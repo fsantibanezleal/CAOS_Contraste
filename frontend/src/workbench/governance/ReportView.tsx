@@ -11,7 +11,7 @@ import type { Text } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, ConventionNote, Doc, GovernanceDoc } from './common';
 import { OpinionCard } from './OpinionBlock';
-import { GOVERNANCE_FILES, OPINION_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
+import { GOVERNANCE_FILES, OPINION_NAME, STATUS_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
 
 type Block = ReportSection['blocks'][number];
 type OutcomeRow = Extract<Block, { kind: 'outcomes' }>['rows'][number];
@@ -24,6 +24,17 @@ const SOURCE_NAME: Record<string, Text> = {
 const KIND_NAME: Record<string, Text> = { p_value: { en: 'p-value', es: 'valor p' }, metric: { en: 'metric', es: 'métrica' } };
 const DIRECTION_NAME: Record<string, Text> = { upper_bad: { en: 'upper is bad', es: 'lo alto es malo' }, lower_bad: { en: 'lower is bad', es: 'lo bajo es malo' } };
 const INPUT_KIND: Record<string, Text> = { document: { en: 'document', es: 'documento' }, engine: { en: 'engine', es: 'motor' }, convention: { en: 'convention', es: 'convención' } };
+
+/** The role a model plays in a table of the report (decision W15: champion, challenger, benchmark, reference). */
+const ROLE_NAME: Record<string, Text> = {
+  champion: { en: 'champion', es: 'campeón' },
+  challenger: { en: 'challenger', es: 'retador' },
+  benchmark: { en: 'benchmark', es: 'referencia externa' },
+  reference: { en: 'reference', es: 'referencia' },
+  dgp: { en: 'generating process', es: 'proceso generador' },
+};
+/** The words of a column whose cells are tokens of a closed set, by the column's English title; any other column prints as written. */
+const TOKEN_COLUMNS: Record<string, Record<string, Text>> = { light: LIGHT_TEXT, status: STATUS_NAME, role: ROLE_NAME };
 
 function PolicyCell({ row }: { row: OutcomeRow }) {
   const lang = useShellLang();
@@ -104,7 +115,13 @@ function BlockView({ block }: { block: Block }) {
       </ul>
     );
   if (block.kind === 'outcomes') return <OutcomesTable rows={block.rows} variant={block.variant_id} />;
-  const cell = (v: string | number | boolean | null): string => (typeof v === 'number' ? formatNumber(v, lang, { digits: 4 }) : v === null ? pick({ en: 'not available', es: 'no disponible' }, lang) : typeof v === 'boolean' ? pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang) : v);
+  const cell = (v: string | number | boolean | null, column?: string): string => {
+    if (typeof v === 'number') return formatNumber(v, lang, { digits: 4 });
+    if (v === null) return pick({ en: 'not available', es: 'no disponible' }, lang);
+    if (typeof v === 'boolean') return pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang);
+    const words = column ? TOKEN_COLUMNS[column.toLowerCase()]?.[v] : undefined;
+    return words ? pick(words, lang) : v;
+  };
   return (
     <div style={{ maxHeight: 360, overflow: 'auto', minWidth: 0 }}>
       <table className="caos-table" data-state="ready">
@@ -123,7 +140,7 @@ function BlockView({ block }: { block: Block }) {
             <tr key={i}>
               {r.map((v, j) => (
                 <td key={j} className="caos-col-text">
-                  <span translate={typeof v === 'string' ? 'no' : undefined}>{cell(v)}</span>
+                  <span translate={typeof v === 'string' && !TOKEN_COLUMNS[block.columns[j]?.en.toLowerCase()]?.[v] ? 'no' : undefined}>{cell(v, block.columns[j]?.en)}</span>
                 </td>
               ))}
             </tr>

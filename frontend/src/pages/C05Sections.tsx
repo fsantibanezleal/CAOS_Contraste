@@ -6,6 +6,7 @@ import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
 import { useT } from '../content/bi';
+import { TRUTH_TEXT } from '../content/cases/C04Results';
 import { CASE1, isLdp, isSp, type LdpVariant, type SpVariant } from '../workbench/c05/selection';
 
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -49,7 +50,7 @@ export function C05ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
           return (
             <tr key={v.variant_id}>
               <td className="caos-col-text">{pick(entries[v.variant_id].title, lang)}</td>
-              <td>{v.provenance.truth_status}</td>
+              <td>{pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, lang)}</td>
               <td className="caos-col-text">{observed}</td>
               <td className="caos-col-text">{shows}</td>
             </tr>

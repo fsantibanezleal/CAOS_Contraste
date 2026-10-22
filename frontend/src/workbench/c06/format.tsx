@@ -1,7 +1,7 @@
 // What the provisions instruments (C06 and C07) share: the number formats, the "not available, with its reason" cell,
 // the text of the four stages and the colour of each stage as a shell token. Nothing here computes a statistic.
 import { formatNumber, pick, useShellLang, type BiText, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 /** The stages of the contracts, with the words a reader uses. */
 export type StageId = 'stage1' | 'stage2' | 'stage3' | 'poci';
@@ -109,8 +109,8 @@ export function ChartOverTable({ chart, children, chartMin = '15rem' }: { chart:
   // `chartMin`: a horizontal bar chart needs about 1.5rem a row, or its rows scroll inside the drawing
   return (
     <div className="ct-stack">
-      <div style={{ flex: '1 1 0', minHeight: chartMin, display: 'flex', flexDirection: 'column' }}>{chart}</div>
-      {children ? <div style={{ flex: '0 1 auto', maxHeight: '42%', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+      <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div>
+      {children ? <div className="ct-stack-table">{children}</div> : null}
     </div>
   );
 }

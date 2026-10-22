@@ -8,6 +8,7 @@ import { LIGHT_TEXT, relight } from '../lib/policy';
 import { useFindingsShares } from '../lib/useMedia';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
+import { designLimit } from './c01Text';
 
 const SEVERITY_TEXT = {
   S1: { en: 'S1 critical', es: 'S1 crítico' },
@@ -27,7 +28,7 @@ function Evidence({ f, sel, number }: { f: Finding; sel: Selection; number: Map<
   return (
     <ul className="ct-evidence">
       {f.evidence.map((e) => {
-        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{e.slice(7)}</li>;
+        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{pick(designLimit(e.slice(7)), lang)}</li>;
         if (e.startsWith('contract:')) {
           const rule = e.slice(9);
           const n = Object.values(sel.data.manifest.contract).reduce((a, c) => a + (c.by_rule.flagged[rule] ?? 0), 0);
@@ -95,7 +96,7 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
           verdict={worst ? SEVERITY_TEXT[worst as keyof typeof SEVERITY_TEXT] : { en: 'No open finding.', es: 'Ningún hallazgo abierto.' }}
         />
         <div className="ct-scroll">
-          <table className="caos-table">
+          <table className="caos-table ct-top">
             <thead>
               <tr>
                 <th className="ct-wide-only">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
@@ -112,6 +113,7 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
                   <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
                   <td className="caos-col-text">
                     {pick(f.title, lang)}
+                    <span className="ct-narrow-only">{f.id}; {pick({ en: 'status: ', es: 'estado: ' }, lang)}{pick(STATUS_TEXT[f.status], lang)}</span>
                     <Evidence f={f} sel={sel} number={number} />
                   </td>
                 </tr>

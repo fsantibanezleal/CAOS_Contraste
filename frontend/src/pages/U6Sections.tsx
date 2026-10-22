@@ -43,6 +43,9 @@ function wmean(items: Array<{ v: number | null | undefined; w: number }>): numbe
   return w > 0 ? s / w : null;
 }
 
+/** A text cell longer than this wraps like a text column: a "not available (reason)" cell must not widen the table past its pane. */
+const LONG_CELL = 28;
+
 export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
   return (
     <table className="caos-table" data-state="ready">
@@ -59,7 +62,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
         {rows.map((r, i) => (
           <tr key={i}>
             {r.map((c, j) => (
-              <td key={j} className={j < wide ? 'caos-col-text' : undefined}>
+              <td key={j} className={j < wide || (typeof c === 'string' && c.length > LONG_CELL) ? 'caos-col-text' : undefined}>
                 {c}
               </td>
             ))}
