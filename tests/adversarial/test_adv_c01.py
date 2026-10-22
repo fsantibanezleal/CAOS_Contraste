@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from planting import edit, edit_json, refute
+from product_planting import edit, edit_json, refute
 
 LEAK = "tests/test_leakage.py"
 C01 = "tests/test_c01.py"

@@ -1,22 +1,23 @@
-"""Fixtures of the adversarial tests (CF-D, after template 0.05.000): a throwaway copy of the repository's committed
-files, one planted defect, and the real gate run as a subprocess on the copy.
+"""Fixtures of the adversarial tests (0.05.000): a throwaway copy of the repository's relevant files, one planted
+defect, the real guard run as a subprocess.
 
-Nothing here writes outside a temporary directory, and nothing reads a raw data file: every plant edits a committed
-artifact or a source file of the copy. The root conftest's autouse fixture imports the pipeline, so it is replaced by a
-no-op here (the copy's own tests import the pipeline in their own process)."""
+The copy holds every file the guards read and none of the heavy or generated trees (node_modules, dist, venvs). The
+tests need only the standard library and pytest, so CI can run them in the checks job; the root conftest's autouse
+fixture imports the pipeline (numpy), so it is replaced here by a no-op."""
 from __future__ import annotations
 
 import shutil
 from pathlib import Path
 
 import pytest
+from planting import add_schema
 
 ROOT = Path(__file__).resolve().parents[2]
 SKIP = shutil.ignore_patterns("node_modules", "dist", "gate-output", "__pycache__", ".venv*", ".git", ".pytest_cache",
-                              ".ruff_cache", "*.pyc", "build", "adversarial")
-COPIED = ("scripts", "docs", "data", "data-pipeline", "models", "frontend", "tests", "deploy", "app", "manifests")
+                              ".ruff_cache", "*.pyc", "build")
+COPIED = ("scripts", "docs", "data", "data-pipeline", "models", "frontend", "tests", ".github", "deploy", "app", "notebooks")
 FILES = ("VERSION", "product.json", "CHANGELOG.md", "requirements-precompute.txt", "requirements-dev.txt",
-         "requirements-api.txt", "pyproject.toml")
+         "requirements-gpu.txt", "requirements-api.txt", ".template-source", "pyproject.toml")
 
 
 @pytest.fixture(autouse=True)
@@ -34,12 +35,13 @@ def base_copy(tmp_path_factory: pytest.TempPathFactory) -> Path:
     for name in FILES:
         if (ROOT / name).exists():
             shutil.copy2(ROOT / name, base / name)
-    return base
+    shutil.copytree(ROOT / "content", base / "content")
+    return add_schema(base)
 
 
 @pytest.fixture
 def repo(base_copy: Path, tmp_path: Path) -> Path:
-    """A fresh copy of the repository's committed files, to plant one defect in."""
+    """A fresh copy of the repository's relevant files, to plant one defect in."""
     dest = tmp_path / "repo"
     shutil.copytree(base_copy, dest)
     return dest

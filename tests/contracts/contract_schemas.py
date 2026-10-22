@@ -79,9 +79,36 @@ def validator(ref: str) -> Draft202012Validator:
     return Draft202012Validator({"$schema": DIALECT, "$ref": sid}, registry=registry())
 
 
+def resolve_name(ref: str, instance: Any) -> str:
+    """The ref (path under schemas/ without the suffix) of a schema given as a bare file name, which is what
+    ``scripts/check_documents.py`` (verbatim from the template) passes: ``case-index`` -> ``common/case-index``. A name that
+    several case folders share (``models``, ``variant``, ``variant-scenario``, ``variant-reverse``) resolves to the one whose
+    ``case_id`` const equals the document's ``case_id`` (every schema under ``schemas/<case>/`` declares it). A ref that
+    already has a folder, or an ``$id``, is returned as it is."""
+    if "/" in ref or ref.startswith(BASE):
+        return ref
+    named = [p for p in schema_files() if p.name == f"{ref}.schema.json"]
+    if len(named) > 1 and isinstance(instance, dict):
+        named = [p for p in named if Candidate(p).consts.get("case_id") == instance.get("case_id")] or named
+    if len(named) != 1:
+        raise SelectionError(f"schema name {ref!r} resolves to {len(named)} files: {[p.relative_to(SCHEMAS).as_posix() for p in named]}")
+    return named[0].relative_to(SCHEMAS).as_posix().removesuffix(".schema.json")
+
+
 def errors(ref: str, instance: Any) -> list[str]:
-    """Every way ``instance`` departs from the schema ``ref``, as ``path: message``; empty when it conforms."""
-    v = validator(ref)
+    """Every way ``instance`` departs from the schema ``ref`` (a ref, an ``$id`` or a bare file name, see
+    :func:`resolve_name`), as ``path: message``; empty when it conforms."""
+    v = validator(resolve_name(ref, instance))
+    found = sorted(v.iter_errors(instance), key=lambda e: [str(p) for p in e.absolute_path])
+    return [f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message}" for e in found[:25]]
+
+
+def component_errors(name: str, instance: Any) -> list[str]:
+    """Every way ``instance`` departs from the OpenAPI component ``name`` of docs/contracts/api.openapi.json (the document is
+    self-contained: its components reference one another locally); empty when it conforms."""
+    api = load_json(CONTRACTS / "api.openapi.json")
+    assert name in api["components"]["schemas"], f"api.openapi.json has no component {name!r}"
+    v = Draft202012Validator({"$schema": DIALECT, "$ref": f"#/components/schemas/{name}", "components": api["components"]})
     found = sorted(v.iter_errors(instance), key=lambda e: [str(p) for p in e.absolute_path])
     return [f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message}" for e in found[:25]]
 

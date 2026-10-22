@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from planting import WEB_READY, edit, edit_json, prune_planned_cases, refute_web
+from product_planting import WEB_READY, edit, edit_json, prune_planned_cases, refute_web
 
 pytestmark = pytest.mark.skipif(not WEB_READY, reason="needs node and `npm ci` in frontend/")
 
