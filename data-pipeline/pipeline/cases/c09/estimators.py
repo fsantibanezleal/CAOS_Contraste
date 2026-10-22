@@ -135,9 +135,10 @@ def thin(obs: Observations, k: int) -> Observations:
                         obs.n_defaults, obs.n_excluded)
 
 
-#: the engine's fractional-logit solver compares log-likelihoods of the order of the sample size to 1e-14, so on a pooled sample of
-#: tens of thousands of observations it can stall at the optimum and report non-convergence (found in the C09 bake, reported to the
-#: engine owner); the fit is then repeated on every k-th observation, and the thinning used is written in the document
+#: before riskvalidation 1.0.1 the engine's fractional-logit solver compared log-likelihoods of the order of the sample size to
+#: 1e-14, so on a pooled sample of tens of thousands of observations it could stall at the optimum and report non-convergence
+#: (found in the C09 bake; fixed in 1.0.1, BL-094). The fallback stays as a guard: a fit that does not converge is repeated on every
+#: k-th observation, and the thinning used is written in the document (1 at every level on 1.0.1)
 THINNING = (1, 2, 3, 4, 6, 8)
 
 
