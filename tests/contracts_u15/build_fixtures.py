@@ -591,17 +591,17 @@ def build_appetite(ex: dict, inv: dict, fnd: dict) -> dict:
 # ------------------------------------------------------------------------------------------------------------------ the reports
 
 
-NO_POLICY_FILE = "no policy file (BL-085)"
+NO_POLICY_FILE = "no policy file for an inline battery string"   # riskvalidation.governance.policy.NO_POLICY_FILE (engine 1.0.0)
 
 
 def parse_policy(row: dict, decisions: dict) -> dict:
     """The policy identity of a row (W15-12): the kind is spec(test_id).decision where the test is registered, the direction is null for an inline
-    battery string because no policy file holds it (BL-085)."""
+    battery string because no policy file holds it."""
     pv = row["policy_version"]
     family = row["test_id"].split(".")[0]
     decision = decisions.get(row["test_id"])
     kind = {"kind": decision, "kind_reason": None} if decision else {
-        "kind": None, "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision"}
+        "kind": None, "kind_reason": "the test id is not in the engine registry (spec() raises KeyError), so it has no decision"}
     base = {"label": pv, **kind, "alpha_amber": row["alpha_amber"], "alpha_red": row["alpha_red"], "_family": family}
     if pv.startswith("riskvalidation-default "):
         return {**base, "direction": None, "direction_reason": "read from the policy file by the engine: the packaged threshold of the test (fixture: not resolved here)",
@@ -745,8 +745,8 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     secs.append(section(6, "filled", inputs[6], [
         {"kind": "outcomes", "variant_id": default["variant_id"], "rows": outcomes},
     ], [(("Threshold kind for rows without a policy file", "Tipo de umbral para filas sin archivo de politica"),
-         ("the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError at the batch 3 head), and the direction is null for an inline battery string until a policy file exists (BL-085)",
-          "el tipo es spec(test_id).decision donde la prueba esta registrada (estas no lo estan: spec() lanza KeyError en la cabeza del lote 3), y la direccion es nula para una cadena de bateria en linea hasta que exista un archivo de politica (BL-085)"))]))
+         ("the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError), and the direction is null for an inline battery string, which has no policy file",
+          "el tipo es spec(test_id).decision donde la prueba está registrada (estas no lo están: spec() lanza KeyError), y la dirección es nula para una cadena de batería en línea, que no tiene archivo de política"))]))
     secs.append(section(7, "filled", inputs[7], [
         table_block(("Variants as perturbations", "Variantes como perturbaciones"), [("Variant", "Variante"), ("Test rows", "Filas"), ("Red rows", "Filas rojas")],
                     [[v["variant_id"], len(v["tests"]), sum(1 for t in v["tests"] if t["light"] == "red")] for v in c["variants"]]),
@@ -795,7 +795,8 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     secs.append(section(12, "filled", inputs[12], [
         table_block(("Documents read", "Documentos leidos"), [("Path", "Ruta"), ("sha256", "sha256")], [[d["path"], d["sha256"]] for d in docs_read]),
     ], [(("Policy-file version and content hash for the inline battery strings", "Version y hash del archivo de politica de las cadenas en linea"),
-         ("the contraste-*-battery strings have no policy file (backlog BL-085, done at the U16 re-bake)", "las cadenas contraste-*-battery no tienen archivo de politica (BL-085, en la re-ejecucion de U16)"))]))
+         ("the contraste-*-battery strings of the committed case documents have no policy file; the next bake of each case writes the packaged battery label",
+         "las cadenas contraste-*-battery de los documentos de caso confirmados no tienen archivo de política; la próxima ejecución de cada caso escribe la etiqueta de batería empaquetada"))]))
     return {
         "schema": "contraste.governance.report/v1", "case_id": "GOVERNANCE", "governance_id": "report", "schema_version": "1.0.0",
         "as_of": AS_OF, "as_of_basis": AS_OF_BASIS, "provenance": provenance(ex), "entry_key": key,

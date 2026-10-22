@@ -14184,7 +14184,7 @@ export interface components {
         };
         /**
          * Governance validation report
-         * @description Catalog row governance-report 1.0.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.
+         * @description Catalog row governance-report 1.1.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.
          */
         "governance-governance-report": {
             /** @constant */
@@ -14850,7 +14850,7 @@ export interface components {
             reference: string;
             policy: components["schemas"]["repPolicy"];
         };
-        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason. */
+        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, a packaged label computed with other cut points (`<label>+custom`, source packaged-policy-overridden), an inline battery string parsed, or unresolved with its reason. */
         repPolicy: {
             label: string;
             /** @description spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy. */
@@ -14869,7 +14869,7 @@ export interface components {
              * @description Computed by riskvalidation.governance.policy.resolve_policy.
              * @enum {string}
              */
-            source: "packaged-policy" | "inline-battery" | "unresolved";
+            source: "packaged-policy" | "packaged-policy-overridden" | "inline-battery" | "unresolved";
             reason: string | null;
         } & (unknown & unknown & unknown);
         /** @description I.3 section 1: Executive summary (06 l.1219-1237). */

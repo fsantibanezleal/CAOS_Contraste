@@ -105,7 +105,7 @@ def test_related_links_are_listed_apart_and_never_drawn_as_dependencies(baked, t
 
 def test_every_entry_depends_on_the_engine_node_and_the_graph_is_layered(baked):
     inv = baked.inventory
-    assert inv["engine_node"]["key"] == "riskvalidation" and inv["engine_node"]["version"] == "0.9.0"
+    assert inv["engine_node"]["key"] == "riskvalidation" and inv["engine_node"]["version"] == "1.0.0"
     assert all(e["key"] != "riskvalidation" for e in inv["entries"])
     pairs = [(e["upstream"], e["downstream"]) for e in inv["edges"]]
     for e in inv["entries"]:

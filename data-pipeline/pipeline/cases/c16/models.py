@@ -40,7 +40,7 @@ GOLDENS = (("stable-retail-adverse", "adverse", "stable-retail", 125, "dossier-0
            ("other-retail-adverse", "adverse", "other-retail", 125, "recomputed"),
            ("non-operational-nfc-adverse-2-days", "adverse", "non-operational-non-financial-corporates", 2, "recomputed"),
            ("committed-credit-facilities-adverse-63-days", "adverse", "committed-credit-facilities", 63, "recomputed"))
-P_ENTER, P_EXIT = 0.01, 0.05                  # the stress-state transition law of the generator: a convention (UNVERIFIED, contract 1.2.0)
+P_ENTER, P_EXIT = 0.01, 0.05                  # the stress-state transition law of the generator: a convention (UNVERIFIED, contract 2.0.0)
 N_DEPOSITORS = 1000                           # per segment
 GENERATOR_HORIZON = 125
 TRUTH_HORIZONS = (2, 5, 30, 125)
@@ -81,14 +81,16 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
     for s in segs:
         calm, stress, what = spec[s["segment"]]
         share = s["opening"] / total
-        cfg_segments.append(DepositorSegment(s["segment"], share, calm, stress, P_ENTER, P_EXIT))
+        cfg_segments.append(DepositorSegment(s["segment"], share, calm, stress))
         doc_segments.append({"segment": s["segment"], "share_of_deposits": share, "calm_daily_hazard": calm, "stress_daily_hazard": stress,
                              "p_enter_stress": P_ENTER, "p_exit_stress": P_EXIT,
                              "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what}; the "
                                           "transition law is a convention.",
                                           f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what}; la ley de "
                                           "transición es una convención.")})
-    gen = DepositorGenerator(DepositorConfig(tuple(cfg_segments), N_DEPOSITORS, GENERATOR_HORIZON))
+    # engine-liquidity-api 2.0.0 (BL-082): one stress chain shared by every depositor, so its two probabilities belong to the configuration; the
+    # document still writes them on each segment row (the c16GeneratorSegment schema requires both), equal to the configuration's
+    gen = DepositorGenerator(DepositorConfig(tuple(cfg_segments), N_DEPOSITORS, GENERATOR_HORIZON, P_ENTER, P_EXIT))
     truth = gen.truth()["outflow_rate"]
     rows = [{"segment": k, "horizon_days": n, "true_outflow_rate": float(truth[k][n - 1])} for k in truth for n in TRUTH_HORIZONS]
     checks = [c for c in gen.verify(n_draws, seed) if c.se > 0.0]

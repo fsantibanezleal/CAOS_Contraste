@@ -42,7 +42,7 @@ python scripts/check_notebooks.py          # the static check: layout, mirror, l
 ```
 
 The environment is the familiar one: `pip install -r notebooks/requirements.txt` in a virtual environment. Its first line is the
-engine, `riskvalidation==0.9.0`, from PyPI; the other lines are the method libraries at the pins of `data-pipeline/requirements.txt`
+engine, `riskvalidation==1.0.0`, from PyPI; the other lines are the method libraries at the pins of `data-pipeline/requirements.txt`
 and the runtime that executes the notebooks. Only the runner writes a notebook's outputs; the committed notebooks are the
 runner's output. To read one, open it on GitHub or in any Jupyter client (select the `.venv-notebooks` kernel to run it). A
 notebook reads committed files only (`data/derived/` and `data/examples/`): it needs no raw data and no `CONTRASTE_DATA`, and it

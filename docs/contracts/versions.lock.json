@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "15.0.0",
+    "version": "16.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "545867803ff668e342d03e4821775cff4ec0ccfa2dcaab88e1ceb185567d059c"
+    "sha256": "1b6bb014e516a08f6681b1ae5b69368046a3ccd34e0d5d8b9125910112682f71"
   },
   "readiness": {
     "version": "1.0.0",
@@ -285,9 +285,9 @@
     "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
   },
   "engine-liquidity-api": {
-    "version": "1.2.1",
+    "version": "2.0.0",
     "schema": "docs/contracts/engine/liquidity-api.md",
-    "sha256": "d896bad767499f006ebf026250ea0c36867086462b298ce1ad32d34d6e651480"
+    "sha256": "a620a1614237c6f581399d6d6c781214314f6842855ea86975ad82edb542b016"
   },
   "c02-outputs": {
     "version": "1.1.0",
@@ -415,9 +415,9 @@
     "sha256": "8527e935efd2a4be3e1e53bfbd218577497d98816bcdd1ea8fb2a9b413f7922c"
   },
   "governance-report": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/governance/governance-report.schema.json",
-    "sha256": "0a29354e88e1377d3511e173efafc3739fadc9f48db573273e1311802e098d71"
+    "sha256": "dae966f6232445054c9c17fd0195a4df77c070ee2fd22e17d58e98c7b9f1b78c"
   },
   "governance-appetite": {
     "version": "1.0.0",
@@ -425,8 +425,8 @@
     "sha256": "680130edb702d5e248314c9fc553780c02594231bdd49384346cff7a40001e80"
   },
   "engine-governance-api": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/engine/governance-api.md",
-    "sha256": "a027f32bafac3d5469ba168ecd9e5afd680b872ad51e4ed03a2c8b84b9c1693b"
+    "sha256": "01e03ea44de51c931190a593d18472e24e48b5b9c656b9744a6f5dede4473888"
   }
 }
