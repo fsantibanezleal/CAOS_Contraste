@@ -303,11 +303,18 @@ def json_texts(obj, only_es: bool, in_es: bool = False):
         yield obj, in_es
 
 
+IDENTIFIER = re.compile(r"[A-Za-z0-9_.#<>-]+")
+
+
 def copied_pairs(obj):
-    """The ``en`` text of every object with ``en`` and ``es`` strings that are equal, the ``en`` having three words or more."""
+    """The ``en`` text of every object with ``en`` and ``es`` strings that are equal, the ``en`` having three words or more.
+
+    An identifier (one token of letters, digits, ``_ . # - < >``, such as ``port-1000-1pct-rho12``) is the same in every language.
+    """
     if isinstance(obj, dict):
         en, es = obj.get("en"), obj.get("es")
-        if isinstance(en, str) and isinstance(es, str) and en.strip() == es.strip() and len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", en)) >= 3:
+        if (isinstance(en, str) and isinstance(es, str) and en.strip() == es.strip() and not IDENTIFIER.fullmatch(en.strip())
+                and len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", en)) >= 3):
             yield en
         for v in obj.values():
             yield from copied_pairs(v)
@@ -421,7 +428,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{rel}:{line}: {word} -> {fix}")
     if not args.documents and not args.paths:
         for (where, word), used in allow.items():
-            if not used:
+            if not used and not where.startswith("data/derived/"):  # the documents are judged with --documents only
                 print(f"{args.allow.name}: unused allow entry: {where} :: {word}")
                 findings.append((where, 0, word, ""))
     print(f"check_spanish: {len(findings)} finding{'s' if len(findings) != 1 else ''}")
