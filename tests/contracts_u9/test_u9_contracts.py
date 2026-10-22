@@ -933,7 +933,8 @@ def row_cells(line: str) -> list[str]:
 
 def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
-    header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
+    # the catalog gained the `documents` column after this fragment was written (U16-W2, template 0.11.000); the merged fragment keeps the columns it had
+    header = [h for h in next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version")) if h != "documents"]
     lines = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("|")]
     rows = [row_cells(ln) for ln in lines]
     assert rows[0] == header
