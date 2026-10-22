@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import type { RungOutputs } from '../lib/contract.types';
 import { CHAMPION, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
+import { currencyName } from './c01Text';
 
 /** Money in millions, as in the decision view. */
 const MILLION = 1e6;
@@ -48,7 +49,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
   const champ = v.outputs.rungs[CHAMPION].cutoff;
   const chall = v.outputs.rungs[sel.challenger].cutoff;
   const names = [shortName(rung(v, CHAMPION), CHAMPION), shortName(rung(v, sel.challenger), sel.challenger)];
-  const currency = v.impact.el_champion?.unit ?? '';
+  const cname = currencyName(v.impact.el_champion?.unit ?? '');
   const money = (x: number | null) => formatNumber(x === null ? null : x / MILLION, lang, { digits: 3 });
   const [eadA] = interp(champ.approval_rate, champ.ead, [sel.approval]);
   const [eadB] = interp(chall.approval_rate, chall.ead, [sel.approval]);
@@ -95,8 +96,8 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8% of the RWA, in million ${currency} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
-          es: `${pick(klass, 'es')}; EAD ${irb.ead.es}; el capital es el 8% de los APR, en millones de ${currency} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
+          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8% of the RWA, in million ${cname.en} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
+          es: `${pick(klass, 'es')}; EAD ${irb.ead.es}; el capital es el 8% de los APR, en millones de ${cname.es} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
         }}
       >
         <div className="ct-row">
@@ -162,14 +163,14 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `At the rail's LGD, in million ${currency}.${sensitivity('en')}`,
-          es: `A la LGD del panel, en millones de ${currency}.${sensitivity('es')}`,
+          en: `At the rail's LGD, in million ${cname.en}.${sensitivity('en')}`,
+          es: `A la LGD del panel, en millones de ${cname.es}.${sensitivity('es')}`,
         }}
       >
         <UPlotChart
           height="fill"
           x={{ values: chart.x, label: { en: 'Approval rate', es: 'Tasa de aprobación' }, format: { percent: true, decimals: 0 } }}
-          y={{ label: { en: `Capital (million ${currency})`, es: `Capital (millones de ${currency})` }, format: { digits: 3 } }}
+          y={{ label: { en: `Capital (million ${cname.en})`, es: `Capital (millones de ${cname.es})` }, format: { digits: 3 } }}
           series={[
             { label: names[0], values: chart.champion, color: '--color-accent', width: 2 },
             { label: names[1], values: chart.challenger, color: '--color-magenta', width: 2, dash: [6, 4] },

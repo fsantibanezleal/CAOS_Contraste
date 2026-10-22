@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { CapitalView } from './CapitalView';
 import { CHAMPION, REPLAY, atApproval, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
+import { currencyName } from './c01Text';
 
 /** The Impact group: the decision (bad rate and expected loss) and the capital (CT-212 to CT-216). */
 export function ImpactGroup({ sel }: { sel: Selection | null }) {
@@ -53,7 +54,8 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
   const better = champ.bad !== null && chall.bad !== null ? chall.bad < champ.bad : null;
   const im = v.impact;
   const currency = im.el_champion?.unit ?? '';
-  const money = { en: `million ${currency}`, es: `millones de ${currency}` };
+  const cname = currencyName(currency);
+  const money = { en: `million ${cname.en}`, es: `millones de ${cname.es}` };
   const fmt = (key: string) => {
     const it = im[key];
     if (!it) return '-';

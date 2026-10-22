@@ -170,6 +170,7 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
   const titles = Object.fromEntries(manifest.artifacts.map((a) => [a.variant_id, a.short_title]));
   const numbered = rows.map((r, i) => `${i + 1} ${pick(titles[r.v.variant_id] ?? r.v.variant_id, lang)}`).join(', ');
   return (
+    <>
     <PlotCard
       title={{ en: `${manifest.case_id}: AUC across the perturbed variants`, es: `${manifest.case_id}: AUC a lo largo de las variantes perturbadas` }}
       lane="replay"
@@ -186,6 +187,39 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
         ]}
       />
     </PlotCard>
+    <RobustnessTable
+      rows={rows.map((r, i) => ({ n: i + 1, title: pick(titles[r.v.variant_id] ?? r.v.variant_id, lang), scorecard: r.auc, best: r.best.auc }))}
+    />
+    </>
+  );
+}
+
+/** The numbers the robustness chart draws, one row per variant (the chart has no table of its own): the number of the note, the variant, the AUC of the scorecard and of the best rung. */
+export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number }> }) {
+  const lang = useShellLang();
+  const t = useT();
+  return (
+    <table className="caos-table ct-wrap-head" data-state="ready" data-table="robustness">
+      <caption className="ct-note">{t('The AUC the chart draws, by variant', 'El AUC que dibuja el gráfico, por variante')}</caption>
+      <thead>
+        <tr>
+          <th>{t('No.', 'N.º')}</th>
+          <th className="caos-col-text">{t('Variant', 'Variante')}</th>
+          <th>{t('AUC of the scorecard (P1)', 'AUC de la scorecard (P1)')}</th>
+          <th>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.n}>
+            <td>{r.n}</td>
+            <td className="caos-col-text">{r.title}</td>
+            <td>{formatNumber(r.scorecard, lang, { decimals: 3 })}</td>
+            <td>{formatNumber(r.best, lang, { decimals: 3 })}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

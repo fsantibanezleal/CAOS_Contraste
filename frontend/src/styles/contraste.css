@@ -51,8 +51,14 @@
 /* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
 .ct-scroll { height: 100%; overflow: auto; min-height: 0; }
 
-/* columns a phone has no room for */
+/* columns a phone has no room for; what they hold that a reader cannot do without (the status of a finding) is repeated
+   under the text of the row, in .ct-narrow-only, which only a phone shows */
 @media (max-width: 640px) { .ct-wide-only { display: none; } }
+/* a table whose rows are several lines tall reads from the top of each row (U16-R2 b06 m4: centred cells left the first finding
+   looking empty) */
+.caos-table.ct-top td { vertical-align: top; }
+.ct-narrow-only { display: none; }
+@media (max-width: 640px) { .ct-narrow-only { display: block; margin-top: 0.2rem; font-size: 0.78rem; color: var(--color-fg-subtle); } }
 /* columns that need a wide instrument (every rung of the battery, the posterior interval); below 1500 px the
    champion and the challenger, and the essential columns */
 @media (max-width: 1499px) { .ct-room-only { display: none; } }
@@ -61,8 +67,11 @@
 .ct-grid6-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0;
   grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
 .ct-grid6-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; }
+/* below 900 px the shell gives a filling card a height of clamp(260px, 48vh, 440px): six panels cannot share it (each was
+   about 40 px, with one tick and no axis labels), so the card grows with its panels, one a row, each 260 px tall */
 @media (max-width: 900px) {
-  .ct-grid6-fill { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
+  .ct-grid6-fill { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: 260px; }
+  .caos-plot.fill > .caos-plot-body:has(.ct-grid6-fill) { height: auto; }
 }
 
 /* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
@@ -103,6 +112,30 @@
 /* a verdict over a scrolling table, inside one filling card */
 .ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
 .ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }
+/* the boxes of a drawing and its tables (ChartOverTable, LabelledOverTable, ChartAbove, the C21 evidence card): the
+   drawing takes the height the tables leave, the tables scroll under it; --ct-chart-min is the drawing's least height */
+.ct-stack-chart { flex: 1 1 0; min-height: var(--ct-chart-min, 15rem); display: flex; flex-direction: column; }
+.ct-stack-fixed { flex: 0 0 var(--ct-chart-min, 15rem); min-height: var(--ct-chart-min, 15rem); display: flex; flex-direction: column; }
+.ct-stack-table { flex: 0 1 auto; max-height: 42%; overflow: auto; min-height: 0; }
+/* the C21 evidence card holds two drawings of 15 rem and a table: it scrolls inside its card when they do not fit */
+.ct-stack[data-block="finding-evidence"] { overflow-y: auto; }
+.ct-stack-rest, .ct-stack-fill { flex: 1 1 0; overflow: auto; min-height: 0; }
+/* below 900 px the card is as tall as what it holds (U16-R2 VS-1: the table box shrank to 0 to 150 px, hid whole tables and
+   headline numbers, and the drawing kept 35 px): the stack flows, nothing is capped, the card body grows with it */
+@media (max-width: 900px) {
+  .ct-stack { height: auto; }
+  .ct-stack-chart, .ct-stack-fixed { flex: none; height: calc(var(--ct-chart-min, 15rem) + 10rem); }
+  .ct-stack-table, .ct-stack-rest, .ct-stack-fill { flex: none; max-height: none; overflow: visible; }
+  .caos-plot.fill > .caos-plot-body:has(.ct-stack) { height: auto; }
+}
+/* a diagram of the documentation is drawn 900 px wide: on a phone it keeps its native size in a box that scrolls sideways
+   (focusable, so a keyboard reaches it), with the hint above, instead of shrinking its labels to about 4 px */
+.ct-fig-hint { display: none; }
+@media (max-width: 900px) {
+  .ct-fig-hint { display: block; margin: 0 0 0.3rem; font-size: 0.78rem; color: var(--color-fg-subtle); }
+  .ct-fig-scroll { overflow-x: auto; max-width: 100%; }
+  .ct-fig-scroll svg { min-width: 900px; }
+}
 
 /* cards side by side at their own height (tables over a filling chart, as the C01 Variants view stacks one); below
    900 px they stack */
