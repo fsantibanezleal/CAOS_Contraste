@@ -35,7 +35,9 @@ def bitexts(node: Any, path: str = "") -> Iterator[tuple[str, str, str]]:
 
 
 def _plain(text: str) -> str:
-    """The text without model orders such as GARCH(1,1), which are notation, not numbers."""
+    """The text without model orders such as GARCH(1,1), which are notation, not numbers, and without the identifiers of a
+    citation (a DOI, an arXiv id, a URL), which stay as published in both languages."""
+    text = re.sub(r"(?:doi:|arXiv[: ]|https?://)\S+", "", text)
     return re.sub(r"\(\d+,\d+\)", "()", text)
 
 
