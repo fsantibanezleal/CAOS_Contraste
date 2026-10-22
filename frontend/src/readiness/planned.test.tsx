@@ -18,7 +18,7 @@ const entry: Entry = {
   kind: 'real',
   manifest_path: 'manifests/C06.json',
 };
-const why = { en: '18 of 22 cases are planned and not built yet: C06.', es: '18 de 22 casos están planificados y aún no construidos: C06.' };
+const why = { en: 'Cases planned and not built yet: 18 of 22 (C06).', es: 'Casos planificados y aún no construidos: 18 de 22 (C06).' };
 
 // the server render reads the store's initial state (zustand), so the test sets the language there
 const init = useLangStore.getInitialState() as { lang: 'en' | 'es' };

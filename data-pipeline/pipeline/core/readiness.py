@@ -39,8 +39,8 @@ DERIVED_IDS = ("case-index", "case-manifest", "test-result", *ENVELOPES)
 T_PROVIDER = ("Served by its provider ({provider}); the real producer is not built yet.",
               "Lo sirve su proveedor ({provider}); el productor real aún no está construido.")
 T_NOT_BAKED = ("The pipeline has not baked this build.", "El pipeline no ha generado esta versión.")
-T_PLANNED = ("{n} of {total} cases are planned and not built yet: {ids}.",
-             "{n} de {total} casos están planificados y aún no construidos: {ids}.")
+T_PLANNED = ("Cases planned and not built yet: {n} of {total} ({ids}).",
+             "Casos planificados y aún no construidos: {n} de {total} ({ids}).")
 T_MANIFESTS = ("{n} of {total} manifests are absent.", "Faltan {n} de {total} manifiestos.")
 T_ARTIFACTS = ("{n} of {total} artifacts are absent.", "Faltan {n} de {total} artefactos.")
 T_STALE = ("Baked by {engine_version}; the product is {version}.",
