@@ -107,9 +107,9 @@ export function ComparisonView({ sel }: { sel: C12Sel | null }) {
 }
 
 const PARITY_TEXT = {
-  match: { en: 'The live port reproduces the committed block of the document at 1e-9 relative.', es: 'El puerto en vivo reproduce el bloque del documento a 1e-9 relativo.' },
-  moved: { en: 'A control moved the inputs away from the document\'s: the live values are the port\'s own and the committed column is the document\'s.', es: 'Un control movió los insumos fuera de los del documento: los valores en vivo son los del puerto y la columna del documento es la comprometida.' },
-  mismatch: { en: 'The live port departs from the committed block of the document:', es: 'El puerto en vivo difiere del bloque comprometido del documento:' },
+  match: { en: 'The live port reproduces the committed block of the document at 1e-9 relative.', es: 'La réplica en vivo reproduce el bloque del documento a 1e-9 relativo.' },
+  moved: { en: 'A control moved the inputs away from the document\'s: the live values are the port\'s own and the committed column is the document\'s.', es: 'Un control movió los insumos fuera de los del documento: los valores en vivo son los de la réplica y la columna del documento es la comprometida.' },
+  mismatch: { en: 'The live port departs from the committed block of the document:', es: 'La réplica en vivo difiere del bloque comprometido del documento:' },
 } as const;
 
 /** The live SA-CCR: EAD against the collateral held, the trades and the hedging sets, live and committed. */
@@ -149,7 +149,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
         lane="live"
         note={{
           en: `EAD = 1.4 (RC + PFE) (CRE52.1). The port computes the interest rate class of CRE52 on the swaps of the book: supervisory duration, delta, maturity factor, the three maturity buckets and the offset formula of CRE52.57, the multiplier with its 5 percent floor. The other four asset classes hold no trade here. Move the collateral held: the replacement cost falls to zero and the multiplier falls with the over-collateralisation.`,
-          es: `EAD = 1,4 (RC + PFE) (CRE52.1). El puerto calcula la clase de tasa de interés de CRE52 sobre los swaps de la cartera: duración supervisora, delta, factor de vencimiento, los tres tramos de vencimiento y la fórmula de compensación de CRE52.57, el multiplicador con su piso de 5 por ciento. Las otras cuatro clases de activos no tienen operaciones aquí. Mueva el colateral mantenido: el costo de reemplazo baja a cero y el multiplicador baja con la sobrecolateralización.`,
+          es: `EAD = 1,4 (RC + PFE) (CRE52.1). La réplica calcula la clase de tasa de interés de CRE52 sobre los swaps de la cartera: duración supervisora, delta, factor de vencimiento, los tres tramos de vencimiento y la fórmula de compensación de CRE52.57, el multiplicador con su piso de 5 por ciento. Las otras cuatro clases de activos no tienen operaciones aquí. Mueva el colateral mantenido: el costo de reemplazo baja a cero y el multiplicador baja con la sobrecolateralización.`,
         }}
       >
         <ChartOverTable
@@ -170,6 +170,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
           <p className="ct-note" data-parity={state} data-live-ead={live.ead} data-committed-ead={sa.ead.amount}>
             {pick(PARITY_TEXT[state], lang)}
             {state === 'mismatch' ? ` ${mism.join('; ')}` : ''}
+            {live.rc === 0 ? ` ${pick({ en: 'With RC = 0 the EAD is alpha times the PFE, so the PFE line lies under the EAD line.', es: 'Con RC = 0 el EAD es alfa por el PFE, así que la línea del PFE queda bajo la del EAD.' }, lang)}` : ''}
           </p>
           <table className="caos-table ct-wrap-head" data-table="c12-saccr-chain">
             <thead>
@@ -369,7 +370,7 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
               height="fill"
               orientation="vertical"
               values={!narrow}
-              data={g.weighted_sensitivities.map((v, i) => ({ id: `t${i}`, label: label(i), value: v / axis.div, tone: v < 0 ? ('bad' as const) : ('accent' as const) }))}
+              data={g.weighted_sensitivities.map((v, i) => ({ id: `t${i}`, label: label(i), value: (Math.round(v) + 0) / axis.div, tone: v < 0 ? ('bad' as const) : ('accent' as const) }))}
               axis={{ label: { en: `Weighted sensitivity (${pick(axis.unit, 'en')})`, es: `Sensibilidad ponderada (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
             />
           }

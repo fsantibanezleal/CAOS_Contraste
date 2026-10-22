@@ -43,7 +43,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `Desk back-test at the ${levelLabel(lvl.alpha, 'en')}, ${name.en}`, es: `Backtest de mesa en la ${levelLabel(lvl.alpha, 'es')}, ${name.es}` }}
+        title={{ en: `Desk back-test at the ${levelLabel(lvl.alpha, 'en')}, ${name.en}`, es: `Backtest de mesa en la ${levelLabel(lvl.alpha, 'es', true)}, ${name.es}` }}
         {...card}
         note={{
           en: `Exceptions of the ${lvl.basis} against the desk VaR over ${count(lvl.n_days, 'en')} days, across the replications. More than ${count(lvl.limit_exceptions, 'en')} moves the desk to the standardised approach.`,
@@ -58,7 +58,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
               height="fill"
               orientation="vertical"
               data={bars}
-              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { digits: 3 } }}
+              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { decimals: 0 } }}
             />
           }
         >
@@ -70,6 +70,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
                   <th className="ct-text">{pick({ en: 'Level', es: 'Nivel' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Basis', es: 'Base' }, lang)}</th>
                   <th>{pick({ en: 'Limit', es: 'Límite' }, lang)}</th>
+                  <th>{pick({ en: 'Mean', es: 'Media' }, lang)}</th>
                   <th>{pick({ en: '95th percentile', es: 'Percentil 95' }, lang)}</th>
                   <th>{pick({ en: 'Within the limit', es: 'Dentro del límite' }, lang)}</th>
                   <th>{pick({ en: 'Over the limit', es: 'Sobre el límite' }, lang)}</th>
@@ -82,6 +83,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
                     <td className="ct-text">{levelLabel(l.alpha, lang)}</td>
                     <td className="ct-text ct-wide-only">{l.basis}</td>
                     <td>{count(l.limit_exceptions, lang)}</td>
+                    <td>{formatNumber(l.exceptions.mean, lang, { decimals: 1 })}</td>
                     <td>{formatNumber(l.exceptions.q95, lang, { decimals: 1 })}</td>
                     <td>{count(l.n_within_limit, lang)}</td>
                     <td>{count(l.n_over_limit, lang)}</td>

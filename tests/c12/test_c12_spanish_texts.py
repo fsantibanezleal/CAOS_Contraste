@@ -24,3 +24,16 @@ def test_the_finding_titles_use_the_spanish_light_measure_and_count():
     assert all("fila" in t and "(s)" not in t and "(book)" not in t and "risk factor" not in t for t in titles), titles
     assert any(t.startswith("1 fila roja sobre") for t in titles) and any(t.startswith("18 filas rojas sobre") for t in titles)
     assert any("(cartera)" in t for t in titles) and any("(factor de riesgo)" in t for t in titles)
+
+
+def test_u16_f7_the_variants_are_named_alike_in_the_manifest_and_the_views():
+    """b06 m6: the wrong-way variant is 'correlación adversa' everywhere (the rail read 'dirección equivocada'), one swap is 'Un solo swap', the CSA titles carry 'de'."""
+    manifest = load("data/derived/manifests/C12.json")
+    es = {a["variant_id"]: a["title"]["es"] for a in manifest["artifacts"]}
+    assert es["wrong-way-risk"] == "Riesgo de correlación adversa"
+    assert es["single-swap"] == "Un solo swap"
+    assert es["csa-mpor-10d"] == "CSA, MPoR de 10 días" and es["csa-mpor-20d"] == "CSA, MPoR de 20 días"
+    for name in DOCUMENTS:
+        text = (FOLDER / name).read_text(encoding="utf-8")
+        assert "dirección equivocada" not in text, name
+        assert "hazard de la contraparte" not in text, name

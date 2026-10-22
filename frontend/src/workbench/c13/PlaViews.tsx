@@ -9,7 +9,7 @@ import { rowsMin } from '../c11/MarketCommon';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
 import { ViewFoot, deficiencyName } from './C13Common';
-import { STATISTIC_TEXT, ZONE_TEXT, ecdfGap, outputsOf, rankSeries, text, type C13Sel } from './selection';
+import { STATISTIC_TEXT, ZONE_TEXT, ecdfGap, seedText, outputsOf, rankSeries, text, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
@@ -31,8 +31,8 @@ export function RanksView({ sel }: { sel: C13Sel | null }) {
         title={{ en: `Rank scatter, ${name.en}`, es: `Dispersión de rangos, ${name.es}` }}
         {...card}
         note={{
-          en: `One replication kept whole (number ${count(ex.replication_index, 'en')}, seed ${count(ex.seed, 'en')}): each point is a day, ranked on the hypothetical and on the risk-theoretical P&L. A model that explains the desk puts the points on the diagonal.`,
-          es: `Una replicación guardada completa (número ${count(ex.replication_index, 'es')}, semilla ${count(ex.seed, 'es')}): cada punto es un día, ordenado por el P&L hipotético y por el P&L teórico del riesgo. Un modelo que explica la mesa pone los puntos en la diagonal.`,
+          en: `One replication kept whole (number ${count(ex.replication_index, 'en')}, seed ${seedText(ex.seed, 'en')}): each point is a day, ranked on the hypothetical and on the risk-theoretical P&L. A model that explains the desk puts the points on the diagonal.`,
+          es: `Una replicación guardada completa (número ${count(ex.replication_index, 'es')}, semilla ${seedText(ex.seed, 'es')}): cada punto es un día, ordenado por el P&L hipotético y por el P&L teórico del riesgo. Un modelo que explica la mesa pone los puntos en la diagonal.`,
         }}
       >
         <ChartOverTable
@@ -267,7 +267,7 @@ export function DetectionView({ sel }: { sel: C13Sel | null }) {
             <dt>{pick({ en: 'Amber or red', es: 'Ámbar o roja' }, lang)}</dt>
             <dd>{`${pct(d.share_amber_or_red, lang, 2)} (${count(d.n_amber_or_red, lang)} / ${count(d.n_replications, lang)})`}</dd>
             <dt>{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</dt>
-            <dd>{`${pct(d.ci_low, lang, 2)} - ${pct(d.ci_high, lang, 2)} (${pick({ en: 'Monte Carlo SE', es: 'EE de Monte Carlo' }, lang)} ${pct(d.mc_se, lang, 2)})`}</dd>
+            <dd>{`${pct(d.ci_low, lang, 2)} - ${pct(d.ci_high, lang, 2)} (${pick({ en: 'Monte Carlo SE', es: 'error estándar de Monte Carlo' }, lang)} ${pct(d.mc_se, lang, 2)})`}</dd>
             <dt>{pick({ en: 'Red', es: 'Roja' }, lang)}</dt>
             <dd>{`${pct(d.share_red, lang, 2)} (${count(d.n_red, lang)})`}</dd>
             <dt>{pick({ en: 'Flagged by Spearman, KS, desk back-test', es: 'Marcadas por Spearman, KS, backtest de mesa' }, lang)}</dt>

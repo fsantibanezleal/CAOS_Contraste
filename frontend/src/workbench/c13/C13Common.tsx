@@ -11,7 +11,7 @@ import { Pending } from '../Pending';
 import { rangeText, truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin } from '../c11/MarketCommon';
-import { DEFICIENCY_TEXT, GENERATOR_TEXT, INTENDED_TEXT, PARAMETER_TEXT, UNIT_TEXT, parameterText, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, text, type C13Outputs, type C13Sel } from './selection';
+import { DEFICIENCY_TEXT, GENERATOR_TEXT, INTENDED_TEXT, PARAMETER_TEXT, UNIT_TEXT, parameterText, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, seedText, text, type C13Outputs, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const pct = (v: number | null | undefined, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
@@ -186,7 +186,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'Window', es: 'Ventana' }, lang)}</dt>
           <dd>{pick({ en: `${count(o.generator.window_days, 'en')} days, P&L as a decimal of the desk notional`, es: `${count(o.generator.window_days, 'es')} días, P&L como decimal del nocional de la mesa` }, lang)}</dd>
           <dt>{pick({ en: 'Replications', es: 'Replicaciones' }, lang)}</dt>
-          <dd>{pick({ en: `${count(o.generator.n_replications, 'en')}, seed ${count(o.generator.seed_base, 'en')} plus the index`, es: `${count(o.generator.n_replications, 'es')}, semilla ${count(o.generator.seed_base, 'es')} más el índice` }, lang)}</dd>
+          <dd>{pick({ en: `${count(o.generator.n_replications, 'en')}, seed ${seedText(o.generator.seed_base, 'en')} plus the index`, es: `${count(o.generator.n_replications, 'es')}, semilla ${seedText(o.generator.seed_base, 'es')} más el índice` }, lang)}</dd>
           <dt>{pick({ en: 'Notice of the models document', es: 'Aviso del documento de modelos' }, lang)}</dt>
           <dd>{pick((fit?.generator ?? o.generator).notice, lang)}</dd>
         </dl>

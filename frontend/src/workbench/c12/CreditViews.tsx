@@ -62,7 +62,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
             <dt>{pick({ en: 'CVA, DVA and BCVA (USD)', es: 'CVA, DVA y BCVA (USD)' }, lang)}</dt>
             <dd data-cva={c.cva.amount}>
               <Nw>{`${cell(c.cva.amount, lang)} / ${cell(c.dva.amount, lang)} / ${cell(c.bcva.amount, lang)}`}</Nw>
-              {` (${pick({ en: 'Monte Carlo SE of the CVA', es: 'ES de Monte Carlo del CVA' }, lang)} `}
+              {` (${pick({ en: 'Monte Carlo SE of the CVA', es: 'Error estándar de Monte Carlo del CVA' }, lang)} `}
               <Nw>{formatNumber(c.cva.mc_se, lang, { digits: 4 })}</Nw>
               {')'}
             </dd>
@@ -160,7 +160,7 @@ export function WwrView({ sel }: { sel: C12Sel | null }) {
           }
         >
           <p className="ct-note" data-block="ore-limit" data-ore-status={ore.status}>
-            {ore.status === 'not-applicable' ? `${pick({ en: 'This variant has no ORE reconciliation.', es: 'Esta variante no tiene conciliación con ORE.' }, lang)} ` : ''}
+            {own ? '' : `${pick({ en: 'Wrong-way variant:', es: 'Variante de correlación adversa:' }, lang)} `}
             {pick(w.ore_limit, lang)}
           </p>
           <table className="caos-table ct-wrap-head" data-table="c12-wwr">
@@ -168,7 +168,7 @@ export function WwrView({ sel }: { sel: C12Sel | null }) {
               <tr>
                 <th>{pick({ en: 'b (per USD million)', es: 'b (por millón de USD)' }, lang)}</th>
                 <th>{pick({ en: 'CVA (USD)', es: 'CVA (USD)' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Monte Carlo SE', es: 'ES de Monte Carlo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Monte Carlo SE', es: 'Error estándar de Monte Carlo' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Reading', es: 'Lectura' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Calibration error of a(t)', es: 'Error de calibración de a(t)' }, lang)}</th>
               </tr>

@@ -16,7 +16,7 @@ import { C13ContextView, C13FindingsView, C13VariantsTable, LevelReadout, Statis
 import { DeskView } from './DeskViews';
 import { DetectionView, EcdfView, RanksView, ZonesView } from './PlaViews';
 import { useC13Instrument } from './instrument';
-import { defaultSel, ecdfGap, outputsOf, rankSeries, spearmanOf, type C13Sel } from './selection';
+import { defaultSel, ecdfGap, outputsOf, rankSeries, seedText, spearmanOf, type C13Sel } from './selection';
 
 type Outputs = components['schemas']['c13Outputs'];
 
@@ -226,7 +226,7 @@ describe('the zones, the detection and the desk back-test', () => {
     for (const d of fit.deficiencies) expect(markup).toContain(`data-deficiency="${d.deficiency_id}"`);
     for (const l of fit.desk_limits) expect(markup).toContain(l.reference);
     expect(markup).toContain(escapeHtml(o.sign_convention.definition.en));
-    expect(markup).toContain(count(fit.replication_plan.seed_base));
+    expect(markup).toContain(seedText(fit.replication_plan.seed_base, 'en')); // a seed is an identifier, written whole (U16-R2 b06 m7)
     expect(markup).toContain('data-fixture="true"');
   });
 
