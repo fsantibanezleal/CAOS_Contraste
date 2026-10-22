@@ -16,6 +16,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import documents as docs
@@ -78,7 +79,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         lineage = lin.build(CASE_ID, sources=[], truth_status="synthetic-calibrated", seed=seed, code_version=__version__,
                             riskvalidation_version=rv, generators=(docs.GENERATOR,))
         variants[sid] = build_artifact(
-            case_id=CASE_ID, variant_id=sid, model=docs.model_summaries(out, rv, scen), outputs=out, tests=rows, impact=docs.impact(out),
+            case_id=CASE_ID, variant_id=sid, model=docs.model_summaries(out, rv, scen), outputs=out, tests=with_reference_text(rows), impact=docs.impact(out),
             findings=docs.findings(out, rows, {"ifrs9": "IFRS9-ecl"}), lineage=lineage, lane={"lane": "precompute", "reasons": []})
     models_doc = _models_artifact(models, seed, rv)
     values = _values(models, outs, rows_by)

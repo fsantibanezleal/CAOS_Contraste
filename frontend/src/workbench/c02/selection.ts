@@ -67,3 +67,8 @@ export function defaultSel(data: CaseData | null): C02Sel | null {
 
 export const HORIZON_TEXT = (years: number | null): Bi =>
   years === null ? { en: 'Pooled', es: 'Agrupado' } : { en: `${years}-year horizon`, es: years === 1 ? 'Horizonte de 1 año' : `Horizonte de ${years} años` };
+
+/** An interval's two ends as a range a reader cannot misread beside a negative bound ("-0,0221 a -0,0118", never "-0,0221 - -0,0118"). */
+export function span(lo: string, hi: string, lang: 'en' | 'es'): string {
+  return `${lo} ${lang === 'es' ? 'a' : 'to'} ${hi}`;
+}

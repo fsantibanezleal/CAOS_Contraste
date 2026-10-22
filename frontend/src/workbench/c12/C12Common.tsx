@@ -12,7 +12,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { noteText } from '../c08/notes';
-import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
+import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
 import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
@@ -109,7 +109,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ? noteText(t.notes, lang) : t.reference}</td>
+                      <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
                     </tr>
                   );
                 })}

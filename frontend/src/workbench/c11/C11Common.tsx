@@ -12,7 +12,7 @@ import { truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin, zoneText } from './MarketCommon';
 import {
-  CLASS_TEXT, HYPERPARAMETER_TEXT, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, UNIT_TEXT, WINDOW_TEXT, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
+  CLASS_TEXT, HYPERPARAMETER_TEXT, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, WINDOW_TEXT, unitFor, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
   type C11Outputs, type C11Sel,
 } from './selection';
 
@@ -178,7 +178,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           {h.others.map((x) => (
             <Fragment key={x.name}>
               <dt>{pick(text(HYPERPARAMETER_TEXT, x.name), lang)}</dt>
-              <dd>{`${formatNumber(x.value, lang, { digits: 4 })} ${pick(text(UNIT_TEXT, x.unit), lang)}`}</dd>
+              <dd>{`${formatNumber(x.value, lang, { digits: 4 })} ${pick(unitFor(x.unit, x.value), lang)}`}</dd>
             </Fragment>
           ))}
         </dl>

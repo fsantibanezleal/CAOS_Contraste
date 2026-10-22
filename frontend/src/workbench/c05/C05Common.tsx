@@ -30,6 +30,13 @@ function findRow(v: VariantArtifact<unknown>, e: string): TestRow | undefined {
   return v.tests.find((t) => t.test_id === testId && t.model_id === model && (segment ? t.segment === segment : t.segment === null || t.segment === 'portfolio'));
 }
 
+/** The reason the calibration engine gives for an improper joint distribution (English only, written by src/engine/credit.ts), in Spanish. */
+const IMPROPER_ES: Record<string, string> = {
+  'a scaled PD exceeds one (section 4.2.3)': 'una PD escalada supera uno (sección 4.2.3)',
+  'condition (4.6a) fails': 'la condición (4.6a) no se cumple',
+};
+const improperText = (reason: string): string => IMPROPER_ES[reason] ?? reason;
+
 export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -191,7 +198,7 @@ function spCompare(sp: SpVariant[], sel: C05Sel, dp: (v: SpVariant, id: string) 
     title: { en: 'The default-profile test of every approach, year by year', es: 'La prueba del perfil de incumplimiento de cada enfoque, año a año' },
     note: {
       en: `One point per approach: ${numbered('en')}. Dashed, the rail's thresholds. The test sees the shape of the curve, not its level: the case 3 approaches (6 to 9) forecast ${times('en')} times the observed PD in these years, and that does not show here.`,
-      es: `Un punto por enfoque: ${numbered('es')}. Segmentadas, los umbrales del panel. La prueba ve la forma de la curva, no su nivel: los enfoques del caso 3 (6 a 9) pronostican ${times('es')} veces la PD observada en estos años, y eso no se ve aquí.`,
+      es: `Un punto por enfoque: ${numbered('es')}. Discontinuas, los umbrales del panel. La prueba ve la forma de la curva, no su nivel: los enfoques del caso 3 (6 a 9) pronostican ${times('es')} veces la PD observada en estos años, y eso no se ve aquí.`,
     },
     x: { values: x, label: { en: 'Approach (numbered in the note)', es: 'Enfoque (numerado en la nota)' }, format: { decimals: 0 } },
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
@@ -215,7 +222,7 @@ function ldpCompare(ldp: LdpVariant[], short: (id: string) => BiText): Compare {
     title: { en: 'What each observed year implies: the bounds at 75%', es: 'Lo que implica cada año observado: las cotas al 75%' },
     note: {
       en: 'The independent most prudent bound of each grade at 75%, one line per observation, against the expert PDs under test (dotted) and the true PDs of the generator (dashed). Every bound lies above the truth; the fewer the defaults, the closer it comes.',
-      es: 'La cota más prudente independiente de cada grado al 75%, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (segmentada). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
+      es: 'La cota más prudente independiente de cada grado al 75%, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (discontinua). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
     },
     x: { values: [1, 2, 3], label: { en: 'Grade (1 A, 2 B, 3 C)', es: 'Grado (1 A, 2 B, 3 C)' }, format: { decimals: 0 } },
     y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75% (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
@@ -278,7 +285,7 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
           {pick(
             {
               en: `Truth status of this variant: ${truthStatusText(v.provenance.truth_status).en}. The readers check each paper against its own print (Table 2's grades add up to its All row; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el cálculo previo. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
@@ -312,11 +319,11 @@ export function CalibrationReadout({ sel }: { sel: C05Sel | null }) {
         { label, value: constant, unitless: true, format: sel?.approach === 'A1-idp' || sel?.approach === 'A2-iar' ? { percent: true, decimals: 1 } : { decimals: 4 } },
         { label: { en: 'PD of CCC-C', es: 'PD de CCC-C' }, value: live?.curve.length ? live.curve[16] : null, unitless: true, format: { percent: true, decimals: 2 } },
         {
-          label: { en: 'Model', es: 'Modelo' },
-          text: live?.improper ? { en: 'improper', es: 'impropio' } : { en: 'proper', es: 'propio' },
+          label: { en: 'Joint distribution', es: 'Distribución conjunta' },
+          text: live?.improper ? { en: 'improper', es: 'impropia' } : { en: 'proper', es: 'propia (suma 1)' },
           tone: live?.improper ? 'bad' : 'good',
           unitless: true,
-          hint: { en: live?.improper ?? 'A proper joint distribution of grade and state.', es: live?.improper ?? 'Una distribución conjunta propia de grado y estado.' },
+          hint: { en: live?.improper ?? 'A proper joint distribution of grade and state.', es: live?.improper ? improperText(live.improper) : 'Una distribución conjunta propia de grado y estado.' },
         },
       ]}
     />

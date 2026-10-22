@@ -26,7 +26,7 @@ _spec.loader.exec_module(u6)  # defines the helpers; its main() does not run on 
 Ob, A, R, S, N, E, B, Int = u6.Ob, u6.A, u6.R, u6.S, u6.N, u6.E, u6.B, u6.Int
 nullable, one_of, reachable, TXT, CUR, DATE, UNIT, LIGHT, NAME_MAP = (
     u6.nullable, u6.one_of, u6.reachable, u6.TXT, u6.CUR, u6.DATE, u6.UNIT, u6.LIGHT, u6.NAME_MAP)
-BASE, NOT_EVALUATED_RULE = u6.BASE, u6.NOT_EVALUATED_RULE
+BASE, NOT_EVALUATED_RULE, REFERENCE_TEXT_RULE = u6.BASE, u6.NOT_EVALUATED_RULE, u6.REFERENCE_TEXT_RULE
 
 OPEN = dict(exclusiveMinimum=0, exclusiveMaximum=1)
 PD = N("An estimate-site PD is open: 0 < pd < 1.", **OPEN)
@@ -440,6 +440,7 @@ def variant_schema(ref: str, kind: str, title: str, desc: str, root: str, defs: 
              "required": ["case_id", "outputs"]},
             {"properties": {"provenance": {"properties": provenance}}},
             NOT_EVALUATED_RULE,
+            REFERENCE_TEXT_RULE,
         ],
         "unevaluatedProperties": False,
         "$defs": reachable(root, defs),

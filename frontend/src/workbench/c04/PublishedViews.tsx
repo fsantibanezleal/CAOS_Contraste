@@ -337,7 +337,7 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `Engelmann (2024), section 4: each starting portfolio projected by (9) under his unstressed matrix (11) as printed, at unit balance, recomputed; the PD of each year. Dashed: the PD of his TTC portfolio (10), to which every path drifts. Marked: the extremes the paper prints, at the year the path reaches them (their values in the table). The matrix itself is derived-only and not shown.`,
-          es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Segmentada: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
+          es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Discontinua: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
         }}
       >
         <UPlotChart

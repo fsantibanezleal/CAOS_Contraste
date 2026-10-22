@@ -107,6 +107,13 @@ export const UNIT_TEXT: Record<string, Bi> = {
   models: { en: 'models', es: 'modelos' },
   'fz0-loss': { en: 'FZ0 loss', es: 'pérdida FZ0' },
 };
+const UNIT_ONE: Record<string, Bi> = {
+  days: { en: 'day', es: 'día' },
+  draws: { en: 'draw', es: 'remuestreo' },
+  models: { en: 'model', es: 'modelo' },
+};
+/** A unit in words, in the singular for a value of one ("1 day", never "1 days"; U16-R2 b05 m4). */
+export const unitFor = (unit: string, value: number): Bi => (value === 1 && UNIT_ONE[unit] ? UNIT_ONE[unit] : text(UNIT_TEXT, unit));
 /** The hyperparameters a window lists beyond the named ones, in words. */
 export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
   caviar_refit_every_days: { en: 'CAViaR refit every', es: 'Reajuste CAViaR cada' },

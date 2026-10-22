@@ -12,7 +12,7 @@ import { noteText } from '../c08/notes';
 import { C10TestsTable, IllustrativeNotice } from './C10Common';
 import { barMin, fullMoney, moneyAxis } from './format';
 import {
-  DIAGNOSTIC_TEXT, ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text, measureText,
+  DIAGNOSTIC_TEXT, ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, referenceNote, rungOf, text, measureText,
   type C10Rung, type C10Sel,
 } from './selection';
 
@@ -69,7 +69,10 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
   const lhp = rung.id === 'c1-lhp' ? undefined : rungOf(o, 'c1-lhp');
   const overlay = lhp?.evaluated && lhp.distribution ? lhp.distribution : null;
   const d = rung.distribution;
-  const grid = unionX(d.loss, overlay?.loss ?? []);
+  // the axis spans the rung in focus: the LHP overlay is drawn only where this rung has support, so a narrow rung is not squeezed into a tenth of the plot (U16-R2 b05 m1)
+  const own0 = d.loss[0] ?? 0;
+  const own1 = d.loss[d.loss.length - 1] ?? 0;
+  const grid = unionX(d.loss, (overlay?.loss ?? []).filter((x) => x >= own0 && x <= own1));
   const { div, unit } = moneyAxis(grid[grid.length - 1] ?? 0, ccy);
   const own = alignTo(d.loss, d.density, grid).map((v) => (v === null ? null : v * div));
   const lhpLine = overlay ? alignTo(overlay.loss, overlay.density, grid).map((v) => (v === null ? null : v * div)) : null;
@@ -397,7 +400,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
               y={{ label: { en: 'Adjustment, share of the EAD', es: 'Ajuste, parte de la EAD' }, format: { percent: true, decimals: 2 } }}
               series={[
                 { label: { en: 'Granularity adjustment', es: 'Ajuste de granularidad' }, values: rows.map((r) => r.ga), color: '--color-accent', width: 2.4 },
-                { label: { en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, values: rows.map((r) => r.truth_ga), color: '--color-magenta', mode: 'points', size: 9 },
+                ...(rows.some((r) => r.truth_ga !== null) ? [{ label: { en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, values: rows.map((r) => r.truth_ga), color: '--color-magenta' as const, mode: 'points' as const, size: 9 }] : []),
               ]}
             />
           }
@@ -453,7 +456,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
             {pick(
               {
                 en: `Gamma factor with shape and rate ${formatNumber(gr.xi, 'en', { digits: 3 })}, loss-given-default dispersion ${formatNumber(gr.gamma, 'en', { digits: 3 })}, portfolio capital K* ${p(gr.k_star, 3)} from the IRB formula at the regulatory correlation. Reference value: delta ${formatNumber(gr.delta_reference, 'en', { digits: 3 })} at xi 0.25 and level ${levelBi(0.999).en} (${gr.delta_reference_source}).`,
-                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: delta ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con xi 0,25 y nivel ${levelBi(0.999).es} (${gr.delta_reference_source}).`,
+                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: delta ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con xi 0,25 y nivel ${levelBi(0.999).es} (${referenceNote(gr.delta_reference_source, 'es')}).`,
               },
               lang,
             )}
