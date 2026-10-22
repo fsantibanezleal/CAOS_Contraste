@@ -405,6 +405,6 @@ describe('tests, findings, variants and context', () => {
     expect(band).toContain('Información, no capital');
     const fan = html(<FanView sel={selOf(fedV)} />);
     expect(fan).toContain(pct(fedV.outputs.capital_plan.cases[1].years[2].cet1.pct_of_rwa, 'es'));
-    expect(html(<PathsView sel={selOf(fedV)} />)).toContain('adaptación calibrada en EE. UU.'.slice(0, 20));
+    expect(html(<PathsView sel={selOf(fedV)} />)).toContain(escapeHtml(fedV.outputs.scenario.adaptation_statement.es)); // the statement alone: the label and the model note repeated it (U16-R2 b09 m11)
   });
 });

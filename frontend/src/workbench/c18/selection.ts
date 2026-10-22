@@ -290,7 +290,7 @@ export const TEST_TEXT: Record<string, Bi> = {
   'aggregation.elliptical_mc_agreement': { en: 'Monte Carlo against the variance-covariance anchor', es: 'Monte Carlo frente al ancla de varianza-covarianza' },
   'aggregation.rosenberg_schuermann_reference': { en: 'Rosenberg and Schuermann reference (not a gate)', es: 'Referencia de Rosenberg y Schuermann (no es un umbral)' },
   'portfolio.euler_additivity': { en: 'The Euler contributions add up to the total', es: 'Las contribuciones de Euler suman el total' },
-  'stress.satellite_backcast': { en: 'Back-cast of the satellites through 2020 to 2025', es: 'Back-cast de los satélites entre 2020 y 2025' },
+  'stress.satellite_backcast': { en: 'Back-cast of the satellites through 2020 to 2025', es: 'Prueba retrospectiva de los satélites entre 2020 y 2025' },
   'stress.sensitivity_monotonicity': { en: 'Sign and monotonicity of every sensitivity', es: 'Signo y monotonía de cada sensibilidad' },
   'stress.static_balance_sheet_rules': { en: 'The static balance sheet rules applied', es: 'Las reglas de balance estático aplicadas' },
   'stress.scenario_severity': { en: 'Severity of each path against history', es: 'Severidad de cada trayectoria frente a la historia' },
