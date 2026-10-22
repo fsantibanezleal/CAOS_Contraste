@@ -140,7 +140,7 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   const head: Record<string, string[]> = {
     C03: [t('Variant', 'Variante'), t('Training loans', 'Créditos de entrenamiento'), t('Vintages with a 5-year mark', 'Cosechas con marca de 5 años'), t('Predicted 5-year PD', 'PD a 5 años predicha'), t('Observed 5-year PD', 'PD a 5 años observada'), t('Largest PSI', 'PSI máximo')],
     C06: [t('Variant', 'Variante'), t('Accounts', 'Cuentas'), t('Gross carrying amount', 'Importe en libros bruto'), t('Expected credit loss', 'Pérdida crediticia esperada'), t('Coverage', 'Cobertura'), t('Share not in stage 1', 'Parte fuera de la etapa 1')],
-    C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anejo 9 del BdE')],
+    C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anexo 9 del BdE')],
     C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD proxy media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
     C09: [t('Variant', 'Variante'), t('Known CCF', 'CCF conocido'), t('Mean estimator, fixed horizon', 'Estimador de media, horizonte fijo'), t('Its bias', 'Su sesgo'), t('Estimates inside the tolerance', 'Estimaciones dentro de la tolerancia')],
   };

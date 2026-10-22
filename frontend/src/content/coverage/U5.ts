@@ -19,7 +19,7 @@ export const CASES: PlannedCase[] = [
   {
     id: 'C07',
     category: 'provisions',
-    title: t('Chile provisions trilogy: CMF B-1, IFRS 9, BdE Annex 9', 'Trilogía de provisiones en Chile: CMF B-1, IFRS 9, Anejo 9 del BdE'),
+    title: t('Chile provisions trilogy: CMF B-1, IFRS 9, BdE Annex 9', 'Trilogía de provisiones en Chile: CMF B-1, IFRS 9, Anexo 9 del BdE'),
     data: t('Synthetic Banco Andino calibrated to CMF aggregates', 'Banco Andino sintético calibrado a agregados de la CMF'),
     truth: t('synthetic calibrated', 'sintético calibrado'),
     unit: 'U5',

@@ -234,11 +234,11 @@ const IRRBB_REASON: { en: string; es: string } = {
 export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
   C06: {
     en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
-    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anexo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
   },
   C07: {
     en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
-    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anexo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
   },
   C14: IRRBB_REASON,
   C15: IRRBB_REASON,
