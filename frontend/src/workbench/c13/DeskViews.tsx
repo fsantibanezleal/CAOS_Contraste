@@ -4,6 +4,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { rangeText } from '../c08/words';
 import { useCard } from '../c03/U6Shared';
 import { ViewFoot, deficiencyName } from './C13Common';
 import { fitOf, levelLabel, outputsOf, type C13Sel } from './selection';
@@ -57,13 +58,13 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
               height="fill"
               orientation="vertical"
               data={bars}
-              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { decimals: 1 } }}
+              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { digits: 3 } }}
             />
           }
         >
           <div data-level={lvl.alpha}>
             <table className="caos-table ct-wrap-head" data-table="c13-desk">
-              <caption className="ct-note">{reference}</caption>
+              <caption className="ct-note">{rangeText(reference, lang)}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Level', es: 'Nivel' }, lang)}</th>

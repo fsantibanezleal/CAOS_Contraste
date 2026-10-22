@@ -2372,7 +2372,7 @@ export interface components {
             primary_source: string;
             /** @constant */
             freddie_mac_available: false;
-            freddie_mac_reason: string;
+            freddie_mac_reason: components["schemas"]["common-text"];
             notice: components["schemas"]["common-text"];
         } | {
             primary_source: string;
@@ -2415,8 +2415,8 @@ export interface components {
         c08DownturnPeriod: {
             first_year: number;
             last_year: number;
-            indicator: string;
-            macro_source: string;
+            indicator: components["schemas"]["common-text"];
+            macro_source: components["schemas"]["common-text"];
         };
         c08DownturnRow: {
             cohort_id: string;
@@ -2704,7 +2704,7 @@ export interface components {
         c08Floors: {
             regime: string;
             cells: components["schemas"]["c08FloorCell"][];
-            source: string;
+            source: components["schemas"]["common-text"];
         };
         /** @description How much the IRB LGD floors (Basel III final, CRE32.16, CRE32.58 to CRE32.59) bind on the estimates. */
         c08FloorsBite: {
@@ -2833,7 +2833,7 @@ export interface components {
                 treatment: "excluded" | "projected" | "not-applicable";
                 n_excluded: number;
                 n_projected: number;
-                reason: string | null;
+                reason: components["schemas"]["common-text"] | null;
             };
             note: components["schemas"]["common-text"];
         } & ({
@@ -2988,7 +2988,7 @@ export interface components {
         c09EadFloor: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
-            rule: string;
+            rule: components["schemas"]["common-text"];
             /** @description A share or an observed rate in [0, 1]. */
             off_balance_share: number;
             rows: components["schemas"]["c09FloorRow"][];

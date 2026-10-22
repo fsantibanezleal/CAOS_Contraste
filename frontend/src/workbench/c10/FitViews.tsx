@@ -7,10 +7,11 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
+import { noteText } from '../c08/notes';
 import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { C10TestsTable } from './C10Common';
-import { ESTIMATOR_SHORT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, REGIME_TEXT, levelBi, outputsOf, text, type C10Sel } from './selection';
+import { DENSITY_TITLE, ESTIMATOR_TEXT, LIKELIHOOD_TITLE, MARK_SHORT, cutoffLabel, INTERVAL_TEXT, IRB_CLASS_TEXT, REGIME_TEXT, levelBi, outputsOf, text, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const NA = (lang: 'en' | 'es') => formatNumber(null, lang);
@@ -53,7 +54,7 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: grid, label: { en: 'Yearly loss rate', es: 'Tasa de pérdida anual' }, format: { percent: true, decimals: 1 } }}
-              y={{ label: { en: 'Density of the fitted distribution', es: 'Densidad de la distribución ajustada' }, format: { decimals: 0 } }}
+              y={{ label: DENSITY_TITLE, format: { decimals: 0 } }}
               series={[
                 { label: { en: 'Fitted Vasicek density', es: 'Densidad de Vasicek ajustada' }, values: line, color: '--color-accent', width: 2.4 },
                 { label: { en: 'Fit-window years', es: 'Años de la ventana de ajuste' }, values: placed('fit'), color: '--color-fg-subtle', mode: 'points', size: 8 },
@@ -93,7 +94,7 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
                   <tr key={a.year} data-year={a.year} data-window={a.window} data-state="no-rate">
                     <td className="ct-text">{a.year}</td>
                     <td className="ct-text">{pick(a.window === 'fit' ? { en: 'fit', es: 'ajuste' } : { en: 'evaluation', es: 'evaluación' }, lang)}</td>
-                    <td data-na="true" colSpan={5} className="ct-text">{`${NA(lang)} (${a.reason ?? ''})`}</td>
+                    <td data-na="true" colSpan={5} className="ct-text">{`${NA(lang)} (${noteText(a.reason, lang)})`}</td>
                   </tr>
                 ) : (
                   <tr key={a.year} data-year={a.year} data-window={a.window} data-exceeds-99={String(a.exceeds_99)} data-exceeds-999={String(a.exceeds_999)}>
@@ -128,7 +129,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
     { id: 'maximum-likelihood', pd: ml.pd, rho: ml.rho, method: ml.interval_method, extra: pick({ en: `log-likelihood ${formatNumber(ml.log_likelihood, 'en', { digits: 4 })}, ${ml.converged ? 'converged' : 'did not converge'}`, es: `log-verosimilitud ${formatNumber(ml.log_likelihood, 'es', { digits: 4 })}, ${ml.converged ? 'convergió' : 'no convergió'}` }, lang) },
     { id: 'moments', pd: mo.pd, rho: mo.rho, method: mo.interval_method, extra: pick({ en: `${count(mo.n_bootstrap, 'en')} bootstrap samples`, es: `${count(mo.n_bootstrap, 'es')} muestras bootstrap` }, lang) },
   ];
-  const marks = rows.map((r) => ({ x: r.rho.estimate, label: { en: `${text(ESTIMATOR_SHORT, r.id).en} ${formatNumber(r.rho.estimate, 'en', { percent: true, decimals: 1 })}`, es: `${text(ESTIMATOR_SHORT, r.id).es} ${formatNumber(r.rho.estimate, 'es', { percent: true, decimals: 1 })}` } }));
+  const marks = rows.map((r) => ({ x: r.rho.estimate, label: { en: `${text(MARK_SHORT, r.id).en} ${formatNumber(r.rho.estimate, 'en', { percent: true, decimals: 1 })}`, es: `${text(MARK_SHORT, r.id).es} ${formatNumber(r.rho.estimate, 'es', { percent: true, decimals: 1 })}` } }));
   return (
     <ViewsRow>
       <PlotCard
@@ -145,9 +146,9 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: p.rho, label: { en: 'Asset correlation', es: 'Correlación de activos' }, format: { percent: true, decimals: 0 } }}
-              y={{ label: { en: 'Profile log-likelihood', es: 'Log-verosimilitud perfilada' }, format: { decimals: 0 } }}
+              y={{ label: LIKELIHOOD_TITLE, format: { decimals: 0 } }}
               series={[{ label: { en: 'Profile log-likelihood', es: 'Log-verosimilitud perfilada' }, values: p.log_likelihood, color: '--color-accent', width: 2.4 }]}
-              yMarks={[{ y: p.cutoff, label: { en: `95% cutoff ${formatNumber(p.cutoff, 'en', { digits: 4 })}`, es: `Corte del 95% ${formatNumber(p.cutoff, 'es', { digits: 4 })}` }, tone: 'warn' }]}
+              yMarks={[{ y: p.cutoff, label: { en: cutoffLabel(formatNumber(p.cutoff, 'en', { digits: 4 }), 'en'), es: cutoffLabel(formatNumber(p.cutoff, 'es', { digits: 4 }), 'es') }, tone: 'warn' }]}
               marks={marks}
             />
           }

@@ -729,7 +729,7 @@
           "description": "ISO 4217 code of the money fields of this block."
         },
         "rule": {
-          "type": "string"
+          "$ref": "../common/text.schema.json"
         },
         "off_balance_share": {
           "type": "number",

@@ -7,6 +7,9 @@ import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { cohortLabel, cohortYear, outputsOf, rungLabel, type C08Sel } from './selection';
+import { YEAR_FORMAT } from './words';
+
+export { YEAR_FORMAT };
 
 const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -122,7 +125,7 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: years, label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: { decimals: 0 } }}
+              x={{ values: years, label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT }}
               y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
               series={[
                 { label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', width: 2.6 },
