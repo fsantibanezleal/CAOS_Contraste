@@ -28,13 +28,13 @@ export function fitOf(sel: Pick<C03Sel, 'data'> | null): C03Fit | null {
   return (sel?.data.models as unknown as { fit?: C03Fit } | undefined)?.fit ?? null;
 }
 
-/** The selection a variant opens on: the first vintage, its last month, the first rung of the comparison. */
+/** The selection a variant opens on: the first vintage, its last month, the champion rung of the comparison (the rung the calibration is read on; the first row is the constant anchor). */
 export function defaultSel(data: CaseData | null): C03Sel | null {
   if (!data || data.manifest.case_id !== 'C03') return null;
   const o = outputsOf({ data });
   if (!o) return null;
   const first = o.vintage_curves[0];
-  return { data, vintage: first?.fiscal_year ?? o.cohort.first_fy, horizon: first?.months[first.months.length - 1] ?? o.target.horizon_months, rung: o.rung_comparison[0]?.rung_id ?? '' };
+  return { data, vintage: first?.fiscal_year ?? o.cohort.first_fy, horizon: first?.months[first.months.length - 1] ?? o.target.horizon_months, rung: o.rung_comparison.find((r) => r.rung_id === o.calibration.rung_id)?.rung_id ?? o.rung_comparison[0]?.rung_id ?? '' };
 }
 
 /** What each kind of PD rung is called. */

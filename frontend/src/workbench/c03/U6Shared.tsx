@@ -34,6 +34,17 @@ const ENGINE_NOTES: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es') => s
   [/^conventional band: (significant|moderate|little) change \(0\.10\/0\.25 rule of thumb, no error control\)$/, (m) => `banda convencional: cambio ${({ significant: 'significativo', moderate: 'moderado', little: 'pequeño' } as Record<string, string>)[m[1]]} (regla práctica de 0,10/0,25, sin control del error)`],
 ];
 
+/**
+ * The reference of a test row in the page's language: the bilingual text the producer carries in `extras.reference_text` (the citation
+ * as published, its locators and the dossier's remark in Spanish), else the engine's own string (U16-F6: no English remark in a Spanish
+ * reference column).
+ */
+export function referenceText(t: Pick<TestRow, 'reference' | 'extras'>, lang: 'en' | 'es'): string {
+  const r = (t.extras as { reference_text?: { en?: unknown; es?: unknown } } | undefined)?.reference_text;
+  const text = r?.[lang];
+  return typeof r?.en === 'string' && typeof r?.es === 'string' && typeof text === 'string' ? text : t.reference;
+}
+
 /** An engine note in the page's language (see ENGINE_NOTES). */
 export function engineNote(note: string, lang: 'en' | 'es'): string {
   if (lang === 'en') return note;
@@ -62,9 +73,9 @@ export function useCard(variant: VariantArtifact | undefined): { lane: Lane; pro
 }
 
 /** A live read-out of the rail: always drawn, with no row while the selection is not there. */
-export function LiveReadout({ variant, title, items }: { variant: VariantArtifact | undefined; title: BiText; items: ReadoutItem[] }) {
+export function LiveReadout({ variant, title, items, lane = LIVE }: { variant: VariantArtifact | undefined; title: BiText; items: ReadoutItem[]; lane?: Lane }) {
   const stateKey = useWorkbenchState()?.stateKey;
-  return <Readout title={title} lane={LIVE} provenance={provenanceOf(variant?.provenance.truth_status)} dataKey={stateKey} items={items} />;
+  return <Readout title={title} lane={lane} provenance={provenanceOf(variant?.provenance.truth_status)} dataKey={stateKey} items={items} />;
 }
 
 /** The read-out row of a proportion that the contract flags: the value as it is, and its flag as the unit when outside [0, 1]. */
@@ -134,7 +145,7 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : t.reference}</td>
+                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : referenceText(t, lang)}</td>
                 </tr>
               );
             })}

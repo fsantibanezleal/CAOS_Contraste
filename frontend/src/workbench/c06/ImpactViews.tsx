@@ -427,7 +427,9 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                       const full = pick(scenarioLabel(id), lang);
                       return (
                         <text key={id} x={x + dx} y={y + dy} textAnchor={anchor} className="dg-axis-label">
-                          {fitLabel(full, i === 0 ? Math.min(width * 0.8, 220) : labelW, 12, 1).lines[0]}
+                          {fitLabel(full, i === 0 ? Math.min(width * 0.8, 220) : labelW, 12, 2).lines.map((line, k) => (
+                            <tspan key={k} x={x + dx} dy={k === 0 ? 0 : 13}>{line}</tspan>
+                          ))}
                           <title>{full}</title>
                         </text>
                       );

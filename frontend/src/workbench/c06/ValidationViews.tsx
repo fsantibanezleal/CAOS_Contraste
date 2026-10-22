@@ -8,7 +8,8 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLabel, unionX } from './format';
-import { cohortText, fitOf, movementText, outputsOf, type C06Sel } from './selection';
+import { referenceText } from '../c03/U6Shared';
+import { cohortText, fitOf, ifrs9TestText, movementText, outputsOf, type C06Sel } from './selection';
 
 // seven cohorts are seven curves: seven distinct colour tokens (the predicted line of each stays dashed)
 const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle', '--color-fg'];
@@ -437,7 +438,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
               <tr>
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
-                <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
+                <th>{pick({ en: 'Statistic or metric', es: 'Estadístico o métrica' }, lang)}</th>
                 <th>p</th>
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'Reference', es: 'Referencia' }, lang)}</th>
@@ -447,16 +448,16 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
               {rows.map((t, i) => (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
-                    {t.test_id}
+                    <span title={t.test_id}>{pick(ifrs9TestText(t.test_id), lang)}</span>
                     {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentLabel(t.segment), lang)}</span> : null}
                   </td>
                   <td className="ct-text">{t.model_id ?? '-'}</td>
-                  <td>{formatNumber(t.statistic, lang, { digits: 4 })}</td>
+                  <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <td>{t.p_value === null ? formatNumber(null, lang) : formatNumber(t.p_value, lang, { digits: 2 })}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text ct-wide-only">{t.reference}</td>
+                  <td className="ct-text ct-wide-only">{referenceText(t, lang)}</td>
                 </tr>
               ))}
             </tbody>

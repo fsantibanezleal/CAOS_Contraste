@@ -5,7 +5,8 @@ import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, compactMoney, money, pct } from './format';
+import { ChartOverTable, axisScale, compactMoney, pct } from './format';
+import { columnScale } from './amounts';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { truthStatusText } from '../c05/selection';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, settingText, type C06Outputs, type C06Sel } from './selection';
@@ -129,6 +130,14 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const first = variants[0]?.v;
+  const currency = first?.outputs.currency ?? '';
+  const total = (v: VariantArtifact<C06Outputs>) => v.outputs.stage_summary.rows.reduce((a, r) => a + r.ecl, 0);
+  const eclOf = (v: VariantArtifact<C06Outputs>, st: string) => v.outputs.stage_summary.rows.find((r) => r.stage === st)?.ecl ?? null;
+  // the amounts in the unit of their column (billions, millions): the axis and the table never print eleven bare digits (U16-R2 b03 m4)
+  const totals = columnScale(variants.map(({ v }) => total(v)), currency);
+  const eclScale = columnScale(variants.flatMap(({ v }) => ['stage1', 'stage2', 'stage3'].map((st) => eclOf(v, st))), currency);
+  const overlayScale = columnScale(variants.map(({ v }) => v.outputs.overlays.reduce((a, x) => a + x.amount, 0)), currency);
+  const divisor = axisScale(Math.max(0, ...variants.map(({ v }) => total(v))), currency).div;
   return (
     <PlotCard
       fill
@@ -144,8 +153,8 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
             title={{ en: 'Model ECL by reporting date', es: 'PCE del modelo por fecha de reporte' }}
             height="fill"
             orientation="vertical"
-            data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.stage_summary.rows.reduce((a, r) => a + r.ecl, 0), tone: 'accent' as const, highlight: id === current }))}
-            axis={{ label: { en: `Model ECL (${first?.outputs.currency ?? ''})`, es: `PCE del modelo (${first?.outputs.currency ?? ''})` }, format: { digits: 3 } }}
+            data={variants.map(({ id, title, v }) => ({ id, label: title, value: total(v) / divisor, tone: 'accent' as const, highlight: id === current }))}
+            axis={{ label: { en: `Model ECL (${pick(totals.unit, 'en')})`, es: `PCE del modelo (${pick(totals.unit, 'es')})` }, format: { digits: 3 } }}
           />
         }
       >
@@ -155,16 +164,16 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
               <th className="ct-text">{pick({ en: 'Variant', es: 'Variante' }, lang)}</th>
               <th className="ct-text">{pick({ en: 'Reporting date', es: 'Fecha de reporte' }, lang)}</th>
               <th className="ct-text ct-wide-only">{pick({ en: 'Data', es: 'Datos' }, lang)}</th>
-              <th>{pick({ en: 'ECL Stage 1', es: 'PCE Etapa 1' }, lang)}</th>
-              <th>{pick({ en: 'ECL Stage 2', es: 'PCE Etapa 2' }, lang)}</th>
-              <th>{pick({ en: 'ECL Stage 3', es: 'PCE Etapa 3' }, lang)}</th>
-              <th>{pick({ en: 'Overlays', es: 'Ajustes' }, lang)}</th>
+              <th>{`${pick({ en: 'ECL Stage 1', es: 'PCE Etapa 1' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
+              <th>{`${pick({ en: 'ECL Stage 2', es: 'PCE Etapa 2' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
+              <th>{`${pick({ en: 'ECL Stage 3', es: 'PCE Etapa 3' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
+              <th>{`${pick({ en: 'Overlays', es: 'Ajustes' }, lang)} (${pick(overlayScale.unit, lang)})`}</th>
             </tr>
           </thead>
           <tbody>
             {variants.map(({ id, title, v }) => {
               const o = v.outputs;
-              const ecl = (st: string) => o.stage_summary.rows.find((r) => r.stage === st)?.ecl ?? null;
+              const ecl = (st: string) => eclOf(v, st);
               return (
                 <tr key={id} data-variant={id} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
@@ -172,10 +181,10 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
                   </td>
                   <td className="ct-text">{o.reporting_date}</td>
                   <td className="ct-text ct-wide-only">{o.data_status.primary_source}</td>
-                  <td>{money(ecl('stage1'), lang, o.currency)}</td>
-                  <td>{money(ecl('stage2'), lang, o.currency)}</td>
-                  <td>{money(ecl('stage3'), lang, o.currency)}</td>
-                  <td>{money(o.overlays.reduce((a, x) => a + x.amount, 0), lang, o.currency)}</td>
+                  <td>{eclScale.fmt(ecl('stage1'), lang)}</td>
+                  <td>{eclScale.fmt(ecl('stage2'), lang)}</td>
+                  <td>{eclScale.fmt(ecl('stage3'), lang)}</td>
+                  <td>{overlayScale.fmt(o.overlays.reduce((a, x) => a + x.amount, 0), lang)}</td>
                 </tr>
               );
             })}
@@ -222,12 +231,12 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
         </p>
         <dl className="ct-defs" data-table="c06-data-status">
           <dt>{pick({ en: 'Reporting date', es: 'Fecha de reporte' }, lang)}</dt>
-          <dd>{`${o.reporting_date} (${pick({ en: `periods of ${o.period_months} months`, es: `períodos de ${o.period_months} meses` }, lang)}; ${pick({ en: `12-month horizon ${o.horizon.stage1_months}, lifetime cap ${o.horizon.lifetime_cap_months} months`, es: `horizonte a 12 meses ${o.horizon.stage1_months}, tope de vida ${o.horizon.lifetime_cap_months} meses` }, lang)})`}</dd>
+          <dd>{`${o.reporting_date} (${pick({ en: `periods of ${o.period_months} months`, es: `períodos de ${o.period_months} meses` }, lang)}; ${pick({ en: `horizon of ${o.horizon.stage1_months} months, lifetime cap ${o.horizon.lifetime_cap_months} months`, es: `horizonte de ${o.horizon.stage1_months} meses, tope de vida ${o.horizon.lifetime_cap_months} meses` }, lang)})`}</dd>
           <dt>{pick({ en: 'Primary data', es: 'Datos principales' }, lang)}</dt>
           <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
-            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
+            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang).replace(/^Freddie Mac: /, '') : ''}`}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>

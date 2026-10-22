@@ -7,7 +7,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { noteText } from '../c08/notes';
-import { useCard } from '../c03/U6Shared';
+import { referenceText, useCard } from '../c03/U6Shared';
 import { ConventionLine, MarketTestsTable, lightWord, rowsMin } from './MarketCommon';
 import { alphaLabel, fitOf, levelOf, modelLabel, outputsOf, testName, testsOf, type C11Sel } from './selection';
 
@@ -99,7 +99,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
           <ConventionLine />
           <p className="ct-note" data-state="unavailable">
             {row
-              ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : row.reference})`
+              ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : referenceText(row, lang)})`
               : sel.alpha === 0.01
                 ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5% en el riel.' }, lang)
                 : level && level.es_status === 'not-forecast'
@@ -150,7 +150,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
               height="fill"
               x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 } }}
               y={{ label: { en: 'Draws per bin', es: 'Simulaciones' }, format: { decimals: 0 } }}
-              series={[{ label: { en: 'Null distribution', es: 'Distribución nula' }, values: counts, color: '--color-accent', width: 2 }]}
+              series={[{ label: { en: 'Null distribution (one point per bin)', es: 'Distribución nula (un punto por tramo)' }, values: counts, color: '--color-accent', mode: 'points', size: 7 }]}
               marks={marks}
             />
           }

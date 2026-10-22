@@ -71,3 +71,19 @@ const DESIGN_LIMIT: Record<string, Bi> = {
 export function designLimit(id: string): Bi {
   return DESIGN_LIMIT[id] ?? same(id);
 }
+
+const UCI_CC_BY = 'This dataset is licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.';
+
+/** The Spanish of a source's licence sentence, kept with the English it translates: a registry wording that has moved on is shown as declared,
+ * never as a stale translation. The sentence of a licence is a gloss for the reader; the name of the licence stays as published. */
+const LICENCE_ES: Record<string, [string, string]> = {
+  'uci-taiwan': [UCI_CC_BY, 'Este conjunto de datos tiene licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0).'],
+  'uci-german': [UCI_CC_BY, 'Este conjunto de datos tiene licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0).'],
+  'uci-polish': [UCI_CC_BY, 'Este conjunto de datos tiene licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0).'],
+};
+
+/** A source's licence in the language: the Spanish of the known sentence, else the sentence as declared. */
+export function licenceText(sourceId: string, declared: string, lang: 'en' | 'es'): string {
+  const known = LICENCE_ES[sourceId];
+  return lang === 'es' && known && known[0] === declared ? known[1] : declared;
+}

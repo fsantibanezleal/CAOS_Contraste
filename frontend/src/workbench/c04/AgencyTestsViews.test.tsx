@@ -418,7 +418,7 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
         expect((p.marks ?? []).map((m) => [m.x, pick(m.label, 'en')])).toEqual(stress);
         const note = card(markup, lang === 'en' ? "Mobility of each year's matrix and the default rate" : 'Movilidad de la matriz de cada año y la tasa de incumplimiento').note;
         const named = [2001, 2008, 2009, 2020].filter((y) => years.includes(y));
-        expect(note).toContain(lang === 'en' ? `Dashed: the stress years ${listOf(named, 'en')}.` : `Segmentadas: los años de tensión ${listOf(named, 'es')}.`);
+        expect(note).toContain(lang === 'en' ? `Dashed: the stress years ${listOf(named, 'en')}.` : `Discontinuas: los años de tensión ${listOf(named, 'es')}.`);
         expect(note).toContain(lang === 'en' ? 'on the same axis (0.10 is 10%)' : 'en el mismo eje (0,10 es 10%)');
         // the table: the chart's numbers and each cohort's ratings at the start
         o.mobility.labels.forEach((label, i) => {
