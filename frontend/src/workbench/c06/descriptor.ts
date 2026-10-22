@@ -35,7 +35,7 @@ export const C06_OUTPUTS: Kind = { object: {
   data_status: { object: {
     primary_source: 'string',
     freddie_mac_available: 'boolean',
-    freddie_mac_reason: { nullable: 'string' },
+    freddie_mac_reason: { nullable: 'text' },
     notice: 'text',
   } },
   scenarios: { array: { object: {
@@ -195,7 +195,7 @@ export const C06_OUTPUTS: Kind = { object: {
     c_index: { nullable: 'number' },
     integrated_brier: { nullable: 'number' },
     calibration_gap_12m: { nullable: 'number' },
-    reason: { nullable: 'string' },
+    reason: { nullable: 'text' },
   } } },
   decile_calibration: { object: {
     rung_id: 'string',

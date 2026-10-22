@@ -98,7 +98,7 @@ export const C07_OUTPUTS: Kind = { object: {
       internal: { nullable: 'number' },
       applied: 'number',
       method: 'string',
-      internal_reason: { nullable: 'string' },
+      internal_reason: { nullable: 'text' },
     } } },
     additional_provisions: { object: {
       amount: 'number',
@@ -185,7 +185,7 @@ export const C07_FIT: Kind = { object: {
   b1_tables: { array: { object: {
     table_id: 'string',
     portfolio: 'string',
-    source: 'string',
+    source: 'text',
     cells: { array: { object: {
       row: 'string',
       column: 'string',

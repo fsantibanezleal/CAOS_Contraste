@@ -112,7 +112,7 @@
   "api": {
     "version": "18.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "1bbe3bdc32a778b41a0e4202924552a32a6e177827b8645a131c6c0019bd7738"
+    "sha256": "693729a3597ae12780e51b819be63430876c195ab7c434f9b8b1adb60b61b83c"
   },
   "readiness": {
     "version": "1.0.0",
@@ -125,9 +125,9 @@
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
   },
   "c06-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c06/variant-reporting-date.schema.json",
-    "sha256": "839e27249aac384f977a8c465c524027a50023693744b174d204299129fe47f7"
+    "sha256": "18bb4a482afb186a574452583d1bd46b4b10724b724e0003d9a2aa78286417c9"
   },
   "c06-models": {
     "version": "1.0.0",
@@ -135,14 +135,14 @@
     "sha256": "e36d4635c9434b0f1fa4c5b7c3033c7ac49512b1e6700390e9fad50ab3690ac8"
   },
   "c07-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c07/variant-three-regime.schema.json",
-    "sha256": "11e400cfc560f094f8c49a8cf8cdba10fd4a85122d8ceb3a75b4cfadf16d7413"
+    "sha256": "3d8e2990a0721d20a7571ef9562d7da15fe1df118036b24354dd9c7e6c52aed0"
   },
   "c07-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c07/models.schema.json",
-    "sha256": "9427cbbbc9ed3c4525f69d2b0ce209f37f1db835bb282730439f386300f72678"
+    "sha256": "1385d453b8748523d3d9129fd107b25b10b97d7734fa7f0d54c1612788b12a59"
   },
   "engine-provisions-api": {
     "version": "1.0.1",
