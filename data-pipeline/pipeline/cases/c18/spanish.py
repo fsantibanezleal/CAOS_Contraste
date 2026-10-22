@@ -86,4 +86,8 @@ SPANISH: dict[str, str] = {
         "El colchón voluntario de estrés, componente d de la meta interna (03 l.152-169, decisión Q4)",
     "oprisk.aggregate on the C17 generator parameters scaled by assets and converted at the observed rate":
         "oprisk.aggregate sobre los parámetros del generador de C17 escalados por activos y convertidos a la tasa observada",
+    "The severity has an infinite mean (xi of 1 or more): the expected loss is undefined, so the EC is the VaR alone (05 l.482)":
+        "La severidad tiene media infinita (xi de 1 o más): la pérdida esperada no está definida, así que el EC es solo el VaR (05 l.482)",
+    "CET1 at the jump-off less the cumulative stressed losses; no revenue is invented. The row with PPNR is labelled and is not the headline.":
+        "CET1 en el punto de partida menos las pérdidas de estrés acumuladas; no se inventa ningún ingreso. La fila con PPNR está rotulada y no es la principal.",
 }
