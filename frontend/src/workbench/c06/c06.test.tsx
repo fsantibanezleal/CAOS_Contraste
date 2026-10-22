@@ -172,7 +172,7 @@ describe('the C06 instrument', () => {
     expect(markup).toContain('the cohort is younger than the horizon');
     expect(markup).toContain('not available');
     const rungs = html(<RungsView sel={sel} />);
-    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason);
+    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason.en);
   });
 
   it('the context says the data is a fixture and why Freddie Mac is not there', () => {

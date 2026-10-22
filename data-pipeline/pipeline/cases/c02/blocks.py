@@ -36,9 +36,9 @@ def term_structure(rows: dict[int, int], events: dict[int, int]) -> tuple[dict[s
                                  for k, c in zip(range(1, 6), cum)) for lang in ("en", "es")}
         return None, cv.t(
             f"The five files are independent samples of different forecast years, not one cohort followed through time, so no cumulative PD is read "
-            f"from them. Their event rates ({rates["en"]}) are not strictly increasing with the horizon, which a cumulative PD would be (decision G22).",
+            f"from them. Their event rates ({rates['en']}) are not strictly increasing with the horizon, which a cumulative PD would be (decision G22).",
             f"Los cinco archivos son muestras independientes de distintos años de pronóstico, no una cohorte seguida en el tiempo, así que no se lee "
-            f"de ellos una PD acumulada. Sus tasas de evento ({rates["es"]}) no crecen estrictamente con el horizonte, como lo haría una PD acumulada "
+            f"de ellos una PD acumulada. Sus tasas de evento ({rates['es']}) no crecen estrictamente con el horizonte, como lo haría una PD acumulada "
             f"(decisión G22).")
     t = ts.from_cumulative(cum, MONTHS)
     points = [{"years": k, "cumulative_pd": float(cum[k - 1]), "hazard": float(t.hazard[k - 1])} for k in range(1, 6)]
