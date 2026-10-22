@@ -364,7 +364,7 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
               height="fill"
               x={{ values: dates.map(day), label: { en: `Days after ${block[0].as_of}`, es: `Días después del ${block[0].as_of}` }, format: { decimals: 0 } }}
               marks={dates.map((d) => ({ x: day(d), label: { en: d, es: d } }))}
-              y={{ label: { en: `CBC and HTM loss (${pick(axis.unit, 'en')})`, es: `CBC y pérdida HTM (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `CBC, HTM loss (${pick(axis.unit, 'en')})`, es: `CBC, pérdida HTM (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 { label: { en: 'CBC, amortised-cost basis', es: 'CBC, base de costo amortizado' }, values: [...block.map((t) => t.cbc_amortised_basis / axis.div), own.basis === 'amortised-cost' ? own.cbc / axis.div : null], color: '--color-good', width: 2.6 },
                 { label: { en: 'CBC, fair-value basis', es: 'CBC, base de valor razonable' }, values: [...block.map((t) => t.cbc_fair_value_basis / axis.div), own.basis === 'fair-value' ? own.cbc / axis.div : null], color: '--color-accent', width: 2.6 },

@@ -65,6 +65,18 @@ export const NOT_REVERSE: BiText = { en: 'Not available: this document is not th
 // --- the tests table -------------------------------------------------------------------------------------------------
 
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
+/** The name of the segment of a test row: a loan type or a regressor of the satellites, else the id. */
+function segmentName(segment: string, lang: Lang): string {
+  const bi = LOAN_TEXT[segment] ?? REGRESSOR_TEXT[segment];
+  return bi ? bi[lang] : segment;
+}
+
+/** The notes the engine writes for a test that did not run, in the page's language. */
+function noteName(note: string, lang: Lang): string {
+  if (lang === 'en') return note;
+  return note === 'not evaluated: not a stress path' ? 'no evaluada: no es una trayectoria de estrés' : note;
+}
+
 export function C18TestsView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -99,12 +111,12 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                      <td className="ct-text" title={t.test_id}>{`${TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}${t.segment ? ` (${segmentName(t.segment, lang)})` : ''}`}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{t.notes ? noteName(t.notes, lang) : t.reference}</td>
                     </tr>
                   );
                 })}

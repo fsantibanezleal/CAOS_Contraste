@@ -10174,7 +10174,7 @@ export interface components {
             };
             panjer: {
                 step_eur: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             fft: {
                 n_points: number;
