@@ -974,7 +974,14 @@ def fragment_rows() -> dict[str, list[str]]:
         catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
         text = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     header = next(ln for ln in text.splitlines() if ln.startswith("| id | version"))
-    assert row_cells(header) == ["id", "version", "owner", "schema file", "example", "producer test", "consumer test",
+    # the catalog gained the `documents` column after these rows were written (U16-W2, template 0.11.000): the cells
+    # are read in the columns the rows had, so the column is dropped from the catalog header and its rows
+    drop = row_cells(header).index("documents") if "documents" in row_cells(header) else None
+
+    def strip(cells: list[str]) -> list[str]:
+        return cells if drop is None else cells[:drop] + cells[drop + 1:]
+
+    assert strip(row_cells(header)) == ["id", "version", "owner", "schema file", "example", "producer test", "consumer test",
                                  "missing-data behavior", "provider", "model io", "swap test", "status"]
     lines = text.splitlines()
     table = []
@@ -982,7 +989,7 @@ def fragment_rows() -> dict[str, list[str]]:
         if not ln.startswith("|"):
             break
         table.append(ln)
-    return {row_cells(ln)[0]: row_cells(ln) for ln in table if row_cells(ln)[0] in ROW_IDS}
+    return {row_cells(ln)[0]: strip(row_cells(ln)) for ln in table if row_cells(ln)[0] in ROW_IDS}
 
 
 def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_cited_test_exists() -> None:

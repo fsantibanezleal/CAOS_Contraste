@@ -1033,7 +1033,8 @@ def fragment_tables() -> tuple[list[str], list[list[str]], list[list[str]]]:
 
 def test_the_rows_fragment_has_the_six_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
-    header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
+    # the catalog gained the `documents` column after this fragment was written (U16-W2, template 0.11.000); the merged fragment keeps the columns it had
+    header = [h for h in next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version")) if h != "documents"]
     head, data, history = fragment_tables()
     assert head == header
     assert [r[0] for r in data] == ROW_IDS
