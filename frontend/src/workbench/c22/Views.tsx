@@ -254,11 +254,13 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
               {mixed && pp.panel.measures === 'size' ? pick({ en: ' (sizes: the model is right)', es: ' (tamaños: el modelo es correcto)' }, lang) : ''}
             </p>
             {pp.x.length >= 2 ? (
+              // a panel of more than three series (Calibration draws nine) gets the solo key, so one curve can be read alone (b10 m16)
               <UPlotChart
                 height="fill"
                 x={{ values: pp.x, label: pp.panel.axis ?? ladder.label, format: { digits: 3 } }}
                 y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
                 series={pp.series}
+                solo={pp.series.length > 3}
                 yMarks={[NOMINAL(sel.level)]}
               />
             ) : (
