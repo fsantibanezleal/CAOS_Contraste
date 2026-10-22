@@ -79,7 +79,8 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
               const size = (s: C22Simulation, rule: string) => rateOf(s, rule).exact ?? rateOf(s, rule).rate;
               const names = (l: 'en' | 'es') => {
                 const at = l === 'es' ? 'al' : 'at';
-                return bad.map((s) => `${pick(s.label, l)} (${pct(l, size(s, AT5), 2)} ${at} 5%, ${pct(l, size(s, AT1), 2)} ${at} 1%)`).join('; ');
+                const stated = l === 'es' ? ', documentado por el motor' : ', documented by the engine';
+                return bad.map((s) => `${pick(s.label, l)} (${pct(l, size(s, AT5), 2)} ${at} 5%, ${pct(l, size(s, AT1), 2)} ${at} 1%${s.study?.excess ? stated : ''})`).join('; ');
               };
               return {
                 en: `${sizes.length - bad.length} of the ${sizes.length} tests hold their size at both levels on ${formatNumber(sizes[0]?.n_rep, 'en')} repetitions of data where their null holds at its boundary. ${bad.length ? `Not: ${names('en')}.` : ''}`,
@@ -109,7 +110,10 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
                       <td>{rateCell(s, AT5, lang)}</td>
                       <td>{rateCell(s, AT1, lang)}</td>
                       <td>{rateOf(s, AT5).exact === null ? '-' : pct(lang, rateOf(s, AT5).exact, 2)}</td>
-                      <td>{ok ? t('holds', 'se mantiene') : t('exceeds', 'excede')}</td>
+                      <td data-documented={s.study?.excess ? 'yes' : undefined}>
+                        {ok ? t('holds', 'se mantiene') : t('exceeds', 'excede')}
+                        {s.study?.excess && !ok ? t(' (documented by the engine)', ' (documentado por el motor)') : ''}
+                      </td>
                     </tr>
                   );
                 })}

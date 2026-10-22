@@ -54,7 +54,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       <>
         <div className="ct-pair">
           <Knob id="c22-n" label={{ en: 'Obligors', es: 'Deudores' }} hint={{ en: 'Obligors in the grade or portfolio tested.', es: 'Deudores del grado o la cartera probada.' }} value={portfolio.n} min={100} max={10000} step={100} format={{ decimals: 0 }} onChange={set('n')} />
-          <Knob id="c22-pd" label={{ en: 'PD applied', es: 'PD aplicada' }} hint={{ en: "The model's PD for the grade.", es: 'La PD del modelo para el grado.' }} value={portfolio.pd} min={0.001} max={0.2} step={0.001} format={{ percent: true, decimals: 1 }} onChange={set('pd')} />
+          <Knob id="c22-pd" label={{ en: 'PD', es: 'PD' }} hint={{ en: "The PD applied: the model's PD for the grade.", es: 'La PD aplicada: la PD del modelo para el grado.' }} value={portfolio.pd} min={0.001} max={0.2} step={0.001} format={{ percent: true, decimals: 1 }} onChange={set('pd')} />
         </div>
         <div className="ct-pair">
           <Knob id="c22-ratio" label={{ en: 'PD ratio', es: 'Razón de PD' }} hint={{ en: 'The true PD over the PD applied: 1 gives the size, above 1 the power against an underestimation.', es: 'La PD verdadera sobre la aplicada: 1 da el tamaño, sobre 1 la potencia contra una subestimación.' }} value={portfolio.ratio} min={1} max={3} step={0.05} format={{ decimals: 2 }} onChange={set('ratio')} />
@@ -106,7 +106,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             : { id: 'power', label: { en: 'Power', es: 'Potencia' }, content: <PowerView sel={sel} /> },
           { id: 'rates', label: { en: 'Rates', es: 'Tasas' }, content: <RatesTableView sel={sel} /> },
           ...(c22.outputs.golden.length ? [{ id: 'paper', label: { en: 'Papers', es: 'Artículos' }, content: <PaperView sel={sel} /> }] : []),
-          { id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> },
+          // the other-families variant measures the engine's named studies, which draw no single dataset: no report to read
+          ...(c22.tests.length ? [{ id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> }] : []),
         ],
         { en: 'Views of the measurements', es: 'Vistas de las mediciones' },
         `validation-${c22.variant_id}`,

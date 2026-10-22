@@ -13282,7 +13282,7 @@ export interface components {
         };
         /**
          * C22 models
-         * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
+         * @description Catalog row c22-models 2.0.0: the C22 models artifact with the exact-probability parity points of the three count tests and the engine's 25 named size and power studies (U16-P2).
          */
         "c22-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -13291,7 +13291,7 @@ export interface components {
         };
         /**
          * C22 validator variant
-         * @description Catalog row c22-variant 1.0.0: one validation harness run (outputs.kind validator).
+         * @description Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
          */
         "c22-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -13310,9 +13310,21 @@ export interface components {
                 y: (number | null)[];
             }[];
         };
+        /** @description A size above its bound that the engine documents on its own page (DOCUMENTED_EXCESS in the engine's size suites): the page, the level, the measured size, the bound, the excess (measured minus bound), whether it exceeds in this run, and the engine's statement. */
+        c22Excess: {
+            page: string;
+            repository: string;
+            level: number;
+            measured: number;
+            bound: number;
+            excess: number;
+            exceeds: boolean;
+            engine: components["schemas"]["common-text"];
+        };
         c22Fit: {
             parity: components["schemas"]["c22Parity"][];
             levels: number[];
+            studies: components["schemas"]["c22StudyRecord"][];
         };
         c22Generator: {
             name: string;
@@ -13341,7 +13353,8 @@ export interface components {
         c22Outputs: {
             /** @constant */
             kind: "validator";
-            family: string;
+            /** @enum {string} */
+            family: "null" | "miscalibration" | "clustering" | "drift" | "discrimination-decay" | "leakage" | "broken-monotonicity" | "concentration" | "other-families";
             ladder: {
                 values: number[];
                 label: components["schemas"]["common-text"];
@@ -13349,7 +13362,8 @@ export interface components {
             levels: number[];
             /** @description axis: the x axis of a panel whose simulations do not run along the family's ladder; measures: whether its rates are */
             panels: {
-                id: string;
+                /** @enum {string} */
+                id: "calibration" | "discrimination" | "stability" | "rating" | "transitions" | "settings" | "portfolio" | "grades" | "obligors" | "years" | "ecb" | "delong" | "development" | "auc" | "feature" | "migration-500" | "migration-2000" | "curve" | "counts" | "ccr" | "ifrs9" | "lgd-ead" | "market-var" | "market-es" | "portfolio-credit" | "fairness" | "ml";
                 label: components["schemas"]["common-text"];
                 axis: components["schemas"]["common-text"] | null;
                 /** @enum {string} */
@@ -13378,7 +13392,8 @@ export interface components {
         };
         /** @description A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
         c22Parity: {
-            test_id: string;
+            /** @enum {string} */
+            test_id: "pd.binomial" | "pd.jeffreys" | "pd.binomial_vasicek";
             n: number;
             pd: number;
             ratio: number;
@@ -13401,10 +13416,12 @@ export interface components {
         /** @description One simulation: a registered test on one generator at one severity, its rates per rule ("p<0.05", "p<0.01", and rules such as "metric>0.1"), the exact probability where one exists and whether the rate agrees with it. */
         c22Simulation: {
             key: string;
-            test_id: string;
+            /** @enum {string} */
+            test_id: "ccr.pfe_exceedance_backtest" | "disc.auc_vs_initial" | "disc.delong" | "fair.fisher_exact" | "fair.two_proportion_z" | "ifrs9.stage_migration_backtest" | "lgd_ead.downturn_coverage" | "lgd_ead.lgd_calibration_by_segment" | "lgd_ead.lgd_calibration_over_time" | "market.acerbi_szekely" | "market.christoffersen_conditional_coverage" | "market.christoffersen_independence" | "market.du_escanciano_conditional" | "market.du_escanciano_unconditional" | "market.duration_test" | "market.dynamic_quantile_test" | "market.kupiec_pof" | "market.mcneil_frey_residual_test" | "ml.conformal_coverage" | "ml.shift_resilience" | "pd.binomial" | "pd.binomial_vasicek" | "pd.chi2_grades" | "pd.default_profile" | "pd.hosmer_lemeshow" | "pd.jeffreys" | "pd.normal_multiperiod" | "pd.spiegelhalter" | "pd.traffic_lights" | "portfolio.crp_recursion_vs_mc" | "portfolio.mc_convergence" | "portfolio.tail_backtest" | "rating.hhi" | "rating.markov_order" | "rating.matrix_reference" | "rating.migration_ztests" | "rating.momentum" | "rating.time_homogeneity" | "stability.chi2" | "stability.csi" | "stability.ks" | "stability.psi";
             label: components["schemas"]["common-text"];
             scenario: components["schemas"]["common-text"];
-            panel: string;
+            /** @enum {string} */
+            panel: "calibration" | "discrimination" | "stability" | "rating" | "transitions" | "settings" | "portfolio" | "grades" | "obligors" | "years" | "ecb" | "delong" | "development" | "auc" | "feature" | "migration-500" | "migration-2000" | "curve" | "counts" | "ccr" | "ifrs9" | "lgd-ead" | "market-var" | "market-es" | "portfolio-credit" | "fairness" | "ml";
             severity: number;
             x: number;
             rates: {
@@ -13420,6 +13437,39 @@ export interface components {
             seed: number;
             n_rep: number;
             generator: string;
+            study: components["schemas"]["c22Study"] | null;
+        };
+        /** @description The engine's named study behind a simulation of a test outside the five credit families (riskvalidation.generators.size_studies, U16-E2): its index among the test's studies, its label, the rule of its rejection, which generator ran (the null or the stated alternative) with its text, whether the design is the null alone or the two points of the other-families variant (no study exposes its departure as a parameter), and the engine's documented excess where there is one. */
+        c22Study: {
+            index: number;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            rule: "p" | "p_le" | "red" | "alarm";
+            /** @enum {string} */
+            rule_label: "p<0.05" | "p<=0.05" | "red" | "alarm";
+            /** @enum {string} */
+            arm: "null" | "alternative";
+            text: components["schemas"]["common-text"];
+            /** @enum {string} */
+            departure: "null" | "two-point";
+            excess: components["schemas"]["c22Excess"] | null;
+        };
+        /** @description One named study of the engine (riskvalidation.generators.size_studies.STUDIES): the test, its index among the test's studies, the generators of the null and of the stated alternative, the pipeline that runs the test where it is not the test itself, the fixed arguments of the test, and the engine's own repetitions and seeds (C22 runs the study with its own seeds and repetitions). */
+        c22StudyRecord: {
+            /** @enum {string} */
+            test_id: "ccr.pfe_exceedance_backtest" | "fair.fisher_exact" | "fair.two_proportion_z" | "ifrs9.stage_migration_backtest" | "lgd_ead.downturn_coverage" | "lgd_ead.lgd_calibration_by_segment" | "lgd_ead.lgd_calibration_over_time" | "market.acerbi_szekely" | "market.christoffersen_conditional_coverage" | "market.christoffersen_independence" | "market.du_escanciano_conditional" | "market.du_escanciano_unconditional" | "market.duration_test" | "market.dynamic_quantile_test" | "market.kupiec_pof" | "market.mcneil_frey_residual_test" | "ml.conformal_coverage" | "ml.shift_resilience" | "portfolio.crp_recursion_vs_mc" | "portfolio.mc_convergence" | "portfolio.tail_backtest";
+            index: number;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            rule: "p" | "p_le" | "red" | "alarm";
+            null_generator: string;
+            alternative_generator: string;
+            pipeline: string | null;
+            test_kwargs: Record<string, never>;
+            engine_n_rep: number;
+            engine_power_n_rep: number | null;
+            engine_seed: number;
+            engine_power_seed: number;
         };
         caseIndexEntry: {
             case_id: string;

@@ -12,7 +12,6 @@ from __future__ import annotations
 import math
 import sys
 import time
-import zlib
 from pathlib import Path
 from typing import Any
 
@@ -65,6 +64,7 @@ from ..core.manifest import build_artifact, build_case_manifest, build_models_ar
 from ..io import papers
 from ..io.formats import write_json
 from ..stages.export import write_artifact
+from . import c22_studies as cs
 from .c01_ladder import _t, _v
 
 CASE_ID = "C22"
@@ -136,7 +136,7 @@ def _log(msg: str) -> None:
 
 def _seed(case_seed: int, key: str) -> int:
     """A seed per simulation, a pure function of the case seed and the simulation's key."""
-    return int(np.random.SeedSequence([case_seed, zlib.crc32(key.encode("utf-8"))]).generate_state(1)[0])
+    return cs.derive_seed(case_seed, key)
 
 
 def _pct(x: float, decimals: int = 1) -> dict[str, str]:
@@ -152,6 +152,8 @@ class Book:
         self.rows: list[dict[str, Any]] = []
         self.generators: dict[str, dict[str, Any]] = {}
         self.sims: dict[str, Any] = {}
+        #: the simulations of the engine's named studies, run before the variants (c22_studies.run_jobs)
+        self.study_runs: dict[tuple[str, str], Any] = {}
 
     def gen(self, ref: str, g: Any) -> str:
         if ref not in self.generators:
@@ -173,13 +175,41 @@ class Book:
             "key": key, "test_id": tid, "label": label or TEST_LABEL[tid], "scenario": scenario, "panel": panel,
             "severity": severity, "x": float(x), "rates": {r: v.to_dict() for r, v in sim.rates.items()},
             "exact": exact, "agrees": agree, "p_histogram": sim.p_histogram(20) if histogram else None,
-            "seed": seed, "n_rep": n_rep, "generator": gen_ref,
+            "seed": seed, "n_rep": n_rep, "generator": gen_ref, "study": None,
         })
         self.sims[key] = sim
         return sim
 
     def rate(self, key: str, rule: str = "p<0.05") -> float:
         return float(self.sims[key].rates[rule].rate)
+
+    def add_study(self, tid: str, index: int, study: Any, arm: str, *, key: str, severity: int, histogram: bool,
+                  departure: str) -> dict[str, Any]:
+        """One row from the engine's named study `tid` (its arm: `null` or `alternative`), run by c22_studies: C22 writes no
+        simulation of its own (ADR-0069). The rates are the study's at both levels first, then its own rule."""
+        sim = self.study_runs[(self.family, key)]
+        cs.require_defined(key, sim)
+        texts = cs.study_texts(study, index)
+        text = texts["null"] if arm == "null" else texts["alternative"]
+        rates = {r: v.to_dict() for r, v in cs.study_rates(sim).items()}
+        ref = f"{tid if index == 0 else f'{tid}#{index}'}-{arm}"
+        self.gen(ref, study.null if arm == "null" else study.alternative)
+        seed = _seed(self.case_seed, f"{self.family}:{key}")
+        if sim.seed != seed:
+            raise RuntimeError(f"{key}: the simulation ran with seed {sim.seed}, the case derives {seed}")
+        row = {
+            "key": key, "test_id": tid, "label": cs.row_label(tid, study, index, len(cs.load_studies()[tid])),
+            "scenario": _t(f"{texts['label']['en']}; {text['en']}", f"{texts['label']['es']}; {text['es']}"),
+            "panel": cs.PANEL_OF[tid], "severity": severity, "x": float(severity), "rates": rates, "exact": None,
+            "agrees": None, "p_histogram": sim.p_histogram(20) if histogram else None, "seed": seed, "n_rep": sim.n_rep,
+            "generator": ref,
+            "study": {"index": index, "label": texts["label"], "rule": study.rule, "rule_label": cs.rejection_label(study),
+                      "arm": arm, "text": text, "departure": departure,
+                      "excess": cs.excess_block(tid, rates, sim.n_rep) if arm == "null" and self.family == "null" else None},
+        }
+        self.rows.append(row)
+        self.sims[key] = sim
+        return row
 
 
 def _exact_counts(test: str, n: int, pd_applied: float, *, pd_true: float, rho_true: float, **kw: Any) -> dict[str, float]:
@@ -415,8 +445,136 @@ def _null(book: Book) -> dict[str, Any]:
         ("port-1000-1pct", port, lambda d: [cal.pd_binomial(**feed_cell()(d)), cal.pd_jeffreys(**feed_cell()(d))], {}),
         ("two-sample-1000", two, lambda d: st.stability_psi(d["expected_counts"], d["actual_counts"]), {}),
     ])
+    other = _null_other(book)
+    impact.update(other["impact"])
+    findings.extend(other["findings"])
+    values.update(other["values"])
     return {"impact": impact, "findings": findings, "values": values, "specimen": specimen, "golden": [],
             "exact_curves": [], "estimators": {"auc": auc_perf, "ece_when_right": ece_perf}}
+
+
+def _rate(d: dict[str, Any]) -> Rate:
+    return Rate(d["rejections"], d["n"], d["undefined"])
+
+
+def _names(rows: list[dict[str, Any]], lang: str) -> str:
+    return ", ".join(r["label"][lang] for r in rows)
+
+
+def _null_other(book: Book) -> dict[str, Any]:
+    """The 21 p-value tests of the other seven families at the boundary of their null: the engine's named studies, 4,000
+    repetitions, both levels (CT-301, BL-091, BL-075)."""
+    studies = cs.load_studies()
+    rows = [book.add_study(tid, i, st, "null", key=cs.study_key(tid, i, "null"), severity=0, histogram=True, departure="null")
+            for tid, lst in studies.items() for i, st in enumerate(lst)]
+
+    def holds(row: dict[str, Any]) -> bool:
+        return all(within_size(_rate(row["rates"][f"p<{a:g}"]), a) for a in LEVELS)
+
+    by_test: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        by_test.setdefault(r["test_id"], []).append(r)
+    kept = [tid for tid, rs in by_test.items() if all(holds(r) for r in rs)]
+    over = [r for r in rows if not holds(r)]
+    undocumented = [r for r in over if not r["study"]["excess"]]
+    top = max(rows, key=lambda r: r["rates"]["p<0.05"]["rate"])
+    mc = next(r for r in rows if r["test_id"] == "portfolio.mc_convergence")
+    ex = mc["study"]["excess"]
+    conservative = [r for r in rows if r["rates"]["p<0.05"]["wilson_high"] < 0.05]
+    impact = {
+        "other_tests_within_bound": _impact(len(kept), "tests", f"Tests of the other seven families that hold their size at 5% and 1% (of {len(by_test)})",
+                                            f"Pruebas de las otras siete familias que mantienen su tamaño al 5% y 1% (de {len(by_test)})"),
+        "other_size_mc_convergence": _impact(ex["measured"], "probability", "Monte Carlo quantile convergence test: size at 1% (the engine's documented excess)",
+                                             "Prueba de convergencia del cuantil Monte Carlo: tamaño al 1% (el exceso documentado del motor)"),
+    }
+    if undocumented:
+        sev, status = "S2", "open"
+        tail_en = f"; above their bound and not documented by the engine: {_names(undocumented, 'en')}"
+        tail_es = f"; sobre su cota y sin documentar por el motor: {_names(undocumented, 'es')}"
+    elif over:
+        sev, status = "S4", "accepted"
+        tail_en = f"; above its bound, as the engine documents: {_names(over, 'en')}"
+        tail_es = f"; sobre su cota, como documenta el motor: {_names(over, 'es')}"
+    else:
+        sev, status, tail_en, tail_es = "S4", "closed", "", ""
+    findings = [
+        _finding("F-OTHER-SIZE", sev, status, [r["key"] for r in over] or [top["key"]],
+                 f"{len(kept)} of {len(by_test)} tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all {len(rows)} studies counted){tail_en}",
+                 f"{len(kept)} de {len(by_test)} pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los {len(rows)} estudios){tail_es}"),
+        _finding("F-OTHER-MC-EXCESS", "S4", "accepted", [mc["key"]],
+                 f"The Monte Carlo quantile convergence test measures {_pct(ex['measured'], 2)['en']} at 1% against a bound of {_pct(ex['bound'], 2)['en']} ("
+                 f"{'above' if ex['exceeds'] else 'within'} it in this run); the engine documents this excess on its page {ex['page']}: {ex['engine']['en']}",
+                 f"La prueba de convergencia del cuantil Monte Carlo mide {_pct(ex['measured'], 2)['es']} al 1% contra una cota de {_pct(ex['bound'], 2)['es']} ("
+                 f"{'sobre' if ex['exceeds'] else 'dentro de'} ella en esta corrida); el motor documenta este exceso en su página {ex['page']}: {ex['engine']['es']}"),
+    ]
+    if conservative:
+        findings.append(_finding(
+            "F-OTHER-CONSERVATIVE", "S4", "accepted", [r["key"] for r in conservative],
+            f"{len(conservative)} studies are conservative: their rate at 5% lies wholly below the level ({_names(conservative, 'en')}); a discrete or estimated null makes them under-reject, which costs power, not credibility",
+            f"{len(conservative)} estudios son conservadores: su tasa al 5% queda por completo bajo el nivel ({_names(conservative, 'es')}); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"))
+    values = {"other_tests_within_bound": float(len(kept)), "other_size_mc_convergence_1pct": ex["measured"]}
+    return {"impact": impact, "findings": findings, "values": values}
+
+
+#: the studies whose power the case declares a range for before the bake (EXPECT), by (test, index) -> value name
+POWER_VALUES = {
+    ("ccr.pfe_exceedance_backtest", 0): "other_power_pfe", ("ifrs9.stage_migration_backtest", 0): "other_power_stage_migration",
+    ("lgd_ead.lgd_calibration_by_segment", 0): "other_power_lgd_segment", ("market.mcneil_frey_residual_test", 0): "other_power_mcneil_frey",
+    ("portfolio.tail_backtest", 0): "other_power_tail95", ("portfolio.mc_convergence", 0): "other_power_mc_convergence",
+    ("portfolio.crp_recursion_vs_mc", 0): "other_power_crp", ("market.kupiec_pof", 0): "other_power_kupiec",
+    ("fair.two_proportion_z", 0): "other_power_fair_z",
+}
+
+
+def _other_families(book: Book) -> dict[str, Any]:
+    """The power of the 21 tests against the stated alternatives of the engine's studies. No Study exposes its departure as
+    a parameter (it holds a null generator and an alternative generator), so each is measured at two points: severity 0,
+    the null, and severity 1, the stated alternative, 2,000 repetitions each."""
+    studies = cs.load_studies()
+    pairs: list[tuple[str, int, dict[str, Any], dict[str, Any]]] = []
+    for tid, lst in studies.items():
+        for i, study in enumerate(lst):
+            r0 = book.add_study(tid, i, study, "null", key=cs.study_key(tid, i, "d0"), severity=0, histogram=False, departure="two-point")
+            r1 = book.add_study(tid, i, study, "alternative", key=cs.study_key(tid, i, "d1"), severity=1, histogram=False, departure="two-point")
+            pairs.append((tid, i, r0, r1))
+
+    def power(r: dict[str, Any]) -> float:
+        return r["rates"]["p<0.05"]["rate"]
+
+    ordered = sorted(pairs, key=lambda p: power(p[3]))
+    lo, hi = ordered[0], ordered[-1]
+    above80 = [p for p in pairs if power(p[3]) >= 0.8]
+    below50 = [p for p in pairs if power(p[3]) < 0.5]
+    median = float(np.median([power(p[3]) for p in pairs]))
+    rises = sum(power(p[3]) > power(p[2]) for p in pairs)
+    impact = {
+        "other_power_min": _impact(power(lo[3]), "probability", f"Weakest power at 5% against a stated alternative: {lo[3]['label']['en']}",
+                                   f"Menor potencia al 5% contra una alternativa declarada: {lo[3]['label']['es']}"),
+        "other_power_max": _impact(power(hi[3]), "probability", f"Strongest power at 5% against a stated alternative: {hi[3]['label']['en']}",
+                                   f"Mayor potencia al 5% contra una alternativa declarada: {hi[3]['label']['es']}"),
+        "other_power_median": _impact(median, "probability", f"Median power at 5% of the {len(pairs)} studies against their stated alternatives",
+                                      f"Potencia mediana al 5% de los {len(pairs)} estudios contra sus alternativas declaradas"),
+        "other_studies_above_80": _impact(len(above80), "studies", f"Studies whose power at 5% reaches 80% (of {len(pairs)})",
+                                          f"Estudios cuya potencia al 5% llega a 80% (de {len(pairs)})"),
+    }
+
+    def named(ps: list, lang: str) -> str:
+        return ", ".join(f"{p[3]['label'][lang]} {_pct(power(p[3]), 0)[lang]}" for p in ps)
+
+    findings = [
+        _finding("F-OTHER-POWER", "S3", "accepted", [lo[3]["key"], hi[3]["key"]],
+                 f"Against its stated alternative a test's power at 5% runs from {_pct(power(lo[3]), 0)['en']} ({lo[3]['label']['en']}) to {_pct(power(hi[3]), 0)['en']} ({hi[3]['label']['en']}); {len(above80)} of {len(pairs)} studies reach 80%. The alternatives are the engine's choices (one departure each), not the only defects a test faces",
+                 f"Contra su alternativa declarada la potencia de una prueba al 5% va de {_pct(power(lo[3]), 0)['es']} ({lo[3]['label']['es']}) a {_pct(power(hi[3]), 0)['es']} ({hi[3]['label']['es']}); {len(above80)} de {len(pairs)} estudios llegan a 80%. Las alternativas son elección del motor (una desviación cada una), no los únicos defectos que una prueba enfrenta"),
+    ]
+    if below50:
+        findings.append(_finding(
+            "F-OTHER-POWER-LOW", "S3", "accepted", [p[3]["key"] for p in below50],
+            f"{len(below50)} studies detect their stated alternative less than half of the time at 5%: {named(below50, 'en')}",
+            f"{len(below50)} estudios detectan su alternativa declarada menos de la mitad de las veces al 5%: {named(below50, 'es')}"))
+    values = {name: power(next(p[3] for p in pairs if (p[0], p[1]) == k)) for k, name in POWER_VALUES.items()}
+    values["other_studies_above_size"] = float(rises)
+    return {"impact": impact, "findings": findings, "values": values, "specimen": [], "golden": [], "exact_curves": [],
+            "estimators": None}
 
 
 MISCAL = (1.0, 1.1, 1.25, 1.5, 2.0, 3.0)
@@ -889,7 +1047,7 @@ def _concentration(book: Book) -> dict[str, Any]:
 
 VARIANTS: tuple[dict[str, Any], ...] = (
     {"id": "null", "run": _null, "ladder": None,
-     "panels": ("calibration", "discrimination", "stability", "rating", "transitions", "settings"),
+     "panels": ("calibration", "discrimination", "stability", "rating", "transitions", "settings", *cs.OTHER_PANELS),
      "title": _t("The null: the model is right", "La nula: el modelo es correcto"),
      "short": _t("Null", "Nula"),
      "regime": _t("Every p-value test on data where its null hypothesis holds at the boundary: its size, at 5% and 1%.",
@@ -929,6 +1087,15 @@ VARIANTS: tuple[dict[str, Any], ...] = (
      "title": _t("Concentration in grades", "Concentración en grados"), "short": _t("Concentration", "Concentración"),
      "regime": _t("A share of every grade's mass moves into the modal grade, up to half.",
                   "Una fracción de la masa de cada grado se mueve al grado modal, hasta la mitad.")},
+    # U16-P2 (BL-091, BL-075): the power of the 21 p-value tests of the other seven families against the engine's stated
+    # alternatives; no Study exposes its departure as a parameter, so two points: the null and the stated alternative
+    {"id": "other-families", "run": _other_families,
+     "ladder": ((0, 1), _t("departure (0: the test's null, 1: the stated alternative)", "desviación (0: la nula de la prueba, 1: la alternativa declarada)")),
+     "panels": cs.OTHER_PANELS,
+     "title": _t("The other families: power against the stated alternative", "Las otras familias: potencia contra la alternativa declarada"),
+     "short": _t("Other families", "Otras"),
+     "regime": _t("The 21 p-value tests of counterparty credit risk, IFRS 9, LGD and EAD, market, portfolio, fairness and machine learning, each against the one alternative the engine's study states.",
+                  "Las 21 pruebas con valor p de riesgo de contraparte, NIIF 9, LGD y EAD, mercado, cartera, equidad y aprendizaje automático, cada una contra la única alternativa que declara el estudio del motor.")},
 )
 
 PANEL_LABEL: dict[str, dict[str, str]] = {
@@ -943,6 +1110,7 @@ PANEL_LABEL: dict[str, dict[str, str]] = {
     "migration-500": _t("Migrations, 500 per grade", "Migraciones, 500 por grado"),
     "migration-2000": _t("Migrations, 2,000 per grade", "Migraciones, 2.000 por grado"),
     "curve": _t("The PD curve's shape", "La forma de la curva de PD"), "counts": _t("Chi-square on the counts", "Chi-cuadrado de los conteos"),
+    **cs.PANEL_LABEL,
 }
 
 #: the x axis of a panel whose simulations do not run along the family's ladder
@@ -1008,6 +1176,23 @@ EXPECT: dict[str, tuple[float, float]] = {
     "hhi_power_c05": (0.0, 0.0),
     "chi2_power_c005": (0.88, 1.0),
     "hhi_max_statistic": (1.05, 1.15),              # ten grades: 1.0937 at an initial CV of 0.6, 1.0913 at P10's 0.6017
+    # U16-P2, declared before the first bake from the engine's U16-E2 report (4,000 repetitions there; 4,000 and 2,000 here,
+    # other seeds): 20 of the 21 tests hold their size at both levels (the Monte Carlo quantile convergence test is the
+    # engine's documented excess, 1.55% at 1% against a bound of 1.49%); three more sit near their bounds (the LGD over
+    # time test 5.92% at 5%, the market back-tests at 700 repetitions in the engine), so 18 to 21
+    "other_tests_within_bound": (18.0, 21.0),
+    "other_size_mc_convergence_1pct": (0.009, 0.022),
+    # the power at 5% against the stated alternative, the engine's figure (U16-E2) with four Monte Carlo SEs at 2,000 repetitions
+    "other_power_pfe": (0.65, 0.78),                # 71.30%
+    "other_power_stage_migration": (0.67, 0.79),    # 72.88%
+    "other_power_lgd_segment": (0.77, 0.87),        # 81.65%
+    "other_power_mcneil_frey": (0.91, 0.975),       # 94.27%
+    "other_power_tail95": (0.25, 0.35),             # 29.93% (60 years, 95%)
+    "other_power_mc_convergence": (0.69, 0.80),     # 74.12%
+    "other_power_crp": (0.49, 0.60),                # 54.45%
+    "other_power_kupiec": (0.62, 0.76),             # 68.85% (the red light, 1,500 days)
+    "other_power_fair_z": (0.97, 1.0),              # 99.03%
+    "other_studies_above_size": (25.0, 25.0),
 }
 
 
@@ -1056,10 +1241,15 @@ def _models(seed: int, rv: str, paths: Any) -> dict[str, Any]:
                                     parity.append({"test_id": test, "n": n, "pd": pd, "ratio": ratio, "rho_true": rho_t,
                                                    "rho_assumed": rho_a, "alpha": a,
                                                    "critical_count": ex["critical_count"], "probability": ex["probability"]})
+    classes = cs.generator_classes()
+    records.extend({"id": g["id"], "family": "generator", "rung": "dgp", "title": g["title"],
+                    "short_title": _t(g["class"], g["class"]), "engine": f"{g['module']}.{g['class']}", "engine_version": rv,
+                    "licence": "MIT", "checkpoint_sha256": None, "calibration": None, "parameters": {},
+                    "details": {"class": g["class"]}} for g in classes)
     lineage = lin.build(CASE_ID, sources=[], truth_status="synthetic-known-truth", seed=seed, code_version=__version__,
-                        riskvalidation_version=rv, generators=tuple(cls for _, cls, _ in families))
+                        riskvalidation_version=rv, generators=tuple(cls for _, cls, _ in families) + tuple(g["class"] for g in classes))
     doc = build_models_artifact(case_id=CASE_ID, fit_id="generators", model=records,
-                                fit={"parity": parity, "levels": list(LEVELS)}, lineage=lineage,
+                                fit={"parity": parity, "levels": list(LEVELS), "studies": cs.model_studies()}, lineage=lineage,
                                 lane={"lane": "precompute", "reasons": []})
     rel = f"{CASE_ID}/models-generators.json"
     return {"rel": rel, **write_artifact(paths.root, rel, doc, exact=frozenset({"details", "parity"}), engines=ENGINES, run_ms=RUN_MS)}
@@ -1105,10 +1295,24 @@ class C22:
                                                        "Los mecanismos generadores y la cuadratura de la calculadora en vivo"),
                                           "path": models["rel"], "bytes": models["bytes"], "lane": models["lane"], "gate": models["gate"]}]
         values: dict[str, float] = {}
+        wanted = tuple(v["id"] for v in VARIANTS if only is None or v["id"] in only)
+        study_variants = tuple(v for v in wanted if v in ("null", "other-families"))
+        runs: dict[tuple[str, str], Any] = {}
+        if study_variants:
+            # the engine's named studies of the 21 tests outside the credit families (U16-P2): each registered test has one,
+            # the optional extras are installed, and the 75 simulations run in worker processes before the variants are built
+            cs.check_registry()
+            cs.check_extras()
+            jobs = cs.jobs_for(seed, study_variants)
+            _log(f"{len(jobs)} study simulations on {cs.default_workers()} workers")
+            runs = cs.run_jobs(jobs, log=_log)
+            for (variant, key), sim in runs.items():
+                cs.require_defined(f"{variant}:{key}", sim)
         for v in VARIANTS:
             if only is not None and v["id"] not in only:
                 continue
             book = Book(seed, v["id"])
+            book.study_runs = runs
             args = (book, wp) if v["id"] == "clustering" else (book, yn) if v["id"] == "drift" else (book,)
             res = v["run"](*args)
             values.update(res["values"])
@@ -1120,7 +1324,7 @@ class C22:
                            for p in v["panels"]],
                 "simulations": book.rows, "generators": book.generators, "golden": res["golden"],
                 "exact_curves": res["exact_curves"], "estimators": res["estimators"],
-                "specimen": {"severity": 0 if v["id"] == "null" else SPECIMEN_SEVERITY},
+                "specimen": {"severity": 0 if v["id"] in ("null", "other-families") else SPECIMEN_SEVERITY},
                 "size_bounds": {f"p<{a:g}": size_bound(a, N_NULL if v["id"] == "null" else N_POWER) for a in LEVELS},
             }
             sources = ["bcbs-wp14"] if v["id"] == "clustering" else ["yurdakul-naranjo-2020"] if v["id"] == "drift" else []

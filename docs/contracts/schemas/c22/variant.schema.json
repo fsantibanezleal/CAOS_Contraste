@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c22/variant.schema.json",
   "title": "C22 validator variant",
-  "description": "Catalog row c22-variant 1.0.0: one validation harness run (outputs.kind validator).",
+  "description": "Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
   "allOf": [
     {"$ref": "../common/variant-envelope.schema.json"},
     {
@@ -112,7 +112,17 @@
       ],
       "properties": {
         "kind": {"const": "validator"},
-        "family": {"type": "string"},
+        "family": {"type": "string", "enum": [
+          "null",
+          "miscalibration",
+          "clustering",
+          "drift",
+          "discrimination-decay",
+          "leakage",
+          "broken-monotonicity",
+          "concentration",
+          "other-families"
+        ]},
         "ladder": {
           "anyOf": [
             {
@@ -141,7 +151,35 @@
             "additionalProperties": false,
             "required": ["id","label","axis","measures"],
             "properties": {
-              "id": {"type": "string"},
+              "id": {"type": "string", "enum": [
+                "calibration",
+                "discrimination",
+                "stability",
+                "rating",
+                "transitions",
+                "settings",
+                "portfolio",
+                "grades",
+                "obligors",
+                "years",
+                "ecb",
+                "delong",
+                "development",
+                "auc",
+                "feature",
+                "migration-500",
+                "migration-2000",
+                "curve",
+                "counts",
+                "ccr",
+                "ifrs9",
+                "lgd-ead",
+                "market-var",
+                "market-es",
+                "portfolio-credit",
+                "fairness",
+                "ml"
+              ]},
               "label": {"$ref": "../common/text.schema.json"},
               "axis": {
                 "anyOf": [
@@ -237,14 +275,86 @@
         "p_histogram",
         "seed",
         "n_rep",
-        "generator"
+        "generator",
+        "study"
       ],
       "properties": {
         "key": {"type": "string"},
-        "test_id": {"type": "string"},
+        "test_id": {"type": "string", "enum": [
+          "ccr.pfe_exceedance_backtest",
+          "disc.auc_vs_initial",
+          "disc.delong",
+          "fair.fisher_exact",
+          "fair.two_proportion_z",
+          "ifrs9.stage_migration_backtest",
+          "lgd_ead.downturn_coverage",
+          "lgd_ead.lgd_calibration_by_segment",
+          "lgd_ead.lgd_calibration_over_time",
+          "market.acerbi_szekely",
+          "market.christoffersen_conditional_coverage",
+          "market.christoffersen_independence",
+          "market.du_escanciano_conditional",
+          "market.du_escanciano_unconditional",
+          "market.duration_test",
+          "market.dynamic_quantile_test",
+          "market.kupiec_pof",
+          "market.mcneil_frey_residual_test",
+          "ml.conformal_coverage",
+          "ml.shift_resilience",
+          "pd.binomial",
+          "pd.binomial_vasicek",
+          "pd.chi2_grades",
+          "pd.default_profile",
+          "pd.hosmer_lemeshow",
+          "pd.jeffreys",
+          "pd.normal_multiperiod",
+          "pd.spiegelhalter",
+          "pd.traffic_lights",
+          "portfolio.crp_recursion_vs_mc",
+          "portfolio.mc_convergence",
+          "portfolio.tail_backtest",
+          "rating.hhi",
+          "rating.markov_order",
+          "rating.matrix_reference",
+          "rating.migration_ztests",
+          "rating.momentum",
+          "rating.time_homogeneity",
+          "stability.chi2",
+          "stability.csi",
+          "stability.ks",
+          "stability.psi"
+        ]},
         "label": {"$ref": "../common/text.schema.json"},
         "scenario": {"$ref": "../common/text.schema.json"},
-        "panel": {"type": "string"},
+        "panel": {"type": "string", "enum": [
+          "calibration",
+          "discrimination",
+          "stability",
+          "rating",
+          "transitions",
+          "settings",
+          "portfolio",
+          "grades",
+          "obligors",
+          "years",
+          "ecb",
+          "delong",
+          "development",
+          "auc",
+          "feature",
+          "migration-500",
+          "migration-2000",
+          "curve",
+          "counts",
+          "ccr",
+          "ifrs9",
+          "lgd-ead",
+          "market-var",
+          "market-es",
+          "portfolio-credit",
+          "fairness",
+          "ml"
+        ]},
         "severity": {"type": "integer"},
         "x": {"type": "number"},
         "rates": {
@@ -280,7 +390,50 @@
         },
         "seed": {"type": "integer"},
         "n_rep": {"type": "integer", "minimum": 0},
-        "generator": {"type": "string"}
+        "generator": {"type": "string"},
+        "study": {
+          "anyOf": [
+            {"$ref": "#/$defs/c22Study"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "c22Study": {
+      "description": "The engine's named study behind a simulation of a test outside the five credit families (riskvalidation.generators.size_studies, U16-E2): its index among the test's studies, its label, the rule of its rejection, which generator ran (the null or the stated alternative) with its text, whether the design is the null alone or the two points of the other-families variant (no study exposes its departure as a parameter), and the engine's documented excess where there is one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index","label","rule","rule_label","arm","text","departure","excess"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0},
+        "label": {"$ref": "../common/text.schema.json"},
+        "rule": {"type": "string", "enum": ["p","p_le","red","alarm"]},
+        "rule_label": {"type": "string", "enum": ["p<0.05","p<=0.05","red","alarm"]},
+        "arm": {"type": "string", "enum": ["null","alternative"]},
+        "text": {"$ref": "../common/text.schema.json"},
+        "departure": {"type": "string", "enum": ["null","two-point"]},
+        "excess": {
+          "anyOf": [
+            {"$ref": "#/$defs/c22Excess"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "c22Excess": {
+      "description": "A size above its bound that the engine documents on its own page (DOCUMENTED_EXCESS in the engine's size suites): the page, the level, the measured size, the bound, the excess (measured minus bound), whether it exceeds in this run, and the engine's statement.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["page","repository","level","measured","bound","excess","exceeds","engine"],
+      "properties": {
+        "page": {"type": "string"},
+        "repository": {"type": "string"},
+        "level": {"type": "number"},
+        "measured": {"type": "number"},
+        "bound": {"type": "number"},
+        "excess": {"type": "number"},
+        "exceeds": {"type": "boolean"},
+        "engine": {"$ref": "../common/text.schema.json"}
       }
     }
   }

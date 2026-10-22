@@ -9,6 +9,7 @@
 | 5 | The live calculator: TypeScript ports, parity points over the rail's corners, tests | CT-308 | done |
 | 6 | The C22 instrument: rail, Model, Validation, Impact, Findings, Variants, Context; C22's sections of Methodology, Experiments and Benchmark | CT-309 | done |
 | 7 | Docs: the case page, the SDD map, the changelog; the canonical bake twice; the measured gate; screenshots read | CT-306, CT-310 | done |
+| 8 | U16-P2 (BL-091, BL-075): the 21 p-value tests of the other seven families join the null variant (the engine's named studies, 4,000 repetitions) and the `other-families` variant measures their power against the stated alternatives; c22-variant and c22-models 2.0.0; the credit families' numbers unchanged; the engine's documented excess shown | CT-301, CT-309, CT-314 to CT-316 | done |
 
 ## Convergence verdict
 
