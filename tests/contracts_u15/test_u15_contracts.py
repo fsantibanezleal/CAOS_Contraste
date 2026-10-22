@@ -533,7 +533,7 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
     assert len(block["rows"]) == len(default["tests"]) == sum(rep["test_counts"].values())
     for row in block["rows"]:
         p = row["policy"]
-        assert p["source"] in ("packaged-policy", "inline-battery", "unresolved")
+        assert p["source"] in ("packaged-policy", "packaged-policy-overridden", "inline-battery", "unresolved")
         if p["source"] == "unresolved":
             assert p["reason"]
     assert any(r["policy"]["source"] == "inline-battery" and r["policy"]["parameters"] for r in block["rows"])
@@ -544,7 +544,7 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
         assert p["kind"] == decisions[row["test_id"]]                                  # spec(test_id).decision, None where unregistered
         assert (p["kind"] is None) == (p["kind_reason"] is not None)
         if p["source"] == "inline-battery":
-            assert p["direction"] is None and p["direction_reason"] == "no policy file (BL-085)"
+            assert p["direction"] is None and p["direction_reason"] == "no policy file for an inline battery string"
 
 
 # --- the appetite ------------------------------------------------------------------------------------------------------------------------
@@ -1134,6 +1134,7 @@ API_MODULES: dict[str, list[str]] = {
     "appetite": ["light", "tier1_validated_on_time", "open_high_severity", "overdue_remediation", "entries_under_exception",
                  "entries_in_breach", "pma_magnitude", "owner_and_complete_record", "appetite_metrics", "appetite_population"],
     "policy": ["resolve_policy"],
+    "reasons": ["codes", "code_of", "bilingual"],
     "report": ["executive_counts", "build_report"],
 }
 VALIDATION = ["inventory_completeness", "findings_overdue", "validation_due", "tier_override_documented", "edges_acyclic"]
@@ -1158,7 +1159,7 @@ def api_sections() -> dict[str, str]:
 
 def test_the_engine_contract_exists_with_its_header() -> None:
     text = API.read_text(encoding="utf-8")
-    assert text.startswith("# Engine governance API contract: `engine-governance-api` 1.0.0")
+    assert text.startswith("# Engine governance API contract: `engine-governance-api` 1.1.0")
     for word in ("Owner: U15-S", "Changing a signature, a unit or a golden value is a breaking change", "Reused engine functions", "Conventions (all functions)"):
         assert word in text, word
 
@@ -1371,7 +1372,7 @@ def test_golden_the_policy_identity_of_a_test_row() -> None:
     assert "riskvalidation-default 2026.10.1" in body and "packaged-policy" in body
     assert "contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0" in body and "inline-battery" in body
     assert "unresolved" in body and "reason" in body
-    assert "spec(test_id).decision" in body and "no policy file (BL-085)" in body and "pd.jeffreys" in body and "kind `p_value`" in body
+    assert "spec(test_id).decision" in body and "no policy file for an inline battery string" in body and "pd.jeffreys" in body and "kind `p_value`" in body
 
 
 def test_golden_the_appetite_light_rule_and_the_scope_profiles() -> None:

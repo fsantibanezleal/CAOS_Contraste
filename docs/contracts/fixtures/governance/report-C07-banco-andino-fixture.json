@@ -562,7 +562,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "nl_amber": 1.0,
          "nl_red": 3.0
@@ -590,7 +590,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -618,7 +618,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -646,7 +646,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -674,7 +674,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -702,7 +702,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -730,7 +730,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "gauss_hermite_tolerance": 1e-09,
          "gauss_hermite_nodes": 64.0
@@ -758,7 +758,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "share_amber": 0.1,
          "share_red": 0.25
@@ -786,7 +786,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "green_ratio": 2.0,
          "amber_ratio": 1.0,
@@ -816,7 +816,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "r_green": "0.8-1.25",
          "r_amber": "0.5-2.0"
@@ -844,7 +844,7 @@
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file (BL-085)",
+        "direction_reason": "no policy file for an inline battery string",
         "parameters": {
          "tolerance": 1e-06,
          "basis": "tolerance * max(1, G)"
@@ -864,8 +864,8 @@
       "es": "Tipo de umbral para filas sin archivo de politica"
      },
      "reason": {
-      "en": "the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError at the batch 3 head), and the direction is null for an inline battery string until a policy file exists (BL-085)",
-      "es": "el tipo es spec(test_id).decision donde la prueba esta registrada (estas no lo estan: spec() lanza KeyError en la cabeza del lote 3), y la direccion es nula para una cadena de bateria en linea hasta que exista un archivo de politica (BL-085)"
+      "en": "the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError), and the direction is null for an inline battery string, which has no policy file",
+      "es": "el tipo es spec(test_id).decision donde la prueba está registrada (estas no lo están: spec() lanza KeyError), y la dirección es nula para una cadena de batería en línea, que no tiene archivo de política"
      }
     }
    ]
@@ -1531,8 +1531,8 @@
       "es": "Version y hash del archivo de politica de las cadenas en linea"
      },
      "reason": {
-      "en": "the contraste-*-battery strings have no policy file (backlog BL-085, done at the U16 re-bake)",
-      "es": "las cadenas contraste-*-battery no tienen archivo de politica (BL-085, en la re-ejecucion de U16)"
+      "en": "the contraste-*-battery strings of the committed case documents have no policy file; the next bake of each case writes the packaged battery label",
+      "es": "las cadenas contraste-*-battery de los documentos de caso confirmados no tienen archivo de política; la próxima ejecución de cada caso escribe la etiqueta de batería empaquetada"
      }
     }
    ]
