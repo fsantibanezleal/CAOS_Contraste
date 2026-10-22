@@ -324,7 +324,7 @@ export interface components {
         };
         /**
          * C02 horizon variant
-         * @description Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
+         * @description Catalog row c02-outputs 2.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
          */
         "c02-variant-horizon": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -410,7 +410,7 @@ export interface components {
             reason: components["schemas"]["common-text"];
             /** @constant */
             source: "engine-provisions-api";
-            pd_basis: string;
+            pd_basis: components["schemas"]["common-text"];
             lgd: {
                 value: number;
                 /** @constant */
@@ -418,8 +418,8 @@ export interface components {
             };
             ecl_12m_effect: number | null;
             ecl_lifetime_effect: number | null;
-            unit: string;
-            reason_if_null: string | null;
+            unit: components["schemas"]["common-text"];
+            reason_if_null: components["schemas"]["common-text"] | null;
         };
         /** @description C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label. */
         c02Outputs: {
@@ -584,6 +584,7 @@ export interface components {
             cells: {
                 /** @enum {unknown} */
                 rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
+                model_id: string;
                 fitted_on_years: number;
                 scored_on_years: number;
                 /** @description A value in [0, 1]. */
@@ -603,7 +604,7 @@ export interface components {
         };
         /**
          * C03 vintage-cohort variant
-         * @description Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
+         * @description Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
          */
         "c03-variant-vintage-cohort": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -614,8 +615,8 @@ export interface components {
         };
         c03Calibration: {
             rung_id: string;
-            /** @description The vintages pooled: those whose 5-year mark is observed. */
-            scope: string;
+            /** @description The vintages pooled: those whose 5-year mark is observed (bilingual since c03-outputs 2.0.0). */
+            scope: components["schemas"]["common-text"];
             rows: components["schemas"]["c03DecileRow"][];
         };
         c03Coefficient: {
@@ -1610,7 +1611,7 @@ export interface components {
             /** @enum {string} */
             primary_source: "sba-7a" | "freddie-mac";
             freddie_mac_available: boolean;
-            freddie_mac_reason: string | null;
+            freddie_mac_reason: components["schemas"]["common-text"] | null;
             notice: components["schemas"]["common-text"];
         };
         /** @description Calibration at 12, 24 and 36 months per predicted-risk decile against the observed cumulative incidence (SDD row Lifetime PD rungs); an unobserved cell is null with its reason. */
@@ -1824,7 +1825,7 @@ export interface components {
             c_index: number | null;
             integrated_brier: number | null;
             calibration_gap_12m: number | null;
-            reason: string | null;
+            reason: components["schemas"]["common-text"] | null;
         };
         c06ScenarioDefinition: {
             id: string;
@@ -2005,7 +2006,7 @@ export interface components {
                 applied: number;
                 /** @enum {string} */
                 method: "standard" | "internal" | "max";
-                internal_reason: string | null;
+                internal_reason: components["schemas"]["common-text"] | null;
             } & unknown)[];
             /** @description Counter-cyclical general provisions (B-1 N 9): their own line, outside the comparable total and never per segment. */
             additional_provisions: {
@@ -2025,7 +2026,7 @@ export interface components {
         c07B1Table: {
             table_id: string;
             portfolio: string;
-            source: string;
+            source: components["schemas"]["common-text"];
             cells: {
                 row: string;
                 column: string;

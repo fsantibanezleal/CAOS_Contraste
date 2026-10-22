@@ -209,7 +209,10 @@
     },
     "calibration": {
       "rung_id": "P1-woe-scorecard",
-      "scope": "vintages with an observed 5-year mark",
+      "scope": {
+        "en": "vintages with an observed 5-year mark",
+        "es": "cosechas con marca de 5 años observada"
+      },
       "rows": [
         {
           "decile": 1,

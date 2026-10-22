@@ -619,7 +619,7 @@
               "internal_reason": {
                 "anyOf": [
                   {
-                    "type": "string"
+                    "$ref": "../common/text.schema.json"
                   },
                   {
                     "type": "null"
@@ -642,7 +642,7 @@
                 "then": {
                   "properties": {
                     "internal_reason": {
-                      "type": "string"
+                      "$ref": "../common/text.schema.json"
                     },
                     "method": {
                       "const": "standard"

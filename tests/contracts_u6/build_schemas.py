@@ -272,7 +272,7 @@ def c03_defs() -> dict:
     })
     d["c03Calibration"] = Ob({
         "rung_id": S(),
-        "scope": S(desc="The vintages pooled: those whose 5-year mark is observed."),
+        "scope": dict(TXT, description="The vintages pooled: those whose 5-year mark is observed (bilingual since c03-outputs 2.0.0)."),
         "rows": A(R("c03DecileRow"), 1),
     })
     d["c03RungResult"] = Ob({
@@ -671,7 +671,7 @@ def c09_defs() -> dict:
 def main() -> None:
     d3, d8, d9 = c03_defs(), c08_defs(), c09_defs()
     variant_schema("C03", "variant-vintage-cohort", "vintage-cohort", "C03 vintage-cohort variant",
-                   "Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case "
+                   "Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case "
                    "(outputs.kind vintage-cohort), on the SBA 7(a) data.", "c03Outputs", d3)
     models_schema("C03", "C03 models",
                   "Catalog row c03-models 1.0.0: the C03 models artifact (vintage definition, target, training window, test cohorts, PD rungs).",

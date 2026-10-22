@@ -172,15 +172,15 @@ def test_the_term_structure_block_is_exploratory_and_comes_from_the_engine() -> 
 
 def test_the_impact_block_is_exploratory_and_comes_from_the_provisions_engine() -> None:
     pds = np.array([0.03, 0.04, 0.05, 0.06, 0.08])
-    detail, impact = blocks.impact_block(pds, "P1 scorecard horizon PDs, test")
+    detail, impact = blocks.impact_block(pds, cv.t("P1 scorecard horizon PDs, test", "PD por horizonte del scorecard P1, prueba"))
     assert detail["label"] == "exploratory" and detail["source"] == "engine-provisions-api" and detail["lgd"] == {"value": cv.LGD, "label": "assumption"}
     assert math.isclose(detail["ecl_12m_effect"], 0.03 * cv.LGD, rel_tol=1e-12)                    # q(1) * LGD * EAD, undiscounted
     assert math.isclose(detail["ecl_lifetime_effect"], 0.08 * cv.LGD, rel_tol=1e-12)               # cumulative(5) * LGD * EAD
     assert detail["reason_if_null"] is None and set(impact) == {"ecl_12m_effect", "ecl_lifetime_effect"}
     assert impact["ecl_12m_effect"]["value"] == detail["ecl_12m_effect"] and "exploratory" in impact["ecl_lifetime_effect"]["label"]["en"]
     # the horizon PDs cannot form a term structure (not strictly increasing): a null with its reason, never a number
-    d2, i2 = blocks.impact_block(np.array([0.03, 0.04, 0.04, 0.06, 0.08]), "P1 scorecard horizon PDs, test")
-    assert d2["ecl_12m_effect"] is None and d2["ecl_lifetime_effect"] is None and "strictly increasing" in d2["reason_if_null"]
+    d2, i2 = blocks.impact_block(np.array([0.03, 0.04, 0.04, 0.06, 0.08]), cv.t("P1 scorecard horizon PDs, test", "PD por horizonte del scorecard P1, prueba"))
+    assert d2["ecl_12m_effect"] is None and d2["ecl_lifetime_effect"] is None and "strictly increasing" in d2["reason_if_null"]["en"]
     assert i2["ecl_12m_effect"]["value"] is None
     assert Path(blocks.__file__).name == "blocks.py"
 

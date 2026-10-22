@@ -74,7 +74,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
           es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par segmentado es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
         }}
       >
-        <ChartOverTable
+        <ChartOverTable chartMin="18rem"
           chart={
         <UPlotChart
           height="fill"
@@ -174,7 +174,7 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
           es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones de 30 y 90 dpd son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
         }}
       >
-        <ChartOverTable
+        <ChartOverTable chartMin="18rem"
           chart={
         <UPlotChart
           height="fill"

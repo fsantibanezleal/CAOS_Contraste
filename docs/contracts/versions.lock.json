@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "17.0.0",
+    "version": "18.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "7b850604af97f7a5e4d28751ff8a51158667ab7b12d1bd02431269a851999ebc"
+    "sha256": "1bbe3bdc32a778b41a0e4202924552a32a6e177827b8645a131c6c0019bd7738"
   },
   "readiness": {
     "version": "1.0.0",
@@ -150,9 +150,9 @@
     "sha256": "e1c93696f989676a339bbb69d48bbf347ffd41c3f2a0e58ae41f8ab56e0d8b0d"
   },
   "c03-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c03/variant-vintage-cohort.schema.json",
-    "sha256": "de49f0af9aeb13e608332d5db4f71f2f0d7524ef7afc2f90851b446d6f3580ec"
+    "sha256": "63134a018f79f57d66da0dcd704946bd61d622ed4ea5e6d0fd135616353a7d71"
   },
   "c03-models": {
     "version": "1.0.0",
@@ -290,9 +290,9 @@
     "sha256": "a620a1614237c6f581399d6d6c781214314f6842855ea86975ad82edb542b016"
   },
   "c02-outputs": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c02/variant-horizon.schema.json",
-    "sha256": "d92efeb8bca3aa79a21d2c82e78d145d864bb2154d4ae08ab23c11f4738c8d91"
+    "sha256": "40a0fe389d1d8819410fff60c30fff1ed83ab7ed59ebc1193ab14b526c816072"
   },
   "c02-models": {
     "version": "1.0.0",

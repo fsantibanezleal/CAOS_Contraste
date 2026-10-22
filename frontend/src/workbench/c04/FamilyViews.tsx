@@ -37,6 +37,7 @@ import {
   type C04Sel,
   type Estimator,
   type FamilyVariant,
+  attributionIn,
 } from './selection';
 
 type Lang = 'en' | 'es';
@@ -331,7 +332,7 @@ function truthNote(lang: Lang, sel: C04Sel): string {
   return L(
     lang,
     `The truth is the EM generator of the pooled annual CEREP counts of S&P's EU entity (${SP_ENTITY.name}); ${attributionOf(sel)}.`,
-    `La verdad es el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (${SP_ENTITY.name}); atribución: ${attributionOf(sel)}.`,
+    `La verdad es el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (${SP_ENTITY.name}); atribución: ${attributionIn(attributionOf(sel), 'es')}.`,
   );
 }
 
@@ -487,7 +488,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The default column of exp(Q) and exp(5Q), percent on a log scale (${pick(DEFINITION_LABEL.d4, 'en')}); ${GRADES[sel.grade]} marked. CEREP counts of ${SP_ENTITY.name}; ${att}.`,
-            `La columna de incumplimiento de exp(Q) y exp(5Q), en porcentaje y escala logarítmica (${pick(DEFINITION_LABEL.d4, 'es')}); se marca ${GRADES[sel.grade]}. Conteos de CEREP de ${SP_ENTITY.name}; atribución: ${att}.`,
+            `La columna de incumplimiento de exp(Q) y exp(5Q), en porcentaje y escala logarítmica (${pick(DEFINITION_LABEL.d4, 'es')}); se marca ${GRADES[sel.grade]}. Conteos de CEREP de ${SP_ENTITY.name}; atribución: ${attributionIn(att, 'es')}.`,
           )}
         />
       }
@@ -498,7 +499,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `${designNote('en', o.family)} The exit rate is minus Q's diagonal, per year; the PDs are exp(Q)'s and exp(5Q)'s, in percent. ${att}.`,
-            `${designNote('es', o.family)} La tasa de salida es menos la diagonal de Q, por año; las PD son las de exp(Q) y exp(5Q), en porcentaje. Atribución: ${att}.`,
+            `${designNote('es', o.family)} La tasa de salida es menos la diagonal de Q, por año; las PD son las de exp(Q) y exp(5Q), en porcentaje. Atribución: ${attributionIn(att, 'es')}.`,
           )}
         >
           <table className="caos-table" data-table="family-design">

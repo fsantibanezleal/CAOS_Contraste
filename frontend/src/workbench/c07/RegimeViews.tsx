@@ -428,7 +428,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
                   <td className="ct-text">{pick(segmentName(o, g.segment_id), lang)}</td>
                   <td>{money(g.standard, lang, cur)}</td>
                   <td>
-                    <MaybeNumber value={g.internal} reason={g.internal_reason} format={(v) => money(v, lang, cur)} />
+                    <MaybeNumber value={g.internal} reason={null} format={(v) => money(v, lang, cur)} />
                   </td>
                   <td>{money(g.applied, lang, cur)}</td>
                   <td className="ct-text ct-wide-only">{pick(METHOD[g.method], lang)}</td>
@@ -436,6 +436,10 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
               ))}
             </tbody>
           </table>
+          {/* the reason is the same for every row: said once under the table, not in every cell (U16-R2 b04 M8) */}
+          {d.group_max_rule.find((g) => g.internal_reason) ? (
+            <p className="ct-note" data-note="internal-reason">{pick(d.group_max_rule.find((g) => g.internal_reason)!.internal_reason!, lang)}</p>
+          ) : null}
           <table className="caos-table" data-table="b1-minimum" data-binding={String(d.minimum_check.binding)}>
             <tbody>
               <tr>

@@ -295,7 +295,7 @@
         "freddie_mac_reason": {
           "anyOf": [
             {
-              "type": "string"
+              "$ref": "../common/text.schema.json"
             },
             {
               "type": "null"
@@ -1222,7 +1222,7 @@
         "reason": {
           "anyOf": [
             {
-              "type": "string"
+              "$ref": "../common/text.schema.json"
             },
             {
               "type": "null"

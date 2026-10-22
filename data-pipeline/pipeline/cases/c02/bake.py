@@ -141,7 +141,8 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
     d_hold = np.array([int(f.yhold.sum()) for f in hz])
     backtest = blocks.backtest_row(champ_pd, n_hold, d_hold) if term is not None else None      # the lifetime back-test presumes a cumulative curve
     cum = np.array([events_by[k] / rows_by[k] for k in range(1, 6)])
-    detail, impact = blocks.impact_block(cum, "the five file event rates, read as the cumulative PD of horizons 1 to 5")
+    detail, impact = blocks.impact_block(cum, cv.t("the five file event rates, read as the cumulative PD of horizons 1 to 5",
+                                              "las cinco tasas de evento de los archivos, leídas como la PD acumulada de los horizontes 1 a 5"))
     docs: dict[str, dict[str, Any]] = {}
     values: dict[str, float] = {}
     for hid in VARIANT_IDS:
