@@ -82,21 +82,21 @@ function headline(o: C20Outputs, lang: 'en' | 'es'): { measure: BiText; value: s
   switch (o.kind) {
     case 'shock': {
       const rows = o.shipped.rows;
-      const worst = rows.length ? Math.min(...rows.map((r) => r.performance.auc_delta)) : null;
-      return { measure: { en: 'Largest AUC loss, as shipped', es: 'Mayor pérdida de AUC, como se entrega' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss, as shipped', es: 'Mayor pérdida de AUC, como se entrega' }, value: worst === null || rows.length === 0 ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'shift': {
       const s = o.synthetic_shift.shifts;
-      const worst = s.length ? Math.min(...s.map((x) => x.metric.auc_delta)) : null;
-      return { measure: { en: 'Largest AUC loss under a synthetic shift', es: 'Mayor pérdida de AUC bajo un cambio sintético' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss under a synthetic shift', es: 'Mayor pérdida de AUC bajo un cambio sintético' }, value: worst === null || s.length === 0 ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'seeds': {
       const sd = o.rows.length ? Math.max(...o.rows.map((r) => r.auc.sd)) : null;
       return { measure: { en: 'Largest AUC standard deviation across seeds', es: 'Mayor desviación estándar del AUC entre semillas' }, value: sd === null ? formatNumber(null, lang) : f3(sd, lang) };
     }
     case 'perturbation': {
-      const at = o.rows.find((r) => r.eps === o.preset_eps);
-      return { measure: { en: 'AUC change at the preset noise scale', es: 'Cambio del AUC en la escala de ruido preestablecida' }, value: at ? f3(at.metric.auc_delta, lang) : formatNumber(null, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss over the noise scales', es: 'Mayor pérdida de AUC entre las escalas de ruido' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'leakage':
       return { measure: { en: 'Planted leak caught', es: 'Fuga plantada detectada' }, value: pick(o.caught ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang) };
@@ -104,10 +104,10 @@ function headline(o: C20Outputs, lang: 'en' | 'es'): { measure: BiText; value: s
 }
 
 /** The largest AUC loss a variant shows (positive is a loss), or null for a kind that measures no AUC change. */
-function worstLoss(o: C20Outputs): number | null {
-  if (o.kind === 'shock') return o.shipped.rows.length ? Math.max(...o.shipped.rows.map((r) => -r.performance.auc_delta)) : null;
-  if (o.kind === 'shift') return o.synthetic_shift.shifts.length ? Math.max(...o.synthetic_shift.shifts.map((x) => -x.metric.auc_delta)) : null;
-  if (o.kind === 'perturbation') return o.rows.length ? Math.max(...o.rows.map((r) => -r.metric.auc_delta)) : null;
+export function worstLoss(o: C20Outputs): number | null {
+  if (o.kind === 'shock') return o.shipped.rows.length ? Math.max(...o.shipped.rows.map((r) => 0 - r.performance.auc_delta)) : null;
+  if (o.kind === 'shift') return o.synthetic_shift.shifts.length ? Math.max(...o.synthetic_shift.shifts.map((x) => 0 - x.metric.auc_delta)) : null;
+  if (o.kind === 'perturbation') return o.rows.length ? Math.max(...o.rows.map((r) => 0 - r.metric.auc_delta)) : null;
   return null;
 }
 
@@ -122,7 +122,7 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
       fill
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
-      note={{ en: 'Each variant answers one question on a locked holdout with synthetic shifts applied to the evaluation set only. Pick one to load it.', es: 'Cada variante responde una pregunta en una muestra reservada, con cambios sintéticos aplicados solo al conjunto de evaluación. Elija una para cargarla.' }}
+      note={{ en: 'Each variant answers one question on a locked holdout with synthetic shifts applied to the evaluation set only. The chart compares the largest AUC loss; the seed sweep and the leak measure other things and have no bar. Pick one to load it.', es: 'Cada variante responde una pregunta en una muestra reservada, con cambios sintéticos aplicados solo al conjunto de evaluación. El gráfico compara la mayor pérdida de AUC; el barrido de semillas y la fuga miden otras cosas y no tienen barra. Elija una para cargarla.' }}
     >
       <LabelledOverTable
         chartMin={barMin(Math.max(1, measured.length))}
@@ -135,7 +135,7 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
               height="fill"
               orientation="horizontal"
               data={measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current }))}
-              axis={{ label: { en: 'AUC loss (positive is a loss); the seed sweep and the leak measure other things', es: 'Pérdida de AUC (positivo es una pérdida); el barrido de semillas y la fuga miden otras cosas' }, format: { decimals: 3 } }}
+              axis={{ label: { en: 'AUC loss (positive is a loss)', es: 'Pérdida de AUC (positiva)' }, format: { decimals: 3 } }}
             />
           )
         }

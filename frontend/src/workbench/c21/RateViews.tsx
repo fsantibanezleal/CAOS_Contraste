@@ -214,7 +214,7 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
               {a.contrasts.map((c) => (
                 <tr key={c.group} data-group={c.group} className={c.group === sel.group ? 'ct-current' : undefined}>
                   <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
-                  <td>{pc1(c.parity_gap, lang)}</td>
+                  <td>{pc1(Math.abs(c.parity_gap) < 5e-4 ? 0 : c.parity_gap, lang)}</td>
                   <td className="ct-wide-only" data-na={c.parity_ratio === null ? 'true' : undefined}>{c.parity_ratio === null ? formatNumber(null, lang) : f3(c.parity_ratio, lang)}</td>
                   <td>{f2(c.z_test.statistic, lang)}</td>
                   <td>{sig(c.z_test.p_value, lang)}</td>

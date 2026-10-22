@@ -68,7 +68,7 @@ export function C21TestsTable({ tests, only }: { tests: TestRow[]; only?: (t: Te
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text"><Marked>{t.notes === null || t.notes === undefined ? (t.reference ?? '') : es(t.notes, lang)}</Marked></td>
+                  <td className="ct-text"><Marked>{es(t.notes ? t.notes : (t.reference ?? ''), lang)}</Marked></td>
                 </tr>
               );
             })}
