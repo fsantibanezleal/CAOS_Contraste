@@ -526,7 +526,7 @@ describe('C04 cross-case sections', () => {
       // the families' cards (estimators, tests, coverage) name S&P's entity and carry ESMA's attribution; the agencies'
       // cards name the three entities
       const source = lang === 'en' ? 'CEREP counts of ' : 'Conteos de CEREP de ';
-      expect(markup.split(esc(`${source}Standard & Poor's Credit Market Services Europe Limited. Source: ESMA CEREP; tables transformed by Contraste.`)).length - 1).toBe(3);
+      expect(markup.split(esc(`${source}Standard & Poor's Credit Market Services Europe Limited. ${attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang)}.`)).length - 1).toBe(3);
       const entities = esc(ags.map((a) => a.outputs.agency.name).join('; '));
       expect(markup.split(entities).length - 1).toBeGreaterThanOrEqual(3);
     });
