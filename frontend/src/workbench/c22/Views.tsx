@@ -12,7 +12,7 @@ import { useFindingsShares } from '../../lib/useMedia';
 import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { COUNT_TESTS, curves, isC22, rateOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
+import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -212,6 +212,8 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
   const ladder = v.outputs.ladder;
   const allSize = v.outputs.panels.every((p) => p.measures === 'size');
   const mixed = !allSize && v.outputs.panels.some((p) => p.measures === 'size');
+  // the other-families variant measures two points per study: the test's null (0) and the engine's stated alternative (1)
+  const twoPoint = ladder.values.length === 2;
   return (
     <PlotCard
       fill
@@ -224,8 +226,8 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
       provenance={provenanceOf(v.provenance.truth_status)}
       dataKey={stateKey}
       note={{
-        en: `Against the family's ladder (${ladder.label.en}) unless a panel names its own axis; ${repetitions(v.outputs.simulations, 'en')}, so a rate's Monte Carlo SE is at most ${pct('en', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; dashed: the exact probability where one exists; dotted: the nominal level.`,
-        es: `Contra la escala de la familia (${ladder.label.es}) salvo que un panel nombre su propio eje; ${repetitions(v.outputs.simulations, 'es')}, así que el EE de Monte Carlo de una tasa es a lo más ${pct('es', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; segmentada: la probabilidad exacta donde existe; punteada: el nivel nominal.`,
+        en: `Against the family's ladder (${ladder.label.en}) unless a panel names its own axis; ${repetitions(v.outputs.simulations, 'en')}, so a rate's Monte Carlo SE is at most ${pct('en', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; dashed: the exact probability where one exists; dotted: the nominal level.${twoPoint ? ' Two points per study: its null (0, the rate is its size) and the one alternative the engine states (1, the rate is its power); a test with several studies has a curve each.' : ''}`,
+        es: `Contra la escala de la familia (${ladder.label.es}) salvo que un panel nombre su propio eje; ${repetitions(v.outputs.simulations, 'es')}, así que el EE de Monte Carlo de una tasa es a lo más ${pct('es', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; segmentada: la probabilidad exacta donde existe; punteada: el nivel nominal.${twoPoint ? ' Dos puntos por estudio: su nula (0, la tasa es su tamaño) y la única alternativa que declara el motor (1, la tasa es su potencia); una prueba con varios estudios tiene una curva cada uno.' : ''}`,
       }}
     >
       <div className="ct-panels-fill" data-views={String(panels.length)}>
@@ -309,6 +311,33 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
   );
 }
 
+/** The size above its bound that the engine documents on its own page (portfolio.mc_convergence): the measured size at
+ * its level, the bound, the excess and the page, shown whether or not this run exceeds, never hidden. */
+export function DocumentedExcess({ rows }: { rows: C22Simulation[] }) {
+  const lang = useShellLang();
+  const documented = rows.filter((s) => excessOf(s));
+  if (documented.length === 0) return null;
+  return (
+    <ul className="ct-evidence" data-list="documented-excess">
+      {documented.map((s) => {
+        const ex = excessOf(s)!;
+        const points = formatNumber(100 * Math.abs(ex.excess), lang, { decimals: 2 });
+        return (
+          <li key={s.key} data-sim={s.key} data-exceeds={ex.exceeds ? 'yes' : 'no'}>
+            {pick(
+              {
+                en: `${s.label.en}: measured size ${pct('en', ex.measured)} at ${pct('en', ex.level, 0)}, against a bound of ${pct('en', ex.bound)}: ${ex.exceeds ? `${points} points above it` : `${points} points below it in this run`}. Engine page ${ex.page} (${ex.repository}). ${ex.engine.en}`,
+                es: `${s.label.es}: tamaño medido ${pct('es', ex.measured)} al ${pct('es', ex.level, 0)}, contra una cota de ${pct('es', ex.bound)}: ${ex.exceeds ? `${points} puntos sobre ella` : `${points} puntos bajo ella en esta corrida`}. Página del motor ${ex.page} (${ex.repository}). ${ex.engine.es}`,
+              },
+              lang,
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** The null family: every test's size with its interval, its exact value and its verdict. */
 export function SizeView({ sel }: { sel: C22Sel | null }) {
   const lang = useShellLang();
@@ -355,12 +384,16 @@ export function SizeView({ sel }: { sel: C22Sel | null }) {
                     <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
                     <td>{rateText(s, r, lang)}</td>
                     <td>{x.exact === null ? '-' : pct(lang, x.exact)}</td>
-                    <td data-holds={ok ? 'yes' : 'no'}>{pick(ok ? { en: 'holds', es: 'se mantiene' } : { en: 'exceeds', es: 'excede' }, lang)}</td>
+                    <td data-holds={ok ? 'yes' : 'no'} data-documented={excessOf(s) ? 'yes' : undefined}>
+                      {pick(ok ? { en: 'holds', es: 'se mantiene' } : { en: 'exceeds', es: 'excede' }, lang)}
+                      {excessOf(s) && !ok ? pick({ en: ' (documented by the engine)', es: ' (documentado por el motor)' }, lang) : ''}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <DocumentedExcess rows={v.outputs.simulations} />
         </div>
       </PlotCard>
     </ViewsRow>
@@ -769,14 +802,17 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
     const r = rule(sel.level);
     const nul = fams.find((f) => f.outputs.ladder === null);
     const tests = nul ? nul.outputs.simulations.filter((s) => s.key.endsWith('@null')) : [];
-    const cells = (f: C22Variant, testId: string) => {
-      if (f.outputs.ladder === null) {
-        const s = f.outputs.simulations.find((x) => x.key === `${testId}@null`);
-        return s ? { rate: rateOf(s, r).exact ?? rateOf(s, r).rate, kind: 'size' as const } : null;
+    // a row per study of the null family (a test with several studies keeps one each); the null column is the study's own
+    // size, the other-families column its power at the engine's stated alternative, the defect columns the credit tests'
+    const cells = (f: C22Variant, s: C22Simulation) => {
+      if (f.outputs.ladder === null) return { rate: rateOf(s, r).exact ?? rateOf(s, r).rate, kind: 'size' as const };
+      if (f.variant_id === 'other-families') {
+        const x = f.outputs.simulations.find((y) => y.key === `${rowKeyOf(s)}@d1`);
+        return x ? { rate: rateOf(x, r).rate, kind: 'power' as const } : null;
       }
-      return familyCell(f, testId, r);
+      return familyCell(f, s.test_id, r);
     };
-    return { tests, rows: tests.map((s) => ({ s, cells: fams.map((f) => cells(f, s.test_id)) })) };
+    return { tests, rows: tests.map((s) => ({ s, cells: fams.map((f) => cells(f, s)) })) };
   }, [sel, fams]);
   if (!sel || all.state !== 'ready' || !matrix) return <Pending />;
   const entries = sel.data.manifest.artifacts.filter((a) => a.role === 'variant');
@@ -792,8 +828,8 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family.",
-          es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia.',
+          en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family. The Other families column is a test's power against the one alternative the engine states for it (blue); the tests of the five credit families are blank there, and the other tests are blank in the credit families' columns.",
+          es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia. La columna Otras familias es la potencia de una prueba contra la única alternativa que el motor declara para ella (azul); las pruebas de las cinco familias de crédito quedan vacías ahí, y las demás pruebas quedan vacías en las columnas de las familias de crédito.',
         }}
       >
         <div className="ct-scroll">
@@ -812,7 +848,7 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
             </thead>
             <tbody>
               {matrix.rows.map(({ s, cells }) => (
-                <tr key={s.test_id} data-test={s.test_id}>
+                <tr key={s.key} data-test={s.test_id} data-row={rowKeyOf(s)}>
                   <td className="ct-text">{pick(s.label, lang)}</td>
                   {cells.map((c, k) => (
                     <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)} data-kind={c?.kind}>

@@ -81,8 +81,8 @@ function Groups({ data }: { data: CaseData }) {
 }
 
 describe('the C22 instrument', () => {
-  it('has the eight families of the design, the null first', () => {
-    expect(cases.map((c) => c.id)).toEqual(['null', 'miscalibration', 'clustering', 'drift', 'discrimination-decay', 'leakage', 'broken-monotonicity', 'concentration']);
+  it('has the eight families of the design and the other-families variant of U16-P2, the null first', () => {
+    expect(cases.map((c) => c.id)).toEqual(['null', 'miscalibration', 'clustering', 'drift', 'discrimination-decay', 'leakage', 'broken-monotonicity', 'concentration', 'other-families']);
   });
 
   it('the groups are the six questions, in order, and the rail has two sections', () => {

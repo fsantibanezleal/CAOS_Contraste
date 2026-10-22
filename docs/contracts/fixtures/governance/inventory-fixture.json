@@ -115,52 +115,52 @@
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "cbc12d1978f2fb05d596f363bb98a79f391b028357c4b14bee45995a2dc523ea",
+    "sha256": "21e2c6986d4db68774d49dae676c014a787dfd69b7aba1651bfb30a31d271669",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "sha256": "a4fa48ce3ab9b44a0bfa0f90b5219cd454b3adb8630cc7c931ce2a7c5471095b",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "sha256": "709c3bda603d9d861a3f7aa39d8d674c8dc54a6d612493b8a0d6fec6c77c6dde",
     "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "sha256": "781521b9303eeeb93d0822590fa4387b58776810b3c9bbef904c8b2b3e9a6bc0",
     "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "sha256": "ef52d5e00cdca19e3d078284961001738b60b200e746033e216ad23b0c1a41e6",
     "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "sha256": "d7eac6a29e64d5e2276b3d2e25963bc09de905c5293feee031a3bc1fa4a90441",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "sha256": "08fa8614e0ce61136a7c42f79053aeba8a13864b579712db360d8e8151292342",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "sha256": "aafc0795a1534bae069362f4fd792c925e22412010bb913483890981d619ebb6",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "sha256": "a0e44e618aa7802990c93e0de0e6c283c49334e4e0cb15903145a57abc45fe02",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "sha256": "aadd47b869ea88b60f67db877bff75334d6f66bc007609b8f6e8ac73057ed459",
     "ref": null
    }
   ]
@@ -1984,7 +1984,7 @@
      "basis": "read at data/derived/manifests/C22.json#/title"
     },
     "A03": {
-     "value": "generators@0.07.000/riskvalidation-0.4.3",
+     "value": "generators@0.13.000/riskvalidation-0.9.0",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C22/models-generators.json#/fit_id | data/derived/C22/models-generators.json#/provenance/code_version | data/derived/C22/models-generators.json#/provenance/riskvalidation_version"
     },
@@ -2006,6 +2006,7 @@
     },
     "A06": {
      "value": [
+      "riskvalidation.fairness.plants.ThresholdBiasPlant",
       "riskvalidation.generators.BinormalScores",
       "riskvalidation.generators.DefaultCounts",
       "riskvalidation.generators.GradeFrequencies",
@@ -2013,7 +2014,20 @@
       "riskvalidation.generators.Migrations",
       "riskvalidation.generators.NestedLda",
       "riskvalidation.generators.TwoSample",
-      "riskvalidation.harness.exact"
+      "riskvalidation.generators.credit.DownturnLgd",
+      "riskvalidation.generators.credit.LgdCalibration",
+      "riskvalidation.generators.credit.StageTransitions",
+      "riskvalidation.generators.exceedances.EsResiduals",
+      "riskvalidation.generators.exceedances.LhpLossRates",
+      "riskvalidation.generators.exceedances.PfeSeries",
+      "riskvalidation.generators.hits.EsLosses",
+      "riskvalidation.generators.hits.PitSeries",
+      "riskvalidation.generators.hits.VarHits",
+      "riskvalidation.generators.montecarlo.CreditRiskPlusSample",
+      "riskvalidation.generators.montecarlo.McQuantile",
+      "riskvalidation.harness.exact",
+      "riskvalidation.ml.plants.CovariateShiftPlant",
+      "riskvalidation.ml.plants.ExchangeabilityBreakPlant"
      ],
      "status": "derivable",
      "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
@@ -2069,7 +2083,21 @@
        "TwoSample",
        "Migrations",
        "GradeFrequencies",
-       "NestedLda"
+       "NestedLda",
+       "PfeSeries",
+       "StageTransitions",
+       "LgdCalibration",
+       "DownturnLgd",
+       "EsResiduals",
+       "LhpLossRates",
+       "McQuantile",
+       "CreditRiskPlusSample",
+       "ThresholdBiasPlant",
+       "VarHits",
+       "EsLosses",
+       "PitSeries",
+       "CovariateShiftPlant",
+       "ExchangeabilityBreakPlant"
       ]
      },
      "status": "present",
@@ -2096,7 +2124,9 @@
        "tests_within_bound",
        "size_hl_fitted",
        "size_normal",
-       "psi010_false_alarm_n100"
+       "psi010_false_alarm_n100",
+       "other_tests_within_bound",
+       "other_size_mc_convergence"
       ]
      },
      "status": "present",
@@ -2111,7 +2141,21 @@
       "dgp",
       "dgp",
       "dgp",
-      "exact"
+      "exact",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp"
      ],
      "status": "present",
      "basis": "read at data/derived/C22/models-generators.json#/model/0/rung and the other model records"
@@ -2177,7 +2221,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.4.3",
+     "value": "riskvalidation 0.9.0",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version validates the entry; independence is not established because the pipeline and the engine are built in the same programme (W15-4); C22 itself is validated by its exact rejection probabilities and by the engine's own tests (A D1)"
     },
@@ -2193,14 +2237,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-12",
+      "date": "2026-10-20",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
+     "basis": "the release date of code version 0.13.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2029-10-12",
+     "value": "2029-10-20",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -2218,7 +2262,7 @@
     "A37": {
      "value": {
       "S1": 0,
-      "S2": 1,
+      "S2": 2,
       "S3": 0,
       "S4": 0
      },
@@ -2227,7 +2271,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-04-10"
+      "earliest_due": "2027-04-18"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -2380,6 +2424,188 @@
      "title": {
       "en": "Exact rejection probabilities of the count tests",
       "es": "Probabilidades exactas de rechazo de las pruebas de conteo"
+     }
+    },
+    {
+     "key": "C22/generators/G8-pfe-series",
+     "model_id": "G8-pfe-series",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Exposure series with a PFE forecast (counterparty credit risk)",
+      "es": "Serie de exposiciones con un pronóstico de PFE (riesgo de contraparte)"
+     }
+    },
+    {
+     "key": "C22/generators/G9-stage-transitions",
+     "model_id": "G9-stage-transitions",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Stage migrations of IFRS 9 accounts",
+      "es": "Migraciones de etapa de cuentas NIIF 9"
+     }
+    },
+    {
+     "key": "C22/generators/G10-lgd-calibration",
+     "model_id": "G10-lgd-calibration",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Realised and predicted LGD of workouts",
+      "es": "LGD realizada y predicha de recuperaciones"
+     }
+    },
+    {
+     "key": "C22/generators/G11-downturn-lgd",
+     "model_id": "G11-downturn-lgd",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Downturn workouts against a downturn estimate",
+      "es": "Recuperaciones de ciclo bajo contra una estimación de ciclo bajo"
+     }
+    },
+    {
+     "key": "C22/generators/G12-es-residuals",
+     "model_id": "G12-es-residuals",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Expected shortfall residuals of exceedances",
+      "es": "Residuos de expected shortfall de las excedencias"
+     }
+    },
+    {
+     "key": "C22/generators/G13-lhp-loss-rates",
+     "model_id": "G13-lhp-loss-rates",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Yearly loss rates of a large homogeneous portfolio",
+      "es": "Tasas de pérdida anuales de una cartera homogénea grande"
+     }
+    },
+    {
+     "key": "C22/generators/G14-mc-quantile",
+     "model_id": "G14-mc-quantile",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A Monte Carlo quantile of the LHP loss rate",
+      "es": "Un cuantil Monte Carlo de la tasa de pérdida LHP"
+     }
+    },
+    {
+     "key": "C22/generators/G15-credit-risk-plus-sample",
+     "model_id": "G15-credit-risk-plus-sample",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A CreditRisk+ loss sample",
+      "es": "Una muestra de pérdidas de CreditRisk+"
+     }
+    },
+    {
+     "key": "C22/generators/G16-threshold-bias-plant",
+     "model_id": "G16-threshold-bias-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Decisions with a planted threshold gap between two groups",
+      "es": "Decisiones con una brecha de umbral plantada entre dos grupos"
+     }
+    },
+    {
+     "key": "C22/generators/G17-var-hits",
+     "model_id": "G17-var-hits",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "VaR exceedances (hits), independent or clustered",
+      "es": "Excedencias de VaR, independientes o agrupadas"
+     }
+    },
+    {
+     "key": "C22/generators/G18-es-losses",
+     "model_id": "G18-es-losses",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Losses with VaR and ES forecasts",
+      "es": "Pérdidas con pronósticos de VaR y ES"
+     }
+    },
+    {
+     "key": "C22/generators/G19-pit-series",
+     "model_id": "G19-pit-series",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Probability integral transforms of a forecast distribution",
+      "es": "Transformadas integrales de probabilidad de una distribución pronosticada"
+     }
+    },
+    {
+     "key": "C22/generators/G20-covariate-shift-plant",
+     "model_id": "G20-covariate-shift-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A model with a planted covariate shift",
+      "es": "Un modelo con un desplazamiento de covariables plantado"
+     }
+    },
+    {
+     "key": "C22/generators/G21-exchangeability-break-plant",
+     "model_id": "G21-exchangeability-break-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A conformal model with a planted exchangeability break",
+      "es": "Un modelo conforme con una ruptura de intercambiabilidad plantada"
      }
     }
    ],
@@ -2559,11 +2785,11 @@
     "profile": "default",
     "review_kind": "attestation",
     "last_validation": {
-     "date": "2026-10-12",
+     "date": "2026-10-20",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2029-10-12",
+    "next_review": "2029-10-20",
     "next_full_revalidation": null,
     "next_monitoring": null,
     "null_reason": {

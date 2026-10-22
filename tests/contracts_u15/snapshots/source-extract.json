@@ -1,5 +1,5 @@
 {
- "engine_commit": "1cda6b210abe631cf11f5744708210ef952b5096",
+ "engine_commit": "0b541bb90eed25c0508907625f7067ced0351ce1",
  "cases": {
   "C01": {
    "fit_id": "german",
@@ -6171,7 +6171,7 @@
    "fit_id": "generators",
    "manifest": {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "cbc12d1978f2fb05d596f363bb98a79f391b028357c4b14bee45995a2dc523ea",
+    "sha256": "21e2c6986d4db68774d49dae676c014a787dfd69b7aba1651bfb30a31d271669",
     "title": {
      "en": "Validating the validator: size and power of every test",
      "es": "Validar al validador: tamaño y potencia de cada prueba"
@@ -6192,9 +6192,9 @@
    },
    "models_document": {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
-    "code_version": "0.07.000",
-    "riskvalidation_version": "0.4.3",
+    "sha256": "a4fa48ce3ab9b44a0bfa0f90b5219cd454b3adb8630cc7c931ce2a7c5471095b",
+    "code_version": "0.13.000",
+    "riskvalidation_version": "0.9.0",
     "truth_status": "synthetic-known-truth",
     "models": [
      {
@@ -6276,6 +6276,146 @@
        "en": "Exact rejection probabilities of the count tests",
        "es": "Probabilidades exactas de rechazo de las pruebas de conteo"
       }
+     },
+     {
+      "id": "G8-pfe-series",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.exceedances.PfeSeries",
+      "title": {
+       "en": "Exposure series with a PFE forecast (counterparty credit risk)",
+       "es": "Serie de exposiciones con un pronóstico de PFE (riesgo de contraparte)"
+      }
+     },
+     {
+      "id": "G9-stage-transitions",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.credit.StageTransitions",
+      "title": {
+       "en": "Stage migrations of IFRS 9 accounts",
+       "es": "Migraciones de etapa de cuentas NIIF 9"
+      }
+     },
+     {
+      "id": "G10-lgd-calibration",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.credit.LgdCalibration",
+      "title": {
+       "en": "Realised and predicted LGD of workouts",
+       "es": "LGD realizada y predicha de recuperaciones"
+      }
+     },
+     {
+      "id": "G11-downturn-lgd",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.credit.DownturnLgd",
+      "title": {
+       "en": "Downturn workouts against a downturn estimate",
+       "es": "Recuperaciones de ciclo bajo contra una estimación de ciclo bajo"
+      }
+     },
+     {
+      "id": "G12-es-residuals",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.exceedances.EsResiduals",
+      "title": {
+       "en": "Expected shortfall residuals of exceedances",
+       "es": "Residuos de expected shortfall de las excedencias"
+      }
+     },
+     {
+      "id": "G13-lhp-loss-rates",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.exceedances.LhpLossRates",
+      "title": {
+       "en": "Yearly loss rates of a large homogeneous portfolio",
+       "es": "Tasas de pérdida anuales de una cartera homogénea grande"
+      }
+     },
+     {
+      "id": "G14-mc-quantile",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.montecarlo.McQuantile",
+      "title": {
+       "en": "A Monte Carlo quantile of the LHP loss rate",
+       "es": "Un cuantil Monte Carlo de la tasa de pérdida LHP"
+      }
+     },
+     {
+      "id": "G15-credit-risk-plus-sample",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.montecarlo.CreditRiskPlusSample",
+      "title": {
+       "en": "A CreditRisk+ loss sample",
+       "es": "Una muestra de pérdidas de CreditRisk+"
+      }
+     },
+     {
+      "id": "G16-threshold-bias-plant",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.fairness.plants.ThresholdBiasPlant",
+      "title": {
+       "en": "Decisions with a planted threshold gap between two groups",
+       "es": "Decisiones con una brecha de umbral plantada entre dos grupos"
+      }
+     },
+     {
+      "id": "G17-var-hits",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.hits.VarHits",
+      "title": {
+       "en": "VaR exceedances (hits), independent or clustered",
+       "es": "Excedencias de VaR, independientes o agrupadas"
+      }
+     },
+     {
+      "id": "G18-es-losses",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.hits.EsLosses",
+      "title": {
+       "en": "Losses with VaR and ES forecasts",
+       "es": "Pérdidas con pronósticos de VaR y ES"
+      }
+     },
+     {
+      "id": "G19-pit-series",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.generators.hits.PitSeries",
+      "title": {
+       "en": "Probability integral transforms of a forecast distribution",
+       "es": "Transformadas integrales de probabilidad de una distribución pronosticada"
+      }
+     },
+     {
+      "id": "G20-covariate-shift-plant",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.ml.plants.CovariateShiftPlant",
+      "title": {
+       "en": "A model with a planted covariate shift",
+       "es": "Un modelo con un desplazamiento de covariables plantado"
+      }
+     },
+     {
+      "id": "G21-exchangeability-break-plant",
+      "family": "generator",
+      "rung": "dgp",
+      "engine": "riskvalidation.ml.plants.ExchangeabilityBreakPlant",
+      "title": {
+       "en": "A conformal model with a planted exchangeability break",
+       "es": "Un modelo conforme con una ruptura de intercambiabilidad plantada"
+      }
      }
     ]
    },
@@ -6284,9 +6424,9 @@
     {
      "variant_id": "broken-monotonicity",
      "path": "data/derived/C22/broken-monotonicity.json",
-     "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "709c3bda603d9d861a3f7aa39d8d674c8dc54a6d612493b8a0d6fec6c77c6dde",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6327,9 +6467,9 @@
     {
      "variant_id": "clustering",
      "path": "data/derived/C22/clustering.json",
-     "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "781521b9303eeeb93d0822590fa4387b58776810b3c9bbef904c8b2b3e9a6bc0",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [
       "bcbs-wp14"
      ],
@@ -6386,9 +6526,9 @@
     {
      "variant_id": "concentration",
      "path": "data/derived/C22/concentration.json",
-     "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "ef52d5e00cdca19e3d078284961001738b60b200e746033e216ad23b0c1a41e6",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6429,9 +6569,9 @@
     {
      "variant_id": "discrimination-decay",
      "path": "data/derived/C22/discrimination-decay.json",
-     "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "d7eac6a29e64d5e2276b3d2e25963bc09de905c5293feee031a3bc1fa4a90441",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6485,9 +6625,9 @@
     {
      "variant_id": "drift",
      "path": "data/derived/C22/drift.json",
-     "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "08fa8614e0ce61136a7c42f79053aeba8a13864b579712db360d8e8151292342",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [
       "yurdakul-naranjo-2020"
      ],
@@ -6543,9 +6683,9 @@
     {
      "variant_id": "leakage",
      "path": "data/derived/C22/leakage.json",
-     "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "aafc0795a1534bae069362f4fd792c925e22412010bb913483890981d619ebb6",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6599,9 +6739,9 @@
     {
      "variant_id": "miscalibration",
      "path": "data/derived/C22/miscalibration.json",
-     "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "a0e44e618aa7802990c93e0de0e6c283c49334e4e0cb15903145a57abc45fe02",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6673,9 +6813,9 @@
     {
      "variant_id": "null",
      "path": "data/derived/C22/null.json",
-     "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "aadd47b869ea88b60f67db877bff75334d6f66bc007609b8f6e8ac73057ed459",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.9.0",
      "sources": [],
      "findings": [
       {
@@ -6781,6 +6921,50 @@
        "title": {
         "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.72%, Markov order (grouped by direction) 6.05%, Matrix against a reference 3.70%, Downward momentum (hazard) 4.45%); the order test, near its bound in 4,000 repetitions, rejects 5.05% at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
         "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Momentum a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+       }
+      },
+      {
+       "id": "F-OTHER-SIZE",
+       "severity": "S2",
+       "status": "open",
+       "evidence": [
+        "rate:market.christoffersen_independence@null",
+        "rate:market.christoffersen_conditional_coverage@null"
+       ],
+       "title": {
+        "en": "19 of 21 tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all 25 studies counted); above their bound and not documented by the engine: Christoffersen independence, Christoffersen conditional coverage",
+        "es": "19 de 21 pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
+       }
+      },
+      {
+       "id": "F-OTHER-MC-EXCESS",
+       "severity": "S4",
+       "status": "accepted",
+       "evidence": [
+        "rate:portfolio.mc_convergence@null"
+       ],
+       "title": {
+        "en": "The Monte Carlo quantile convergence test measures 1.32% at 1% against a bound of 1.49% (within it in this run); the engine documents this excess on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
+        "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,32% al 1% contra una cota de 1,49% (dentro de ella en esta corrida); el motor documenta este exceso en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55% al 1% contra una cota de 1,49% (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1%; con el error estándar exacto su tamaño es 1,20%, dentro de ambas cotas."
+       }
+      },
+      {
+       "id": "F-OTHER-CONSERVATIVE",
+       "severity": "S4",
+       "status": "accepted",
+       "evidence": [
+        "rate:market.mcneil_frey_residual_test@null",
+        "rate:portfolio.tail_backtest@null",
+        "rate:portfolio.tail_backtest#1@null",
+        "rate:portfolio.crp_recursion_vs_mc@null",
+        "rate:market.duration_test@null",
+        "rate:market.dynamic_quantile_test@null",
+        "rate:market.dynamic_quantile_test#2@null",
+        "rate:market.dynamic_quantile_test#3@null"
+       ],
+       "title": {
+        "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile) (60 years at the 95% level), Tail back-test (LHP quantile) (250 years at the 99% level), CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
+        "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Backtest de cola (cuantil LHP) (60 años al nivel 95%), Backtest de cola (cuantil LHP) (250 años al nivel 99%), Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5%), Prueba de cuantil dinámico (250 días al 2,5%), Prueba de cuantil dinámico (750 días al 1%)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
        }
       }
      ],
@@ -6896,9 +7080,45 @@
     "data/derived/C22/models-generators.json#/model/1/engine",
     "data/derived/C22/models-generators.json#/model/1/family",
     "data/derived/C22/models-generators.json#/model/1/rung",
+    "data/derived/C22/models-generators.json#/model/10/engine",
+    "data/derived/C22/models-generators.json#/model/10/family",
+    "data/derived/C22/models-generators.json#/model/10/rung",
+    "data/derived/C22/models-generators.json#/model/11/engine",
+    "data/derived/C22/models-generators.json#/model/11/family",
+    "data/derived/C22/models-generators.json#/model/11/rung",
+    "data/derived/C22/models-generators.json#/model/12/engine",
+    "data/derived/C22/models-generators.json#/model/12/family",
+    "data/derived/C22/models-generators.json#/model/12/rung",
+    "data/derived/C22/models-generators.json#/model/13/engine",
+    "data/derived/C22/models-generators.json#/model/13/family",
+    "data/derived/C22/models-generators.json#/model/13/rung",
+    "data/derived/C22/models-generators.json#/model/14/engine",
+    "data/derived/C22/models-generators.json#/model/14/family",
+    "data/derived/C22/models-generators.json#/model/14/rung",
+    "data/derived/C22/models-generators.json#/model/15/engine",
+    "data/derived/C22/models-generators.json#/model/15/family",
+    "data/derived/C22/models-generators.json#/model/15/rung",
+    "data/derived/C22/models-generators.json#/model/16/engine",
+    "data/derived/C22/models-generators.json#/model/16/family",
+    "data/derived/C22/models-generators.json#/model/16/rung",
+    "data/derived/C22/models-generators.json#/model/17/engine",
+    "data/derived/C22/models-generators.json#/model/17/family",
+    "data/derived/C22/models-generators.json#/model/17/rung",
+    "data/derived/C22/models-generators.json#/model/18/engine",
+    "data/derived/C22/models-generators.json#/model/18/family",
+    "data/derived/C22/models-generators.json#/model/18/rung",
+    "data/derived/C22/models-generators.json#/model/19/engine",
+    "data/derived/C22/models-generators.json#/model/19/family",
+    "data/derived/C22/models-generators.json#/model/19/rung",
     "data/derived/C22/models-generators.json#/model/2/engine",
     "data/derived/C22/models-generators.json#/model/2/family",
     "data/derived/C22/models-generators.json#/model/2/rung",
+    "data/derived/C22/models-generators.json#/model/20/engine",
+    "data/derived/C22/models-generators.json#/model/20/family",
+    "data/derived/C22/models-generators.json#/model/20/rung",
+    "data/derived/C22/models-generators.json#/model/21/engine",
+    "data/derived/C22/models-generators.json#/model/21/family",
+    "data/derived/C22/models-generators.json#/model/21/rung",
     "data/derived/C22/models-generators.json#/model/3/engine",
     "data/derived/C22/models-generators.json#/model/3/family",
     "data/derived/C22/models-generators.json#/model/3/rung",
@@ -6914,6 +7134,12 @@
     "data/derived/C22/models-generators.json#/model/7/engine",
     "data/derived/C22/models-generators.json#/model/7/family",
     "data/derived/C22/models-generators.json#/model/7/rung",
+    "data/derived/C22/models-generators.json#/model/8/engine",
+    "data/derived/C22/models-generators.json#/model/8/family",
+    "data/derived/C22/models-generators.json#/model/8/rung",
+    "data/derived/C22/models-generators.json#/model/9/engine",
+    "data/derived/C22/models-generators.json#/model/9/family",
+    "data/derived/C22/models-generators.json#/model/9/rung",
     "data/derived/C22/models-generators.json#/provenance/code_version",
     "data/derived/C22/models-generators.json#/provenance/generators",
     "data/derived/C22/models-generators.json#/provenance/riskvalidation_version",
@@ -6964,9 +7190,45 @@
     "data/derived/C22/models-generators.json#/model/1/engine": "riskvalidation.generators.BinormalScores",
     "data/derived/C22/models-generators.json#/model/1/family": "generator",
     "data/derived/C22/models-generators.json#/model/1/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/10/engine": "riskvalidation.generators.credit.LgdCalibration",
+    "data/derived/C22/models-generators.json#/model/10/family": "generator",
+    "data/derived/C22/models-generators.json#/model/10/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/11/engine": "riskvalidation.generators.credit.DownturnLgd",
+    "data/derived/C22/models-generators.json#/model/11/family": "generator",
+    "data/derived/C22/models-generators.json#/model/11/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/12/engine": "riskvalidation.generators.exceedances.EsResiduals",
+    "data/derived/C22/models-generators.json#/model/12/family": "generator",
+    "data/derived/C22/models-generators.json#/model/12/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/13/engine": "riskvalidation.generators.exceedances.LhpLossRates",
+    "data/derived/C22/models-generators.json#/model/13/family": "generator",
+    "data/derived/C22/models-generators.json#/model/13/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/14/engine": "riskvalidation.generators.montecarlo.McQuantile",
+    "data/derived/C22/models-generators.json#/model/14/family": "generator",
+    "data/derived/C22/models-generators.json#/model/14/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/15/engine": "riskvalidation.generators.montecarlo.CreditRiskPlusSample",
+    "data/derived/C22/models-generators.json#/model/15/family": "generator",
+    "data/derived/C22/models-generators.json#/model/15/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/16/engine": "riskvalidation.fairness.plants.ThresholdBiasPlant",
+    "data/derived/C22/models-generators.json#/model/16/family": "generator",
+    "data/derived/C22/models-generators.json#/model/16/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/17/engine": "riskvalidation.generators.hits.VarHits",
+    "data/derived/C22/models-generators.json#/model/17/family": "generator",
+    "data/derived/C22/models-generators.json#/model/17/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/18/engine": "riskvalidation.generators.hits.EsLosses",
+    "data/derived/C22/models-generators.json#/model/18/family": "generator",
+    "data/derived/C22/models-generators.json#/model/18/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/19/engine": "riskvalidation.generators.hits.PitSeries",
+    "data/derived/C22/models-generators.json#/model/19/family": "generator",
+    "data/derived/C22/models-generators.json#/model/19/rung": "dgp",
     "data/derived/C22/models-generators.json#/model/2/engine": "riskvalidation.generators.LogisticPortfolio",
     "data/derived/C22/models-generators.json#/model/2/family": "generator",
     "data/derived/C22/models-generators.json#/model/2/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/20/engine": "riskvalidation.ml.plants.CovariateShiftPlant",
+    "data/derived/C22/models-generators.json#/model/20/family": "generator",
+    "data/derived/C22/models-generators.json#/model/20/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/21/engine": "riskvalidation.ml.plants.ExchangeabilityBreakPlant",
+    "data/derived/C22/models-generators.json#/model/21/family": "generator",
+    "data/derived/C22/models-generators.json#/model/21/rung": "dgp",
     "data/derived/C22/models-generators.json#/model/3/engine": "riskvalidation.generators.TwoSample",
     "data/derived/C22/models-generators.json#/model/3/family": "generator",
     "data/derived/C22/models-generators.json#/model/3/rung": "dgp",
@@ -6982,7 +7244,13 @@
     "data/derived/C22/models-generators.json#/model/7/engine": "riskvalidation.harness.exact",
     "data/derived/C22/models-generators.json#/model/7/family": "exact",
     "data/derived/C22/models-generators.json#/model/7/rung": "exact",
-    "data/derived/C22/models-generators.json#/provenance/code_version": "0.07.000",
+    "data/derived/C22/models-generators.json#/model/8/engine": "riskvalidation.generators.exceedances.PfeSeries",
+    "data/derived/C22/models-generators.json#/model/8/family": "generator",
+    "data/derived/C22/models-generators.json#/model/8/rung": "dgp",
+    "data/derived/C22/models-generators.json#/model/9/engine": "riskvalidation.generators.credit.StageTransitions",
+    "data/derived/C22/models-generators.json#/model/9/family": "generator",
+    "data/derived/C22/models-generators.json#/model/9/rung": "dgp",
+    "data/derived/C22/models-generators.json#/provenance/code_version": "0.13.000",
     "data/derived/C22/models-generators.json#/provenance/generators": [
      "DefaultCounts",
      "BinormalScores",
@@ -6990,9 +7258,23 @@
      "TwoSample",
      "Migrations",
      "GradeFrequencies",
-     "NestedLda"
+     "NestedLda",
+     "PfeSeries",
+     "StageTransitions",
+     "LgdCalibration",
+     "DownturnLgd",
+     "EsResiduals",
+     "LhpLossRates",
+     "McQuantile",
+     "CreditRiskPlusSample",
+     "ThresholdBiasPlant",
+     "VarHits",
+     "EsLosses",
+     "PitSeries",
+     "CovariateShiftPlant",
+     "ExchangeabilityBreakPlant"
     ],
-    "data/derived/C22/models-generators.json#/provenance/riskvalidation_version": "0.4.3",
+    "data/derived/C22/models-generators.json#/provenance/riskvalidation_version": "0.9.0",
     "data/derived/manifests/C22.json#/question": {
      "en": "How often does each validation test reject a right model, and which defects does it catch?",
      "es": "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?"
@@ -7010,7 +7292,9 @@
     "tests_within_bound",
     "size_hl_fitted",
     "size_normal",
-    "psi010_false_alarm_n100"
+    "psi010_false_alarm_n100",
+    "other_tests_within_bound",
+    "other_size_mc_convergence"
    ],
    "spec_decisions": {
     "pd.binomial": "p_value",

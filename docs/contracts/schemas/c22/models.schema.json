@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c22/models.schema.json",
   "title": "C22 models",
-  "description": "Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.",
+  "description": "Catalog row c22-models 2.0.0: the C22 models artifact with the exact-probability parity points of the three count tests and the engine's 25 named size and power studies (U16-P2).",
   "allOf": [
     {"$ref": "../common/models-envelope.schema.json"},
     {
@@ -18,7 +18,7 @@
     "c22Fit": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["parity","levels"],
+      "required": ["parity","levels","studies"],
       "properties": {
         "parity": {
           "type": "array",
@@ -27,7 +27,53 @@
         "levels": {
           "type": "array",
           "items": {"type": "number"}
+        },
+        "studies": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22StudyRecord"}
         }
+      }
+    },
+    "c22StudyRecord": {
+      "description": "One named study of the engine (riskvalidation.generators.size_studies.STUDIES): the test, its index among the test's studies, the generators of the null and of the stated alternative, the pipeline that runs the test where it is not the test itself, the fixed arguments of the test, and the engine's own repetitions and seeds (C22 runs the study with its own seeds and repetitions).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["test_id","index","label","rule","null_generator","alternative_generator","pipeline","test_kwargs","engine_n_rep","engine_power_n_rep","engine_seed","engine_power_seed"],
+      "properties": {
+        "test_id": {"type": "string", "enum": [
+          "ccr.pfe_exceedance_backtest",
+          "fair.fisher_exact",
+          "fair.two_proportion_z",
+          "ifrs9.stage_migration_backtest",
+          "lgd_ead.downturn_coverage",
+          "lgd_ead.lgd_calibration_by_segment",
+          "lgd_ead.lgd_calibration_over_time",
+          "market.acerbi_szekely",
+          "market.christoffersen_conditional_coverage",
+          "market.christoffersen_independence",
+          "market.du_escanciano_conditional",
+          "market.du_escanciano_unconditional",
+          "market.duration_test",
+          "market.dynamic_quantile_test",
+          "market.kupiec_pof",
+          "market.mcneil_frey_residual_test",
+          "ml.conformal_coverage",
+          "ml.shift_resilience",
+          "portfolio.crp_recursion_vs_mc",
+          "portfolio.mc_convergence",
+          "portfolio.tail_backtest"
+        ]},
+        "index": {"type": "integer", "minimum": 0},
+        "label": {"$ref": "../common/text.schema.json"},
+        "rule": {"type": "string", "enum": ["p","p_le","red","alarm"]},
+        "null_generator": {"type": "string"},
+        "alternative_generator": {"type": "string"},
+        "pipeline": {"type": ["string","null"]},
+        "test_kwargs": {"type": "object"},
+        "engine_n_rep": {"type": "integer", "minimum": 1},
+        "engine_power_n_rep": {"type": ["integer","null"]},
+        "engine_seed": {"type": "integer"},
+        "engine_power_seed": {"type": "integer"}
       }
     },
     "c22Parity": {
@@ -46,7 +92,11 @@
         "probability"
       ],
       "properties": {
-        "test_id": {"type": "string"},
+        "test_id": {"type": "string", "enum": [
+          "pd.binomial",
+          "pd.jeffreys",
+          "pd.binomial_vasicek"
+        ]},
         "n": {"type": "integer", "minimum": 0},
         "pd": {
           "type": "number",
