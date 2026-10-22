@@ -267,7 +267,7 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
                 attrs: { 'data-prior': s.prior_kind },
                 value: pick(
                   {
-                    en: 'Gamma on the Pareto shape alpha = 1 / xi, unrestricted (an infinite mean is not excluded); mean and 90 percent interval from the scenario points. the reading of the method by Contraste, stated on every result.',
+                    en: 'Gamma on the Pareto shape alpha = 1 / xi, unrestricted (an infinite mean is not excluded); mean and 90 percent interval from the scenario points. The Contraste reading of the method, stated on every result.',
                     es: 'Gamma sobre la forma de Pareto alfa = 1 / xi, sin restricción (no se excluye una media infinita); media e intervalo del 90 por ciento desde los puntos de escenario. Lectura de Contraste del método, declarada en cada resultado.',
                   },
                   lang,

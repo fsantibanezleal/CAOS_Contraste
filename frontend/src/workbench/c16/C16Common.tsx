@@ -15,15 +15,16 @@ import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
 import { bankName, es, nameOf } from './localise';
 import {
-  BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, FAMILY_TEXT, HAIRCUT_RULE_TEXT, PHASE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
-  amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text,
+  BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, HAIRCUT_RULE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
+  amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text, scenarioPhrase,
   type C16Fit, type C16Outputs, type C16Reverse, type C16Sel, type C16Survival,
 } from './selection';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
 export const SHARE = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { percent: true, decimals: 2 });
-export const cell = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { decimals: 0 });
+/** A whole amount; a value that rounds to zero is 0, never "-0" (U16-R2 b08 m3). */
+export const cell = (v: number | null | undefined, lang: Lang) => formatNumber(v === null || v === undefined ? v : Math.round(v) + 0, lang, { decimals: 0 });
 export const digits = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { digits: 4 });
 
 /**
@@ -123,13 +124,16 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                      <td className="ct-text" title={t.test_id}>
+                        {TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}
+                        {t.segment === null ? null : <span className="ct-narrow-only" data-segment={t.segment}>{pick(text(SEGMENT_NAMES, t.segment), lang)}</span>}
+                      </td>
                       <td className="ct-text ct-wide-only">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : es(t.notes, lang)}</td>
+                      <td className="ct-text">{es(t.notes ? t.notes : t.reference, lang)}</td>
                     </tr>
                   );
                 })}
@@ -217,7 +221,7 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
-                  <td className="ct-text ct-wide-only">{`${pick(text(FAMILY_TEXT, o.variant.scenario_family), lang)}, ${pick(text(PHASE_TEXT, o.variant.phase), lang)}`}</td>
+                  <td className="ct-text ct-wide-only">{scenarioPhrase(o.variant.scenario_family, o.variant.phase, lang)}</td>
                   <td>{o.variant.horizon_days}</td>
                   {o.path ? <SurvivalCell s={o.path.survival} className="ct-text" /> : <td className="ct-text" data-na="true">{formatNumber(null, lang)}</td>}
                   <td data-na={o.lcr ? undefined : 'true'}>{o.lcr ? SHARE(o.lcr.ratio, lang) : formatNumber(null, lang)}</td>
@@ -341,7 +345,7 @@ function ConventionRows({ c }: { c: Conventions }) {
     }),
     ...GRID_KEYS.map((k) => ({ id: k, label: CONVENTION_TEXT[k], value: `${values(c[k])} ${unitWord(c[k].unit, lang)}`, basis: c[k].basis, status: c[k].status })),
     { id: 'deposit_category_mapping', label: { en: 'Deposit mapping to the LCR categories', es: 'Mapeo de depósitos a las categorías del LCR' }, value: c.deposit_category_mapping.rows.map((r) => pick(r.label, lang)).join('; '), basis: c.deposit_category_mapping.basis, status: c.deposit_category_mapping.status },
-    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${nameOf(r.variant, lang)}: ${pick(text(FAMILY_TEXT, r.scenario_family), lang)}, ${pick(text(PHASE_TEXT, r.phase), lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
+    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${nameOf(r.variant, lang)}: ${scenarioPhrase(r.scenario_family, r.phase, lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
     { id: 'day_calendar', label: { en: 'Day calendar of the ladder', es: 'Calendario de días de la escalera' }, value: `${pick({ en: 'US business days from', es: 'días hábiles de EE. UU. desde' }, lang)} ${c.day_calendar.first_day}`, basis: c.day_calendar.basis, status: c.day_calendar.status },
     { id: 'cbc_securities_mapping', label: { en: 'Securities classes and haircuts of the CBC', es: 'Clases de valores y recortes del CBC' }, value: c.cbc_securities_mapping.rows.map((r) => `${pick(text(CLASS_TEXT, r.class_id), lang)} ${SHARE(r.haircut, lang)}`).join('; '), basis: c.cbc_securities_mapping.basis, status: c.cbc_securities_mapping.status },
     { id: 'monetisation_schedule', label: { en: 'Monetisation schedule of the CBC', es: 'Calendario de monetización del CBC' }, value: c.monetisation_schedule.points.map((p) => `${pick({ en: 'day', es: 'día' }, lang)} ${p.day}: ${SHARE(p.cumulative_share, lang)}`).join('; '), basis: c.monetisation_schedule.basis, status: c.monetisation_schedule.status },
@@ -517,7 +521,6 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
   const v = sel.data.variant;
   const fit = fitOf(sel);
   const conv = base.conventions;
-  const word = (map: Record<string, Bi>, k: string) => pick(text(map, k), lang);
   return (
     <div className="ct-context" data-case={m.case_id}>
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
@@ -529,7 +532,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
           <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
           <dd>{bankName(base.bank.name, lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
-          <dd>{pick({ en: 'The balance-sheet aggregates are real, from the FDIC call reports; the behaviour of the depositors and the deposits are synthetic, from a generator with a known truth.', es: 'Los agregados del balance son reales, de los reportes de condición de la FDIC; el comportamiento de los depositantes y los depósitos son sintéticos, de un generador con verdad conocida.' }, lang)}</dd>
+          <dd>{pick({ en: 'The balance-sheet aggregates are real, from the FDIC call reports; the behaviour of the depositors and the deposits are synthetic, from a generator with a known truth.', es: 'Los agregados del balance son reales, de los reportes de llamada de la FDIC; el comportamiento de los depositantes y los depósitos son sintéticos, de un generador con verdad conocida.' }, lang)}</dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(base.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'The LCR', es: 'El LCR' }, lang)}</dt>
@@ -541,8 +544,8 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
               <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
               <dd data-variant-id={o.variant.id}>{`${pick(o.variant.label, lang)}. ${pick(o.variant.description, lang)}`}</dd>
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
-              <dd>{`${word(FAMILY_TEXT, o.variant.scenario_family)}, ${word(PHASE_TEXT, o.variant.phase)}, ${o.variant.horizon_days} ${pick({ en: 'days', es: 'días' }, lang)}`}</dd>
-              <dt>{pick({ en: 'Call reports read', es: 'Reportes de condición leídos' }, lang)}</dt>
+              <dd>{`${scenarioPhrase(o.variant.scenario_family, o.variant.phase, lang)}, ${o.variant.horizon_days} ${pick({ en: 'days', es: 'días' }, lang)}`}</dd>
+              <dt>{pick({ en: 'Call reports read', es: 'Reportes de llamada leídos' }, lang)}</dt>
               <dd>{`${o.data.call_reports.map((c) => c.report_date).join(', ')}; ${pick({ en: 'data cut-off', es: 'corte de datos' }, lang)} ${o.data.data_cutoff}`}</dd>
               <dt>{pick({ en: 'Dating rule', es: 'Regla de fechas' }, lang)}</dt>
               <dd>{pick(o.data.rule, lang)}</dd>
