@@ -38,14 +38,21 @@ export function bandEvaluated(row: TestRow): boolean {
   return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value === null && !ownPolicyEvaluated(row);
 }
 
+/** A packaged battery policy of the engine (riskvalidation 1.0.0, one versioned file per battery): `contraste-<battery>
+ * <version>`, with `+custom` when the row was computed with other cut points (D16-17). */
+export const PACKAGED_POLICY = /^contraste-[a-z0-9-]+ \d+\.\d+\.\d+(\+custom)?$/;
+
 /** True when a row was lit under its test family's own policy, not the product's: its alphas differ from COMMITTED and
- * its policy_version names them (C11's market back-tests: Kupiec, Christoffersen and duration amber below 0.10
- * and red below 0.05, Acerbi-Szekely amber below 0.05 and red below 0.0001, the reviewed engine-market-api levels on which
- * C11's eligibility gates are defined). The policy rail does not move such a light; it stays the committed one. */
+ * its policy_version names that policy, as a packaged battery label (from riskvalidation 1.0.0, the alphas in the row)
+ * or, in a document baked before 1.0.0, with the alphas written into the label (C11's market back-tests: Kupiec,
+ * Christoffersen and duration amber below 0.10 and red below 0.05, Acerbi-Szekely amber below 0.05 and red below
+ * 0.0001, the reviewed engine-market-api levels on which C11's eligibility gates are defined). The policy rail does not
+ * move such a light; it stays the committed one. */
 export function ownPolicyEvaluated(row: TestRow): boolean {
   return (
     row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && toleranceOf(row) === null &&
-    (row.alpha_amber !== COMMITTED.amber || row.alpha_red !== COMMITTED.red) && /alpha_amber=/.test(row.policy_version)
+    (row.alpha_amber !== COMMITTED.amber || row.alpha_red !== COMMITTED.red) &&
+    (PACKAGED_POLICY.test(row.policy_version) || /alpha_amber=/.test(row.policy_version))
   ); // a row the family could not evaluate (an undefined ES) is one too: it keeps its committed not_evaluated
 }
 
