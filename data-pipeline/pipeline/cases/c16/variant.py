@@ -1,4 +1,4 @@
-"""One scenario variant of C16 at the valuation date, through ``riskvalidation`` (engine contract ``engine-liquidity-api`` 1.2.0).
+"""One scenario variant of C16 at the valuation date, through ``riskvalidation`` (engine contract ``engine-liquidity-api`` 2.0.0).
 
 ``scenario_document`` builds the ``outputs`` block, the test rows, the impact and the findings of one of the five scenario variants
 (LCR standard run-off, LiST Adverse, LiST Extreme, the 2023 fast run, HTM losses in the CBC) for a call report read up to its date.

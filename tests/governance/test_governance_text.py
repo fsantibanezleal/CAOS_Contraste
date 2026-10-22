@@ -41,10 +41,19 @@ def test_no_convention_is_called_regulatory_and_every_label_is_convention(baked)
 
 
 ENGLISH = re.compile(r"\b(the|and|of|with|for|are|is|from|which|that|this|only|exists?|not|per|has|have|rule|finding|findings|model)\b", re.I)
-#: unaccented spellings the bake must have restored: a singular -cion/-sion word, the n written for the eñe, and the unaccented words of the restoration table
+#: unaccented spellings the documents must not carry: a singular -cion/-sion word, the n written for the eñe, and the unaccented words listed below
 #: (a plural -ciones has no accent, so it is not searched for)
-_RESTORED = __import__("importlib").import_module("pipeline.governance.spanish").WORDS
-UNACCENTED = re.compile(r"(?<![\w.@/])(\w+(?:cion|sion)|diseno\w*|peldano\w*|pequeno\w*|" + "|".join(sorted(_RESTORED, key=len, reverse=True)) + r")(?![\w(@/])", re.I)
+#: the unaccented spellings searched for; listed here and nowhere else (U16-I: the stopgap restoration table of 0.15.000 is gone, the engine writes its Spanish accented)
+_RESTORED = {w: w for w in (
+    "descripcion", "implementacion", "verificacion", "analisis", "estres", "opinion", "recomendacion", "ningun", "algun", "critico", "maximo", "convencion",
+    "proporcion", "bateria", "seccion", "limite", "limites", "operacion", "evaluacion", "calificacion", "codigo", "replicacion", "declaracion", "politica",
+    "direccion", "catalogo", "remediacion", "sintetico", "sintetica", "validacion", "linea", "ejecucion", "excepcion", "rubrica", "estadistico", "estadistica",
+    "economico", "economica", "teoria", "metodo", "metodologia", "metrica", "agentico", "agentica", "calculo", "clasificacion", "aplicacion", "informacion",
+    "relacion", "decision", "revision", "supervision", "exposicion", "generacion", "produccion", "monitorizacion", "calibracion", "estimacion", "explicacion",
+    "perdida", "capitalizacion", "matematica", "matematico", "version", "dia", "dias", "union", "indice", "periodo", "numero", "unico", "ultimo", "ultima",
+    "tambien", "despues", "leido", "leidos", "diseno", "disenos", "peldano", "peldanos", "pequeno")}
+# a hyphen joins the parts of an identifier (`hmda-logistic-decision`): the stopgap of 0.15.000 accented the last part of that model id, the engine does not
+UNACCENTED = re.compile(r"(?<![\w.@/-])(\w+(?:cion|sion)|diseno\w*|peldano\w*|pequeno\w*|" + "|".join(sorted(_RESTORED, key=len, reverse=True)) + r")(?![\w(@/-])", re.I)
 #: correct without an accent
 ALLOWED = {"version", "versiones", "decision", "dia", "dias"} - {"version", "decision", "dia", "dias"}
 
@@ -82,20 +91,6 @@ def test_no_english_appears_in_a_spanish_field(baked):
     assert bad == [], bad[:8]
 
 
-def test_the_restoration_table_leaves_a_text_that_is_already_accented_unchanged():
-    from pipeline.governance import spanish
-
-    for text in ("Descripción del modelo y uso previsto", "diseño de las pruebas", "los peldaños de la escalera", "Opinión global", "Año 2026"):
-        assert spanish.restore(text) == text
-    assert spanish.restore("Descripcion del modelo y uso previsto") == "Descripción del modelo y uso previsto"
-    assert spanish.restore("las alternativas de diseno") == "las alternativas de diseño"
-    assert spanish.restore("los peldanos de la escalera") == "los peldaños de la escalera"
-    assert spanish.restore("Opinion global") == "Opinión global"
-    # an ambiguous word is decided by its phrase, not by the word: 'esta' with a following adjective is a verb, before a noun a demonstrative
-    assert spanish.restore("la independencia no esta establecida") == "la independencia no está establecida"
-    assert spanish.restore("esta entrada tiene un hallazgo") == "esta entrada tiene un hallazgo"
-
-
 def test_the_accented_text_is_utf8_nfc(baked):
     import unicodedata
 
@@ -104,13 +99,11 @@ def test_the_accented_text_is_utf8_nfc(baked):
 
 
 def test_adversarial_an_unaccented_spanish_text_is_found_by_the_check_and_restored_by_the_table():
-    """The accent check must be able to fail: planted unaccented texts are found, and the restoration table repairs them."""
-    from pipeline.governance import spanish
-
+    """The accent check must be able to fail: planted unaccented texts are found. (The name is the one CT-2315 of docs/design/features/governance/validation.md cites; the
+    restoration table of 0.15.000 is gone, so only the finding half remains and the accented spelling is the pass case.)"""
     planted = "Descripcion del modelo: el diseno de la implementacion y la politica de los peldanos"
     assert {m.group(0).lower() for m in UNACCENTED.finditer(planted)} >= {"descripcion", "diseno", "implementacion", "politica", "peldanos"}
-    fixed = spanish.restore(planted)
-    assert not list(UNACCENTED.finditer(fixed)) and "diseño" in fixed and "peldaños" in fixed
+    assert not list(UNACCENTED.finditer("Descripción del modelo: el diseño de la implementación y la política de los peldaños"))
 
 
 #: unaccented spellings of common Spanish words, listed here independently of the restoration table (review m1)

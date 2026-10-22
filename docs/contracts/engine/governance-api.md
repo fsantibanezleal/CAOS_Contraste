@@ -1,4 +1,4 @@
-# Engine governance API contract: `engine-governance-api` 1.0.0
+# Engine governance API contract: `engine-governance-api` 1.1.0
 
 Owner: U15-S (unit sizing `plans/contraste/units/U15-sizing.md`, CAOS_MANAGE). Implemented by U15-E in `riskvalidation.governance` and
 `riskvalidation.validation.governance` (repository CAOS_RiskValidation, released with the engine tag that follows v0.08.000, R1 of the sizing);
@@ -20,6 +20,7 @@ material model changes. OSFI's transition is "an 18-month transition period" in 
 Version history: 1.0.0, the first contract (2026-10-20). Still unreleased, so the version stays 1.0.0: the fix round after the Opus review of 2026-10-20 (decisions
 W15-11 to W15-15 and the review's B1, M1 to M6, m1 to m11) amends it in place before U15-E writes its tests from it. 1.0.0 amended in place before its release with the eight
 clarifications of the implemented engine and the review's fixes (2026-10-20): the page states what the engine at `task/u15-governance` 183cd9a implements, and no golden value changed.
+1.1.0 (additive, at the engine 1.0.0 release, U16-E1 and U16-E3; 2026-10-21): the module `riskvalidation.governance.reasons` (the reason codes and `bilingual`), the Spanish of `report.py` and `appetite.py` in RAE orthography (no key, number or English-text change), the reasons `NO_POLICY_FILE`, `KIND_NOT_REGISTERED` and the label reason reworded without a backlog id, and `resolve_policy` gaining `override`, the source `packaged-policy-overridden`, the reason code `policy.override_missing` and the `battery` key for a packaged label written with the parameters appended. No signature, unit or golden value of 1.0.0 changed.
 
 Tags of the amendments. A clause changed by this amendment ends with a tag naming its source, and every source is re-checkable:
 `[c1]` to `[c8]` are the eight clarifications of the U15-E report (`wip/contraste/u15-e-governance-2026-10-20.md`, section "Contract clarifications"), judged and accepted as in-place
@@ -44,8 +45,8 @@ amendments by the review (`wip/contraste/review-u15-e-2026-10-20.md`, D4); `[F1]
 - Non-finite numbers [F4]: a share, an amount or a total that is `NaN` or infinite is refused with `ValueError` wherever it enters a level or an RWEA share
   (`Finding.rwea_share`, `rwea_share_of_anchor`, `rwea_level`, `finding_level`, `opinion_level`), never read as a number that hides an unreadable value.
 - Bilingual text [c3]: the schemas require an `es` text beside the `en` one, so the documents' texts are produced by `report.build_report` and `appetite.appetite_metrics` in both
-  languages (the Spanish without accents, as the product's documents write it); every number inside them is computed by the function. `scope_test`, `assign_variant`, `anchor_from_test_row`,
-  `rwea_share_of_anchor` and `resolve_policy` return English text only (the rationale and every reason), and the bake adds the Spanish text.
+  languages (the Spanish in RAE orthography, with its accents and the eñe: 1.1.0 changes only the spelling of 53 string tokens of `report.py` and `appetite.py`, no key, number or English text); every number inside them is computed by the function. `scope_test`, `assign_variant`, `anchor_from_test_row`,
+  `rwea_share_of_anchor` and `resolve_policy` return English strings only (the rationale and every reason). The stable key of a reason is its **reason code**, a key of `riskvalidation.governance.reasons.REASONS`; the English sentence is human text that a minor release may reword, and the code is the API. The bake reads the Spanish of such a reason with `reasons.bilingual(sentence)` (keys `en` and `es`), which replaces the translation table of the 0.15.000 bake.
 - The as-of date (W15-13): every document carries `as_of` and `as_of_basis` (label `convention`, a basis in English and Spanish). The production rule is the date of the newest release
   heading of `CHANGELOG.md` when the bake runs: committed (R4), never later than publication, never earlier than a raised date (the checker refuses an `as_of` before the newest
   raised date or last validation date). A fixture says its date is "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication".
@@ -92,7 +93,8 @@ the Conventions section ([code], `conventions.py`, and the modules named).
 | `riskvalidation.governance.schedule` | `PROFILES` (`default`, `ecb`), `ECB_REVIEW_MONTHS` (12), `ECB_REVALIDATION_MONTHS` (36) |
 | `riskvalidation.governance.opinion` | `LABEL`, `RWEA_LEVEL_3` (0.05), `RWEA_LEVEL_4` (0.10) |
 | `riskvalidation.governance.appetite` | `DIRECTIONS`, `METRIC_IDS` |
-| `riskvalidation.governance.policy` | `NO_POLICY_FILE` (`no policy file (BL-085)`), `KIND_NOT_REGISTERED` |
+| `riskvalidation.governance.policy` | `NO_POLICY_FILE` (`no policy file for an inline battery string`), `KIND_NOT_REGISTERED` (`the test id is not in the engine registry (spec() raises KeyError), so it has no decision`), `CUSTOM_SUFFIX` (`+custom`) |
+| `riskvalidation.governance.reasons` | `REASONS`: `dict[str, tuple[str, str]]`, a reason code to its English and Spanish templates (31 codes at 1.0.0: `scope.*`, `variant.*`, `anchor.*`, `policy.*`) |
 | `riskvalidation.governance.report` | `METHODOLOGY_PAGE`, `SECTION_KEYS` (the twelve section keys, in the order of the schema) |
 | `riskvalidation.validation.governance` | `GOV_ROWS`, `GOV_KEYS`, `GOV_H0`, `POLICY_SUFFIX` (`gov-1.0.0`), `NAN`, `CONVENTION`, `DOSSIER_06` and the reference strings `REF_COMPLETENESS`, `REF_OVERDUE`, `REF_DUE`, `REF_OVERRIDE`, `REF_EDGES` |
 
@@ -826,24 +828,56 @@ The policy identity of a test row (W15-6): the source of every threshold the rep
 
 ```python
 def resolve_policy(policy_version: str, test_id: str, alpha_amber: float | None = None,
-                   alpha_red: float | None = None) -> tuple[dict | None, str | None]: ...
+                   alpha_red: float | None = None, override: Mapping[str, Any] | None = None) -> tuple[dict | None, str | None]: ...
 ```
 
-- Units: the row's `policy_version`, its `test_id` and its alphas; returns (identity, reason): exactly one is `None`. An identity is `{"label", "kind", "kind_reason", "direction", "direction_reason",
-  "alpha_amber", "alpha_red", "parameters", "version", "source"}` with `source` one of `packaged-policy`, `inline-battery`. The `kind` is `spec(test_id).decision`, `p_value` or `metric` (W15-12; engine
-  `core/registry.py`), and `None` with its `kind_reason` where the test is not registered (`spec` raises `KeyError`; at the batch 3 head the ifrs9, stress, aggregation and portfolio tests are not
-  registered) [F6; `policy.py:30-35`]: there is no fallback to the kind of a packaged threshold, so a packaged label for an unregistered test has kind `None` too. The `direction` (`upper_bad` or `lower_bad`) is read from the packaged policy file's threshold for the test, never from a document or a fixture [c8]: `None` with
-  `direction_reason` "a p-value threshold has no direction" for a `p_value` threshold, `None` with "the packaged policy <label> holds no packaged threshold for <test_id>" where the file has none (the text no longer calls the test descriptive, [F6]; `policy.py:88-98`), and `None` with `direction_reason`
-  "no policy file (BL-085)" for an inline battery string.
+- Units: the row's `policy_version`, its `test_id`, its alphas and, for a row computed with other cut points, its `extras["policy_override"]`; returns (identity, reason): exactly one is `None`. An identity is `{"label", "kind", "kind_reason", "direction", "direction_reason",
+  "alpha_amber", "alpha_red", "parameters", "version", "source"}` plus, only for a packaged label written with its parameters appended, `"battery"`; `source` is one of `packaged-policy`, `packaged-policy-overridden`, `inline-battery`. The `kind` is `spec(test_id).decision`, `p_value` or `metric` (W15-12; engine
+  `core/registry.py`), and `None` with its `kind_reason` ("the test id is not in the engine registry (spec() raises KeyError), so it has no decision", code `policy.kind_not_registered`) where the test is not registered: there is no fallback to the kind of a packaged threshold, so a packaged label for an unregistered test has kind `None` too. At engine 1.0.0 the ifrs9, stress, aggregation and portfolio tests that 0.9.0 lacked are registered, so the committed rows of those families have a kind. The `direction` (`upper_bad` or `lower_bad`) is read from the packaged policy file's threshold for the test, never from a document or a fixture [c8]: `None` with
+  `direction_reason` "a p-value threshold has no direction" for a `p_value` threshold, `None` with "the packaged policy <label> holds no packaged threshold for <test_id>" where the file has none, `None` with "the light of <test_id> is the rule <rule>, not a single direction" where the entry names a rule other than a single direction (code `policy.rule_not_single_direction`), and `None` with `direction_reason`
+  "no policy file for an inline battery string" (`NO_POLICY_FILE`) for an inline battery string.
+- Forms of `policy_version` (the first that matches wins): a packaged label plus `+custom` (`contraste-liquidity-battery 1.0.0+custom`, a row computed with other cut points than its packaged entry) resolves as the packaged identity with `parameters` from `override` (`extras["policy_override"]` of the row) and source `packaged-policy-overridden`; without `override` it returns `(None, reason)` with code `policy.override_missing`. A packaged label with parameters appended (`riskvalidation-default 2026.10.1; ml-battery-1.1.0; overfit_tolerance=0.05`, the form before U16-E3) resolves as the bare label with the parameters read and, when the appended text holds a token without `=`, that token as `battery` (the engine returns the key only then; the `governance-report` schema has no such key, the token stays in `label` and the bake drops the key). The inline form `contraste-<family>-battery-<version>[; key=value ...]` keeps resolving, now also for a hyphenated family (`lgd-ead`) and for `contraste-c12-1.0.0`. A packaged battery label (`contraste-<name> <version>`, U16-E3) resolves through `packaged_policy(label)`: source `packaged-policy`, the version of the file, `parameters` the entry's own, the direction from the file.
 - Golden: a packaged label `"riskvalidation-default 2026.10.1"` resolves through `load_policy` and `default_policy`: source `packaged-policy`, version `2026.10.1`, the kind from the packaged
-  threshold of the test; an inline string `"contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0"` is parsed: source `inline-battery`, version `1.0.0`, parameters
-  `{"nl_amber": 1.0, "nl_red": 3.0}`, kind `None` (`ifrs9.scenario_sensitivity` is not registered) and direction `None` with "no policy file (BL-085)"; the same string for the registered `pd.jeffreys` has kind `p_value`
-  and the same null direction and reason; the string `"x"` is `unresolved`: it returns `(None, reason)` with the reason stated.
-- A packaged label with the suffix `+gov-` (`riskvalidation-default 2026.10.1+gov-1.0.0`) resolves through `validation.governance.gov_default_policy`, the packaged policy plus the five `gov.` rows, so a `gov.` row gets its `lower_bad` or `upper_bad` direction [F6; `policy.py:73-80`]. A packaged label whose id, or whose version before the `+`,
-  is not the packaged policy's returns `(None, reason)` (`policy.py:81-87`); a packaged identity has `parameters` `{}`; the inline pattern is tried first.
+  threshold of the test, `parameters` `{}`; an inline string `"contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0"` is parsed: source `inline-battery`, version `1.0.0`, parameters
+  `{"nl_amber": 1.0, "nl_red": 3.0}`, kind `metric` (`ifrs9.scenario_sensitivity` is registered at engine 1.0.0) and direction `None` with "no policy file for an inline battery string"; the same string for the registered `pd.jeffreys` has kind `p_value`
+  and the same null direction and reason; the string `"x"` is `unresolved`: it returns `(None, reason)` with the reason stated (code `policy.string_unmatched`). `"contraste-liquidity-battery 1.0.0"` for `liq.cliff_effect_diagnostic` resolves with source `packaged-policy`, direction `lower_bad` and parameters `{"amber": -0.01, "red": -0.03}`.
+- A packaged label with the suffix `+gov-` (`riskvalidation-default 2026.10.1+gov-1.0.0`) resolves through `validation.governance.gov_default_policy`, the packaged policy plus the five `gov.` rows, so a `gov.` row gets its `lower_bad` or `upper_bad` direction [F6]. A packaged label whose id, or whose version before the `+`,
+  is not the packaged policy's returns `(None, reason)` (code `policy.label_not_packaged`); a packaged default identity has `parameters` `{}`.
 - Fixtures [c8]: the two report fixtures hold only `inline-battery` rows (C07 11, C18 17), so no fixture exercises the packaged-policy direction, and the engine's reproduction test no longer normalises it (review D4 8; fix round `f0ede9d`).
-- Invariants: a parameter value that is not a number stays a string (`rule=red-on-any`); the family is the part of the test id before the first dot; the report states the source of every threshold; a
-  packaged policy file per battery is backlog BL-085, done when the cases are next re-baked (U16).
+- Invariants: a parameter value that is not a number stays a string (`rule=red-on-any`); the family is the part of the test id before the first dot; the report states the source of every threshold; the reasons are English strings whose stable key is the reason code (`policy.no_policy_file`, `policy.unresolved_identity`, `policy.p_value_no_direction`, `policy.kind_not_registered`, `policy.no_threshold`, `policy.rule_not_single_direction`, `policy.label_not_packaged`, `policy.override_missing`, `policy.string_unmatched`); the packaged policy file per battery (BL-085) exists at engine 1.0.0 and the cases move to its labels when they are next baked.
+
+## Module `riskvalidation/governance/reasons.py`
+
+The reason codes (engine-governance-api 1.1.0, RV-1707): the stable key of a reason is a code, never its sentence. `REASONS` (see Public constants) holds the English and Spanish templates of the 31 reasons of `scope_test`, `assign_variant`, `anchor_from_test_row`, `rwea_share_of_anchor` and `resolve_policy` (`scope.us.in` to `scope.ecb.not_estimate`, `variant.no_fit` to `variant.many_holders`, `anchor.no_cited_row` to `anchor.not_rwea`, `policy.no_policy_file` to `policy.string_unmatched`); the Spanish is in RAE orthography. The functions above keep returning English strings; the bake reads the Spanish with `bilingual`.
+
+### `riskvalidation.governance.reasons.codes`
+
+```python
+def codes() -> tuple[str, ...]: ...
+```
+
+- Units: the reason codes of `REASONS`, in table order.
+- Golden: `codes()` holds `"variant.no_fit"`, `"anchor.no_cited_row"`, `"policy.no_policy_file"` and `"policy.override_missing"`; it has no duplicate.
+
+### `riskvalidation.governance.reasons.code_of`
+
+```python
+def code_of(english: str) -> tuple[str, dict[str, str]]: ...
+```
+
+- Units: an English sentence returned by an engine function; returns the code and the values of its placeholders (a template such as `no fit holds all of the variant's sources ({sources})` gives `{"sources": ...}`).
+- Golden: `code_of("the case has no fit to assign the variant to")` is `("variant.no_fit", {})`; `code_of("no fit holds all of the variant's sources (a, b)")` is `("variant.no_holder", {"sources": "a, b"})`.
+- Invariants: a sentence with no code raises `ValueError`.
+
+### `riskvalidation.governance.reasons.bilingual`
+
+```python
+def bilingual(reason: str, **values: str) -> dict[str, str]: ...
+```
+
+- Units: a reason code with the values of its placeholders, or (a convenience) an English sentence of an engine function; returns `{"en": ..., "es": ...}`.
+- Golden: `bilingual("variant.no_fit")` is `{"en": "the case has no fit to assign the variant to", "es": "el caso no tiene un ajuste al que asignar la variante"}`; `bilingual("the case has no fit to assign the variant to")` is the same pair; `bilingual("no fit holds all of the variant's sources (a, b)")["es"]` is `"ningún ajuste contiene todas las fuentes de la variante (a, b)"`.
+- Invariants: `ValueError` for a reason with no code and for a missing value of a placeholder; the English side is the sentence the function returned, so `bilingual(sentence)["en"] == sentence`.
 
 ## Module `riskvalidation/governance/report.py`
 
