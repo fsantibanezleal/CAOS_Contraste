@@ -1,7 +1,7 @@
 // The selection the C08 views share, and the readings of a default-cohort document every view needs. Nothing here
 // computes a statistic: the LGD proxy, the rungs, the downturn add-on and the floors' bite are the bake's; the helpers
 // find, name and map. A loss given default is never clipped to [0, 1]: the contract flags it and the views print the flag.
-import type { Bi } from '../c03/U6Shared';
+import { humanize, type Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 
@@ -73,6 +73,22 @@ export function cohortIds(sel: Pick<C08Sel, 'data'> | null): string[] {
 }
 
 export { humanize } from '../c03/U6Shared';
+
+/** The data a document names as its primary source. */
+export const DATASET_TEXT: Record<string, Bi> = {
+  'sba-7a-chargeoff-twin': { en: 'SBA 7(a) charge-off twin', es: 'Gemelo de castigos de SBA 7(a)' },
+};
+
+/** The segments of the floors' bite (the SBA book by term and revolving status), with their term in months. */
+export const SEGMENT_TEXT: Record<string, Bi> = {
+  'sme-revolver': { en: 'SME revolving line', es: 'Línea rotativa pyme' },
+  'sme-term-up-to-84': { en: 'SME term loan, up to 84 months', es: 'Préstamo a plazo pyme, hasta 84 meses' },
+  'sme-term-85-239': { en: 'SME term loan, 85 to 239 months', es: 'Préstamo a plazo pyme, de 85 a 239 meses' },
+  'sme-term-240-plus': { en: 'SME term loan, 240 months or more', es: 'Préstamo a plazo pyme, 240 meses o más' },
+};
+
+/** The words for a segment of the floors' bite; the id in words when the map lacks it. */
+export const segmentLabel = (id: string): Bi => SEGMENT_TEXT[id] ?? { en: humanize(id), es: humanize(id) };
 
 const COLLATERAL_TEXT: Record<string, Bi> = {
   unsecured: { en: 'unsecured', es: 'sin garantía' },

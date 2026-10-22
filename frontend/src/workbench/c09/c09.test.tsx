@@ -145,7 +145,7 @@ describe('the C09 instrument', () => {
       expect(markup).toContain(pct(r.share_binding));
       expect(markup).toContain(r.reference);
     }
-    expect(markup).toContain(escapeHtml(o.ead_floor.rule));
+    expect(markup).toContain(escapeHtml(o.ead_floor.rule.en));
     expect(markup).toContain(escapeHtml(o.small_undrawn.reference));
     expect(markup).toContain(formatNumber(o.small_undrawn.n_switched, 'en', { decimals: 0 }));
   });

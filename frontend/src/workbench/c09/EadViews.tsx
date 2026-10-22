@@ -5,9 +5,10 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { ChartOverTable, MaybeNumber, axisScale, money } from '../c06/format';
-import { U6TestsTable, humanize, p2, useCard } from '../c03/U6Shared';
+import { U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { rangeText } from '../c08/words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -177,12 +178,12 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
               title={{ en: 'Share of facilities where the floor binds', es: 'Proporción de líneas donde el piso se activa' }}
               height="fill"
               orientation="horizontal"
-              data={f.rows.map((r) => ({ id: r.facility_class, label: { en: humanize(r.facility_class), es: humanize(r.facility_class) }, value: r.share_binding, tone: 'accent' as const }))}
+              data={f.rows.map((r) => ({ id: r.facility_class, label: facilityLabel(r.facility_class), value: r.share_binding, tone: 'accent' as const }))}
               axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 } }}
             />
           }
         >
-          <p className="ct-note" data-floor-rule="true" translate="no">{f.rule}</p>
+          <p className="ct-note" data-floor-rule="true">{pick(f.rule, lang)}</p>
           <table className="caos-table ct-wrap-head" data-table="ead-floor">
             <thead>
               <tr>
@@ -198,13 +199,13 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
             <tbody>
               {f.rows.map((r) => (
                 <tr key={r.facility_class} data-class={r.facility_class}>
-                  <td className="ct-text">{humanize(r.facility_class)}</td>
+                  <td className="ct-text">{pick(facilityLabel(r.facility_class), lang)}</td>
                   <td>{p2(r.sa_ccf, lang)}</td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>{p2(r.share_binding, lang)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_before, lang, f.currency)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_after, lang, f.currency)}</td>
-                  <td className="ct-text ct-wide-only" translate="no">{r.reference}</td>
+                  <td className="ct-text ct-wide-only" translate="no">{rangeText(r.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -236,9 +237,9 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
               <tbody>
                 {fit.floors.supervisory_ccfs.map((c) => (
                   <tr key={c.item} data-item={c.item}>
-                    <td className="ct-text">{humanize(c.item)}</td>
+                    <td className="ct-text">{pick(facilityLabel(c.item), lang)}</td>
                     <td>{p2(c.ccf, lang)}</td>
-                    <td className="ct-text ct-wide-only" translate="no">{c.reference}</td>
+                    <td className="ct-text ct-wide-only" translate="no">{rangeText(c.reference, lang)}</td>
                   </tr>
                 ))}
               </tbody>

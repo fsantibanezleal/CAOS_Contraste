@@ -14,6 +14,7 @@ from riskvalidation.lgd_ead import ccf, floors
 from riskvalidation.lgd_ead.workout import range_flag
 from riskvalidation.validation import lgd_ead as val
 
+from ...core.text import number, percent
 from . import calibration, params
 from . import estimators as est
 from . import models as mdl
@@ -83,6 +84,9 @@ MODEL_SHORT = {
     "ccf-fixed-horizon-bounded-scale": "CCF 12m logit", "ccf-cohort-floor-cap": "CCF cohort", "ccf-variable-horizon-floor-cap": "CCF variable",
     "direct-ead": "Direct EAD", "utilisation-change": "Util. change",
 }
+MODEL_SHORT_ES = {"ccf-fixed-horizon-censor": "CCF 12m censura", "ccf-fixed-horizon-floor-cap": "CCF 12m piso y tope",
+                  "ccf-fixed-horizon-bounded-scale": "CCF 12m logit acotado", "ccf-cohort-floor-cap": "CCF cohorte",
+                  "ccf-variable-horizon-floor-cap": "CCF variable", "direct-ead": "EAD directo", "utilisation-change": "Cambio de uso"}
 
 #: money and share keys written without nine-digit compaction
 EXACT = frozenset({"predicted_ead", "realised_ead", "gap", "mean_ead_before", "mean_ead_after", "threshold"})
@@ -94,7 +98,7 @@ def level_text(level: int) -> dict[str, str]:
         return T("Level 0: no acceleration; the undrawn amount is drawn at a constant rate over the twelve months before default.",
                  "Nivel 0: sin aceleración; el monto no utilizado se usa a ritmo constante en los doce meses previos al incumplimiento.")
     return T(f"Level {level}: in the last {x['window']} months before default the drawing rate is {x['factor']:g} times its earlier rate.",
-             f"Nivel {level}: en los últimos {x['window']} meses previos al incumplimiento el ritmo de uso es {x['factor']:g} veces el anterior.")
+             f"Nivel {level}: en los últimos {x['window']} meses previos al incumplimiento el ritmo de uso es {_g(x['factor'], 'es')} veces el anterior.")
 
 
 def generator_block(level: int) -> dict[str, Any]:
@@ -180,7 +184,8 @@ def floor_block(data: LevelData, preds: dict[str, np.ndarray]) -> dict[str, Any]
         rows.append({"facility_class": item, "sa_ccf": float(sa), "reference": ref, "n": int(pred.size),
                      "share_binding": float(bite.share_binding), "mean_ead_before": float(bite.mean_before),
                      "mean_ead_after": float(bite.mean_after)})
-    return {"currency": PARAMS["currency"], "rule": "on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+    return {"currency": PARAMS["currency"], "rule": T("on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+                  "monto en balance + 50 % de la exposición fuera de balance al CCF del método estandarizado (CRE32.36, CRE32.64)"),
             "off_balance_share": 0.5, "rows": rows}
 
 
@@ -233,8 +238,26 @@ def impact(out: dict[str, Any]) -> dict[str, Any]:
     return imp
 
 
+def _n(x: float, decimals: int) -> str:
+    """A number inside a Spanish text, as the shell writes it."""
+    return number(x, decimals, lang="es")
+
+
+def _g(x: float, lang: str) -> str:
+    """A factor as ``:g`` writes it (2, 1.5), with the language's decimal sign."""
+    for decimals in range(7):
+        if round(x, decimals) == x:
+            return number(x, decimals, lang=lang)
+    return number(x, 6, lang=lang)
+
+
+def _signed(x: float, decimals: int, lang: str) -> str:
+    return ("+" if x >= 0 else "") + number(x, decimals, lang=lang)
+
+
 def _side(bias: float) -> tuple[str, str]:
-    return (f"{abs(bias):.3f} below", f"{abs(bias):.3f} por debajo") if bias < 0 else (f"{abs(bias):.3f} above", f"{abs(bias):.3f} por encima")
+    return ((f"{abs(bias):.3f} below", f"{number(abs(bias), 3, lang='es')} por debajo") if bias < 0
+            else (f"{abs(bias):.3f} above", f"{number(abs(bias), 3, lang='es')} por encima"))
 
 
 def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
@@ -255,14 +278,14 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "none", "mean")],
               "title": T(f"At level {lvl} the fixed-horizon mean CCF is {fx['estimate']['value']:.3f} against the known {truth:.3f}, "
                          f"{_side(fx['bias'])[0]} (tolerance {out['ccf_by_design']['tolerance']:.2f})",
-                         f"En el nivel {lvl} el CCF medio a horizonte fijo es {fx['estimate']['value']:.3f} frente al conocido {truth:.3f}, "
-                         f"{_side(fx['bias'])[1]} (tolerancia {out['ccf_by_design']['tolerance']:.2f})")})
+                         f"En el nivel {lvl} el CCF medio a horizonte fijo es {_n(fx['estimate']['value'], 3)} frente al conocido {_n(truth, 3)}, "
+                         f"{_side(fx['bias'])[1]} (tolerancia {_n(out['ccf_by_design']['tolerance'], 2)})")})
     ok_p = fp["within_tolerance"]
     f.append({"id": "F-POOLED", "severity": "S4" if ok_p else "S3", "status": "accepted" if ok_p else "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "none", "pooled")],
               "title": T(f"The pooled (ratio of sums) fixed-horizon CCF is {fp['estimate']['value']:.3f}, {_side(fp['bias'])[0]} the known value, "
                          "because the lines with most undrawn amount draw least",
-                         f"El CCF agrupado (razón de sumas) a horizonte fijo es {fp['estimate']['value']:.3f}, {_side(fp['bias'])[1]} del valor "
+                         f"El CCF agrupado (razón de sumas) a horizonte fijo es {_n(fp['estimate']['value'], 3)}, {_side(fp['bias'])[1]} del valor "
                          "conocido, porque las líneas con más monto no utilizado son las que menos usan")})
     f.append({"id": "F-HORIZON", "severity": "S2" if abs(co["bias"]) > 2 * TOLERANCE else "S3", "status": "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("cohort", "none", "pooled"),
@@ -270,24 +293,24 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
               "title": T(f"The cohort design reads the CCF {_side(co['bias'])[0]} and the variable-horizon design {_side(va['bias'])[0]} the known "
                          f"{truth:.3f}: a reference date nearer the default leaves less undrawn amount to be drawn",
                          f"El diseño de cohorte lee el CCF {_side(co['bias'])[1]} y el de horizonte variable {_side(va['bias'])[1]} del "
-                         f"{truth:.3f} conocido: una fecha de referencia más cercana al incumplimiento deja menos monto por usar")})
+                         f"{_n(truth, 3)} conocido: una fecha de referencia más cercana al incumplimiento deja menos monto por usar")})
     f.append({"id": "F-TREATMENT", "severity": "S3", "status": "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "floor-cap", "mean")],
               "title": T(f"Flooring at 0 and capping at 1 moves the fixed-horizon mean CCF to {fc['estimate']['value']:.3f} "
                          f"({fc['bias']:+.3f} against the known value); {fx['share_above_one']:.1%} of the CCFs lie above 1 and "
                          f"{fx['share_below_zero']:.1%} below 0",
-                         f"Poner piso en 0 y tope en 1 lleva el CCF medio a horizonte fijo a {fc['estimate']['value']:.3f} "
-                         f"({fc['bias']:+.3f} frente al valor conocido); {fx['share_above_one']:.1%} de los CCF están sobre 1 y "
-                         f"{fx['share_below_zero']:.1%} bajo 0")})
+                         f"Poner piso en 0 y tope en 1 lleva el CCF medio a horizonte fijo a {_n(fc['estimate']['value'], 3)} "
+                         f"({_signed(fc['bias'], 3, 'es')} frente al valor conocido); {percent(fx['share_above_one'], 1, lang='es')} de los CCF están sobre 1 y "
+                         f"{percent(fx['share_below_zero'], 1, lang='es')} bajo 0")})
     f.append({"id": "F-UNDEFINED", "severity": "S3", "status": "accepted", "evidence": ["design:undrawn-not-positive-is-undefined"],
               "title": T(f"{undefined:.1%} of the defaulters have no CCF at the fixed horizon (fully drawn or over their limit) and {excluded:.1%} "
                          "defaulted in the first month of their cohort; both are left out of the estimates and counted",
-                         f"{undefined:.1%} de los incumplidores no tiene CCF a horizonte fijo (línea totalmente usada o sobre su límite) y "
-                         f"{excluded:.1%} incumplió en el primer mes de su cohorte; ambos quedan fuera de las estimaciones y se cuentan")})
+                         f"{percent(undefined, 1, lang='es')} de los incumplidores no tiene CCF a horizonte fijo (línea totalmente usada o sobre su límite) y "
+                         f"{percent(excluded, 1, lang='es')} incumplió en el primer mes de su cohorte; ambos quedan fuera de las estimaciones y se cuentan")})
     f.append({"id": "F-DIRECT", "severity": "S3", "status": "open", "evidence": ["lgd_ead.ead_backtest_by_band@direct-ead"],
               "title": T(f"The direct EAD model clips {dm['n_clipped_above']:,} development lines whose EAD exceeds their limit, so it cannot "
                          "predict the exposure of an overlimit line",
-                         f"El modelo de EAD directo recorta {dm['n_clipped_above']} líneas de desarrollo cuya EAD supera su límite, por lo "
+                         f"El modelo de EAD directo recorta {number(dm['n_clipped_above'], 0, lang='es')} líneas de desarrollo cuya EAD supera su límite, por lo "
                          "que no puede predecir la exposición de una línea sobre su límite")})
     return f
 
@@ -303,7 +326,7 @@ def model_summaries(level: int, data: LevelData, rv: str) -> list[dict[str, Any]
             src = fit.logit if fit.logit is not None else fit.ead_fit
             for name, coef in zip(src.names, src.coefficients, strict=True):
                 pars[f"coef_{name}"] = {"value": float(coef), "unit": "logit" if m["kind"] != "utilisation-change" else "share of limit"}
-        out.append({"id": m["id"], "family": "lgd-ead", "rung": m["kind"], "title": MODEL_TITLE[m["id"]], "short_title": T(MODEL_SHORT[m["id"]], MODEL_SHORT[m["id"]]),
+        out.append({"id": m["id"], "family": "lgd-ead", "rung": m["kind"], "title": MODEL_TITLE[m["id"]], "short_title": T(MODEL_SHORT[m["id"]], MODEL_SHORT_ES.get(m["id"], MODEL_SHORT[m["id"]])),
                     "engine": "riskvalidation.lgd_ead.ccf", "engine_version": rv, "licence": "MIT", "calibration": None,
                     "parameters": pars, "checkpoint_sha256": None})
     return out
@@ -328,7 +351,7 @@ def models_document(plan: dict[str, Any], data: dict[int, LevelData], rv: str) -
                            "covariates": mdl.covariates(m), "n_clipped_below": below, "n_clipped_above": above})
     levels = [{"level": x["level"],
                "label": T(f"Level {x['level']}: factor {x['factor']:g}, window {x['window']} months, known CCF {params.known_ccf(x['level']):.4f}",
-                          f"Nivel {x['level']}: factor {x['factor']:g}, ventana de {x['window']} meses, CCF conocido {params.known_ccf(x['level']):.4f}"),
+                          f"Nivel {x['level']}: factor {_g(x['factor'], 'es')}, ventana de {x['window']} meses, CCF conocido {number(params.known_ccf(x['level']), 4, lang='es')}"),
                "acceleration_factor": float(x["factor"]), "acceleration_window_months": int(x["window"])} for x in LEVELS]
     gen = generator_block(0)
     fit = {

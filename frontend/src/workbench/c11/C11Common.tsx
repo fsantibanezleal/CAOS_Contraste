@@ -7,14 +7,18 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { noteText } from '../c08/notes';
+import { truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin, zoneText } from './MarketCommon';
 import {
-  CLASS_TEXT, SOURCE_CLASS_TEXT, WINDOW_TEXT, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
+  CLASS_TEXT, HYPERPARAMETER_TEXT, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, UNIT_TEXT, WINDOW_TEXT, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
   type C11Outputs, type C11Sel,
 } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** The value axis of the exceedance bars: the expected counts (2.49, 0.64) are fractions and keep them (U16-R2 b05 B1). */
+export const COUNT_AXIS = { digits: 3 } as const;
 const NONE = (lang: 'en' | 'es') => formatNumber(null, lang);
 const na = (): BiText => ({ en: NONE('en'), es: NONE('es') });
 
@@ -60,7 +64,7 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
             height="fill"
             orientation="horizontal"
             data={bars}
-            axis={{ label: { en: 'Days', es: 'Días' }, format: { decimals: 0 } }}
+            axis={{ label: { en: 'Days', es: 'Días' }, format: COUNT_AXIS }}
           />
         }
       >
@@ -140,7 +144,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           <dt>{pick({ en: 'Convention', es: 'Convención' }, lang)}</dt>
           <dd data-convention="definition">{pick(o.sign_convention.definition, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The hyperparameters, fixed before any test window', es: 'Los hiperparámetros, fijados antes de cualquier ventana de prueba' }} {...card} note={spanLine(o)}>
@@ -165,8 +169,8 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           <dd>{count(h.seed, lang)}</dd>
           {h.others.map((x) => (
             <Fragment key={x.name}>
-              <dt>{x.name}</dt>
-              <dd>{`${formatNumber(x.value, lang, { digits: 4 })} ${x.unit}`}</dd>
+              <dt>{pick(text(HYPERPARAMETER_TEXT, x.name), lang)}</dt>
+              <dd>{`${formatNumber(x.value, lang, { digits: 4 })} ${pick(text(UNIT_TEXT, x.unit), lang)}`}</dd>
             </Fragment>
           ))}
         </dl>
@@ -197,7 +201,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           </dd>
         </dl>
         {o.grid.realised_loss.status === 'withheld-derived-only' ? (
-          <p className="ct-note" data-state="unavailable">{`${NONE(lang)} (${o.grid.realised_loss.reason ?? ''})`}</p>
+          <p className="ct-note" data-state="unavailable">{`${NONE(lang)} (${noteText(o.grid.realised_loss.reason, lang)})`}</p>
         ) : null}
         {fit ? (
           <ul className="ct-evidence" data-table="c11-sources">
@@ -228,10 +232,10 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                   <tr key={r.model_id} data-rung={r.rung} data-status={r.status}>
                     <td className="ct-text">{pick(r.title, lang)}</td>
                     <td className="ct-wide-only">{r.rung}</td>
-                    <td className="ct-text ct-wide-only">{r.source}</td>
+                    <td className="ct-text ct-wide-only">{rungSourceText(r.source, lang)}</td>
                     <td className="ct-text">
-                      {r.es_method}
-                      {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{r.not_run_reason}</span> : null}
+                      {esMethodText(r.es_method, lang)}
+                      {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{noteText(r.not_run_reason, lang)}</span> : null}
                     </td>
                     <td data-na={wf ? undefined : 'true'}>{wf ? `${count(wf.n_refits, lang)} (${count(wf.n_convergence_failures, lang)} ${pick({ en: 'failed', es: 'fallidos' }, lang)})` : NONE(lang)}</td>
                   </tr>
@@ -294,7 +298,7 @@ export function TestReadout({ sel }: { sel: C11Sel | null }) {
       variant={sel?.data.variant}
       title={sel?.test ? testName(sel.test) : { en: 'This back-test', es: 'Este backtest' }}
       items={[
-        { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ?? 'El estadístico de la prueba, cuando corrió.' } },
+        { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ? noteText(t.notes, 'es') : 'El estadístico de la prueba, cuando corrió.' } },
         { label: { en: 'p-value', es: 'Valor p' }, value: ran ? t.p_value : null, unitless: true, format: { digits: 2 }, hint: { en: 'The probability of a statistic this large if the model were right.', es: 'La probabilidad de un estadístico así de grande si el modelo fuera correcto.' } },
         { label: { en: 'Light', es: 'Luz' }, text: t ? zoneText(t.light) : na(), hint: { en: 'Under the committed policy; a test that did not run is not evaluated.', es: 'Bajo la política comprometida; una prueba que no corrió no se evalúa.' } },
       ]}

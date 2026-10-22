@@ -11313,8 +11313,7 @@
                 "const": false
               },
               "freddie_mac_reason": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "#/components/schemas/common-text"
               },
               "notice": {
                 "$ref": "#/components/schemas/common-text"
@@ -11489,10 +11488,10 @@
             "minimum": 1990
           },
           "indicator": {
-            "type": "string"
+            "$ref": "#/components/schemas/common-text"
           },
           "macro_source": {
-            "type": "string"
+            "$ref": "#/components/schemas/common-text"
           }
         }
       },
@@ -12170,7 +12169,7 @@
             "minItems": 1
           },
           "source": {
-            "type": "string"
+            "$ref": "#/components/schemas/common-text"
           }
         },
         "description": "The LGD floor cells transcribed from dossier 01 section A.5."
@@ -12699,7 +12698,7 @@
               "reason": {
                 "anyOf": [
                   {
-                    "type": "string"
+                    "$ref": "#/components/schemas/common-text"
                   },
                   {
                     "type": "null"
@@ -13313,7 +13312,7 @@
             "description": "ISO 4217 code of the money fields of this block."
           },
           "rule": {
-            "type": "string"
+            "$ref": "#/components/schemas/common-text"
           },
           "off_balance_share": {
             "type": "number",

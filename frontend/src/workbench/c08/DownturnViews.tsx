@@ -6,7 +6,10 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Flagged, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { cohortLabel, cohortYear, fitOf, floorCellLabel, humanize, outputsOf, type C08Sel } from './selection';
+import { cohortLabel, cohortYear, fitOf, floorCellLabel, outputsOf, segmentLabel, type C08Sel } from './selection';
+import { YEAR_FORMAT, rangeText } from './words';
+
+export { YEAR_FORMAT };
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -35,7 +38,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: rows.map((r) => cohortYear(sel, r.cohort_id)), label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: { decimals: 0 } }}
+              x={{ values: rows.map((r) => cohortYear(sel, r.cohort_id)), label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT }}
               y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
               series={[
                 { label: { en: 'Long-run LGD', es: 'LGD de largo plazo' }, values: rows.map((r) => r.long_run_lgd.value), color: '--color-fg-subtle', width: 1.8, dash: [6, 3] },
@@ -48,8 +51,8 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
           <p className="ct-note" data-downturn-period={`${t.period.first_year}-${t.period.last_year}`}>
             {pick(
               {
-                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by ${t.period.indicator}. Macro source: ${t.period.macro_source}.`,
-                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por ${t.period.indicator}. Fuente macro: ${t.period.macro_source}.`,
+                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by ${pick(t.period.indicator, 'en')}. Macro source: ${pick(t.period.macro_source, 'en')}.`,
+                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por ${pick(t.period.indicator, 'es')}. Fuente macro: ${pick(t.period.macro_source, 'es')}.`,
               },
               lang,
             )}
@@ -129,7 +132,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
               title={{ en: 'Share of defaults where the floor binds', es: 'Proporción de incumplimientos donde el piso se activa' }}
               height="fill"
               orientation="horizontal"
-              data={fb.rows.map((r) => ({ id: r.segment_id, label: { en: humanize(r.segment_id), es: humanize(r.segment_id) }, value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
+              data={fb.rows.map((r) => ({ id: r.segment_id, label: segmentLabel(r.segment_id), value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
               axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 } }}
             />
           }
@@ -150,7 +153,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
             <tbody>
               {fb.rows.map((r) => (
                 <tr key={r.segment_id} data-floor={r.floor_id} data-segment={r.segment_id} className={r.segment_id === sel.segment ? 'ct-current' : undefined}>
-                  <td className="ct-text" title={r.reference}>{humanize(r.segment_id)}</td>
+                  <td className="ct-text" title={rangeText(r.reference, lang)}>{pick(segmentLabel(r.segment_id), lang)}</td>
                   <td>{p2(r.floor, lang)}</td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>{p2(r.share_binding, lang)}</td>
@@ -183,12 +186,12 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
                   <tr key={c.id} data-cell={c.id} className={cellOf(fb.rows.find((r) => r.segment_id === sel.segment)?.floor_id ?? '')?.id === c.id ? 'ct-current' : undefined}>
                     <td className="ct-text">{pick(floorCellLabel(c), lang)}</td>
                     <td>{p2(c.floor, lang)}</td>
-                    <td className="ct-text ct-wide-only" translate="no">{c.reference}</td>
+                    <td className="ct-text ct-wide-only" translate="no">{rangeText(c.reference, lang)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="ct-note" data-regime={fit?.floors.regime} translate="no">{fit?.floors.source}</p>
+            <p className="ct-note" data-regime={fit?.floors.regime} translate="no">{fit?.floors.source ? pick(fit.floors.source, lang) : null}</p>
           </div>
         )}
       </PlotCard>

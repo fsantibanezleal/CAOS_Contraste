@@ -7,7 +7,8 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
-import { INCOMPLETE_TEXT, WORKOUT_CONVENTION, outputsOf, type C08Outputs, type C08Sel } from './selection';
+import { DATASET_TEXT, INCOMPLETE_TEXT, WORKOUT_CONVENTION, outputsOf, type C08Outputs, type C08Sel } from './selection';
+import { truthText, wordsOf } from './words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -115,15 +116,15 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
           <dt>{pick({ en: 'Default cohort', es: 'Cohorte de incumplimiento' }, lang)}</dt>
           <dd>{pick(o.cohort.label, lang)}</dd>
           <dt>{pick({ en: 'Primary data', es: 'Datos principales' }, lang)}</dt>
-          <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
+          <dd data-primary-source={d.primary_source}>{pick(wordsOf(DATASET_TEXT, d.primary_source), lang)}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
-            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ?? ''}`}
+            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'Training and workout', es: 'Entrenamiento y recuperación' }} {...card} note={{ en: 'Only defaults whose workout closed before the cut-off train the models; later default cohorts are the tests.', es: 'Solo los incumplimientos cuya recuperación cerró antes del corte entrenan los modelos; las cohortes de incumplimiento posteriores son las pruebas.' }}>
@@ -139,7 +140,7 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
           <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
           <dd data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
           <dt>{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
-          <dd>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${w.incomplete_workouts.reason}` : ''}`}</dd>
+          <dd>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
           <dt>{pick({ en: 'Note', es: 'Nota' }, lang)}</dt>
           <dd>{pick(w.note, lang)}</dd>
         </dl>

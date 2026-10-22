@@ -8,9 +8,10 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { rangeText, truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin } from '../c11/MarketCommon';
-import { DEFICIENCY_TEXT, INTENDED_TEXT, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, text, type C13Outputs, type C13Sel } from './selection';
+import { DEFICIENCY_TEXT, GENERATOR_TEXT, INTENDED_TEXT, PARAMETER_TEXT, UNIT_TEXT, parameterText, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, text, type C13Outputs, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const pct = (v: number | null | undefined, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
@@ -45,13 +46,16 @@ export function ViewFoot({ o }: { o: C13Outputs }) {
   );
 }
 
+/** The findings box never collapses below a readable height (a phone: the box was a 10 px sliver, U16-R2 b06 B4). */
+export const FINDINGS_MIN_HEIGHT = 'min(70vh, 36rem)';
+
 export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   return (
     <div className="ct-stack" data-block="c13-findings">
       <KnownBanner o={o} />
-      <div style={{ flex: '1 1 0', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: '1 1 0', minHeight: FINDINGS_MIN_HEIGHT, display: 'flex', flexDirection: 'column' }}>
         <ViewsRow>
           <FindingsCard variant={sel.data.variant} />
         </ViewsRow>
@@ -157,22 +161,22 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'Convention', es: 'Convención' }, lang)}</dt>
           <dd data-convention="definition">{pick(o.sign_convention.definition, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
         <KnownBanner o={o} />
       </PlotCard>
       <PlotCard title={{ en: 'The desk P&L generator', es: 'El generador de P&L de la mesa' }} {...card}>
         <dl className="ct-defs" data-table="c13-generator">
           <dt>{pick({ en: 'Generator', es: 'Generador' }, lang)}</dt>
-          <dd>{fit?.generator.name ?? o.generator.name}</dd>
+          <dd>{pick(text(GENERATOR_TEXT, fit?.generator.name ?? o.generator.name), lang)}</dd>
           {fit ? (
             <>
               <dt>{pick({ en: 'True risk model', es: 'Modelo de riesgo verdadero' }, lang)}</dt>
               <dd>{pick(fit.generator.true_risk_model, lang)}</dd>
               {fit.generator.parameters.map((p) => (
                 <Fragment key={p.name}>
-                  <dt>{p.name}</dt>
-                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${p.unit}`}</dd>
+                  <dt>{pick(text(PARAMETER_TEXT, p.name), lang)}</dt>
+                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${pick(text(UNIT_TEXT, p.unit), lang)}`}</dd>
                 </Fragment>
               ))}
             </>
@@ -196,11 +200,11 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'ECDF step', es: 'Paso de la ECDF' }, lang)}</dt>
           <dd>{formatNumber(t.ecdf_step, lang, { decimals: 3 })}</dd>
           <dt>{pick({ en: 'Reference', es: 'Referencia' }, lang)}</dt>
-          <dd>{t.reference}</dd>
+          <dd>{rangeText(t.reference, lang)}</dd>
           {(fit?.desk_limits ?? []).map((l) => (
             <Fragment key={l.alpha}>
               <dt>{levelLabel(l.alpha, lang)}</dt>
-              <dd>{pick({ en: `more than ${count(l.limit_exceptions, 'en')} exceptions in 250 days moves the desk to the standardised approach (${l.reference})`, es: `más de ${count(l.limit_exceptions, 'es')} excepciones en 250 días pasa la mesa al método estandarizado (${l.reference})` }, lang)}</dd>
+              <dd>{pick({ en: `more than ${count(l.limit_exceptions, 'en')} exceptions in 250 days moves the desk to the standardised approach (${l.reference})`, es: `más de ${count(l.limit_exceptions, 'es')} excepciones en 250 días pasa la mesa al método estandarizado (${rangeText(l.reference, 'es')})` }, lang)}</dd>
             </Fragment>
           ))}
         </dl>
@@ -221,7 +225,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
                   <td className="ct-text">{pick(text(DEFICIENCY_TEXT, d.deficiency_id), lang)}</td>
                   <td className="ct-text">
                     {pick(d.mechanism, lang)}
-                    {d.parameters.length > 0 ? ` (${d.parameters.map((p) => `${p.name} ${formatNumber(p.value, lang, { digits: 3 })} ${p.unit}`).join(', ')})` : ''}
+                    {d.parameters.length > 0 ? ` (${d.parameters.map((p) => parameterText(p, lang, 3)).join(', ')})` : ''}
                   </td>
                   <td className="ct-text ct-wide-only">{pick(text(INTENDED_TEXT, d.intended_to_fail), lang)}</td>
                 </tr>

@@ -92,7 +92,7 @@ describe('the C08 instrument', () => {
     expect(markup).toContain(formatNumber(o.exposure.gross_approval_total, 'en', { decimals: 0 }));
     expect(markup).toContain(formatNumber(o.exposure.gross_charge_off_total, 'en', { decimals: 0 }));
     expect(markup).toContain('data-freddie-mac="false"');
-    expect(markup).toContain(escapeHtml(o.data_status.freddie_mac_reason as string));
+    expect(markup).toContain(escapeHtml(o.data_status.freddie_mac_reason!.en));
   });
 
   it('the rungs give R2, RMSE, MAE, Spearman and the calibration gap; a missing value is not available with its reason', () => {
@@ -142,7 +142,7 @@ describe('the C08 instrument', () => {
       expect(markup).toContain(pct(r.crisis_realised_lgd.value));
     }
     expect(markup).toContain(pct(o.downturn.coverage.share_covered));
-    expect(markup).toContain(escapeHtml(o.downturn.period.macro_source));
+    expect(markup).toContain(escapeHtml(o.downturn.period.macro_source.en));
     expect(markup).toContain(escapeHtml(o.downturn.approach.en));
   });
 
@@ -172,7 +172,7 @@ describe('the C08 instrument', () => {
     const markup = html(<C08ContextView sel={sel} />);
     expect(markup).toContain(o.training.cutoff_date);
     expect(markup).toContain(escapeHtml(o.training.closure_rule.en));
-    expect(markup).toContain(escapeHtml(o.workout.incomplete_workouts.reason as string));
+    expect(markup).toContain(escapeHtml(o.workout.incomplete_workouts.reason!.en));
     expect(markup).toContain('data-freddie-mac="false"');
     expect(markup).toContain(escapeHtml(o.data_status.notice.en));
   });

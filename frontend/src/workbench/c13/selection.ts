@@ -5,6 +5,7 @@
 // picture of MAR32.36 to MAR32.41). The tests recompute the document's own Spearman and KS from them.
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { Bi } from '../c03/U6Shared';
 
 export type C13Outputs = components['schemas']['c13Outputs'];
@@ -155,4 +156,39 @@ export function defaultSel(data: CaseData | null): C13Sel | null {
   const o = outputsOf({ data });
   if (!o) return null;
   return { data, alpha: (o.desk_backtest[0]?.alpha ?? 0.025) as C13Alpha, statistic: 'overall' };
+}
+
+/** The parameters of the generator and of a planted deficiency, and their units, in words (the document gives them as snake_case ids). */
+export const PARAMETER_TEXT: Record<string, Bi> = {
+  basis_sd_share: { en: 'basis share of the HPL deviation', es: 'parte de base de la desviación del HPL' },
+  burn_days: { en: 'burn-in days', es: 'días de calentamiento' },
+  correlation_error: { en: 'correlation error', es: 'error de correlación' },
+  factor_correlation: { en: 'factor correlation', es: 'correlación entre factores' },
+  lag_days: { en: 'lag', es: 'rezago' },
+  loading_1: { en: 'loading of factor 1', es: 'carga del factor 1' },
+  loading_2: { en: 'loading of factor 2', es: 'carga del factor 2' },
+  omitted_loading_share: { en: 'omitted loading share', es: 'parte de la carga omitida' },
+  residual_sd_share: { en: 'residual share of the factor P&L deviation', es: 'parte residual de la desviación del P&L de factores' },
+  vol_lag_days: { en: 'volatility lag', es: 'rezago de la volatilidad' },
+  vol_log_sd: { en: 'volatility log deviation', es: 'desviación logarítmica de la volatilidad' },
+  vol_persistence: { en: 'volatility persistence', es: 'persistencia de la volatilidad' },
+};
+export const UNIT_TEXT: Record<string, Bi> = {
+  'share-of-hpl-sd': { en: 'of the HPL deviation', es: 'de la desviación del HPL' },
+  'share-of-factor-pnl-sd': { en: 'of the factor P&L deviation', es: 'de la desviación del P&L de factores' },
+  days: { en: 'days', es: 'días' },
+  'correlation-points': { en: 'correlation points', es: 'puntos de correlación' },
+  correlation: { en: 'correlation', es: 'correlación' },
+  'decimal-per-sd': { en: 'decimal per deviation', es: 'decimal por desviación' },
+  'log-points': { en: 'log points', es: 'puntos logarítmicos' },
+  'per-day': { en: 'per day', es: 'por día' },
+};
+export const GENERATOR_TEXT: Record<string, Bi> = {
+  'desk-pnl-generator': { en: 'Desk P&L generator', es: 'Generador de P&L de la mesa' },
+};
+
+/** A named parameter with its value and unit in the language. */
+export function parameterText(p: { name: string; value: number; unit: string }, lang: 'en' | 'es', digits: number): string {
+  const unit = UNIT_TEXT[p.unit]?.[lang] ?? p.unit;
+  return `${(PARAMETER_TEXT[p.name] ?? { en: p.name, es: p.name })[lang]} ${formatNumber(p.value, lang, { digits })} ${unit}`.trim();
 }

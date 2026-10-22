@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 from riskvalidation.validation import market as val
 
+from ...core.text import number, percent
 from . import generator, params
 from . import measure as ms
 from .params import ALPHAS, IDS, WINDOW_DAYS
@@ -83,6 +84,20 @@ TRUE_MODEL = T(
 INTENDED_NOTE = {
     "none": T("none", "ninguno"), "spearman": T("the Spearman statistic", "el estadístico de Spearman"),
     "ks": T("the Kolmogorov-Smirnov statistic", "el estadístico de Kolmogorov-Smirnov"), "either": T("either statistic", "cualquiera de los estadísticos")}
+
+
+#: the planted deficiencies in Spanish, for a title (U16-R2 b06 B2: "the planted omitted factor" inside a Spanish sentence)
+DEFICIENCY_ES = {"omitted-factor": "factor omitido", "wrong-correlation": "correlación errónea", "stale-volatility": "volatilidad desactualizada",
+                 "time-misalignment": "desfase temporal", "missing-basis": "base faltante"}
+
+
+def _p(x: float) -> str:
+    """A share as a percent inside a Spanish text (96,0 %)."""
+    return percent(x, 1, lang="es")
+
+
+def _n(x: float) -> str:
+    return number(x, 0, lang="es")
 
 
 def generator_block(did: str, n: int) -> dict[str, Any]:
@@ -207,26 +222,26 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
         ok = p <= 0.05
         f.append({"id": "F-SIZE", "severity": "S4" if ok else "S3", "status": "accepted" if ok else "open", "evidence": ["market.pla_test"],
                   "title": T(f"With no deficiency the PLA is amber or red in {p:.1%} of {d['n_replications']:,} replications (red in {p_red:.1%}): the false-alarm rate of the test",
-                             f"Sin deficiencia el PLA es ámbar o rojo en {p:.1%} de {d['n_replications']:,} replicaciones (rojo en {p_red:.1%}): la tasa de falsa alarma del test")})
+                             f"Sin deficiencia el PLA es ámbar o rojo en {_p(p)} de {_n(d['n_replications'])} replicaciones (rojo en {_p(p_red)}): la tasa de falsa alarma del test")})
     else:
         sev, status = ("S4", "accepted") if p >= 0.95 else (("S3", "open") if p >= 0.5 else ("S2", "open"))
         verb_en, verb_es = ("catches", "detecta") if p >= 0.5 else ("misses", "no detecta")
         f.append({"id": "F-PLA", "severity": sev, "status": status, "evidence": ["market.pla_test"],
                   "title": T(f"The PLA {verb_en} the planted {did.replace('-', ' ')} in {p:.1%} of {d['n_replications']:,} replications "
                              f"(amber or red; red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
-                             f"El PLA {verb_es} la deficiencia plantada ({did.replace('-', ' ')}) en {p:.1%} de {d['n_replications']:,} replicaciones "
-                             f"(ámbar o rojo; rojo en {p_red:.1%}; intervalo de 95% {d['ci_low']:.1%} a {d['ci_high']:.1%})")})
+                             f"El PLA {verb_es} la deficiencia plantada ({DEFICIENCY_ES.get(did, did.replace('-', ' '))}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
+                             f"(ámbar o rojo; rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")})
         n_int = d["intended_test_flagged"]
         f.append({"id": "F-INTENDED", "severity": "S3" if n_int / d["n_replications"] >= 0.5 else "S2", "status": "open", "evidence": ["market.pla_test"],
                   "title": T(f"The statistic meant to break ({INTENDED_NOTE[k['intended_to_fail']]['en']}) flags {n_int / d['n_replications']:.1%} of the replications",
-                             f"El estadístico que debía romperse ({INTENDED_NOTE[k['intended_to_fail']]['es']}) marca {n_int / d['n_replications']:.1%} de las replicaciones")})
+                             f"El estadístico que debía romperse ({INTENDED_NOTE[k['intended_to_fail']]['es']}) marca {_p(n_int / d['n_replications'])} de las replicaciones")})
     f.append({"id": "F-DESK", "severity": "S3" if desk[0.01]["share_over_limit"] >= 0.05 or desk[0.025]["share_over_limit"] >= 0.05 else "S4",
               "status": "open" if max(desk[0.01]["share_over_limit"], desk[0.025]["share_over_limit"]) >= 0.05 else "accepted",
               "evidence": ["market.desk_backtest"],
               "title": T(f"The desk exceeds its exception limit in {desk[0.025]['share_over_limit']:.1%} of the replications at 97.5% "
                          f"(limit {desk[0.025]['limit_exceptions']}) and {desk[0.01]['share_over_limit']:.1%} at 99% (limit {desk[0.01]['limit_exceptions']})",
-                         f"La mesa supera su límite de excepciones en {desk[0.025]['share_over_limit']:.1%} de las replicaciones al 97,5% "
-                         f"(límite {desk[0.025]['limit_exceptions']}) y {desk[0.01]['share_over_limit']:.1%} al 99% (límite {desk[0.01]['limit_exceptions']})")})
+                         f"La mesa supera su límite de excepciones en {_p(desk[0.025]['share_over_limit'])} de las replicaciones al 97,5 % "
+                         f"(límite {desk[0.025]['limit_exceptions']}) y {_p(desk[0.01]['share_over_limit'])} al 99 % (límite {desk[0.01]['limit_exceptions']})")})
     return f
 
 

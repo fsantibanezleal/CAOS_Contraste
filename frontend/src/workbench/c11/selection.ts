@@ -100,6 +100,19 @@ export const WINDOW_TEXT: Record<string, Bi> = {
   'calm-2004-06': { en: 'Calm 2004 to 2006', es: 'Calma 2004 a 2006' },
 };
 
+/** The units a document names ("5 days", "draws"), in words. */
+export const UNIT_TEXT: Record<string, Bi> = {
+  days: { en: 'days', es: 'días' },
+  draws: { en: 'draws', es: 'remuestreos' },
+  models: { en: 'models', es: 'modelos' },
+  'fz0-loss': { en: 'FZ0 loss', es: 'pérdida FZ0' },
+};
+/** The hyperparameters a window lists beyond the named ones, in words. */
+export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
+  caviar_refit_every_days: { en: 'CAViaR refit every', es: 'Reajuste CAViaR cada' },
+  hs_short_window: { en: 'Short historical-simulation window', es: 'Ventana corta de simulación histórica' },
+};
+
 export const CLASS_TEXT: Record<string, Bi> = {
   equity: { en: 'Equity', es: 'Acciones' },
   rates: { en: 'Rates', es: 'Tasas' },
@@ -194,3 +207,31 @@ export function defaultSel(data: CaseData | null): C11Sel | null {
   const test = levelOf(o, model, alpha)?.test_ids[0] ?? '';
   return { data, alpha, model, test };
 }
+
+/** How each rung of the ladder forms its expected shortfall (the document gives it in English only). */
+const ES_METHOD: Array<[string, string]> = [
+  ['tail mean of the sorted window', 'media de la cola de la ventana ordenada'],
+  ['tail integral of the interpolated weighted quantile function', 'integral de la cola de la función de cuantiles ponderada e interpolada'],
+  ['normal ES from the window mean and volatility', 'ES normal con la media y la volatilidad de la ventana'],
+  ['none: the Cornish-Fisher expansion gives the VaR only', 'ninguno: la expansión de Cornish-Fisher da solo el VaR'],
+  ['normal ES from the EWMA volatility', 'ES normal con la volatilidad EWMA'],
+  ['Student-t tail mean of the unit-variance innovation', 'media de la cola t de Student de la innovación de varianza unitaria'],
+  ['tail mean of the GARCH-filtered standardised residuals', 'media de la cola de los residuos estandarizados filtrados por GARCH'],
+  ['GPD tail ES, undefined for xi at or above 1', 'ES de la cola GPD, indefinido para xi igual o mayor que 1'],
+  ['none: CAViaR forecasts the VaR only', 'ninguno: CAViaR pronostica solo el VaR'],
+  ['autoregressive gap below the CAViaR VaR, fitted by the asymmetric Laplace likelihood', 'brecha autorregresiva bajo el VaR de CAViaR, ajustada con la verosimilitud de Laplace asimétrica'],
+  ['joint VaR and ES from one dynamic factor (FZ0 estimation)', 'VaR y ES conjuntos de un factor dinámico (estimación FZ0)'],
+  ['joint VaR and ES from two dynamic factors (FZ0 estimation)', 'VaR y ES conjuntos de dos factores dinámicos (estimación FZ0)'],
+  ['one dynamic factor with a log absolute return term (FZ0 estimation)', 'un factor dinámico con un término de log del retorno absoluto (estimación FZ0)'],
+  ['network output', 'salida de la red'],
+];
+export const esMethodText = (method: string, lang: 'en' | 'es'): string => (lang === 'en' ? method : (ES_METHOD.find(([en]) => en === method)?.[1] ?? method));
+
+/** The source of a rung ("historical simulation (textbook; Pritsker 2001)"): the citation stays, its English remarks are translated. */
+export const rungSourceText = (source: string, lang: 'en' | 'es'): string =>
+  lang === 'en'
+    ? source
+    : source
+        .replace('historical simulation (textbook;', 'simulación histórica (de texto;')
+        .replace('(preprint; challenger only)', '(preprint; solo retador)')
+        .replace('; two-step estimation declared in the engine', '; estimación en dos pasos declarada en el motor');
