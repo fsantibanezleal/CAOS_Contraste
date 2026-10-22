@@ -342,7 +342,9 @@ def test_the_freddie_mac_slot_is_nullable_with_its_reason_never_a_number() -> No
         doc = load(ref)
         status = doc[root_of(ref)]["data_status"]
         assert status["freddie_mac_available"] is False
-        assert isinstance(status["freddie_mac_reason"], str) and status["freddie_mac_reason"]
+        # c08-outputs and c08-models 2.0.0 (U16-F3): the reason is a bilingual text, both languages written
+        reason = status["freddie_mac_reason"]
+        assert isinstance(reason, dict) and all(isinstance(reason.get(k), str) and reason[k] for k in ("en", "es"))
         bad = copy.deepcopy(doc)
         bad[root_of(ref)]["data_status"]["freddie_mac_reason"] = None
         assert cs.errors(ref, bad) != [], "unavailable Freddie Mac without a reason validates"
@@ -508,7 +510,8 @@ def test_the_rows_fragment_has_the_seven_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == ("2.0.0" if r[0] == "c03-outputs" else "1.0.0")      # U16-F2 moved c03-outputs to 2.0.0
+        # U16-F2 moved c03-outputs to 2.0.0; U16-F3 moved c08-outputs, c08-models and c09-outputs to 2.0.0 (bilingual texts)
+        assert d["version"] == ("2.0.0" if r[0] in ("c03-outputs", "c08-outputs", "c08-models", "c09-outputs") else "1.0.0"), r[0]
         # the producers are built (U5 in 0.08.000, U6 in 0.10.000): each row is real, with a committed example
         assert d["status"] == "real"
         assert (ROOT / d["example"]).is_file(), d["example"]
