@@ -453,7 +453,7 @@ def models_document(book: Book, base_ev: dict[str, Any], overlays: tuple, rv: st
         f"{src.UF_DATE}: {src.UF_VALUE:,.2f} CLP per UF.",
         "Sintético: Banco Andino es un banco generado, calibrado a agregados públicos del sistema de la CMF (parámetros y hash en el "
         "registro del modelo generador); sus filas no son observaciones de ningún banco. Las hipotecas indexadas a UF se convierten a CLP "
-        f"al valor del SII del {src.UF_DATE}: {src.UF_VALUE:,.2f} CLP por UF.".replace(",", "#").replace(".", ",").replace("#", "."))
+        f"al valor del SII del {src.UF_DATE}: {tx.number(src.UF_VALUE, 2, lang='es')} CLP por UF.")
     fit = {
         "currency": CURRENCY,
         "bank": {"name": "Banco Andino", "synthetic": True, "notice": notice, "seed": int(book.seed),

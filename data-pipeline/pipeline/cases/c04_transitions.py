@@ -471,12 +471,13 @@ def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str
     if lra.get("d4") is not None and lra.get("d2") is not None and gap is not None:
         r = [gap[5], gap[6]]
         if r[1] is not None and r[1] < 0.8:
-            d4, d2 = _pct(lra["d4"]["rate"][6]), _pct(lra["d2"]["rate"][6])
+            # the ratio in the sentence is the pooled one, so the two rates beside it are the pooled ones (not the long-run averages of the years)
+            d4, d2 = _pct(lra["d4"]["pooled_rate"][6]), _pct(lra["d2"]["pooled_rate"][6])
             rb = "" if r[0] is None else f" and {100 * r[0]:.0f}% for B"
             rb_es = "" if r[0] is None else f" y {100 * r[0]:.0f}% para B"
             f.append({"id": "F-DEF-GAP", "severity": "S2", "status": "open", "evidence": ["design:definition_gap"],
-                      "title": _t(f"{name}: the transition matrix's default column gives {100 * r[1]:.0f}% of the default page's PD for CCC to C{rb}, pooled over the years both pages hold (long-run averages {d4[0]} against {d2[0]}): a PD read from CEREP's migration matrix understates speculative defaults",
-                                  f"{name}: la columna de incumplimiento de la matriz de transición da {100 * r[1]:.0f}% de la PD de la página de incumplimientos para CCC a C{rb_es}, agrupada en los años que ambas páginas cubren (promedios de largo plazo {d4[1]} contra {d2[1]}): una PD leída de la matriz de migración de CEREP subestima los incumplimientos especulativos")})
+                      "title": _t(f"{name}: the transition matrix's default column gives {100 * r[1]:.0f}% of the default page's PD for CCC to C{rb}, pooled over the years both pages hold (pooled rates {d4[0]} against {d2[0]}): a PD read from CEREP's migration matrix understates speculative defaults",
+                                  f"{name}: la columna de incumplimiento de la matriz de transición da {100 * r[1]:.0f}% de la PD de la página de incumplimientos para CCC a C{rb_es}, agrupada en los años que ambas páginas cubren (tasas agrupadas {d4[1]} contra {d2[1]}): una PD leída de la matriz de migración de CEREP subestima los incumplimientos especulativos")})
     elif lra.get("d4") is None:
         f.append({"id": "F-NO-D4", "severity": "S3", "status": "accepted", "evidence": ["design:definition_gap"],
                   "title": _t(f"{_poss(name)} transition page has no default category: its PDs come from the default pages only, and a migration matrix read from CEREP carries no default column",

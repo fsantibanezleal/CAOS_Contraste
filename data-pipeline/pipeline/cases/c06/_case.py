@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from ..reference_text import with_reference_text
 
 SOURCES = ("sba-foia", "fed-stress-tests")
 CASE_ID = "C06"
@@ -120,7 +121,7 @@ class C06:
                             "short_title": _t(f"Models {en_m[:3]} {year}", f"Modelos {es_m[:3]} {year}"), "regime": regime,
                             "path": rel_m, "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
             d = res.document
-            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=d["model"], outputs=d["outputs"], tests=d["tests"],
+            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                                  impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{vid}.json"
             e_v = write_artifact(paths.root, rel, art, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)

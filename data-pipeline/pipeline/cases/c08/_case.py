@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from ..reference_text import with_reference_text
 
 SOURCES = ("sba-foia",)
 CASE_ID = "C08"
@@ -119,7 +120,7 @@ class C08:
                             "short_title": _t(f"Models {cid}", f"Modelos {cid}"), "regime": regime, "path": rel_m,
                             "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
             art = build_artifact(case_id=CASE_ID, variant_id=vid, model=md_.model_summaries(res), outputs=res.outputs,
-                                 tests=res.tests, impact=res.impact, findings=res.findings, lineage=lineage, lane=lane)
+                                 tests=with_reference_text(res.tests), impact=res.impact, findings=res.findings, lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{vid}.json"
             e_v = write_artifact(paths.root, rel, art, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)
             entries.append({"role": "variant", "variant_id": vid, "title": title, "short_title": short, "regime": regime,
