@@ -12,6 +12,11 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { C04Benchmark, C04Experiments } from '../pages/C04Sections';
 import * as BenchmarkPage from '../pages/Benchmark';
 import * as U6 from '../pages/U6Sections';
+import { batch3ExperimentTables } from '../pages/Batch3Sections';
+import { MatrixDrawing, SensitivityTable } from './governance/TierMatrix';
+import { tierColor } from './governance/DependencyMap';
+import { tierOf, type GovInventory, type GovReport } from './governance/model';
+import { ReportDocument } from './governance/ReportView';
 
 const here = (rel: string) => new URL(rel, import.meta.url);
 const text = (rel: string) => readFileSync(here(rel), 'utf8');
@@ -179,5 +184,107 @@ describe('b11 m6 and m10: one label per rung, the best rung named', () => {
     const T = (BenchmarkPage as unknown as { RobustnessTable: (p: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number; bestRung: string }> }) => ReactElement }).RobustnessTable;
     const markup = html(<T rows={[{ n: 1, title: 'Drift', scorecard: 0.7123, best: 0.7456, bestRung: 'P4 LightGBM' }]} />);
     expect(plain(markup)).toContain('P4 LightGBM');
+  });
+});
+
+describe('b12 m1: the forbidden arc of the protocol figure does not strike through its label', () => {
+  it('the label sits below the lowest point of the curve (y 175)', () => {
+    const m = /className="dg-axis-label" x=\{W \/ 2\} y=\{(\d+)\} textAnchor="middle">\{t\('forbidden/.exec(text('../pages/DocFigures.tsx'));
+    expect(m).not.toBeNull();
+    expect(Number(m![1])).toBeGreaterThanOrEqual(192);
+  });
+});
+
+describe('b12 m4: the tier matrix uses the tier colours of the dependency map', () => {
+  const inv = read<GovInventory>('governance/inventory.json');
+  const markup = html(<MatrixDrawing inv={inv} width={480} picked={null} />);
+  it('every non-empty cell is filled with the colour of its tier', () => {
+    const cells = [...markup.matchAll(/data-count="(\d+)" data-tier="(\d)"[^>]*>\s*<rect[^>]*fill="([^"]+)"/g)];
+    expect(cells.length).toBe(16);
+    let seen = 0;
+    for (const [, n, tier, fill] of cells) {
+      if (Number(n) === 0) continue;
+      seen += 1;
+      expect(fill).toBe(tierColor(Number(tier)));
+    }
+    expect(seen).toBeGreaterThan(0);
+    expect(tierOf(4, 4)).toBeGreaterThan(0);
+  });
+});
+
+describe('b12 m5: the caption of the sensitivity table is above the scroll box, not inside the table', () => {
+  const inv = read<GovInventory>('governance/inventory.json');
+  it('has a paragraph above the table and no <caption>', () => {
+    const markup = html(<SensitivityTable inv={inv} />);
+    expect(markup).not.toContain('<caption');
+    expect(markup.indexOf('<p')).toBeGreaterThanOrEqual(0);
+    expect(markup.indexOf('<p')).toBeLessThan(markup.indexOf('<table'));
+  });
+});
+
+describe('b12 m6 and m7: the report wording and the narrow outcomes table', () => {
+  const report = read<GovReport>('governance/reports/C01-german.json');
+  it('a reason after "Not available:" starts with a capital, in both languages', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const t = plain(html(<ReportDocument report={report} />, lang));
+      expect(t).not.toMatch(/(Not available|No disponible): [a-záéíóú]/);
+    }
+  });
+  it('the test counts read word: number, with the plural a count of rows takes (no evaluadas: 31)', () => {
+    const t = plain(html(<ReportDocument report={report} />, 'es'));
+    expect(t).toMatch(/no evaluadas: \d+/);
+    expect(t.split('Filas de prueba:')[1].slice(0, 120)).not.toMatch(/no evaluada \d+/);
+    expect(plain(html(<ReportDocument report={report} />, 'en'))).toMatch(/not evaluated: \d+/);
+  });
+  it('the test cell carries the model and the segment for a phone (the column is wide-only)', () => {
+    const markup = html(<ReportDocument report={report} />);
+    expect(markup).toMatch(/<td class="caos-col-text">\s*<span translate="no">pd\.jeffreys<\/span>\s*<span class="ct-narrow-only"/);
+  });
+  it('a scroll box of the report fades its end like every other', () => {
+    expect(text('./governance/ReportView.tsx')).not.toMatch(/maxHeight: (360|420), overflow: 'auto'/);
+    expect(text('./governance/ReportView.tsx')).toMatch(/ct-fade-scroll/);
+  });
+  it('the register and the methodology page say "fecha de registro", not "fecha de levantamiento"', () => {
+    expect(text('./governance/RegisterView.tsx')).not.toContain('fecha de levantamiento');
+    expect(text('../pages/methodology/governance.tsx')).not.toContain('fecha de levantamiento');
+    expect(text('./governance/RegisterView.tsx')).toContain('fecha de registro');
+  });
+});
+
+describe('b12 m11, m12, m13, m9, m14: the Experiments page', () => {
+  it('only C01 reads the scorecard paragraph; C04, C05 and C22 read the generic one', () => {
+    const src = text('../pages/Experiments.tsx');
+    expect(src).not.toMatch(/kind !== 'c04'/);
+    expect(src).toMatch(/kind === 'scorecard'/);
+  });
+  it('the C01 table heads its records column as the holdout records and names the best rung by its short title', () => {
+    const src = text('../pages/Experiments.tsx');
+    expect(src).toContain("t('Holdout records', 'Registros reservados')");
+    expect(src).not.toMatch(/\{r\.best\.id\} \(/);
+  });
+  const c02 = read<CaseManifest>('manifests/C02.json');
+  const c02v = c02.artifacts.filter((a) => a.role === 'variant').map((a) => read<VariantArtifact>(a.path));
+  it('C02 transfer: the 1-year row shows an off-diagonal cell and a singular year', () => {
+    const [t] = batch3ExperimentTables(c02 as never, c02v as never, 'en');
+    const row = t.rows.find((r) => String(r[0]).includes('1 year') || String(r[1]) === '1 year')!;
+    const last = String(row[row.length - 1]);
+    expect(last).not.toContain('fitted on 1 years');
+    expect(last).not.toMatch(/fitted on (\d+) years?, scored on /);
+    expect(last).toMatch(/fitted on 1 year,/);
+  });
+  it('the C09 bias is written in percentage points', () => {
+    const c09 = read<CaseManifest>('manifests/C09.json');
+    const vs = c09.artifacts.filter((a) => a.role === 'variant').map((a) => read<VariantArtifact<unknown>>(a.path));
+    const rows = U6.experimentRows(c09, vs, 'en');
+    expect(rows.map((r) => String(r[3])).every((c) => / pp$/.test(c))).toBe(true);
+  });
+  it('a table amount prints one decimal when scaled so the amounts of a table read alike', () => {
+    expect(U6.money(867_000_000, 'USD', 'en')).toBe('867.0 m USD');
+    expect(U6.money(457_300_000, 'USD', 'en')).toBe('457.3 m USD');
+    expect(U6.money(99_712_000_000, 'USD', 'en')).toBe('99.7 bn USD');
+    expect(U6.money(99_600_000_000, 'USD', 'es')).toBe('99,6 mil M USD');
+  });
+  it('the C10 note of the Experiments page says "superaciones"', () => {
+    expect(text('../pages/Wave2Sections.tsx')).not.toContain('las excedencias cuentan');
   });
 });

@@ -193,8 +193,10 @@ describe('Reports', () => {
     expect(count(h, /data-status="absent"/g)).toBe(c18.sections.filter((s) => s.status === 'absent').length);
     expect(c18.sections.filter((s) => s.status === 'absent').length).toBeGreaterThan(0);
     const absent = c18.sections.find((s) => s.status === 'absent')!;
-    expect(text(h)).toContain(absent.absent_reason!.en);
-    expect(text(h)).toContain(c18.sections[0].missing[0]?.reason.en ?? '');
+    // a reason after "Not available:" starts with a capital (U16-R2 b12 m6)
+    const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+    expect(text(h)).toContain(cap(absent.absent_reason!.en));
+    expect(text(h)).toContain(cap(c18.sections[0].missing[0]?.reason.en ?? ''));
   });
   it('shows section 11 with the opinion level, the rule and the labelled recommendation', () => {
     for (const lang of LANGS) {

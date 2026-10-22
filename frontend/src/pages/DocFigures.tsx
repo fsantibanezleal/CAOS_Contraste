@@ -259,7 +259,7 @@ export function ProtocolFigure() {
         </g>
       ))}
       <path className="dg-asymptote" fill="none" d={`M418 130 C 418 190, 126 190, 126 130`} />
-      <text className="dg-axis-label" x={W / 2} y={178} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
+      <text className="dg-axis-label" x={W / 2} y={196} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
       <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30% de muestra reservada; 20% del resto para calibración')}</text>
     </Frame>
   );

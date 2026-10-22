@@ -77,7 +77,9 @@ function c02Row(name: string, v: Variant, lang: Lang): Cell[] {
   const champ = o.rungs.find((r) => r.rung === 'P1');
   const best = o.rungs.reduce<C02Outputs['rungs'][number] | undefined>((b, r) => (!b || r.discrimination.auc > b.discrimination.auc ? r : b), undefined);
   const noChamp = t('the document holds no P1 rung', 'el documento no contiene el peldaño P1');
-  const cell = champ ? o.transfer.cells.find((c) => c.rung === 'P1') : undefined;
+  // the cell of the rung fitted on one file and scored on ANOTHER: the first P1 cell is the diagonal (fitted and scored on the same horizon), which is no transfer (U16-R2 b12 m12)
+  const cell = champ ? o.transfer.cells.find((c) => c.rung === 'P1' && c.fitted_on_years !== c.scored_on_years) : undefined;
+  const yrs = (n: number) => (n === 1 ? t('1 year', '1 año') : t(`${n} years`, `${n} años`));
   const horizon = o.years === null ? t('Pooled (all five files)', 'Agrupado (los cinco archivos)') : o.years === 1 ? t('1 year', '1 año') : t(`${o.years} years`, `${o.years} años`);
   return [
     name,
@@ -88,7 +90,7 @@ function c02Row(name: string, v: Variant, lang: Lang): Cell[] {
     best ? `${best.rung} (${num(best.discrimination.auc, lang, 3)})` : na(lang, t('the document holds no rung', 'el documento no contiene ningún peldaño')),
     champ ? c02Light(champ.calibration.hosmer_lemeshow.p_value, lang) : na(lang, noChamp),
     champ && cell
-      ? `${signed(cell.auc - champ.discrimination.auc, lang)} (${t(`fitted on ${cell.fitted_on_years} years, scored on ${cell.scored_on_years}`, `ajustado con ${cell.fitted_on_years} años, evaluado en ${cell.scored_on_years}`)})`
+      ? `${signed(cell.auc - champ.discrimination.auc, lang)} (${t(`fitted on ${yrs(cell.fitted_on_years)}, scored on ${cell.scored_on_years}`, `ajustado con ${yrs(cell.fitted_on_years)}, evaluado en ${cell.scored_on_years}`)})`
       : na(lang, champ ? bi(o.transfer.reason, lang) : noChamp),
   ];
 }

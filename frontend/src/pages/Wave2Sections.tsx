@@ -229,7 +229,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
         rows: loan.map((v) => c10LoanRow(nameOf(v), v, lang)),
         note: t(
           'The fit reads the yearly loss rates up to 2006 by maximum likelihood; the exceedances count the years from 2007 to 2012 in which the loss rate went over the fitted quantile of each level; the capital is the economic capital of the illustrative portfolio, in the currency shown.',
-          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las excedencias cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
+          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las superaciones cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
         ),
       });
     if (grid.length)

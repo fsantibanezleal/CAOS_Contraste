@@ -266,7 +266,7 @@ export function RegisterSection({ findings }: { findings: GovFindings }) {
       </p>
       <ConventionNote />
       <AsOf asOf={findings.as_of} basis={findings.as_of_basis} />
-      <PlotCard title={{ en: 'The findings register', es: 'El registro de hallazgos' }} lane="replay" provenance="synthetic" note={{ en: 'Sort by any column. A due date is the raised date plus the deadline of its severity and tier, a stated convention.', es: 'Ordene por cualquier columna. Una fecha de vencimiento es la fecha de levantamiento más el plazo de su severidad y nivel, una convención declarada.' }}>
+      <PlotCard title={{ en: 'The findings register', es: 'El registro de hallazgos' }} lane="replay" provenance="synthetic" note={{ en: 'Sort by any column. A due date is the raised date plus the deadline of its severity and tier, a stated convention.', es: 'Ordene por cualquier columna. Una fecha de vencimiento es la fecha de registro más el plazo de su severidad y nivel, una convención declarada.' }}>
         <RegisterTable rows={findings.rows} />
       </PlotCard>
       <PlotCard title={{ en: 'Severity by status', es: 'Severidad por estado' }} lane="replay" provenance="synthetic">
