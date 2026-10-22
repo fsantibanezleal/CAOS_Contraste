@@ -36,9 +36,10 @@ ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split(".")
 ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
 # sha256 of the three adopted scripts at the template release 0.10 (git show of scripts/<name> at its tag)
+# the sha256 of the scripts at the template tag v0.11.000 (U16-W adopted them; 0.10.000 hashes before)
 ADOPTED = {
-    "check_notebooks.py": "827f67ebd495ea643ef814c0d33378e46f6ed232937f2bb192daf2458c13fc50",
-    "run_notebooks.py": "f5caebdefbe98ce23e733198c7c8157c9683f76f0340a6dc613f90b27c6f6123",
+    "check_notebooks.py": "cafdc8b58957e045115c3c72feb985a7dd1d7bd65709f5e111d1e0969daba98c",
+    "run_notebooks.py": "5e2cdb5f71a44cce5f1e4d7d1ef0e333cc0d3aa760dbce29ae40a3dc769aeba3",
     "check_readme_areas.py": "1eb76a810d13aeebf12809a69490e8e1cac4cdf6f51516e0568e9d2c717e96e2",
 }
 
@@ -271,9 +272,24 @@ def stream_text(cell: dict) -> str:
     return "".join("".join(o["text"]) for o in cell["outputs"] if o["output_type"] == "stream")
 
 
-def numeric_tokens(cell: dict) -> list[str]:
-    """The numbers a code cell printed, in order: what the two trees must share (their text is in their own language)."""
-    return NUMBER.findall(stream_text(cell))
+SPANISH_DECIMAL = re.compile(r"(?<![\d,])(\d+),(?=\d+%)")  # "2,5%" of a label; the grouping commas of {:,} and "[0,2)" stay
+SPANISH_THOUSANDS = re.compile(r"\d{1,3}(?:\.\d{3})+")
+
+
+def numeric_tokens(cell: dict, lang: str = "en") -> list[str]:
+    """The numbers a code cell printed, in order: what the two trees must share (their text is in their own language).
+
+    Since the producers write the numbers of their texts as the shell does (fee234b, U16-P1a), a Spanish label carries
+    "2,5%" where the English one has "2.5%": the decimal comma before a percent is read back to the point, so the number is still compared."""
+    text = stream_text(cell)
+    return NUMBER.findall(SPANISH_DECIMAL.sub(r"\1.", text) if lang == "es" else text)
+
+
+def same_numbers(english: list[str], spanish: list[str]) -> bool:
+    """Equal token by token; the one difference allowed is the thousands point of a Spanish label ("1.500 dias" for
+    "1500 days"): a Spanish token of the form 1.500 or 12.345.678 whose digits are the English token's."""
+    return len(english) == len(spanish) and all(
+        e == s or (SPANISH_THOUSANDS.fullmatch(s) is not None and e == s.replace(".", "")) for e, s in zip(english, spanish))
 
 
 def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
@@ -286,7 +302,15 @@ def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
         assert len(a_cells) == len(b_cells)
         for i, (x, y) in enumerate(zip(a_cells, b_cells), 1):
             assert [o["output_type"] for o in x["outputs"]] == [o["output_type"] for o in y["outputs"]], f"{en.name}: code cell {i}"
-            assert numeric_tokens(x) == numeric_tokens(y), f"{en.name}: code cell {i}: the printed numbers of the two trees differ"
+            assert same_numbers(numeric_tokens(x), numeric_tokens(y, "es")), f"{en.name}: code cell {i}: the printed numbers of the two trees differ"
+
+
+def test_adversarial_the_spanish_number_reading_allows_only_the_thousands_point_and_the_decimal_comma():
+    cell = {"outputs": [{"output_type": "stream", "text": ["a (1500 days at 2.5%) 0.058\n"]}]}
+    es_cell = {"outputs": [{"output_type": "stream", "text": ["a (1.500 dias al 2,5%) 0.058\n"]}]}
+    assert same_numbers(numeric_tokens(cell), numeric_tokens(es_cell, "es"))
+    for wrong in ("a (1.501 dias al 2,5%) 0.058\n", "a (1.500 dias al 2,6%) 0.058\n", "a (1.500 dias al 2,5%) 0.059\n", "a (1.500 dias al 2,5%)\n"):
+        assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
 
 
 # English labels the English notebooks print; a Spanish notebook prints none of them (conventions/product-notebooks.md:
@@ -379,12 +403,13 @@ def test_the_ci_runs_the_static_checks_and_never_the_notebooks():
 def test_the_adopted_scripts_are_the_template_scripts_byte_for_byte():
     for name, digest in ADOPTED.items():
         data = (SCRIPTS / name).read_bytes().replace(b"\r\n", b"\n")
-        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the template release 0.10"
+        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the template release 0.11.000"
 
 
 @pytest.mark.skipif(not (ROOT / ".venv-notebooks").exists(), reason="the notebook environment .venv-notebooks is a local release gate (ADR-0074)")
-def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel():
-    done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check"], capture_output=True, text=True, check=False,
+def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel(tmp_path):
+    # template 0.11.000: --check names its temp root (--tmp, else CAOS_TEMP_ROOT) and never falls back to the system temp
+    done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check", "--tmp", str(tmp_path)], capture_output=True, text=True, check=False,
                           cwd=ROOT, timeout=3000)
     assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
     assert "nothing written" in done.stdout
@@ -602,7 +627,7 @@ def test_adversarial_a_hand_edited_output_fails_the_release_gate(repo):
     cell = next(c for c in code_cells(nb) if any(o["output_type"] == "stream" for o in c["outputs"]))
     next(o for o in cell["outputs"] if o["output_type"] == "stream")["text"] = ["edited by hand\n"]
     write_nb(target, nb)
-    done = subprocess.run([sys.executable, str(repo / "scripts" / "run_notebooks.py"), "--check", "--only", str(target)],
+    done = subprocess.run([sys.executable, str(repo / "scripts" / "run_notebooks.py"), "--check", "--tmp", str(repo.parent), "--only", str(target)],
                           capture_output=True, text=True, check=False, timeout=900)
     assert done.returncode == 1 and "stale" in done.stdout, done.stdout[-1500:]
 
