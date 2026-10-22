@@ -17,6 +17,7 @@ import { MatrixDrawing, SensitivityTable } from './governance/TierMatrix';
 import { tierColor } from './governance/DependencyMap';
 import { tierOf, type GovInventory, type GovReport } from './governance/model';
 import { ReportDocument } from './governance/ReportView';
+import { ContextView } from './ContextView';
 import { ImpactView } from './ImpactView';
 import { LadderView } from './ModelViews';
 import { BatteryView, CalibrationView, DiscriminationView, StabilityView } from './ValidationViews';
@@ -66,6 +67,10 @@ describe('VS-1, V02-4, V06-5, V21-1: a table of a filling card keeps its rows at
   it('a scroll box (.ct-scroll, also inside a stack) flows below 900 px instead of keeping the clamp of the card', () => {
     expect(narrow).toMatch(/\.ct-scroll[^{]*\{[^}]*height:\s*auto/);
     expect(narrow).toMatch(/\.ct-stack\s*>\s*\.ct-scroll[^{]*\{[^}]*flex:\s*none/);
+  });
+  it('the panels of a C22 family flow as well, with their card body', () => {
+    expect(narrow).toMatch(/\.ct-panels-fill\s*\{[^}]*height:\s*auto/);
+    expect(narrow).toMatch(/:has\(\.ct-panels-fill\)[^{]*\{[^}]*height:\s*auto/);
   });
   it('the card body that holds a scroll box grows with it', () => {
     expect(narrow).toMatch(/:has\(\.ct-scroll\)[^{]*\{[^}]*height:\s*auto/);
@@ -351,6 +356,9 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
   it('m5: the PSI note says that ties merge deciles', () => {
     expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/ties[^.]*merge/i);
     expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empates[^.]*(fusionan|unen)/i);
+  });
+  it('m8: the attribution column of the Spanish Context says its text is the own wording of the source', () => {
+    expect(view(<ContextView sel={sel} />, 'es')).toContain('texto exigido por la fuente, en su idioma');
   });
   it('m16: the AUC and its interval are written to the same four decimals', () => {
     expect(view(<DiscriminationView sel={sel} />, 'en')).toMatch(/0\.\d{4} \(0\.\d{4} - 0\.\d{4}\)/);

@@ -130,6 +130,9 @@
   /* a table that scrolls inside its card at a phone keeps the rows the card clamp leaves (one or two, U16-R2 b02 m1): it flows */
   .ct-scroll, .ct-stack > .ct-scroll { flex: none; height: auto; overflow-y: visible; }
   .ct-fade-scroll { max-height: none !important; overflow-y: visible; }
+  /* the panels of a C22 family flow too: a box of 405 px held 4,605 px of panels with no cue (U16-R2 b02 m1) */
+  .ct-panels-fill { height: auto; overflow-y: visible; }
+  .caos-plot.fill > .caos-plot-body:has(.ct-panels-fill) { height: auto; }
   .caos-plot.fill > .caos-plot-body:has(.ct-scroll) { height: auto; }
 }
 /* a box of the reports with a height of its own scrolls like the others */
