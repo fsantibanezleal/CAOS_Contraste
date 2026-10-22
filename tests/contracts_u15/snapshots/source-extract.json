@@ -1,11 +1,11 @@
 {
- "engine_commit": "0b541bb90eed25c0508907625f7067ced0351ce1",
+ "engine_commit": "682adeaf8e247cdf306dc666948b3b7e800468bf",
  "cases": {
   "C01": {
    "fit_id": "german",
    "manifest": {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "007ccc71174e1a51f66d817c2681f8d3ac19cca5a84620a0ac800198b564abda",
+    "sha256": "fbb7ed12f1d9f36112885fa7a200018b327e44d6075994c0e9294368ccad3464",
     "title": {
      "en": "Retail cards PD: champion vs challenger",
      "es": "PD de tarjetas: campeón vs retador"
@@ -26,9 +26,9 @@
    },
    "models_document": {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
-    "code_version": "0.07.000",
-    "riskvalidation_version": "0.4.3",
+    "sha256": "cc31660ee1f225de62eeee73386ab4c1ed583f13fe0e431a535203a188763001",
+    "code_version": "1.00.000",
+    "riskvalidation_version": "1.0.1",
     "truth_status": "real-outcomes",
     "models": [
      {
@@ -118,9 +118,9 @@
     {
      "variant_id": "german-twin",
      "path": "data/derived/C01/german-twin.json",
-     "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.4.3",
+     "sha256": "8b20279786c0cb80ce89f3bf688c99d410c98460eb36af6d36da6d069118018b",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "uci-german"
      ],
@@ -2594,7 +2594,7 @@
        "alpha_red": null,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "0f831ac184e61620e7111778677bd30bfc89ee52093da6bb7e0b15263169fdc8"
+       "inputs_hash": "ed2acf37ca3dad9d9817e9af87b0003e9dbdc8575a53a3a3dc3cd2252d8c5fcf"
       },
       {
        "test_id": "disc.auc_vs_initial",
@@ -2611,7 +2611,7 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "05000621eab82249c8c491e27854aef89e09c83eb99248afa6d2986509a9d5c4"
+       "inputs_hash": "1a62ad901502627217a023e12857dec0745a52af4956f73a5d5c5e6a462266b2"
       },
       {
        "test_id": "disc.delong",
@@ -2628,7 +2628,7 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "1f7fdef8476b4ba288309c0df841c9dac97fdb6948205cb4a0cbcfb910d9b65d"
+       "inputs_hash": "3974936a09ee130d91631ecd459f9ce98a3a4841702d56a70fb768ae3cabb04b"
       },
       {
        "test_id": "disc.ks",
@@ -2645,14 +2645,14 @@
        "alpha_red": null,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "c2d27a63b94e562f29c5187935026e86565865a5be622164ea56d8448ba440eb"
+       "inputs_hash": "e4eedd420edbe82455f9441a83f51cc8b23bcc05ec93d34f3a9a81957aa04b2d"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G01",
        "statistic": 0.0727272727,
-       "p_value": 4.00473143e-11,
+       "p_value": 4.0058697e-11,
        "metric": null,
        "light": "red",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2662,14 +2662,14 @@
        "alpha_red": 0.01,
        "n": 55,
        "n_events": 4,
-       "inputs_hash": "a47e546c68c5c7d3c321e93c5d581092825b52884994669fa422fab00f83ae2c"
+       "inputs_hash": "8b518d9cf7c55302e8f393871ccbeeeffc6a541502302c9523d277a99ce2b35c"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G03",
        "statistic": 0.0,
-       "p_value": 0.189742292,
+       "p_value": 0.189746789,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2679,14 +2679,14 @@
        "alpha_red": 0.01,
        "n": 1,
        "n_events": 0,
-       "inputs_hash": "dbb912ed644ead3ed2f8dbd26911dde2457c341aa2acaaf61ee5f42c2af7d850"
+       "inputs_hash": "e82bfd047540bc85cb7de524f874704efdb89a622a015dba364b2a8ac83e0b0c"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G04",
        "statistic": 0.0,
-       "p_value": 0.201588511,
+       "p_value": 0.201588715,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2696,14 +2696,14 @@
        "alpha_red": 0.01,
        "n": 1,
        "n_events": 0,
-       "inputs_hash": "2944af2813ab215c18f576efc694f0210ec10a3fdd249986fa095f55435fcdc2"
+       "inputs_hash": "26248ef57e118fee45018dd1fcc3d11a363cf4ac1ac9210f5e49526662dfdd2f"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G05",
        "statistic": 0.0,
-       "p_value": 0.467972787,
+       "p_value": 0.467972084,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2713,14 +2713,14 @@
        "alpha_red": 0.01,
        "n": 4,
        "n_events": 0,
-       "inputs_hash": "9e957e3b58960bb60acda2f528492edd6fdba62c722addd70610351e48e33fdd"
+       "inputs_hash": "ab5df8197ba7ce25462974fe1db6f304422c38d61bb42337adcd0d03baed1acf"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G06",
        "statistic": 0.05,
-       "p_value": 0.594320484,
+       "p_value": 0.594320493,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2730,14 +2730,14 @@
        "alpha_red": 0.01,
        "n": 20,
        "n_events": 1,
-       "inputs_hash": "258459b446dca168b6974c746b09e83af2d2b46399875f0828282cf9a5ec4404"
+       "inputs_hash": "07c815226cdb80183d5bbc62e0cf4a5c621c6abf9c2552c5df6797bca968c468"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G07",
        "statistic": 0.2,
-       "p_value": 0.0297371643,
+       "p_value": 0.0297371957,
        "metric": null,
        "light": "amber",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2747,14 +2747,14 @@
        "alpha_red": 0.01,
        "n": 30,
        "n_events": 6,
-       "inputs_hash": "0bc65cd29ac5b32bf306e97805a219afd81b180051ecec2420a7ec6771c7cf25"
+       "inputs_hash": "07294965aa67f1253c73df3de7d5cf2d68b3e85e7c459a3270c42101e5b4d9b8"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G08",
        "statistic": 0.0,
-       "p_value": 0.48342057,
+       "p_value": 0.483417584,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2764,14 +2764,14 @@
        "alpha_red": 0.01,
        "n": 1,
        "n_events": 0,
-       "inputs_hash": "5daf78b790e5cad66739734b6a80c59d44612ac9558b40e434235bbcd8f3e6d9"
+       "inputs_hash": "d44c9abd1027a0deaa44204731b27981866d2402ab027e4935892d493e627a0c"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G09",
        "statistic": 0.5,
-       "p_value": 0.154810137,
+       "p_value": 0.154810477,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2781,14 +2781,14 @@
        "alpha_red": 0.01,
        "n": 2,
        "n_events": 1,
-       "inputs_hash": "2c4c28d4da95f7ce2b856f731a4fc82076c4473ad28be67a729c6b7cf202f65f"
+       "inputs_hash": "a7d2d918becc1aec883794992cc780c5d9aaa334788f9439cc4c8807b0c9f135"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G10",
        "statistic": 0.275510204,
-       "p_value": 0.472199065,
+       "p_value": 0.472196716,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2798,14 +2798,14 @@
        "alpha_red": 0.01,
        "n": 98,
        "n_events": 27,
-       "inputs_hash": "97c2f869e5b6b8842e2b3f45da29b25a79aac0a0d1cdfd05ae227db377be194b"
+       "inputs_hash": "ecb60e4818859080fbc12547c2d24a3b4e7a6ca920255f307696b01240473e24"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G11",
        "statistic": 0.4375,
-       "p_value": 0.400562069,
+       "p_value": 0.400561198,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2815,14 +2815,14 @@
        "alpha_red": 0.01,
        "n": 32,
        "n_events": 14,
-       "inputs_hash": "67444ed7207434ea27487dd36f00a19fdc3a20c661e6fc32dfbcfcba9c9b3b75"
+       "inputs_hash": "fc0f0fef4a1dd6cda228fbe31503c5e26d17a010cd79e832c30427df5275172b"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "G12",
        "statistic": 0.660714286,
-       "p_value": 0.668020925,
+       "p_value": 0.668021763,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2832,14 +2832,14 @@
        "alpha_red": 0.01,
        "n": 56,
        "n_events": 37,
-       "inputs_hash": "2436fd0f3d6bbc5004a80807a231dca0300ba9d07f64cc148631f39d63eaf8eb"
+       "inputs_hash": "f98a4ab69eeb6465bfc5ad67cc0942e61e449217c93f8fdd5d951035102f2d08"
       },
       {
        "test_id": "pd.jeffreys",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
        "statistic": 0.3,
-       "p_value": 0.20142793,
+       "p_value": 0.201427067,
        "metric": null,
        "light": "green",
        "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
@@ -2849,14 +2849,14 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "fc9651c535453776f6054a5a40024a4771b00b5f723a1f12bfc3b16a3dda8ade"
+       "inputs_hash": "e340a1f44f8be547165956c9638daf89a8b0eefba69949229d58cfa38ff50cb3"
       },
       {
        "test_id": "pd.binomial",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
        "statistic": 90.0,
-       "p_value": 0.219739627,
+       "p_value": 0.219738719,
        "metric": null,
        "light": "green",
        "h0": "the true PD is less than or equal to the PD applied, defaults independent",
@@ -2866,14 +2866,14 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "a734e29a673dbcfe18f46865794c69dd43f3b9a65d922aaa9d9977567f3f0452"
+       "inputs_hash": "01d8c69acf1a8f7db8a07115fe34d084bf44236cef16cb87854011cb9f2588e8"
       },
       {
        "test_id": "pd.binomial_vasicek",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
        "statistic": 90.0,
-       "p_value": 0.372474847,
+       "p_value": 0.372474431,
        "metric": null,
        "light": "green",
        "h0": "the true PD is less than or equal to the PD applied, defaults correlated through one systematic factor",
@@ -2883,14 +2883,14 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "2d8916c52c7db690d4e8eb9613756df90aea4e59f81ab6deedee3d76a3dcc032"
+       "inputs_hash": "1d746540e55630612dc4f1ab262db577f1ad35c4dc79fa5749b7af3800798ff2"
       },
       {
        "test_id": "pd.chi2_grades",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
-       "statistic": 1309.4501,
-       "p_value": 4.10131897e-274,
+       "statistic": 1309.36712,
+       "p_value": 4.27382856e-274,
        "metric": null,
        "light": "red",
        "h0": "every grade PD equals the true PD of its grade, defaults independent within and between grades",
@@ -2900,13 +2900,13 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "356efd7886a2f8dca012220a168645a557431fc5fee26adbbcd107cfd4d1de9e"
+       "inputs_hash": "bf58ea95dfc862a737a011117f88ebbd6d600e6c2deaa7f809673d953fb65272"
       },
       {
        "test_id": "pd.hosmer_lemeshow",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
-       "statistic": 33376.891,
+       "statistic": 33376.8907,
        "p_value": 0.0,
        "metric": null,
        "light": "red",
@@ -2917,14 +2917,14 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "6d51ab0ef19ee68e6704319bf8f4e17dcafd557c71b5a4fbc27cd52aa0249043"
+       "inputs_hash": "53e8eec504947ef94fdca231dc5f74aeefe29138abaa6d0f41bb5383307a384c"
       },
       {
        "test_id": "pd.spiegelhalter",
        "model_id": "P5-tabpfn",
        "segment": "portfolio",
-       "statistic": 2.4151672,
-       "p_value": 0.00786399391,
+       "statistic": 2.41518204,
+       "p_value": 0.00786367352,
        "metric": null,
        "light": "red",
        "h0": "every obligor's predicted PD equals its true default probability",
@@ -2934,7 +2934,7 @@
        "alpha_red": 0.01,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "31b200a6768961b1690dd8ae03c896d5cddb74be03f84cc985cb5a750170d95a"
+       "inputs_hash": "3dfd31fdf99b22f7839cba4cefe2a5c60c3e3db5bdc738c044aec7f737f470ea"
       },
       {
        "test_id": "pd.brier",
@@ -2942,7 +2942,7 @@
        "segment": "portfolio",
        "statistic": null,
        "p_value": null,
-       "metric": 0.166744522,
+       "metric": 0.16674466,
        "light": "not_evaluated",
        "h0": "descriptive: mean squared error of the PD forecasts",
        "reference": "Brier (1950), doi:10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2; Murphy (1973), doi:10.1175/1520-0450(1973)012<0595:ANVPOT>2.0.CO;2",
@@ -2951,7 +2951,7 @@
        "alpha_red": null,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "c39d3225e61bde979ed88d5910c02094da0db85663a4b66f0f2654e84951b91d"
+       "inputs_hash": "14105ba5c94162b35b307f06a2c5a49f52d4bf1ce898c29cf930d7521d604689"
       },
       {
        "test_id": "pd.ece",
@@ -2959,7 +2959,7 @@
        "segment": "portfolio",
        "statistic": null,
        "p_value": null,
-       "metric": 0.039459935,
+       "metric": 0.0394597716,
        "light": "not_evaluated",
        "h0": "descriptive: weighted mean absolute gap between forecast and observed default rate per bin",
        "reference": "Naeini, Cooper and Hauskrecht (2015), AAAI, doi:10.1609/aaai.v29i1.9602; Guo et al. (2017), arXiv:1706.04599",
@@ -2968,7 +2968,7 @@
        "alpha_red": null,
        "n": 300,
        "n_events": 90,
-       "inputs_hash": "4308b3146d1eecb1a418a81fcd0953bc370a6f14193c27c127005b415330fd31"
+       "inputs_hash": "c659f1e9f897d3d32d8fd2da4e9c71ec2369b8e80ce51df4432c1da9733664ba"
       },
       {
        "test_id": "stability.psi",
@@ -3385,9 +3385,9 @@
     "data/derived/C01/models-german.json#/model/7/engine": "tabpfn",
     "data/derived/C01/models-german.json#/model/7/family": "pd-scoring",
     "data/derived/C01/models-german.json#/model/7/rung": "P5",
-    "data/derived/C01/models-german.json#/provenance/code_version": "0.07.000",
+    "data/derived/C01/models-german.json#/provenance/code_version": "1.00.000",
     "data/derived/C01/models-german.json#/provenance/generators": [],
-    "data/derived/C01/models-german.json#/provenance/riskvalidation_version": "0.4.3",
+    "data/derived/C01/models-german.json#/provenance/riskvalidation_version": "1.0.1",
     "data/derived/manifests/C01.json#/question": {
      "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
      "es": "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
@@ -3440,7 +3440,7 @@
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "2aa1c2297982bd0a760d5a8391220a7e9953d4a5df8b1572e5528f9f3b82a003",
+    "sha256": "53f8539c543bc30eb7b92738c028bbd418c6363eee75d9f201f9db830ea693f1",
     "title": {
      "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
      "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
@@ -3458,9 +3458,9 @@
    },
    "models_document": {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
-    "code_version": "0.07.000",
-    "riskvalidation_version": "0.5.0",
+    "sha256": "7c7cbd257d44d48a89290d095f721ea283391cc53b60e83dda1db8fc4d934939",
+    "code_version": "1.00.000",
+    "riskvalidation_version": "1.0.1",
     "truth_status": "synthetic-calibrated",
     "models": [
      {
@@ -3510,9 +3510,9 @@
     {
      "variant_id": "base",
      "path": "data/derived/C07/base.json",
-     "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "62cb4f31ad15352254840e627c2c9b67fbab47089933618e17f75f0675cf379f",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -3587,7 +3587,7 @@
        "light": "green",
        "h0": "the probability-weighted ECL equals the ECL at the probability-weighted mean path (a linear ECL)",
        "reference": "BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), para 36(a); GPPC (2016), The implementation of IFRS 9 impairment requirements by banks, 2016-06-17, 2.8.1.2; IFRS 9 5.5.17(a), B5.5.42",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3604,7 +3604,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3621,7 +3621,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3638,7 +3638,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3655,7 +3655,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3672,7 +3672,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3689,7 +3689,7 @@
        "light": "green",
        "h0": "the weighted PD equals the PD at the weighted mean factor (a linear PD in the systematic factor)",
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; gauss_hermite_tolerance=1e-09; gauss_hermite_nodes=64",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
@@ -3706,7 +3706,7 @@
        "light": "green",
        "h0": "overlays are a small, attributed, directionally consistent part of the allowance",
        "reference": "ECB Banking Supervision (2024), IFRS 9 overlays and model improvements for novel risks, doi:10.2866/034127; ECB letter SSM-2020-0744 (2020-12-04); BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), paras 50 and 51",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; share_amber=0.1; share_red=0.25",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 2,
@@ -3723,7 +3723,7 @@
        "light": "amber",
        "h0": "Stage 2 accounts default at the same rate as Stage 1 accounts (the SICR flag carries no information)",
        "reference": "EBA (2023), IFRS 9 implementation by EU institutions, 2023 Monitoring report, EBA/Rep/2023/36, doi:10.2853/269836, paras 94 to 99 and Figure 42; BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), A38; dossier 02 I.2",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; green_ratio=2.0; amber_ratio=1.0; direct_share_amber=0.5; min_months=1",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 167198,
@@ -3740,7 +3740,7 @@
        "light": "green",
        "h0": "the discounted realised losses within the horizon equal the model ECL for the same accounts",
        "reference": "IFRS 9 B5.5.52; EBA (2023), IFRS 9 implementation by EU institutions, 2023 Monitoring report, EBA/Rep/2023/36, doi:10.2853/269836, paras 100 to 104",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; r_green=0.8-1.25; r_amber=0.5-2.0",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 167198,
@@ -3757,7 +3757,7 @@
        "light": "green",
        "h0": "opening plus movements equals closing, by stage, and the waterfall opens into the stage tables",
        "reference": "IFRS 7 35H and 35I; dossier 02 I.1 items 9 and 10 and I.2",
-       "policy_version": "contraste-ifrs9-battery-1.0.0; tolerance=1e-06; basis=tolerance * max(1, G)",
+       "policy_version": "contraste-ifrs9-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 6,
@@ -3769,9 +3769,9 @@
     {
      "variant_id": "combined-severe",
      "path": "data/derived/C07/combined-severe.json",
-     "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "c51e480a0e425d9a4b3881243b1f0cf69ec6dba8a95456d6d1f4ee81d052b242",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -3928,9 +3928,9 @@
     {
      "variant_id": "consumer-arrears-shock",
      "path": "data/derived/C07/consumer-arrears-shock.json",
-     "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "5da646192ba832d8f2b15187fd5f6c65edbfc0f92ada6528f09b2e8c5ebfd800",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -4099,9 +4099,9 @@
     {
      "variant_id": "house-price-fall",
      "path": "data/derived/C07/house-price-fall.json",
-     "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "ba94b4a833fb13a07e81ea2201aeae0842a0cb06b6143c1296769171ac7c5809",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -4270,9 +4270,9 @@
     {
      "variant_id": "recession",
      "path": "data/derived/C07/recession.json",
-     "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "2a915b9795e912abebd3d01b6b8fd99174c023eb24df2ebcfda89fd136a0178f",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -4441,9 +4441,9 @@
     {
      "variant_id": "uf-inflation-spike",
      "path": "data/derived/C07/uf-inflation-spike.json",
-     "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
-     "code_version": "0.07.000",
-     "riskvalidation_version": "0.5.0",
+     "sha256": "ee072766b3fd3f05887c4c3bdbed530449b0a82dd8fe386de888a4b87c8f5822",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -4671,11 +4671,11 @@
     "data/derived/C07/models-banco-andino.json#/model/3/engine": "riskvalidation.provisions.local_es",
     "data/derived/C07/models-banco-andino.json#/model/3/family": "statutory-provision",
     "data/derived/C07/models-banco-andino.json#/model/3/rung": "bde-annex9",
-    "data/derived/C07/models-banco-andino.json#/provenance/code_version": "0.07.000",
+    "data/derived/C07/models-banco-andino.json#/provenance/code_version": "1.00.000",
     "data/derived/C07/models-banco-andino.json#/provenance/generators": [
      "banco-andino-synthetic/1.0.0"
     ],
-    "data/derived/C07/models-banco-andino.json#/provenance/riskvalidation_version": "0.5.0",
+    "data/derived/C07/models-banco-andino.json#/provenance/riskvalidation_version": "1.0.1",
     "data/derived/manifests/C07.json#/question": {
      "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
@@ -4707,7 +4707,7 @@
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "7a822eabcb64a596792f8c10fdb38d77f2f4e48bc95f1f0e74344fa2280cf133",
+    "sha256": "1ffd45c98b63a762062e9b2198e91a2bf9bb64d1282cea6e9bbd420c2b9bf8e9",
     "title": {
      "en": "ICAAP and IAPE capital aggregation under macro scenarios",
      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
@@ -4731,9 +4731,9 @@
    },
    "models_document": {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
-    "code_version": "0.15.000",
-    "riskvalidation_version": "0.9.0",
+    "sha256": "a2186aa6aa9bf853f63587cc1123c9832622addf45f5ba40a0bd60d75199e044",
+    "code_version": "1.00.000",
+    "riskvalidation_version": "1.0.1",
     "truth_status": "synthetic-calibrated",
     "models": [
      {
@@ -4773,9 +4773,9 @@
     {
      "variant_id": "baseline",
      "path": "data/derived/C18/baseline.json",
-     "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "28261ae9faf1a7d977b03b01241a1ffd85ae7007d71720980fa21a58075aac2d",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -4850,86 +4850,86 @@
        "test_id": "aggregation.simple_sum_and_variance_covariance",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.931580292794096,
+       "statistic": 0.9315803965487653,
        "p_value": null,
-       "metric": 0.7476278509282498,
+       "metric": 0.7476279282051226,
        "light": "green",
        "h0": "the aggregate is not above the simple sum and agrees with the variance-covariance formula",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.1 (the aggregation ladder: simple sum, variance-covariance, copulas)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 4,
        "n_events": null,
-       "inputs_hash": "206462b7bfdbd45780ed652108e47902cc04067ae100a99be4c609e1230c3783"
+       "inputs_hash": "8315c291b922155f0ef06ef324de3f5c73bd2e1bdcce9d5ef389b4ad9785e9e6"
       },
       {
        "test_id": "aggregation.copula_choice_sensitivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12280231864558688,
+       "statistic": 0.12280216658879661,
        "p_value": null,
-       "metric": 0.12280231864558688,
+       "metric": 0.12280216658879661,
        "light": "amber",
        "h0": "the choice between the Gaussian and the t copula over the stated nu set moves the capital by less than the thresholds",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); Rosenberg and Schuermann (2006), A general approach to integrated risk management with skewed, fat-tailed risks, J. Financial Economics 79(3):569-614, doi:10.1016/j.jfineco.2005.03.001 (dossier 05 G.2)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; amber=0.05; red=0.15",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 3,
        "n_events": null,
-       "inputs_hash": "6368e14a7003e97930fd33e1483b3805afb73402fa78bed1d324219091199074"
+       "inputs_hash": "622304d580a32496f00dcd254e0b8dbc057e0253443ccc1ef0f4466df59b7aa5"
       },
       {
        "test_id": "aggregation.worst_case_bracket",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 704814.1714526084,
+       "statistic": 704814.0560671377,
        "p_value": null,
-       "metric": 1.0710712945757181,
+       "metric": 1.0710712244644753,
        "light": "green",
        "h0": "every row of the band lies between the lower bound and the worst case",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 6,
        "n_events": null,
-       "inputs_hash": "955aa966c6aa10191cf423ceb199508b4a75de6d6edda482a7d3dbc67bc34816"
+       "inputs_hash": "4e27086cbcd92da05ef398fcc270afaff0b788e53b666d2b4de50aac11bc1d54"
       },
       {
        "test_id": "aggregation.correlation_stress",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12113490637743207,
+       "statistic": 0.12113490109002112,
        "p_value": null,
-       "metric": 0.12113490637743207,
+       "metric": 0.12113490109002112,
        "light": "amber",
        "h0": "raising the market-credit correlation does not lower the capital and raises it by less than the amber gate",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": null,
        "n_events": null,
-       "inputs_hash": "1d17db58cccc5c74a965ee0b363f389f6e3071d97238225f2b13905dd268b039"
+       "inputs_hash": "effbc2124900f78dceac18edbf302d3961c85eab565f4e3d7232a7d11bf89d49"
       },
       {
        "test_id": "aggregation.diversification_sign",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.8394382845062561,
+       "statistic": 0.8394382575910049,
        "p_value": null,
-       "metric": 0.2523721490717502,
+       "metric": 0.2523720717948774,
        "light": "green",
        "h0": "every diversification benefit has the right sign (DF <= 1)",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 5,
        "n_events": null,
-       "inputs_hash": "b946eb55769234b948df4e4a12bbbcd25ccc851287ec0852aacc7dfbdcf3dcb5"
+       "inputs_hash": "238ad2eed6d9242fdfbe39434025fef57e56be269d2b46b0b62bd9b1e4117512"
       },
       {
        "test_id": "aggregation.horizon_confidence_consistency",
@@ -4941,7 +4941,7 @@
        "light": "green",
        "h0": "one risk horizon and one confidence level apply across the marginals",
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 01 l.837-839 (one horizon and one confidence level for the aggregation)",
-       "policy_version": "contraste-aggregation-battery-1.0.0; expected_horizon=1.0; expected_level=0.999",
+       "policy_version": "contraste-aggregation-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 4,
@@ -4952,18 +4952,18 @@
        "test_id": "portfolio.euler_additivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 709389.9885192472,
+       "statistic": 709389.8922561734,
        "p_value": null,
-       "metric": 0.0,
+       "metric": 1.6410625961512174e-16,
        "light": "green",
        "h0": "the Euler contributions add up to the total",
        "reference": "Tasche (2008), Capital allocation to business units and sub-portfolios: the Euler principle, arXiv 0708.2542 (full allocation); dossier 05 G.5 (validation tests of an economic capital model: check the allocation sums to the total, the sensitivity checks)",
-       "policy_version": "contraste-portfolio-battery-1.0.0; tolerance=1e-06",
+       "policy_version": "contraste-portfolio-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 4,
        "n_events": null,
-       "inputs_hash": "c834f3233955256a8facd55b488fb97b80178a01e5db0528ca4bbba0c59745d2"
+       "inputs_hash": "28c976097a43c8a4233a71a31e68946f83f0f1a15935015fb941ac5874f13628"
       },
       {
        "test_id": "stress.sensitivity_monotonicity",
@@ -4975,7 +4975,7 @@
        "light": "red",
        "h0": "every macro sensitivity has its expected sign, so the projected loss rate is monotone in the path severity",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; rule=red-on-any",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 30,
@@ -4992,7 +4992,7 @@
        "light": "red",
        "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 24,
@@ -5009,7 +5009,7 @@
        "light": "red",
        "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 24,
@@ -5026,7 +5026,7 @@
        "light": "red",
        "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 24,
@@ -5043,7 +5043,7 @@
        "light": "red",
        "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 24,
@@ -5060,7 +5060,7 @@
        "light": "red",
        "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
-       "policy_version": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 24,
@@ -5077,7 +5077,7 @@
        "light": "green",
        "h0": "the static balance sheet rules are applied: the total is constant, stage 3 never falls, no balance is negative",
        "reference": "EBA 2025 EU-wide stress test, Methodological Note of 2025-01-20, paras 33, 34 and 90 (static balance sheet: constant total, no cure of stage 3); dossier 05 H.4 and H.7",
-       "policy_version": "contraste-stress-battery-1.0.0; tolerance=0.006000000000000001",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": 12,
@@ -5094,7 +5094,7 @@
        "light": "not_evaluated",
        "h0": "a stress path is at least as severe as history",
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
-       "policy_version": "contraste-stress-battery-1.0.0; minimum=0.75",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": null,
@@ -5111,7 +5111,7 @@
        "light": "not_evaluated",
        "h0": "a stress path is at least as severe as history",
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
-       "policy_version": "contraste-stress-battery-1.0.0; minimum=0.75",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": null,
@@ -5128,7 +5128,7 @@
        "light": "not_evaluated",
        "h0": "a stress path is at least as severe as history",
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
-       "policy_version": "contraste-stress-battery-1.0.0; minimum=0.75",
+       "policy_version": "contraste-stress-battery 1.0.0",
        "alpha_amber": null,
        "alpha_red": null,
        "n": null,
@@ -5140,9 +5140,9 @@
     {
      "variant_id": "eba-2025-adverse",
      "path": "data/derived/C18/eba-2025-adverse.json",
-     "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "2f100dd81c1244c04b201a27375f7567977ebc727d00baca61235305acfd306b",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5241,45 +5241,45 @@
        "test_id": "aggregation.simple_sum_and_variance_covariance",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.931580292794096,
+       "statistic": 0.9315803965487653,
        "p_value": null,
-       "metric": 0.7476278509282498,
+       "metric": 0.7476279282051226,
        "light": "green"
       },
       {
        "test_id": "aggregation.copula_choice_sensitivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12280231864558688,
+       "statistic": 0.12280216658879661,
        "p_value": null,
-       "metric": 0.12280231864558688,
+       "metric": 0.12280216658879661,
        "light": "amber"
       },
       {
        "test_id": "aggregation.worst_case_bracket",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 704814.1714526084,
+       "statistic": 704814.0560671377,
        "p_value": null,
-       "metric": 1.0710712945757181,
+       "metric": 1.0710712244644753,
        "light": "green"
       },
       {
        "test_id": "aggregation.correlation_stress",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12113490637743207,
+       "statistic": 0.12113490109002112,
        "p_value": null,
-       "metric": 0.12113490637743207,
+       "metric": 0.12113490109002112,
        "light": "amber"
       },
       {
        "test_id": "aggregation.diversification_sign",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.8394382845062561,
+       "statistic": 0.8394382575910049,
        "p_value": null,
-       "metric": 0.2523721490717502,
+       "metric": 0.2523720717948774,
        "light": "green"
       },
       {
@@ -5295,9 +5295,9 @@
        "test_id": "portfolio.euler_additivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 709389.9885192472,
+       "statistic": 709389.8922561734,
        "p_value": null,
-       "metric": 0.0,
+       "metric": 1.6410625961512174e-16,
        "light": "green"
       },
       {
@@ -5395,9 +5395,9 @@
     {
      "variant_id": "fed-2026-severely-adverse",
      "path": "data/derived/C18/fed-2026-severely-adverse.json",
-     "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "4579c2abf7c1794261166a39e1c881818a72d35822640ec0049541948ad27b66",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5496,45 +5496,45 @@
        "test_id": "aggregation.simple_sum_and_variance_covariance",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.931580292794096,
+       "statistic": 0.9315803965487653,
        "p_value": null,
-       "metric": 0.7476278509282498,
+       "metric": 0.7476279282051226,
        "light": "green"
       },
       {
        "test_id": "aggregation.copula_choice_sensitivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12280231864558688,
+       "statistic": 0.12280216658879661,
        "p_value": null,
-       "metric": 0.12280231864558688,
+       "metric": 0.12280216658879661,
        "light": "amber"
       },
       {
        "test_id": "aggregation.worst_case_bracket",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 704814.1714526084,
+       "statistic": 704814.0560671377,
        "p_value": null,
-       "metric": 1.0710712945757181,
+       "metric": 1.0710712244644753,
        "light": "green"
       },
       {
        "test_id": "aggregation.correlation_stress",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12113490637743207,
+       "statistic": 0.12113490109002112,
        "p_value": null,
-       "metric": 0.12113490637743207,
+       "metric": 0.12113490109002112,
        "light": "amber"
       },
       {
        "test_id": "aggregation.diversification_sign",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.8394382845062561,
+       "statistic": 0.8394382575910049,
        "p_value": null,
-       "metric": 0.2523721490717502,
+       "metric": 0.2523720717948774,
        "light": "green"
       },
       {
@@ -5550,9 +5550,9 @@
        "test_id": "portfolio.euler_additivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 709389.9885192472,
+       "statistic": 709389.8922561734,
        "p_value": null,
-       "metric": 0.0,
+       "metric": 1.6410625961512174e-16,
        "light": "green"
       },
       {
@@ -5650,9 +5650,9 @@
     {
      "variant_id": "ngfs-delayed-transition",
      "path": "data/derived/C18/ngfs-delayed-transition.json",
-     "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "fba21e9620f7ee372c572be26cd7c181203a809e8170d67f5f577d9441abd8b1",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5739,45 +5739,45 @@
        "test_id": "aggregation.simple_sum_and_variance_covariance",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.931580292794096,
+       "statistic": 0.9315803965487653,
        "p_value": null,
-       "metric": 0.7476278509282498,
+       "metric": 0.7476279282051226,
        "light": "green"
       },
       {
        "test_id": "aggregation.copula_choice_sensitivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12280231864558688,
+       "statistic": 0.12280216658879661,
        "p_value": null,
-       "metric": 0.12280231864558688,
+       "metric": 0.12280216658879661,
        "light": "amber"
       },
       {
        "test_id": "aggregation.worst_case_bracket",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 704814.1714526084,
+       "statistic": 704814.0560671377,
        "p_value": null,
-       "metric": 1.0710712945757181,
+       "metric": 1.0710712244644753,
        "light": "green"
       },
       {
        "test_id": "aggregation.correlation_stress",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12113490637743207,
+       "statistic": 0.12113490109002112,
        "p_value": null,
-       "metric": 0.12113490637743207,
+       "metric": 0.12113490109002112,
        "light": "amber"
       },
       {
        "test_id": "aggregation.diversification_sign",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.8394382845062561,
+       "statistic": 0.8394382575910049,
        "p_value": null,
-       "metric": 0.2523721490717502,
+       "metric": 0.2523720717948774,
        "light": "green"
       },
       {
@@ -5793,9 +5793,9 @@
        "test_id": "portfolio.euler_additivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 709389.9885192472,
+       "statistic": 709389.8922561734,
        "p_value": null,
-       "metric": 0.0,
+       "metric": 1.6410625961512174e-16,
        "light": "green"
       },
       {
@@ -5902,9 +5902,9 @@
     {
      "variant_id": "reverse-stress",
      "path": "data/derived/C18/reverse-stress.json",
-     "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "1dd869d3987eaeb43084b11d868c802468d78e9bbef77d206c0e28785770cbb1",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5941,9 +5941,9 @@
     {
      "variant_id": "t-copula-baseline",
      "path": "data/derived/C18/t-copula-baseline.json",
-     "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
-     "code_version": "0.15.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "edcd3c1fe044f432c20a0b55dfbd898d64769406355505e10c0fcb56314bde9d",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5960,8 +5960,8 @@
         "aggregation.simple_sum_and_variance_covariance"
        ],
        "title": {
-        "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,518 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
-        "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.518 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2% bajo la suma y es información, no capital."
+        "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,517 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
+        "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.517 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2% bajo la suma y es información, no capital."
        }
       },
       {
@@ -5994,45 +5994,45 @@
        "test_id": "aggregation.simple_sum_and_variance_covariance",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.931580292794096,
+       "statistic": 0.9315803965487653,
        "p_value": null,
-       "metric": 0.7476278509282498,
+       "metric": 0.7476279282051226,
        "light": "green"
       },
       {
        "test_id": "aggregation.copula_choice_sensitivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12280231864558688,
+       "statistic": 0.12280216658879661,
        "p_value": null,
-       "metric": 0.12280231864558688,
+       "metric": 0.12280216658879661,
        "light": "amber"
       },
       {
        "test_id": "aggregation.worst_case_bracket",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 704814.1714526084,
+       "statistic": 704814.0560671377,
        "p_value": null,
-       "metric": 1.0710712945757181,
+       "metric": 1.0710712244644753,
        "light": "green"
       },
       {
        "test_id": "aggregation.correlation_stress",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.12113490637743207,
+       "statistic": 0.12113490109002112,
        "p_value": null,
-       "metric": 0.12113490637743207,
+       "metric": 0.12113490109002112,
        "light": "amber"
       },
       {
        "test_id": "aggregation.diversification_sign",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.8394382845062561,
+       "statistic": 0.8394382575910049,
        "p_value": null,
-       "metric": 0.2523721490717502,
+       "metric": 0.2523720717948774,
        "light": "green"
       },
       {
@@ -6048,27 +6048,27 @@
        "test_id": "portfolio.euler_additivity",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 709389.9885192472,
+       "statistic": 709389.8922561734,
        "p_value": null,
-       "metric": 0.0,
+       "metric": 1.6410625961512174e-16,
        "light": "green"
       },
       {
        "test_id": "aggregation.elliptical_mc_agreement",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": -0.8868291266452841,
+       "statistic": -0.8868380963445248,
        "p_value": null,
-       "metric": -0.0026652191319167517,
+       "metric": -0.0026652460965338465,
        "light": "green"
       },
       {
        "test_id": "aggregation.rosenberg_schuermann_reference",
        "model_id": "c18-aggregation-ladder",
        "segment": null,
-       "statistic": 0.3375638678500361,
+       "statistic": 0.33756372959576697,
        "p_value": null,
-       "metric": 0.3375638678500361,
+       "metric": 0.33756372959576697,
        "light": "green"
       }
      ]
@@ -6127,9 +6127,9 @@
     "data/derived/C18/models-banco-andino.json#/model/2/engine": "riskvalidation",
     "data/derived/C18/models-banco-andino.json#/model/2/family": "stress",
     "data/derived/C18/models-banco-andino.json#/model/2/rung": "capital-engine-static",
-    "data/derived/C18/models-banco-andino.json#/provenance/code_version": "0.15.000",
+    "data/derived/C18/models-banco-andino.json#/provenance/code_version": "1.00.000",
     "data/derived/C18/models-banco-andino.json#/provenance/generators": [],
-    "data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version": "0.9.0",
+    "data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version": "1.0.1",
     "data/derived/manifests/C18.json#/question": {
      "en": "Does Banco Andino hold its internal capital target for three years under each scenario once credit, market, IRRBB and operational risk are aggregated, and how much of the answer rests on the aggregation method?",
      "es": "¿Mantiene Banco Andino su objetivo interno de capital durante tres años bajo cada escenario una vez agregados los riesgos de crédito, mercado, IRRBB y operacional, y cuánto de la respuesta depende del método de agregación?"
@@ -6171,7 +6171,7 @@
    "fit_id": "generators",
    "manifest": {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "21e2c6986d4db68774d49dae676c014a787dfd69b7aba1651bfb30a31d271669",
+    "sha256": "9eeddeb772aec6bdd43fb3175a93f0b434d5363859c974dffde7e22fc1698940",
     "title": {
      "en": "Validating the validator: size and power of every test",
      "es": "Validar al validador: tamaño y potencia de cada prueba"
@@ -6192,9 +6192,9 @@
    },
    "models_document": {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "a4fa48ce3ab9b44a0bfa0f90b5219cd454b3adb8630cc7c931ce2a7c5471095b",
-    "code_version": "0.13.000",
-    "riskvalidation_version": "0.9.0",
+    "sha256": "287d586e469bbd2bbad8f10b023f5e639f9f0585f8f10c0e67d0e7389f994ac3",
+    "code_version": "1.00.000",
+    "riskvalidation_version": "1.0.1",
     "truth_status": "synthetic-known-truth",
     "models": [
      {
@@ -6424,9 +6424,9 @@
     {
      "variant_id": "broken-monotonicity",
      "path": "data/derived/C22/broken-monotonicity.json",
-     "sha256": "709c3bda603d9d861a3f7aa39d8d674c8dc54a6d612493b8a0d6fec6c77c6dde",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "26fd3794c1c52908697e3a46ae1b6d8ff7084bfe1189fd2c674a4d0f0d81c618",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -6467,9 +6467,9 @@
     {
      "variant_id": "clustering",
      "path": "data/derived/C22/clustering.json",
-     "sha256": "781521b9303eeeb93d0822590fa4387b58776810b3c9bbef904c8b2b3e9a6bc0",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "11ec30a8b184b23ab983f08a020aed88c00fe6b2b6aeaad171ac0fa9db973d5f",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "bcbs-wp14"
      ],
@@ -6526,9 +6526,9 @@
     {
      "variant_id": "concentration",
      "path": "data/derived/C22/concentration.json",
-     "sha256": "ef52d5e00cdca19e3d078284961001738b60b200e746033e216ad23b0c1a41e6",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "4e7dd3a797458992cbbbbe4b6b716026e6a97bea3e2f5973adaf3baf70e4dcba",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -6569,9 +6569,9 @@
     {
      "variant_id": "discrimination-decay",
      "path": "data/derived/C22/discrimination-decay.json",
-     "sha256": "d7eac6a29e64d5e2276b3d2e25963bc09de905c5293feee031a3bc1fa4a90441",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "63e993be95a126486afa6c709c7bbab472c3eacea37b3e2114715fd3e7419412",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -6625,9 +6625,9 @@
     {
      "variant_id": "drift",
      "path": "data/derived/C22/drift.json",
-     "sha256": "08fa8614e0ce61136a7c42f79053aeba8a13864b579712db360d8e8151292342",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "91f0187ebb47cf69b17c84e88e8cd5e2dc38e7710839d3837314e96cd7837ac6",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [
       "yurdakul-naranjo-2020"
      ],
@@ -6683,9 +6683,9 @@
     {
      "variant_id": "leakage",
      "path": "data/derived/C22/leakage.json",
-     "sha256": "aafc0795a1534bae069362f4fd792c925e22412010bb913483890981d619ebb6",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "5340d8ddadd8ada4b00d5c78ac9717f210098b779bbc5995a6f523309e90e275",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -6739,9 +6739,9 @@
     {
      "variant_id": "miscalibration",
      "path": "data/derived/C22/miscalibration.json",
-     "sha256": "a0e44e618aa7802990c93e0de0e6c283c49334e4e0cb15903145a57abc45fe02",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "04391984ee332f994663e146e046e95bad28e4a437ff70fa7742c80b93dabeb1",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -6813,9 +6813,9 @@
     {
      "variant_id": "null",
      "path": "data/derived/C22/null.json",
-     "sha256": "aadd47b869ea88b60f67db877bff75334d6f66bc007609b8f6e8ac73057ed459",
-     "code_version": "0.13.000",
-     "riskvalidation_version": "0.9.0",
+     "sha256": "d7973919e22f3a0a81335e68118d1250967424c0fa5ea18c600700e4f5e1167b",
+     "code_version": "1.00.000",
+     "riskvalidation_version": "1.0.1",
      "sources": [],
      "findings": [
       {
@@ -7250,7 +7250,7 @@
     "data/derived/C22/models-generators.json#/model/9/engine": "riskvalidation.generators.credit.StageTransitions",
     "data/derived/C22/models-generators.json#/model/9/family": "generator",
     "data/derived/C22/models-generators.json#/model/9/rung": "dgp",
-    "data/derived/C22/models-generators.json#/provenance/code_version": "0.13.000",
+    "data/derived/C22/models-generators.json#/provenance/code_version": "1.00.000",
     "data/derived/C22/models-generators.json#/provenance/generators": [
      "DefaultCounts",
      "BinormalScores",
@@ -7274,7 +7274,7 @@
      "CovariateShiftPlant",
      "ExchangeabilityBreakPlant"
     ],
-    "data/derived/C22/models-generators.json#/provenance/riskvalidation_version": "0.9.0",
+    "data/derived/C22/models-generators.json#/provenance/riskvalidation_version": "1.0.1",
     "data/derived/manifests/C22.json#/question": {
      "en": "How often does each validation test reject a right model, and which defects does it catch?",
      "es": "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?"
