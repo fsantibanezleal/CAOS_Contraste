@@ -100,6 +100,14 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
             })}
           </tbody>
         </table>
+        {rows
+          .filter((r) => r.champ === null)
+          .map((r) => (
+            <p key={r.id} className="ct-note" data-state="unavailable" data-no-champion={r.id}>
+              <strong>{pick(r.title, lang)}</strong>
+              {`: ${pick({ en: 'no champion. Why: ', es: 'sin campeón. Motivo: ' }, lang)}${noteText(r.v.outputs.comparison.champions.find((c) => c.alpha === alpha)?.reason, lang)}`}
+            </p>
+          ))}
       </ChartOverTable>
     </PlotCard>
   );
