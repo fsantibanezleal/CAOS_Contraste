@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from planting import ROOT, edit, edit_json, git_init, load_json, refute, script_gate
+from product_planting import ROOT, edit, edit_json, git_init, load_json, refute, script_gate
 
 EM_DASH = chr(0x2014)
 T = "tests/test_contract.py"
