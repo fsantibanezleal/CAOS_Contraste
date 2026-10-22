@@ -27,7 +27,7 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no calibration.', es: 'No disponible: el artefacto de modelos no trae la calibración.' }, lang)}</p>
       ) : (
         <div className="ct-scroll">
-          <p className="ct-note" data-bank={fit.bank.name}>{`${fit.bank.name}: ${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${fit.bank.calibration_source})`}</p>
+          <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>{`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source, lang)})`}</p>
           <table className="caos-table ct-wrap-head" data-table="calibration-targets">
             <thead>
               <tr>
@@ -73,7 +73,34 @@ const AXIS_TEXT: Record<string, BiText> = {
   'no-mortgage-arrears': { en: 'no mortgage, arrears', es: 'sin hipotecario, con mora' },
   'no-guarantee': { en: 'no guarantee', es: 'sin garantía' },
 };
-const axisText = (id: string): BiText => AXIS_TEXT[id] ?? { en: id, es: id };
+/**
+ * The words for a row or a column id of a B-1 table (U16-R2 b04 m4): a band of days past due ('1-29', '0-7'), a band of the loan
+ * over the value of the guarantee ('pvg<=40', '40<pvg<=80', 'ptvg>90'), else the id's own entry or the id as written.
+ */
+const axisText = (id: string): BiText => {
+  if (AXIS_TEXT[id]) return AXIS_TEXT[id];
+  const days = /^(\d+)(?:-(\d+))?$/.exec(id);
+  if (days) return days[2] ? { en: `${days[1]} to ${days[2]} days past due`, es: `${days[1]} a ${days[2]} días de mora` } : { en: `${days[1]} days past due`, es: `${days[1]} días de mora` };
+  const ratio = /^(?:(\d+)<)?(p?t?vg)(?:<=(\d+)|>(\d+))$/.exec(id);
+  if (ratio) {
+    const total = ratio[2] === 'ptvg';
+    const en = total ? 'total loan over the value of the guarantee' : 'loan over the value of the guarantee';
+    const es = total ? 'préstamo total sobre el valor de la garantía' : 'préstamo sobre el valor de la garantía';
+    if (ratio[1] && ratio[3]) return { en: `${en}: over ${ratio[1]}% up to ${ratio[3]}%`, es: `${es}: sobre ${ratio[1]}% hasta ${ratio[3]}%` };
+    if (ratio[3]) return { en: `${en}: up to ${ratio[3]}%`, es: `${es}: hasta ${ratio[3]}%` };
+    return { en: `${en}: over ${ratio[4]}%`, es: `${es}: sobre ${ratio[4]}%` };
+  }
+  return { en: id, es: id };
+};
+
+/** The calibration source the producer writes in English (a citation with the registry's remarks), in the page's language: the citation and the hash as published. */
+export function calibrationSource(source: string, lang: 'en' | 'es'): string {
+  if (lang === 'en') return source;
+  return source
+    .replace('public web publication (the CMF Bancos API key is absent)', 'publicación web pública (falta la clave de la API de CMF Bancos)')
+    .replace(/; generator /, '; generador ')
+    .replace(/; parameters sha256 /, '; parámetros sha256 ');
+}
 
 export function TablesView({ sel }: { sel: C07Sel | null }) {
   const lang = useShellLang();

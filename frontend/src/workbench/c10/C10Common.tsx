@@ -10,7 +10,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
 import { adjustmentText, noteText, seriesText } from '../c08/notes';
-import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
+import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
 import {
   ESTIMATOR_TEXT, GENERATOR_TEXT, INTERVAL_TEXT, SOURCE_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Estimator, type C10GridOutputs, type C10Outputs, type C10Sel,
@@ -86,7 +86,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : t.reference}</td>
+                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
                 </tr>
               );
             })}

@@ -305,7 +305,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
               const top = 6;
               const axis = 22;
               const rowH = (height - top - axis) / bars.length;
-              // the totals are markers, so the axis spans the running total only (it does not start at zero)
+              // the totals are markers, so the axis spans the running total only (the caption says so; it never claims where the axis starts)
               const lo0 = Math.min(...bars.map((x) => x.lo));
               const hi0 = Math.max(...bars.map((x) => x.hi));
               const pad = Math.max((hi0 - lo0) * 0.12, 1);
@@ -350,7 +350,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
             }}
           </Stage>
           <p className="ct-note" aria-live="polite">
-            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
+            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Millions of ${cur}; the axis spans the running total of the bridge, and the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje abarca el total acumulado del puente, y los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
           </p>
         </div>
       </PlotCard>

@@ -7,6 +7,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, p2, useCard } from './U6Shared';
+import { REPLAY } from '../model';
 import { fitOf, fyRange, outputsOf, rungLabel, type C03Outputs, type C03Sel } from './selection';
 import { fyText } from './VintageViews';
 
@@ -124,7 +125,7 @@ export function C03ContextView({ sel }: { sel: C03Sel | null }) {
         </p>
         <dl className="ct-defs" data-table="c03-data-status">
           <dt>{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</dt>
-          <dd>{`${pick(o.cohort.label, lang)} (${o.cohort.approval_fiscal_years.map((y) => fyText(y).en).join(', ')})`}</dd>
+          <dd>{`${pick(o.cohort.label, lang)} (${o.cohort.approval_fiscal_years.map((y) => pick(fyText(y), lang)).join(', ')})`}</dd>
           <dt>{pick({ en: 'Data', es: 'Datos' }, lang)}</dt>
           <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
           <dt>{pick({ en: 'Files as of', es: 'Archivos al' }, lang)}</dt>
@@ -158,6 +159,7 @@ export function VintageReadout({ sel }: { sel: C03Sel | null }) {
   const why: BiText | undefined = row?.reason ? { en: row.reason, es: row.reason } : undefined;
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={{ en: 'Five-year mark, this vintage', es: 'Marca de cinco años, esta cosecha' }}
       items={[
@@ -179,6 +181,7 @@ export function HorizonReadout({ sel }: { sel: C03Sel | null }) {
   const why: BiText | undefined = curve?.reason ? { en: curve.reason, es: curve.reason } : undefined;
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={{ en: 'Cumulative PD at this month', es: 'PD acumulada en este mes' }}
       items={[
@@ -197,6 +200,7 @@ export function ModelReadout({ sel }: { sel: C03Sel | null }) {
   const label = sel ? rungLabel(sel, sel.rung) : { en: '', es: '' };
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={{ en: 'This model on the cohort', es: 'Este modelo en la cohorte' }}
       items={[

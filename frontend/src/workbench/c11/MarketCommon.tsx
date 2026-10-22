@@ -4,7 +4,7 @@
 import { formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
-import type { Bi } from '../c03/U6Shared';
+import { referenceText, type Bi } from '../c03/U6Shared';
 import { MaybeNumber } from '../c06/format';
 import { noteText } from '../c08/notes';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
@@ -87,7 +87,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={t.reference}>{pick(testName(t.test_id), lang)}</td>
+                  <td className="ct-text" title={referenceText(t, lang)}>{pick(testName(t.test_id), lang)}</td>
                   <td>
                     <MaybeNumber value={ran ? t.statistic : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                   </td>
@@ -97,7 +97,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(lightWord(t.light), lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : t.reference}</td>
+                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
                 </tr>
               );
             })}

@@ -117,8 +117,8 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
         title={{ en: 'Realised against predicted LGD, by default cohort', es: 'LGD realizada contra predicha, por cohorte de incumplimiento' }}
         {...card}
         note={{
-          en: 'The mean LGD realised by the defaults of each cohort with its interval, against the mean the model predicted. A cohort whose realised mean lies above the interval of the prediction was under-predicted. The horizontal axis is the first default year of the cohort.',
-          es: 'La LGD media realizada por los incumplimientos de cada cohorte con su intervalo, contra la media que predijo el modelo. Una cohorte cuya media realizada queda sobre el intervalo de la predicción fue subpredicha. El eje horizontal es el primer año de incumplimiento de la cohorte.',
+          en: 'The mean LGD realised by the defaults of each cohort with its interval, against the mean the model predicted. A cohort whose predicted mean lies below the interval of the realised mean was under-predicted. The horizontal axis is the first default year of the cohort.',
+          es: 'La LGD media realizada por los incumplimientos de cada cohorte con su intervalo, contra la media que predijo el modelo. Una cohorte cuya media predicha queda bajo el intervalo de la media realizada fue subpredicha. El eje horizontal es el primer año de incumplimiento de la cohorte.',
         }}
       >
         <ChartOverTable

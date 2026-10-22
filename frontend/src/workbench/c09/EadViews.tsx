@@ -216,7 +216,7 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
         <div className="ct-scroll">
           <dl className="ct-defs" data-table="small-undrawn" data-applied={String(s.applied)}>
             <dt>{pick({ en: 'Threshold', es: 'Umbral' }, lang)}</dt>
-            <dd>{money(s.threshold, lang, s.currency)}</dd>
+            <dd>{`${money(s.threshold, lang, s.currency)} ${s.currency}`}</dd>
             <dt>{pick({ en: 'Applied', es: 'Aplicada' }, lang)}</dt>
             <dd>{s.applied ? yes : no}</dd>
             <dt>{pick({ en: 'Facilities switched', es: 'Líneas cambiadas' }, lang)}</dt>

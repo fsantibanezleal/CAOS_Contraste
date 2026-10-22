@@ -109,8 +109,8 @@ export function LadderView({ sel }: { sel: Selection | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: 'Held-out AUC with its DeLong 95% interval, the paired DeLong test against the scorecard, and the calibration of each rung (Brier, ECE). Engines and licences are in the Context group.',
-            es: 'AUC fuera de muestra con su intervalo 95% de DeLong, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier, ECE). Motores y licencias están en el grupo Contexto.',
+            en: 'Held-out AUC, the paired DeLong test against the scorecard, and the calibration of each rung (Brier). From 641 px wide the table adds the DeLong 95% interval of the AUC and the ECE. Engines and licences are in the Context group.',
+            es: 'AUC fuera de muestra, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier). Desde 641 px de ancho la tabla suma el intervalo 95% de DeLong del AUC y el ECE. Motores y licencias están en el grupo Contexto.',
           }}
         >
           <div className="ct-scroll">
@@ -164,7 +164,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'Defaulters caught against non-defaulters flagged, riskier first. Dashed: the P0 anchors.', es: 'Incumplidores detectados contra no incumplidores marcados, de mayor a menor riesgo. Segmentadas: los anclajes P0.' }}
+        note={{ en: 'Defaulters caught against non-defaulters flagged, riskier first. Dashed: the P0 anchors.', es: 'Incumplidores detectados contra no incumplidores marcados, de mayor a menor riesgo. Discontinuas: los anclajes P0.' }}
       >
         <UPlotChart
           height="fill"
@@ -224,7 +224,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
         dataKey={stateKey}
         note={{
           en: `${formatNumber(sc.scaling.score_ref, 'en', { decimals: 0 })} points at odds ${formatNumber(sc.scaling.odds_ref, 'en', { decimals: 0 })} to 1, ${formatNumber(sc.scaling.pdo, 'en', { decimals: 0 })} points to double the odds; bins fitted on the training slice only. Highlighted: the applicant's bins.${dropped('en') ? ` Not in the scorecard: ${dropped('en')}.` : ''}`,
-          es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con odds ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar las odds; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped('es') ? ` Fuera de la scorecard: ${dropped('es')}.` : ''}`,
+          es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con razón de probabilidades de ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar la razón; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped('es') ? ` Fuera de la scorecard: ${dropped('es')}.` : ''}`,
         }}
       >
         <div className="ct-scroll">

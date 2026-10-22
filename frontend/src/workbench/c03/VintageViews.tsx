@@ -156,6 +156,13 @@ export function FiveYearView({ sel }: { sel: C03Sel | null }) {
 }
 
 /** The population stability index of each vintage against the training population. */
+/** The conventional band of a PSI (below 0.10, 0.10 to 0.25, above 0.25): a rule of thumb with no error control, told in words because the bar chart draws no reference line. */
+export function psiBand(psi: number): { en: string; es: string } {
+  if (psi < 0.1) return { en: 'below 0.10', es: 'bajo 0,10' };
+  if (psi <= 0.25) return { en: '0.10 to 0.25', es: '0,10 a 0,25' };
+  return { en: 'above 0.25', es: 'sobre 0,25' };
+}
+
 export function StabilityView({ sel }: { sel: C03Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -190,6 +197,7 @@ export function StabilityView({ sel }: { sel: C03Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Vintage', es: 'Cosecha' }, lang)}</th>
                 <th>PSI</th>
+                <th className="ct-text">{pick({ en: 'Convention band', es: 'Banda convencional' }, lang)}</th>
                 <th>{pick({ en: 'Observed 5-year PD', es: 'PD observada a 5 años' }, lang)}</th>
               </tr>
             </thead>
@@ -198,6 +206,7 @@ export function StabilityView({ sel }: { sel: C03Sel | null }) {
                 <tr key={r.fiscal_year} data-vintage={r.fiscal_year} className={r.fiscal_year === sel.vintage ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(fyText(r.fiscal_year), lang)}</td>
                   <td>{formatNumber(r.psi, lang, { digits: 3 })}</td>
+                  <td className="ct-text" data-band>{pick(psiBand(r.psi), lang)}</td>
                   <td>
                     <MaybeNumber value={r.observed_5y_pd} reason={reasonOf(r.fiscal_year)} format={(v) => p2(v, lang)} />
                   </td>
