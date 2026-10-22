@@ -105,7 +105,7 @@ def test_related_links_are_listed_apart_and_never_drawn_as_dependencies(baked, t
 
 def test_every_entry_depends_on_the_engine_node_and_the_graph_is_layered(baked):
     inv = baked.inventory
-    assert inv["engine_node"]["key"] == "riskvalidation" and inv["engine_node"]["version"] == "1.0.0"
+    assert inv["engine_node"]["key"] == "riskvalidation" and inv["engine_node"]["version"] == pinned_engine()
     assert all(e["key"] != "riskvalidation" for e in inv["entries"])
     pairs = [(e["upstream"], e["downstream"]) for e in inv["edges"]]
     for e in inv["entries"]:
@@ -142,3 +142,12 @@ def test_no_dangling_edge_id_is_published_in_the_inputs_or_the_inventory():
 
     for rel in (gs.INPUTS, gs.DERIVED / "governance" / "inventory.json"):
         assert not re.search(r"\(E\d\d\)", rel.read_text(encoding="utf-8")), rel
+
+def pinned_engine() -> str:
+    """The riskvalidation release data-pipeline/requirements.txt pins (tests/engine_pin.py reads the same line)."""
+    from engine_pin import PYPI_PIN
+    from pathlib import Path as _P
+    req = (_P(__file__).resolve().parents[2] / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    m = PYPI_PIN.search(req)
+    assert m is not None, "no PyPI pin of riskvalidation in data-pipeline/requirements.txt"
+    return m.group("version")
