@@ -3,7 +3,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { setLang } from '../c03/u6-testkit';
 import { committedData, view } from '../c08/spanish-testkit';
-import { C11ContextView, COUNT_AXIS } from './C11Common';
+import { C11ContextView, C11VariantsTable, COUNT_AXIS } from './C11Common';
+import type { VariantArtifact } from '../../lib/contract.types';
+import type { C11Outputs } from './selection';
 import { ChampionView } from './ComparisonViews';
 import { TimelineView, ZonesView } from './ExceedanceViews';
 import { EsBacktestView, TestsView } from './BacktestViews';
@@ -47,5 +49,12 @@ describe('the Spanish views of C11', () => {
 
   it('the exceedance bars keep their decimals (2.49 expected, not 2)', () => {
     expect(COUNT_AXIS).toEqual({ digits: 3 });
+  });
+
+  it('the windows table gives the reason of a window with no champion (b05 M2)', () => {
+    setLang('es');
+    const v = crisis.variant as unknown as VariantArtifact<C11Outputs>;
+    const text = view(<C11VariantsTable variants={[{ id: v.variant_id, title: { en: 'Equity 2007 to 2009', es: 'Renta variable 2007 a 2009' }, v }]} onPick={() => undefined} current={v.variant_id} />);
+    expect(text).toContain('sin campeón. Motivo: ningún modelo elegible tiene un ES cada día');
   });
 });
