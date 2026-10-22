@@ -340,8 +340,9 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
   const sel = { data: { manifest: c01, variant, models }, challenger: defaultChallenger(variant), alphas: COMMITTED, approval: 0.8, lgd: 0.5, applicant: 0 } as never;
   const view = (el: ReactElement, lang: Lang) => plain(html(el, lang));
   it('m1: the Impact decision says why the live figure differs from the applicant-by-applicant one', () => {
-    expect(view(<ImpactView sel={sel} />, 'en')).toContain('The live figures above interpolate the cut-off curve');
-    expect(view(<ImpactView sel={sel} />, 'es')).toContain('Las cifras en vivo de arriba interpolan la curva de corte');
+    // the wording U16-F6 settled for the same minor (merged at 093b85e)
+    expect(view(<ImpactView sel={sel} />, 'en')).toContain('The live figures interpolate the cut-off curve');
+    expect(view(<ImpactView sel={sel} />, 'es')).toContain('Las cifras en vivo interpolan la curva de corte');
   });
   it('m3: the DeLong cell of the battery names the direction of the difference, not only a red light', () => {
     expect(view(<BatteryView sel={sel} />, 'en')).toMatch(/AUC (higher|lower)/);
@@ -352,11 +353,11 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
     expect((markup.match(/ct-narrow-only/g) ?? []).length).toBeGreaterThanOrEqual(2 * 7);
   });
   it('m4: the calibration note says the posterior interval is shown where there is room', () => {
-    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/on a wide screen/i);
+    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/shown from \d+ px wide/i);
   });
   it('m5: the PSI note says that ties merge deciles', () => {
-    expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/ties[^.]*merge/i);
-    expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empates[^.]*(fusionan|unen)/i);
+    expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/tie[sd][^.]*merge/i);
+    expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empat\w*[^.]*(fusionan|unen)/i);
   });
   it('m8: the attribution column of the Spanish Context says its text is the own wording of the source', () => {
     expect(view(<ContextView sel={sel} />, 'es')).toContain('texto exigido por la fuente, en su idioma');
