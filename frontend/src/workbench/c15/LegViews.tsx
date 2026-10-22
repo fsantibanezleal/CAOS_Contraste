@@ -385,7 +385,7 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
             {e.parameters.map((p) => (
               <Fragment key={p.name}>
                 <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
-                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' && p.unit === 'per year' ? 'por año' : p.unit})`}</dd>
+                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' ? (p.unit === 'per year' ? 'por año' : p.unit === 'per square-root year' ? 'por raíz cuadrada del año' : p.unit) : p.unit})`}</dd>
               </Fragment>
             ))}
             <dt>{pick({ en: 'Paths', es: 'Trayectorias' }, lang)}</dt>

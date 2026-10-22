@@ -44,11 +44,8 @@ const TEXT: Map = {
   'model fit and locked holdout of the seed, perturbation and leakage variants': 'ajuste del modelo y reserva bloqueada de las variantes de semillas, perturbación y fuga',
   'real drift between the portfolios and the size of the synthetic shift': 'deriva real entre las carteras y tamaño del cambio sintético',
   // the engine of a model
-  'InterpretML ExplainableBoostingClassifier': 'InterpretML ExplainableBoostingClassifier',
-  'optbinning + statsmodels Logit': 'optbinning + statsmodels Logit',
   'own on optbinning': 'propio sobre optbinning',
-  'scikit-learn LogisticRegression': 'scikit-learn LogisticRegression',
-  'scikit-learn trees and LogisticRegression, own rule extraction': 'árboles de scikit-learn y LogisticRegression, extracción de reglas propia',
+  'scikit-learn trees and LogisticRegression, own rule extraction': 'árboles de scikit-learn y regresión logística de scikit-learn, extracción de reglas propia',
   'calibration slice': 'corte de calibración',
   // the bands of the drift index and the notes of the tests
   'conventional band: little change (0.10/0.25 rule of thumb, no error control)': 'banda convencional: cambio pequeño (regla empírica 0,10/0,25, sin control del error)',
