@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { C01WriteUp } from '../content/cases/C01';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
+import { engineText } from './c01Text';
 
 const WRITE_UPS: Record<string, () => ReactNode> = { C01: () => <C01WriteUp /> };
 
@@ -84,7 +85,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                 <td>{pick(r.short_title, lang)}</td>
                 <td className="caos-col-text">{pick(r.title, lang)}</td>
                 <td className="caos-col-text">
-                  {r.engine}
+                  {engineText(r.engine, lang)}
                   {r.engine_version !== 'n/a' ? `, ${r.engine_version}` : ''}
                 </td>
                 <td className="caos-col-text" translate="no">

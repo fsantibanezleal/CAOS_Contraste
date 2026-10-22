@@ -116,12 +116,12 @@
   <text class="acc l-en" x="618" y="286">held to the pipeline by parity tests</text>
   <text class="acc l-es" x="618" y="286">sujeto al pipeline por pruebas de paridad</text>
   <rect class="bx" x="608" y="314" width="258" height="102" rx="6"/>
-  <text class="it l-en" x="618" y="332">Next: the engine in the browser</text>
-  <text class="it l-es" x="618" y="332">Siguiente: el motor en el navegador</text>
-  <text class="sub l-en" x="618" y="350">riskvalidation is pure NumPy and SciPy;</text>
-  <text class="sub l-es" x="618" y="350">riskvalidation es NumPy y SciPy puros;</text>
-  <text class="sub l-en" x="618" y="366">once on PyPI it runs in Pyodide, admitted</text>
-  <text class="sub l-es" x="618" y="366">al estar en PyPI corre en Pyodide, admitido</text>
-  <text class="sub l-en" x="618" y="382">only when its cold start is measured</text>
-  <text class="sub l-es" x="618" y="382">solo cuando se mide su arranque en frío</text>
+  <text class="it l-en" x="618" y="332">Pyodide: by measurement only</text>
+  <text class="it l-es" x="618" y="332">Pyodide: solo por medición</text>
+  <text class="sub l-en" x="618" y="350">riskvalidation is on PyPI (NumPy, SciPy);</text>
+  <text class="sub l-es" x="618" y="350">riskvalidation está en PyPI (NumPy, SciPy);</text>
+  <text class="sub l-en" x="618" y="366">Pyodide is admitted only when its cold</text>
+  <text class="sub l-es" x="618" y="366">Pyodide se admite solo al medir su arranque</text>
+  <text class="sub l-en" x="618" y="382">start is measured; none is planned</text>
+  <text class="sub l-es" x="618" y="382">en frío; ninguna medición está planeada</text>
 </svg>

@@ -10,6 +10,7 @@ import type { EbmExport, GbmDetails, ModelRecord, ScorecardDetails } from '../li
 import { liveScores } from './Workbench';
 import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
+import { engineText, ruleText, unitName, type Bi } from './c01Text';
 
 const PALETTE = ['--color-fg-subtle', '--color-accent', '--color-accent-2', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-fg'] as const;
 
@@ -126,7 +127,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.m.id} data-rung={r.m.id} title={`${pick(r.m.title, lang)}: ${r.m.engine} (${r.m.licence})`}>
+                  <tr key={r.m.id} data-rung={r.m.id} title={`${pick(r.m.title, lang)}: ${engineText(r.m.engine, lang)} (${r.m.licence})`}>
                     <td>{pick(shortName(r.m, r.m.id), lang)}</td>
                     <td>{f(r.auc)}</td>
                     <td className="ct-wide-only">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
@@ -330,7 +331,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           <UPlotChart
             height="fill"
             x={{ values: dist.x, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
-            y={{ label: { en: 'Share of the group', es: 'Fracción del grupo' }, format: { percent: true, decimals: 0 } }}
+            y={{ label: { en: 'Share of the group', es: 'Fracción' }, format: { percent: true, decimals: 0 } }}
             series={[
               { label: { en: 'Defaulters', es: 'Incumplidores' }, values: dist.def, color: '--color-bad' },
               { label: { en: 'Non-defaulters', es: 'No incumplidores' }, values: dist.non, color: '--color-good' },
@@ -352,32 +353,57 @@ function termImportance(ex: EbmExport): Array<{ name: string; spread: number; in
     .sort((a, b) => b.spread - a.spread);
 }
 
+/** One panel of the EBM view: the term's score over its bins, with the axis label in both languages. */
+export interface EbmShape {
+  name: string;
+  x: number[];
+  y: number[];
+  categorical: boolean;
+  xLabel: Bi;
+}
+
+/**
+ * The six strongest main effects as panels. A continuous term plots each bin at its left edge; a categorical term plots
+ * each category at its own code (the key of `categories`, whose value is the bin of the score): the code of a category is
+ * not its position (U16-R2 B3: EDUCATION 4 was drawn at 5). The axis names the feature's unit from the data dictionary
+ * (`fit.features`): a money feature is in NT dollars, or Deutsche Mark for the German twin.
+ */
+export function ebmShapes(ex: EbmExport, fit?: { features?: Array<{ name: string; unit: string }> }): EbmShape[] {
+  return termImportance(ex)
+    .filter((t) => ex.terms[t.index].features.length === 1)
+    .slice(0, 6)
+    .map((t) => {
+      const term = ex.terms[t.index];
+      const feat = ex.features[term.features[0]];
+      const lv = feat.levels[0];
+      const scores = term.scores as number[];
+      const unit = unitName(fit?.features?.find((f) => f.name === term.name)?.unit ?? '');
+      if (lv.kind === 'continuous') {
+        const cuts = lv.cuts ?? [];
+        // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, the first at the first cut
+        const x = [cuts[0] - 1e-9, ...cuts];
+        const label = (l: 'en' | 'es') => (unit ? `${term.name} (${unit[l]})` : term.name);
+        return { name: term.name, x, y: scores.slice(1, cuts.length + 2), categorical: false, xLabel: { en: label('en'), es: label('es') } };
+      }
+      const cats = Object.entries(lv.categories ?? {}).sort((a, b) => a[1] - b[1]);
+      return {
+        name: term.name,
+        x: cats.map(([code], i) => (Number.isFinite(Number(code)) ? Number(code) : i + 1)),
+        y: cats.map(([, bin]) => scores[bin]),
+        categorical: true,
+        xLabel: { en: `${term.name} (category code)`, es: `${term.name} (código de categoría)` },
+      };
+    });
+}
+
 /** The EBM's six strongest main effects: each term's score over its bins (the "boosted scorecard"), and every term
  * by the spread of its scores. */
 export function EbmView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const ex = sel ? details<{ export: EbmExport }>(sel, 'P3-ebm')?.export : undefined;
-  const shapes = useMemo(() => {
-    if (!ex) return null;
-    return termImportance(ex)
-      .filter((t) => ex.terms[t.index].features.length === 1)
-      .slice(0, 6)
-      .map((t) => {
-        const term = ex.terms[t.index];
-        const feat = ex.features[term.features[0]];
-        const lv = feat.levels[0];
-        const scores = term.scores as number[];
-        if (lv.kind === 'continuous') {
-          const cuts = lv.cuts ?? [];
-          // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, the first at the first cut
-          const x = [cuts[0] - 1e-9, ...cuts];
-          return { name: term.name, x, y: scores.slice(1, cuts.length + 2), categorical: false };
-        }
-        const cats = Object.entries(lv.categories ?? {}).sort((a, b) => a[1] - b[1]);
-        return { name: term.name, x: cats.map((_, i) => i + 1), y: cats.map(([, k]) => scores[k]), categorical: true };
-      });
-  }, [ex]);
+  const fit = sel?.data.models.fit;
+  const shapes = useMemo(() => (ex ? ebmShapes(ex, fit) : null), [ex, fit]);
   if (!sel || !ex || !shapes) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const pairs = ex.terms.filter((t) => t.features.length === 2).map((t) => t.name);
@@ -399,7 +425,7 @@ export function EbmView({ sel }: { sel: Selection | null }) {
             <div key={s.name} className="ct-small-multiple">
               <UPlotChart
                 height="fill"
-                x={{ values: s.x, label: { en: s.categorical ? `${s.name} (category)` : s.name, es: s.categorical ? `${s.name} (categoría)` : s.name } }}
+                x={{ values: s.x, label: s.xLabel }}
                 y={{ label: { en: 'Log-odds', es: 'Log-odds' }, format: { decimals: 2 } }}
                 series={[{ label: { en: s.name, es: s.name }, values: s.y, color: '--color-accent', mode: s.categorical ? 'points' : 'line' }]}
               />
@@ -597,7 +623,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               {rules.map((r) => (
                 <tr key={r.rule}>
                   <td className="caos-col-text">
-                    <code>{r.rule}</code>
+                    <code>{ruleText(r.rule, lang)}</code>
                   </td>
                   <td>{formatNumber(r.coefficient, lang, { decimals: 3 })}</td>
                 </tr>

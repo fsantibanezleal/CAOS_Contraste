@@ -4,7 +4,7 @@
 // bank's reported or regulatory ratio; the aggregates are real, the behaviour and the deposits are synthetic; the realised
 // run has two denominators; every named parameter is a convention; a survival period is a day or "survives the horizon".
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -33,8 +33,8 @@ export const digits = (v: number | null | undefined, lang: Lang) => formatNumber
 export function ChartAbove({ chart, children, chartHeight = '15rem' }: { chart: ReactNode; children?: ReactNode; chartHeight?: string }) {
   return (
     <div className="ct-stack">
-      <div style={{ flex: `0 0 ${chartHeight}`, minHeight: chartHeight, display: 'flex', flexDirection: 'column' }}>{chart}</div>
-      {children ? <div style={{ flex: '1 1 0', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+      <div className="ct-stack-fixed" style={{ minHeight: chartHeight, '--ct-chart-min': chartHeight } as CSSProperties}>{chart}</div>
+      {children ? <div className="ct-stack-rest">{children}</div> : null}
     </div>
   );
 }

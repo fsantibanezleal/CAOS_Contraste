@@ -3,7 +3,7 @@
 // parameters (each a convention, never a regulatory threshold; 06 I.6 l.1268-1270) and the number formats. Nothing here
 // computes a statistic.
 import { formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import type { Bi } from '../c03/U6Shared';
@@ -151,8 +151,8 @@ export function LabelledOverTable({ head, chart, children, chartMin = '15rem' }:
   return (
     <div className="ct-stack">
       {head}
-      {chart ? <div style={{ flex: '1 1 0', minHeight: chartMin, display: 'flex', flexDirection: 'column' }}>{chart}</div> : null}
-      {children ? <div style={chart ? { flex: '0 1 auto', maxHeight: '42%', overflow: 'auto', minHeight: 0 } : { flex: '1 1 0', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+      {chart ? <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div> : null}
+      {children ? <div className={chart ? 'ct-stack-table' : 'ct-stack-fill'}>{children}</div> : null}
     </div>
   );
 }
