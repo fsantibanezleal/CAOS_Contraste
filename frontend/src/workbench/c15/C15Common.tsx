@@ -289,9 +289,9 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Deposit category', es: 'Categoría de depósitos' }, lang)}</th>
                 <th>{pick({ en: 'Core share requested', es: 'Parte estable pedida' }, lang)}</th>
-                <th>{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th>{pick({ en: 'Share cap', es: 'Tope de la parte' }, lang)}</th>
                 <th>{pick({ en: 'Used', es: 'Usada' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Cap applied', es: 'Tope aplicado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>

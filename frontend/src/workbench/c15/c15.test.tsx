@@ -288,11 +288,11 @@ describe('the C15 instrument', () => {
     expect(markup).toContain('above the floor');
   });
 
-  it('the prioritised-bank thresholds are lines: 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
+  it('the prioritised-bank thresholds are marks (U16-R2 b07 m6: three tests, no line between them): 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
     const chart = thresholdsChart(sel);
     expect(chart?.x.values).toEqual([1, 2, 3]);
     expect(chart?.series.map((s) => s.values)).toEqual([o.thresholds.tests.map((t) => t.ratio), [0.05, 0.15, 0.18]]);
-    expect(chart?.series[1].mode).not.toBe('points');
+    expect(chart?.series[1].mode).toBe('points');
     const markup = html(<ThresholdsView sel={sel} />);
     for (const t of o.thresholds.tests) {
       expect(markup).toContain(`data-test-id="${t.id}"`);

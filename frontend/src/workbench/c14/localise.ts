@@ -61,3 +61,17 @@ export const IRRBB_SOURCE_RULES: ReadonlyArray<Rule> = [
   // the reference of the outlier test
   [/^SRP31\.82 to SRP31\.83 \(15 percent of Tier 1\)$/, () => 'SRP31.82 a SRP31.83 (15 por ciento del capital de nivel 1)'],
 ];
+
+/** The references the IRRBB tests carry when a test has no note of its own (the cell then shows its source, in Spanish). */
+export const TEST_REFERENCE_RULES: ReadonlyArray<Rule> = [
+  [/^BCBS SRP31\.90 to SRP31\.92, Interest rate risk in the banking book, the six standardised shock scenarios and the worked example at t = 3\.5 years \(dossier 01 H\.2\), (https:\/\/\S+)$/,
+    (g) => `BCBS SRP31.90 a SRP31.92, riesgo de tasa de interés en el libro de banca, los seis escenarios de choque estandarizados y el ejemplo resuelto a t = 3,5 años (dossier 01 H.2), ${g[1]}`],
+  [/^BCBS SRP31\.82 to SRP31\.83 and SRP31\.129: the EVE supervisory outlier test \(15 percent of Tier 1\) and the standardised EVE; dossier 05 D\.7: always report EVE with and without behavioural assumptions$/,
+    () => 'BCBS SRP31.82 a SRP31.83 y SRP31.129: la prueba supervisora de valores atípicos del EVE (15 por ciento del capital de nivel 1) y el EVE estandarizado; dossier 05 D.7: informar siempre el EVE con y sin supuestos conductuales'],
+  [/^BCBS d368 \(2016\), Standards: Interest rate risk in the banking book, (https:\/\/\S+); dossier 05 D\.3 \(weight stability across estimation windows\)$/,
+    (g) => `BCBS d368 (2016), Normas: riesgo de tasa de interés en el libro de banca, ${g[1]}; dossier 05 D.3 (estabilidad de los pesos entre ventanas de estimación)`],
+  [/^dossier 05, IRRBB acceptance: the 2022 hiking cycle as the out-of-sample test of an NII projection$/,
+    () => 'dossier 05, aceptación del IRRBB: el ciclo de alzas de 2022 como prueba fuera de muestra de una proyección del NII'],
+  [/^CMF Recopilacion Actualizada de Normas, capitulo 21-13, Anexo 1 \(Hoja 9 to Hoja 12\): CLP and UR shock sizes, the 50 percent offset, the 2\.5 percent indexation charge \(dossier 03 F\.2\), (https:\/\/\S+)$/,
+    (g) => `CMF Recopilacion Actualizada de Normas, capitulo 21-13, Anexo 1 (Hoja 9 a Hoja 12): tamaños de los choques en CLP y UR, la compensación de 50 por ciento, el cargo de 2,5 por ciento por reajustabilidad (dossier 03 F.2), ${g[1]}`],
+];
