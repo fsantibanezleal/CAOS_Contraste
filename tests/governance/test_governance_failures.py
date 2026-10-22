@@ -62,7 +62,8 @@ def test_adversarial_a_release_the_changelog_does_not_know_stops_the_bake(tree):
     from pipeline.governance.readers import BakeError
 
     p = tree / "CHANGELOG.md"
-    version = "%d.%02d.%03d" % (0, 9, 0)   # the code version of C03, C08 and C09
+    # the code version the committed C08 documents record (1.00.000 since the 1.0 re-bake): its heading goes, so its date does too
+    version = json.loads((tree / "data/derived/C08/dc-2007-08.json").read_text(encoding="utf-8"))["provenance"]["code_version"]
     text = p.read_text(encoding="utf-8")
     assert f"## [{version}]," in text
     p.write_text(text.replace(f"## [{version}],", f"## [{version}1],"), encoding="utf-8")

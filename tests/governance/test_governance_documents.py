@@ -18,7 +18,7 @@ MOVED_ATTRIBUTES = {
     "A09": "the fixture summarises the C07 and C18 books in three classes; the bake lists the segment ids (C07) or the class mapping (C18) the models document holds",
     "A13": "the fixture reads the C01 split and the C18 fit end year in its own shape; the bake reads the same pointers into its value shape",
     "A19": "the fixture counts the C18 named parameters in its own shape; the bake counts the same list",
-    "A31": "the fixture names the engine version that built the case document; the bake names the validator at the pinned release (riskvalidation 1.0.0)",
+    "A31": "the fixture names the engine version that built the case document; the bake names the validator at the pinned release (the riskvalidation pin of data-pipeline/requirements.txt)",
     "A16": "the fixture holds two edges; the full edge table (the depends_on of the manifests, since U16-P1b) gives C18 four feeders and C01/german its downstream cases",
     "A38": "the fixture register holds the four fixture entries' findings under the fixture deadlines; the full register is the same rows, so the value agrees unless an entry gains a variant",
 }
@@ -88,7 +88,8 @@ def test_every_variant_is_in_exactly_one_entry_or_excluded_with_its_reason(baked
         if d.get("schema") == "contraste.case/v1" and "variant_id" in d:
             on_disk.add((d["case_id"], d["variant_id"]))
     assert on_disk == set(seen) | excluded
-    assert len(on_disk) == 127
+    # 127 variants at 0.15.000; U16-P2 adds the C22 other-families variant
+    assert len(on_disk) == 128
 
 
 def test_the_tier_is_the_engine_matrix_of_its_scores_under_every_reading(baked):
@@ -238,7 +239,7 @@ def test_the_dates_come_from_the_changelog_and_never_from_the_clock(baked):
         md = gs.read(next(d["path"] for d in baked.inventory["provenance"]["documents_read"] if d["path"].endswith(f"{e['case_id']}/models-{e['fit_id']}.json")))
         assert e["schedule"]["last_validation"]["date"] == dates[md["provenance"]["code_version"]]
     assert baked.inventory["provenance"]["code_version"] == json.loads(gs.INPUTS.read_text(encoding="utf-8"))["release"]["code_version"]
-    assert baked.inventory["provenance"]["riskvalidation_version"] == "1.0.0"
+    assert baked.inventory["provenance"]["riskvalidation_version"] == pinned_engine()
 
 
 def test_every_path_read_is_listed_with_its_sha256_over_lf_normalised_bytes(baked):
@@ -329,3 +330,12 @@ def test_the_engine_computes_the_values_the_bake_writes(baked):
         assert r["overdue"] == eng.is_overdue(r["status"], due, as_of)
         assert r["ecb_f"] == eng.severity_to_ecb(r["severity"]) and r["status"] == eng.map_product_status(r["product_status"])
     assert baked.findings["counts"] == eng.register_counts(baked.findings["rows"])
+
+def pinned_engine() -> str:
+    """The riskvalidation release data-pipeline/requirements.txt pins (tests/engine_pin.py reads the same line)."""
+    from engine_pin import PYPI_PIN
+    from pathlib import Path as _P
+    req = (_P(__file__).resolve().parents[2] / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    m = PYPI_PIN.search(req)
+    assert m is not None, "no PyPI pin of riskvalidation in data-pipeline/requirements.txt"
+    return m.group("version")
