@@ -3,7 +3,7 @@
 // for, with an index that lets a reviewer read each view with its case, group, sub-view and the committed documents it
 // shows. It measures nothing and judges nothing: the shell gate (npm run gate) measures, the reviewers read these captures.
 //
-//   npm run capture -- --out D:/_Temp/<run>                          every built case and route, the three captures of D16-3
+//   npm run capture -- --out <temp root>/<run>                       every built case and route, the three captures of D16-3
 //   npm run capture -- --out <dir> --cases C01,C02                   a reviewer batch: those cases only (no documentation routes)
 //   npm run capture -- --out <dir> --routes /methodology,/benchmark  those routes only (add /app to walk the cases too)
 //   npm run capture -- --out <dir> --captures 1280x800:light:en      one capture; the format is WxH:theme:lang, comma separated
