@@ -10,6 +10,8 @@ import { C04VariantsProvider } from '../content/cases/C04Results';
 import { CITATIONS } from '../content/citations';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { C04Benchmark, C04Experiments } from '../pages/C04Sections';
+import * as BenchmarkPage from '../pages/Benchmark';
+import * as U6 from '../pages/U6Sections';
 
 const here = (rel: string) => new URL(rel, import.meta.url);
 const text = (rel: string) => readFileSync(here(rel), 'utf8');
@@ -147,5 +149,35 @@ describe('b11 m4 and m5: no negative zero, one p-value format on the pages', () 
   });
   it('the Benchmark difference to P1 goes through num', () => {
     expect(text('../pages/Benchmark.tsx')).toMatch(/num\(r\.auc !== null && champ\?\.auc != null \? r\.auc - champ\.auc : null, lang, 4\)/);
+  });
+});
+
+describe('b11 m6 and m10: one label per rung, the best rung named', () => {
+  const c01 = read<CaseManifest>('manifests/C01.json');
+  const holdout = read<VariantArtifact>(c01.artifacts.find((a) => a.role === 'variant' && a.variant_id === 'holdout')!.path);
+  const c08 = read<CaseManifest>('manifests/C08.json');
+  const c08v = read<VariantArtifact>(c08.artifacts.find((a) => a.role === 'variant')!.path);
+  const Comparison = BenchmarkPage.Comparison;
+  for (const lang of ['en', 'es'] as const) {
+    it(`the Benchmark verdict names the rungs the way its table does, never by id (${lang})`, () => {
+      const text = plain(html(<Comparison v={holdout} title="C01" />, lang));
+      for (const m of holdout.model) expect(text, m.id).not.toContain(m.id);
+      const labels = holdout.model.filter((m) => m.id !== 'P0-constant').map((m) => m.short_title[lang]);
+      expect(new Set(labels).size).toBe(labels.length);
+      for (const l of labels) expect(text).toContain(l);
+    });
+  }
+  it('a rung reads its short title, not "beta Beta regression"', () => {
+    const rungName = U6.rungName;
+    expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'en')).toBe('L3 Beta');
+    expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'es')).toBe(c08v.model.find((m) => m.id === 'L3-beta')!.short_title.es);
+  });
+  it('a rung the document declares absent is named, not shown by its id', () => {
+    expect(U6.rungName(c08v as VariantArtifact<unknown>, 'P5-tabpfn', 'es')).toBe('P5 TabPFN');
+  });
+  it('the robustness table names the best rung of each variant', () => {
+    const T = (BenchmarkPage as unknown as { RobustnessTable: (p: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number; bestRung: string }> }) => ReactElement }).RobustnessTable;
+    const markup = html(<T rows={[{ n: 1, title: 'Drift', scorecard: 0.7123, best: 0.7456, bestRung: 'P4 LightGBM' }]} />);
+    expect(plain(markup)).toContain('P4 LightGBM');
   });
 });

@@ -16,7 +16,7 @@ import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES, num } from './U6Sections
 import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
 import { B3BenchmarkSection, B3_BENCHMARK_CASES } from './Batch3Sections';
 
-function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
+export function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
   const t = useT();
   const rows = v.model
@@ -45,8 +45,8 @@ function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
         verdict={
           better.length
             ? {
-                en: `${better.map((r) => r.m.id).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
-                es: `${better.map((r) => r.m.id).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
+                en: `${better.map((r) => r.m.short_title.en).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
+                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
               }
             : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la scorecard aquí.' }
         }
@@ -67,7 +67,7 @@ function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
           {rows.map((r) => (
             <tr key={r.m.id}>
               <td className="caos-col-text">
-                {r.m.rung} {pick(r.m.title, lang)}
+                {pick(r.m.short_title, lang)}
               </td>
               <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
               <td>{r.lo !== null && r.hi !== null ? `${formatNumber(r.lo, lang, { decimals: 4 })} - ${formatNumber(r.hi, lang, { decimals: 4 })}` : ''}</td>
@@ -164,7 +164,7 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
       .filter((m) => m.id !== 'P0-constant')
       .map((m) => ({ id: m.id, auc: value(test(v, 'disc.auc', m.id)) ?? 0 }))
       .sort((a, b) => b.auc - a.auc)[0];
-    return { v, best, auc: value(test(v, 'disc.auc', CHAMPION)) };
+    return { v, best, bestRung: pick(v.model.find((m) => m.id === best.id)?.short_title ?? { en: best.id, es: best.id }, lang), auc: value(test(v, 'disc.auc', CHAMPION)) };
   });
   if (rows.length < 2) return null;
   const titles = Object.fromEntries(manifest.artifacts.map((a) => [a.variant_id, a.short_title]));
@@ -188,14 +188,14 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
       />
     </PlotCard>
     <RobustnessTable
-      rows={rows.map((r, i) => ({ n: i + 1, title: pick(titles[r.v.variant_id] ?? r.v.variant_id, lang), scorecard: r.auc, best: r.best.auc }))}
+      rows={rows.map((r, i) => ({ n: i + 1, title: pick(titles[r.v.variant_id] ?? r.v.variant_id, lang), scorecard: r.auc, best: r.best.auc, bestRung: r.bestRung }))}
     />
     </>
   );
 }
 
 /** The numbers the robustness chart draws, one row per variant (the chart has no table of its own): the number of the note, the variant, the AUC of the scorecard and of the best rung. */
-export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number }> }) {
+export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number; bestRung?: string }> }) {
   const lang = useShellLang();
   const t = useT();
   return (
@@ -206,6 +206,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
           <th>{t('No.', 'N.º')}</th>
           <th className="caos-col-text">{t('Variant', 'Variante')}</th>
           <th>{t('AUC of the scorecard (P1)', 'AUC de la scorecard (P1)')}</th>
+          <th className="caos-col-text">{t('Best rung', 'Mejor peldaño')}</th>
           <th>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
         </tr>
       </thead>
@@ -215,6 +216,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
             <td>{r.n}</td>
             <td className="caos-col-text">{r.title}</td>
             <td>{formatNumber(r.scorecard, lang, { decimals: 3 })}</td>
+            <td className="caos-col-text">{r.bestRung ?? ''}</td>
             <td>{formatNumber(r.best, lang, { decimals: 3 })}</td>
           </tr>
         ))}
