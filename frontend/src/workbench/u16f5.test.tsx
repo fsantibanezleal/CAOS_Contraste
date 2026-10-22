@@ -119,8 +119,13 @@ describe('PR-C04: the Experiments and Benchmark copy of C04 in Spanish carries t
 
 describe('b11 m1: Spanish never renders git "commit" as "comprometer"', () => {
   const dirs = ['../pages/', '../pages/methodology/', '../architecture/'];
-  const files = dirs.flatMap((d) => readdirSync(here(d)).filter((f) => /\.(tsx|ts|svg)$/.test(f) && !/\.test\./.test(f)).map((f) => `${d}${f}`));
-  const COMMIT_SENSE = /artefactos? comprometid|muestras? comprometid|umbrales comprometid|documentos? comprometid|política comprometida|compromete el pipeline|pipeline compromete|pipeline comprometió|puede(?:n)? comprometerse|se compromete|Compromiso:|manifiesto de licencias comprometido|\(comprometido\)/;
+  const flat = dirs.flatMap((d) => readdirSync(here(d)).filter((f) => /\.(tsx|ts|svg)$/.test(f) && !/\.test\./.test(f)).map((f) => `${d}${f}`));
+  // every view and content file too (the integrator, after the U16-F6 merge): a case view names the policy it ran under
+  const walk = (d: string): string[] =>
+    readdirSync(here(d), { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(`${d}${e.name}/`) : /\.(tsx|ts)$/.test(e.name) && !/\.test\./.test(e.name) ? [`${d}${e.name}`] : []);
+  const files = [...flat, ...walk('./'), ...walk('../content/')];
+  const COMMIT_SENSE = /artefactos? comprometid|muestras? comprometid|umbrales comprometid|documentos? comprometid|política comprometida|compromete el pipeline|pipeline compromete|pipeline comprometió|puede(?:n)? comprometerse|se compromete|Compromiso:|manifiesto de licencias comprometido|\(comprometido\)|(?:tabla de puntos|verdad exacta|evidencia|curva de corte|capital|EBM) comprometid/;
   it('reads the files of the pages and the figures', () => expect(files.length).toBeGreaterThan(20));
   for (const f of files) {
     it(`${f.replace('../', '')} uses versionar for what the pipeline commits`, () => {

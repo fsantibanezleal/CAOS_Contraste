@@ -58,7 +58,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
   return (
     <div data-block="tests">
       <p className="ct-note">
-        {pick({ en: 'The tests the engine returned: the statistic and p-value when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió, la luz bajo la política comprometida y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {pick({ en: 'The tests the engine returned: the statistic and p-value when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió, la luz bajo la política versionada y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
       </p>
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row for this view.', es: 'Esta variante no trae filas de pruebas para esta vista.' }, lang)}</p>
@@ -391,7 +391,7 @@ export function LevelReadout({ sel }: { sel: C10Sel | null }) {
         { label: { en: 'Fitted quantile', es: 'Cuantil ajustado' }, value: b?.fitted_quantile ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The yearly loss rate the fitted distribution puts at the level.', es: 'La tasa de pérdida anual que la distribución ajustada pone en el nivel.' } },
         { label: { en: 'Years expected above', es: 'Años esperados sobre él' }, value: b?.expected_exceedances ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'Evaluation years times one minus the level.', es: 'Años de evaluación por uno menos el nivel.' } },
         { label: { en: 'Years observed above', es: 'Años observados sobre él' }, value: b?.observed_exceedances ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Evaluation years whose loss rate is above the fitted quantile.', es: 'Años de evaluación cuya tasa de pérdida supera el cuantil ajustado.' } },
-        { label: { en: 'Light', es: 'Luz' }, text: light ?? NA, hint: { en: 'The light of the binomial tail probability under the committed policy.', es: 'La luz de la probabilidad de cola binomial bajo la política comprometida.' } },
+        { label: { en: 'Light', es: 'Luz' }, text: light ?? NA, hint: { en: 'The light of the binomial tail probability under the committed policy.', es: 'La luz de la probabilidad de cola binomial bajo la política versionada.' } },
       ]}
     />
   );

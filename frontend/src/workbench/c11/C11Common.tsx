@@ -308,7 +308,7 @@ export function TestReadout({ sel }: { sel: C11Sel | null }) {
       items={[
         { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ? noteText(t.notes, 'es') : 'El estadístico de la prueba, cuando corrió.' } },
         { label: { en: 'p-value', es: 'Valor p' }, value: ran ? t.p_value : null, unitless: true, format: { digits: 2 }, hint: { en: 'The probability of a statistic this large if the model were right.', es: 'La probabilidad de un estadístico así de grande si el modelo fuera correcto.' } },
-        { label: { en: 'Light', es: 'Luz' }, text: t ? zoneText(t.light) : na(), hint: { en: 'Under the committed policy; a test that did not run is not evaluated.', es: 'Bajo la política comprometida; una prueba que no corrió no se evalúa.' } },
+        { label: { en: 'Light', es: 'Luz' }, text: t ? zoneText(t.light) : na(), hint: { en: 'Under the committed policy; a test that did not run is not evaluated.', es: 'Bajo la política versionada; una prueba que no corrió no se evalúa.' } },
       ]}
     />
   );
