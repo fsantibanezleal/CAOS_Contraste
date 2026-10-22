@@ -18,7 +18,7 @@ MOVED_ATTRIBUTES = {
     "A09": "the fixture summarises the C07 and C18 books in three classes; the bake lists the segment ids (C07) or the class mapping (C18) the models document holds",
     "A13": "the fixture reads the C01 split and the C18 fit end year in its own shape; the bake reads the same pointers into its value shape",
     "A19": "the fixture counts the C18 named parameters in its own shape; the bake counts the same list",
-    "A31": "the fixture names the engine version that built the case document; the bake names the validator at the pinned release (riskvalidation 0.9.0)",
+    "A31": "the fixture names the engine version that built the case document; the bake names the validator at the pinned release (riskvalidation 1.0.0)",
     "A16": "the fixture holds two edges; the full edge table (the depends_on of the manifests, since U16-P1b) gives C18 four feeders and C01/german its downstream cases",
     "A38": "the fixture register holds the four fixture entries' findings under the fixture deadlines; the full register is the same rows, so the value agrees unless an entry gains a variant",
 }
@@ -238,7 +238,7 @@ def test_the_dates_come_from_the_changelog_and_never_from_the_clock(baked):
         md = gs.read(next(d["path"] for d in baked.inventory["provenance"]["documents_read"] if d["path"].endswith(f"{e['case_id']}/models-{e['fit_id']}.json")))
         assert e["schedule"]["last_validation"]["date"] == dates[md["provenance"]["code_version"]]
     assert baked.inventory["provenance"]["code_version"] == json.loads(gs.INPUTS.read_text(encoding="utf-8"))["release"]["code_version"]
-    assert baked.inventory["provenance"]["riskvalidation_version"] == "0.9.0"
+    assert baked.inventory["provenance"]["riskvalidation_version"] == "1.0.0"
 
 
 def test_every_path_read_is_listed_with_its_sha256_over_lf_normalised_bytes(baked):

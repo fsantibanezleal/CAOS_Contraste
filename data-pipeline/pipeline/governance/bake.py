@@ -20,7 +20,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from . import APPETITE_REL, FINDINGS_REL, INVENTORY_REL, REPORTS_DIR, SUMS_REL, attributes, edge_table, report_rel, spanish
+from . import APPETITE_REL, FINDINGS_REL, INVENTORY_REL, REPORTS_DIR, SUMS_REL, attributes, edge_table, report_rel
 from .readers import REPO_ROOT, BakeError, Case, Reader, newest_release, read_corpus, release_dates
 
 INPUTS_REL = "data-pipeline/pipeline/governance/inputs.json"
@@ -39,6 +39,17 @@ RANKS_NOTE = "the rank inside a generation is the layout's"
 
 def T(en: str, es: str) -> dict[str, str]:
     return {"en": en, "es": es}
+
+
+def _engine_text(reason: str) -> dict[str, str]:
+    """The English reason of an engine function and its Spanish, both from the engine's reason table (``riskvalidation.governance.reasons``, engine-governance-api
+    1.1.0): the Spanish carries its accents. A sentence the table does not hold raises ``ValueError``; no text is invented or left in English."""
+    from riskvalidation.governance.reasons import bilingual
+
+    try:
+        return bilingual(reason)
+    except ValueError as exc:
+        raise BakeError(f"the engine holds no Spanish text for the reason {reason!r}: {exc}") from exc
 
 
 @dataclass
@@ -219,7 +230,7 @@ def _schedule(E: SimpleNamespace, tier: int, last: str) -> dict[str, Any]:
 def _scope(E: SimpleNamespace, inputs: dict[str, Any], case_id: str) -> dict[str, Any]:
     a = inputs["scope_answers"]
     answers = E.scope.ScopeAnswers(a["applies_theory"], a["output_is_estimate"], a["deterministic"], a["generative_or_agentic"])
-    profiles = [{"profile": d.profile, "in_scope": d.in_scope, "rationale": T(d.rationale, spanish.translate(d.rationale))} for d in E.scope.scope_record(answers)]
+    profiles = [{"profile": d.profile, "in_scope": d.in_scope, "rationale": _engine_text(d.rationale)} for d in E.scope.scope_record(answers)]
     note = inputs["scope_notes"]["cases"].get(case_id)
     basis = (f"{a['basis']}; the profile rules are a reading of the B.1 table (UNVERIFIED beyond it)" + (f"; {note}" if note else ""))
     return {"answers": {k: a[k] for k in ("applies_theory", "output_is_estimate", "deterministic", "generative_or_agentic")}, "profiles": profiles, "basis": basis}
@@ -268,8 +279,8 @@ def _register_rows(E: SimpleNamespace, key: str, owner: str, tier: int, variants
             rows.append({
                 "key": f"{doc['case_id']}/{vid}/{f['id']}", "case_id": doc["case_id"], "variant_id": vid, "id": f["id"], "entry_key": key,
                 "title": f["title"], "severity": sev, "ecb_f": E.findings.severity_to_ecb(sev), "product_status": f["status"], "status": status,
-                "evidence": f["evidence"], "anchor": anchor, "anchor_reason": None if why is None else T(why, spanish.translate(why)),
-                "rwea_share": share, "rwea_share_reason": None if share_why is None else T(share_why, spanish.translate(share_why)),
+                "evidence": f["evidence"], "anchor": anchor, "anchor_reason": None if why is None else _engine_text(why),
+                "rwea_share": share, "rwea_share_reason": None if share_why is None else _engine_text(share_why),
                 "owner_role": owner, "tier": tier, "raised": raised.isoformat(), "deadline_days": days, "due": due.isoformat(),
                 "ageing_days": E.findings.ageing_days(raised, as_of), "overdue": E.findings.is_overdue(status, due, as_of),
                 "remediation": None,
@@ -398,7 +409,7 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
             n = len(case.variants[vid].doc["findings"])
             excluded.append({"case_id": cid, "variant_id": vid, "reason": T(
                 f"no fit can be assigned to the variant: {why}; its {n} finding rows are not in the register",
-                f"no se puede asignar un ajuste a la variante: {spanish.translate(why)}; sus {n} filas de hallazgos no están en el registro")})
+                f"no se puede asignar un ajuste a la variante: {_engine_text(why)['es']}; sus {n} filas de hallazgos no están en el registro")})
         order = list(case.variants)
         for fit in sorted(case.models):
             mine = sorted(placed[fit], key=lambda p: order.index(p[0]))
@@ -515,20 +526,28 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
                      "riskvalidation_version": by_id[v][1]["provenance"].get("riskvalidation_version")} for v in order]
         own = {case.manifest_path, d["_models"].path, *[p for _, p, _ in d["_variants"]], "CHANGELOG.md", INPUTS_REL, edge_table.EDGES_REL}
         scoped = {"provenance": _filtered_provenance(provenance, own), "as_of_basis": as_of_basis}
-        reports[key] = E.report.build_report(e, scoped, [r for r in all_rows if r["entry_key"] == key], variants, as_of)
+        reports[key] = _drop_battery_key(E.report.build_report(e, scoped, [r for r in all_rows if r["entry_key"] == key], variants, as_of))
 
-    copied = _copied_texts(cases)
-    for doc in (inventory, findings, appetite, *reports.values()):
-        spanish.restore_document(doc, copied)
     check_documents(inventory, findings, appetite, reports)
     from . import page
 
     return Baked(inventory, findings, appetite, reports, page.results_block(inventory, findings, appetite, reports), docs_read)
 
 
+def _drop_battery_key(report: dict[str, Any]) -> dict[str, Any]:
+    """The engine returns the key ``battery`` of a policy identity only for a packaged label written with its parameters appended (engine-governance-api 1.1.0); the
+    ``governance-report`` schema has no such key and the token stays in the row's ``label``, so the key is dropped (a document never holds a key its contract does not name)."""
+    for section in report["sections"]:
+        for block in section.get("blocks", []):
+            if block.get("kind") == "outcomes":
+                for row in block["rows"]:
+                    row["policy"].pop("battery", None)
+    return report
+
+
 def _copied_texts(cases: dict[str, Case]) -> frozenset[str]:
     """The texts the documents copy unchanged from the case documents (a case question and title, a finding title, a model record title): the case's own words, such as
-    'approval cohorts' or 'approval rate' in a credit model, stay as the case wrote them (the Spanish is not restored). The checker's text rule reads them
+    'approval cohorts' or 'approval rate' in a credit model, stay as the case wrote them (the accent and English checks of the tests skip them). The checker's text rule reads them
     too: its allow list names the phrases that are metrics or cohorts."""
     out: set[str] = set()
     for case in cases.values():
