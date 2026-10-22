@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "fbb7ed12f1d9f36112885fa7a200018b327e44d6075994c0e9294368ccad3464",
+    "sha256": "399d3128ebb6fe365c544d3832472009d2f36128fe63fcb07a9975d1508ccc8d",
     "ref": null
    },
    {
@@ -30,47 +30,47 @@
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "8b20279786c0cb80ce89f3bf688c99d410c98460eb36af6d36da6d069118018b",
+    "sha256": "abfafcf0af777bc5669ec57656cdea6e11466c34493c3103ffb98e8ecf965afb",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "5f3030381a10e88a17aa010733d4221d9c404c093a4f19616bba0ee8505a2238",
+    "sha256": "c830eb9a59768746086b2a34d358737f58fc7ab60a99c3bedb3eb6421ead35cd",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "7294ed84ba86a3bcf2e25a5b07c9f3409dd8be33393d2fe59056bae5cc319b4d",
+    "sha256": "52cf179feea4385258e496b0ccfc6edb3984874d985c45708cf605d2b2200c36",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "5768dbb730d40bfa7105f96be98aa5fa882cdfef08df5ffb46f47af161f033fc",
+    "sha256": "681eb00d3550d98a22e765efa92784998ccde3ce8ad323029359f45e801dc310",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "84a1296fe606fc18c9214cf49edf8a1ce83841c77d76b7e3e671f4c1efcf3ce5",
+    "sha256": "b346fc6243f0e8fb0887c4e2a07e1538571c8facbd0e06fbafddea3d731db695",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "7b7ec28f260877b099a816ae746d9e69dc1637e18fe8482a7473bed5cb5ef450",
+    "sha256": "fb92191a4f5480c6da82761d6e696dbc6039de6fb986b1ec164a067293f0fa24",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "8d158db0a402f84704a17bbbdf52852d3e680901f0ce7ad5cd2d68d709fa0675",
+    "sha256": "f0960bb3e1a0b3ebbd9780dacdd9c62a4f2affb37ae84fd18392b02379219f44",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "23818da1ea7cedfdd1214950851f14d7fb1eca4dc93be39d3a679fe2eacd6518",
+    "sha256": "43365fbfbbfa7b330a92d8a1c1cc6615a4fb553bb60651ebb4181c749aa8eb30",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "9d15a112ed58a19467d4f4626dc1db4baa6d5db9b61560a2125379052298eb7c",
+    "sha256": "f3bd4fca7785da96bdd860eef07826f003ce5eab2f5dd34ca4b66088e17ccd0f",
     "ref": null
    },
    {
@@ -115,7 +115,7 @@
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "9eeddeb772aec6bdd43fb3175a93f0b434d5363859c974dffde7e22fc1698940",
+    "sha256": "002cedacacd0de96dd10ae4e8d3e85e30cda52bf6da341841030c6b5b902adc9",
     "ref": null
    },
    {
@@ -160,7 +160,7 @@
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "d7973919e22f3a0a81335e68118d1250967424c0fa5ea18c600700e4f5e1167b",
+    "sha256": "38c911f2df75980ea4252a10a3bbb60180706fc9b10a0cd2d6299f789d223a51",
     "ref": null
    }
   ]
