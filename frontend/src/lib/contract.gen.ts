@@ -5182,6 +5182,8 @@ export interface components {
             outputs: components["schemas"]["c13Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /** @description One planted deficiency and how the generator plants it. */
         c13DeficiencyPlan: {
