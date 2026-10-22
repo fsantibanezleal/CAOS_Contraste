@@ -8,6 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { es } from './localise';
 import { CLASS_TEXT, HAIRCUT_RULE_TEXT, LCR_CATEGORY_TEXT, axisOf, outputsOf, text, type C16Sel } from './selection';
 import { ChartAbove, MONEY_UNIT, NOT_SCENARIO, SHARE, SurvivalCell, UnavailableCard, cell } from './C16Common';
 
@@ -202,7 +203,7 @@ export function HtmView({ sel }: { sel: C16Sel | null }) {
               {rv.difference === null ? formatNumber(null, lang) : `${cell(rv.difference, lang)} (${SHARE(rv.relative_difference, lang)})`}
             </dd>
             <dt>{pick({ en: 'Curve', es: 'Curva' }, lang)}</dt>
-            <dd>{rv.curve_source}</dd>
+            <dd>{es(rv.curve_source, lang)}</dd>
           </dl>
         </ChartAbove>
       </PlotCard>
@@ -289,7 +290,7 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
                   <td>{cell(r.balance, lang)}</td>
                   <td>{SHARE(r.rate, lang)}</td>
                   <td>{cell(r.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
                 </tr>
               ))}
               {l.inflows.map((r) => (
@@ -298,7 +299,7 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
                   <td>{cell(r.balance, lang)}</td>
                   <td>{SHARE(r.rate, lang)}</td>
                   <td>{cell(r.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>

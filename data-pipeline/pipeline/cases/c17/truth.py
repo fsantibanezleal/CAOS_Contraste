@@ -58,7 +58,7 @@ def _compute(v: Variant, mc_years: int, seed: int) -> Truth:
     sf_mc = 1.0 - np.searchsorted(srt, axis, side="right") / srt.size
     del srt, sample
     sf_fft = ga.sf_on_grid(h_fft, step, axis)
-    sf_pan = ga.sf_on_grid(h_pan, step_p, axis)
+    sf_pan = ga.sf_within_grid(h_pan, step_p, axis)
     q_sla = sla.sla_var(lam, "gpd", par, P.LEVEL)
     finite_mean = np.isfinite(dist.severity_moment("gpd", par, 1))
     mean = float(agg.compound_poisson_moments(lam, "gpd", par).mean) if finite_mean else None
@@ -78,7 +78,7 @@ def _compute(v: Variant, mc_years: int, seed: int) -> Truth:
     exceedance = {
         "currency": P.CURRENCY, "grid_eur": [float(x) for x in axis],
         "monte_carlo": {"n_years": int(mc_years), "seed": int(seed), "exceedance": [float(x) for x in sf_mc]},
-        "panjer": {"step_eur": float(step_p), "exceedance": [float(x) for x in sf_pan]},
+        "panjer": {"step_eur": float(step_p), "exceedance": sf_pan},
         "fft": {"n_points": TRUTH_POINTS, "padding_factor": 4, "tilt": 0.0, "exceedance": [float(x) for x in sf_fft]},
         "quantile_999_eur": {"monte_carlo": float(q_mc), "panjer": float(q_pan), "fft": float(q_fft), "sla": float(q_sla)},
     }

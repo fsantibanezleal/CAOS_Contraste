@@ -7,6 +7,7 @@ import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { testName } from '../c20/U14Common';
+import { es } from './localise';
 
 // a regulation citation ("29 CFR 1607.4(D)"), a row of a regulation's annex ("row 10.2", "fila 10.2") and the arithmetic of rows a
 // label names ("(4.4+4.5+4.6)", "(8%+7.1+7.2)", "(6-7.2)", "(1.1 - 5)"): references kept as the source writes them
@@ -67,7 +68,7 @@ export function C21TestsTable({ tests, only }: { tests: TestRow[]; only?: (t: Te
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text"><Marked>{t.notes ?? t.reference ?? ''}</Marked></td>
+                  <td className="ct-text"><Marked>{t.notes === null || t.notes === undefined ? (t.reference ?? '') : es(t.notes, lang)}</Marked></td>
                 </tr>
               );
             })}

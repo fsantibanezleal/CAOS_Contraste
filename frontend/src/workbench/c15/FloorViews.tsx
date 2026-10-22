@@ -141,7 +141,7 @@ export function thresholdsChart(sel: C15Sel | null): Pick<UPlotChartProps, 'x' |
   const tests = o.thresholds.tests;
   return {
     x: { values: tests.map((_, i) => i + 1), label: { en: 'Test (numbered as in the table)', es: 'Prueba (numerada como en la tabla)' }, format: { decimals: 0 } },
-    y: { label: { en: 'Ratio of the measure to its base', es: 'Razón de la medida a su base' }, format: { percent: true, decimals: 0 } },
+    y: { label: { en: 'Measure over its base', es: 'Medida sobre su base' }, format: { percent: true, decimals: 0 } },
     series: [
       { label: { en: 'Measured', es: 'Medido' }, values: tests.map((t) => t.ratio), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
       { label: { en: 'Threshold of the test', es: 'Umbral de la prueba' }, values: tests.map((t) => t.threshold), color: '--color-bad', width: 2.2, dash: [6, 3] },

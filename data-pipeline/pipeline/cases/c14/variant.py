@@ -22,6 +22,7 @@ from . import fits, slotting
 from ...io.fdic import Report, realised_nii, report_at
 from .slotting import Item, t
 from ...io.treasury import ParCurve, curve_as_of
+from ...core.text import number as _num
 
 MID = rv_slotting.bucket_grid().midpoints
 SHOCKS = shocks.SHOCKS
@@ -233,7 +234,7 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
         levels.append({"level": lv, "nii_quantile": float(base_nii - got.ear), "eve_quantile": float(base_eve - got.evar),
                        "ear": float(got.ear), "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
     ear_evar = {"method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
-                "parameters": [{"name": "a", "value": asm.HW1F_A, "unit": "per year"}, {"name": "sigma", "value": float(sigma), "unit": "per year"}],
+                "parameters": [{"name": "a", "value": asm.HW1F_A, "unit": "per year"}, {"name": "sigma", "value": float(sigma), "unit": "per square-root year"}],
                 "base_nii": float(base_nii), "base_eve": float(base_eve), "levels": levels, "mc_error_method": "batch-means",
                 "n_batches": asm.N_BATCHES}
 
@@ -376,8 +377,8 @@ def _findings(o: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, 
     out.append({"id": "F1", "severity": sev, "status": "open", "evidence": ["irrbb.eve_with_without_behavioural"], "title": t(
         f"The EVE risk measure is {beh['ratio'] * 100:.1f} percent of Tier 1 with the capped behavioural NMD and "
         f"{con['ratio'] * 100:.1f} percent with every non-maturity deposit overnight; the outlier threshold is 15 percent.",
-        f"La medida de riesgo EVE es {beh['ratio'] * 100:.1f} por ciento del Tier 1 con NMD conductual con tope y "
-        f"{con['ratio'] * 100:.1f} por ciento con todos los depósitos a la vista a un día; el umbral del test es 15 por ciento.")})
+        f"La medida de riesgo EVE es {_num(beh['ratio'] * 100, 1, lang='es')} por ciento del capital de nivel 1 con NMD conductual con tope y "
+        f"{_num(con['ratio'] * 100, 1, lang='es')} por ciento con todos los depósitos a la vista a un día; el umbral de la prueba es 15 por ciento.")})
     out.append({"id": "F2", "severity": "S3", "status": "open", "evidence": ["design:retail-share-is-a-synthetic-mapping"], "title": t(
         "The split of deposits between retail and wholesale and every core share and maturity are synthetic: the call report carries none.",
         "La separación de depósitos entre minoristas y mayoristas y toda proporción y plazo estables son sintéticos: el reporte no los trae.")})
@@ -389,19 +390,19 @@ def _findings(o: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, 
             f"The 12-month change in NII projected for a +{o['scenarios'][0]['shock_size']['parallel_bp']:.0f} bp shock differs from the "
             f"realised 2022 change by {oos['relative_error'] * 100:.0f} percent; the shock is not the realised path.",
             f"El cambio a 12 meses del NII proyectado para un choque de +{o['scenarios'][0]['shock_size']['parallel_bp']:.0f} pb difiere "
-            f"del cambio realizado en 2022 en {oos['relative_error'] * 100:.0f} por ciento; el choque no es la trayectoria realizada.")})
+            f"del cambio realizado en 2022 en {_num(oos['relative_error'] * 100, 0, lang='es')} por ciento; el choque no es la trayectoria realizada.")})
     st, ch = by["irrbb.nmd_parameter_stability"], by["irrbb.behavioural_change_at_breach"]
     if st["light"] in ("red", "amber"):
         out.append({"id": "F4", "severity": "S2" if st["light"] == "red" else "S3", "status": "open",
                     "evidence": ["irrbb.nmd_parameter_stability"], "title": t(
             f"The fitted replicating-portfolio weights move by up to {st['statistic']:.2f} between estimation windows and the weighted "
             f"average maturity by up to {st['metric']:.1f} years: the deposit duration the data support is not stable.",
-            f"Los pesos de la cartera replicante ajustada se mueven hasta {st['statistic']:.2f} entre ventanas de estimación y el plazo "
-            f"promedio ponderado hasta {st['metric']:.1f} años: la duración de los depósitos que respalda la data no es estable.")})
+            f"Los pesos de la cartera replicante ajustada se mueven hasta {_num(st['statistic'], 2, lang='es')} entre ventanas de estimación y el plazo "
+            f"promedio ponderado hasta {_num(st['metric'], 1, lang='es')} años: la duración de los depósitos que respaldan los datos no es estable.")})
     if ch["light"] == "red":
         out.append({"id": "F5", "severity": "S2", "status": "open", "evidence": ["irrbb.behavioural_change_at_breach"], "title": t(
             f"The fitted weighted average maturity changed at {ch['statistic']:.0f} date(s) where the standardised outlier test was breached: "
             "a deposit-duration assumption that moves with a breach is the pattern the Federal Reserve review describes.",
-            f"El plazo promedio ponderado ajustado cambió en {ch['statistic']:.0f} fecha(s) en que se superó el test de valores atípicos "
-            "estandarizado: un supuesto de duración de depósitos que se mueve con un exceso es el patrón que describe la revisión de la Reserva Federal.")})
+            f"El plazo promedio ponderado ajustado cambió en {ch['statistic']:.0f} fecha(s) en que se superó la prueba de valores atípicos "
+            "estandarizada: un supuesto de duración de depósitos que se mueve con un exceso es el patrón que describe la revisión de la Reserva Federal.")})
     return out

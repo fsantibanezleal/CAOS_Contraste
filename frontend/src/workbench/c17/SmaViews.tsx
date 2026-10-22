@@ -5,7 +5,7 @@
 import { BarChart, Callout, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, axisScale } from '../c06/format';
-import { useCard } from '../c03/U6Shared';
+import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
@@ -134,6 +134,11 @@ export function ResponseView({ sel }: { sel: C17Sel | null }) {
     );
   }
   const scale = axisScale(Math.max(...r.rows.flatMap((x) => [x.orc_eur, x.lda_capital_eur])), 'EUR');
+  // the rise of each capital from the first row (no added loss) to the last, computed from the committed rows
+  const first = r.rows[0];
+  const last = r.rows[r.rows.length - 1];
+  const rise = (a: number, b: number): Bi => ({ en: formatNumber(((b - a) / a) * 100, 'en', { decimals: 0 }), es: formatNumber(((b - a) / a) * 100, 'es', { decimals: 0 }) });
+  const rises = { sma: rise(first.orc_eur, last.orc_eur), lda: rise(first.lda_capital_eur, last.lda_capital_eur) };
   return (
     <ViewsRow>
       <PlotCard
@@ -141,15 +146,15 @@ export function ResponseView({ sel }: { sel: C17Sel | null }) {
         title={{ en: 'Response to one large loss', es: 'Respuesta a una pérdida grande' }}
         {...card}
         note={{
-          en: `One history (${where.en}, seed ${r.seed}) with a single loss of growing size added to its latest year. The SMA reads the loss through the loss component, so its multiplier and its capital move with it; the LDA capital of the same history changes far less. The business indicator component stays fixed.`,
-          es: `Una historia (${where.es}, semilla ${r.seed}) a cuyo último año se le suma una pérdida única de tamaño creciente. El SMA lee la pérdida a través del componente de pérdidas, así que su multiplicador y su capital se mueven con ella; el capital LDA de la misma historia cambia mucho menos. El componente del indicador de negocio queda fijo.`,
+          en: `One history (${where.en}, seed ${r.seed}) with a single loss of growing size added to its latest year. The SMA reads the loss through the loss component, so its multiplier and its capital move with it. From no added loss to the largest, the SMA capital rises by ${rises.sma.en} percent and the LDA capital rises by ${rises.lda.en} percent in this history. The business indicator component stays fixed.`,
+          es: `Una historia (${where.es}, semilla ${r.seed}) a cuyo último año se le suma una pérdida única de tamaño creciente. El SMA lee la pérdida a través del componente de pérdidas, así que su multiplicador y su capital se mueven con ella. Desde ninguna pérdida sumada hasta la mayor, el capital SMA sube ${rises.sma.es} por ciento y el capital LDA sube ${rises.lda.es} por ciento en esta historia. El componente del indicador de negocio queda fijo.`,
         }}
       >
         <ChartOverTable
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: r.rows.map((x) => x.added_loss_eur / 1e6), label: { en: 'Loss added to the latest year', es: 'Pérdida sumada al último año' }, unit: { en: 'm EUR', es: 'M EUR' }, format: { decimals: 0 } }}
+              x={{ values: r.rows.map((x) => x.added_loss_eur / 1e6), label: { en: 'Added loss', es: 'Pérdida sumada' }, unit: { en: 'm EUR', es: 'M EUR' }, format: { decimals: 0 } }}
               y={{ label: { en: `Capital (${pick(scale.unit, 'en')})`, es: `Capital (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
               series={[
                 { label: { en: 'SMA capital', es: 'Capital SMA' }, values: r.rows.map((x) => x.orc_eur / scale.div), color: '--color-accent', width: 2.6 },

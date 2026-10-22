@@ -12,6 +12,7 @@ import { UnavailableCard } from '../c14/C14Common';
 import { LabelledOverTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { CONTROL_TEXT, FIELD_TEXT, attributeFor, groupBi, outputsOf, text, type C21Sel } from './selection';
+import { es } from './localise';
 
 const controls = (ids: string[], lang: 'en' | 'es') => ids.map((c) => pick(text(CONTROL_TEXT, c), lang)).join(', ');
 
@@ -74,7 +75,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
                   <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td>{f3(e.estimate.coefficient, lang)}</td>
                   <td>{`${f3(e.estimate.ci.lo, lang)} - ${f3(e.estimate.ci.hi, lang)}`}</td>
-                  <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : e.estimate.unit}</td>
+                  <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : es(e.estimate.unit, lang)}</td>
                   <td className="ct-wide-only">{int(e.estimate.n, lang)}</td>
                 </tr>
               ) : (
@@ -246,10 +247,10 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
               <tr><td className="ct-text">{pick({ en: 'Complainants', es: 'Demandantes' }, lang)}</td><td>{int(s.n_complainants, lang)}</td></tr>
               <tr><td className="ct-text">{pick({ en: 'Cases tested', es: 'Casos evaluados' }, lang)}</td><td>{int(s.n_cases, lang)}</td></tr>
               <tr data-measure="significant"><td className="ct-text">{pick({ en: 'Significant cases', es: 'Casos significativos' }, lang)}</td><td>{`${int(s.n_significant, lang)}${s.n_cases > 0 ? ` (${pc1(s.n_significant / s.n_cases, lang)})` : ''}`}</td></tr>
-              <tr data-status={s.label_parameters}><td className="ct-text">{pick({ en: 'Distance and level', es: 'Distancia y nivel' }, lang)}</td><td className="ct-text">{pick({ en: `${s.distance_normalization} normalisation; convention`, es: `normalización ${s.distance_normalization}; convención` }, lang)}</td></tr>
+              <tr data-status={s.label_parameters}><td className="ct-text">{pick({ en: 'Distance and level', es: 'Distancia y nivel' }, lang)}</td><td className="ct-text">{pick({ en: `${s.distance_normalization} normalisation; convention`, es: `normalización ${es(s.distance_normalization, 'es')}; convención` }, lang)}</td></tr>
             </tbody>
           </table>
-          <p className="ct-note">{s.interval}</p>
+          <p className="ct-note">{es(s.interval, lang)}</p>
           <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.situation')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>

@@ -13,6 +13,7 @@ import numpy as np
 from riskvalidation.liquidity import ladder, scenarios
 from riskvalidation.validation import liquidity as val
 
+from ...core.text import number
 from ...io import treasury
 from ...io.fdic import Report
 from . import balance
@@ -27,6 +28,16 @@ TIME_DATES = ("2021-12-31", "2022-06-30")
 FDIC_SOURCE = "https://api.fdic.gov/banks/financials (CERT 24735, REPDTE {date})"
 H8_SERIES = {"large-domestic-deposits": ("h8-deposits-large-domestic", "Deposits, large domestically chartered banks", "Depósitos, bancos grandes domésticos"),
              "small-domestic-deposits": ("h8-deposits-small-domestic", "Deposits, small domestically chartered banks", "Depósitos, bancos pequeños domésticos")}
+
+
+#: the back-test segments in words (a finding title never prints a slug): English, Spanish
+SEGMENT_NAME = {"board-stated-share": ("board-stated share", "proporción declarada por la Junta"),
+                "call-report-dep": ("call-report deposits", "depósitos del reporte")}
+
+
+def _segment_name(segment: str | None) -> tuple[str, str]:
+    """The words of a back-test segment in both languages; a segment without words keeps its id."""
+    return SEGMENT_NAME.get(segment or "", (str(segment), str(segment)))
 
 
 def basis_of(vid: str) -> str:
@@ -156,8 +167,8 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
     for t in adequacy:
         if t.light.value != "green":
             findings.append(finding(f"F-liq-adequacy-{t.segment}", "S2" if t.light.value == "red" else "S3", ["liq.runoff_adequacy_back_test"],
-                                    f"The modelled outflow is {t.statistic:.3f} of the realised outflow ({t.segment})",
-                                    f"La salida modelada es {t.statistic:.3f} de la realizada ({t.segment})"))
+                                    f"The modelled outflow is {number(t.statistic, 3, lang='en')} of the realised outflow ({_segment_name(t.segment)[0]})",
+                                    f"La salida modelada es {number(t.statistic, 3, lang='es')} de la realizada ({_segment_name(t.segment)[1]})"))
     if p is not None:
         tests.append(_tr(val.nlp_identity(p.cbc_total, p.total_out, p.total_in, p.nlp, conv["nlp_identity_tolerance"]["value"])))
         tests.append(_tr(val.cliff_effect_diagnostic(p.nlp, sheet["total_assets"], conv["cliff_days"]["near"], conv["cliff_days"]["far"],

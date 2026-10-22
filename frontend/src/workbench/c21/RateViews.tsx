@@ -11,6 +11,7 @@ import { UnavailableCard } from '../c14/C14Common';
 import { LabelledOverTable, barMin, f2, f3, int, pc1, sig, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { FIELD_TEXT, attributeFor, groupBi, outputsOf, text, type C21Sel } from './selection';
+import { es } from './localise';
 
 const noAttribute = (sel: C21Sel | null, title: BiText) => (
   <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: this document carries no protected attribute.', es: 'No disponible: este documento no trae ningún atributo protegido.' }} />
@@ -109,7 +110,7 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
         {...card}
         note={{
           en: `Each group's rate over the rate of the highest-rate group (${groupBi(f.highest_rate_group).en}). The line at ${formatNumber(f.threshold, 'en', { decimals: 1 })} is the four-fifths rule (its citation is above the chart), an employment-selection benchmark and not a credit-law threshold. The flag is decided on the counts in exact arithmetic: ${f.rule}.`,
-          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${groupBi(f.highest_rate_group).es}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${f.rule}.`,
+          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${groupBi(f.highest_rate_group).es}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${es(f.rule, 'es')}.`,
         }}
       >
         <LabelledOverTable

@@ -13,6 +13,7 @@ import {
   AGGREGATION_TEXT, STATUS_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, fitOf, outputsOf, rungName, scenarioOf, stabilityAt, text, whole,
   type C17Outputs, type C17Sel,
 } from './selection';
+import { es } from './localise';
 
 const na = (lang: 'en' | 'es') => formatNumber(null, lang);
 const NA_BI = (): Bi => ({ en: formatNumber(null, 'en'), es: formatNumber(null, 'es') });
@@ -154,7 +155,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <dd data-quantile={q.value_eur}>{pick({ en: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).en}, checked by ${whole(q.mc_check.n_years, 'en')} simulated years)`, es: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).es}, verificado con ${whole(q.mc_check.n_years, 'es')} años simulados)` }, lang)}</dd>
           <dt>{pick({ en: 'True annual mean', es: 'Media anual verdadera' }, lang)}</dt>
           <dd data-mean={t.annual_loss_mean.value_eur === null ? 'not-available' : 'available'}>
-            {t.annual_loss_mean.value_eur === null ? `${na(lang)} (${t.annual_loss_mean.reason ?? ''})` : eur(t.annual_loss_mean.value_eur)}
+            {t.annual_loss_mean.value_eur === null ? `${na(lang)} (${es(t.annual_loss_mean.reason, lang)})` : eur(t.annual_loss_mean.value_eur)}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(t.notice, lang)}</dd>
@@ -176,7 +177,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <dd data-label={tg.label}>{pick({ en: 'Derived only', es: 'Solo derivado' }, lang)}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
           <dd>
-            <a href={tg.source.url} target="_blank" rel="noreferrer">{tg.source.title}</a>
+            <a href={tg.source.url} target="_blank" rel="noreferrer">{es(tg.source.title, lang)}</a>
             {` (${tg.source.date}, ${pick({ en: 'table', es: 'tabla' }, lang)} ${tg.source.table})`}
           </dd>
           <dt>{pick({ en: 'Losses counted from', es: 'Pérdidas contadas desde' }, lang)}</dt>
@@ -274,7 +275,8 @@ export function RungReadout({ sel }: { sel: C17Sel | null }) {
       title={{ en: 'This method in this cell', es: 'Este método en esta celda' }}
       items={[
         { label: { en: 'Aggregation', es: 'Agregación' }, text: summary ? text(AGGREGATION_TEXT, summary.aggregation) : NA_BI(), hint: { en: 'How the annual loss distribution of the method is computed.', es: 'Cómo se calcula la distribución de pérdida anual del método.' } },
-        { label: { en: 'Status', es: 'Estado' }, text: status ? text(STATUS_TEXT, status) : NA_BI(), hint: { en: 'UNVERIFIED marks a form not yet checked against its primary text.', es: 'UNVERIFIED marca una forma que aún no se verificó contra su texto primario.' } },
+        { label: { en: 'Status', es: 'Estado' }, text: status ? text(STATUS_TEXT, status) : NA_BI(), hint: { en: 'UNVERIFIED marks a form not yet checked against its primary text.', es: 'SIN VERIFICAR marca una forma que aún no se verificó contra su texto primario.' } },
+        { label: { en: 'Histories defined', es: 'Historias definidas' }, value: summary?.n_defined ?? null, unitless: true, format: { decimals: 0 }, hint: summary ? { en: 'The histories the median rests on: the method is undefined for the others (a failed fit, or a threshold without enough losses).', es: 'Las historias en que se apoya la mediana: el método no está definido para las demás (un ajuste fallido, o un umbral sin pérdidas suficientes).' } : hintNa },
         { label: { en: 'Median capital', es: 'Capital mediano' }, ...amount, hint: summary ? { en: 'The 99.9 percent capital, median over the histories.', es: 'El capital al 99,9 por ciento, mediana sobre las historias.' } : hintNa },
         { label: { en: 'Median over the truth', es: 'Mediana sobre la verdad' }, value: summary?.ratio_to_truth.median ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'The capital divided by the true quantile: 1 is exact.', es: 'El capital dividido por el cuantil verdadero: 1 es exacto.' } },
         { label: { en: 'Histories below the truth', es: 'Historias bajo la verdad' }, value: summary?.share_underestimating ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Share of the histories whose capital is under the true quantile.', es: 'Proporción de las historias cuyo capital está bajo el cuantil verdadero.' } },

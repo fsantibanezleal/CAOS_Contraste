@@ -48,12 +48,13 @@ export const RUNG_SHORT: Record<string, Bi> = {
   scenario: { en: 'Scenario combination', es: 'Combinación con escenarios' },
 };
 
-/** The word UNVERIFIED stays in English in both languages: it is the label of the contract, not a translation. */
+/** The label of the contract is UNVERIFIED in the document and in the English view; the Spanish view says SIN VERIFICAR (U16-R2, b08 B3; C16 says it so). */
 export const UNVERIFIED = 'UNVERIFIED';
+export const UNVERIFIED_ES = 'SIN VERIFICAR';
 
 export const STATUS_TEXT: Record<string, Bi> = {
   verified: { en: 'verified', es: 'verificado' },
-  UNVERIFIED: { en: UNVERIFIED, es: UNVERIFIED },
+  UNVERIFIED: { en: UNVERIFIED, es: UNVERIFIED_ES },
 };
 
 export const AGGREGATION_TEXT: Record<string, Bi> = {
@@ -100,7 +101,7 @@ export const rungLabel = (rung: string): Bi => text(RUNG_SHORT, rung);
 /** A rung's name with the label the contract requires: the UNVERIFIED rung carries it in every place it is named. */
 export function rungName(rung: string): Bi {
   const base = rungLabel(rung);
-  return rung === 'sla-mean-corrected' ? { en: `${base.en} (${UNVERIFIED})`, es: `${base.es} (${UNVERIFIED})` } : base;
+  return rung === 'sla-mean-corrected' ? { en: `${base.en} (${UNVERIFIED})`, es: `${base.es} (${UNVERIFIED_ES})` } : base;
 }
 
 /** The cell of the grid for the years and the threshold chosen, or the first when the document carries no such cell. */
