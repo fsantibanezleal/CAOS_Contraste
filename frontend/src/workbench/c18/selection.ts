@@ -226,6 +226,22 @@ export function axisOf(values: ReadonlyArray<number | null | undefined>, currenc
   return { div: s.div / 1e6, unit: s.unit };
 }
 
+/** The Spanish names of the rows of the summary table of Annex 3, with their accents (the CMF's own labels are written without them). */
+export const ANNEX3_ES: Record<string, string> = {
+  '1': 'Ratios de capital', '1.1': 'PE / APR', '1.2': 'T1 / APR', '1.3': 'CET1 / APR', '2': 'Patrimonio efectivo', '2.T2': 'T2', '2.AT1': 'AT1', '2.CET1': 'CET1',
+  '3': 'APR', '4': 'Cuantificación del capital necesario', '4.1': 'Riesgo de crédito', '4.1.1': 'Método estándar', '4.1.2': 'Modelo interno',
+  '4.2': 'Riesgo de mercado (ME)', '4.3': 'Riesgo operacional (ME)', '4.4': 'Riesgo de concentración', '4.4.1': 'Individual', '4.4.2': 'Sectorial',
+  '4.4.3': 'Otro tipo', '4.5': 'RMLB', '4.6': 'Riesgo estratégico', '4.7': 'Riesgo reputacional', '4.8': 'Otros riesgos materiales', '5': 'OI',
+  '6': 'Cuantificación del capital necesario por riesgos no cubiertos en el pilar 1 (4.4+4.5+4.6+4.7+4.8)',
+  '7': 'Exigencia mínima de PE, en período de planificación (8%+7.1+7.2)',
+  '7.1': 'Exigencia adicional de PE por art. 66 quater (banco sistémico)', '7.2': 'Exigencia adicional de PE por art. 66 quinquies',
+  '8': 'Cuantificación del capital necesario por riesgos no cubiertos en el pilar 1 y no exigidos por el art. 66 quinquies (6-7.2)',
+  '9': 'Colchones de conservación y contracíclico, en período de planificación (art. 66 bis y 66 ter)',
+  '10.1': 'Impacto en el índice de capital básico de las pruebas de tensión severas, sin mitigación',
+  '10.2': 'Impacto en el índice de capital básico de las pruebas de tensión severas, con mitigación',
+  '11': 'Componente d) del OI', '12': 'Holgura del índice de patrimonio efectivo respecto del OI (1.1 - 5)',
+};
+
 /** The English names of the 34 rows of the summary table of Annex 3; the Spanish is the CMF's own label as the document carries it. */
 export const ANNEX3_EN: Record<string, string> = {
   '1': 'Capital ratios',
