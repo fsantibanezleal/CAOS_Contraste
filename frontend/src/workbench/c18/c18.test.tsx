@@ -251,10 +251,22 @@ describe('the stress group', () => {
     for (const r of o.severity.rows) expect(markup).toContain(`data-severity="${r.maps_to_regressor}"`);
     expect(markup).toContain(formatNumber(o.severity.minimum_ratio, 'en', { digits: 4 }));
     expect(markup).toContain('convention');
+    // PR-C18-2: the column judges the ratio against the minimum; is_stress is the scenario's kind, never the verdict
     const weak = clone(fedV);
     weak.outputs.severity.rows[0].ratio = 0.5;
-    weak.outputs.severity.rows[0].is_stress = false;
-    expect(html(<SeverityView sel={selOf(weak)} />)).toMatch(/data-severity="unemployment_rate"[^>]*data-stress="false"/);
+    weak.outputs.severity.rows[0].is_stress = true;
+    const weakMarkup = html(<SeverityView sel={selOf(weak)} />);
+    expect(weakMarkup).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="false"/);
+    expect(weakMarkup).toContain('no, below the minimum');
+    const strong = clone(fedV);
+    strong.outputs.severity.rows[0].ratio = 1.2;
+    strong.outputs.severity.rows[0].is_stress = true;
+    expect(html(<SeverityView sel={selOf(strong)} />)).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="true"/);
+    const base = clone(fedV);
+    base.outputs.severity.rows[0].is_stress = false;
+    const baseMarkup = html(<SeverityView sel={selOf(base)} />);
+    expect(baseMarkup).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="not-judged"/);
+    expect(baseMarkup).toContain('not judged (baseline)');
   });
 
   it('the losses are listed by risk and year, with the total', () => {

@@ -390,8 +390,10 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const sv = o.severity;
+  // is_stress is the scenario's kind (not the baseline); the minimum-ratio rule is judged here, on a stress path only (PR-C18-2)
+  const severe = (r: (typeof sv.rows)[number]): boolean => r.ratio >= sv.minimum_ratio;
   const bars = [
-    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor), value: r.ratio, tone: r.is_stress ? ('accent' as const) : ('warn' as const), hint: text(REGRESSOR_TEXT, r.maps_to_regressor) })),
+    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor), value: r.ratio, tone: !r.is_stress ? ('neutral' as const) : severe(r) ? ('accent' as const) : ('warn' as const), hint: text(REGRESSOR_TEXT, r.maps_to_regressor) })),
     { id: 'minimum', label: { en: 'Minimum ratio (a convention)', es: 'Razón mínima (una convención)' } as BiText, value: sv.minimum_ratio, tone: 'neutral' as const },
   ];
   return (
@@ -401,8 +403,8 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${sv.reference_episode.start} to ${sv.reference_episode.end}) for the same variable. A path below the minimum ratio, a convention of the case, is not a stress. ${pick(sv.reference_episode.source, 'en')}`,
-          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${sv.reference_episode.start} a ${sv.reference_episode.end}) para la misma variable. Una trayectoria bajo la razón mínima, una convención del caso, no es un estrés. ${pick(sv.reference_episode.source, 'es')}`,
+          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${sv.reference_episode.start} to ${sv.reference_episode.end}) for the same variable. A stress path below the minimum ratio, a convention of the case, is not severe enough; a baseline path is not judged. ${pick(sv.reference_episode.source, 'en')}`,
+          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${sv.reference_episode.start} a ${sv.reference_episode.end}) para la misma variable. Una trayectoria de estrés bajo la razón mínima, una convención del caso, no es lo bastante severa; una trayectoria base no se juzga. ${pick(sv.reference_episode.source, 'es')}`,
         }}
       >
         <ChartOverTable
@@ -425,18 +427,18 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
                 <th className="ct-wide-only">{pick({ en: 'Quarter', es: 'Trimestre' }, lang)}</th>
                 <th>{pick({ en: 'Crisis peak', es: 'Máximo de la crisis' }, lang)}</th>
                 <th>{pick({ en: 'Ratio', es: 'Razón' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'A stress?', es: '¿Es un estrés?' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Severe enough?', es: '¿Lo bastante severa?' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {sv.rows.map((r) => (
-                <tr key={r.maps_to_regressor} data-severity={r.maps_to_regressor} data-stress={String(r.is_stress)}>
+                <tr key={r.maps_to_regressor} data-severity={r.maps_to_regressor} data-stress={String(r.is_stress)} data-severe={r.is_stress ? String(severe(r)) : 'not-judged'}>
                   <td className="ct-text" title={r.variable}>{`${pick(text(REGRESSOR_TEXT, r.maps_to_regressor), lang)} (${unitEs(r.unit, lang)})`}</td>
                   <td>{formatNumber(r.path_peak_deviation, lang, { digits: 4 })}</td>
                   <td className="ct-wide-only">{quarterText(r.path_peak_quarter, lang)}</td>
                   <td>{formatNumber(r.history_peak_deviation, lang, { digits: 4 })}</td>
                   <td>{formatNumber(r.ratio, lang, { digits: 4 })}</td>
-                  <td className="ct-text">{r.is_stress ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no, below the minimum', es: 'no, bajo el mínimo' }, lang)}</td>
+                  <td className="ct-text">{!r.is_stress ? pick({ en: 'not judged (baseline)', es: 'no se juzga (escenario base)' }, lang) : severe(r) ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no, below the minimum', es: 'no, bajo el mínimo' }, lang)}</td>
                 </tr>
               ))}
             </tbody>
