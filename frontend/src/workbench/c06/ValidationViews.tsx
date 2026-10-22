@@ -203,6 +203,8 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
   const d = o.decile_calibration;
   const cohort = d.rows.find((r) => r.origination_cohort === 'all')?.origination_cohort ?? d.rows[0]?.origination_cohort;
   const mine = d.rows.filter((r) => r.origination_cohort === cohort);
+  // a Cohort column that holds one value in every row says nothing: the cohort is in the title of the drawing
+  const oneCohort = new Set(d.rows.map((r) => r.origination_cohort)).size === 1;
   const deciles = unionX(mine.map((r) => r.decile));
   const horizons = [...new Set(mine.map((r) => r.months))].sort((a, b) => a - b);
   const series = horizons.flatMap((h, i) => {
@@ -213,7 +215,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
     ];
   });
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{ en: `Calibration by risk decile, rung ${d.rung_id}${cohort ? `, cohort ${cohortText(cohort).en}` : ''}`, es: `Calibración por decil de riesgo, peldaño ${d.rung_id}${cohort ? `, cohorte ${cohortText(cohort).es}` : ''}` }}
@@ -234,7 +236,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
           <table className="caos-table ct-wrap-head" data-table="decile-calibration">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Cohort', es: 'Cohorte' }, lang)}</th>
+                {oneCohort ? null : <th className="ct-text">{pick({ en: 'Cohort', es: 'Cohorte' }, lang)}</th>}
                 <th>{pick({ en: 'Months', es: 'Meses' }, lang)}</th>
                 <th>{pick({ en: 'Decile', es: 'Decil' }, lang)}</th>
                 <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
@@ -245,7 +247,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {d.rows.map((r) => (
                 <tr key={`${r.origination_cohort}-${r.months}-${r.decile}`} data-cohort={r.origination_cohort} data-months={r.months} data-decile={r.decile}>
-                  <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>
+                  {oneCohort ? null : <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>}
                   <td>{r.months}</td>
                   <td>{r.decile}</td>
                   <td>{formatNumber(r.n, lang, { decimals: 0 })}</td>

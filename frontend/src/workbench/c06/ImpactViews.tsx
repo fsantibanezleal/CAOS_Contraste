@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { provenanceOf, REPLAY } from '../model';
 import { viridis } from '../c04/MatrixMap';
 import { Pending } from '../Pending';
+import { columnScale } from './amounts';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, axisScale, money, pct } from './format';
 import { nearestPoint, outputsOf, rescaled, type C06Sel } from './selection';
 
@@ -381,8 +382,9 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
   const fmt = (v: number) => (sel.surface === 'ecl' ? `${formatNumber(v / sc.div, lang, { digits: 4 })} ${pick(sc.unit, lang)}` : pct(v, lang, 2));
   const scenarioLabel = (id: string): BiText => o.scenarios.find((s) => s.id === id)?.label ?? { en: id, es: id };
   const ternary = g.scenario_ids.length === 3;
+  const eclScale = columnScale(g.points.flatMap((p) => [p.ecl_recomputed, p.ecl_frozen]), cur);
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{
@@ -447,14 +449,24 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
           </p>
         )}
       </PlotCard>
-      <PlotCard fill title={{ en: 'The grid in numbers', es: 'La grilla en números' }} lane={LIVE} provenance={prov} dataKey={stateKey}>
+      <PlotCard
+        fill
+        title={{ en: 'The grid in numbers', es: 'La grilla en números' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Weights in the order: ${g.scenario_ids.map((id) => pick(scenarioLabel(id), 'en')).join(' / ')}.`,
+          es: `Pesos en el orden: ${g.scenario_ids.map((id) => pick(scenarioLabel(id), 'es')).join(' / ')}.`,
+        }}
+      >
         <div className="ct-scroll">
           <table className="caos-table ct-wrap-head" data-table="weight-grid">
             <thead>
               <tr>
-                <th className="ct-text">{g.scenario_ids.map((id) => pick(scenarioLabel(id), lang)).join(' / ')}</th>
-                <th>{pick({ en: 'ECL, recomputed', es: 'PCE, recalculada' }, lang)}</th>
-                <th>{pick({ en: 'ECL, frozen', es: 'PCE, congelada' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Weights', es: 'Pesos' }, lang)}</th>
+                <th>{`${pick({ en: 'ECL, recomputed', es: 'PCE, recalculada' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
+                <th>{`${pick({ en: 'ECL, frozen', es: 'PCE, congelada' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
                 <th className="ct-wide-only">{pick({ en: 'Stage 2, recomputed', es: 'Etapa 2, recalculada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Stage 2, frozen', es: 'Etapa 2, congelada' }, lang)}</th>
               </tr>
@@ -463,8 +475,8 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
               {g.points.map((p) => (
                 <tr key={p.weights.join('/')} data-weights={p.weights.join('/')} className={p === near ? 'ct-current' : undefined}>
                   <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{p.weights.map((x) => pct(x, lang, 0)).join(' / ')}</td>
-                  <td>{money(p.ecl_recomputed, lang, cur)}</td>
-                  <td>{money(p.ecl_frozen, lang, cur)}</td>
+                  <td>{eclScale.fmt(p.ecl_recomputed, lang)}</td>
+                  <td>{eclScale.fmt(p.ecl_frozen, lang)}</td>
                   <td className="ct-wide-only">{pct(p.stage2_ratio_recomputed, lang, 1)}</td>
                   <td className="ct-wide-only">{pct(p.stage2_ratio_frozen, lang, 1)}</td>
                 </tr>
@@ -488,6 +500,9 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const s = o.stage_summary;
   const closing = (stage: string) => o.reconciliation.allowance.find((r) => r.stage === stage)?.closing ?? null;
+  const gcaScale = columnScale(s.rows.map((r) => r.gross_carrying_amount), s.currency);
+  const eclScale = columnScale(s.rows.map((r) => r.ecl), s.currency);
+  const closingScale = columnScale(s.rows.map((r) => closing(r.stage)), s.currency);
   return (
     <ViewsRow shares={[2, 3]}>
       <PlotCard fill title={{ en: 'Coverage by stage', es: 'Cobertura por etapa' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Coverage is the model ECL over the gross carrying amount of the stage.', es: 'La cobertura es la PCE del modelo sobre el valor en libros bruto de la etapa.' }}>
@@ -506,10 +521,10 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
                 <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
-                <th>{`${pick({ en: 'Gross carrying amount', es: 'Valor en libros bruto' }, lang)} (${s.currency})`}</th>
-                <th>{pick({ en: 'Model ECL', es: 'PCE del modelo' }, lang)}</th>
+                <th>{`${pick({ en: 'Gross carrying amount', es: 'Valor en libros bruto' }, lang)} (${pick(gcaScale.unit, lang)})`}</th>
+                <th>{`${pick({ en: 'Model ECL', es: 'PCE del modelo' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
                 <th>{pick({ en: 'Coverage', es: 'Cobertura' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Allowance closing, overlays included', es: 'Cobertura final, con ajustes' }, lang)}</th>
+                <th className="ct-wide-only">{`${pick({ en: 'Allowance closing, with overlays', es: 'Provisión final, con ajustes' }, lang)} (${pick(closingScale.unit, lang)})`}</th>
               </tr>
             </thead>
             <tbody>
@@ -517,11 +532,11 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
                 <tr key={r.stage} data-stage={r.stage}>
                   <td className="ct-text">{pick(STAGE_TEXT[r.stage], lang)}</td>
                   <td>{formatNumber(r.accounts, lang, { decimals: 0 })}</td>
-                  <td>{money(r.gross_carrying_amount, lang, s.currency)}</td>
-                  <td>{money(r.ecl, lang, s.currency)}</td>
+                  <td>{gcaScale.fmt(r.gross_carrying_amount, lang)}</td>
+                  <td>{eclScale.fmt(r.ecl, lang)}</td>
                   <td>{pct(r.coverage, lang, 2)}</td>
                   <td className="ct-wide-only">
-                    <MaybeNumber value={closing(r.stage)} reason={null} format={(v) => money(v, lang, s.currency)} />
+                    <MaybeNumber value={closing(r.stage)} reason={null} format={(v) => closingScale.fmt(v, lang)} />
                   </td>
                 </tr>
               ))}
