@@ -72,6 +72,6 @@ export const TEST_REFERENCE_RULES: ReadonlyArray<Rule> = [
     (g) => `BCBS d368 (2016), Normas: riesgo de tasa de interés en el libro de banca, ${g[1]}; dossier 05 D.3 (estabilidad de los pesos entre ventanas de estimación)`],
   [/^dossier 05, IRRBB acceptance: the 2022 hiking cycle as the out-of-sample test of an NII projection$/,
     () => 'dossier 05, aceptación del IRRBB: el ciclo de alzas de 2022 como prueba fuera de muestra de una proyección del NII'],
-  [/^CMF Recopilacion Actualizada de Normas, capitulo 21-13, Anexo 1 \(Hoja 9 to Hoja 12\): CLP and UR shock sizes, the 50 percent offset, the 2\.5 percent indexation charge \(dossier 03 F\.2\), (https:\/\/\S+)$/,
-    (g) => `CMF Recopilacion Actualizada de Normas, capitulo 21-13, Anexo 1 (Hoja 9 a Hoja 12): tamaños de los choques en CLP y UR, la compensación de 50 por ciento, el cargo de 2,5 por ciento por reajustabilidad (dossier 03 F.2), ${g[1]}`],
+  [/^CMF Recopilaci(?:o)n Actualizada de Normas, cap(?:i)tulo 21-13, Anexo 1 \(Hoja 9 to Hoja 12\): CLP and UR shock sizes, the 50 percent offset, the 2\.5 percent indexation charge \(dossier 03 F\.2\), (https:\/\/\S+)$/,
+    (g) => `CMF Recopilación Actualizada de Normas, capítulo 21-13, Anexo 1 (Hoja 9 a Hoja 12): tamaños de los choques en CLP y UR, la compensación de 50 por ciento, el cargo de 2,5 por ciento por reajustabilidad (dossier 03 F.2), ${g[1]}`],
 ];

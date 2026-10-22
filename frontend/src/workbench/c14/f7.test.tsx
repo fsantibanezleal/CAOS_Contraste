@@ -14,7 +14,7 @@ const models14 = committedDoc<ModelsArtifact>('C14', 'models-svb-2021-2022');
 const sel14 = (name: string): C14Sel => defaultSel(fixtureData('C14', committedDoc<VariantArtifact>('C14', name), models14, { en: 'IRRBB', es: 'IRRBB' })) as C14Sel;
 const models15 = committedDoc<ModelsArtifact>('C15', 'models-banco-andino-2026-09');
 const sel15 = (name: string): C15Sel => defaultSel15(fixtureData('C15', committedDoc<VariantArtifact>('C15', name), models15, { en: 'IRRBB', es: 'IRRBB' })) as C15Sel;
-const VERBATIM = ['Recopilacion Actualizada de Normas', 'Contraste', /https?:\/\/\S+/g];
+const VERBATIM = ['Contraste', /https?:\/\/\S+/g];
 
 describe('U16-F7 C14 and C15 (b07 minors)', () => {
   afterEach(() => setLang('en'));
