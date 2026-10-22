@@ -65,6 +65,21 @@ def test_unaccented_sion_ending_is_found_in_the_second_argument_of_a_helper(guar
     assert out.count("finding") >= 1
 
 
+def test_a_word_inside_an_identifier_is_code_not_spanish_text(guard, tmp_path, capsys):
+    """The engine's reason quotes the attribute spec(test_id).decision in its Spanish sentence; the word is code."""
+    _write(tmp_path, DOC, '{"reason": {"en": "the kind is spec(test_id).decision where", '
+                          '"es": "el tipo es spec(test_id).decision donde la prueba está registrada"}}')
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 0, out
+    _write(tmp_path, DOC, '{"rows": [{"en": "the model hmda-logistic-decision is the champion", '
+                          '"es": "el modelo hmda-logistic-decision es el campeón del caso"}]}')
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 0, out
+    _write(tmp_path, DOC, '{"reason": {"en": "the decision of the bank", "es": "la decision del banco y su situacion"}}')
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1 and "decisión" in out
+
+
 def test_a_correct_spanish_text_passes(guard, tmp_path, capsys):
     _write(tmp_path, PY, 'T = {"en": "Ten years", "es": "Diez años de exposición, según el método ¿cuánto?"}\n')
     code, out = _run(guard, tmp_path, capsys)
