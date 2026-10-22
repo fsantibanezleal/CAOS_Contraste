@@ -288,3 +288,19 @@ describe('b12 m11, m12, m13, m9, m14: the Experiments page', () => {
     expect(text('../pages/Wave2Sections.tsx')).not.toContain('las excedencias cuentan');
   });
 });
+
+describe('b13 m1, m2, m4: the methodology captions and figures', () => {
+  it('no caption writes the entity &ell; (HTML has none, so it printed literally)', () => {
+    expect(text('../pages/methodology/aggregation-stress.tsx')).not.toContain('&ell;');
+  });
+  it('the legend of the share figure names the colours the bars are drawn in, not "grey"', () => {
+    const src = text('../pages/methodology/portfolio-capital.tsx');
+    expect(src).not.toContain('grey: share of the exposure');
+    expect(src).not.toContain('gris: parte de la exposición');
+  });
+  it('the tier figure takes its colours from the one tier scale of the dependency map, with no hard-coded hex', () => {
+    const src = text('../pages/methodology/governance.tsx');
+    expect(src).not.toContain('#2d1b69');
+    expect(src).toContain('tierColor');
+  });
+});

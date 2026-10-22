@@ -7,6 +7,7 @@
 // wherever it appears. The recommendation is the rule's output on the evidence; Contraste approves no model (SDD non-goal 1).
 import { Callout, Cite, DocSection, Equation, Figure, useShellLang } from '@fasl-work/caos-app-shell';
 import { P, T, useT } from '../../content/bi';
+import { tierColor } from '../../workbench/governance/DependencyMap';
 import { RULE_OUTPUT_LABEL, TIER_RULE_TEX, tierOf } from '../../workbench/governance/model';
 import type { MethodologySection } from '../methodologyRegistry';
 
@@ -19,7 +20,6 @@ function TierRuleFigure() {
   const T0 = 40;
   const cw = (W - L - 8) / 4;
   const ch = 44;
-  const shade = ['#2d1b69', '#2a6f97', '#5aa469', '#c9c25a'];
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('The 4 by 4 tier matrix: the tier of each pair of materiality and complexity scores', 'La matriz de niveles de 4 por 4: el nivel de cada par de puntajes de materialidad y complejidad')} style={{ width: '100%', height: 'auto', maxWidth: 480 }}>
       <text x={L + 2 * cw} y={14} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">{t('Complexity C', 'Complejidad C')}</text>
@@ -34,7 +34,7 @@ function TierRuleFigure() {
             const tier = tierOf(m, c);
             return (
               <g key={c}>
-                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={shade[tier - 1]} />
+                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={tierColor(tier)} />
                 <text x={L + (c - 0.5) * cw} y={T0 + (r + 0.5) * ch + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={tier >= 3 ? '#141414' : '#f4f4f4'}>{t(`Tier ${tier}`, `Nivel ${tier}`)}</text>
               </g>
             );
