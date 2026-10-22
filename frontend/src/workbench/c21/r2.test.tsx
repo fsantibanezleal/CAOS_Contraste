@@ -22,6 +22,7 @@ const selOf = (name: string): C21Sel => defaultSel(fixtureData('C21', committedD
 // what a reader must find as written: the statute and rule names, the dataset, the paper, the evidence ids of the shared findings
 // card and the quotations of the law (a legal text is quoted, also inside a finding title)
 const VERBATIM = [
+  /the Supreme Court held[^.]*\./g, /Gross HMDA denial[^.]*\./g, /The Act does not provide[^.]*\./g, /91 FR 21620[^)]*Inc\./g,
   'HMDA', 'Fair Housing Act', 'Regulation B', 'arXiv', 'Wald', 'Home Mortgage Disclosure Act', 'FFIEC', 'CFPB',
   /\b[a-z]+(?:[-_][a-z0-9]+)+\b/g, /@[A-Za-z0-9:_-]+/g, /91 FR 21620[^)]*Inc\./g, /62 or over vs under 62/g,
   /the Supreme Court held[^.]*\./g, /Gross HMDA denial[^.]*\./g, /The Act does not provide[^.]*\./g,

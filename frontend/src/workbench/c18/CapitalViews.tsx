@@ -15,6 +15,7 @@ import {
   ANNEX3_EN, ANNEX3_ES, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
   type C18Cell, type C18Sel,
 } from './selection';
+import { phraseEs } from './localise';
 
 const PLAN_COLOR = { base: '--color-accent', 'stress-without-mitigation': '--color-bad', 'stress-with-mitigation': '--color-good' } as const;
 
@@ -334,7 +335,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <p className="ct-note">{t.formula}</p>
+          <p className="ct-note">{phraseEs(t.formula, lang)}</p>
           <table className="caos-table ct-wrap-head" data-table="c18-stack-refs">
             <thead>
               <tr>

@@ -24,7 +24,7 @@ const selOf = (name: string): C20Sel => defaultSel(fixtureData('C20', committedD
 
 // what a reader must find as written: library names, licences, the dataset file names and the quotation of the licence
 const VERBATIM = ['InterpretML', 'ExplainableBoostingClassifier', 'optbinning', 'statsmodels', 'scikit-learn', 'LogisticRegression', 'Apache-2.0', 'BSD-3-Clause',
-  'SGCDataset_metadata.json', 'uci-polish', 'uci-taiwan', /\b[a-z]+(?:[-_][a-z0-9]+)+\b/g, /It is provided for research[^"]*individuals\./g, 'Taiwan', 'Fed', 'UCI', 'German'];
+  'SGCDataset_metadata.json', 'uci-polish', 'uci-taiwan', /\b[a-z]+(?:[-_][a-z0-9]+)+\b/g, /It is provided for research[^"]*individuals\./g, /@[A-Za-z0-9:_-]+/g, 'Taiwan', 'Fed', 'UCI', 'German'];
 
 describe('U16-F4 C20: the Spanish view', () => {
   afterEach(() => setLang('en'));

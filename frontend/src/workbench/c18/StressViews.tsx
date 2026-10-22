@@ -14,6 +14,7 @@ import {
   backcastOf, fitOf, outputsOf, satFitOf, text,
   type C18Sel,
 } from './selection';
+import { unitEs } from './localise';
 
 type Lang = 'en' | 'es';
 /** A quarter end as "2026 Q1" (T1 in Spanish). */
@@ -74,7 +75,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: p.transposed.map((_, i) => i + 1), label: { en: `Quarter of the projection (1 is ${quarterText(p.transposed[0].date, 'en')})`, es: `Trimestre de la proyección (1 es ${quarterText(p.transposed[0].date, 'es')})` }, format: { decimals: 0 } }}
-              y={{ label: { en: `${name(p.maps_to_regressor)} (${p.unit})`, es: `${name(p.maps_to_regressor)} (${p.unit})` }, format: { digits: 4 } }}
+              y={{ label: { en: `${name(p.maps_to_regressor)} (${p.unit})`, es: `${name(p.maps_to_regressor)} (${unitEs(p.unit, 'es')})` }, format: { digits: 4 } }}
               series={[{ label: { en: 'Transposed onto Banco Andino', es: 'Transpuesta a Banco Andino' }, values: p.transposed.map((q) => q.value), color: '--color-accent', width: 2.8 }]}
               yMarks={marks}
             />
@@ -99,7 +100,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
               {s.paths.map((q, i) => (
                 <tr key={`${q.maps_to_regressor}-${i}`} data-path={i} data-transposition={q.transposition.label} className={i === sel.path ? 'ct-current' : undefined}>
                   <td className="ct-text" title={q.variable}>{name(q.maps_to_regressor)}</td>
-                  <td className="ct-text ct-wide-only">{q.unit}</td>
+                  <td className="ct-text ct-wide-only">{unitEs(q.unit, lang)}</td>
                   <td className="ct-text">{pick(text(LEVEL_RULE_TEXT, q.level_rule.kind), lang)}</td>
                   <td>{formatNumber(q.transposition.source_jump_off.value, lang, { digits: 4 })}</td>
                   <td>{formatNumber(q.transposition.target.value, lang, { digits: 4 })}</td>
@@ -430,7 +431,7 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
             <tbody>
               {sv.rows.map((r) => (
                 <tr key={r.maps_to_regressor} data-severity={r.maps_to_regressor} data-stress={String(r.is_stress)}>
-                  <td className="ct-text" title={r.variable}>{`${pick(text(REGRESSOR_TEXT, r.maps_to_regressor), lang)} (${r.unit})`}</td>
+                  <td className="ct-text" title={r.variable}>{`${pick(text(REGRESSOR_TEXT, r.maps_to_regressor), lang)} (${unitEs(r.unit, lang)})`}</td>
                   <td>{formatNumber(r.path_peak_deviation, lang, { digits: 4 })}</td>
                   <td className="ct-wide-only">{quarterText(r.path_peak_quarter, lang)}</td>
                   <td>{formatNumber(r.history_peak_deviation, lang, { digits: 4 })}</td>

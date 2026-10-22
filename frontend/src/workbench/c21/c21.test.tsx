@@ -147,7 +147,7 @@ describe('the C21 instrument', () => {
     const markup = html(<ControlledView sel={sel} />);
     const e = o.attributes[0].contrasts[0].controlled.estimate!;
     expect(markup).toContain(f3(e.coefficient));
-    expect(markup).toContain(`${f3(e.ci.lo)} - ${f3(e.ci.hi)}`);
+    expect(markup).toContain(`${f3(e.ci.lo)} to ${f3(e.ci.hi)}`);
     expect(markup).toContain(`data-label="${e.label}"`);
     expect(markup).toContain('Missing control: credit score');
     expect(markup).toContain('approximation of comparative evidence');

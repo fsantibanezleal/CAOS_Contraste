@@ -26,6 +26,8 @@ const VERBATIM = ['Silicon Valley Bank', 'Liquidity Stress Testing', 'LiST', 'Ba
 
 /** A slug printed as text: three or more words joined by hyphens or an underscore id. */
 const SLUG = /\b[a-z]+(?:[-_][a-z0-9]+)+\b/g;
+/** Identifiers that the producer's own prose names (a phase, a function of the engine, a haircut term): code in a sentence, not a label. */
+const CODE_IN_PROSE = ['lcr-30-day', 'lcr_nsfr', 'roll-off'];
 
 describe('U16-F4 C16: the Spanish view', () => {
   afterEach(() => setLang('en'));
@@ -38,7 +40,7 @@ describe('U16-F4 C16: the Spanish view', () => {
         const text = visibleText(html(<View sel={selOf(name)} />));
         for (const leak of englishLeaks(text, VERBATIM)) all.push(`${name} ${view} ${leak}`);
         // the evidence ids of the shared findings card are that card's
-        if (view !== 'Findings') for (const id of text.match(SLUG) ?? []) all.push(`${name} ${view} slug ${id}`);
+        if (view !== 'Findings') for (const id of (text.match(SLUG) ?? []).filter((x) => !CODE_IN_PROSE.includes(x))) all.push(`${name} ${view} slug ${id}`);
       }
     }
     expect([...new Set(all)]).toEqual([]);
