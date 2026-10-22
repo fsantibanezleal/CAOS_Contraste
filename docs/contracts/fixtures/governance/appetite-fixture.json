@@ -20,147 +20,147 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "007ccc71174e1a51f66d817c2681f8d3ac19cca5a84620a0ac800198b564abda",
+    "sha256": "fbb7ed12f1d9f36112885fa7a200018b327e44d6075994c0e9294368ccad3464",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "sha256": "cc31660ee1f225de62eeee73386ab4c1ed583f13fe0e431a535203a188763001",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "sha256": "8b20279786c0cb80ce89f3bf688c99d410c98460eb36af6d36da6d069118018b",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "2aa1c2297982bd0a760d5a8391220a7e9953d4a5df8b1572e5528f9f3b82a003",
+    "sha256": "53f8539c543bc30eb7b92738c028bbd418c6363eee75d9f201f9db830ea693f1",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "sha256": "7c7cbd257d44d48a89290d095f721ea283391cc53b60e83dda1db8fc4d934939",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "sha256": "62cb4f31ad15352254840e627c2c9b67fbab47089933618e17f75f0675cf379f",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "sha256": "c51e480a0e425d9a4b3881243b1f0cf69ec6dba8a95456d6d1f4ee81d052b242",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "sha256": "5da646192ba832d8f2b15187fd5f6c65edbfc0f92ada6528f09b2e8c5ebfd800",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "sha256": "ba94b4a833fb13a07e81ea2201aeae0842a0cb06b6143c1296769171ac7c5809",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "sha256": "2a915b9795e912abebd3d01b6b8fd99174c023eb24df2ebcfda89fd136a0178f",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "sha256": "ee072766b3fd3f05887c4c3bdbed530449b0a82dd8fe386de888a4b87c8f5822",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "7a822eabcb64a596792f8c10fdb38d77f2f4e48bc95f1f0e74344fa2280cf133",
+    "sha256": "1ffd45c98b63a762062e9b2198e91a2bf9bb64d1282cea6e9bbd420c2b9bf8e9",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
+    "sha256": "a2186aa6aa9bf853f63587cc1123c9832622addf45f5ba40a0bd60d75199e044",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
+    "sha256": "28261ae9faf1a7d977b03b01241a1ffd85ae7007d71720980fa21a58075aac2d",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
+    "sha256": "2f100dd81c1244c04b201a27375f7567977ebc727d00baca61235305acfd306b",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
+    "sha256": "4579c2abf7c1794261166a39e1c881818a72d35822640ec0049541948ad27b66",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
+    "sha256": "fba21e9620f7ee372c572be26cd7c181203a809e8170d67f5f577d9441abd8b1",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
+    "sha256": "1dd869d3987eaeb43084b11d868c802468d78e9bbef77d206c0e28785770cbb1",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
+    "sha256": "edcd3c1fe044f432c20a0b55dfbd898d64769406355505e10c0fcb56314bde9d",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "21e2c6986d4db68774d49dae676c014a787dfd69b7aba1651bfb30a31d271669",
+    "sha256": "9eeddeb772aec6bdd43fb3175a93f0b434d5363859c974dffde7e22fc1698940",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "a4fa48ce3ab9b44a0bfa0f90b5219cd454b3adb8630cc7c931ce2a7c5471095b",
+    "sha256": "287d586e469bbd2bbad8f10b023f5e639f9f0585f8f10c0e67d0e7389f994ac3",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "709c3bda603d9d861a3f7aa39d8d674c8dc54a6d612493b8a0d6fec6c77c6dde",
+    "sha256": "26fd3794c1c52908697e3a46ae1b6d8ff7084bfe1189fd2c674a4d0f0d81c618",
     "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "781521b9303eeeb93d0822590fa4387b58776810b3c9bbef904c8b2b3e9a6bc0",
+    "sha256": "11ec30a8b184b23ab983f08a020aed88c00fe6b2b6aeaad171ac0fa9db973d5f",
     "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "ef52d5e00cdca19e3d078284961001738b60b200e746033e216ad23b0c1a41e6",
+    "sha256": "4e7dd3a797458992cbbbbe4b6b716026e6a97bea3e2f5973adaf3baf70e4dcba",
     "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "d7eac6a29e64d5e2276b3d2e25963bc09de905c5293feee031a3bc1fa4a90441",
+    "sha256": "63e993be95a126486afa6c709c7bbab472c3eacea37b3e2114715fd3e7419412",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "08fa8614e0ce61136a7c42f79053aeba8a13864b579712db360d8e8151292342",
+    "sha256": "91f0187ebb47cf69b17c84e88e8cd5e2dc38e7710839d3837314e96cd7837ac6",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "aafc0795a1534bae069362f4fd792c925e22412010bb913483890981d619ebb6",
+    "sha256": "5340d8ddadd8ada4b00d5c78ac9717f210098b779bbc5995a6f523309e90e275",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "a0e44e618aa7802990c93e0de0e6c283c49334e4e0cb15903145a57abc45fe02",
+    "sha256": "04391984ee332f994663e146e046e95bad28e4a437ff70fa7742c80b93dabeb1",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "aadd47b869ea88b60f67db877bff75334d6f66bc007609b8f6e8ac73057ed459",
+    "sha256": "d7973919e22f3a0a81335e68118d1250967424c0fa5ea18c600700e4f5e1167b",
     "ref": null
    }
   ]

@@ -574,14 +574,14 @@ def test_the_appetite_recomputes_from_the_inventory_and_the_register() -> None:
     high = [r for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")]
     over = [r for r in rows if r["overdue"]]
     distinct = lambda rs: len({(r["entry_key"], r["id"]) for r in rs})   # noqa: E731
-    assert m["open-high-severity"]["numerator"] == distinct(high) == 4 and m["open-high-severity"]["register_rows"] == len(high) == 8
+    assert m["open-high-severity"]["numerator"] == distinct(high) == 5 and m["open-high-severity"]["register_rows"] == len(high) == 9
     assert m["overdue-remediation"]["numerator"] == distinct(over) == 3 and m["overdue-remediation"]["register_rows"] == len(over) == 7
-    assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 39
+    assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 42
     assert all(m[k]["register_rows"] is None for k in m if k not in ("open-high-severity", "overdue-remediation"))
     assert m["entries-under-exception"]["numerator"] == sum(1 for e in inv["entries"] if e["lifecycle"]["exception"])
     assert m["entries-in-breach"]["numerator"] == sum(1 for e in inv["entries"] if e["attributes"]["A36"]["value"]["red"] > 0)
     assert m["pma-magnitude"]["value"] == pytest.approx(324129997.0 / 97592002519.53)
-    assert app["population"] == {"entries": 4, "findings": len(rows), "distinct_findings": 39, "tier1_entries": 2}
+    assert app["population"] == {"entries": 4, "findings": len(rows), "distinct_findings": 42, "tier1_entries": 2}
 
 
 # --- the planted defects: each refused by the layer the table names ---------------------------------------------------------------------
@@ -1425,7 +1425,7 @@ def test_golden_the_register_report_and_appetite_numbers_of_the_contract_equal_t
     body = _golden_text("findings.register_counts")
     assert f"total {c['total']}" in body and f"overdue {c['overdue']}" in body
     assert all(f"{s} {n}" in body for s, n in c["by_severity"].items())
-    assert "open 49, validated_closed 4, risk_accepted 28" in body and c["by_status"]["open"] == 49
+    assert "open 50, validated_closed 4, risk_accepted 30" in body and c["by_status"]["open"] == 50
     counts = rep["test_counts"]
     assert json.dumps(counts) in _golden_text("report.executive_counts").replace("'", '"') or str(counts).replace("'", '"') in         _golden_text("report.executive_counts")
     m = {x["id"]: x for x in app["metrics"]}

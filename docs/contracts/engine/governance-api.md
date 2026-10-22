@@ -640,7 +640,7 @@ def register_counts(rows: Sequence[Mapping[str, Any]]) -> dict: ...
 ```
 
 - Units: register rows; returns `total`, `by_severity` (S1 to S4), `by_status` (the seven states), `overdue` and `by_case`, a list sorted by case id with the same four counts.
-- Golden: for the fixture register: total 81, by_severity S1 2, S2 14, S3 41, S4 24, by_status open 49, validated_closed 4, risk_accepted 28 (the other four states 0), overdue 7.
+- Golden: for the fixture register: total 84, by_severity S1 2, S2 15, S3 41, S4 26, by_status open 50, validated_closed 4, risk_accepted 30 (the other four states 0), overdue 7.
 - Invariants: each of `by_severity` and `by_status` sums to `total`; the `by_case` totals sum to `total`. A row holds `case_id`, `severity`, `status` and `overdue`; an unknown severity or state raises `ValueError` ([code] `findings.py:216-237`).
 
 ## Module `riskvalidation/governance/schedule.py`
@@ -750,7 +750,7 @@ def open_high_severity(rows: Sequence[Mapping[str, Any]]) -> tuple[float, float,
 
 - Units: register rows; returns (numerator, denominator, value, register rows): the distinct (entry, id) findings with a row in status `open`, `action_plan_agreed`, `in_progress`, `submitted_for_closure` or
   `overdue` and severity S1 or S2; the distinct (entry, id) findings of the register; the count (value equals the numerator); and the number of register rows behind the numerator.
-- Golden: for the fixture register: (4, 39, 4, 8).
+- Golden: for the fixture register: (5, 42, 5, 9).
 - Invariants (W15-14): a finding repeated in n variants of an entry counts once (B.6 counts findings, 06 l.609-611); the row count is the secondary number in the same metric object (`register_rows`).
 
 ### `riskvalidation.governance.appetite.overdue_remediation`
@@ -760,7 +760,7 @@ def overdue_remediation(rows: Sequence[Mapping[str, Any]]) -> tuple[float, float
 ```
 
 - Units: register rows; returns (numerator, denominator, value, register rows): the distinct (entry, id) findings with an overdue row, the distinct findings of the register, the count, and the overdue rows.
-- Golden: for the fixture register: (3, 39, 3, 7).
+- Golden: for the fixture register: (3, 42, 3, 7).
 - Invariants: the row count equals the number of rows `is_overdue` flags at the as-of date; a finding counts once per entry.
 
 ### `riskvalidation.governance.appetite.entries_under_exception`
@@ -952,7 +952,7 @@ def findings_overdue(register: Sequence[Mapping[str, Any]], as_of: date, *, poli
 - Reference: dossier 06 B.7 l.614-628.
 - Units: `metric` is the share of open-state rows that are overdue; `n` the open-state rows; `n_events` the overdue rows.
 - Light: `upper_bad`: amber above 0, red above 0.25 (a convention).
-- Golden: the fixture register at 2026-12-31: n = 49, n_events = 7, metric = 0.1429, light `amber`.
+- Golden: the fixture register at 2026-12-31: n = 50, n_events = 7, metric = 0.1400, light `amber`.
 - Invariants: no open-state row returns `not_evaluated`; the overdue count equals `is_overdue` over the rows.
 
 ### `riskvalidation.validation.governance.validation_due`
@@ -1030,7 +1030,7 @@ def appetite_population(entries: Sequence[Mapping[str, Any]], rows: Sequence[Map
 ```
 
 - Units: entries and register rows; returns the `population` of the appetite document: `entries`, `findings` (the register rows), `distinct_findings` (the distinct (entry, id) pairs) and `tier1_entries` [c5; `appetite.py:134-141`].
-- Golden: for the fixture, `{"entries": 4, "findings": 81, "distinct_findings": 39, "tier1_entries": 2}`.
+- Golden: for the fixture, `{"entries": 4, "findings": 84, "distinct_findings": 42, "tier1_entries": 2}`.
 - Invariants: `distinct_findings` is the denominator of the two distinct-finding count metrics of `appetite_metrics`.
 
 ### `riskvalidation.governance.opinion.rwea_level`
