@@ -44,6 +44,8 @@ jobs:
           python -c "import sys, yaml, pathlib; [yaml.safe_load(p.read_text()) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('workflows: OK')"
       - name: CONTRACT 2, manifests and artifacts consistent
         run: python scripts/check_artifacts.py
+      - name: Every committed document valid against its schema file, each governed by one catalog row (ADR-0080)
+        run: python scripts/check_documents.py
       - name: Every artifact carries true provenance (CT-003)
         run: python scripts/check_provenance.py
       - name: No raw rows of a non-mirror source (CT-006)
@@ -90,31 +92,11 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Base-integrity guards (the regressions this archetype forbids)
-        run: |
-          fail=0
-          # the tracked paths, read once. `git ls-files | grep -q` failed at random under pipefail: grep -q exits on its first
-          # match, git ls-files dies of SIGPIPE and the pipeline reports 141, so a test (and its negation) flipped run to run.
-          # Every test below reads the list from a here-string: no pipe, no early-closing reader.
-          files="$(git ls-files)"
-          # a real .env must never be tracked; an example file (.env.example, frontend/.env.example) may be
-          envs="$(grep -E '(^|/)\.env(\..+)?$' <<<"$files" | grep -vE '(^|/)\.env(\..+)?\.example$' || true)"
-          if [ -n "$envs" ]; then
-            echo "::error::a real .env is tracked (only an .env.example may be): $(tr '\n' ' ' <<<"$envs")"; fail=1; fi
-          # venvs, native binaries and heavy model blobs must never be tracked
-          if grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$' <<<"$files"; then
-            echo "::error::a venv or native/heavy binary is tracked"; fail=1; fi
-          # raw or heavy data must never be tracked; commit only compact derived artifacts under data/derived/
-          if grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy)$' <<<"$files"; then
-            echo "::error::raw or heavy data tracked; commit only compact derived artifacts (data/derived/)"; fail=1; fi
-          # no leaked local machine paths in tracked sources
-          if git grep -nE '[A-Z]:\\_(Repos|worktrees|Temp)|[A-Z]:/_(Repos|worktrees|Temp)' -- . ':!.github' >/dev/null 2>&1; then
-            echo "::error::a local machine path in a tracked file"; fail=1; fi
-          if [ "$fail" -eq 0 ]; then echo "guards: OK"; fi
-          exit $fail
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Base-integrity guards (the regressions this archetype forbids; a model file a catalog row declares is admitted, 0.09.000)
+        run: python scripts/check_base_integrity.py
       - name: No template residue (an instantiated product replaces the example)
         run: python scripts/check_template_residue.py
       - name: Every path a document names exists
