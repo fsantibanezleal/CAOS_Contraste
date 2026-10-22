@@ -198,6 +198,14 @@ def test_an_allow_entry_silences_one_finding_and_an_unused_entry_fails(guard, tm
     assert "unused allow entry" in out
 
 
+def test_an_allow_entry_of_a_document_is_not_judged_without_documents(guard, tmp_path, capsys):
+    _write(tmp_path, PY, 'T = {"es": "Los años"}\n')
+    allow = tmp_path / "allow.txt"
+    allow.write_text("data/derived/contract/x.json :: decision  # a field name\n", encoding="utf-8")
+    code, out = _run(guard, tmp_path, capsys, "--allow", str(allow))
+    assert code == 0, out
+
+
 def test_explicit_paths_are_scanned_instead_of_the_tree(guard, tmp_path, capsys):
     _write(tmp_path, PY, 'T = {"es": "Los anos"}\n')
     _write(tmp_path, "data-pipeline/pipeline/cases/y.py", 'T = {"es": "Los años"}\n')
@@ -249,6 +257,20 @@ def test_documents_accept_an_es_that_differs_and_a_short_name_that_is_the_same(g
     }))
     code, out = _run(guard, tmp_path, capsys, "--documents")
     assert code == 0, out
+
+
+def test_documents_accept_an_identifier_that_is_the_same_in_both_languages(guard, tmp_path, capsys):
+    _write(tmp_path, COPY_DOC, json.dumps({
+        "a": {"en": "lda-lognormal-truncated", "es": "lda-lognormal-truncated"},
+        "b": {"en": "port-1000-1pct-rho12", "es": "port-1000-1pct-rho12"},
+        "c": {"en": "<test_id>-null", "es": "<test_id>-null"},
+        "e": {"en": "market.dynamic_quantile_test#2-alternative", "es": "market.dynamic_quantile_test#2-alternative"},
+        "d": {"en": "The rule of the floor", "es": "The rule of the floor"},
+    }))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert "The rule of the floor" in out
+    assert "lda-lognormal" not in out and "port-1000" not in out and "test_id" not in out and "dynamic_quantile" not in out
 
 
 def test_the_copy_check_is_for_documents_only(guard, tmp_path, capsys):

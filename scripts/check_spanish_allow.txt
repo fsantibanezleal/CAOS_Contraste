@@ -9,3 +9,4 @@ data-pipeline/pipeline/cases/c07/documents.py :: Desempeno  # English calibratio
 data-pipeline/pipeline/cases/c15/targets.py :: Depositos  # English locator quoting the CMF table row
 data-pipeline/pipeline/io/bcch.py :: Codigo  # the BDE answer key "Codigo" and "Descripcion" as the API spells them
 data-pipeline/pipeline/io/contract.py :: decision  # the dataset field named decision, written in the Spanish notes as a code token
+data/derived/contract/scored_sample.json :: decision  # the dataset field named decision in the exported contract, the same code token as in its producer
