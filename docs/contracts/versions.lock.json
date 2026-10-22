@@ -425,8 +425,8 @@
     "sha256": "680130edb702d5e248314c9fc553780c02594231bdd49384346cff7a40001e80"
   },
   "engine-governance-api": {
-    "version": "1.1.0",
+    "version": "1.1.2",
     "schema": "docs/contracts/engine/governance-api.md",
-    "sha256": "01e03ea44de51c931190a593d18472e24e48b5b9c656b9744a6f5dede4473888"
+    "sha256": "1d320dd2c00e795f05455304614118ef71c376a96edb565c8435dcd87b036915"
   }
 }

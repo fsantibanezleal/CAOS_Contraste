@@ -594,7 +594,7 @@ def build_appetite(ex: dict, inv: dict, fnd: dict) -> dict:
 NO_POLICY_FILE = "no policy file for an inline battery string"   # riskvalidation.governance.policy.NO_POLICY_FILE (engine 1.0.0)
 
 
-def parse_policy(row: dict, decisions: dict) -> dict:
+def parse_policy(row: dict, decisions: dict, packaged: dict | None = None) -> dict:
     """The policy identity of a row (W15-12): the kind is spec(test_id).decision where the test is registered, the direction is null for an inline
     battery string because no policy file holds it."""
     pv = row["policy_version"]
@@ -606,6 +606,21 @@ def parse_policy(row: dict, decisions: dict) -> dict:
     if pv.startswith("riskvalidation-default "):
         return {**base, "direction": None, "direction_reason": "read from the policy file by the engine: the packaged threshold of the test (fixture: not resolved here)",
                 "parameters": {}, "version": pv.split(" ", 1)[1], "source": "packaged-policy", "reason": None}
+    label = re.fullmatch(r"(contraste-[a-z0-9-]+) (\d+\.\d+\.\d+)", pv)
+    if label and pv in (packaged or {}):
+        # the 1.0 form: a packaged battery label. The version is the label's; the direction and the cut points are the committed policy file's
+        # entry for the test (the extract copies it), the direction only where the rule is a single direction (engine governance-api.md l.839)
+        entry = packaged[pv]["thresholds"].get(row["test_id"])
+        direction, why = None, f"the packaged policy {pv} holds no packaged threshold for {row['test_id']}"
+        if entry is not None and entry["kind"] == "p_value":
+            why = "a p-value threshold has no direction"
+        elif entry is not None and entry["rule"].partition(":")[0] not in ("", "upper_le", "lower_ge"):
+            why = f"the light of {row['test_id']} is the rule {entry['rule']!r}, not a single direction"
+        elif entry is not None:
+            direction, why = entry["kind"], None
+        params = {k: float(v) for k, v in entry["parameters"].items()} if entry is not None else {}
+        return {**base, "direction": direction, "direction_reason": why, "parameters": params, "version": label.group(2),
+                "source": "packaged-policy", "reason": None}
     m = re.fullmatch(r"(contraste-[a-z0-9]+-battery-(\d+\.\d+\.\d+))((?:; [a-z0-9_]+=[^;]+)*)", pv)
     if not m:
         return {**base, "kind": None, "kind_reason": "unresolved identity", "direction": None, "direction_reason": NO_POLICY_FILE, "parameters": {},
@@ -621,10 +636,10 @@ def parse_policy(row: dict, decisions: dict) -> dict:
             "source": "inline-battery", "reason": None}
 
 
-def outcome_rows(variant: dict, decisions: dict) -> list[dict]:
+def outcome_rows(variant: dict, decisions: dict, packaged: dict | None = None) -> list[dict]:
     out = []
     for r in variant["tests"]:
-        p = parse_policy(r, decisions)
+        p = parse_policy(r, decisions, packaged)
         family = p.pop("_family")
         out.append({"test_id": r["test_id"], "model_id": r["model_id"], "segment": r["segment"], "family": family, "statistic": r["statistic"],
                     "p_value": r["p_value"], "metric": r["metric"], "light": r["light"], "h0": r["h0"], "reference": r["reference"], "policy": p})
@@ -680,7 +695,7 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     rows = [r for r in fnd["rows"] if r["entry_key"] == key]
     open_rows = [r for r in rows if r["status"] in OPEN_STATES]
     level = max((4 if r["severity"] == "S1" else 3 if r["severity"] == "S2" else 2 for r in open_rows), default=1)
-    outcomes = outcome_rows(default, c["spec_decisions"])
+    outcomes = outcome_rows(default, c["spec_decisions"], c.get("packaged_policies"))
     counts = {k: 0 for k in ("green", "amber", "red", "not_evaluated", "error")}
     for r in outcomes:
         counts[r["light"]] += 1

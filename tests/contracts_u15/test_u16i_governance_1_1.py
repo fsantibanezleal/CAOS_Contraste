@@ -137,11 +137,19 @@ def test_the_battery_key_is_not_in_the_schema_and_the_label_keeps_the_token() ->
 
 
 def test_the_fixtures_carry_the_engine_reason_for_an_inline_battery_row() -> None:
+    """The 1.0 documents carry packaged battery labels, so the report fixtures hold packaged-policy rows (no inline-battery row remains); the
+    policy identity of every one equals ``resolve_policy`` of the engine, and an inline string still carries the engine's NO_POLICY_FILE reason."""
     from riskvalidation.governance import policy
 
+    ident, _ = policy.resolve_policy("contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0", "ifrs9.scenario_sensitivity", None, None, None)
+    assert ident["source"] == "inline-battery" and ident["direction_reason"] == policy.NO_POLICY_FILE
     for name in ("report-C07-banco-andino-fixture.json", "report-C18-banco-andino-fixture.json"):
         doc = json.loads((FIX / name).read_text(encoding="utf-8"))
         rows = next(b for b in doc["sections"][5]["blocks"] if b["kind"] == "outcomes")["rows"]
-        inline = [r["policy"] for r in rows if r["policy"]["source"] == "inline-battery"]
-        assert inline and all(p["direction_reason"] == policy.NO_POLICY_FILE for p in inline), name
+        packaged = [r for r in rows if r["policy"]["source"] == "packaged-policy" and r["policy"]["label"].startswith("contraste-")]
+        assert packaged and not [r for r in rows if r["policy"]["source"] in ("inline-battery", "unresolved")], name
+        for r in packaged:
+            p = r["policy"]
+            got, reason = policy.resolve_policy(p["label"], r["test_id"], p["alpha_amber"], p["alpha_red"], None)
+            assert reason is None and got == {k: p[k] for k in got}, (name, r["test_id"])
         assert "BL-085" not in json.dumps(doc), name
