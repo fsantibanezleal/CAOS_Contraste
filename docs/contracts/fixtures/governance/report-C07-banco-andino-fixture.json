@@ -557,16 +557,19 @@
        "reference": "BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), para 36(a); GPPC (2016), The implementation of IFRS 9 impairment requirements by banks, 2016-06-17, 2.8.1.2; IFRS 9 5.5.17(a), B5.5.42",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.scenario_sensitivity is the rule 'ifrs9_scenario_sensitivity', not a single direction",
+        "parameters": {
+         "nl_amber": 1.0,
+         "nl_red": 3.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -582,16 +585,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -607,16 +612,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -632,16 +639,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -657,16 +666,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -682,16 +693,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -707,16 +720,18 @@
        "reference": "dossier 02 B.4 and C.1 (BCBS 2005 explanatory note; Vasicek 2002; Gordy 2003, doi:10.1016/S1042-9573(03)00040-8)",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.nonlinearity is the rule 'ifrs9_nonlinearity', not a single direction",
+        "parameters": {
+         "gauss_hermite_tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -732,16 +747,19 @@
        "reference": "ECB Banking Supervision (2024), IFRS 9 overlays and model improvements for novel risks, doi:10.2866/034127; ECB letter SSM-2020-0744 (2020-12-04); BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), paras 50 and 51",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.overlay_diagnostics is the rule 'ifrs9_overlay', not a single direction",
+        "parameters": {
+         "share_amber": 0.1,
+         "share_red": 0.25
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -757,16 +775,20 @@
        "reference": "EBA (2023), IFRS 9 implementation by EU institutions, 2023 Monitoring report, EBA/Rep/2023/36, doi:10.2853/269836, paras 94 to 99 and Figure 42; BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), A38; dossier 02 I.2",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.sicr_effectiveness is the rule 'ifrs9_sicr_effectiveness', not a single direction",
+        "parameters": {
+         "amber_ratio": 1.0,
+         "direct_share_amber": 0.5,
+         "green_ratio": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -782,16 +804,21 @@
        "reference": "IFRS 9 B5.5.52; EBA (2023), IFRS 9 implementation by EU institutions, 2023 Monitoring report, EBA/Rep/2023/36, doi:10.2853/269836, paras 100 to 104",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.ecl_backtest is the rule 'ifrs9_ecl_backtest', not a single direction",
+        "parameters": {
+         "r_amber_high": 2.0,
+         "r_amber_low": 0.5,
+         "r_green_high": 1.25,
+         "r_green_low": 0.8
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -807,16 +834,18 @@
        "reference": "IFRS 7 35H and 35I; dossier 02 I.1 items 9 and 10 and I.2",
        "policy": {
         "label": "contraste-ifrs9-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of ifrs9.reconciliation_identities is the rule 'red_if_nonempty:extras.failing_identities', not a single direction",
+        "parameters": {
+         "tolerance": 1e-06
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       }
      ]
