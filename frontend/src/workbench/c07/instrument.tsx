@@ -194,7 +194,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     [
       { id: 'b1', label: { en: 'CMF B-1', es: 'CMF B-1' }, content: <B1View sel={sel} /> },
       { id: 'ifrs9', label: { en: 'IFRS 9', es: 'IFRS 9' }, content: <Ifrs9View sel={sel} /> },
-      { id: 'bde', label: { en: 'BdE Annex 9', es: 'BdE Anexo 9' }, content: <BdeView sel={sel} /> },
+      { id: 'bde', label: { en: 'BdE Annex 9', es: 'BdE Anejo 9' }, content: <BdeView sel={sel} /> },
     ],
     { en: 'Views of each regime', es: 'Vistas de cada régimen' },
     'c07-regimes',

@@ -1,4 +1,4 @@
-// U16-F2 (the R2 fix round, C07), on the committed documents: the Anexo 9 header and the truth status in Spanish, the B-1 reason said once,
+// U16-F2 (the R2 fix round, C07), on the committed documents: the Anejo 9 header and the truth status in Spanish, the B-1 reason said once,
 // the table captions and axis ids in words, the bars never narrower than a pixel and each with a readout.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { committedData, render, textOf, variantIds } from '../c03/u16f2-kit';
@@ -27,7 +27,7 @@ describe('U16-F2 C07', () => {
     const es = [render(<ThreeRegimeView sel={s} />, 'es'), render(<SegmentsView sel={s} />, 'es'), render(<C07ContextView sel={s} />, 'es')].join(' ');
     expect(es).not.toContain('BdE Annex 9');
     expect(es).not.toContain('synthetic-calibrated');
-    expect(textOf(es)).toContain('Anexo 9 del BdE');
+    expect(textOf(es)).toContain('Anejo 9 del BdE');
     expect(textOf(es)).toContain('sintético, calibrado');
   });
 
