@@ -316,9 +316,10 @@ describe('b13 m1, m2, m4: the methodology captions and figures', () => {
   });
 });
 
-describe('b12 m10: the BdE annex is "Anexo 9" in Spanish on every page, as the C07 case titles it', () => {
+// D16-22: the Spanish name is the regulator's own, "Anejo 9" of Circular 4/2017 (b04 m3, b12 m10)
+describe('b12 m10: the BdE annex is "Anejo 9" in Spanish on every page, as Banco de España names it', () => {
   for (const f of ['../pages/Benchmark.tsx', '../pages/methodology/provisions.tsx', '../pages/U6Sections.tsx', '../content/coverage/U5.ts', '../content/coverage/base.ts']) {
-    it(`${f.replace('../', '')} has no "Anejo 9"`, () => expect(text(f)).not.toContain('Anejo 9'));
+    it(`${f.replace('../', '')} has no "Anexo 9"`, () => expect(text(f)).not.toContain('Anexo 9'));
   }
 });
 
