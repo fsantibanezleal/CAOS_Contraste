@@ -434,7 +434,7 @@ export function TestsView({ sel }: { sel: C04Sel | null }) {
     ? join(
         {
           en: `-log10 p of each annual cohort's counts against the matrix pooled over its ${o.pooled.cohorts} cohorts (${pick(statName(refForm), 'en')}, ${dofText('en')} dof), withdrawals removed; each point lit under the committed policy.`,
-          es: `-log10 p de los conteos de cada cohorte anual contra la matriz agrupada sobre sus ${o.pooled.cohorts} cohortes (${pick(statName(refForm), 'es')}, ${dofText('es')} gl), sin retiros; cada punto con su luz según la política comprometida.`,
+          es: `-log10 p de los conteos de cada cohorte anual contra la matriz agrupada sobre sus ${o.pooled.cohorts} cohortes (${pick(statName(refForm), 'es')}, ${dofText('es')} gl), sin retiros; cada punto con su luz según la política versionada.`,
         },
         under.length
           ? {

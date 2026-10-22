@@ -62,7 +62,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
         {pick(
           {
             en: `The tests the engine returned: the statistic and p-value when it ran and the light under the committed policy${policy ? ` (${policyOf(rows, 'en')})` : ''}. A test that did not run says why and shows no number.`,
-            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política comprometida${policy ? ` (${policy})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
+            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política versionada${policy ? ` (${policy})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
           },
           lang,
         )}

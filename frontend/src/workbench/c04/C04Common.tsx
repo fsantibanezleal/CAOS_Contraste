@@ -607,7 +607,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: pc,
       note: {
         en: `The p-value of each cited test, numbered as in the table, on a log scale against the committed policy's thresholds (${pc.policy}: amber below ${formatNumber(pc.amber, 'en', { digits: 2 })}, red below ${formatNumber(pc.red, 'en', { digits: 2 })}; a policy, not a regulation). Red points are the cohorts and periods the test rejects.${pc.marks.length ? ' Marked: the years the finding names, where the year\'s migrations depart most from the pooled matrix (the likelihood ratio per degree of freedom).' : ''}${below.en} ${src.en}`,
-        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política comprometida (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
+        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política versionada (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
       },
     };
   }
@@ -703,7 +703,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
       dataKey={stateKey}
       note={{
         en: `Each finding cites the test rows behind it (their p-value and light under the committed policy), the measured rates (with their Monte Carlo SE and Wilson interval) or the block of the outputs the bake computed it from. ${where.en}${src.en}`,
-        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política comprometida), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que se calculó. ${where.es}${src.es}`,
+        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política versionada), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que se calculó. ${where.es}${src.es}`,
       }}
     >
       <div className={fill ? 'ct-stack' : 'ct-stack-natural'}>

@@ -427,7 +427,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
       lane={REPLAY}
       provenance={prov}
       dataKey={stateKey}
-      note={{ en: 'One row per test: its statistic, p-value when it has one, the light under the committed policy and its reference.', es: 'Una fila por prueba: su estadístico, valor p cuando lo tiene, la luz bajo la política comprometida y su referencia.' }}
+      note={{ en: 'One row per test: its statistic, p-value when it has one, the light under the committed policy and its reference.', es: 'Una fila por prueba: su estadístico, valor p cuando lo tiene, la luz bajo la política versionada y su referencia.' }}
     >
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
