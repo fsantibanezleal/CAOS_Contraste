@@ -57,7 +57,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           <Knob id="c22-pd" label={{ en: 'PD', es: 'PD' }} hint={{ en: "The PD applied: the model's PD for the grade.", es: 'La PD aplicada: la PD del modelo para el grado.' }} value={portfolio.pd} min={0.001} max={0.2} step={0.001} format={{ percent: true, decimals: 1 }} onChange={set('pd')} />
         </div>
         <div className="ct-pair">
-          <Knob id="c22-ratio" label={{ en: 'PD ratio', es: 'Razón de PD' }} hint={{ en: 'The true PD over the PD applied: 1 gives the size, above 1 the power against an underestimation.', es: 'La PD verdadera sobre la aplicada: 1 da el tamaño, sobre 1 la potencia contra una subestimación.' }} value={portfolio.ratio} min={1} max={3} step={0.05} format={{ decimals: 2 }} onChange={set('ratio')} />
+          <Knob id="c22-ratio" label={{ en: 'PD ratio', es: 'Razón PD' }} hint={{ en: 'The true PD over the PD applied: 1 gives the size, above 1 the power against an underestimation.', es: 'La PD verdadera sobre la aplicada: 1 da el tamaño, sobre 1 la potencia contra una subestimación.' }} value={portfolio.ratio} min={1} max={3} step={0.05} format={{ decimals: 2 }} onChange={set('ratio')} />
           <Knob id="c22-rho" label={{ en: 'Correlation', es: 'Correlación' }} hint={{ en: 'The asset correlation the defaults really have (one systematic factor).', es: 'La correlación de activos que realmente tienen los incumplimientos (un factor sistemático).' }} value={portfolio.rhoTrue} min={0} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoTrue')} />
         </div>
         <PortfolioReadout sel={sel} />
@@ -73,8 +73,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           id="c22-level"
           label={{ en: 'Level', es: 'Nivel' }}
           options={[
-            { id: '0.05', label: { en: '5%', es: '5%' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política comprometida); cada vista reproducida lee este nivel.' } },
-            { id: '0.01', label: { en: '1%', es: '1%' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política comprometida); cada vista reproducida lee este nivel.' } },
+            { id: '0.05', label: { en: '5%', es: '5%' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política versionada); cada vista reproducida lee este nivel.' } },
+            { id: '0.01', label: { en: '1%', es: '1%' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política versionada); cada vista reproducida lee este nivel.' } },
           ]}
           value={String(level)}
           onChange={(id) => setLevel(Number(id))}
