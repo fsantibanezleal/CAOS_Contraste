@@ -1355,7 +1355,7 @@
       },
       "c02-variant-horizon": {
         "title": "C02 horizon variant",
-        "description": "Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
+        "description": "Catalog row c02-outputs 2.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -1922,8 +1922,7 @@
             "const": "engine-provisions-api"
           },
           "pd_basis": {
-            "type": "string",
-            "minLength": 1
+            "$ref": "#/components/schemas/common-text"
           },
           "lgd": {
             "type": "object",
@@ -1964,14 +1963,12 @@
             ]
           },
           "unit": {
-            "type": "string",
-            "minLength": 1
+            "$ref": "#/components/schemas/common-text"
           },
           "reason_if_null": {
             "anyOf": [
               {
-                "type": "string",
-                "minLength": 1
+                "$ref": "#/components/schemas/common-text"
               },
               {
                 "type": "null"
@@ -2631,6 +2628,7 @@
               "additionalProperties": false,
               "required": [
                 "rung",
+                "model_id",
                 "fitted_on_years",
                 "scored_on_years",
                 "auc",
@@ -2647,6 +2645,10 @@
                     "P3",
                     "P4"
                   ]
+                },
+                "model_id": {
+                  "type": "string",
+                  "minLength": 1
                 },
                 "fitted_on_years": {
                   "type": "integer",
@@ -2705,7 +2707,7 @@
       },
       "c03-variant-vintage-cohort": {
         "title": "C03 vintage-cohort variant",
-        "description": "Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.",
+        "description": "Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -2780,8 +2782,8 @@
             "type": "string"
           },
           "scope": {
-            "type": "string",
-            "description": "The vintages pooled: those whose 5-year mark is observed."
+            "$ref": "#/components/schemas/common-text",
+            "description": "The vintages pooled: those whose 5-year mark is observed (bilingual since c03-outputs 2.0.0)."
           },
           "rows": {
             "type": "array",
@@ -7738,7 +7740,7 @@
           "freddie_mac_reason": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/common-text"
               },
               {
                 "type": "null"
@@ -8779,7 +8781,7 @@
           "reason": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/common-text"
               },
               {
                 "type": "null"
@@ -9656,7 +9658,7 @@
                 "internal_reason": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "$ref": "#/components/schemas/common-text"
                     },
                     {
                       "type": "null"
@@ -9679,7 +9681,7 @@
                   "then": {
                     "properties": {
                       "internal_reason": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/common-text"
                       },
                       "method": {
                         "const": "standard"
@@ -9754,7 +9756,7 @@
             "type": "string"
           },
           "source": {
-            "type": "string"
+            "$ref": "#/components/schemas/common-text"
           },
           "cells": {
             "type": "array",

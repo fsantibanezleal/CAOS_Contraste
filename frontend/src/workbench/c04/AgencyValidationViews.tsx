@@ -1052,7 +1052,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
             y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
             series={series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
-            yMarks={[{ y: 1, label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, tone: 'neutral' }]}
+            yMarks={[{ y: 1, label: { en: 'D2 = 1', es: 'D2 = 1' }, tone: 'neutral' }]}
             marks={[{ x: g + 1, label: grade }]}
           />
         ) : (
@@ -1295,7 +1295,9 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
   const hasDefault = o.pd.d4 !== null;
   const emptyYears = emptyDefaultYears(o).map((y) => y.year);
   const steps = data.years ?? 5;
-  const xLabel = bi((l) => `${t(l, 'Five-year window', 'Ventana de cinco años')} (${data.windows.map((w, i) => `${i + 1} ${w.label}`).join(', ')})`);
+  // the axis names the number only (a title listing every window ran past the card at 390 px and was clipped); the windows are listed in the table's note
+  const windowList = data.windows.map((w, i) => `${i + 1} ${w.label}`).join(', ');
+  const xLabel = bi((l) => t(l, 'Five-year window (number)', 'Ventana de cinco años (número)'));
   const markText = (l: Lang): string => {
     if (data.marked === null) return '';
     const w = data.windows[data.marked];
@@ -1354,8 +1356,8 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
     (l) =>
       t(
         l,
-        `Shares of each window's ${grade} cohort in percent, the chart's in its order; the first row counts the cohort at the window's start (tab 4), the last two the share withdrawn by the window's end, lived and chained (withdrawals an absorbing state).${omitted ? ` ${omitted} rows the pages give for no window are left out.` : ''}${data.marked !== null ? ` The chart marks ${data.windows[data.marked].label}.` : ''}`,
-        `Fracciones de la cohorte ${grade} de cada ventana en porcentaje, las del gráfico en su orden; la primera fila cuenta la cohorte al inicio de la ventana (pestaña 4), las dos últimas la fracción retirada al final de la ventana, vivida y encadenada (los retiros como estado absorbente).${omitted ? ` Se omiten ${omitted} filas que las páginas no dan para ninguna ventana.` : ''}${data.marked !== null ? ` El gráfico marca ${data.windows[data.marked].label}.` : ''}`,
+        `Windows: ${windowList}. Shares of each window's ${grade} cohort in percent, the chart's in its order; the first row counts the cohort at the window's start (tab 4), the last two the share withdrawn by the window's end, lived and chained (withdrawals an absorbing state).${omitted ? ` ${omitted} rows the pages give for no window are left out.` : ''}${data.marked !== null ? ` The chart marks ${data.windows[data.marked].label}.` : ''}`,
+        `Ventanas: ${windowList}. Fracciones de la cohorte ${grade} de cada ventana en porcentaje, las del gráfico en su orden; la primera fila cuenta la cohorte al inicio de la ventana (pestaña 4), las dos últimas la fracción retirada al final de la ventana, vivida y encadenada (los retiros como estado absorbente).${omitted ? ` Se omiten ${omitted} filas que las páginas no dan para ninguna ventana.` : ''}${data.marked !== null ? ` El gráfico marca ${data.windows[data.marked].label}.` : ''}`,
       ) + pdSource(o, l),
   );
   const withdrawnNote = bi((l) => {

@@ -376,7 +376,9 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
   const vlo = Math.min(...vals);
   const vhi = Math.max(...vals);
   const t = (v: number) => (vhi > vlo ? (v - vlo) / (vhi - vlo) : 0.5);
-  const fmt = (v: number) => (sel.surface === 'ecl' ? money(v, lang, cur) : pct(v, lang, 2));
+  // the colour scale reads in the unit of the amounts (billions, millions), never as eleven bare digits (U16-R2 b03 M4)
+  const sc = axisScale(Math.max(Math.abs(vlo), Math.abs(vhi)), cur);
+  const fmt = (v: number) => (sel.surface === 'ecl' ? `${formatNumber(v / sc.div, lang, { digits: 4 })} ${pick(sc.unit, lang)}` : pct(v, lang, 2));
   const scenarioLabel = (id: string): BiText => o.scenarios.find((s) => s.id === id)?.label ?? { en: id, es: id };
   const ternary = g.scenario_ids.length === 3;
   return (
@@ -432,6 +434,11 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                 );
               }}
             </Stage>
+            <div data-colour-bar="simplex" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span className="ct-note">{fmt(vlo)}</span>
+              <span aria-hidden="true" style={{ flex: '1 1 6rem', minWidth: '6rem', height: '0.6rem', borderRadius: 3, background: `linear-gradient(to right, ${[0, 0.25, 0.5, 0.75, 1].map((x) => viridis(x)).join(', ')})` }} />
+              <span className="ct-note">{fmt(vhi)}</span>
+            </div>
             <p className="ct-note">{pick({ en: `Colour: ${fmt(vlo)} (dark) to ${fmt(vhi)} (light).`, es: `Color: ${fmt(vlo)} (oscuro) a ${fmt(vhi)} (claro).` }, lang)}</p>
           </div>
         ) : (

@@ -163,12 +163,13 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
     for rung in RUNGS:
         if not status[rung].evaluated:
             cmp_rows.append({"rung_id": rung, "c_index": None, "integrated_brier": None, "calibration_gap_12m": None,
-                             "reason": status[rung].reason})
+                             "reason": {"en": str(status[rung].reason), "es": f"peldaño no evaluado (motivo del motor: {status[rung].reason})"}})
             continue
         res = all_results.get(rung)
         c_index, reason = None, None
         if rung == "L0-km":
-            reason = "Kaplan-Meier is one pooled curve by loan age: its ranking is the age ranking, no c-index is reported"
+            reason = {"en": "Kaplan-Meier is one pooled curve by loan age: its ranking is the age ranking, no c-index is reported",
+                      "es": "Kaplan-Meier es una sola curva agrupada por antigüedad del préstamo: su orden es el orden por antigüedad y no se informa índice c"}
         else:
             m = elig & complete
             pred12 = _predicted(rung, run, ladder, m, (12,))[:, 0]
@@ -176,7 +177,8 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
             if 0 < y.sum() < y.size:
                 c_index = float(disc_auc(pred12, y, model_id=rung, segment="all").metric)
             else:
-                reason = "no default or no survivor within 12 months among the accounts followed: the c-index is undefined"
+                reason = {"en": "no default or no survivor within 12 months among the accounts followed: the c-index is undefined",
+                          "es": "ningún incumplimiento o ningún sobreviviente a 12 meses entre las cuentas seguidas: el índice c no está definido"}
         brier = gap12 = None
         if res is not None and res.extras.get("brier"):
             brier = float(np.mean(res.extras["brier"]))

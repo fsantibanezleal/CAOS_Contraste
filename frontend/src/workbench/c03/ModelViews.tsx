@@ -110,7 +110,7 @@ export function CalibrationView({ sel }: { sel: C03Sel | null }) {
             />
           }
         >
-          <p className="ct-note" data-scope="calibration">{`${pick({ en: 'Scope', es: 'Alcance' }, lang)}: ${o.calibration.scope}`}</p>
+          <p className="ct-note" data-scope="calibration">{`${pick({ en: 'Scope', es: 'Alcance' }, lang)}: ${pick(o.calibration.scope, lang)}`}</p>
           <table className="caos-table ct-wrap-head" data-table="deciles">
             <thead>
               <tr>
@@ -152,6 +152,18 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
   const no = pick({ en: 'no', es: 'no' }, lang);
   const windows = fit?.cohort_windows ?? [];
   const rung = fit?.ladder.find((r) => r.rung_id === sel.rung);
+  // the models artifact fits one ladder, on the window of the latest cohort: say so under every cohort (the rungs are not refitted per cohort)
+  const fitWindow = rung ? windows.find((w) => w.training.cutoff_date === rung.training_cutoff) : undefined;
+  const fitCaption = (l: 'en' | 'es') => {
+    if (!rung) return '';
+    const label = rungLabel(sel, rung.rung_id)[l];
+    const window = fitWindow ? fitWindow.label[l] : rung.training_cutoff;
+    const range = fitWindow ? fyRange(fitWindow.training.first_fy, fitWindow.training.last_fy) : '';
+    const other = fitWindow && fitWindow.id !== o.cohort.id;
+    return l === 'en'
+      ? `${label}: ${rung.covariates.join(', ')} (${rung.engine}). Rungs as fitted for the window of the cohort ${window}${range ? ` (vintages ${range})` : ''}, cut-off ${rung.training_cutoff}${other ? `, not for the window of this cohort (${o.cohort.label.en})` : ''}`
+      : `${label}: ${rung.covariates.join(', ')} (${rung.engine}). Peldaños tal como se ajustaron para la ventana de la cohorte ${window}${range ? ` (cosechas ${range})` : ''}, corte ${rung.training_cutoff}${other ? `, no para la ventana de esta cohorte (${o.cohort.label.es})` : ''}`;
+  };
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -170,8 +182,8 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
             chart={
               <UPlotChart
                 height="fill"
-                x={{ values: windows.map((w) => w.first_fy), label: { en: 'First fiscal year of the test cohort', es: 'Primer año fiscal de la cohorte de prueba' }, format: { decimals: 0 } }}
-                y={{ label: { en: 'Fiscal year', es: 'Año fiscal' }, format: { decimals: 0 } }}
+                x={{ values: windows.map((w) => w.first_fy), label: { en: 'First fiscal year of the test cohort', es: 'Primer año fiscal de la cohorte de prueba' }, format: { decimals: 0, grouping: false } }}
+                y={{ label: { en: 'Fiscal year', es: 'Año fiscal' }, format: { decimals: 0, grouping: false } }}
                 series={[
                   { label: { en: 'Last vintage trained on', es: 'Última cosecha de entrenamiento' }, values: windows.map((w) => w.training.last_fy), color: '--color-accent', mode: 'points', size: 11 },
                   { label: { en: 'First vintage tested', es: 'Primera cosecha de prueba' }, values: windows.map((w) => w.first_fy), color: '--color-fg-subtle', width: 1.6, dash: [5, 4] },
@@ -220,7 +232,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
           </dl>
           {rung ? (
             <table className="caos-table ct-wrap-head" data-table="rung-coefficients">
-              <caption className="ct-note">{`${pick(rungLabel(sel, rung.rung_id), lang)}: ${rung.covariates.join(', ')} (${rung.engine}, ${rung.training_cutoff})`}</caption>
+              <caption className="ct-note" data-block="rung-fit-window">{fitCaption(lang)}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Coefficient', es: 'Coeficiente' }, lang)}</th>

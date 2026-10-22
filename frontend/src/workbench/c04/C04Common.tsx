@@ -74,6 +74,7 @@ import {
   type FamilyVariant,
   type PublishedVariant,
   P_FLOOR,
+  attributionIn,
 } from './selection';
 import { esDecimals } from './esDecimals';
 
@@ -255,8 +256,8 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
       ...drawn,
     ],
     yMarks: [
-      { y: amber, label: { en: `Amber threshold ${a.en}`, es: `Umbral ámbar ${a.es}` }, tone: 'warn' },
-      { y: red, label: { en: `Red threshold ${r.en}`, es: `Umbral rojo ${r.es}` }, tone: 'bad' },
+      { y: amber, label: { en: `Amber ${a.en}`, es: `Ámbar ${a.es}` }, tone: 'warn' },
+      { y: red, label: { en: `Red ${r.en}`, es: `Rojo ${r.es}` }, tone: 'bad' },
     ],
     marks: runMarks(namedYears(rows)),
     floor: P_FLOOR,
@@ -576,7 +577,7 @@ function sourceOf(v: VariantArtifact<unknown>): Bi {
   if (isFamily(v)) {
     return {
       en: `Known truth: rating paths drawn from ${GENERATOR_TEXT.en}. ${ATTRIBUTION_FALLBACK}.`,
-      es: `Verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es}. ${ATTRIBUTION_FALLBACK}.`,
+      es: `Verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es}. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`,
     };
   }
   return { en: "The papers' printed values against their recomputation.", es: 'Los valores impresos de los artículos contra su recálculo.' };
@@ -841,7 +842,7 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
       .map((a) => ` La página de transiciones de ${name(a, 'es')} no tiene categoría de incumplimiento: no hay D4 ni tasa TTC.`)
       .join('')}${empty
       .map(({ a, e }) => ` La columna de incumplimiento de ${name(a, 'es')} está vacía en los años ${yearRanges(e.years, 'es')}, mientras su página de incumplimientos cuenta ${formatNumber(e.defaulted, 'es')} calificaciones incumplidas en esos años.`)
-      .join('')} ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}. Elija una fila para cargar la agencia.`,
+      .join('')} ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attributionIn(attribution, 'es')}. Elija una fila para cargar la agencia.`,
   };
 }
 
@@ -939,7 +940,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
       dataKey={stateKey}
       note={{
         en: `Each family's headline measurements as its artifact states them, against a known truth: rating paths drawn from ${GENERATOR_TEXT.en} (${attribution}). The design is on each name. Pick a row to load the family.`,
-        es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attribution}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
+        es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attributionIn(attribution, 'es')}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
       }}
     >
       <div className="ct-scroll">
@@ -1079,7 +1080,7 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                     {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
                   <td className="caos-col-text">
-                    <span translate="no">{s.attribution}</span>
+                    <span translate="no">{attributionIn(s.attribution, lang)}</span>
                   </td>
                 </tr>
               );
@@ -1090,9 +1091,9 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
               <td className="caos-col-text">
                 {gen
                   ? lang === 'es'
-                    ? `Trayectorias generadas desde ${GENERATOR_TEXT.es}; cohortes de ${gen.obligors.map((n) => formatNumber(n, 'es')).join('; ')} deudores por grado. ${ATTRIBUTION_FALLBACK}.`
+                    ? `Trayectorias generadas desde ${GENERATOR_TEXT.es}; cohortes de ${gen.obligors.map((n) => formatNumber(n, 'es')).join('; ')} deudores por grado. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`
                     : `Paths drawn from ${GENERATOR_TEXT.en}; cohorts of ${gen.obligors.map((n) => formatNumber(n, 'en')).join(', ')} obligors by grade. ${ATTRIBUTION_FALLBACK}.`
-                  : ATTRIBUTION_FALLBACK}
+                  : attributionIn(ATTRIBUTION_FALLBACK, lang)}
               </td>
             </tr>
           </tbody>

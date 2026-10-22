@@ -13,6 +13,7 @@ from typing import Any
 
 import numpy as np
 
+from ...core import text as tx
 from ..c06.panel import months_between
 from . import evaluate, fit, models, panel, windows
 from .fit import MONTHS, WindowFit
@@ -81,16 +82,16 @@ def training_block(cohort: windows.Cohort, wf: WindowFit, crisis: int) -> dict[s
     w = wf.window
     mark = windows.five_year_mark(w.last_fy)
     en = (f"Approval fiscal years FY{w.first_fy} to FY{w.last_fy}: the 5-year mark of FY{w.last_fy} closes on {mark}, before the first "
-          f"approval of {cohort.name} on {cohort.first_fy - 1}-10-01. {wf.n_loans:,} loans with a known 5-year outcome and "
-          f"{wf.n_events:,} charge-offs; the rungs were fitted on a stratified sample of {wf.fit_rows:,} of them. ")
+          f"approval of {cohort.name} on {cohort.first_fy - 1}-10-01. {tx.number(wf.n_loans, lang='en')} loans with a known 5-year outcome and "
+          f"{tx.number(wf.n_events, lang='en')} charge-offs; the rungs were fitted on a stratified sample of {tx.number(wf.fit_rows, lang='en')} of them. ")
     es = (f"Años fiscales de aprobación AF{w.first_fy} a AF{w.last_fy}: la marca de 5 años de AF{w.last_fy} cierra el {mark}, antes de la "
-          f"primera aprobación de AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} el {cohort.first_fy - 1}-10-01. {wf.n_loans:,} créditos "
-          f"con resultado a 5 años conocido y {wf.n_events:,} castigos; los escalones se ajustaron con una muestra estratificada de "
-          f"{wf.fit_rows:,} de ellos. ")
+          f"primera aprobación de AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} el {cohort.first_fy - 1}-10-01. {tx.number(wf.n_loans, lang='es')} créditos "
+          f"con resultado a 5 años conocido y {tx.number(wf.n_events, lang='es')} castigos; los escalones se ajustaron con una muestra estratificada de "
+          f"{tx.number(wf.fit_rows, lang='es')} de ellos. ")
     if crisis > 0:
-        en += (f"The window holds {crisis:,} charge-offs dated in the recession ({CRISIS_TEXT[0]}): the model is trained through "
+        en += (f"The window holds {tx.number(crisis, lang='en')} charge-offs dated in the recession ({CRISIS_TEXT[0]}): the model is trained through "
                "the crisis.")
-        es += (f"La ventana contiene {crisis:,} castigos fechados en la recesión ({CRISIS_TEXT[1]}): el modelo se entrena a través "
+        es += (f"La ventana contiene {tx.number(crisis, lang='es')} castigos fechados en la recesión ({CRISIS_TEXT[1]}): el modelo se entrena a través "
                "de la crisis.")
     else:
         en += "The window closes before the recession (December 2007): the model has seen no outcome of the crisis."
@@ -225,7 +226,8 @@ def bake_cohort(loans: panel.Loans, cohort: windows.Cohort, seed: int, *, observ
             comparison.append({"rung_id": rid, "auc": None, "auc_ci_low": None, "auc_ci_high": None, "brier": None,
                                "calibration_gap_5y": None, "reason": wf.not_evaluated[rid]})
     pooled_years = [fy for fy, ok in marks.items() if ok]
-    scope = f"vintages with an observed 5-year mark: FY{pooled_years[0]}" + (f" to FY{pooled_years[-1]}" if len(pooled_years) > 1 else "")
+    scope = t(f"vintages with an observed 5-year mark: FY{pooled_years[0]}" + (f" to FY{pooled_years[-1]}" if len(pooled_years) > 1 else ""),
+              f"cosechas con marca de 5 años observada: AF{pooled_years[0]}" + (f" a AF{pooled_years[-1]}" if len(pooled_years) > 1 else ""))
     calibration = {"rung_id": champion, "scope": scope, "rows": _deciles(pd_eval[champion], y_eval)}
 
     tests: list[dict[str, Any]] = []

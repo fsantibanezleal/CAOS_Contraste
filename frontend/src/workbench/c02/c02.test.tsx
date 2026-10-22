@@ -206,14 +206,14 @@ describe('the C02 instrument', () => {
     expect(markup).toContain('caos-bars');
     expect(markup).toContain(formatNumber(o.impact_detail.ecl_12m_effect, 'en', { digits: 4 }));
     expect(markup).toContain(formatNumber(o.impact_detail.ecl_lifetime_effect, 'en', { digits: 4 }));
-    expect(markup).toContain(escapeHtml(o.impact_detail.unit));
+    expect(markup).toContain(escapeHtml(o.impact_detail.unit.en));
     expect(markup).toContain('assumption');
-    expect(markup).toContain(escapeHtml(o.impact_detail.pd_basis));
+    expect(markup).toContain(escapeHtml(o.impact_detail.pd_basis.en));
   });
 
   it('an ECL effect the document leaves null says not available with its reason, never a zero', () => {
     const odd = clone();
-    Object.assign(odd.outputs.impact_detail, { ecl_12m_effect: null, ecl_lifetime_effect: null, reason_if_null: 'The provisions engine did not run for this file.' });
+    Object.assign(odd.outputs.impact_detail, { ecl_12m_effect: null, ecl_lifetime_effect: null, reason_if_null: { en: 'The provisions engine did not run for this file.', es: 'El motor de provisiones no corrió para este archivo.' } });
     const markup = html(<EclImpactView sel={withVariant(odd)} />);
     expect(markup).toContain('The provisions engine did not run for this file.');
     expect(markup).toContain(NA);
@@ -222,7 +222,51 @@ describe('the C02 instrument', () => {
     expect(markup).not.toContain('<table');
     expect(markup).toContain('data-table="ecl-impact"');
     expect(markup).toContain('data-measure="ecl-12m"');
-    expect(markup).toContain(escapeHtml(odd.outputs.impact_detail.unit));
+    expect(markup).toContain(escapeHtml(odd.outputs.impact_detail.unit.en));
+  });
+
+  it('U16-F2 PR-C02: the Spanish impact view prints the unit, the PD basis and the reason in Spanish, none of the English strings', () => {
+    const odd = clone();
+    Object.assign(odd.outputs.impact_detail, {
+      ecl_12m_effect: null, ecl_lifetime_effect: null,
+      unit: { en: 'ECL per unit, test', es: 'PCE por unidad, prueba' }, pd_basis: { en: 'the five file rates', es: 'las cinco tasas de los archivos' },
+      reason_if_null: { en: 'the horizon PDs 0.0694, 0.0526 are not strictly increasing', es: 'las PD por horizonte 0,0694, 0,0526 no crecen estrictamente' },
+    });
+    setLang('es');
+    const markup = html(<EclImpactView sel={withVariant(odd)} />);
+    for (const s of ['PCE por unidad, prueba', 'las cinco tasas de los archivos', '0,0694, 0,0526 no crecen estrictamente']) expect(markup).toContain(s);
+    for (const s of ['ECL per unit, test', 'the five file rates', '0.0694', 'strictly increasing']) expect(markup).not.toContain(s);
+    setLang('en');
+    const en = html(<EclImpactView sel={withVariant(odd)} />);
+    expect(en).toContain('ECL per unit, test');
+    expect(en).toContain('the horizon PDs 0.0694, 0.0526 are not strictly increasing');
+  });
+
+  it('U16-F2 V02-1: the transfer map finds a cell by the model, never by the rung code P4 that two models share', () => {
+    const odd = clone();
+    const p4 = odd.outputs.rungs.find((r) => r.rung === 'P4')!;
+    odd.outputs.rungs.push({ ...structuredClone(p4), model_id: 'fixture-p4-xgb' });
+    odd.outputs.transfer.cells = [{ rung: 'P4', model_id: p4.model_id, fitted_on_years: 1, scored_on_years: 2, auc: 0.7123, n: 900, events: 40 }];
+    const own = html(<TransferView sel={{ ...withVariant(odd), rung: p4.model_id }} />);
+    expect(own).toContain(f3(0.7123));
+    const other = html(<TransferView sel={{ ...withVariant(odd), rung: 'fixture-p4-xgb' }} />);
+    expect(other).toContain('data-state="unavailable"');
+    expect(other).not.toContain(f3(0.7123));
+  });
+
+  it('U16-F2 V02-2: seven rungs are seven distinguishable curves, the seventh dashed', () => {
+    const odd = clone();
+    while (odd.outputs.rungs.length < 7) odd.outputs.rungs.push({ ...structuredClone(odd.outputs.rungs[0]), model_id: `fixture-extra-${odd.outputs.rungs.length}` });
+    const series = rocChart(withVariant(odd), 'roc')!.series;
+    const styles = series.slice(1).map((s) => `${s.color}|${(s as { dash?: number[] }).dash?.join(',') ?? ''}`);
+    expect(new Set(styles).size).toBe(7);
+  });
+
+  it('U16-F2 V02-5: the Spanish ROC and CAP axis titles are short enough for a short plot', () => {
+    const roc = rocChart(sel, 'roc')!;
+    const cap = rocChart(sel, 'cap')!;
+    expect((roc.y.label as { es: string }).es.length).toBeLessThanOrEqual(22);
+    expect((cap.y.label as { es: string }).es.length).toBeLessThanOrEqual(22);
   });
 
   it('a test that did not run sits under its view and shows its reason, never a number', () => {
@@ -243,11 +287,29 @@ describe('the C02 instrument', () => {
       return v;
     };
     const variants = [at(1, 0), at(2, 0.02), at(3, 0.04), at(4, 0.05), at(5, 0.07), pooled].map((v) => ({ id: v.variant_id, title: { en: v.variant_id, es: v.variant_id }, v }));
-    const markup = html(<C02VariantsTable variants={variants} onPick={() => undefined} current="fixture-h1" rung="P4" />);
+    const markup = html(<C02VariantsTable variants={variants} onPick={() => undefined} current="fixture-h1" rung="fixture-p4" />);
     for (const years of [1, 2, 3, 4, 5]) expect(markup).toContain(`data-years="${years}"`);
     expect(markup).toContain('data-years="pooled"');
     expect(markup).toContain(f3(0.88 - 0.07));
     expect(markup).toContain('different samples');
+  });
+
+  it('U16-F2 V02-1: the discrimination by horizon keeps both models of the code P4 apart', () => {
+    const at = (years: number) => {
+      const v = clone();
+      Object.assign(v.outputs, { horizon_id: `h${years}`, years });
+      v.variant_id = `fixture-h${years}`;
+      const p4 = v.outputs.rungs.find((r) => r.rung === 'P4')!;
+      const second = structuredClone(p4);
+      Object.assign(second, { model_id: 'fixture-p4-xgb' });
+      second.discrimination.auc = 0.5555;
+      v.outputs.rungs.push(second);
+      return v;
+    };
+    const variants = [at(1), at(2)].map((v) => ({ id: v.variant_id, title: { en: v.variant_id, es: v.variant_id }, v }));
+    const markup = html(<C02VariantsTable variants={variants} onPick={() => undefined} current="fixture-h1" rung="fixture-p4-xgb" />);
+    expect(markup).toContain(f3(0.5555));
+    expect(markup).toContain('AUC fixture-p4-xgb');
   });
 
   it('the context gives the counts, the leakage-safe protocol, the pooled caveat and every named parameter as a convention', () => {

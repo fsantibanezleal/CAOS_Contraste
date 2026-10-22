@@ -10,6 +10,7 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
 import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
@@ -35,8 +36,14 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
   const files = variants.filter((e) => e.v.outputs.years !== null).sort((a, b) => (a.v.outputs.years as number) - (b.v.outputs.years as number));
   const pooled = variants.filter((e) => e.v.outputs.years === null);
   const ordered = [...files, ...pooled];
-  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => r.rung)))];
-  const auc = (e: Entry, code: string) => e.v.outputs.rungs.find((r) => r.rung === code)?.discrimination.auc ?? null;
+  // keyed on the model: the rung code P4 names LightGBM and XGBoost, and a find on the code returns the first of them
+  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => r.model_id)))];
+  const auc = (e: Entry, id: string) => e.v.outputs.rungs.find((r) => r.model_id === id)?.discrimination.auc ?? null;
+  const name = (id: string): BiText => {
+    const m = first?.model.find((x) => x.id === id);
+    const t = shortName(m, id);
+    return typeof t === 'string' ? { en: t, es: t } : t;
+  };
   const years = files.map((e) => e.v.outputs.years as number);
   return (
     <PlotCard
@@ -57,7 +64,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               height="fill"
               x={{ values: years, label: { en: 'Horizon of the file', es: 'Horizonte del archivo' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
               y={{ label: { en: 'AUC on the holdout', es: 'AUC en la muestra reservada' }, format: { decimals: 2 } }}
-              series={codes.map((code, i) => ({ label: { en: code, es: code }, values: files.map((e) => auc(e, code)), color: COLORS[i % COLORS.length], width: code === rung ? 3 : 1.6, mode: 'line' as const }))}
+              series={codes.map((code, i) => ({ label: name(code), values: files.map((e) => auc(e, code)), color: COLORS[i % COLORS.length], dash: i >= COLORS.length ? [6, 3] : undefined, width: code === rung ? 3 : 1.6, mode: 'line' as const }))}
             />
           )
         }
@@ -69,7 +76,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               <th className="ct-wide-only">{pick({ en: 'Firms', es: 'Empresas' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Bankruptcies', es: 'Quiebras' }, lang)}</th>
               <th>{pick({ en: 'Rate', es: 'Tasa' }, lang)}</th>
-              <th>{`AUC ${rung}`}</th>
+              <th>{`AUC ${pick(name(rung), lang)}`}</th>
               <th>{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
               <th className="ct-wide-only">KS</th>
             </tr>
@@ -77,7 +84,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
           <tbody>
             {ordered.map((e) => {
               const o = e.v.outputs;
-              const r = o.rungs.find((x) => x.rung === rung) ?? null;
+              const r = o.rungs.find((x) => x.model_id === rung) ?? null;
               return (
                 <tr key={e.id} data-variant={e.id} data-years={o.years ?? 'pooled'} className={e.id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
@@ -107,7 +114,7 @@ export function C02VariantsView({ sel, onPick }: { sel: C02Sel | null; onPick: (
   const variants = (all.data as unknown as Array<VariantArtifact<C02Outputs>>)
     .filter((v) => v.outputs.kind === 'horizon')
     .map((v) => ({ id: v.variant_id, title: entries.find((e) => e.variant_id === v.variant_id)?.short_title ?? { en: v.variant_id, es: v.variant_id }, v }));
-  const code = rungFor(sel)?.rung ?? '';
+  const code = rungFor(sel)?.model_id ?? '';
   return (
     <ViewsRow>
       <C02VariantsTable variants={variants} onPick={onPick} current={sel.data.variant.variant_id} rung={code} />
@@ -196,7 +203,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
               </thead>
               <tbody>
                 {fit.ladder.map((l) => (
-                  <tr key={l.rung} data-ladder={l.rung}>
+                  <tr key={`${l.rung}-${l.label.en}`} data-ladder={l.rung}>
                     <td className="ct-text">{l.rung}</td>
                     <td className="ct-text">{pick(l.label, lang)}</td>
                     <td className="ct-text ct-wide-only">{l.engine}</td>

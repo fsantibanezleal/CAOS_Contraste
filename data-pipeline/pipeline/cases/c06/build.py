@@ -17,6 +17,7 @@ from riskvalidation.provisions import term_structure as rv_ts
 from riskvalidation.provisions.overlays import Overlay
 from riskvalidation.provisions.staging import allocate_stages
 
+from ...core import text as tx
 from . import backtest as bt
 from .panel import SEGMENT_IDS
 from .rollforward import RollForward
@@ -213,6 +214,11 @@ def implied_multiplier(run: DateRun) -> float:
 # the findings
 
 
+def _g3(x: float) -> str:
+    """``x`` to three significant digits with the Spanish decimal comma (the English side writes ``{x:.3g}``)."""
+    return f"{x:.3g}".replace(".", ",")
+
+
 def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.ndarray, stage_summary: dict[str, Any],
              lifetime_left_out: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
@@ -235,7 +241,7 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     if lb and lb[0]["light"] in ("amber", "red") and lb[0]["metric"] is not None:
         add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
             f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points ({lb[0]['light']})",
-            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {100 * lb[0]['metric']:.1f} puntos ({lb[0]['light']})")
+            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos ({tx.light(lb[0]['light'], 'es')})")
     for tid, fid, en, es in (
         ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag separates defaults from performing loans", "La marca de Etapa 2 separa los incumplimientos de los préstamos sanos"),
         ("ifrs9.ecl_backtest", "F-ECL-BACKTEST", "The 12-month ECL against the losses realised after the date", "La PCE a 12 meses frente a las pérdidas realizadas después de la fecha"),
@@ -245,9 +251,10 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
         if r is not None and r["light"] in ("amber", "red", "not_evaluated"):
             sev = "S2" if r["light"] == "red" else "S3"
             val = "not evaluated" if r["light"] == "not_evaluated" else f"metric {r['metric']:.3g}" if r["metric"] is not None else f"p {r['p_value']:.3g}"
-            val_es = "no evaluada" if r["light"] == "not_evaluated" else val.replace("metric", "métrica")
+            val_es = ("no evaluada" if r["light"] == "not_evaluated" else f"métrica {_g3(r['metric'])}" if r["metric"] is not None
+                      else f"p {_g3(r['p_value'])}")
             add(f"{fid}-{r['light']}", sev if r["light"] != "not_evaluated" else "S4", "open", [key(r)],
-                f"{en}: {r['light']} ({val})", f"{es}: {r['light']} ({val_es})")
+                f"{en}: {r['light']} ({val})", f"{es}: {tx.light(r['light'], 'es')} ({val_es})" if r["light"] != "not_evaluated" else f"{es}: no evaluada")
     if ecl_by_scen_total[-1] < ecl_by_scen_total[0]:
         add("F-SCENARIO-ORDER", "S2", "open", ["ifrs9.scenario_sensitivity@L1-dth"],
             "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date",
@@ -270,7 +277,7 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     if lifetime_left_out:
         add("F-SHORT-LIFE", "S4", "accepted", ["design:backtest-population"],
             f"{lifetime_left_out:,} accounts with less than 33 months of contractual life left are outside the lifetime backtest",
-            f"{lifetime_left_out:,} cuentas con menos de 33 meses de vida contractual quedan fuera del backtest de vida completa")
+            f"{tx.number(lifetime_left_out, 0, lang='es')} cuentas con menos de 33 meses de vida contractual quedan fuera del backtest de vida completa")
     return out
 
 

@@ -116,7 +116,7 @@ def c02_defs() -> dict:
     }, "Champion and challenger: the DeLong difference and the paired bootstrap of the Brier difference (06 C.7 l.1041-1044).")
     d["c02Transfer"] = Ob({
         "label": EXPL, "reason": TXT,
-        "cells": A(Ob({"rung": RUNGS, "fitted_on_years": Int(1, 5), "scored_on_years": Int(1, 5),
+        "cells": A(Ob({"rung": RUNGS, "model_id": S(), "fitted_on_years": Int(1, 5), "scored_on_years": Int(1, 5),
                        "auc": UNIT, "n": Int(1), "events": Int(0)}), 0),
     }, "Cross-file transfer: a rung fitted on file i scored on the holdout of file j. Exploratory: the firm overlap is unknown (SDD l.374). Empty for the pooled variant.")
     d["c02TermStructure"] = Ob({
@@ -128,9 +128,9 @@ def c02_defs() -> dict:
     }, "The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9).")
     d["c02ImpactDetail"] = Ob({
         "label": EXPL, "reason": TXT, "source": C("engine-provisions-api"),
-        "pd_basis": S(), "lgd": Ob({"value": N(minimum=0, maximum=1), "label": C("assumption")}),
-        "ecl_12m_effect": nullable(N()), "ecl_lifetime_effect": nullable(N()), "unit": S(),
-        "reason_if_null": nullable(S()),
+        "pd_basis": TXT, "lgd": Ob({"value": N(minimum=0, maximum=1), "label": C("assumption")}),
+        "ecl_12m_effect": nullable(N()), "ecl_lifetime_effect": nullable(N()), "unit": TXT,
+        "reason_if_null": nullable(TXT),
     }, "The 12-month and lifetime ECL effect of the horizon PDs (decision Q10). Exploratory.")
     d["c02Outputs"] = Ob({
         "kind": C("horizon"),
@@ -471,7 +471,7 @@ C21_RULES = [C21_ALLOWLIST]
 def main() -> None:
     d = c02_defs()
     variant_schema("c02", "variant-horizon", "horizon", "C02 horizon variant",
-                   "Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
+                   "Catalog row c02-outputs 2.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
                    "c02Outputs", d, C02_RULES)
     models_schema("c02", "C02 models", "Catalog row c02-models 1.0.0: the five Polish files, the ladder and the leakage-safe protocol.", "c02Fit", d)
     d = c20_defs()

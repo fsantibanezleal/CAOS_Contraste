@@ -18,6 +18,7 @@ import {
   DEFINITION_LABEL,
   ESMA_DEFINITIONS,
   GRADES,
+  attributionIn,
   familyCountsText,
   gradeCounts,
   isAgency,
@@ -175,7 +176,7 @@ describe('the C04 Impact group (live)', () => {
           // a CEREP-derived card names its source: on an agency the entity, its code, scope and period and the
           // attribution verbatim (CT-407); on a family the attribution of the counts its truth was fitted to
           const note = found[0].note;
-          const att = 'Source: ESMA CEREP; tables transformed by Contraste';
+          const att = attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang);
           if (isAgency(v)) {
             const o = v.outputs;
             const first = o.cohorts[0].label;

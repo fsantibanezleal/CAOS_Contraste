@@ -121,7 +121,7 @@ def c02_outputs(horizon: str, years: int | None, rows: int, events: int) -> dict
                         "brier_diff": -0.002, "brier_diff_ci": {"lo": -0.004, "hi": 0.0, "level": 0.95, "method": "paired-bootstrap"},
                         "grade_disagreement_share": 0.12}],
         "transfer": {"label": "exploratory", "reason": t("The firm overlap across files is unknown, so a transfer AUC may be inflated"),
-                     "cells": [] if pooled else [{"rung": "P1", "fitted_on_years": 1, "scored_on_years": 2, "auc": 0.78, "n": 900, "events": 40}]},
+                     "cells": [] if pooled else [{"rung": "P1", "model_id": "fixture-p1", "fitted_on_years": 1, "scored_on_years": 2, "auc": 0.78, "n": 900, "events": 40}]},
         "term_structure": None if pooled else {
             "label": "exploratory", "reason": t("Five file event rates read as a cumulative PD; the files may not draw one population"),
             "points": [{"years": y, "cumulative_pd": c, "hazard": h} for y, c, h in
@@ -131,9 +131,9 @@ def c02_outputs(horizon: str, years: int | None, rows: int, events: int) -> dict
         "term_structure_reason": t("The five files are independent samples of different forecast years, not one cohort followed through time; their "
                                    "rates fall with the horizon, so no cumulative PD is read from them (fixture)") if pooled else None,
         "impact_detail": {"label": "exploratory", "reason": t("ECL effect of the horizon PDs on an illustrative exposure"),
-                          "source": "engine-provisions-api", "pd_basis": "P1 horizon PDs, fixture",
+                          "source": "engine-provisions-api", "pd_basis": t("P1 horizon PDs, fixture", "PD por horizonte de P1, fixture"),
                           "lgd": {"value": 0.45, "label": "assumption"}, "ecl_12m_effect": 1.0, "ecl_lifetime_effect": 2.5,
-                          "unit": "index, fixture", "reason_if_null": None},
+                          "unit": t("index, fixture", "índice, fixture"), "reason_if_null": None},
         "parameters": params(C02_NAMES), "requirements": ["CT-0201"],
     }
 

@@ -15,6 +15,7 @@ from riskvalidation.provisions import ecl as ecl_mod
 from riskvalidation.provisions import local_cl as cl
 from riskvalidation.provisions import local_es as es
 
+from ...core import text as tx
 from . import b1, bde, ifrs9
 from . import book as bk
 from . import scenarios as sc
@@ -131,8 +132,10 @@ def variant_outputs(book: Book, ev: dict[str, Any], base_ev: dict[str, Any], ove
         standard = m(segment_sum(book, res_b1.provision, s))
         applied, method = cl.b1_group_max_rule(standard, None)
         max_rule.append({"segment_id": s, "standard": standard, "internal": None, "applied": m(applied), "method": method,
-                         "internal_reason": "Banco Andino has no internal method: the standard method applies (B-1 N 3); the CMF "
-                                            "August 2026 report states that no institution uses internal methods for provisions"})
+                         "internal_reason": T("Banco Andino has no internal method: the standard method applies (B-1 N 3); the CMF "
+                                             "August 2026 report states that no institution uses internal methods for provisions",
+                                             "Banco Andino no tiene método interno: se aplica el método estándar (B-1 N 3); el informe de la CMF "
+                                             "de agosto de 2026 indica que ninguna institución usa métodos internos para las provisiones")})
         b1_seg[s] = m(applied)
     b1_seg["commercial-individual"] = m(segment_sum(book, res_b1.provision, "commercial-individual"))
     top_up = m(mc.top_up)
@@ -278,39 +281,40 @@ def findings(out: dict[str, Any], rows: list[dict[str, Any]], model_ids: dict[st
         "id": "F-GAP", "severity": sev, "status": "open", "evidence": [f"ifrs9.scenario_sensitivity@{mid}"],
         "title": T(f"On one portfolio the IFRS 9 total is {ratio:.0%} of the CMF B-1 total (gap {(f9 - b1t) / 1e9:,.1f} CLP bn) and "
                    f"BdE Annex 9 is {bd / b1t:.0%}",
-                   f"Sobre una misma cartera el total IFRS 9 es {ratio:.0%} del total CMF B-1 (brecha {(f9 - b1t) / 1e9:,.1f} mil millones CLP) "
-                   f"y el Anejo 9 del BdE es {bd / b1t:.0%}".replace(".", ","))}]
+                   f"Sobre una misma cartera el total IFRS 9 es {tx.percent(ratio, 0, lang='es')} del total CMF B-1 "
+                   f"(brecha {tx.number((f9 - b1t) / 1e9, 1, lang='es')} mil millones CLP) "
+                   f"y el Anejo 9 del BdE es {tx.percent(bd / b1t, 0, lang='es')}")}]
     nl = byt["ifrs9.scenario_sensitivity"]
     f.append({"id": "F-NONLINEARITY", "severity": "S3" if nl["light"] == "green" else "S2", "status": "open",
               "evidence": [f"ifrs9.scenario_sensitivity@{mid}"],
               "title": T(f"The weighted ECL exceeds the ECL at the mean scenario path by {nl['metric']:.1%}",
-                         f"La ECL ponderada supera a la ECL en la trayectoria media de escenarios en {nl['metric']:.1%}".replace(".", ","))})
+                         f"La ECL ponderada supera a la ECL en la trayectoria media de escenarios en {tx.percent(nl['metric'], 1, lang='es')}")})
     ov = byt["ifrs9.overlay_diagnostics"]
     f.append({"id": "F-OVERLAY", "severity": "S4" if ov["light"] == "green" else "S3", "status": "accepted" if ov["light"] == "green" else "open",
               "evidence": [f"ifrs9.overlay_diagnostics@{mid}"],
               "title": T(f"Overlays are {ov['metric']:.2%} of the IFRS 9 allowance, each a separate line",
-                         f"Los ajustes posmodelo son {ov['metric']:.2%} de la provisión IFRS 9, cada uno en una línea separada".replace(".", ","))})
+                         f"Los ajustes posmodelo son {tx.percent(ov['metric'], 2, lang='es')} de la provisión IFRS 9, cada uno en una línea separada")})
     mc = out["b1_detail"]["minimum_check"]
     f.append({"id": "F-MINIMUM", "severity": "S4", "status": "accepted", "evidence": ["design:b1-minimum-normal-individual"],
               "title": T("The 0.50% minimum on the individually assessed normal portfolio is "
                          + ("binding" if mc["binding"] else "not binding") + f" (top-up {mc['top_up'] / 1e6:,.1f} CLP million)",
                          "El mínimo de 0,50 % de la cartera normal de evaluación individual "
-                         + ("es vinculante" if mc["binding"] else "no es vinculante") + f" (complemento {mc['top_up'] / 1e6:,.1f} millones CLP)")})
+                         + ("es vinculante" if mc["binding"] else "no es vinculante") + f" (complemento {tx.number(mc['top_up'] / 1e6, 1, lang='es')} millones CLP)")})
     bt = byt["ifrs9.ecl_backtest"]
     if bt["light"] in ("amber", "red"):
         f.append({"id": "F-ECL-BACKTEST", "severity": "S3" if bt["light"] == "amber" else "S2", "status": "open",
                   "evidence": [f"ifrs9.ecl_backtest@{mid}"],
                   "title": T(f"The 12-month ECL against the generator's own realised losses: ratio {bt['metric']:.2f} ({bt['light']})",
-                             f"La ECL a 12 meses frente a las pérdidas realizadas del propio generador: razón {bt['metric']:.2f} ({bt['light']})")})
+                             f"La ECL a 12 meses frente a las pérdidas realizadas del propio generador: razón {tx.number(bt['metric'], 2, lang='es')} ({tx.light(bt['light'], 'es')})")})
     sc_ = byt["ifrs9.sicr_effectiveness"]
     if sc_["light"] in ("amber", "red"):
         f.append({"id": "F-SICR", "severity": "S3" if sc_["light"] == "amber" else "S2", "status": "open",
                   "evidence": [f"ifrs9.sicr_effectiveness@{mid}"],
                   "title": T(f"Stage 2 defaults {sc_['metric']:.1f} times as often as Stage 1 in the generator's realised outcomes, but "
                              f"{sc_['extras']['share_stage3_direct_from_stage1']:.0%} of Stage 3 entries come directly from Stage 1 ({sc_['light']})",
-                             f"La Etapa 2 incumple {sc_['metric']:.1f} veces más que la Etapa 1 en los resultados realizados del generador, pero "
-                             f"el {sc_['extras']['share_stage3_direct_from_stage1']:.0%} de las entradas a Etapa 3 viene directo de la Etapa 1 "
-                             f"({sc_['light']})")})
+                             f"La Etapa 2 incumple {tx.number(sc_['metric'], 1, lang='es')} veces más que la Etapa 1 en los resultados realizados del generador, pero "
+                             f"el {tx.percent(sc_['extras']['share_stage3_direct_from_stage1'], 0, lang='es')} de las entradas a Etapa 3 viene directo de la Etapa 1 "
+                             f"({tx.light(sc_['light'], 'es')})")})
     return f
 
 
@@ -385,12 +389,16 @@ def b1_tables() -> list[dict[str, Any]]:
         for col, ptvg in (("no-guarantee", None), ("ptvg<=60", 0.5), ("60<ptvg<=75", 0.7), ("75<ptvg<=90", 0.85), ("ptvg>90", 0.95)):
             pi, pdi, pe = cl.b1_commercial_pe(row, ptvg)
             com.append({"row": row, "column": col, "pi": pi, "pdi": pdi, "pe": pe})
-    src_ = "CMF CNCB Chapter B-1 (Circular 2.346), dossier 03 section D.5; read through riskvalidation.provisions.local_cl"
+    def src_(section: str, extra_en: str = "", extra_es: str = "", d: str = "D.5") -> dict[str, str]:
+        return T(f"CMF CNCB Chapter B-1 (Circular 2.346), dossier 03 section {d}; read through riskvalidation.provisions.local_cl ({section}){extra_en}",
+                 f"CMF CNCB Capítulo B-1 (Circular 2.346), dossier 03 sección {d}; leído con riskvalidation.provisions.local_cl ({section}){extra_es}")
+
     return [
-        {"table_id": "mortgage-pe", "portfolio": "residential-mortgage", "source": src_ + " (3.1.1)", "cells": mort},
-        {"table_id": "consumer-pi", "portfolio": "consumer", "source": src_ + " (3.1.3); the PDI by product is in the B-1 model record", "cells": cons},
-        {"table_id": "individual-categories", "portfolio": "commercial-individual", "source": src_.replace("D.5", "D.3") + " (2.1)", "cells": ind},
-        {"table_id": "commercial-generic-pe", "portfolio": "commercial-group", "source": src_ + " (3.1.2 c)", "cells": com}]
+        {"table_id": "mortgage-pe", "portfolio": "residential-mortgage", "source": src_("3.1.1"), "cells": mort},
+        {"table_id": "consumer-pi", "portfolio": "consumer",
+         "source": src_("3.1.3", "; the PDI by product is in the B-1 model record", "; la PDI por producto está en el registro del modelo B-1"), "cells": cons},
+        {"table_id": "individual-categories", "portfolio": "commercial-individual", "source": src_("2.1", d="D.3"), "cells": ind},
+        {"table_id": "commercial-generic-pe", "portfolio": "commercial-group", "source": src_("3.1.2 c"), "cells": com}]
 
 
 def default_categories() -> list[dict[str, Any]]:
