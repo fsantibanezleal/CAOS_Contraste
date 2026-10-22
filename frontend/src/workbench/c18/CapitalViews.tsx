@@ -10,7 +10,7 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { Marked } from '../c21/Marked';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
-import { HWaterfall, stackRows } from './Waterfall';
+import { stackBars } from './Waterfall';
 import {
   ANNEX3_EN, ANNEX3_ES, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
   type C18Cell, type C18Sel,
@@ -246,7 +246,6 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const t = o.internal_capital_target;
   const fit = fitOf(sel);
-  const pctNo = (v: number) => PCT(v, lang, 2);
   const layerDefs: Array<{ id: keyof typeof LAYER_TEXT; size: number; label: string | null }> = [
     { id: 'min_pe', size: t.min_pe, label: null },
     { id: 'c_dsib', size: t.c_dsib, label: null },
@@ -255,9 +254,9 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     { id: 'c_ccyb', size: t.c_ccyb, label: null },
     { id: 'c_d', size: t.c_d.value, label: t.c_d.label },
   ];
-  const oiRows = stackRows(
-    layerDefs.map((l) => ({ id: l.id, label: LAYER_TEXT[l.id], size: l.size, tone: l.label ? ('--color-warn' as const) : ('--color-accent' as const), value: pctNo(l.size) })),
-    { id: 'oi', label: { en: 'Internal target OI', es: 'Objetivo interno OI' }, value: pctNo(t.oi), tone: '--color-fg' },
+  const oiBars = stackBars(
+    layerDefs.map((l) => ({ id: l.id, label: LAYER_TEXT[l.id], size: l.size, tone: l.label ? ('warn' as const) : ('accent' as const), ...(l.label ? { hint: text(LABEL_TEXT, l.label) } : {}) })),
+    { id: 'oi', label: { en: 'Internal target OI', es: 'Objetivo interno OI' }, value: t.oi, tone: 'neutral' },
   );
   const stressNo = planOf(o, 'stress-without-mitigation');
   const stressWith = planOf(o, 'stress-with-mitigation');
@@ -268,17 +267,16 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     { id: 'pe-with', label: { en: 'PE, year 3, with mitigation', es: 'PE, año 3, con mitigación' }, v: y3(stressWith)?.pe.pct_of_rwa ?? null },
     { id: 'legal', label: { en: 'Legal minimum PE', es: 'PE mínimo legal' }, v: stressNo?.years.find((y) => y.requirement.basis === 'legal-minimum')?.requirement.pct_of_rwa ?? null },
   ];
-  const refRows = refs.flatMap((r) => (r.v === null ? [] : [{ id: r.id, label: r.label, from: 0, to: r.v, tone: '--color-good' as const, value: pctNo(r.v) }]));
+  const refBars = refs.flatMap((r) => (r.v === null ? [] : [{ id: r.id, label: r.label, value: r.v, span: [0, r.v] as [number, number], tone: 'good' as const }]));
   const legal = fit?.bank_anchors.chilean_stack ?? null;
   // the CET1 legal stack carries the CET1 share of Pillar 2 (reverse_p2_cet1), as the failure-point finding does; the whole P2R is the PE stack's
   const legalShare = (k: 'cet1_min' | 'c_ccob' | 'c_ccyb' | 'c_dsib' | 'p2r'): number => (legal ? (k === 'p2r' ? (fit?.named_parameters.reverse_p2_cet1.value ?? legal.p2r) : legal[k]) : 0);
-  const legalRows = legal
-    ? stackRows(
-        (['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legalShare(k), tone: '--color-magenta' as const, value: PCT(legalShare(k), lang, k === 'p2r' ? 3 : 2) })),
-      )
+  const legalBars = legal
+    ? stackBars((['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legalShare(k), tone: 'accent' as const })))
     : null;
-  const rowsAll = oiRows.length + refRows.length;
-  const axisFmt = (v: number) => formatNumber(v, lang, { percent: true, decimals: 1 });
+  const rowsAll = oiBars.length + refBars.length;
+  // a share keeps two decimals, and a third only where a figure needs it (9.125 %), as the table does
+  const shareFormat = (bars: Array<{ value: number | null | undefined }>) => ({ percent: true, decimals: Math.max(2, ...bars.map((x) => requirementDecimals(x.value ?? 0))) });
   return (
     <ViewsRow>
       <PlotCard
@@ -291,24 +289,24 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${(rowsAll + (legalRows?.length ?? 0)) * 1.3 + 4}rem`}
+          chartMin={`${(rowsAll + (legalBars?.length ?? 0)) * 1.3 + 4}rem`}
           chart={
             <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0 }}>
               <div style={{ flex: `${rowsAll} 1 0`, minHeight: 0 }}>
-                <HWaterfall
-                  rows={[...oiRows, ...refRows]}
-                  axisLabel={{ en: 'Share of RWA', es: 'Parte de los APR' }}
-                  tickFormat={axisFmt}
-                  ariaLabel={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
+                <BarChart
+                  title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
+                  data={[...oiBars, ...refBars]}
+                  axis={{ label: { en: 'Share of RWA', es: 'Parte de los APR' }, format: shareFormat([...oiBars, ...refBars]) }}
+                  height="fill"
                 />
               </div>
-              {legalRows ? (
-                <div style={{ flex: `${legalRows.length + 2} 1 0`, minHeight: 0 }}>
-                  <HWaterfall
-                    rows={legalRows}
-                    axisLabel={{ en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }}
-                    tickFormat={axisFmt}
-                    ariaLabel={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
+              {legalBars ? (
+                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: 0 }}>
+                  <BarChart
+                    title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
+                    data={legalBars}
+                    axis={{ label: { en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }, format: shareFormat(legalBars) }}
+                    height="fill"
                   />
                 </div>
               ) : null}

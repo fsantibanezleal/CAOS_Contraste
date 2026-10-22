@@ -9,7 +9,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { HWaterfall, stackRows } from './Waterfall';
+import { stackBars } from './Waterfall';
 import { Defs, NOT_AGGREGATION, NOT_AGG_VARIANT, PCT, UnavailableCard, cell, digits, producerText } from './C18Common';
 import {
   MONEY_UNIT, NOT_CAPITAL, RISK_ORDER, RISK_TEXT, aggDocOf, aggOf, axisOf, methodShort, methodText, text,
@@ -141,10 +141,9 @@ export function EulerView({ sel }: { sel: C18Sel | null }) {
   const e = a.euler;
   const d = a.diversification;
   const scale = axisOf([e.es_total_clp_m, ...e.allocation.map((x) => x.contribution_clp_m)]);
-  const fmt = (v: number) => formatNumber(v / scale.div, lang, { digits: 4 });
-  const rows = stackRows(
-    e.allocation.map((x) => ({ id: x.risk, label: text(RISK_TEXT, x.risk), size: x.contribution_clp_m, tone: x.risk === sel.risk ? ('--color-warn' as const) : ('--color-accent' as const), value: fmt(x.contribution_clp_m) })),
-    { id: 'total', label: { en: 'Aggregate expected shortfall', es: 'Déficit esperado agregado' }, value: fmt(e.es_total_clp_m), tone: '--color-fg' },
+  const bars = stackBars(
+    e.allocation.map((x) => ({ id: x.risk, label: text(RISK_TEXT, x.risk), size: x.contribution_clp_m / scale.div, tone: x.risk === sel.risk ? ('warn' as const) : ('accent' as const) })),
+    { id: 'total', label: { en: 'Aggregate expected shortfall', es: 'Déficit esperado agregado' }, value: e.es_total_clp_m / scale.div, tone: 'neutral' },
   );
   const additive = e.additivity.relative_error <= e.additivity.tolerance;
   return (
@@ -161,11 +160,11 @@ export function EulerView({ sel }: { sel: C18Sel | null }) {
         <ChartOverTable
           chartMin="16rem"
           chart={
-            <HWaterfall
-              rows={rows}
-              axisLabel={{ en: `Expected shortfall (${pick(scale.unit, 'en')})`, es: `Déficit esperado (${pick(scale.unit, 'es')})` }}
-              tickFormat={(v) => formatNumber(v / scale.div, lang, { digits: 4 })}
-              ariaLabel={{ en: 'Euler allocation of the expected shortfall by risk', es: 'Asignación de Euler del déficit esperado por riesgo' }}
+            <BarChart
+              title={{ en: 'Euler allocation of the expected shortfall by risk', es: 'Asignación de Euler del déficit esperado por riesgo' }}
+              data={bars}
+              axis={{ label: { en: `Expected shortfall (${pick(scale.unit, 'en')})`, es: `Déficit esperado (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
+              height="fill"
             />
           }
         >
