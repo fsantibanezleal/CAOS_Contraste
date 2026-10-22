@@ -99,7 +99,7 @@
   <text class="it l-en" x="618" y="104">Replay</text>
   <text class="it l-es" x="618" y="104">Reproducción</text>
   <text class="sub l-en" x="618" y="122">committed artifacts, fetched with the version;</text>
-  <text class="sub l-es" x="618" y="122">artefactos comprometidos, pedidos con la versión;</text>
+  <text class="sub l-es" x="618" y="122">artefactos versionados, pedidos con la versión;</text>
   <text class="sub l-en" x="618" y="138">GBM and TabPFN scores are always replayed</text>
   <text class="sub l-es" x="618" y="138">los puntajes GBM y TabPFN siempre se reproducen</text>
   <text class="sub l-en" x="618" y="154">(ONNX Runtime Web has no tree-ensemble kernel)</text>

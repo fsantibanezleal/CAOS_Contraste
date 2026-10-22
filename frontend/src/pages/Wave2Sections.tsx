@@ -9,7 +9,7 @@ import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { BiText } from '@fasl-work/caos-app-shell';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
-import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
+import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 import { DEFICIENCY_TEXT, INTENDED_TEXT, type C13Outputs } from '../workbench/c13/selection';
 import { SHOCK_TEXT as C14_SHOCK_TEXT, scenarioOf, type C14Outputs } from '../workbench/c14/selection';
 import { SHOCK_TEXT as C15_SHOCK_TEXT, type C15Outputs, type C15Pair } from '../workbench/c15/selection';
@@ -229,7 +229,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
         rows: loan.map((v) => c10LoanRow(nameOf(v), v, lang)),
         note: t(
           'The fit reads the yearly loss rates up to 2006 by maximum likelihood; the exceedances count the years from 2007 to 2012 in which the loss rate went over the fitted quantile of each level; the capital is the economic capital of the illustrative portfolio, in the currency shown.',
-          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las excedencias cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
+          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las superaciones cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
         ),
       });
     if (grid.length)
@@ -373,7 +373,7 @@ function c11Ladder(name: string, v: Variant, lang: Lang): W2Table {
       if (isChamp) versus = t('Champion', 'Campeón');
       else if (!dm) versus = na(lang);
       else if (dm.p_value === null || dm.p_value === undefined) versus = na(lang, dm.not_evaluated_reason);
-      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${num(dm.p_value, lang, 3)})`;
+      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${pval(dm.p_value, lang)})`;
       return [
         bi(alphaShort(l.alpha), lang),
         `${m.rung} ${modelTitle(v, m.model_id, lang)}`,

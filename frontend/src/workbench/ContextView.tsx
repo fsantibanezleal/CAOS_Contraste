@@ -42,7 +42,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
             <tr>
               <th className="caos-col-text">{pick({ en: 'Source', es: 'Fuente' }, lang)}</th>
               <th className="caos-col-text">{pick({ en: 'Licence and class', es: 'Licencia y clase' }, lang)}</th>
-              <th className="caos-col-text">{pick({ en: 'Attribution', es: 'Atribución' }, lang)}</th>
+              <th className="caos-col-text">{pick({ en: 'Attribution', es: 'Atribución (texto exigido por la fuente, en su idioma)' }, lang)}</th>
             </tr>
           </thead>
           <tbody>

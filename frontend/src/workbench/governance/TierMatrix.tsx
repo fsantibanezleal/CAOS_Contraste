@@ -5,7 +5,7 @@
 // the tier counts under the four readings of the rubric (decision W15-3), the adopted one marked.
 import { Stage, fitLabel, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { KeyboardEvent } from 'react';
-import { viridis } from '../c04/MatrixMap';
+import { tierColor } from './DependencyMap';
 import { matrixCells, tierName, tierOf, type GovInventory } from './model';
 
 const LEFT = 76;
@@ -21,8 +21,9 @@ export interface CellPick {
 export function MatrixDrawing({ inv, width, picked, onPick }: { inv: GovInventory; width: number; picked: CellPick | null; onPick?: (cell: CellPick | null) => void }) {
   const lang = useShellLang();
   const { counts } = matrixCells(inv.entries);
-  const max = Math.max(1, ...counts.flat());
   const cw = Math.max(20, (width - LEFT - 4) / 4);
+  /** The position of each tier on the viridis scale the dependency map colours it with: the ink of a cell follows it. */
+  const TIER_STEP = [0.04, 0.36, 0.68, 0.96];
   const ink = (t: number) => (t >= 0.55 ? '#141414' : '#f4f4f4');
   const key = (cell: CellPick) => (e: KeyboardEvent<SVGGElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -51,7 +52,6 @@ export function MatrixDrawing({ inv, width, picked, onPick }: { inv: GovInventor
           </text>
           {[1, 2, 3, 4].map((c) => {
             const n = counts[m][c];
-            const t = n / max;
             const on = picked?.m === m && picked.c === c;
             const x = LEFT + (c - 1) * cw;
             const y = TOP + r * CELL_H;
@@ -70,11 +70,11 @@ export function MatrixDrawing({ inv, width, picked, onPick }: { inv: GovInventor
                 onClick={() => onPick?.(on ? null : { m, c })}
                 onKeyDown={key({ m, c })}
               >
-                <rect x={x + 0.5} y={y + 0.5} width={cw - 1} height={CELL_H - 1} fill={n === 0 ? 'var(--color-surface-2)' : viridis(0.15 + 0.85 * t)} stroke={on ? 'var(--color-fg)' : 'var(--color-border)'} strokeWidth={on ? 2.5 : 1} strokeDasharray={n === 0 ? '3 3' : undefined} />
-                <text x={x + 5} y={y + 14} fontSize={10} fill={n === 0 ? 'var(--color-fg-subtle)' : ink(0.15 + 0.85 * t)} style={{ pointerEvents: 'none' }}>
+                <rect x={x + 0.5} y={y + 0.5} width={cw - 1} height={CELL_H - 1} fill={n === 0 ? 'var(--color-surface-2)' : tierColor(tier)} stroke={on ? 'var(--color-fg)' : 'var(--color-border)'} strokeWidth={on ? 2.5 : 1} strokeDasharray={n === 0 ? '3 3' : undefined} />
+                <text x={x + 5} y={y + 14} fontSize={10} fill={n === 0 ? 'var(--color-fg-subtle)' : ink(TIER_STEP[tier - 1])} style={{ pointerEvents: 'none' }}>
                   {tag(tier)}
                 </text>
-                <text x={x + cw / 2} y={y + CELL_H / 2 + 9} textAnchor="middle" fontSize={16} fontWeight={700} fill={n === 0 ? 'var(--color-fg-subtle)' : ink(0.15 + 0.85 * t)} style={{ pointerEvents: 'none', fontVariantNumeric: 'tabular-nums' }}>
+                <text x={x + cw / 2} y={y + CELL_H / 2 + 9} textAnchor="middle" fontSize={16} fontWeight={700} fill={n === 0 ? 'var(--color-fg-subtle)' : ink(TIER_STEP[tier - 1])} style={{ pointerEvents: 'none', fontVariantNumeric: 'tabular-nums' }}>
                   {n}
                 </text>
               </g>
@@ -104,16 +104,17 @@ export function SensitivityTable({ inv }: { inv: GovInventory }) {
   const readings = first ? first.tier_block.tier_sensitivity : [];
   const adopted = inv.conventions.adopted_reading.reading;
   return (
-    <table className="caos-table" data-state="ready" data-sensitivity>
-      <caption className="ct-note">
-        {pick(
-          {
-            en: 'Entries per tier under the four readings of the rubric. The tier rests on two choices: how the regulatory use is graded, and whether complexity is the mean or the maximum of its factors.',
-            es: 'Entradas por nivel bajo las cuatro lecturas de la rúbrica. El nivel descansa en dos decisiones: cómo se gradúa el uso regulatorio, y si la complejidad es la media o el máximo de sus factores.',
-          },
-          lang,
-        )}
-      </caption>
+    <>
+    <p className="ct-note" id="ct-sensitivity-note">
+      {pick(
+        {
+          en: 'Entries per tier under the four readings of the rubric. The tier rests on two choices: how the regulatory use is graded, and whether complexity is the mean or the maximum of its factors.',
+          es: 'Entradas por nivel bajo las cuatro lecturas de la rúbrica. El nivel descansa en dos decisiones: cómo se gradúa el uso regulatorio, y si la complejidad es la media o el máximo de sus factores.',
+        },
+        lang,
+      )}
+    </p>
+    <table className="caos-table" data-state="ready" data-sensitivity aria-describedby="ct-sensitivity-note">
       <thead>
         <tr>
           <th>{pick({ en: 'Reading', es: 'Lectura' }, lang)}</th>
@@ -144,5 +145,6 @@ export function SensitivityTable({ inv }: { inv: GovInventory }) {
         })}
       </tbody>
     </table>
+    </>
   );
 }

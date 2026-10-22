@@ -137,7 +137,7 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
             lane={REPLAY}
             provenance={prov}
             dataKey={stateKey}
-            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}.`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}.` }}
+            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}. The live figures above interpolate the cut-off curve, so they differ a little from this exact count.`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}. Las cifras en vivo de arriba interpolan la curva de corte, por eso difieren un poco de este conteo exacto.` }}
           >
             <div className="ct-scroll">
               <table className="caos-table">

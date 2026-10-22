@@ -7,6 +7,7 @@
 // wherever it appears. The recommendation is the rule's output on the evidence; Contraste approves no model (SDD non-goal 1).
 import { Callout, Cite, DocSection, Equation, Figure, useShellLang } from '@fasl-work/caos-app-shell';
 import { P, T, useT } from '../../content/bi';
+import { tierColor } from '../../workbench/governance/DependencyMap';
 import { RULE_OUTPUT_LABEL, TIER_RULE_TEX, tierOf } from '../../workbench/governance/model';
 import type { MethodologySection } from '../methodologyRegistry';
 
@@ -19,7 +20,6 @@ function TierRuleFigure() {
   const T0 = 40;
   const cw = (W - L - 8) / 4;
   const ch = 44;
-  const shade = ['#2d1b69', '#2a6f97', '#5aa469', '#c9c25a'];
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('The 4 by 4 tier matrix: the tier of each pair of materiality and complexity scores', 'La matriz de niveles de 4 por 4: el nivel de cada par de puntajes de materialidad y complejidad')} style={{ width: '100%', height: 'auto', maxWidth: 480 }}>
       <text x={L + 2 * cw} y={14} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">{t('Complexity C', 'Complejidad C')}</text>
@@ -34,7 +34,7 @@ function TierRuleFigure() {
             const tier = tierOf(m, c);
             return (
               <g key={c}>
-                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={shade[tier - 1]} />
+                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={tierColor(tier)} />
                 <text x={L + (c - 0.5) * cw} y={T0 + (r + 0.5) * ch + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={tier >= 3 ? '#141414' : '#f4f4f4'}>{t(`Tier ${tier}`, `Nivel ${tier}`)}</text>
               </g>
             );
@@ -82,7 +82,7 @@ function Body() {
         />
         <P
           en="The register adds what the validation workflow needs and the case documents lack: the quantitative anchor (the statistic or metric of the cited test row, or an absence with its reason), the owner role, a due date counted from the raised date by a deadline table of severity by tier, the ageing and an overdue flag. The seven states (open, action plan agreed, in progress, submitted for closure, validated and closed, overdue, risk accepted) are those of the workflow; the product's three statuses map to them (open to open, accepted to risk accepted, closed to validated and closed). Every deadline is a convention: no regulatory source prescribes days."
-          es="El registro agrega lo que el flujo de validación necesita y los documentos de los casos no tienen: el ancla cuantitativa (el estadístico o la métrica de la fila de prueba citada, o una ausencia con su razón), el rol responsable, una fecha de vencimiento contada desde la fecha de levantamiento por una tabla de plazos de severidad por nivel, la antigüedad y una marca de vencido. Los siete estados (abierto, plan de acción acordado, en curso, enviado a cierre, validado y cerrado, vencido, riesgo aceptado) son los del flujo; los tres estados del producto se mapean a ellos (abierto a abierto, aceptado a riesgo aceptado, cerrado a validado y cerrado). Cada plazo es una convención: ninguna fuente regulatoria prescribe días."
+          es="El registro agrega lo que el flujo de validación necesita y los documentos de los casos no tienen: el ancla cuantitativa (el estadístico o la métrica de la fila de prueba citada, o una ausencia con su razón), el rol responsable, una fecha de vencimiento contada desde la fecha de registro por una tabla de plazos de severidad por nivel, la antigüedad y una marca de vencido. Los siete estados (abierto, plan de acción acordado, en curso, enviado a cierre, validado y cerrado, vencido, riesgo aceptado) son los del flujo; los tres estados del producto se mapean a ellos (abierto a abierto, aceptado a riesgo aceptado, cerrado a validado y cerrado). Cada plazo es una convención: ninguna fuente regulatoria prescribe días."
         />
         <h3 className="ct-sub">
           <T en="The overall opinion, the recommendation and the model risk appetite" es="La opinión global, la recomendación y el apetito de riesgo de modelo" />

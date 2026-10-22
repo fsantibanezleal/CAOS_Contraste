@@ -57,7 +57,7 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
   const lang = useShellLang();
   const num = (v: number | null) => formatNumber(v, lang, { digits: 4 });
   return (
-    <div style={{ maxHeight: 420, overflow: 'auto', minWidth: 0 }} data-outcomes={variant}>
+    <div className="ct-fade-scroll" style={{ maxHeight: 420, minWidth: 0 }} data-outcomes={variant}>
       <table className="caos-table" data-state="ready">
         <caption className="ct-note">
           {pick({ en: 'Test rows of the variant ', es: 'Filas de prueba de la variante ' }, lang)}
@@ -79,6 +79,10 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
             <tr key={i} data-test={r.test_id} data-light={r.light}>
               <td className="caos-col-text">
                 <span translate="no">{r.test_id}</span>
+                <span className="ct-narrow-only" translate="no">
+                  {r.model_id ?? '-'}
+                  {r.segment ? `, ${r.segment}` : ''}
+                </span>
               </td>
               <td className="caos-col-text ct-wide-only">
                 <span translate="no">
@@ -123,7 +127,7 @@ function BlockView({ block }: { block: Block }) {
     return words ? pick(words, lang) : v;
   };
   return (
-    <div style={{ maxHeight: 360, overflow: 'auto', minWidth: 0 }}>
+    <div className="ct-fade-scroll" style={{ maxHeight: 360, minWidth: 0 }}>
       <table className="caos-table" data-state="ready">
         <caption className="ct-note">{pick(block.caption, lang)}</caption>
         <thead>
@@ -167,7 +171,7 @@ export function SectionView({ section }: { section: ReportSection }) {
       {section.status === 'absent' && section.absent_reason && (
         <p data-state="unavailable" className="caos-pending">
           {pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}
-          <Doc t={section.absent_reason} />
+          <Doc t={section.absent_reason} capital />
         </p>
       )}
       {level !== null && (
@@ -185,7 +189,7 @@ export function SectionView({ section }: { section: ReportSection }) {
           {section.missing.map((m, i) => (
             <li key={i}>
               <strong>{pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}</strong>
-              <Doc t={m.element} />. <Doc t={m.reason} />
+              <Doc t={m.element} capital />. <Doc t={m.reason} capital />
             </li>
           ))}
         </ul>
@@ -221,7 +225,7 @@ export function ReportDocument({ report }: { report: GovReport }) {
       <h3 className="ct-sub">{pick(report.title, lang)}</h3>
       <p data-report-header>
         <span translate="no">{report.entry_key}</span>, {tierName(report.tier, lang)}. {pick({ en: 'Test rows: ', es: 'Filas de prueba: ' }, lang)}
-        {pick(LIGHT_TEXT.green, lang)} {n(c.green)}, {pick(LIGHT_TEXT.amber, lang)} {n(c.amber)}, {pick(LIGHT_TEXT.red, lang)} {n(c.red)}, {pick(LIGHT_TEXT.not_evaluated, lang)} {n(c.not_evaluated)}, {pick(LIGHT_TEXT.error, lang)} {n(c.error)}.
+        {pick(LIGHT_TEXT.green, lang)}: {n(c.green)}, {pick(LIGHT_TEXT.amber, lang)}: {n(c.amber)}, {pick(LIGHT_TEXT.red, lang)}: {n(c.red)}, {pick({ en: 'not evaluated', es: 'no evaluadas' }, lang)}: {n(c.not_evaluated)}, {pick(LIGHT_TEXT.error, lang)}: {n(c.error)}.
       </p>
       <AsOf asOf={report.as_of} basis={report.as_of_basis} />
       {report.sections.map((s) => (

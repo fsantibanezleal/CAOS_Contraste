@@ -115,9 +115,9 @@ export function FindingsWithOpinion({ caseId, children }: { caseId: string; chil
   return (
     <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%', gap: 0 }}>
       <div className="ct-part ct-part-3">{children}</div>
-      <details className="ct-note" data-opinion-disclosure onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setOpened(true); }} style={{ margin: 0, fontSize: '0.72rem', lineHeight: 1, padding: 0 }}>
+      <details className="ct-note" data-opinion-disclosure onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setOpened(true); }} style={{ margin: 0, fontSize: '0.72rem', lineHeight: 1.4, padding: 0 }}>
         <summary>{pick({ en: 'Overall opinion on the evidence (governance)', es: 'Opinión global sobre la evidencia (gobernanza)' }, lang)}</summary>
-        <div style={{ maxHeight: 260, overflow: 'auto', minWidth: 0 }}>
+        <div className="ct-fade-scroll" style={{ maxHeight: 260, minWidth: 0 }}>
           {opened ? <OpinionBlock caseId={caseId} /> : null}
         </div>
       </details>

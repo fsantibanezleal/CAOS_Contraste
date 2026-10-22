@@ -129,10 +129,16 @@ export function LadderView({ sel }: { sel: Selection | null }) {
                 {rows.map((r) => (
                   <tr key={r.m.id} data-rung={r.m.id} title={`${pick(r.m.title, lang)}: ${engineText(r.m.engine, lang)} (${r.m.licence})`}>
                     <td>{pick(shortName(r.m, r.m.id), lang)}</td>
-                    <td>{f(r.auc)}</td>
+                    <td>
+                      {f(r.auc)}
+                      {r.lo !== null && r.hi !== null ? <span className="ct-narrow-only">{`${f(r.lo)} - ${f(r.hi)}`}</span> : null}
+                    </td>
                     <td className="ct-wide-only">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
                     <td>{r.m.id === CHAMPION ? pick({ en: 'champion', es: 'campeón' }, lang) : formatNumber(r.delongP, lang, { digits: 2 })}</td>
-                    <td>{f(r.brier, 4)}</td>
+                    <td>
+                      {f(r.brier, 4)}
+                      <span className="ct-narrow-only">{`ECE ${f(r.ece, 4)}`}</span>
+                    </td>
                     <td className="ct-wide-only">{f(r.ece, 4)}</td>
                   </tr>
                 ))}

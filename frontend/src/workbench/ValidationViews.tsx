@@ -36,11 +36,15 @@ export function LightCell({ row, alphas, className, descriptive }: { row: TestRo
   // a p-value below the smallest double the engine returns as 0; it is not zero
   // a row the table calls descriptive shows its statistic (the KS distance D), not the p-value it also carries
   const stat = descriptive ? value(row) : null;
+  // the DeLong test is two-sided, so its light says the AUCs differ, not which is higher: the direction is named beside it (U16-R2 b01 m3)
+  const diff = row.test_id === 'disc.delong' ? extra(row, 'difference') : null;
+  const direction = diff === null || diff === 0 ? null : diff > 0 ? 'higher' : 'lower';
   const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
   return (
     <td data-light={light} className={`ct-light ct-light-${light}${className ? ` ${className}` : ''}`} title={pick(thresholdLabel(row, alphas), lang)}>
       {shown}
       {light !== 'not_evaluated' && <span className="ct-light-word"> {pick(LIGHT_TEXT[light], lang)}</span>}
+      {direction !== null && <span className="ct-note" data-direction={direction}> ({pick(direction === 'higher' ? { en: 'AUC higher', es: 'AUC mayor' } : { en: 'AUC lower', es: 'AUC menor' }, lang)})</span>}
     </td>
   );
 }
@@ -124,7 +128,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
         lane="live"
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The interval is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). El intervalo es la posterior Beta(D + 1/2, N - D + 1/2).' }}
+        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). On a wide screen the interval column is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). En una pantalla ancha, la columna de intervalo es la posterior Beta(D + 1/2, N - D + 1/2).' }}
       >
         <div className="ct-scroll">
           <table className="caos-table">
@@ -235,13 +239,13 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
               <td>
                 {formatNumber(value(test(v, 'disc.auc', CHAMPION)), lang, { decimals: 4 })}{' '}
                 <span className="ct-wide-only">
-                  ({formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_low'), lang, { decimals: 3 })} - {formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_high'), lang, { decimals: 3 })})
+                  ({formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_low'), lang, { decimals: 4 })} - {formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_high'), lang, { decimals: 4 })})
                 </span>
               </td>
               <td>
                 {formatNumber(value(test(v, 'disc.auc', sel.challenger)), lang, { decimals: 4 })}{' '}
                 <span className="ct-wide-only">
-                  ({formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_low'), lang, { decimals: 3 })} - {formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_high'), lang, { decimals: 3 })})
+                  ({formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_low'), lang, { decimals: 4 })} - {formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_high'), lang, { decimals: 4 })})
                 </span>
               </td>
               <td>{formatNumber(extra(dl, 'difference'), lang, { decimals: 4 })}</td>
@@ -358,7 +362,7 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma.' }}
+        note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum. Ties in the PD merge deciles, so a rung can show fewer than ten.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma. Los empates en la PD fusionan deciles, así que un peldaño puede mostrar menos de diez.' }}
       >
         <UPlotChart
           height="fill"

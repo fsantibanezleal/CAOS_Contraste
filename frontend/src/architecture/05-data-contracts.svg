@@ -44,7 +44,7 @@
   <text class="sub l-en" x="636" y="110">class, licence text, SHA-256 and</text>
   <text class="sub l-es" x="636" y="110">clase, texto de licencia, SHA-256 y</text>
   <text class="sub l-en" x="636" y="126">bytes of every file (committed)</text>
-  <text class="sub l-es" x="636" y="126">bytes de cada archivo (comprometido)</text>
+  <text class="sub l-es" x="636" y="126">bytes de cada archivo (versionado)</text>
 
   <rect class="pn" x="20" y="176" width="420" height="264" rx="10"/>
   <text class="h l-en" x="36" y="200">Contract 1: what may enter</text>
@@ -72,7 +72,7 @@
 
   <rect class="pn" x="482" y="176" width="398" height="264" rx="10"/>
   <text class="h l-en" x="498" y="200">Contract 2: what the pipeline commits</text>
-  <text class="h l-es" x="498" y="200">Contrato 2: lo que el pipeline compromete</text>
+  <text class="h l-es" x="498" y="200">Contrato 2: lo que el pipeline versiona</text>
   <text class="mono" x="498" y="224">manifests/index.json, manifests/C01.json</text>
   <text class="mono" x="498" y="242">C01/models-*.json, C01/&lt;variant&gt;.json</text>
   <text class="sub l-en" x="498" y="266">model records, outputs, TestResult rows, impact,</text>

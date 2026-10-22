@@ -22,13 +22,21 @@ export const U6_CASES = new Set(['C03', 'C06', 'C07', 'C08', 'C09']);
 /** The cases with a rung comparison for the Benchmark (the provisions cases compare regimes, in the App). */
 export const U6_BENCHMARK_CASES = new Set(['C03', 'C08', 'C09']);
 
-export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(v, lang, { decimals });
-export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
+/** A value that rounds to zero at the digits shown is zero, never "-0.000" (U16-R2 b11 m4). `scale` is 100 for a percent. */
+const unsignedZero = (v: number | null | undefined, decimals: number, scale = 1): number | null | undefined =>
+  typeof v === 'number' && Math.abs(v * scale) < 0.5 * 10 ** -decimals ? 0 : v;
+export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(unsignedZero(v, decimals), lang, { decimals });
+export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(unsignedZero(v, decimals, 100), lang, { percent: true, decimals });
+/** A difference of probabilities in percentage points, as C04 writes its own (U16-R2 b12 m9). */
+export const pp = (v: number | null | undefined, lang: Lang, decimals = 2) => (typeof v === 'number' ? `${num(v * 100, lang, decimals)} pp` : formatNumber(null, lang));
+/** A p-value: three significant digits, so 1.0e-91 never reads 0.000 (U16-R2 b11 m5); the same format as the C01 rows. */
+export const pval = (v: number | null | undefined, lang: Lang, digits = 3) => formatNumber(v, lang, { digits });
 
 /** An amount for a table cell: scaled to billions or millions with its unit, never an eleven-digit number. */
 export function money(v: number | null | undefined, currency: string, lang: Lang): string {
   const c = compactMoney(v, currency);
-  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, c.format)} ${pick(c.unit, lang)}`;
+  // one decimal for a scaled amount, so the amounts of a table read alike ("867.0 m" beside "457.3 m", U16-R2 b12 m14)
+  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, pick(c.unit, 'en') === currency ? c.format : { decimals: 1 })} ${pick(c.unit, lang)}`;
 }
 
 /** The weighted mean of the values that are present, or null when there is none. */
@@ -118,7 +126,7 @@ export function experimentRows(manifest: CaseManifest, vs: VariantArtifact<unkno
     const base = o.ccf_by_design.rows.filter((r) => r.estimator === 'mean');
     const inside = o.ccf_by_design.rows.filter((r) => r.within_tolerance).length;
     const row = base[0];
-    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pct(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
+    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pp(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
   });
 }
 
@@ -132,7 +140,7 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   const head: Record<string, string[]> = {
     C03: [t('Variant', 'Variante'), t('Training loans', 'Créditos de entrenamiento'), t('Vintages with a 5-year mark', 'Cosechas con marca de 5 años'), t('Predicted 5-year PD', 'PD a 5 años predicha'), t('Observed 5-year PD', 'PD a 5 años observada'), t('Largest PSI', 'PSI máximo')],
     C06: [t('Variant', 'Variante'), t('Accounts', 'Cuentas'), t('Gross carrying amount', 'Importe en libros bruto'), t('Expected credit loss', 'Pérdida crediticia esperada'), t('Coverage', 'Cobertura'), t('Share not in stage 1', 'Parte fuera de la etapa 1')],
-    C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anejo 9 del BdE')],
+    C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anexo 9 del BdE')],
     C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD proxy media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
     C09: [t('Variant', 'Variante'), t('Known CCF', 'CCF conocido'), t('Mean estimator, fixed horizon', 'Estimador de media, horizonte fijo'), t('Its bias', 'Su sesgo'), t('Estimates inside the tolerance', 'Estimaciones dentro de la tolerancia')],
   };
@@ -147,10 +155,13 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
-function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
+/** A rung by its short title, the one label source of the Benchmark (U16-R2 b11 m6: "beta Beta regression" doubled the code). */
+export function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
   const m = v.model.find((x) => x.id === id);
-  return m ? `${m.rung ? `${m.rung} ` : ''}${pick(m.title, lang)}` : id;
+  return m ? pick(m.short_title ?? m.title, lang) : (ABSENT_RUNG[id] ? pick(ABSENT_RUNG[id], lang) : id);
 }
+/** A rung the document declares absent has no model record, so no short title: its name is here (the identifier stays the same in both languages). */
+const ABSENT_RUNG: Record<string, { en: string; es: string }> = { 'P5-tabpfn': { en: 'P5 TabPFN', es: 'P5 TabPFN' } };
 
 /** The Benchmark section of a case: its rungs compared with its own metrics, one table per variant. */
 export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
