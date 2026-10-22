@@ -17,6 +17,8 @@ import {
 } from './selection';
 import { phraseEs } from './localise';
 
+/** The requirement keeps the two decimals of every other cell of the table, and a third only where the legal figure needs it (9.125 %). */
+export const requirementDecimals = (v: number): 2 | 3 => (Math.abs(v * 1e4 - Math.round(v * 1e4)) < 1e-6 ? 2 : 3);
 const PLAN_COLOR = { base: '--color-accent', 'stress-without-mitigation': '--color-bad', 'stress-with-mitigation': '--color-good' } as const;
 
 /** The CET1 over RWA of the three plans from the jump-off to year 3, against the layers of the OI, with the plan in numbers beneath. */
@@ -66,7 +68,8 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
               y={{ label: { en: 'CET1 over RWA', es: 'CET1 sobre APR' }, format: { percent: true, decimals: 1 } }}
               series={[
                 ...plan.map((c) => ({
-                  label: text(PLAN_TEXT, c.case),
+                  // with no mitigation to apply, the red and green lines are the same line: the key says so (U16-R2 b09 m2)
+                  label: c.case === 'stress-with-mitigation' && !m.applies ? { en: 'Stress, with mitigation (identical: no mitigation applies)', es: 'Estrés con mitigación (idéntico: no se aplica mitigación)' } : text(PLAN_TEXT, c.case),
                   values: [start, ...[1, 2, 3].map((yr) => c.years.find((y) => y.year === yr)?.cet1.pct_of_rwa ?? null)],
                   color: PLAN_COLOR[c.case],
                   width: c.case === 'stress-without-mitigation' ? 3 : 2.2,
@@ -121,7 +124,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
                   <td>{y.year}</td>
                   <td>{PCT(y.cet1.pct_of_rwa, lang)}</td>
                   <td>{PCT(y.pe.pct_of_rwa, lang)}</td>
-                  <td className="ct-text ct-wide-only">{`${pick(text(REQUIREMENT_TEXT, y.requirement.basis), lang)} ${PCT(y.requirement.pct_of_rwa, lang, 3)}`}</td>
+                  <td className="ct-text ct-wide-only">{`${pick(text(REQUIREMENT_TEXT, y.requirement.basis), lang)} ${PCT(y.requirement.pct_of_rwa, lang, requirementDecimals(y.requirement.pct_of_rwa))}`}</td>
                   <td>{PCT(y.headroom_pct_of_rwa, lang)}</td>
                   <td className="ct-wide-only">{cell(y.deficit_clp_m, lang)}</td>
                 </tr>
