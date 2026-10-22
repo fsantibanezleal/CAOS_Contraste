@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Iterator
 
 ROOT = Path(__file__).resolve().parents[1]
-NUMBER = re.compile(r"(?<![A-Za-z\d.,])\d+(?:[.,]\d+)+")  # not inside a paragraph reference (CRE32.36)
+NUMBER = re.compile(r"(?<!QuantLib )(?<!ORE )(?<!Python )(?<![A-Za-z\d.,])\d+(?:[.,]\d+)+(?![A-Za-z])")  # not inside a paragraph reference (CRE32.36) or an equation number (5.7a)
 ENGLISH_PERCENT = re.compile(r"\d%")
 LIGHT_WORDS = re.compile(r"\((?:green|amber|red)\)|\b(?:green|amber)\b", re.IGNORECASE)  # "red" alone is the Spanish word for a network
 
@@ -43,7 +43,7 @@ def leaks(en: str, es: str) -> list[str]:
     en, es = _plain(en), _plain(es)
     """What an English form left in the Spanish text: a number token that is also in the English text (a decimal point or a
     thousands comma), a percent glued to its number, an English light word."""
-    out = [t for t in NUMBER.findall(es) if t in NUMBER.findall(en) and ("." in t or "," in t) and t.replace(",", ".") != t.replace(".", ",")]
+    out = [t for t in NUMBER.findall(es) if t in NUMBER.findall(en) and ("." in t or "," in t) and t.count(".") < 2 and t.replace(",", ".") != t.replace(".", ",")]
     out += ENGLISH_PERCENT.findall(es)
     out += LIGHT_WORDS.findall(es)
     return out
