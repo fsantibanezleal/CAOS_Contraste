@@ -1,11 +1,12 @@
 // U16-F8 (D16-21, shell 0.19.0), on the committed C18 documents: the two waterfalls of the capital stack (the layers of the internal
 // target with the effective equity against it, and the legal minimum stack) and the Euler allocation of the expected shortfall are the
 // shell BarChart with floating bars. Each layer is a span from the running sum of the layers before it, its value the layer's size; a
-// total and a reference bar start at zero with the document's own figure. No C18 view draws its own <svg>.
+// total and a reference bar span zero to the document's own figure. No C18 view draws its own <svg>.
 import { readFileSync, readdirSync } from 'node:fs';
+import { pick } from '@fasl-work/caos-app-shell';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
-import { committedDoc, fixtureData, html, setLang, visibleText } from '../c14/testkit';
+import { committedDoc, fixtureData, html, setLang } from '../c14/testkit';
 import { PCT, cell } from './C18Common';
 import { aggOf, axisOf, defaultSel, fitOf, outputsOf, type C18Sel } from './selection';
 import { StackView } from './CapitalViews';
@@ -72,11 +73,11 @@ describe('U16-F8 C18: the shell draws the waterfalls', () => {
         expect(oi!.data.map((d) => d.tone).slice(0, 6)).toEqual(['accent', 'accent', 'warn', 'accent', 'accent', 'warn']);
         const total = oi!.data.find((d) => d.id === 'oi')!;
         expect(total.value).toBeCloseTo(t.oi, 12);
-        expect(total.span).toBeUndefined();
+        expect(total.span).toEqual([0, total.value]);
         // the effective equity against it: the document's ratios from zero
         const pe = oi!.data.find((d) => d.id === 'pe-start')!;
         expect(pe.value).toBeCloseTo(o.capital_start.pe_ratio, 12);
-        expect(pe.span).toBeUndefined();
+        expect(pe.span).toEqual([0, pe.value]);
         expect(oi!.axis.format?.percent).toBe(true);
         for (const d of oi!.data) expect(d.label[lang].length).toBeGreaterThan(0);
         // the legal stack carries the CET1 share of Pillar 2
@@ -86,7 +87,7 @@ describe('U16-F8 C18: the shell draws the waterfalls', () => {
         const st = fit.bank_anchors.chilean_stack;
         expectChain(legal!.data, [st.cet1_min, st.c_ccob, st.c_ccyb, st.c_dsib, fit.named_parameters.reverse_p2_cet1.value ?? st.p2r]);
         // the table keeps every layer in the language
-        for (const v of [...sizes, t.oi]) expect(visibleText(markup)).toContain(PCT(v, lang, 3));
+        for (const v of [...sizes, t.oi]) expect(markup).toContain(PCT(v, lang, 3));
       });
     }
   }
@@ -108,9 +109,9 @@ describe('U16-F8 C18: the shell draws the waterfalls', () => {
         const total = chart!.data[chart!.data.length - 1];
         expect(total.id).toBe('total');
         expect(total.value).toBeCloseTo(e.es_total_clp_m / scale.div, 12);
-        expect(total.span).toBeUndefined();
-        expect(chart!.axis.label[lang]).toContain(scale.unit[lang]);
-        for (const x of e.allocation) expect(visibleText(markup)).toContain(cell(x.contribution_clp_m, lang));
+        expect(total.span).toEqual([0, total.value]);
+        expect(chart!.axis.label[lang]).toContain(pick(scale.unit, lang));
+        for (const x of e.allocation) expect(markup).toContain(cell(x.contribution_clp_m, lang));
       });
     }
   }

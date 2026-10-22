@@ -2,8 +2,7 @@
 // B-1 comparable total to the IFRS 9 total, each regime in its own detail (the B-1 minimum and max rule, the IFRS 9
 // probability-weighted components with the overlays apart, the BdE categories mapped to stages), and the scenario's
 // delta against the base. Every drawing has its table with the same numbers; every number is the document's.
-import { BarChart, PlotCard, Stage, ViewsRow, fitLabel, formatNumber, niceTicks, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
-import { useState } from 'react';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BarDatum, type BiText } from '@fasl-work/caos-app-shell';
 import { ChartOverTable, MaybeNumber, STAGE_TEXT, money, pct } from '../c06/format';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
@@ -11,7 +10,6 @@ import { FixtureNotice } from '../c06/C06Common';
 import { componentLabel, outputsOf, type C07Outputs, type C07Sel, type RegimeId } from './selection';
 
 const LIVE = 'live' as const;
-const REGIME_COLOR: Record<RegimeId, string> = { 'cmf-b1': '--color-accent', ifrs9: '--color-warn', 'bde-annex9': '--color-good' };
 const REGIME_TONE: Record<RegimeId, 'accent' | 'warn' | 'good'> = { 'cmf-b1': 'accent', ifrs9: 'warn', 'bde-annex9': 'good' };
 const STATUS_TEXT: Record<string, BiText> = {
   'statutory-chile-loans': { en: 'Statutory for loans in Chile', es: 'Estatutaria para créditos en Chile' },
@@ -26,8 +24,6 @@ function regimeName(id: RegimeId, label: BiText): BiText {
   return id === 'ifrs9' ? IFRS9_NAME : label;
 }
 
-const colorOf = (token: string) => `var(${token})`;
-
 const segmentName = (o: C07Outputs, id: string): BiText => o.portfolio.segments.find((x) => x.segment_id === id)?.label ?? { en: id, es: id };
 
 const CATEGORY_TEXT: Record<string, BiText> = {
@@ -37,88 +33,35 @@ const CATEGORY_TEXT: Record<string, BiText> = {
   'written-off': { en: 'Written off', es: 'Fallido' },
 };
 
-/** Grouped bars: one group per segment, one bar per regime. */
+/** Grouped bars: one group per segment, one bar per regime, drawn by the shell (D16-21); the bar under the pointer or the keyboard is
+ * read in the shell's live readout. */
 function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
   const lang = useShellLang();
-  const [picked, setPicked] = useState<string | null>(null);
   const cur = o.currency;
   const segs = o.comparison.rows;
-  const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
   const value = (r: (typeof segs)[number], id: RegimeId) => (id === 'cmf-b1' ? r.cmf_b1_provision : id === 'ifrs9' ? r.ifrs9_provision : r.bde_annex9_provision);
   const ids: RegimeId[] = ['cmf-b1', 'ifrs9', 'bde-annex9'];
-  const chosen = picked ? picked.split('|') : null;
-  const cs = chosen ? segs.find((r) => r.segment_id === chosen[0]) : null;
+  const nameOf = (id: RegimeId) => regimeName(id, o.regimes.find((r) => r.regime === id)?.label ?? { en: id, es: id });
   return (
     <div className="ct-map">
-      <Stage label={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }} className="ct-map-stage">
-        {({ width, height }) => {
-          const left = 64;
-          const bottom = 54;
-          const top = 10;
-          const plotW = Math.max(width - left - 8, 40);
-          const plotH = Math.max(height - top - bottom, 40);
-          const hi = Math.max(...segs.flatMap((r) => ids.map((id) => value(r, id))), 1);
-          const ticks = niceTicks(0, hi, plotH, 22, 6);
-          const top2 = Math.max(hi, ticks[ticks.length - 1]);
-          const sy = (v: number) => top + plotH - (v / top2) * plotH;
-          const gw = plotW / Math.max(segs.length, 1);
-          const bw = Math.max(Math.min((gw * 0.8) / 3, 40), 3);
-          return (
-            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }, lang)}>
-              {ticks.map((t) => (
-                <g key={t}>
-                  <line className="dg-grid" x1={left} x2={width - 4} y1={sy(t)} y2={sy(t)} />
-                  <text className="dg-tick" x={left - 6} y={sy(t) + 4} textAnchor="end">{formatNumber(t / 1e6, lang, { digits: 3 })}</text>
-                </g>
-              ))}
-              {segs.map((r, gi) => {
-                const x0 = left + gi * gw + (gw - bw * 3) / 2;
-                return (
-                  <g key={r.segment_id} data-group={r.segment_id}>
-                    {ids.map((id, bi) => {
-                      const v = value(r, id);
-                      const key = `${r.segment_id}|${id}`;
-                      return (
-                        <rect
-                          key={id}
-                          x={x0 + bi * bw}
-                          y={sy(v)}
-                          width={Math.max(bw - 2, 1)}
-                          height={Math.max(sy(0) - sy(v), 1)}
-                          style={{ fill: colorOf(REGIME_COLOR[id]), stroke: picked === key ? 'var(--color-fg)' : 'none', strokeWidth: 2, opacity: sel.regime === id ? 1 : 0.78 }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`${label(r.segment_id)}, ${id}: ${money(v, lang, cur)}`}
-                          onClick={() => setPicked(picked === key ? null : key)}
-                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === key ? null : key)}
-                        >
-                          <title>{`${label(r.segment_id)}, ${id}: ${money(v, lang, cur)}`}</title>
-                        </rect>
-                      );
-                    })}
-                    {(() => {
-                      const fit = fitLabel(label(r.segment_id), gw - 6, 12, 2);
-                      return (
-                        <text className="dg-axis-label" x={left + gi * gw + gw / 2} y={height - 38} textAnchor="middle">
-                          <title>{label(r.segment_id)}</title>
-                          {fit.lines.map((ln, li) => (
-                            <tspan key={li} x={left + gi * gw + gw / 2} dy={li === 0 ? 0 : 14}>{ln}</tspan>
-                          ))}
-                        </text>
-                      );
-                    })()}
-                  </g>
-                );
-              })}
-              <text className="dg-note" x={left} y={height - 4}>{pick({ en: `${cur} millions`, es: `millones de ${cur}` }, lang)}</text>
-            </svg>
-          );
-        }}
-      </Stage>
-      <p className="ct-note" aria-live="polite">
-        {chosen && cs
-          ? `${label(cs.segment_id)}, ${pick(regimeName(chosen[1] as RegimeId, o.regimes.find((r) => r.regime === chosen[1])?.label ?? { en: chosen[1], es: chosen[1] }), lang)}: ${money(value(cs, chosen[1] as RegimeId), lang, cur)} ${cur}`
-          : pick({ en: 'Pick a bar to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
+      <BarChart
+        title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
+        height="fill"
+        data={segs.flatMap((r) =>
+          ids.map((id) => ({
+            id: `${r.segment_id}|${id}`,
+            label: nameOf(id),
+            group: { id: r.segment_id, label: segmentName(o, r.segment_id) },
+            value: value(r, id) / 1e6,
+            tone: REGIME_TONE[id],
+            highlight: sel.regime === id,
+          })),
+        )}
+        legend={ids.map((id) => ({ tone: REGIME_TONE[id], label: nameOf(id) }))}
+        axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 3 } }}
+      />
+      <p className="ct-note">
+        {pick({ en: 'Pick a bar to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
       </p>
     </div>
   );
@@ -264,7 +207,6 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
 export function BridgeView({ sel }: { sel: C07Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
-  const [picked, setPicked] = useState<string | null>(null);
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
@@ -275,17 +217,21 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
   if (!from || !to) return <Pending />;
   const sum = b.steps.reduce((a, s) => a + s.amount, 0);
   const closes = Math.abs(from.total_provision + sum - to.total_provision) <= 1e-6 * Math.max(1, Math.abs(to.total_provision));
-  let run = from.total_provision;
-  const bars = [
-    { id: 'from', label: from.label, amount: from.total_provision, lo: from.total_provision, hi: from.total_provision, kind: 'total' },
-    ...b.steps.map((s) => {
+  // the totals are dots and the steps float from the running total, in millions; the axis spans the running total only (it does not start at zero)
+  let run = from.total_provision / 1e6;
+  const bars: BarDatum[] = [
+    { id: 'from', label: from.label, value: from.total_provision / 1e6, span: [from.total_provision / 1e6, from.total_provision / 1e6], tone: 'accent' },
+    ...b.steps.map((s): BarDatum => {
       const start = run;
-      run += s.amount;
-      return { id: s.id, label: s.label, amount: s.amount, lo: Math.min(start, run), hi: Math.max(start, run), kind: 'step' };
+      run += s.amount / 1e6;
+      return { id: s.id, label: s.label, value: s.amount / 1e6, span: [start, run], tone: s.amount >= 0 ? 'bad' : 'good' };
     }),
-    { id: 'to', label: IFRS9_NAME, amount: to.total_provision, lo: to.total_provision, hi: to.total_provision, kind: 'total' },
+    { id: 'to', label: IFRS9_NAME, value: to.total_provision / 1e6, span: [to.total_provision / 1e6, to.total_provision / 1e6], tone: 'warn' },
   ];
-  const chosen = bars.find((x) => x.id === picked) ?? null;
+  const ends = bars.flatMap((x) => x.span as [number, number]);
+  const lo0 = Math.min(...ends);
+  const hi0 = Math.max(...ends);
+  const pad = Math.max((hi0 - lo0) * 0.12, 1);
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -297,60 +243,14 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
         note={{ en: 'The steps are exhaustive: they sum to the gap, and an unexplained step would be its own line. The B-1 additional provisions are outside both totals and are not a step; the B-1 minimum top-up and the IFRS 9 overlays are.', es: 'Los pasos son exhaustivos: suman la brecha, y un paso sin explicar sería su propia línea. Las provisiones adicionales de B-1 están fuera de ambos totales y no son un paso; el complemento del mínimo de B-1 y los ajustes de IFRS 9 sí lo son.' }}
       >
         <div className="ct-map">
-          <Stage label={{ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }} className="ct-map-stage">
-            {({ width, height }) => {
-              const labelW = Math.min(Math.max(width * 0.34, 90), 190);
-              const x0 = labelW + 8;
-              const plotW = Math.max(width - x0 - 70, 40);
-              const top = 6;
-              const axis = 22;
-              const rowH = (height - top - axis) / bars.length;
-              // the totals are markers, so the axis spans the running total only (it does not start at zero)
-              const lo0 = Math.min(...bars.map((x) => x.lo));
-              const hi0 = Math.max(...bars.map((x) => x.hi));
-              const pad = Math.max((hi0 - lo0) * 0.12, 1);
-              const ticks = niceTicks(lo0 - pad, hi0 + pad, plotW, 60, 6);
-              const dmin = Math.min(lo0 - pad, ticks[0]);
-              const dmax = Math.max(hi0 + pad, ticks[ticks.length - 1]);
-              const sx = (v: number) => x0 + ((v - dmin) / (dmax - dmin)) * plotW;
-              return (
-                <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }, lang)}>
-                  {ticks.map((t) => (
-                    <g key={t}>
-                      <line className="dg-grid" x1={sx(t)} x2={sx(t)} y1={top} y2={height - axis} />
-                      <text className="dg-tick" x={sx(t)} y={height - 6} textAnchor="middle">{formatNumber(t / 1e6, lang, { digits: 4 })}</text>
-                    </g>
-                  ))}
-                  {bars.map((x, i) => {
-                    const y = top + i * rowH;
-                    const h = Math.max(rowH * 0.62, 3);
-                    const fill = x.kind === 'total' ? (x.id === 'from' ? REGIME_COLOR['cmf-b1'] : REGIME_COLOR.ifrs9) : x.amount >= 0 ? '--color-bad' : '--color-good';
-                    return (
-                      <g key={x.id} data-bar={x.id}>
-                        <text className="dg-bar-label" x={labelW} y={y + rowH / 2 + 4} textAnchor="end">{fitLabel(pick(x.label, lang), labelW, 11, 1).lines[0]}</text>
-                        <rect
-                          x={x.kind === 'total' ? sx(x.lo) - h / 2 : sx(x.lo)}
-                          y={y + (rowH - h) / 2}
-                          width={x.kind === 'total' ? h : Math.max(sx(x.hi) - sx(x.lo), 1.5)}
-                          height={h}
-                          rx={x.kind === 'total' ? h / 2 : 0}
-                          style={{ fill: colorOf(fill), stroke: picked === x.id ? 'var(--color-fg)' : 'none', strokeWidth: 2 }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`${pick(x.label, lang)}: ${money(x.amount, lang, cur)}`}
-                          onClick={() => setPicked(picked === x.id ? null : x.id)}
-                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === x.id ? null : x.id)}
-                        />
-                        <text className="dg-tick" x={sx(x.hi) + (x.kind === 'total' ? h / 2 + 4 : 4)} y={y + rowH / 2 + 4}>{formatNumber(x.amount / 1e6, lang, { digits: 4 })}</text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              );
-            }}
-          </Stage>
-          <p className="ct-note" aria-live="polite">
-            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
+          <BarChart
+            title={{ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }}
+            height="fill"
+            data={bars}
+            axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 4 }, range: [lo0 - pad, hi0 + pad] }}
+          />
+          <p className="ct-note">
+            {pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
           </p>
         </div>
       </PlotCard>

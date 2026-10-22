@@ -12,7 +12,7 @@ import { money } from '../c06/format';
 import { defaultSel, outputsOf, type C07Sel } from './selection';
 
 type Datum = { id: string; label: { en: string; es: string }; value: number | null; tone?: string; span?: [number, number]; group?: { id: string; label: { en: string; es: string } } };
-type Props = { title: { en: string; es: string }; data: Datum[]; axis: { label: { en: string; es: string }; unit?: { en: string; es: string }; range?: [number, number] }; legend?: Array<{ tone: string; label: { en: string; es: string } }>; onSelect?: unknown };
+type Props = { title: { en: string; es: string }; data: Datum[]; axis: { label: { en: string; es: string }; unit?: { en: string; es: string }; range?: [number, number] }; legend?: Array<{ tone: string; label: { en: string; es: string } }> };
 const bars = vi.hoisted(() => [] as Props[]);
 vi.mock('@fasl-work/caos-app-shell', async (importOriginal) => {
   const mod = await importOriginal<typeof import('@fasl-work/caos-app-shell')>();
@@ -65,7 +65,6 @@ describe('U16-F8 C07: the shell draws the grouped bars and the bridge', () => {
           });
           expect(grouped!.legend?.map((l) => l.tone)).toEqual(['accent', 'warn', 'good']);
           expect(grouped!.legend?.every((l) => l.label.en && l.label.es)).toBe(true);
-          expect(typeof grouped!.onSelect).toBe('function');
           // the table beside it keeps every provision, in the language
           if (View === SegmentsView) for (const r of o.comparison.rows) expect(textOf(markup)).toContain(money(r.ifrs9_provision, lang, o.comparison.currency));
         }
@@ -114,7 +113,6 @@ describe('U16-F8 C07: the shell draws the grouped bars and the bridge', () => {
         const ends = d.flatMap((x) => x.span!);
         expect(Math.min(...ends)).toBeGreaterThanOrEqual(range[0]);
         expect(Math.max(...ends)).toBeLessThanOrEqual(range[1]);
-        expect(typeof chart!.onSelect).toBe('function');
         // the table keeps every step in the language
         for (const st of b.steps) expect(textOf(markup)).toContain(money(st.amount, lang, b.currency));
       });
