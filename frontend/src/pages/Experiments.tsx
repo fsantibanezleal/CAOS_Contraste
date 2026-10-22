@@ -46,7 +46,7 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
           <tr>
             <th>#</th>
             <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-            <th>{t('Records', 'Registros')}</th>
+            <th>{t('Holdout records', 'Registros reservados')}</th>
             <th>{t('Default rate', 'Tasa de incumplimiento')}</th>
             <th>{t('AUC, scorecard', 'AUC, scorecard')}</th>
             <th>{t('Best rung by AUC', 'Mejor peldaño por AUC')}</th>
@@ -63,7 +63,7 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
               <td>{formatNumber(r.v.outputs.defaults / r.v.outputs.n, lang, { percent: true, decimals: 1 })}</td>
               <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
               <td>
-                {r.best.id} ({formatNumber(r.best.auc, lang, { decimals: 4 })})
+                {pick(r.v.model.find((m) => m.id === r.best.id)?.short_title ?? { en: r.best.id, es: r.best.id }, lang)} ({formatNumber(r.best.auc, lang, { decimals: 4 })})
               </td>
               <td>{r.jef ? `p ${formatNumber(r.jef.p_value, lang, { digits: 3 })}, ${pick(LIGHT_TEXT[relight(r.jef, COMMITTED)], lang)}` : '-'}</td>
               <td>{r.psi ? `${formatNumber(value(r.psi), lang, { decimals: 4 })}, ${pick(LIGHT_TEXT[relight(r.psi, COMMITTED)], lang)}` : '-'}</td>
@@ -125,7 +125,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
-      {kind !== 'scorecard' && kind !== 'c04' && kind !== 'c05' && kind !== 'c22' ? (
+      {kind !== 'scorecard' ? (
         <P
           en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."
           es="Cada variante de este caso es la misma pregunta hecha a datos distintos, y la tabla de abajo lee una fila de resultados por variante desde su artefacto, en las medidas que declara este caso; un número que el artefacto omite se dice no disponible, con su razón, en la App."

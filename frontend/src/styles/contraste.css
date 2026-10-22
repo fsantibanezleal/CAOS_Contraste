@@ -129,12 +129,15 @@
   .caos-plot.fill > .caos-plot-body:has(.ct-stack) { height: auto; }
   /* a table that scrolls inside its card at a phone keeps the rows the card clamp leaves (one or two, U16-R2 b02 m1): it flows */
   .ct-scroll, .ct-stack > .ct-scroll { flex: none; height: auto; overflow-y: visible; }
+  .ct-fade-scroll { max-height: none !important; overflow-y: visible; }
   .caos-plot.fill > .caos-plot-body:has(.ct-scroll) { height: auto; }
 }
+/* a box of the reports with a height of its own scrolls like the others */
+.ct-fade-scroll { overflow: auto; }
 /* a scroll box of a wide screen fades its bottom edge and keeps a gap under its last row, so no line ends cut through its
    middle where the box ends (U16-R2 V21-5); the gap is blank and the fade only touches it once the box is scrolled to its end */
 @media (min-width: 901px) {
-  .ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll {
+  .ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll {
     padding-bottom: 1.25rem;
     mask-image: linear-gradient(to bottom, #000 calc(100% - 1.25rem), transparent);
   }

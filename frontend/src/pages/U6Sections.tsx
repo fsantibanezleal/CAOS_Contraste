@@ -27,13 +27,16 @@ const unsignedZero = (v: number | null | undefined, decimals: number, scale = 1)
   typeof v === 'number' && Math.abs(v * scale) < 0.5 * 10 ** -decimals ? 0 : v;
 export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(unsignedZero(v, decimals), lang, { decimals });
 export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(unsignedZero(v, decimals, 100), lang, { percent: true, decimals });
+/** A difference of probabilities in percentage points, as C04 writes its own (U16-R2 b12 m9). */
+export const pp = (v: number | null | undefined, lang: Lang, decimals = 2) => (typeof v === 'number' ? `${num(v * 100, lang, decimals)} pp` : formatNumber(null, lang));
 /** A p-value: three significant digits, so 1.0e-91 never reads 0.000 (U16-R2 b11 m5); the same format as the C01 rows. */
 export const pval = (v: number | null | undefined, lang: Lang, digits = 3) => formatNumber(v, lang, { digits });
 
 /** An amount for a table cell: scaled to billions or millions with its unit, never an eleven-digit number. */
 export function money(v: number | null | undefined, currency: string, lang: Lang): string {
   const c = compactMoney(v, currency);
-  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, c.format)} ${pick(c.unit, lang)}`;
+  // one decimal for a scaled amount, so the amounts of a table read alike ("867.0 m" beside "457.3 m", U16-R2 b12 m14)
+  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, pick(c.unit, 'en') === currency ? c.format : { decimals: 1 })} ${pick(c.unit, lang)}`;
 }
 
 /** The weighted mean of the values that are present, or null when there is none. */
@@ -123,7 +126,7 @@ export function experimentRows(manifest: CaseManifest, vs: VariantArtifact<unkno
     const base = o.ccf_by_design.rows.filter((r) => r.estimator === 'mean');
     const inside = o.ccf_by_design.rows.filter((r) => r.within_tolerance).length;
     const row = base[0];
-    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pct(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
+    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pp(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
   });
 }
 
