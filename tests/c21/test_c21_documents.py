@@ -44,7 +44,7 @@ def test_every_committed_document_validates_passes_the_checks_and_is_listed_with
         for row in load(C21 / f"{name}.json")["tests"]:
             if row["test_id"] in ("fair.conditional_disparity", "fair.rate_spread_disparity"):
                 assert row["alpha_amber"] is None and row["alpha_red"] is None and row["extras"]["thresholds"]["interval_level"] == 0.95
-                assert "interval_level=0.95" in row["policy_version"] and row["p_value"] is not None
+                assert row["policy_version"].startswith("riskvalidation-default") and row["p_value"] is not None  # riskvalidation 1.0 packaged policy label (BL-094): the level is in extras.thresholds above
             elif row["test_id"] == "fair.situation_testing":
                 assert row["alpha_amber"] is None and row["alpha_red"] is None and row["extras"]["thresholds"]["amber"] == 0.2
             elif row["test_id"] in ("fair.two_proportion_z", "fair.fisher_exact"):
