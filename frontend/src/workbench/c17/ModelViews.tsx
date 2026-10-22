@@ -9,6 +9,7 @@ import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { AGGREGATION_TEXT, DISCRETION_TEXT, SEVERITY_TEXT, STATUS_TEXT, capitalOf, cellLabel, cellOf, fitOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
+import { es } from './localise';
 
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
 
@@ -52,7 +53,7 @@ export function LadderView({ sel }: { sel: C17Sel | null }) {
         {...card}
         note={{
           en: 'Rung 1 fits a lognormal and ignores that losses under the collection threshold are not recorded; rung 2 fits the truncated severity and rescales the frequency; rung 3 splices a lognormal body with a generalised Pareto tail; rung 4 is the closed-form single loss approximation, and rung 5 its mean-corrected form, UNVERIFIED; rung 6 combines scenario points with the losses. The bars give the share of histories whose capital falls below the true quantile.',
-          es: 'El peldaño 1 ajusta una lognormal e ignora que las pérdidas bajo el umbral de recolección no se registran; el 2 ajusta la severidad truncada y reescala la frecuencia; el 3 empalma un cuerpo lognormal con una cola de Pareto generalizada; el 4 es la aproximación de una pérdida en forma cerrada, y el 5 su forma corregida por la media, UNVERIFIED; el 6 combina puntos de escenario con las pérdidas. Las barras dan la proporción de historias cuyo capital cae bajo el cuantil verdadero.',
+          es: 'El peldaño 1 ajusta una lognormal e ignora que las pérdidas bajo el umbral de recolección no se registran; el 2 ajusta la severidad truncada y reescala la frecuencia; el 3 empalma un cuerpo lognormal con una cola de Pareto generalizada; el 4 es la aproximación de una pérdida en forma cerrada, y el 5 su forma corregida por la media, SIN VERIFICAR; el 6 combina puntos de escenario con las pérdidas. Las barras dan la proporción de historias cuyo capital cae bajo el cuantil verdadero.',
         }}
       >
         <ChartOverTable
@@ -86,7 +87,7 @@ export function LadderView({ sel }: { sel: C17Sel | null }) {
                   <td className="ct-text ct-wide-only">{r.truncated ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                   <td className="ct-text">{pick(text(AGGREGATION_TEXT, r.aggregation), lang)}</td>
                   <td className="ct-text">{pick(text(STATUS_TEXT, r.status), lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -175,7 +176,7 @@ export function SmaSpecView({ sel }: { sel: C17Sel | null }) {
               { id: 'exponent', label: { en: 'Multiplier exponent', es: 'Exponente del multiplicador' }, value: formatNumber(s.ilm_exponent, lang, { digits: 3 }) },
               { id: 'rwa', label: { en: 'Risk-weighted assets', es: 'Activos ponderados por riesgo' }, value: pick({ en: `${formatNumber(s.rwa_factor, 'en', { digits: 4 })} times the capital`, es: `${formatNumber(s.rwa_factor, 'es', { digits: 4 })} veces el capital` }, lang) },
               { id: 'golden', label: { en: 'Golden value', es: 'Valor de referencia' }, attrs: { 'data-golden': String(s.golden.bic_eur) }, value: pick({ en: `a business indicator of ${whole(s.golden.bi_eur, 'en')} EUR gives a component of ${whole(s.golden.bic_eur, 'en')} EUR (${s.golden.reference})`, es: `un indicador de negocio de ${whole(s.golden.bi_eur, 'es')} EUR da un componente de ${whole(s.golden.bic_eur, 'es')} EUR (${s.golden.reference})` }, lang) },
-              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: s.reference },
+              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: es(s.reference, lang) },
             ]}
           />
           <table className="caos-table ct-wrap-head" data-table="sma-discretions">
@@ -191,7 +192,7 @@ export function SmaSpecView({ sel }: { sel: C17Sel | null }) {
                 <tr key={d.id} data-discretion={d.id}>
                   <td className="ct-text">{pick(text(DISCRETION_TEXT, d.id), lang)}</td>
                   <td className="ct-text">{pick(d.description, lang)}</td>
-                  <td className="ct-text ct-wide-only">{d.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(d.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>

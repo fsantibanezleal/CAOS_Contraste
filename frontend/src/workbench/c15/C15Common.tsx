@@ -15,6 +15,8 @@ import {
   LEG_TEXT, ORIGIN_TEXT, SHOCK_TEXT, BASKET_TEXT, OFFSET_TEXT, amount, axisOf, eveRowOf, fitOf, legOf, moneyDoc, outputsOf, pairTotal, scaleUnit, text, worst,
   type C15Outputs, type C15Sel,
 } from './selection';
+import { localise } from '../c14/localise';
+import { C15_SOURCE_RULES } from './localise';
 
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
@@ -112,6 +114,10 @@ const ASSUMPTION_TEXT: Record<string, Bi> = {
 const PARAMETER_TEXT: Record<string, Bi> = {
   net_uf_position: { en: 'Net UF position', es: 'Posición neta en UF' },
   surprise_pp: { en: 'CPI surprise', es: 'Sorpresa de IPC' },
+  net_uf_share_tier1: { en: 'Net UF position, share of Tier 1', es: 'Posición neta en UF, parte del capital de nivel 1' },
+  ur_floating_share: { en: 'Floating share of the UF commercial loans', es: 'Parte flotante de los préstamos comerciales en UF' },
+  clp_long_asset_share: { en: 'Long share of the CLP fixed commercial loans and securities', es: 'Parte larga de los préstamos comerciales fijos en CLP y los valores' },
+  clp_bond_years_scale: { en: 'Scale of the CLP bond maturities', es: 'Escala de los plazos de los bonos en CLP' },
 };
 const CATEGORY_TEXT: Record<string, Bi> = {
   'retail-operational': { en: 'Retail operational', es: 'Minorista operacional' },
@@ -121,7 +127,18 @@ const CATEGORY_TEXT: Record<string, Bi> = {
 
 /** A unit of the documents in words in the page language: "millions CLF" is "millones de CLF". */
 export function unitText(unit: string, lang: 'en' | 'es'): string {
-  if (lang === 'es') return unit.replace(/^millions /, 'millones de ').replace('percentage points', 'puntos porcentuales').replace(/^per year$/, 'por año').replace(/^years$/, 'años');
+  if (lang === 'es') {
+    const words: Record<string, string> = {
+      'share of Tier 1': 'parte del capital de nivel 1',
+      'share of the UF commercial loans': 'parte de los préstamos comerciales en UF',
+      'share of the CLP fixed commercial loans and securities': 'parte de los préstamos comerciales fijos en CLP y los valores',
+      'factor on the maturity': 'factor sobre el plazo',
+      'share of the term deposit': 'parte del depósito a plazo',
+      'per square-root year': 'por raíz cuadrada del año',
+      'share of |PN_UR|': 'parte de |PN_UR|',
+    };
+    return words[unit] ?? unit.replace(/^millions /, 'millones de ').replace('percentage points', 'puntos porcentuales').replace(/^per year$/, 'por año').replace(/^years$/, 'años');
+  }
   return unit;
 }
 
@@ -149,7 +166,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(o.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'Calibration source and seed', es: 'Fuente de la calibración y semilla' }, lang)}</dt>
-          <dd>{`${o.bank.calibration_source} (${o.bank.seed})`}</dd>
+          <dd>{`${localise(o.bank.calibration_source, lang, C15_SOURCE_RULES)} (${o.bank.seed})`}</dd>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd data-variant-id={o.variant.id}>{`${pick(o.variant.label, lang)}. ${pick(o.variant.description, lang)}`}</dd>
           {o.variant.parameters.map((p) => (
@@ -172,7 +189,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
           <dt>{pick({ en: 'UF date', es: 'Fecha de la UF' }, lang)}</dt>
           <dd>{o.ur_currency.uf_date}</dd>
           <dt>{pick({ en: 'UF source', es: 'Fuente de la UF' }, lang)}</dt>
-          <dd>{o.ur_currency.uf_source}</dd>
+          <dd>{localise(o.ur_currency.uf_source, lang, C15_SOURCE_RULES)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The curves', es: 'Las curvas' }} {...card} note={{ en: 'The sovereign yields are the Banco Central de Chile\'s; the fitted zero curve is an adaptation by Contraste, under the BCCh terms of use.', es: 'Los rendimientos soberanos son del Banco Central de Chile; la curva cero ajustada es una adaptación de Contraste, bajo los términos de uso del BCCh.' }}>
@@ -261,7 +278,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
                     <td className="ct-text">{pick(text(ASSUMPTION_TEXT, k), lang)}</td>
                     <td>{assumptionValue(a.value, a.unit, lang)}</td>
                     <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, a.source_kind), lang)}</td>
-                    <td className="ct-text ct-wide-only">{a.source}</td>
+                    <td className="ct-text ct-wide-only">{localise(a.source, lang, C15_SOURCE_RULES)}</td>
                   </tr>
                 );
               })}
@@ -313,7 +330,7 @@ function CurveRows({ curve }: { curve: C15Outputs['curves']['clp'] }) {
       <dt>{pick({ en: `${name} curve`, es: `Curva ${name}` }, lang)}</dt>
       <dd data-curve={curve.curve}>{`${curve.month} (${curve.date}); ${curve.fit.model === 'svensson' ? 'Svensson' : 'Nelson-Siegel'}, ${pick({ en: 'fit error', es: 'error del ajuste' }, lang)} ${formatNumber(curve.fit.rmse_bp, lang, { digits: 4 })} ${pick({ en: 'bp', es: 'pb' }, lang)}`}</dd>
       <dt>{pick({ en: `${name} source`, es: `Fuente ${name}` }, lang)}</dt>
-      <dd>{curve.attribution}</dd>
+      <dd>{localise(curve.attribution, lang, C15_SOURCE_RULES)}</dd>
     </>
   );
 }

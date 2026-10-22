@@ -15,6 +15,7 @@ import { Marked } from './Marked';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
+import { es, treatmentName } from './localise';
 
 /** The short label every C21 view says before its content. */
 export function NoLegalClaim({ legal }: { legal: C21Legal | null }) {
@@ -238,7 +239,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
           <dd>{`${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> (<Marked>{l.platform_terms_cover}</Marked>)</dd>
+          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> (<Marked>{es(l.platform_terms_cover, lang)}</Marked>)</dd>
           <dt>{pick({ en: 'CFPB statement', es: 'Declaración de la CFPB' }, lang)}</dt>
           <dd><span translate="no" lang="en">{`"${l.modified_statement}"`}</span></dd>
         </dl>
@@ -258,7 +259,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
               {o.data_notes.map((n) => (
                 <tr key={n.field} data-field={n.field}>
                   <td className="ct-text">{n.field}</td>
-                  <td className="ct-text">{n.treatment}</td>
+                  <td className="ct-text">{treatmentName(n.treatment, lang)}</td>
                   <td data-na={n.n_missing === null ? 'true' : undefined}>{n.n_missing === null ? formatNumber(null, lang) : int(n.n_missing, lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(n.reason, lang)}</td>
                 </tr>

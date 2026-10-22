@@ -108,7 +108,7 @@ export function scaleFactor(o: Pick<C14Outputs, 'units'>): number {
 /** The unit text of a table column of money in the document's scale: "USD thousands". */
 export function scaleUnit(o: Pick<C14Outputs, 'units' | 'currency'>): Bi {
   const word = o.units.money_scale === 'millions' ? { en: 'millions', es: 'millones' } : o.units.money_scale === 'thousands' ? { en: 'thousands', es: 'miles' } : null;
-  return word ? { en: `${o.currency} ${word.en}`, es: `${o.currency} ${word.es}` } : { en: o.currency, es: o.currency };
+  return word ? { en: `${o.currency} ${word.en}`, es: `${word.es} de ${o.currency}` } : { en: o.currency, es: o.currency };
 }
 
 /** An amount of the document in a narrow place (a read-out): scaled to units, then to bn or m with the unit that says so. */

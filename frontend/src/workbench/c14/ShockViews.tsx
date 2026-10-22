@@ -11,6 +11,7 @@ import {
   CALIBRATION_SHORT, CALIBRATION_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SHOCK_ORDER, SHOCK_TEXT, axisOf, cell, outputsOf, scaleUnit, scenarioFor, scenarioOf, text,
   type C14Sel,
 } from './selection';
+import { IRRBB_SOURCE_RULES, localise } from './localise';
 
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
@@ -233,7 +234,7 @@ export function OutlierView({ sel }: { sel: C14Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{o.scenarios[0].outlier.reference}</p>
+          <p className="ct-note">{localise(o.scenarios[0].outlier.reference, lang, IRRBB_SOURCE_RULES)}</p>
           <table className="caos-table ct-wrap-head" data-table="shock-numbers">
             <thead>
               <tr>

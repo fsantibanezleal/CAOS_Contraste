@@ -59,7 +59,11 @@ def _variant(doc: dict) -> list[str]:
         curve = ex[name]["exceedance"]
         if len(curve) != len(grid):
             out.append(f"exceedance.{name} has {len(curve)} points for a grid of {len(grid)}")
-        if any(not 0 <= x <= 1 for x in curve) or any(b > a + 1e-12 for a, b in zip(curve, curve[1:])):
+        # the Panjer curve is null past the end of its grid (c17-outputs 2.0.0): the nulls are a suffix, the rest is the curve
+        real = [x for x in curve if x is not None]
+        if curve[: len(real)] != real:
+            out.append(f"exceedance.{name} has a null before a value: the nulls are only the part of the axis past the grid")
+        if any(not 0 <= x <= 1 for x in real) or any(b > a + 1e-12 for a, b in zip(real, real[1:])):
             out.append(f"exceedance.{name} is not a nonincreasing curve in [0, 1]")
     qm = ex["quantile_999_eur"]
     if abs(qm["panjer"] - qm["fft"]) / qm["panjer"] >= 1e-3:

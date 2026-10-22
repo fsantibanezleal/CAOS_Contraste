@@ -8,6 +8,8 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { SHOCK_TEXT, ORIGIN_TEXT, axisOf, documentOffset, moneyDoc, outputsOf, scaleUnit, text, worst, type C15Sel } from './selection';
 import { IrrbbTestsTable } from '../c14/C14Common';
+import { localise } from '../c14/localise';
+import { FORMULA_RULES } from './localise';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
@@ -151,7 +153,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
           }
         >
           <dl className="ct-defs" data-table="indexation">
-            <dt>{pick({ en: 'Net UF position (UF)', es: 'Posición neta en UF (UF)' }, lang)}</dt>
+            <dt>{pick({ en: `Net UF position (${pick(scaleUnit({ ...moneyDoc(o), currency: 'UF' }), 'en')})`, es: `Posición neta en UF (${pick(scaleUnit({ ...moneyDoc(o), currency: 'UF' }), 'es')})` }, lang)}</dt>
             <dd>{formatNumber(c.net_position_uf_units, lang, { digits: 4 })}</dd>
             <dt>{pick({ en: 'Value of one UF (CLP)', es: 'Valor de una UF (CLP)' }, lang)}</dt>
             <dd>{formatNumber(o.ur_currency.uf_value, lang, { decimals: 0 })}</dd>
@@ -164,7 +166,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
             <dt>{pick({ en: `Indexation charge (${unit})`, es: `Cargo por reajustabilidad (${unit})` }, lang)}</dt>
             <dd>{cell(c.charge, lang)}</dd>
             <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-            <dd translate="no">{c.formula}</dd>
+            <dd translate="no">{localise(c.formula, lang, FORMULA_RULES)}</dd>
             <dt>{pick({ en: 'In words', es: 'En palabras' }, lang)}</dt>
             <dd>{pick(c.note, lang)}</dd>
             <dt>{pick({ en: `Rate result of delta NII (${unit})`, es: `Resultado de tasa del delta NII (${unit})` }, lang)}</dt>
@@ -179,7 +181,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
               <dt>{pick({ en: `Effect (${unit}); positive is a loss`, es: `Efecto (${unit}); positivo es una pérdida` }, lang)}</dt>
               <dd>{cell(s.effect, lang)}</dd>
               <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-              <dd translate="no">{s.formula}</dd>
+              <dd translate="no">{localise(s.formula, lang, FORMULA_RULES)}</dd>
             </dl>
           ) : (
             <p className="ct-note" data-table="cpi-scenario" data-cpi="absent" data-na="true" data-state="unavailable">

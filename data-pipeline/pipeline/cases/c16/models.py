@@ -150,15 +150,19 @@ def models_fit(report: Report, conv: dict, cal: dict[str, Any], generator: dict[
                      "rows": [{"row_id": r.row_id, "bank": r.bank, "year": r.year, "outflow_share": r.outflow_share, "days": r.days} for r in runoff.TABLE_A1],
                      "lcr_range": {"label": "LCR deposit outflow rates", "low": lo, "high": hi, "days": days}},
         "calibration": cal, "generator": generator,
-        "sources": [{"source_id": sid, "publisher": pub, "licence_class": cls, "licence_basis": basis, "statement": txt(st + " A reading of the notice, not legal advice.", st)}
-                    for sid, pub, cls, basis, st in (
-            ("fdic-bankfind", "FDIC", "mirror-allowed", "unverified", "Presumed US government public data; the licence sentence is UNVERIFIED."),
-            ("fed-h8", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement."),
-            ("fed-svb-review", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement."),
+        "sources": [{"source_id": sid, "publisher": pub, "licence_class": cls, "licence_basis": basis,
+                     "statement": txt(en + " A reading of the notice, not legal advice.", es + " Es una lectura del aviso, no asesoría legal.")}
+                    for sid, pub, cls, basis, en, es in (
+            ("fdic-bankfind", "FDIC", "mirror-allowed", "unverified", "Presumed US government public data; the licence sentence is UNVERIFIED.",
+             "Se presume dato público del gobierno de EE. UU.; la frase de licencia está SIN VERIFICAR."),
+            ("fed-h8", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement.", "Declaración de dominio público de la Junta."),
+            ("fed-svb-review", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement.", "Declaración de dominio público de la Junta."),
             ("bcbs-d555-table-a1", "Bank for International Settlements", "mirror-allowed", "notice-read",
-             "Table A.1 enters as constants with the source stated, within the BIS limited-extract terms; the rest of d555 is derived-only."),
+             "Table A.1 enters as constants with the source stated, within the BIS limited-extract terms; the rest of d555 is derived-only.",
+             "La Tabla A.1 entra como constantes con la fuente declarada, dentro de los términos de extracto limitado del BPI; el resto de d555 es solo derivado."),
             ("ecb-list-2019", "European Central Bank", "mirror-allowed", "notice-read",
-             "Parameters used with the ECB cited, the text accurate and any modification stated."))]}
+             "Parameters used with the ECB cited, the text accurate and any modification stated.",
+             "Parámetros usados citando al BCE, con el texto exacto y toda modificación declarada."))]}
 
 
 def models_summary(ev: str) -> list[dict[str, Any]]:

@@ -122,7 +122,7 @@ export const C17_OUTPUTS: Kind = { object: {
     currency: 'string',
     grid_eur: { array: num },
     monte_carlo: { object: { n_years: 'integer', seed: 'integer', exceedance: { array: num } } },
-    panjer: { object: { step_eur: num, exceedance: { array: num } } },
+    panjer: { object: { step_eur: num, exceedance: { array: { nullable: num } } } },
     fft: { object: { n_points: 'integer', padding_factor: 'integer', tilt: num, exceedance: { array: num } } },
     quantile_999_eur: { object: { monte_carlo: num, panjer: num, fft: num, sla: num } },
   } },

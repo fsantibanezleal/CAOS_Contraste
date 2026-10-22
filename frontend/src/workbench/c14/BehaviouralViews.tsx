@@ -10,6 +10,7 @@ import { IrrbbTestsTable, UnavailableCard, assumptionValue } from './C14Common';
 import {
   CALIBRATION_SHORT, CATEGORY_TEXT, SHOCK_TEXT, SOURCE_KIND_TEXT, axisOf, cell, fitOf, nmdModelOf, outputsOf, scaleUnit, text, type C14Sel,
 } from './selection';
+import { IRRBB_SOURCE_RULES, localise } from './localise';
 
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
@@ -151,7 +152,7 @@ export function ReplicatingView({ sel }: { sel: C14Sel | null }) {
             <dt>{pick({ en: 'Deposit beta, down', es: 'Beta de depósitos, a la baja' }, lang)}</dt>
             <dd>{SHARE(m.deposit_beta.down, lang)}</dd>
             <dt>{pick({ en: 'Where the beta comes from', es: 'De dónde viene el beta' }, lang)}</dt>
-            <dd>{`${pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang)}: ${m.deposit_beta.source}`}</dd>
+            <dd>{`${pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang)}: ${localise(m.deposit_beta.source, lang, IRRBB_SOURCE_RULES)}`}</dd>
           </dl>
           <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.nmd_parameter_stability'} />
         </ChartOverTable>
@@ -209,7 +210,7 @@ export function CapsView({ sel }: { sel: C14Sel | null }) {
                 <th>{pick({ en: 'Maturity requested (years)', es: 'Plazo pedido (años)' }, lang)}</th>
                 <th>{pick({ en: 'Cap (years)', es: 'Tope (años)' }, lang)}</th>
                 <th>{pick({ en: 'Used (years)', es: 'Usado (años)' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Cap applied', es: 'Tope aplicado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -239,6 +240,12 @@ function parameterLabel(parameter: string, category: string): BiText {
   const c = text(CATEGORY_TEXT, category);
   if (parameter.startsWith('core share')) return { en: `Core share, ${c.en.toLowerCase()}`, es: `Parte estable, ${c.es.toLowerCase()}` };
   if (parameter.startsWith('core maturity')) return { en: `Core maturity, ${c.en.toLowerCase()}`, es: `Plazo estable, ${c.es.toLowerCase()}` };
+  // the contract's own phrases: "requested core share, wholesale", "replicating-portfolio weighted average maturity, wholesale"
+  if (parameter.startsWith('requested core share')) return { en: `Requested core share, ${c.en.toLowerCase()}`, es: `Parte estable solicitada, ${c.es.toLowerCase()}` };
+  if (parameter.startsWith('requested core maturity')) return { en: `Requested core maturity, ${c.en.toLowerCase()}`, es: `Plazo estable solicitado, ${c.es.toLowerCase()}` };
+  if (parameter.startsWith('replicating-portfolio weighted average maturity')) {
+    return { en: `Weighted average maturity of the replicating portfolio, ${c.en.toLowerCase()}`, es: `Plazo medio ponderado de la cartera replicante, ${c.es.toLowerCase()}` };
+  }
   return { en: parameter, es: parameter };
 }
 
@@ -269,8 +276,6 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'From', es: 'Desde' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'To', es: 'Hasta' }, lang)}</th>
                 <th>{pick({ en: 'Before', es: 'Antes' }, lang)}</th>
                 <th>{pick({ en: 'After', es: 'Después' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Limit breach in the window', es: 'Exceso de límite en la ventana' }, lang)}</th>
@@ -281,9 +286,10 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
             <tbody>
               {changes.map((c, i) => (
                 <tr key={i} data-flagged={c.flagged} data-breach={c.limit_breach_in_window}>
-                  <td className="ct-text">{pick(parameterLabel(c.parameter, c.category), lang)}</td>
-                  <td className="ct-wide-only">{c.from_date}</td>
-                  <td className="ct-wide-only">{c.to_date}</td>
+                  <td className="ct-text">
+                    {pick(parameterLabel(c.parameter, c.category), lang)}
+                    <span className="ct-note" style={{ display: 'block' }} data-window={`${c.from_date} ${c.to_date}`}>{`${c.from_date} ${pick({ en: 'to', es: 'a' }, lang)} ${c.to_date}`}</span>
+                  </td>
                   <td>{assumptionValue(c.from_value, c.unit, lang)}</td>
                   <td>{assumptionValue(c.to_value, c.unit, lang)}</td>
                   <td className="ct-text">{pick(c.limit_breach_in_window ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang)}</td>
