@@ -69,7 +69,11 @@ function ContributionFigure() {
           </g>
         );
       })}
-      <text className="dg-note" x={40} y={30} textAnchor="start">{t('blue: share of the exposure; magenta: share of the VaR; outlined: share of the ES', 'azul: parte de la exposición; magenta: parte del VaR; con contorno: parte del ES')}</text>
+      {/* the key on two lines, so the Spanish fits the drawing at every width (gate G10, wide font) */}
+      <text className="dg-note" x={40} y={30} textAnchor="start">
+        <tspan x={40}>{t('blue: share of the exposure; magenta: share of the VaR;', 'azul: parte de la exposición; magenta: parte del VaR;')}</tspan>
+        <tspan x={40} dy={14}>{t('outlined: share of the ES', 'con contorno: parte del ES')}</tspan>
+      </text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );

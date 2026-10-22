@@ -369,7 +369,7 @@ export function FairnessReadout({ sel }: { sel: C20Sel | null }) {
       title={{ en: 'The fairness test', es: 'La prueba de equidad' }}
       items={[
         { label: { en: 'Gap', es: 'Brecha' }, value: row?.value ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The largest difference between groups, on the Taiwan model; labelled evidence, never a compliance statement.', 'La mayor diferencia entre grupos, en el modelo de Taiwán; evidencia etiquetada, nunca una declaración de cumplimiento.') },
-        { label: { en: 'Light', es: 'Luz' }, text: row ? ({ green: { en: 'green', es: 'verde' }, amber: { en: 'amber', es: 'ámbar' }, red: { en: 'red', es: 'rojo' }, not_evaluated: { en: 'not evaluated', es: 'sin evaluar' }, error: { en: 'error', es: 'error' } } as Record<string, BiText>)[row.light] ?? na : na, unitless: true, hint: hint('Under the committed policy; a convention.', 'Bajo la política comprometida; una convención.') },
+        { label: { en: 'Light', es: 'Luz' }, text: row ? ({ green: { en: 'green', es: 'verde' }, amber: { en: 'amber', es: 'ámbar' }, red: { en: 'red', es: 'rojo' }, not_evaluated: { en: 'not evaluated', es: 'sin evaluar' }, error: { en: 'error', es: 'error' } } as Record<string, BiText>)[row.light] ?? na : na, unitless: true, hint: hint('Under the committed policy; a convention.', 'Bajo la política versionada; una convención.') },
       ]}
     />
   );

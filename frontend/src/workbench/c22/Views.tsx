@@ -121,7 +121,7 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `${Object.keys(o.generators).length} generators from riskvalidation ${v.provenance.riskvalidation_version ?? ''}, each with its configuration and its exact truth committed; ${o.ladder ? `severity ladder: ${o.ladder.values.join(', ')} (${o.ladder.label.en})` : 'every test at the boundary of its null'}.`,
-          es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta comprometidas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
+          es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta versionadas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
         }}
       >
         <div className="ct-scroll">
