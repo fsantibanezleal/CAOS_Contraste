@@ -223,7 +223,7 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     expect(base[2]).toMatch(/14\.98\s?%/);
     expect(base[3]).toMatch(/1,?710/);
     expect(base[4]).toMatch(/1,?060/);
-    expect(base[4]).toMatch(/2,?018/);
+    expect(base[4]).toMatch(/2,?017\.8/); // one decimal for a scaled amount (U16-R2 b12 m14)
     expect(base[5]).toMatch(NOT_AVAILABLE);
     const agg = rowOf('C18', 'fixture-t-copula-aggregation');
     expect(agg[1]).toMatch(NOT_AVAILABLE);

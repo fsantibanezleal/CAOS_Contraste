@@ -23,9 +23,10 @@ export function GovernanceDoc<T>({ file, children, label }: { file: string; chil
 }
 
 /** Prose a document wrote in both languages. On the Spanish page it is already Spanish, and it may quote a reference such as "A D2 3.5" that is not a decimal: it is marked translate="no" so the page's Spanish-number check reads it as the reference it is. */
-export function Doc({ t }: { t: Text }) {
+export function Doc({ t, capital = false }: { t: Text; capital?: boolean }) {
   const lang = useShellLang();
-  return <span translate={lang === 'es' ? 'no' : undefined}>{t[lang]}</span>;
+  const words = capital ? t[lang].replace(/^\s*(\p{L})/u, (m, c: string) => m.replace(c, c.toUpperCase())) : t[lang];
+  return <span translate={lang === 'es' ? 'no' : undefined}>{words}</span>;
 }
 
 /** The as-of date of a document and what it is: a date with its label, never the date of publication unless the basis says so. */

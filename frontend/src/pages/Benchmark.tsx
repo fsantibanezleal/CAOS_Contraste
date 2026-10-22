@@ -12,11 +12,11 @@ import { CHAMPION, extra, test, value } from '../workbench/model';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
-import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
+import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES, num } from './U6Sections';
 import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
 import { B3BenchmarkSection, B3_BENCHMARK_CASES } from './Batch3Sections';
 
-function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
+export function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
   const t = useT();
   const rows = v.model
@@ -45,8 +45,8 @@ function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
         verdict={
           better.length
             ? {
-                en: `${better.map((r) => r.m.id).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
-                es: `${better.map((r) => r.m.id).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
+                en: `${better.map((r) => r.m.short_title.en).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
+                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
               }
             : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la scorecard aquí.' }
         }
@@ -67,11 +67,11 @@ function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
           {rows.map((r) => (
             <tr key={r.m.id}>
               <td className="caos-col-text">
-                {r.m.rung} {pick(r.m.title, lang)}
+                {pick(r.m.short_title, lang)}
               </td>
               <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
               <td>{r.lo !== null && r.hi !== null ? `${formatNumber(r.lo, lang, { decimals: 4 })} - ${formatNumber(r.hi, lang, { decimals: 4 })}` : ''}</td>
-              <td>{r.m.id === CHAMPION ? '' : formatNumber(r.auc !== null && champ?.auc != null ? r.auc - champ.auc : null, lang, { decimals: 4 })}</td>
+              <td>{r.m.id === CHAMPION ? '' : num(r.auc !== null && champ?.auc != null ? r.auc - champ.auc : null, lang, 4)}</td>
               <td>{r.dl ? formatNumber(r.dl.p_value, lang, { digits: 3 }) : ''}</td>
               <td>{formatNumber(r.brier, lang, { decimals: 4 })}</td>
               <td>{formatNumber(r.jef?.p_value ?? null, lang, { digits: 3 })}</td>
@@ -164,7 +164,7 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
       .filter((m) => m.id !== 'P0-constant')
       .map((m) => ({ id: m.id, auc: value(test(v, 'disc.auc', m.id)) ?? 0 }))
       .sort((a, b) => b.auc - a.auc)[0];
-    return { v, best, auc: value(test(v, 'disc.auc', CHAMPION)) };
+    return { v, best, bestRung: pick(v.model.find((m) => m.id === best.id)?.short_title ?? { en: best.id, es: best.id }, lang), auc: value(test(v, 'disc.auc', CHAMPION)) };
   });
   if (rows.length < 2) return null;
   const titles = Object.fromEntries(manifest.artifacts.map((a) => [a.variant_id, a.short_title]));
@@ -188,14 +188,14 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
       />
     </PlotCard>
     <RobustnessTable
-      rows={rows.map((r, i) => ({ n: i + 1, title: pick(titles[r.v.variant_id] ?? r.v.variant_id, lang), scorecard: r.auc, best: r.best.auc }))}
+      rows={rows.map((r, i) => ({ n: i + 1, title: pick(titles[r.v.variant_id] ?? r.v.variant_id, lang), scorecard: r.auc, best: r.best.auc, bestRung: r.bestRung }))}
     />
     </>
   );
 }
 
 /** The numbers the robustness chart draws, one row per variant (the chart has no table of its own): the number of the note, the variant, the AUC of the scorecard and of the best rung. */
-export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number }> }) {
+export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: string; scorecard: number | null; best: number; bestRung?: string }> }) {
   const lang = useShellLang();
   const t = useT();
   return (
@@ -206,6 +206,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
           <th>{t('No.', 'N.º')}</th>
           <th className="caos-col-text">{t('Variant', 'Variante')}</th>
           <th>{t('AUC of the scorecard (P1)', 'AUC de la scorecard (P1)')}</th>
+          <th className="caos-col-text">{t('Best rung', 'Mejor peldaño')}</th>
           <th>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
         </tr>
       </thead>
@@ -215,6 +216,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
             <td>{r.n}</td>
             <td className="caos-col-text">{r.title}</td>
             <td>{formatNumber(r.scorecard, lang, { decimals: 3 })}</td>
+            <td className="caos-col-text">{r.bestRung ?? ''}</td>
             <td>{formatNumber(r.best, lang, { decimals: 3 })}</td>
           </tr>
         ))}
@@ -232,11 +234,11 @@ const IRRBB_REASON: { en: string; es: string } = {
 export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
   C06: {
     en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
-    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anexo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
   },
   C07: {
     en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
-    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anexo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
   },
   C14: IRRBB_REASON,
   C15: IRRBB_REASON,
@@ -271,7 +273,7 @@ export function Benchmark() {
           floor: 'live',
           reason: {
             en: 'The Benchmark replays committed artifacts. The live inference on held-out data is the App workbench, in its Impact group, where the reader moves the controls.',
-            es: 'El Benchmark reproduce artefactos comprometidos. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
+            es: 'El Benchmark reproduce artefactos versionados. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
           },
         },
       ]}
@@ -288,7 +290,7 @@ export function Benchmark() {
             key={m.case_id}
             area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
             title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
-            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
+            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}
           >
             {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : B3_BENCHMARK_CASES.has(m.case_id) ? <B3BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
@@ -299,7 +301,7 @@ export function Benchmark() {
         </DocSection>
       )}
       {all.state === 'ready' && comparable.length > 0 && (
-        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
+        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}>
           {comparable.map((m) => (
             <Robustness key={m.case_id} manifest={m} />
           ))}

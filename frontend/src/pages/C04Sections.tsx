@@ -27,6 +27,7 @@ import {
   type Lang,
 } from '../content/cases/C04Results';
 import type { C04MarkovRung, C04Simulation, C04ThinRung, CaseManifest, VariantArtifact } from '../lib/contract.types';
+import { attributionIn } from '../workbench/c04/selection';
 import { provenanceOf } from '../workbench/model';
 import { agencyLraChart, nonEmpty, rungText } from '../workbench/c04/C04Common';
 import { SP_ENTITY } from '../workbench/c04/FamilyViews';
@@ -76,13 +77,13 @@ const sizeBound = (level: number, n: number) => level + SIZE_Z * Math.sqrt((leve
  * carries ESMA's attribution (verbatim, the source's own wording), as the family views do. */
 const FAMILY_SOURCE = {
   en: ` CEREP counts of ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
-  es: ` Conteos de CEREP de ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
+  es: ` Conteos de CEREP de ${SP_ENTITY.name}. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`,
 } as const;
 
 function agencyData(v: AgencyVariant, lang: Lang): string {
   const a = agencyFacts(v);
   return lang === 'es'
-    ? `${a.entity}: ${a.cohorts} cohortes anuales de ${a.first} a ${a.last} y ${a.semesters} semestres; ${formatNumber(a.ratings, 'es')} calificaciones en las cohortes anuales. ${a.attribution}.`
+    ? `${a.entity}: ${a.cohorts} cohortes anuales de ${a.first} a ${a.last} y ${a.semesters} semestres; ${formatNumber(a.ratings, 'es')} calificaciones en las cohortes anuales. ${attributionIn(a.attribution, 'es')}.`
     : `${a.entity}: ${a.cohorts} annual cohorts from ${a.first} to ${a.last} and ${a.semesters} semesters; ${formatNumber(a.ratings, 'en')} ratings over the annual cohorts. ${a.attribution}.`;
 }
 
@@ -168,7 +169,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
           provenance={provenanceOf(agencies[0]?.provenance.truth_status)}
           note={{
             en: `The mean of the yearly one-year PDs (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition (D2 the default-rate page, D4 the transition page's default column), dash the agency's EU entity (${agencies.map((a) => a.outputs.agency.name).join('; ')}). A zero average has no point. Grey: each agency's TTC default rate under its pooled matrix. ${pick(ESMA_DEFINITIONS, 'en')} ${attribution}.`,
-            es: `La media de las PD anuales (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición (D2 la página de tasas de incumplimiento, D4 la columna de incumplimiento de la página de transiciones), trazo la entidad UE de la agencia (${agencies.map((a) => a.outputs.agency.name).join('; ')}). Un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia con su matriz agrupada. ${pick(ESMA_DEFINITIONS, 'es')} ${attribution}.`,
+            es: `La media de las PD anuales (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición (D2 la página de tasas de incumplimiento, D4 la columna de incumplimiento de la página de transiciones), trazo la entidad UE de la agencia (${agencies.map((a) => a.outputs.agency.name).join('; ')}). Un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia con su matriz agrupada. ${pick(ESMA_DEFINITIONS, 'es')} ${attributionIn(attribution, 'es')}.`,
           }}
         >
           <UPlotChart height={CHART_HEIGHT} x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
@@ -206,7 +207,7 @@ function DefinitionsCard({ agencies, manifest, provenance }: { agencies: AgencyV
       provenance={provenance}
       note={{
         en: `Long-run averages (EBA/GL/2017/16 paragraph 84) by agency and grade under D2, D3 and D4, and the pooled ratios. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `Promedios de largo plazo (párrafo 84 de EBA/GL/2017/16) por agencia y grado con D2, D3 y D4, y las razones agrupadas. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `Promedios de largo plazo (párrafo 84 de EBA/GL/2017/16) por agencia y grado con D2, D3 y D4, y las razones agrupadas. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict
@@ -292,7 +293,7 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
       provenance={provenance}
       note={{
         en: `The L1 distance of exp(Q) to each agency's pooled one-year matrix for the EM generator of the annual counts (Smith and dos Reis 2018), the diagonal and weighted adjustments and the JLT approximation (Israel, Rosenthal and Wei 2001); Theorem 3(c)'s moves are reachable through other grades but never observed. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict
@@ -374,7 +375,7 @@ function LifetimeCard({ agencies, manifest, provenance }: { agencies: AgencyVari
       provenance={provenance}
       note={{
         en: `The latest five-year window of each agency: the share of its starting cohort that defaulted within the window on the default-rate page (D2, cumulative), the share in a default category at the window's end (D4), and the projections of the same cohort by the window's annual matrices chained (withdrawals a state), the pooled matrix to the fifth power and exp(5Q) of the EM generator. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict

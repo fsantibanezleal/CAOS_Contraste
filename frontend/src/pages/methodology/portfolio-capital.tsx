@@ -69,7 +69,7 @@ function ContributionFigure() {
           </g>
         );
       })}
-      <text className="dg-note" x={40} y={30} textAnchor="start">{t('grey: share of the exposure; middle: share of the VaR; right: share of the ES', 'gris: parte de la exposición; centro: parte del VaR; derecha: parte del ES')}</text>
+      <text className="dg-note" x={40} y={30} textAnchor="start">{t('blue: share of the exposure; magenta: share of the VaR; outlined: share of the ES', 'azul: parte de la exposición; magenta: parte del VaR; con contorno: parte del ES')}</text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );
