@@ -10,11 +10,11 @@ import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, t
 import { Pending } from './Pending';
 
 /** The portfolio-level tests of the battery, in the order a validation report reads them. */
-const BATTERY: Array<{ id: string; label: BiText }> = [
+const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'disc.auc', label: { en: 'AUC (descriptive)', es: 'AUC (descriptiva)' } },
   { id: 'disc.auc_vs_initial', label: { en: 'AUC against initial validation (ECB)', es: 'AUC contra la validación inicial (BCE)' } },
   { id: 'disc.delong', label: { en: 'DeLong against the champion', es: 'DeLong contra el campeón' } },
-  { id: 'disc.ks', label: { en: 'Kolmogorov-Smirnov (descriptive)', es: 'Kolmogorov-Smirnov (descriptiva)' } },
+  { id: 'disc.ks', label: { en: 'Kolmogorov-Smirnov (descriptive)', es: 'Kolmogorov-Smirnov (descriptiva)' }, descriptive: true },
   { id: 'pd.jeffreys', label: { en: 'Jeffreys, portfolio (ECB)', es: 'Jeffreys, cartera (BCE)' } },
   { id: 'pd.binomial', label: { en: 'Binomial (WP14)', es: 'Binomial (WP14)' } },
   { id: 'pd.binomial_vasicek', label: { en: 'Binomial with asset correlation 4% (WP14, CRE31.15)', es: 'Binomial con correlación de activos 4% (WP14, CRE31.15)' } },
@@ -28,13 +28,15 @@ const BATTERY: Array<{ id: string; label: BiText }> = [
 ];
 
 /** A test's value (its p-value when it has one) and its light under the rail's policy, as a word: never colour alone. */
-export function LightCell({ row, alphas, className }: { row: TestRow | undefined; alphas: PolicyAlphas; className?: string }) {
+export function LightCell({ row, alphas, className, descriptive }: { row: TestRow | undefined; alphas: PolicyAlphas; className?: string; descriptive?: boolean }) {
   const lang = useShellLang();
   if (!row) return <td className={className}>-</td>;
   const light: Light = relight(row, alphas);
   const p = row.p_value;
   // a p-value below the smallest double the engine returns as 0; it is not zero
-  const shown = p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
+  // a row the table calls descriptive shows its statistic (the KS distance D), not the p-value it also carries
+  const stat = descriptive ? value(row) : null;
+  const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
   return (
     <td data-light={light} className={`ct-light ct-light-${light}${className ? ` ${className}` : ''}`} title={pick(thresholdLabel(row, alphas), lang)}>
       {shown}
@@ -81,7 +83,7 @@ export function BatteryView({ sel }: { sel: Selection | null }) {
                   {pick(b.label, lang)}
                 </td>
                 {cols.map((m) => (
-                  <LightCell key={m.id} row={test(v, b.id, m.id)} alphas={sel.alphas} className={room(m.id)} />
+                  <LightCell key={m.id} row={test(v, b.id, m.id)} alphas={sel.alphas} className={room(m.id)} descriptive={b.descriptive} />
                 ))}
               </tr>
             ))}

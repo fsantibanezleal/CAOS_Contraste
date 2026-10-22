@@ -211,3 +211,55 @@ def test_the_real_tree_is_clean(guard, capsys):
     code = guard.main(["--root", str(ROOT)])
     out = capsys.readouterr().out
     assert code == 0, out
+
+
+# --- U16-F1: a Spanish field that copies the English ------------------------------------------------------------------
+
+COPY_DOC = "data/derived/C98/copy.json"
+
+
+def test_documents_find_an_es_that_equals_the_en_when_the_en_has_three_words(guard, tmp_path, capsys):
+    _write(tmp_path, COPY_DOC, json.dumps({"note": {"en": "The reason is stated here", "es": "The reason is stated here"}}))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert f"{COPY_DOC}:" in out and "copies the English" in out
+    assert "The reason is stated here" in out
+
+
+def test_documents_accept_an_es_that_differs_and_a_short_name_that_is_the_same(guard, tmp_path, capsys):
+    _write(tmp_path, COPY_DOC, json.dumps({
+        "a": {"en": "The reason is stated here", "es": "La razón se declara aquí"},
+        "b": {"en": "Banco Andino", "es": "Banco Andino"},
+        "c": {"en": "P4 LightGBM", "es": "P4 LightGBM"},
+    }))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 0, out
+
+
+def test_the_copy_check_is_for_documents_only(guard, tmp_path, capsys):
+    _write(tmp_path, PY, 'T = {"en": "The reason is stated here", "es": "The reason is stated here"}\n')
+    code, out = _run(guard, tmp_path, capsys)
+    assert "copies the English" not in out
+
+
+def test_a_copy_allow_entry_with_a_reason_silences_one_text(guard, tmp_path, capsys):
+    _write(tmp_path, COPY_DOC, json.dumps({"n": {"en": "Source: ESMA CEREP tables", "es": "Source: ESMA CEREP tables"}}))
+    _write(tmp_path, "scripts/check_spanish_copies.txt", f"{COPY_DOC} :: Source: ESMA CEREP tables  # the source's own wording, kept verbatim\n")
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 0, out
+
+
+def test_a_copy_allow_entry_without_a_reason_is_refused(guard, tmp_path, capsys):
+    _write(tmp_path, COPY_DOC, json.dumps({"n": {"en": "Source: ESMA CEREP tables", "es": "Source: ESMA CEREP tables"}}))
+    _write(tmp_path, "scripts/check_spanish_copies.txt", f"{COPY_DOC} :: Source: ESMA CEREP tables\n")
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert "reason" in out
+
+
+def test_the_copy_list_of_the_real_tree_has_a_reason_on_every_line(guard):
+    path = ROOT / "scripts" / "check_spanish_copies.txt"
+    assert path.exists()
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        if raw.strip() and not raw.lstrip().startswith("#"):
+            assert "  # " in raw and raw.split("  # ", 1)[1].strip(), raw

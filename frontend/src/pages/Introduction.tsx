@@ -153,8 +153,8 @@ function Technical() {
         <>
       <DocSection title={{ en: 'How to read the App', es: 'Cómo leer la App' }} noRefsReason={{ en: 'Describes this interface.', es: 'Describe esta interfaz.' }}>
         <P
-          en="The App is one workbench. The rail on the left holds what you choose and what you read: the case, its variant, and the case's live inputs in sections, each with a read-out that moves with its controls. The instrument beside it has one row of groups: Model, Validation, Impact, Findings, Variants and Context."
-          es="La App es un banco de trabajo. El panel de la izquierda contiene lo que se elige y lo que se lee: el caso, su variante, y las entradas en vivo del caso en secciones, cada una con una lectura que se mueve con sus controles. El instrumento a su lado tiene una fila de grupos: Modelo, Validación, Impacto, Hallazgos, Variantes y Contexto."
+          en="The App is one workbench. The rail on the left holds what you choose and what you read: the case, its variant, and the case's live inputs in sections, each with a read-out that moves with its controls. The instrument beside it has one row of groups, which the selected case names; the groups of C01 are Model, Validation, Impact, Findings, Variants and Context."
+          es="La App es un banco de trabajo. El panel de la izquierda contiene lo que se elige y lo que se lee: el caso, su variante, y las entradas en vivo del caso en secciones, cada una con una lectura que se mueve con sus controles. El instrumento a su lado tiene una fila de grupos, que nombra el caso elegido; los grupos de C01 son Modelo, Validación, Impacto, Hallazgos, Variantes y Contexto."
         />
         <P
           en="Every view carries two badges: its lane (live, recomputed in your browser; replay, read from a committed artifact) and its data (real, synthetic or published). A view still showing an earlier selection says so while it recomputes. A case that is planned and not built yet is listed with a planned mark, can be selected, and says in every group that it is not available yet, with the reason."

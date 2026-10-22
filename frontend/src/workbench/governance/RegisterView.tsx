@@ -17,6 +17,7 @@ import {
   severityByStatus,
   severityText,
   sortRows,
+  useGovernance,
   type AppetiteMetric,
   type FindingRow,
   type GovAppetite,
@@ -132,7 +133,13 @@ export function SeverityStatusBars({ rows }: { rows: FindingRow[] }) {
     <div data-stacked-bars>
       {data.map((d) => (
         <div key={d.severity} data-severity-bar={d.severity} data-total={d.total} style={{ display: 'grid', gridTemplateColumns: 'minmax(7rem, 11rem) 1fr', alignItems: 'center', gap: '0.5rem', margin: '0.35rem 0', minWidth: 0 }}>
-          <span>{severityText(d.severity, ecb(d.severity), lang)}</span>
+          <span>
+            {severityText(d.severity, ecb(d.severity), lang)}
+            <br />
+            <span className="ct-note" data-severity-counts>
+              {statuses.filter((s) => d.byStatus[s]).map((s) => `${pick(STATUS_NAME[s], lang)} ${formatNumber(d.byStatus[s], lang, { decimals: 0 })}`).join('; ')}
+            </span>
+          </span>
           <div
             role="img"
             aria-label={`${d.severity}: ${statuses.filter((s) => d.byStatus[s]).map((s) => `${pick(STATUS_NAME[s], lang)} ${d.byStatus[s]}`).join(', ') || '0'}`}
@@ -140,9 +147,7 @@ export function SeverityStatusBars({ rows }: { rows: FindingRow[] }) {
           >
             {statuses.map((s) =>
               d.byStatus[s] ? (
-                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-bg)', fontSize: 11, fontWeight: 600, minWidth: 0 }}>
-                  {formatNumber(d.byStatus[s], lang, { decimals: 0 })}
-                </span>
+                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], minWidth: 0 }} />
               ) : null,
             )}
           </div>
@@ -275,9 +280,18 @@ export function RegisterSection({ findings }: { findings: GovFindings }) {
 }
 
 /** The appetite metrics, drawn from the appetite document. */
-export function AppetiteSection({ appetite }: { appetite: GovAppetite }) {
+export function AppetiteSection({ appetite, registerRows }: { appetite: GovAppetite; registerRows?: number }) {
   const lang = useShellLang();
   const n = (v: number) => formatNumber(v, lang, { decimals: 0 });
+  // the appetite counts the register's rows and the inventory's own findings: say so when the register is at hand (VS-5)
+  const own = registerRows !== undefined ? appetite.population.findings - registerRows : 0;
+  const rows =
+    own > 0
+      ? {
+          en: `${n(appetite.population.findings)} finding rows: the ${n(registerRows ?? 0)} of the register and the ${n(own)} of the inventory itself`,
+          es: `${n(appetite.population.findings)} filas de hallazgos: las ${n(registerRows ?? 0)} del registro y las ${n(own)} del propio inventario`,
+        }
+      : { en: `${n(appetite.population.findings)} register rows`, es: `${n(appetite.population.findings)} filas del registro` };
   return (
     <>
       <h3 className="ct-sub">{pick({ en: 'The model risk appetite', es: 'El apetito de riesgo de modelo' }, lang)}</h3>
@@ -288,8 +302,8 @@ export function AppetiteSection({ appetite }: { appetite: GovAppetite }) {
       <p data-appetite-population>
         {pick(
           {
-            en: `${n(appetite.population.distinct_findings)} distinct findings (${n(appetite.population.findings)} register rows) across ${n(appetite.population.entries)} entries, ${n(appetite.population.tier1_entries)} of them Tier 1.`,
-            es: `${n(appetite.population.distinct_findings)} hallazgos distintos (${n(appetite.population.findings)} filas del registro) en ${n(appetite.population.entries)} entradas, ${n(appetite.population.tier1_entries)} de ellas de Nivel 1.`,
+            en: `${n(appetite.population.distinct_findings)} distinct findings (${rows.en}) across ${n(appetite.population.entries)} entries, ${n(appetite.population.tier1_entries)} of them Tier 1.`,
+            es: `${n(appetite.population.distinct_findings)} hallazgos distintos (${rows.es}) en ${n(appetite.population.entries)} entradas, ${n(appetite.population.tier1_entries)} de ellas de Nivel 1.`,
           },
           lang,
         )}
@@ -305,9 +319,15 @@ export function FindingsTab({ findings, appetite }: { findings: GovFindings; app
   return (
     <>
       <RegisterSection findings={findings} />
-      <AppetiteSection appetite={appetite} />
+      <AppetiteSection appetite={appetite} registerRows={findings.counts.total} />
     </>
   );
+}
+
+/** The appetite with the register's row count when the register was read; without it, the appetite's own count alone. */
+function AppetiteWithRegister({ appetite }: { appetite: GovAppetite }) {
+  const findings = useGovernance<GovFindings>(GOVERNANCE_FILES.findings);
+  return <AppetiteSection appetite={appetite} registerRows={findings.state === 'ready' ? findings.data.counts.total : undefined} />;
 }
 
 /** The tab: each document in its own declared state, so a missing appetite never hides the register. */
@@ -315,7 +335,7 @@ export function FindingsTabLoader() {
   return (
     <>
       <GovernanceDoc<GovFindings> file={GOVERNANCE_FILES.findings}>{(findings) => <RegisterSection findings={findings} />}</GovernanceDoc>
-      <GovernanceDoc<GovAppetite> file={GOVERNANCE_FILES.appetite}>{(appetite) => <AppetiteSection appetite={appetite} />}</GovernanceDoc>
+      <GovernanceDoc<GovAppetite> file={GOVERNANCE_FILES.appetite}>{(appetite) => <AppetiteWithRegister appetite={appetite} />}</GovernanceDoc>
     </>
   );
 }

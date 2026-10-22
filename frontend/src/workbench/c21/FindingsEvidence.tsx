@@ -3,7 +3,7 @@
 // fair.rate_spread_disparity row the coefficient in percentage points (the line at 0). Each value is the `metric` of the
 // document's row; a cited row the document lacks is listed as not available with its id. A finding that cites only a
 // design limit draws nothing. An approximation of comparative evidence, never a legal claim.
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { PlotCard, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import type { Finding, TestRow, VariantArtifact } from '../../lib/contract.types';
@@ -104,14 +104,14 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
           <p className="ct-note" data-state="unavailable">{pick({ en: 'No finding of this variant cites a controlled or rate-spread row.', es: 'Ningún hallazgo de esta variante cita una fila controlada o de diferencial de tasa.' }, lang)}</p>
         ) : null}
         {kinds.map((kind) => (
-          <div key={kind} data-evidence-chart={kind} data-reference-line={KIND_TEXT[kind].at} style={{ flex: '1 1 0', minHeight: '12rem', display: 'flex', flexDirection: 'column' }}>
+          <div key={kind} className="ct-stack-chart" data-evidence-chart={kind} data-reference-line={KIND_TEXT[kind].at} style={{ minHeight: '15rem', '--ct-chart-min': '15rem' } as CSSProperties}>
             <p className="ct-note">{pick(KIND_TEXT[kind].title, lang)}</p>
             <div style={{ flex: '1 1 0', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
               <EvidenceChart kind={kind} rows={rows.filter((r) => r.kind === kind)} findings={findings} lang={lang} />
             </div>
           </div>
         ))}
-        <div style={{ flex: '0 1 auto', maxHeight: '26%', overflow: 'auto', minHeight: 0 }}>
+        <div className="ct-stack-table">
           {kinds.length > 0 ? (
             <table className="caos-table ct-wrap-head" data-table="finding-evidence">
               <thead>

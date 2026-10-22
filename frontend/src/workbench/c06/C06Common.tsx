@@ -81,7 +81,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
           }
         >
         <div className="ct-scroll">
-          <table className="caos-table" data-table="findings">
+          <table className="caos-table ct-top" data-table="findings">
             <thead>
               <tr>
                 <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
@@ -95,6 +95,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
                   <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
                   <td className="ct-text">
                     {pick(f.title, lang)}
+                    <span className="ct-narrow-only">{pick({ en: 'Status: ', es: 'Estado: ' }, lang)}{pick(STATUS_TEXT[f.status], lang)}</span>
                     <ul className="ct-evidence">
                       {f.evidence.map((e) => (
                         <li key={e}>{e.startsWith('design:') ? `${pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}${e.slice(7)}` : e}</li>

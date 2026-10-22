@@ -5,7 +5,14 @@ import { SVG } from './index';
 
 function Inline({ svg, label }: { svg: string; label: string }) {
   const lang = useShellLang();
-  return <div className="ct-fig fig-svg wide" data-arch-lang={lang} role="img" aria-label={label} dangerouslySetInnerHTML={{ __html: svg }} />;
+  return (
+    <>
+      <p className="ct-fig-hint">{lang === 'es' ? 'Deslice hacia los lados para leer el diagrama a su tamaño.' : 'Scroll sideways to read the diagram at full size.'}</p>
+      <div className="ct-fig-scroll" tabIndex={0} role="group" aria-label={label}>
+        <div className="ct-fig fig-svg wide" data-arch-lang={lang} role="img" aria-label={label} dangerouslySetInnerHTML={{ __html: svg }} />
+      </div>
+    </>
+  );
 }
 
 export const OverviewFigure = () => <Inline svg={SVG.lanes} label="Contraste end to end" />;

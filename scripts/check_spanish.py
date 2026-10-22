@@ -4,7 +4,10 @@
 It reads, without evaluating anything:
   - the producers: the string constants of data-pipeline/pipeline/**/*.py (read with ast) and the strings of its JSON files;
   - the frontend: the strings of frontend/src/**/*.ts(x) (a small TypeScript tokenizer) and the text of its JSX;
-  - with --documents, the ``es`` values (and ``*_es`` values) of the committed JSON documents under data/derived/.
+  - with --documents, the ``es`` values (and ``*_es`` values) of the committed JSON documents under data/derived/, and every
+    bilingual object ``{en, es}`` whose ``es`` equals its ``en`` when the ``en`` has three words or more (U16-F1): a Spanish field
+    that copies the English. scripts/check_spanish_copies.txt lists the copies that are right (``path :: text  # reason``; a
+    line without a reason is a finding).
 Frontend tests and generated files (*.test.ts(x), *.gen.ts) are not scanned.
 
 A finding is (1) a word of scripts/check_spanish_words.txt written without its accent, in any text that is not an identifier,
@@ -293,6 +296,36 @@ def json_texts(obj, only_es: bool, in_es: bool = False):
         yield obj, in_es
 
 
+def copied_pairs(obj):
+    """The ``en`` text of every object with ``en`` and ``es`` strings that are equal, the ``en`` having three words or more."""
+    if isinstance(obj, dict):
+        en, es = obj.get("en"), obj.get("es")
+        if isinstance(en, str) and isinstance(es, str) and en.strip() == es.strip() and len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", en)) >= 3:
+            yield en
+        for v in obj.values():
+            yield from copied_pairs(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from copied_pairs(v)
+
+
+def load_copies(path: Path | None) -> tuple[dict[tuple[str, str], bool], list[str]]:
+    """The allowed copies ``(path, text) -> used`` and the lines that carry no reason."""
+    allow: dict[tuple[str, str], bool] = {}
+    bad: list[str] = []
+    if path and path.exists():
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            if not raw.strip() or raw.lstrip().startswith("#"):
+                continue
+            body, _, reason = raw.partition("  # ")
+            if not reason.strip() or "::" not in body:
+                bad.append(raw.strip())
+                continue
+            where, text = (part.strip() for part in body.split("::", 1))
+            allow[(where, text)] = False
+    return allow, bad
+
+
 def _line_of(lines: list[str], first: int, last: int, word: str) -> int:
     for no in range(first, min(last, len(lines)) + 1):
         if re.search(r"(?<![A-Za-zÀ-ÿ])" + re.escape(word) + r"(?![A-Za-zÀ-ÿ])", lines[no - 1]):
@@ -345,6 +378,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--documents", action="store_true", help="read the es values of data/derived instead of the code")
     ap.add_argument("--words", type=Path, default=HERE / "check_spanish_words.txt")
     ap.add_argument("--allow", type=Path, default=None, help="default: scripts/check_spanish_allow.txt under the root")
+    ap.add_argument("--copies", type=Path, default=None, help="default: scripts/check_spanish_copies.txt under the root")
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         try:
@@ -356,8 +390,20 @@ def main(argv: list[str] | None = None) -> int:
     args.allow = args.allow or root / "scripts" / "check_spanish_allow.txt"
     allow = load_allow(args.allow)
     findings = []
+    copies, no_reason = load_copies(args.copies or root / "scripts" / "check_spanish_copies.txt") if args.documents else ({}, [])
+    for line in no_reason:
+        findings.append(("scripts/check_spanish_copies.txt", 0, "a copy entry needs a reason after '  # '", line))
     for path in collect(root, args.documents, args.paths):
         rel = path.relative_to(root).as_posix()
+        if args.documents and path.suffix == ".json":
+            doc_lines = path.read_text(encoding="utf-8").splitlines()
+            for en in dict.fromkeys(copied_pairs(json.loads(path.read_text(encoding="utf-8")))):
+                if (rel, en) in copies:
+                    copies[(rel, en)] = True
+                    continue
+                first = en.splitlines()[0][:40]
+                at = next((n for n, ln in enumerate(doc_lines, 1) if first in ln), 1)
+                findings.append((rel, at, "es copies the English", f"translate: {en[:70]}"))
         for item in scan_file(path, rel, words, args.documents):
             key = (item[0], item[2].lower())
             if key in allow:
