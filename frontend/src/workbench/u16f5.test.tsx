@@ -1,7 +1,7 @@
 // U16-F5: the shared views and the pages, fix round 2. One describe per row or minor of the U16-R2 triage that this unit
 // owns; each fails on the defect the second capture review found, in both languages where the defect is a language one.
 import { CitationsProvider, useLangStore } from '@fasl-work/caos-app-shell';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
 import type { ReactElement } from 'react';
@@ -97,4 +97,55 @@ describe('PR-C04: the Experiments and Benchmark copy of C04 in Spanish carries t
       expect(plain(page(el, 'en'))).toContain('Source: ESMA CEREP; tables transformed by Contraste');
     });
   }
+});
+
+describe('b11 m1: Spanish never renders git "commit" as "comprometer"', () => {
+  const dirs = ['../pages/', '../pages/methodology/', '../architecture/'];
+  const files = dirs.flatMap((d) => readdirSync(here(d)).filter((f) => /\.(tsx|ts|svg)$/.test(f) && !/\.test\./.test(f)).map((f) => `${d}${f}`));
+  const COMMIT_SENSE = /artefactos? comprometid|muestras? comprometid|umbrales comprometid|documentos? comprometid|política comprometida|compromete el pipeline|pipeline compromete|pipeline comprometió|puede(?:n)? comprometerse|se compromete|Compromiso:|manifiesto de licencias comprometido|\(comprometido\)/;
+  it('reads the files of the pages and the figures', () => expect(files.length).toBeGreaterThan(20));
+  for (const f of files) {
+    it(`${f.replace('../', '')} uses versionar for what the pipeline commits`, () => {
+      expect(COMMIT_SENSE.exec(text(f))?.[0] ?? null).toBeNull();
+    });
+  }
+});
+
+describe('b11 m2 and m3, b12 m3, b13 m3: a box that scrolls sideways at a phone shows a cue', () => {
+  const narrow = media('max-width', 900);
+  for (const sel of ['.prose table', '.equation', '.ct-fig-scroll']) {
+    it(`${sel} fades its right edge and keeps a gap after its last column`, () => {
+      const rules = (narrow.match(new RegExp(`${sel.replace('.', '\.').replace('.', '\.')}[^{}]*\{[^}]*\}`, 'g')) ?? []).join('\n');
+      expect(rules).toMatch(/mask-image:\s*linear-gradient\(to right/);
+      expect(rules).toMatch(/padding-right:/);
+    });
+  }
+});
+
+describe('b11 m4 and m5: no negative zero, one p-value format on the pages', () => {
+  it('num rounds a tiny negative to an unsigned zero, in both languages', async () => {
+    const { num, pct } = await import('../pages/U6Sections');
+    for (const lang of ['en', 'es'] as const) {
+      expect(num(-2.95e-5, lang, 4)).toBe(lang === 'en' ? '0.0000' : '0,0000');
+      expect(num(-0.0004, lang, 3)).toBe(lang === 'en' ? '0.000' : '0,000');
+      expect(num(-0.0016, lang, 3)).toMatch(/^-0[.,]002$/);
+      expect(pct(-0.000245, lang, 1)).not.toContain('-');
+      expect(pct(-0.0261, lang, 1)).toContain('-');
+    }
+  });
+  it('pval keeps three significant digits where num with three decimals printed 0.000', async () => {
+    const { pval, num } = await import('../pages/U6Sections');
+    expect(num(1.0e-91, 'en', 3)).toBe('0.000');
+    expect(pval(1.0e-91, 'en')).not.toBe('0.000');
+    expect(pval(0.314, 'en')).toBe('0.314');
+    expect(pval(0.314, 'es')).toBe('0,314');
+  });
+  it('the C02 and C11 page rows read their p-values through pval', () => {
+    expect(text('../pages/Batch3Sections.tsx')).toMatch(/pval\(r\.calibration\.hosmer_lemeshow\.p_value/);
+    expect(text('../pages/Batch3Sections.tsx')).toMatch(/pval\(pair\.delong_p_value/);
+    expect(text('../pages/Wave2Sections.tsx')).toMatch(/pval\(dm\.p_value/);
+  });
+  it('the Benchmark difference to P1 goes through num', () => {
+    expect(text('../pages/Benchmark.tsx')).toMatch(/num\(r\.auc !== null && champ\?\.auc != null \? r\.auc - champ\.auc : null, lang, 4\)/);
+  });
 });

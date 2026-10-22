@@ -12,7 +12,7 @@ import { CHAMPION, extra, test, value } from '../workbench/model';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
-import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
+import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES, num } from './U6Sections';
 import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
 import { B3BenchmarkSection, B3_BENCHMARK_CASES } from './Batch3Sections';
 
@@ -71,7 +71,7 @@ function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
               </td>
               <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
               <td>{r.lo !== null && r.hi !== null ? `${formatNumber(r.lo, lang, { decimals: 4 })} - ${formatNumber(r.hi, lang, { decimals: 4 })}` : ''}</td>
-              <td>{r.m.id === CHAMPION ? '' : formatNumber(r.auc !== null && champ?.auc != null ? r.auc - champ.auc : null, lang, { decimals: 4 })}</td>
+              <td>{r.m.id === CHAMPION ? '' : num(r.auc !== null && champ?.auc != null ? r.auc - champ.auc : null, lang, 4)}</td>
               <td>{r.dl ? formatNumber(r.dl.p_value, lang, { digits: 3 }) : ''}</td>
               <td>{formatNumber(r.brier, lang, { decimals: 4 })}</td>
               <td>{formatNumber(r.jef?.p_value ?? null, lang, { digits: 3 })}</td>
@@ -271,7 +271,7 @@ export function Benchmark() {
           floor: 'live',
           reason: {
             en: 'The Benchmark replays committed artifacts. The live inference on held-out data is the App workbench, in its Impact group, where the reader moves the controls.',
-            es: 'El Benchmark reproduce artefactos comprometidos. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
+            es: 'El Benchmark reproduce artefactos versionados. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
           },
         },
       ]}
@@ -288,7 +288,7 @@ export function Benchmark() {
             key={m.case_id}
             area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
             title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
-            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
+            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}
           >
             {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : B3_BENCHMARK_CASES.has(m.case_id) ? <B3BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
@@ -299,7 +299,7 @@ export function Benchmark() {
         </DocSection>
       )}
       {all.state === 'ready' && comparable.length > 0 && (
-        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
+        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos versionados.' }}>
           {comparable.map((m) => (
             <Robustness key={m.case_id} manifest={m} />
           ))}

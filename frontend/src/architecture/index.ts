@@ -60,7 +60,7 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'Every source carries its licence class; the fetcher hashes every file into the licence manifest; contract 1 decides what may enter, record by record; contract 2 is what the pipeline commits, and its export refuses any artifact whose lineage includes a source that may only be linked.',
       body_es:
-        'Cada fuente lleva su clase de licencia; el descargador registra el hash de cada archivo en el manifiesto de licencias; el contrato 1 decide lo que puede entrar, registro por registro; el contrato 2 es lo que el pipeline compromete, y su exportación rechaza todo artefacto cuyo linaje incluya una fuente que solo puede enlazarse.',
+        'Cada fuente lleva su clase de licencia; el descargador registra el hash de cada archivo en el manifiesto de licencias; el contrato 1 decide lo que puede entrar, registro por registro; el contrato 2 es lo que el pipeline versiona, y su exportación rechaza todo artefacto cuyo linaje incluya una fuente que solo puede enlazarse.',
     },
   ],
 };

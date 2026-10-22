@@ -143,6 +143,14 @@
 @media (max-width: 900px) {
   .ct-stack[data-block="finding-evidence"] .ct-stack-chart { height: 28rem; }
 }
+/* a table or an equation of the documentation that scrolls sideways on a phone shows it (U16-R2 b11 m2 and m3, b12 m3, b13 m3): the
+   right edge fades and the box keeps a gap after its last column, so scrolled to the end the last column is whole */
+@media (max-width: 900px) {
+  .prose table, .equation, .ct-fig-scroll {
+    padding-right: 1.5rem;
+    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  }
+}
 /* a diagram of the documentation is drawn 900 px wide: on a phone it keeps its native size in a box that scrolls sideways
    (focusable, so a keyboard reaches it), with the hint above, instead of shrinking its labels to about 4 px */
 .ct-fig-hint { display: none; }
