@@ -152,10 +152,13 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
-function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
+/** A rung by its short title, the one label source of the Benchmark (U16-R2 b11 m6: "beta Beta regression" doubled the code). */
+export function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
   const m = v.model.find((x) => x.id === id);
-  return m ? `${m.rung ? `${m.rung} ` : ''}${pick(m.title, lang)}` : id;
+  return m ? pick(m.short_title ?? m.title, lang) : (ABSENT_RUNG[id] ? pick(ABSENT_RUNG[id], lang) : id);
 }
+/** A rung the document declares absent has no model record, so no short title: its name is here (the identifier stays the same in both languages). */
+const ABSENT_RUNG: Record<string, { en: string; es: string }> = { 'P5-tabpfn': { en: 'P5 TabPFN', es: 'P5 TabPFN' } };
 
 /** The Benchmark section of a case: its rungs compared with its own metrics, one table per variant. */
 export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
