@@ -82,7 +82,7 @@ OVERLAP_CAVEAT = t(
 TRANSFER_REASON = t(
     "A rung fitted on the training slice of one file and scored on the holdout of another. The firm overlap across the files is unknown, "
     "so a transfer AUC may be inflated by firms that repeat; the block is exploratory and no out-of-time claim is made.",
-    "Un escalón ajustado en el tramo de entrenamiento de un archivo y puntuado en la muestra reservada de otro. El traslape de empresas "
+    "Un peldaño ajustado en el tramo de entrenamiento de un archivo y puntuado en la muestra reservada de otro. El traslape de empresas "
     "entre archivos se desconoce, de modo que el AUC de traslado puede estar inflado por empresas repetidas; el bloque es exploratorio y "
     "no se afirma nada fuera del tiempo.")
 TERM_STRUCTURE_REASON = t(

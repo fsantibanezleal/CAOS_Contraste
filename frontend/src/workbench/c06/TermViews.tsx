@@ -2,7 +2,7 @@
 // selected account, the SICR scatter with the multiplier, floor and threefold lines, and the non-linearity panel.
 // Each draws what the c06-outputs document carries; the lines of the SICR rule are drawn from the document's own
 // `settings.sicr`, never from constants of this file.
-import { PlotCard, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { provenanceOf, REPLAY } from '../model';
 import { Pending } from '../Pending';
@@ -71,7 +71,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
         dataKey={stateKey}
         note={{
           en: 'h(t) is the conditional PD of a period given survival, q(t) = S(t-1) h(t) its unconditional (marginal) PD and F(t) the sum of q: the document names both. The weighted curve is the probability-weighted PD; the dashed pair is the selected account, its origination curve against the current one over the same remaining window.',
-          es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par segmentado es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
+          es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par discontinuo es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
         }}
       >
         <ChartOverTable chartMin="18rem"
@@ -145,11 +145,13 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
   const grid = sicrGrid(o);
   const stages = ['stage1', 'stage2', 'stage3', 'poci'] as const;
   const used = stages.filter((st) => o.sicr_points.some((p) => p.stage === st));
+  // a PD above 100% cannot be reached: a line of the rule is drawn only where it can be crossed, so the axis does not run to 1,000%
+  const reachable = (v: number): number | null => (v > 1 ? null : v);
   const series = [
     { label: { en: 'No change (current = origination)', es: 'Sin cambio (actual = originación)' }, values: grid.map((x) => x), color: '--color-fg-faint' as ShellColorToken, width: 1, dash: [2, 4] },
-    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => multiplierAt(o, x) * x), color: '--color-warn' as ShellColorToken, width: 1.8 },
-    { label: { en: 'Absolute floor', es: 'Piso absoluto' }, values: grid.map((x) => x + s.absolute_floor), color: '--color-magenta' as ShellColorToken, width: 1.4, dash: [6, 3] },
-    { label: { en: `Threefold backstop (x${s.threefold_ratio})`, es: `Respaldo del triple (x${s.threefold_ratio})` }, values: grid.map((x) => s.threefold_ratio * x), color: '--color-bad' as ShellColorToken, width: 1.8, dash: [8, 3] },
+    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => reachable(multiplierAt(o, x) * x)), color: '--color-warn' as ShellColorToken, width: 1.8 },
+    { label: { en: 'Absolute floor', es: 'Piso absoluto' }, values: grid.map((x) => reachable(x + s.absolute_floor)), color: '--color-magenta' as ShellColorToken, width: 1.4, dash: [6, 3] },
+    { label: { en: `Threefold backstop (x${s.threefold_ratio})`, es: `Respaldo del triple (x${s.threefold_ratio})` }, values: grid.map((x) => reachable(s.threefold_ratio * x)), color: '--color-bad' as ShellColorToken, width: 1.8, dash: [8, 3] },
     ...used.map((st) => ({
       label: STAGE_TEXT[st],
       values: grid.map((x) => {
@@ -188,11 +190,11 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
           <ul className="ct-evidence" data-table="sicr-rule">
             {s.multiplier_schedule.map((m) => (
               <li key={m.pd_origination_upper} data-multiplier={m.multiplier}>
-                {pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}: the PD must reach ${m.multiplier} times`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}: la PD debe llegar a ${m.multiplier} veces` }, lang)}
+                {pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}: the PD must reach ${formatNumber(m.multiplier, 'en', { decimals: 1 })} times`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}: la PD debe llegar a ${formatNumber(m.multiplier, 'es', { decimals: 1 })} veces` }, lang)}
               </li>
             ))}
             <li data-floor={s.absolute_floor}>{pick({ en: `and rise by at least ${pct(s.absolute_floor, 'en', 2)} in absolute terms`, es: `y subir al menos ${pct(s.absolute_floor, 'es', 2)} en términos absolutos` }, lang)}</li>
-            <li data-threefold={s.threefold_ratio}>{pick({ en: `or reach ${s.threefold_ratio} times the origination PD (backstop)`, es: `o llegar a ${s.threefold_ratio} veces la PD de originación (respaldo)` }, lang)}</li>
+            <li data-threefold={s.threefold_ratio}>{pick({ en: `or reach ${formatNumber(s.threefold_ratio, 'en', { decimals: 1 })} times the origination PD (backstop)`, es: `o llegar a ${formatNumber(s.threefold_ratio, 'es', { decimals: 1 })} veces la PD de originación (respaldo)` }, lang)}</li>
             <li data-dpd={s.dpd_backstop}>{pick({ en: `${s.dpd_backstop} days past due (presumption) and ${s.default_dpd} (default)`, es: `${s.dpd_backstop} días de mora (presunción) y ${s.default_dpd} (incumplimiento)` }, lang)}</li>
             <li data-lcr={String(s.low_credit_risk_pd)}>
               {s.low_credit_risk_pd === null
@@ -252,8 +254,8 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
   const rows: Array<{ id: string; label: BiText; value: number; format: (v: number) => string }> = [
     { id: 'pd-weighted', label: { en: 'Weighted PD, E[PD(z)]', es: 'PD ponderada, E[PD(z)]' }, value: n.pd_weighted, format: (v) => pct(v, lang, 3) },
     { id: 'pd-at-mean', label: { en: 'PD at the weighted-average factor', es: 'PD en el factor promedio ponderado' }, value: n.pd_at_mean_z, format: (v) => pct(v, lang, 3) },
-    { id: 'ecl-weighted', label: { en: 'ECL, weighted scenarios', es: 'PCE, escenarios ponderados' }, value: n.ecl_weighted, format: (v) => money(v, lang, n.currency) },
-    { id: 'ecl-mean', label: { en: 'ECL at the mean path', es: 'PCE en la trayectoria media' }, value: n.ecl_at_mean_path, format: (v) => money(v, lang, n.currency) },
+    { id: 'ecl-weighted', label: { en: `ECL, weighted scenarios (${n.currency})`, es: `PCE, escenarios ponderados (${n.currency})` }, value: n.ecl_weighted, format: (v) => money(v, lang, n.currency) },
+    { id: 'ecl-mean', label: { en: `ECL at the mean path (${n.currency})`, es: `PCE en la trayectoria media (${n.currency})` }, value: n.ecl_at_mean_path, format: (v) => money(v, lang, n.currency) },
     { id: 'index', label: { en: 'Non-linearity index, ECL weighted / ECL at the mean path - 1', es: 'Índice de no linealidad, PCE ponderada / PCE en la trayectoria media - 1' }, value: n.index, format: (v) => pct(v, lang, 2) },
   ];
   return (
@@ -305,7 +307,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
               {n.scenario_points.map((p) => (
                 <tr key={p.scenario_id} data-scenario={p.scenario_id}>
                   <td className="ct-text">{pick(o.scenarios.find((s) => s.id === p.scenario_id)?.label ?? { en: p.scenario_id, es: p.scenario_id }, lang)}</td>
-                  <td>{pick({ en: String(p.z), es: String(p.z).replace('.', ',') }, lang)}</td>
+                  <td>{formatNumber(p.z, lang, { decimals: 2 })}</td>
                   <td>{pct(p.weight, lang, 0)}</td>
                   <td>{pct(p.pd_pit, lang, 3)}</td>
                 </tr>

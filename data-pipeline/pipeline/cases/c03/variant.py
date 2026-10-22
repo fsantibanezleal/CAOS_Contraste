@@ -86,7 +86,7 @@ def training_block(cohort: windows.Cohort, wf: WindowFit, crisis: int) -> dict[s
           f"{tx.number(wf.n_events, lang='en')} charge-offs; the rungs were fitted on a stratified sample of {tx.number(wf.fit_rows, lang='en')} of them. ")
     es = (f"Años fiscales de aprobación AF{w.first_fy} a AF{w.last_fy}: la marca de 5 años de AF{w.last_fy} cierra el {mark}, antes de la "
           f"primera aprobación de AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} el {cohort.first_fy - 1}-10-01. {tx.number(wf.n_loans, lang='es')} créditos "
-          f"con resultado a 5 años conocido y {tx.number(wf.n_events, lang='es')} castigos; los escalones se ajustaron con una muestra estratificada de "
+          f"con resultado a 5 años conocido y {tx.number(wf.n_events, lang='es')} castigos; los peldaños se ajustaron con una muestra estratificada de "
           f"{tx.number(wf.fit_rows, lang='es')} de ellos. ")
     if crisis > 0:
         en += (f"The window holds {tx.number(crisis, lang='en')} charge-offs dated in the recession ({CRISIS_TEXT[0]}): the model is trained through "
@@ -136,11 +136,11 @@ def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort
             tag = "".join(w[0] for w in family.split()).upper()
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": sorted({f"{r['test_id']}@{rung}" for r in hit}),
                         "title": t(f"{rung}: {family} tests flag the {cohort.name} cohort ({names})",
-                                   f"{rung}: las pruebas de {family_es} alertan en la cohorte {cohort.name} ({names})")})
+                                   f"{rung}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} ({names})")})
     if crisis == 0:
         out.append({"id": "F-CRISIS", "severity": "S2", "status": "open", "evidence": ["design:training-window-before-the-crisis"],
                     "title": t("The window closes before the 2007-09 recession: the rungs have seen no crisis outcome",
-                               "La ventana cierra antes de la recesión de 2007-09: los escalones no han visto ningún resultado de la crisis")})
+                               "La ventana cierra antes de la recesión de 2007-09: los peldaños no han visto ningún resultado de la crisis")})
     out.append({"id": "F-DATA", "severity": "S3", "status": "accepted", "evidence": ["design:sba-7a-is-not-a-bank-book"],
                 "title": t("SBA 7(a) small-business loans under a federal guarantee, not a bank's SME book; no delinquency, balance or rating",
                            "Créditos a pequeñas empresas SBA 7(a) bajo garantía federal, no la cartera pyme de un banco; sin mora, saldo ni calificación")})

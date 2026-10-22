@@ -439,7 +439,7 @@ export function TestsView({ sel }: { sel: C04Sel | null }) {
         under.length
           ? {
               en: `Dashed: ${yearList(under, 'en')}, p below 1E-300, the smallest number the engine represents.`,
-              es: `${under.length > 1 ? 'Segmentadas' : 'Segmentada'}: ${yearList(under, 'es')}, p bajo 1E-300, el menor número que el motor representa.`,
+              es: `${under.length > 1 ? 'Discontinuas' : 'Discontinua'}: ${yearList(under, 'es')}, p bajo 1E-300, el menor número que el motor representa.`,
             }
           : NONE,
         credit(o),
@@ -637,7 +637,7 @@ export function MobilityView({ sel }: { sel: C04Sel | null }) {
                   en: `Each annual cohort's own matrix, withdrawals removed: Jafry and Schuermann's M_SVD (the mean singular value of P - I) and the trace index (n - tr P)/(n - 1), both 0 when nobody moves; beside them the speculative-grade default rate (BB, B and CCC-C pooled, ${pick(label, 'en')}) as a share of the cohort on the same axis (0.10 is 10%).`,
                   es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10%).`,
                 },
-                stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Segmentadas: los años de tensión ${stress('es')}.` } : NONE,
+                stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Discontinuas: los años de tensión ${stress('es')}.` } : NONE,
                 credit(o, true),
               )
             : join({ en: 'No cohort has an index or a default rate to draw: the table gives what the artifact holds.', es: 'Ninguna cohorte tiene un índice ni una tasa de incumplimiento que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))
@@ -821,7 +821,7 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       en: "Each year with both semesters published: the L1 distance (the absolute differences summed over the 8 x 8 cells, at most 2 a row) between the product of the two semester matrices and the year's own matrix, withdrawals removed in all three. A Markov chain makes them agree up to sampling error (Chapman-Kolmogorov); the second semester's cohort also holds the ratings issued in the first.",
       es: 'Cada año con ambos semestres publicados: la distancia L1 (las diferencias absolutas sumadas sobre las 8 x 8 celdas, a lo más 2 por fila) entre el producto de las dos matrices semestrales y la matriz propia del año, sin retiros en las tres. Una cadena de Markov las hace coincidir salvo error muestral (Chapman-Kolmogorov); la cohorte del segundo semestre también tiene las calificaciones emitidas en el primero.',
     },
-    marksText('en') ? { en: `Dashed: ${marksText('en')}.`, es: `Segmentadas: ${marksText('es')}.` } : NONE,
+    marksText('en') ? { en: `Dashed: ${marksText('en')}.`, es: `Discontinuas: ${marksText('es')}.` } : NONE,
     credit(o),
   );
   const empty = built.emptyYears.length

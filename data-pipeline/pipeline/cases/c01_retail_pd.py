@@ -263,6 +263,8 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
     """Findings from the battery under the case's severity policy (SEVERITY), for the champion and the challenger;
     the design limits and the data-quality flags are S3 and S4."""
     out: list[dict[str, Any]] = []
+    # the variant is named, never printed as its id (U16-R2 b01 m8: 'la población holdout')
+    vtitle = next(v["title"] for v in VARIANTS if v["id"] == variant)
     for rung in (CHAMPION, CHALLENGER if CHALLENGER in fit.rungs else "P5-tabpfn"):
         for family, ids, on_red, on_amber in SEVERITY:
             hit = [r for r in rows if r["model_id"] == rung and r["test_id"] in ids and r["light"] in ("red", "amber")
@@ -274,8 +276,8 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
             names = ", ".join(sorted({r["test_id"] for r in hit}))
             tag = "".join(w[0] for w in family.split()).upper()
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": ev,
-                        "title": _t(f"{rung}: {family} tests flag the {variant} population ({names})",
-                                    f"{rung}: las pruebas de {_ES[family]} alertan en la población {variant} ({names})")})
+                        "title": _t(f"{rung}: {family} tests flag the variant \"{vtitle['en']}\" ({names})",
+                                    f"{rung}: las pruebas de {_ES[family]} alertan en la variante «{vtitle['es']}» ({names})")})
     out.append({"id": "F-OOT", "severity": "S3", "status": "accepted", "evidence": ["design:single-snapshot"],
                 "title": _t("No out-of-time validation is possible: the data is a single snapshot",
                             "No es posible validar fuera del tiempo: los datos son una sola foto")})
@@ -467,7 +469,7 @@ def _irb_facts(cls: str, full: np.ndarray | None) -> dict[str, Any]:
         "lgd_floor_source": "BCBS d424, IRB paragraph 121 and its table (CRE32.58 to CRE32.59)",
         "transactor_source": "BCBS d424, standardised paragraph 56 and IRB paragraph 25; CRR3 Article 4(1)(152)",
         "ead": _t("the current bill (BILL_AMT1, floored at 0), the drawn balance only",
-                  "la cuenta actual (BILL_AMT1, con piso 0), solo el saldo utilizado") if cards else
+                  "el saldo facturado actual (BILL_AMT1, con piso 0), solo el saldo utilizado") if cards else
                _t("the credit amount", "el monto del crédito"),
     }
 

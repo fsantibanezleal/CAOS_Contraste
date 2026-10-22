@@ -612,6 +612,8 @@ export interface components {
             outputs: components["schemas"]["c03Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         c03Calibration: {
             rung_id: string;
@@ -1579,6 +1581,8 @@ export interface components {
             /** @constant */
             case_id: "C06";
             outputs: components["schemas"]["c06Outputs"];
+        } & {
+            tests?: unknown;
         };
         /** @description The SICR view's pair of curves for a sampled account: the origination forward curve against the current one over the same remaining window. */
         c06AccountCurve: {
@@ -1984,6 +1988,8 @@ export interface components {
             /** @constant */
             case_id: "C07";
             outputs: components["schemas"]["c07Outputs"];
+        } & {
+            tests?: unknown;
         };
         c07B1Detail: {
             /** @description ISO 4217 code of the money fields of this block. */
@@ -2338,6 +2344,8 @@ export interface components {
             /** @constant */
             case_id: "C08";
             outputs: components["schemas"]["c08Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };
@@ -2872,6 +2880,8 @@ export interface components {
             outputs: components["schemas"]["c09Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /** @description One model in one utilisation band. A utilisation-change prediction is not clipped: prediction_flag is outside-range when any facility of the band has an unclipped prediction below 0 or above its limit (api predict_ead). */
         c09BacktestRow: {
@@ -3150,6 +3160,8 @@ export interface components {
             };
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /**
          * C10 loan-type variant
@@ -3165,6 +3177,8 @@ export interface components {
                 truth_status?: "real-outcomes";
                 inputs?: unknown;
             };
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };
@@ -3865,6 +3879,8 @@ export interface components {
             outputs: components["schemas"]["c11Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /** @description The champion at a level: the lowest average FZ0 among the eligible models with a score; null, with its reason, when there is none. */
         c11Champion: {
@@ -4444,6 +4460,8 @@ export interface components {
             /** @constant */
             case_id: "C12";
             outputs: components["schemas"]["c12Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         } & {
@@ -5162,6 +5180,8 @@ export interface components {
             /** @constant */
             case_id: "C13";
             outputs: components["schemas"]["c13Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };

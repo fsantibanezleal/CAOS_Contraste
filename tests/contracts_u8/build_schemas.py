@@ -180,6 +180,10 @@ NOT_EVALUATED_RULE = {
                                 "notes": {"type": "string", "minLength": 1}}},
     }}},
 }
+REFERENCE_TEXT_RULE = {
+    "properties": {"tests": {"items": {"properties": {"extras": {"properties": {
+        "reference_text": {"$ref": "../common/text.schema.json"}}}}}}},
+}
 
 
 def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: str, defs: dict) -> None:
@@ -194,6 +198,7 @@ def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: 
                             "outputs": {"$ref": f"#/$defs/{root}", "properties": {"kind": {"const": kind}}}},
              "required": ["case_id", "outputs"]},
             NOT_EVALUATED_RULE,
+            *([REFERENCE_TEXT_RULE] if case == "C11" else []),
         ],
         "unevaluatedProperties": False,
         "$defs": reachable(root, defs),

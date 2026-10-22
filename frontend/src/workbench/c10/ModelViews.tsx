@@ -9,7 +9,7 @@ import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { IllustrativeNotice } from './C10Common';
 import { noteText } from '../c08/notes';
-import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, measureText, outputsOf, rungOf, text, type C10Sel } from './selection';
+import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, measureText, outputsOf, referenceNote, rungOf, text, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -62,9 +62,9 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{`${r.rung}: ${pick(r.label, lang)}`}</td>
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
-                  <td className="ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? formatNumber(null, lang) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
+                  <td className="ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? (ran(r.id, r.n_scenarios).why ? pick(ran(r.id, r.n_scenarios).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
-                  <td className="ct-text">{r.reference}</td>
+                  <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   <td className="ct-text ct-wide-only">{r.parameters.map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
@@ -203,7 +203,7 @@ export function EstimatorsView({ sel }: { sel: C10Sel | null }) {
                 <td className="ct-text">{pick(text(ESTIMATOR_TEXT, e.id), lang)}</td>
                 <td className="ct-text">{pick(text(INTERVAL_TEXT, e.interval_method), lang)}</td>
                 <td className="ct-text" translate="no"><code>{e.engine_function}</code></td>
-                <td className="ct-text ct-wide-only">{e.reference}</td>
+                <td className="ct-text ct-wide-only">{referenceNote(e.reference, lang)}</td>
               </tr>
             ))}
           </tbody>

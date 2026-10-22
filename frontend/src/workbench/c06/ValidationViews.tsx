@@ -8,7 +8,8 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLabel, unionX } from './format';
-import { cohortText, fitOf, movementText, outputsOf, type C06Sel } from './selection';
+import { referenceText } from '../c03/U6Shared';
+import { cohortText, fitOf, ifrs9TestText, movementText, outputsOf, type C06Sel } from './selection';
 
 // seven cohorts are seven curves: seven distinct colour tokens (the predicted line of each stays dashed)
 const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle', '--color-fg'];
@@ -203,6 +204,8 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
   const d = o.decile_calibration;
   const cohort = d.rows.find((r) => r.origination_cohort === 'all')?.origination_cohort ?? d.rows[0]?.origination_cohort;
   const mine = d.rows.filter((r) => r.origination_cohort === cohort);
+  // a Cohort column that holds one value in every row says nothing: the cohort is in the title of the drawing
+  const oneCohort = new Set(d.rows.map((r) => r.origination_cohort)).size === 1;
   const deciles = unionX(mine.map((r) => r.decile));
   const horizons = [...new Set(mine.map((r) => r.months))].sort((a, b) => a - b);
   const series = horizons.flatMap((h, i) => {
@@ -213,7 +216,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
     ];
   });
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{ en: `Calibration by risk decile, rung ${d.rung_id}${cohort ? `, cohort ${cohortText(cohort).en}` : ''}`, es: `Calibración por decil de riesgo, peldaño ${d.rung_id}${cohort ? `, cohorte ${cohortText(cohort).es}` : ''}` }}
@@ -234,7 +237,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
           <table className="caos-table ct-wrap-head" data-table="decile-calibration">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Cohort', es: 'Cohorte' }, lang)}</th>
+                {oneCohort ? null : <th className="ct-text">{pick({ en: 'Cohort', es: 'Cohorte' }, lang)}</th>}
                 <th>{pick({ en: 'Months', es: 'Meses' }, lang)}</th>
                 <th>{pick({ en: 'Decile', es: 'Decil' }, lang)}</th>
                 <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
@@ -245,7 +248,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {d.rows.map((r) => (
                 <tr key={`${r.origination_cohort}-${r.months}-${r.decile}`} data-cohort={r.origination_cohort} data-months={r.months} data-decile={r.decile}>
-                  <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>
+                  {oneCohort ? null : <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>}
                   <td>{r.months}</td>
                   <td>{r.decile}</td>
                   <td>{formatNumber(r.n, lang, { decimals: 0 })}</td>
@@ -435,7 +438,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
               <tr>
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
-                <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
+                <th>{pick({ en: 'Statistic or metric', es: 'Estadístico o métrica' }, lang)}</th>
                 <th>p</th>
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'Reference', es: 'Referencia' }, lang)}</th>
@@ -445,16 +448,16 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
               {rows.map((t, i) => (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
-                    {t.test_id}
+                    <span title={t.test_id}>{pick(ifrs9TestText(t.test_id), lang)}</span>
                     {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentLabel(t.segment), lang)}</span> : null}
                   </td>
                   <td className="ct-text">{t.model_id ?? '-'}</td>
-                  <td>{formatNumber(t.statistic, lang, { digits: 4 })}</td>
+                  <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <td>{t.p_value === null ? formatNumber(null, lang) : formatNumber(t.p_value, lang, { digits: 2 })}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text ct-wide-only">{t.reference}</td>
+                  <td className="ct-text ct-wide-only">{referenceText(t, lang)}</td>
                 </tr>
               ))}
             </tbody>

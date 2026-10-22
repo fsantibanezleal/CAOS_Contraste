@@ -524,6 +524,9 @@ def main() -> None:
     path = SCHEMAS / "c12" / "variant-swap-exposure.schema.json"
     doc = json.loads(path.read_text(encoding="utf-8"))
     doc["allOf"].append({"properties": {"tests": {"items": {"properties": {"test_id": {"pattern": r"^ccr\."}}}}}})
+    # the Spanish of each test's reference (U16-F6), typed in the row's open extras
+    doc["allOf"].append({"properties": {"tests": {"items": {"properties": {"extras": {"properties": {
+        "reference_text": {"$ref": "../common/text.schema.json"}}}}}}}})
     path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     m = c12_models()
     U.models_schema("C12", "C12 models (HW1F calibration per backtest date)",

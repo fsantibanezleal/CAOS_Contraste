@@ -8,6 +8,7 @@ import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/char
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { span } from './selection';
 import { UnavailableCard } from '../c14/C14Common';
 import { ParamTable, U14TestsTable, barMin, f2, f3, f4, int, pc, sig, testsOf, type NamedParam } from '../c20/U14Common';
 import { challengerFor, outputsOf, rungFor, rungName, type C02Sel } from './selection';
@@ -72,7 +73,7 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
                 <tr key={r.model_id} data-rung={r.model_id} className={r.model_id === rungFor(sel)?.model_id ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(rungName(sel, r.model_id), lang)}</td>
                   <td>{f3(r.discrimination.auc, lang)}</td>
-                  <td>{`${f3(r.discrimination.auc_ci.lo, lang)} - ${f3(r.discrimination.auc_ci.hi, lang)}`}</td>
+                  <td>{span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang)}</td>
                   <td>{f3(r.discrimination.gini, lang)}</td>
                   <td>{f3(r.discrimination.ks, lang)}</td>
                 </tr>
@@ -111,8 +112,8 @@ export function RungsView({ sel }: { sel: C02Sel | null }) {
         title={{ en: 'Do the learned rungs beat the champion?', es: '¿Superan los peldaños aprendidos al campeón?' }}
         {...card}
         note={{
-          en: 'The bars are the AUC of every rung. The table gives each challenger minus the champion: the AUC difference with its 95% DeLong interval and p-value (an interval that holds zero is no evidence of a gain), the Brier difference with its paired-bootstrap interval, and the share of firms whose grade moves by two notches or more.',
-          es: 'Las barras son el AUC de cada peldaño. La tabla da cada retador menos el campeón: la diferencia de AUC con su intervalo DeLong de 95% y su valor p (un intervalo que contiene el cero no es evidencia de una ganancia), la diferencia de Brier con su intervalo bootstrap pareado, y la parte de empresas cuyo grado se mueve dos escalones o más.',
+          en: 'The bars are the AUC of every rung. The table gives each challenger minus the champion: the AUC difference with its 95% DeLong interval and p-value (an interval that holds zero is no evidence of a gain), the Brier difference with its paired-bootstrap interval, and the share of firms whose grade moves by two grades or more.',
+          es: 'Las barras son el AUC de cada peldaño. La tabla da cada retador menos el campeón: la diferencia de AUC con su intervalo DeLong de 95% y su valor p (un intervalo que contiene el cero no es evidencia de una ganancia), la diferencia de Brier con su intervalo bootstrap pareado, y la parte de empresas cuyo grado se mueve dos grados o más.',
         }}
       >
         <ChartOverTable
@@ -144,10 +145,10 @@ export function RungsView({ sel }: { sel: C02Sel | null }) {
                 <tr key={`${c.champion}-${c.challenger}`} data-champion={c.champion} data-challenger={c.challenger} className={c.challenger === focus?.challenger ? 'ct-current' : undefined}>
                   <td className="ct-text">{`${pick(rungName(sel, c.challenger), lang)} ${pick({ en: 'against', es: 'contra' }, lang)} ${pick(rungName(sel, c.champion), lang)}`}</td>
                   <td>{f3(c.auc_diff, lang)}</td>
-                  <td>{`${f3(c.auc_diff_ci.lo, lang)} - ${f3(c.auc_diff_ci.hi, lang)}`}</td>
+                  <td>{span(f3(c.auc_diff_ci.lo, lang), f3(c.auc_diff_ci.hi, lang), lang)}</td>
                   <td>{sig(c.delong_p_value, lang)}</td>
                   <td className="ct-wide-only">{f4(c.brier_diff, lang)}</td>
-                  <td className="ct-wide-only">{`${f4(c.brier_diff_ci.lo, lang)} - ${f4(c.brier_diff_ci.hi, lang)}`}</td>
+                  <td className="ct-wide-only">{span(f4(c.brier_diff_ci.lo, lang), f4(c.brier_diff_ci.hi, lang), lang)}</td>
                   <td>{pc(c.grade_disagreement_share, lang)}</td>
                 </tr>
               ))}
@@ -215,7 +216,7 @@ export function CalibrationView({ sel }: { sel: C02Sel | null }) {
                   <td className="ct-wide-only">{int(b.n, lang)}</td>
                   <td>{pc(b.pd, lang)}</td>
                   <td>{pc(b.dr, lang)}</td>
-                  <td>{`${pc(b.lo, lang)} - ${pc(b.hi, lang)}`}</td>
+                  <td>{span(pc(b.lo, lang), pc(b.hi, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>

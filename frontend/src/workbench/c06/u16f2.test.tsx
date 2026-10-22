@@ -30,7 +30,7 @@ describe('U16-F2 C06', () => {
         textOf(render(<BacktestView sel={s} />, 'es')), textOf(render(<DecileView sel={s} />, 'es')),
       ].join(' ');
       for (const raw of RAW) expect(es, `${id}: ${raw}`).not.toContain(raw);
-      expect(es).toContain('Freddie Mac: falta la cuenta del titular');
+      expect(es).toContain('no disponible: falta la cuenta del titular');
       expect(es).not.toContain("Freddie Mac: the owner's account is missing");
       expect(es).toContain('todas');
     });

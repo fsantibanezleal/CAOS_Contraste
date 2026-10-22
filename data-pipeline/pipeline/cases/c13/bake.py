@@ -19,6 +19,7 @@ from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ...io.formats import write_json
+from ..reference_text import with_reference_text
 from ...stages.export import write_artifact
 from . import documents as docs
 from . import measure, params
@@ -82,7 +83,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         out, tests = docs.outputs_and_tests(did, m)
         outs[did] = out
         variants[did] = build_artifact(
-            case_id=CASE_ID, variant_id=did, model=[docs.model_summary(did, rv)], outputs=out, tests=tests, impact=docs.impact(out),
+            case_id=CASE_ID, variant_id=did, model=[docs.model_summary(did, rv)], outputs=out, tests=with_reference_text(tests), impact=docs.impact(out),
             findings=docs.findings(out), lineage=_lineage(seed, rv), lane={"lane": "precompute", "reasons": []})
         say(f"{did}: amber or red {out['detection']['share_amber_or_red']:.3f}, red {out['detection']['share_red']:.3f}")
     models = docs.models_document(pl, rv)

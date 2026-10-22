@@ -273,6 +273,28 @@ def test_documents_accept_an_identifier_that_is_the_same_in_both_languages(guard
     assert "lda-lognormal" not in out and "port-1000" not in out and "test_id" not in out and "dynamic_quantile" not in out
 
 
+def test_documents_accept_a_reviewed_reference_kept_as_published_but_not_the_same_text_elsewhere(guard, tmp_path, capsys):
+    cite = "Kupiec (1995), J. Derivatives 3(2):73-84, doi:10.3905/jod.1995.407942"
+    _write(tmp_path, COPY_DOC, json.dumps({
+        "tests": [{"extras": {"reference_text": {"en": cite, "es": cite}}}],
+        "note": {"en": cite, "es": cite},
+    }))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert out.count("copies the English") == 1, out
+
+
+def test_documents_skip_the_words_of_a_reviewed_reference_but_not_of_an_es_text(guard, tmp_path, capsys):
+    cite = "Tong, Mues, Brown and Thomas (2016), Exposure at default models with and without the credit conversion factor"
+    _write(tmp_path, COPY_DOC, json.dumps({
+        "tests": [{"extras": {"reference_text": {"en": cite, "es": cite}}}],
+        "note": {"en": "The conversion factor", "es": "El factor de conversion"},
+    }))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert out.count("conversion -> ") == 1, out
+
+
 def test_the_copy_check_is_for_documents_only(guard, tmp_path, capsys):
     _write(tmp_path, PY, 'T = {"en": "The reason is stated here", "es": "The reason is stated here"}\n')
     code, out = _run(guard, tmp_path, capsys)
