@@ -109,6 +109,13 @@ def check_text(text: str, certain: bool, words: dict[str, str]) -> list[tuple[st
         word = m.group(0)
         if any(ord(c) > 127 for c in word):
             continue
+        before = text[m.start() - 1] if m.start() > 0 else " "
+        after = text[m.end()] if m.end() < len(text) else " "
+        follows = text[m.end() + 1] if m.end() + 1 < len(text) else " "
+        precedes = text[m.start() - 2] if m.start() > 1 else " "
+        if (before in "._" or (before == "-" and precedes.isalnum()) or after in "(_"
+                or (after in ".-" and follows.isalnum())):
+            continue  # a word inside an identifier (spec(test_id).decision, a_b, x.y, hmda-logistic-decision) is code, not text
         low = word.lower()
         if low in words:
             out.append((word, fix_case(word, words[low])))
