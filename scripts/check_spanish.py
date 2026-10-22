@@ -292,9 +292,15 @@ def jsx_texts(source: str):
 # --- JSON -----------------------------------------------------------------------------------------------------------------
 
 def json_texts(obj, only_es: bool, in_es: bool = False):
-    """Every string of a JSON value; with ``only_es``, those under an ``es`` or ``*_es`` key."""
+    """Every string of a JSON value; with ``only_es``, those under an ``es`` or ``*_es`` key.
+
+    A value under a reviewed key (``REVIEWED_KEYS``) is skipped: it is checked where it is written (the code scan reads
+    ``REFERENCE_ES``), and in a document it carries citations as published, English titles included.
+    """
     if isinstance(obj, dict):
         for k, v in obj.items():
+            if k in REVIEWED_KEYS:
+                continue
             yield from json_texts(v, only_es, in_es or k == "es" or k.endswith("_es"))
     elif isinstance(obj, list):
         for v in obj:
@@ -306,21 +312,28 @@ def json_texts(obj, only_es: bool, in_es: bool = False):
 IDENTIFIER = re.compile(r"[A-Za-z0-9_.#<>-]+")
 
 
-def copied_pairs(obj):
+#: keys whose bilingual value is reviewed one by one in its producer, so an ``es`` equal to the ``en`` there is a decision: a test's
+#: reference (``extras.reference_text``, from ``REFERENCE_ES`` of ``pipeline/cases/reference_text.py``, which refuses an unknown
+#: reference) keeps a bare citation as published
+REVIEWED_KEYS = frozenset({"reference_text"})
+
+
+def copied_pairs(obj, key: str | None = None):
     """The ``en`` text of every object with ``en`` and ``es`` strings that are equal, the ``en`` having three words or more.
 
-    An identifier (one token of letters, digits, ``_ . # - < >``, such as ``port-1000-1pct-rho12``) is the same in every language.
+    An identifier (one token of letters, digits, ``_ . # - < >``, such as ``port-1000-1pct-rho12``) is the same in every language,
+    and so is the value of a reviewed key (``REVIEWED_KEYS``).
     """
     if isinstance(obj, dict):
         en, es = obj.get("en"), obj.get("es")
-        if (isinstance(en, str) and isinstance(es, str) and en.strip() == es.strip() and not IDENTIFIER.fullmatch(en.strip())
-                and len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", en)) >= 3):
+        if (key not in REVIEWED_KEYS and isinstance(en, str) and isinstance(es, str) and en.strip() == es.strip()
+                and not IDENTIFIER.fullmatch(en.strip()) and len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", en)) >= 3):
             yield en
-        for v in obj.values():
-            yield from copied_pairs(v)
+        for k, v in obj.items():
+            yield from copied_pairs(v, k)
     elif isinstance(obj, list):
         for v in obj:
-            yield from copied_pairs(v)
+            yield from copied_pairs(v, key)
 
 
 def load_copies(path: Path | None) -> tuple[dict[tuple[str, str], bool], list[str]]:
