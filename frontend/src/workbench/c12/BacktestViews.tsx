@@ -5,6 +5,7 @@
 // model itself, the independent-sample table values being reported beside them. The PFE exceedance counts are a secondary
 // row (BCBS 185 paragraph 27). The only arithmetic is the binning of the document's PITs into ten equal classes.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { useMedia } from '../../lib/useMedia';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
@@ -20,6 +21,8 @@ const WINDOW_TEXT: Record<string, Bi> = {
 /** The PITs of the horizon in focus in ten equal classes: uniform when the model holds. */
 export function PitView({ sel }: { sel: C12Sel | null }) {
   const lang = useShellLang();
+  // ten classes at a phone width cannot carry "0.0 to 0.1": the lower edge of each class names it (U16-R2 b06 m10)
+  const narrow = useMedia('(max-width: 600px)');
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
   const title: BiText = { en: 'The PIT histogram', es: 'El histograma de los PIT' };
@@ -46,10 +49,10 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
           chartMin="14rem"
           chart={
             <BarChart
-              title={{ en: 'Number of back-test dates by PIT class', es: 'Número de fechas del backtest por clase de PIT' }}
+              title={narrow ? { en: 'Back-test dates by PIT class (lower edge)', es: 'Fechas del backtest por clase de PIT (borde inferior)' } : { en: 'Number of back-test dates by PIT class', es: 'Número de fechas del backtest por clase de PIT' }}
               height="fill"
               orientation="vertical"
-              data={counts.map((n, i) => ({ id: `bin${i}`, label: { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
+              data={counts.map((n, i) => ({ id: `bin${i}`, label: narrow ? { en: formatNumber(i / bins, 'en', { decimals: 1 }), es: formatNumber(i / bins, 'es', { decimals: 1 }) } : { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
               axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { decimals: 0 }, range: [0, Math.max(4, ...counts)] }}
             />
           }

@@ -610,13 +610,13 @@ describe('the C12 instrument', () => {
     expect(imM).toContain('proxy por regresión');
     expect(imM).toContain('no SIMM');
     expect(imM).toContain(cell(netting.outputs.exposure.eepe.amount, 'es'));
-    expect(html(<WwrView sel={selOf(wwr)} />)).toContain('no tiene conciliación con ORE');
+    expect(html(<WwrView sel={selOf(wwr)} />)).toContain(escapeHtml(wwr.outputs.wrong_way_risk!.ore_limit.es));
     expect(html(<WwrView sel={selOf(wwr)} />)).toContain(formatNumber(wwr.outputs.wrong_way_risk!.largest_b_w, 'es', { digits: 4 }));
     const ctx = html(<C12ContextView sel={selOf(netting)} />);
     expect(ctx).toContain('convención');
     expect(ctx).toContain('Nocional (USD)');
     expect(ctx).toContain('Plazos ausentes');
-    expect(html(<SaCcrView sel={selOf(netting)} />)).toContain('El puerto en vivo reproduce el bloque del documento');
+    expect(html(<SaCcrView sel={selOf(netting)} />)).toContain('La réplica en vivo reproduce el bloque del documento');
     expect(html(<PitView sel={selOf(netting)} />)).toContain('El histograma de los PIT');
     expect(html(<ComparisonView sel={selOf(netting)} />)).toContain('Regulatorio contra modelado');
     expect(html(<C12VariantsTable peers={peers} onPick={() => undefined} current={netting.variant_id} />)).toContain('Riesgo de correlación adversa');

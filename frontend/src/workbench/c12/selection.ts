@@ -232,3 +232,14 @@ export function histogram(pits: readonly number[], bins = 10): number[] {
   for (const p of pits) counts[Math.min(bins - 1, Math.max(0, Math.floor(p * bins)))] += 1;
   return counts;
 }
+
+/** The segment of an engine test row in words ("book-10bd-q90" is "Book, 10 business days, quantile 90 %"); an unknown form is returned as it is. */
+export function segmentText(segment: string | null | undefined, lang: 'en' | 'es'): string {
+  if (!segment) return '';
+  const m = /^(book|risk factor|risk-factor)-([0-9a-z]+?)(?:-q(\d+))?$/.exec(segment);
+  const horizon = m ? HORIZON_LONG[m[2]] : undefined;
+  if (!m || !horizon) return segment;
+  const subject = SUBJECT_TEXT[m[1] === 'book' ? 'book' : 'risk-factor'][lang];
+  const quantile = m[3] ? `${lang === 'es' ? 'cuantil' : 'quantile'} ${m[3]} %` : '';
+  return [subject, horizon[lang], quantile].filter(Boolean).join(', ');
+}
