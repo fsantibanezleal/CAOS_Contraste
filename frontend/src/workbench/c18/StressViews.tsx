@@ -3,14 +3,14 @@
 // the satellites against the realised (signed) charge-off rates, the severity of each path against the global financial
 // crisis, and the expected losses by risk and year. The paths and the satellites are a US-calibrated adaptation and every view
 // says so. A realised charge-off rate can be negative (a net recovery): it is drawn and written as it is, never floored.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell, digits } from './C18Common';
 import {
-  CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT, US_ADAPTATION,
+  CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT,
   backcastOf, fitOf, outputsOf, satFitOf, text,
   type C18Sel,
 } from './selection';
@@ -81,7 +81,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
             />
           }
         >
-          <p className="ct-note" data-adaptation={s.adaptation_label}>{`${pick(text(LABEL_TEXT, s.adaptation_label), lang)}. ${pick(s.adaptation_statement, lang)} ${pick(US_ADAPTATION, lang)}`}</p>
+          <p className="ct-note" data-adaptation={s.adaptation_label}>{pick(s.adaptation_statement, lang)}</p>
           {win ? (
             <p className="ct-note" data-window={`${win.start_year}-${win.end_year}`}>{`${win.start_year} ${pick({ en: 'to', es: 'a' }, lang)} ${win.end_year}: ${pick(win.label, lang)}`}</p>
           ) : null}
@@ -150,6 +150,15 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
 }
 
 /** The projected loss rate of each Federal Reserve loan type under the path, and the three classes of the bank built from them. */
+/** One colour per loan type, and a dash on the residential line: the default palette drew the commercial and the residential lines in two close blues in the dark theme (U16-R2 b09 m8). */
+const LOAN_COLOR: Record<string, ShellColorToken> = {
+  'commercial-industrial': '--color-accent',
+  'commercial-real-estate': '--color-warn',
+  residential: '--color-magenta',
+  'credit-cards': '--color-bad',
+  'other-consumer': '--color-good',
+};
+
 export function SatellitesView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -179,7 +188,7 @@ export function SatellitesView({ sel }: { sel: C18Sel | null }) {
               height="fill"
               x={{ values: q.map((_, i) => i + 1), label: { en: `Quarter of the projection (1 is ${q[0] ? quarterText(q[0].quarter_end, 'en') : ''})`, es: `Trimestre de la proyección (1 es ${q[0] ? quarterText(q[0].quarter_end, 'es') : ''})` }, format: { decimals: 0 } }}
               y={{ label: { en: 'Projected charge-off rate', es: 'Tasa de castigo proyectada' }, format: { percent: true, decimals: 2 } }}
-              series={sat.fed_loan_types.map((f) => ({ label: text(LOAN_TEXT, f.fed_loan_type), values: f.quarters.map((x) => x.rate), width: f.fed_loan_type === sel.loan ? 3.4 : 1.6 }))}
+              series={sat.fed_loan_types.map((f) => ({ label: text(LOAN_TEXT, f.fed_loan_type), values: f.quarters.map((x) => x.rate), color: LOAN_COLOR[f.fed_loan_type] ?? '--color-fg-subtle', width: f.fed_loan_type === sel.loan ? 3.4 : 1.6, ...(f.fed_loan_type === 'residential' ? { dash: [6, 3] as [number, number] } : {}) }))}
             />
           }
         >
@@ -256,11 +265,11 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
-  const title: BiText = { en: 'The back-cast against the realised rates', es: 'El back-cast frente a las tasas realizadas' };
+  const title: BiText = { en: 'The back-cast against the realised rates', es: 'La prueba retrospectiva frente a las tasas realizadas' };
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const b = backcastOf(o, sel.loan);
-  if (!b) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document has no back-cast for this loan type.', es: 'No disponible: el documento no trae back-cast para este tipo de préstamo.' }} />;
+  if (!b) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document has no back-cast for this loan type.', es: 'No disponible: el documento no trae prueba retrospectiva para este tipo de préstamo.' }} />;
   const fit = satFitOf(fitOf(sel), sel.loan);
   const m = b.metrics;
   const loanName = text(LOAN_TEXT, sel.loan);

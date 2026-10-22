@@ -1,6 +1,7 @@
 // CT-309: the C22 instrument, rendered on the server from the committed artifacts. Every view of every family carries
 // its lane; the groups are the six questions in order; the Context names the papers, their licence classes, the
 // generators and each family's truth status; the rail's read-out changes with every control of both sections.
+import { TRUTH_TEXT } from '../content/cases/C04Results';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
@@ -127,7 +128,7 @@ describe('the C22 instrument', () => {
         expect(markup).toContain(`data-licence-class="${manifest.source_details[id].class}"`);
       }
       expect(markup).toContain('data-licence-class="generator"');
-      expect(markup).toContain(c.data.variant.provenance.truth_status);
+      expect(markup).toContain((TRUTH_TEXT[c.data.variant.provenance.truth_status] as { en: string }).en); // in words, never the raw id (U16-R2 b10 m11)
     }
   });
 

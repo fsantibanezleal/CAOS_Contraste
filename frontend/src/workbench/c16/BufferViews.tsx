@@ -331,6 +331,12 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
   );
 }
 
+/** The unrealised HTM loss of a variant with no HTM block: the fair value less the amortised cost of the held-to-maturity line of its own balance sheet (U16-R2 b08 m2). */
+export function htmLossOfBalanceSheet(items: ReadonlyArray<{ item_id: string; amount?: number | null; fair_value?: number | null }>): number | null {
+  const htm = items.find((i) => i.item_id === 'securities-htm');
+  return htm && typeof htm.amount === 'number' && typeof htm.fair_value === 'number' ? htm.fair_value - htm.amount : null;
+}
+
 /** The call-report dates before the run: deposits, the HTM loss, the CBC on both bases, the survival period and the LCR as the losses grew. */
 export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
   const lang = useShellLang();
@@ -342,7 +348,7 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
   const block = o.time_block;
   const t0 = Date.parse(`${block[0].as_of}T00:00:00Z`);
   const day = (d: string) => Math.round((Date.parse(`${d}T00:00:00Z`) - t0) / 86400000);
-  const own = { as_of: o.valuation_date, basis: o.cbc.htm_valuation_basis, cbc: o.cbc.total_liquidity_value, loss: o.htm?.reported.htm_unrealised ?? null };
+  const own = { as_of: o.valuation_date, basis: o.cbc.htm_valuation_basis, cbc: o.cbc.total_liquidity_value, loss: o.htm?.reported.htm_unrealised ?? htmLossOfBalanceSheet(o.balance_sheet.items) };
   const dates = [...block.map((t) => t.as_of), own.as_of];
   const axis = axisOf([...block.flatMap((t) => [t.cbc_amortised_basis, t.cbc_fair_value_basis, t.htm_unrealised_loss]), own.cbc]);
   const dep = o.balance_sheet.deposits;
@@ -354,7 +360,7 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
         {...card}
         note={{
           en: 'Two earlier call-report dates, 2021-12-31 and 2022-06-30, beside the valuation date of the document: the CBC on the amortised-cost and the fair-value basis, the unrealised loss on the held-to-maturity book, the survival period and the LCR. The last date shows the basis the document itself uses; the other basis is not available for it.',
-          es: 'Dos fechas anteriores de los reportes de condición, 2021-12-31 y 2022-06-30, junto a la fecha de valoración del documento: el CBC en la base de costo amortizado y en la de valor razonable, la pérdida no realizada de la cartera mantenida al vencimiento, el periodo de supervivencia y el LCR. La última fecha muestra la base que usa el propio documento; la otra base no está disponible para ella.',
+          es: 'Dos fechas anteriores de los reportes de llamada, 2021-12-31 y 2022-06-30, junto a la fecha de valoración del documento: el CBC en la base de costo amortizado y en la de valor razonable, la pérdida no realizada de la cartera mantenida al vencimiento, el periodo de supervivencia y el LCR. La última fecha muestra la base que usa el propio documento; la otra base no está disponible para ella.',
         }}
       >
         <ChartAbove

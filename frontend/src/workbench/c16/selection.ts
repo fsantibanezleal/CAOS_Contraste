@@ -121,6 +121,12 @@ export const PHASE_TEXT: Record<string, Bi> = {
   protracted: { en: 'protracted', es: 'prolongada' },
   'lcr-30-day': { en: '30-day LCR stress', es: 'estrés LCR a 30 días' },
 };
+/** The scenario family and phase of a variant in one phrase; the Spanish names the phase ("idiosincrático, fase prolongada"), as the two nouns differ in gender (U16-R2 b08 m8). */
+export function scenarioPhrase(family: string, phase: string, lang: 'en' | 'es'): string {
+  const f = (FAMILY_TEXT[family] ?? { en: family, es: family })[lang];
+  const p = (PHASE_TEXT[phase] ?? { en: phase, es: phase })[lang];
+  return lang === 'es' ? `${f}, fase ${p}` : `${f}, ${p}`;
+}
 export const LCR_CATEGORY_TEXT: Record<string, Bi> = {
   retail_stable_insurance_criteria: { en: 'Retail stable, insurance criteria', es: 'Minorista estable, criterios del seguro' },
   retail_stable: { en: 'Retail stable', es: 'Minorista estable' },

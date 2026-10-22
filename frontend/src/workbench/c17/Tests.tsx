@@ -46,7 +46,7 @@ export function C17TestsTable({ variant, host }: { variant: VariantArtifact; hos
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : es(t.notes, lang)}</td>
+                  <td className="ct-text">{es(t.notes ? t.notes : t.reference, lang)}</td>
                 </tr>
               );
             })}

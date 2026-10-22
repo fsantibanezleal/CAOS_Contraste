@@ -33,6 +33,16 @@ export interface C20Instrument {
   controls: Record<string, string | number | boolean>;
 }
 
+/** The variants of the case that carry the views of a kind, named as the rail names them (U16-R2 b09 m12). */
+const KIND_VARIANTS: Record<string, { en: string; es: string }> = {
+  shock: { en: 'SGCD seen or SGCD held out', es: 'SGCD vistos o SGCD no vistos' },
+  shift: { en: 'Fed shift', es: 'Desplazamiento Fed' },
+  seeds: { en: 'Seeds', es: 'Semillas' },
+  perturbation: { en: 'Noise', es: 'Ruido' },
+  leakage: { en: 'Leakage', es: 'Fuga' },
+};
+const listOf = (names: string[], or: string) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} ${or} ${names[names.length - 1]}`);
+
 type Tab = { id: string; label: BiText; kinds: C20Kind[]; content: (sel: C20Sel) => ReactElement };
 
 const STRESS: Tab[] = [
@@ -194,7 +204,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     if (mine.length === 0) {
       return (
         <p className="caos-pending" data-state="unavailable" data-group={key}>
-          {pick({ en: 'Not available in this variant: pick another variant for these views.', es: 'No disponible en esta variante: elija otra variante para estas vistas.' }, lang)}
+          {pick(
+            {
+              en: `Not available in this variant: pick ${listOf([...new Set(list.flatMap((t) => t.kinds))].map((k) => KIND_VARIANTS[k]?.en ?? k), 'or')} for these views.`,
+              es: `No disponible en esta variante: elija ${listOf([...new Set(list.flatMap((t) => t.kinds))].map((k) => KIND_VARIANTS[k]?.es ?? k), 'o')} para estas vistas.`,
+            },
+            lang,
+          )}
         </p>
       );
     }

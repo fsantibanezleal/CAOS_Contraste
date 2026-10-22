@@ -144,7 +144,8 @@ export function thresholdsChart(sel: C15Sel | null): Pick<UPlotChartProps, 'x' |
     y: { label: { en: 'Measure over its base', es: 'Medida sobre su base' }, format: { percent: true, decimals: 0 } },
     series: [
       { label: { en: 'Measured', es: 'Medido' }, values: tests.map((t) => t.ratio), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
-      { label: { en: 'Threshold of the test', es: 'Umbral de la prueba' }, values: tests.map((t) => t.threshold), color: '--color-bad', width: 2.2, dash: [6, 3] },
+      // a mark per test, not a line: the three thresholds belong to three different tests and a line would join them (U16-R2 b07 m6)
+      { label: { en: 'Threshold of the test', es: 'Umbral de la prueba' }, values: tests.map((t) => t.threshold), color: '--color-bad', width: 2.2, mode: 'points', size: 8 },
     ],
   };
 }

@@ -10,7 +10,7 @@ import { Pending } from '../Pending';
 import { LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20ShockRow } from './selection';
-import { localTests } from './localise';
+import { es, localTests } from './localise';
 
 const TITLE_DEGRADATION: BiText = { en: 'Degradation by shock', es: 'Degradación por choque' };
 const TITLE_DRIFT: BiText = { en: 'Drift by shock', es: 'Deriva por choque' };
@@ -28,7 +28,7 @@ const BLOCK_TEXT: Record<Block, { title: Bi; note: (source: string | null) => Bi
     title: { en: 'Contraste-applied', es: 'Aplicados por Contraste' },
     note: (source) => ({
       en: `Contraste applies each shock family to the structured view itself, with the parameters of ${source ?? 'the dataset metadata'}. These are Contraste's own application, labelled as such, and not the dataset's shipped shocks.`,
-      es: `Contraste aplica cada familia de choques a la vista estructurada misma, con los parámetros de ${source ?? 'los metadatos del conjunto'}. Es la aplicación propia de Contraste, etiquetada como tal, y no los choques entregados por el conjunto.`,
+      es: `Contraste aplica cada familia de choques a la vista estructurada misma, con los parámetros de ${source ? es(source, 'es') : 'los metadatos del conjunto'}. Es la aplicación propia de Contraste, etiquetada como tal, y no los choques entregados por el conjunto.`,
     }),
   },
 };
@@ -59,7 +59,7 @@ function BlockCard({ sel, block }: { sel: C20Sel; block: Block }) {
               title={{ en: 'AUC loss by shock', es: 'Pérdida de AUC por choque' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: -r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
+              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: 0 - r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
               axis={{ label: { en: 'AUC loss against the clean set (positive is a loss)', es: 'Pérdida de AUC (positiva) vs. conjunto limpio' }, format: { decimals: 3 } }}
             />
           )

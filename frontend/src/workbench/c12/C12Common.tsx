@@ -15,7 +15,7 @@ import { noteText } from '../c08/notes';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
-import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
+import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -93,7 +93,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                   <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
                   <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Reason or note', es: 'Razón o nota' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Note', es: 'Nota' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -101,7 +101,10 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                      <td className="ct-text" title={t.test_id}>
+                        {TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}
+                        {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{segmentText(t.segment, lang)}</span> : null}
+                      </td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
@@ -274,6 +277,8 @@ const VALUE_TEXT: Record<string, Bi> = {
   'investment-grade': RATING_TEXT['investment-grade'],
   'high-yield-or-not-rated': RATING_TEXT['high-yield-or-not-rated'],
 };
+/** Units that name the kind of value, not a measure: the value already says it ("payer, receiver"), so no unit is appended. */
+const KIND_UNITS = new Set(['payer or receiver', 'trade ids', 'trade id', 'rule']);
 const CONVENTION_WORD: Bi = { en: 'convention', es: 'convención' };
 
 function conventionValue(v: unknown, unit: string, lang: Lang): string {
@@ -302,7 +307,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
         <FixtureNotice variant={v} />
         <p>
-          <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
+          <strong>{pick(m.title, lang)}</strong>{/[?!.]$/.test(pick(m.title, lang)) ? ' ' : '. '}{pick(m.question, lang)}
         </p>
         <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-case" data-variant-id={o.variant}>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
@@ -397,7 +402,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
               {params.map(([k, p]) => (
                 <tr key={k} data-convention={k} data-status={p.label}>
                   <td className="ct-text">{pick(text(NAMED_TEXT, k), lang)}</td>
-                  <td className="ct-text">{`${conventionValue(p.value, p.unit, lang)} ${pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</td>
+                  <td className="ct-text">{`${conventionValue(p.value, p.unit, lang)} ${KIND_UNITS.has(p.unit) ? '' : pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</td>
                   <td className="ct-text">{p.label === 'convention' ? word : p.label}</td>
                 </tr>
               ))}

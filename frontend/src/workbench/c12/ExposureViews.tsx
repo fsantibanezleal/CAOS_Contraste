@@ -66,7 +66,7 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
             <dt>{pick({ en: 'EPE and EEPE (USD)', es: 'EPE y EEPE (USD)' }, lang)}</dt>
             <dd data-eepe={e.eepe.amount}>
               <Nw>{`${cell(e.epe.amount, lang)} / ${cell(e.eepe.amount, lang)}`}</Nw>
-              {` (${pick({ en: 'first', es: 'primeros' }, lang)} ${years(e.eepe_horizon_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}; ${pick({ en: 'Monte Carlo SE', es: 'ES de Monte Carlo' }, lang)} ${cell(e.eepe.mc_se, lang)})`}
+              {` (${e.eepe_horizon_years === 1 ? pick({ en: 'first year', es: 'primer año' }, lang) : `${pick({ en: 'first', es: 'primeros' }, lang)} ${years(e.eepe_horizon_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}; ${pick({ en: 'Monte Carlo SE', es: 'error estándar de Monte Carlo' }, lang)} ${cell(e.eepe.mc_se, lang)})`}
             </dd>
             <dt>{pick({ en: 'ORE 1.8.17.0', es: 'ORE 1.8.17.0' }, lang)}</dt>
             <dd data-ore={ore.status}>

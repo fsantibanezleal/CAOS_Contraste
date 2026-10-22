@@ -7,9 +7,11 @@ import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C22WriteUp } from '../../content/cases/C22';
+import { TRUTH_TEXT } from '../../content/cases/C04Results';
 import type { C22Simulation, Finding, VariantArtifact } from '../../lib/contract.types';
 import { useFindingsShares } from '../../lib/useMedia';
 import { LightCell } from '../ValidationViews';
+import { testName } from '../c20/U14Common';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
@@ -310,7 +312,7 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
                     <td>{formatNumber(s.x, lang, { digits: 3 })}</td>
                     <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
                     <td>{rateText(s, r, lang)}</td>
-                    <td className="ct-wide-only">{`${pct(lang, x.lo, 1)} - ${pct(lang, x.hi, 1)}`}</td>
+                    <td className="ct-wide-only">{`${pct(lang, x.lo, 1)} ${pick({ en: 'to', es: 'a' }, lang)} ${pct(lang, x.hi, 1)}`}</td>
                     <td data-agrees={s.agrees?.[r] ? 'yes' : 'no'}>
                       {x.exact === null ? '-' : `${pct(lang, x.exact)}, ${pick(s.agrees?.[r] ? { en: 'agrees', es: 'concuerda' } : { en: 'differs', es: 'difiere' }, lang)}`}
                     </td>
@@ -373,8 +375,8 @@ export function SizeView({ sel }: { sel: C22Sel | null }) {
         provenance={provenanceOf(v.provenance.truth_status)}
         dataKey={stateKey}
         note={{
-          en: `The rejection rate when the test's null holds at its boundary (${v.outputs.simulations[0]?.n_rep.toLocaleString('en')} repetitions). A test holds its size when its exact probability is at most the level, or, without one, when the rate is at most ${pct('en', bound)} (the level plus 3.09 Monte Carlo SEs).`,
-          es: `La tasa de rechazo cuando la nula de la prueba se cumple en su frontera (${v.outputs.simulations[0]?.n_rep.toLocaleString('es')} repeticiones). Una prueba mantiene su tamaño cuando su probabilidad exacta es a lo más el nivel, o, sin ella, cuando la tasa es a lo más ${pct('es', bound)} (el nivel más 3,09 EE de Monte Carlo).`,
+          en: `The rejection rate when the test's null holds at its boundary (${formatNumber(v.outputs.simulations[0]?.n_rep, 'en', { decimals: 0 })} repetitions). A test holds its size when its exact probability is at most the level, or, without one, when the rate is at most ${pct('en', bound)} (the level plus 3.09 Monte Carlo SEs).`,
+          es: `La tasa de rechazo cuando la nula de la prueba se cumple en su frontera (${formatNumber(v.outputs.simulations[0]?.n_rep, 'es', { decimals: 0 })} repeticiones). Una prueba mantiene su tamaño cuando su probabilidad exacta es a lo más el nivel, o, sin ella, cuando la tasa es a lo más ${pct('es', bound)} (el nivel más 3,09 EE de Monte Carlo).`,
         }}
       >
         <div className="ct-scroll">
@@ -454,6 +456,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
               x={{ values: pp.x, label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 } }}
               y={{ label: { en: 'Density', es: 'Densidad' }, format: { decimals: 1 } }}
               series={pp.series}
+              solo
               yMarks={[{ y: 1, label: { en: 'Uniform', es: 'Uniforme' }, tone: 'neutral' }]}
             />
           </div>
@@ -495,7 +498,7 @@ export function PaperView({ sel }: { sel: C22Sel | null }) {
         <ul className="ct-stack-natural">
           {g.map((s) => (
             <li key={s.study} data-study={s.study}>
-              <strong>{pick(s.title, lang)}</strong>: {pick({ en: `${s.agree} of ${s.total} cells agree within 3.29 combined SEs (${s.runs.toLocaleString('en')} runs, as published). `, es: `${s.agree} de ${s.total} celdas concuerdan dentro de 3,29 EE combinados (${s.runs.toLocaleString('es')} corridas, como se publicó). ` }, lang)}
+              <strong>{pick(s.title, lang)}</strong>: {pick({ en: `${s.agree} of ${s.total} cells agree within 3.29 combined SEs (${formatNumber(s.runs, 'en', { decimals: 0 })} runs, as published). `, es: `${s.agree} de ${s.total} celdas concuerdan dentro de 3,29 EE combinados (${formatNumber(s.runs, 'es', { decimals: 0 })} corridas, como se publicó). ` }, lang)}
               <WithQuotes text={pick(s.note, lang)} />
             </li>
           ))}
@@ -551,7 +554,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
             <tbody>
               {v.tests.map((t, i) => (
                 <tr key={`${t.test_id}-${i}`}>
-                  <td className="ct-text">{t.test_id}</td>
+                  <td className="ct-text" title={t.test_id}>{pick(testName(t.test_id), lang)}</td>
                   <td className="ct-text">{t.model_id}</td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <LightCell row={t} alphas={sel.alphas} />
@@ -645,7 +648,7 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
           lane={LIVE}
           provenance={prov}
           dataKey={stateKey}
-          note={{ en: `${p.n.toLocaleString('en')} obligors, PD applied ${pct('en', p.pd)}, true correlation ${pct('en', p.rhoTrue, 1)}; exact, recomputed in your browser.`, es: `${p.n.toLocaleString('es')} deudores, PD aplicada ${pct('es', p.pd)}, correlación verdadera ${pct('es', p.rhoTrue, 1)}; exacta, recalculada en su navegador.` }}
+          note={{ en: `${formatNumber(p.n, 'en', { decimals: 0 })} obligors, PD applied ${pct('en', p.pd)}, true correlation ${pct('en', p.rhoTrue, 1)}; exact, recomputed in your browser. Where the Binomial and Jeffreys curves reject alike, the Jeffreys line lies over the Binomial one.`, es: `${formatNumber(p.n, 'es', { decimals: 0 })} deudores, PD aplicada ${pct('es', p.pd)}, correlación verdadera ${pct('es', p.rhoTrue, 1)}; exacta, recalculada en su navegador. Donde las curvas Binomial y Jeffreys rechazan igual, la línea de Jeffreys cubre a la Binomial.` }}
         >
           <UPlotChart
             height="fill"
@@ -923,8 +926,8 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5% sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5% sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
