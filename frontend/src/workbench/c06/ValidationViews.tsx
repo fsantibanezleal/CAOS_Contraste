@@ -66,8 +66,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Covariates', es: 'Covariables' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Macro', es: 'Macro' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Prepayment competes', es: 'Prepago compite' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Prepayment competes', es: 'Prepago compite' }, lang)}</th>
                 <th>{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</th>
               </tr>
             </thead>
@@ -75,9 +74,18 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               {fit.ladder.map((r) => (
                 <tr key={r.rung_id} data-rung={r.rung_id}>
                   <td className="ct-text">{r.rung_id}</td>
-                  <td className="ct-text">{r.covariates.length ? r.covariates.join(', ') : pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.macro_covariates.length ? r.macro_covariates.join(', ') : pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.competing_prepayment ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
+                  <td className="ct-text">
+                    {r.covariates.length || r.macro_covariates.length ? (
+                      <details data-covariates={r.rung_id}>
+                        <summary>{pick({ en: `${r.covariates.length} covariates, ${r.macro_covariates.length} macro`, es: `${r.covariates.length} covariables, ${r.macro_covariates.length} macro` }, lang)}</summary>
+                        <p className="ct-note">{r.covariates.join(', ')}</p>
+                        {r.macro_covariates.length ? <p className="ct-note">{`${pick({ en: 'Macro', es: 'Macro' }, lang)}: ${r.macro_covariates.join(', ')}`}</p> : null}
+                      </details>
+                    ) : (
+                      pick({ en: 'none', es: 'ninguna' }, lang)
+                    )}
+                  </td>
+                  <td className="ct-text">{r.competing_prepayment ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                   <td>{r.training_cutoff}</td>
                 </tr>
               ))}
