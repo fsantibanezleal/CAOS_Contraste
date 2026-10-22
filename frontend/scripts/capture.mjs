@@ -7,6 +7,7 @@
 //   npm run capture -- --out <dir> --cases C01,C02                   a reviewer batch: those cases only (no documentation routes)
 //   npm run capture -- --out <dir> --routes /methodology,/benchmark  those routes only (add /app to walk the cases too)
 //   npm run capture -- --out <dir> --captures 1280x800:light:en      one capture; the format is WxH:theme:lang, comma separated
+//   npm run capture -- --out <dir> --variants all                    every variant of each case (or --variants id,id), selected in the rail
 //   npm run capture -- --out <dir> --url https://<domain>            the deployed origin instead of dist/
 // Other options: --dist <dir> (default dist), --base-path /Repo/ (default VITE_BASE or /), --settle-ms 15000 (the gate's),
 // --workers 4 (parallel pages), --workbench /app, --full-page true (the whole scrollable page instead of the viewport). The output folder is never inside the repository: the tool refuses it.
@@ -40,7 +41,7 @@ function parseArgs(argv) {
     a[k.slice(2)] = v;
     i += 1;
   }
-  const known = new Set(['out', 'cases', 'routes', 'captures', 'url', 'dist', 'base-path', 'settle-ms', 'workers', 'workbench', 'full-page']);
+  const known = new Set(['out', 'cases', 'routes', 'captures', 'url', 'dist', 'base-path', 'settle-ms', 'workers', 'workbench', 'full-page', 'variants']);
   for (const k of Object.keys(a)) if (!known.has(k)) throw new Error(`unknown option --${k}`);
   if (!a.out) throw new Error('--out <dir> is required (the output folder, outside the repository)');
   return a;
@@ -166,6 +167,8 @@ export async function runCapture(opts) {
   const workers = Math.max(1, Number(opts.workers ?? 4));
   const workbench = (opts.workbench ?? '/app').trim();
   const fullPage = opts['full-page'] === 'true';
+  const wantVariants = opts.variants && opts.variants !== 'all' ? opts.variants.split(',').map((v) => v.trim()).filter(Boolean) : null;
+  const variantMode = Boolean(opts.variants);
 
   const { chromium } = require('playwright');
   const { THEME_STORAGE_KEY, LANG_STORAGE_KEY } = await import('@fasl-work/caos-app-shell/keys');
@@ -307,12 +310,17 @@ export async function runCapture(opts) {
   const manifestRow = readiness?.contracts?.find((c) => c.id === 'case-manifest');
   const titleOf = new Map((caseIndex?.cases ?? []).map((c) => [c.case_id, c.title?.en ?? '']));
   const built = [];
+  const variantsOf = new Map(); // case id -> { def, ids } from the manifest (the variants the rail offers, in its order)
   const notBuilt = [];
   for (const id of cases) {
     const entry = (caseIndex?.cases ?? []).find((c) => c.case_id === id);
     const path = entry?.manifest_path ?? `manifests/${id}.json`;
-    if (await exists(path)) built.push(id);
-    else {
+    if (await exists(path)) {
+      built.push(id);
+      const m = await getJson(path);
+      const ids = (m?.artifacts ?? []).filter((a) => a.role === 'variant').map((a) => a.variant_id);
+      variantsOf.set(id, { def: m?.default_variant ?? ids[0] ?? null, ids });
+    } else {
       const declared = manifestRow?.missing?.includes(path);
       notBuilt.push({
         route: workbench,
@@ -326,12 +334,30 @@ export async function runCapture(opts) {
     }
   }
 
-  // ---- the tasks: one per (capture, route), and one per (capture, case) on the workbench route
+  // ---- the variants to walk per case: the default one only, or (--variants) all of them or those named
+  if (wantVariants) {
+    for (const v of wantVariants) {
+      if (!built.some((id) => variantsOf.get(id).ids.includes(v))) throw new Error(`variant ${v} is not offered by any selected case`);
+    }
+  }
+  const variantsFor = (id) => {
+    const { def, ids } = variantsOf.get(id);
+    if (!variantMode) return [{ id: def, vi: 0, select: false, walk: false }];
+    const chosen = wantVariants ? ids.filter((v) => wantVariants.includes(v)) : ids;
+    // a case with no variant list in its manifest is walked once as it renders
+    if (ids.length === 0) return [{ id: def, vi: 0, select: false, walk: true }];
+    return chosen.map((v) => ({ id: v, vi: ids.indexOf(v), select: v !== def, walk: true }));
+  };
+
+  // ---- the tasks: one per (capture, route), and one per (capture, case, variant) on the workbench route
   const tasks = [];
   routes.forEach((route, ri) => {
     captures.forEach((cap, ci) => {
-      if (route === workbench) built.forEach((id, ki) => tasks.push({ route, ri, cap, ci, caseId: id, ki }));
-      else tasks.push({ route, ri, cap, ci, caseId: null, ki: 0 });
+      if (route === workbench) {
+        built.forEach((id, ki) => {
+          for (const v of variantsFor(id)) tasks.push({ route, ri, cap, ci, caseId: id, ki, variant: v });
+        });
+      } else tasks.push({ route, ri, cap, ci, caseId: null, ki: 0, variant: null });
     });
   });
 
@@ -352,7 +378,7 @@ export async function runCapture(opts) {
         const wb = await page.evaluate(() => document.querySelector('[data-case-workbench]')?.getAttribute('data-case') ?? null).catch(() => null);
         const mode = await page.evaluate(() => ({ theme: document.documentElement.dataset.theme ?? null, lang: document.documentElement.lang || null })).catch(() => ({}));
         const parts = trail.map((x) => x.key);
-        const dirParts = [t.cap.id, routeSlug(t.route), ...(t.caseId ? [t.caseId] : [])];
+        const dirParts = [t.cap.id, routeSlug(t.route), ...(t.caseId ? [t.caseId] : []), ...(t.variant?.walk ? [t.variant.id] : [])];
         const file = `shots/${dirParts.join('/')}/${parts.length ? parts.join('__') : 'view'}.png`;
         mkdirSync(dirname(join(out, file)), { recursive: true });
         await page.evaluate(() => window.scrollTo(0, 0)).catch(() => undefined);
@@ -366,10 +392,11 @@ export async function runCapture(opts) {
         if (mode.lang && !mode.lang.startsWith(t.cap.lang)) warnings.push(`asked for ${t.cap.lang}; <html lang> is ${mode.lang}`);
         const consoleErrors = rec.consoleErrors.slice(errMark.c);
         rows.push({
-          order: [t.ri, t.caseId ? t.ki : 0, t.ci, seq],
-          id: [t.cap.id, t.route, t.caseId ?? '-', ...parts].join('|'),
+          order: [t.ri, t.caseId ? t.ki : 0, t.variant?.vi ?? 0, t.ci, seq],
+          id: [t.cap.id, t.route, t.caseId ?? '-', ...(t.variant?.walk ? [`v:${t.variant.id}`] : []), ...parts].join('|'),
           route: t.route,
           case: t.caseId,
+          variant: t.variant?.id ?? null,
           case_title: t.caseId ? titleOf.get(t.caseId) ?? '' : null,
           group: trail[0] ? { id: trail[0].id, label: trail[0].label, key: trail[0].key } : null,
           sub_view: trail[1] ? { id: trail[1].id, label: trail[1].label, key: trail[1].key } : null,
@@ -396,6 +423,24 @@ export async function runCapture(opts) {
 
       let settled = await settle(page);
       let emitted = 0;
+
+      // a variant walk: select the variant in the rail as a reader does, then wait for the idle state
+      if (t.variant?.select) {
+        const chip = page.locator('[data-control="variant"] [role="radio"]').nth(t.variant.vi);
+        const vid = [t.cap.id, t.route, t.caseId, `v:${t.variant.id}`].join('|');
+        try {
+          await chip.evaluate((el) => el.scrollIntoView({ block: 'nearest', inline: 'nearest' })).catch(() => undefined);
+          await chip.click({ timeout: 5000 });
+        } catch (e) {
+          failures.push({ id: vid, message: `the variant could not be selected: ${e.message.split('\n')[0]}` });
+          return;
+        }
+        settled = await settle(page);
+        if ((await chip.getAttribute('aria-checked').catch(() => null)) !== 'true') {
+          failures.push({ id: vid, message: 'the variant chip is not checked after the click' });
+          return;
+        }
+      }
 
       /** Walks the tab lists owned by `parent` (null: the page itself); a state with no list under it is a view. */
       const visit = async (trail, parentKey, handled) => {
@@ -456,7 +501,7 @@ export async function runCapture(opts) {
 
   // ---- the index, in the order of the routes, the cases, the captures and the walk
   rows.sort((a, b) => {
-    for (let i = 0; i < 4; i += 1) if (a.order[i] !== b.order[i]) return a.order[i] - b.order[i];
+    for (let i = 0; i < 5; i += 1) if (a.order[i] !== b.order[i]) return a.order[i] - b.order[i];
     return 0;
   });
   const index = rows.map(({ order, ...r }) => r);
@@ -471,6 +516,7 @@ export async function runCapture(opts) {
     build,
     captures: captures.map((c) => c.id),
     routes,
+    variants: variantMode ? (opts.variants === 'all' ? 'all' : wantVariants) : 'default',
     cases_built: built,
     cases_not_built: notBuilt.map((n) => n.case),
     views: new Set(index.map((r) => r.id.split('|').slice(1).join('|'))).size,
@@ -516,7 +562,7 @@ function indexHtml(all, product) {
     body.push(`<table><thead><tr><th>View</th>${caps.map((c) => `<th>${esc(c.size)} ${esc(c.theme)} ${esc(c.lang)}</th>`).join('')}</tr></thead><tbody>`);
     for (const [vk, byCap] of views) {
       const any = [...byCap.values()][0];
-      const label = [any.group?.label, any.sub_view?.label, ...any.deeper.map((d) => d.label)].filter(Boolean).join(' > ') || 'whole page';
+      const label = [any.id.split('|')[3]?.startsWith('v:') ? `variant ${any.variant}` : '', any.group?.label, any.sub_view?.label, ...any.deeper.map((d) => d.label)].filter(Boolean).join(' > ') || 'whole page';
       body.push(`<tr><th scope="row">${esc(label)}<br><code>${esc(vk)}</code></th>`);
       for (const c of caps) {
         const r = byCap.get(c.id);
