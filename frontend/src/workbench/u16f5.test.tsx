@@ -367,6 +367,11 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
   it('m8: the attribution column of the Spanish Context says its text is the own wording of the source', () => {
     expect(view(<ContextView sel={sel} />, 'es')).toContain('texto exigido por la fuente, en su idioma');
   });
+  it('m8, the licence: the Spanish gloss is read as Spanish and the licence name, with its version, is marked translate="no" (gate G11)', () => {
+    const raw = html(<ContextView sel={sel} />, 'es');
+    expect(raw).toMatch(/Este conjunto de datos tiene licencia <span translate="no">Creative Commons Atribución 4\.0 Internacional \(CC BY 4\.0\)<\/span>\./);
+    expect(raw).not.toMatch(/translate="no">Este conjunto de datos/);
+  });
   it('m16: the AUC and its interval are written to the same four decimals', () => {
     expect(view(<DiscriminationView sel={sel} />, 'en')).toMatch(/0\.\d{4} \(0\.\d{4} - 0\.\d{4}\)/);
   });
