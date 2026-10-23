@@ -218,18 +218,32 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
       </PlotCard>
       <PlotCard fill title={{ en: 'This cohort and its rung', es: 'Esta cohorte y su peldaño' }} {...card}>
         <div className="ct-scroll">
-          <dl className="ct-defs" data-training={o.cohort.id}>
-            <dt>{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</dt>
-            <dd>{`${pick(o.cohort.label, lang)} (${fyRange(o.cohort.first_fy, o.cohort.last_fy)})`}</dd>
-            <dt>{pick({ en: 'Trained on vintages', es: 'Entrenada con cosechas' }, lang)}</dt>
-            <dd>{fyRange(t.first_fy, t.last_fy)}</dd>
-            <dt>{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</dt>
-            <dd>{t.cutoff_date}</dd>
-            <dt>{pick({ en: 'Loans and charge-offs', es: 'Créditos y castigos' }, lang)}</dt>
-            <dd>{`${count(t.n_loans, lang)} / ${count(t.n_events, lang)}`}</dd>
-            <dt>{pick({ en: 'Crisis in the training', es: 'Crisis en el entrenamiento' }, lang)}</dt>
-            <dd data-crisis={String(t.crisis_included)}>{t.crisis_included ? yes : no}</dd>
-          </dl>
+          {/* the cohort's facts as a two-column table: a table is what a card draws (gate G6), so a rung with no coefficients still
+              fills its card (a definition list left it painting 22% of its stage) */}
+          <table className="caos-table" data-training={o.cohort.id} data-table="cohort-facts">
+            <tbody>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</th>
+                <td className="ct-text">{`${pick(o.cohort.label, lang)} (${fyRange(o.cohort.first_fy, o.cohort.last_fy)})`}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Trained on vintages', es: 'Entrenada con cosechas' }, lang)}</th>
+                <td className="ct-text">{fyRange(t.first_fy, t.last_fy)}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</th>
+                <td className="ct-text">{t.cutoff_date}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Loans and charge-offs', es: 'Créditos y castigos' }, lang)}</th>
+                <td className="ct-text">{`${count(t.n_loans, lang)} / ${count(t.n_events, lang)}`}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Crisis in the training', es: 'Crisis en el entrenamiento' }, lang)}</th>
+                <td className="ct-text" data-crisis={String(t.crisis_included)}>{t.crisis_included ? yes : no}</td>
+              </tr>
+            </tbody>
+          </table>
           {rung ? (
             <table className="caos-table ct-wrap-head" data-table="rung-coefficients">
               <caption className="ct-note" data-block="rung-fit-window">{fitCaption(lang)}</caption>
