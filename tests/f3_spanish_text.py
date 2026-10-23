@@ -38,6 +38,11 @@ def _plain(text: str) -> str:
     """The text without model orders such as GARCH(1,1), which are notation, not numbers, and without the identifiers of a
     citation (a DOI, an arXiv id, a URL), which stay as published in both languages."""
     text = re.sub(r"(?:doi:|arXiv[: ]|https?://)\S+", "", text)
+    # citation locators, written the same in both languages: a circular's own number (Circular 2.346), the section of a module
+    # (local_cl (2.1)), an equation after its authors (Anderson y Goodman 2.8)
+    text = re.sub(r"\bCircular\s+(?:N[°º]\s*)?\d[\d.]*", "Circular", text)
+    text = re.sub(r"\b([a-z_]+(?:\.[a-z_]+)+) \(\d+(?:\.\d+)+(?: [a-z])?\)", r"\1 ()", text)
+    text = re.sub(r"\b([A-Z][a-z]+) \d+(?:\.\d+)+(?=\))", r"\1", text)
     return re.sub(r"\(\d+,\d+\)", "()", text)
 
 
