@@ -13,7 +13,7 @@ import { Pending } from '../Pending';
 import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
-import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, span, type C02Outputs, type C02Sel } from './selection';
+import { HORIZON_TEXT, bareModel, challengerFor, fitOf, outputsOf, rungFor, rungName, span, type C02Outputs, type C02Sel } from './selection';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
   if (!sel) return <Pending />;
@@ -37,10 +37,11 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
   const pooled = variants.filter((e) => e.v.outputs.years === null);
   const ordered = [...files, ...pooled];
   // keyed on the model: the rung code P4 names LightGBM and XGBoost, and a find on the code returns the first of them
-  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => r.model_id)))];
-  const auc = (e: Entry, id: string) => e.v.outputs.rungs.find((r) => r.model_id === id)?.discrimination.auc ?? null;
+  // the models are joined across the files by their id without the file's prefix (h1-, pooled-)
+  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => bareModel(r.model_id))))];
+  const auc = (e: Entry, id: string) => e.v.outputs.rungs.find((r) => bareModel(r.model_id) === id)?.discrimination.auc ?? null;
   const name = (id: string): BiText => {
-    const m = first?.model.find((x) => x.id === id);
+    const m = first?.model.find((x) => bareModel(x.id) === bareModel(id));
     const t = shortName(m, id);
     return typeof t === 'string' ? { en: t, es: t } : t;
   };
@@ -84,7 +85,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
           <tbody>
             {ordered.map((e) => {
               const o = e.v.outputs;
-              const r = o.rungs.find((x) => x.model_id === rung) ?? null;
+              const r = o.rungs.find((x) => bareModel(x.model_id) === bareModel(rung)) ?? null;
               return (
                 <tr key={e.id} data-variant={e.id} data-years={o.years ?? 'pooled'} className={e.id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
