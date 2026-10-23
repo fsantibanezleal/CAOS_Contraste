@@ -113,10 +113,13 @@ def test_a_c01_finding_names_the_variant_and_the_ead_says_saldo_facturado():
                 assert "«" in f["title"]["es"]
                 assert not re.search(r"\b(?:holdout|label-noise|prior-shift|small-sample|drift-moderate|drift-severe|german-twin)\b", f["title"]["es"])
                 assert not re.search(r"\b(?:label-noise|prior-shift|small-sample)\b", f["title"]["en"])
-        ead = doc.get("outputs", {}).get("irb", {}).get("ead")
+        irb = doc.get("outputs", {}).get("irb", {})
+        ead = irb.get("ead")
         if ead:
             assert "cuenta actual" not in ead["es"]
-            assert "saldo facturado" in ead["es"]
+            # the billed balance is the card book's EAD (qrre); the German twin's is the loan amount ("el monto del crédito")
+            if irb.get("asset_class") == "qrre":
+                assert "saldo facturado" in ead["es"]
     assert seen >= 5
 
 

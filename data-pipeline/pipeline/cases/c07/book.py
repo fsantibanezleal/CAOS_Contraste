@@ -20,12 +20,12 @@ CLASSES = ("mortgage", "consumer", "commercial")
 #: calibration classes by account: class, sub (product or assessment), tier (collateral or risk tier)
 SEGMENTS: tuple[dict[str, Any], ...] = (
     {"id": "mortgage-ltv-le80", "klass": "mortgage", "sub": 0, "tier": 0, "b1": "residential-mortgage", "bde": "B.1.1",
-     "label": {"en": "Residential mortgages, LTV up to 80%", "es": "Hipotecario vivienda, PVG hasta 80%"},
-     "bde_label": {"en": "Main residence, LTV up to 80%", "es": "Vivienda habitual, LTV hasta 80%"},
+     "label": {"en": "Residential mortgages, LTV up to 80%", "es": "Hipotecario vivienda, PVG hasta 80 %"},
+     "bde_label": {"en": "Main residence, LTV up to 80%", "es": "Vivienda habitual, LTV hasta 80 %"},
      "eir": 0.08, "rho": 0.15},
     {"id": "mortgage-ltv-gt80", "klass": "mortgage", "sub": 0, "tier": 1, "b1": "residential-mortgage", "bde": "B.1.2",
-     "label": {"en": "Residential mortgages, LTV above 80%", "es": "Hipotecario vivienda, PVG sobre 80%"},
-     "bde_label": {"en": "Main residence, LTV above 80%", "es": "Vivienda habitual, LTV sobre 80%"},
+     "label": {"en": "Residential mortgages, LTV above 80%", "es": "Hipotecario vivienda, PVG sobre 80 %"},
+     "bde_label": {"en": "Main residence, LTV above 80%", "es": "Vivienda habitual, LTV sobre 80 %"},
      "eir": 0.08, "rho": 0.15},
     {"id": "consumer-instalment", "klass": "consumer", "sub": 0, "tier": None, "b1": "consumer", "bde": "B.2",
      "label": {"en": "Consumer instalment loans", "es": "Consumo en cuotas"},
