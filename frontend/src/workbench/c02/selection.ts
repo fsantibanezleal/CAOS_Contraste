@@ -37,6 +37,11 @@ export function rungOf(o: C02Outputs | null, id: string): C02Rung | null {
 }
 
 /** The rung in focus of a selection, or the first rung when the document does not carry it. */
+/** A model's id without the prefix of the file it was fitted on: "h1-P2a-l1" and "pooled-P2a-l1" are the model "P2a-l1", the
+ * key the transfer cells use and the one that joins a model across the six files (the rung code alone does not: P4 names
+ * LightGBM and XGBoost). */
+export const bareModel = (id: string): string => id.replace(/^(?:h\d+|pooled)-/, '');
+
 export function rungFor(sel: C02Sel | null): C02Rung | null {
   const o = outputsOf(sel);
   return rungOf(o, sel?.rung ?? '') ?? o?.rungs[0] ?? null;

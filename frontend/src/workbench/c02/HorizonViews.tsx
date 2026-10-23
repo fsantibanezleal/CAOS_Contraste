@@ -10,7 +10,7 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc } from '../c20/U14Common';
-import { outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
+import { bareModel, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
 
 /** The display band of a transfer AUC (a shade, not a threshold): below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above. */
 const band = (auc: number): 1 | 2 | 3 | 4 => (auc < 0.6 ? 1 : auc < 0.7 ? 2 : auc < 0.8 ? 3 : 4);
@@ -30,8 +30,8 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
   const seen = new Set<string>();
   // the cell of a model, not of a rung code: the code P4 names both LightGBM and XGBoost
   const cells = [...o.transfer.cells, ...others].filter((c) => {
-    const key = `${c.model_id}|${c.fitted_on_years}|${c.scored_on_years}`;
-    if (c.model_id !== focus.model_id || seen.has(key)) return false;
+    const key = `${bareModel(c.model_id)}|${c.fitted_on_years}|${c.scored_on_years}`;
+    if (bareModel(c.model_id) !== bareModel(focus.model_id) || seen.has(key)) return false;
     seen.add(key);
     return true;
   });
