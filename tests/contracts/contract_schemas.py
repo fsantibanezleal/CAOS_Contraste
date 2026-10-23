@@ -256,6 +256,18 @@ def catalog_rows() -> list[dict[str, str]]:
     return rows
 
 
+def latest_history_version(contract_id: str) -> str:
+    """The newest version the catalog's History table records for a contract (its rows carry a date in the third column)."""
+    versions = []
+    for line in (CONTRACTS / "catalog.md").read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) > 2 and cells[0] == contract_id and len(cells[2]) == 10 and cells[2][4] == "-" and cells[2][7] == "-":
+            versions.append(cells[1])
+    if not versions:
+        raise LookupError(f"no History row for {contract_id}")
+    return max(versions, key=lambda v: tuple(int(x) for x in v.split(".")))
+
+
 def exempt_from_documents(rows: list[dict[str, str]], fixtures: list[Path]) -> set[str]:
     """Schemas allowed to have no committed document under data/ or the registries: those whose catalog row is
     ``active`` (served by a provider) and those that a document under docs/contracts/fixtures/ covers."""
