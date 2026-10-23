@@ -56,6 +56,10 @@ def document_leaks(doc: Any, only: str | None = None) -> list[str]:
     for path, en, es in bitexts(doc):
         if only and only not in path:
             continue
+        # a test's reference keeps its citation as published (a locator such as "Annex 3.1" is a section number, not a
+        # decimal); its Spanish is reviewed one reference at a time in REFERENCE_ES (pipeline/cases/reference_text.py)
+        if path.endswith(".reference_text"):
+            continue
         bad = leaks(en, es)
         if bad:
             found.append(f"{path}: {bad} in {es[:90]!r}")
