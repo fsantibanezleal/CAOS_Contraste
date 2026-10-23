@@ -116,3 +116,21 @@ describe('U16-F8 C18: the shell draws the waterfalls', () => {
     }
   }
 });
+
+describe('U16-F8 C18 on shell 0.19.0: each bar of the capital stack states its share with the decimals its figure needs', () => {
+  afterEach(() => setLang('en'));
+  for (const name of SCENARIOS) {
+    it(`${name}: two decimals, three where the figure needs them (P2R 9.125 %), as the table; the axis ticks one decimal`, () => {
+      const { props } = charts('en', <StackView sel={selOf(name)} />);
+      const stacks = props.slice(0, 2) as Array<Props & { data: Array<Datum & { format?: { percent?: boolean; decimals?: number } }> }>;
+      expect(stacks.length).toBe(2);
+      for (const chart of stacks) {
+        expect(chart.axis.format).toEqual({ percent: true, decimals: 1 });
+        for (const d of chart.data) {
+          const need = Math.abs((d.value ?? 0) * 1e4 - Math.round((d.value ?? 0) * 1e4)) < 1e-6 ? 2 : 3;
+          expect(d.format, `${name} ${d.id}`).toEqual({ percent: true, decimals: need });
+        }
+      }
+    });
+  }
+});

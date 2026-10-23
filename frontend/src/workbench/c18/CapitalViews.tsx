@@ -276,7 +276,11 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     : null;
   const rowsAll = oiBars.length + refBars.length;
   // a share keeps two decimals, and a third only where a figure needs it (9.125 %), as the table does
-  const shareFormat = (bars: Array<{ value: number | null | undefined }>) => ({ percent: true, decimals: Math.max(2, ...bars.map((x) => requirementDecimals(x.value ?? 0))) });
+  // each bar states its share with the decimals the figure needs (2, or 3 such as P2R 9.125 %), as the table does (shell 0.19.0
+  // BarDatum.format); the axis ticks keep one decimal
+  const ownDecimals = <T extends { value: number | null | undefined }>(bars: T[]): T[] =>
+    bars.map((b) => ({ ...b, format: { percent: true, decimals: requirementDecimals(b.value ?? 0) } }));
+  const tickFormat = { percent: true, decimals: 1 };
   return (
     <ViewsRow>
       <PlotCard
@@ -295,8 +299,8 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               <div style={{ flex: `${rowsAll} 1 0`, minHeight: 0 }}>
                 <BarChart
                   title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
-                  data={[...oiBars, ...refBars]}
-                  axis={{ label: { en: 'Share of RWA', es: 'Parte de los APR' }, format: shareFormat([...oiBars, ...refBars]) }}
+                  data={ownDecimals([...oiBars, ...refBars])}
+                  axis={{ label: { en: 'Share of RWA', es: 'Parte de los APR' }, format: tickFormat }}
                   height="fill"
                 />
               </div>
@@ -304,8 +308,8 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: 0 }}>
                   <BarChart
                     title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
-                    data={legalBars}
-                    axis={{ label: { en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }, format: shareFormat(legalBars) }}
+                    data={ownDecimals(legalBars)}
+                    axis={{ label: { en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }, format: tickFormat }}
                     height="fill"
                   />
                 </div>
