@@ -47,7 +47,7 @@ GERMAN_COST = {"bad_accepted": 5.0, "good_rejected": 1.0}  # german.doc, section
 VARIANTS: tuple[dict[str, Any], ...] = (
     {"id": "holdout", "fit": "taiwan", "truth": "real-outcomes",
      "title": _t("Holdout as observed", "Muestra reservada tal como se observa"), "short": _t("Holdout", "Reservada"),
-     "regime": _t("The locked 30% holdout, opened once.", "La muestra reservada del 30%, abierta una sola vez.")},
+     "regime": _t("The locked 30% holdout, opened once.", "La muestra reservada del 30 %, abierta una sola vez.")},
     {"id": "drift-moderate", "fit": "taiwan", "truth": "synthetic-known-truth",
      "title": _t("Covariate drift, moderate", "Deriva de covariables, moderada"), "short": _t("Drift 0.25", "Deriva 0,25"),
      "regime": _t("Real holdout rows resampled toward recent delinquency, weights exp(0.25 z).",
@@ -60,8 +60,8 @@ VARIANTS: tuple[dict[str, Any], ...] = (
      "regime": _t("Real holdout rows resampled so the default rate is 1.5 times the observed one.",
                   "Filas reales remuestreadas para que la tasa de incumplimiento sea 1,5 veces la observada.")},
     {"id": "label-noise", "fit": "taiwan", "truth": "synthetic-known-truth",
-     "title": _t("Label noise 5%", "Ruido de etiqueta 5%"), "short": _t("Noise 5%", "Ruido 5%"),
-     "regime": _t("5% of the holdout labels flipped at random.", "El 5% de las etiquetas de la muestra reservada invertidas al azar.")},
+     "title": _t("Label noise 5%", "Ruido de etiqueta 5 %"), "short": _t("Noise 5%", "Ruido 5 %"),
+     "regime": _t("5% of the holdout labels flipped at random.", "El 5 % de las etiquetas de la muestra reservada invertidas al azar.")},
     {"id": "small-sample", "fit": "taiwan-small", "truth": "real-outcomes",
      "title": _t("Small sample (2,000 rows)", "Muestra pequeña (2.000 filas)"), "short": _t("2,000 rows", "2.000 filas"),
      "regime": _t("The ladder retrained on 2,000 training rows, evaluated on the same holdout.",
@@ -212,10 +212,10 @@ def _impact(fit: Fit, pds: dict[str, np.ndarray], raws: dict[str, np.ndarray], y
         "approval_rate": {"value": float(a.mean()), "unit": "fraction", "label": lab("Approval rate (both models)", "Tasa de aprobación (ambos modelos)")},
         "bad_rate_champion": {"value": float(y[a].mean()), "unit": "fraction", "label": lab("Bad rate among approved, champion", "Tasa de malos entre aprobados, campeón")},
         "bad_rate_challenger": {"value": float(y[b].mean()), "unit": "fraction", "label": lab("Bad rate among approved, challenger", "Tasa de malos entre aprobados, retador")},
-        "el_champion": {"value": float(LGD * (champ[a] * ead[a]).sum()), "unit": cur, "label": lab("Expected loss of the approved, champion (LGD 50%)", "Pérdida esperada de los aprobados, campeón (LGD 50%)")},
-        "el_challenger": {"value": float(LGD * (chall[b] * ead[b]).sum()), "unit": cur, "label": lab("Expected loss of the approved, challenger (LGD 50%)", "Pérdida esperada de los aprobados, retador (LGD 50%)")},
-        "loss_champion": {"value": float(LGD * ead[a & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, champion (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, campeón (LGD 50%)")},
-        "loss_challenger": {"value": float(LGD * ead[b & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, challenger (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, retador (LGD 50%)")},
+        "el_champion": {"value": float(LGD * (champ[a] * ead[a]).sum()), "unit": cur, "label": lab("Expected loss of the approved, champion (LGD 50%)", "Pérdida esperada de los aprobados, campeón (LGD 50 %)")},
+        "el_challenger": {"value": float(LGD * (chall[b] * ead[b]).sum()), "unit": cur, "label": lab("Expected loss of the approved, challenger (LGD 50%)", "Pérdida esperada de los aprobados, retador (LGD 50 %)")},
+        "loss_champion": {"value": float(LGD * ead[a & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, champion (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, campeón (LGD 50 %)")},
+        "loss_challenger": {"value": float(LGD * ead[b & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, challenger (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, retador (LGD 50 %)")},
         "swap_in": {"value": float((b & ~a).sum()), "unit": "applicants", "label": lab("Approved by the challenger only", "Aprobados solo por el retador")},
         "swap_out": {"value": float((a & ~b).sum()), "unit": "applicants", "label": lab("Approved by the champion only", "Aprobados solo por el campeón")},
         "swap_in_bad_rate": {"value": float(y[b & ~a].mean()) if (b & ~a).any() else None, "unit": "fraction", "label": lab("Bad rate of the challenger-only approvals", "Tasa de malos de los aprobados solo por el retador")},
@@ -228,7 +228,7 @@ def _impact(fit: Fit, pds: dict[str, np.ndarray], raws: dict[str, np.ndarray], y
         unit = cap.account_capital(cls, p, ead, rev)["basel3"]
         out[f"capital_{key}"] = {"value": float(LGD * unit[m].sum()), "unit": cur, "label": lab(
             f"IRB capital of the approved, {key} (Basel III, LGD 50%)",
-            f"Capital IRB de los aprobados, {es} (Basilea III, LGD 50%)")}
+            f"Capital IRB de los aprobados, {es} (Basilea III, LGD 50 %)")}
     if fit.source == "uci-german":
         def cost(p: np.ndarray) -> tuple[float, float]:
             best = (np.inf, 0.0)
