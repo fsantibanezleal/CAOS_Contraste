@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { C01WriteUp } from '../content/cases/C01';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
-import { engineText, licenceText } from './c01Text';
+import { engineText, licenceParts, licenceText } from './c01Text';
 
 const WRITE_UPS: Record<string, () => ReactNode> = { C01: () => <C01WriteUp /> };
 
@@ -57,7 +57,15 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                     ({s?.publisher})
                   </td>
                   <td className="caos-col-text">
-                    <span translate={lang === 'es' && s && licenceText(id, s.licence, 'es') !== s.licence ? undefined : 'no'}>{s ? licenceText(id, s.licence, lang) : ''}</span> <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
+                    {s && lang === 'es' && licenceText(id, s.licence, 'es') !== s.licence ? (
+                      // the Spanish gloss is read as Spanish; the licence's own name, with its version, is not translated
+                      (() => {
+                        const [before, name, after] = licenceParts(licenceText(id, s.licence, 'es'));
+                        return <span>{before}{name ? <span translate="no">{name}</span> : null}{after}</span>;
+                      })()
+                    ) : (
+                      <span translate="no">{s ? s.licence : ''}</span>
+                    )}{' '}<em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
                   </td>
                   {/* the source's required wording, verbatim in its own language */}
                   <td className="caos-col-text" translate="no" lang="en">
