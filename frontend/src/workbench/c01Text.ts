@@ -87,3 +87,13 @@ export function licenceText(sourceId: string, declared: string, lang: 'en' | 'es
   const known = LICENCE_ES[sourceId];
   return lang === 'es' && known && known[0] === declared ? known[1] : declared;
 }
+
+/** The licence's own name inside a sentence ("Creative Commons Atribución 4.0 Internacional (CC BY 4.0)"): a name with its version,
+ * written as published, so the page marks it translate="no" and a reader of Spanish numbers (gate G11) skips its "4.0". */
+const LICENCE_NAME = /Creative Commons [^()]*\(CC [^)]*\)/;
+
+/** The sentence split around the licence's name: [before, name, after]; the name is "" when the sentence names none. */
+export function licenceParts(text: string): [string, string, string] {
+  const m = LICENCE_NAME.exec(text);
+  return m ? [text.slice(0, m.index), m[0], text.slice(m.index + m[0].length)] : [text, '', ''];
+}
