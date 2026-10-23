@@ -337,7 +337,7 @@ def _null(book: Book) -> dict[str, Any]:
          _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin momentum (c = 0)"), None),
         # the settings the harness found to matter
         ("pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow", logit, "logistic-5000", None, {"fitted": True}, "settings",
-         _t("the same, with G - 2 degrees of freedom (fitted=True)", "lo mismo, con G - 2 grados de libertad (fitted=True)"), None),
+         _t("the same, with G - 2 degrees of freedom (the model fitted on the same sample)", "lo mismo, con G - 2 grados de libertad (el modelo ajustado sobre la misma muestra)"), None),
         ("pd.traffic_lights@upper", "pd.traffic_lights", SERIES, "series-5y-3pct", feed_series(), {"ties": "upper"}, "settings",
          _t("the upper tie rule WP14's simulation used", "la regla de empates superior que usó la simulación de WP14"),
          _exact_traffic([1000] * 5, 0.03, 0.03, ties="upper")),

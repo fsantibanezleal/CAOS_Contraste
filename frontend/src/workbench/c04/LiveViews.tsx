@@ -346,7 +346,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
           dataKey={stateKey}
           note={{
             en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); ${marked.en}.${empty.en} ${src.en}`,
-            es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
+            es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Discontinua: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
           }}
         >
           <UPlotChart
@@ -621,7 +621,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                   <th>D</th>
                   <th>N</th>
                   <th>
-                    N† <Ref>(3.4)</Ref>
+                    {pick({ en: 'Effective N', es: 'N efectivo' }, lang)} <Ref>(3.4)</Ref>
                   </th>
                   <th>{pick({ en: 'Wald width', es: 'Ancho Wald' }, lang)}</th>
                   <th>{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
@@ -785,8 +785,10 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   series.push({
     label: { en: `${GRADES[g]}'s own risk weight`, es: `Ponderador propio de ${GRADES[g]}` },
     values: drawnRows.map((r) => onLog(r.result?.riskWeights[g])),
-    color: '--color-fg',
+    // not the colour of the 'weighted' generator (--color-fg): one colour never carries two meanings in a chart (U16-R2 b02 m8)
+    color: '--color-fg-faint',
     mode: 'points',
+    size: 13,
   });
   const chartSeries = drawable(series).map(pad);
   // the tall screen's second drawing: every drawn row's risk weight grade by grade (generators dashed), and the chosen
@@ -873,7 +875,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             dataKey={stateKey}
             note={{
               en: `Each definition's and generator's (dashed) risk weight grade by grade at LGD ${lgd.en}, log scale: where the lines part, the definition decides the capital.${spread ? ` ${GRADES[g]} runs from ${pctd('en', spread.lo.value)} (${pick(spread.lo.label, 'en')}) to ${pctd('en', spread.hi.value)} (${pick(spread.hi.label, 'en')}).` : ''} Marked: the chosen grade. ${src.en}`,
-              es: `El ponderador de cada definición y generador (segmentados) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido. ${src.es}`,
+              es: `El ponderador de cada definición y generador (discontinuos) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido. ${src.es}`,
             }}
           >
             {byGrade.length ? (
@@ -974,7 +976,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
         actions={<LgdKnob sel={sel} />}
         note={{
           en: `The IRB risk weight (Basel III final, corporate, CRE31.5; maturity 2.5 years, CRE32.44) per unit of EAD at the knob's LGD, of each grade at the generator's true one-year PD, the only PD a known truth has; dashed, the average over the design's obligors. Log scale; marked: the chosen grade. ${src.en}`,
-          es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; segmentada, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
+          es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; discontinua, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
         }}
       >
         {series.length ? (

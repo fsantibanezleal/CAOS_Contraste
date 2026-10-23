@@ -274,6 +274,7 @@ def stream_text(cell: dict) -> str:
 
 SPANISH_DECIMAL = re.compile(r"(?<![\d,])(\d+),(?=\d+%)")  # "2,5%" of a label; the grouping commas of {:,} and "[0,2)" stay
 SPANISH_THOUSANDS = re.compile(r"\d{1,3}(?:\.\d{3})+")
+SPANISH_NUMBER = re.compile(r"-?\d+,\d+(?:\.\d+)?(?:[eE][-+]?\d+)?|-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
 
 
 def numeric_tokens(cell: dict, lang: str = "en") -> list[str]:
@@ -282,14 +283,33 @@ def numeric_tokens(cell: dict, lang: str = "en") -> list[str]:
     Since the producers write the numbers of their texts as the shell does (fee234b, U16-P1a), a Spanish label carries
     "2,5%" where the English one has "2.5%": the decimal comma before a percent is read back to the point, so the number is still compared."""
     text = stream_text(cell)
-    return NUMBER.findall(SPANISH_DECIMAL.sub(r"\1.", text) if lang == "es" else text)
+    if lang != "es":
+        return NUMBER.findall(text)
+    # a comma between digits stays one token ("0,0694"): same_numbers reads it as a decimal comma or as the English pair
+    return SPANISH_NUMBER.findall(SPANISH_DECIMAL.sub(r"\1.", text))
 
 
 def same_numbers(english: list[str], spanish: list[str]) -> bool:
-    """Equal token by token; the one difference allowed is the thousands point of a Spanish label ("1.500 dias" for
-    "1500 days"): a Spanish token of the form 1.500 or 12.345.678 whose digits are the English token's."""
-    return len(english) == len(spanish) and all(
-        e == s or (SPANISH_THOUSANDS.fullmatch(s) is not None and e == s.replace(".", "")) for e, s in zip(english, spanish))
+    """Equal token by token, with the differences of a Spanish label: the thousands point ("1.500 dias" for "1500 days"), a
+    token of the form 1.500 or 12.345.678 whose digits are the English token's; and the decimal comma ("0,0694" for "0.0694"),
+    a token with a comma between digits that is the English decimal, or the English pair of integers when both trees print
+    the same comma (Python's {:,} grouping, an interval such as [0,2))."""
+    i = j = 0
+    while i < len(english) and j < len(spanish):
+        e, s = english[i], spanish[j]
+        if e == s or (SPANISH_THOUSANDS.fullmatch(s) is not None and e == s.replace(".", "")):
+            i, j = i + 1, j + 1
+            continue
+        if "," in s:
+            left, right = s.split(",", 1)
+            if e == f"{left}.{right}":
+                i, j = i + 1, j + 1
+                continue
+            if e == left and i + 1 < len(english) and english[i + 1] == right:
+                i, j = i + 2, j + 1
+                continue
+        return False
+    return i == len(english) and j == len(spanish)
 
 
 def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
@@ -310,6 +330,16 @@ def test_adversarial_the_spanish_number_reading_allows_only_the_thousands_point_
     es_cell = {"outputs": [{"output_type": "stream", "text": ["a (1.500 dias al 2,5%) 0.058\n"]}]}
     assert same_numbers(numeric_tokens(cell), numeric_tokens(es_cell, "es"))
     for wrong in ("a (1.501 dias al 2,5%) 0.058\n", "a (1.500 dias al 2,6%) 0.058\n", "a (1.500 dias al 2,5%) 0.059\n", "a (1.500 dias al 2,5%)\n"):
+        assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
+
+
+def test_adversarial_a_spanish_decimal_comma_reads_as_the_english_decimal_and_a_shared_comma_stays_a_pair():
+    cell = {"outputs": [{"output_type": "stream", "text": ["rates (1y 0.0694, 2y 0.0526) on [0,2) of 5,910 rows, 26,943.01 EUR\n"]}]}
+    es_cell = {"outputs": [{"output_type": "stream", "text": ["tasas (1 año 0,0694, 2 años 0,0526) en [0,2) de 5,910 filas, 26,943.01 EUR\n"]}]}
+    assert same_numbers(numeric_tokens(cell), numeric_tokens(es_cell, "es"))
+    for wrong in ("tasas (1 año 0,0695, 2 años 0,0526) en [0,2) de 5,910 filas, 26,943.01 EUR\n",
+                  "tasas (1 año 0,0694, 2 años 0,0526) en [0,3) de 5,910 filas, 26,943.01 EUR\n",
+                  "tasas (1 año 0,0694) en [0,2) de 5,910 filas, 26,943.01 EUR\n"):
         assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
 
 

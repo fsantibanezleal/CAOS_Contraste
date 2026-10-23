@@ -18,6 +18,18 @@ const controls = (ids: string[], lang: 'en' | 'es') => ids.map((c) => pick(text(
 
 type Which = 'controlled' | 'rate_spread';
 
+/** The x axis of the group charts (b10 m3): one named tick per group, the group's name as the table writes it (with its reference
+ * when two contrasts share a group, so no label repeats), and half a step of room at each end. */
+export function groupAxis(contrasts: Array<{ group: string; reference_group: string }>) {
+  const twice = (g: string) => contrasts.filter((c) => c.group === g).length > 1;
+  const ticks = contrasts.map((c, i) => {
+    const g = groupBi(c.group);
+    const r = groupBi(c.reference_group);
+    return { value: i + 1, label: twice(c.group) ? { en: `${g.en} / ${r.en}`, es: `${g.es} / ${r.es}` } : g };
+  });
+  return { values: contrasts.map((_, i) => i + 1), ticks, range: [0.5, contrasts.length + 0.5] as [number, number], label: { en: 'Group', es: 'Grupo' }, format: { decimals: 0 } };
+}
+
 function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
   const lang = useShellLang();
   const card = useCard(sel.data.variant);
@@ -35,7 +47,6 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
         en: 'The coefficient of the group in a linear model of the rate spread of the approved loans with the same controls, in percentage points of rate spread, with its 95% interval: positive means a higher spread than the reference group. An approximation of comparative evidence.',
         es: 'El coeficiente del grupo en un modelo lineal del diferencial de tasa de los préstamos aprobados con los mismos controles, en puntos porcentuales de diferencial, con su intervalo de 95%: positivo significa un diferencial mayor que el del grupo de referencia. Una aproximación de evidencia comparativa.',
       };
-  const x = have.map((_, i) => i + 1);
   return (
     <PlotCard fill title={{ en: `${title.en}: ${text(FIELD_TEXT, a.field).en.toLowerCase()}`, es: `${title.es}: ${text(FIELD_TEXT, a.field).es.toLowerCase()}` }} {...card} note={note}>
       <LabelledOverTable
@@ -46,7 +57,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
           ) : (
             <UPlotChart
               height="fill"
-              x={{ values: x, label: { en: 'Group, in the order of the table', es: 'Grupo, en el orden de la tabla' }, format: { decimals: 0 } }}
+              x={groupAxis(have.map((r) => r.c))}
               y={{ label: which === 'controlled' ? { en: 'Coefficient (log-odds)', es: 'Coeficiente (log-odds)' } : { en: 'Coefficient (percentage points)', es: 'Coeficiente (puntos porcentuales)' }, format: { decimals: 2 } }}
               series={[
                 { label: { en: 'Estimate', es: 'Estimación' }, values: have.map((r) => r.e.estimate!.coefficient), color: '--color-accent', mode: 'points', size: 11 },
@@ -148,7 +159,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
             ) : (
               <UPlotChart
                 height="fill"
-                x={{ values: have.map((_, i) => i + 1), label: { en: 'Group, in the order of the table', es: 'Grupo, en el orden de la tabla' }, format: { decimals: 0 } }}
+                x={groupAxis(have.map((r) => r.c))}
                 y={{ label: { en: 'Coefficient (log-odds of approval)', es: 'Coeficiente (log-odds de aprobación)' }, format: { decimals: 2 } }}
                 series={[
                   { label: { en: `Fitted on ${o.fit_year}`, es: `Ajustado en ${o.fit_year}` }, values: have.map((r) => r.e!.fit_coefficient), color: '--color-accent', mode: 'points', size: 11 },

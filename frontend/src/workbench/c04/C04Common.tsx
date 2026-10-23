@@ -367,7 +367,7 @@ export function withdrawalsChart(f: FamilyVariant, points: EvidencePoint[], grad
     marks: gradeMark(grade),
     note: {
       en: `The mean one-year PD over ${reps.en} repetitions minus the true PD, as a share of it, by grade: withdrawals removed from the denominator (CEREP's transition page) and each withdrawn obligor followed to the year end (EBA/GL/2017/16 paragraphs 73 and 76), at the strongest informative withdrawal (k ${kTop.en}: the withdrawal rate times 1 + k in the year before a default) and, dashed, removed with withdrawals not informative (k ${kBase.en}). The top grades' few defaults make their shares noisy; their Monte Carlo errors are in the Validation group. Marked: the rail's grade.`,
-      es: `La PD anual media en ${reps.es} repeticiones menos la PD verdadera, como fracción de ella, por grado: retiros eliminados del denominador (la página de transiciones de CEREP) y cada deudor retirado seguido hasta el fin del año (párrafos 73 y 76 de EBA/GL/2017/16), con el retiro informativo más fuerte (k ${kTop.es}: la tasa de retiro por 1 + k en el año previo a un incumplimiento) y, segmentada, eliminados con retiros no informativos (k ${kBase.es}). Los pocos incumplimientos de los mejores grados hacen ruidosas sus fracciones; sus errores de Monte Carlo están en el grupo Validación. Marcado: el grado del panel.`,
+      es: `La PD anual media en ${reps.es} repeticiones menos la PD verdadera, como fracción de ella, por grado: retiros eliminados del denominador (la página de transiciones de CEREP) y cada deudor retirado seguido hasta el fin del año (párrafos 73 y 76 de EBA/GL/2017/16), con el retiro informativo más fuerte (k ${kTop.es}: la tasa de retiro por 1 + k en el año previo a un incumplimiento) y, discontinua, eliminados con retiros no informativos (k ${kBase.es}). Los pocos incumplimientos de los mejores grados hacen ruidosas sus fracciones; sus errores de Monte Carlo están en el grupo Validación. Marcado: el grado del panel.`,
     },
   };
 }
@@ -554,7 +554,7 @@ export function rungText(f: FamilyVariant, s: C04Simulation, lang: Lang): string
 
 function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang): string {
   const n = k ? `[${k}] ` : '';
-  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado en el horneado desde ' : 'Computed in the bake from '}${pick(designName(c.key), lang)}`;
+  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado previamente desde ' : 'Computed in the bake from '}${pick(designName(c.key), lang)}`;
   if (c.kind === 'missing') return `${ref} (${lang === 'es' ? 'no está en el artefacto' : 'not in the artifact'})`;
   if (c.kind === 'test') {
     const t = c.row;
@@ -607,7 +607,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: pc,
       note: {
         en: `The p-value of each cited test, numbered as in the table, on a log scale against the committed policy's thresholds (${pc.policy}: amber below ${formatNumber(pc.amber, 'en', { digits: 2 })}, red below ${formatNumber(pc.red, 'en', { digits: 2 })}; a policy, not a regulation). Red points are the cohorts and periods the test rejects.${pc.marks.length ? ' Marked: the years the finding names, where the year\'s migrations depart most from the pooled matrix (the likelihood ratio per degree of freedom).' : ''}${below.en} ${src.en}`,
-        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política comprometida (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
+        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política versionada (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
       },
     };
   }
@@ -619,7 +619,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: rc,
       note: {
         en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power.${rc.marks?.length ? ' Marked: the rates at the empirical momentum strength (alpha 0.125).' : ''} ${src.en}`,
-        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (segmentada 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
+        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (discontinua 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
       },
     };
   }
@@ -703,7 +703,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
       dataKey={stateKey}
       note={{
         en: `Each finding cites the test rows behind it (their p-value and light under the committed policy), the measured rates (with their Monte Carlo SE and Wilson interval) or the block of the outputs the bake computed it from. ${where.en}${src.en}`,
-        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política comprometida), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que el horneado lo calculó. ${where.es}${src.es}`,
+        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política versionada), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que se calculó. ${where.es}${src.es}`,
       }}
     >
       <div className={fill ? 'ct-stack' : 'ct-stack-natural'}>
@@ -1122,7 +1122,7 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
           {pick(
             {
               en: `Truth status of this variant: ${v.provenance.truth_status}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el horneado. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}

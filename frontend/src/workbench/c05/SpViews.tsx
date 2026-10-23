@@ -138,7 +138,7 @@ export function ProfilesView({ sel }: { sel: C05Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
                 <th>2009</th>
                 <th>{o.year}</th>
-                <th className="ct-wide-only">{pick({ en: 'Change', es: 'Cambio' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Change, points', es: 'Cambio, puntos' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -262,8 +262,8 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), the chi-square approximation beside it for reference. The light follows the rail\'s policy.',
-          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
+          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), from 1500 px wide the chi-square approximation beside it for reference. The light follows the rail\'s policy.',
+          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), desde 1500 px de ancho con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
         }}
       >
         <div className="ct-scroll">
@@ -427,8 +427,8 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
               {g.table7_p_values.map((r) => (
                 <tr key={r.approach}>
                   <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
-                  <td>{formatNumber(r.printed_pct, lang, { decimals: 1 })}%</td>
-                  <td>{formatNumber(r.ours_pct, lang, { decimals: 2 })}%</td>
+                  <td>{formatNumber(r.printed_pct / 100, lang, { percent: true, decimals: 1 })}</td>
+                  <td>{formatNumber(r.ours_pct / 100, lang, { percent: true, decimals: 2 })}</td>
                 </tr>
               ))}
             </tbody>
@@ -445,8 +445,8 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
               {g.table8.map((r) => (
                 <tr key={r.approach}>
                   <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
-                  <td>{formatNumber(r.printed_pct, lang, { decimals: 2 })}%</td>
-                  <td>{formatNumber(r.ours_pct, lang, { decimals: 3 })}%</td>
+                  <td>{formatNumber(r.printed_pct / 100, lang, { percent: true, decimals: 2 })}</td>
+                  <td>{formatNumber(r.ours_pct / 100, lang, { percent: true, decimals: 3 })}</td>
                 </tr>
               ))}
             </tbody>
@@ -501,7 +501,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
                 <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(m.short_title, lang)}</td>
                   <td>{pct(lang, data.rw[m.id], 1)}</td>
-                  <td>{formatNumber((data.rw[m.id] / ref - 1) * 100, lang, { decimals: 1 })}%</td>
+                  <td>{formatNumber(data.rw[m.id] / ref - 1, lang, { percent: true, decimals: 1 })}</td>
                 </tr>
               ))}
             </tbody>

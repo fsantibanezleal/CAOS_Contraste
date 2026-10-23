@@ -231,7 +231,7 @@
         "regime": "bde-annex9",
         "label": {
           "en": "BdE Annex 9",
-          "es": "BdE Anexo 9"
+          "es": "BdE Anejo 9"
         },
         "status": "spanish-gaap-alternative-solutions",
         "currency": "CLP",
@@ -566,7 +566,7 @@
       "unit": "CLP",
       "label": {
         "en": "BdE Annex 9",
-        "es": "BdE Anexo 9"
+        "es": "BdE Anejo 9"
       }
     }
   },

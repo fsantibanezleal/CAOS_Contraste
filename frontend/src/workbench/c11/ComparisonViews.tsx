@@ -45,7 +45,8 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
               title={{ en: 'Model confidence set p-value on FZ0', es: 'Valor p del conjunto de confianza de modelos sobre FZ0' }}
               height="fill"
               orientation="horizontal"
-              data={(mcs?.members ?? []).map((x) => ({
+              // the bars follow the ranking the note states: lowest average FZ0 first (U16-R2 b05 m6)
+              data={[...(mcs?.members ?? [])].sort((a, b) => ranked.findIndex((r) => r.m.model_id === a.model_id) - ranked.findIndex((r) => r.m.model_id === b.model_id)).map((x) => ({
                 id: x.model_id,
                 label: modelLabel(sel, x.model_id),
                 value: x.p_value,

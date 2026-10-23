@@ -32,7 +32,9 @@ BASELINE = {
     "drift": "46a6974a98addf80803a775db2edbbb09f7e69e96523b732b6b98870267255b4",
     "leakage": "ad0ce3fdfb19516b3cbab87dd3ff99cb7761ff6033410c2c2f4a5db614fac1e1",
     "miscalibration": "bbeb3090c2bb034cf8892b4814d2a7be771d39fc93f5c3b8b2f212dd7195621f",
-    "null": "538b97efd13b301c0af4ad4552f999fbe8c3159b548896c75e22af2a739a30eb",
+    # re-pinned at U16 b10 m11 (2026-10-22): the HL scenario text of simulation 21 says "the model fitted on the same sample"
+    # where it said "(fitted=True)", in both languages; checked path by path, no number moved
+    "null": "95199739ed70fcda8d464a27f3f7620506fcc578f3feeddb638a8ea63d67dc5b",
 }
 
 

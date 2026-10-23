@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "20.0.0",
+    "version": "22.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "0ec6ff181028f7afc30c1aa6a436ff305f100f620e23605f3994b83a6d73794f"
+    "sha256": "4d674c817bd82f94978e68c6b23c8459bdf9cdc590522b51509a3cb91da62a63"
   },
   "readiness": {
     "version": "1.0.1",
@@ -125,9 +125,9 @@
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
   },
   "c06-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c06/variant-reporting-date.schema.json",
-    "sha256": "18bb4a482afb186a574452583d1bd46b4b10724b724e0003d9a2aa78286417c9"
+    "sha256": "273594a852bcfc18192921070e14cdbd4f0d9022bef50251afcc6485fcd14f2f"
   },
   "c06-models": {
     "version": "1.0.0",
@@ -135,9 +135,9 @@
     "sha256": "e36d4635c9434b0f1fa4c5b7c3033c7ac49512b1e6700390e9fad50ab3690ac8"
   },
   "c07-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c07/variant-three-regime.schema.json",
-    "sha256": "3d8e2990a0721d20a7571ef9562d7da15fe1df118036b24354dd9c7e6c52aed0"
+    "sha256": "71df18a35b8d9af9feacb3c9be308cae14105467feb196931e87d138bbd62d2a"
   },
   "c07-models": {
     "version": "2.0.0",
@@ -150,9 +150,9 @@
     "sha256": "e1c93696f989676a339bbb69d48bbf347ffd41c3f2a0e58ae41f8ab56e0d8b0d"
   },
   "c03-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c03/variant-vintage-cohort.schema.json",
-    "sha256": "63134a018f79f57d66da0dcd704946bd61d622ed4ea5e6d0fd135616353a7d71"
+    "sha256": "d104b2915752dd959eb397e67723a8a1ea2a7f6d78dc1ad396e809388bd0e6bc"
   },
   "c03-models": {
     "version": "1.0.0",
@@ -160,9 +160,9 @@
     "sha256": "ee07f14472df56680ee59e90cec8c4f999ffeb080cac6569ad8d792d88eebd68"
   },
   "c08-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c08/variant-default-cohort.schema.json",
-    "sha256": "02396785215cef352e2392bc38dc1056a343916fd8adbc60d96f1fe48154c860"
+    "sha256": "b5bf7f4d081acd15a68bab973098a7e9d5edca5445c4d22bf852550766b05480"
   },
   "c08-models": {
     "version": "2.0.0",
@@ -170,9 +170,9 @@
     "sha256": "9dd4daec36839c052147b4ed2fef43b037588aa4bc683d9dd445bcc5c3cfbcc4"
   },
   "c09-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c09/variant-acceleration-level.schema.json",
-    "sha256": "c0addbff41c1b6a38c97051aa5b4891f9df41fe00bc3a565dbdcdfc97a972523"
+    "sha256": "9174c1e3084185cb191449203962924861dd55bf04c490a488a6916bbb9106c8"
   },
   "c09-models": {
     "version": "1.0.0",
@@ -225,14 +225,14 @@
     "sha256": "20c15099d5871d95a8ee9552a659494300e8e867ee2c6fe9e7fa0bb42ea0ed37"
   },
   "c10-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c10/variant-loan-type.schema.json",
-    "sha256": "b8cc2eb822e9493037aa5d92cbd1b718e232fe7ec4a28392391ebc82e942273d"
+    "sha256": "abbc12f297dff44bdf150664f2bcf6566d9a8dfb52b3c8b513358829d16ba262"
   },
   "c10-outputs-grid": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c10/variant-correlation-grid.schema.json",
-    "sha256": "7a9c2b03b8f9dfb00dfe05c881548e0d2b8034acfad2756dfe6e68c7c270ceeb"
+    "sha256": "9ca7b8391ba5c9da317753137c25950edb9a78a15570187fc85eb7485a73cb95"
   },
   "c10-models": {
     "version": "1.0.0",
@@ -245,9 +245,9 @@
     "sha256": "573446ba124f06b12747a12efc64e53861d3dfde024aaf3b56449b526f9f138a"
   },
   "c11-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c11/variant-window.schema.json",
-    "sha256": "d92095203c20e8939fccdae165cdc3fe8db6e432911cc5f37b317dfa0242c6e6"
+    "sha256": "267de553b529efd730a2d2ee6b92b22aab2e5d3edd505d75381fac2cec75854d"
   },
   "c11-models": {
     "version": "1.0.0",
@@ -255,9 +255,9 @@
     "sha256": "4aeb37448b9f0845d61361f1281aebfa149764e8d13753911a8bbfcee3d78bb0"
   },
   "c13-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c13/variant-deficiency.schema.json",
-    "sha256": "e80fa3801a0a3f86315ac9980cd326f01820a06556b38c53b05f2395f04ae6a8"
+    "sha256": "11a8f537a4ac25693583ceb50260870677fb933456574f72536b8e6174867222"
   },
   "c13-models": {
     "version": "1.0.0",
@@ -380,9 +380,9 @@
     "sha256": "4ccbff4cfd1b8842372b3717326bdd97c1a43f336807c372204d93fd1b0d5216"
   },
   "c12-outputs": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c12/variant-swap-exposure.schema.json",
-    "sha256": "7a046f4fa48b5059e5049f98dac8c99c539f0dd86868884fd10a430bb419035c"
+    "sha256": "482b20e0a7ae636323f47531b84171963a696d124f6ca22442a72ed40c3af066"
   },
   "c12-models": {
     "version": "1.0.0",

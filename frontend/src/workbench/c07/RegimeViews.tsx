@@ -61,7 +61,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
         axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 3 } }}
       />
       <p className="ct-note">
-        {pick({ en: 'Pick a bar to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
+        {pick({ en: 'Point at a bar, or use the arrow keys, to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Apunte a una barra, o use las flechas, para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anejo 9 del BdE.' }, lang)}
       </p>
     </div>
   );
@@ -169,7 +169,7 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
               <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
               <th>{`CMF B-1 (${cur})`}</th>
               <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
-              <th>{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</th>
+              <th>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</th>
               <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
               <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
             </tr>
@@ -250,7 +250,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
             axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 4 }, range: [lo0 - pad, hi0 + pad] }}
           />
           <p className="ct-note">
-            {pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
+            {pick({ en: `Millions of ${cur}; the axis spans the running total of the bridge, and the two totals are the dots. Point at a bar, or use the arrow keys, to read it.`, es: `Millones de ${cur}; el eje abarca el total acumulado del puente, y los dos totales son los puntos. Apunte a una barra, o use las flechas, para leerla.` }, lang)}
           </p>
         </div>
       </PlotCard>
@@ -522,7 +522,7 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
   const cur = d.currency;
   return (
     <ViewsRow>
-      <PlotCard fill title={{ en: 'BdE Annex 9: coverage by category', es: 'Anexo 9 del BdE: cobertura por categoría' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'The coverage of each category over its exposure, with the percentages of the alternative solutions of the Annex.', es: 'La cobertura de cada categoría sobre su exposición, con los porcentajes de las soluciones alternativas del Anexo.' }}>
+      <PlotCard fill title={{ en: 'BdE Annex 9: coverage by category', es: 'Anejo 9 del BdE: cobertura por categoría' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'The coverage of each category over its exposure, with the percentages of the alternative solutions of the Annex.', es: 'La cobertura de cada categoría sobre su exposición, con los porcentajes de las soluciones alternativas del Anejo.' }}>
         <ChartOverTable
           chart={
         <BarChart
@@ -559,8 +559,8 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
           </table>
           <p className="ct-note">
             {d.method === 'alternative-solutions'
-              ? pick({ en: 'Method: the alternative solutions of the Annex (Spanish GAAP), aligned with IFRS 9.', es: 'Método: las soluciones alternativas del Anexo (PGC español), alineadas con IFRS 9.' }, lang)
-              : pick({ en: 'Method: internal methodology, validated under the Annex.', es: 'Método: metodología interna, validada bajo el Anexo.' }, lang)}
+              ? pick({ en: 'Method: the alternative solutions of the Annex (Spanish GAAP), aligned with IFRS 9.', es: 'Método: las soluciones alternativas del Anejo (PGC español), alineadas con IFRS 9.' }, lang)
+              : pick({ en: 'Method: internal methodology, validated under the Annex.', es: 'Método: metodología interna, validada bajo el Anejo.' }, lang)}
           </p>
         </div>
         </ChartOverTable>
@@ -640,7 +640,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
                 <td>{money(dv.ifrs9_delta, lang, dv.currency)}</td>
               </tr>
               <tr data-delta="bde-annex9">
-                <td className="ct-text">{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</td>
+                <td className="ct-text">{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</td>
                 <td>{money(dv.bde_annex9_delta, lang, dv.currency)}</td>
               </tr>
             </tbody>

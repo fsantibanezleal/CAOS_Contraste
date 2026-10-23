@@ -221,3 +221,18 @@ export function defaultSel(data: CaseData | null): C10Sel | null {
   const cell = g ? (g.cells.find((c) => c.known_rho === g.generator.null_rho) ?? g.cells[0]) : undefined;
   return { data, rung, level: 0.999, estimator: 'maximum-likelihood', group: o?.portfolio.groups[0]?.id ?? '', cell: cell ? cellKey(cell) : '' };
 }
+
+/**
+ * The remarks the producer attaches to the citations of the ladder, the estimators and the granularity adjustment (English only in the
+ * models artifact): the citation as published, its locators and the remark in Spanish. A reference it does not know is shown as written.
+ */
+const REFERENCE_ES: Record<string, string> = {
+  'dossier 04 C.4 (E[L^2] = joint default probability)': 'dossier 04 C.4 (E[L^2] = probabilidad conjunta de incumplimiento)',
+  'Glasserman and Li (2005); dossier 04 H.7 (the twist is UNVERIFIED there; acceptance is unbiasedness against plain Monte Carlo)':
+    'Glasserman and Li (2005); dossier 04 H.7 (la inclinación está SIN VERIFICAR allí; la aceptación es la ausencia de sesgo frente al Monte Carlo simple)',
+  'Glasserman and Li (2005); no Student-t twist is specified, so the rung is a not-evaluated row':
+    'Glasserman and Li (2005); no se especifica una inclinación para la t de Student, así que el escalón es una fila no evaluada',
+  'Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)': 'Gordy and Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)',
+  'Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)': 'Gordy and Lutkebohmert (2013), ec. 15 y p. 46 (dossier 04 H.5)',
+};
+export const referenceNote = (reference: string, lang: 'en' | 'es'): string => (lang === 'es' ? REFERENCE_ES[reference] ?? reference : reference);

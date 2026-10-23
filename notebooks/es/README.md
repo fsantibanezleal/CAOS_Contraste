@@ -144,7 +144,7 @@ Un tema sin cuaderno de nivel 3 explica por qué en su fila; todos los temas del
 
 ## Más allá del estado del arte
 
-Cada afirmación de la sección Beyond the state of the art del SDD, con los notebooks de nivel 4 que la demuestran en este idioma; la evidencia comprometida de cada afirmación está en el SDD.
+Cada afirmación de la sección Beyond the state of the art del SDD, con los notebooks de nivel 4 que la demuestran en este idioma; la evidencia versionada de cada afirmación está en el SDD.
 
 - **BS-1** Más allá: el tamaño y la potencia de cada prueba, medidos sobre defectos plantados. Demostrada por: [14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb](14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb).
 - **BS-2** Más allá: las reconciliaciones contra motores de referencia que existen hoy; Más allá: exposición conciliada con un motor de referencia dentro del error de Monte Carlo y valores de referencia para el riesgo de correlación adversa. Demostrada por: [03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb](03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb), [08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb](08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb).

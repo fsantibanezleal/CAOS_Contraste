@@ -119,8 +119,13 @@ describe('PR-C04: the Experiments and Benchmark copy of C04 in Spanish carries t
 
 describe('b11 m1: Spanish never renders git "commit" as "comprometer"', () => {
   const dirs = ['../pages/', '../pages/methodology/', '../architecture/'];
-  const files = dirs.flatMap((d) => readdirSync(here(d)).filter((f) => /\.(tsx|ts|svg)$/.test(f) && !/\.test\./.test(f)).map((f) => `${d}${f}`));
-  const COMMIT_SENSE = /artefactos? comprometid|muestras? comprometid|umbrales comprometid|documentos? comprometid|política comprometida|compromete el pipeline|pipeline compromete|pipeline comprometió|puede(?:n)? comprometerse|se compromete|Compromiso:|manifiesto de licencias comprometido|\(comprometido\)/;
+  const flat = dirs.flatMap((d) => readdirSync(here(d)).filter((f) => /\.(tsx|ts|svg)$/.test(f) && !/\.test\./.test(f)).map((f) => `${d}${f}`));
+  // every view and content file too (the integrator, after the U16-F6 merge): a case view names the policy it ran under
+  const walk = (d: string): string[] =>
+    readdirSync(here(d), { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(`${d}${e.name}/`) : /\.(tsx|ts)$/.test(e.name) && !/\.test\./.test(e.name) ? [`${d}${e.name}`] : []);
+  const files = [...flat, ...walk('./'), ...walk('../content/')];
+  const COMMIT_SENSE = /artefactos? comprometid|muestras? comprometid|umbrales comprometid|documentos? comprometid|política comprometida|compromete el pipeline|pipeline compromete|pipeline comprometió|puede(?:n)? comprometerse|se compromete|Compromiso:|manifiesto de licencias comprometido|\(comprometido\)|(?:tabla de puntos|verdad exacta|evidencia|curva de corte|capital|EBM) comprometid/;
   it('reads the files of the pages and the figures', () => expect(files.length).toBeGreaterThan(20));
   for (const f of files) {
     it(`${f.replace('../', '')} uses versionar for what the pipeline commits`, () => {
@@ -340,8 +345,9 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
   const sel = { data: { manifest: c01, variant, models }, challenger: defaultChallenger(variant), alphas: COMMITTED, approval: 0.8, lgd: 0.5, applicant: 0 } as never;
   const view = (el: ReactElement, lang: Lang) => plain(html(el, lang));
   it('m1: the Impact decision says why the live figure differs from the applicant-by-applicant one', () => {
-    expect(view(<ImpactView sel={sel} />, 'en')).toContain('The live figures above interpolate the cut-off curve');
-    expect(view(<ImpactView sel={sel} />, 'es')).toContain('Las cifras en vivo de arriba interpolan la curva de corte');
+    // the wording U16-F6 settled for the same minor (merged at 093b85e)
+    expect(view(<ImpactView sel={sel} />, 'en')).toContain('The live figures interpolate the cut-off curve');
+    expect(view(<ImpactView sel={sel} />, 'es')).toContain('Las cifras en vivo interpolan la curva de corte');
   });
   it('m3: the DeLong cell of the battery names the direction of the difference, not only a red light', () => {
     expect(view(<BatteryView sel={sel} />, 'en')).toMatch(/AUC (higher|lower)/);
@@ -352,11 +358,11 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
     expect((markup.match(/ct-narrow-only/g) ?? []).length).toBeGreaterThanOrEqual(2 * 7);
   });
   it('m4: the calibration note says the posterior interval is shown where there is room', () => {
-    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/on a wide screen/i);
+    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/shown from \d+ px wide/i);
   });
   it('m5: the PSI note says that ties merge deciles', () => {
-    expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/ties[^.]*merge/i);
-    expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empates[^.]*(fusionan|unen)/i);
+    expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/tie[sd][^.]*merge/i);
+    expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empat\w*[^.]*(fusionan|unen)/i);
   });
   it('m8: the attribution column of the Spanish Context says its text is the own wording of the source', () => {
     expect(view(<ContextView sel={sel} />, 'es')).toContain('texto exigido por la fuente, en su idioma');

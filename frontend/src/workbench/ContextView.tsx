@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { C01WriteUp } from '../content/cases/C01';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
-import { engineText } from './c01Text';
+import { engineText, licenceText } from './c01Text';
 
 const WRITE_UPS: Record<string, () => ReactNode> = { C01: () => <C01WriteUp /> };
 
@@ -57,7 +57,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                     ({s?.publisher})
                   </td>
                   <td className="caos-col-text">
-                    <span translate="no">{s?.licence}</span> <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
+                    <span translate={lang === 'es' && s && licenceText(id, s.licence, 'es') !== s.licence ? undefined : 'no'}>{s ? licenceText(id, s.licence, lang) : ''}</span> <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
                   </td>
                   {/* the source's required wording, verbatim in its own language */}
                   <td className="caos-col-text" translate="no" lang="en">

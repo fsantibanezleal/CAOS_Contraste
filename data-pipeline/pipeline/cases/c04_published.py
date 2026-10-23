@@ -72,7 +72,7 @@ ENTRY_ROUNDING = {
               "does not state; its printed four-digit entries give 1.0945% against the printed 1.093%, 0.0015 "
               "percentage points apart, within the 0.0021 that their rounding and the PD's allow",
         "es": "construido estresando la matriz con z = 1 y propagando W_ttc un año, con una correlación que el "
-              "artículo no declara; sus entradas impresas de cuatro dígitos dan 1,0945% frente al 1,093% impreso, a "
+              "artículo no declara; sus entradas impresas de cuatro dígitos dan 1,0945 % frente al 1,093 % impreso, a "
               "0,0015 puntos porcentuales, dentro de los 0,0021 que permiten su redondeo y el de la PD",
     },
 }

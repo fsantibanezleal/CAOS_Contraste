@@ -55,7 +55,7 @@ function DecisionReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(v?.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: shortName(v ? rung(v, CHAMPION) : undefined, CHAMPION), value: champ?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'From the committed cut-off curve; the Impact group draws it.', es: 'Desde la curva de corte comprometida; el grupo Impacto la dibuja.' } },
+        { label: shortName(v ? rung(v, CHAMPION) : undefined, CHAMPION), value: champ?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'From the committed cut-off curve; the Impact group draws it.', es: 'Desde la curva de corte versionada; el grupo Impacto la dibuja.' } },
         { label: shortName(v && sel ? rung(v, sel.challenger) : undefined, sel?.challenger ?? ''), value: chall?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 } },
       ]}
     />
@@ -107,7 +107,7 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(sel?.data.variant.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La scorecard, desde la tabla de puntos comprometida.' } },
+        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La scorecard, desde la tabla de puntos versionada.' } },
         { label: { en: 'PD, scorecard', es: 'PD, scorecard' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'PD, EBM (raw)', es: 'PD, EBM (cruda)' }, value: live?.pdEbm ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Before its calibration map.', es: 'Antes de su mapa de calibración.' } },
         { label: { en: 'Outcome', es: 'Resultado' }, text: live ? (live.defaulted ? { en: 'defaulted', es: 'incumplió' } : { en: 'did not default', es: 'no incumplió' }) : undefined, unitless: true },
@@ -280,7 +280,7 @@ export function Workbench() {
           <PolicyReadout sel={sel} />
           {moved && (
             <button type="button" className="ct-linkbutton" onClick={() => setAlphas(COMMITTED)}>
-              {pick({ en: 'Back to the committed policy', es: 'Volver a la política comprometida' }, lang)}
+              {pick({ en: 'Back to the committed policy', es: 'Volver a la política versionada' }, lang)}
             </button>
           )}
         </>
@@ -294,7 +294,7 @@ export function Workbench() {
           <Knob
             id="applicant"
             label={{ en: 'Applicant of the sample', es: 'Solicitante de la muestra' }}
-            hint={{ en: 'One of the 50 holdout applicants scored live from the committed points table and EBM.', es: 'Uno de los 50 solicitantes de la muestra reservada puntuados en vivo con la tabla de puntos y el EBM comprometidos.' }}
+            hint={{ en: 'One of the 50 holdout applicants scored live from the committed points table and EBM.', es: 'Uno de los 50 solicitantes de la muestra reservada puntuados en vivo con la tabla de puntos y el EBM versionados.' }}
             value={applicant + 1}
             min={1}
             max={sample.ids.length}

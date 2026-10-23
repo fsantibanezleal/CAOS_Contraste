@@ -905,7 +905,7 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         dd = dict(zip(header, r))
-        assert dd["version"] == "1.0.0"
+        assert dd["version"] == cs.latest_history_version(r[0]), r[0]  # the row agrees with its History (U16 bumps)
         assert dd["status"] == "real"                        # the integrator set real when the bakes landed (0.11.000)
         assert dd["provider"].startswith("fixture:")
         assert (ROOT / dd["schema file"]).is_file(), dd["schema file"]

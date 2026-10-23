@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from ..reference_text import with_reference_text
 
 from . import windows
 
@@ -166,7 +167,7 @@ class C03:
         values: dict[str, float] = {}
         for res in results:
             d = res.document
-            art = build_artifact(case_id=CASE_ID, variant_id=res.variant_id, model=d["model"], outputs=d["outputs"], tests=d["tests"],
+            art = build_artifact(case_id=CASE_ID, variant_id=res.variant_id, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                                  impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{res.variant_id}.json"
             e_v = write_artifact(paths.root, rel, art, exact=frozenset({"calibration"}), engines=ENGINES, run_ms=RUN_MS)

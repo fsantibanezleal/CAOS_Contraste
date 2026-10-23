@@ -124,7 +124,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <C05PolicyReadout sel={sel} />
         {moved && (
           <button type="button" className="ct-linkbutton" onClick={() => setAlphas(COMMITTED)}>
-            {pick({ en: 'Back to the committed policy', es: 'Volver a la política comprometida' }, lang)}
+            {pick({ en: 'Back to the committed policy', es: 'Volver a la política versionada' }, lang)}
           </button>
         )}
       </>

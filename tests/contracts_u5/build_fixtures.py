@@ -473,7 +473,7 @@ def build_c07() -> tuple[dict, dict]:
         regime("ifrs9", ("IFRS 9", "IFRS 9"), ifrs, [
             ("stage1", ("Stage 1", "Etapa 1"), 105e9, 800e6), ("stage2", ("Stage 2", "Etapa 2"), 12e9, 1.2e9),
             ("stage3", ("Stage 3", "Etapa 3"), 3e9, 1.0e9)]),
-        regime("bde-annex9", ("BdE Annex 9", "BdE Anexo 9"), bde, [
+        regime("bde-annex9", ("BdE Annex 9", "BdE Anejo 9"), bde, [
             ("normal", ("Normal risk", "Riesgo normal"), 108e9, 900e6),
             ("normal-special-watch", ("Normal, special watch", "Normal en vigilancia especial"), 9e9, 1.17e9),
             ("doubtful", ("Doubtful", "Dudoso"), 3e9, 900e6)]),
@@ -546,7 +546,7 @@ def build_c07() -> tuple[dict, dict]:
         "tests": [test_row("ifrs9.reconciliation_identities", "R3-trilogy")],
         "impact": {"provision_cmf_b1": {"value": tot["cmf-b1"], "unit": "CLP", "label": txt("CMF B-1", "CMF B-1")},
                    "provision_ifrs9": {"value": tot["ifrs9"], "unit": "CLP", "label": txt("IFRS 9", "IFRS 9")},
-                   "provision_bde": {"value": tot["bde-annex9"], "unit": "CLP", "label": txt("BdE Annex 9", "BdE Anexo 9")}},
+                   "provision_bde": {"value": tot["bde-annex9"], "unit": "CLP", "label": txt("BdE Annex 9", "BdE Anejo 9")}},
         "findings": [],
         **envelope_common("synthetic-calibrated"),
     }
