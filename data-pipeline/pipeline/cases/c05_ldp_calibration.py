@@ -33,6 +33,7 @@ from riskvalidation.validation.calibration import (
 from .. import __version__
 from ..core import expect as expectations
 from ..core import lineage as lin
+from ..core import text as tx
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import papers
 from ..io.formats import write_json
@@ -100,7 +101,7 @@ VARIANTS: tuple[dict[str, Any], ...] = (
     {"id": "ldp-sim-0", "kind": "ldp", "total": 0, "truth": "synthetic-known-truth",
      "title": _t("Generated year without defaults", "Año generado sin incumplimientos"), "short": _t("0 defaults", "0 incumpl."),
      "regime": _t("A year of the Vasicek generator (true PDs 0.05%, 0.10%, 0.20%; correlation 12%) with no default.",
-                  "Un año del generador de Vasicek (PD verdaderas 0,05%, 0,10%, 0,20%; correlación 12%) sin incumplimientos.")},
+                  "Un año del generador de Vasicek (PD verdaderas 0,05 %, 0,10 %, 0,20 %; correlación 12 %) sin incumplimientos.")},
     {"id": "ldp-sim-1", "kind": "ldp", "total": 1, "truth": "synthetic-known-truth",
      "title": _t("Generated year with one default", "Año generado con un incumplimiento"), "short": _t("1 default", "1 incumpl."),
      "regime": _t("A year of the same generator with one default.", "Un año del mismo generador con un incumplimiento.")},
@@ -143,8 +144,8 @@ def _log(msg: str) -> None:
 
 
 def _es(x: float, decimals: int) -> str:
-    """A number as the Spanish texts write it: a decimal comma."""
-    return f"{x:.{decimals}f}".replace(".", ",")
+    """A number as the Spanish texts write it, the shell's es-CL form (``pipeline.core.text``)."""
+    return tx.number(x, decimals, lang="es")
 
 
 def _irb_rw(pd: float) -> float:
@@ -525,10 +526,10 @@ def _ldp_impact(bounds: dict[str, Any], truth: tuple[float, ...] | None) -> dict
     def avg(pds) -> float:
         return float(np.sum(n * np.array([_irb_rw(p) for p in pds])) / n.sum())
 
-    out = {"rw_expert": {"value": avg(EXPERT_PD), "unit": "share of EAD", "label": _t("Average risk weight, expert PDs (floored at 0.05%)", "Ponderador medio, PD expertas (con piso 0,05%)")},
-           "rw_independent_75": {"value": avg(bounds["independent"][k75]), "unit": "share of EAD", "label": _t("Average risk weight, most prudent at 75%", "Ponderador medio, más prudente al 75%")},
-           "rw_correlated_75": {"value": avg(bounds["correlated"][k75]), "unit": "share of EAD", "label": _t("Average risk weight, most prudent at 75%, correlation 12%", "Ponderador medio, más prudente al 75%, correlación 12%")},
-           "rw_scaled_75": {"value": avg(bounds["scaled_upper_bound"][k75]["pd"]), "unit": "share of EAD", "label": _t("Average risk weight, scaled to the portfolio bound at 75%", "Ponderador medio, escalado a la cota de la cartera al 75%")}}
+    out = {"rw_expert": {"value": avg(EXPERT_PD), "unit": "share of EAD", "label": _t("Average risk weight, expert PDs (floored at 0.05%)", "Ponderador medio, PD expertas (con piso 0,05 %)")},
+           "rw_independent_75": {"value": avg(bounds["independent"][k75]), "unit": "share of EAD", "label": _t("Average risk weight, most prudent at 75%", "Ponderador medio, más prudente al 75 %")},
+           "rw_correlated_75": {"value": avg(bounds["correlated"][k75]), "unit": "share of EAD", "label": _t("Average risk weight, most prudent at 75%, correlation 12%", "Ponderador medio, más prudente al 75 %, correlación 12 %")},
+           "rw_scaled_75": {"value": avg(bounds["scaled_upper_bound"][k75]["pd"]), "unit": "share of EAD", "label": _t("Average risk weight, scaled to the portfolio bound at 75%", "Ponderador medio, escalado a la cota de la cartera al 75 %")}}
     if truth is not None:
         out["rw_truth"] = {"value": avg(truth), "unit": "share of EAD", "label": _t("Average risk weight, the true PDs", "Ponderador medio, las PD verdaderas")}
     return out
@@ -547,30 +548,30 @@ def _ldp_findings(v: dict[str, Any], d: tuple[int, ...], tests: list[dict[str, A
     out.append({"id": "F-BELOW-BOUND", "severity": "S3" if below else "S4", "status": "open",
                 "evidence": ["design:pluto-tasche-section-5"],
                 "title": _t(f"The expert PDs lie below the most prudent calibration (scaled to the portfolio bound at 75%) in grades {', '.join(below) or 'none'}",
-                            f"Las PD expertas quedan bajo la calibración más prudente (escalada a la cota de la cartera al 75%) en los grados {', '.join(below) or 'ninguno'}")})
+                            f"Las PD expertas quedan bajo la calibración más prudente (escalada a la cota de la cartera al 75 %) en los grados {', '.join(below) or 'ninguno'}")})
     if cp is not None:
         power = cp["tests"]["expert"]["vasicek_portfolio"]["reject_5"]
         size_j = cp["tests"]["true"]["jeffreys_portfolio"]["reject_5"]
         size_v = cp["tests"]["true"]["vasicek_portfolio"]["reject_5"]
         out.append({"id": "F-POWER", "severity": "S2", "status": "open", "evidence": ["design:known-truth-power"],
                     "title": _t(f"Against a model at half the truth, the test that keeps its size (Vasicek binomial, {100 * size_v:.1f}% under the truth) rejects in {100 * power:.1f}% of the years at 5%: the battery cannot see the underestimation",
-                                f"Frente a un modelo a la mitad de la verdad, la prueba que mantiene su tamaño (binomial de Vasicek, {_es(100 * size_v, 1)}% bajo la verdad) rechaza en el {_es(100 * power, 1)}% de los años al 5%: la batería no ve la subestimación")})
+                                f"Frente a un modelo a la mitad de la verdad, la prueba que mantiene su tamaño (binomial de Vasicek, {_es(100 * size_v, 1)} % bajo la verdad) rechaza en el {_es(100 * power, 1)} % de los años al 5 %: la batería no ve la subestimación")})
         out.append({"id": "F-SIZE", "severity": "S3", "status": "open", "evidence": ["design:known-truth-size"],
                     "title": _t(f"With correlated defaults the Jeffreys portfolio test rejects the true PDs in {100 * size_j:.1f}% of the years at 5% (the BCBS WP14 warning on correlation)",
-                                f"Con incumplimientos correlacionados la prueba de Jeffreys de la cartera rechaza las PD verdaderas en el {_es(100 * size_j, 1)}% de los años al 5% (la advertencia del WP14 de BCBS sobre la correlación)")})
+                                f"Con incumplimientos correlacionados la prueba de Jeffreys de la cartera rechaza las PD verdaderas en el {_es(100 * size_j, 1)} % de los años al 5 % (la advertencia del WP14 de BCBS sobre la correlación)")})
         ratio = next(r for r in cp["coverage"]["independent"]["C"] if r["gamma"] == 0.75)["ratio_median"]
         sc = next(r for r in cp["coverage"]["scaled"]["C"] if r["gamma"] == 0.50)["coverage"]
         b50 = next(r for r in cp["coverage"]["independent"]["B"] if r["gamma"] == 0.50)["coverage"]
         out.append({"id": "F-CONSERVATISM", "severity": "S4", "status": "accepted", "evidence": ["design:known-truth-coverage"],
                     "title": _t(f"From 75% up the one-year bounds cover the truth in every generated year, far above it (grade C at 75%: {ratio:.1f} times the true PD in the median year); at 50% a year without defaults puts grade B's bound just under its truth (coverage {100 * b50:.0f}%)",
-                                f"Desde el 75% las cotas de un año cubren la verdad en todos los años generados, muy por encima (grado C al 75%: {_es(ratio, 1)} veces la PD verdadera en el año mediano); al 50% un año sin incumplimientos deja la cota del grado B justo bajo su verdad (cobertura {_es(100 * b50, 0)}%)")})
+                                f"Desde el 75 % las cotas de un año cubren la verdad en todos los años generados, muy por encima (grado C al 75 %: {_es(ratio, 1)} veces la PD verdadera en el año mediano); al 50 % un año sin incumplimientos deja la cota del grado B justo bajo su verdad (cobertura {_es(100 * b50, 0)} %)")})
         out.append({"id": "F-SCALED-COVERAGE", "severity": "S3", "status": "open", "evidence": ["design:known-truth-coverage"],
                     "title": _t(f"Scaled to the portfolio bound at a moderate 50% (the paper's proposal), grade C's estimate covers the truth in {100 * sc:.0f}% of the years",
-                                f"Escalada a la cota de la cartera a un moderado 50% (la propuesta del artículo), la estimación del grado C cubre la verdad en el {_es(100 * sc, 0)}% de los años")})
+                                f"Escalada a la cota de la cartera a un moderado 50 % (la propuesta del artículo), la estimación del grado C cubre la verdad en el {_es(100 * sc, 0)} % de los años")})
     else:
         out.append({"id": "F-PAPER-DEVIATIONS", "severity": "S4", "status": "accepted", "evidence": ["design:pluto-tasche-deviations"],
                     "title": _t("The paper's Tables 4 (75%), 8, 12 and 13 to 14 deviate from their exact values; the golden table names each cell",
-                                "Las tablas 4 (75%), 8, 12 y 13 a 14 del artículo se apartan de sus valores exactos; la tabla de referencia nombra cada celda")})
+                                "Las tablas 4 (75 %), 8, 12 y 13 a 14 del artículo se apartan de sus valores exactos; la tabla de referencia nombra cada celda")})
     return out
 
 
@@ -632,7 +633,7 @@ def _ldp_variant(v: dict[str, Any], d: tuple[int, ...], seed: int, rv: str, cp: 
                "parameters": {f"pd_{g}": {"value": p, "unit": "probability"} for g, p in zip(LDP_GRADES, EXPERT_PD, strict=True)}}]
     for mid, title, short, params in (
         ("L1-independent", _t("Most prudent bound, independent", "Cota más prudente, independiente"), _t("Independent", "Independiente"), {}),
-        ("L2-correlated", _t("Most prudent bound, correlation 12%", "Cota más prudente, correlación 12%"), _t("Correlated", "Correlacionada"),
+        ("L2-correlated", _t("Most prudent bound, correlation 12%", "Cota más prudente, correlación 12 %"), _t("Correlated", "Correlacionada"),
          {"rho": {"value": RHO, "unit": "unitless"}}),
         ("L3-scaled", _t("Most prudent bound scaled to the portfolio bound", "Cota más prudente escalada a la cota de la cartera"), _t("Scaled", "Escalada"), {}),
     ):
