@@ -22,6 +22,7 @@ from scipy.linalg import expm
 from .. import __version__
 from ..core import expect as expectations
 from ..core import lineage as lin
+from ..core import text as tx
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import cerep
 from ..io.formats import write_json
@@ -342,18 +343,23 @@ EMPIRICAL_ALPHA = 0.125
 
 
 def _pct(x: float, decimals: int = 2) -> tuple[str, str]:
-    en = f"{100 * x:.{decimals}f}%"
-    return en, en.replace(".", ",")
+    """A share as a percent: the English text's form, and the Spanish one as the shell writes it (``pipeline.core.text``)."""
+    return f"{100 * x:.{decimals}f}%", tx.percent(x, decimals, lang="es")
+
+
+def _signed_pct(x: float, decimals: int = 0) -> str:
+    """A signed share as a Spanish percent ("+12 %", "-34 %"), the English ``{:+.0f}%`` in the shell's form."""
+    text = tx.percent(x, decimals, lang="es")
+    return text if text.startswith("-") else f"+{text}"
 
 
 def _miles(x: float) -> str:
     """A count as the Spanish texts write it: a point between thousands."""
-    return f"{x:,.0f}".replace(",", ".")
+    return tx.number(x, 0, lang="es")
 
 
 def _num(x: float, decimals: int = 2) -> tuple[str, str]:
-    en = f"{x:.{decimals}f}"
-    return en, en.replace(".", ",")
+    return f"{x:.{decimals}f}", tx.number(x, decimals, lang="es")
 
 
 def _rw(pd: float) -> float:
@@ -474,10 +480,10 @@ def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str
             # the ratio in the sentence is the pooled one, so the two rates beside it are the pooled ones (not the long-run averages of the years)
             d4, d2 = _pct(lra["d4"]["pooled_rate"][6]), _pct(lra["d2"]["pooled_rate"][6])
             rb = "" if r[0] is None else f" and {100 * r[0]:.0f}% for B"
-            rb_es = "" if r[0] is None else f" y {100 * r[0]:.0f}% para B"
+            rb_es = "" if r[0] is None else f" y {_pct(r[0], 0)[1]} para B"
             f.append({"id": "F-DEF-GAP", "severity": "S2", "status": "open", "evidence": ["design:definition_gap"],
                       "title": _t(f"{name}: the transition matrix's default column gives {100 * r[1]:.0f}% of the default page's PD for CCC to C{rb}, pooled over the years both pages hold (pooled rates {d4[0]} against {d2[0]}): a PD read from CEREP's migration matrix understates speculative defaults",
-                                  f"{name}: la columna de incumplimiento de la matriz de transición da {100 * r[1]:.0f}% de la PD de la página de incumplimientos para CCC a C{rb_es}, agrupada en los años que ambas páginas cubren (tasas agrupadas {d4[1]} contra {d2[1]}): una PD leída de la matriz de migración de CEREP subestima los incumplimientos especulativos")})
+                                  f"{name}: la columna de incumplimiento de la matriz de transición da {_pct(r[1], 0)[1]} de la PD de la página de incumplimientos para CCC a C{rb_es}, agrupada en los años que ambas páginas cubren (tasas agrupadas {d4[1]} contra {d2[1]}): una PD leída de la matriz de migración de CEREP subestima los incumplimientos especulativos")})
     elif lra.get("d4") is None:
         f.append({"id": "F-NO-D4", "severity": "S3", "status": "accepted", "evidence": ["design:definition_gap"],
                   "title": _t(f"{_poss(name)} transition page has no default category: its PDs come from the default pages only, and a migration matrix read from CEREP carries no default column",
@@ -516,7 +522,7 @@ def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str
         f.append({"id": "F-YEARS", "severity": "S3", "status": "open",
                   "evidence": [f"rating.matrix_reference@{code}@{r['label']}" for r in rejected],
                   "title": _t(f"{name}: {len(rejected)} of {len(refs)} years' migrations depart from the pooled matrix at 1%, most in {worst} (likelihood ratio per degree of freedom); with cohorts of thousands of ratings the test sees every year's own conditions",
-                              f"{name}: las migraciones de {len(rejected)} de {len(refs)} años se apartan de la matriz agrupada al 1%, más en {worst} (razón de verosimilitud por grado de libertad); con cohortes de miles de calificaciones la prueba ve las condiciones propias de cada año")})
+                              f"{name}: las migraciones de {len(rejected)} de {len(refs)} años se apartan de la matriz agrupada al 1 %, más en {worst} (razón de verosimilitud por grado de libertad); con cohortes de miles de calificaciones la prueba ve las condiciones propias de cada año")})
     # the embedding problem
     emb, gen = out["embedding"], out["generators"]
     if emb["exact_generator_excluded"] and _has_default(out):
@@ -606,7 +612,7 @@ def family_impact(out: dict[str, Any]) -> dict[str, Any]:
         z = r["estimators"]["cohort"]["zero"][0]["rate"]
         cov = r["coverage"]["wald"][0]["rate"]
         return {"zero_share_aaa": {"value": z, "unit": "probability", "label": _t("Share of repetitions with a cohort PD of exactly zero for AAA", "Proporción de repeticiones con PD de cohorte exactamente cero para AAA")},
-                "wald_coverage_aaa": {"value": cov, "unit": "probability", "label": _t("Coverage of the 95% Wald interval for AAA", "Cobertura del intervalo de Wald al 95% para AAA")}}
+                "wald_coverage_aaa": {"value": cov, "unit": "probability", "label": _t("Coverage of the 95% Wald interval for AAA", "Cobertura del intervalo de Wald al 95 % para AAA")}}
     if fid == "momentum":
         r = _rung(out, EMPIRICAL_ALPHA)
         err = r["error_cohort_power"]["mean"][3]
@@ -618,7 +624,7 @@ def family_impact(out: dict[str, Any]) -> dict[str, Any]:
         r = _rung(out, 9.0)
         return {"removed_bias_b": {"value": r["pd_removed"]["bias"][5], "unit": "probability difference", "label": _t("Bias of the B PD with withdrawals removed, informative k 9", "Sesgo de la PD de B con retiros eliminados, informativo k 9")}}
     r = _rung(out, 50)
-    return {"wald_coverage_aaa_50": {"value": r["coverage"]["wald"][0], "unit": "probability", "label": _t("Exact coverage of the 95% Wald interval for AAA with 50 obligors", "Cobertura exacta del intervalo de Wald al 95% para AAA con 50 deudores")}}
+    return {"wald_coverage_aaa_50": {"value": r["coverage"]["wald"][0], "unit": "probability", "label": _t("Exact coverage of the 95% Wald interval for AAA with 50 obligors", "Cobertura exacta del intervalo de Wald al 95 % para AAA con 50 deudores")}}
 
 
 def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, Any]]:
@@ -632,7 +638,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         truth = out["generator"]["pd_1y"][0]
         res.append({"id": "F-COHORT-ZERO", "severity": "S3", "status": "accepted", "evidence": ["design:rungs.estimators.zero"],
                     "title": _t(f"With S&P-like cohorts over five years, the pooled cohort PD of AAA is exactly zero in {100 * z:.0f}% of repetitions (true {1e4 * truth:.2f}bp); the duration and EM estimates are positive in every one",
-                                f"Con cohortes como las de S&P en cinco años, la PD de cohorte agrupada de AAA es exactamente cero en {100 * z:.0f}% de las repeticiones (verdadera {_num(1e4 * truth)[1]}pb); las estimaciones de duración y EM son positivas en todas")})
+                                f"Con cohortes como las de S&P en cinco años, la PD de cohorte agrupada de AAA es exactamente cero en {_pct(z, 0)[1]} de las repeticiones (verdadera {_num(1e4 * truth)[1]}pb); las estimaciones de duración y EM son positivas en todas")})
         snap = ("em", "diagonal", "weighted", "cohort")
         b = {m: est[m]["bias"][0] for m in (*snap, "duration")}
         se = {m: est[m]["bias_mcse"][0] for m in (*snap, "duration")}
@@ -655,7 +661,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         res.append({"id": "F-SIZE", "severity": "S2" if over else "S4", "status": "open" if over else "closed",
                     "evidence": [f"rate:{s['key']}" for s in nulls],
                     "title": _t(f"The four transition tests on the S&P-like chain: {'above their size bound: ' + ', '.join(over) if over else 'all hold their size at 5%'} ({reps} repetitions)",
-                                f"Las cuatro pruebas de transición en la cadena como la de S&P: {'sobre su cota de tamaño: ' + ', '.join(over) if over else 'todas mantienen su tamaño al 5%'} ({reps} repeticiones)")})
+                                f"Las cuatro pruebas de transición en la cadena como la de S&P: {'sobre su cota de tamaño: ' + ', '.join(over) if over else 'todas mantienen su tamaño al 5 %'} ({reps} repeticiones)")})
         forms = {s["key"].rsplit("-", 1)[1]: s for s in out["simulations"] if s["key"].startswith("rating.markov_order@form-")}
         if set(forms) == {"chi2", "lr"}:
             def _holds(s: dict[str, Any]) -> bool:
@@ -673,12 +679,12 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
             res.append({"id": "F-ORDER-FORM", "severity": sev, "status": "closed" if sev == "S4" else "open",
                         "evidence": [f"rate:{c2['key']}", f"rate:{lr['key']}"],
                         "title": _t(f"The order test on S&P-like cohorts ({c2['n_rep']:,} repetitions of a Markov chain): its chi-square form rejects {rates['chi2'][0]:.2f}% at 5% and {rates['chi2'][1]:.2f}% at 1%, its likelihood ratio {rates['lr'][0]:.2f}% and {rates['lr'][1]:.2f}%: {verdict}. riskvalidation defaults to the chi-square, chosen on an even five-grade chain; which form holds depends on the cohorts' sparsity",
-                                    f"La prueba de orden en cohortes como las de S&P ({_miles(c2['n_rep'])} repeticiones de una cadena de Markov): su forma chi-cuadrado rechaza {_num(rates['chi2'][0])[1]}% al 5% y {_num(rates['chi2'][1])[1]}% al 1%, su razón de verosimilitud {_num(rates['lr'][0])[1]}% y {_num(rates['lr'][1])[1]}%: {verdict_es}. riskvalidation usa por defecto la chi-cuadrado, elegida en una cadena pareja de cinco grados; qué forma se sostiene depende de lo ralas que sean las cohortes")})
+                                    f"La prueba de orden en cohortes como las de S&P ({_miles(c2['n_rep'])} repeticiones de una cadena de Markov): su forma chi-cuadrado rechaza {_num(rates['chi2'][0])[1]} % al 5 % y {_num(rates['chi2'][1])[1]} % al 1 %, su razón de verosimilitud {_num(rates['lr'][0])[1]} % y {_num(rates['lr'][1])[1]} %: {verdict_es}. riskvalidation usa por defecto la chi-cuadrado, elegida en una cadena pareja de cinco grados; qué forma se sostiene depende de lo ralas que sean las cohortes")})
         cw, cj = r["coverage"]["wald"][0]["rate"], r["coverage"]["jeffreys"][0]["rate"]
         if cw < 0.9:
             res.append({"id": "F-WALD", "severity": "S2", "status": "open", "evidence": ["design:rungs.coverage"],
                         "title": _t(f"The 95% Wald interval covers the true AAA PD in {100 * cw:.0f}% of repetitions, Jeffreys in {100 * cj:.0f}%",
-                                    f"El intervalo de Wald al 95% cubre la PD verdadera de AAA en {100 * cw:.0f}% de las repeticiones, Jeffreys en {100 * cj:.0f}%")})
+                                    f"El intervalo de Wald al 95 % cubre la PD verdadera de AAA en {_pct(cw, 0)[1]} de las repeticiones, Jeffreys en {_pct(cj, 0)[1]}")})
     elif fid == "momentum":
         weak, emp = 0.025, EMPIRICAL_ALPHA
         tests = {k: {a: _sim(out, f"rating.{k}@alpha{a:g}") for a in (weak, emp)} for k in ("time_homogeneity", "momentum")}
@@ -690,7 +696,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         res.append({"id": "F-MOMENTUM-TESTS", "severity": "S3", "status": "open",
                     "evidence": [f"rate:rating.{k}@alpha{a:g}" for k in ("time_homogeneity", "momentum") for a in (weak, emp)],
                     "title": _t(f"Momentum at the empirical strength, alpha 0.125{c_en}, is seen by the hazard test in {hz_e:.0f}% of repetitions and by time homogeneity in {th_e:.0f}%; at a fifth of it (alpha 0.025) in {hz_w:.0f}% and {th_w:.0f}%",
-                                f"El momentum con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {hz_e:.0f}% de las repeticiones y la homogeneidad temporal en {th_e:.0f}%; a un quinto de ella (alfa 0,025) en {hz_w:.0f}% y {th_w:.0f}%")})
+                                f"El momentum con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {_num(hz_e, 0)[1]} % de las repeticiones y la homogeneidad temporal en {_num(th_e, 0)[1]} %; a un quinto de ella (alfa 0,025) en {_num(hz_w, 0)[1]} % y {_num(th_w, 0)[1]} %")})
         r = _rung(out, emp)
         err, freq = r["error_cohort_power"]["mean"][3], r["pd_5y_frequency"]["mean"][3]
         err_se = r["error_cohort_power"]["bias_mcse"][3]
@@ -700,7 +706,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         z = err / err_se if err_se else float("inf")
         res.append({"id": "F-MOMENTUM-PROJECTION", "severity": "S3", "status": "open", "evidence": ["design:rungs.error_cohort_power"],
                     "title": _t(f"Momentum at the empirical strength (alpha 0.125) raises the BBB cohort's five-year default frequency from {_pct(base)[0]} (no momentum) to {_pct(freq)[0]}; the one-year matrix estimated from the same paths, to the fifth power, gives {_pct(chained)[0]}: it carries most of the effect and misses {100 * err:+.2f} points ({rel:+.0f}%, {abs(z):.1f} Monte Carlo errors)",
-                                f"El momentum con la fuerza empírica (alfa 0,125) sube la frecuencia de incumplimiento a cinco años de la cohorte BBB de {_pct(base)[1]} (sin momentum) a {_pct(freq)[1]}; la matriz anual estimada de las mismas trayectorias, a la quinta potencia, da {_pct(chained)[1]}: lleva la mayor parte del efecto y yerra {_num(100 * err)[1]} puntos ({rel:+.0f}%, {_num(abs(z), 1)[1]} errores de Monte Carlo)")})
+                                f"El momentum con la fuerza empírica (alfa 0,125) sube la frecuencia de incumplimiento a cinco años de la cohorte BBB de {_pct(base)[1]} (sin momentum) a {_pct(freq)[1]}; la matriz anual estimada de las mismas trayectorias, a la quinta potencia, da {_pct(chained)[1]}: lleva la mayor parte del efecto y yerra {_num(100 * err)[1]} puntos ({_signed_pct(rel / 100, 0)}, {_num(abs(z), 1)[1]} errores de Monte Carlo)")})
         r = _rung(out, 0.25)
         err, freq = r["error_cohort_power"]["mean"][3], r["pd_5y_frequency"]["mean"][3]
         chained = r["pd_5y_cohort_power"]["mean"][3]
@@ -713,7 +719,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         sy, pooled, base = r["pd_stressed_year"]["mean"][4], r["pd_lra"]["mean"][4], r["pd_true_base"][4]
         res.append({"id": "F-CYCLE", "severity": "S3", "status": "open", "evidence": ["rate:rating.time_homogeneity@k1.5", "design:rungs.pd_stressed_year"],
                     "title": _t(f"One year with downgrades times 1.5 is caught by time homogeneity in {100 * th:.0f}% of repetitions; times 2, the BB PD of that year is {sy / base:.1f} times the stable chain's and the five-year long-run average (EBA paragraph 84) {pooled / base:.2f} times",
-                                f"Un año con rebajas por 1,5 lo detecta la homogeneidad temporal en {100 * th:.0f}% de las repeticiones; por 2, la PD de BB de ese año es {_num(sy / base, 1)[1]} veces la de la cadena estable y el promedio de largo plazo de cinco años (párrafo 84 de la EBA) {_num(pooled / base)[1]} veces")})
+                                f"Un año con rebajas por 1,5 lo detecta la homogeneidad temporal en {_pct(th, 0)[1]} de las repeticiones; por 2, la PD de BB de ese año es {_num(sy / base, 1)[1]} veces la de la cadena estable y el promedio de largo plazo de cinco años (párrafo 84 de la EBA) {_num(pooled / base)[1]} veces")})
     elif fid == "withdrawals":
         r9, r0 = _rung(out, 9.0), _rung(out, 0.0)
         rem, fol = r9["pd_removed"]["bias"][5], r9["pd_followed"]["bias"][5]
@@ -728,12 +734,12 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
             why = why_es = ""
         res.append({"id": "F-WITHDRAW", "severity": "S2", "status": "open", "evidence": ["design:rungs.pd_removed", "design:rungs.pd_followed"],
                     "title": _t(f"With informative withdrawals (k 9) the B PD with withdrawals removed is off by {100 * rem / truth:+.0f}% of the truth, followed (EBA paragraph 76) by {100 * fol / truth:+.0f}%; without informativeness by {100 * b0 / truth:+.0f}%{why}",
-                                f"Con retiros informativos (k 9) la PD de B con retiros eliminados se desvía {100 * rem / truth:+.0f}% de la verdad, seguida (párrafo 76 de la EBA) {100 * fol / truth:+.0f}%; sin información {100 * b0 / truth:+.0f}%{why_es}")})
+                                f"Con retiros informativos (k 9) la PD de B con retiros eliminados se desvía {_signed_pct(rem / truth, 0)} de la verdad, seguida (párrafo 76 de la EBA) {_signed_pct(fol / truth, 0)}; sin información {_signed_pct(b0 / truth, 0)}{why_es}")})
     else:
         r50, r1000 = _rung(out, 50), _rung(out, 1000)
         res.append({"id": "F-THIN", "severity": "S2", "status": "open", "evidence": ["design:rungs.coverage"],
                     "title": _t(f"Exact coverage of the 95% intervals for AAA with 50 obligors: Wald {_pct(r50['coverage']['wald'][0])[0]} (it collapses to zero width at no default, the usual case), Agresti-Coull {_pct(r50['coverage']['agresti_coull'][0])[0]}, Jeffreys {_pct(r50['coverage']['jeffreys'][0])[0]}",
-                                f"Cobertura exacta de los intervalos al 95% para AAA con 50 deudores: Wald {_pct(r50['coverage']['wald'][0])[1]} (colapsa a ancho cero sin incumplimientos, el caso usual), Agresti-Coull {_pct(r50['coverage']['agresti_coull'][0])[1]}, Jeffreys {_pct(r50['coverage']['jeffreys'][0])[1]}")})
+                                f"Cobertura exacta de los intervalos al 95 % para AAA con 50 deudores: Wald {_pct(r50['coverage']['wald'][0])[1]} (colapsa a ancho cero sin incumplimientos, el caso usual), Agresti-Coull {_pct(r50['coverage']['agresti_coull'][0])[1]}, Jeffreys {_pct(r50['coverage']['jeffreys'][0])[1]}")})
         ov = r1000["overlap_jeffreys"]
         res.append({"id": "F-NOTCH", "severity": "S3", "status": "open", "evidence": ["design:rungs.overlap_jeffreys"],
                     "title": _t(f"Even with 1,000 obligors per grade the Jeffreys intervals of AAA and AA overlap with probability {ov[0]:.4f}, of A and BBB {ov[2]:.4f}: their PDs cannot be told apart by the intervals",
@@ -801,9 +807,9 @@ def published_findings(out: dict[str, Any]) -> list[dict[str, Any]]:
         tail = (f"; the {r['matrix']} {r['method'].upper()} distance ({r['printed']:.6f}) follows only from the paper's "
                 f"printed four-digit generator, which gives {irw['jlt_from_printed_generator']:.6f}, while equation (3) on the "
                 f"printed matrix gives {r['recomputed']:.6f}")
-        tail_es = (f"; la distancia {r['method'].upper()} de {r['matrix']} ({r['printed']:.6f}) solo resulta del generador "
-                   f"impreso a cuatro dígitos, que da {irw['jlt_from_printed_generator']:.6f}, mientras la ecuación (3) sobre la "
-                   f"matriz impresa da {r['recomputed']:.6f}")
+        tail_es = (f"; la distancia {r['method'].upper()} de {r['matrix']} ({_num(r['printed'], 6)[1]}) solo resulta del generador "
+                   f"impreso a cuatro dígitos, que da {_num(irw['jlt_from_printed_generator'], 6)[1]}, mientras la ecuación (3) sobre la "
+                   f"matriz impresa da {_num(r['recomputed'], 6)[1]}")
     out_f = [{"id": "F-IRW", "severity": "S4", "status": "closed", "evidence": ["design:irw"],
               "title": _t(f"Israel, Rosenthal and Wei (2001): {k} of {n} distances recomputed to the printed six digits{tail}",
                           f"Israel, Rosenthal y Wei (2001): {k} de {n} distancias recalculadas a los seis dígitos impresos{tail_es}")}]
