@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "fbb7ed12f1d9f36112885fa7a200018b327e44d6075994c0e9294368ccad3464",
+    "sha256": "46f91fe75b124c230601e4b142f38190b5fbd4ed98872f8e656f788074100a66",
     "ref": null
    },
    {
@@ -30,47 +30,47 @@
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "8b20279786c0cb80ce89f3bf688c99d410c98460eb36af6d36da6d069118018b",
+    "sha256": "1cbd89dad92631fcd5dc39f131a3db7c2a994f8f502cf509550862f53ff2fb92",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "5f3030381a10e88a17aa010733d4221d9c404c093a4f19616bba0ee8505a2238",
+    "sha256": "15751f2d493d4e0e8d705ef466767ac6692e5263e6f7dc21846b8ca70b12e51c",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "7294ed84ba86a3bcf2e25a5b07c9f3409dd8be33393d2fe59056bae5cc319b4d",
+    "sha256": "a0ef4730eb8f605197ab75461da50e48763193945974210403ba70a16f49d84e",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "5768dbb730d40bfa7105f96be98aa5fa882cdfef08df5ffb46f47af161f033fc",
+    "sha256": "08837270538730e28777e8ce0adc6fabaa37ca0121a53690aa151e1eeb0df49d",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "84a1296fe606fc18c9214cf49edf8a1ce83841c77d76b7e3e671f4c1efcf3ce5",
+    "sha256": "c5bb962b318819e88a3504e86a379e3fc103cad03dc3a6a7ce25d3ddd82a42b0",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "7b7ec28f260877b099a816ae746d9e69dc1637e18fe8482a7473bed5cb5ef450",
+    "sha256": "dd36244aaa03007e0c85c3c7438661ff24883036284296cf1da2ad583d3dc27a",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "8d158db0a402f84704a17bbbdf52852d3e680901f0ce7ad5cd2d68d709fa0675",
+    "sha256": "364d350144fcd14057150c7c3ada3b314f43063d530801b92a541500c6031500",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "23818da1ea7cedfdd1214950851f14d7fb1eca4dc93be39d3a679fe2eacd6518",
+    "sha256": "2e6f703c31c588736206faa0c64e1d463711d6635a404efa4a88f1c703dc510c",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "9d15a112ed58a19467d4f4626dc1db4baa6d5db9b61560a2125379052298eb7c",
+    "sha256": "d41309b1619c27f177d7789045f6ae60f0126b058778e0df7d60345509a766dd",
     "ref": null
    },
    {
@@ -115,7 +115,7 @@
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "9eeddeb772aec6bdd43fb3175a93f0b434d5363859c974dffde7e22fc1698940",
+    "sha256": "002cedacacd0de96dd10ae4e8d3e85e30cda52bf6da341841030c6b5b902adc9",
     "ref": null
    },
    {
@@ -160,7 +160,7 @@
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "d7973919e22f3a0a81335e68118d1250967424c0fa5ea18c600700e4f5e1167b",
+    "sha256": "38c911f2df75980ea4252a10a3bbb60180706fc9b10a0cd2d6299f789d223a51",
     "ref": null
    }
   ]
@@ -257,8 +257,8 @@
    "id": "F-CF-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: calibration fit tests flag the german-twin population (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)",
-    "es": "P4-lightgbm: las pruebas de ajuste de calibración alertan en la población german-twin (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)"
+    "en": "P4-lightgbm: calibration fit tests flag the variant \"German Credit twin\" (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)",
+    "es": "P4-lightgbm: las pruebas de ajuste de calibración alertan en la variante «Gemelo German Credit» (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -305,8 +305,8 @@
    "id": "F-D-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: discrimination tests flag the german-twin population (disc.auc_vs_initial)",
-    "es": "P4-lightgbm: las pruebas de discriminación alertan en la población german-twin (disc.auc_vs_initial)"
+    "en": "P4-lightgbm: discrimination tests flag the variant \"German Credit twin\" (disc.auc_vs_initial)",
+    "es": "P4-lightgbm: las pruebas de discriminación alertan en la variante «Gemelo German Credit» (disc.auc_vs_initial)"
    },
    "severity": "S3",
    "ecb_f": "F2",

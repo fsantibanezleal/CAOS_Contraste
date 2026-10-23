@@ -202,8 +202,8 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
         title={{ en: 'ECL effect of the horizon PDs (exploratory)', es: 'Efecto en la PCE de las PD por horizonte (exploratorio)' }}
         {...card}
         note={{
-          en: `The effect on the 12-month and the lifetime expected credit loss when the horizon PDs of the rung replace the ones in use, through the engine provisions API, in ${d.unit.en}. The LGD is an assumption of Contraste, not an estimate.`,
-          es: `El efecto en la pérdida crediticia esperada a 12 meses y de toda la vida cuando las PD por horizonte del peldaño reemplazan a las en uso, a través de la API de provisiones del motor, en ${d.unit.es}. La LGD es un supuesto de Contraste, no una estimación.`,
+          en: `The effect on the 12-month and the lifetime expected credit loss when the horizon PDs of the term-structure block (the five file event rates, not the rung's) replace the ones in use, through the engine provisions API, in ${d.unit.en}. The LGD is an assumption of Contraste, not an estimate.`,
+          es: `El efecto en la pérdida crediticia esperada a 12 meses y de toda la vida cuando las PD por horizonte del bloque de estructura temporal (las cinco tasas de evento de los archivos, no las del peldaño) reemplazan a las en uso, a través de la API de provisiones del motor, en ${d.unit.es}. La LGD es un supuesto de Contraste, no una estimación.`,
         }}
       >
         <LabelledOverTable

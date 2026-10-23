@@ -271,7 +271,8 @@ def spanish_strings(node):
 def decimal_point_findings(doc) -> list[str]:
     import re
 
-    return [s for s in spanish_strings(doc) if re.search(r"\d\.\d", s)]
+    # a citation's identifiers (a DOI, an arXiv id, a URL) stay as published in both languages; they are not decimals
+    return [s for s in spanish_strings(doc) if re.search(r"\d\.\d", re.sub(r"(?:doi:|arXiv[: ]|https?://)\S+", "", s))]
 
 
 def test_adversarial_no_spanish_string_writes_a_decimal_with_a_point(mini):

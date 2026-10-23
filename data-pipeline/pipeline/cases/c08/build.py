@@ -105,8 +105,8 @@ def workout_block() -> dict[str, Any]:
         "incomplete_workouts": {"treatment": "not-applicable", "n_excluded": 0, "n_projected": 0,
                                 "reason": t("the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record",
                                             "el archivo SBA no tiene flujos de recuperación que descontar ni proyectar; el castigo es todo el registro")},
-        "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
-                  "No se descuenta un proxy de castigo; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (párrafo NO VERIFICADO)."),
+        "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (the paragraph number is not confirmed).",
+                  "No se descuenta un proxy de castigo; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (el número de párrafo no está confirmado)."),
     }
 
 

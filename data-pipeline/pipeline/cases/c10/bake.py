@@ -23,6 +23,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import documents as docs
@@ -116,7 +117,7 @@ def build(seed: int, scale: float, table: fed.Table, raw: dict[str, Any], *, wor
     first = None
     for lt in types:
         d = docs.loan_type_document(lt, table, run, n_boot, rv, say)
-        art = build_artifact(case_id=CASE_ID, variant_id=lt["id"], model=d["model"], outputs=d["outputs"], tests=d["tests"],
+        art = build_artifact(case_id=CASE_ID, variant_id=lt["id"], model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                              impact=d["impact"], findings=d["findings"], lineage=lineage(seed, rv, raw, "real-outcomes", True),
                              lane={"lane": "precompute", "reasons": []})
         variants[lt["id"]] = add_illustrative_input(art)
@@ -139,7 +140,7 @@ def build(seed: int, scale: float, table: fed.Table, raw: dict[str, Any], *, wor
         g["outputs"]["generator"]["seed"] = seeds_for(seed)["sim"]
         g["outputs"]["generator"]["rho_grid"] = list(grid_rhos)
         findings = docs.grid_findings(g)
-        art = build_artifact(case_id=CASE_ID, variant_id=f"grid-{years}", model=g["model"], outputs=g["outputs"], tests=g["tests"],
+        art = build_artifact(case_id=CASE_ID, variant_id=f"grid-{years}", model=g["model"], outputs=g["outputs"], tests=with_reference_text(g["tests"]),
                              impact=g["impact"], findings=findings, lineage=lineage(seed, rv, raw, "synthetic-known-truth", False),
                              lane={"lane": "precompute", "reasons": []})
         variants[f"grid-{years}"] = art

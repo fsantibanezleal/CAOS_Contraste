@@ -69,7 +69,11 @@ function ContributionFigure() {
           </g>
         );
       })}
-      <text className="dg-note" x={40} y={30} textAnchor="start">{t('blue: share of the exposure; magenta: share of the VaR; outlined: share of the ES', 'azul: parte de la exposición; magenta: parte del VaR; con contorno: parte del ES')}</text>
+      {/* the key on two lines, so the Spanish fits the drawing at every width (gate G10, wide font) */}
+      <text className="dg-note" x={40} y={30} textAnchor="start">
+        <tspan x={40}>{t('blue: share of the exposure; magenta: share of the VaR;', 'azul: parte de la exposición; magenta: parte del VaR;')}</tspan>
+        <tspan x={40} dy={14}>{t('outlined: share of the ES', 'con contorno: parte del ES')}</tspan>
+      </text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );
@@ -119,7 +123,7 @@ function VasicekPart() {
       />
       <P
         en={<>In a large homogeneous portfolio the obligors' own terms average out and the portfolio default fraction converges to p(Z). Because p(z) falls as the factor rises, the distribution function of the limit and its quantile follow from that monotonicity, which gives the two closed forms above. This large-portfolio loss is the infinitely granular approximation: the loss views of C10 draw it dashed over every other rung of the ladder, and it is never the true loss distribution of a finite portfolio, because it leaves out the name concentration that a handful of large exposures adds to the tail. Its quantile at a high level is the single-factor capital whose error the case measures.</>}
-        es={<>En una cartera homogénea grande los términos propios de los deudores se compensan y la fracción de incumplimiento de la cartera converge a p(Z). Como p(z) baja cuando sube el factor, la función de distribución del límite y su cuantil se siguen de esa monotonía, lo que da las dos formas cerradas de arriba. Esta pérdida de cartera grande es la aproximación infinitamente granular: las vistas de pérdidas de C10 la dibujan punteada sobre cada otro escalón de la escalera, y nunca es la distribución de pérdidas verdadera de una cartera finita, porque omite la concentración por nombre que unas pocas exposiciones grandes agregan a la cola. Su cuantil en un nivel alto es el capital de un solo factor cuyo error mide el caso.</>}
+        es={<>En una cartera homogénea grande los términos propios de los deudores se compensan y la fracción de incumplimiento de la cartera converge a p(Z). Como p(z) baja cuando sube el factor, la función de distribución del límite y su cuantil se siguen de esa monotonía, lo que da las dos formas cerradas de arriba. Esta pérdida de cartera grande es la aproximación infinitamente granular: las vistas de pérdidas de C10 la dibujan punteada sobre cada otro peldaño de la escalera, y nunca es la distribución de pérdidas verdadera de una cartera finita, porque omite la concentración por nombre que unas pocas exposiciones grandes agregan a la cola. Su cuantil en un nivel alto es el capital de un solo factor cuyo error mide el caso.</>}
       />
       <Equation
         tex={String.raw`\begin{aligned}K&=\Bigl[\mathrm{LGD}\cdot N\!\Bigl(\tfrac{G(\mathrm{PD})}{(1-R)^{1/2}}+\Bigl(\tfrac{R}{1-R}\Bigr)^{1/2}\,G(0.999)\Bigr)-\mathrm{PD}\cdot\mathrm{LGD}\Bigr]\cdot\frac{1+(M-2.5)\,b(\mathrm{PD})}{1-1.5\,b(\mathrm{PD})},\qquad \mathrm{RWA}=12.5\,K\,\mathrm{EAD}\\ b(\mathrm{PD})&=\bigl(0.11852-0.05478\ln \mathrm{PD}\bigr)^2,\qquad R_{\mathrm{corp}}=0.12\,\tfrac{1-e^{-50\mathrm{PD}}}{1-e^{-50}}+0.24\Bigl[1-\tfrac{1-e^{-50\mathrm{PD}}}{1-e^{-50}}\Bigr]-0.04\Bigl(1-\tfrac{S-5}{45}\Bigr)\end{aligned}`}

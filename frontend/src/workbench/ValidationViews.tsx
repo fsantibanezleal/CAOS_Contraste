@@ -13,7 +13,7 @@ import { Pending } from './Pending';
 const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'disc.auc', label: { en: 'AUC (descriptive)', es: 'AUC (descriptiva)' } },
   { id: 'disc.auc_vs_initial', label: { en: 'AUC against initial validation (ECB)', es: 'AUC contra la validación inicial (BCE)' } },
-  { id: 'disc.delong', label: { en: 'DeLong against the champion', es: 'DeLong contra el campeón' } },
+  { id: 'disc.delong', label: { en: 'DeLong against the champion (a difference in either direction)', es: 'DeLong contra el campeón (una diferencia en cualquier sentido)' } },
   { id: 'disc.ks', label: { en: 'Kolmogorov-Smirnov (descriptive)', es: 'Kolmogorov-Smirnov (descriptiva)' }, descriptive: true },
   { id: 'pd.jeffreys', label: { en: 'Jeffreys, portfolio (ECB)', es: 'Jeffreys, cartera (BCE)' } },
   { id: 'pd.binomial', label: { en: 'Binomial (WP14)', es: 'Binomial (WP14)' } },
@@ -39,7 +39,7 @@ export function LightCell({ row, alphas, className, descriptive }: { row: TestRo
   // the DeLong test is two-sided, so its light says the AUCs differ, not which is higher: the direction is named beside it (U16-R2 b01 m3)
   const diff = row.test_id === 'disc.delong' ? extra(row, 'difference') : null;
   const direction = diff === null || diff === 0 ? null : diff > 0 ? 'higher' : 'lower';
-  const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
+  const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, p >= 0.1 && p < 1 ? { decimals: 2 } : { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
   return (
     <td data-light={light} className={`ct-light ct-light-${light}${className ? ` ${className}` : ''}`} title={pick(thresholdLabel(row, alphas), lang)}>
       {shown}
@@ -128,7 +128,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
         lane="live"
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). On a wide screen the interval column is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). En una pantalla ancha, la columna de intervalo es la posterior Beta(D + 1/2, N - D + 1/2).' }}
+        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The posterior interval column, shown from 1500 px wide, is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). La columna del intervalo posterior, visible desde 1500 px de ancho, es la posterior Beta(D + 1/2, N - D + 1/2).' }}
       >
         <div className="ct-scroll">
           <table className="caos-table">
@@ -362,11 +362,11 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum. Ties in the PD merge deciles, so a rung can show fewer than ten.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma. Los empates en la PD fusionan deciles, así que un peldaño puede mostrar menos de diez.' }}
+        note={{ en: "Each bin's contribution to the PSI, on the training slice's PD deciles; tied values merge deciles, so a rung can have fewer than ten bins. The PSI is their sum.", es: 'La contribución de cada tramo al PSI, sobre los deciles de PD del tramo de entrenamiento; los valores empatados unen deciles, así que un peldaño puede tener menos de diez tramos. El PSI es su suma.' }}
       >
         <UPlotChart
           height="fill"
-          x={{ values: x, label: { en: 'Training decile of the PD (1 = lowest)', es: 'Decil de PD de entrenamiento (1 = el más bajo)' }, format: { decimals: 0 } }}
+          x={{ values: x, label: { en: 'Training bin of the PD (1 = lowest; ties merge deciles)', es: 'Tramo de PD de entrenamiento (1 = el más bajo; los empates unen deciles)' }, format: { decimals: 0 } }}
           y={{ label: { en: 'PSI contribution', es: 'Contribución al PSI' }, format: { decimals: 5 } }}
           series={[
             { label: shortName(rung(v, CHAMPION), CHAMPION), values: champ, color: '--color-accent', width: 2 },

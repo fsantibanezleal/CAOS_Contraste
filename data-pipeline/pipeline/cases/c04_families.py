@@ -129,7 +129,7 @@ LADDERS: dict[str, dict[str, Any] | None] = {
                          "Tasas de rebaja multiplicadas por k en el tercer año"),
               "unit": "ratio", "values": list(CYCLE_K)},
     "withdrawals": {"name": _t("Informative withdrawal k: 6% a year, times 1 + k in the year before default",
-                               "Retiro informativo k: 6% al año, multiplicado por 1 + k en el año previo al "
+                               "Retiro informativo k: 6 % al año, multiplicado por 1 + k en el año previo al "
                                "incumplimiento"),
                     "unit": "ratio", "values": list(INFORMATIVE)},
     "thin": {"name": _t("Obligors per grade", "Deudores por grado"), "unit": "count", "values": list(THIN_N)},

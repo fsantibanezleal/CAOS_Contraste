@@ -13,7 +13,7 @@ import { Pending } from '../Pending';
 import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
-import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
+import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, span, type C02Outputs, type C02Sel } from './selection';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
   if (!sel) return <Pending />;
@@ -94,7 +94,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
                   <td className="ct-wide-only">{int(o.counts.events, lang)}</td>
                   <td>{pc(o.counts.event_rate, lang)}</td>
                   <td data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.auc, lang) : formatNumber(null, lang)}</td>
-                  <td data-na={r ? undefined : 'true'}>{r ? `${f3(r.discrimination.auc_ci.lo, lang)} - ${f3(r.discrimination.auc_ci.hi, lang)}` : formatNumber(null, lang)}</td>
+                  <td data-na={r ? undefined : 'true'}>{r ? span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang) : formatNumber(null, lang)}</td>
                   <td className="ct-wide-only" data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.ks, lang) : formatNumber(null, lang)}</td>
                 </tr>
               );
@@ -162,7 +162,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
           <dd>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)} (${pick({ en: 'training / calibration / holdout', es: 'entrenamiento / calibración / reservada' }, lang)})`}</dd>
           <dt>{pick({ en: 'Bankruptcies in the holdout', es: 'Quiebras en la muestra reservada' }, lang)}</dt>
           <dd>{int(o.split.holdout_events, lang)}</dd>
-          <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Binning, imputación y selección ajustados solo en el tramo de entrenamiento' }, lang)}</dt>
+          <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Agrupación en tramos, imputación y selección ajustadas solo en el tramo de entrenamiento' }, lang)}</dt>
           <dd>{yes(o.split.fit_on_training_slice_only)}</dd>
           <dt>{pick({ en: 'Calibration map on a separate slice', es: 'Mapa de calibración en un tramo aparte' }, lang)}</dt>
           <dd>{yes(o.split.calibration_map_on_separate_slice)}</dd>
@@ -253,7 +253,7 @@ export function ChallengerReadout({ sel }: { sel: C02Sel | null }) {
         { label: { en: 'AUC difference', es: 'Diferencia de AUC' }, value: c?.auc_diff ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Challenger minus champion, on the same holdout.', es: 'Retador menos campeón, en la misma muestra reservada.' } },
         { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: c?.auc_diff_ci.lo ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The lower end of the 95% DeLong interval; an interval holding zero is no evidence of a gain.', es: 'El extremo inferior del intervalo DeLong de 95%; un intervalo que contiene el cero no es evidencia de una ganancia.' } },
         { label: { en: 'p (DeLong)', es: 'p (DeLong)' }, value: c?.delong_p_value ?? null, unitless: true, format: { digits: 2 }, hint: { en: 'The DeLong test of equal AUCs.', es: 'La prueba DeLong de AUC iguales.' } },
-        { label: { en: 'Grades moved', es: 'Grados movidos' }, value: c?.grade_disagreement_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The share of firms whose grade differs by two notches or more.', es: 'La parte de empresas cuyo grado difiere en dos escalones o más.' } },
+        { label: { en: 'Grades moved', es: 'Grados movidos' }, value: c?.grade_disagreement_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The share of firms whose grade differs by two grades or more.', es: 'La parte de empresas cuyo grado difiere en dos grados o más.' } },
       ]}
     />
   );

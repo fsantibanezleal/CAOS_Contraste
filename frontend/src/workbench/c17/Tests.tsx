@@ -19,7 +19,7 @@ export function C17TestsTable({ variant, host }: { variant: VariantArtifact; hos
   return (
     <div data-block="tests">
       <p className="ct-note">
-        {pick({ en: 'The tests the engine returned for this view: the statistic and p-value when a test ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor para esta vista: el estadístico y el valor p cuando una prueba corrió, la luz bajo la política comprometida y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {pick({ en: 'The tests the engine returned for this view: the statistic and p-value when a test ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor para esta vista: el estadístico y el valor p cuando una prueba corrió, la luz bajo la política versionada y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
       </p>
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row for this view.', es: 'Esta variante no trae filas de pruebas para esta vista.' }, lang)}</p>

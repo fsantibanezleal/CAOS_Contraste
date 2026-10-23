@@ -34,8 +34,8 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
       title={{ en: 'The acceleration levels', es: 'Los niveles de aceleración' }}
       {...card}
       note={{
-        en: 'A higher level draws utilisation up more steeply before default, so the CCF measured a fixed year before default drifts from the truth. Pick a level to load it.',
-        es: 'Un nivel más alto sube la utilización con más fuerza antes del incumplimiento, así que el CCF medido un año fijo antes del incumplimiento se aleja de la verdad. Elija un nivel para cargarlo.',
+        en: 'A higher level draws utilisation up more steeply before default. The bars are the bias of the CCF measured a fixed year before default at each level, how far it sits from the known CCF; it can be small. Pick a level to load it.',
+        es: 'Un nivel más alto sube la utilización con más fuerza antes del incumplimiento. Las barras son el sesgo del CCF medido un año fijo antes del incumplimiento en cada nivel, cuánto se aleja del CCF conocido; puede ser pequeño. Elija un nivel para cargarlo.',
       }}
     >
       <ChartOverTable

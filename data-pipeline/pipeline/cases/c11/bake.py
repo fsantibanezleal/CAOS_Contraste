@@ -22,6 +22,7 @@ import numpy as np
 from ... import __version__
 from ...core import expect as expectations
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...core.lineage import Input, Lineage
 from ...io import contract as c1
 from ...io.formats import write_json
@@ -166,7 +167,7 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
     for w in windows:
         d = docs.build_window(ports[w.window_id], runs[w.window_id], hp, code_version=__version__, engine_version=ev, model_ids=model_ids,
                            mc_draws=mc_draws, z2_draws=z2_draws, limit=limit)
-        art = build_artifact(case_id=CASE_ID, variant_id=w.window_id, model=d["model"], outputs=d["outputs"], tests=d["tests"],
+        art = build_artifact(case_id=CASE_ID, variant_id=w.window_id, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                              impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
         rel = f"{CASE_ID}/{w.window_id}.json"
         e_v = write_artifact(root, rel, art, engines=ENGINES, run_ms=RUN_MS)

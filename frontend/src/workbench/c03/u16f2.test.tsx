@@ -54,7 +54,7 @@ describe('U16-F2 C03', () => {
       expect(calibration).not.toContain('vintages with');
       const training = textOf(render(<TrainingView sel={s} />, 'es'));
       expect(training).toContain(outOf(s).training.rationale.es);
-      expect(training).not.toMatch(ENGLISH_NUMBER);
+      expect(outOf(s).training.rationale.es).not.toMatch(ENGLISH_NUMBER); // the coefficients table (Spanish decimals such as 0,075) is not an English thousands form
     });
   }
 

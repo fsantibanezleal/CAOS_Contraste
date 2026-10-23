@@ -10,6 +10,19 @@ export type C06Models = { fit?: C06Fit };
 
 /** The words for the ids the documents carry (U16-R2 b03 B3): never an id inside a Spanish sentence or cell. */
 export const COHORT_TEXT: Record<string, { en: string; es: string }> = { all: { en: 'all', es: 'todas' }, older: { en: 'older', es: 'anteriores' } };
+/** The tests of the IFRS 9 battery in words (the id stays in the cell's title, never printed as the name). */
+export const IFRS9_TEST_TEXT: Record<string, { en: string; es: string }> = {
+  'ifrs9.lifetime_pd_backtest': { en: 'Lifetime PD backtest', es: 'Backtest de la PD de vida' },
+  'ifrs9.sicr_effectiveness': { en: 'Effectiveness of the stage flag (SICR)', es: 'Efectividad de la marca de etapa (SICR)' },
+  'ifrs9.sicr_threshold_stability': { en: 'Stability of the SICR threshold', es: 'Estabilidad del umbral de SICR' },
+  'ifrs9.stage_migration_backtest': { en: 'Stage migration backtest', es: 'Backtest de la migración de etapas' },
+  'ifrs9.ecl_backtest': { en: '12-month ECL backtest', es: 'Backtest de la PCE a 12 meses' },
+  'ifrs9.scenario_sensitivity': { en: 'Sensitivity to the scenarios', es: 'Sensibilidad a los escenarios' },
+  'ifrs9.nonlinearity': { en: 'Nonlinearity of the ECL in the scenario weights', es: 'No linealidad de la PCE en los pesos de escenarios' },
+  'ifrs9.overlay_diagnostics': { en: 'Overlay diagnostics', es: 'Diagnóstico de los ajustes' },
+  'ifrs9.reconciliation_identities': { en: 'Reconciliation identities', es: 'Identidades de conciliación' },
+};
+export const ifrs9TestText = (id: string): { en: string; es: string } => IFRS9_TEST_TEXT[id] ?? { en: id, es: id };
 export const cohortText = (id: string): { en: string; es: string } => COHORT_TEXT[id] ?? { en: id, es: id };
 export const MOVEMENT_TEXT: Record<string, { en: string; es: string }> = {
   originations: { en: 'originations', es: 'originaciones' },
