@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 // @ts-expect-error the generator is plain JavaScript, run by node (scripts/gen-names.mjs)
 import { collectModelNames, serialise } from '../../../scripts/gen-names.mjs';
-import { TEST_NAMES, evidenceLabel, modelName, segmentName, testName, type NameContext } from './index';
+import { TEST_NAMES, entryName, evidenceLabel, modelName, segmentName, testName, type NameContext } from './index';
 import committed from './models.gen.json';
 import registry from './registry.json';
 
@@ -110,5 +110,23 @@ describe('the names gate: every id a reader can meet has a name', () => {
 
   it('keeps models.gen.json equal to what the documents say (node scripts/gen-names.mjs)', () => {
     expect(serialise(committed)).toBe(serialise(collectModelNames(derived)));
+  });
+});
+
+describe('the governance entries', () => {
+  it('names every inventory entry, link, exclusion and register entry in both languages (the R2b page review: C02/polish-horizons)', () => {
+    const gov = (f: string) => JSON.parse(readFileSync(join(derived, 'governance', f), 'utf8')) as Obj;
+    const inv = gov('inventory.json');
+    const keys = new Set<string>();
+    for (const e of inv.entries as Obj[]) keys.add(e.key as string);
+    for (const r of inv.related as Obj[]) [r.a, r.b].forEach((k) => keys.add(k as string));
+    for (const e of inv.edges as Obj[]) [e.upstream, e.downstream].forEach((k) => keys.add(k as string));
+    for (const x of inv.excluded as Obj[]) if (x.variant_id) keys.add(`${x.case_id}/${x.variant_id}`);
+    for (const r of gov('findings.json').rows as Obj[]) keys.add(r.entry_key as string);
+    const missing = [...keys].filter((k) => {
+      const n = entryName(k);
+      return !n || !n.en || !n.es || n.en.includes(k) || n.es.includes(k);
+    });
+    expect(missing).toEqual([]);
   });
 });

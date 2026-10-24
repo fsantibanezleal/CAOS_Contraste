@@ -97,8 +97,8 @@ function CaseFacts({ m }: { m: CaseManifest }) {
     .join(', ');
   return (
     <P
-      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
-      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
+      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.map((s) => m.source_details[s]?.name ?? s).join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.map((s) => m.source_details[s]?.name ?? s).join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
     />
   );
 }

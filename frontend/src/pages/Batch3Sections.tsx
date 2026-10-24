@@ -14,6 +14,7 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../lib/policy';
 import { P, useT } from '../content/bi';
 import { Marked } from '../workbench/c21/Marked';
+import { inputName } from '../workbench/names';
 import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 
 type Lang = 'en' | 'es';
@@ -358,7 +359,7 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
         t('Leakage', 'Fuga'),
         t('Planted leak caught by the screen', 'Fuga sembrada detectada por el filtro'),
         yes(lang, o.caught),
-        t(`planted feature ${o.planted_feature} (single-feature AUC ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`, `variable sembrada ${o.planted_feature} (AUC de una sola variable ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`),
+        t(`planted feature: ${(inputName(o.planted_feature) ?? { en: o.planted_feature, es: o.planted_feature }).en} (single-feature AUC ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`, `variable sembrada: ${(inputName(o.planted_feature) ?? { en: o.planted_feature, es: o.planted_feature }).es} (AUC de una sola variable ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`),
       ];
     default:
       return [name, na(lang), na(lang), na(lang), na(lang)];

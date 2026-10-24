@@ -7,6 +7,7 @@
 import { ArtifactUnavailable, getJSON, useArtifact, type LoadedDeclared } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { Text } from '../../lib/contract.types';
+import { entryText } from '../names';
 
 export type GovInventory = components['schemas']['governance-governance-inventory'];
 export type GovFindings = components['schemas']['governance-governance-findings'];
@@ -231,7 +232,8 @@ export function ageingBins(rows: FindingRow[], width = 30): Array<{ from: number
 }
 
 /** The entry key of a report file name's parts, for the reader's select: `C07/banco-andino`. */
-export const entryLabel = (e: InvEntry, lang: 'en' | 'es'): string => `${e.key}: ${e.title[lang]}`;
+// the entry in words, then its case title (the R2b page review: the select printed `C01/german`)
+export const entryLabel = (e: InvEntry, lang: 'en' | 'es'): string => `${entryText(e.key)[lang]}: ${e.title[lang]}`;
 
 /** The three states of a tab's one document, shown as the reason a reader can read. */
 export const NOT_YET: Text = { en: 'Not available yet', es: 'Aún no disponible' };

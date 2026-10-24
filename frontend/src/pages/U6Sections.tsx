@@ -3,10 +3,11 @@
 // rungs of each variant with the case's own metrics. Every number is read from the committed variant artifacts when the
 // page opens; none is typed in, and a value the artifact leaves null says "not available" (T13).
 import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import { isValidElement, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
+import { modelName } from '../workbench/names';
 import type { C03Outputs } from '../workbench/c03/selection';
 import type { C06Outputs } from '../workbench/c06/selection';
 import type { C07Outputs } from '../workbench/c07/selection';
@@ -70,7 +71,9 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
         {rows.map((r, i) => (
           <tr key={i}>
             {r.map((c, j) => (
-              <td key={j} className={j < wide || (typeof c === 'string' && c.length > LONG_CELL) ? 'caos-col-text' : undefined}>
+              // an element cell (a marked citation) is text that wraps like a long string (the R2b review: the C21 four-fifths cell ran
+              // the table past the pane at 1280)
+              <td key={j} className={j < wide || (typeof c === 'string' && c.length > LONG_CELL) || isValidElement(c) ? 'caos-col-text' : undefined}>
                 {c}
               </td>
             ))}
@@ -219,7 +222,8 @@ export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             <h4>{name}</h4>
             <Table
               head={[t('EAD model', 'Modelo de EAD'), t('Predicted EAD', 'EAD predicha'), t('Realised EAD', 'EAD realizada'), t('Relative gap', 'Brecha relativa'), t('Worst band light', 'Peor luz por tramo')]}
-              rows={models.map((r) => [r.m.model_id, money(r.pred, cur, lang), money(r.real, cur, lang), pct(r.rel, lang), light[r.worst] ?? r.worst])}
+              // each EAD model by its name (the raw-id scan of the pages: ccf-cohort-floor-cap, direct-ead)
+              rows={models.map((r) => [pick(modelName(r.m.model_id, { caseId: 'C09', models: v.model }) ?? { en: r.m.model_id, es: r.m.model_id }, lang), money(r.pred, cur, lang), money(r.real, cur, lang), pct(r.rel, lang), light[r.worst] ?? r.worst])}
             />
           </section>
         );

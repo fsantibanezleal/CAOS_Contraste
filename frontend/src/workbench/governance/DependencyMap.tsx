@@ -9,6 +9,7 @@
 import { Stage, fitLabel, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { viridis } from '../c04/MatrixMap';
 import { layers, tierName, worstOpen, type GovInventory, type InvEntry, type Severity } from './model';
+import { entryText } from '../names';
 
 /** Tier 1 (the most material) is the darkest end of viridis, Tier 4 the lightest: four steps a reader can tell apart. */
 export const tierColor = (tier: number): string => viridis([0.04, 0.36, 0.68, 0.96][Math.min(4, Math.max(1, tier)) - 1]);
@@ -98,7 +99,7 @@ export function MapDrawing({ inv, width, height }: { inv: GovInventory; width: n
         const ring = worst ? SEVERITY_RING[worst] : null;
         return (
           <g key={e.key} data-node={e.key} data-tier={e.tier_block.tier} data-worst={worst ?? 'none'}>
-            <title>{`${e.key}: ${pick(e.title, lang)}, ${tierName(e.tier_block.tier, lang)}`}</title>
+            <title>{`${pick(entryText(e.key), lang)}: ${pick(e.title, lang)}, ${tierName(e.tier_block.tier, lang)}`}</title>
             {ring && <circle cx={n.x} cy={n.y} r={R + 3} fill="none" stroke={ring.color} strokeWidth={ring.width} />}
             <circle cx={n.x} cy={n.y} r={R} fill={tierColor(e.tier_block.tier)} stroke="var(--color-border)" strokeWidth={1} />
             <text x={n.x} y={n.y} textAnchor="middle" dominantBaseline="central" fontSize={11} fontWeight={600} fill={inkOn(e.tier_block.tier)} style={{ pointerEvents: 'none' }}>

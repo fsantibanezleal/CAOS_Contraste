@@ -1,7 +1,7 @@
 // The names the committed documents give the ids a finding cites, by case: each variant document's models (`model[]`, its short
 // title, else its title when the short title is the id itself or a class name), C04's agencies by their CEREP code (the variant's
 // short title in the case manifest), the configuration of each measured rate (`rate:<key>`; C22: the simulation's scenario), and
-// each variant's title in the case manifest.
+// each variant's title in the case manifest, and each source by its published name (`source_details[id].name` of the manifests).
 // The views of a case read the names from the document they load; the governance views, which load no case document, and the
 // findings evidence of every case read them from src/workbench/names/models.gen.json, which this script writes. The names gate
 // (names.test.ts) checks that the committed file equals what this script collects, so a re-bake that renames a model fails until
@@ -21,15 +21,20 @@ const isCode = (s, id) => s === id || /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+$/.test
 const text = (t) => (t && typeof t === 'object' && typeof t.en === 'string' && typeof t.es === 'string' ? { en: t.en, es: t.es } : null);
 const sorted = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 
-/** { models, rates, variants }: each { case: { id: { en, es } } }, from the committed documents under `root`. */
+/** { models, rates, variants, sources }: the first three { case: { id: { en, es } } }, sources { id: name }, from the committed
+ * documents under `root`. */
 export function collectModelNames(root = join(repo, 'data', 'derived')) {
-  const out = { models: {}, rates: {}, variants: {} };
+  const out = { models: {}, rates: {}, variants: {}, sources: {} };
   const cases = readdirSync(root).filter((d) => /^C\d\d$/.test(d)).sort();
   for (const c of cases) {
     const names = {};
     const rates = {};
     const manifestPath = join(root, 'manifests', `${c}.json`);
     const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : null;
+    // the sources by their published name (the governance report lists a fit's sources)
+    for (const [id, d] of Object.entries(manifest?.source_details ?? {})) {
+      if (typeof d?.name === 'string' && !out.sources[id]) out.sources[id] = d.name;
+    }
     // the variants by their manifest title (the governance report names the variant of its test rows)
     const variants = {};
     for (const a of manifest?.artifacts ?? []) {
@@ -64,6 +69,7 @@ export function collectModelNames(root = join(repo, 'data', 'derived')) {
     if (Object.keys(rates).length) out.rates[c] = sorted(rates);
     if (Object.keys(variants).length) out.variants[c] = sorted(variants);
   }
+  out.sources = sorted(out.sources);
   return out;
 }
 

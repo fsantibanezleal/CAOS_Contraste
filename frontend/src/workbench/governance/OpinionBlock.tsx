@@ -20,6 +20,7 @@ import {
   type ReportSection,
   type Severity,
 } from './model';
+import { entryText } from '../names';
 
 export type Opinion = Extract<ReportSection, { number: 11 }>['opinion'];
 
@@ -81,7 +82,7 @@ export function OpinionBlockView({ caseId, inv }: { caseId: string; inv: GovInve
         <div key={e.key} data-opinion-entry={e.key}>
           {mine.length > 1 && (
             <h4>
-              <span translate="no">{e.key}</span>: {pick(e.title, lang)}
+              {pick(entryText(e.key), lang)}: {pick(e.title, lang)}
             </h4>
           )}
           <GovernanceDoc<GovReport> file={reportFile(e.key)}>{(report) => <ReportOpinion report={report} />}</GovernanceDoc>

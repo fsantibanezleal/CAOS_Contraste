@@ -17,6 +17,7 @@ import {
   conform,
 } from '../../lib/contract.types';
 import { groupCases, topRow } from '../../pages/Experiments';
+import { entryText } from '../names';
 import { DESIGN_GROUP_LABEL, governanceTabs } from '../../pages/experiments/governanceTabs';
 import { collectSections } from '../../pages/methodologyRegistry';
 import * as governanceSection from '../../pages/methodology/governance';
@@ -119,7 +120,8 @@ describe('Inventory and tiers', () => {
   });
   it('lists the entries, the left-out cases with their reason and the findings of the inventory with their ECB F', () => {
     const t = text(html(<InventoryTab inv={inv} />));
-    for (const e of inv.entries) expect(t).toContain(e.key);
+    // each entry by its name, never its key (the R2b page review)
+    for (const e of inv.entries) expect(t).toContain(entryText(e.key).en);
     for (const x of inv.excluded) expect(t).toContain(x.reason.en);
     for (const f of inv.governance_findings) {
       expect(t).toContain(f.severity);
