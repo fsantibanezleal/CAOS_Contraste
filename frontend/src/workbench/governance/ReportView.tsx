@@ -11,7 +11,7 @@ import type { Text } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, ConventionNote, Doc, GovernanceDoc } from './common';
 import { OpinionCard } from './OpinionBlock';
-import { rowWhere, testText, variantName } from '../names';
+import { entryName, entryText, rowWhere, sourceName, testText, variantName } from '../names';
 import { GOVERNANCE_FILES, OPINION_NAME, STATUS_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
 
 type Block = ReportSection['blocks'][number];
@@ -102,9 +102,45 @@ function OutcomesTable({ rows, variant, caseId }: { rows: OutcomeRow[]; variant:
   );
 }
 
+/** The fit of an entry in words for the engine's report sentences: the entry's name without its case (`German Credit fit`). */
+const fitWords = (caseId: string, fit: string, lang: 'en' | 'es'): string => {
+  const n = entryName(`${caseId}/${fit}`);
+  return n ? n[lang].slice(caseId.length + 2) : fit;
+};
+const count = (n: string, lang: 'en' | 'es') => formatNumber(Number(n), lang, { decimals: 0 });
+
+/** The sentences the engine's report builder (riskvalidation.governance.report) writes with a fit id, source ids or a plural that
+ * does not agree with its count, read whole in words; any other sentence is shown as it comes (the R2b page review c23). */
+const REPORT_SENTENCES: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es', caseId: string) => string]> = [
+  [/^Scope: the fit (\S+) of case (C\d\d); the full battery of the default variant \((\d+) test rows\) and the findings of its (\d+) variants\.$/,
+    (m, lang) => lang === 'en'
+      ? `Scope: ${m[2]}, ${fitWords(m[2], m[1], 'en')}; the full battery of the default variant (${count(m[3], 'en')} test rows) and the findings of its ${m[4] === '1' ? 'one variant' : `${count(m[4], 'en')} variants`}.`
+      : `Alcance: ${m[2]}, ${fitWords(m[2], m[1], 'es')}; la batería completa de la variante por defecto (${count(m[3], 'es')} filas de prueba) y los hallazgos de ${m[4] === '1' ? 'su única variante' : `sus ${count(m[4], 'es')} variantes`}.`],
+  [/^(.+): (\d+) model records in the fit (\S+); tier (\d) \((.+)\)\.$/,
+    (m, lang, caseId) => {
+      const n = m[2] === '1' ? (lang === 'en' ? 'one model record' : 'un registro de modelo') : lang === 'en' ? `${count(m[2], 'en')} model records` : `${count(m[2], 'es')} registros de modelo`;
+      return lang === 'en' ? `${m[1]}: ${n} in the ${fitWords(caseId, m[3], 'en')}; tier ${m[4]} (${m[5]}).` : `${m[1]}: ${n} en el ${fitWords(caseId, m[3], 'es')}; nivel ${m[4]} (${m[5]}).`;
+    }],
+  [/^(?:Sources|Fuentes): (.+)\.$/,
+    (m, lang) => `${lang === 'en' ? 'Sources' : 'Fuentes'}: ${m[1].split(', ').map((s) => sourceName(s) ?? s).join('; ')}.`],
+  [/^(\d+) register rows are stated limits of the synthetic case \(risk_accepted\); use restrictions are the SDD non-goals\.$/,
+    (m, lang) => lang === 'en'
+      ? `${m[1] === '1' ? 'One register row is a stated limit' : `${count(m[1], 'en')} register rows are stated limits`} of the synthetic case (risk accepted); use restrictions are the SDD non-goals.`
+      : `${m[1] === '1' ? 'Una fila del registro es un límite declarado' : `${count(m[1], 'es')} filas del registro son límites declarados`} del caso sintético (riesgo aceptado); las restricciones de uso son los no-objetivos del SDD.`],
+];
+
+/** A report sentence in the reader's language and words: the engine's English sentence matched whole, else the document's text. */
+export function reportSentence(t: Text, caseId: string, lang: 'en' | 'es'): string {
+  for (const [re, f] of REPORT_SENTENCES) {
+    const m = re.exec(t.en);
+    if (m) return f(m, lang, caseId);
+  }
+  return t[lang];
+}
+
 function BlockView({ block, caseId }: { block: Block; caseId: string }) {
   const lang = useShellLang();
-  if (block.kind === 'text') return <p><Doc t={block.text} /></p>;
+  if (block.kind === 'text') return <p><span translate={lang === 'es' ? 'no' : undefined}>{reportSentence(block.text, caseId, lang)}</span></p>;
   if (block.kind === 'list')
     return (
       <ul>
@@ -119,7 +155,10 @@ function BlockView({ block, caseId }: { block: Block; caseId: string }) {
     if (v === null) return pick({ en: 'not available', es: 'no disponible' }, lang);
     if (typeof v === 'boolean') return pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang);
     const words = column ? TOKEN_COLUMNS[column.toLowerCase()]?.[v] : undefined;
-    return words ? pick(words, lang) : v;
+    if (words) return pick(words, lang);
+    // a variant by its name (the R2b page review: `german-twin`)
+    const variant = column?.toLowerCase() === 'variant' ? variantName(caseId, v) : null;
+    return variant ? pick(variant, lang) : v;
   };
   return (
     <div className="ct-fade-scroll" style={{ maxHeight: 360, minWidth: 0 }}>
@@ -219,7 +258,7 @@ export function ReportDocument({ report }: { report: GovReport }) {
     <article data-report={report.entry_key} data-sections={report.sections.length}>
       <h3 className="ct-sub">{pick(report.title, lang)}</h3>
       <p data-report-header>
-        <span translate="no">{report.entry_key}</span>, {tierName(report.tier, lang)}. {pick({ en: 'Test rows: ', es: 'Filas de prueba: ' }, lang)}
+        {pick(entryText(report.entry_key), lang)}, {tierName(report.tier, lang)}. {pick({ en: 'Test rows: ', es: 'Filas de prueba: ' }, lang)}
         {pick(LIGHT_TEXT.green, lang)}: {n(c.green)}, {pick(LIGHT_TEXT.amber, lang)}: {n(c.amber)}, {pick(LIGHT_TEXT.red, lang)}: {n(c.red)}, {pick({ en: 'not evaluated', es: 'no evaluadas' }, lang)}: {n(c.not_evaluated)}, {pick(LIGHT_TEXT.error, lang)}: {n(c.error)}.
       </p>
       <AsOf asOf={report.as_of} basis={report.as_of_basis} />

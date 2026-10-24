@@ -10,6 +10,7 @@ import type { BiText } from '@fasl-work/caos-app-shell';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
 import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
+import { noteText } from '../workbench/c08/notes';
 import { DEFICIENCY_TEXT, INTENDED_TEXT, type C13Outputs } from '../workbench/c13/selection';
 import { SHOCK_TEXT as C14_SHOCK_TEXT, scenarioOf, type C14Outputs } from '../workbench/c14/selection';
 import { SHOCK_TEXT as C15_SHOCK_TEXT, type C15Outputs, type C15Pair } from '../workbench/c15/selection';
@@ -41,7 +42,8 @@ export const W2_BENCHMARK_CASES = new Set(['C10', 'C11', 'C13', 'C17']);
 const C10_LEVEL_FOCUS = 0.999;
 
 /** What a value the artifact leaves out reads like: "not available", and the reason when the document gives one. */
-const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${reason})` : ''}`;
+// a reason the documents write in English only reads in the page's language, as in the views (the R2b review: the C11 champion reason)
+const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${noteText(reason, lang)})` : ''}`;
 const bi = (t: BiText | undefined, lang: Lang, fallback = ''): string => (t ? pick(t, lang) : fallback);
 const join = (parts: string[]): string => parts.join('; ');
 /** A value between two bounds: "0.0030 (0.0025 to 0.0036)". */

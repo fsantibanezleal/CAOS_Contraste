@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
-import { rowWhere, testText } from '../names';
+import { entryText, rowWhere, testText } from '../names';
 import {
   GOVERNANCE_FILES,
   PRODUCT_STATUS_NAME,
@@ -46,6 +46,19 @@ const STATUS_FILL: Record<string, string> = {
   risk_accepted: 'var(--color-fg-faint)',
 };
 
+/** Why a finding has no quantitative anchor, said by what its evidence is (a design limit, a contract rule, a measured rate, a
+ * test cited for no model); null when the evidence holds a test row, whose missing value the document's reason explains. */
+function evidenceKind(evidence: string[]): { en: string; es: string } | null {
+  if (!evidence.length || evidence.some((k) => k.split('@').length >= 2)) return null;
+  const kinds = new Set(evidence.map((k) => (/^(design|contract|rate):/.exec(k)?.[1] ?? 'test')));
+  const one = kinds.size === 1 ? [...kinds][0] : null;
+  if (one === 'design') return { en: 'the finding rests on a stated design limit, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en un límite de diseño declarado, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'contract') return { en: 'the finding rests on a rule of the contract, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en una regla del contrato, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'rate') return { en: 'the finding rests on a measured rate, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en una tasa medida, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'test') return { en: 'the finding cites its tests for no single model, so no one row holds the statistic', es: 'el hallazgo cita sus pruebas sin un modelo único, así que ninguna fila sola tiene el estadístico' };
+  return { en: 'the finding rests on design limits, contract rules or measured rates, not on one test row, so there is no statistic to read', es: 'el hallazgo descansa en límites de diseño, reglas del contrato o tasas medidas, no en una fila de prueba, así que no hay estadístico que leer' };
+}
+
 function AnchorCell({ row }: { row: FindingRow }) {
   const lang = useShellLang();
   if (row.anchor) {
@@ -64,10 +77,11 @@ function AnchorCell({ row }: { row: FindingRow }) {
       </>
     );
   }
+  const kind = evidenceKind(row.evidence);
   return (
     <span data-anchor="unavailable">
       {pick({ en: 'not available: ', es: 'no disponible: ' }, lang)}
-      {row.anchor_reason ? <Doc t={row.anchor_reason} /> : ''}
+      {kind ? pick(kind, lang) : row.anchor_reason ? <Doc t={row.anchor_reason} /> : ''}
     </span>
   );
 }
@@ -96,9 +110,10 @@ export function RegisterTable({ rows }: { rows: FindingRow[] }) {
           {sorted.map((r) => (
             <tr key={r.key} data-finding={r.key} data-severity={r.severity} data-status={r.status} data-overdue={r.overdue ? 'true' : 'false'}>
               <td className="caos-col-text">
-                <span translate="no">{r.entry_key}</span>
+                {/* the entry and the finding in words (the R2b page review: `C14/svb-2021-2022` and `F1`) */}
+                {pick(entryText(r.entry_key), lang)}
                 <br />
-                <span translate="no">{r.id}</span>
+                <Doc t={r.title} />
               </td>
               <td className="caos-col-text">{severityText(r.severity, r.ecb_f, lang)}</td>
               <td className="caos-col-text">

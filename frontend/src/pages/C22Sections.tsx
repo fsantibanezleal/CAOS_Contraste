@@ -57,12 +57,21 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
             return (
               <tr key={v.variant_id} data-family={v.variant_id}>
                 <td className="caos-col-text">{pick(titles[v.variant_id] ?? { en: v.variant_id, es: v.variant_id }, lang)}</td>
-                <td className="caos-col-text">{names.join(', ')}</td>
+                {/* the engine's generator references, as the C22 views print them: code, never translated (the raw-id ruling) */}
+                <td className="caos-col-text">
+                  {names.map((n, i) => (
+                    <span key={n}>
+                      {i ? ', ' : ''}
+                      <code translate="no">{n}</code>
+                    </span>
+                  ))}
+                </td>
                 <td className="caos-col-text">
                   {o.ladder ? `${pick(o.ladder.label, lang)}: ${o.ladder.values.map((x) => formatNumber(x, lang, { digits: 3 })).join('; ')}` : t('none: every test at its null', 'ninguna: cada prueba en su nula')}
                 </td>
                 <td>{formatNumber(o.simulations.length, lang)}</td>
-                <td className="caos-col-text">{v.findings.map((f) => `${f.id} (${f.severity})`).join(', ')}</td>
+                {/* each finding by its title, never its id (the raw-id scan of the pages: F-PROFILE-BLIND) */}
+                <td className="caos-col-text">{v.findings.map((f) => `${pick(f.title, lang)} (${f.severity})`).join('; ')}</td>
               </tr>
             );
           })}

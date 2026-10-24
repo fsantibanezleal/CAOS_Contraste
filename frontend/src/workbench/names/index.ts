@@ -27,10 +27,55 @@ const GEN = MODELS as {
   models: Record<string, Record<string, BiText>>;
   rates: Record<string, Record<string, BiText>>;
   variants: Record<string, Record<string, BiText>>;
+  sources: Record<string, string>;
 };
 
 /** A variant's title in its case manifest (for the views that load no manifest: the governance report). */
 export const variantName = (caseId: string, variantId: string): BiText | null => GEN.variants[caseId]?.[variantId] ?? null;
+
+/** A source by its published name (the manifests' `source_details`), the same in both languages; null for an unknown id. */
+export const sourceName = (id: string): string | null => GEN.sources[id] ?? null;
+
+/** The fits of the governance inventory that are not a variant of their case (an inventory entry is one fit: the models
+ * document `models-<fit>.json`; data-pipeline/pipeline/governance/inputs.json). C06 and C08 fit one ladder per variant and take
+ * the variant's name. */
+const FIT_NAME: Record<string, BiText> = {
+  'C01/german': bi('German Credit fit', 'Ajuste German Credit'),
+  'C01/taiwan': bi('Taiwan fit', 'Ajuste Taiwán'),
+  'C01/taiwan-small': bi('Taiwan small-sample fit', 'Ajuste Taiwán de muestra pequeña'),
+  'C02/polish-horizons': bi('Polish horizons fit', 'Ajuste de los horizontes polacos'),
+  'C03/sba-7a': bi('SBA 7(a) fit', 'Ajuste SBA 7(a)'),
+  'C04/transitions': bi('Rating transitions', 'Transiciones de calificación'),
+  'C05/ldp': bi('Low-default portfolios', 'Carteras de bajo incumplimiento'),
+  'C05/sp2009': bi('S&P 2009 fit', 'Ajuste S&P 2009'),
+  'C07/banco-andino': bi('Banco Andino', 'Banco Andino'),
+  'C09/generator': bi('Generator', 'Generador'),
+  'C10/c10': bi('Portfolio model ladder', 'Escalera de modelos de cartera'),
+  'C11/ladder': bi('VaR and ES ladder', 'Escalera de VaR y ES'),
+  'C12/hw1f-treasury-2000-2025': bi('Hull-White on the Treasury curves, 2000 to 2025', 'Hull-White sobre las curvas del Tesoro, 2000 a 2025'),
+  'C13/generator': bi('Generator', 'Generador'),
+  'C14/svb-2021-2022': bi('SVB, 2021 to 2022', 'SVB, 2021 a 2022'),
+  'C15/banco-andino-2026-09': bi('Banco Andino, September 2026', 'Banco Andino, septiembre de 2026'),
+  'C16/svb-liquidity': bi('SVB liquidity', 'Liquidez de SVB'),
+  'C17/generator': bi('Generator', 'Generador'),
+  'C18/banco-andino': bi('Banco Andino', 'Banco Andino'),
+  'C20/c20-ladder': bi('ML model ladder', 'Escalera de modelos de ML'),
+  'C21/hmda-de-2018-2023': bi('HMDA Delaware, 2018 to 2023', 'HMDA Delaware, 2018 a 2023'),
+  'C22/generators': bi('Generators', 'Generadores'),
+};
+
+/** An inventory entry (`C02/polish-horizons`) or a variant key (`C05/ldp-sim-0`) in words: its case and its fit or variant;
+ * null for a key with no name. */
+export function entryName(key: string): BiText | null {
+  const i = key.indexOf('/');
+  if (i < 0) return null;
+  const caseId = key.slice(0, i);
+  const name = FIT_NAME[key] ?? variantName(caseId, key.slice(i + 1));
+  return name ? bi(`${caseId}, ${name.en}`, `${caseId}, ${name.es}`) : null;
+}
+
+/** An entry key in words, or as written when it has no name. */
+export const entryText = (key: string): BiText => entryName(key) ?? bi(key, key);
 
 /** A test row's model and segment in words ("P1 Scorecard, portfolio"), each part named or, failing that, left out. */
 export function rowWhere(caseId: string, modelId: string | null | undefined, segment: string | null | undefined, models?: NameContext['models']): BiText | null {
@@ -145,6 +190,8 @@ const SBA_FIELD: Record<string, BiText> = {
   sector: bi('Sector', 'Sector'),
   revolver: bi('Revolving line', 'Línea rotativa'),
   '(intercept)': bi('Intercept', 'Intercepto'),
+  // C20's planted leak (c20/v_leak.py LEAK): the default flag plus noise, dated one month after the observation date
+  future_status_code: bi('future status code (the planted leak)', 'código de estado futuro (la fuga sembrada)'),
 };
 
 /** An input of a data file by name: a column of the German file, a field of the Fed portfolios or an input C03 derives from the
@@ -171,7 +218,11 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
   // the input of a CSI row, as its data file names the column (C02: the UCI file's Attr27; a `_missing` column is its missing-value
   // indicator); a dataset's column name is the name it publishes
   if ((m = /^characteristic:(.+?)(_missing)?$/.exec(seg))) {
-    return m[2] ? bi(`input ${m[1]}, missing-value indicator`, `entrada ${m[1]}, indicador de valor faltante`) : bi(`input ${m[1]}`, `entrada ${m[1]}`);
+    // a column the product names (the German file's checking_status) in words; a published column name (Attr27) as written
+    const n = inputName(m[1]);
+    const en = n ? n.en : `input ${m[1]}`;
+    const es = n ? n.es : `entrada ${m[1]}`;
+    return m[2] ? bi(`${en}, missing-value indicator`, `${es}, indicador de valor faltante`) : bi(en, es);
   }
   switch (ctx.caseId) {
     case 'C04':
