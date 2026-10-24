@@ -6,7 +6,7 @@ import { PlotCard, SubTabs, Verdict, ViewsRow, formatNumber, pick, useShellLang,
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { CapitalView } from './CapitalView';
-import { CHAMPION, REPLAY, atApproval, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
+import { CHAMPION, REPLAY, atApproval, defaultChallenger, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
 import { currencyName } from './c01Text';
 
@@ -51,6 +51,9 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
   const champ = atApproval(v.outputs.rungs[CHAMPION].cutoff, sel.approval);
   const chall = atApproval(v.outputs.rungs[sel.challenger].cutoff, sel.approval);
   const names = [shortName(rung(v, CHAMPION), CHAMPION), shortName(rung(v, sel.challenger), sel.challenger)];
+  // the pipeline's exact figures are the champion against the pipeline's own challenger, whatever the rail picked (R2b c02 B2)
+  const pipelineChallenger = defaultChallenger(v);
+  const pipelineName = shortName(rung(v, pipelineChallenger), pipelineChallenger);
   const better = champ.bad !== null && chall.bad !== null ? chall.bad < champ.bad : null;
   const im = v.impact;
   const currency = im.el_champion?.unit ?? '';
@@ -137,7 +140,7 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
             lane={REPLAY}
             provenance={prov}
             dataKey={stateKey}
-            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}. The live figures interpolate the cut-off curve; the pipeline's are exact, so the two can differ in the second decimal.`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}. Las cifras en vivo interpolan la curva de corte; las del pipeline son exactas, así que pueden diferir en el segundo decimal.` }}
+            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}. The live figures interpolate the cut-off curve between its points; the pipeline's are exact, so the two can differ by a point or more, and a tie block on a model's curve can reverse which bad rate is lower.${sel.challenger === pipelineChallenger ? '' : ` The table compares the champion with ${pipelineName.en}, the pipeline's challenger, not the rail's.`}`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}. Las cifras en vivo interpolan la curva de corte entre sus puntos; las del pipeline son exactas, así que pueden diferir en un punto o más, y un bloque de empates en la curva de un modelo puede invertir cuál tasa de malos es menor.${sel.challenger === pipelineChallenger ? '' : ` La tabla compara al campeón con ${pipelineName.es}, el retador del pipeline, no el del panel.`}` }}
           >
             <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table">
@@ -145,7 +148,7 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
                   <tr>
                     <th className="caos-col-text">{pick({ en: 'Champion, then challenger', es: 'Campeón, luego retador' }, lang)}</th>
                     <th>{pick(names[0], lang)}</th>
-                    <th>{pick(names[1], lang)}</th>
+                    <th>{pick(pipelineName, lang)}</th>
                   </tr>
                 </thead>
                 <tbody>

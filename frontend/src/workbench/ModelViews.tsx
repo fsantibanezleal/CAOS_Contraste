@@ -48,8 +48,69 @@ export function droppedReason(why: string, lang: 'en' | 'es'): string {
   return why;
 }
 
+/** The codes of the UCI Statlog (German Credit Data) file by their meaning in its codebook (attribute descriptions,
+ * https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data): the German twin's scorecard bins print the meaning, never the
+ * code (U16-R2b c01 B2). */
+const GERMAN_CODE_TEXT: Record<string, { en: string; es: string }> = {
+  A11: { en: 'under 0 DM', es: 'menos de 0 DM' },
+  A12: { en: '0 to under 200 DM', es: 'de 0 a menos de 200 DM' },
+  A13: { en: '200 DM or more, or salary assignments for at least 1 year', es: '200 DM o más, o asignación de sueldo por al menos 1 año' },
+  A14: { en: 'no checking account', es: 'sin cuenta corriente' },
+  A30: { en: 'no credits taken, or all paid back duly', es: 'sin créditos, o todos pagados al día' },
+  A31: { en: 'all credits at this bank paid back duly', es: 'todos los créditos de este banco pagados al día' },
+  A32: { en: 'existing credits paid back duly till now', es: 'créditos vigentes pagados al día hasta ahora' },
+  A33: { en: 'delay in paying off in the past', es: 'atrasos en pagos pasados' },
+  A34: { en: 'critical account, or other credits existing', es: 'cuenta crítica, u otros créditos vigentes' },
+  A40: { en: 'car (new)', es: 'auto nuevo' },
+  A41: { en: 'car (used)', es: 'auto usado' },
+  A42: { en: 'furniture or equipment', es: 'muebles o equipamiento' },
+  A43: { en: 'radio or television', es: 'radio o televisión' },
+  A44: { en: 'domestic appliances', es: 'electrodomésticos' },
+  A45: { en: 'repairs', es: 'reparaciones' },
+  A46: { en: 'education', es: 'educación' },
+  A47: { en: 'vacation', es: 'vacaciones' },
+  A48: { en: 'retraining', es: 'recapacitación' },
+  A49: { en: 'business', es: 'negocios' },
+  A410: { en: 'others', es: 'otros' },
+  A61: { en: 'under 100 DM', es: 'menos de 100 DM' },
+  A62: { en: '100 to under 500 DM', es: 'de 100 a menos de 500 DM' },
+  A63: { en: '500 to under 1,000 DM', es: 'de 500 a menos de 1.000 DM' },
+  A64: { en: '1,000 DM or more', es: '1.000 DM o más' },
+  A65: { en: 'unknown, or no savings account', es: 'desconocido, o sin cuenta de ahorro' },
+  A71: { en: 'unemployed', es: 'desempleado' },
+  A72: { en: 'under 1 year', es: 'menos de 1 año' },
+  A73: { en: '1 to under 4 years', es: 'de 1 a menos de 4 años' },
+  A74: { en: '4 to under 7 years', es: 'de 4 a menos de 7 años' },
+  A75: { en: '7 years or more', es: '7 años o más' },
+  A101: { en: 'none', es: 'ninguno' },
+  A102: { en: 'co-applicant', es: 'codeudor' },
+  A103: { en: 'guarantor', es: 'aval' },
+  A121: { en: 'real estate', es: 'bienes raíces' },
+  A122: { en: 'building society savings or life insurance', es: 'ahorro para vivienda o seguro de vida' },
+  A123: { en: 'car or other property', es: 'auto u otro bien' },
+  A124: { en: 'unknown, or no property', es: 'desconocido, o sin bienes' },
+  A141: { en: 'bank', es: 'banco' },
+  A142: { en: 'stores', es: 'tiendas' },
+  A143: { en: 'none', es: 'ninguno' },
+  A151: { en: 'rent', es: 'arriendo' },
+  A152: { en: 'own', es: 'propia' },
+  A153: { en: 'for free', es: 'gratuita' },
+  A171: { en: 'unemployed or unskilled, non-resident', es: 'desempleado o no calificado, no residente' },
+  A172: { en: 'unskilled, resident', es: 'no calificado, residente' },
+  A173: { en: 'skilled employee or official', es: 'empleado calificado o funcionario' },
+  A174: { en: 'management, self-employed or highly qualified', es: 'gerencia, independiente o altamente calificado' },
+  A191: { en: 'none', es: 'ninguno' },
+  A192: { en: "yes, registered under the customer's name", es: "sí, registrado a nombre del cliente" },
+};
+
 export function binText(bin: string, lang: 'en' | 'es'): string {
   if (bin === 'Missing') return lang === 'es' ? 'Sin dato' : 'Missing';
+  // a set of the German file's category codes: their meanings, joined by "or"
+  const codes = /^\{\s*(A\d+(?:\s*,\s*A\d+)*)\s*\}$/.exec(bin);
+  if (codes) {
+    const ids = codes[1].split(/\s*,\s*/);
+    if (ids.every((c) => GERMAN_CODE_TEXT[c])) return ids.map((c) => GERMAN_CODE_TEXT[c][lang]).join(lang === 'es' ? ' o ' : ' or ');
+  }
   if (bin === 'Special') return lang === 'es' ? 'Especial' : 'Special';
   const m = /^([[(])\s*(-?inf|-?\d+(?:\.\d+)?)\s*,\s*(-?inf|-?\d+(?:\.\d+)?)\s*([\])])$/.exec(bin);
   if (!m) return bin;
@@ -328,12 +389,15 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
         </PlotCard>
         <PlotCard
           fill
-          title={{ en: 'Where this applicant sits', es: 'Dónde se ubica este solicitante' }}
-          lane="live"
+          // with no scored applicant the card shows the two distributions only: titled and laned for what it draws (R2b c01 M2)
+          title={live ? { en: 'Where this applicant sits', es: 'Dónde se ubica este solicitante' } : { en: "PD of this variant's defaulters and non-defaulters", es: 'PD de los incumplidores y no incumplidores de esta variante' }}
+          lane={live ? 'live' : REPLAY}
           provenance={prov}
           dataKey={stateKey}
-          note={{ en: "The scorecard's PD of this variant's defaulters and non-defaulters; the marker is the applicant's live PD.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; la marca es la PD en vivo del solicitante.' }}
+          note={live ? { en: "The scorecard's PD of this variant's defaulters and non-defaulters; the marker is the applicant's live PD.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; la marca es la PD en vivo del solicitante.' } : { en: "The scorecard's PD of this variant's defaulters and non-defaulters; this variant carries no scored applicant to place.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; esta variante no trae un solicitante puntuado que ubicar.' }}
         >
+          {/* a floor for the drawing, so a tall card above it in the column never squeezes it to a strip (R2b c01 M2: about 10 px) */}
+          <div style={{ flex: '1 1 0', minHeight: '11rem', display: 'flex', flexDirection: 'column' }}>
           <UPlotChart
             height="fill"
             x={{ values: dist.x, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
@@ -344,6 +408,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
             ]}
             marks={live ? [{ x: live.pdScorecard, label: { en: 'applicant', es: 'solicitante' } }] : undefined}
           />
+          </div>
         </PlotCard>
       </>
     </ViewsRow>
@@ -397,7 +462,8 @@ export function ebmShapes(ex: EbmExport, fit?: { features?: Array<{ name: string
         x: cats.map(([code], i) => (Number.isFinite(Number(code)) ? Number(code) : i + 1)),
         y: cats.map(([, bin]) => scores[bin]),
         categorical: true,
-        xLabel: { en: `${term.name} (category code)`, es: `${term.name} (código de categoría)` },
+        // a short title, so it fits its panel (R2b c01 M1: "EDUCATION (código de categor" was cut at the panel edge)
+        xLabel: { en: `${term.name} (code)`, es: `${term.name} (código)` },
       };
     });
 }

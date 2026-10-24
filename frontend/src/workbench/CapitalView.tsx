@@ -6,7 +6,7 @@ import { PlotCard, Verdict, formatNumber, pick, useShellLang, useWorkbenchState,
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { RungOutputs } from '../lib/contract.types';
-import { CHAMPION, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
+import { CHAMPION, defaultChallenger, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
 import { currencyName } from './c01Text';
 
@@ -49,6 +49,9 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
   const champ = v.outputs.rungs[CHAMPION].cutoff;
   const chall = v.outputs.rungs[sel.challenger].cutoff;
   const names = [shortName(rung(v, CHAMPION), CHAMPION), shortName(rung(v, sel.challenger), sel.challenger)];
+  // the exact sentence is the pipeline's: the champion against the pipeline's own challenger (R2b c02 B2)
+  const pipelineChallenger = defaultChallenger(v);
+  const pipelineName = shortName(rung(v, pipelineChallenger), pipelineChallenger);
   const cname = currencyName(v.impact.el_champion?.unit ?? '');
   const money = (x: number | null) => formatNumber(x === null ? null : x / MILLION, lang, { digits: 3 });
   const [eadA] = interp(champ.approval_rate, champ.ead, [sel.approval]);
@@ -135,8 +138,8 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
               <p className="ct-note" data-exact="pipeline">
                 {pick(
                   {
-                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50%): ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
-                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50%): ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
+                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50%), ${names[0].en} and ${pipelineName.en}${sel.challenger === pipelineChallenger ? '' : ' (the pipeline\'s challenger)'}: ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
+                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50%), ${names[0].es} y ${pipelineName.es}${sel.challenger === pipelineChallenger ? '' : ' (el retador del pipeline)'}: ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
                   },
                   lang,
                 )}
