@@ -70,10 +70,13 @@ describe('VS-1, V02-4, V06-5, V21-1: a table of a filling card keeps its rows at
   });
   it('the panels of a C22 family flow as well, with their card body', () => {
     expect(narrow).toMatch(/\.ct-panels-fill\s*\{[^}]*height:\s*auto/);
-    expect(narrow).toMatch(/:has\(\.ct-panels-fill\)[^{]*\{[^}]*height:\s*auto/);
+    // the card body grows through the shell's flow contract (0.19.1, SHC-100): the panels carry data-caos-flow
+    expect(text('./c22/Views.tsx')).toMatch(/className="ct-panels-fill" data-caos-flow=""/);
   });
-  it('the card body that holds a scroll box grows with it', () => {
-    expect(narrow).toMatch(/:has\(\.ct-scroll\)[^{]*\{[^}]*height:\s*auto/);
+  it('the card body that holds a scroll box grows with it (the shell flows it: every scroll box carries data-caos-flow)', () => {
+    const shell = text('../../node_modules/@fasl-work/caos-app-shell/styles.css');
+    expect(shell).toMatch(/\.caos-plot\.fill > \.caos-plot-body:has\(> \.caos-table, \[data-caos-flow\]\)\s*\{[^}]*height:\s*auto/);
+    for (const f of ['./c05/SpViews.tsx', './c22/Views.tsx', './c16/C16Common.tsx']) expect(text(f)).not.toMatch(/className="ct-scroll"(?! data-caos-flow)/);
   });
 });
 
@@ -136,7 +139,11 @@ describe('b11 m1: Spanish never renders git "commit" as "comprometer"', () => {
 
 describe('b11 m2 and m3, b12 m3, b13 m3: a box that scrolls sideways at a phone shows a cue', () => {
   const narrow = media('max-width', 900);
-  for (const sel of ['.prose table', '.equation', '.ct-fig-scroll']) {
+  // the equation's cue is the shell's since 0.19.1 (SHC-100): the product restyles no shell class
+  it('.equation fades its right edge on a phone in the shell', () => {
+    expect(text('../../node_modules/@fasl-work/caos-app-shell/styles.css')).toMatch(/\.equation\s*\{\s*padding-right:\s*1\.5rem;\s*mask-image:\s*linear-gradient\(to right/);
+  });
+  for (const sel of ['.prose table', '.ct-fig-scroll']) {
     it(`${sel} fades its right edge and keeps a gap after its last column`, () => {
       const rules = (narrow.match(new RegExp(`${sel.replace('.', '\.').replace('.', '\.')}[^{}]*\{[^}]*\}`, 'g')) ?? []).join('\n');
       expect(rules).toMatch(/mask-image:\s*linear-gradient\(to right/);
