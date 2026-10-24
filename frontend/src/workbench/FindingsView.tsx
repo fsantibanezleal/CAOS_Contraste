@@ -98,18 +98,18 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
           <table className="caos-table ct-top">
             <thead>
               <tr>
-                <th className="ct-wide-only">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
+                <th className="ct-wide-only ct-repeated">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
                 <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+                <th className="ct-wide-only ct-repeated">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
                 <th className="caos-col-text">{pick({ en: 'What and why', es: 'Qué y por qué' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {findings.map((f) => (
                 <tr key={f.id} data-severity={f.severity}>
-                  <td className="ct-wide-only">{f.id}</td>
+                  <td className="ct-wide-only ct-repeated">{f.id}</td>
                   <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
-                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
+                  <td className="ct-wide-only ct-repeated">{pick(STATUS_TEXT[f.status], lang)}</td>
                   <td className="caos-col-text">
                     {pick(f.title, lang)}
                     <span className="ct-narrow-only">{f.id}; {pick({ en: 'status: ', es: 'estado: ' }, lang)}{pick(STATUS_TEXT[f.status], lang)}</span>

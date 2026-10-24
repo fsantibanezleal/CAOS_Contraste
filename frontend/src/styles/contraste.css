@@ -51,9 +51,12 @@
 /* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
 .ct-scroll { height: 100%; overflow: auto; min-height: 0; }
 
-/* columns a phone has no room for; what they hold that a reader cannot do without (the status of a finding) is repeated
-   under the text of the row, in .ct-narrow-only, which only a phone shows */
-@media (max-width: 640px) { .ct-wide-only { display: none; } }
+/* what a phone has no room for. A table column is hidden only when its value is repeated under the text of the row, in
+   .ct-narrow-only, which only a phone shows (those columns carry .ct-repeated); every other column stays, and the table scrolls
+   sideways in its own box (below): a value a reader cannot reach is not hidden (U16-R2b, the 390 rule of 2026-10-24) */
+@media (max-width: 640px) {
+  .ct-wide-only:not(th):not(td), th.ct-wide-only.ct-repeated, td.ct-wide-only.ct-repeated { display: none; }
+}
 /* a table whose rows are several lines tall reads from the top of each row (U16-R2 b06 m4: centred cells left the first finding
    looking empty) */
 .caos-table.ct-top td { vertical-align: top; }
@@ -125,7 +128,9 @@
 @media (max-width: 900px) {
   .ct-stack { height: auto; }
   .ct-stack-chart, .ct-stack-fixed { flex: none; height: calc(var(--ct-chart-min, 15rem) + 10rem); }
-  .ct-stack-table, .ct-stack-rest, .ct-stack-fill { flex: none; max-height: none; overflow: visible; }
+  /* they flow down; a table wider than its card scrolls sideways in its own box, never cut at the card edge (U16-R2b: the shell's
+     filling card body hides what overflows it, so a box that let its table overflow lost the right columns) */
+  .ct-stack-table, .ct-stack-rest, .ct-stack-fill { flex: none; max-height: none; overflow-x: auto; overflow-y: visible; }
   .caos-plot.fill > .caos-plot-body:has(.ct-stack) { height: auto; }
   /* a table that scrolls inside its card at a phone keeps the rows the card clamp leaves (one or two, U16-R2 b02 m1): it flows */
   .ct-scroll, .ct-stack > .ct-scroll { flex: none; height: auto; overflow-y: visible; }
@@ -135,6 +140,9 @@
   .caos-plot.fill > .caos-plot-body:has(.ct-panels-fill) { height: auto; }
   .caos-plot.fill > .caos-plot-body:has(.ct-scroll) { height: auto; }
 }
+/* C13's Findings box: it fills the instrument at 1280; on a phone it keeps a floor of min(70vh, 36rem) (U16-R2 b06 B4, R2b c14) */
+.ct-c13-findings { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+@media (max-width: 900px) { .ct-c13-findings { flex: none; min-height: min(70vh, 36rem); } }
 /* a box of the reports with a height of its own scrolls like the others */
 .ct-fade-scroll { overflow: auto; }
 /* a scroll box of a wide screen fades its bottom edge and keeps a gap under its last row, so no line ends cut through its
@@ -152,6 +160,16 @@
 /* a table or an equation of the documentation that scrolls sideways on a phone shows it (U16-R2 b11 m2 and m3, b12 m3, b13 m3): the
    right edge fades and the box keeps a gap after its last column, so scrolled to the end the last column is whole */
 @media (max-width: 900px) {
+  /* the same for every table of the instrument: the box that holds it scrolls sideways, fades its right edge and keeps a gap
+     after the last column (any element whose child is a table: the scroll and stack boxes, and a plain wrapper) */
+  :is(div, section):has(> table.caos-table):not(.caos-plot-body) {
+    overflow-x: auto;
+    min-width: 0;
+    max-width: 100%;
+    padding-right: 1.5rem;
+    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  }
+  .caos-plot-body:has(> table.caos-table) { overflow-x: auto; }
   .prose table, .equation, .ct-fig-scroll {
     padding-right: 1.5rem;
     mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);

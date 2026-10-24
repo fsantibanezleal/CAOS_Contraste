@@ -46,7 +46,9 @@ export function ViewFoot({ o }: { o: C13Outputs }) {
   );
 }
 
-/** The findings box never collapses below a readable height (a phone: the box was a 10 px sliver, U16-R2 b06 B4). */
+/** The findings box never collapses below a readable height on a phone (the box was a 10 px sliver, U16-R2 b06 B4); at 1280 it
+ * fills the instrument and scrolls inside, so it never spills under the governance disclosure (U16-R2b c14 M1). The floor is the
+ * stylesheet's `.ct-c13-findings` rule below 900 px; this constant documents it. */
 export const FINDINGS_MIN_HEIGHT = 'min(70vh, 36rem)';
 
 export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
@@ -55,7 +57,7 @@ export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
   return (
     <div className="ct-stack" data-block="c13-findings">
       <KnownBanner o={o} />
-      <div style={{ flex: '1 1 0', minHeight: FINDINGS_MIN_HEIGHT, display: 'flex', flexDirection: 'column' }}>
+      <div className="ct-c13-findings">
         <ViewsRow>
           <FindingsCard variant={sel.data.variant} />
         </ViewsRow>

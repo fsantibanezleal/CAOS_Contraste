@@ -89,7 +89,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
               <tr>
                 <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+                <th className="ct-wide-only ct-repeated">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +106,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
                       ))}
                     </ul>
                   </td>
-                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
+                  <td className="ct-wide-only ct-repeated">{pick(STATUS_TEXT[f.status], lang)}</td>
                 </tr>
               ))}
             </tbody>
