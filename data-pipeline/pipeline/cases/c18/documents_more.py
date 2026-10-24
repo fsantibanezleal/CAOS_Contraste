@@ -102,12 +102,16 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
         "cet1_ratio_end_stress": {"value": stack["total"], "unit": "share of RWA", "label": T("CET1 ratio at the failure point: the legal minimum stack")},
         "oi_headroom_min": {"value": None, "unit": "share of RWA", "label": T("Not computed in this variant")},
         "p2g_proxy": {"value": None, "unit": "share of RWA", "label": T("Not computed in this variant")}}
-    names = [f["id"] for f in space["factors"]]
+    # each factor by its label, lower case inside the sentence (the R2b review c19: the title printed real_gdp_growth); the
+    # articles of the sentence are those of these two factors, so another factor space stops the bake here
+    assert [f["id"] for f in space["factors"]] == ["real_gdp_growth", "unemployment_rate"], space["factors"]
+    names = [f["label"]["en"][0].lower() + f["label"]["en"][1:] for f in space["factors"]]
+    names_es = [f["label"]["es"][0].lower() + f["label"]["es"][1:] for f in space["factors"]]
     x = best.x_star
     findings = [{"id": "reverse-scenario", "severity": "S3", "status": "open", "evidence": ["stress.reverse_solution_check"],
-                 "title": T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and {names[1]} by "
+                 "title": T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and the {names[1]} by "
                             f"{x[1]:+.2f} points, a Mahalanobis distance of {best.distance:.2f} (tail probability {p:.1%}); the loss-only baseline already ends below the stack.",
-                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza {names[0]} en {P.es(x[0], '+.2f')} y {names[1]} en "
+                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el {names_es[0]} en {P.es(x[0], '+.2f')} y la {names_es[1]} en "
                             f"{P.es(x[1], '+.2f')} puntos, a una distancia de Mahalanobis de {P.es(best.distance, '.2f')} (probabilidad de cola {P.es(p, '.1%')}); la base de solo pérdidas ya termina bajo el mínimo.")}]
     return {"outputs": plain(outputs), "tests": rows_of([test]), "impact": impact, "findings": findings, "solution": best, "plausibility": p,
             "net_loss_at_zero": net_zero}
