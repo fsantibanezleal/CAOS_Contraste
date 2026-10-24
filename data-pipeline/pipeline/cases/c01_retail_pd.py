@@ -27,7 +27,7 @@ from ..stages.export import write_artifact
 from ..stages.ingest import ingest
 from . import c01_capital as cap
 from . import c01_features as feat
-from .c01_ladder import Rung, _t, _v, fit_ladder
+from .c01_ladder import SHORT_TITLES, Rung, _t, _v, fit_ladder
 
 CASE_ID = "C01"
 SOURCES = ("uci-taiwan", "uci-german")
@@ -273,11 +273,12 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
                 continue
             sev = on_red if any(r["light"] == "red" for r in hit) else on_amber
             ev = sorted({f"{r['test_id']}@{rung}" for r in hit})
-            names = ", ".join(sorted({r["test_id"] for r in hit}))
             tag = "".join(w[0] for w in family.split()).upper()
+            # the model by its short title, and no test id: the evidence under the title names each test (U16-R2b c01 B1)
+            short = SHORT_TITLES.get(rung, {"en": rung, "es": rung})
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": ev,
-                        "title": _t(f"{rung}: {family} tests flag the variant \"{vtitle['en']}\" ({names})",
-                                    f"{rung}: las pruebas de {_ES[family]} alertan en la variante «{vtitle['es']}» ({names})")})
+                        "title": _t(f"{short['en']}: {family} tests flag the variant \"{vtitle['en']}\"",
+                                    f"{short['es']}: las pruebas de {_ES[family]} alertan en la variante «{vtitle['es']}»")})
     out.append({"id": "F-OOT", "severity": "S3", "status": "accepted", "evidence": ["design:single-snapshot"],
                 "title": _t("No out-of-time validation is possible: the data is a single snapshot",
                             "No es posible validar fuera del tiempo: los datos son una sola foto")})
