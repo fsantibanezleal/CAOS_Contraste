@@ -23,6 +23,7 @@ import {
   ATTRIBUTE_TEXT, FAIR_TESTS, SCREEN_TEXT, SHOCK_TEXT, blockRows, defaultSel, outputsOf, text, type Block, type C20Kind, type C20Sel, type Screen,
 } from './selection';
 import { testName } from './U14Common';
+import { windowName } from '../names';
 
 export interface C20Instrument {
   sel: C20Sel | null;
@@ -139,7 +140,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <>
           {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } }))} value={sel.shift} onChange={setShift} />}
           <ShiftReadout sel={sel} />
-          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: { en: w.window, es: w.window } }))} value={sel.window} onChange={setWin} />}
+          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: windowName(w.window) }))} value={sel.window} onChange={setWin} />}
           <WindowReadout sel={sel} />
         </>
       ),

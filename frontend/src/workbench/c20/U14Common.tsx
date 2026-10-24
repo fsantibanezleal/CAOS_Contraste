@@ -76,10 +76,16 @@ export const PARAM_TEXT: Record<string, Bi> = {
   decision_cutoff_reject_share: { en: 'Share of baseline decisions declined at the cut-off', es: 'Parte de las decisiones base rechazadas en el corte' },
 };
 
+const SCORE_TEXT: Record<string, Bi> = {
+  'resemblance-classifier-probability': { en: "the resemblance classifier's probability", es: 'la probabilidad del clasificador de parecido' },
+};
+
 /** A named parameter's value in its own unit: a number, a list of numbers, or the name of a score. */
 export function paramValue(value: unknown, lang: Lang): string {
   if (Array.isArray(value)) return value.map((v) => formatNumber(v as number, lang, { digits: 3 })).join(', ');
   if (typeof value === 'number') return formatNumber(value, lang, { digits: 4 });
+  // the name of a score in words (the raw-id scan: resemblance-classifier-probability)
+  if (typeof value === 'string' && SCORE_TEXT[value]) return SCORE_TEXT[value][lang];
   return String(value);
 }
 

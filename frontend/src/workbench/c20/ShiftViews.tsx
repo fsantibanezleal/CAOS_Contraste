@@ -11,6 +11,7 @@ import { NotInVariant, SgcdNotice } from './C20Common';
 import { RULE_OF_THUMB } from './ShockViews';
 import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
 import { localTests } from './localise';
+import { inputName, segmentName, windowName } from '../names';
 
 const TITLE_REAL: BiText = { en: 'Real drift between the portfolios', es: 'Deriva real entre las carteras' };
 const TITLE_SYNTH: BiText = { en: 'Synthetic shift', es: 'Cambio sintético' };
@@ -82,7 +83,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
                 p.variables.map((v) => (
                   <tr key={`${p.a}-${p.b}-${v.name}`} data-pair={`${p.a}-${p.b}`} data-input={v.name}>
                     <td className="ct-text">{`${name(p.a)} / ${name(p.b)}`}</td>
-                    <td className="ct-text">{v.name}</td>
+                    <td className="ct-text">{pick(inputName(v.name) ?? { en: v.name, es: v.name }, lang)}</td>
                     <td>{f3(v.psi, lang)}</td>
                     <td>{f3(v.csi, lang)}</td>
                     <td className="ct-wide-only">{f3(v.ks, lang)}</td>
@@ -149,7 +150,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {s.shifts.map((x) => (
                 <tr key={x.shift_id} data-shift={x.shift_id} className={x.shift_id === sel.shift ? 'ct-current' : undefined}>
-                  <td className="ct-text">{x.shift_id}</td>
+                  <td className="ct-text">{pick(segmentName(x.shift_id, { caseId: 'C20' }) ?? { en: x.shift_id, es: x.shift_id }, lang)}</td>
                   <td>{f3(x.score, lang)}</td>
                   <td>{f3(x.metric.auc, lang)}</td>
                   <td>{f4(x.metric.auc_delta, lang)}</td>
@@ -183,7 +184,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_CONFORMAL} needs="shift" />;
   const c = o.synthetic_shift.label_free.conformal;
   const rows = [
-    ...c.coverage_by_window.map((w) => ({ id: w.window, label: { en: w.window, es: w.window } as BiText, value: w.coverage, highlight: w.window === sel.window, tone: w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const) })),
+    ...c.coverage_by_window.map((w) => ({ id: w.window, label: windowName(w.window), value: w.coverage, highlight: w.window === sel.window, tone: w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const) })),
     { id: 'overall', label: { en: 'All windows', es: 'Todas las ventanas' } as BiText, value: c.coverage, highlight: false, tone: undefined },
     { id: 'target', label: { en: 'Target (1 minus alpha)', es: 'Meta (1 menos alfa)' } as BiText, value: c.target_coverage, highlight: false, tone: 'neutral' as const },
   ];
@@ -223,7 +224,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {c.coverage_by_window.map((w) => (
                 <tr key={w.window} data-window={w.window} data-below-target={w.coverage < c.target_coverage} className={w.window === sel.window ? 'ct-current' : undefined}>
-                  <td className="ct-text">{w.window}</td>
+                  <td className="ct-text">{pick(windowName(w.window), lang)}</td>
                   <td className="ct-wide-only">{int(w.n, lang)}</td>
                   <td>{pc1(w.coverage, lang)}</td>
                   <td>{sig(w.binomial_p_value, lang)}</td>

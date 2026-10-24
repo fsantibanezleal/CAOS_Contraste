@@ -11,6 +11,7 @@ import { LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc1, sig, testsO
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20ShockRow } from './selection';
 import { es, localTests } from './localise';
+import { inputName } from '../names';
 
 const TITLE_DEGRADATION: BiText = { en: 'Degradation by shock', es: 'Degradación por choque' };
 const TITLE_DRIFT: BiText = { en: 'Drift by shock', es: 'Deriva por choque' };
@@ -200,7 +201,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {(focus?.drift.variables ?? []).map((v) => (
                 <tr key={v.name} data-input={v.name}>
-                  <td className="ct-text">{v.name}</td>
+                  <td className="ct-text">{pick(inputName(v.name) ?? { en: v.name, es: v.name }, lang)}</td>
                   <td>{f3(v.psi, lang)}</td>
                   <td>{f3(v.csi, lang)}</td>
                   <td data-na={v.chi2_p_value === null ? 'true' : undefined}>{v.chi2_p_value === null ? formatNumber(null, lang) : sig(v.chi2_p_value, lang)}</td>

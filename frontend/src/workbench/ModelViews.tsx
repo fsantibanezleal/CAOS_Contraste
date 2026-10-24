@@ -11,6 +11,7 @@ import { liveScores } from './Workbench';
 import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
 import { engineText, ruleText, unitName, type Bi } from './c01Text';
+import { inputName } from './names';
 
 const PALETTE = ['--color-fg-subtle', '--color-accent', '--color-accent-2', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-fg'] as const;
 
@@ -314,7 +315,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                   const here = live ? live.card.rows[j] === r.row : false;
                   return (
                     <tr key={`${r.feature}-${r.row}`} data-current={here ? 'true' : undefined} className={here ? 'ct-current' : undefined}>
-                      <td>{r.feature}</td>
+                      <td>{pick(inputName(r.feature) ?? { en: r.feature, es: r.feature }, lang)}</td>
                       <td className="ct-text">{binText(r.bin, lang)}</td>
                       <td className="ct-wide-only">{formatNumber(r.count, lang)}</td>
                       <td>{formatNumber(r.event_rate, lang, { percent: true, decimals: 1 })}</td>
@@ -353,7 +354,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                 {reasons.map((r, k) => (
                   <tr key={r.feature}>
                     <td>{k + 1}</td>
-                    <td className="caos-col-text">{r.feature}</td>
+                    <td className="caos-col-text">{pick(inputName(r.feature) ?? { en: r.feature, es: r.feature }, lang)}</td>
                     <td>{formatNumber(r.points, lang, { decimals: 0 })}</td>
                     <td>{formatNumber(r.avg, lang, { decimals: 1 })}</td>
                     <td>{formatNumber(r.shortfall, lang, { decimals: 1 })}</td>
@@ -378,7 +379,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                     .slice(0, 6)
                     .map((r) => (
                       <tr key={r.f}>
-                        <td className="caos-col-text">{r.f}</td>
+                        <td className="caos-col-text">{pick(inputName(r.f) ?? { en: r.f, es: r.f }, lang)}</td>
                         <td>{formatNumber(r.iv, lang, { decimals: 3 })}</td>
                       </tr>
                     ))}
