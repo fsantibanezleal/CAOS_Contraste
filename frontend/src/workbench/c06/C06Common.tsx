@@ -5,7 +5,7 @@ import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, axisScale, compactMoney, pct } from './format';
+import { ChartOverTable, axisScale, compactMoney, pct, segmentLabel } from './format';
 import { columnScale } from './amounts';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { truthStatusText } from '../c05/selection';
@@ -21,6 +21,26 @@ const SEVERITY_TEXT: Record<string, BiText> = {
   S3: { en: 'S3 moderate', es: 'S3 moderado' },
   S4: { en: 'S4 minor', es: 'S4 menor' },
 };
+/** The colour of each severity in the findings drawing: S3 and S4 apart (R2b c07, they shared the warning colour). */
+export const SEVERITY_TONE: Record<string, 'bad' | 'warn' | 'neutral'> = { S1: 'bad', S2: 'bad', S3: 'warn', S4: 'neutral' };
+
+/** The source of each scenario of the models document in words, in the reader's language (R2b c07: `sc.source` printed as written,
+ * English in the Spanish page); a source the map does not hold is printed as written. */
+const SCENARIO_SOURCE_TEXT: Record<string, BiText> = {
+  'Federal Reserve 2026_Final_Supervisory_Baseline_Domestic.csv, shape transposed to the reporting date': {
+    en: 'Federal Reserve 2026 supervisory baseline scenario (domestic variables), its shape moved to the reporting date',
+    es: 'Escenario base de supervisión 2026 de la Reserva Federal (variables nacionales), su forma trasladada a la fecha de reporte',
+  },
+  'Federal Reserve 2026_Final_Supervisory_Severely_Adverse_Domestic.csv, shape transposed to the reporting date': {
+    en: 'Federal Reserve 2026 supervisory severely adverse scenario (domestic variables), its shape moved to the reporting date',
+    es: 'Escenario severamente adverso de supervisión 2026 de la Reserva Federal (variables nacionales), su forma trasladada a la fecha de reporte',
+  },
+  "midpoint of the Federal Reserve 2026 baseline and severely adverse shapes (Contraste's own scenario)": {
+    en: "The midpoint of the Federal Reserve 2026 baseline and severely adverse shapes (Contraste's own scenario)",
+    es: 'El punto medio de las formas base y severamente adversa de la Reserva Federal 2026 (escenario propio de Contraste)',
+  },
+};
+
 const STATUS_TEXT: Record<string, BiText> = {
   open: { en: 'open', es: 'abierto' },
   accepted: { en: 'accepted (a stated limit)', es: 'aceptado (un límite declarado)' },
@@ -79,7 +99,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
               title={{ en: 'Findings by severity', es: 'Hallazgos por severidad' }}
               height="fill"
               orientation="horizontal"
-              data={order.map((s) => ({ id: s, label: SEVERITY_TEXT[s] ?? { en: s, es: s }, value: findings.filter((f) => f.severity === s).length, tone: s === 'S1' || s === 'S2' ? ('bad' as const) : ('warn' as const) }))}
+              data={order.map((s) => ({ id: s, label: SEVERITY_TEXT[s] ?? { en: s, es: s }, value: findings.filter((f) => f.severity === s).length, tone: SEVERITY_TONE[s] ?? ('warn' as const) }))}
               axis={{ label: { en: 'Findings', es: 'Hallazgos' }, format: { decimals: 0 } }}
             />
           }
@@ -247,7 +267,7 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
           <dd>{pick(truthStatusText(v.provenance.truth_status), lang)}</dd>
         </dl>
       </PlotCard>
-      <PlotCard title={{ en: 'The policy of the run', es: 'La política de la corrida' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Only the 30 dpd and 90 dpd presumptions are in IFRS 9. The multipliers, the floor, the probation and the discounting convention are documented model settings, not requirements of the standard.', es: 'Solo las presunciones de 30 y 90 dpd están en IFRS 9. Los multiplicadores, el piso, la prueba y la convención de descuento son parámetros documentados del modelo, no requisitos de la norma.' }}>
+      <PlotCard title={{ en: 'The policy of the run', es: 'La política de la corrida' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Only the presumptions at 30 and 90 days past due are in IFRS 9. The multipliers, the floor, the probation and the discounting convention are documented model settings, not requirements of the standard.', es: 'Solo las presunciones a 30 y 90 días de mora están en IFRS 9. Los multiplicadores, el piso, la prueba y la convención de descuento son parámetros documentados del modelo, no requisitos de la norma.' }}>
         <dl className="ct-defs" data-table="c06-settings">
           <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
           <dd>{`${pick(settingText(s.discount_convention), lang)}; ${pick({ en: 'EIR basis', es: 'base de la TIE' }, lang)} ${pick(settingText(s.eir_basis), lang)}`}</dd>
@@ -256,7 +276,7 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
           <dt>{pick({ en: 'Low credit risk exemption', es: 'Exención de bajo riesgo' }, lang)}</dt>
           <dd>{s.low_credit_risk_exemption ? pick({ en: 'used', es: 'usada' }, lang) : pick({ en: 'not used', es: 'no usada' }, lang)}</dd>
           <dt>{pick({ en: 'Stage 3 at', es: 'Etapa 3 desde' }, lang)}</dt>
-          <dd>{`${s.sicr.default_dpd} dpd`}</dd>
+          <dd>{pick({ en: `${s.sicr.default_dpd} days past due`, es: `${s.sicr.default_dpd} días de mora` }, lang)}</dd>
         </dl>
         {fit ? (
           <table className="caos-table ct-wrap-head" data-table="scenario-definitions">
@@ -272,7 +292,7 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
                 <tr key={sc.id} data-scenario={sc.id}>
                   <td className="ct-text">{pick(sc.label, lang)}</td>
                   <td>{pct(sc.weight, lang, 0)}</td>
-                  <td className="ct-text">{sc.source}</td>
+                  <td className="ct-text">{SCENARIO_SOURCE_TEXT[sc.source] ? pick(SCENARIO_SOURCE_TEXT[sc.source], lang) : sc.source}</td>
                 </tr>
               ))}
             </tbody>
@@ -341,7 +361,7 @@ export function CurveReadout({ sel }: { sel: C06Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: `${symbol}(${o.horizon.stage1_months} m)`, es: `${symbol}(${o.horizon.stage1_months} m)` }, value: first ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: `The probability-weighted curve of ${sel.segment} at month ${o.horizon.stage1_months}, in the measure chosen above.`, es: `La curva ponderada por probabilidad de ${sel.segment} en el mes ${o.horizon.stage1_months}, en la medida elegida arriba.` } },
+        { label: { en: `${symbol}(${o.horizon.stage1_months} m)`, es: `${symbol}(${o.horizon.stage1_months} m)` }, value: first ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: `The probability-weighted curve of ${segmentLabel(sel.segment).en.toLowerCase()} at month ${o.horizon.stage1_months}, in the measure chosen above.`, es: `La curva ponderada por probabilidad de ${segmentLabel(sel.segment).es.toLowerCase()} en el mes ${o.horizon.stage1_months}, en la medida elegida arriba.` } },
         { label: { en: `${symbol}(${lastMonth ?? 'last'} m)`, es: `${symbol}(${lastMonth ?? 'último'} m)` }, value: last ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: `The same curve at its last month.`, es: `La misma curva en su último mes.` } },
       ]}
     />

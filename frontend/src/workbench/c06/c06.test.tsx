@@ -108,7 +108,9 @@ describe('the C06 instrument', () => {
     for (const m of o.settings.sicr.multiplier_schedule) expect(markup).toContain(`data-multiplier="${m.multiplier}"`);
     expect(markup).toContain(`data-threefold="${o.settings.sicr.threefold_ratio}"`);
     expect(markup).toContain('data-floor=');
-    for (const p of o.sicr_points) expect(markup).toContain(`data-account="${p.account_id}" data-trigger="${p.trigger}"`);
+    // U16-F9c (the ruling of 2026-10-24 on long tables): the accounts are counted by stage and trigger, not listed one row each
+    for (const p of o.sicr_points) expect(markup).toContain(`data-stage="${p.stage}" data-trigger="${p.trigger}"`);
+    expect(markup).toContain(`data-accounts="${o.sicr_points.length}"`);
   });
 
   it('the waterfall draws every line, the overlays as their own lines apart from the model ECL', () => {
