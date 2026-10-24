@@ -233,6 +233,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
 export function YearsReadout({ sel }: { sel: C17Sel | null }) {
   const o = outputsOf(sel);
   const cell = o && sel ? cellOf(o, sel.years, sel.threshold) : null;
+  const defined = cell && sel ? capitalOf(cell, sel.rung).summary?.n_defined ?? null : null;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -240,6 +241,8 @@ export function YearsReadout({ sel }: { sel: C17Sel | null }) {
       items={[
         { label: { en: 'Histories', es: 'Historias' }, value: cell?.replications.n_replications ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Independent simulated loss histories in the cell, each with its own seed.', es: 'Historias de pérdidas simuladas e independientes en la celda, cada una con su semilla.' } },
         { label: { en: 'Failed fits', es: 'Ajustes fallidos' }, value: cell?.replications.n_failed ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Histories whose fit did not converge: counted, never dropped silently.', es: 'Historias cuyo ajuste no convergió: se cuentan, no se descartan en silencio.' } },
+        // the histories with a capital for the rung in focus: the count the median is taken over (R2b c18 M-2, the rail)
+        { label: { en: 'With a capital', es: 'Con capital' }, value: defined, unitless: true, format: { decimals: 0 }, hint: { en: 'Histories whose fit gives a capital for the rung in focus: the median and the percentiles are taken over them.', es: 'Historias cuyo ajuste da un capital para el peldaño en foco: la mediana y los percentiles se toman sobre ellas.' } },
         { label: { en: 'Losses per history', es: 'Pérdidas por historia' }, value: cell?.replications.n_losses_median ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Median number of recorded losses in a history.', es: 'Número mediano de pérdidas registradas en una historia.' } },
       ]}
     />

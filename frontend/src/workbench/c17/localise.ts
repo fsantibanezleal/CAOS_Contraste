@@ -25,5 +25,15 @@ const R: ReadonlyArray<Rule> = [
   [/^OPE25\.7 footnote 2$/, () => 'OPE25.7 nota 2'],
 ];
 
+/** A name inside a sentence: its first letter lower case unless the first word is a proper name or an acronym ("Bayesian
+ * credibility", "Monte Carlo", "SLA, mean-corrected" keep it); the rest as written ("GPD", "SLA" stay upper case; R2b c18 m-2:
+ * "by bayesian credibility", "lognormal and gpd splice"). */
+const PROPER = new Set(['Bayesian', 'Monte', 'Panjer', 'Fourier', 'Pareto', 'Bayesiana']);
+export function inSentence(name: string): string {
+  const first = name.split(/[\s,]/)[0];
+  if (PROPER.has(first) || /[A-Z].*[A-Z]/.test(first)) return name;
+  return name.charAt(0).toLowerCase() + name.slice(1);
+}
+
 /** The Spanish of a document string, or the string itself in English or when no rule knows it. */
 export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => localise(s, lang, R);
