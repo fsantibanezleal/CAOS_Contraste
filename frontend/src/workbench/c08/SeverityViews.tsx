@@ -159,9 +159,14 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
             <dt>{pick({ en: 'Definition', es: 'Definición' }, lang)}</dt>
             <dd>{pick(p.definition, lang)}</dd>
             <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-            <dd>{p.formula}</dd>
+            {/* the SBA file's published field codes, named by the definition above (the raw-id ruling of 2026-10-24) */}
+            <dd>
+              <code translate="no">{p.formula}</code>
+            </dd>
             <dt>{pick({ en: 'Fields', es: 'Campos' }, lang)}</dt>
-            <dd>{`${p.source_field} / ${p.exposure_field}`}</dd>
+            <dd>
+              <code translate="no">{`${p.source_field} / ${p.exposure_field}`}</code>
+            </dd>
             <dt>{pick({ en: 'Recovery cash flows', es: 'Flujos de recuperación' }, lang)}</dt>
             <dd data-recovery-flows={String(p.recovery_cash_flows_available)}>{p.recovery_cash_flows_available ? pick({ en: 'available', es: 'disponibles' }, lang) : pick({ en: 'not available in the file', es: 'no disponibles en el archivo' }, lang)}</dd>
             <dt>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</dt>

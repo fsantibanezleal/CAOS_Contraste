@@ -11,7 +11,7 @@ import { liveScores } from './Workbench';
 import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
 import { engineText, ruleText, unitName, type Bi } from './c01Text';
-import { inputName } from './names';
+import { inputName, ruleNames } from './names';
 
 const PALETTE = ['--color-fg-subtle', '--color-accent', '--color-accent-2', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-fg'] as const;
 
@@ -664,7 +664,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               <tbody>
                 {coefs.map(([k, b]) => (
                   <tr key={k}>
-                    <td>{k}</td>
+                    <td>{pick(inputName(k) ?? { en: k, es: k }, lang)}</td>
                     <td>{b === 0 ? pick({ en: '0 (removed)', es: '0 (eliminada)' }, lang) : formatNumber(b, lang, { decimals: 3 })}</td>
                   </tr>
                 ))}
@@ -696,7 +696,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               {rules.map((r) => (
                 <tr key={r.rule}>
                   <td className="caos-col-text">
-                    <code>{ruleText(r.rule, lang)}</code>
+                    {ruleNames(ruleText(r.rule, lang), lang)}
                   </td>
                   <td>{formatNumber(r.coefficient, lang, { decimals: 3 })}</td>
                 </tr>
