@@ -158,8 +158,8 @@ export function ContextView({ sel }: { sel: Selection | null }) {
             .map(([src, c]) =>
               pick(
                 {
-                  en: `${src}: ${formatNumber(c.counts.input, 'en')} records, ${formatNumber(c.counts.accepted, 'en')} accepted, ${formatNumber(c.counts.rejected, 'en')} rejected, ${formatNumber(c.counts.flagged, 'en')} flags (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'en')}`).join(', ') || 'none'}); not used: ${c.ignored_columns.join(', ') || 'nothing'}.`,
-                  es: `${src}: ${formatNumber(c.counts.input, 'es')} registros, ${formatNumber(c.counts.accepted, 'es')} aceptados, ${formatNumber(c.counts.rejected, 'es')} rechazados, ${formatNumber(c.counts.flagged, 'es')} marcas (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'es')}`).join(', ') || 'ninguna'}); sin usar: ${c.ignored_columns.join(', ') || 'nada'}.`,
+                  en: `${m.source_details[src]?.name ?? src}: ${formatNumber(c.counts.input, 'en')} records, ${formatNumber(c.counts.accepted, 'en')} accepted, ${formatNumber(c.counts.rejected, 'en')} rejected, ${formatNumber(c.counts.flagged, 'en')} flags (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'en')}`).join(', ') || 'none'}); not used: ${c.ignored_columns.join(', ') || 'nothing'}.`,
+                  es: `${m.source_details[src]?.name ?? src}: ${formatNumber(c.counts.input, 'es')} registros, ${formatNumber(c.counts.accepted, 'es')} aceptados, ${formatNumber(c.counts.rejected, 'es')} rechazados, ${formatNumber(c.counts.flagged, 'es')} marcas (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'es')}`).join(', ') || 'ninguna'}); sin usar: ${c.ignored_columns.join(', ') || 'nada'}.`,
                 },
                 lang,
               ),
