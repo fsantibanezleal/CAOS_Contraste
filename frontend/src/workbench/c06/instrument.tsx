@@ -9,7 +9,7 @@ import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { RailSelect } from './RailSelect';
 import { AccountReadout, C06ContextView, CurveReadout, C06FindingsView, C06VariantsView, SurfaceReadout, WeightReadout } from './C06Common';
-import { segmentLabel } from './format';
+import { STAGE_TEXT, segmentLabel } from './format';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
@@ -127,7 +127,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c06-account"
           label={{ en: 'Account', es: 'Cuenta' }}
-          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${a.stage}, ${segmentLabel(a.segment_id).en.toLowerCase()}`, es: `${a.stage}, ${segmentLabel(a.segment_id).es.toLowerCase()}` } }))}
+          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${pick(STAGE_TEXT[a.stage] ?? a.stage, 'en')}, ${segmentLabel(a.segment_id).en.toLowerCase()}`, es: `${pick(STAGE_TEXT[a.stage] ?? a.stage, 'es')}, ${segmentLabel(a.segment_id).es.toLowerCase()}` } }))}
           value={sel.account}
           onChange={setAccount}
         />
