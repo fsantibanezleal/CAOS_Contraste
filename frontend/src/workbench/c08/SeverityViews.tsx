@@ -143,6 +143,7 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
           chart={
             <BarChart
               title={{ en: 'The two totals of the proxy', es: 'Los dos totales del proxy' }}
+              zoomOff={{ en: 'Two totals: there is no range of bars to zoom.', es: 'Dos totales: no hay un rango de barras que acercar.' }}
               height="fill"
               orientation="horizontal"
               data={[

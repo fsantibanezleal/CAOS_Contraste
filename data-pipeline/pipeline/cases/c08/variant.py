@@ -176,10 +176,10 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
     floors_bite = {
         "regime": bd.REGIME, "rows": floor_rows,
         "note": bd.t(
-            f"Floors of dossier 01 A.5 applied to the {ref.rung_id} predictions of the cohort, by segment; the SBA file has no "
+            f"Floors of dossier 01 A.5 applied to the {bd.RUNG_TEXT[ref.rung_id][1][0]} predictions of the cohort, by segment; the SBA file has no "
             "collateral field, so the collateral is inferred from the term and the revolving status (lines of credit and loans up to "
             "7 years as unsecured, 7 to 20 years as other physical, 20 years or more as real estate). The bite is the mean uplift.",
-            f"Pisos del dossier 01 A.5 aplicados a las predicciones de {ref.rung_id} de la cohorte, por segmento; el archivo SBA no "
+            f"Pisos del dossier 01 A.5 aplicados a las predicciones de {bd.RUNG_TEXT[ref.rung_id][1][1]} de la cohorte, por segmento; el archivo SBA no "
             "tiene campo de garantía, de modo que la garantía se infiere del plazo y de si es línea rotativa (líneas y préstamos de "
             "hasta 7 años como sin garantía, de 7 a 20 años como otra física, de 20 años o más como inmobiliaria). El efecto es el "
             "alza media."),
@@ -202,8 +202,8 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
     impact = {
         "mean_lgd_proxy": {"value": float(y_test.mean()), "unit": "share", "label": bd.t("Mean LGD proxy of the cohort", "LGD proxy media de la cohorte")},
         "calibration_gap_reference": {"value": comparison[[c["rung_id"] for c in comparison].index(ref.rung_id)]["calibration_gap"],
-                                      "unit": "share", "label": bd.t(f"Mean realised minus mean predicted LGD, {ref.rung_id}",
-                                                                      f"LGD realizada media menos predicha media, {ref.rung_id}")},
+                                      "unit": "share", "label": bd.t(f"Mean realised minus mean predicted LGD, {bd.RUNG_TEXT[ref.rung_id][1][0]}",
+                                                                      f"LGD realizada media menos predicha media, {bd.RUNG_TEXT[ref.rung_id][1][1]}")},
         "downturn_add_on": {"value": float(down.downturn - down.long_run), "unit": "share",
                             "label": bd.t("Downturn add-on to the long-run LGD", "Ajuste de recesión sobre la LGD de largo plazo")},
     }
@@ -219,8 +219,8 @@ def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -
         sign_en, sign_es = ("under-predicts", "subestima") if cal["metric"] > 0 else ("over-predicts", "sobreestima")
         out.append({"id": f"F-cal-{rung_id}", "severity": "S2" if cal["light"] == "red" else "S3", "status": "open",
                     "evidence": [f"lgd_ead.lgd_calibration_by_segment@{rung_id}@{seg}"],
-                    "title": bd.t(f"{rung_id} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
-                                  f"{rung_id} {sign_es} la LGD proxy realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
+                    "title": bd.t(f"{bd.RUNG_TEXT[rung_id][1][0]} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
+                                  f"{bd.RUNG_TEXT[rung_id][1][1]} {sign_es} la LGD proxy realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
     uncovered = [r for r in down.rows if not r["covered"]]
     if uncovered:
         ids = ", ".join(r["cohort_id"] for r in uncovered)
