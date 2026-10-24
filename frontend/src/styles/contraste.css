@@ -59,6 +59,8 @@
 }
 /* a detail of a row under its first cell (the input a test row tests) */
 .ct-row-detail { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--color-fg-subtle); }
+/* a long reference (a DOI, a URL) breaks inside a text cell, so it does not widen its table past the card (R2b c09 B2) */
+.caos-table td.ct-text { overflow-wrap: anywhere; }
 /* a table whose rows are several lines tall reads from the top of each row (U16-R2 b06 m4: centred cells left the first finding
    looking empty) */
 .caos-table.ct-top td { vertical-align: top; }
@@ -76,7 +78,6 @@
    about 40 px, with one tick and no axis labels), so the card grows with its panels, one a row, each 260 px tall */
 @media (max-width: 900px) {
   .ct-grid6-fill { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: 260px; }
-  .caos-plot.fill > .caos-plot-body:has(.ct-grid6-fill) { height: auto; }
 }
 
 /* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
@@ -117,6 +118,8 @@
 /* a verdict over a scrolling table, inside one filling card */
 .ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
 .ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }
+/* the least height of a drawing over its tables; a box sets its own (ChartOverTable's `chartMin`) */
+:root { --ct-chart-min: 15rem; }
 /* the boxes of a drawing and its tables (ChartOverTable, LabelledOverTable, ChartAbove, the C21 evidence card): the
    drawing takes the height the tables leave, the tables scroll under it; --ct-chart-min is the drawing's least height */
 .ct-stack-chart { flex: 1 1 0; min-height: var(--ct-chart-min, 15rem); display: flex; flex-direction: column; }
@@ -126,21 +129,19 @@
 .ct-stack[data-block="finding-evidence"] { overflow-y: auto; }
 .ct-stack-rest, .ct-stack-fill { flex: 1 1 0; overflow: auto; min-height: 0; }
 /* below 900 px the card is as tall as what it holds (U16-R2 VS-1: the table box shrank to 0 to 150 px, hid whole tables and
-   headline numbers, and the drawing kept 35 px): the stack flows, nothing is capped, the card body grows with it */
+   headline numbers, and the drawing kept 35 px): the stack flows, nothing is capped, and the card body grows with it, which the
+   shell does for a body holding a `data-caos-flow` box (0.19.1, SHC-100; every stack, scroll box and panel grid carries it) */
 @media (max-width: 900px) {
   .ct-stack { height: auto; }
   .ct-stack-chart, .ct-stack-fixed { flex: none; height: calc(var(--ct-chart-min, 15rem) + 10rem); }
   /* they flow down; a table wider than its card scrolls sideways in its own box, never cut at the card edge (U16-R2b: the shell's
      filling card body hides what overflows it, so a box that let its table overflow lost the right columns) */
   .ct-stack-table, .ct-stack-rest, .ct-stack-fill { flex: none; max-height: none; overflow-x: auto; overflow-y: visible; }
-  .caos-plot.fill > .caos-plot-body:has(.ct-stack) { height: auto; }
   /* a table that scrolls inside its card at a phone keeps the rows the card clamp leaves (one or two, U16-R2 b02 m1): it flows */
   .ct-scroll, .ct-stack > .ct-scroll { flex: none; height: auto; overflow-y: visible; }
   .ct-fade-scroll { max-height: none !important; overflow-y: visible; }
   /* the panels of a C22 family flow too: a box of 405 px held 4,605 px of panels with no cue (U16-R2 b02 m1) */
   .ct-panels-fill { height: auto; overflow-y: visible; }
-  .caos-plot.fill > .caos-plot-body:has(.ct-panels-fill) { height: auto; }
-  .caos-plot.fill > .caos-plot-body:has(.ct-scroll) { height: auto; }
 }
 /* C13's Findings box: it fills the instrument at 1280; on a phone it keeps a floor of min(70vh, 36rem) (U16-R2 b06 B4, R2b c14) */
 .ct-c13-findings { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
@@ -171,8 +172,7 @@
     padding-right: 1.5rem;
     mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
   }
-  .caos-plot-body:has(> table.caos-table) { overflow-x: auto; }
-  .prose table, .equation, .ct-fig-scroll {
+  .prose table, .ct-fig-scroll {
     padding-right: 1.5rem;
     mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
   }

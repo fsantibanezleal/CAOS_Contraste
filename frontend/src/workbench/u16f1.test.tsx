@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
 import type { ReactElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../lib/contract.types';
 import { setLang } from './c03/u6-testkit';
 import { ChartOverTable } from './c06/format';
@@ -60,6 +61,8 @@ describe('VS-1: below 900 px a table box never collapses (the stack flows natura
       expect(markup).not.toMatch(/max-height/);
       expect(markup).toMatch(/class="ct-stack-(table|rest)"/);
       expect(markup).toMatch(/class="ct-stack-(chart|fixed)"/);
+      // the card body flows on a phone through the shell's contract (0.19.1, SHC-100), never a product rule on .caos-plot-body
+      expect(markup).toMatch(/class="ct-stack" data-caos-flow=""/);
     });
   }
   it('FindingsEvidenceCard keeps no inline cap on its table box', () => {
@@ -77,7 +80,9 @@ describe('VS-1: below 900 px a table box never collapses (the stack flows natura
     // a column is hidden on a phone only when its value is repeated under the row text
     expect(media(640)).toMatch(/td\.ct-wide-only\.ct-repeated/);
     expect(media(640)).not.toMatch(/^\s*\.ct-wide-only\s*\{\s*display:\s*none/m);
-    expect(narrow).toMatch(/:has\(\.ct-stack\)[^{]*\{[^}]*height:\s*auto/);
+    // the product restyles no shell class: the card body's flow is the shell's (data-caos-flow, 0.19.1)
+    expect(css).not.toMatch(/\.caos-plot-body:has|\.caos-plot\.fill\s*>\s*\.caos-plot-body/);
+    expect(css).not.toMatch(/(^|[\s,]})?\.equation\s*[,{]/m);
   });
 });
 
@@ -229,7 +234,8 @@ describe('V01-3: six small multiples are one per row on a phone, each tall enoug
     const narrow = media(900);
     expect(narrow).toMatch(/\.ct-grid6-fill\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
     expect(narrow).toMatch(/\.ct-grid6-fill[^{]*\{[^}]*grid-auto-rows:\s*\d+px/);
-    expect(narrow).toMatch(/:has\(\.ct-grid6-fill\)[^{]*\{[^}]*height:\s*auto/);
+    // the card grows through the shell's flow contract (0.19.1, SHC-100): the grid carries data-caos-flow
+    expect(text('./ModelViews.tsx') + text('./c03/ModelViews.tsx')).toMatch(/className="ct-grid6-fill" data-caos-flow=""/);
   });
 });
 
@@ -292,7 +298,7 @@ describe('minors of the shared files', () => {
     const ks = variant.tests.find((t) => t.test_id === 'disc.ks' && t.model_id === 'P1-scorecard')!;
     const d = (ks.metric ?? ks.statistic) as number;
     const row = plain(html(<BatteryView sel={sel as never} />)).split('Kolmogorov-Smirnov (descriptive)')[1].slice(0, 40);
-    expect(row).toContain(d.toFixed(3));
+    expect(row).toContain(formatNumber(d, 'en', { decimals: 3 }));
   });
   it('b06 m4: the findings tables read from the top of the row', () => {
     expect(html(<FindingsView sel={sel as never} />)).toMatch(/class="caos-table ct-top"/);
@@ -304,8 +310,8 @@ describe('b13 m5: the momentum coefficient the methodology quotes is the committ
     const d = json<{ outputs: { ladder: { values: number[] }; rungs: Array<{ coefficient: { mean: number } }> } }>('../../../data/derived/C04/momentum.json').outputs;
     const c = d.rungs[d.ladder.values.indexOf(0.125)].coefficient.mean;
     const src = text('../pages/MethodologyTransitions.tsx');
-    expect(src).toContain(`a fitted c of ${c.toFixed(3)}:`);
-    expect(src).toContain(`un c ajustado de ${c.toFixed(3).replace('.', ',')}:`);
+    expect(src).toContain(`a fitted c of ${formatNumber(c, 'en', { decimals: 3 })}:`);
+    expect(src).toContain(`un c ajustado de ${formatNumber(c, 'es', { decimals: 3 })}:`);
   });
 });
 

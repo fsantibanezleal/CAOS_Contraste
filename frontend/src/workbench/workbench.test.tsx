@@ -171,8 +171,8 @@ describe('Focus mode of the App (shell 0.14.0, ADR-0070)', () => {
     expect(gate).toContain("'--require-focus'");
   });
 
-  it('the shell is pinned to exactly 0.19.0 (0.14.1: the Focus control on the case select row keeps the rails from scrolling; 0.14.2: the cause shares stay whole at phone width; 0.14.3: the Focus label never covers the sub-tabs and no Focus control shows inside Focus; 0.15.0: the gate check G19, a short value never breaks across lines; 0.16.0 to 0.18.0: Focus on a surface, the case select shows names whole, G5 measures every select; 0.19.0: Tier A on every chart (zoom, pan, brush, crosshair readout, keyboard, data table, summary) and the bar forms of D16-21, floating and grouped bars, that draw the C07 and C18 waterfalls, bridge and grouped bars)', () => {
+  it('the shell is pinned to exactly 0.19.1 (0.19.1: a filling card flows on a phone through data-caos-flow, Spanish date names; 0.14.1: the Focus control on the case select row keeps the rails from scrolling; 0.14.2: the cause shares stay whole at phone width; 0.14.3: the Focus label never covers the sub-tabs and no Focus control shows inside Focus; 0.15.0: the gate check G19, a short value never breaks across lines; 0.16.0 to 0.18.0: Focus on a surface, the case select shows names whole, G5 measures every select; 0.19.0: Tier A on every chart (zoom, pan, brush, crosshair readout, keyboard, data table, summary) and the bar forms of D16-21, floating and grouped bars, that draw the C07 and C18 waterfalls, bridge and grouped bars)', () => {
     const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
-    expect(pkg.dependencies['@fasl-work/caos-app-shell']).toBe('0.19.0');
+    expect(pkg.dependencies['@fasl-work/caos-app-shell']).toBe('0.19.1');
   });
 });
