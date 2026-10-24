@@ -110,6 +110,9 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
     );
   }
   const years = rows.map((r) => cohortYear(sel, r.cohort_id));
+  // a variant that tests one cohort (dc-2020-23) has one x value: drawn as points on a range of a year each side, since a one-point
+  // line draws nothing and uPlot ranged a single year to 0..4,000 (R2b c09 B1)
+  const single = years.length < 2;
   return (
     <ViewsRow>
       <PlotCard
@@ -125,13 +128,14 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: years, label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT }}
+              x={{ values: years, label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT, ...(single ? { range: [years[0] - 1, years[0] + 1] as [number, number] } : {}) }}
               y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
+              zoomOff={single ? { en: 'One cohort: a single point has no range to zoom.', es: 'Una cohorte: un solo punto no tiene rango que acercar.' } : undefined}
               series={[
-                { label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', width: 2.6 },
-                { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, values: rows.map((r) => r.ci_low), color: '--color-accent', width: 1, dash: [3, 3] },
-                { label: { en: 'Interval, high', es: 'Intervalo, superior' }, values: rows.map((r) => r.ci_high), color: '--color-accent', width: 1, dash: [3, 3] },
-                { label: { en: 'Predicted', es: 'Predicha' }, values: rows.map((r) => r.predicted.value), color: '--color-magenta', width: 2, dash: [6, 3] },
+                { label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', width: 2.6, ...(single ? { mode: 'points' as const, size: 11 } : {}) },
+                { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, values: rows.map((r) => r.ci_low), color: '--color-accent', width: 1, dash: [3, 3], ...(single ? { mode: 'points' as const, size: 6 } : {}) },
+                { label: { en: 'Interval, high', es: 'Intervalo, superior' }, values: rows.map((r) => r.ci_high), color: '--color-accent', width: 1, dash: [3, 3], ...(single ? { mode: 'points' as const, size: 6 } : {}) },
+                { label: { en: 'Predicted', es: 'Predicha' }, values: rows.map((r) => r.predicted.value), color: '--color-magenta', width: 2, dash: [6, 3], ...(single ? { mode: 'points' as const, size: 9 } : {}) },
               ]}
             />
           }

@@ -115,7 +115,7 @@ def closure_rule() -> dict[str, str]:
         "Only defaults whose charge-off closed strictly before the cutoff enter the training set (the file has no later record of a "
         "workout); later default cohorts are the tests. The file has no default date before the charge-off, so the open workouts "
         f"excluded are counted as the charge-offs of the {WORKOUT_WINDOW_MONTHS} months after the cutoff, a stated stand-in.",
-        "Solo entran al entrenamiento los incumplimientos cuyo castigo cerro estrictamente antes del corte (el archivo no tiene "
+        "Solo entran al entrenamiento los incumplimientos cuyo castigo cerró estrictamente antes del corte (el archivo no tiene "
         "registro posterior de una recuperación); las cohortes posteriores son de prueba. El archivo no tiene fecha de "
         "incumplimiento anterior al castigo, de modo que los procesos abiertos excluidos se cuentan como los castigos de los "
         f"{WORKOUT_WINDOW_MONTHS} meses posteriores al corte, un sustituto declarado.")
