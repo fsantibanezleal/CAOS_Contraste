@@ -77,7 +77,7 @@ export function PerturbationView({ sel }: { sel: C20Sel | null }) {
           <p className="ct-note" data-preset-delta={preset?.metric.auc_delta ?? ''}>
             {tol ? pick({ en: `Tolerance (convention): ${f3(tol.value as number, 'en')} AUC points at the preset scale ${formatNumber(o.preset_eps, 'en', { digits: 3 })}.`, es: `Tolerancia (convención): ${f3(tol.value as number, 'es')} puntos de AUC en la escala preestablecida ${formatNumber(o.preset_eps, 'es', { digits: 3 })}.` }, lang) : pick({ en: 'The tolerance is not available in this document.', es: 'La tolerancia no está disponible en este documento.' }, lang)}
           </p>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.robustness', 'ml.overfit', 'ml.weak_spot')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.robustness', 'ml.overfit', 'ml.weak_spot')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
         </ChartOverTable>
       </PlotCard>
@@ -152,7 +152,7 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
             </tbody>
           </table>
           <ParamTable params={localParams(o.parameters as unknown as NamedParam[], lang)} only={['n_seeds', 'n_bootstrap_refits']} />
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.seed_stability', 'ml.reason_code')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.seed_stability', 'ml.reason_code')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
@@ -225,7 +225,7 @@ export function ExplainerView({ sel }: { sel: C20Sel | null }) {
                 ))}
               </tbody>
             </table>
-            <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.effect_agreement', 'ml.additivity')} />
+            <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.effect_agreement', 'ml.additivity')} caseId="C20" models={sel.data.variant.model} />
           </ChartOverTable>
         )}
       </PlotCard>
@@ -300,7 +300,7 @@ export function LeakageView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.leakage', 'ml.data_quality')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.leakage', 'ml.data_quality')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
