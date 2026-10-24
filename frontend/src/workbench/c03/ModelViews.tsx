@@ -6,7 +6,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
 import { U6TestsTable, p2, useCard } from './U6Shared';
-import { fitOf, fyRange, outputsOf, rungLabel, type C03Sel } from './selection';
+import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from './selection';
 
 const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -55,7 +55,7 @@ export function RungsView({ sel }: { sel: C03Sel | null }) {
                 <tr key={r.rung_id} data-rung={r.rung_id} className={r.rung_id === sel.rung ? 'ct-current' : undefined}>
                   <td className="ct-text" title={r.rung_id}>{pick(label(r.rung_id), lang)}</td>
                   <td>
-                    <MaybeNumber value={r.auc} reason={r.reason} format={(v) => d3(v, lang)} />
+                    <MaybeNumber value={r.auc} reason={r.reason ? pick(reasonText(r.reason), lang) : r.reason} format={(v) => d3(v, lang)} />
                   </td>
                   <td className="ct-wide-only">
                     {r.auc_ci_low !== null && r.auc_ci_high !== null ? `${d3(r.auc_ci_low, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${d3(r.auc_ci_high, lang)}` : formatNumber(null, lang)}

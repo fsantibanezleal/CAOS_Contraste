@@ -10,6 +10,8 @@ import { LiveReadout, p2, useCard } from './U6Shared';
 import { REPLAY } from '../model';
 import { fitOf, fyRange, outputsOf, rungLabel, type C03Outputs, type C03Sel } from './selection';
 import { fyText } from './VintageViews';
+import { truthText } from '../c08/words';
+import { SOURCE_TEXT, reasonText } from './selection';
 
 const CENSORING: Record<string, BiText> = {
   'exempt-right-censored': { en: 'Loans still active (EXEMPT) are right-censored: they leave the target until they resolve.', es: 'Los créditos vigentes (EXEMPT) son censurados por la derecha: salen del objetivo hasta que se resuelvan.' },
@@ -127,13 +129,13 @@ export function C03ContextView({ sel }: { sel: C03Sel | null }) {
           <dt>{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</dt>
           <dd>{`${pick(o.cohort.label, lang)} (${o.cohort.approval_fiscal_years.map((y) => pick(fyText(y), lang)).join(', ')})`}</dd>
           <dt>{pick({ en: 'Data', es: 'Datos' }, lang)}</dt>
-          <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
+          <dd data-primary-source={d.primary_source}>{pick(SOURCE_TEXT[d.primary_source] ?? { en: d.primary_source, es: d.primary_source }, lang)}</dd>
           <dt>{pick({ en: 'Files as of', es: 'Archivos al' }, lang)}</dt>
           <dd>{d.files_as_of}</dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The target and the vintage', es: 'El objetivo y la cosecha' }} {...card} note={{ en: 'A vintage is the loans approved in one SBA fiscal year. The target is read at the 5-year mark and never before.', es: 'Una cosecha son los créditos aprobados en un año fiscal de la SBA. El objetivo se lee en la marca de 5 años y nunca antes.' }}>
@@ -196,7 +198,7 @@ export function HorizonReadout({ sel }: { sel: C03Sel | null }) {
 export function ModelReadout({ sel }: { sel: C03Sel | null }) {
   const o = outputsOf(sel);
   const r = o?.rung_comparison.find((x) => x.rung_id === sel?.rung) ?? null;
-  const why: BiText | undefined = r?.reason ? { en: r.reason, es: r.reason } : undefined;
+  const why: BiText | undefined = r?.reason ? reasonText(r.reason) : undefined;
   const label = sel ? rungLabel(sel, sel.rung) : { en: '', es: '' };
   return (
     <LiveReadout

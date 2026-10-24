@@ -62,3 +62,15 @@ export function rungLabel(sel: Pick<C03Sel, 'data'> | null, id: string): Bi {
 
 /** The range of fiscal years of a cohort window, "2018-2020". */
 export const fyRange = (first: number, last: number): string => (first === last ? `${first}` : `${first}-${last}`);
+
+/** The data source of a document in words (U16-R2b c04 B1: "sba-7a" printed as it is). */
+export const SOURCE_TEXT: Record<string, { en: string; es: string }> = {
+  'sba-7a': { en: 'SBA 7(a) loan-level file (FOIA)', es: 'Archivo a nivel de préstamo SBA 7(a) (FOIA)' },
+};
+
+/** The reasons a document gives for a rung it did not run, in Spanish beside the English (the document writes them in English; c04 M2). */
+const REASON_ES: Record<string, string> = {
+  'TabPFN is the optional extra (data-pipeline/requirements-tabpfn.txt) and it is not installed in the bake environment: the challenger is declared absent, and no number stands in for it':
+    'TabPFN es el extra opcional (data-pipeline/requirements-tabpfn.txt) y no está instalado en el entorno de la corrida: el retador se declara ausente y ningún número lo reemplaza',
+};
+export const reasonText = (reason: string): { en: string; es: string } => ({ en: reason, es: REASON_ES[reason] ?? reason });
