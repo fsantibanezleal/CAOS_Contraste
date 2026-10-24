@@ -6,7 +6,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { TEST_TEXT, TEST_VIEW } from './selection';
 import { es } from './localise';
-import { testText } from '../names';
+import { rowWhere, testText } from '../names';
 
 export type TestHost = 'exceedance' | 'tail' | 'method' | 'response' | 'scenario' | 'ladder';
 
@@ -38,9 +38,14 @@ export function C17TestsTable({ variant, host }: { variant: VariantArtifact; hos
             {rows.map((t, i) => {
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               const name = pick(nameOf(t.test_id), lang);
+              // the method and the cell a row tests, so 24 capital rows of one test can be told apart (R2b c18 M-1)
+              const where = rowWhere('C17', t.model_id, t.segment === 'portfolio' ? null : t.segment, variant.model);
               return (
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={name}>{name}</td>
+                  <td className="ct-text" title={name}>
+                    {name}
+                    {where ? <span className="ct-row-detail" data-segment={t.segment ?? undefined}>{pick(where, lang)}</span> : null}
+                  </td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
