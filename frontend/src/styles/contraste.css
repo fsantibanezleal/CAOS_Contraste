@@ -261,3 +261,14 @@ table.ct-wrap-head th { white-space: normal; }
 /* C18 (U16-F9c, R2b c19 M-new-1): the stack view's two drawings share their card by their bars; a phone gives each its least height */
 .ct-c18-stack-charts { display: flex; flex-direction: column; flex: 1 1 0; height: 100%; min-height: 0; gap: 0.5rem; }
 @media (max-width: 900px) { .ct-c18-stack-charts { height: auto; } }
+
+/* C20 (U16-F9c, R2b c20): a drawing of many bars keeps its full height in a box that scrolls at 1280 (a phone flows); the seeds
+   drawing is two drawings, one per unit, sharing their box */
+.ct-c20-bars { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+.ct-c20-pair { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; gap: 0.5rem; }
+.ct-c20-pair > * { flex: 1 1 0; min-height: 0; }
+@media (max-width: 900px) {
+  .ct-c20-bars { flex: none; overflow-y: visible; }
+  .ct-c20-pair { flex: none; }
+  .ct-c20-pair > * { flex: none; min-height: 10rem; }
+}
