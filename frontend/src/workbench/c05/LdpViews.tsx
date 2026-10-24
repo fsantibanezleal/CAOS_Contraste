@@ -177,6 +177,27 @@ export function ScalingView({ sel }: { sel: C05Sel | null }) {
   );
 }
 
+/** A row of the size-and-power table in words: its key is `<test>_<segment>` ("jeffreys_A", "vasicek_portfolio"; R2b c06 B3). */
+function sizePowerRow(key: string, names: Record<string, BiText>, lang: 'en' | 'es'): string {
+  const [test, ...rest] = key.split('_');
+  const seg = rest.join('_');
+  const id = test === 'vasicek' ? 'pd.binomial_vasicek' : `pd.${test}`;
+  const name = names[id] ? pick(names[id], lang) : key;
+  const where = seg === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : `${lang === 'es' ? 'grado' : 'grade'} ${seg}`;
+  return `${name}, ${where}`;
+}
+
+/** The notes of the recomputed tables of Pluto and Tasche in Spanish, beside the English the document writes (R2b c06 M2). */
+const GOLDEN_NOTE_ES: Record<string, string> = {
+  "75%: the paper's 0.65% is the bound at 76.3%; the exact one is 0.638%, and Table 11 scales with the 0.65%":
+    '75 %: el 0,65 % del artículo es la cota al 76,3 %; la exacta es 0,638 %, y la Tabla 11 escala con el 0,65 %',
+  'every printed cell lies at or above the exact bound, within 0.0094 percentage points':
+    'cada celda impresa está en la cota exacta o sobre ella, dentro de 0,0094 puntos porcentuales',
+  'B at 99.9%: printed 9.54%, exact 9.44%': 'B al 99,9 %: impreso 9,54 %, exacto 9,44 %',
+  'Monte Carlo of the stated model, checked by a deterministic quadrature in riskvalidation; the print lies 1% to 5% above it at 99% and 99.9%':
+    'Monte Carlo del modelo declarado, verificado con una cuadratura determinista en riskvalidation; lo impreso queda entre 1 % y 5 % sobre él al 99 % y al 99,9 %',
+};
+
 /** The battery on the expert model: Jeffreys per grade and for the portfolio, the binomial and the Vasicek binomial. */
 export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
   const lang = useShellLang();
@@ -250,7 +271,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
               <tbody>
                 {Object.keys(kt.tests.true).map((k) => (
                   <tr key={k}>
-                    <td className="ct-text">{k.replace('_', ', ')}</td>
+                    <td className="ct-text">{sizePowerRow(k, NAME, lang)}</td>
                     <td>{pct(lang, kt.tests.true[k].reject_5, 1)}</td>
                     <td>{pct(lang, kt.tests.expert[k].reject_5, 1)}</td>
                   </tr>
@@ -293,7 +314,7 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
           dataKey={stateKey}
           note={{
             en: `${cells.filter((c) => c.gap === 0).length} of ${cells.length} cells identical at the printed precision; the others, cell by cell: ${Object.values(o.golden.notes).join('; ')}.`,
-            es: `${cells.filter((c) => c.gap === 0).length} de ${cells.length} celdas idénticas a la precisión impresa; las demás, celda por celda: ${Object.values(o.golden.notes).join('; ')}.`,
+            es: `${cells.filter((c) => c.gap === 0).length} de ${cells.length} celdas idénticas a la precisión impresa; las demás, celda por celda: ${Object.values(o.golden.notes).map((n) => GOLDEN_NOTE_ES[n] ?? n).join('; ')}.`,
           }}
         >
           <div className="ct-scroll" data-caos-flow="">

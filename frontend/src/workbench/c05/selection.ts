@@ -36,8 +36,10 @@ export const truthStatusText = (id: string): Text => TRUTH_STATUS_TEXT[id] ?? { 
 
 /** The Spanish of the descriptive part of a source's licence and attribution (names, URLs and the citation stay verbatim), kept with the
  * English it translates: a registry wording that has moved on is shown as declared, never as a stale translation. */
-export const SOURCE_TEXT_ES: Record<string, { licence: [string, string]; attribution: [string, string] }> = {
+export const SOURCE_TEXT_ES: Record<string, { name?: [string, string]; licence: [string, string]; attribution: [string, string] }> = {
   'tasche-2013': {
+    // the paper's title stays as published; the tables it names are the reader's words (R2b c06 B1)
+    name: ['The art of probability-of-default curve calibration (arXiv 1212.3716v6), Tables 2 to 9', 'The art of probability-of-default curve calibration (arXiv 1212.3716v6), tablas 2 a 9'],
     licence: [
       'arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); Table 2 quotes the S&P annual global corporate default studies for 2009 to 2011 (S&P 2010, 2011, 2012)',
       'Licencia de arXiv.org perpetua y no exclusiva para distribuir (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); la Tabla 2 cita los estudios anuales de incumplimiento corporativo global de S&P de 2009 a 2011 (S&P 2010, 2011, 2012)',
@@ -48,6 +50,7 @@ export const SOURCE_TEXT_ES: Record<string, { licence: [string, string]; attribu
     ],
   },
   'pluto-tasche-2005': {
+    name: ['Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14', 'Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), tablas 1 a 14'],
     licence: [
       "arXiv assumed license, 1991-2003 (http://arxiv.org/licenses/assumed-1991-2003/): distribution by arXiv; the tables are the paper's own computations on a hypothetical portfolio",
       'Licencia supuesta de arXiv, 1991-2003 (http://arxiv.org/licenses/assumed-1991-2003/): distribución por arXiv; las tablas son los cálculos propios del artículo sobre una cartera hipotética',
@@ -59,7 +62,7 @@ export const SOURCE_TEXT_ES: Record<string, { licence: [string, string]; attribu
   },
 };
 /** A source's licence or attribution in the language: the Spanish of the known wording, else the wording as declared. */
-export function sourceText(id: string, field: 'licence' | 'attribution', declared: string, l: 'en' | 'es'): string {
+export function sourceText(id: string, field: 'name' | 'licence' | 'attribution', declared: string, l: 'en' | 'es'): string {
   const known = SOURCE_TEXT_ES[id]?.[field];
   return l === 'es' && known && known[0] === declared ? known[1] : declared;
 }
