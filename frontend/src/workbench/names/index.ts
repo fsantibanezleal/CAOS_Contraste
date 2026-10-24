@@ -116,6 +116,31 @@ const FED_FIELD: Record<string, BiText> = {
   guarantor_flag: bi('guarantor', 'garante'),
 };
 
+/** The inputs of the UCI German credit file (C01's German twin, C20's SGCD) by name (data-pipeline/pipeline/cases/c01_features.py). */
+const GERMAN_FIELD: Record<string, BiText> = {
+  checking_status: bi('Status of the existing checking account', 'Estado de la cuenta corriente'),
+  duration_months: bi('Duration', 'Plazo'),
+  credit_history: bi('Credit history', 'Historial de crédito'),
+  purpose: bi('Purpose', 'Propósito'),
+  credit_amount: bi('Credit amount', 'Monto del crédito'),
+  savings: bi('Savings account and bonds', 'Cuenta de ahorro y bonos'),
+  employment_since: bi('Present employment since', 'Antigüedad en el empleo actual'),
+  installment_rate: bi('Instalment rate in percent of disposable income', 'Cuota como porcentaje del ingreso disponible'),
+  other_debtors: bi('Other debtors and guarantors', 'Otros deudores y avales'),
+  residence_since: bi('Present residence since', 'Antigüedad en la residencia actual'),
+  property: bi('Property', 'Bienes'),
+  other_installment_plans: bi('Other instalment plans', 'Otros planes de cuotas'),
+  housing: bi('Housing', 'Vivienda'),
+  existing_credits: bi('Number of existing credits at this bank', 'Créditos vigentes en este banco'),
+  job: bi('Job', 'Empleo'),
+  people_liable: bi('People liable to provide maintenance for', 'Personas a cargo'),
+  telephone: bi('Telephone', 'Teléfono'),
+};
+
+/** An input of a data file by name: a column of the German file or a field of the Fed portfolios; null for any other (a column
+ * whose published name is its name, such as the Taiwan file's LIMIT_BAL, prints as written). */
+export const inputName = (col: string): BiText | null => GERMAN_FIELD[col] ?? FED_FIELD[col] ?? null;
+
 /** C20's Fed shift (`fed-higher-risk-x0.25`): the Fed's higher-risk portfolio drift at a multiple (c20/v_shift.py). */
 const fedShift = (k: string): BiText => bi(`the Fed higher-risk drift times ${num(k, 'en')}`, `la deriva de mayor riesgo de la Fed por ${num(k, 'es')}`);
 
@@ -201,6 +226,9 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
   }
   return null;
 }
+
+/** A conformal window of C20 by name ("fed-higher-risk-x0.25", "pooled", "baseline"); the id when no form matches. */
+export const windowName = (w: string): BiText => segmentName(`window:${w}`, { caseId: 'C20' }) ?? segmentName(w, { caseId: 'C20' }) ?? bi(w, w);
 
 /** A C21 contrast ("25-34 vs 35-44") with the groups in the language's words and "vs" as "frente a" in Spanish. */
 function contrastBi(label: string, lang: Lang): string {

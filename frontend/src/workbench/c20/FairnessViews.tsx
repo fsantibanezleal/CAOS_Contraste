@@ -87,8 +87,10 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
 /** The Impact view: the share of decisions that flip at the stated cut-off under each shift. */
 /** The name of a shift of the decision-flip view: the shipped shocks of the German data and Contraste's own application of each family. */
 export function shiftName(id: string): BiText {
-  const m = /^(shipped|applied)-(F\d)$/.exec(id);
+  const m = /^(shipped|applied)-(F\d|numeric-noise)$/.exec(id);
   if (!m) return { en: id, es: id };
+  // a family of shocks without a code is named by its words (the raw-id scan: applied-numeric-noise)
+  if (m[2] === 'numeric-noise') return m[1] === 'shipped' ? { en: 'Shipped, numeric noise', es: 'Provisto, ruido numérico' } : { en: 'Applied by Contraste, numeric noise', es: 'Aplicado por Contraste, ruido numérico' };
   return m[1] === 'shipped' ? { en: `Shipped, ${m[2]}`, es: `Provisto, ${m[2]}` } : { en: `Applied by Contraste, ${m[2]}`, es: `Aplicado por Contraste, ${m[2]}` };
 }
 
