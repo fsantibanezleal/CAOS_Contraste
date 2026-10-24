@@ -77,6 +77,8 @@ export function C17VariantsTable({ variants, sel, onPick, current }: { variants:
               <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
               <th>{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
+              {/* how many of the histories give a capital at all: the median and spread are over these (R2b c18 M-2, V17-3) */}
+              <th>{pick({ en: 'Histories with a capital', es: 'Historias con capital' }, lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -91,6 +93,7 @@ export function C17VariantsTable({ variants, sel, onPick, current }: { variants:
                 <td>{r.summary ? formatNumber(r.summary.ratio_to_truth.median, lang, { digits: 3 }) : na(lang)}</td>
                 <td>{r.summary ? formatNumber(r.summary.iqr_over_truth, lang, { percent: true, decimals: 2 }) : na(lang)}</td>
                 <td className="ct-wide-only">{r.summary ? formatNumber(r.summary.share_underestimating, lang, { percent: true, decimals: 2 }) : na(lang)}</td>
+                <td data-n-defined={r.summary?.n_defined}>{r.summary ? formatNumber(r.summary.n_defined, lang, { decimals: 0 }) : na(lang)}</td>
               </tr>
             ))}
           </tbody>
