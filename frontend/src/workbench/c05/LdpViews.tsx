@@ -10,6 +10,7 @@ import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { GRADE_COLOR, averageRiskWeight, isLdp, quadrature, useLiveBounds, type C05Sel, type LdpVariant } from './selection';
+import { testText } from '../names';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 3) => formatNumber(v, lang, { percent: true, decimals });
@@ -215,7 +216,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
             <tbody>
               {v.tests.map((t) => (
                 <tr key={`${t.test_id}-${t.segment}`}>
-                  <td className="ct-text">{pick(NAME[t.test_id] ?? { en: t.test_id, es: t.test_id }, lang)}</td>
+                  <td className="ct-text">{pick(NAME[t.test_id] ?? testText(t.test_id), lang)}</td>
                   <td className="ct-text">{t.segment === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : t.segment}</td>
                   <td>{t.n_events !== null && t.n !== null ? `${formatNumber(t.n_events, lang)} / ${formatNumber(t.n, lang)}` : '-'}</td>
                   <LightCell row={t} alphas={sel.alphas} />

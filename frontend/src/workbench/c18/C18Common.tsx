@@ -21,6 +21,7 @@ import {
   type C18AggOutputs, type C18Fit, type C18Outputs, type C18Reverse, type C18Sel,
 } from './selection';
 import { phraseEs, unitEs } from './localise';
+import { testText } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -115,7 +116,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{`${TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}${t.segment ? ` (${segmentName(t.segment, lang)})` : ''}`}</td>
+                      <td className="ct-text" title={t.test_id}>{`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}${t.segment ? ` (${segmentName(t.segment, lang)})` : ''}`}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>

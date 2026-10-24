@@ -4,14 +4,14 @@
 import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
-import { humanize } from '../c03/U6Shared';
 import { TEST_TEXT, TEST_VIEW } from './selection';
 import { es } from './localise';
+import { testText } from '../names';
 
 export type TestHost = 'exceedance' | 'tail' | 'method' | 'response' | 'scenario' | 'ladder';
 
 /** The words of a test: the table above, or the part of its id after the family, in words. */
-const nameOf = (id: string) => TEST_TEXT[id] ?? { en: humanize(id.split('.').pop() ?? id), es: humanize(id.split('.').pop() ?? id) };
+const nameOf = (id: string) => TEST_TEXT[id] ?? testText(id);
 
 export function C17TestsTable({ variant, host }: { variant: VariantArtifact; host: TestHost }) {
   const lang = useShellLang();

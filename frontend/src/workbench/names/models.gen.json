@@ -1,0 +1,3346 @@
+{
+ "models": {
+  "C01": {
+   "P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "P5-tabpfn": {
+    "en": "P5 TabPFN",
+    "es": "P5 TabPFN"
+   }
+  },
+  "C02": {
+   "h1-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "h1-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "h1-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "h1-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "h1-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "h1-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "h1-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "h1-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "h2-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "h2-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "h2-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "h2-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "h2-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "h2-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "h2-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "h2-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "h3-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "h3-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "h3-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "h3-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "h3-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "h3-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "h3-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "h3-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "h4-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "h4-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "h4-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "h4-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "h4-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "h4-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "h4-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "h4-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "h5-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "h5-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "h5-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "h5-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "h5-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "h5-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "h5-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "h5-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   },
+   "pooled-P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "pooled-P0-single": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "pooled-P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "pooled-P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "pooled-P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "pooled-P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "pooled-P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "pooled-P4-xgboost": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   }
+  },
+  "C03": {
+   "P0-constant": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "P1-scorecard": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "P2a-l1": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "P2b-pltr": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "P3-ebm": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "P4-lightgbm": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   }
+  },
+  "C04": {
+   "FITGB": {
+    "en": "Fitch",
+    "es": "Fitch"
+   },
+   "G1-rating-paths": {
+    "en": "Rating paths with a known generator",
+    "es": "Trayectorias de calificación con un generador conocido"
+   },
+   "M1-cohort": {
+    "en": "Cohort",
+    "es": "Cohortes"
+   },
+   "M2-em": {
+    "en": "EM",
+    "es": "EM"
+   },
+   "M3-diagonal": {
+    "en": "Diagonal",
+    "es": "Diagonal"
+   },
+   "M4-weighted": {
+    "en": "Weighted",
+    "es": "Weighted"
+   },
+   "M5-jlt": {
+    "en": "JLT",
+    "es": "JLT"
+   },
+   "MDYGB": {
+    "en": "Moody's",
+    "es": "Moody's"
+   },
+   "P1-irw": {
+    "en": "Israel, Rosenthal and Wei (2001), section 4",
+    "es": "Israel, Rosenthal y Wei (2001), sección 4"
+   },
+   "P2-sr190": {
+    "en": "Schuermann and Hanson (2004), Table 5",
+    "es": "Schuermann y Hanson (2004), Tabla 5"
+   },
+   "P3-engelmann": {
+    "en": "Engelmann (2024), section 4",
+    "es": "Engelmann (2024), sección 4"
+   },
+   "STPGB": {
+    "en": "S&P",
+    "es": "S&P"
+   }
+  },
+  "C05": {
+   "A1-idp": {
+    "en": "Default profile",
+    "es": "Perfil de incumpl."
+   },
+   "A2-iar": {
+    "en": "Accuracy ratio",
+    "es": "Razón de precisión"
+   },
+   "A3-spd": {
+    "en": "Scaled PDs",
+    "es": "PD escaladas"
+   },
+   "A4-slr": {
+    "en": "Scaled LR",
+    "es": "RV escalada"
+   },
+   "B1-ilr": {
+    "en": "Invariant LR",
+    "es": "RV invariante"
+   },
+   "C1-ipc": {
+    "en": "2009 curve",
+    "es": "Curva 2009"
+   },
+   "C2-ls": {
+    "en": "Least squares",
+    "es": "Mín. cuadrados"
+   },
+   "C3-chi2": {
+    "en": "Least chi-square",
+    "es": "Mín. chi-cuadrado"
+   },
+   "C4-ilr": {
+    "en": "LR, profile",
+    "es": "RV, perfil"
+   },
+   "E0-expert": {
+    "en": "Expert",
+    "es": "Experta"
+   },
+   "L0-methods": {
+    "en": "Most prudent",
+    "es": "Más prudente"
+   },
+   "L1-independent": {
+    "en": "Independent",
+    "es": "Independiente"
+   },
+   "L2-correlated": {
+    "en": "Correlated",
+    "es": "Correlacionada"
+   },
+   "L3-scaled": {
+    "en": "Scaled",
+    "es": "Escalada"
+   },
+   "M0-observed-2009": {
+    "en": "Observed 2009",
+    "es": "Observada 2009"
+   },
+   "M1-qmm-2009": {
+    "en": "QMM 2009",
+    "es": "QMM 2009"
+   }
+  },
+  "C06": {
+   "L0-km": {
+    "en": "L0 Kaplan-Meier",
+    "es": "L0 Kaplan-Meier"
+   },
+   "L1-dth": {
+    "en": "L1 Hazard",
+    "es": "L1 Hazard"
+   },
+   "L2-cox": {
+    "en": "L2 Cox",
+    "es": "L2 Cox"
+   }
+  },
+  "C07": {
+   "B1-standard": {
+    "en": "CMF B-1",
+    "es": "CMF B-1"
+   },
+   "BDE-annex9": {
+    "en": "BdE Annex 9",
+    "es": "BdE Anejo 9"
+   },
+   "G0-banco-andino": {
+    "en": "Generator",
+    "es": "Generador"
+   },
+   "IFRS9-ecl": {
+    "en": "IFRS 9",
+    "es": "IFRS 9"
+   }
+  },
+  "C08": {
+   "L1-ols": {
+    "en": "L1 OLS",
+    "es": "L1 MCO"
+   },
+   "L2-fractional-logit": {
+    "en": "L2 Fractional logit",
+    "es": "L2 Logit fraccional"
+   },
+   "L3-beta": {
+    "en": "L3 Beta",
+    "es": "L3 Beta"
+   },
+   "L4-hurdle": {
+    "en": "L4 Hurdle",
+    "es": "L4 Hurdle"
+   },
+   "L5-gradient-boosted": {
+    "en": "L5 Boosted trees",
+    "es": "L5 Árboles"
+   },
+   "L6-tobit": {
+    "en": "L6 Tobit",
+    "es": "L6 Tobit"
+   }
+  },
+  "C09": {
+   "ccf-cohort-floor-cap": {
+    "en": "CCF cohort",
+    "es": "CCF cohorte"
+   },
+   "ccf-fixed-horizon-bounded-scale": {
+    "en": "CCF 12m logit",
+    "es": "CCF 12m logit acotado"
+   },
+   "ccf-fixed-horizon-censor": {
+    "en": "CCF 12m censor",
+    "es": "CCF 12m censura"
+   },
+   "ccf-fixed-horizon-floor-cap": {
+    "en": "CCF 12m floor-cap",
+    "es": "CCF 12m piso y tope"
+   },
+   "ccf-fixed-horizon-none": {
+    "en": "CCF 12m",
+    "es": "CCF 12m"
+   },
+   "ccf-variable-horizon-floor-cap": {
+    "en": "CCF variable",
+    "es": "CCF variable"
+   },
+   "direct-ead": {
+    "en": "Direct EAD",
+    "es": "EAD directo"
+   },
+   "utilisation-change": {
+    "en": "Util. change",
+    "es": "Cambio de uso"
+   }
+  },
+  "C10": {
+   "m-creditrisk-plus": {
+    "en": "CreditRisk+",
+    "es": "CreditRisk+"
+   },
+   "m-gaussian-1f": {
+    "en": "Gaussian 1F",
+    "es": "Gaussiana 1F"
+   },
+   "m-gaussian-mf": {
+    "en": "Gaussian MF",
+    "es": "Gaussiana MF"
+   },
+   "m-lhp": {
+    "en": "LHP",
+    "es": "LHP"
+   },
+   "m-student-t": {
+    "en": "Student-t",
+    "es": "t de Student"
+   }
+  },
+  "C11": {
+   "awhs": {
+    "en": "Age-weighted historical simulation",
+    "es": "Simulación histórica ponderada por edad"
+   },
+   "caviar-as": {
+    "en": "CAViaR, asymmetric slope",
+    "es": "CAViaR, pendiente asimétrica"
+   },
+   "caviar-es": {
+    "en": "ES-CAViaR (two-step, Taylor)",
+    "es": "ES-CAViaR (dos pasos, Taylor)"
+   },
+   "caviar-sav": {
+    "en": "CAViaR, symmetric absolute value",
+    "es": "CAViaR, valor absoluto simétrico"
+   },
+   "cf-rolling": {
+    "en": "Cornish-Fisher VaR, rolling moments",
+    "es": "VaR de Cornish-Fisher, momentos móviles"
+   },
+   "dn-rolling": {
+    "en": "Delta-normal, rolling moments",
+    "es": "Delta-normal, momentos móviles"
+   },
+   "egarch-t": {
+    "en": "EGARCH with Student-t innovations",
+    "es": "EGARCH con innovaciones t de Student"
+   },
+   "evt-mf": {
+    "en": "Conditional EVT (McNeil and Frey)",
+    "es": "EVT condicional (McNeil y Frey)"
+   },
+   "ewma": {
+    "en": "EWMA (RiskMetrics)",
+    "es": "EWMA (RiskMetrics)"
+   },
+   "fhs": {
+    "en": "Filtered historical simulation",
+    "es": "Simulación histórica filtrada"
+   },
+   "garch-t": {
+    "en": "GARCH(1,1) with Student-t innovations",
+    "es": "GARCH(1,1) con innovaciones t de Student"
+   },
+   "gas-fz-1": {
+    "en": "GAS-FZ, one factor",
+    "es": "GAS-FZ, un factor"
+   },
+   "gas-fz-2": {
+    "en": "GAS-FZ, two factors",
+    "es": "GAS-FZ, dos factores"
+   },
+   "gas-hybrid": {
+    "en": "Hybrid GARCH-FZ",
+    "es": "GARCH-FZ híbrido"
+   },
+   "gjr-t": {
+    "en": "GJR-GARCH with Student-t innovations",
+    "es": "GJR-GARCH con innovaciones t de Student"
+   },
+   "hs-250": {
+    "en": "Historical simulation, 250 days",
+    "es": "Simulación histórica, 250 días"
+   },
+   "hs-500": {
+    "en": "Historical simulation, 500 days",
+    "es": "Simulación histórica, 500 días"
+   },
+   "nn-fz": {
+    "en": "Quantile network trained on FZ0 (challenger)",
+    "es": "Red de cuantiles entrenada con FZ0 (retador)"
+   }
+  },
+  "C12": {
+   "hw1f-exposure": {
+    "en": "HW1F",
+    "es": "HW1F"
+   }
+  },
+  "C13": {
+   "desk-risk-model": {
+    "en": "Missing basis",
+    "es": "Base omitida"
+   }
+  },
+  "C14": {
+   "irrbb-dynamic-nii": {
+    "en": "Dynamic NII with deposit betas",
+    "es": "NII dinámico con betas de depósitos"
+   },
+   "irrbb-ear-evar-hw1f": {
+    "en": "EaR and EVaR",
+    "es": "EaR y EVaR"
+   },
+   "irrbb-eve-standardised": {
+    "en": "Standardised EVE",
+    "es": "EVE estandarizado"
+   },
+   "irrbb-gap-duration": {
+    "en": "Repricing gap and duration gap",
+    "es": "Brecha de reprecio y brecha de duración"
+   },
+   "irrbb-nmd-replicating": {
+    "en": "Replicating portfolio of the non-maturity deposits",
+    "es": "Cartera replicante de los depósitos a la vista"
+   }
+  },
+  "C15": {
+   "irrbb-annex1": {
+    "en": "RAN 21-13 Annex 1",
+    "es": "RAN 21-13 Anexo 1"
+   },
+   "irrbb-curves-nelson-siegel": {
+    "en": "Nelson-Siegel zero curves",
+    "es": "Curvas cero Nelson-Siegel"
+   },
+   "irrbb-dynamic-nii": {
+    "en": "Dynamic NII",
+    "es": "NII dinámico"
+   },
+   "irrbb-ear-evar-hw1f": {
+    "en": "EaR and EVaR",
+    "es": "EaR y EVaR"
+   }
+  },
+  "C16": {
+   "liquidity-ladder": {
+    "en": "Liquidity ladder",
+    "es": "Escalera de liquidez"
+   }
+  },
+  "C17": {
+   "lda-lognormal": {
+    "en": "Poisson-lognormal LDA ignoring the collection threshold",
+    "es": "El LDA Poisson-lognormal que ignora el umbral"
+   },
+   "lda-lognormal-truncated": {
+    "en": "Truncated lognormal above the threshold, frequency rescaled",
+    "es": "Lognormal truncada sobre el umbral"
+   },
+   "lda-splice": {
+    "en": "Lognormal body and GPD tail splice",
+    "es": "Empalme de cuerpo lognormal y cola GPD"
+   },
+   "scenario": {
+    "en": "Scenario combination by Bayesian credibility",
+    "es": "Combinación de escenarios por credibilidad bayesiana"
+   },
+   "sla": {
+    "en": "Single loss approximation",
+    "es": "Aproximación de una pérdida"
+   },
+   "sla-mean-corrected": {
+    "en": "Single loss approximation with the mean correction",
+    "es": "Aproximación de una pérdida con corrección por media"
+   },
+   "sma": {
+    "en": "Standardised approach of OPE25 (BIC x ILM)",
+    "es": "Enfoque estandarizado de OPE25 (BIC x ILM)"
+   }
+  },
+  "C18": {
+   "c18-aggregation-ladder": {
+    "en": "Aggregation ladder",
+    "es": "Escalera de agregación"
+   },
+   "c18-capital-engine": {
+    "en": "Capital engine on a static balance sheet",
+    "es": "Motor de capital sobre balance estático"
+   },
+   "c18-satellites-us-calibrated": {
+    "en": "Macro satellites of the net charge-off rates",
+    "es": "Satélites macro de las tasas de castigo netas"
+   }
+  },
+  "C20": {
+   "P0-constant-german-sgcd": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "P0-constant-polish": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "P0-constant-taiwan": {
+    "en": "P0 Constant",
+    "es": "P0 Constante"
+   },
+   "P0-single-german-sgcd": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "P0-single-polish": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "P0-single-taiwan": {
+    "en": "P0 One variable",
+    "es": "P0 Una variable"
+   },
+   "P1-scorecard-german-sgcd": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "P1-scorecard-polish": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "P1-scorecard-taiwan": {
+    "en": "P1 Scorecard",
+    "es": "P1 Scorecard"
+   },
+   "P2a-l1-german-sgcd": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "P2a-l1-polish": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "P2a-l1-taiwan": {
+    "en": "P2a L1",
+    "es": "P2a L1"
+   },
+   "P2b-pltr-german-sgcd": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "P2b-pltr-polish": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "P2b-pltr-taiwan": {
+    "en": "P2b PLTR",
+    "es": "P2b PLTR"
+   },
+   "P3-ebm-german-sgcd": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "P3-ebm-polish": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "P3-ebm-taiwan": {
+    "en": "P3 EBM",
+    "es": "P3 EBM"
+   },
+   "P4-lightgbm-german-sgcd": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "P4-lightgbm-polish": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "P4-lightgbm-taiwan": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "P4-lightgbm-taiwan-planted-leak": {
+    "en": "P4 LightGBM",
+    "es": "P4 LightGBM"
+   },
+   "P4-xgboost-taiwan": {
+    "en": "P4 XGBoost",
+    "es": "P4 XGBoost"
+   }
+  },
+  "C21": {
+   "hmda-linear-rate-spread": {
+    "en": "Linear rate-spread model with the permitted controls",
+    "es": "Modelo lineal del diferencial de tasa con los controles permitidos"
+   },
+   "hmda-logistic-decision": {
+    "en": "Logistic decision model with the permitted controls",
+    "es": "Modelo logístico de decisión con los controles permitidos"
+   },
+   "hmda-selection-rates": {
+    "en": "Selection rates by group",
+    "es": "Tasas de selección por grupo"
+   },
+   "hmda-situation-testing": {
+    "en": "Situation testing",
+    "es": "Prueba de situación"
+   }
+  },
+  "C22": {
+   "G1-default-counts": {
+    "en": "Default counts, one-factor model with time correlation (WP14)",
+    "es": "Conteos de incumplimiento, modelo de un factor con correlación temporal (WP14)"
+   },
+   "G10-lgd-calibration": {
+    "en": "Realised and predicted LGD of workouts",
+    "es": "LGD realizada y predicha de recuperaciones"
+   },
+   "G11-downturn-lgd": {
+    "en": "Downturn workouts against a downturn estimate",
+    "es": "Recuperaciones de ciclo bajo contra una estimación de ciclo bajo"
+   },
+   "G12-es-residuals": {
+    "en": "Expected shortfall residuals of exceedances",
+    "es": "Residuos de expected shortfall de las excedencias"
+   },
+   "G13-lhp-loss-rates": {
+    "en": "Yearly loss rates of a large homogeneous portfolio",
+    "es": "Tasas de pérdida anuales de una cartera homogénea grande"
+   },
+   "G14-mc-quantile": {
+    "en": "A Monte Carlo quantile of the LHP loss rate",
+    "es": "Un cuantil Monte Carlo de la tasa de pérdida LHP"
+   },
+   "G15-credit-risk-plus-sample": {
+    "en": "A CreditRisk+ loss sample",
+    "es": "Una muestra de pérdidas de CreditRisk+"
+   },
+   "G16-threshold-bias-plant": {
+    "en": "Decisions with a planted threshold gap between two groups",
+    "es": "Decisiones con una brecha de umbral plantada entre dos grupos"
+   },
+   "G17-var-hits": {
+    "en": "VaR exceedances (hits), independent or clustered",
+    "es": "Excedencias de VaR, independientes o agrupadas"
+   },
+   "G18-es-losses": {
+    "en": "Losses with VaR and ES forecasts",
+    "es": "Pérdidas con pronósticos de VaR y ES"
+   },
+   "G19-pit-series": {
+    "en": "Probability integral transforms of a forecast distribution",
+    "es": "Transformadas integrales de probabilidad de una distribución pronosticada"
+   },
+   "G2-binormal": {
+    "en": "Binormal scores with an exact AUC",
+    "es": "Puntajes binormales con AUC exacta"
+   },
+   "G20-covariate-shift-plant": {
+    "en": "A model with a planted covariate shift",
+    "es": "Un modelo con un desplazamiento de covariables plantado"
+   },
+   "G21-exchangeability-break-plant": {
+    "en": "A conformal model with a planted exchangeability break",
+    "es": "Un modelo conforme con una ruptura de intercambiabilidad plantada"
+   },
+   "G3-logistic": {
+    "en": "Logistic portfolio with a planted calibration",
+    "es": "Cartera logística con calibración plantada"
+   },
+   "G4-two-sample": {
+    "en": "Two samples (Yurdakul and Naranjo's design)",
+    "es": "Dos muestras (diseño de Yurdakul y Naranjo)"
+   },
+   "G5-migrations": {
+    "en": "Migrations",
+    "es": "Migrations"
+   },
+   "G6-grade-frequencies": {
+    "en": "Grade frequencies with planted concentration",
+    "es": "Frecuencias por grado con concentración plantada"
+   },
+   "G7-nested-lda": {
+    "en": "Nested discriminants (Demler et al.)",
+    "es": "Discriminantes anidados (Demler et al.)"
+   },
+   "G8-pfe-series": {
+    "en": "Exposure series with a PFE forecast (counterparty credit risk)",
+    "es": "Serie de exposiciones con un pronóstico de PFE (riesgo de contraparte)"
+   },
+   "G9-stage-transitions": {
+    "en": "Stage migrations of IFRS 9 accounts",
+    "es": "Migraciones de etapa de cuentas NIIF 9"
+   },
+   "X1-exact": {
+    "en": "Exact",
+    "es": "Exacta"
+   },
+   "binormal-150": {
+    "en": "binormal-150",
+    "es": "binormal-150"
+   },
+   "binormal-150-d0": {
+    "en": "binormal-150-d0",
+    "es": "binormal-150-d0"
+   },
+   "binormal-150-d0.01": {
+    "en": "binormal-150-d0.01",
+    "es": "binormal-150-d0.01"
+   },
+   "binormal-150-d0.02": {
+    "en": "binormal-150-d0.02",
+    "es": "binormal-150-d0.02"
+   },
+   "binormal-150-d0.03": {
+    "en": "binormal-150-d0.03",
+    "es": "binormal-150-d0.03"
+   },
+   "binormal-150-d0.05": {
+    "en": "binormal-150-d0.05",
+    "es": "binormal-150-d0.05"
+   },
+   "binormal-150-d0.08": {
+    "en": "binormal-150-d0.08",
+    "es": "binormal-150-d0.08"
+   },
+   "binormal-150-dev1": {
+    "en": "binormal-150-dev1",
+    "es": "binormal-150-dev1"
+   },
+   "binormal-150-leak0": {
+    "en": "binormal-150-leak0",
+    "es": "binormal-150-leak0"
+   },
+   "binormal-150-leak0.25": {
+    "en": "binormal-150-leak0.25",
+    "es": "binormal-150-leak0.25"
+   },
+   "binormal-150-leak0.5": {
+    "en": "binormal-150-leak0.5",
+    "es": "binormal-150-leak0.5"
+   },
+   "binormal-150-leak1": {
+    "en": "binormal-150-leak1",
+    "es": "binormal-150-leak1"
+   },
+   "binormal-150-leak1.5": {
+    "en": "binormal-150-leak1.5",
+    "es": "binormal-150-leak1.5"
+   },
+   "binormal-150-leak2": {
+    "en": "binormal-150-leak2",
+    "es": "binormal-150-leak2"
+   },
+   "binormal-150-m0": {
+    "en": "binormal-150-m0",
+    "es": "binormal-150-m0"
+   },
+   "binormal-150-m0.467": {
+    "en": "binormal-150-m0.467",
+    "es": "binormal-150-m0.467"
+   },
+   "binormal-150-m1": {
+    "en": "binormal-150-m1",
+    "es": "binormal-150-m1"
+   },
+   "binormal-150-m16": {
+    "en": "binormal-150-m16",
+    "es": "binormal-150-m16"
+   },
+   "binormal-150-m4": {
+    "en": "binormal-150-m4",
+    "es": "binormal-150-m4"
+   },
+   "binormal-150-pair": {
+    "en": "binormal-150-pair",
+    "es": "binormal-150-pair"
+   },
+   "binormal-150-pair-d0": {
+    "en": "binormal-150-pair-d0",
+    "es": "binormal-150-pair-d0"
+   },
+   "binormal-150-pair-d0.01": {
+    "en": "binormal-150-pair-d0.01",
+    "es": "binormal-150-pair-d0.01"
+   },
+   "binormal-150-pair-d0.02": {
+    "en": "binormal-150-pair-d0.02",
+    "es": "binormal-150-pair-d0.02"
+   },
+   "binormal-150-pair-d0.03": {
+    "en": "binormal-150-pair-d0.03",
+    "es": "binormal-150-pair-d0.03"
+   },
+   "binormal-150-pair-d0.05": {
+    "en": "binormal-150-pair-d0.05",
+    "es": "binormal-150-pair-d0.05"
+   },
+   "binormal-150-pair-d0.08": {
+    "en": "binormal-150-pair-d0.08",
+    "es": "binormal-150-pair-d0.08"
+   },
+   "binormal-621-pair": {
+    "en": "binormal-621-pair",
+    "es": "binormal-621-pair"
+   },
+   "ccr.pfe_exceedance_backtest-alternative": {
+    "en": "ccr.pfe_exceedance_backtest-alternative",
+    "es": "ccr.pfe_exceedance_backtest-alternative"
+   },
+   "ccr.pfe_exceedance_backtest-null": {
+    "en": "ccr.pfe_exceedance_backtest-null",
+    "es": "ccr.pfe_exceedance_backtest-null"
+   },
+   "fair.fisher_exact-alternative": {
+    "en": "fair.fisher_exact-alternative",
+    "es": "fair.fisher_exact-alternative"
+   },
+   "fair.fisher_exact-null": {
+    "en": "fair.fisher_exact-null",
+    "es": "fair.fisher_exact-null"
+   },
+   "fair.two_proportion_z-alternative": {
+    "en": "fair.two_proportion_z-alternative",
+    "es": "fair.two_proportion_z-alternative"
+   },
+   "fair.two_proportion_z-null": {
+    "en": "fair.two_proportion_z-null",
+    "es": "fair.two_proportion_z-null"
+   },
+   "grades-10-5000": {
+    "en": "grades-10-5000",
+    "es": "grades-10-5000"
+   },
+   "grades-10-c0": {
+    "en": "grades-10-c0",
+    "es": "grades-10-c0"
+   },
+   "grades-10-c0.01": {
+    "en": "grades-10-c0.01",
+    "es": "grades-10-c0.01"
+   },
+   "grades-10-c0.02": {
+    "en": "grades-10-c0.02",
+    "es": "grades-10-c0.02"
+   },
+   "grades-10-c0.05": {
+    "en": "grades-10-c0.05",
+    "es": "grades-10-c0.05"
+   },
+   "grades-10-c0.1": {
+    "en": "grades-10-c0.1",
+    "es": "grades-10-c0.1"
+   },
+   "grades-10-c0.5": {
+    "en": "grades-10-c0.5",
+    "es": "grades-10-c0.5"
+   },
+   "grades-7": {
+    "en": "grades-7",
+    "es": "grades-7"
+   },
+   "grades-7-k1": {
+    "en": "grades-7-k1",
+    "es": "grades-7-k1"
+   },
+   "grades-7-k1.1": {
+    "en": "grades-7-k1.1",
+    "es": "grades-7-k1.1"
+   },
+   "grades-7-k1.25": {
+    "en": "grades-7-k1.25",
+    "es": "grades-7-k1.25"
+   },
+   "grades-7-k1.5": {
+    "en": "grades-7-k1.5",
+    "es": "grades-7-k1.5"
+   },
+   "grades-7-k2": {
+    "en": "grades-7-k2",
+    "es": "grades-7-k2"
+   },
+   "grades-7-k3": {
+    "en": "grades-7-k3",
+    "es": "grades-7-k3"
+   },
+   "grades-7-rho0": {
+    "en": "grades-7-rho0",
+    "es": "grades-7-rho0"
+   },
+   "grades-7-rho0.02": {
+    "en": "grades-7-rho0.02",
+    "es": "grades-7-rho0.02"
+   },
+   "grades-7-rho0.05": {
+    "en": "grades-7-rho0.05",
+    "es": "grades-7-rho0.05"
+   },
+   "grades-7-rho0.1": {
+    "en": "grades-7-rho0.1",
+    "es": "grades-7-rho0.1"
+   },
+   "grades-7-rho0.15": {
+    "en": "grades-7-rho0.15",
+    "es": "grades-7-rho0.15"
+   },
+   "grades-7-rho0.2": {
+    "en": "grades-7-rho0.2",
+    "es": "grades-7-rho0.2"
+   },
+   "grades-7-swap0": {
+    "en": "grades-7-swap0",
+    "es": "grades-7-swap0"
+   },
+   "grades-7-swap0.2": {
+    "en": "grades-7-swap0.2",
+    "es": "grades-7-swap0.2"
+   },
+   "grades-7-swap0.4": {
+    "en": "grades-7-swap0.4",
+    "es": "grades-7-swap0.4"
+   },
+   "grades-7-swap0.6": {
+    "en": "grades-7-swap0.6",
+    "es": "grades-7-swap0.6"
+   },
+   "grades-7-swap0.8": {
+    "en": "grades-7-swap0.8",
+    "es": "grades-7-swap0.8"
+   },
+   "grades-7-swap1": {
+    "en": "grades-7-swap1",
+    "es": "grades-7-swap1"
+   },
+   "grades-7-thin": {
+    "en": "grades-7-thin",
+    "es": "grades-7-thin"
+   },
+   "ifrs9.stage_migration_backtest-alternative": {
+    "en": "ifrs9.stage_migration_backtest-alternative",
+    "es": "ifrs9.stage_migration_backtest-alternative"
+   },
+   "ifrs9.stage_migration_backtest-null": {
+    "en": "ifrs9.stage_migration_backtest-null",
+    "es": "ifrs9.stage_migration_backtest-null"
+   },
+   "lgd_ead.downturn_coverage-alternative": {
+    "en": "lgd_ead.downturn_coverage-alternative",
+    "es": "lgd_ead.downturn_coverage-alternative"
+   },
+   "lgd_ead.downturn_coverage-null": {
+    "en": "lgd_ead.downturn_coverage-null",
+    "es": "lgd_ead.downturn_coverage-null"
+   },
+   "lgd_ead.lgd_calibration_by_segment-alternative": {
+    "en": "lgd_ead.lgd_calibration_by_segment-alternative",
+    "es": "lgd_ead.lgd_calibration_by_segment-alternative"
+   },
+   "lgd_ead.lgd_calibration_by_segment-null": {
+    "en": "lgd_ead.lgd_calibration_by_segment-null",
+    "es": "lgd_ead.lgd_calibration_by_segment-null"
+   },
+   "lgd_ead.lgd_calibration_over_time-alternative": {
+    "en": "lgd_ead.lgd_calibration_over_time-alternative",
+    "es": "lgd_ead.lgd_calibration_over_time-alternative"
+   },
+   "lgd_ead.lgd_calibration_over_time-null": {
+    "en": "lgd_ead.lgd_calibration_over_time-null",
+    "es": "lgd_ead.lgd_calibration_over_time-null"
+   },
+   "logistic-5000": {
+    "en": "logistic-5000",
+    "es": "logistic-5000"
+   },
+   "logistic-5000-k1": {
+    "en": "logistic-5000-k1",
+    "es": "logistic-5000-k1"
+   },
+   "logistic-5000-k1.1": {
+    "en": "logistic-5000-k1.1",
+    "es": "logistic-5000-k1.1"
+   },
+   "logistic-5000-k1.25": {
+    "en": "logistic-5000-k1.25",
+    "es": "logistic-5000-k1.25"
+   },
+   "logistic-5000-k1.5": {
+    "en": "logistic-5000-k1.5",
+    "es": "logistic-5000-k1.5"
+   },
+   "logistic-5000-k2": {
+    "en": "logistic-5000-k2",
+    "es": "logistic-5000-k2"
+   },
+   "logistic-5000-k3": {
+    "en": "logistic-5000-k3",
+    "es": "logistic-5000-k3"
+   },
+   "logistic-5000-rho0": {
+    "en": "logistic-5000-rho0",
+    "es": "logistic-5000-rho0"
+   },
+   "logistic-5000-rho0.02": {
+    "en": "logistic-5000-rho0.02",
+    "es": "logistic-5000-rho0.02"
+   },
+   "logistic-5000-rho0.05": {
+    "en": "logistic-5000-rho0.05",
+    "es": "logistic-5000-rho0.05"
+   },
+   "logistic-5000-rho0.1": {
+    "en": "logistic-5000-rho0.1",
+    "es": "logistic-5000-rho0.1"
+   },
+   "logistic-5000-rho0.15": {
+    "en": "logistic-5000-rho0.15",
+    "es": "logistic-5000-rho0.15"
+   },
+   "logistic-5000-rho0.2": {
+    "en": "logistic-5000-rho0.2",
+    "es": "logistic-5000-rho0.2"
+   },
+   "logistic-5000-s0": {
+    "en": "logistic-5000-s0",
+    "es": "logistic-5000-s0"
+   },
+   "logistic-5000-s0.05": {
+    "en": "logistic-5000-s0.05",
+    "es": "logistic-5000-s0.05"
+   },
+   "logistic-5000-s0.1": {
+    "en": "logistic-5000-s0.1",
+    "es": "logistic-5000-s0.1"
+   },
+   "logistic-5000-s0.2": {
+    "en": "logistic-5000-s0.2",
+    "es": "logistic-5000-s0.2"
+   },
+   "logistic-5000-s0.3": {
+    "en": "logistic-5000-s0.3",
+    "es": "logistic-5000-s0.3"
+   },
+   "logistic-5000-s0.5": {
+    "en": "logistic-5000-s0.5",
+    "es": "logistic-5000-s0.5"
+   },
+   "market.acerbi_szekely-alternative": {
+    "en": "market.acerbi_szekely-alternative",
+    "es": "market.acerbi_szekely-alternative"
+   },
+   "market.acerbi_szekely-null": {
+    "en": "market.acerbi_szekely-null",
+    "es": "market.acerbi_szekely-null"
+   },
+   "market.christoffersen_conditional_coverage-alternative": {
+    "en": "market.christoffersen_conditional_coverage-alternative",
+    "es": "market.christoffersen_conditional_coverage-alternative"
+   },
+   "market.christoffersen_conditional_coverage-null": {
+    "en": "market.christoffersen_conditional_coverage-null",
+    "es": "market.christoffersen_conditional_coverage-null"
+   },
+   "market.christoffersen_independence-alternative": {
+    "en": "market.christoffersen_independence-alternative",
+    "es": "market.christoffersen_independence-alternative"
+   },
+   "market.christoffersen_independence-null": {
+    "en": "market.christoffersen_independence-null",
+    "es": "market.christoffersen_independence-null"
+   },
+   "market.du_escanciano_conditional-alternative": {
+    "en": "market.du_escanciano_conditional-alternative",
+    "es": "market.du_escanciano_conditional-alternative"
+   },
+   "market.du_escanciano_conditional-null": {
+    "en": "market.du_escanciano_conditional-null",
+    "es": "market.du_escanciano_conditional-null"
+   },
+   "market.du_escanciano_unconditional-alternative": {
+    "en": "market.du_escanciano_unconditional-alternative",
+    "es": "market.du_escanciano_unconditional-alternative"
+   },
+   "market.du_escanciano_unconditional-null": {
+    "en": "market.du_escanciano_unconditional-null",
+    "es": "market.du_escanciano_unconditional-null"
+   },
+   "market.duration_test-alternative": {
+    "en": "market.duration_test-alternative",
+    "es": "market.duration_test-alternative"
+   },
+   "market.duration_test-null": {
+    "en": "market.duration_test-null",
+    "es": "market.duration_test-null"
+   },
+   "market.dynamic_quantile_test#1-alternative": {
+    "en": "market.dynamic_quantile_test#1-alternative",
+    "es": "market.dynamic_quantile_test#1-alternative"
+   },
+   "market.dynamic_quantile_test#1-null": {
+    "en": "market.dynamic_quantile_test#1-null",
+    "es": "market.dynamic_quantile_test#1-null"
+   },
+   "market.dynamic_quantile_test#2-alternative": {
+    "en": "market.dynamic_quantile_test#2-alternative",
+    "es": "market.dynamic_quantile_test#2-alternative"
+   },
+   "market.dynamic_quantile_test#2-null": {
+    "en": "market.dynamic_quantile_test#2-null",
+    "es": "market.dynamic_quantile_test#2-null"
+   },
+   "market.dynamic_quantile_test#3-alternative": {
+    "en": "market.dynamic_quantile_test#3-alternative",
+    "es": "market.dynamic_quantile_test#3-alternative"
+   },
+   "market.dynamic_quantile_test#3-null": {
+    "en": "market.dynamic_quantile_test#3-null",
+    "es": "market.dynamic_quantile_test#3-null"
+   },
+   "market.dynamic_quantile_test-alternative": {
+    "en": "market.dynamic_quantile_test-alternative",
+    "es": "market.dynamic_quantile_test-alternative"
+   },
+   "market.dynamic_quantile_test-null": {
+    "en": "market.dynamic_quantile_test-null",
+    "es": "market.dynamic_quantile_test-null"
+   },
+   "market.kupiec_pof-alternative": {
+    "en": "market.kupiec_pof-alternative",
+    "es": "market.kupiec_pof-alternative"
+   },
+   "market.kupiec_pof-null": {
+    "en": "market.kupiec_pof-null",
+    "es": "market.kupiec_pof-null"
+   },
+   "market.mcneil_frey_residual_test-alternative": {
+    "en": "market.mcneil_frey_residual_test-alternative",
+    "es": "market.mcneil_frey_residual_test-alternative"
+   },
+   "market.mcneil_frey_residual_test-null": {
+    "en": "market.mcneil_frey_residual_test-null",
+    "es": "market.mcneil_frey_residual_test-null"
+   },
+   "migrations-7-2000-r1": {
+    "en": "migrations-7-2000-r1",
+    "es": "migrations-7-2000-r1"
+   },
+   "migrations-7-2000-r1.25": {
+    "en": "migrations-7-2000-r1.25",
+    "es": "migrations-7-2000-r1.25"
+   },
+   "migrations-7-2000-r1.5": {
+    "en": "migrations-7-2000-r1.5",
+    "es": "migrations-7-2000-r1.5"
+   },
+   "migrations-7-2000-r2": {
+    "en": "migrations-7-2000-r2",
+    "es": "migrations-7-2000-r2"
+   },
+   "migrations-7-2000-r3": {
+    "en": "migrations-7-2000-r3",
+    "es": "migrations-7-2000-r3"
+   },
+   "migrations-7-2000-r4": {
+    "en": "migrations-7-2000-r4",
+    "es": "migrations-7-2000-r4"
+   },
+   "migrations-7-500-boundary": {
+    "en": "migrations-7-500-boundary",
+    "es": "migrations-7-500-boundary"
+   },
+   "migrations-7-500-r1": {
+    "en": "migrations-7-500-r1",
+    "es": "migrations-7-500-r1"
+   },
+   "migrations-7-500-r1.25": {
+    "en": "migrations-7-500-r1.25",
+    "es": "migrations-7-500-r1.25"
+   },
+   "migrations-7-500-r1.5": {
+    "en": "migrations-7-500-r1.5",
+    "es": "migrations-7-500-r1.5"
+   },
+   "migrations-7-500-r2": {
+    "en": "migrations-7-500-r2",
+    "es": "migrations-7-500-r2"
+   },
+   "migrations-7-500-r3": {
+    "en": "migrations-7-500-r3",
+    "es": "migrations-7-500-r3"
+   },
+   "migrations-7-500-r4": {
+    "en": "migrations-7-500-r4",
+    "es": "migrations-7-500-r4"
+   },
+   "ml.conformal_coverage-alternative": {
+    "en": "ml.conformal_coverage-alternative",
+    "es": "ml.conformal_coverage-alternative"
+   },
+   "ml.conformal_coverage-null": {
+    "en": "ml.conformal_coverage-null",
+    "es": "ml.conformal_coverage-null"
+   },
+   "ml.shift_resilience-alternative": {
+    "en": "ml.shift_resilience-alternative",
+    "es": "ml.shift_resilience-alternative"
+   },
+   "ml.shift_resilience-null": {
+    "en": "ml.shift_resilience-null",
+    "es": "ml.shift_resilience-null"
+   },
+   "nested-lda-framingham": {
+    "en": "nested-lda-framingham",
+    "es": "nested-lda-framingham"
+   },
+   "paths-5x1000-5y": {
+    "en": "paths-5x1000-5y",
+    "es": "paths-5x1000-5y"
+   },
+   "port-1000-1pct": {
+    "en": "port-1000-1pct",
+    "es": "port-1000-1pct"
+   },
+   "port-1000-1pct-rho12": {
+    "en": "port-1000-1pct-rho12",
+    "es": "port-1000-1pct-rho12"
+   },
+   "port-1000-rho0": {
+    "en": "port-1000-rho0",
+    "es": "port-1000-rho0"
+   },
+   "port-1000-rho0.02": {
+    "en": "port-1000-rho0.02",
+    "es": "port-1000-rho0.02"
+   },
+   "port-1000-rho0.05": {
+    "en": "port-1000-rho0.05",
+    "es": "port-1000-rho0.05"
+   },
+   "port-1000-rho0.1": {
+    "en": "port-1000-rho0.1",
+    "es": "port-1000-rho0.1"
+   },
+   "port-1000-rho0.15": {
+    "en": "port-1000-rho0.15",
+    "es": "port-1000-rho0.15"
+   },
+   "port-1000-rho0.2": {
+    "en": "port-1000-rho0.2",
+    "es": "port-1000-rho0.2"
+   },
+   "port-5000-k1": {
+    "en": "port-5000-k1",
+    "es": "port-5000-k1"
+   },
+   "port-5000-k1.1": {
+    "en": "port-5000-k1.1",
+    "es": "port-5000-k1.1"
+   },
+   "port-5000-k1.25": {
+    "en": "port-5000-k1.25",
+    "es": "port-5000-k1.25"
+   },
+   "port-5000-k1.5": {
+    "en": "port-5000-k1.5",
+    "es": "port-5000-k1.5"
+   },
+   "port-5000-k2": {
+    "en": "port-5000-k2",
+    "es": "port-5000-k2"
+   },
+   "port-5000-k3": {
+    "en": "port-5000-k3",
+    "es": "port-5000-k3"
+   },
+   "portfolio.crp_recursion_vs_mc-alternative": {
+    "en": "portfolio.crp_recursion_vs_mc-alternative",
+    "es": "portfolio.crp_recursion_vs_mc-alternative"
+   },
+   "portfolio.crp_recursion_vs_mc-null": {
+    "en": "portfolio.crp_recursion_vs_mc-null",
+    "es": "portfolio.crp_recursion_vs_mc-null"
+   },
+   "portfolio.mc_convergence-alternative": {
+    "en": "portfolio.mc_convergence-alternative",
+    "es": "portfolio.mc_convergence-alternative"
+   },
+   "portfolio.mc_convergence-null": {
+    "en": "portfolio.mc_convergence-null",
+    "es": "portfolio.mc_convergence-null"
+   },
+   "portfolio.tail_backtest#1-alternative": {
+    "en": "portfolio.tail_backtest#1-alternative",
+    "es": "portfolio.tail_backtest#1-alternative"
+   },
+   "portfolio.tail_backtest#1-null": {
+    "en": "portfolio.tail_backtest#1-null",
+    "es": "portfolio.tail_backtest#1-null"
+   },
+   "portfolio.tail_backtest-alternative": {
+    "en": "portfolio.tail_backtest-alternative",
+    "es": "portfolio.tail_backtest-alternative"
+   },
+   "portfolio.tail_backtest-null": {
+    "en": "portfolio.tail_backtest-null",
+    "es": "portfolio.tail_backtest-null"
+   },
+   "series-5y-3pct": {
+    "en": "series-5y-3pct",
+    "es": "series-5y-3pct"
+   },
+   "series-5y-k1": {
+    "en": "series-5y-k1",
+    "es": "series-5y-k1"
+   },
+   "series-5y-k1.1": {
+    "en": "series-5y-k1.1",
+    "es": "series-5y-k1.1"
+   },
+   "series-5y-k1.25": {
+    "en": "series-5y-k1.25",
+    "es": "series-5y-k1.25"
+   },
+   "series-5y-k1.5": {
+    "en": "series-5y-k1.5",
+    "es": "series-5y-k1.5"
+   },
+   "series-5y-k2": {
+    "en": "series-5y-k2",
+    "es": "series-5y-k2"
+   },
+   "series-5y-k3": {
+    "en": "series-5y-k3",
+    "es": "series-5y-k3"
+   },
+   "series-5y-rho0": {
+    "en": "series-5y-rho0",
+    "es": "series-5y-rho0"
+   },
+   "series-5y-rho0.02": {
+    "en": "series-5y-rho0.02",
+    "es": "series-5y-rho0.02"
+   },
+   "series-5y-rho0.05": {
+    "en": "series-5y-rho0.05",
+    "es": "series-5y-rho0.05"
+   },
+   "series-5y-rho0.1": {
+    "en": "series-5y-rho0.1",
+    "es": "series-5y-rho0.1"
+   },
+   "series-5y-rho0.15": {
+    "en": "series-5y-rho0.15",
+    "es": "series-5y-rho0.15"
+   },
+   "series-5y-rho0.2": {
+    "en": "series-5y-rho0.2",
+    "es": "series-5y-rho0.2"
+   },
+   "two-sample-100": {
+    "en": "two-sample-100",
+    "es": "two-sample-100"
+   },
+   "two-sample-1000": {
+    "en": "two-sample-1000",
+    "es": "two-sample-1000"
+   },
+   "two-sample-1000-s0": {
+    "en": "two-sample-1000-s0",
+    "es": "two-sample-1000-s0"
+   },
+   "two-sample-1000-s0.05": {
+    "en": "two-sample-1000-s0.05",
+    "es": "two-sample-1000-s0.05"
+   },
+   "two-sample-1000-s0.1": {
+    "en": "two-sample-1000-s0.1",
+    "es": "two-sample-1000-s0.1"
+   },
+   "two-sample-1000-s0.2": {
+    "en": "two-sample-1000-s0.2",
+    "es": "two-sample-1000-s0.2"
+   },
+   "two-sample-1000-s0.3": {
+    "en": "two-sample-1000-s0.3",
+    "es": "two-sample-1000-s0.3"
+   },
+   "two-sample-1000-s0.5": {
+    "en": "two-sample-1000-s0.5",
+    "es": "two-sample-1000-s0.5"
+   }
+  }
+ },
+ "rates": {
+  "C22": {
+   "ccr.pfe_exceedance_backtest@d0": {
+    "en": "PFE at 95%, 1000 dates; the test's null holds at its boundary",
+    "es": "PFE al 95%, 1.000 fechas; la nula de la prueba se cumple en su frontera"
+   },
+   "ccr.pfe_exceedance_backtest@d1": {
+    "en": "PFE at 95%, 1000 dates; the PFE forecast is 90% of the true 95% quantile (exceedance frequency 6.94%, not 5%)",
+    "es": "PFE al 95%, 1.000 fechas; el pronóstico de PFE es 90% del cuantil 95% verdadero (frecuencia de excedencia 6,94%, no 5%)"
+   },
+   "ccr.pfe_exceedance_backtest@null": {
+    "en": "PFE at 95%, 1000 dates; the test's null holds at its boundary",
+    "es": "PFE al 95%, 1.000 fechas; la nula de la prueba se cumple en su frontera"
+   },
+   "disc.auc_vs_initial@d0": {
+    "en": "development AUC 0.80 known, current 0.80",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,80"
+   },
+   "disc.auc_vs_initial@d0.01": {
+    "en": "development AUC 0.80 known, current 0.79",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,79"
+   },
+   "disc.auc_vs_initial@d0.02": {
+    "en": "development AUC 0.80 known, current 0.78",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,78"
+   },
+   "disc.auc_vs_initial@d0.03": {
+    "en": "development AUC 0.80 known, current 0.77",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,77"
+   },
+   "disc.auc_vs_initial@d0.05": {
+    "en": "development AUC 0.80 known, current 0.75",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,75"
+   },
+   "disc.auc_vs_initial@d0.08": {
+    "en": "development AUC 0.80 known, current 0.72",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,72"
+   },
+   "disc.auc_vs_initial@dev1": {
+    "en": "the development AUC estimated on an equal sample (ECB form)",
+    "es": "el AUC de desarrollo estimada en una muestra igual (forma BCE)"
+   },
+   "disc.auc_vs_initial@dev1-extended": {
+    "en": "the same with the development AUC's variance added",
+    "es": "lo mismo sumando la varianza del AUC de desarrollo"
+   },
+   "disc.auc_vs_initial@l0": {
+    "en": "the leaked feature shifted by 0 for defaulters in development",
+    "es": "la variable filtrada desplazada 0 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@l0.25": {
+    "en": "the leaked feature shifted by 0.25 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,25 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@l0.5": {
+    "en": "the leaked feature shifted by 0.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,5 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@l1": {
+    "en": "the leaked feature shifted by 1 for defaulters in development",
+    "es": "la variable filtrada desplazada 1 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@l1.5": {
+    "en": "the leaked feature shifted by 1.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 1,5 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@l2": {
+    "en": "the leaked feature shifted by 2 for defaulters in development",
+    "es": "la variable filtrada desplazada 2 para incumplidos en desarrollo"
+   },
+   "disc.auc_vs_initial@m0": {
+    "en": "no change; development AUC known",
+    "es": "sin cambio; AUC de desarrollo conocida"
+   },
+   "disc.auc_vs_initial@m0.467": {
+    "en": "no change; development AUC 0.467 times the current",
+    "es": "sin cambio; AUC de desarrollo 0,467 veces la actual"
+   },
+   "disc.auc_vs_initial@m0.467-extended": {
+    "en": "no change; development AUC 0.467 times the current, its variance added",
+    "es": "sin cambio; AUC de desarrollo 0,467 veces la actual, su varianza sumada"
+   },
+   "disc.auc_vs_initial@m1": {
+    "en": "no change; development AUC 1 times the current",
+    "es": "sin cambio; AUC de desarrollo 1 veces la actual"
+   },
+   "disc.auc_vs_initial@m1-extended": {
+    "en": "no change; development AUC 1 times the current, its variance added",
+    "es": "sin cambio; AUC de desarrollo 1 veces la actual, su varianza sumada"
+   },
+   "disc.auc_vs_initial@m16": {
+    "en": "no change; development AUC 16 times the current",
+    "es": "sin cambio; AUC de desarrollo 16 veces la actual"
+   },
+   "disc.auc_vs_initial@m16-extended": {
+    "en": "no change; development AUC 16 times the current, its variance added",
+    "es": "sin cambio; AUC de desarrollo 16 veces la actual, su varianza sumada"
+   },
+   "disc.auc_vs_initial@m4": {
+    "en": "no change; development AUC 4 times the current",
+    "es": "sin cambio; AUC de desarrollo 4 veces la actual"
+   },
+   "disc.auc_vs_initial@m4-extended": {
+    "en": "no change; development AUC 4 times the current, its variance added",
+    "es": "sin cambio; AUC de desarrollo 4 veces la actual, su varianza sumada"
+   },
+   "disc.auc_vs_initial@null": {
+    "en": "150 defaulters, 4,850 survivors, AUC 0.80, development AUC known",
+    "es": "150 incumplidos, 4.850 sobrevivientes, AUC 0,80, AUC de desarrollo conocida"
+   },
+   "disc.delong@d0": {
+    "en": "champion AUC 0.80, challenger 0.80, same sample",
+    "es": "campeón AUC 0,80, retador 0,80, misma muestra"
+   },
+   "disc.delong@d0.01": {
+    "en": "champion AUC 0.80, challenger 0.79, same sample",
+    "es": "campeón AUC 0,80, retador 0,79, misma muestra"
+   },
+   "disc.delong@d0.02": {
+    "en": "champion AUC 0.80, challenger 0.78, same sample",
+    "es": "campeón AUC 0,80, retador 0,78, misma muestra"
+   },
+   "disc.delong@d0.03": {
+    "en": "champion AUC 0.80, challenger 0.77, same sample",
+    "es": "campeón AUC 0,80, retador 0,77, misma muestra"
+   },
+   "disc.delong@d0.05": {
+    "en": "champion AUC 0.80, challenger 0.75, same sample",
+    "es": "campeón AUC 0,80, retador 0,75, misma muestra"
+   },
+   "disc.delong@d0.08": {
+    "en": "champion AUC 0.80, challenger 0.72, same sample",
+    "es": "campeón AUC 0,80, retador 0,72, misma muestra"
+   },
+   "disc.delong@nested": {
+    "en": "nested discriminants fitted and compared on the same sample (Demler et al.)",
+    "es": "discriminantes anidados ajustados y comparados en la misma muestra (Demler et al.)"
+   },
+   "disc.delong@non-nested": {
+    "en": "two non-nested scores of equal AUC on an independent sample",
+    "es": "dos puntajes no anidados de igual AUC en una muestra independiente"
+   },
+   "disc.delong@null": {
+    "en": "two scores of equal AUC 0.80, correlation 0.5",
+    "es": "dos puntajes de igual AUC 0,80, correlación 0,5"
+   },
+   "fair.fisher_exact@d0": {
+    "en": "2000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
+   },
+   "fair.fisher_exact@d1": {
+    "en": "2000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en log-odds (una brecha de tasa de selección sobre 8 puntos)"
+   },
+   "fair.fisher_exact@null": {
+    "en": "2000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
+   },
+   "fair.two_proportion_z@d0": {
+    "en": "2000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
+   },
+   "fair.two_proportion_z@d1": {
+    "en": "2000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en log-odds (una brecha de tasa de selección sobre 8 puntos)"
+   },
+   "fair.two_proportion_z@null": {
+    "en": "2000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
+   },
+   "ifrs9.stage_migration_backtest@d0": {
+    "en": "three stages, 4000, 1500 and 500 accounts; the test's null holds at its boundary",
+    "es": "tres etapas, 4.000, 1.500 y 500 cuentas; la nula de la prueba se cumple en su frontera"
+   },
+   "ifrs9.stage_migration_backtest@d1": {
+    "en": "three stages, 4000, 1500 and 500 accounts; the stage 1 to stage 2 migration is 9.5%, not the predicted 8% (stage 1 staying 88.5%)",
+    "es": "tres etapas, 4.000, 1.500 y 500 cuentas; la migración de etapa 1 a etapa 2 es 9,5%, no el 8% predicho (la etapa 1 permanece 88,5%)"
+   },
+   "ifrs9.stage_migration_backtest@null": {
+    "en": "three stages, 4000, 1500 and 500 accounts; the test's null holds at its boundary",
+    "es": "tres etapas, 4.000, 1.500 y 500 cuentas; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.downturn_coverage@d0": {
+    "en": "150 downturn workouts, estimate 0.45; the test's null holds at its boundary",
+    "es": "150 recuperaciones de ciclo bajo, estimación 0,45; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.downturn_coverage@d1": {
+    "en": "150 downturn workouts, estimate 0.45; the mean realised downturn LGD is 5 points above the 0.45 estimate",
+    "es": "150 recuperaciones de ciclo bajo, estimación 0,45; la LGD de ciclo bajo realizada es en promedio 5 puntos sobre la estimación de 0,45"
+   },
+   "lgd_ead.downturn_coverage@null": {
+    "en": "150 downturn workouts, estimate 0.45; the test's null holds at its boundary",
+    "es": "150 recuperaciones de ciclo bajo, estimación 0,45; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.lgd_calibration_by_segment@d0": {
+    "en": "one segment, 250 workouts; the test's null holds at its boundary",
+    "es": "un segmento, 250 recuperaciones; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.lgd_calibration_by_segment@d1": {
+    "en": "one segment, 250 workouts; the realised LGD is 5 points above the predicted one on average",
+    "es": "un segmento, 250 recuperaciones; la LGD realizada es en promedio 5 puntos sobre la predicha"
+   },
+   "lgd_ead.lgd_calibration_by_segment@null": {
+    "en": "one segment, 250 workouts; the test's null holds at its boundary",
+    "es": "un segmento, 250 recuperaciones; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.lgd_calibration_over_time@d0": {
+    "en": "five default years, 60 workouts each; the test's null holds at its boundary",
+    "es": "cinco años de incumplimiento, 60 recuperaciones cada uno; la nula de la prueba se cumple en su frontera"
+   },
+   "lgd_ead.lgd_calibration_over_time@d1": {
+    "en": "five default years, 60 workouts each; in the last of five years the realised LGD is 10 points above the predicted one",
+    "es": "cinco años de incumplimiento, 60 recuperaciones cada uno; en el último de cinco años la LGD realizada es 10 puntos sobre la predicha"
+   },
+   "lgd_ead.lgd_calibration_over_time@null": {
+    "en": "five default years, 60 workouts each; the test's null holds at its boundary",
+    "es": "cinco años de incumplimiento, 60 recuperaciones cada uno; la nula de la prueba se cumple en su frontera"
+   },
+   "market.acerbi_szekely@d0": {
+    "en": "250 days at 2.5%; normal losses with their true VaR and ES",
+    "es": "250 días al 2,5%; pérdidas normales con su VaR y ES verdaderos"
+   },
+   "market.acerbi_szekely@d1": {
+    "en": "250 days at 2.5%; the realised losses are 1.25 times as dispersed as the VaR and ES forecasts say",
+    "es": "250 días al 2,5%; las pérdidas realizadas son 1,25 veces más dispersas de lo que dicen los pronósticos de VaR y ES"
+   },
+   "market.acerbi_szekely@null": {
+    "en": "250 days at 2.5%; normal losses with their true VaR and ES",
+    "es": "250 días al 2,5%; pérdidas normales con su VaR y ES verdaderos"
+   },
+   "market.christoffersen_conditional_coverage@d0": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.christoffersen_conditional_coverage@d1": {
+    "en": "1500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "1.500 días al 5%; tras una excedencia sigue otra con probabilidad 15%, no 5% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.christoffersen_conditional_coverage@null": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.christoffersen_independence@d0": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.christoffersen_independence@d1": {
+    "en": "1500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "1.500 días al 5%; tras una excedencia sigue otra con probabilidad 15%, no 5% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.christoffersen_independence@null": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.du_escanciano_conditional@d0": {
+    "en": "2000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10%; PIT uniformes"
+   },
+   "market.du_escanciano_conditional@d1": {
+    "en": "2000 days at 10%; the tail PITs (below 0.10) cluster: one follows another with probability 20%, not 10%",
+    "es": "2.000 días al 10%; los PIT de cola (bajo 0,10) se agrupan: uno sigue a otro con probabilidad 20%, no 10%"
+   },
+   "market.du_escanciano_conditional@null": {
+    "en": "2000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10%; PIT uniformes"
+   },
+   "market.du_escanciano_unconditional@d0": {
+    "en": "2000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10%; PIT uniformes"
+   },
+   "market.du_escanciano_unconditional@d1": {
+    "en": "2000 days at 10%; the lower tail has too much mass (u = r^1.05: 11.2% of the PITs below 0.10, not 10%)",
+    "es": "2.000 días al 10%; la cola inferior tiene demasiada masa (u = r^1,05: 11,2% de los PIT bajo 0,10, no 10%)"
+   },
+   "market.du_escanciano_unconditional@null": {
+    "en": "2000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10%; PIT uniformes"
+   },
+   "market.duration_test@d0": {
+    "en": "400 days at 5%; independent hits at 5%",
+    "es": "400 días al 5%; excedencias independientes al 5%"
+   },
+   "market.duration_test@d1": {
+    "en": "400 days at 5%; a hit is followed by a hit with probability 40%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "400 días al 5%; tras una excedencia sigue otra con probabilidad 40%, no 5% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.duration_test@null": {
+    "en": "400 days at 5%; independent hits at 5%",
+    "es": "400 días al 5%; excedencias independientes al 5%"
+   },
+   "market.dynamic_quantile_test#1@d0": {
+    "en": "250 days at 1%; independent hits",
+    "es": "250 días al 1%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test#1@d1": {
+    "en": "250 days at 1%; a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "250 días al 1%; tras una excedencia sigue otra con probabilidad 10%, no 1% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.dynamic_quantile_test#1@null": {
+    "en": "250 days at 1%; independent hits",
+    "es": "250 días al 1%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test#2@d0": {
+    "en": "250 days at 2.5%; independent hits",
+    "es": "250 días al 2,5%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test#2@d1": {
+    "en": "250 days at 2.5%; a hit is followed by a hit with probability 15%, not 2.5% (clustered exceedances at the same hit rate)",
+    "es": "250 días al 2,5%; tras una excedencia sigue otra con probabilidad 15%, no 2,5% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.dynamic_quantile_test#2@null": {
+    "en": "250 days at 2.5%; independent hits",
+    "es": "250 días al 2,5%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test#3@d0": {
+    "en": "750 days at 1%; independent hits",
+    "es": "750 días al 1%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test#3@d1": {
+    "en": "750 days at 1%; a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "750 días al 1%; tras una excedencia sigue otra con probabilidad 10%, no 1% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.dynamic_quantile_test#3@null": {
+    "en": "750 days at 1%; independent hits",
+    "es": "750 días al 1%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test@d0": {
+    "en": "1500 days at 5%; independent hits",
+    "es": "1.500 días al 5%; excedencias independientes"
+   },
+   "market.dynamic_quantile_test@d1": {
+    "en": "1500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "1.500 días al 5%; tras una excedencia sigue otra con probabilidad 15%, no 5% (excedencias agrupadas con la misma tasa)"
+   },
+   "market.dynamic_quantile_test@null": {
+    "en": "1500 days at 5%; independent hits",
+    "es": "1.500 días al 5%; excedencias independientes"
+   },
+   "market.kupiec_pof@d0": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.kupiec_pof@d1": {
+    "en": "1500 days at 5%; the VaR is exceeded 1.3 times too often (a hit rate of 6.5%, not 5%)",
+    "es": "1.500 días al 5%; el VaR se excede 1,3 veces más de lo debido (una tasa de excedencia de 6,5%, no 5%)"
+   },
+   "market.kupiec_pof@null": {
+    "en": "1500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5%; excedencias independientes al 5%"
+   },
+   "market.mcneil_frey_residual_test@d0": {
+    "en": "2500 days at 5%, 125 exceedances expected; the test's null holds at its boundary",
+    "es": "2.500 días al 5%, 125 excedencias esperadas; la nula de la prueba se cumple en su frontera"
+   },
+   "market.mcneil_frey_residual_test@d1": {
+    "en": "2500 days at 5%, 125 exceedances expected; the ES forecast is 95% of the true 5% expected shortfall of a normal loss (mean residual 0.103)",
+    "es": "2.500 días al 5%, 125 excedencias esperadas; el pronóstico de ES es 95% del expected shortfall verdadero al 5% de una pérdida normal (residuo medio 0,103)"
+   },
+   "market.mcneil_frey_residual_test@null": {
+    "en": "2500 days at 5%, 125 exceedances expected; the test's null holds at its boundary",
+    "es": "2.500 días al 5%, 125 excedencias esperadas; la nula de la prueba se cumple en su frontera"
+   },
+   "ml.conformal_coverage@d0": {
+    "en": "2000 test rows, 90% coverage; drift 0",
+    "es": "2.000 filas de prueba, cobertura 90%; deriva 0"
+   },
+   "ml.conformal_coverage@d1": {
+    "en": "2000 test rows, 90% coverage; log-odds drift 0.5 between calibration and test",
+    "es": "2.000 filas de prueba, cobertura 90%; deriva de 0,5 en log-odds entre calibración y prueba"
+   },
+   "ml.conformal_coverage@null": {
+    "en": "2000 test rows, 90% coverage; drift 0",
+    "es": "2.000 filas de prueba, cobertura 90%; deriva 0"
+   },
+   "ml.shift_resilience@d0": {
+    "en": "2000 development rows, a quarter worst-subsample share; shift 0",
+    "es": "2.000 filas de desarrollo, un cuarto en el peor subconjunto; desplazamiento 0"
+   },
+   "ml.shift_resilience@d1": {
+    "en": "2000 development rows, a quarter worst-subsample share; a quarter of the rows shifted 3 sd on feature 0",
+    "es": "2.000 filas de desarrollo, un cuarto en el peor subconjunto; un cuarto de las filas desplazado 3 desviaciones estándar en la variable 0"
+   },
+   "ml.shift_resilience@null": {
+    "en": "2000 development rows, a quarter worst-subsample share; shift 0",
+    "es": "2.000 filas de desarrollo, un cuarto en el peor subconjunto; desplazamiento 0"
+   },
+   "pd.binomial@k1": {
+    "en": "5,000 obligors, PD applied 2%, true 2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+   },
+   "pd.binomial@k1.1": {
+    "en": "5,000 obligors, PD applied 2%, true 2.2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+   },
+   "pd.binomial@k1.25": {
+    "en": "5,000 obligors, PD applied 2%, true 2.5%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+   },
+   "pd.binomial@k1.5": {
+    "en": "5,000 obligors, PD applied 2%, true 3%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+   },
+   "pd.binomial@k2": {
+    "en": "5,000 obligors, PD applied 2%, true 4%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+   },
+   "pd.binomial@k3": {
+    "en": "5,000 obligors, PD applied 2%, true 6%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+   },
+   "pd.binomial@null": {
+    "en": "1,000 obligors, PD 1%, independent",
+    "es": "1.000 deudores, PD 1%, independientes"
+   },
+   "pd.binomial@rho0": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 0%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+   },
+   "pd.binomial@rho0.02": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 2%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+   },
+   "pd.binomial@rho0.05": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 5%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+   },
+   "pd.binomial@rho0.1": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 10%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+   },
+   "pd.binomial@rho0.15": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 15%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+   },
+   "pd.binomial@rho0.2": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 20%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+   },
+   "pd.binomial_vasicek@k1": {
+    "en": "5,000 obligors, PD applied 2%, true 2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+   },
+   "pd.binomial_vasicek@k1.1": {
+    "en": "5,000 obligors, PD applied 2%, true 2.2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+   },
+   "pd.binomial_vasicek@k1.25": {
+    "en": "5,000 obligors, PD applied 2%, true 2.5%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+   },
+   "pd.binomial_vasicek@k1.5": {
+    "en": "5,000 obligors, PD applied 2%, true 3%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+   },
+   "pd.binomial_vasicek@k2": {
+    "en": "5,000 obligors, PD applied 2%, true 4%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+   },
+   "pd.binomial_vasicek@k3": {
+    "en": "5,000 obligors, PD applied 2%, true 6%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+   },
+   "pd.binomial_vasicek@null": {
+    "en": "1,000 obligors, PD 1%, correlation 12% assumed and true",
+    "es": "1.000 deudores, PD 1%, correlación 12% supuesta y verdadera"
+   },
+   "pd.binomial_vasicek@rho0": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 0%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+   },
+   "pd.binomial_vasicek@rho0.02": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 2%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+   },
+   "pd.binomial_vasicek@rho0.05": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 5%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+   },
+   "pd.binomial_vasicek@rho0.1": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 10%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+   },
+   "pd.binomial_vasicek@rho0.15": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 15%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+   },
+   "pd.binomial_vasicek@rho0.2": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 20%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+   },
+   "pd.chi2_grades@k1": {
+    "en": "seven grades, every true PD 1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1 veces la del grado"
+   },
+   "pd.chi2_grades@k1.1": {
+    "en": "seven grades, every true PD 1.1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,1 veces la del grado"
+   },
+   "pd.chi2_grades@k1.25": {
+    "en": "seven grades, every true PD 1.25 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,25 veces la del grado"
+   },
+   "pd.chi2_grades@k1.5": {
+    "en": "seven grades, every true PD 1.5 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,5 veces la del grado"
+   },
+   "pd.chi2_grades@k2": {
+    "en": "seven grades, every true PD 2 times its grade PD",
+    "es": "siete grados, cada PD verdadera 2 veces la del grado"
+   },
+   "pd.chi2_grades@k3": {
+    "en": "seven grades, every true PD 3 times its grade PD",
+    "es": "siete grados, cada PD verdadera 3 veces la del grado"
+   },
+   "pd.chi2_grades@null": {
+    "en": "seven grades, 5 to 32 expected defaults each",
+    "es": "siete grados, 5 a 32 incumplimientos esperados cada uno"
+   },
+   "pd.chi2_grades@rho0": {
+    "en": "seven grades, one factor, correlation 0%",
+    "es": "siete grados, un factor, correlación 0%"
+   },
+   "pd.chi2_grades@rho0.02": {
+    "en": "seven grades, one factor, correlation 2%",
+    "es": "siete grados, un factor, correlación 2%"
+   },
+   "pd.chi2_grades@rho0.05": {
+    "en": "seven grades, one factor, correlation 5%",
+    "es": "siete grados, un factor, correlación 5%"
+   },
+   "pd.chi2_grades@rho0.1": {
+    "en": "seven grades, one factor, correlation 10%",
+    "es": "siete grados, un factor, correlación 10%"
+   },
+   "pd.chi2_grades@rho0.15": {
+    "en": "seven grades, one factor, correlation 15%",
+    "es": "siete grados, un factor, correlación 15%"
+   },
+   "pd.chi2_grades@rho0.2": {
+    "en": "seven grades, one factor, correlation 20%",
+    "es": "siete grados, un factor, correlación 20%"
+   },
+   "pd.chi2_grades@swap0": {
+    "en": "grades 3 and 4 true PDs moved 0 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0 del camino una sobre otra"
+   },
+   "pd.chi2_grades@swap0.2": {
+    "en": "grades 3 and 4 true PDs moved 0.2 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,2 del camino una sobre otra"
+   },
+   "pd.chi2_grades@swap0.4": {
+    "en": "grades 3 and 4 true PDs moved 0.4 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,4 del camino una sobre otra"
+   },
+   "pd.chi2_grades@swap0.6": {
+    "en": "grades 3 and 4 true PDs moved 0.6 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,6 del camino una sobre otra"
+   },
+   "pd.chi2_grades@swap0.8": {
+    "en": "grades 3 and 4 true PDs moved 0.8 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,8 del camino una sobre otra"
+   },
+   "pd.chi2_grades@swap1": {
+    "en": "grades 3 and 4 true PDs moved 1 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 1 del camino una sobre otra"
+   },
+   "pd.chi2_grades@thin": {
+    "en": "a best grade expecting 0.6 defaults",
+    "es": "un mejor grado que espera 0,6 incumplimientos"
+   },
+   "pd.default_profile@k1": {
+    "en": "seven grades, every true PD 1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1 veces la del grado"
+   },
+   "pd.default_profile@k1.1": {
+    "en": "seven grades, every true PD 1.1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,1 veces la del grado"
+   },
+   "pd.default_profile@k1.25": {
+    "en": "seven grades, every true PD 1.25 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,25 veces la del grado"
+   },
+   "pd.default_profile@k1.5": {
+    "en": "seven grades, every true PD 1.5 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,5 veces la del grado"
+   },
+   "pd.default_profile@k2": {
+    "en": "seven grades, every true PD 2 times its grade PD",
+    "es": "siete grados, cada PD verdadera 2 veces la del grado"
+   },
+   "pd.default_profile@k3": {
+    "en": "seven grades, every true PD 3 times its grade PD",
+    "es": "siete grados, cada PD verdadera 3 veces la del grado"
+   },
+   "pd.default_profile@null": {
+    "en": "seven grades; Monte Carlo p-value of 2,000 draws",
+    "es": "siete grados; valor p de Monte Carlo con 2.000 sorteos"
+   },
+   "pd.default_profile@swap0": {
+    "en": "grades 3 and 4 true PDs moved 0 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0 del camino una sobre otra"
+   },
+   "pd.default_profile@swap0.2": {
+    "en": "grades 3 and 4 true PDs moved 0.2 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,2 del camino una sobre otra"
+   },
+   "pd.default_profile@swap0.4": {
+    "en": "grades 3 and 4 true PDs moved 0.4 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,4 del camino una sobre otra"
+   },
+   "pd.default_profile@swap0.6": {
+    "en": "grades 3 and 4 true PDs moved 0.6 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,6 del camino una sobre otra"
+   },
+   "pd.default_profile@swap0.8": {
+    "en": "grades 3 and 4 true PDs moved 0.8 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,8 del camino una sobre otra"
+   },
+   "pd.default_profile@swap1": {
+    "en": "grades 3 and 4 true PDs moved 1 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 1 del camino una sobre otra"
+   },
+   "pd.hosmer_lemeshow@fitted": {
+    "en": "the same, with G - 2 degrees of freedom (the model fitted on the same sample)",
+    "es": "lo mismo, con G - 2 grados de libertad (el modelo ajustado sobre la misma muestra)"
+   },
+   "pd.hosmer_lemeshow@k1": {
+    "en": "5,000 obligors, every model odds divided by 1",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1"
+   },
+   "pd.hosmer_lemeshow@k1.1": {
+    "en": "5,000 obligors, every model odds divided by 1.1",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,1"
+   },
+   "pd.hosmer_lemeshow@k1.25": {
+    "en": "5,000 obligors, every model odds divided by 1.25",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,25"
+   },
+   "pd.hosmer_lemeshow@k1.5": {
+    "en": "5,000 obligors, every model odds divided by 1.5",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,5"
+   },
+   "pd.hosmer_lemeshow@k2": {
+    "en": "5,000 obligors, every model odds divided by 2",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 2"
+   },
+   "pd.hosmer_lemeshow@k3": {
+    "en": "5,000 obligors, every model odds divided by 3",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 3"
+   },
+   "pd.hosmer_lemeshow@null": {
+    "en": "5,000 obligors, mean PD 5%, PDs given (G = 10)",
+    "es": "5.000 deudores, PD media 5%, PD dadas (G = 10)"
+   },
+   "pd.hosmer_lemeshow@rho0": {
+    "en": "5,000 obligors, one factor, correlation 0%",
+    "es": "5.000 deudores, un factor, correlación 0%"
+   },
+   "pd.hosmer_lemeshow@rho0.02": {
+    "en": "5,000 obligors, one factor, correlation 2%",
+    "es": "5.000 deudores, un factor, correlación 2%"
+   },
+   "pd.hosmer_lemeshow@rho0.05": {
+    "en": "5,000 obligors, one factor, correlation 5%",
+    "es": "5.000 deudores, un factor, correlación 5%"
+   },
+   "pd.hosmer_lemeshow@rho0.1": {
+    "en": "5,000 obligors, one factor, correlation 10%",
+    "es": "5.000 deudores, un factor, correlación 10%"
+   },
+   "pd.hosmer_lemeshow@rho0.15": {
+    "en": "5,000 obligors, one factor, correlation 15%",
+    "es": "5.000 deudores, un factor, correlación 15%"
+   },
+   "pd.hosmer_lemeshow@rho0.2": {
+    "en": "5,000 obligors, one factor, correlation 20%",
+    "es": "5.000 deudores, un factor, correlación 20%"
+   },
+   "pd.hosmer_lemeshow@s0": {
+    "en": "5,000 obligors, covariates shifted by 0 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0 DE, el modelo correcto"
+   },
+   "pd.hosmer_lemeshow@s0.05": {
+    "en": "5,000 obligors, covariates shifted by 0.05 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
+   },
+   "pd.hosmer_lemeshow@s0.1": {
+    "en": "5,000 obligors, covariates shifted by 0.1 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
+   },
+   "pd.hosmer_lemeshow@s0.2": {
+    "en": "5,000 obligors, covariates shifted by 0.2 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
+   },
+   "pd.hosmer_lemeshow@s0.3": {
+    "en": "5,000 obligors, covariates shifted by 0.3 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
+   },
+   "pd.hosmer_lemeshow@s0.5": {
+    "en": "5,000 obligors, covariates shifted by 0.5 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
+   },
+   "pd.jeffreys@k1": {
+    "en": "5,000 obligors, PD applied 2%, true 2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+   },
+   "pd.jeffreys@k1.1": {
+    "en": "5,000 obligors, PD applied 2%, true 2.2%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+   },
+   "pd.jeffreys@k1.25": {
+    "en": "5,000 obligors, PD applied 2%, true 2.5%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+   },
+   "pd.jeffreys@k1.5": {
+    "en": "5,000 obligors, PD applied 2%, true 3%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+   },
+   "pd.jeffreys@k2": {
+    "en": "5,000 obligors, PD applied 2%, true 4%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+   },
+   "pd.jeffreys@k3": {
+    "en": "5,000 obligors, PD applied 2%, true 6%",
+    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+   },
+   "pd.jeffreys@null": {
+    "en": "1,000 obligors, PD 1%, independent",
+    "es": "1.000 deudores, PD 1%, independientes"
+   },
+   "pd.jeffreys@rho0": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 0%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+   },
+   "pd.jeffreys@rho0.02": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 2%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+   },
+   "pd.jeffreys@rho0.05": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 5%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+   },
+   "pd.jeffreys@rho0.1": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 10%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+   },
+   "pd.jeffreys@rho0.15": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 15%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+   },
+   "pd.jeffreys@rho0.2": {
+    "en": "1,000 obligors, PD 1% right, asset correlation 20%",
+    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+   },
+   "pd.normal_multiperiod@k1": {
+    "en": "five years, PD applied 3%, true 3%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3%"
+   },
+   "pd.normal_multiperiod@k1.1": {
+    "en": "five years, PD applied 3%, true 3.3%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3,3%"
+   },
+   "pd.normal_multiperiod@k1.25": {
+    "en": "five years, PD applied 3%, true 3.75%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3,75%"
+   },
+   "pd.normal_multiperiod@k1.5": {
+    "en": "five years, PD applied 3%, true 4.5%",
+    "es": "cinco años, PD aplicada 3%, verdadera 4,5%"
+   },
+   "pd.normal_multiperiod@k2": {
+    "en": "five years, PD applied 3%, true 6%",
+    "es": "cinco años, PD aplicada 3%, verdadera 6%"
+   },
+   "pd.normal_multiperiod@k3": {
+    "en": "five years, PD applied 3%, true 9%",
+    "es": "cinco años, PD aplicada 3%, verdadera 9%"
+   },
+   "pd.normal_multiperiod@null": {
+    "en": "five independent years of 1,000 obligors at PD 3%",
+    "es": "cinco años independientes de 1.000 deudores con PD 3%"
+   },
+   "pd.normal_multiperiod@rho0": {
+    "en": "five years, correlation 0% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 0% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.normal_multiperiod@rho0.02": {
+    "en": "five years, correlation 2% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 2% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.normal_multiperiod@rho0.05": {
+    "en": "five years, correlation 5% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 5% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.normal_multiperiod@rho0.1": {
+    "en": "five years, correlation 10% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 10% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.normal_multiperiod@rho0.15": {
+    "en": "five years, correlation 15% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 15% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.normal_multiperiod@rho0.2": {
+    "en": "five years, correlation 20% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 20% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.spiegelhalter@k1": {
+    "en": "5,000 obligors, every model odds divided by 1",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1"
+   },
+   "pd.spiegelhalter@k1.1": {
+    "en": "5,000 obligors, every model odds divided by 1.1",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,1"
+   },
+   "pd.spiegelhalter@k1.25": {
+    "en": "5,000 obligors, every model odds divided by 1.25",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,25"
+   },
+   "pd.spiegelhalter@k1.5": {
+    "en": "5,000 obligors, every model odds divided by 1.5",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,5"
+   },
+   "pd.spiegelhalter@k2": {
+    "en": "5,000 obligors, every model odds divided by 2",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 2"
+   },
+   "pd.spiegelhalter@k3": {
+    "en": "5,000 obligors, every model odds divided by 3",
+    "es": "5,000 deudores, cada razón de chances del modelo dividida por 3"
+   },
+   "pd.spiegelhalter@null": {
+    "en": "5,000 obligors, mean PD 5%",
+    "es": "5.000 deudores, PD media 5%"
+   },
+   "pd.spiegelhalter@rho0": {
+    "en": "5,000 obligors, one factor, correlation 0%",
+    "es": "5.000 deudores, un factor, correlación 0%"
+   },
+   "pd.spiegelhalter@rho0.02": {
+    "en": "5,000 obligors, one factor, correlation 2%",
+    "es": "5.000 deudores, un factor, correlación 2%"
+   },
+   "pd.spiegelhalter@rho0.05": {
+    "en": "5,000 obligors, one factor, correlation 5%",
+    "es": "5.000 deudores, un factor, correlación 5%"
+   },
+   "pd.spiegelhalter@rho0.1": {
+    "en": "5,000 obligors, one factor, correlation 10%",
+    "es": "5.000 deudores, un factor, correlación 10%"
+   },
+   "pd.spiegelhalter@rho0.15": {
+    "en": "5,000 obligors, one factor, correlation 15%",
+    "es": "5.000 deudores, un factor, correlación 15%"
+   },
+   "pd.spiegelhalter@rho0.2": {
+    "en": "5,000 obligors, one factor, correlation 20%",
+    "es": "5.000 deudores, un factor, correlación 20%"
+   },
+   "pd.spiegelhalter@s0": {
+    "en": "5,000 obligors, covariates shifted by 0 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0 DE, el modelo correcto"
+   },
+   "pd.spiegelhalter@s0.05": {
+    "en": "5,000 obligors, covariates shifted by 0.05 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
+   },
+   "pd.spiegelhalter@s0.1": {
+    "en": "5,000 obligors, covariates shifted by 0.1 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
+   },
+   "pd.spiegelhalter@s0.2": {
+    "en": "5,000 obligors, covariates shifted by 0.2 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
+   },
+   "pd.spiegelhalter@s0.3": {
+    "en": "5,000 obligors, covariates shifted by 0.3 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
+   },
+   "pd.spiegelhalter@s0.5": {
+    "en": "5,000 obligors, covariates shifted by 0.5 SD, the model right",
+    "es": "5,000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
+   },
+   "pd.traffic_lights@k1": {
+    "en": "five years, PD applied 3%, true 3%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3%"
+   },
+   "pd.traffic_lights@k1.1": {
+    "en": "five years, PD applied 3%, true 3.3%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3,3%"
+   },
+   "pd.traffic_lights@k1.25": {
+    "en": "five years, PD applied 3%, true 3.75%",
+    "es": "cinco años, PD aplicada 3%, verdadera 3,75%"
+   },
+   "pd.traffic_lights@k1.5": {
+    "en": "five years, PD applied 3%, true 4.5%",
+    "es": "cinco años, PD aplicada 3%, verdadera 4,5%"
+   },
+   "pd.traffic_lights@k2": {
+    "en": "five years, PD applied 3%, true 6%",
+    "es": "cinco años, PD aplicada 3%, verdadera 6%"
+   },
+   "pd.traffic_lights@k3": {
+    "en": "five years, PD applied 3%, true 9%",
+    "es": "cinco años, PD aplicada 3%, verdadera 9%"
+   },
+   "pd.traffic_lights@null": {
+    "en": "five independent years, the printed tie rule",
+    "es": "cinco años independientes, la regla de empates impresa"
+   },
+   "pd.traffic_lights@rho0": {
+    "en": "five years, correlation 0% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 0% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@rho0.02": {
+    "en": "five years, correlation 2% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 2% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@rho0.05": {
+    "en": "five years, correlation 5% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 5% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@rho0.1": {
+    "en": "five years, correlation 10% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 10% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@rho0.15": {
+    "en": "five years, correlation 15% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 15% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@rho0.2": {
+    "en": "five years, correlation 20% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 20% en el año, correlación del factor 0,2 entre años"
+   },
+   "pd.traffic_lights@upper": {
+    "en": "the upper tie rule WP14's simulation used",
+    "es": "la regla de empates superior que usó la simulación de WP14"
+   },
+   "portfolio.crp_recursion_vs_mc@d0": {
+    "en": "2000 scenarios, 400 obligors in five exposure bands; the test's null holds at its boundary",
+    "es": "2.000 escenarios, 400 deudores en cinco bandas de exposición; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.crp_recursion_vs_mc@d1": {
+    "en": "2000 scenarios, 400 obligors in five exposure bands; the sample has sector variance 0.6, the recursion's pmf 0.5 (loss variance 172 units against 150)",
+    "es": "2.000 escenarios, 400 deudores en cinco bandas de exposición; la muestra tiene varianza sectorial 0,6, la pmf de la recursión 0,5 (varianza de pérdida 172 unidades contra 150)"
+   },
+   "portfolio.crp_recursion_vs_mc@null": {
+    "en": "2000 scenarios, 400 obligors in five exposure bands; the test's null holds at its boundary",
+    "es": "2.000 escenarios, 400 deudores en cinco bandas de exposición; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.mc_convergence@d0": {
+    "en": "20000 scenarios, the 99% quantile of the LHP loss rate; the test's null holds at its boundary",
+    "es": "20.000 escenarios, el cuantil 99% de la tasa de pérdida LHP; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.mc_convergence@d1": {
+    "en": "20000 scenarios, the 99% quantile of the LHP loss rate; the run simulates correlation 0.13, the anchor is the closed form at 0.12 (quantile 0.0964 against 0.0917)",
+    "es": "20.000 escenarios, el cuantil 99% de la tasa de pérdida LHP; la corrida simula correlación 0,13, el ancla es la forma cerrada con 0,12 (cuantil 0,0964 contra 0,0917)"
+   },
+   "portfolio.mc_convergence@null": {
+    "en": "20000 scenarios, the 99% quantile of the LHP loss rate; the test's null holds at its boundary",
+    "es": "20.000 escenarios, el cuantil 99% de la tasa de pérdida LHP; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.tail_backtest#1@d0": {
+    "en": "250 years at the 99% level; the test's null holds at its boundary",
+    "es": "250 años al nivel 99%; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.tail_backtest#1@d1": {
+    "en": "250 years at the 99% level; the true asset correlation is 0.30, the fit says 0.12 (the 99% quantile is exceeded 4.29% of the years, not 1%)",
+    "es": "250 años al nivel 99%; la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 99% se excede en 4,29% de los años, no 1%)"
+   },
+   "portfolio.tail_backtest#1@null": {
+    "en": "250 years at the 99% level; the test's null holds at its boundary",
+    "es": "250 años al nivel 99%; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.tail_backtest@d0": {
+    "en": "60 years at the 95% level; the test's null holds at its boundary",
+    "es": "60 años al nivel 95%; la nula de la prueba se cumple en su frontera"
+   },
+   "portfolio.tail_backtest@d1": {
+    "en": "60 years at the 95% level; the true asset correlation is 0.30, the fit says 0.12 (the 95% quantile is exceeded 9.12% of the years, not 5%)",
+    "es": "60 años al nivel 95%; la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 95% se excede en 9,12% de los años, no 5%)"
+   },
+   "portfolio.tail_backtest@null": {
+    "en": "60 years at the 95% level; the test's null holds at its boundary",
+    "es": "60 años al nivel 95%; la nula de la prueba se cumple en su frontera"
+   },
+   "rating.hhi@c0": {
+    "en": "0% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "0% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@c0.01": {
+    "en": "1% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "1% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@c0.02": {
+    "en": "2% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "2% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@c0.05": {
+    "en": "5% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "5% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@c0.1": {
+    "en": "10% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "10% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@c0.5": {
+    "en": "50% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "50% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "rating.hhi@null": {
+    "en": "ten grades, 5,000 obligors, the initial distribution unchanged",
+    "es": "diez grados, 5.000 deudores, la distribución inicial sin cambio"
+   },
+   "rating.markov_order@null": {
+    "en": "five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain",
+    "es": "cinco grados e incumplimiento, 1.000 deudores cada uno, cinco instantáneas anuales de una cadena de Markov"
+   },
+   "rating.markov_order@null-20000": {
+    "en": "the same chain, 20,000 repetitions: the order test's size measured to 0.15 points",
+    "es": "la misma cadena, 20.000 repeticiones: el tamaño de la prueba de orden medido a 0,15 puntos"
+   },
+   "rating.matrix_reference@null": {
+    "en": "the first year's counts against the chain's own one-year matrix",
+    "es": "los conteos del primer año contra la matriz anual de la propia cadena"
+   },
+   "rating.migration_ztests@null": {
+    "en": "seven grades, 500 obligors each, one cell at the boundary",
+    "es": "siete grados, 500 deudores cada uno, una celda en la frontera"
+   },
+   "rating.migration_ztests@r1-n2000": {
+    "en": "grade 4 to grade 2 at 1 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r1-n500": {
+    "en": "grade 4 to grade 2 at 1 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.migration_ztests@r1.25-n2000": {
+    "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1.25 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r1.25-n500": {
+    "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1.25 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.migration_ztests@r1.5-n2000": {
+    "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1.5 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r1.5-n500": {
+    "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1.5 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.migration_ztests@r2-n2000": {
+    "en": "grade 4 to grade 2 at 2 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 2 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r2-n500": {
+    "en": "grade 4 to grade 2 at 2 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 2 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.migration_ztests@r3-n2000": {
+    "en": "grade 4 to grade 2 at 3 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 3 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r3-n500": {
+    "en": "grade 4 to grade 2 at 3 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 3 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.migration_ztests@r4-n2000": {
+    "en": "grade 4 to grade 2 at 4 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 4 veces grado 4 a grado 3; 2.000 deudores por grado"
+   },
+   "rating.migration_ztests@r4-n500": {
+    "en": "grade 4 to grade 2 at 4 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 4 veces grado 4 a grado 3; 500 deudores por grado"
+   },
+   "rating.momentum@null": {
+    "en": "the same paths: no momentum (c = 0)",
+    "es": "las mismas trayectorias: sin momentum (c = 0)"
+   },
+   "rating.time_homogeneity@null": {
+    "en": "five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain",
+    "es": "cinco grados e incumplimiento, 1.000 deudores cada uno, cinco instantáneas anuales de una cadena de Markov"
+   },
+   "stability.chi2@c0": {
+    "en": "0% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "0% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@c0.01": {
+    "en": "1% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "1% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@c0.02": {
+    "en": "2% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "2% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@c0.05": {
+    "en": "5% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "5% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@c0.1": {
+    "en": "10% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "10% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@c0.5": {
+    "en": "50% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "50% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+   },
+   "stability.chi2@null": {
+    "en": "two samples of 1,000, ten population deciles",
+    "es": "dos muestras de 1.000, diez deciles poblacionales"
+   },
+   "stability.chi2@s0": {
+    "en": "two samples of 1,000, the current shifted by 0 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+   },
+   "stability.chi2@s0.05": {
+    "en": "two samples of 1,000, the current shifted by 0.05 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+   },
+   "stability.chi2@s0.1": {
+    "en": "two samples of 1,000, the current shifted by 0.1 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+   },
+   "stability.chi2@s0.2": {
+    "en": "two samples of 1,000, the current shifted by 0.2 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+   },
+   "stability.chi2@s0.3": {
+    "en": "two samples of 1,000, the current shifted by 0.3 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+   },
+   "stability.chi2@s0.5": {
+    "en": "two samples of 1,000, the current shifted by 0.5 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+   },
+   "stability.csi@l0": {
+    "en": "the leaked feature shifted by 0 for defaulters in development",
+    "es": "la variable filtrada desplazada 0 para incumplidos en desarrollo"
+   },
+   "stability.csi@l0.25": {
+    "en": "the leaked feature shifted by 0.25 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,25 para incumplidos en desarrollo"
+   },
+   "stability.csi@l0.5": {
+    "en": "the leaked feature shifted by 0.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,5 para incumplidos en desarrollo"
+   },
+   "stability.csi@l1": {
+    "en": "the leaked feature shifted by 1 for defaulters in development",
+    "es": "la variable filtrada desplazada 1 para incumplidos en desarrollo"
+   },
+   "stability.csi@l1.5": {
+    "en": "the leaked feature shifted by 1.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 1,5 para incumplidos en desarrollo"
+   },
+   "stability.csi@l2": {
+    "en": "the leaked feature shifted by 2 for defaulters in development",
+    "es": "la variable filtrada desplazada 2 para incumplidos en desarrollo"
+   },
+   "stability.csi@null": {
+    "en": "two samples of 1,000, ten population deciles",
+    "es": "dos muestras de 1.000, diez deciles poblacionales"
+   },
+   "stability.ks@null": {
+    "en": "two samples of 1,000",
+    "es": "dos muestras de 1.000"
+   },
+   "stability.ks@s0": {
+    "en": "two samples of 1,000, the current shifted by 0 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+   },
+   "stability.ks@s0.05": {
+    "en": "two samples of 1,000, the current shifted by 0.05 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+   },
+   "stability.ks@s0.1": {
+    "en": "two samples of 1,000, the current shifted by 0.1 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+   },
+   "stability.ks@s0.2": {
+    "en": "two samples of 1,000, the current shifted by 0.2 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+   },
+   "stability.ks@s0.3": {
+    "en": "two samples of 1,000, the current shifted by 0.3 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+   },
+   "stability.ks@s0.5": {
+    "en": "two samples of 1,000, the current shifted by 0.5 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+   },
+   "stability.psi@n100": {
+    "en": "two samples of 100: the 0.10 and 0.25 rules of thumb",
+    "es": "dos muestras de 100: las reglas 0,10 y 0,25"
+   },
+   "stability.psi@null": {
+    "en": "two samples of 1,000, ten population deciles",
+    "es": "dos muestras de 1.000, diez deciles poblacionales"
+   },
+   "stability.psi@s0": {
+    "en": "two samples of 1,000, the current shifted by 0 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+   },
+   "stability.psi@s0.05": {
+    "en": "two samples of 1,000, the current shifted by 0.05 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+   },
+   "stability.psi@s0.1": {
+    "en": "two samples of 1,000, the current shifted by 0.1 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+   },
+   "stability.psi@s0.2": {
+    "en": "two samples of 1,000, the current shifted by 0.2 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+   },
+   "stability.psi@s0.3": {
+    "en": "two samples of 1,000, the current shifted by 0.3 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+   },
+   "stability.psi@s0.5": {
+    "en": "two samples of 1,000, the current shifted by 0.5 SD",
+    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+   }
+  }
+ },
+ "variants": {
+  "C01": {
+   "drift-moderate": {
+    "en": "Covariate drift, moderate",
+    "es": "Deriva de covariables, moderada"
+   },
+   "drift-severe": {
+    "en": "Covariate drift, severe",
+    "es": "Deriva de covariables, severa"
+   },
+   "german-twin": {
+    "en": "German Credit twin",
+    "es": "Gemelo German Credit"
+   },
+   "holdout": {
+    "en": "Holdout as observed",
+    "es": "Muestra reservada tal como se observa"
+   },
+   "label-noise": {
+    "en": "Label noise 5%",
+    "es": "Ruido de etiqueta 5 %"
+   },
+   "prior-shift": {
+    "en": "Prior shift x1.5",
+    "es": "Cambio de prior x1,5"
+   },
+   "small-sample": {
+    "en": "Small sample (2,000 rows)",
+    "es": "Muestra pequeña (2.000 filas)"
+   }
+  },
+  "C02": {
+   "h1": {
+    "en": "1-year file",
+    "es": "Archivo de 1 año"
+   },
+   "h2": {
+    "en": "2-year file",
+    "es": "Archivo de 2 años"
+   },
+   "h3": {
+    "en": "3-year file",
+    "es": "Archivo de 3 años"
+   },
+   "h4": {
+    "en": "4-year file",
+    "es": "Archivo de 4 años"
+   },
+   "h5": {
+    "en": "5-year file",
+    "es": "Archivo de 5 años"
+   },
+   "pooled": {
+    "en": "Pooled: the five files stacked",
+    "es": "Agrupada: los cinco archivos apilados"
+   }
+  },
+  "C03": {
+   "fy2006-07": {
+    "en": "Test cohort FY2006-07",
+    "es": "Cohorte de prueba AF2006-07"
+   },
+   "fy2008-10": {
+    "en": "Test cohort FY2008-10",
+    "es": "Cohorte de prueba AF2008-10"
+   },
+   "fy2011-14": {
+    "en": "Test cohort FY2011-14",
+    "es": "Cohorte de prueba AF2011-14"
+   },
+   "fy2015-17": {
+    "en": "Test cohort FY2015-17",
+    "es": "Cohorte de prueba AF2015-17"
+   },
+   "fy2018-20": {
+    "en": "Test cohort FY2018-20",
+    "es": "Cohorte de prueba AF2018-20"
+   }
+  },
+  "C04": {
+   "cycle": {
+    "en": "A recession year in a stable chain",
+    "es": "Un año de recesión en una cadena estable"
+   },
+   "fitch": {
+    "en": "Fitch's EU entity: CEREP's corporate cohorts",
+    "es": "Entidad UE de Fitch: cohortes corporativas de CEREP"
+   },
+   "markov": {
+    "en": "Markov chain: the estimators and tests against the truth",
+    "es": "Cadena de Markov: estimadores y pruebas contra la verdad"
+   },
+   "momentum": {
+    "en": "Rating momentum (dos Reis, Pfeuffer and Smith)",
+    "es": "Momentum de calificación (dos Reis, Pfeuffer y Smith)"
+   },
+   "moodys": {
+    "en": "Moody's EU entity: CEREP's corporate cohorts",
+    "es": "Entidad UE de Moody's: cohortes corporativas de CEREP"
+   },
+   "published": {
+    "en": "Published answers: three papers recomputed",
+    "es": "Respuestas publicadas: tres artículos recalculados"
+   },
+   "sp": {
+    "en": "S&P's EU entity: CEREP's corporate cohorts",
+    "es": "Entidad UE de S&P: cohortes corporativas de CEREP"
+   },
+   "thin": {
+    "en": "Thin cohorts: intervals for a PD by grade",
+    "es": "Cohortes delgadas: intervalos para una PD por grado"
+   },
+   "withdrawals": {
+    "en": "Informative withdrawals",
+    "es": "Retiros informativos"
+   }
+  },
+  "C05": {
+   "ldp-published": {
+    "en": "Low-default example of Pluto and Tasche",
+    "es": "Ejemplo de bajo incumplimiento de Pluto y Tasche"
+   },
+   "ldp-sim-0": {
+    "en": "Generated year without defaults",
+    "es": "Año generado sin incumplimientos"
+   },
+   "ldp-sim-1": {
+    "en": "Generated year with one default",
+    "es": "Año generado con un incumplimiento"
+   },
+   "ldp-sim-3": {
+    "en": "Generated year with three defaults",
+    "es": "Año generado con tres incumplimientos"
+   },
+   "sp-2010": {
+    "en": "S&P corporates, 2009 curve to 2010",
+    "es": "Corporativos S&P, curva 2009 a 2010"
+   },
+   "sp-2011": {
+    "en": "S&P corporates, 2009 curve to 2011",
+    "es": "Corporativos S&P, curva 2009 a 2011"
+   }
+  },
+  "C06": {
+   "rd-2006-12": {
+    "en": "Reporting date December 2006",
+    "es": "Fecha de reporte diciembre de 2006"
+   },
+   "rd-2008-12": {
+    "en": "Reporting date December 2008",
+    "es": "Fecha de reporte diciembre de 2008"
+   },
+   "rd-2010-12": {
+    "en": "Reporting date December 2010",
+    "es": "Fecha de reporte diciembre de 2010"
+   },
+   "rd-2019-12": {
+    "en": "Reporting date December 2019",
+    "es": "Fecha de reporte diciembre de 2019"
+   },
+   "rd-2020-06": {
+    "en": "Reporting date June 2020",
+    "es": "Fecha de reporte junio de 2020"
+   },
+   "rd-2023-06": {
+    "en": "Reporting date June 2023",
+    "es": "Fecha de reporte junio de 2023"
+   }
+  },
+  "C07": {
+   "base": {
+    "en": "Base",
+    "es": "Base"
+   },
+   "combined-severe": {
+    "en": "Combined severe",
+    "es": "Severo combinado"
+   },
+   "consumer-arrears-shock": {
+    "en": "Consumer arrears shock",
+    "es": "Shock de mora de consumo"
+   },
+   "house-price-fall": {
+    "en": "House price fall",
+    "es": "Caída del precio de viviendas"
+   },
+   "recession": {
+    "en": "Recession",
+    "es": "Recesión"
+   },
+   "uf-inflation-spike": {
+    "en": "UF inflation spike",
+    "es": "Alza de inflación UF"
+   }
+  },
+  "C08": {
+   "dc-2003-06": {
+    "en": "Default cohort 2003-06",
+    "es": "Cohorte de incumplimientos 2003-06"
+   },
+   "dc-2007-08": {
+    "en": "Default cohort 2007-08",
+    "es": "Cohorte de incumplimientos 2007-08"
+   },
+   "dc-2009-10": {
+    "en": "Default cohort 2009-10",
+    "es": "Cohorte de incumplimientos 2009-10"
+   },
+   "dc-2011-13": {
+    "en": "Default cohort 2011-13",
+    "es": "Cohorte de incumplimientos 2011-13"
+   },
+   "dc-2014-19": {
+    "en": "Default cohort 2014-19",
+    "es": "Cohorte de incumplimientos 2014-19"
+   },
+   "dc-2020-23": {
+    "en": "Default cohort 2020-23",
+    "es": "Cohorte de incumplimientos 2020-23"
+   }
+  },
+  "C09": {
+   "level-0": {
+    "en": "Level 0: no acceleration; the undrawn amount is drawn at a constant rate over the twelve months before default.",
+    "es": "Nivel 0: sin aceleración; el monto no utilizado se usa a ritmo constante en los doce meses previos al incumplimiento."
+   },
+   "level-1": {
+    "en": "Level 1: in the last 6 months before default the drawing rate is 1.25 times its earlier rate.",
+    "es": "Nivel 1: en los últimos 6 meses previos al incumplimiento el ritmo de uso es 1,25 veces el anterior."
+   },
+   "level-2": {
+    "en": "Level 2: in the last 6 months before default the drawing rate is 1.5 times its earlier rate.",
+    "es": "Nivel 2: en los últimos 6 meses previos al incumplimiento el ritmo de uso es 1,5 veces el anterior."
+   },
+   "level-3": {
+    "en": "Level 3: in the last 6 months before default the drawing rate is 2 times its earlier rate.",
+    "es": "Nivel 3: en los últimos 6 meses previos al incumplimiento el ritmo de uso es 2 veces el anterior."
+   },
+   "level-4": {
+    "en": "Level 4: in the last 6 months before default the drawing rate is 2.5 times its earlier rate.",
+    "es": "Nivel 4: en los últimos 6 meses previos al incumplimiento el ritmo de uso es 2,5 veces el anterior."
+   },
+   "level-5": {
+    "en": "Level 5: in the last 6 months before default the drawing rate is 3 times its earlier rate.",
+    "es": "Nivel 5: en los últimos 6 meses previos al incumplimiento el ritmo de uso es 3 veces el anterior."
+   }
+  },
+  "C10": {
+   "commercial-industrial": {
+    "en": "Commercial and industrial",
+    "es": "Comerciales e industriales"
+   },
+   "commercial-real-estate": {
+    "en": "Commercial real estate",
+    "es": "Inmobiliario comercial"
+   },
+   "credit-cards": {
+    "en": "Credit cards",
+    "es": "Tarjetas de crédito"
+   },
+   "grid-22": {
+    "en": "Correlation grid, 22 years",
+    "es": "Grilla de correlaciones, 22 años"
+   },
+   "grid-40": {
+    "en": "Correlation grid, 40 years",
+    "es": "Grilla de correlaciones, 40 años"
+   },
+   "other-consumer": {
+    "en": "Other consumer",
+    "es": "Otro consumo"
+   },
+   "residential": {
+    "en": "Residential real estate",
+    "es": "Crédito hipotecario residencial"
+   }
+  },
+  "C11": {
+   "calm-2004-06": {
+    "en": "Calm 2004 to 2006: the control window",
+    "es": "Calma 2004 a 2006: la ventana de control"
+   },
+   "equity-2007-09": {
+    "en": "Equity 2007 to 2009: the financial crisis",
+    "es": "Renta variable 2007 a 2009: la crisis financiera"
+   },
+   "equity-2020": {
+    "en": "Equity 2020: the pandemic crash",
+    "es": "Renta variable 2020: la caída de la pandemia"
+   },
+   "fx-2008": {
+    "en": "FX 2008: the euro against the dollar in the crisis",
+    "es": "Divisas 2008: el euro frente al dólar en la crisis"
+   },
+   "mixed-2023": {
+    "en": "Mixed 2023: the bank turmoil",
+    "es": "Mixta 2023: la turbulencia bancaria"
+   },
+   "rates-2022": {
+    "en": "Rates 2022: the hiking cycle",
+    "es": "Tasas 2022: el ciclo de alzas"
+   }
+  },
+  "C12": {
+   "csa-mpor-10d": {
+    "en": "CSA, MPoR 10 days",
+    "es": "CSA, MPoR de 10 días"
+   },
+   "csa-mpor-20d": {
+    "en": "CSA, MPoR 20 days",
+    "es": "CSA, MPoR de 20 días"
+   },
+   "netting-set": {
+    "en": "Netting set",
+    "es": "Conjunto de neteo"
+   },
+   "single-swap": {
+    "en": "Single swap",
+    "es": "Un solo swap"
+   },
+   "with-im": {
+    "en": "With initial margin",
+    "es": "Con margen inicial"
+   },
+   "wrong-way-risk": {
+    "en": "Wrong-way risk",
+    "es": "Riesgo de correlación adversa"
+   }
+  },
+  "C13": {
+   "missing-basis": {
+    "en": "Missing basis: the model leaves out the instrument basis",
+    "es": "Base omitida: el modelo omite la base del instrumento"
+   },
+   "none": {
+    "en": "No deficiency: the risk model is exact",
+    "es": "Sin deficiencia: el modelo de riesgo es exacto"
+   },
+   "omitted-factor": {
+    "en": "Omitted factor: the model leaves out a risk factor",
+    "es": "Factor omitido: el modelo omite un factor de riesgo"
+   },
+   "stale-volatility": {
+    "en": "Stale volatility: the model uses the volatility of 20 days ago",
+    "es": "Volatilidad rezagada: el modelo usa la volatilidad de hace 20 días"
+   },
+   "time-misalignment": {
+    "en": "Time misalignment: the risk-theoretical P&L is dated one day off",
+    "es": "Desfase temporal: el P&L teórico por riesgo está fechado un día desfasado"
+   },
+   "wrong-correlation": {
+    "en": "Wrong correlation: the model overstates the factor correlation by 0.3",
+    "es": "Correlación errónea: el modelo sobreestima la correlación de los factores en 0,3"
+   }
+  },
+  "C14": {
+   "vd-2021-q4": {
+    "en": "Valuation date 2021-12-31 (2021-Q4)",
+    "es": "Fecha de valoración 2021-12-31 (2021-Q4)"
+   },
+   "vd-2022-q2": {
+    "en": "Valuation date 2022-06-30 (2022-Q2)",
+    "es": "Fecha de valoración 2022-06-30 (2022-Q2)"
+   },
+   "vd-2022-q4": {
+    "en": "Valuation date 2022-12-31 (2022-Q4)",
+    "es": "Fecha de valoración 2022-12-31 (2022-Q4)"
+   }
+  },
+  "C15": {
+   "clp-steepener": {
+    "en": "CLP steepener",
+    "es": "Empinamiento CLP"
+   },
+   "cpi-surprise": {
+    "en": "CPI surprise +2.5 pp",
+    "es": "Sorpresa de IPC +2,5 pp"
+   },
+   "floors-active": {
+    "en": "Floors active",
+    "es": "Pisos activos"
+   },
+   "long-uf": {
+    "en": "Long UF",
+    "es": "UF largo"
+   },
+   "offset-on-off": {
+    "en": "CLP/CLF offset on and off",
+    "es": "Compensación CLP/CLF activada y desactivada"
+   },
+   "short-uf": {
+    "en": "Short UF",
+    "es": "UF corto"
+   }
+  },
+  "C16": {
+   "fast-run": {
+    "en": "2023 fast run",
+    "es": "Corrida rápida 2023"
+   },
+   "htm-losses": {
+    "en": "HTM losses in CBC",
+    "es": "Pérdidas HTM en el CBC"
+   },
+   "lcr-standard": {
+    "en": "LCR standard run-off",
+    "es": "LCR con salidas estándar"
+   },
+   "list-adverse": {
+    "en": "LiST adverse",
+    "es": "LiST adverso"
+   },
+   "list-extreme": {
+    "en": "LiST extreme",
+    "es": "LiST extremo"
+   },
+   "reverse-stress": {
+    "en": "Reverse stress",
+    "es": "Estrés inverso"
+   }
+  },
+  "C17": {
+   "xi-0-6": {
+    "en": "Tail index 0.6",
+    "es": "Índice de cola 0,6"
+   },
+   "xi-0-8": {
+    "en": "Tail index 0.8",
+    "es": "Índice de cola 0,8"
+   },
+   "xi-0-96": {
+    "en": "Tail index 0.96",
+    "es": "Índice de cola 0,96"
+   },
+   "xi-1-1": {
+    "en": "Tail index 1.1: no finite mean",
+    "es": "Índice de cola 1,1: sin media finita"
+   }
+  },
+  "C18": {
+   "baseline": {
+    "en": "Baseline (Fed 2026)",
+    "es": "Base (Fed 2026)"
+   },
+   "eba-2025-adverse": {
+    "en": "EBA 2025 adverse",
+    "es": "Adverso EBA 2025"
+   },
+   "fed-2026-severely-adverse": {
+    "en": "Fed 2026 severely adverse",
+    "es": "Severamente adverso Fed 2026"
+   },
+   "ngfs-delayed-transition": {
+    "en": "NGFS delayed transition",
+    "es": "Transición tardía NGFS"
+   },
+   "reverse-stress": {
+    "en": "Reverse stress",
+    "es": "Tensión inversa"
+   },
+   "t-copula-baseline": {
+    "en": "t-copula aggregation",
+    "es": "Agregación con cópula t"
+   }
+  },
+  "C20": {
+   "fed-shift": {
+    "en": "Fed corporate shift probes",
+    "es": "Sondas de desplazamiento corporativas de la Fed"
+   },
+   "leakage-planted": {
+    "en": "Planted leakage",
+    "es": "Fuga plantada"
+   },
+   "perturbation-grid": {
+    "en": "Perturbation grid",
+    "es": "Grilla de perturbación"
+   },
+   "seed-sweep": {
+    "en": "Seed sweep and reason-code stability",
+    "es": "Barrido de semillas y estabilidad de códigos de razón"
+   },
+   "sgcd-held-out": {
+    "en": "SGCD shocks the model has not seen (F4)",
+    "es": "Choques de SGCD que el modelo no ha visto (F4)"
+   },
+   "sgcd-seen": {
+    "en": "SGCD shocks the model has seen (F1 and F2)",
+    "es": "Choques de SGCD que el modelo ha visto (F1 y F2)"
+   }
+  },
+  "C21": {
+   "pair-2018-19": {
+    "en": "Fitted on 2018, confirmed on 2019",
+    "es": "Ajustado en 2018, confirmado en 2019"
+   },
+   "pair-2019-20": {
+    "en": "Fitted on 2019, confirmed on 2020",
+    "es": "Ajustado en 2019, confirmado en 2020"
+   },
+   "pair-2020-21": {
+    "en": "Fitted on 2020, confirmed on 2021",
+    "es": "Ajustado en 2020, confirmado en 2021"
+   },
+   "pair-2021-22": {
+    "en": "Fitted on 2021, confirmed on 2022",
+    "es": "Ajustado en 2021, confirmado en 2022"
+   },
+   "pair-2022-23": {
+    "en": "Fitted on 2022, confirmed on 2023",
+    "es": "Ajustado en 2022, confirmado en 2023"
+   },
+   "pair-2023-24": {
+    "en": "Fitted on 2023, confirmed on 2024",
+    "es": "Ajustado en 2023, confirmado en 2024"
+   }
+  },
+  "C22": {
+   "broken-monotonicity": {
+    "en": "Broken monotonicity",
+    "es": "Monotonía rota"
+   },
+   "clustering": {
+    "en": "Clustering: correlated defaults",
+    "es": "Agrupamiento de incumplimientos"
+   },
+   "concentration": {
+    "en": "Concentration in grades",
+    "es": "Concentración en grados"
+   },
+   "discrimination-decay": {
+    "en": "Discrimination decay",
+    "es": "Deterioro de la discriminación"
+   },
+   "drift": {
+    "en": "Drift: the population moved",
+    "es": "Deriva: la población se movió"
+   },
+   "leakage": {
+    "en": "Leakage of the outcome",
+    "es": "Filtración del resultado"
+   },
+   "miscalibration": {
+    "en": "Miscalibration: PDs too low",
+    "es": "Descalibración: PD subestimadas"
+   },
+   "null": {
+    "en": "The null: the model is right",
+    "es": "La nula: el modelo es correcto"
+   },
+   "other-families": {
+    "en": "The other families: power against the stated alternative",
+    "es": "Las otras familias: potencia contra la alternativa declarada"
+   }
+  }
+ }
+}

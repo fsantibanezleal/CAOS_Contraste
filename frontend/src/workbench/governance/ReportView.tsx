@@ -11,6 +11,7 @@ import type { Text } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, ConventionNote, Doc, GovernanceDoc } from './common';
 import { OpinionCard } from './OpinionBlock';
+import { rowWhere, testText, variantName } from '../names';
 import { GOVERNANCE_FILES, OPINION_NAME, STATUS_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
 
 type Block = ReportSection['blocks'][number];
@@ -53,15 +54,17 @@ function PolicyCell({ row }: { row: OutcomeRow }) {
   );
 }
 
-function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string }) {
+/** The test rows of one variant, each test, model and segment in words (U16-R2b: no raw id where a name exists). */
+function OutcomesTable({ rows, variant, caseId }: { rows: OutcomeRow[]; variant: string; caseId: string }) {
   const lang = useShellLang();
   const num = (v: number | null) => formatNumber(v, lang, { digits: 4 });
+  const where = (r: OutcomeRow) => pick(rowWhere(caseId, r.model_id, r.segment) ?? { en: '-', es: '-' }, lang);
   return (
     <div className="ct-fade-scroll" style={{ maxHeight: 420, minWidth: 0 }} data-outcomes={variant}>
       <table className="caos-table" data-state="ready">
         <caption className="ct-note">
           {pick({ en: 'Test rows of the variant ', es: 'Filas de prueba de la variante ' }, lang)}
-          <span translate="no">{variant}</span>
+          {pick(variantName(caseId, variant) ?? { en: variant, es: variant }, lang)}
         </caption>
         <thead>
           <tr>
@@ -78,18 +81,10 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
           {rows.map((r, i) => (
             <tr key={i} data-test={r.test_id} data-light={r.light}>
               <td className="caos-col-text">
-                <span translate="no">{r.test_id}</span>
-                <span className="ct-narrow-only" translate="no">
-                  {r.model_id ?? '-'}
-                  {r.segment ? `, ${r.segment}` : ''}
-                </span>
+                {pick(testText(r.test_id), lang)}
+                <span className="ct-narrow-only">{where(r)}</span>
               </td>
-              <td className="caos-col-text ct-wide-only">
-                <span translate="no">
-                  {r.model_id ?? '-'}
-                  {r.segment ? `, ${r.segment}` : ''}
-                </span>
-              </td>
+              <td className="caos-col-text ct-wide-only">{where(r)}</td>
               <td>{num(r.statistic)}</td>
               <td>{num(r.p_value)}</td>
               <td>{num(r.metric)}</td>
@@ -107,7 +102,7 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
   );
 }
 
-function BlockView({ block }: { block: Block }) {
+function BlockView({ block, caseId }: { block: Block; caseId: string }) {
   const lang = useShellLang();
   if (block.kind === 'text') return <p><Doc t={block.text} /></p>;
   if (block.kind === 'list')
@@ -118,7 +113,7 @@ function BlockView({ block }: { block: Block }) {
         ))}
       </ul>
     );
-  if (block.kind === 'outcomes') return <OutcomesTable rows={block.rows} variant={block.variant_id} />;
+  if (block.kind === 'outcomes') return <OutcomesTable rows={block.rows} variant={block.variant_id} caseId={caseId} />;
   const cell = (v: string | number | boolean | null, column?: string): string => {
     if (typeof v === 'number') return formatNumber(v, lang, { digits: 4 });
     if (v === null) return pick({ en: 'not available', es: 'no disponible' }, lang);
@@ -156,7 +151,7 @@ function BlockView({ block }: { block: Block }) {
 }
 
 /** One of the twelve sections: filled with its inputs, or absent with its reason; what the template asks for and the product lacks is listed as missing. */
-export function SectionView({ section }: { section: ReportSection }) {
+export function SectionView({ section, caseId = '' }: { section: ReportSection; caseId?: string }) {
   const lang = useShellLang();
   const opinion = 'opinion' in section ? section.opinion : null;
   const level = 'opinion_level' in section ? section.opinion_level : null;
@@ -181,7 +176,7 @@ export function SectionView({ section }: { section: ReportSection }) {
         </p>
       )}
       {section.blocks.map((b, i) => (
-        <BlockView key={i} block={b} />
+        <BlockView key={i} block={b} caseId={caseId} />
       ))}
       {opinion && <OpinionCard opinion={opinion} />}
       {section.missing.length > 0 && (
@@ -229,7 +224,7 @@ export function ReportDocument({ report }: { report: GovReport }) {
       </p>
       <AsOf asOf={report.as_of} basis={report.as_of_basis} />
       {report.sections.map((s) => (
-        <SectionView key={s.number} section={s} />
+        <SectionView key={s.number} section={s} caseId={report.entry_key.split('/')[0]} />
       ))}
     </article>
   );

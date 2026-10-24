@@ -9,6 +9,7 @@ import { ChartOverTable, axisScale, compactMoney, pct } from './format';
 import { columnScale } from './amounts';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { truthStatusText } from '../c05/selection';
+import { evidenceText } from '../names';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, settingText, type C06Outputs, type C06Sel } from './selection';
 
 const LIVE = 'live' as const;
@@ -100,7 +101,8 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
                     <span className="ct-narrow-only">{pick({ en: 'Status: ', es: 'Estado: ' }, lang)}{pick(STATUS_TEXT[f.status], lang)}</span>
                     <ul className="ct-evidence">
                       {f.evidence.map((e) => (
-                        <li key={e}>{e.startsWith('design:') ? `${pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}${e.slice(7)}` : e}</li>
+                        // every key in words: the test, its model and segment, a design limit (U16-R2b: no raw id where a name exists)
+                        <li key={e}>{evidenceText(e, { caseId: variant.case_id, models: variant.model }, lang)}</li>
                       ))}
                     </ul>
                   </td>

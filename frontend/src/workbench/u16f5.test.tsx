@@ -254,7 +254,9 @@ describe('b12 m6 and m7: the report wording and the narrow outcomes table', () =
   });
   it('the test cell carries the model and the segment for a phone (the column is wide-only)', () => {
     const markup = html(<ReportDocument report={report} />);
-    expect(markup).toMatch(/<td class="caos-col-text">\s*<span translate="no">pd\.jeffreys<\/span>\s*<span class="ct-narrow-only"/);
+    // the test in words, then its model and segment in words for a phone (U16-R2b: no raw id where a name exists)
+    expect(markup).toMatch(/<td class="caos-col-text">Jeffreys<span class="ct-narrow-only">P\d[^<]*, portfolio<\/span>/);
+    expect(markup).not.toMatch(/>pd\.jeffreys</);
   });
   it('a scroll box of the report fades its end like every other', () => {
     expect(text('./governance/ReportView.tsx')).not.toMatch(/maxHeight: (360|420), overflow: 'auto'/);

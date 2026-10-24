@@ -8,7 +8,7 @@ import { LIGHT_TEXT, relight } from '../lib/policy';
 import { useFindingsShares } from '../lib/useMedia';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
-import { designLimit } from './c01Text';
+import { evidenceText } from './names';
 
 const SEVERITY_TEXT = {
   S1: { en: 'S1 critical', es: 'S1 crítico' },
@@ -28,24 +28,23 @@ function Evidence({ f, sel, number }: { f: Finding; sel: Selection; number: Map<
   return (
     <ul className="ct-evidence">
       {f.evidence.map((e) => {
-        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{pick(designLimit(e.slice(7)), lang)}</li>;
+        const ctx = { caseId: 'C01', models: sel.data.variant.model };
+        if (e.startsWith('design:')) return <li key={e}>{evidenceText(e, ctx, lang)}</li>;
         if (e.startsWith('contract:')) {
           const rule = e.slice(9);
           const n = Object.values(sel.data.manifest.contract).reduce((a, c) => a + (c.by_rule.flagged[rule] ?? 0), 0);
           return (
             <li key={e}>
-              {pick({ en: 'Contract 1 rule ', es: 'Regla del contrato 1 ' }, lang)}
-              {rule}: {formatNumber(n, lang)} {pick({ en: 'records flagged', es: 'registros marcados' }, lang)}
+              {evidenceText(e, ctx, lang)}: {formatNumber(n, lang)} {pick({ en: 'records flagged', es: 'registros marcados' }, lang)}
             </li>
           );
         }
-        const [testId, model] = e.split('@');
         const row = cited(sel, e);
         const k = number.get(`${f.id}|${e}`);
         return (
           <li key={e}>
             {k ? `[${k}] ` : ''}
-            {testId} ({model}): {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
+            {evidenceText(e, ctx, lang)}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
           </li>
         );
       })}

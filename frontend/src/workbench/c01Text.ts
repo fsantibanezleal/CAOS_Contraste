@@ -2,6 +2,7 @@
 // money is in, the unit of a feature, a PLTR rule, a design limit. A Spanish view prints each in Spanish, with the
 // decimal sign and the grouping of the shell's es-CL (U16-R2, PR-C01); a name this file does not know prints as written.
 import { formatNumber } from '@fasl-work/caos-app-shell';
+import { DESIGN_LIMITS } from './names/design';
 
 /** A text in both languages. */
 export type Bi = { en: string; es: string };
@@ -63,13 +64,10 @@ export function ruleText(rule: string, lang: 'en' | 'es'): string {
     .join(' y ');
 }
 
-const DESIGN_LIMIT: Record<string, Bi> = {
-  'single-snapshot': { en: 'the data is a single snapshot', es: 'los datos son una sola foto' },
-};
-
-/** A design limit a finding cites (`design:<id>`) in words; an id not listed here prints as written. */
+/** A design limit a finding cites (`design:<id>`) in words, from the product's one map (names/design.ts); an id not listed there
+ * prints as written (the names gate fails on it). */
 export function designLimit(id: string): Bi {
-  return DESIGN_LIMIT[id] ?? same(id);
+  return DESIGN_LIMITS[id] ?? same(id);
 }
 
 const UCI_CC_BY = 'This dataset is licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.';

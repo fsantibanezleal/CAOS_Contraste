@@ -13,6 +13,7 @@ import { useFindingsShares } from '../../lib/useMedia';
 import { LightCell } from '../ValidationViews';
 import { testName } from '../c20/U14Common';
 import { REPLAY, provenanceOf } from '../model';
+import { evidenceText } from '../names';
 import { Pending } from '../Pending';
 import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
 
@@ -754,7 +755,7 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
                       {f.evidence.map((e) => {
                         const s = sim(e);
                         const k = number.get(`${f.id}|${e}`);
-                        return <li key={e}>{s ? `[${k}] ${pick(s.label, lang)}, ${pick(s.scenario, lang)}: ${rateText(s, r, lang)}` : e}</li>;
+                        return <li key={e}>{s ? `[${k}] ${pick(s.label, lang)}, ${pick(s.scenario, lang)}: ${rateText(s, r, lang)}` : evidenceText(e, { caseId: 'C22', models: v.model }, lang)}</li>;
                       })}
                     </ul>
                   </td>

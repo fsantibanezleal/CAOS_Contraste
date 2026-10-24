@@ -1,0 +1,261 @@
+// The names of every id a reader can meet in a finding's evidence or a tests table: tests, models, segments, design limits,
+// outputs blocks, rate configurations and contract rules (U16-R2b, the ruling of 2026-10-24: a raw id shown where the product
+// has a name is a blocker). The views of a case keep their own words where they have them; the Findings card of every case, the
+// governance views and every fallback read these, so no view prints an id. The names gate (names.test.ts) walks every committed
+// document and fails on any key these do not name.
+import type { Bi as BiText } from '../c03/U6Shared';
+import { HORIZON_LONG, SUBJECT_TEXT } from '../c12/selection';
+import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT } from '../c09/selection';
+import { ESTIMATOR_TEXT as C10_ESTIMATOR_TEXT } from '../c10/selection';
+import { LOAN_TEXT } from '../c18/selection';
+import { SHOCK_TEXT } from '../c20/selection';
+import { FIELD_TEXT, GROUP_TEXT } from '../c21/selection';
+import { DESIGN_LIMITS, OUTPUT_BLOCKS } from './design';
+import MODELS from './models.gen.json';
+import { TEST_NAMES } from './tests';
+
+export { DESIGN_LIMITS, OUTPUT_BLOCKS, TEST_NAMES };
+
+type Lang = 'en' | 'es';
+const bi = (en: string, es: string): BiText => ({ en, es });
+const join = (parts: Array<BiText | null | undefined>, sep = ', '): BiText => {
+  const xs = parts.filter((p): p is BiText => !!p);
+  return bi(xs.map((p) => p.en).join(sep), xs.map((p) => p.es).join(sep));
+};
+const num = (s: string, lang: Lang): string => (lang === 'es' ? s.replace('.', ',') : s);
+const GEN = MODELS as {
+  models: Record<string, Record<string, BiText>>;
+  rates: Record<string, Record<string, BiText>>;
+  variants: Record<string, Record<string, BiText>>;
+};
+
+/** A variant's title in its case manifest (for the views that load no manifest: the governance report). */
+export const variantName = (caseId: string, variantId: string): BiText | null => GEN.variants[caseId]?.[variantId] ?? null;
+
+/** A test row's model and segment in words ("P1 Scorecard, portfolio"), each part named or, failing that, left out. */
+export function rowWhere(caseId: string, modelId: string | null | undefined, segment: string | null | undefined, models?: NameContext['models']): BiText | null {
+  const ctx = { caseId, models };
+  const parts = [modelId ? modelName(modelId, ctx) : null, segment ? segmentName(segment, ctx) : null].filter((p): p is BiText => !!p);
+  return parts.length ? bi(parts.map((p) => p.en).join(', '), parts.map((p) => p.es).join(', ')) : null;
+}
+
+/** A test's name. A repeated test of a rate key (`market.dynamic_quantile_test#2`) adds its number; an id no map holds is null. */
+export function testName(id: string): BiText | null {
+  const m = /^(.*)#(\d+)$/.exec(id);
+  const base = TEST_NAMES[m ? m[1] : id];
+  if (!base) return null;
+  return m ? bi(`${base.en} (${Number(m[2]) + 1})`, `${base.es} (${Number(m[2]) + 1})`) : base;
+}
+
+/** A test's name, else the id: for a view that must print something; the names gate keeps this fallback unused. */
+export const testText = (id: string): BiText => testName(id) ?? bi(id, id);
+
+/** What the names of a case read: its id and, when the view loaded it, the document's own model list. */
+export interface NameContext {
+  caseId: string;
+  models?: ReadonlyArray<{ id: string; title?: BiText; short_title?: BiText }>;
+}
+
+/** C09's composed CCF ids (`ccf-<design>-<treatment>[-<estimator>]`, the bake's ead_models and fits) in C09's own words. */
+function c09Model(id: string): BiText | null {
+  const m = /^ccf-(fixed-horizon|cohort|variable-horizon)-(none|censor|floor-cap|bounded-scale)(?:-(mean|pooled))?$/.exec(id);
+  if (!m) return null;
+  const parts: BiText[] = [DESIGN_TEXT[m[1]], TREATMENT_TEXT[m[2]], ...(m[3] ? [ESTIMATOR_TEXT[m[3]]] : [])];
+  const low = (lang: Lang) => parts.map((p) => p[lang].toLowerCase()).join(', ');
+  return bi(`CCF, ${low('en')}`, `CCF, ${low('es')}`);
+}
+
+/** A model's name: the document's short title (or title), else the committed documents' table, else the case's composed form. */
+export function modelName(id: string, ctx: NameContext): BiText | null {
+  const own = ctx.models?.find((m) => m.id === id);
+  const fromDoc = own?.short_title && own.short_title.en !== id ? own.short_title : own?.title;
+  if (fromDoc && fromDoc.en !== id) return fromDoc;
+  const table = GEN.models[ctx.caseId]?.[id];
+  if (table) return table;
+  if (ctx.caseId === 'C09') return c09Model(id);
+  // C18's satellite of one loan class (c18/satellites: `c18-satellite-<loan>`), in C18's words for the class
+  const sat = ctx.caseId === 'C18' ? /^c18-satellite-(.+)$/.exec(id) : null;
+  if (sat && LOAN_TEXT[sat[1]]) return bi(`Satellite of ${LOAN_TEXT[sat[1]].en.toLowerCase()}`, `Satélite de ${LOAN_TEXT[sat[1]].es.toLowerCase()}`);
+  return null;
+}
+
+const SEGMENT_FIXED: Record<string, BiText> = {
+  portfolio: bi('portfolio', 'cartera'),
+  all: bi('whole book', 'toda la cartera'),
+  annual: bi('the annual cohorts', 'las cohortes anuales'),
+  semesters: bi('the semesters', 'los semestres'),
+  holdout: bi('holdout', 'muestra reservada'),
+  screen: bi('the leakage screen', 'el filtro de fuga'),
+  'train-vs-holdout': bi('training against holdout', 'entrenamiento contra muestra reservada'),
+  'shap-vs-ale-range': bi('SHAP against the ALE range', 'SHAP contra el rango de ALE'),
+  'window:pooled': bi('the windows pooled', 'las ventanas agrupadas'),
+  age: bi('age', 'edad'),
+  sex: bi('sex', 'sexo'),
+  marital_status: bi('marital status', 'estado civil'),
+  'minimum-transfer-amount-0': bi('minimum transfer amount 0', 'monto mínimo de transferencia 0'),
+};
+
+/** C20's Fed shift (`fed-higher-risk-x0.25`): the Fed's higher-risk portfolio drift at a multiple (c20/v_shift.py). */
+const fedShift = (k: string): BiText => bi(`the Fed higher-risk drift times ${num(k, 'en')}`, `la deriva de mayor riesgo de la Fed por ${num(k, 'es')}`);
+
+/** A segment of a test row or an evidence key in words; null when no form of the case matches (the gate fails on it). */
+export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
+  if (SEGMENT_FIXED[seg]) return SEGMENT_FIXED[seg];
+  let m: RegExpExecArray | null;
+  switch (ctx.caseId) {
+    case 'C04':
+      if (/^\d{4}$/.test(seg)) return bi(`cohort ${seg}`, `cohorte ${seg}`);
+      break;
+    case 'C05':
+      if (/^(AAA|AA|A|BBB|BB|B|CCC-C|C)$/.test(seg)) return bi(`grade ${seg}`, `grado ${seg}`);
+      break;
+    case 'C08':
+      if ((m = /^cohort-(\d{4})-(\d{2})$/.exec(seg))) {
+        const end = `${m[1].slice(0, 2)}${m[2]}`;
+        return bi(`the ${m[1]} to ${end} cohort`, `la cohorte ${m[1]} a ${end}`);
+      }
+      break;
+    case 'C10':
+      if ((m = /^lhp-like-([\d.]+)$/.exec(seg))) return bi(`the LHP anchor at ${num(m[1], 'en')}%`, `el ancla LHP al ${num(m[1], 'es')} %`);
+      if ((m = /^rho=([\d.]+)\/(maximum-likelihood|moments)$/.exec(seg))) {
+        const e = C10_ESTIMATOR_TEXT[m[2]];
+        return bi(`known correlation ${num(m[1], 'en')}, ${e.en.toLowerCase()}`, `correlación conocida ${num(m[1], 'es')}, ${e.es.toLowerCase()}`);
+      }
+      break;
+    case 'C12':
+      if ((m = /^(book|risk factor|risk-factor)-([0-9a-z]+?)(?:-q(\d+))?$/.exec(seg)) && HORIZON_LONG[m[2]]) {
+        const s = SUBJECT_TEXT[m[1] === 'book' ? 'book' : 'risk-factor'];
+        const subject = bi(s.en.charAt(0).toLowerCase() + s.en.slice(1), s.es.charAt(0).toLowerCase() + s.es.slice(1));
+        return join([subject, HORIZON_LONG[m[2]], m[3] ? bi(`quantile ${m[3]} %`, `cuantil ${m[3]} %`) : null]);
+      }
+      break;
+    case 'C17':
+      // the cell of the capital-stability grid: the years of history and the collection threshold (c17/documents.py cell_id)
+      if ((m = /^y(\d+)-h(\d+)$/.exec(seg))) {
+        const t = Number(m[2]);
+        return bi(`${m[1]} years of losses, threshold ${t.toLocaleString('en-US')}`, `${m[1]} años de pérdidas, umbral ${t.toLocaleString('es-CL')}`);
+      }
+      break;
+    case 'C02':
+      // the input of a CSI row, as the UCI file names its column (Attr27, and its missing-value indicator)
+      if ((m = /^characteristic:(Attr\d+)(_missing)?$/.exec(seg))) {
+        return m[2] ? bi(`input ${m[1]}, missing-value indicator`, `entrada ${m[1]}, indicador de valor faltante`) : bi(`input ${m[1]}`, `entrada ${m[1]}`);
+      }
+      break;
+    case 'C20':
+      if ((m = /^(\d+)-bootstrap-refits$/.exec(seg))) return bi(`${m[1]} bootstrap refits`, `${m[1]} reajustes bootstrap`);
+      if ((m = /^(?:(control-zeros-kept):)?preset-eps-([\d.]+)$/.exec(seg))) {
+        const base = bi(`preset noise scale ${num(m[2], 'en')}`, `escala de ruido predefinida ${num(m[2], 'es')}`);
+        return m[1] ? join([base, bi('control zeros kept', 'ceros de control conservados')]) : base;
+      }
+      if ((m = /^(shipped|applied):(F\d)$/.exec(seg)) && SHOCK_TEXT[m[2]]) {
+        const how = m[1] === 'shipped' ? bi('as shipped', 'como se entregan') : bi('applied by Contraste', 'aplicado por Contraste');
+        return join([SHOCK_TEXT[m[2]], how]);
+      }
+      if ((m = /^(?:window:)?fed-higher-risk-x([\d.]+)$/.exec(seg))) return fedShift(m[1]);
+      break;
+    case 'C21': {
+      // field | contrast | measure (c21 FindingsEvidence): "applicant_age|25-34 vs 35-44|controlled"
+      const [field, contrast, measure] = seg.split('|');
+      const f = FIELD_TEXT[field];
+      if (!f) break;
+      const c = contrast === undefined ? null : bi(contrastBi(contrast, 'en'), contrastBi(contrast, 'es'));
+      const how = measure === 'controlled' ? bi('controlled', 'controlado') : measure === 'rate_spread' ? bi('rate spread', 'diferencial de tasa') : null;
+      if (measure !== undefined && !how) break;
+      return join([f, c, how]);
+    }
+    default:
+      break;
+  }
+  return null;
+}
+
+/** A C21 contrast ("25-34 vs 35-44") with the groups in the language's words and "vs" as "frente a" in Spanish. */
+function contrastBi(label: string, lang: Lang): string {
+  const words = Object.entries(GROUP_TEXT).reduce((acc, [g, b]) => acc.replaceAll(g, b[lang]), label);
+  return lang === 'es' ? words.replace(' vs ', ' frente a ') : words;
+}
+
+/** A measured rate of a `rate:<test>@<config>` key: the test, then its configuration (C22's scenario from its documents, collected by
+ * scripts/gen-names.mjs; C04's from the key's tail). */
+export function rateName(key: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
+  const [test, tail = ''] = key.split('@');
+  const t = testName(test);
+  if (!t) return null;
+  const detail = rateDetail(ctx.caseId, key, tail);
+  return detail ? join([t, detail]) : null;
+}
+
+const RATE_TAIL: Record<string, BiText> = {
+  null: bi('under the null (its size)', 'bajo la hipótesis nula (su tamaño)'),
+  'form-chi2': bi('chi-square form, Markov chain', 'forma chi-cuadrado, cadena de Markov'),
+  'form-lr': bi('likelihood ratio form, Markov chain', 'forma de razón de verosimilitud, cadena de Markov'),
+};
+
+function rateDetail(caseId: string, key: string, tail: string): BiText | null {
+  const docs = GEN.rates[caseId]?.[key];
+  if (docs) return docs;
+  if (RATE_TAIL[tail]) return RATE_TAIL[tail];
+  let m: RegExpExecArray | null;
+  if ((m = /^k([\d.]+)$/.exec(tail))) return bi(`k = ${num(m[1], 'en')}`, `k = ${num(m[1], 'es')}`);
+  if ((m = /^alpha([\d.]+)$/.exec(tail))) return bi(`alpha = ${num(m[1], 'en')}`, `alfa = ${num(m[1], 'es')}`);
+  return null;
+}
+
+/** A contract rule a finding cites (`contract:<rule>`), from the rule's own text (data-pipeline/pipeline/cases/c01_features.py). */
+export const CONTRACT_RULES: Record<string, BiText> = {
+  'C01-EDU-CODE': bi('EDUCATION outside its documented codes (1 to 4)', 'EDUCATION fuera de sus códigos documentados (1 a 4)'),
+  'C01-PAY-CODE': bi('a repayment status outside its documented codes (-1, 1 to 9)', 'un estado de pago fuera de sus códigos documentados (-1, 1 a 9)'),
+};
+
+/** What an evidence key names, in words, and its parts (the caller adds the row's result: p value and light). */
+export interface EvidenceLabel {
+  kind: 'test' | 'design' | 'block' | 'rate' | 'contract';
+  text: BiText;
+  testId?: string;
+  modelId?: string;
+  segment?: string;
+}
+
+/** The words of one evidence key, or null for a key no form names (the names gate fails on it). */
+export function evidenceLabel(key: string, ctx: NameContext): EvidenceLabel | null {
+  if (key.startsWith('design:')) {
+    const id = key.slice(7);
+    if (DESIGN_LIMITS[id]) return { kind: 'design', text: join([bi('Design limit', 'Límite de diseño'), DESIGN_LIMITS[id]], ': ') };
+    if (OUTPUT_BLOCKS[id]) return { kind: 'block', text: join([bi('Computed in the bake from', 'Calculado previamente desde'), OUTPUT_BLOCKS[id]], ' ') };
+    return null;
+  }
+  if (key.startsWith('contract:')) {
+    const rule = CONTRACT_RULES[key.slice(9)];
+    return rule ? { kind: 'contract', text: join([bi('Contract 1 rule', 'Regla del contrato 1'), rule], ': ') } : null;
+  }
+  if (key.startsWith('rate:')) {
+    const text = rateName(key.slice(5), ctx);
+    return text ? { kind: 'rate', text } : null;
+  }
+  const [testId, modelId, ...rest] = key.split('@');
+  const t = testName(testId);
+  if (!t) return null;
+  const parts: BiText[] = [];
+  if (modelId !== undefined) {
+    const mn = modelName(modelId, ctx);
+    if (!mn) return null;
+    parts.push(mn);
+  }
+  const segment = rest.length ? rest.join('@') : undefined;
+  if (segment !== undefined) {
+    const sn = segmentName(segment, ctx);
+    if (!sn) return null;
+    parts.push(sn);
+  }
+  // the model and the segment in parentheses after the test; after a name that ends in its own parentheses, a comma
+  const wrap = (name: string, rest: string) => (name.endsWith(')') ? `${name}, ${rest}` : `${name} (${rest})`);
+  const text = parts.length ? bi(wrap(t.en, parts.map((p) => p.en).join(', ')), wrap(t.es, parts.map((p) => p.es).join(', '))) : t;
+  return { kind: 'test', text, testId, modelId, segment };
+}
+
+/** The words of an evidence key in a language, else the key: for a renderer; the names gate keeps the fallback unused. */
+export function evidenceText(key: string, ctx: NameContext, lang: Lang): string {
+  const l = evidenceLabel(key, ctx);
+  return l ? l.text[lang] : key;
+}

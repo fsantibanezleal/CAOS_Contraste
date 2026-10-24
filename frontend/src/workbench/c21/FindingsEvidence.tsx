@@ -131,7 +131,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
                         <td>{`${kind === 'odds-ratio' ? 'OR' : 'pp'} ${i + 1}`}</td>
                         <td className="ct-text ct-wide-only">{r.finding}</td>
                         <td className="ct-text">{`${pick(text(FIELD_TEXT, r.field), lang)}: ${contrastText(r.contrast, lang)}`}</td>
-                        <td>{r.metric === null ? `${formatNumber(null, lang)} (${r.id})` : f3(r.metric, lang)}</td>
+                        <td>{r.metric === null ? formatNumber(null, lang) : f3(r.metric, lang)}</td>
                       </tr>
                     )),
                 )}

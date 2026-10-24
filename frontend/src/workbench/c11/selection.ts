@@ -8,6 +8,7 @@ import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { TestRow } from '../../lib/contract.types';
 import type { Bi } from '../c03/U6Shared';
+import { testText } from '../names';
 
 export type C11Outputs = components['schemas']['c11Outputs'];
 export type C11Fit = components['schemas']['c11Fit'];
@@ -70,7 +71,7 @@ export const TEST_TEXT: Record<string, Bi> = {
   'market.desk_backtest': { en: 'Desk back-test', es: 'Backtest de mesa' },
   'market.pla_test': { en: 'P&L attribution test', es: 'Prueba de atribución de P&L' },
 };
-export const testName = (id: string): Bi => TEST_TEXT[id] ?? { en: id, es: id };
+export const testName = (id: string): Bi => TEST_TEXT[id] ?? testText(id);
 
 export const ZONE_TEXT: Record<string, Bi> = {
   green: { en: 'Green', es: 'Verde' },
