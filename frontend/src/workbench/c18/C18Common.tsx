@@ -22,6 +22,7 @@ import {
 } from './selection';
 import { phraseEs, unitEs } from './localise';
 import { testText } from '../names';
+import { variantName } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -387,7 +388,8 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.scenario_sources.map((s) => (
                 <tr key={s.scenario_id} data-scenario={s.scenario_id}>
-                  <td className="ct-text">{s.scenario_id}</td>
+                  {/* the scenario by its variant's title, never its id (the raw-id scan: eba-2025-adverse) */}
+                  <td className="ct-text">{pick(variantName('C18', s.scenario_id) ?? { en: s.scenario_id, es: s.scenario_id }, lang)}</td>
                   <td className="ct-text">{pick(text(PROVIDER_TEXT, s.provider), lang)}</td>
                   <td className="ct-text">{s.vintage_date}</td>
                   <td className="ct-text">{s.licence_class === 'derived-only' ? pick({ en: 'derived only', es: 'solo derivado' }, lang) : pick({ en: 'mirror allowed', es: 'espejo permitido' }, lang)}</td>
