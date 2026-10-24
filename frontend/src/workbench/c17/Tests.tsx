@@ -16,6 +16,8 @@ const nameOf = (id: string) => TEST_TEXT[id] ?? testText(id);
 export function C17TestsTable({ variant, host }: { variant: VariantArtifact; host: TestHost }) {
   const lang = useShellLang();
   const rows: TestRow[] = variant.tests.filter((t) => (TEST_VIEW[t.test_id] ?? 'ladder') === host);
+  // the ladder hosts only a test no other view takes: with none it shows no block, not a sentence that always says none (R2b c18 m-1)
+  if (host === 'ladder' && rows.length === 0) return null;
   return (
     <div data-block="tests">
       <p className="ct-note">
