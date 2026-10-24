@@ -17,9 +17,20 @@ const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color
 
 const ESTIMATOR = { 'kaplan-meier': 'Kaplan-Meier', 'aalen-johansen': 'Aalen-Johansen' } as const;
 
+/** The Spanish of the English strings of the models document the conversion table prints (the raw-id scan of 2026-10-24). */
+const DOC_ES: Record<string, string> = {
+  "one-factor Vasicek conversion (riskvalidation implied_z and ttc_to_pit): the factor of each past quarter from the book's realised default rate; each scenario's factor from the default rate the hazard rung implies for the book under that scenario; the satellite is the least-squares reduced form of the hazard rung":
+    'conversión de Vasicek de un factor (implied_z y ttc_to_pit de riskvalidation): el factor de cada trimestre pasado desde la tasa de incumplimiento realizada de la cartera; el factor de cada escenario desde la tasa de incumplimiento que el peldaño de riesgo implica para la cartera en ese escenario; el satélite es la forma reducida por mínimos cuadrados del peldaño de riesgo',
+  'charge-off severity proxy': 'aproximación por la severidad del castigo',
+  'original EIR, mid-period convention': 'TIE original, convención de mitad de periodo',
+  'the file has no balance: a term loan amortises as a level-payment annuity at its EIR over its term; a revolving line is carried at its full approval (conversion factor 1)':
+    'el archivo no trae saldo: un crédito a plazo se amortiza como una anualidad de cuota fija a su TIE durante su plazo; una línea revolvente se lleva a su aprobación completa (factor de conversión 1)',
+};
+
 /** The ladder of lifetime PD rungs, the one-factor conversion, LGD and EAD that the bake used (the models artifact). */
 export function LadderView({ sel }: { sel: C06Sel | null }) {
   const lang = useShellLang();
+  const es = (t: string) => (lang === 'es' ? DOC_ES[t] ?? t : t);
   const stateKey = useWorkbenchState()?.stateKey;
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
@@ -36,7 +47,8 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
   }
   const grid = unionX(...fit.ladder.map((r) => r.baseline.months));
   const series = fit.ladder.map((r, i) => ({
-    label: { en: `${r.rung_id} (${r.kind})`, es: `${r.rung_id} (${r.kind})` },
+    // the rung by its short title, never its id and kind (the raw-id scan: "L0-km (kaplan-meier)")
+    label: (sel.data.variant.model.find((m) => m.id === r.rung_id)?.short_title ?? { en: r.rung_id, es: r.rung_id }) as { en: string; es: string },
     values: alignTo(r.baseline.months, r.baseline.cumulative_pd, grid),
     color: COLORS[i % COLORS.length],
     width: 2,
@@ -97,16 +109,16 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               <tr data-row="pit">
                 <td className="ct-text">{pick({ en: 'Through the cycle to point in time', es: 'De a través del ciclo a puntual' }, lang)}</td>
-                <td>{`${fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</td>
+                <td>{`${lang === 'es' ? DOC_ES[fit.pit.method] ?? fit.pit.method : fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</td>
               </tr>
               <tr data-row="lgd">
                 <td className="ct-text">{pick({ en: 'LGD', es: 'LGD' }, lang)}</td>
-                <td>{`${fit.lgd.kind}, ${fit.lgd.discounting}: ${fit.lgd.segments.map((s) => `${s.segment_id} ${pct(s.lgd, lang, 0)}`).join(', ')}`}</td>
+                <td>{`${es(fit.lgd.kind)}, ${es(fit.lgd.discounting)}: ${fit.lgd.segments.map((s) => `${pick(segmentLabel(s.segment_id), lang)} ${pct(s.lgd, lang, 0)}`).join(', ')}`}</td>
               </tr>
               <tr data-row="ead">
                 <td className="ct-text">{pick({ en: 'EAD: revolving conversion factor', es: 'EAD: factor de conversión revolvente' }, lang)}</td>
                 <td>
-                  <MaybeNumber value={fit.ead.ccf_revolving} reason={fit.ead.reason} format={(v) => pct(v, lang, 0)} />
+                  <MaybeNumber value={fit.ead.ccf_revolving} reason={fit.ead.reason ? es(fit.ead.reason) : fit.ead.reason} format={(v) => pct(v, lang, 0)} />
                 </td>
               </tr>
             </tbody>
