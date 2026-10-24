@@ -13,7 +13,7 @@ import { useMedia } from '../../lib/useMedia';
 import { Fragment } from 'react';
 import { BA_CVA_DS, SECTORS, baCvaMismatches, riskWeight } from './bacva';
 import { saCcr, saCcrInputFrom, saCcrMismatches } from './saccr';
-import { NOT_SWAP, SHARE, UnavailableCard, cell, digits, years, DEFS_STYLE, Nw } from './C12Common';
+import { NOT_SWAP, NumbersCard, SHARE, UnavailableCard, cell, digits, years, DEFS_STYLE, Nw } from './C12Common';
 import { RATING_SHORT, RATING_TEXT, SECTOR_TEXT, amount, axisOf, collateralRange, committedCollateral, fitOf, liveBaCva, liveSaCcr, outputsOf, text, type C12Sel } from './selection';
 import { axisScale } from '../c06/format';
 
@@ -141,7 +141,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
     ...(moved ? [{ x: clamp(committed), label: { en: 'Committed collateral', es: 'Colateral del documento' } }] : []),
   ];
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={title}
@@ -152,9 +152,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
           es: `EAD = 1,4 (RC + PFE) (CRE52.1). La réplica calcula la clase de tasa de interés de CRE52 sobre los swaps de la cartera: duración supervisora, delta, factor de vencimiento, los tres tramos de vencimiento y la fórmula de compensación de CRE52.57, el multiplicador con su piso de 5 por ciento. Las otras cuatro clases de activos no tienen operaciones aquí. Mueva el colateral mantenido: el costo de reemplazo baja a cero y el multiplicador baja con la sobrecolateralización.`,
         }}
       >
-        <ChartOverTable
-          chart={
-            <UPlotChart
+                    <UPlotChart
               height="fill"
               x={{ values: xs.map((x) => x / ax.div), label: { en: `Collateral held (${pick(ax.unit, 'en')})`, es: `Colateral mantenido (${pick(ax.unit, 'es')})` }, format: { digits: 4 } }}
               y={{ label: { en: `EAD and its parts (${pick(ay.unit, 'en')})`, es: `EAD y sus partes (${pick(ay.unit, 'es')})` }, format: { digits: 4 } }}
@@ -165,8 +163,8 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
               ]}
               marks={marks}
             />
-          }
-        >
+      </PlotCard>
+      <NumbersCard card={card}>
           <p className="ct-note" data-parity={state} data-live-ead={live.ead} data-committed-ead={sa.ead.amount}>
             {pick(PARITY_TEXT[state], lang)}
             {state === 'mismatch' ? ` ${mism.join('; ')}` : ''}
@@ -228,8 +226,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
-        </ChartOverTable>
-      </PlotCard>
+      </NumbersCard>
     </ViewsRow>
   );
 }
@@ -352,7 +349,7 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
   const label = (i: number): BiText => (tenors ? { en: `${formatNumber(tenors[i], 'en', { digits: 4 })} y`, es: `${formatNumber(tenors[i], 'es', { digits: 4 })} a` } : { en: `Tenor ${i + 1}`, es: `Plazo ${i + 1}` });
   const axis = axisOf(g.weighted_sensitivities);
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={title}
@@ -362,10 +359,7 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
           es: `El cambio de valor por un punto base, dividido por 0,0001 (MAR21.19), por el ponderador de riesgo delta del plazo (MAR21.42), dividido por raíz de 2 como puede hacerlo el banco para una moneda especificada como USD (MAR21.44, una convención del caso); las sensibilidades ponderadas se agregan con las correlaciones de MAR21.46 en tres escenarios y el mayor es el cargo. El shock de curvatura es el ${p ? formatNumber(p.curvature_shock, 'es', { percent: true, decimals: 1 }) : formatNumber(null, 'es')} sin dividir (MAR21.99). Una cartera de swaps no tiene vega.`,
         }}
       >
-        <ChartOverTable
-          chartMin="15rem"
-          chart={
-            <BarChart
+                    <BarChart
               title={{ en: 'Weighted sensitivities by tenor', es: 'Sensibilidades ponderadas por plazo' }}
               height="fill"
               orientation="vertical"
@@ -373,8 +367,8 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
               data={g.weighted_sensitivities.map((v, i) => ({ id: `t${i}`, label: label(i), value: (Math.round(v) + 0) / axis.div, tone: v < 0 ? ('bad' as const) : ('accent' as const) }))}
               axis={{ label: { en: `Weighted sensitivity (${pick(axis.unit, 'en')})`, es: `Sensibilidad ponderada (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
             />
-          }
-        >
+      </PlotCard>
+      <NumbersCard card={card}>
           <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-girr">
             <dt>{pick({ en: 'Delta charge, divided and undivided (USD)', es: 'Cargo delta, dividido y sin dividir (USD)' }, lang)}</dt>
             <dd data-girr-charge={g.delta_charge.amount}><Nw>{`${cell(g.delta_charge.amount, lang)} / ${cell(g.delta_charge_undivided.amount, lang)}`}</Nw></dd>
@@ -407,8 +401,7 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
-        </ChartOverTable>
-      </PlotCard>
+      </NumbersCard>
     </ViewsRow>
   );
 }

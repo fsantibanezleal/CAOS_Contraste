@@ -32,7 +32,8 @@ export const VARIANT_TEXT: Record<string, Bi> = {
   'netting-set': { en: 'Netting set', es: 'Conjunto de neteo' },
   'csa-mpor-10d': { en: 'CSA, MPoR 10 days', es: 'CSA, MPoR de 10 días' },
   'csa-mpor-20d': { en: 'CSA, MPoR 20 days', es: 'CSA, MPoR de 20 días' },
-  'with-im': { en: 'CSA with initial margin', es: 'CSA con margen inicial' },
+  // the variant's own name, the one its selector shows (R2b c13 m5: "Con margen inicial" in the rail, "CSA con margen inicial" here)
+  'with-im': { en: 'With initial margin', es: 'Con margen inicial' },
   'wrong-way-risk': { en: 'Wrong-way risk', es: 'Riesgo de correlación adversa' },
 };
 export const BASIS_TEXT: Record<string, Bi> = {

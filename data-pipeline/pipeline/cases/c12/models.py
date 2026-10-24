@@ -40,10 +40,10 @@ def credit_curve_block() -> dict[str, Any]:
                                "al mismo plazo; la supervivencia es exp(-s t / LGD). Un spread de mercado AAA a A que incluye efectos de "
                                "liquidez e impuestos, un piso para calificaciones menores."),
             "source_url": HQM_URL, "licence_class": "mirror-allowed with citation",
-            "licence_basis": text("FRED tags the HQM series Public Domain: Citation Requested; the Treasury-side sentence is UNVERIFIED, so "
-                                  "every use cites the U.S. Department of the Treasury.",
-                                  "FRED etiqueta la serie HQM como Public Domain: Citation Requested; la frase del lado del Tesoro es "
-                                  "NO VERIFICADA, por lo que cada uso cita al Departamento del Tesoro de EE. UU."),
+            "licence_basis": text("FRED tags the HQM series Public Domain: Citation Requested; no Treasury page states the licence that we have "
+                                  "found, so every use cites the U.S. Department of the Treasury.",
+                                  "FRED etiqueta la serie HQM como Public Domain: Citation Requested; ninguna página del Tesoro que hayamos "
+                                  "encontrado indica la licencia, por lo que cada uso cita al Departamento del Tesoro de EE. UU."),
             "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread",
             "synthetic_spread": book.named_parameters(0)["counterparty_spread"]}
 

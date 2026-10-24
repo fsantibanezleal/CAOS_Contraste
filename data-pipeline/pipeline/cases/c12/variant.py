@@ -189,12 +189,12 @@ MEASURE_NOTE = text(
     "quantity the analytic swaption identity gives and the one ORE's own profile reproduces; the expectation in the simulation's "
     "own measure differs by the convexity gap. The discounted profiles feed the CVA. The PFE is the quantile of the simulated "
     "exposure in the simulation measure. Effective EE starts from zero: the current exposure is the replacement cost of the "
-    "sa_ccr block. EPE and EEPE are averages over the first year; their errors are batch errors of 20 antithetic batches.",
+    "SA-CCR block. EPE and EEPE are averages over the first year; their errors are batch errors of 20 antithetic batches.",
     "EE y ENE no están descontados (estilo Basilea) en la medida t-forward: el EE descontado del motor dividido por P(0, t), la "
     "cantidad que da la identidad analítica de la swaption y la que reproduce el perfil de ORE; la esperanza en la medida propia de "
     "la simulación difiere por la brecha de convexidad. Los perfiles descontados alimentan el CVA. El PFE es el cuantil de la "
     "exposición simulada en la medida de la simulación. El EE efectivo parte de cero: la exposición actual es el costo de "
-    "reemplazo del bloque sa_ccr. EPE y EEPE son promedios del primer año; sus errores son errores de 20 lotes antitéticos.")
+    "reemplazo del bloque SA-CCR. EPE y EEPE son promedios del primer año; sus errores son errores de 20 lotes antitéticos.")
 
 CSA_LIMIT = text("The Andersen, Pykhtin and Sokol timelines are not modelled. The minimum transfer amount acts on the balance of the "
                  "report grid; ORE margins on its own call schedule, so its effect is larger there (see the ORE rows).",
@@ -321,6 +321,8 @@ WHAT = {
     "ccr.ore_dim_agreement": ("the mean initial margin against ORE's dim_cube", "el margen inicial medio frente al dim_cube de ORE"),
 }
 #: the measures of a finding ("book", "risk factor", a reconciliation case) in Spanish (U16-R2 b06 B2: "(book)" in a Spanish title)
+#: the measure of a finding title in English words (the raw-id scan: "(minimum-transfer-amount-0)")
+MEASURE_EN = {"risk-factor": "risk factor", "minimum-transfer-amount-0": "minimum transfer amount 0"}
 MEASURE_ES = {"book": "cartera", "risk factor": "factor de riesgo", "risk-factor": "factor de riesgo",
               "minimum-transfer-amount-0": "monto mínimo de transferencia 0"}
 #: the light of a finding as a feminine adjective of "fila", singular and plural
@@ -344,11 +346,11 @@ def findings_of(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out = []
     for n, ((tid, light, measure), ids) in enumerate(sorted(groups.items()), start=1):
         en, es = WHAT.get(tid, (tid, tid))
-        tag = f" ({measure})" if measure else ""
+        tag = f" ({MEASURE_EN.get(measure, measure)})" if measure else ""
         tag_es = f" ({MEASURE_ES.get(measure, measure)})" if measure else ""
         n_rows = len(ids)
         row_es = "fila" if n_rows == 1 else "filas"
         light_es = ROW_LIGHT_ES[light][0 if n_rows == 1 else 1]
         out.append({"id": f"C12-F{n:02d}", "severity": SEVERITY[light], "status": "open", "evidence": ids,
-                    "title": text(f"{len(ids)} {light} row(s) on {en}{tag}", f"{number(n_rows, 0, lang='es')} {row_es} {light_es} sobre {es}{tag_es}")})
+                    "title": text(f"{len(ids)} {light} {'row' if n_rows == 1 else 'rows'} on {en}{tag}", f"{number(n_rows, 0, lang='es')} {row_es} {light_es} sobre {es}{tag_es}")})
     return out
