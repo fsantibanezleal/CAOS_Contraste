@@ -19,6 +19,7 @@ import {
   amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text, scenarioPhrase,
   type C16Fit, type C16Outputs, type C16Reverse, type C16Sel, type C16Survival,
 } from './selection';
+import { testText } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -125,7 +126,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
-                        {TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}
+                        {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
                         {t.segment === null ? null : <span className="ct-narrow-only" data-segment={t.segment}>{pick(text(SEGMENT_NAMES, t.segment), lang)}</span>}
                       </td>
                       <td className="ct-text ct-wide-only">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>

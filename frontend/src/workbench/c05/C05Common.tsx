@@ -7,6 +7,7 @@ import { C05WriteUp } from '../../content/cases/C05';
 import type { Finding, TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT, LIGHT_TONE, relight } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
+import { evidenceText } from '../names';
 import { Pending } from '../Pending';
 import { CASE1, approachShort, averageRiskWeight, isLdp, isSp, sourceText, truthStatusText, useLiveBounds, useLiveCurve, type C05Sel, type LdpVariant, type SpVariant } from './selection';
 
@@ -71,11 +72,12 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
                     {pick(f.title, lang)}
                     <ul className="ct-evidence">
                       {f.evidence.map((e) => {
-                        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{e.slice(7)}</li>;
+                        const words = evidenceText(e, { caseId: 'C05', models: v.model }, lang);
+                        if (e.startsWith('design:')) return <li key={e}>{words}</li>;
                         const row = findRow(v, e);
                         return (
                           <li key={e}>
-                            {e}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
+                            {words}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
                           </li>
                         );
                       })}

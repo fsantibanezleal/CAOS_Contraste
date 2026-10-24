@@ -7,6 +7,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { pct } from '../c06/format';
+import { testText } from '../names';
 
 export const LIVE: Lane = 'live';
 
@@ -138,7 +139,7 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                  <td className="ct-text" title={t.test_id}>{pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}</td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>

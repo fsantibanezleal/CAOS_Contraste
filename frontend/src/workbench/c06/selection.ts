@@ -3,6 +3,7 @@
 // is frozen), so moving a weight re-weights the per-scenario ECLs the document carries; nothing else is computed here.
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
+import { testText } from '../names';
 
 export type C06Outputs = components['schemas']['c06Outputs'];
 export type C06Fit = components['schemas']['c06Fit'];
@@ -22,7 +23,7 @@ export const IFRS9_TEST_TEXT: Record<string, { en: string; es: string }> = {
   'ifrs9.overlay_diagnostics': { en: 'Overlay diagnostics', es: 'Diagnóstico de los ajustes' },
   'ifrs9.reconciliation_identities': { en: 'Reconciliation identities', es: 'Identidades de conciliación' },
 };
-export const ifrs9TestText = (id: string): { en: string; es: string } => IFRS9_TEST_TEXT[id] ?? { en: id, es: id };
+export const ifrs9TestText = (id: string): { en: string; es: string } => IFRS9_TEST_TEXT[id] ?? testText(id);
 export const cohortText = (id: string): { en: string; es: string } => COHORT_TEXT[id] ?? { en: id, es: id };
 export const MOVEMENT_TEXT: Record<string, { en: string; es: string }> = {
   originations: { en: 'originations', es: 'originaciones' },

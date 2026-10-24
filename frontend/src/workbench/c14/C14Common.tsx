@@ -17,6 +17,7 @@ import {
   outputsOf, scaleUnit, scenarioFor, scenarioOf, shockOf, text, type C14Outputs, type C14Sel,
 } from './selection';
 import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise } from './localise';
+import { testText } from '../names';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
@@ -58,7 +59,7 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text">{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                  <td className="ct-text">{pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>

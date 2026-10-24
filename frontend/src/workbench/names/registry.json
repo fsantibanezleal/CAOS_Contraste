@@ -1,0 +1,675 @@
+{
+ "source": "riskvalidation 1.0.1, riskvalidation.core.registry.catalogue(); written by scripts/names_registry.py",
+ "tests": [
+  {
+   "test_id": "aggregation.copula_choice_sensitivity",
+   "name": "Copula choice sensitivity",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.correlation_stress",
+   "name": "Correlation stress",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.diversification_sign",
+   "name": "Diversification sign",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.elliptical_mc_agreement",
+   "name": "Elliptical MC agreement",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.horizon_confidence_consistency",
+   "name": "Horizon confidence consistency",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.rosenberg_schuermann_reference",
+   "name": "Rosenberg schuermann reference",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.simple_sum_and_variance_covariance",
+   "name": "Simple sum and variance covariance",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "aggregation.worst_case_bracket",
+   "name": "Worst case bracket",
+   "family": "aggregation"
+  },
+  {
+   "test_id": "ccr.cva_recomputed",
+   "name": "CVA recomputed",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.ee_analytic_vs_simulated",
+   "name": "EE analytic vs simulated",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.eepe_recomputed",
+   "name": "EEPE recomputed",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.martingale_discounted_bonds",
+   "name": "Martingale discounted bonds",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.path_convergence",
+   "name": "Path convergence",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.pfe_exceedance_backtest",
+   "name": "PFE exceedance back-test",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.pit_exposure_backtest",
+   "name": "PIT exposure back-test",
+   "family": "ccr"
+  },
+  {
+   "test_id": "ccr.reconcile_ee_profile",
+   "name": "Reconcile EE profile",
+   "family": "ccr"
+  },
+  {
+   "test_id": "disc.auc",
+   "name": "Area under the ROC curve",
+   "family": "discrimination"
+  },
+  {
+   "test_id": "disc.auc_vs_initial",
+   "name": "AUC against the AUC at initial validation",
+   "family": "discrimination"
+  },
+  {
+   "test_id": "disc.delong",
+   "name": "DeLong test of two correlated AUCs",
+   "family": "discrimination"
+  },
+  {
+   "test_id": "disc.ks",
+   "name": "Kolmogorov-Smirnov separation",
+   "family": "discrimination"
+  },
+  {
+   "test_id": "fair.adverse_impact",
+   "name": "Adverse impact",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.auc_by_group",
+   "name": "AUC by group",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.calibration_within_groups",
+   "name": "Calibration within groups",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.conditional_disparity",
+   "name": "Conditional disparity",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.demographic_parity",
+   "name": "Demographic parity",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.equal_opportunity",
+   "name": "Equal opportunity",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.equalized_odds",
+   "name": "Equalized odds",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.fisher_exact",
+   "name": "Fisher exact test",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.rate_spread_disparity",
+   "name": "Rate spread disparity",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.replication",
+   "name": "Replication",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.situation_testing",
+   "name": "Situation testing",
+   "family": "fairness"
+  },
+  {
+   "test_id": "fair.two_proportion_z",
+   "name": "Two-proportion z-test",
+   "family": "fairness"
+  },
+  {
+   "test_id": "gov.edges_acyclic",
+   "name": "Dependency graph acyclic",
+   "family": "governance"
+  },
+  {
+   "test_id": "gov.findings_overdue",
+   "name": "Overdue findings",
+   "family": "governance"
+  },
+  {
+   "test_id": "gov.inventory_completeness",
+   "name": "Inventory completeness",
+   "family": "governance"
+  },
+  {
+   "test_id": "gov.tier_override_documented",
+   "name": "Tier overrides documented",
+   "family": "governance"
+  },
+  {
+   "test_id": "gov.validation_due",
+   "name": "Validation due",
+   "family": "governance"
+  },
+  {
+   "test_id": "ifrs9.ecl_backtest",
+   "name": "ECL backtest",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.lifetime_pd_backtest",
+   "name": "Lifetime PD backtest",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.nonlinearity",
+   "name": "Non-linearity of the weighted PD",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.overlay_diagnostics",
+   "name": "Overlay diagnostics",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.reconciliation_identities",
+   "name": "Reconciliation identities",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.scenario_sensitivity",
+   "name": "Scenario sensitivity",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.sicr_effectiveness",
+   "name": "SICR effectiveness",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.sicr_threshold_stability",
+   "name": "SICR threshold stability",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "ifrs9.stage_migration_backtest",
+   "name": "Stage migration backtest",
+   "family": "ifrs9"
+  },
+  {
+   "test_id": "irrbb.behavioural_change_at_breach",
+   "name": "Behavioural change at breach",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.cmf_annex1_goldens",
+   "name": "CMF RAN 21-13 Annex 1 goldens",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.eve_sum_of_parts",
+   "name": "EVE sum of parts",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.eve_with_without_behavioural",
+   "name": "EVE with without behavioural",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.nii_out_of_sample",
+   "name": "NII out of sample",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.nmd_parameter_stability",
+   "name": "NMD parameter stability",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "irrbb.srp31_92_goldens",
+   "name": "SRP31.92 worked example goldens",
+   "family": "irrbb"
+  },
+  {
+   "test_id": "lgd_ead.ccf_estimator_bias",
+   "name": "CCF estimator bias",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "lgd_ead.downturn_coverage",
+   "name": "Downturn coverage",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "lgd_ead.ead_backtest_by_band",
+   "name": "EAD backtest by band",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "lgd_ead.lgd_calibration_by_segment",
+   "name": "LGD calibration by segment",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "lgd_ead.lgd_calibration_over_time",
+   "name": "LGD calibration over time",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "lgd_ead.lgd_discrimination",
+   "name": "LGD rank discrimination",
+   "family": "lgd_ead"
+  },
+  {
+   "test_id": "liq.cbc_haircut_rules",
+   "name": "CBC haircut rules",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.cliff_effect_diagnostic",
+   "name": "Cliff effect diagnostic",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.htm_loss_effect",
+   "name": "HTM loss effect",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.htm_revaluation_vs_reported",
+   "name": "HTM revaluation vs reported",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.list_compounding_golden",
+   "name": "LiST compounding golden",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.nlp_identity",
+   "name": "NLP identity",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.reverse_stress_round_trip",
+   "name": "Reverse stress round trip",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.runoff_adequacy_back_test",
+   "name": "Runoff adequacy back test",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.runoff_vs_generator_truth",
+   "name": "Runoff vs generator truth",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.survival_monotone_in_severity",
+   "name": "Survival monotone in severity",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "liq.uninsured_share_sensitivity",
+   "name": "Uninsured share sensitivity",
+   "family": "liquidity"
+  },
+  {
+   "test_id": "market.acerbi_szekely",
+   "name": "Acerbi-Szekely ES back-test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.basel_traffic_light",
+   "name": "Basel traffic light",
+   "family": "market"
+  },
+  {
+   "test_id": "market.christoffersen_conditional_coverage",
+   "name": "Christoffersen conditional coverage",
+   "family": "market"
+  },
+  {
+   "test_id": "market.christoffersen_independence",
+   "name": "Christoffersen independence",
+   "family": "market"
+  },
+  {
+   "test_id": "market.desk_backtest",
+   "name": "Desk backtest",
+   "family": "market"
+  },
+  {
+   "test_id": "market.du_escanciano_conditional",
+   "name": "Du-Escanciano conditional ES back-test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.du_escanciano_unconditional",
+   "name": "Du-Escanciano unconditional ES back-test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.duration_test",
+   "name": "Christoffersen-Pelletier duration test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.dynamic_quantile_test",
+   "name": "Engle-Manganelli dynamic quantile test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.kupiec_pof",
+   "name": "Kupiec proportion of failures",
+   "family": "market"
+  },
+  {
+   "test_id": "market.mcneil_frey_residual_test",
+   "name": "McNeil-Frey ES residual test",
+   "family": "market"
+  },
+  {
+   "test_id": "market.pla_test",
+   "name": "Profit and loss attribution test",
+   "family": "market"
+  },
+  {
+   "test_id": "ml.additivity",
+   "name": "Shapley additivity",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.cbpe_estimate",
+   "name": "Label-free AUC estimate",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.challenger_brier",
+   "name": "Champion and challenger Brier",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.conformal_coverage",
+   "name": "Conformal coverage",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.data_quality",
+   "name": "Data quality",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.effect_agreement",
+   "name": "Explainer agreement",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.leakage_screen",
+   "name": "Leakage screen",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.overfit",
+   "name": "Overfit gap",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.reason_code_stability",
+   "name": "Reason-code stability",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.robustness",
+   "name": "Perturbation robustness",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.seed_stability",
+   "name": "Seed stability",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.shift_resilience",
+   "name": "Resilience to distribution shift",
+   "family": "ml"
+  },
+  {
+   "test_id": "ml.weak_spot",
+   "name": "Weak spots",
+   "family": "ml"
+  },
+  {
+   "test_id": "oprisk.benchmark_reproduction",
+   "name": "Benchmark reproduction",
+   "family": "oprisk"
+  },
+  {
+   "test_id": "oprisk.capital_stability",
+   "name": "Capital stability",
+   "family": "oprisk"
+  },
+  {
+   "test_id": "oprisk.scenario_influence",
+   "name": "Scenario influence",
+   "family": "oprisk"
+  },
+  {
+   "test_id": "oprisk.sma_ilm_response",
+   "name": "SMA ILM response to a large loss",
+   "family": "oprisk"
+  },
+  {
+   "test_id": "oprisk.threshold_stability",
+   "name": "Threshold stability",
+   "family": "oprisk"
+  },
+  {
+   "test_id": "pd.binomial",
+   "name": "Binomial test",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.binomial_vasicek",
+   "name": "Vasicek-corrected binomial test",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.brier",
+   "name": "Brier score with Murphy decomposition",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.chi2_grades",
+   "name": "Chi-square test over grades",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.default_profile",
+   "name": "Chi-square test of the default profile",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.ece",
+   "name": "Expected calibration error",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.hosmer_lemeshow",
+   "name": "Hosmer-Lemeshow test",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.jeffreys",
+   "name": "Jeffreys test",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.normal_multiperiod",
+   "name": "Normal test over several periods",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.spiegelhalter",
+   "name": "Spiegelhalter test",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "pd.traffic_lights",
+   "name": "Traffic-lights test (Blochwitz, Hohl and Wehn)",
+   "family": "pd-calibration"
+  },
+  {
+   "test_id": "portfolio.correlation_size_power",
+   "name": "Correlation size power",
+   "family": "portfolio"
+  },
+  {
+   "test_id": "portfolio.crp_recursion_vs_mc",
+   "name": "CreditRisk+ recursion against Monte Carlo",
+   "family": "portfolio"
+  },
+  {
+   "test_id": "portfolio.euler_additivity",
+   "name": "Euler additivity",
+   "family": "portfolio"
+  },
+  {
+   "test_id": "portfolio.mc_convergence",
+   "name": "MC convergence",
+   "family": "portfolio"
+  },
+  {
+   "test_id": "portfolio.tail_backtest",
+   "name": "Tail backtest",
+   "family": "portfolio"
+  },
+  {
+   "test_id": "rating.hhi",
+   "name": "Concentration in rating grades (Herfindahl index)",
+   "family": "rating-system"
+  },
+  {
+   "test_id": "rating.markov_order",
+   "name": "First-order Markov chain against second order (Anderson-Goodman, states grouped by direction)",
+   "family": "transitions"
+  },
+  {
+   "test_id": "rating.matrix_reference",
+   "name": "A migration matrix against a reference matrix (Anderson-Goodman, likelihood ratio)",
+   "family": "transitions"
+  },
+  {
+   "test_id": "rating.migration_ztests",
+   "name": "Migration matrix monotonicity z-tests",
+   "family": "rating-system"
+  },
+  {
+   "test_id": "rating.momentum",
+   "name": "Rating momentum (stratified hazard with a downgraded-into covariate, likelihood ratio)",
+   "family": "transitions"
+  },
+  {
+   "test_id": "rating.mwb",
+   "name": "Matrix weighted bandwidth",
+   "family": "rating-system"
+  },
+  {
+   "test_id": "rating.time_homogeneity",
+   "name": "Time homogeneity of a migration matrix (Anderson-Goodman chi-square)",
+   "family": "transitions"
+  },
+  {
+   "test_id": "stability.chi2",
+   "name": "Chi-square test of homogeneity",
+   "family": "stability"
+  },
+  {
+   "test_id": "stability.csi",
+   "name": "Characteristic stability index",
+   "family": "stability"
+  },
+  {
+   "test_id": "stability.ks",
+   "name": "Two-sample Kolmogorov-Smirnov test",
+   "family": "stability"
+  },
+  {
+   "test_id": "stability.psi",
+   "name": "Population stability index",
+   "family": "stability"
+  },
+  {
+   "test_id": "stability.wasserstein",
+   "name": "Wasserstein-1 distance",
+   "family": "stability"
+  },
+  {
+   "test_id": "stress.bottom_up_vs_top_down",
+   "name": "Bottom up vs top down",
+   "family": "stress"
+  },
+  {
+   "test_id": "stress.reverse_solution_check",
+   "name": "Reverse solution check",
+   "family": "stress"
+  },
+  {
+   "test_id": "stress.satellite_backcast",
+   "name": "Satellite backcast",
+   "family": "stress"
+  },
+  {
+   "test_id": "stress.scenario_severity",
+   "name": "Scenario severity",
+   "family": "stress"
+  },
+  {
+   "test_id": "stress.sensitivity_monotonicity",
+   "name": "Sensitivity monotonicity",
+   "family": "stress"
+  },
+  {
+   "test_id": "stress.static_balance_sheet_rules",
+   "name": "Static balance sheet rules",
+   "family": "stress"
+  }
+ ]
+}

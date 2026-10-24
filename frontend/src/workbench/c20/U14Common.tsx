@@ -7,6 +7,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import type { Bi } from '../c03/U6Shared';
+import { testText } from '../names';
 
 export type Lang = 'en' | 'es';
 
@@ -21,7 +22,7 @@ export const int = (v: number | null | undefined, lang: Lang) => formatNumber(v,
 /** The height a horizontal bar chart of `rows` rows needs (about 1.8 rem a row and the axis): below it the rows scroll in the drawing. */
 export const barMin = (rows: number): string => `${Math.max(10, 4.4 + rows * 1.8)}rem`;
 
-/** The words of the tests the ML validation and fairness engines return; an id without an entry is shown as it is. */
+/** The words of the tests the ML validation and fairness engines return; an id without an entry reads the product's name (names/tests.ts). */
 export const TEST_TEXT: Record<string, Bi> = {
   'disc.auc': { en: 'AUC (descriptive)', es: 'AUC (descriptiva)' },
   'disc.delong': { en: 'DeLong against the champion', es: 'DeLong contra el campeón' },
@@ -60,7 +61,7 @@ export const TEST_TEXT: Record<string, Bi> = {
   'fair.calibration_within_groups': { en: 'Calibration within groups', es: 'Calibración dentro de los grupos' },
   'fair.auc_by_group': { en: 'AUC by group', es: 'AUC por grupo' },
 };
-export const testName = (id: string): Bi => TEST_TEXT[id] ?? { en: id, es: id };
+export const testName = (id: string): Bi => TEST_TEXT[id] ?? testText(id);
 
 /** The names of the named parameters (the contract's `name` enum), in words. */
 export const PARAM_TEXT: Record<string, Bi> = {

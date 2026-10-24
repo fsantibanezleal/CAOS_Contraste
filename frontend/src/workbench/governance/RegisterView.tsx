@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
+import { rowWhere, testText } from '../names';
 import {
   GOVERNANCE_FILES,
   PRODUCT_STATUS_NAME,
@@ -53,8 +54,12 @@ function AnchorCell({ row }: { row: FindingRow }) {
       <>
         {pick(a.metric === 'statistic' ? { en: 'statistic', es: 'estadístico' } : { en: 'metric', es: 'métrica' }, lang)} {formatNumber(a.value, lang, { digits: 4 })}
         <br />
-        <span translate="no" title={a.basis}>
-          {a.test_id}@{a.model_id}
+        <span title={a.basis}>
+          {pick(testText(a.test_id), lang)}
+          {(() => {
+            const w = rowWhere(row.case_id, a.model_id, a.segment);
+            return w ? ` (${pick(w, lang)})` : '';
+          })()}
         </span>
       </>
     );
