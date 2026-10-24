@@ -381,7 +381,7 @@
    },
    "L1-dth": {
     "en": "L1 Hazard",
-    "es": "L1 Hazard"
+    "es": "L1 Riesgo en tiempo discreto"
    },
    "L2-cox": {
     "en": "L2 Cox",
@@ -3342,5 +3342,33 @@
     "es": "Las otras familias: potencia contra la alternativa declarada"
    }
   }
+ },
+ "sources": {
+  "bcbs-wp14": "Studies on the Validation of Internal Rating Systems (revised), Working Paper 14, Tables 5 to 8 (the simulation of the normal and traffic-lights tests)",
+  "bcch-bde": "Banco Central de Chile BDE and API",
+  "eba-esrb-stress-2025": "EBA / ESRB 2025 EU-wide stress test scenario",
+  "engelmann-2024": "Spurious default probability projections in credit risk stress testing models (arXiv 2401.08892v1), section 4",
+  "esma-cerep": "ESMA CEREP",
+  "fdic-bankfind": "FDIC BankFind Suite (failures, financials)",
+  "fed-chargeoff": "Federal Reserve charge-off and delinquency rates",
+  "fed-h8": "Federal Reserve H.8 (assets and liabilities of commercial banks)",
+  "fed-stress-tests": "Federal Reserve supervisory stress test scenarios and methodology data (2025, 2026)",
+  "fed-svb-review": "Federal Reserve review of the supervision and regulation of Silicon Valley Bank",
+  "fred-public-domain": "FRED, public-domain series (H.15, H.8, H.10)",
+  "french-data-library": "Kenneth R. French data library",
+  "hmda": "Home Mortgage Disclosure Act data",
+  "israel-rosenthal-wei-2001": "Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings (authors' version), section 4",
+  "ngfs-phase-v": "NGFS climate scenarios, Phase V",
+  "pluto-tasche-2005": "Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14",
+  "santanderai-sgcd": "Stressed German Credit Dataset (SGCD-v0.1)",
+  "sba-foia": "SBA 7(a) and 504 FOIA loan data",
+  "schuermann-hanson-2004": "Estimating probabilities of default (FRBNY Staff Report 190), Table 5",
+  "tasche-2013": "The art of probability-of-default curve calibration (arXiv 1212.3716v6), Tables 2 to 9",
+  "treasury-hqm": "US Treasury High Quality Market (HQM) corporate bond yield curve, end-of-month spot rates",
+  "treasury-par-curve": "US Treasury daily par yield curve",
+  "uci-german": "Statlog (German Credit Data)",
+  "uci-polish": "Polish Companies Bankruptcy",
+  "uci-taiwan": "Default of Credit Card Clients (Taiwan)",
+  "yurdakul-naranjo-2020": "Statistical properties of the population stability index, Table 4 (the rejection rates of the PSI rules and the chi-square benchmark)"
  }
 }
