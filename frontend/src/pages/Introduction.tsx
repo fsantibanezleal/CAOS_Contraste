@@ -73,7 +73,7 @@ function Technical() {
         />
         <Equation
           tex={String.raw`\hat\alpha = \frac{1}{R}\sum_{r=1}^{R}\mathbf{1}\{p_r < \alpha\}`}
-          caption={<T en={<>The measured rejection rate of a test: R repetitions of a generator, p_r the p-value of the test in repetition r, α the level. On a correct model it is the size and should sit near α; with a planted defect it is the power (Basel Committee Working Paper 14).</>} es={<>La tasa de rechazo medida de una prueba: R repeticiones de un generador, p_r el valor p de la prueba en la repetición r, α el nivel. En un modelo correcto es el tamaño y debe quedar cerca de α; con un defecto plantado es la potencia (documento de trabajo 14 del Comité de Basilea).</>} />}
+          caption={<T en={<>The measured rejection rate of a test: R repetitions of a generator, p<sub>r</sub> the p-value of the test in repetition r, α the level. On a correct model it is the size and should sit near α; with a planted defect it is the power (Basel Committee Working Paper 14).</>} es={<>La tasa de rechazo medida de una prueba: R repeticiones de un generador, p<sub>r</sub> el valor p de la prueba en la repetición r, α el nivel. En un modelo correcto es el tamaño y debe quedar cerca de α; con un defecto plantado es la potencia (documento de trabajo 14 del Comité de Basilea).</>} />}
         />
         <Equation
           tex={String.raw`\frac{\hat\alpha + \dfrac{z^2}{2R} \pm z\sqrt{\dfrac{\hat\alpha(1-\hat\alpha)}{R} + \dfrac{z^2}{4R^2}}}{1 + \dfrac{z^2}{R}}`}
@@ -81,7 +81,7 @@ function Technical() {
         />
         <Equation
           tex={String.raw`\mathrm{AUC} = \Pr(S_B > S_G) + \tfrac{1}{2}\Pr(S_B = S_G), \qquad \mathrm{Gini} = 2\,\mathrm{AUC} - 1`}
-          caption={<T en={<>The ranking power of a score: S_B the risk score of an obligor drawn at random among those who defaulted, S_G of one drawn among those who did not, AUC the area under the ROC curve, Gini its rescaling to the range from -1 to 1.</>} es={<>El poder de ordenamiento de un puntaje: S_B el puntaje de riesgo de un deudor tomado al azar entre los que incumplieron, S_G el de uno tomado entre los que no, AUC el área bajo la curva ROC, Gini su reescalamiento al rango de -1 a 1.</>} />}
+          caption={<T en={<>The ranking power of a score: S<sub>B</sub> the risk score of an obligor drawn at random among those who defaulted, S<sub>G</sub> of one drawn among those who did not, AUC the area under the ROC curve, Gini its rescaling to the range from -1 to 1.</>} es={<>El poder de ordenamiento de un puntaje: S<sub>B</sub> el puntaje de riesgo de un deudor tomado al azar entre los que incumplieron, S<sub>G</sub> el de uno tomado entre los que no, AUC el área bajo la curva ROC, Gini su reescalamiento al rango de -1 a 1.</>} />}
         />
         <Equation
           tex={String.raw`K = \mathrm{LGD}\left[\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD}) + \sqrt{\rho}\,\Phi^{-1}(0.999)}{\sqrt{1-\rho}}\right) - \mathrm{PD}\right], \qquad \mathrm{RW} = 12.5\,K`}

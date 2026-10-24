@@ -215,7 +215,7 @@ export function ChainFigure() {
           <text className="dg-node-label" x={xs[i]} y={y + 4} textAnchor="middle">{n}</text>
         </g>
       ))}
-      <text className="dg-edge-label" x={(xs[0] + xs[1]) / 2} y={y - 58} textAnchor="middle">p_ij</text>
+      <text className="dg-edge-label" x={(xs[0] + xs[1]) / 2} y={y - 58} textAnchor="middle">p<sub>ij</sub></text>
       <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('Grades move among themselves; default (D) never leaves', 'Los grados se mueven entre sí; el incumplimiento (D) nunca sale')}</text>
       <Note>{t('Illustrative chain', 'Cadena ilustrativa')}</Note>
     </Frame>
@@ -229,7 +229,7 @@ export function HomogeneityFigure() {
   const est = [0.34, 0.4, 0.36, 0.52, 0.66, 0.48, 0.38, 0.35, 0.41];
   return (
     <Frame label={t('Illustrative yearly estimates of one transition probability and the pooled estimate', 'Estimaciones anuales ilustrativas de una probabilidad de transición y la estimación agrupada')}>
-      <Axes x={t('Year of the cohort', 'Año de la cohorte')} y={t('Estimate of one p_ij', 'Estimación de un p_ij')} />
+      <Axes x={t('Year of the cohort', 'Año de la cohorte')} y={t('Estimate of one pᵢⱼ', 'Estimación de un pᵢⱼ')} />
       <path className="dg-asymptote" fill="none" d={path([[0, 0.43], [1, 0.43]])} />
       <path className="dg-curve" d={path(years.map((u, i): [number, number] => [u, est[i]]))} />
       {years.map((u, i) => (

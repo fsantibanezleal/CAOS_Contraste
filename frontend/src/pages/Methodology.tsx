@@ -54,7 +54,7 @@ function Scorecards() {
         />
         <Equation
           tex="\mathrm{WoE}_i = \ln\frac{r_i^{NE}/r_T^{NE}}{r_i^{E}/r_T^{E}} = \ln\frac{r_T^{E}}{r_T^{NE}} - \mathrm{logit}(D_i), \qquad \mathrm{IV} = \sum_{i=1}^{n}\left(p_i - q_i\right)\ln\frac{p_i}{q_i}"
-          caption={<T en={<>r_i^NE and r_i^E: non-events and events in bin i; r_T: their totals; D_i: the bin default rate; p_i and q_i: the bin shares of non-events and events (Navas-Palencia 2020, section <Ref>2.1</Ref>).</>} es={<>r_i^NE y r_i^E: no eventos y eventos del tramo i; r_T: sus totales; D_i: la tasa de incumplimiento del tramo; p_i y q_i: las fracciones de no eventos y de eventos del tramo (Navas-Palencia 2020, sección <Ref>2.1</Ref>).</>} />}
+          caption={<T en={<>r<sub>i</sub>^NE and r<sub>i</sub>^E: non-events and events in bin i; r<sub>T</sub>: their totals; D<sub>i</sub>: the bin default rate; p<sub>i</sub> and q<sub>i</sub>: the bin shares of non-events and events (Navas-Palencia 2020, section <Ref>2.1</Ref>).</>} es={<>r<sub>i</sub>^NE y r<sub>i</sub>^E: no eventos y eventos del tramo i; r<sub>T</sub>: sus totales; D<sub>i</sub>: la tasa de incumplimiento del tramo; p<sub>i</sub> y q<sub>i</sub>: las fracciones de no eventos y de eventos del tramo (Navas-Palencia 2020, sección <Ref>2.1</Ref>).</>} />}
         />
         <P
           en="Optimal binning is a mathematical programme: pre-bins from a tree are merged into bins that maximise the information value under constraints on the number of bins, their minimum size and a monotone trend of the default rate (ascending, descending, peak or valley). Contraste declares the direction of every variable before fitting, from its meaning (more delinquency raises risk; a larger limit and larger payments lower it), and lets the solver choose where no direction is declared. The IV screen keeps variables with an information value of at least 0.02, the rule of thumb attributed to Siddiqi, whose exact source page is not verified."
@@ -155,7 +155,7 @@ function Discrimination() {
         />
         <Equation
           tex="\mathrm{AUC} = \frac{1}{|A|\,|B|}\sum_{a\in A}\sum_{b\in B} u_{a,b}, \qquad s^2 = \frac{\widehat{\mathrm{var}}(V_{10})}{|A|} + \frac{\widehat{\mathrm{var}}(V_{01})}{|B|}"
-          caption={<T en={<>A: defaulters; B: non-defaulters; u_ab = 1 when a is ranked riskier than b, 1/2 on a tie, 0 otherwise; V_10 and V_01: the structural components, the mean of u over the other group (ECB 2019, Annex <Ref>3.1</Ref>).</>} es={<>A: incumplidores; B: no incumplidores; u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate, 0 si no; V_10 y V_01: los componentes estructurales, la media de u sobre el otro grupo (BCE 2019, Anexo <Ref>3.1</Ref>).</>} />}
+          caption={<T en={<>A: defaulters; B: non-defaulters; u<sub>ab</sub> = 1 when a is ranked riskier than b, 1/2 on a tie, 0 otherwise; V<sub>10</sub> and V<sub>01</sub>: the structural components, the mean of u over the other group (ECB 2019, Annex <Ref>3.1</Ref>).</>} es={<>A: incumplidores; B: no incumplidores; u<sub>ab</sub> = 1 cuando a queda como más riesgoso que b, 1/2 en un empate, 0 si no; V<sub>10</sub> y V<sub>01</sub>: los componentes estructurales, la media de u sobre el otro grupo (BCE 2019, Anexo <Ref>3.1</Ref>).</>} />}
         />
               <h3 className="ct-sub">
           <T en="Has discrimination deteriorated, and is a challenger better?" es="¿Se deterioró la discriminación, y es mejor un retador?" />
@@ -233,7 +233,7 @@ function Stability() {
         />
         <Equation
           tex={String.raw`\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}, \qquad \text{${t('reject when', 'rechazar cuando')}}\;\; \mathrm{PSI} > \left(\frac1n + \frac1m\right)\chi^2_{1-\alpha,\,B-1}`}
-          caption={<T en={<>e_i and a_i: the development and current shares of bin i; n and m: the two sample sizes; B: the number of bins (Yurdakul and Naranjo 2020, Theorem <Ref>3.3</Ref>).</>} es={<>e_i y a_i: las fracciones de desarrollo y actual del tramo i; n y m: los dos tamaños de muestra; B: el número de tramos (Yurdakul y Naranjo 2020, Teorema <Ref>3.3</Ref>).</>} />}
+          caption={<T en={<>e<sub>i</sub> and a<sub>i</sub>: the development and current shares of bin i; n and m: the two sample sizes; B: the number of bins (Yurdakul and Naranjo 2020, Theorem <Ref>3.3</Ref>).</>} es={<>e<sub>i</sub> y a<sub>i</sub>: las fracciones de desarrollo y actual del tramo i; n y m: los dos tamaños de muestra; B: el número de tramos (Yurdakul y Naranjo 2020, Teorema <Ref>3.3</Ref>).</>} />}
         />
               <h3 className="ct-sub">
           <T en="Concentration in the grades" es="Concentración en los grados" />

@@ -21,7 +21,7 @@ export function ModelRiskExtra() {
       />
       <Equation
         tex={String.raw`\mathrm{light}(p) = \begin{cases} \text{red} & p < \alpha_{\mathrm{red}} \\ \text{amber} & \alpha_{\mathrm{red}} \le p < \alpha_{\mathrm{amber}} \\ \text{green} & p \ge \alpha_{\mathrm{amber}} \end{cases}`}
-        caption={<T en={<>The light of a test under the reader's policy: p its p-value, α_red and α_amber the policy thresholds, with α_red not above α_amber. They are a policy choice that the rail moves, not a regulatory threshold.</>} es={<>La luz de una prueba bajo la política del lector: p su valor p, α_red y α_amber los umbrales de la política, con α_red no mayor que α_amber. Son una elección de política que mueve el panel, no un umbral regulatorio.</>} />}
+        caption={<T en={<>The light of a test under the reader's policy: p its p-value, α<sub>red</sub> and α_amber the policy thresholds, with α<sub>red</sub> not above α_amber. They are a policy choice that the rail moves, not a regulatory threshold.</>} es={<>La luz de una prueba bajo la política del lector: p su valor p, α<sub>red</sub> y α_amber los umbrales de la política, con α<sub>red</sub> no mayor que α_amber. Son una elección de política que mueve el panel, no un umbral regulatorio.</>} />}
       />
       <Equation
         tex={String.raw`\Pr(\text{at least one rejection}) = 1 - (1-\alpha)^{m}`}
@@ -70,7 +70,7 @@ export function GlassBoxExtra() {
       />
       <Equation
         tex={String.raw`\hat\beta = \arg\min_{\beta}\; -\sum_{i=1}^{n}\Big[y_i \log \sigma(x_i^{\top}\beta) + (1-y_i)\log\big(1-\sigma(x_i^{\top}\beta)\big)\Big] + \lambda\lVert\beta\rVert_1`}
-        caption={<T en={<>The L1-penalised logistic regression behind the penalised rungs: y_i the outcome of record i, x_i its inputs (weights of evidence or tree rules), σ the logistic function, β the coefficients and λ the penalty strength chosen by cross-validation; the penalty sets some coefficients exactly to zero.</>} es={<>La regresión logística con penalización L1 detrás de los peldaños penalizados: y_i el resultado del registro i, x_i sus entradas (pesos de evidencia o reglas de árboles), σ la función logística, β los coeficientes y λ la fuerza de la penalización elegida por validación cruzada; la penalización lleva algunos coeficientes exactamente a cero.</>} />}
+        caption={<T en={<>The L1-penalised logistic regression behind the penalised rungs: y<sub>i</sub> the outcome of record i, x<sub>i</sub> its inputs (weights of evidence or tree rules), σ the logistic function, β the coefficients and λ the penalty strength chosen by cross-validation; the penalty sets some coefficients exactly to zero.</>} es={<>La regresión logística con penalización L1 detrás de los peldaños penalizados: y<sub>i</sub> el resultado del registro i, x<sub>i</sub> sus entradas (pesos de evidencia o reglas de árboles), σ la función logística, β los coeficientes y λ la fuerza de la penalización elegida por validación cruzada; la penalización lleva algunos coeficientes exactamente a cero.</>} />}
       />
       <Figure caption={t('A shape function of an explainable boosting machine, schematic: the contribution of one variable to the log-odds, one step per bin, which a reviewer reads directly.', 'Una función de forma de una explainable boosting machine, esquemática: la contribución de una variable a las log-odds, un escalón por tramo, que un revisor lee directamente.')}>
         <ShapeFigure />
@@ -98,7 +98,7 @@ export function BoostingExtra() {
       />
       <Equation
         tex={String.raw`F_M(x) = F_0 + \nu\sum_{m=1}^{M} h_m(x), \qquad \frac{\partial F_M}{\partial x_j} \ge 0 \ \text{ for each constrained feature } j`}
-        caption={<T en={<>The boosted model: F_0 the initial score, ν the learning rate, h_m the m-th tree and M the number of trees; the monotone constraint asks the score never to fall as a constrained feature j grows, and Contraste checks it on individual conditional expectation curves, record by record.</>} es={<>El modelo boosted: F_0 el puntaje inicial, ν la tasa de aprendizaje, h_m el m-ésimo árbol y M el número de árboles; la restricción monótona pide que el puntaje no baje cuando crece una variable restringida j, y Contraste lo verifica en curvas de expectativa condicional individual, registro a registro.</>} />}
+        caption={<T en={<>The boosted model: F<sub>0</sub> the initial score, ν the learning rate, h<sub>m</sub> the m-th tree and M the number of trees; the monotone constraint asks the score never to fall as a constrained feature j grows, and Contraste checks it on individual conditional expectation curves, record by record.</>} es={<>El modelo boosted: F<sub>0</sub> el puntaje inicial, ν la tasa de aprendizaje, h<sub>m</sub> el m-ésimo árbol y M el número de árboles; la restricción monótona pide que el puntaje no baje cuando crece una variable restringida j, y Contraste lo verifica en curvas de expectativa condicional individual, registro a registro.</>} />}
       />
       <Equation
         tex={String.raw`p(y^{\ast} \mid x^{\ast}, \mathcal{D}) = \int p(y^{\ast} \mid x^{\ast}, \phi)\, p(\phi \mid \mathcal{D})\, d\phi`}
