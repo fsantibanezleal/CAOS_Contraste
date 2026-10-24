@@ -64,7 +64,7 @@ def curve_block(vd: str, curve: ParCurve) -> tuple[dict[str, Any], np.ndarray, n
            f"{curve.observation_date}" + (f"; carried to {vd}, the last curve published on or before it" if carried else ""))
     block = {
         "date": vd, "source": src, "observed_kind": "par-yield", "compounding": "continuous",
-        "interpolation": "par yields bootstrapped to continuously compounded zero rates (engine bootstrap_zero_curve, semiannual "
+        "interpolation": "par yields bootstrapped to continuously compounded zero rates (the engine's zero-curve bootstrap, semiannual "
                          "bond-equivalent, simple interest up to six months); linear in tenor and flat outside the grid at the 19 midpoints",
         "missing_tenors": curve.missing_tenors(),
         "points": [{"tenor_years": float(a), "observed_yield": float(b), "zero_rate": float(c)} for a, b, c in zip(ten, par, zero)],
@@ -280,10 +280,10 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
         "curve": cblock,
         "assumptions": {
             "nmd_core_share": {"value": sum(s["balance"] * s["core_share_used"] for s in segs) / tot, "unit": "share",
-                               "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of nmd_segments (the SRP31 "
+                               "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of the deposit categories below (the SRP31 "
                                "Table 4 caps applied to the synthetic requests)"},
             "nmd_core_maturity_years": {"value": sum(s["balance"] * s["core_maturity_used_years"] for s in segs) / tot, "unit": "years",
-                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of nmd_segments"},
+                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of the deposit categories below"},
             "prepayment_cpr": _a("prepayment_cpr", asm.PREPAYMENT_CPR),
             "term_deposit_redemption_rate": _a("term_deposit_redemption_rate", tdrr0),
             "deposit_beta": {"value": beta_up, "unit": "pass-through", "source_kind": "fitted",

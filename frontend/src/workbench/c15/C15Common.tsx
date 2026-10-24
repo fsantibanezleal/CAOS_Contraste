@@ -45,8 +45,8 @@ export function C15VariantsTable({ variants, onPick, current }: { variants: Arra
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
       note={{
-        en: 'Each variant is one document of the SDD: a long or short UF book, a CPI surprise, a CLP steepener, the offset on and off, and floors that bind. The bars are the delta NII with the indexation charge; the table keeps the rate result and the charge apart. Pick a variant to load it.',
-        es: 'Cada variante es un documento del SDD: un libro largo o corto en UF, una sorpresa de IPC, un empinamiento en CLP, la compensación activa e inactiva, y pisos que rigen. Las barras son el delta NII con el cargo por reajustabilidad; la tabla mantiene aparte el resultado de tasa y el cargo. Elija una variante para cargarla.',
+        en: 'Each variant is one document of the SDD: a long or short UF book, a CPI surprise, a CLP steepener, the offset on and off, and the book most exposed to the UR floor (no floor binds on the curves of the valuation date). The bars are the delta NII with the indexation charge; the table keeps the rate result and the charge apart. Pick a variant to load it.',
+        es: 'Cada variante es un documento del SDD: un libro largo o corto en UF, una sorpresa de IPC, un empinamiento en CLP, la compensación activa e inactiva, y el libro más expuesto al piso de la UR (ningún piso actúa sobre las curvas de la fecha de valoración). Las barras son el delta NII con el cargo por reajustabilidad; la tabla mantiene aparte el resultado de tasa y el cargo. Elija una variante para cargarla.',
       }}
     >
       <ChartOverTable

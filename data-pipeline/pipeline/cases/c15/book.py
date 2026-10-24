@@ -60,11 +60,11 @@ def _spec(vid: str, en: str, es: str, d_en: str, d_es: str, cpi: float | None = 
 SPECS: dict[str, VariantSpec] = {s.id: s for s in (
     _spec("long-uf", "Long UF", "UF largo",
           "A net long UF book: UF assets exceed UF funding by 30 percent of Tier 1, the difference funded in pesos.",
-          "Libro con posición neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del Tier 1, financiado en pesos.",
+          "Libro con posición neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del capital de nivel 1, financiado en pesos.",
           net_uf_share_tier1=0.30),
     _spec("short-uf", "Short UF", "UF corto",
           "A net short UF book: UF funding exceeds UF assets by 30 percent of Tier 1, so an indexation surprise is a loss.",
-          "Libro con posición neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del Tier 1.",
+          "Libro con posición neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del capital de nivel 1.",
           net_uf_share_tier1=-0.30),
     _spec("cpi-surprise", "CPI surprise +2.5 pp", "Sorpresa de IPC +2,5 pp",
           "The long UF book under a 2.5 percentage point inflation surprise on its net UF position.",
@@ -74,7 +74,7 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
           "A near-flat UF position and a CLP book with 35 percent of its fixed loans and securities moved to the long end, so the "
           "long-end rise of the steepener acts on it.",
           "Posición en UF casi plana y libro en pesos con 35 por ciento de sus créditos fijos y valores en el tramo largo, de modo que el alza "
-          "del tramo largo del empinamiento actúa sobre el.",
+          "del tramo largo del empinamiento actúa sobre él.",
           net_uf_share_tier1=0.05, clp_long_asset_share=0.35),
     _spec("offset-on-off", "CLP/CLF offset on and off", "Compensación CLP/CLF activada y desactivada",
           "A long UF book funded in long CLP bonds (twice the maturity), so the two legs move in opposite directions and the 50 percent "
@@ -193,10 +193,10 @@ class Book:
         return {
             "nmd_core_share": {"value": sum(s["balance"] * s["core_share_used"] for s in segs) / total, "unit": "share",
                                "source_kind": "regulatory-cap",
-                               "source": "balance-weighted average of the used values of nmd_segments (the SRP31 Table 4 caps applied to the "
+                               "source": "balance-weighted average of the used values of the deposit categories below (the SRP31 Table 4 caps applied to the "
                                          "synthetic requests)"},
             "nmd_core_maturity_years": {"value": sum(s["balance"] * s["core_maturity_used_years"] for s in segs) / total, "unit": "years",
-                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of nmd_segments"},
+                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of the deposit categories below"},
             "prepayment_cpr": a("prepayment_cpr", asm.PREPAYMENT_CPR),
             "term_deposit_redemption_rate": a("term_deposit_redemption_rate", asm.TERM_DEPOSIT_REDEMPTION_RATE),
             "deposit_beta": a("deposit_beta", asm.DEPOSIT_BETA)}
