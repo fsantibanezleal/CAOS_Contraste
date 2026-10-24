@@ -20,7 +20,8 @@ const R: ReadonlyArray<Rule> = [
   [/^individual-level indicator over the complainants of the protected group, centers excluded; the cut point is a convention, never a regulatory threshold, and sits in extras\.thresholds, not in the p-value alphas; never red; no legal claim$/,
     () => 'indicador a nivel individual sobre los denunciantes del grupo protegido, centros excluidos; el punto de corte es una convención, nunca un umbral regulatorio, y está en extras.thresholds, no en los alfa del valor p; nunca rojo; sin afirmación legal'],
   [/^approximation of comparative evidence$/, () => 'aproximación de evidencia comparativa'],
-  [/^percentage points of rate_spread$/, () => 'puntos porcentuales de rate_spread'],
+  // the unit names the field in words, never its code (the raw-id scan of 2026-10-24)
+  [/^percentage points of rate_spread$/, () => 'puntos porcentuales de diferencial de tasa'],
   [/^odds ratio$/, () => 'razón de odds'],
   [/^action_taken 1 or 2$/, () => 'action_taken 1 o 2'],
   [/^flag when 5 \* x_g \* n_h < 4 \* x_h \* n_g$/, () => 'marcar cuando 5 * x_g * n_h < 4 * x_h * n_g'],

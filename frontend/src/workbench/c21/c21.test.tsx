@@ -165,7 +165,9 @@ describe('the C21 instrument', () => {
     const markup = html(<RateSpreadView sel={sel} />);
     const e = o.attributes[0].contrasts[0].rate_spread.estimate!;
     expect(markup).toContain(f3(e.coefficient));
-    expect(markup).toContain(escapeHtml(e.unit));
+    // the unit names the field in words, never its code (the raw-id scan of 2026-10-24)
+    expect(markup).toContain(escapeHtml(e.unit.replace('rate_spread', 'rate spread')));
+    expect(markup).not.toContain('rate_spread<');
     expect(markup).toContain('data-table="rate-spread"');
   });
 

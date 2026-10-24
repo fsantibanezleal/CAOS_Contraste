@@ -86,7 +86,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
                   <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td>{f3(e.estimate.coefficient, lang)}</td>
                   <td>{`${f3(e.estimate.ci.lo, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${f3(e.estimate.ci.hi, lang)}`}</td>
-                  <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : es(e.estimate.unit, lang)}</td>
+                  <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : lang === 'es' ? es(e.estimate.unit, lang) : e.estimate.unit.replace('rate_spread', 'rate spread')}</td>
                   <td className="ct-wide-only">{int(e.estimate.n, lang)}</td>
                 </tr>
               ) : (
