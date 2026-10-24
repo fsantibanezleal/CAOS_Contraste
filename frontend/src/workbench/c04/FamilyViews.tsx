@@ -252,7 +252,7 @@ function ChartCard({ v, spec, title, note }: { v: FamilyVariant; spec: ChartSpec
     );
     return (
       <PlotCard fill title={title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={`${note} ${why}`}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <SpecTable spec={spec} />
         </div>
       </PlotCard>
@@ -271,7 +271,7 @@ function TableCard({ v, title, note, children }: { v: FamilyVariant; title: BiTe
   const stateKey = useWorkbenchState()?.stateKey;
   return (
     <PlotCard fill title={title} lane={REPLAY} provenance={provenanceOf(v.provenance.truth_status)} dataKey={stateKey} note={note}>
-      <div className="ct-scroll">{children}</div>
+      <div className="ct-scroll" data-caos-flow="">{children}</div>
     </PlotCard>
   );
 }
@@ -463,7 +463,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
         >
           {/* the scale above the map, not in the card's head: there the title and the lane badges leave it no room (the
               agency matrix view measured the head overflowing in Spanish at 1280 x 800) */}
-          <div className="ct-stack">
+          <div className="ct-stack" data-caos-flow="">
             <div className="ct-stack-natural" data-controls="c04-map">
               <ChipGroup id="c04-map-scale" label={t('Colour scale', 'Escala de color')} options={SCALES} value={sel.mapScale} onChange={(id) => sel.act.setMapScale(id as MapScale)} />
             </div>

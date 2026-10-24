@@ -101,7 +101,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
         {rows.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="tests">
               <thead>
                 <tr>
@@ -318,7 +318,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
   return (
     <>
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every parameter of the case is a convention or a case assumption, labelled as one with the basis of its proposed value; none is a regulatory figure. The value is the document\'s, not a calibration to Banco Andino.', es: 'Cada parámetro del caso es una convención o un supuesto del caso, rotulado como tal con la base de su valor propuesto; ninguno es una cifra regulatoria. El valor es el del documento, no una calibración a Banco Andino.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c18-parameters">
             <thead>
               <tr>
@@ -333,7 +333,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The satellites fitted before 2020', es: 'Los satélites ajustados antes de 2020' }} {...card} note={{ en: 'One regression per Federal Reserve loan type on the charge-off rate, fitted on data that ends before the episode it is back-cast through. They are a US-calibrated adaptation, not Chilean satellites.', es: 'Una regresión por tipo de préstamo de la Reserva Federal sobre la tasa de castigo, ajustada con datos que terminan antes del episodio que se retro-proyecta. Son una adaptación calibrada en EE. UU., no satélites chilenos.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c18-satellites-fit">
             <thead>
               <tr>
@@ -361,7 +361,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The bank anchors and the scenario sources', es: 'Los anclajes del banco y las fuentes de escenarios' }} {...card} note={{ en: 'Only ratios computed from the Banco Santander-Chile Form 20-F 2025 enter the documents, with the filing cited; the amounts of Banco Andino are scaled from them.', es: 'Solo entran a los documentos razones calculadas del Formulario 20-F 2025 de Banco Santander-Chile, con la presentación citada; los montos de Banco Andino se escalan desde ellas.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <Defs data-table="c18-anchors">
             <dt>{pick({ en: 'Anchor of the RWA', es: 'Anclaje de los APR' }, lang)}</dt>
             <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Proxy de Tier 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>

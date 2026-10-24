@@ -200,7 +200,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The Annex 1 shock sizes', es: 'Los tamaños de choque del Anexo 1' }} {...card} note={{ en: 'A tabled size is exactly the table\'s. A size that is a Contraste estimate carries its label and its method and is never shown as a regulatory parameter.', es: 'Un tamaño tabulado es exactamente el de la tabla. Un tamaño que es una estimación de Contraste lleva su etiqueta y su método y nunca se muestra como parámetro regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c15-sizes">
             <thead>
               <tr>
@@ -260,7 +260,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The behavioural assumptions', es: 'Los supuestos conductuales' }} {...card} note={{ en: 'Each assumption names where it comes from: a regulatory cap, a fit, or a synthetic value stated here. A request above its cap is capped and shows both the request and the value used.', es: 'Cada supuesto dice de dónde viene: un tope regulatorio, un ajuste, o un valor sintético declarado aquí. Una petición sobre su tope queda con tope y muestra la petición y el valor usado.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c15-assumptions">
             <thead>
               <tr>

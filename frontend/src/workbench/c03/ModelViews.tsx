@@ -217,7 +217,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
         )}
       </PlotCard>
       <PlotCard fill title={{ en: 'This cohort and its rung', es: 'Esta cohorte y su peldaño' }} {...card}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           {/* the cohort's facts as a two-column table: a table is what a card draws (gate G6), so a rung with no coefficients still
               fills its card (a definition list left it painting 22% of its stage) */}
           <table className="caos-table" data-training={o.cohort.id} data-table="cohort-facts">

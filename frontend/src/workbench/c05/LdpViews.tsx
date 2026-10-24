@@ -84,7 +84,7 @@ export function BoundsView({ sel }: { sel: C05Sel | null }) {
           es: `Al ${pct(lang, sel.gamma, 1)}, correlación ${pct(lang, sel.rho, 0)}${sel.scaled ? `, escaladas a la cota de la cartera (K ${formatNumber(live.k, lang, { decimals: 3 })})` : ''}.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="pools">
             <thead>
               <tr>
@@ -140,7 +140,7 @@ export function ScalingView({ sel }: { sel: C05Sel | null }) {
           es: 'Un factor K común a todos los grados iguala la media ponderada de las cotas a la cota más prudente de toda la cartera (la del mejor grado): se conservan el orden y las razones y se abandona su lectura como cotas de confianza. El artículo lo propone a un nivel moderado.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="scaling">
             <thead>
               <tr>
@@ -203,7 +203,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
           es: `PD expertas ${v.outputs.expert_pd.map((p) => pct(lang, p, 2)).join(', ')} para los grados ${v.outputs.grades.join(', ')}, contra los incumplimientos de este año. Unilateral: un valor p bajo significa más incumplimientos de los que la PD permite. Las luces siguen la política del panel.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="ldp-tests">
             <thead>
               <tr>
@@ -238,7 +238,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
             es: 'Fracción de años en que cada prueba rechaza al 5%: contra las PD verdaderas (su tamaño, 5% si es correcta) y contra las PD expertas, la mitad de la verdad (su potencia).',
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="size-power">
               <thead>
                 <tr>
@@ -296,7 +296,7 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
             es: `${cells.filter((c) => c.gap === 0).length} de ${cells.length} celdas idénticas a la precisión impresa; las demás, celda por celda: ${Object.values(o.golden.notes).join('; ')}.`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="golden-ldp">
               <thead>
                 <tr>
@@ -347,7 +347,7 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
           es: 'Fracción de años en que cada cota es al menos la PD verdadera, y su mediana al 75% como múltiplo de la verdad (PD verdaderas 0,05%, 0,10%, 0,20%; correlación 12%). Desde el 75% una cota de un año cubre la verdad todos los años; al 50% un año sin incumplimientos deja la del grado B justo bajo ella, y el escalado baja más las cotas.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="coverage">
             <thead>
               <tr>
@@ -467,7 +467,7 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
           es: `Función corporativa, vencimiento ${formatNumber(o.irb.maturity, 'es', { decimals: 1 })} años, régimen y LGD del panel, una unidad de EAD por deudor; la fila destacada es la estimación del panel, cuyas PD muestra la vista de cotas. El piso de PD (0,05% en Basilea III y CRR3, 0,03% en Basilea II) eleva las PD expertas de los mejores grados: lo que el piso corrige y lo que no.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="ldp-capital">
             <thead>
               <tr>

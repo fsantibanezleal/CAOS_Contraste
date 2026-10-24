@@ -113,7 +113,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
             es: 'AUC fuera de muestra, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier). Desde 641 px de ancho la tabla suma el intervalo 95% de DeLong del AUC y el ECE. Motores y licencias están en el grupo Contexto.',
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table">
               <thead>
                 <tr>
@@ -233,7 +233,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con razón de probabilidades de ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar la razón; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped('es') ? ` Fuera de la scorecard: ${dropped('es')}.` : ''}`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>
@@ -426,7 +426,7 @@ export function EbmView({ sel }: { sel: Selection | null }) {
           es: `Cada panel es la contribución de un término a las log-odds de incumplimiento sobre sus tramos; su suma más el intercepto es el modelo. Términos de pares: ${pairs.join(', ') || 'ninguno'}.`,
         }}
       >
-        <div className="ct-grid6-fill" data-views="6">
+        <div className="ct-grid6-fill" data-caos-flow="" data-views="6">
           {shapes.map((s) => (
             <div key={s.name} className="ct-small-multiple">
               <UPlotChart
@@ -440,7 +440,7 @@ export function EbmView({ sel }: { sel: Selection | null }) {
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'Terms by the spread of their scores', es: 'Términos según la amplitud de sus puntajes' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Spread: the largest minus the smallest score of the term, in log-odds.', es: 'Amplitud: el mayor menos el menor puntaje del término, en log-odds.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>
@@ -575,7 +575,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
           es: `Fuerza de penalización C = ${String(l1.C).replace('.', ',')}, elegida por log loss con validación cruzada; sobreviven ${l1.selected?.length ?? 0} de ${coefs.length} variables.`,
         }}
       >
-        <div className="ct-stack">
+        <div className="ct-stack" data-caos-flow="">
           <Verdict
             compact
             title={{ en: 'Signs agree with WoE', es: 'Signos de acuerdo con el WoE' }}
@@ -586,7 +586,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
                 : { en: 'Some coefficient is positive on WoE: a sign the penalty did not remove.', es: 'Algún coeficiente es positivo sobre el WoE: un signo que la penalización no eliminó.' }
             }
           />
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table">
               <thead>
                 <tr>
@@ -617,7 +617,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
           es: `${rules.length} de ${pl.n_candidate_rules ?? 0} reglas candidatas seleccionadas; estabilidad de Jaccard de la selección en ${pl.stability?.bootstraps ?? 0} bootstraps: media ${formatNumber(pl.stability?.jaccard_mean, 'es', { decimals: 2 })}, mínimo ${formatNumber(pl.stability?.jaccard_min, 'es', { decimals: 2 })}.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>

@@ -137,7 +137,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
   };
   return (
     <div data-state="ready">
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="c04-variants">
           <thead>
             <tr>
@@ -219,7 +219,7 @@ function DefinitionsCard({ agencies, manifest, provenance }: { agencies: AgencyV
           es: `Agrupada en los años que ambas páginas cubren, la columna de incumplimiento de la matriz de transición (D4) da ${parts('es')}.${same.length ? ` D3 cuenta los mismos incumplimientos que D2 en cada grado para ${sameNames('es')}: las dos difieren solo por la cohorte.` : ''} ${pick(ESMA_DEFINITIONS, 'es')}`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-definitions">
           <thead>
             <tr>
@@ -305,7 +305,7 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
           es: `EM y los ajustes diagonal y ponderado reproducen las matrices agrupadas dentro de ${range('es', close, l1)} en L1; JLT queda a ${range('es', jlt, l1)} de ellas, ${range('es', ratios, times)} veces la distancia del ajuste diagonal. El teorema 3 excluye un generador exacto para ${excluded.length} de ${agencies.length} agencias${excluded.length ? ` (${conditions('es')})` : ''}; ${monotone} de ${agencies.length} matrices agrupadas son estocásticamente monótonas.`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-generators">
           <thead>
             <tr>
@@ -387,7 +387,7 @@ function LifetimeCard({ agencies, manifest, provenance }: { agencies: AgencyVari
           es: `${sentence('es')}. Las matrices encadenadas llevan la columna de incumplimiento de la página de transiciones, que no cuenta una calificación retirada después de incumplir.`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-lifetime">
           <thead>
             <tr>
@@ -484,7 +484,7 @@ function EstimatorsCard({ markov, manifest, provenance }: { markov: FamilyVarian
         y={{ label: { en: 'RMSE of the one-year PD (log scale)', es: 'RMSE de la PD anual (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
         series={chart.series}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-estimators">
           <thead>
             <tr>
@@ -571,7 +571,7 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
       }}
     >
       <Verdict compact title={{ en: 'What the simulations support', es: 'Lo que respaldan las simulaciones' }} tone={failing.length ? 'warn' : 'accent'} verdict={{ en: verdict('en'), es: verdict('es') }} />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-tests">
           <thead>
             <tr>
@@ -678,7 +678,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
         />
       )}
       {thinRungs.length > 0 && (
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="bench-coverage-thin">
             <thead>
               <tr>
@@ -737,7 +737,7 @@ function PapersCard({ published }: { published: PublishedVariant }) {
           es: agreements.map((p) => `${pick(p.name, 'es')}: ${p.agree} de ${p.total} a los dígitos impresos (${pick(p.detail, 'es')})`).join('. '),
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-irw">
           <thead>
             <tr>
@@ -761,7 +761,7 @@ function PapersCard({ published }: { published: PublishedVariant }) {
           </tbody>
         </table>
       </div>
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-sr190">
           <thead>
             <tr>
@@ -785,7 +785,7 @@ function PapersCard({ published }: { published: PublishedVariant }) {
           </tbody>
         </table>
       </div>
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-engelmann">
           <thead>
             <tr>

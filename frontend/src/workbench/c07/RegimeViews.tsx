@@ -255,7 +255,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'The steps in numbers', es: 'Los pasos en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="gap-bridge" data-closes={String(closes)}>
             <thead>
               <tr>
@@ -313,7 +313,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50% se aplica a la cartera normal evaluada individualmente.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="group-max-rule">
             <thead>
               <tr>
@@ -372,7 +372,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The additional provisions are counter-cyclical, a board policy with a minimum and a maximum: they are in what the bank books but outside the total the three regimes are compared on. They may never cover model deficiencies.', es: 'Las provisiones adicionales son contracíclicas, una política del directorio con mínimo y máximo: están en lo que el banco constituye pero fuera del total sobre el que se comparan los tres regímenes. Nunca pueden cubrir deficiencias de los modelos.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="b1-booked">
             <tbody>
               <tr>
@@ -424,7 +424,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100% de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
       >
-        <div className="ct-scroll" data-measure={d.measure}>
+        <div className="ct-scroll" data-caos-flow="" data-measure={d.measure}>
           <table className="caos-table ct-wrap-head" data-table="ifrs9-components">
             <thead>
               <tr>
@@ -478,7 +478,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
           {d.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="ifrs9-overlays">
               <thead>
                 <tr>

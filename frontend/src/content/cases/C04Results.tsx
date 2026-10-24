@@ -369,7 +369,7 @@ function LraTable({ agencies, manifest }: { agencies: AgencyVariant[]; manifest:
     }),
   );
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head" data-table="results-lra">
         <thead>
           <tr>

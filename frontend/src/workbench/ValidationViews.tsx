@@ -68,7 +68,7 @@ export function BatteryView({ sel }: { sel: Selection | null }) {
       dataKey={stateKey}
       note={sample ? thresholdLabel(sample, sel.alphas) : undefined}
     >
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-battery">
           <thead>
             <tr>
@@ -130,7 +130,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
         dataKey={stateKey}
         note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The posterior interval column, shown from 1500 px wide, is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). La columna del intervalo posterior, visible desde 1500 px de ancho, es la posterior Beta(D + 1/2, N - D + 1/2).' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>
@@ -334,7 +334,7 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
           </table>
         </PlotCard>
         <PlotCard fill title={{ en: 'Stability of each input', es: 'Estabilidad por variable' }} lane="live" provenance={prov} dataKey={stateKey}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table">
               <thead>
                 <tr>

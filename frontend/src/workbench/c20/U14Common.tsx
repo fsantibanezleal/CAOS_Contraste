@@ -150,7 +150,7 @@ export function Labelled({ label, reason, children }: { label: string; reason: B
  */
 export function LabelledOverTable({ head, chart, children, chartMin = '15rem' }: { head?: ReactNode; chart?: ReactNode; children?: ReactNode; chartMin?: string }) {
   return (
-    <div className="ct-stack">
+    <div className="ct-stack" data-caos-flow="">
       {head}
       {chart ? <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div> : null}
       {children ? <div className={chart ? 'ct-stack-table' : 'ct-stack-fill'}>{children}</div> : null}

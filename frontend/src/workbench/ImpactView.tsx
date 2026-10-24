@@ -139,7 +139,7 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
             dataKey={stateKey}
             note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}. The live figures interpolate the cut-off curve; the pipeline's are exact, so the two can differ in the second decimal.`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}. Las cifras en vivo interpolan la curva de corte; las del pipeline son exactas, así que pueden diferir en el segundo decimal.` }}
           >
-            <div className="ct-scroll">
+            <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table">
                 <thead>
                   <tr>

@@ -131,7 +131,7 @@ export function C07ContextView({ sel }: { sel: C07Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The portfolio', es: 'La cartera' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="portfolio">
             <thead>
               <tr>

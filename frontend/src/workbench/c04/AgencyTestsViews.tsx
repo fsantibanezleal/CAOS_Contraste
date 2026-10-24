@@ -230,7 +230,7 @@ function NotAgency({ sel }: { sel: C04Sel }) {
 function SeriesTable({ x, columns, show, name }: { x: number[]; columns: Array<Pick<ChartSeries, 'label' | 'values'>>; show: (v: number | null, lang: Lang) => string; name: string }) {
   const lang = useShellLang();
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head" data-table={name}>
         <thead>
           <tr>
@@ -481,7 +481,7 @@ export function TestsView({ sel }: { sel: C04Sel | null }) {
         )}
       </PlotCard>
       <PlotCard fill title={{ en: "Every year's tests", es: 'Las pruebas de cada año' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
-        <div className="ct-stack">
+        <div className="ct-stack" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="time-homogeneity">
             <thead>
               <tr>
@@ -510,7 +510,7 @@ export function TestsView({ sel }: { sel: C04Sel | null }) {
               })}
             </tbody>
           </table>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="tests-by-year">
               <thead>
                 <tr>
@@ -669,7 +669,7 @@ export function MobilityView({ sel }: { sel: C04Sel | null }) {
           credit(o, true),
         )}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="mobility">
             <thead>
               <tr>
@@ -844,7 +844,7 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
         ? { en: `${built.tiny} PDs below 1E-20 are left out as well (the log axis would not draw).`, es: `${built.tiny} PD bajo 1E-20 también quedan fuera (el eje logarítmico no se dibujaría).` }
         : NONE;
   const pdTable = (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head" data-table="semesters-pd">
         <thead>
           <tr>
@@ -881,7 +881,7 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       credit(o, true),
     );
     pdBody = (
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="semesters-cohorts">
           <thead>
             <tr>

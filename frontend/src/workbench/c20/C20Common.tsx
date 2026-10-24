@@ -222,7 +222,7 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
       </PlotCard>
       {fit ? (
         <PlotCard title={{ en: 'The data and the model', es: 'Los datos y el modelo' }} {...card} note={{ en: 'The model reads one view of each record; a shock that does not reach that view cannot move it.', es: 'El modelo lee una vista de cada registro; un choque que no llega a esa vista no puede moverlo.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c20-datasets">
               <thead>
                 <tr>
@@ -246,7 +246,7 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <ParamTable params={localParams(o.parameters as unknown as NamedParam[], lang)} />
         </div>
       </PlotCard>

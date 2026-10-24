@@ -685,7 +685,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
         es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política versionada), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que se calculó. ${where.es}${src.es}`,
       }}
     >
-      <div className={fill ? 'ct-stack' : 'ct-stack-natural'}>
+      <div className={fill ? 'ct-stack' : 'ct-stack-natural'} data-caos-flow="">
         <Verdict
           compact
           title={{ en: 'Most severe open finding', es: 'Hallazgo abierto más severo' }}
@@ -699,7 +699,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
               : { en: `No open finding (${ev.findings.length} in all)`, es: `Ningún hallazgo abierto (${ev.findings.length} en total)` }
           }
         />
-        {fill ? <div className="ct-scroll">{rows}</div> : rows}
+        {fill ? <div className="ct-scroll" data-caos-flow="">{rows}</div> : rows}
       </div>
     </PlotCard>
   );
@@ -922,7 +922,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attributionIn(attribution, 'es')}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
       }}
     >
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="variants-families">
           <thead>
             <tr>

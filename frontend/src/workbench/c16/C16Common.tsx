@@ -35,7 +35,7 @@ export const digits = (v: number | null | undefined, lang: Lang) => formatNumber
  */
 export function ChartAbove({ chart, children, chartHeight = '15rem' }: { chart: ReactNode; children?: ReactNode; chartHeight?: string }) {
   return (
-    <div className="ct-stack">
+    <div className="ct-stack" data-caos-flow="">
       <div className="ct-stack-fixed" style={{ minHeight: chartHeight, '--ct-chart-min': chartHeight } as CSSProperties}>{chart}</div>
       {children ? <div className="ct-stack-rest">{children}</div> : null}
     </div>
@@ -109,7 +109,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
         {rows.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="tests">
               <thead>
                 <tr>
@@ -400,7 +400,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
   return (
     <>
       <PlotCard title={{ en: 'The run-off parameter sets', es: 'Los conjuntos de parámetros de salida' }} {...card} note={{ en: 'Each set names where it comes from: a transcribed table, a calibration on rows dated before 2023, or a stated value. The LiST rates are the note\'s own, on its 2019 TARGET2 relevant-day calendar.', es: 'Cada conjunto dice de dónde viene: una tabla transcrita, una calibración con filas anteriores a 2023, o un valor declarado. Las tasas LiST son las de la nota, en su calendario de días relevantes TARGET2 de 2019.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-parameter-sets">
             <thead>
               <tr>
@@ -444,7 +444,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The calibration and the generator', es: 'La calibración y el generador' }} {...card} note={{ en: 'The fast run is calibrated on rows dated before 2023 and scored on the 2023 rows; the SVB observation is an anchor, not a forecast. The depositor generator has a known truth, so the model\'s run-off can be checked against it.', es: 'La corrida rápida se calibra con filas anteriores a 2023 y se evalúa en las filas de 2023; la observación de SVB es un ancla, no un pronóstico. El generador de depositantes tiene una verdad conocida, así que la salida del modelo se puede contrastar con ella.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" data-table="c16-calibration">
             <dt>{pick({ en: 'Calibration', es: 'Calibración' }, lang)}</dt>
             <dd>{pick(fit.calibration.statement, lang)}</dd>
@@ -483,7 +483,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The sources and their licence class', es: 'Las fuentes y su clase de licencia' }} {...card} note={{ en: 'The class is a reading of each publisher\'s notice, not legal advice; a source whose notice was not read says so.', es: 'La clase es una lectura del aviso de cada editor, no asesoría legal; una fuente cuyo aviso no se leyó lo dice.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-sources">
             <thead>
               <tr>
@@ -556,7 +556,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
       </PlotCard>
       {o ? (
         <PlotCard title={{ en: 'The balance sheet and the deposits', es: 'El balance y los depósitos' }} {...card} note={{ en: 'DEPUNA and DEPINS cover the domestic offices and their denominator is DEPDOM; DEP includes the foreign offices. Both denominators are stated wherever the uninsured share appears.', es: 'DEPUNA y DEPINS cubren las oficinas domésticas y su denominador es DEPDOM; DEP incluye las oficinas en el exterior. Ambos denominadores se declaran donde aparece la parte no asegurada.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <DepositsBlock d={o.balance_sheet.deposits} />
             <table className="caos-table ct-wrap-head" data-table="c16-items">
               <thead>
@@ -587,7 +587,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every grid, tolerance, threshold, mapping and calendar of the case is a convention, labelled as one with the basis of its proposed value; none is a regulatory threshold.', es: 'Cada grilla, tolerancia, umbral, mapeo y calendario del caso es una convención, rotulada como tal con la base de su valor propuesto; ninguno es un umbral regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-conventions">
             <thead>
               <tr>

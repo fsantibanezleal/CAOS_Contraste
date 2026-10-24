@@ -125,7 +125,7 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
           es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta versionadas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="generators">
             <thead>
               <tr>
@@ -172,7 +172,7 @@ function repetitions(rows: C22Simulation[], lang: 'en' | 'es'): string {
 function DesignsTable({ rows, ruleKey }: { rows: C22Simulation[]; ruleKey: string }) {
   const lang = useShellLang();
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head" data-table="designs">
         <thead>
           <tr>
@@ -247,7 +247,7 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
         es: `Contra la escala de la familia (${ladder.label.es}) salvo que un panel nombre su propio eje; ${repetitions(v.outputs.simulations, 'es')}, así que el EE de Monte Carlo de una tasa es a lo más ${pct('es', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; segmentada: la probabilidad exacta donde existe; punteada: el nivel nominal.${twoPoint ? ' Dos puntos por estudio: su nula (0, la tasa es su tamaño) y la única alternativa que declara el motor (1, la tasa es su potencia); una prueba con varios estudios tiene una curva cada uno.' : ''}`,
       }}
     >
-      <div className="ct-panels-fill" data-views={String(panels.length)}>
+      <div className="ct-panels-fill" data-caos-flow="" data-views={String(panels.length)}>
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
             <p className="ct-sm-title">
@@ -292,7 +292,7 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'Rate (Monte Carlo SE), 95% Wilson interval, and the exact probability where one exists, with whether the rate agrees with it within 3.29 SE. The setting is on the panel\'s axis; the scenario states it in words.', es: 'Tasa (EE de Monte Carlo), intervalo de Wilson al 95%, y la probabilidad exacta donde existe, con si la tasa concuerda con ella dentro de 3,29 EE. El ajuste está en el eje del panel; el escenario lo dice en palabras.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="rates">
             <thead>
               <tr>
@@ -382,7 +382,7 @@ export function SizeView({ sel }: { sel: C22Sel | null }) {
           es: `La tasa de rechazo cuando la nula de la prueba se cumple en su frontera (${formatNumber(v.outputs.simulations[0]?.n_rep, 'es', { decimals: 0 })} repeticiones). Una prueba mantiene su tamaño cuando su probabilidad exacta es a lo más el nivel, o, sin ella, cuando la tasa es a lo más ${pct('es', bound)} (el nivel más 3,09 EE de Monte Carlo).`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="size">
             <thead>
               <tr>
@@ -450,7 +450,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
       dataKey={stateKey}
       note={{ en: 'Density of the p-values in 20 bins (1 = uniform). A test with an exact continuous null is flat; a discrete or conservative one piles up near 1; an oversized one rises near 0.', es: 'Densidad de los valores p en 20 intervalos (1 = uniforme). Una prueba con nula continua exacta es plana; una discreta o conservadora se acumula cerca de 1; una sobredimensionada sube cerca de 0.' }}
     >
-      <div className="ct-panels-fill" data-views={String(panels.length)}>
+      <div className="ct-panels-fill" data-caos-flow="" data-views={String(panels.length)}>
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
             <p className="ct-sm-title">{pick(pp.panel.label, lang)}</p>
@@ -544,7 +544,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
           es: `Las pruebas sobre un conjunto generado con severidad ${v.outputs.specimen.severity}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="specimen">
             <thead>
               <tr>
@@ -736,7 +736,7 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
         dataKey={stateKey}
         note={{ en: "Each finding cites the measured rates behind it, at the rail's level, with their Monte Carlo SE; the numbers are the chart's.", es: 'Cada hallazgo cita las tasas medidas que lo respaldan, al nivel del panel, con su EE de Monte Carlo; los números son los del gráfico.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="findings">
             <thead>
               <tr>
@@ -853,7 +853,7 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
           es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia. La columna Otras familias es la potencia de una prueba contra la única alternativa que el motor declara para ella (azul); las pruebas de las cinco familias de crédito quedan vacías ahí, y las demás pruebas quedan vacías en las columnas de las familias de crédito.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head ct-heat-table" data-table="detections">
             <thead>
               <tr>

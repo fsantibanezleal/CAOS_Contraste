@@ -271,7 +271,7 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
           es: 'Un parámetro conductual que cambió entre dos fechas de valoración queda marcado cuando la ventana contiene además un exceso de límite: un supuesto más favorable adoptado mientras un límite estaba excedido es el patrón que halló la revisión de 2023 de Silicon Valley Bank. La marca es la pregunta del validador, no un veredicto.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="parameter-changes">
             <thead>
               <tr>

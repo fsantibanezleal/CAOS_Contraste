@@ -175,7 +175,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
       </PlotCard>
       {fit ? (
         <PlotCard title={{ en: 'The five files and the ladder', es: 'Los cinco archivos y la escalera' }} {...card}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c02-files">
               <thead>
                 <tr>
@@ -216,7 +216,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <ParamTable params={o.parameters as unknown as NamedParam[]} />
         </div>
       </PlotCard>

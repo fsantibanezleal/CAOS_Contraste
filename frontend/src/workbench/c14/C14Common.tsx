@@ -263,7 +263,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The behavioural assumptions', es: 'Los supuestos conductuales' }} {...card} note={{ en: 'Each assumption names where it comes from: a regulatory cap, a fit, or a synthetic value stated here. The standardised EVE uses the capped values.', es: 'Cada supuesto dice de dónde viene: un tope regulatorio, un ajuste, o un valor sintético declarado aquí. El EVE estandarizado usa los valores con tope.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c14-assumptions">
             <thead>
               <tr>
@@ -290,7 +290,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The slotted balance sheet', es: 'El balance ubicado en tramos' }} {...card} note={{ en: `Amounts in ${unit}. An item the financials lack shows not available with its reason and the slotting assumption that replaces it, never an invented number.`, es: `Montos en ${unit}. Una partida que los estados no traen muestra no disponible con su razón y el supuesto de ubicación que la reemplaza, nunca un número inventado.` }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c14-items">
             <thead>
               <tr>

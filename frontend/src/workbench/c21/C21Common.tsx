@@ -211,7 +211,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The legal reading', es: 'La lectura legal' }} {...card}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <LegalSentences legal={o.legal} />
         </div>
       </PlotCard>
@@ -245,7 +245,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'How each field is published', es: 'Cómo se publica cada campo' }} {...card} note={{ en: 'A field the release bins, rounds, tops or withholds says so, with its reason; the public data carry no credit score.', es: 'Un campo que la publicación agrupa, redondea, trunca o retiene lo dice, con su razón; los datos públicos no traen puntaje de crédito.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c21-notes">
             <thead>
               <tr>

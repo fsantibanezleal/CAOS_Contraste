@@ -172,7 +172,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
             {pick({ en: 'Not available: the models artifact carries no floor cells.', es: 'No disponible: el artefacto de modelos no trae las celdas de pisos.' }, lang)}
           </p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="floor-cells">
               <thead>
                 <tr>

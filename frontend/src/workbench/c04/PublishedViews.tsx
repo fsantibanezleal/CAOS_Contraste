@@ -227,7 +227,7 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
           es: `Recalculados por riskvalidation ${v.provenance.riskvalidation_version ?? ''} desde los artículos en la raíz de datos; un valor concuerda dentro de media unidad del último dígito impreso. Israel et al.: concuerdan ${irwAgree} de ${o.irw.rows.length}; el Teorema 3(c) se cumple en ${t3} de ${o.irw.theorem3_c.length} matrices (un movimiento alcanzable pero nunca observado: no hay generador exacto); la serie logarítmica (1) toma ${o.irw.series_terms} términos hasta el 1e-8 declarado, como está impreso. Schuermann y Hanson: concuerdan ${srAgree} de ${o.sr190.rows.length} con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el único conteo cuya cota inferior de Wald se imprime como la de la tabla. Engelmann: su matriz (11) tal como está impresa (filas que suman 1 dentro de ${formatNumber(o.engelmann.row_sum_deviation, 'es', { digits: 2 })}), a saldo unitario. El grupo Modelo cita cada artículo.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <p className="ct-sm-title">
             {pick({ en: 'Israel, Rosenthal and Wei (2001), section 4: the L1 distance of exp(Q) to P', es: 'Israel, Rosenthal y Wei (2001), sección 4: la distancia L1 de exp(Q) a P' }, lang)}
           </p>
@@ -443,7 +443,7 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
           es: "Cada artículo es solo de derivados: su PDF queda en la raíz de datos y solo se publican los resultados recalculados desde él, así que una matriz que un artículo reimprime nunca se dibuja aquí; las matrices propias de las agencias están en las variantes S&P, Moody's y Fitch, desde CEREP.",
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="papers">
             <thead>
               <tr>
@@ -596,7 +596,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           es: `Cotas en puntos básicos, de la inferior a la superior; las filas N† son números efectivos de deudores, y las filas del panel dan su N† en la última columna. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="table5-live">
             <thead>
               <tr>
