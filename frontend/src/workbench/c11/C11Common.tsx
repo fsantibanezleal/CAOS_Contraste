@@ -12,7 +12,7 @@ import { truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin, zoneText } from './MarketCommon';
 import {
-  CLASS_TEXT, HYPERPARAMETER_TEXT, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, WINDOW_TEXT, unitFor, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
+  CLASS_TEXT, HYPERPARAMETER_TEXT, REASON_ES, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, WINDOW_TEXT, unitFor, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
   type C11Outputs, type C11Sel,
 } from './selection';
 
@@ -289,7 +289,7 @@ export function ModelReadout({ sel }: { sel: C11Sel | null }) {
       title={sel ? modelLabel(sel, sel.model) : { en: 'This model', es: 'Este modelo' }}
       items={[
         { label: { en: 'Eligible', es: 'Elegible' }, text: model ? (model.eligible ? yes : no) : na(), hint: { en: 'No gate back-test is red at either level.', es: 'Ninguna prueba de compuerta está en rojo en ningún nivel.' } },
-        { label: { en: 'Average FZ0', es: 'FZ0 medio' }, value: lv?.fz0_mean ?? null, unitless: true, format: { digits: 4 }, hint: lv?.fz0_reason ? { en: lv.fz0_reason, es: lv.fz0_reason } : { en: 'The joint VaR and ES score, lower is better.', es: 'El puntaje conjunto de VaR y ES, menor es mejor.' } },
+        { label: { en: 'Average FZ0', es: 'FZ0 medio' }, value: lv?.fz0_mean ?? null, unitless: true, format: { digits: 4 }, hint: lv?.fz0_reason ? { en: lv.fz0_reason, es: REASON_ES[lv.fz0_reason] ?? lv.fz0_reason } : { en: 'The joint VaR and ES score, lower is better.', es: 'El puntaje conjunto de VaR y ES, menor es mejor.' } },
         { label: { en: 'Rung', es: 'Escalón' }, text: sel && rungOf(sel, sel.model) ? { en: rungOf(sel, sel.model), es: rungOf(sel, sel.model) } : na(), hint: { en: 'The place of the model on the ladder from historical simulation to a challenger.', es: 'El lugar del modelo en la escalera desde la simulación histórica hasta un retador.' } },
       ]}
     />
