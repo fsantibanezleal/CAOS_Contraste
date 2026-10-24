@@ -600,7 +600,7 @@ describe('the C12 instrument', () => {
     expect(markup).toContain(text(fit.credit_curve.derivation));
     for (const l of fit.limits) expect(markup).toContain(text(l));
     expect(markup).toContain('data-unverified="true"');
-    expect(markup).toContain('UNVERIFIED as papers');
+    expect(markup).toContain('not verified as papers');
   });
 
   it('the Spanish rendering reads as Spanish and keeps the number format of the language', () => {
