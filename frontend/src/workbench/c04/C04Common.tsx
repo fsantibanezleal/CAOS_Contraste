@@ -1056,7 +1056,7 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                     {` (${s.publisher})`}
                   </td>
                   <td className="caos-col-text">
-                    {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
+                    {lang === 'es' && LICENCE_ES[s.licence] ? LICENCE_ES[s.licence] : s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
                   <td className="caos-col-text">
                     <span translate="no">{attributionIn(s.attribution, lang)}</span>
@@ -1100,8 +1100,8 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
@@ -1116,6 +1116,19 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
     </div>
   );
 }
+
+/** The Spanish of each licence statement of C04's sources (R2b c05 B3): a gloss, with the publisher's own sentence kept in quotation
+ * marks; a statement not listed prints as declared. */
+const LICENCE_ES: Record<string, string> = {
+  'Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged':
+    'Se autoriza la reproducción de toda la información del sitio, salvo indicación contraria, siempre que se cite la fuente ("Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged")',
+  "authors' version on J. S. Rosenthal's website, no licence statement found (UNVERIFIED); its three one-year matrices are S&P's and Moody's data reprinted in the paper":
+    'versión de los autores en el sitio de J. S. Rosenthal, sin declaración de licencia (SIN VERIFICAR); sus tres matrices anuales son datos de S&P y Moody\'s reproducidos en el artículo',
+  'arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); the matrix (11) is reprinted from Trueck and Rachev (2009)':
+    'licencia perpetua y no exclusiva de arXiv.org para distribuir (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); la matriz (11) se reproduce de Trueck y Rachev (2009)',
+  "Federal Reserve Bank of New York staff report, reuse terms not read (UNVERIFIED); Table 5 holds the paper's own interval computations, no data":
+    'informe del personal del Banco de la Reserva Federal de Nueva York, términos de reutilización no leídos (SIN VERIFICAR); la Tabla 5 contiene los cálculos de intervalos del propio artículo, sin datos',
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // The rail's read-outs: each title one line of the rail and each item one line (label and value), at most three items

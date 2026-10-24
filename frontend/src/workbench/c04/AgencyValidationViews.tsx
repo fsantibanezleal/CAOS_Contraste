@@ -1052,7 +1052,9 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
             y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
             series={series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
-            yMarks={[{ y: 1, label: { en: 'D2 = 1', es: 'D2 = 1' }, tone: 'neutral' }]}
+            // the line at 1 is drawn without a label: the label covered the D3/D2 line at CCC-C, the view's point (R2b c05 M1); the
+            // note says what the dotted line is
+            yMarks={[{ y: 1, tone: 'neutral' }]}
             marks={[{ x: g + 1, label: grade }]}
           />
         ) : (

@@ -119,6 +119,13 @@ EXPECT: dict[str, tuple[float, float]] = {
 }
 
 
+
+#: the four transition tests in words, English and Spanish, as the views name them (frontend/src/workbench/names/tests.ts)
+TEST_WORDS = {"rating.markov_order": ("Markov order", "orden de Markov"),
+              "rating.time_homogeneity": ("time homogeneity", "homogeneidad temporal"),
+              "rating.matrix_reference": ("migration matrix against a reference matrix", "matriz de migración contra una matriz de referencia"),
+              "rating.momentum": ("momentum hazard", "riesgo de momentum")}
+
 def _log(msg: str) -> None:
     print(f"[C04] {msg}", file=sys.stderr, flush=True)
 
@@ -658,10 +665,13 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         bound = size_bound(0.05, reps)
         nulls = [s for s in out["simulations"] if s["key"].endswith("@null")]
         over = [s["test_id"] for s in nulls if s["rates"]["p<0.05"]["rate"] > bound]
+        # the tests in words, never their ids (R2b c05 B1: "rating.markov_order" in both languages)
+        over_en = ", ".join(TEST_WORDS.get(t, (t, t))[0] for t in over)
+        over_es = ", ".join(TEST_WORDS.get(t, (t, t))[1] for t in over)
         res.append({"id": "F-SIZE", "severity": "S2" if over else "S4", "status": "open" if over else "closed",
                     "evidence": [f"rate:{s['key']}" for s in nulls],
-                    "title": _t(f"The four transition tests on the S&P-like chain: {'above their size bound: ' + ', '.join(over) if over else 'all hold their size at 5%'} ({reps} repetitions)",
-                                f"Las cuatro pruebas de transición en la cadena como la de S&P: {'sobre su cota de tamaño: ' + ', '.join(over) if over else 'todas mantienen su tamaño al 5 %'} ({reps} repeticiones)")})
+                    "title": _t(f"The four transition tests on the S&P-like chain: {'above their size bound: ' + over_en if over else 'all hold their size at 5%'} ({reps} repetitions)",
+                                f"Las cuatro pruebas de transición en la cadena como la de S&P: {'sobre su cota de tamaño: ' + over_es if over else 'todas mantienen su tamaño al 5 %'} ({reps} repeticiones)")})
         forms = {s["key"].rsplit("-", 1)[1]: s for s in out["simulations"] if s["key"].startswith("rating.markov_order@form-")}
         if set(forms) == {"chi2", "lr"}:
             def _holds(s: dict[str, Any]) -> bool:
