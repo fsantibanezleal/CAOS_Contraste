@@ -69,7 +69,7 @@ function OutcomesTable({ rows, variant, caseId }: { rows: OutcomeRow[]; variant:
         <thead>
           <tr>
             <th className="caos-col-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-            <th className="caos-col-text ct-wide-only">{pick({ en: 'Model, segment', es: 'Modelo, segmento' }, lang)}</th>
+            <th className="caos-col-text ct-wide-only ct-repeated">{pick({ en: 'Model, segment', es: 'Modelo, segmento' }, lang)}</th>
             <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
             <th>{pick({ en: 'p-value', es: 'valor p' }, lang)}</th>
             <th>{pick({ en: 'Metric', es: 'Métrica' }, lang)}</th>
@@ -84,7 +84,7 @@ function OutcomesTable({ rows, variant, caseId }: { rows: OutcomeRow[]; variant:
                 {pick(testText(r.test_id), lang)}
                 <span className="ct-narrow-only">{where(r)}</span>
               </td>
-              <td className="caos-col-text ct-wide-only">{where(r)}</td>
+              <td className="caos-col-text ct-wide-only ct-repeated">{where(r)}</td>
               <td>{num(r.statistic)}</td>
               <td>{num(r.p_value)}</td>
               <td>{num(r.metric)}</td>

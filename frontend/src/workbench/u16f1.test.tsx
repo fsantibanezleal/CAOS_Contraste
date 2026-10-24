@@ -69,7 +69,14 @@ describe('VS-1: below 900 px a table box never collapses (the stack flows natura
     const narrow = media(900);
     expect(narrow).toMatch(/\.ct-stack\s*\{[^}]*height:\s*auto/);
     expect(narrow).toMatch(/\.ct-stack-table[^{]*\{[^}]*max-height:\s*none/);
-    expect(narrow).toMatch(/\.ct-stack-table[^{]*\{[^}]*overflow:\s*visible/);
+    // it flows down, and a table wider than its card scrolls sideways in its own box: the shell's card body hides what overflows
+    // it, so `overflow: visible` cut the right columns at 390 (U16-R2b, c03 M2, c11 B1, c12 B3, c15 B1)
+    expect(narrow).toMatch(/\.ct-stack-table[^{]*\{[^}]*overflow-x:\s*auto;\s*overflow-y:\s*visible/);
+    expect(narrow).not.toMatch(/\.ct-stack-table[^{]*\{[^}]*overflow:\s*visible/);
+    expect(narrow).toMatch(/:has\(> table\.caos-table\)[^{]*\{[^}]*overflow-x:\s*auto/);
+    // a column is hidden on a phone only when its value is repeated under the row text
+    expect(media(640)).toMatch(/td\.ct-wide-only\.ct-repeated/);
+    expect(media(640)).not.toMatch(/^\s*\.ct-wide-only\s*\{\s*display:\s*none/m);
     expect(narrow).toMatch(/:has\(\.ct-stack\)[^{]*\{[^}]*height:\s*auto/);
   });
 });

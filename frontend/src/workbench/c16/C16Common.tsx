@@ -114,7 +114,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Against', es: 'Contra' }, lang)}</th>
+                  <th className="ct-text ct-wide-only ct-repeated">{pick({ en: 'Against', es: 'Contra' }, lang)}</th>
                   <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Reason or note', es: 'Razón o nota' }, lang)}</th>
@@ -129,7 +129,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
                         {t.segment === null ? null : <span className="ct-narrow-only" data-segment={t.segment}>{pick(text(SEGMENT_NAMES, t.segment), lang)}</span>}
                       </td>
-                      <td className="ct-text ct-wide-only">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
+                      <td className="ct-text ct-wide-only ct-repeated">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>

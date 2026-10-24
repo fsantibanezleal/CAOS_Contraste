@@ -119,10 +119,10 @@ export function LadderView({ sel }: { sel: Selection | null }) {
                 <tr>
                   <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                   <th>AUC</th>
-                  <th className="ct-wide-only">{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+                  <th className="ct-wide-only ct-repeated">{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
                   <th>{pick({ en: 'DeLong p', es: 'p de DeLong' }, lang)}</th>
                   <th>Brier</th>
-                  <th className="ct-wide-only">ECE</th>
+                  <th className="ct-wide-only ct-repeated">ECE</th>
                 </tr>
               </thead>
               <tbody>
@@ -133,13 +133,13 @@ export function LadderView({ sel }: { sel: Selection | null }) {
                       {f(r.auc)}
                       {r.lo !== null && r.hi !== null ? <span className="ct-narrow-only">{`${f(r.lo)} - ${f(r.hi)}`}</span> : null}
                     </td>
-                    <td className="ct-wide-only">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
+                    <td className="ct-wide-only ct-repeated">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
                     <td>{r.m.id === CHAMPION ? pick({ en: 'champion', es: 'campeón' }, lang) : formatNumber(r.delongP, lang, { digits: 2 })}</td>
                     <td>
                       {f(r.brier, 4)}
                       <span className="ct-narrow-only">{`ECE ${f(r.ece, 4)}`}</span>
                     </td>
-                    <td className="ct-wide-only">{f(r.ece, 4)}</td>
+                    <td className="ct-wide-only ct-repeated">{f(r.ece, 4)}</td>
                   </tr>
                 ))}
               </tbody>
