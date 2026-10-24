@@ -14,6 +14,7 @@ from typing import Any
 import numpy as np
 
 from ...core import text as tx
+from ..c01_ladder import SHORT_TITLES
 from ..c06.panel import months_between
 from . import evaluate, fit, models, panel, windows
 from .fit import MONTHS, WindowFit
@@ -132,11 +133,11 @@ def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort
             if not hit:
                 continue
             sev = on_red if any(r["light"] == "red" for r in hit) else on_amber
-            names = ", ".join(sorted({r["test_id"] for r in hit}))
             tag = "".join(w[0] for w in family.split()).upper()
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": sorted({f"{r['test_id']}@{rung}" for r in hit}),
-                        "title": t(f"{rung}: {family} tests flag the {cohort.name} cohort ({names})",
-                                   f"{rung}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} ({names})")})
+                        # the rung by its short title and no test id: the evidence names each test (U16-R2b c04 B2)
+                        "title": t(f"{SHORT_TITLES.get(rung, {'en': rung})['en']}: {family} tests flag the {cohort.name} cohort",
+                                   f"{SHORT_TITLES.get(rung, {'es': rung})['es']}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]}")})
     if crisis == 0:
         out.append({"id": "F-CRISIS", "severity": "S2", "status": "open", "evidence": ["design:training-window-before-the-crisis"],
                     "title": t("The window closes before the 2007-09 recession: the rungs have seen no crisis outcome",
