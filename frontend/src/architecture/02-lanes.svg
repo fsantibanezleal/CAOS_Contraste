@@ -46,7 +46,7 @@
   <text class="sub l-en" x="44" y="298">link-only: linked, never read</text>
   <text class="sub l-es" x="44" y="298">solo enlace: nunca leída</text>
   <text class="sub l-en" x="44" y="314">unusable: the terms forbid it</text>
-  <text class="sub l-es" x="44" y="314">inutilizable: los términos lo impiden</text>
+  <text class="sub l-es" x="44" y="314">inutilizable: lo prohíben</text>
   <text class="acc l-en" x="44" y="342">every file hashed in the</text>
   <text class="acc l-es" x="44" y="342">cada archivo con su hash en</text>
   <text class="acc l-en" x="44" y="358">licence manifest</text>

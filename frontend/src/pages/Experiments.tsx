@@ -202,11 +202,11 @@ function Metrics() {
       />
       <Equation
         tex="\mathrm{AUC} = \frac{1}{|A|\,|B|}\sum_{a\in A}\sum_{b\in B} u_{a,b}"
-        caption={<T en={<>The area under the ROC curve: A the defaulters, B the non-defaulters, u_ab = 1 when a is ranked riskier than b, 1/2 on a tie and 0 otherwise (ECB 2019).</>} es={<>El área bajo la curva ROC: A los incumplidores, B los no incumplidores, u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate y 0 en otro caso (BCE 2019).</>} />}
+        caption={<T en={<>The area under the ROC curve: A the defaulters, B the non-defaulters, u<sub>ab</sub> = 1 when a is ranked riskier than b, 1/2 on a tie and 0 otherwise (ECB 2019).</>} es={<>El área bajo la curva ROC: A los incumplidores, B los no incumplidores, u<sub>ab</sub> = 1 cuando a queda como más riesgoso que b, 1/2 en un empate y 0 en otro caso (BCE 2019).</>} />}
       />
       <Equation
         tex="\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}"
-        caption={<T en={<>The population stability index of a score: B the number of bins, a_i the share of the current population in bin i and e_i the share expected from development (Yurdakul and Naranjo 2020).</>} es={<>El índice de estabilidad poblacional de un puntaje: B el número de tramos, a_i la fracción de la población actual en el tramo i y e_i la fracción esperada desde el desarrollo (Yurdakul y Naranjo 2020).</>} />}
+        caption={<T en={<>The population stability index of a score: B the number of bins, a<sub>i</sub> the share of the current population in bin i and e<sub>i</sub> the share expected from development (Yurdakul and Naranjo 2020).</>} es={<>El índice de estabilidad poblacional de un puntaje: B el número de tramos, a<sub>i</sub> la fracción de la población actual en el tramo i y e<sub>i</sub> la fracción esperada desde el desarrollo (Yurdakul y Naranjo 2020).</>} />}
       />
       <Equation
         tex="p = F_{\mathrm{Beta}\left(D+\frac12,\; N-D+\frac12\right)}(\mathrm{PD})"
