@@ -177,7 +177,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>

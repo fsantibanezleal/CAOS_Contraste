@@ -95,6 +95,27 @@ const SEGMENT_FIXED: Record<string, BiText> = {
   'minimum-transfer-amount-0': bi('minimum transfer amount 0', 'monto mínimo de transferencia 0'),
 };
 
+/** C20's Fed portfolios and the fields of their loans (the Federal Reserve's hypothetical portfolios, c20/v_shift.py). */
+const FED_PORTFOLIO: Record<string, BiText> = {
+  typical: bi('typical', 'típica'),
+  'lower-risk': bi('lower-risk', 'de menor riesgo'),
+  'higher-risk': bi('higher-risk', 'de mayor riesgo'),
+};
+const FED_FIELD: Record<string, BiText> = {
+  committed_exposure_amt: bi('committed exposure', 'exposición comprometida'),
+  utilized_exposure_amt: bi('utilised exposure', 'exposición utilizada'),
+  interest_rate: bi('interest rate', 'tasa de interés'),
+  term: bi('term', 'plazo'),
+  orig_year: bi('origination year', 'año de originación'),
+  rating: bi('rating', 'calificación'),
+  facility_type_cat: bi('facility type', 'tipo de facilidad'),
+  lien_position_cat: bi('lien position', 'posición del gravamen'),
+  domestic_flag: bi('domestic borrower', 'deudor doméstico'),
+  naics_two_digit_cat: bi('industry (two-digit NAICS)', 'industria (NAICS a dos dígitos)'),
+  interest_rate_variability: bi('interest rate variability', 'variabilidad de la tasa de interés'),
+  guarantor_flag: bi('guarantor', 'garante'),
+};
+
 /** C20's Fed shift (`fed-higher-risk-x0.25`): the Fed's higher-risk portfolio drift at a multiple (c20/v_shift.py). */
 const fedShift = (k: string): BiText => bi(`the Fed higher-risk drift times ${num(k, 'en')}`, `la deriva de mayor riesgo de la Fed por ${num(k, 'es')}`);
 
@@ -102,6 +123,11 @@ const fedShift = (k: string): BiText => bi(`the Fed higher-risk drift times ${nu
 export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
   if (SEGMENT_FIXED[seg]) return SEGMENT_FIXED[seg];
   let m: RegExpExecArray | null;
+  // the input of a CSI row, as its data file names the column (C02: the UCI file's Attr27; a `_missing` column is its missing-value
+  // indicator); a dataset's column name is the name it publishes
+  if ((m = /^characteristic:(.+?)(_missing)?$/.exec(seg))) {
+    return m[2] ? bi(`input ${m[1]}, missing-value indicator`, `entrada ${m[1]}, indicador de valor faltante`) : bi(`input ${m[1]}`, `entrada ${m[1]}`);
+  }
   switch (ctx.caseId) {
     case 'C04':
       if (/^\d{4}$/.test(seg)) return bi(`cohort ${seg}`, `cohorte ${seg}`);
@@ -136,14 +162,15 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
         return bi(`${m[1]} years of losses, threshold ${t.toLocaleString('en-US')}`, `${m[1]} años de pérdidas, umbral ${t.toLocaleString('es-CL')}`);
       }
       break;
-    case 'C02':
-      // the input of a CSI row, as the UCI file names its column (Attr27, and its missing-value indicator)
-      if ((m = /^characteristic:(Attr\d+)(_missing)?$/.exec(seg))) {
-        return m[2] ? bi(`input ${m[1]}, missing-value indicator`, `entrada ${m[1]}, indicador de valor faltante`) : bi(`input ${m[1]}`, `entrada ${m[1]}`);
-      }
-      break;
     case 'C20':
       if ((m = /^(\d+)-bootstrap-refits$/.exec(seg))) return bi(`${m[1]} bootstrap refits`, `${m[1]} reajustes bootstrap`);
+      if ((m = /^(\d+)-seeds$/.exec(seg))) return bi(`${m[1]} retraining seeds`, `${m[1]} semillas de reentrenamiento`);
+      if (seg === 'window:baseline') return bi('the baseline window', 'la ventana base');
+      // the weak-spot slices of one input (c20/v_perturb.py: the input as the UCI Taiwan file names its column)
+      if ((m = /^slices-of-(.+)$/.exec(seg))) return bi(`slices of ${m[1]}`, `segmentos de ${m[1]}`);
+      if ((m = /^(shipped|applied):(numeric-noise)$/.exec(seg))) {
+        return join([SHOCK_TEXT[m[2]], m[1] === 'shipped' ? bi('as shipped', 'como se entregan') : bi('applied by Contraste', 'aplicado por Contraste')]);
+      }
       if ((m = /^(?:(control-zeros-kept):)?preset-eps-([\d.]+)$/.exec(seg))) {
         const base = bi(`preset noise scale ${num(m[2], 'en')}`, `escala de ruido predefinida ${num(m[2], 'es')}`);
         return m[1] ? join([base, bi('control zeros kept', 'ceros de control conservados')]) : base;
@@ -153,6 +180,11 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
         return join([SHOCK_TEXT[m[2]], how]);
       }
       if ((m = /^(?:window:)?fed-higher-risk-x([\d.]+)$/.exec(seg))) return fedShift(m[1]);
+      // one field's drift from one Fed portfolio to another ("typical>higher-risk:interest_rate")
+      if ((m = /^([a-z-]+)>([a-z-]+):([a-z_]+)$/.exec(seg)) && FED_PORTFOLIO[m[1]] && FED_PORTFOLIO[m[2]] && FED_FIELD[m[3]]) {
+        const [a, b, f] = [FED_PORTFOLIO[m[1]], FED_PORTFOLIO[m[2]], FED_FIELD[m[3]]];
+        return bi(`${f.en}, ${a.en} against ${b.en} portfolio`, `${f.es}, cartera ${a.es} frente a ${b.es}`);
+      }
       break;
     case 'C21': {
       // field | contrast | measure (c21 FindingsEvidence): "applicant_age|25-34 vs 35-44|controlled"

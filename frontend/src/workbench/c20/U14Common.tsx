@@ -7,7 +7,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import type { Bi } from '../c03/U6Shared';
-import { testText } from '../names';
+import { modelName, segmentName, testText, type NameContext } from '../names';
 
 export type Lang = 'en' | 'es';
 
@@ -162,9 +162,13 @@ export function LabelledOverTable({ head, chart, children, chartMin = '15rem' }:
 export const testsOf = (...prefixes: string[]) => (t: TestRow) => prefixes.some((p) => t.test_id.startsWith(p));
 
 /** The rows the engine returned for the tests of this variant, under the drawing they belong to: a test that did not run says why and shows no number. */
-export function U14TestsTable({ tests, modelLabel, only }: { tests: TestRow[]; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean }) {
+/** `caseId` and `models` name a row's model and its input (segment) when the case passes no `modelLabel`; a row of the portfolio
+ * shows no input. */
+export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: { tests: TestRow[]; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean; caseId?: string; models?: NameContext['models'] }) {
   const lang = useShellLang();
   const rows = only ? tests.filter(only) : tests;
+  const modelText = (id: string) => modelLabel?.(id) ?? pick(modelName(id, { caseId, models }) ?? { en: id, es: id }, lang);
+  const input = (t: TestRow) => (t.segment && t.segment !== 'portfolio' ? segmentName(t.segment, { caseId }) : null);
   return (
     <div data-block="tests">
       <p className="ct-note">
@@ -188,8 +192,12 @@ export function U14TestsTable({ tests, modelLabel, only }: { tests: TestRow[]; m
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text">{pick(testName(t.test_id), lang)}</td>
-                  <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
+                  <td className="ct-text">
+                    {pick(testName(t.test_id), lang)}
+                    {/* the input of a row that tests one (C02's CSI of each input), so the rows can be told apart */}
+                    {input(t) ? <span className="ct-row-detail" data-segment={t.segment}>{pick(input(t)!, lang)}</span> : null}
+                  </td>
+                  <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : modelText(t.model_id)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>

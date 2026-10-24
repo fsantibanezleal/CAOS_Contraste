@@ -57,6 +57,8 @@
 @media (max-width: 640px) {
   .ct-wide-only:not(th):not(td), th.ct-wide-only.ct-repeated, td.ct-wide-only.ct-repeated { display: none; }
 }
+/* a detail of a row under its first cell (the input a test row tests) */
+.ct-row-detail { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--color-fg-subtle); }
 /* a table whose rows are several lines tall reads from the top of each row (U16-R2 b06 m4: centred cells left the first finding
    looking empty) */
 .caos-table.ct-top td { vertical-align: top; }

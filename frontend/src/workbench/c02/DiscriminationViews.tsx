@@ -80,7 +80,7 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('disc.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('disc.')} modelLabel={(id) => pick(rungName(sel, id), lang)} caseId="C02" />
         </ChartOverTable>
       </PlotCard>
       <PlotCard
@@ -221,7 +221,7 @@ export function CalibrationView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('pd.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('pd.')} modelLabel={(id) => pick(rungName(sel, id), lang)} caseId="C02" />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -288,7 +288,7 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
             </tbody>
           </table>
           <ParamTable params={o.parameters as unknown as NamedParam[]} only={['overfit_tolerance']} />
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.', 'ml.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.', 'ml.')} modelLabel={(id) => pick(rungName(sel, id), lang)} caseId="C02" />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

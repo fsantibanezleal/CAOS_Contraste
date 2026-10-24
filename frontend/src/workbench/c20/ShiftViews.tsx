@@ -92,7 +92,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               )}
             </tbody>
           </table>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -167,7 +167,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.shift')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.shift')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -237,7 +237,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.conformal')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.conformal')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -289,7 +289,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
               <li key={a.id} data-assumption={a.id}>{pick(a.text, lang)}</li>
             ))}
           </ul>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
           <p className="ct-note">{pick({ en: `Share of rows in the worst subsample: ${pc(s.worst_subsample.share, 'en')}.`, es: `Parte de las filas en la peor submuestra: ${pc(s.worst_subsample.share, 'es')}.` }, lang)}</p>
         </LabelledOverTable>

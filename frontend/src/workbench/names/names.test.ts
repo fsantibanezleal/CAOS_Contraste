@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 // @ts-expect-error the generator is plain JavaScript, run by node (scripts/gen-names.mjs)
 import { collectModelNames, serialise } from '../../../scripts/gen-names.mjs';
-import { TEST_NAMES, evidenceLabel, modelName, testName, type NameContext } from './index';
+import { TEST_NAMES, evidenceLabel, modelName, segmentName, testName, type NameContext } from './index';
 import committed from './models.gen.json';
 import registry from './registry.json';
 
@@ -91,6 +91,19 @@ describe('the names gate: every id a reader can meet has a name', () => {
     for (const r of rows) {
       if (!testName(r.test)) bad.add(`${r.caseId} test ${r.test}`);
       if (r.model !== null && !modelName(r.model, { caseId: r.caseId, models: r.models })) bad.add(`${r.caseId} model ${r.model}`);
+    }
+    expect([...bad].slice(0, 40)).toEqual([]);
+  });
+
+  it('names the input (segment) of every row the U14 tests table shows (C02, C20)', () => {
+    const bad = new Set<string>();
+    for (const { path, doc } of docs) {
+      const caseId = (doc as Obj).case_id;
+      if (caseId !== 'C02' && caseId !== 'C20') continue;
+      for (const t of ((doc as Obj).tests as Array<Obj> | undefined) ?? []) {
+        const seg = t.segment;
+        if (typeof seg === 'string' && seg !== 'portfolio' && !segmentName(seg, { caseId })) bad.add(`${path} ${seg}`);
+      }
     }
     expect([...bad].slice(0, 40)).toEqual([]);
   });
