@@ -9,7 +9,8 @@
 //   npm run capture -- --out <dir> --captures 1280x800:light:en      one capture; the format is WxH:theme:lang, comma separated
 //   npm run capture -- --out <dir> --variants all                    every variant of each case (or --variants id,id), selected in the rail
 //   npm run capture -- --out <dir> --url https://<domain>            the deployed origin instead of dist/
-// Other options: --dist <dir> (default dist), --base-path /Repo/ (default VITE_BASE or /), --settle-ms 15000 (the gate's),
+// Other options: --dist <dir> (default dist), --base-path /Repo/ (default VITE_BASE or /), --settle-ms 15000 (the gate's), --text true (the
+// view's text beside each PNG),
 // --workers 4 (parallel pages), --workbench /app, --full-page true (the whole scrollable page instead of the viewport). The output folder is never inside the repository: the tool refuses it.
 // Output: <out>/index.json (one row per view and capture, plus one per planned case), <out>/index.html (a grid by case),
 // <out>/run.json (the run), <out>/shots/<capture>/<route>/<case>/<group>__<sub>.png. Never runs in CI (ADR-0074); the
@@ -41,7 +42,7 @@ function parseArgs(argv) {
     a[k.slice(2)] = v;
     i += 1;
   }
-  const known = new Set(['out', 'cases', 'routes', 'captures', 'url', 'dist', 'base-path', 'settle-ms', 'workers', 'workbench', 'full-page', 'variants']);
+  const known = new Set(['out', 'cases', 'routes', 'captures', 'url', 'dist', 'base-path', 'settle-ms', 'workers', 'workbench', 'full-page', 'variants', 'text']);
   for (const k of Object.keys(a)) if (!known.has(k)) throw new Error(`unknown option --${k}`);
   if (!a.out) throw new Error('--out <dir> is required (the output folder, outside the repository)');
   return a;
@@ -167,6 +168,8 @@ export async function runCapture(opts) {
   const workers = Math.max(1, Number(opts.workers ?? 4));
   const workbench = (opts.workbench ?? '/app').trim();
   const fullPage = opts['full-page'] === 'true';
+  // --text true: beside each PNG, the text a reader sees in the view (its innerText), for a scan of raw ids and English words
+  const withText = opts.text === 'true';
   const wantVariants = opts.variants && opts.variants !== 'all' ? opts.variants.split(',').map((v) => v.trim()).filter(Boolean) : null;
   const variantMode = Boolean(opts.variants);
 
@@ -383,6 +386,10 @@ export async function runCapture(opts) {
         mkdirSync(dirname(join(out, file)), { recursive: true });
         await page.evaluate(() => window.scrollTo(0, 0)).catch(() => undefined);
         await page.screenshot({ path: join(out, file), animations: 'disabled', fullPage: fullPage });
+        if (withText) {
+          const seen = await page.evaluate(() => document.querySelector('main')?.innerText ?? document.body.innerText).catch(() => '');
+          writeFileSync(join(out, file.replace(/\.png$/, '.txt')), seen, 'utf8');
+        }
         const docs = rec.docs.slice(mark).map((d) => d.split('?')[0]);
         const miss = rec.errors.slice(errMark.n);
         const warnings = [];
