@@ -7,6 +7,7 @@ import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { testName } from '../c20/U14Common';
+import { modelName } from '../names';
 import { es } from './localise';
 
 // a regulation citation ("29 CFR 1607.4(D)"), a row of a regulation's annex ("row 10.2", "fila 10.2") and the arithmetic of rows a
@@ -63,7 +64,7 @@ export function C21TestsTable({ tests, only }: { tests: TestRow[]; only?: (t: Te
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">{pick(testName(t.test_id), lang)}</td>
-                  <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : t.model_id}</td>
+                  <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : pick(modelName(t.model_id, { caseId: 'C21' }) ?? { en: t.model_id, es: t.model_id }, lang)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>

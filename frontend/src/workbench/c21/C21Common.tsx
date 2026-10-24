@@ -14,10 +14,17 @@ import { LiveReadout, useCard } from '../c03/U6Shared';
 import { Marked } from './Marked';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
-import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
+import { BASIS_TEXT, CONTROL_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
 import { es, treatmentName } from './localise';
 
 /** The short label every C21 view says before its content. */
+
+/** The HMDA fields the data notes list that the attribute and control maps do not name (the CFPB data dictionary). */
+const DATA_FIELD_TEXT: Record<string, { en: string; es: string }> = {
+  action_taken: { en: 'Action taken on the application', es: 'Acción tomada sobre la solicitud' },
+  rate_spread: { en: 'Rate spread', es: 'Diferencial de tasa' },
+};
+
 export function NoLegalClaim({ legal }: { legal: C21Legal | null }) {
   const lang = useShellLang();
   return (
@@ -258,7 +265,8 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
             <tbody>
               {o.data_notes.map((n) => (
                 <tr key={n.field} data-field={n.field}>
-                  <td className="ct-text">{n.field}</td>
+                  {/* the field by its name, its code in the public file beside it (a data dictionary) */}
+                  <td className="ct-text">{DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field] ? <>{pick(DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field], lang)} <code translate="no">{n.field}</code></> : n.field}</td>
                   <td className="ct-text">{treatmentName(n.treatment, lang)}</td>
                   <td data-na={n.n_missing === null ? 'true' : undefined}>{n.n_missing === null ? formatNumber(null, lang) : int(n.n_missing, lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(n.reason, lang)}</td>
