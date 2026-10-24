@@ -25,8 +25,8 @@ from .panel import COHORTS, AnnualRate, Defaults
 
 INDICATOR = t("annual charge-off rate of the SBA 7(a) book (charge-offs of the year over loans open on 1 January)",
               "tasa anual de castigos de la cartera SBA 7(a) (castigos del año sobre los préstamos abiertos al 1 de enero)")
-SOURCE = t("sba-foia (a credit indicator of the book itself; no macro path is read)",
-           "sba-foia (un indicador de crédito de la propia cartera; no se lee una trayectoria macro)")
+SOURCE = t("the SBA FOIA loan file (a credit indicator of the book itself; no macro path is read)",
+           "el archivo de préstamos FOIA de la SBA (un indicador de crédito de la propia cartera; no se lee una trayectoria macro)")
 
 
 @dataclass(frozen=True)
