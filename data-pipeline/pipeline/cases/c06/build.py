@@ -34,7 +34,7 @@ SEGMENT_LABELS = {
 RUNG_TEXT = {
     "L0-km": (("Kaplan-Meier lifetime PD", "PD de vida completa de Kaplan-Meier"), ("L0 Kaplan-Meier", "L0 Kaplan-Meier")),
     "L1-dth": (("Discrete-time hazard with macro covariates", "Hazard en tiempo discreto con covariables macro"),
-               ("L1 Hazard", "L1 Hazard")),
+               ("L1 Hazard", "L1 Riesgo en tiempo discreto")),
     "L2-cox": (("Cox proportional hazards", "Riesgos proporcionales de Cox"), ("L2 Cox", "L2 Cox")),
 }
 RUNG_KIND = {"L0-km": "kaplan-meier", "L1-dth": "discrete-time-hazard", "L2-cox": "cox"}
