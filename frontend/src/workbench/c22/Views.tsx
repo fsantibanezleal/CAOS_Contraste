@@ -84,6 +84,12 @@ function describeRecord(rec: unknown, lang: 'en' | 'es'): Array<{ k: string; v: 
   return out;
 }
 
+/** The licence classes of a source in words. */
+const LICENCE_CLASS_TEXT: Record<string, { en: string; es: string }> = {
+  'derived-only': { en: 'derived only', es: 'solo derivado' },
+  'mirror-allowed': { en: 'mirror allowed', es: 'espejo permitido' },
+};
+
 /** A record of keys and values for a cell: the generator's own keys are code (they are identifiers, not words), the values are read in the language. */
 function RecordText({ items }: { items: Array<{ k: string; v: string }> }) {
   return (
@@ -139,8 +145,10 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
             <tbody>
               {Object.entries(o.generators).map(([ref, g]) => (
                 <tr key={ref} data-generator={ref}>
-                  <td className="ct-text">{ref}</td>
-                  <td className="ct-text">{g.name}</td>
+                  {/* the engine's own reference and class of a generator: code, as its configuration keys (an engine-configuration
+                      appendix; ruling of 2026-10-24) */}
+                  <td className="ct-text"><code translate="no">{ref}</code></td>
+                  <td className="ct-text"><code translate="no">{g.name}</code></td>
                   <td className="ct-text"><RecordText items={config(g.config)} /></td>
                   <td className="ct-text ct-wide-only"><RecordText items={truth(g)} /></td>
                   <td className="ct-text ct-wide-only">{users(ref)}</td>
@@ -914,7 +922,8 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
                   <td className="caos-col-text">
                     <a href={s.landing} target="_blank" rel="noreferrer">{s.name}</a>
                   </td>
-                  <td className="caos-col-text">{s.licence} ({s.class})</td>
+                  {/* the licence class in words (the raw-id scan: derived-only) */}
+                  <td className="caos-col-text">{s.licence} ({pick(LICENCE_CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</td>
                   <td className="caos-col-text">{s.attribution}</td>
                 </tr>
               );
