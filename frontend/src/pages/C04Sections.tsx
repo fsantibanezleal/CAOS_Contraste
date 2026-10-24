@@ -578,9 +578,9 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
               <th className="caos-col-text">{t('Family', 'Familia')}</th>
               <th className="caos-col-text">{t('Test', 'Prueba')}</th>
               <th className="caos-col-text">{t('Setting', 'Ajuste')}</th>
-              <th>{t('Rate at 5% (SE)', 'Tasa al 5% (EE)')}</th>
-              <th>{t('Rate at 1% (SE)', 'Tasa al 1% (EE)')}</th>
-              <th>{t('Wilson 95%, 5%', 'Wilson 95%, 5%')}</th>
+              <th>{t('Rate at 5% (SE)', 'Tasa al 5 % (EE)')}</th>
+              <th>{t('Rate at 1% (SE)', 'Tasa al 1 % (EE)')}</th>
+              <th>{t('Wilson 95%, 5%', 'Wilson 95 %, 5 %')}</th>
               <th>{t('Repetitions', 'Repeticiones')}</th>
             </tr>
           </thead>
@@ -664,7 +664,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
       provenance={provenance}
       note={{
         en: `The share of repetitions in which each 95% interval covers the true one-year PD, by grade (Markov family, the chart), and the exact coverage by enumeration for cohorts of each size (thin family, the table). Paths drawn from ${GENERATOR_TEXT.en}.${FAMILY_SOURCE.en}`,
-        es: `La fracción de repeticiones en que cada intervalo al 95% cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
+        es: `La fracción de repeticiones en que cada intervalo al 95 % cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
       }}
     >
       <Verdict compact title={{ en: 'What the coverage supports', es: 'Lo que respalda la cobertura' }} tone="accent" verdict={{ en: `${mc('en')}${exact('en')}`, es: `${mc('es')}${exact('es')}` }} />
@@ -674,7 +674,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
           x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
           y={{ label: { en: 'Coverage of the true PD', es: 'Cobertura de la PD verdadera' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
           series={chart.series}
-          yMarks={[{ y: chart.level, label: { en: `Nominal ${Math.round(chart.level * 100)}%`, es: `Nominal ${Math.round(chart.level * 100)}%` }, tone: 'neutral' }]}
+          yMarks={[{ y: chart.level, label: { en: `Nominal ${Math.round(chart.level * 100)}%`, es: `Nominal ${Math.round(chart.level * 100)} %` }, tone: 'neutral' }]}
         />
       )}
       {thinRungs.length > 0 && (

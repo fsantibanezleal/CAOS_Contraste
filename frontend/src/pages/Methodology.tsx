@@ -190,7 +190,7 @@ function Calibration() {
         />
         <Equation
           tex="p = F_{\mathrm{Beta}\left(D+\frac12,\; N-D+\frac12\right)}(\mathrm{PD}), \qquad \frac{k^*}{n} \approx \Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD}) + \sqrt{\rho}\,\Phi^{-1}(q)}{\sqrt{1-\rho}}\right)"
-          caption={t('Left: the Jeffreys p-value (ECB 2019, 2.5.3.1). Right: the large-portfolio critical default rate of the Vasicek-adjusted binomial test at confidence q and asset correlation ρ; WP14 gives 19, 35, 49, 63 and 77 defaults out of 1,000 at a PD of 1% and ρ = 0, 5, 10, 15 and 20%.', 'Izquierda: el valor p de Jeffreys (BCE 2019, 2.5.3.1). Derecha: la tasa crítica de incumplimiento de la prueba binomial ajustada de Vasicek para una cartera grande, con confianza q y correlación de activos ρ; WP14 da 19, 35, 49, 63 y 77 incumplimientos de 1.000 con PD de 1% y ρ = 0, 5, 10, 15 y 20%.')}
+          caption={t('Left: the Jeffreys p-value (ECB 2019, 2.5.3.1). Right: the large-portfolio critical default rate of the Vasicek-adjusted binomial test at confidence q and asset correlation ρ; WP14 gives 19, 35, 49, 63 and 77 defaults out of 1,000 at a PD of 1% and ρ = 0, 5, 10, 15 and 20%.', 'Izquierda: el valor p de Jeffreys (BCE 2019, 2.5.3.1). Derecha: la tasa crítica de incumplimiento de la prueba binomial ajustada de Vasicek para una cartera grande, con confianza q y correlación de activos ρ; WP14 da 19, 35, 49, 63 y 77 incumplimientos de 1.000 con PD de 1 % y ρ = 0, 5, 10, 15 y 20 %.')}
         />
               <h3 className="ct-sub">
           <T en="The fit: is the PD right across the range?" es="El ajuste: ¿es correcta la PD en todo el rango?" />
@@ -264,7 +264,7 @@ function SizeAndPower() {
         />
         <Equation
           tex="\hat r = \frac{1}{n_{sim}}\sum_{i=1}^{n_{sim}} \mathbb 1(p_i < \alpha), \qquad \widehat{\mathrm{SE}}(\hat r) = \sqrt{\frac{\hat r(1-\hat r)}{n_{sim}}}, \qquad \hat r \le \alpha + z_{0.999}\sqrt{\frac{\alpha(1-\alpha)}{n_{sim}}}"
-          caption={t('The rejection rate, its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6) and the size bound: a test holds its size when its rate under the null at its boundary is at most the level plus 3.09 standard errors, 6.06% at 5% with 4,000 repetitions.', 'La tasa de rechazo, su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6) y la cota de tamaño: una prueba mantiene su tamaño cuando su tasa bajo la nula en su frontera es a lo más el nivel más 3,09 errores estándar, 6,06% al 5% con 4.000 repeticiones.')}
+          caption={t('The rejection rate, its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6) and the size bound: a test holds its size when its rate under the null at its boundary is at most the level plus 3.09 standard errors, 6.06% at 5% with 4,000 repetitions.', 'La tasa de rechazo, su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6) y la cota de tamaño: una prueba mantiene su tamaño cuando su tasa bajo la nula en su frontera es a lo más el nivel más 3,09 errores estándar, 6,06 % al 5 % con 4.000 repeticiones.')}
         />
               <h3 className="ct-sub">
           <T en="Where no simulation is needed" es="Donde no se necesita simulación" />

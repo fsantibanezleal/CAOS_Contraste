@@ -147,14 +147,14 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
       </div>
       <div className="ct-share-2">
         <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
-          note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75%, grados A, B, C.' }}>
+          note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75 %, grados A, B, C.' }}>
           <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="variants-ldp">
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Variant', es: 'Variante' }, lang)}</th>
                   <th>{pick({ en: 'Defaults', es: 'Incumpl.' }, lang)}</th>
-                  <th>{pick({ en: 'Bounds at 75%', es: 'Cotas al 75%' }, lang)}</th>
+                  <th>{pick({ en: 'Bounds at 75%', es: 'Cotas al 75 %' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -221,13 +221,13 @@ const LDP_COLOR: ShellColorToken[] = ['--color-accent', '--color-accent-2', '--c
 function ldpCompare(ldp: LdpVariant[], short: (id: string) => BiText): Compare {
   const truth = ldp.find((v) => v.outputs.true_pd)?.outputs.true_pd;
   return {
-    title: { en: 'What each observed year implies: the bounds at 75%', es: 'Lo que implica cada año observado: las cotas al 75%' },
+    title: { en: 'What each observed year implies: the bounds at 75%', es: 'Lo que implica cada año observado: las cotas al 75 %' },
     note: {
       en: 'The independent most prudent bound of each grade at 75%, one line per observation, against the expert PDs under test (dotted) and the true PDs of the generator (dashed). Every bound lies above the truth; the fewer the defaults, the closer it comes.',
-      es: 'La cota más prudente independiente de cada grado al 75%, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (discontinua). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
+      es: 'La cota más prudente independiente de cada grado al 75 %, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (discontinua). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
     },
     x: { values: [1, 2, 3], label: { en: 'Grade (1 A, 2 B, 3 C)', es: 'Grado (1 A, 2 B, 3 C)' }, format: { decimals: 0 } },
-    y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75% (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
+    y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75 % (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
     series: [
       ...ldp.map((v, i) => ({ label: short(v.variant_id), values: v.outputs.bounds.independent[v.outputs.gammas.indexOf(0.75)], color: LDP_COLOR[i % LDP_COLOR.length], width: 2 })),
       ...(ldp[0] ? [{ label: { en: 'Expert PDs', es: 'PD expertas' }, values: ldp[0].outputs.expert_pd, color: '--color-warn' as ShellColorToken, width: 1.2, dash: [2, 4] }] : []),
@@ -279,7 +279,7 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
             <tr data-licence-class="generator">
               <td className="caos-col-text">{pick({ en: 'Vasicek generator (Contraste\'s own)', es: 'Generador de Vasicek (de Contraste)' }, lang)}</td>
               <td className="caos-col-text">{pick({ en: 'MIT, no third-party data', es: 'MIT, sin datos de terceros' }, lang)}</td>
-              <td className="caos-col-text">{pick({ en: 'True PDs 0.05%, 0.10%, 0.20%; correlation 12%; 20,000 seeded years', es: 'PD verdaderas 0,05%, 0,10%, 0,20%; correlación 12%; 20.000 años con semilla' }, lang)}</td>
+              <td className="caos-col-text">{pick({ en: 'True PDs 0.05%, 0.10%, 0.20%; correlation 12%; 20,000 seeded years', es: 'PD verdaderas 0,05 %, 0,10 %, 0,20 %; correlación 12 %; 20.000 años con semilla' }, lang)}</td>
             </tr>
           </tbody>
         </table>

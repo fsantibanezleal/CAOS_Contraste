@@ -281,10 +281,10 @@ export function rateChart(points: EvidencePoint[]): C04Chart | null {
   const xs = numbered(sims.length);
   const at = (key: string, f: 'rate' | 'wilson_low' | 'wilson_high') => pad(sims.map((s) => s?.rates[key]?.[f] ?? null));
   const drawn = nonEmpty([
-    { label: { en: 'Rate at 5%', es: 'Tasa al 5%' }, values: at(AT5, 'rate'), color: '--color-accent', mode: 'points' },
-    { label: { en: 'Wilson 95% of the 5% rate, low', es: 'Wilson 95% de la tasa al 5%, inferior' }, values: at(AT5, 'wilson_low'), color: '--color-fg-subtle', mode: 'points' },
-    { label: { en: 'Wilson 95% of the 5% rate, high', es: 'Wilson 95% de la tasa al 5%, superior' }, values: at(AT5, 'wilson_high'), color: '--color-fg-subtle', mode: 'points' },
-    { label: { en: 'Rate at 1%', es: 'Tasa al 1%' }, values: at(AT1, 'rate'), color: '--color-magenta', mode: 'points' },
+    { label: { en: 'Rate at 5%', es: 'Tasa al 5 %' }, values: at(AT5, 'rate'), color: '--color-accent', mode: 'points' },
+    { label: { en: 'Wilson 95% of the 5% rate, low', es: 'Wilson 95 % de la tasa al 5 %, inferior' }, values: at(AT5, 'wilson_low'), color: '--color-fg-subtle', mode: 'points' },
+    { label: { en: 'Wilson 95% of the 5% rate, high', es: 'Wilson 95 % de la tasa al 5 %, superior' }, values: at(AT5, 'wilson_high'), color: '--color-fg-subtle', mode: 'points' },
+    { label: { en: 'Rate at 1%', es: 'Tasa al 1 %' }, values: at(AT1, 'rate'), color: '--color-magenta', mode: 'points' },
   ]);
   if (!drawn.length) return null;
   return {
@@ -294,8 +294,8 @@ export function rateChart(points: EvidencePoint[]): C04Chart | null {
       ...drawn,
     ],
     yMarks: [
-      { y: 0.05, label: { en: 'Nominal 5%', es: 'Nominal 5%' }, tone: 'warn' },
-      { y: 0.01, label: { en: 'Nominal 1%', es: 'Nominal 1%' }, tone: 'bad' },
+      { y: 0.05, label: { en: 'Nominal 5%', es: 'Nominal 5 %' }, tone: 'warn' },
+      { y: 0.01, label: { en: 'Nominal 1%', es: 'Nominal 1 %' }, tone: 'bad' },
     ],
     marks: sims.flatMap((s, i) =>
       s && s.key.includes('@alpha') && s.rung !== null && Math.abs(s.rung - EMPIRICAL_ALPHA) < 1e-12
@@ -598,7 +598,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: rc,
       note: {
         en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power.${rc.marks?.length ? ' Marked: the rates at the empirical momentum strength (alpha 0.125).' : ''} ${src.en}`,
-        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (discontinua 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
+        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5 % con su intervalo de Wilson al 95 %, y al 1 %, contra los niveles nominales (discontinua 5 %, punteada 1 %). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
       },
     };
   }
@@ -1222,12 +1222,12 @@ export function agencyReading(sel: C04Sel, v: AgencyVariant): Reading {
         },
       },
       {
-        label: { en: 'Jeffreys 95%', es: 'Jeffreys 95%' },
+        label: { en: 'Jeffreys 95%', es: 'Jeffreys 95 %' },
         ...(interval ? { text: interval } : { value: null }),
         unitless: true,
         hint: {
           en: `The 95% Jeffreys interval of the pooled rate, ${pooledText.en}: the defaults over the ratings pooled across the cohorts.`,
-          es: `El intervalo de Jeffreys al 95% de la tasa agrupada, ${pooledText.es}: los incumplimientos sobre las calificaciones agrupadas de las cohortes.`,
+          es: `El intervalo de Jeffreys al 95 % de la tasa agrupada, ${pooledText.es}: los incumplimientos sobre las calificaciones agrupadas de las cohortes.`,
         },
       },
     ],
@@ -1343,8 +1343,8 @@ export function familyReading(sel: C04Sel, v: FamilyVariant): Reading {
     provenance,
     items: [
       truthItem({ en: `${expected.en} defaults expected in a year among ${n.en} obligors.`, es: `${expected.es} incumplimientos esperados en un año entre ${n.es} deudores.` }),
-      { label: { en: 'Wald coverage', es: 'Cobertura de Wald' }, value: r?.coverage.wald[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95%.' } },
-      { label: { en: 'Jeffreys coverage', es: 'Cobertura de Jeffreys' }, value: r?.coverage.jeffreys[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95%.' } },
+      { label: { en: 'Wald coverage', es: 'Cobertura de Wald' }, value: r?.coverage.wald[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95 %.' } },
+      { label: { en: 'Jeffreys coverage', es: 'Cobertura de Jeffreys' }, value: r?.coverage.jeffreys[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95 %.' } },
     ],
   };
 }

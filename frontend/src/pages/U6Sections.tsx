@@ -183,7 +183,7 @@ export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             <section key={v.variant_id}>
               <h4>{name}</h4>
               <Table
-                head={[t('Rung', 'Peldaño'), 'AUC', t('95% interval', 'Intervalo 95%'), 'Brier', t('5-year calibration gap', 'Brecha de calibración a 5 años')]}
+                head={[t('Rung', 'Peldaño'), 'AUC', t('95% interval', 'Intervalo 95 %'), 'Brier', t('5-year calibration gap', 'Brecha de calibración a 5 años')]}
                 rows={o.rung_comparison.map((r) => [
                   rungName(v, r.rung_id, lang),
                   r.auc === null ? `${formatNumber(null, lang)}${r.reason ? ` (${r.reason})` : ''}` : num(r.auc, lang, 4),

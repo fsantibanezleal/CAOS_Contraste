@@ -172,7 +172,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
           dataKey={stateKey}
           note={{
             en: 'Held-out AUC, the paired DeLong test against the scorecard, and the calibration of each rung (Brier). From 641 px wide the table adds the DeLong 95% interval of the AUC and the ECE. Engines and licences are in the Context group.',
-            es: 'AUC fuera de muestra, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier). Desde 641 px de ancho la tabla suma el intervalo 95% de DeLong del AUC y el ECE. Motores y licencias están en el grupo Contexto.',
+            es: 'AUC fuera de muestra, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier). Desde 641 px de ancho la tabla suma el intervalo 95 % de DeLong del AUC y el ECE. Motores y licencias están en el grupo Contexto.',
           }}
         >
           <div className="ct-scroll" data-caos-flow="">
@@ -181,7 +181,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
                 <tr>
                   <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                   <th>AUC</th>
-                  <th className="ct-wide-only ct-repeated">{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+                  <th className="ct-wide-only ct-repeated">{pick({ en: '95% interval', es: 'Intervalo 95 %' }, lang)}</th>
                   <th>{pick({ en: 'DeLong p', es: 'p de DeLong' }, lang)}</th>
                   <th>Brier</th>
                   <th className="ct-wide-only ct-repeated">ECE</th>

@@ -14,7 +14,8 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../lib/policy';
 import { P, useT } from '../content/bi';
 import { Marked } from '../workbench/c21/Marked';
-import { inputName } from '../workbench/names';
+import { inputName, modelName } from '../workbench/names';
+import { SHOCK_TEXT as C20_SHOCK_TEXT } from '../workbench/c20/selection';
 import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 
 type Lang = 'en' | 'es';
@@ -121,7 +122,7 @@ function c02Ladder(name: string, v: Variant, lang: Lang): B3Table {
   return {
     key: `ladder-${v.variant_id}`,
     title: name,
-    head: [t('Rung', 'Peldaño'), t('AUC (95% interval)', 'AUC (intervalo 95%)'), 'Brier', 'ECE', t('Hosmer-Lemeshow p', 'p de Hosmer-Lemeshow'), t('AUC difference to the champion', 'Diferencia de AUC con el campeón'), t('DeLong p of the difference', 'p de DeLong de la diferencia')],
+    head: [t('Rung', 'Peldaño'), t('AUC (95% interval)', 'AUC (intervalo 95 %)'), 'Brier', 'ECE', t('Hosmer-Lemeshow p', 'p de Hosmer-Lemeshow'), t('AUC difference to the champion', 'Diferencia de AUC con el campeón'), t('DeLong p of the difference', 'p de DeLong de la diferencia')],
     rows,
     wide: 1,
     note: t(
@@ -308,6 +309,9 @@ function c18Band(name: string, v: Variant, lang: Lang): B3Table | null {
 
 type C20Doc = C20Shock | C20Shift | C20Seeds | C20Perturbation | C20Leakage;
 
+/** A C20 rung by its name in the variant's models (the R2b page review: `P4-lightgbm`). */
+const c20Rung = (v: Variant, id: string, lang: Lang): string => bi(modelName(id, { caseId: 'C20', models: v.model }) ?? { en: id, es: id }, lang);
+
 function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C20Doc;
@@ -322,7 +326,7 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
         t('Shock', 'Shock'),
         o.seen_or_held_out === 'seen' ? t('AUC under the seen shocks', 'AUC bajo los shocks vistos') : t('AUC under the held-out shocks', 'AUC bajo los shocks reservados'),
         range,
-        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => r.shock_id).join(', ')})`, `${o.shipped.rows.length} familias de shocks tal como se entregaron (${o.shipped.rows.map((r) => r.shock_id).join(', ')})`),
+        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).en).join(', ')})`, `${o.shipped.rows.length} familias de shocks tal como se entregaron (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).es).join(', ')})`),
       ];
     }
     case 'shift': {
@@ -340,8 +344,8 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
         name,
         t('Seeds', 'Semillas'),
         t('Standard deviation of the AUC across seeds', 'Desviación estándar del AUC entre semillas'),
-        o.rows.length ? join(o.rows.map((r) => `${r.rung}: ${num(r.auc.sd, lang, 3)}`)) : na(lang, t('the document holds no seed row', 'el documento no contiene fila de semillas')),
-        o.rows.length ? join(o.rows.map((r) => t(`${r.rung}: ${r.n_seeds} seeds`, `${r.rung}: ${r.n_seeds} semillas`))) : na(lang),
+        o.rows.length ? join(o.rows.map((r) => `${c20Rung(v, r.rung, lang)}: ${num(r.auc.sd, lang, 3)}`)) : na(lang, t('the document holds no seed row', 'el documento no contiene fila de semillas')),
+        o.rows.length ? join(o.rows.map((r) => t(`${c20Rung(v, r.rung, 'en')}: ${r.n_seeds} seeds`, `${c20Rung(v, r.rung, 'es')}: ${r.n_seeds} semillas`))) : na(lang),
       ];
     case 'perturbation': {
       const r = o.rows.find((x) => x.eps === o.preset_eps);
@@ -429,7 +433,7 @@ function c21Row(name: string, v: Variant, lang: Lang): Cell[] {
     )}</Marked>,
     per((_, c) => {
       const e = c.controlled.estimate;
-      return e ? t(`odds ratio ${num(e.odds_ratio, lang, 2)} (coefficient ${num(e.coefficient, lang, 2)}, 95% interval ${num(e.ci.lo, lang, 2)} to ${num(e.ci.hi, lang, 2)})`, `razón de momios ${num(e.odds_ratio, lang, 2)} (coeficiente ${num(e.coefficient, lang, 2)}, intervalo 95% ${num(e.ci.lo, lang, 2)} a ${num(e.ci.hi, lang, 2)})`) : na(lang, c.controlled.reason);
+      return e ? t(`odds ratio ${num(e.odds_ratio, lang, 2)} (coefficient ${num(e.coefficient, lang, 2)}, 95% interval ${num(e.ci.lo, lang, 2)} to ${num(e.ci.hi, lang, 2)})`, `razón de momios ${num(e.odds_ratio, lang, 2)} (coeficiente ${num(e.coefficient, lang, 2)}, intervalo 95 % ${num(e.ci.lo, lang, 2)} a ${num(e.ci.hi, lang, 2)})`) : na(lang, c.controlled.reason);
     }),
     per((_, c) => {
       const e = c.confirmation.estimate;

@@ -172,7 +172,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text" data-benchmark={r.drift.chi2_p_value === null ? 'none' : r.drift.chi2_p_value < 0.05 ? 'exceeded' : 'within'} data-na={r.drift.chi2_p_value === null ? 'true' : undefined}>
                     {r.drift.chi2_p_value === null
                       ? `${formatNumber(null, lang)} (${pick({ en: 'the test did not run', es: 'la prueba no corrió' }, lang)})`
-                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'above the benchmark at 5%', es: 'sobre el umbral al 5%' } : { en: 'within the benchmark at 5%', es: 'dentro del umbral al 5%' }, lang)}`}
+                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'above the benchmark at 5%', es: 'sobre el umbral al 5 %' } : { en: 'within the benchmark at 5%', es: 'dentro del umbral al 5 %' }, lang)}`}
                   </td>
                 </tr>
               ))}

@@ -516,7 +516,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `The live curve, the scaled likelihood ratio and the 2009 curve unchanged, at the rail's regime and LGD. The risk weight peaks at a PD near 30% (maturity 2.5 years) and falls beyond it, where the expected loss the function deducts grows faster: the 2009 curve puts CCC-C at ${pct('en', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
-          es: `La curva en vivo, la razón de verosimilitud escalada y la curva 2009 sin cambios, al régimen y la LGD del panel. El ponderador alcanza su máximo con una PD cercana al 30% (vencimiento 2,5 años) y cae más allá, donde la pérdida esperada que la función descuenta crece más rápido: la curva 2009 pone CCC-C en ${pct('es', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
+          es: `La curva en vivo, la razón de verosimilitud escalada y la curva 2009 sin cambios, al régimen y la LGD del panel. El ponderador alcanza su máximo con una PD cercana al 30 % (vencimiento 2,5 años) y cae más allá, donde la pérdida esperada que la función descuenta crece más rápido: la curva 2009 pone CCC-C en ${pct('es', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
         }}
       >
         <UPlotChart

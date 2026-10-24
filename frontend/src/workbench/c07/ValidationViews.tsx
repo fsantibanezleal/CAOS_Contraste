@@ -103,9 +103,9 @@ const axisText = (id: string): BiText => {
     const total = ratio[2] === 'ptvg';
     const en = total ? 'total loan over the value of the guarantee' : 'loan over the value of the guarantee';
     const es = total ? 'préstamo total sobre el valor de la garantía' : 'préstamo sobre el valor de la garantía';
-    if (ratio[1] && ratio[3]) return { en: `${en}: over ${ratio[1]}% up to ${ratio[3]}%`, es: `${es}: sobre ${ratio[1]}% hasta ${ratio[3]}%` };
-    if (ratio[3]) return { en: `${en}: up to ${ratio[3]}%`, es: `${es}: hasta ${ratio[3]}%` };
-    return { en: `${en}: over ${ratio[4]}%`, es: `${es}: sobre ${ratio[4]}%` };
+    if (ratio[1] && ratio[3]) return { en: `${en}: over ${ratio[1]}% up to ${ratio[3]}%`, es: `${es}: sobre ${ratio[1]} % hasta ${ratio[3]} %` };
+    if (ratio[3]) return { en: `${en}: up to ${ratio[3]}%`, es: `${es}: hasta ${ratio[3]} %` };
+    return { en: `${en}: over ${ratio[4]}%`, es: `${es}: sobre ${ratio[4]} %` };
   }
   return { en: id, es: id };
 };

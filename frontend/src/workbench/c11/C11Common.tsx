@@ -53,14 +53,14 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
       {...card}
       note={{
         en: 'Each window is a stress or calm period of public daily series, forecast one day ahead with data strictly before the day. The bars are the exceedances of the champion at the 1% tail against the count expected; windows differ in length. Pick one to load it.',
-        es: 'Cada ventana es un período de tensión o calma de series públicas diarias, pronosticado un día adelante con datos estrictamente anteriores al día. Las barras son las excedencias del campeón en la cola de 1% frente a las esperadas; las ventanas difieren en largo. Elija una para cargarla.',
+        es: 'Cada ventana es un período de tensión o calma de series públicas diarias, pronosticado un día adelante con datos estrictamente anteriores al día. Las barras son las excedencias del campeón en la cola de 1 % frente a las esperadas; las ventanas difieren en largo. Elija una para cargarla.',
       }}
     >
       <ChartOverTable
         chartMin={rowsMin(bars.length)}
         chart={
           <BarChart
-            title={{ en: 'Exceedances of the champion at the 1% tail', es: 'Excedencias del campeón en la cola de 1%' }}
+            title={{ en: 'Exceedances of the champion at the 1% tail', es: 'Excedencias del campeón en la cola de 1 %' }}
             height="fill"
             orientation="horizontal"
             data={bars}

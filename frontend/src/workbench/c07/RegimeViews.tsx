@@ -335,7 +335,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50% se aplica a la cartera normal evaluada individualmente.' }}
+        note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50 % se aplica a la cartera normal evaluada individualmente.' }}
       >
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="group-max-rule">
@@ -446,7 +446,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100% de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
+        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100 % de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
       >
         <div className="ct-scroll" data-caos-flow="" data-measure={d.measure}>
           <table className="caos-table ct-wrap-head" data-table="ifrs9-components">
@@ -455,7 +455,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
                 <th>{pick({ en: 'Weight', es: 'Peso' }, lang)}</th>
                 <th>z</th>
-                <th>{`${pick({ en: 'ECL at 100% weight (sensitivity)', es: 'PCE con 100% de peso (sensibilidad)' }, lang)} (${cur})`}</th>
+                <th>{`${pick({ en: 'ECL at 100% weight (sensitivity)', es: 'PCE con 100 % de peso (sensibilidad)' }, lang)} (${cur})`}</th>
               </tr>
             </thead>
             <tbody>

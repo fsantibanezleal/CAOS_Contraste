@@ -219,7 +219,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <ChipGroup
           id="c04-level"
           label={{ en: 'Level', es: 'Nivel' }}
-          options={LEVELS.map((l) => ({ id: String(l), label: { en: `${Math.round(l * 100)}%`, es: `${Math.round(l * 100)}%` } }))}
+          options={LEVELS.map((l) => ({ id: String(l), label: { en: `${Math.round(l * 100)}%`, es: `${Math.round(l * 100)} %` } }))}
           value={String(level)}
           onChange={(id) => setLevel(Number(id))}
         />

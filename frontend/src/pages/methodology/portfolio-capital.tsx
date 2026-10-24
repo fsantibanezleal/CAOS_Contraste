@@ -29,8 +29,8 @@ function FitFigure() {
       <polyline className="dg-curve" fill="none" points={pts} />
       <line className="dg-marker" x1={x(0.31)} y1={34} x2={x(0.31)} y2={base + 6} />
       <line className="dg-marker" x1={x(0.5)} y1={34} x2={x(0.5)} y2={base + 6} />
-      <text className="dg-marker-label" x={x(0.31) + 4} y={44} textAnchor="start">{t('99%', '99%')}</text>
-      <text className="dg-marker-label" x={x(0.5) + 4} y={44} textAnchor="start">{t('99.9%', '99,9%')}</text>
+      <text className="dg-marker-label" x={x(0.31) + 4} y={44} textAnchor="start">{t('99%', '99 %')}</text>
+      <text className="dg-marker-label" x={x(0.5) + 4} y={44} textAnchor="start">{t('99.9%', '99,9 %')}</text>
       {fit.map((u) => (
         <circle key={`f${u}`} className="dg-node" cx={x(u)} cy={y(u)} r={5} />
       ))}

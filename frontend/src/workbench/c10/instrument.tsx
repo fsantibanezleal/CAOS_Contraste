@@ -27,8 +27,8 @@ export interface C10Instrument {
 }
 
 const LEVEL_HINT: Record<number, BiText> = {
-  0.99: { en: 'The 99% quantile of the loss: one year in a hundred is worse.', es: 'El cuantil del 99% de la pérdida: uno de cada cien años es peor.' },
-  0.999: { en: 'The 99.9% quantile, the level of the Basel IRB capital: one year in a thousand is worse.', es: 'El cuantil del 99,9%, el nivel del capital IRB de Basilea: uno de cada mil años es peor.' },
+  0.99: { en: 'The 99% quantile of the loss: one year in a hundred is worse.', es: 'El cuantil del 99 % de la pérdida: uno de cada cien años es peor.' },
+  0.999: { en: 'The 99.9% quantile, the level of the Basel IRB capital: one year in a thousand is worse.', es: 'El cuantil del 99,9 %, el nivel del capital IRB de Basilea: uno de cada mil años es peor.' },
 };
 
 export function useInstrument(data: CaseData | null, onPick: (id: string) => void): C10Instrument | null {

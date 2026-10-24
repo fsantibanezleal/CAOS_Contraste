@@ -71,7 +71,7 @@ export function C22WriteUp() {
         tex={String.raw`S(c) = \frac{\sqrt{K-1}\,(c - CV_{init})}{c\,\sqrt{0.5 + c^2}} \;\longrightarrow\; 0 \quad (c \to \infty)`}
         caption={t(
           'The ECB concentration statistic as a function of the current CV (ECB 2019, section 2.5.5.3, as transcribed in dossier 06): the variance term treats the K grade frequencies as the sample, so the number of obligors never enters. A chi-square test of homogeneity on the counts catches a 5% concentration shift almost always.',
-          'El estadístico de concentración del BCE en función del CV actual (BCE 2019, sección 2.5.5.3, transcrito en el dossier 06): el término de varianza trata las K frecuencias por grado como la muestra, así que el número de deudores nunca entra. Una prueba chi-cuadrado de homogeneidad en los conteos detecta casi siempre un desplazamiento de concentración del 5%.',
+          'El estadístico de concentración del BCE en función del CV actual (BCE 2019, sección 2.5.5.3, transcrito en el dossier 06): el término de varianza trata las K frecuencias por grado como la muestra, así que el número de deudores nunca entra. Una prueba chi-cuadrado de homogeneidad en los conteos detecta casi siempre un desplazamiento de concentración del 5 %.',
         )}
       />
       <h3>{t('What not to read into it', 'Lo que no debe leerse')}</h3>

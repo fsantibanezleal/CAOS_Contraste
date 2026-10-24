@@ -14,11 +14,14 @@ const X1 = 456;
 const Y0 = 206;
 const Y1 = 24;
 
-function Frame({ label, children }: { label: string; children: ReactNode }) {
+/** A figure of the page: `top` crops an empty band above the drawing (the protocol starts at y 60). */
+function Frame({ label, children, top = 0 }: { label: string; children: ReactNode; top?: number }) {
   return (
-    <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
-      {children}
-    </svg>
+    <div className="ct-docfig-box">
+      <svg className="ct-docfig" viewBox={`0 ${top} ${W} ${H - top}`} role="img" aria-label={label}>
+        {children}
+      </svg>
+    </div>
   );
 }
 
@@ -250,7 +253,7 @@ export function ProtocolFigure() {
     { x: 364, w: 108, cls: 'dg-box good', title: t('Locked holdout', 'Reservada'), sub: t('tests, once', 'pruebas, una vez') },
   ];
   return (
-    <Frame label={t('The leakage-safe protocol: training, calibration and a locked holdout, and the forbidden path', 'El protocolo sin fugas: entrenamiento, calibración y una muestra reservada bloqueada, y el camino prohibido')}>
+    <Frame top={48} label={t('The leakage-safe protocol: training, calibration and a locked holdout, and the forbidden path', 'El protocolo sin fugas: entrenamiento, calibración y una muestra reservada bloqueada, y el camino prohibido')}>
       {parts.map((p) => (
         <g key={p.title}>
           <rect className={p.cls} x={p.x} y={60} width={p.w} height={64} rx={4} />
@@ -260,7 +263,7 @@ export function ProtocolFigure() {
       ))}
       <path className="dg-asymptote" fill="none" d={`M418 130 C 418 190, 126 190, 126 130`} />
       <text className="dg-axis-label" x={W / 2} y={196} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
-      <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30% de muestra reservada; 20% del resto para calibración')}</text>
+      <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30 % de muestra reservada; 20 % del resto para calibración')}</text>
     </Frame>
   );
 }

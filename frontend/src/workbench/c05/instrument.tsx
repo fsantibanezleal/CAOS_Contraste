@@ -13,9 +13,9 @@ import { CASE1, approachShort, isLdp, isSp, type C05Sel } from './selection';
 import { ApproachesView, CurvesView, DefaultProfileView, GoldenSpView, GradeTestsView, ProfilesView, SpImpactView } from './SpViews';
 
 const REGIMES: Array<{ id: Regime; label: BiText; hint: BiText }> = [
-  { id: 'basel3', label: { en: 'Basel III', es: 'Basilea III' }, hint: { en: 'Basel III final (CRE31, in force 2023-01-01): PD floor 0.05%, no scaling factor.', es: 'Basilea III final (CRE31, vigente desde 2023-01-01): piso de PD 0,05%, sin factor de escala.' } },
+  { id: 'basel3', label: { en: 'Basel III', es: 'Basilea III' }, hint: { en: 'Basel III final (CRE31, in force 2023-01-01): PD floor 0.05%, no scaling factor.', es: 'Basilea III final (CRE31, vigente desde 2023-01-01): piso de PD 0,05 %, sin factor de escala.' } },
   { id: 'crr3', label: { en: 'CRR3', es: 'CRR3' }, hint: { en: 'EU CRR3, Article 153 (applies from 2025-01-01): the Basel III formula.', es: 'CRR3 de la UE, artículo 153 (aplica desde 2025-01-01): la fórmula de Basilea III.' } },
-  { id: 'basel2', label: { en: 'Basel II', es: 'Basilea II' }, hint: { en: 'Basel II (CRE30.4): the 1.06 scaling factor, PD floor 0.03%.', es: 'Basilea II (CRE30.4): el factor de escala 1,06, piso de PD 0,03%.' } },
+  { id: 'basel2', label: { en: 'Basel II', es: 'Basilea II' }, hint: { en: 'Basel II (CRE30.4): the 1.06 scaling factor, PD floor 0.03%.', es: 'Basilea II (CRE30.4): el factor de escala 1,06, piso de PD 0,03 %.' } },
 ];
 
 // The rail is 248 px wide at 1280x800: the four approach chips keep the paper's order on two rows when the accuracy
@@ -103,7 +103,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <Knob
           id="c05-lgd"
           label={{ en: 'LGD', es: 'LGD' }}
-          hint={{ en: 'Loss given default for every obligor; 45% is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).', es: 'Pérdida dado el incumplimiento de todo deudor; 45% es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).' }}
+          hint={{ en: 'Loss given default for every obligor; 45% is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).', es: 'Pérdida dado el incumplimiento de todo deudor; 45 % es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).' }}
           value={lgd}
           min={0.1}
           max={0.9}
@@ -167,7 +167,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
               <Knob
                 id="c05-gamma"
                 label={{ en: 'Level', es: 'Nivel' }}
-                hint={{ en: 'The confidence level of the most prudent bounds; the paper argues for moderate ones (below 95%).', es: 'El nivel de confianza de las cotas más prudentes; el artículo aboga por niveles moderados (bajo 95%).' }}
+                hint={{ en: 'The confidence level of the most prudent bounds; the paper argues for moderate ones (below 95%).', es: 'El nivel de confianza de las cotas más prudentes; el artículo aboga por niveles moderados (bajo 95 %).' }}
                 value={gamma}
                 min={0.5}
                 max={0.995}
@@ -178,7 +178,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
               <Knob
                 id="c05-rho"
                 label={{ en: 'Correlation', es: 'Correlación' }}
-                hint={{ en: 'The asset correlation of the one-factor model (12% is the Basel minimum corporate correlation the paper uses).', es: 'La correlación de activos del modelo de un factor (12% es la mínima corporativa de Basilea que usa el artículo).' }}
+                hint={{ en: 'The asset correlation of the one-factor model (12% is the Basel minimum corporate correlation the paper uses).', es: 'La correlación de activos del modelo de un factor (12 % es la mínima corporativa de Basilea que usa el artículo).' }}
                 value={rho}
                 min={0}
                 max={0.3}

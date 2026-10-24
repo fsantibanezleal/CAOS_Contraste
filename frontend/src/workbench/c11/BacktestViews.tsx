@@ -101,7 +101,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             {row
               ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : referenceText(row, lang)})`
               : sel.alpha === 0.01
-                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5% en el riel.' }, lang)
+                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5 % en el riel.' }, lang)
                 : level && level.es_status === 'not-forecast'
                   ? pick({ en: 'Not available: this model forecasts no ES, so there is nothing to back-test.', es: 'No disponible: este modelo no pronostica la ES, así que no hay nada que probar.' }, lang)
                   : pick({ en: 'Not available: the document carries no Z2 for this model and level.', es: 'No disponible: el documento no trae Z2 para este modelo y nivel.' }, lang)}
@@ -165,9 +165,9 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <dd data-level={esAlpha}>{pick(alphaLabel(esAlpha), lang)}</dd>
             <dt>{pick({ en: 'Realised Z2', es: 'Z2 realizado' }, lang)}</dt>
             <dd>{fmt(es.realised)}</dd>
-            <dt>{pick({ en: 'Model 5% critical value (yellow)', es: 'Valor crítico del modelo al 5% (amarillo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 5% critical value (yellow)', es: 'Valor crítico del modelo al 5 % (amarillo)' }, lang)}</dt>
             <dd>{fmt(es.critical_5pct)}</dd>
-            <dt>{pick({ en: 'Model 0.01% critical value (red)', es: 'Valor crítico del modelo al 0,01% (rojo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 0.01% critical value (red)', es: 'Valor crítico del modelo al 0,01 % (rojo)' }, lang)}</dt>
             <dd>{fmt(es.critical_0_01pct)}</dd>
             <dt>{pick({ en: 'Simulated draws', es: 'Simulaciones' }, lang)}</dt>
             <dd>{formatNumber(es.n_draws, lang, { decimals: 0 })}</dd>

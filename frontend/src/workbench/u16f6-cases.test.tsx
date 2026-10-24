@@ -103,7 +103,7 @@ describe('U16-F6 C07 (b04)', () => {
   it('m4: the B-1 tables say days past due and the guarantee ratio in words', () => {
     const t = textOf(render(<TablesView sel={s()} />, 'es'));
     expect(t).toContain('1 a 29 días de mora');
-    expect(t).toContain('préstamo sobre el valor de la garantía: hasta 40%');
+    expect(t).toContain('préstamo sobre el valor de la garantía: hasta 40 %');
     expect(t).not.toMatch(/pvg<=|ptvg</);
   });
   it('m1: the bridge caption never claims where the axis starts', () => {

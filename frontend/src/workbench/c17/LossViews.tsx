@@ -44,11 +44,11 @@ export function exceedanceChart(e: C17Outputs['exceedance'], truth?: C17Outputs[
     ],
     marks: truth
       ? [
-          { x: truth.annual_loss_quantile.value_eur / 1e6, label: { en: 'True 99.9% quantile', es: 'Cuantil verdadero 99,9%' } },
+          { x: truth.annual_loss_quantile.value_eur / 1e6, label: { en: 'True 99.9% quantile', es: 'Cuantil verdadero 99,9 %' } },
           { x: e.quantile_999_eur.sla / 1e6, label: { en: 'SLA', es: 'SLA' } },
         ]
       : [{ x: e.quantile_999_eur.sla / 1e6, label: { en: 'SLA', es: 'SLA' } }],
-    yMarks: [{ y: 1 - level, label: { en: '99.9% level', es: 'Nivel 99,9%' }, tone: 'neutral' }],
+    yMarks: [{ y: 1 - level, label: { en: '99.9% level', es: 'Nivel 99,9 %' }, tone: 'neutral' }],
   };
 }
 
@@ -96,7 +96,7 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Method', es: 'Método' }, lang)}</th>
-                <th>{pick({ en: '99.9% quantile (EUR)', es: 'Cuantil 99,9% (EUR)' }, lang)}</th>
+                <th>{pick({ en: '99.9% quantile (EUR)', es: 'Cuantil 99,9 % (EUR)' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'How', es: 'Cómo' }, lang)}</th>
               </tr>
             </thead>
