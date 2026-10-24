@@ -119,6 +119,17 @@ export const unitFor = (unit: string, value: number): Bi => (value === 1 && UNIT
 export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
   caviar_refit_every_days: { en: 'CAViaR refit every', es: 'Reajuste CAViaR cada' },
   hs_short_window: { en: 'Short historical-simulation window', es: 'Ventana corta de simulación histórica' },
+  // every key the documents list (R2b c12 B2: five printed as ids, in the Spanish view too)
+  hs_long_window: { en: 'Long historical-simulation window', es: 'Ventana larga de simulación histórica' },
+  gas_refit_every_days: { en: 'GAS refit every', es: 'Reajuste GAS cada' },
+  evt_refit_every_days: { en: 'EVT refit every', es: 'Reajuste EVT cada' },
+  z2_draws: { en: 'Z2 simulations', es: 'Simulaciones de Z2' },
+  mc_draws: { en: 'Monte Carlo simulations', es: 'Simulaciones de Monte Carlo' },
+};
+
+/** The reasons a document gives for a score it could not compute, in Spanish (the document writes them in English). */
+export const REASON_ES: Record<string, string> = {
+  'the model forecasts no ES: FZ0 is not defined': 'el modelo no pronostica ES: FZ0 no está definido',
 };
 
 export const CLASS_TEXT: Record<string, Bi> = {
