@@ -227,7 +227,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
     if (loan.length)
       out.push({
         key: 'loan-type',
-        head: [t('Loan type', 'Tipo de crédito'), t('Fitted PD (95% interval)', 'PD ajustada (intervalo 95%)'), t('Fitted correlation (95% interval)', 'Correlación ajustada (intervalo 95%)'), t('Exceedances in the evaluation years', 'Excedencias en los años de evaluación'), t('99.9% capital, C2 Monte Carlo', 'Capital al 99,9%, C2 Monte Carlo'), t('99.9% capital, LHP (C1)', 'Capital al 99,9%, LHP (C1)')],
+        head: [t('Loan type', 'Tipo de crédito'), t('Fitted PD (95% interval)', 'PD ajustada (intervalo 95 %)'), t('Fitted correlation (95% interval)', 'Correlación ajustada (intervalo 95 %)'), t('Exceedances in the evaluation years', 'Excedencias en los años de evaluación'), t('99.9% capital, C2 Monte Carlo', 'Capital al 99,9 %, C2 Monte Carlo'), t('99.9% capital, LHP (C1)', 'Capital al 99,9 %, LHP (C1)')],
         rows: loan.map((v) => c10LoanRow(nameOf(v), v, lang)),
         note: t(
           'The fit reads the yearly loss rates up to 2006 by maximum likelihood; the exceedances count the years from 2007 to 2012 in which the loss rate went over the fitted quantile of each level; the capital is the economic capital of the illustrative portfolio, in the currency shown.',
@@ -253,13 +253,13 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c11Row,
       t(
         'The champion of a level is the model with the lowest average FZ0 score among the eligible ones; the confidence set (MCS) counts the models the test cannot separate from the best. The Basel traffic light is defined for the 99% VaR only.',
-        'El campeón de un nivel es el modelo con el menor puntaje FZ0 promedio entre los elegibles; el conjunto de confianza (MCS) cuenta los modelos que la prueba no logra separar del mejor. El semáforo de Basilea se define solo para el VaR al 99%.',
+        'El campeón de un nivel es el modelo con el menor puntaje FZ0 promedio entre los elegibles; el conjunto de confianza (MCS) cuenta los modelos que la prueba no logra separar del mejor. El semáforo de Basilea se define solo para el VaR al 99 %.',
       ),
       5,
     );
   if (id === 'C13')
     return one(
-      [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Share caught (95% interval)', 'Parte detectada (intervalo 95%)'), t('PLA zones, joint (replications)', 'Zonas PLA, conjuntas (réplicas)')],
+      [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Share caught (95% interval)', 'Parte detectada (intervalo 95 %)'), t('PLA zones, joint (replications)', 'Zonas PLA, conjuntas (réplicas)')],
       c13Row,
       t(
         'A replication is caught when its joint zone of the P&L attribution test is amber or red; on the control, with no deficiency, that share is the false alarm rate.',
@@ -273,7 +273,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c14Row,
       t(
         'The largest of the six prescribed shocks of the 2024 calibration, with the shock that gives it; the outlier test compares it with 15% of Tier 1 capital. A positive delta is a loss; contractual puts every non-maturity deposit in the overnight bucket.',
-        'El mayor de los seis shocks prescritos de la calibración 2024, con el shock que lo da; la prueba de valor atípico lo compara con 15% del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
+        'El mayor de los seis shocks prescritos de la calibración 2024, con el shock que lo da; la prueba de valor atípico lo compara con 15 % del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
       ),
       5,
     );
@@ -283,12 +283,12 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c15Row,
       t(
         'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows stay on the fixtures until the owner supplies the data.',
-        'El mayor de los seis shocks del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50% aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
+        'El mayor de los seis shocks del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50 % aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
       ),
       6,
     );
   return one(
-    [t('Variant', 'Variante'), t('Tail index', 'Índice de cola'), t('True 99.9% quantile', 'Cuantil verdadero al 99,9%'), t('LDA capital over the true quantile (median)', 'Capital LDA sobre el cuantil verdadero (mediana)'), t('Its dispersion (IQR over the true quantile)', 'Su dispersión (rango intercuartil sobre el cuantil verdadero)'), t('SMA capital', 'Capital SMA')],
+    [t('Variant', 'Variante'), t('Tail index', 'Índice de cola'), t('True 99.9% quantile', 'Cuantil verdadero al 99,9 %'), t('LDA capital over the true quantile (median)', 'Capital LDA sobre el cuantil verdadero (mediana)'), t('Its dispersion (IQR over the true quantile)', 'Su dispersión (rango intercuartil sobre el cuantil verdadero)'), t('SMA capital', 'Capital SMA')],
     c17Row,
     t(
       `The LDA capital is the spliced lognormal and GPD rung over ${C17_YEARS} years of losses collected above EUR 20,000, across the independent histories of the cell; a ratio of 1 is the true quantile. The SMA capital is the standardised measure of the synthetic bank with no added loss.`,
@@ -326,7 +326,7 @@ function c10Rungs(name: string, v: Variant, lang: Lang): W2Table {
   return {
     key: `rungs-${v.variant_id}`,
     title: name,
-    head: [t('Rung', 'Peldaño'), t('Method', 'Método'), t('Estimator', 'Estimador'), t('99.9% VaR', 'VaR al 99,9%'), t('99.9% ES', 'ES al 99,9%'), t('99.9% capital', 'Capital al 99,9%'), t('Monte Carlo error of the VaR', 'Error de Monte Carlo del VaR'), t('Capital against the reference', 'Capital frente a la referencia')],
+    head: [t('Rung', 'Peldaño'), t('Method', 'Método'), t('Estimator', 'Estimador'), t('99.9% VaR', 'VaR al 99,9 %'), t('99.9% ES', 'ES al 99,9 %'), t('99.9% capital', 'Capital al 99,9 %'), t('Monte Carlo error of the VaR', 'Error de Monte Carlo del VaR'), t('Capital against the reference', 'Capital frente a la referencia')],
     rows,
     wide: 3,
     note: t(
@@ -353,7 +353,7 @@ function c10Estimators(name: string, v: Variant, lang: Lang): W2Table {
   return {
     key: `estimators-${v.variant_id}`,
     title: name,
-    head: [t('Known correlation', 'Correlación conocida'), t('Estimator', 'Estimador'), t('Mean estimate', 'Estimación media'), t('Bias', 'Sesgo'), 'RMSE', t('Coverage of the 95% interval', 'Cobertura del intervalo 95%'), t('Rejection of the null', 'Rechazo de la nula')],
+    head: [t('Known correlation', 'Correlación conocida'), t('Estimator', 'Estimador'), t('Mean estimate', 'Estimación media'), t('Bias', 'Sesgo'), 'RMSE', t('Coverage of the 95% interval', 'Cobertura del intervalo 95 %'), t('Rejection of the null', 'Rechazo de la nula')],
     rows,
     wide: 2,
     note: t('The simulator knows the true correlation of each cell, so the bias and the coverage are measured against it.', 'El simulador conoce la correlación verdadera de cada celda, así que el sesgo y la cobertura se miden contra ella.'),
@@ -418,7 +418,7 @@ function c13Detection(manifest: CaseManifest, vs: Variant[], lang: Lang): W2Tabl
   });
   return {
     key: 'detection',
-    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por el backtest de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95%)')],
+    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por el backtest de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95 %)')],
     rows,
     wide: 3,
     note: t(
@@ -450,7 +450,7 @@ function c17Ladder(name: string, v: Variant, lang: Lang): W2Table {
   const sma = o.sma_response.rows.find((r) => r.added_loss_eur === 0) ?? o.sma_response.rows[0];
   if (sma)
     rows.push([t('Standardised measurement approach (SMA)', 'Enfoque de medición estandarizado (SMA)'), t('closed form', 'forma cerrada'), STATUS_TEXT.verified ? pick(STATUS_TEXT.verified, lang) : '', money(sma.orc_eur, o.currency, lang), q ? num(sma.orc_eur / q.value_eur, lang, 2) : na(lang), '', '']);
-  const truth = q ? `${t('True 99.9% quantile', 'Cuantil verdadero al 99,9%')}: ${money(q.value_eur, o.currency, lang)}` : '';
+  const truth = q ? `${t('True 99.9% quantile', 'Cuantil verdadero al 99,9 %')}: ${money(q.value_eur, o.currency, lang)}` : '';
   return {
     key: `ladder-${v.variant_id}`,
     title: `${name} (${pick(cellLabel(cell.years, cell.collection_threshold_eur), lang)}${truth ? `; ${truth}` : ''})`,
@@ -459,7 +459,7 @@ function c17Ladder(name: string, v: Variant, lang: Lang): W2Table {
     wide: 3,
     note: t(
       'The ratio is the median capital over the true 99.9% quantile of the generator, so 1 is exact and below 1 underestimates; the SMA is a regulatory measure with no sampling, so it has a single value.',
-      'La razón es el capital mediano sobre el cuantil verdadero al 99,9% del generador, así que 1 es exacto y bajo 1 subestima; el SMA es una medida regulatoria sin muestreo, así que tiene un solo valor.',
+      'La razón es el capital mediano sobre el cuantil verdadero al 99,9 % del generador, así que 1 es exacto y bajo 1 subestima; el SMA es una medida regulatoria sin muestreo, así que tiene un solo valor.',
     ),
   };
 }

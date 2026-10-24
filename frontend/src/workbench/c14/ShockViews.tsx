@@ -188,7 +188,7 @@ export function outlierChart(sel: C14Sel | null): Pick<UPlotChartProps, 'x' | 'y
       { label: NMD_TEXT.behavioural, values: share('behavioural'), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
       { label: NMD_TEXT.contractual, values: share('contractual'), color: '--color-magenta', width: 2.4, mode: 'points', size: 12 },
     ],
-    yMarks: [{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15% del capital de nivel 1' }, tone: 'bad' }],
+    yMarks: [{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15 % del capital de nivel 1' }, tone: 'bad' }],
   };
 }
 

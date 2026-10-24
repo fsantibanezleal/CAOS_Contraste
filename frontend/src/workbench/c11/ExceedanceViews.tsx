@@ -140,7 +140,7 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
         <PlotCard fill title={title} {...card}>
           <ConventionLine />
           <p className="ct-note" data-state="unavailable">
-            {pick({ en: 'Not available at this level: the Basel traffic light (MAR32.9) is defined at the 99 percent level over 250 days, the 1% tail.', es: 'No disponible en este nivel: el semáforo de Basilea (MAR32.9) se define al nivel de 99 por ciento sobre 250 días, la cola de 1%.' }, lang)}
+            {pick({ en: 'Not available at this level: the Basel traffic light (MAR32.9) is defined at the 99 percent level over 250 days, the 1% tail.', es: 'No disponible en este nivel: el semáforo de Basilea (MAR32.9) se define al nivel de 99 por ciento sobre 250 días, la cola de 1 %.' }, lang)}
           </p>
         </PlotCard>
       </ViewsRow>

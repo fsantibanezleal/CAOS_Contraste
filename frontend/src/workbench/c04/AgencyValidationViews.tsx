@@ -346,8 +346,8 @@ export function intervalsChart(rows: PdRow[]): IntervalsChart {
     { label: { en: 'Long-run average', es: 'Promedio de largo plazo' }, values: rows.map((r) => r.rate), color: '--color-good', width: 2 },
     { label: { en: 'Pooled, defaults / n', es: 'Agrupada, incumplimientos / n' }, values: rows.map((r) => r.pooled), color: '--color-fg', mode: 'points' },
     ...METHODS.flatMap((m): ChartSeries[] => [
-      { label: { en: `${m.name} 95%, upper`, es: `${m.name} 95%, superior` }, values: rows.map((r) => r[m.key].upper), color: m.color, width: 2 },
-      { label: { en: `${m.name} 95%, lower`, es: `${m.name} 95%, inferior` }, values: rows.map((r) => r[m.key].lower), color: m.color, width: 1.4, dash: [5, 4] },
+      { label: { en: `${m.name} 95%, upper`, es: `${m.name} 95 %, superior` }, values: rows.map((r) => r[m.key].upper), color: m.color, width: 2 },
+      { label: { en: `${m.name} 95%, lower`, es: `${m.name} 95 %, inferior` }, values: rows.map((r) => r[m.key].lower), color: m.color, width: 1.4, dash: [5, 4] },
     ]),
   ];
   const zeroGrades = new Set<number>();
@@ -427,9 +427,9 @@ function PdTableHead({ show }: { show: (c: PdOptional) => boolean }) {
         <th>{pick({ en: 'Average, %', es: 'Promedio, %' }, lang)}</th>
         <th>{pick({ en: 'Defaults / n', es: 'Incumpl. / n' }, lang)}</th>
         {show('pooled') && <th className="ct-wide-only">{pick({ en: 'Pooled, %', es: 'Agrupada, %' }, lang)}</th>}
-        <th>{pick({ en: 'Jeffreys 95%, %', es: 'Jeffreys 95%, %' }, lang)}</th>
-        {show('wald') && <th className="ct-wide-only">{pick({ en: 'Wald 95%, %', es: 'Wald 95%, %' }, lang)}</th>}
-        {show('agresti-coull') && <th className="ct-wide-only">{pick({ en: 'Agresti-Coull 95%, %', es: 'Agresti-Coull 95%, %' }, lang)}</th>}
+        <th>{pick({ en: 'Jeffreys 95%, %', es: 'Jeffreys 95 %, %' }, lang)}</th>
+        {show('wald') && <th className="ct-wide-only">{pick({ en: 'Wald 95%, %', es: 'Wald 95 %, %' }, lang)}</th>}
+        {show('agresti-coull') && <th className="ct-wide-only">{pick({ en: 'Agresti-Coull 95%, %', es: 'Agresti-Coull 95 %, %' }, lang)}</th>}
         {show('cohorts') && <th className="ct-wide-only">{pick({ en: 'Cohorts', es: 'Cohortes' }, lang)}</th>}
         {show('last5') && <th className="ct-wide-only">{pick({ en: 'Last five, %', es: 'Últimas cinco, %' }, lang)}</th>}
       </tr>

@@ -41,11 +41,11 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
   const note: BiText = which === 'controlled'
     ? {
         en: 'The coefficient of the group in a logistic decision model of approval with the permitted underwriting controls HMDA publishes, with its 95% interval: negative means lower odds of approval than the reference group at the same controls. The public data carry no credit score, so every estimate names it as a missing control. An approximation of comparative evidence.',
-        es: 'El coeficiente del grupo en un modelo logístico de decisión de aprobación con los controles de suscripción permitidos que publica HMDA, con su intervalo de 95%: negativo significa menores odds de aprobación que el grupo de referencia con los mismos controles. Los datos públicos no traen puntaje de crédito, así que cada estimación lo nombra como control faltante. Una aproximación de evidencia comparativa.',
+        es: 'El coeficiente del grupo en un modelo logístico de decisión de aprobación con los controles de suscripción permitidos que publica HMDA, con su intervalo de 95 %: negativo significa menores odds de aprobación que el grupo de referencia con los mismos controles. Los datos públicos no traen puntaje de crédito, así que cada estimación lo nombra como control faltante. Una aproximación de evidencia comparativa.',
       }
     : {
         en: 'The coefficient of the group in a linear model of the rate spread of the approved loans with the same controls, in percentage points of rate spread, with its 95% interval: positive means a higher spread than the reference group. An approximation of comparative evidence.',
-        es: 'El coeficiente del grupo en un modelo lineal del diferencial de tasa de los préstamos aprobados con los mismos controles, en puntos porcentuales de diferencial, con su intervalo de 95%: positivo significa un diferencial mayor que el del grupo de referencia. Una aproximación de evidencia comparativa.',
+        es: 'El coeficiente del grupo en un modelo lineal del diferencial de tasa de los préstamos aprobados con los mismos controles, en puntos porcentuales de diferencial, con su intervalo de 95 %: positivo significa un diferencial mayor que el del grupo de referencia. Una aproximación de evidencia comparativa.',
       };
   return (
     <PlotCard fill title={{ en: `${title.en}: ${text(FIELD_TEXT, a.field).en.toLowerCase()}`, es: `${title.es}: ${text(FIELD_TEXT, a.field).es.toLowerCase()}` }} {...card} note={note}>
@@ -74,7 +74,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
             <tr>
               <th className="ct-text">{pick({ en: 'Group', es: 'Grupo' }, lang)}</th>
               <th>{pick({ en: 'Coefficient', es: 'Coeficiente' }, lang)}</th>
-              <th>{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+              <th>{pick({ en: '95% interval', es: 'Intervalo 95 %' }, lang)}</th>
               <th className="ct-wide-only">{which === 'controlled' ? pick({ en: 'Odds ratio', es: 'Razón de odds' }, lang) : pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
               <th className="ct-wide-only">N</th>
             </tr>

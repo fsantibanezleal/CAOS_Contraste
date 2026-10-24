@@ -24,8 +24,8 @@ export function C01WriteUp() {
       <h3>{t('The split', 'La partición')}</h3>
       <L
         items={[
-          { en: 'A locked stratified holdout of 30%, opened only by the evaluation.', es: 'Una muestra reservada estratificada del 30%, abierta solo por la evaluación.' },
-          { en: 'A calibration slice of 20% of the rest, disjoint from the holdout: every calibration map is fitted there.', es: 'Un tramo de calibración del 20% del resto, disjunto de la muestra reservada: ahí se ajusta todo mapa de calibración.' },
+          { en: 'A locked stratified holdout of 30%, opened only by the evaluation.', es: 'Una muestra reservada estratificada del 30 %, abierta solo por la evaluación.' },
+          { en: 'A calibration slice of 20% of the rest, disjoint from the holdout: every calibration map is fitted there.', es: 'Un tramo de calibración del 20 % del resto, disjunto de la muestra reservada: ahí se ajusta todo mapa de calibración.' },
           { en: 'The training slice: binning, WoE, rules and hyperparameters are fitted there only, with repeated stratified five-fold cross-validation.', es: 'El tramo de entrenamiento: tramos, WoE, reglas e hiperparámetros se ajustan solo ahí, con validación cruzada estratificada repetida de cinco pliegues.' },
         ]}
       />
@@ -47,7 +47,7 @@ export function C01WriteUp() {
           { en: 'Holdout: the models as they would be validated on day one.', es: 'Muestra reservada: los modelos como se validarían el primer día.' },
           { en: 'Covariate drift, moderate and severe: real holdout rows resampled toward recent delinquency with P(default | x) unchanged. A calibrated model stays calibrated; the PSI must flag the shift.', es: 'Deriva de covariables, moderada y severa: filas reales remuestreadas hacia mora reciente con P(incumplimiento | x) sin cambio. Un modelo calibrado sigue calibrado; el PSI debe detectar el cambio.' },
           { en: 'Prior shift x1.5: 1.5 times the defaults with P(x | default) unchanged. Every PD now under-estimates the default rate, and the Jeffreys and binomial tests must reject.', es: 'Cambio de prior x1,5: 1,5 veces los incumplimientos con P(x | incumplimiento) sin cambio. Toda PD subestima ahora la tasa de incumplimiento, y las pruebas de Jeffreys y binomial deben rechazar.' },
-          { en: 'Label noise 5%: discrimination falls for every rung, and the default rate rises (flipping 5% of a 22% default rate adds more defaults than it removes).', es: 'Ruido de etiqueta 5%: la discriminación cae en todo peldaño, y la tasa de incumplimiento sube (invertir el 5% de una tasa de 22% agrega más incumplimientos de los que quita).' },
+          { en: 'Label noise 5%: discrimination falls for every rung, and the default rate rises (flipping 5% of a 22% default rate adds more defaults than it removes).', es: 'Ruido de etiqueta 5 %: la discriminación cae en todo peldaño, y la tasa de incumplimiento sube (invertir el 5 % de una tasa de 22 % agrega más incumplimientos de los que quita).' },
           { en: 'Small sample: the ladder retrained on 2,000 rows; estimation risk, and whether the challengers\' gain survives with less data.', es: 'Muestra pequeña: la escalera reentrenada con 2.000 filas; riesgo de estimación, y si la ganancia de los retadores sobrevive con menos datos.' },
           { en: 'German twin: the whole ladder on small data, with TabPFN, and the cost matrix as the decision.', es: 'Gemelo alemán: toda la escalera con pocos datos, con TabPFN, y la matriz de costos como decisión.' },
         ]}
@@ -61,7 +61,7 @@ export function C01WriteUp() {
         tex="K = LGD\cdot N\!\left(\frac{G(PD)}{\sqrt{1-R}} + \sqrt{\frac{R}{1-R}}\;G(0.999)\right) - PD\cdot LGD, \qquad \text{capital} = K\cdot s\cdot EAD"
         caption={t(
           'The retail capital requirement per unit of EAD (8% of the risk-weighted assets): N the standard normal distribution, G its inverse, R the class correlation (4% for QRRE), s the scaling factor (1.06 in Basel II, none in Basel III and CRR3). K is linear in the LGD, so the view multiplies the committed capital at unit LGD by the rail\'s.',
-          'El requerimiento de capital minorista por unidad de EAD (8% de los activos ponderados por riesgo): N la distribución normal estándar, G su inversa, R la correlación de la clase (4% para QRRE), s el factor de escala (1,06 en Basilea II, ninguno en Basilea III y CRR3). K es lineal en la LGD, así que la vista multiplica el capital versionado a LGD unitaria por la del panel.',
+          'El requerimiento de capital minorista por unidad de EAD (8 % de los activos ponderados por riesgo): N la distribución normal estándar, G su inversa, R la correlación de la clase (4 % para QRRE), s el factor de escala (1,06 en Basilea II, ninguno en Basilea III y CRR3). K es lineal en la LGD, así que la vista multiplica el capital versionado a LGD unitaria por la del panel.',
         )}
       />
       <P

@@ -228,8 +228,15 @@ table.ct-wrap-head th { white-space: normal; }
 .ct-defs dt { color: var(--color-fg-subtle); min-width: 0; overflow-wrap: break-word; }
 .ct-defs dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
 
-/* The schematics of the documentation pages (pages/DocFigures.tsx): one column wide, never wider than its figure */
-.ct-docfig { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+/* The schematics of the documentation pages (pages/DocFigures.tsx): one column wide, never wider than its figure. The selector
+   outranks the shell's `.prose svg { max-width: 100% }`, which drew a figure across the whole page at 1280 (the R2b page review
+   c23); on a phone a figure keeps 440 px, so its labels stay readable, in a box that scrolls sideways with the fade */
+.ct-docfig-box { min-width: 0; max-width: 100%; }
+.prose svg.ct-docfig, svg.ct-docfig { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+@media (max-width: 640px) {
+  .ct-docfig-box { overflow-x: auto; padding-right: 1.5rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent); }
+  .prose svg.ct-docfig, svg.ct-docfig { min-width: 440px; }
+}
 .ct-docfig text { overflow: visible; }
 
 /* the heading of a part inside one documentation section (a Methodology topic is one method section) */

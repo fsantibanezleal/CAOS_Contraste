@@ -94,7 +94,7 @@ export function BoostingExtra() {
       />
       <P
         en="What a better ranking is worth in capital: at 80% approved, an LGD of 50% and the Basel III function, the monotone boosted book of the Taiwan cards needs 4.2% less capital than the scorecard's, because the better ranking lets in less risk at the same approval rate. The gap grows to 10.3% under severe covariate drift and reverses to 13.5% more capital for the same model trained on 2,000 rows, so the complexity pays only where there is enough data to support it."
-        es="Lo que vale en capital un mejor ordenamiento: con 80% aprobado, una LGD de 50% y la función de Basilea III, la cartera boosted monótona de las tarjetas de Taiwán necesita 4,2% menos de capital que la de la scorecard, porque el mejor ordenamiento deja entrar menos riesgo con la misma tasa de aprobación. La brecha crece a 10,3% con deriva severa de covariables y se invierte a 13,5% más de capital para el mismo modelo entrenado con 2000 filas, de modo que la complejidad rinde solo donde hay datos suficientes que la sostengan."
+        es="Lo que vale en capital un mejor ordenamiento: con 80 % aprobado, una LGD de 50 % y la función de Basilea III, la cartera boosted monótona de las tarjetas de Taiwán necesita 4,2 % menos de capital que la de la scorecard, porque el mejor ordenamiento deja entrar menos riesgo con la misma tasa de aprobación. La brecha crece a 10,3 % con deriva severa de covariables y se invierte a 13,5 % más de capital para el mismo modelo entrenado con 2000 filas, de modo que la complejidad rinde solo donde hay datos suficientes que la sostengan."
       />
       <Equation
         tex={String.raw`F_M(x) = F_0 + \nu\sum_{m=1}^{M} h_m(x), \qquad \frac{\partial F_M}{\partial x_j} \ge 0 \ \text{ for each constrained feature } j`}
@@ -126,7 +126,7 @@ export function DiscriminationExtra() {
       />
       <P
         en="A caution found by measuring the test itself in case C22: the test of the AUC against the initial AUC treats the initial AUC as known, and when it is estimated on a slice of similar size the test rejects about one time in six at the 5% level when nothing changed. Contraste therefore adds the variance of the calibration slice's AUC, an extension of the ECB formula that the result states; with it the champion's p-value on the plain holdout moved from 0.092 to 0.226."
-        es="Una cautela hallada midiendo la propia prueba en el caso C22: la prueba del AUC contra el AUC inicial trata el AUC inicial como conocido, y cuando se estima en una tajada de tamaño similar la prueba rechaza cerca de una vez de cada seis al nivel de 5% cuando nada cambió. Por eso Contraste suma la varianza del AUC de la tajada de calibración, una extensión de la fórmula del BCE que el resultado declara; con ella el valor p del campeón en la muestra reservada simple pasó de 0,092 a 0,226."
+        es="Una cautela hallada midiendo la propia prueba en el caso C22: la prueba del AUC contra el AUC inicial trata el AUC inicial como conocido, y cuando se estima en una tajada de tamaño similar la prueba rechaza cerca de una vez de cada seis al nivel de 5 % cuando nada cambió. Por eso Contraste suma la varianza del AUC de la tajada de calibración, una extensión de la fórmula del BCE que el resultado declara; con ella el valor p del campeón en la muestra reservada simple pasó de 0,092 a 0,226."
       />
       <Figure caption={t('An ROC curve, schematic: the area under it is the AUC, the probability that a defaulter scores riskier than a non-defaulter; the diagonal is a ranking with no information.', 'Una curva ROC, esquemática: el área bajo ella es el AUC, la probabilidad de que un deudor que incumple puntúe como más riesgoso que uno que no; la diagonal es un ordenamiento sin información.')}>
         <RocFigure />
@@ -154,7 +154,7 @@ export function CalibrationExtra() {
       <Limit
         title={{ en: 'A calibration test is only as good as its measured size', es: 'Una prueba de calibración vale lo que su tamaño medido' }}
         en="Hosmer-Lemeshow with the degrees of freedom of a model fitted on the same data rejected correct PDs about one time in nine at the 5% level when the PDs were fitted on other data. Case C22 found it by measurement and the product corrected it, which is why no test of the battery is read without its measured size."
-        es="Hosmer-Lemeshow con los grados de libertad de un modelo ajustado sobre los mismos datos rechazó PD correctas cerca de una vez de cada nueve al nivel de 5% cuando las PD se habían ajustado con otros datos. El caso C22 lo encontró midiendo y el producto lo corrigió, y por eso ninguna prueba de la batería se lee sin su tamaño medido."
+        es="Hosmer-Lemeshow con los grados de libertad de un modelo ajustado sobre los mismos datos rechazó PD correctas cerca de una vez de cada nueve al nivel de 5 % cuando las PD se habían ajustado con otros datos. El caso C22 lo encontró midiendo y el producto lo corrigió, y por eso ninguna prueba de la batería se lee sin su tamaño medido."
       />
     </>
   );

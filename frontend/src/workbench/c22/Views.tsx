@@ -298,7 +298,7 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
         lane={REPLAY}
         provenance={provenanceOf(v.provenance.truth_status)}
         dataKey={stateKey}
-        note={{ en: 'Rate (Monte Carlo SE), 95% Wilson interval, and the exact probability where one exists, with whether the rate agrees with it within 3.29 SE. The setting is on the panel\'s axis; the scenario states it in words.', es: 'Tasa (EE de Monte Carlo), intervalo de Wilson al 95%, y la probabilidad exacta donde existe, con si la tasa concuerda con ella dentro de 3,29 EE. El ajuste está en el eje del panel; el escenario lo dice en palabras.' }}
+        note={{ en: 'Rate (Monte Carlo SE), 95% Wilson interval, and the exact probability where one exists, with whether the rate agrees with it within 3.29 SE. The setting is on the panel\'s axis; the scenario states it in words.', es: 'Tasa (EE de Monte Carlo), intervalo de Wilson al 95 %, y la probabilidad exacta donde existe, con si la tasa concuerda con ella dentro de 3,29 EE. El ajuste está en el eje del panel; el escenario lo dice en palabras.' }}
       >
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="rates">
@@ -309,7 +309,7 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
                 <th>{pick({ en: 'Setting', es: 'Ajuste' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
                 <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Wilson 95%', es: 'Wilson 95%' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Wilson 95%', es: 'Wilson 95 %' }, lang)}</th>
                 <th>{pick({ en: 'Exact', es: 'Exacta' }, lang)}</th>
               </tr>
             </thead>
@@ -611,7 +611,7 @@ export function EstimatorsView({ sel }: { sel: C22Sel | null }) {
             <tr><td className="ct-text">{pick({ en: 'AUC: empirical SE', es: 'AUC: EE empírico' }, lang)}</td><td>{num(a.empirical_se)}</td><td>{num(a.empirical_se_mcse)}</td></tr>
             <tr><td className="ct-text">{pick({ en: 'AUC: exact SE (Hanley and McNeil)', es: 'AUC: EE exacto (Hanley y McNeil)' }, lang)}</td><td>{num(a.exact_se)}</td><td>-</td></tr>
             <tr><td className="ct-text">{pick({ en: 'AUC: ECB SE (average)', es: 'AUC: EE del BCE (promedio)' }, lang)}</td><td>{num(a.model_se)}</td><td>-</td></tr>
-            <tr><td className="ct-text">{pick({ en: 'AUC: coverage of the 95% interval', es: 'AUC: cobertura del intervalo al 95%' }, lang)}</td><td>{pct(lang, a.coverage)}</td><td>{pct(lang, a.coverage_mcse)}</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'AUC: coverage of the 95% interval', es: 'AUC: cobertura del intervalo al 95 %' }, lang)}</td><td>{pct(lang, a.coverage)}</td><td>{pct(lang, a.coverage_mcse)}</td></tr>
             <tr><td className="ct-text">{pick({ en: 'ECE when the PDs are right (its bias)', es: 'ECE cuando las PD son correctas (su sesgo)' }, lang)}</td><td>{num(e.mean)}</td><td>{num(e.bias_mcse)}</td></tr>
           </tbody>
         </table>
@@ -780,7 +780,7 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: `Each cited rate at ${pct('en', sel.level, 0)}, numbered as in the table, with its 95% Wilson interval, against the nominal level.`, es: `Cada tasa citada al ${pct('es', sel.level, 0)}, numerada como en la tabla, con su intervalo de Wilson al 95%, contra el nivel nominal.` }}
+        note={{ en: `Each cited rate at ${pct('en', sel.level, 0)}, numbered as in the table, with its 95% Wilson interval, against the nominal level.`, es: `Cada tasa citada al ${pct('es', sel.level, 0)}, numerada como en la tabla, con su intervalo de Wilson al 95 %, contra el nivel nominal.` }}
       >
         <UPlotChart
           height="fill"
@@ -788,8 +788,8 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
           y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, Math.min(1, Math.max(sel.level, ...points.map((x) => (x.s ? rateOf(x.s, r).hi : 0))) * 1.1)] }}
           series={[
             // the interval ends are small dots drawn first; the rate is the larger accent dot drawn last, so the interval never covers it
-            { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
-            { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Wilson 95%, low', es: 'Wilson 95 %, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Wilson 95%, high', es: 'Wilson 95 %, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
             { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points', size: 9 },
           ]}
           yMarks={[{ ...NOMINAL(sel.level), tone: 'warn' }]}
@@ -939,7 +939,7 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
           {pick(
             {
               en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5% sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5 % sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}

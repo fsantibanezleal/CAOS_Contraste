@@ -154,7 +154,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <dd>{pick({ en: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'en', { digits: 4 })} losses per year of ${whole(t.frequency.counted_above_eur, 'en')} EUR or more`, es: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'es', { digits: 4 })} pérdidas por año de ${whole(t.frequency.counted_above_eur, 'es')} EUR o más` }, lang)}</dd>
           <dt>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</dt>
           <dd>{pick({ en: `generalised Pareto from ${whole(t.severity.location_eur, 'en')} EUR, scale ${whole(t.severity.scale_eur, 'en')} EUR, tail index ${formatNumber(t.severity.tail_index, 'en', { digits: 3 })}`, es: `Pareto generalizada desde ${whole(t.severity.location_eur, 'es')} EUR, escala ${whole(t.severity.scale_eur, 'es')} EUR, índice de cola ${formatNumber(t.severity.tail_index, 'es', { digits: 3 })}` }, lang)}</dd>
-          <dt>{pick({ en: 'True 99.9% quantile of the annual loss', es: 'Cuantil verdadero 99,9% de la pérdida anual' }, lang)}</dt>
+          <dt>{pick({ en: 'True 99.9% quantile of the annual loss', es: 'Cuantil verdadero 99,9 % de la pérdida anual' }, lang)}</dt>
           <dd data-quantile={q.value_eur}>{pick({ en: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).en}, checked by ${whole(q.mc_check.n_years, 'en')} simulated years)`, es: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).es}, verificado con ${whole(q.mc_check.n_years, 'es')} años simulados)` }, lang)}</dd>
           <dt>{pick({ en: 'True annual mean', es: 'Media anual verdadera' }, lang)}</dt>
           <dd data-mean={t.annual_loss_mean.value_eur === null ? 'not-available' : 'available'}>

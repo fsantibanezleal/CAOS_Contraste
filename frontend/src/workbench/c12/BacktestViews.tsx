@@ -60,16 +60,16 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
           <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-pit">
             <dt>{pick({ en: 'Statistic W²', es: 'Estadístico W²' }, lang)}</dt>
             <dd data-w2={h.w2}><Nw>{digits(h.w2, lang)}</Nw></dd>
-            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5% y 1%' }, lang)}</dt>
+            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5 % y 1 %' }, lang)}</dt>
             <dd><Nw>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</Nw></dd>
-            <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5% y 1% (informada al lado, no en su lugar)' }, lang)}</dt>
+            <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5 % y 1 % (informada al lado, no en su lugar)' }, lang)}</dt>
             <dd><Nw>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</Nw></dd>
             <dt>{pick({ en: 'Dates and effective sample size', es: 'Fechas y tamaño de muestra efectivo' }, lang)}</dt>
             <dd>
               <Nw>{`${h.n} / ${formatNumber(h.effective_sample_size, lang, { digits: 4 })}`}</Nw>
               {` (${pick({ en: 'overlapping horizons share information', es: 'los horizontes que se traslapan comparten información' }, lang)})`}
             </dd>
-            <dt>{pick({ en: 'Decision at 5%', es: 'Decisión al 5%' }, lang)}</dt>
+            <dt>{pick({ en: 'Decision at 5%', es: 'Decisión al 5 %' }, lang)}</dt>
             <dd data-reject={String(h.reject_at_5pct)}>{h.reject_at_5pct ? pick({ en: 'the distribution is rejected', es: 'la distribución se rechaza' }, lang) : pick({ en: 'the distribution is not rejected', es: 'la distribución no se rechaza' }, lang)}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-pit-bins">
@@ -127,7 +127,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
               orientation="horizontal"
               data={HORIZONS.flatMap((id) => {
                 const h = rows.find((r) => r.horizon === id);
-                return h ? [{ id, label: text(HORIZON_LONG, id), value: h.w2, tone: h.reject_at_5pct ? ('bad' as const) : ('accent' as const), highlight: id === sel.horizon, hint: { en: `5% critical value ${formatNumber(h.critical_simulated.p05, 'en', { digits: 4 })}`, es: `Valor crítico al 5% ${formatNumber(h.critical_simulated.p05, 'es', { digits: 4 })}` } }] : [];
+                return h ? [{ id, label: text(HORIZON_LONG, id), value: h.w2, tone: h.reject_at_5pct ? ('bad' as const) : ('accent' as const), highlight: id === sel.horizon, hint: { en: `5% critical value ${formatNumber(h.critical_simulated.p05, 'en', { digits: 4 })}`, es: `Valor crítico al 5 % ${formatNumber(h.critical_simulated.p05, 'es', { digits: 4 })}` } }] : [];
               })}
               axis={{ label: { en: 'Anderson-Darling W²', es: 'W² de Anderson-Darling' }, format: { digits: 4 } }}
             />
@@ -139,8 +139,8 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Horizon', es: 'Horizonte' }, lang)}</th>
                 <th>{pick({ en: 'Dates', es: 'Fechas' }, lang)}</th>
                 <th>{pick({ en: 'W²', es: 'W²' }, lang)}</th>
-                <th>{pick({ en: '5% value', es: 'Valor al 5%' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: '1% value', es: 'Valor al 1%' }, lang)}</th>
+                <th>{pick({ en: '5% value', es: 'Valor al 5 %' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: '1% value', es: 'Valor al 1 %' }, lang)}</th>
                 {quantiles.map((q) => (
                   <th key={q} className="ct-wide-only">{pick({ en: `Above the ${formatNumber(q, 'en', { percent: true, decimals: 0 })} PFE (count / expected)`, es: `Sobre el PFE ${formatNumber(q, 'es', { percent: true, decimals: 0 })} (cuenta / esperadas)` }, lang)}</th>
                 ))}

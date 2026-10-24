@@ -85,7 +85,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={data}
-              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9% (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
+              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9 % (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
             />
           }
         >
@@ -100,7 +100,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
             {pick(
               {
                 en: `True 99.9% quantile of the generator, the grey bar: ${whole(truth, 'en')} EUR. A method that is exact has a median over the truth of 1.`,
-                es: `Cuantil verdadero 99,9% del generador, la barra gris: ${whole(truth, 'es')} EUR. Un método exacto tiene una mediana sobre la verdad de 1.`,
+                es: `Cuantil verdadero 99,9 % del generador, la barra gris: ${whole(truth, 'es')} EUR. Un método exacto tiene una mediana sobre la verdad de 1.`,
               },
               lang,
             )}
@@ -182,7 +182,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={data}
-              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9% (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
+              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9 % (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
             />
           }
         >

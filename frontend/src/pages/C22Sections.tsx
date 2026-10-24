@@ -89,7 +89,9 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
               const names = (l: 'en' | 'es') => {
                 const at = l === 'es' ? 'al' : 'at';
                 const stated = l === 'es' ? ', documentado por el motor' : ', documented by the engine';
-                return bad.map((s) => `${pick(s.label, l)} (${pct(l, size(s, AT5), 2)} ${at} 5%, ${pct(l, size(s, AT1), 2)} ${at} 1%${s.study?.excess ? stated : ''})`).join('; ');
+                // an exact size (enumerated) is said to be exact, so the sentence's repetitions are not read as its basis (the R2b page review)
+                const kind = (s: C22Simulation) => (rateOf(s, AT5).exact != null ? (l === 'es' ? 'tamaño exacto ' : 'exact size ') : '');
+                return bad.map((s) => `${pick(s.label, l)} (${kind(s)}${pct(l, size(s, AT5), 2)} ${at} ${pct(l, 0.05, 0)}, ${pct(l, size(s, AT1), 2)} ${at} ${pct(l, 0.01, 0)}${s.study?.excess ? stated : ''})`).join('; ');
               };
               return {
                 en: `${sizes.length - bad.length} of the ${sizes.length} tests hold their size at both levels on ${formatNumber(sizes[0]?.n_rep, 'en')} repetitions of data where their null holds at its boundary. ${bad.length ? `Not: ${names('en')}.` : ''}`,
@@ -103,9 +105,9 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
                 <tr>
                   <th className="caos-col-text">{t('Test', 'Prueba')}</th>
                   <th className="caos-col-text">{t('Where its null holds', 'Dónde se cumple su nula')}</th>
-                  <th>{t('Rate at 5% (SE)', 'Tasa al 5% (EE)')}</th>
-                  <th>{t('Rate at 1% (SE)', 'Tasa al 1% (EE)')}</th>
-                  <th>{t('Exact at 5%', 'Exacta al 5%')}</th>
+                  <th>{t('Rate at 5% (SE)', 'Tasa al 5 % (EE)')}</th>
+                  <th>{t('Rate at 1% (SE)', 'Tasa al 1 % (EE)')}</th>
+                  <th>{t('Exact at 5%', 'Exacta al 5 %')}</th>
                   <th>{t('Size', 'Tamaño')}</th>
                 </tr>
               </thead>
@@ -241,7 +243,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
           tone="accent"
           verdict={{
             en: `Of ${rows.length} curves of a test against a planted defect it should see, ${reach.length} reach ${pct('en', POWER, 0)} power at 5% within the family's ladder. ${blind.length} stay below 20% at the highest severity: ${list(blind, 'en')}. The ladders are Contraste's design choices; power on them is not the probability of finding a real bank's problem.`,
-            es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5% dentro de la escala de la familia. ${blind.length} quedan bajo 20% en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
+            es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5 % dentro de la escala de la familia. ${blind.length} quedan bajo 20 % en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
           }}
         />
         <div className="ct-scroll" data-caos-flow="">
@@ -252,7 +254,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                 <th className="caos-col-text">{t('Test', 'Prueba')}</th>
                 <th className="caos-col-text">{t('Setting', 'Ajuste')}</th>
                 <th>{t('Rate without the defect', 'Tasa sin el defecto')}</th>
-                <th>{t('80% power from', '80% de potencia desde')}</th>
+                <th>{t('80% power from', '80 % de potencia desde')}</th>
                 <th>{t('Rate at the highest severity', 'Tasa en la mayor severidad')}</th>
               </tr>
             </thead>

@@ -46,7 +46,7 @@ export function Comparison({ v, title }: { v: VariantArtifact; title: string }) 
           better.length
             ? {
                 en: `${better.map((r) => r.m.short_title.en).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
-                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
+                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5 %) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
               }
             : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la scorecard aquí.' }
         }
@@ -56,7 +56,7 @@ export function Comparison({ v, title }: { v: VariantArtifact; title: string }) 
           <tr>
             <th className="caos-col-text">{t('Rung', 'Peldaño')}</th>
             <th>AUC</th>
-            <th>{t('95% interval', 'Intervalo 95%')}</th>
+            <th>{t('95% interval', 'Intervalo 95 %')}</th>
             <th>{t('Difference to P1', 'Diferencia con P1')}</th>
             <th>{t('DeLong p', 'p de DeLong')}</th>
             <th>Brier</th>

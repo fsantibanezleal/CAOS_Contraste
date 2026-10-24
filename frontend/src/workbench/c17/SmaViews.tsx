@@ -158,7 +158,7 @@ export function ResponseView({ sel }: { sel: C17Sel | null }) {
               y={{ label: { en: `Capital (${pick(scale.unit, 'en')})`, es: `Capital (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
               series={[
                 { label: { en: 'SMA capital', es: 'Capital SMA' }, values: r.rows.map((x) => x.orc_eur / scale.div), color: '--color-accent', width: 2.6 },
-                { label: { en: 'LDA capital, 99.9%', es: 'Capital LDA, 99,9%' }, values: r.rows.map((x) => x.lda_capital_eur / scale.div), color: '--color-magenta', width: 2.2, dash: [6, 3] },
+                { label: { en: 'LDA capital, 99.9%', es: 'Capital LDA, 99,9 %' }, values: r.rows.map((x) => x.lda_capital_eur / scale.div), color: '--color-magenta', width: 2.2, dash: [6, 3] },
               ]}
             />
           }

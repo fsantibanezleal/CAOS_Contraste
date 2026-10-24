@@ -78,7 +78,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               <th className="ct-wide-only">{pick({ en: 'Bankruptcies', es: 'Quiebras' }, lang)}</th>
               <th>{pick({ en: 'Rate', es: 'Tasa' }, lang)}</th>
               <th>{`AUC ${pick(name(rung), lang)}`}</th>
-              <th>{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+              <th>{pick({ en: '95% interval', es: 'Intervalo 95 %' }, lang)}</th>
               <th className="ct-wide-only">KS</th>
             </tr>
           </thead>
@@ -252,7 +252,7 @@ export function ChallengerReadout({ sel }: { sel: C02Sel | null }) {
       title={sel && c ? { en: `${rungName(sel, c.challenger).en} against ${rungName(sel, c.champion).en}`, es: `${rungName(sel, c.challenger).es} contra ${rungName(sel, c.champion).es}` } : { en: 'The challenger', es: 'El retador' }}
       items={[
         { label: { en: 'AUC difference', es: 'Diferencia de AUC' }, value: c?.auc_diff ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Challenger minus champion, on the same holdout.', es: 'Retador menos campeón, en la misma muestra reservada.' } },
-        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: c?.auc_diff_ci.lo ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The lower end of the 95% DeLong interval; an interval holding zero is no evidence of a gain.', es: 'El extremo inferior del intervalo DeLong de 95%; un intervalo que contiene el cero no es evidencia de una ganancia.' } },
+        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: c?.auc_diff_ci.lo ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The lower end of the 95% DeLong interval; an interval holding zero is no evidence of a gain.', es: 'El extremo inferior del intervalo DeLong de 95 %; un intervalo que contiene el cero no es evidencia de una ganancia.' } },
         { label: { en: 'p (DeLong)', es: 'p (DeLong)' }, value: c?.delong_p_value ?? null, unitless: true, format: { digits: 2 }, hint: { en: 'The DeLong test of equal AUCs.', es: 'La prueba DeLong de AUC iguales.' } },
         { label: { en: 'Grades moved', es: 'Grados movidos' }, value: c?.grade_disagreement_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The share of firms whose grade differs by two grades or more.', es: 'La parte de empresas cuyo grado difiere en dos grados o más.' } },
       ]}

@@ -36,7 +36,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
   const layers: Array<{ y: number; label: BiText; tone: 'neutral' | 'warn' }> = [];
   let run = 0;
   for (const [size, label, tone] of [
-    [t.min_pe, { en: 'OI: minimum 8%', es: 'OI: mínimo 8%' }, 'neutral'],
+    [t.min_pe, { en: 'OI: minimum 8%', es: 'OI: mínimo 8 %' }, 'neutral'],
     [t.c_dsib, { en: 'OI: + D-SIB', es: 'OI: + D-SIB' }, 'neutral'],
     [t.c_p2.value, { en: 'OI: + Pillar 2', es: 'OI: + Pilar 2' }, 'neutral'],
     [t.c_ccob, { en: 'OI: + conservation', es: 'OI: + conservación' }, 'neutral'],

@@ -128,7 +128,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <Knob
           id="c07-weight"
           label={{ en: 'Weight', es: 'Peso' }}
-          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100% es una sensibilidad, nunca la medida.' }}
+          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100 % es una sensibilidad, nunca la medida.' }}
           value={sel.weight}
           min={0}
           max={1}

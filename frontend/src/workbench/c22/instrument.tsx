@@ -73,13 +73,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           id="c22-level"
           label={{ en: 'Level', es: 'Nivel' }}
           options={[
-            { id: '0.05', label: { en: '5%', es: '5%' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política versionada); cada vista reproducida lee este nivel.' } },
-            { id: '0.01', label: { en: '1%', es: '1%' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política versionada); cada vista reproducida lee este nivel.' } },
+            { id: '0.05', label: { en: '5%', es: '5 %' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política versionada); cada vista reproducida lee este nivel.' } },
+            { id: '0.01', label: { en: '1%', es: '1 %' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política versionada); cada vista reproducida lee este nivel.' } },
           ]}
           value={String(level)}
           onChange={(id) => setLevel(Number(id))}
         />
-        <Knob id="c22-rho-assumed" label={{ en: "Vasicek's assumed correlation", es: 'Correlación de Vasicek' }} hint={{ en: 'The correlation the Vasicek-corrected test assumes: a modelling assumption to document; the IRB corporate correlations run from 12% to 24%.', es: 'La correlación que supone la prueba corregida de Vasicek: un supuesto de modelación a documentar; las correlaciones corporativas IRB van de 12% a 24%.' }} value={portfolio.rhoAssumed} min={0.01} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoAssumed')} />
+        <Knob id="c22-rho-assumed" label={{ en: "Vasicek's assumed correlation", es: 'Correlación de Vasicek' }} hint={{ en: 'The correlation the Vasicek-corrected test assumes: a modelling assumption to document; the IRB corporate correlations run from 12% to 24%.', es: 'La correlación que supone la prueba corregida de Vasicek: un supuesto de modelación a documentar; las correlaciones corporativas IRB van de 12 % a 24 %.' }} value={portfolio.rhoAssumed} min={0.01} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoAssumed')} />
         <PortfolioReadout sel={sel} />
       </>
     ),

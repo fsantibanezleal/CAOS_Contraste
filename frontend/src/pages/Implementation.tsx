@@ -34,7 +34,7 @@ function Pipeline() {
         </Callout>
         <L
           items={[
-            { en: 'A locked stratified holdout of 30%; a calibration slice of 20% of the rest, disjoint from it; the training slice, where every binning, WoE, rule, hyperparameter and fit is learned.', es: 'Una muestra reservada estratificada del 30%; un tramo de calibración del 20% del resto, disjunto de ella; el tramo de entrenamiento, donde se aprende todo tramado, WoE, regla, hiperparámetro y ajuste.' },
+            { en: 'A locked stratified holdout of 30%; a calibration slice of 20% of the rest, disjoint from it; the training slice, where every binning, WoE, rule, hyperparameter and fit is learned.', es: 'Una muestra reservada estratificada del 30 %; un tramo de calibración del 20 % del resto, disjunto de ella; el tramo de entrenamiento, donde se aprende todo tramado, WoE, regla, hiperparámetro y ajuste.' },
             { en: 'Repeated stratified five-fold cross-validation inside the training slice for every choice a rung makes (penalty strength, number of trees).', es: 'Validación cruzada estratificada repetida de cinco pliegues dentro del tramo de entrenamiento para toda elección de un peldaño (fuerza de penalización, número de árboles).' },
             { en: 'Each case declares, before it is baked, the range a reader should see for its named results (a default rate, an AUC, a PSI, a p-value under a known shift); the bake fails when a result falls outside.', es: 'Cada caso declara, antes de precalcularse, el rango que el lector debería ver para sus resultados con nombre (una tasa de incumplimiento, una AUC, un PSI, un valor p bajo un cambio conocido); el precálculo falla si un resultado cae fuera.' },
           ]}

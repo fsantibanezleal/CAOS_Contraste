@@ -181,7 +181,7 @@ export const seconds = (day: string): number => Date.parse(`${day}T00:00:00Z`) /
 /** The one-line convention every view states (the full definition is in the Context and the models document). */
 export const CONVENTION_LINE: Bi = {
   en: 'VaR and ES are positive losses, decimals of the portfolio value: a VaR of 1% means a loss of 1% of its value.',
-  es: 'El VaR y la ES son pérdidas positivas, decimales del valor de la cartera: un VaR de 1% significa una pérdida de 1% de su valor.',
+  es: 'El VaR y la ES son pérdidas positivas, decimales del valor de la cartera: un VaR de 1 % significa una pérdida de 1 % de su valor.',
 };
 
 /** The sentence that says where the hyperparameters were fixed, before any test window (decision D1). */

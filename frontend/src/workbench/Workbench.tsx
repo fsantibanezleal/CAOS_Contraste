@@ -235,7 +235,7 @@ export function Workbench() {
           <Knob
             id="lgd"
             label={{ en: 'LGD', es: 'LGD' }}
-            hint={{ en: 'Loss given default, assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50% es el piso de Basilea III para QRRE (CRE32.58).' }}
+            hint={{ en: 'Loss given default, assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50 % es el piso de Basilea III para QRRE (CRE32.58).' }}
             value={lgd}
             min={0.1}
             max={1}

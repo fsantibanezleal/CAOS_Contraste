@@ -45,7 +45,7 @@ export function C05ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
             const k = v.outputs.gammas.indexOf(0.75);
             const vas = v.tests.find((x) => x.test_id === 'pd.binomial_vasicek');
             observed = `${pick({ en: 'defaults ', es: 'incumplimientos ' }, lang)}${v.outputs.defaults.join(', ')}`;
-            shows = `${pick({ en: 'bounds at 75%: ', es: 'cotas al 75%: ' }, lang)}${v.outputs.bounds.independent[k].map((b) => pct(lang, b, 3)).join(', ')}; Vasicek ${vas ? pick(LIGHT_TEXT[relight(vas, COMMITTED)], lang) : '-'}`;
+            shows = `${pick({ en: 'bounds at 75%: ', es: 'cotas al 75 %: ' }, lang)}${v.outputs.bounds.independent[k].map((b) => pct(lang, b, 3)).join(', ')}; Vasicek ${vas ? pick(LIGHT_TEXT[relight(vas, COMMITTED)], lang) : '-'}`;
           }
           return (
             <tr key={v.variant_id}>
@@ -80,7 +80,7 @@ export function C05BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
           tone="accent"
           verdict={{
             en: 'In 2010 the scaled likelihood ratio and the invariant accuracy ratio fit the default profile, scaled PDs and the invariant default profile do not at 5%; in 2011 all four fit. One forecast year each: anecdotal evidence, as the paper says of its own example.',
-            es: 'En 2010 la razón de verosimilitud escalada y la razón de precisión invariante ajustan el perfil de incumplimiento, las PD escaladas y el perfil invariante no al 5%; en 2011 los cuatro ajustan. Un año pronosticado cada uno: evidencia anecdótica, como dice el artículo de su propio ejemplo.',
+            es: 'En 2010 la razón de verosimilitud escalada y la razón de precisión invariante ajustan el perfil de incumplimiento, las PD escaladas y el perfil invariante no al 5 %; en 2011 los cuatro ajustan. Un año pronosticado cada uno: evidencia anecdótica, como dice el artículo de su propio ejemplo.',
           }}
         />
         <table className="caos-table">
@@ -124,16 +124,16 @@ export function C05BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             tone="accent"
             verdict={{
               en: `Over ${formatNumber(kt.years, 'en')} generated years the bounds cover the truth from 75% up, at a cost in conservatism; the tests that ignore the correlation reject true PDs too often, and the one that keeps its size seldom sees a model at half the truth.`,
-              es: `En ${formatNumber(kt.years, 'es')} años generados las cotas cubren la verdad desde el 75%, a costa de conservadurismo; las pruebas que ignoran la correlación rechazan PD verdaderas demasiado seguido, y la que mantiene su tamaño rara vez ve un modelo a la mitad de la verdad.`,
+              es: `En ${formatNumber(kt.years, 'es')} años generados las cotas cubren la verdad desde el 75 %, a costa de conservadurismo; las pruebas que ignoran la correlación rechazan PD verdaderas demasiado seguido, y la que mantiene su tamaño rara vez ve un modelo a la mitad de la verdad.`,
             }}
           />
           <table className="caos-table">
             <thead>
               <tr>
                 <th className="caos-col-text">{t('Estimator, grade C', 'Estimador, grado C')}</th>
-                <th>{t('Coverage at 50%', 'Cobertura al 50%')}</th>
-                <th>{t('Coverage at 75%', 'Cobertura al 75%')}</th>
-                <th>{t('Median / truth at 75%', 'Mediana / verdad al 75%')}</th>
+                <th>{t('Coverage at 50%', 'Cobertura al 50 %')}</th>
+                <th>{t('Coverage at 75%', 'Cobertura al 75 %')}</th>
+                <th>{t('Median / truth at 75%', 'Mediana / verdad al 75 %')}</th>
               </tr>
             </thead>
             <tbody>
@@ -154,7 +154,7 @@ export function C05BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
           <table className="caos-table">
             <thead>
               <tr>
-                <th className="caos-col-text">{t('Test at 5%', 'Prueba al 5%')}</th>
+                <th className="caos-col-text">{t('Test at 5%', 'Prueba al 5 %')}</th>
                 <th>{t('Size (true PDs)', 'Tamaño (PD verdaderas)')}</th>
                 <th>{t('Power (expert PDs)', 'Potencia (PD expertas)')}</th>
               </tr>

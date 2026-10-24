@@ -635,7 +635,7 @@ export function MobilityView({ sel }: { sel: C04Sel | null }) {
             ? join(
                 {
                   en: `Each annual cohort's own matrix, withdrawals removed: Jafry and Schuermann's M_SVD (the mean singular value of P - I) and the trace index (n - tr P)/(n - 1), both 0 when nobody moves; beside them the speculative-grade default rate (BB, B and CCC-C pooled, ${pick(label, 'en')}) as a share of the cohort on the same axis (0.10 is 10%).`,
-                  es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10%).`,
+                  es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10 %).`,
                 },
                 stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Discontinuas: los años de tensión ${stress('es')}.` } : NONE,
                 credit(o, true),

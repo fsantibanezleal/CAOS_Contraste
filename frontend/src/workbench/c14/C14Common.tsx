@@ -126,7 +126,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
               { label: NMD_TEXT.contractual, values: sorted.map((e) => ratio(e.v, 'contractual')), color: '--color-magenta', width: 2.2, mode: 'points', size: 11 },
             ]}
             marks={sorted.map((e, i) => ({ x: x[i], label: { en: e.v.outputs.quarter, es: e.v.outputs.quarter } }))}
-            yMarks={[{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15% del capital de nivel 1' }, tone: 'bad' }]}
+            yMarks={[{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15 % del capital de nivel 1' }, tone: 'bad' }]}
           />
         }
       >

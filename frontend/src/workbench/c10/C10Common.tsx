@@ -148,7 +148,7 @@ export function C10VariantsTable({ variants, onPick, current }: { variants: Arra
                 <th className="ct-text">{pick({ en: 'Loan type', es: 'Tipo de crédito' }, lang)}</th>
                 <th>{pick({ en: 'Fitted correlation', es: 'Correlación ajustada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'IRB correlation', es: 'Correlación IRB' }, lang)}</th>
-                <th>{pick({ en: 'Years above the 99% quantile', es: 'Años sobre el cuantil 99%' }, lang)}</th>
+                <th>{pick({ en: 'Years above the 99% quantile', es: 'Años sobre el cuantil 99 %' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -409,8 +409,8 @@ export function EstimatorReadout({ sel }: { sel: C10Sel | null }) {
       title={sel ? { en: `${text(ESTIMATOR_TEXT, sel.estimator).en}: the fit`, es: `${text(ESTIMATOR_TEXT, sel.estimator).es}: el ajuste` } : { en: 'The fit', es: 'El ajuste' }}
       items={[
         { label: { en: 'Asset correlation', es: 'Correlación de activos' }, value: f?.rho.estimate ?? null, unitless: true, format: fmt, hint: { en: 'The correlation of the obligors with the one systematic factor, squared loading.', es: 'La correlación de los deudores con el único factor sistemático, carga al cuadrado.' } },
-        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95% por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95%.' } },
-        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95% por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95%.' } },
+        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95 %.' } },
+        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95 %.' } },
         { label: { en: 'Probability of default', es: 'Probabilidad de incumplimiento' }, value: f?.pd.estimate ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The long-run yearly default or loss rate of the fitted distribution.', es: 'La tasa anual de incumplimiento o pérdida de largo plazo de la distribución ajustada.' } },
       ]}
     />
@@ -451,7 +451,7 @@ export function CellReadout({ sel }: { sel: C10Sel | null }) {
       items={[
         { label: { en: 'Role of the cell', es: 'Papel de la celda' }, text: role ?? NA, hint: { en: 'Size where the known correlation equals the null; power elsewhere.', es: 'Tamaño donde la correlación conocida es la de la nula; potencia en las demás.' } },
         { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, value: e?.rejection_rate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the test rejects that the correlation equals the null.', es: 'Con qué frecuencia la prueba rechaza que la correlación sea la de la nula.' } },
-        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95% interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95% contiene la correlación conocida.' } },
+        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95% interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95 % contiene la correlación conocida.' } },
         { label: { en: 'Mean estimate', es: 'Estimación media' }, value: e?.mean_estimate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The mean of the estimates over the valid replications.', es: 'La media de las estimaciones en las replicaciones válidas.' } },
       ]}
     />

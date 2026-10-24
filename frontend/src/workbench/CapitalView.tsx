@@ -100,7 +100,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         dataKey={stateKey}
         note={{
           en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8% of the RWA, in million ${cname.en} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
-          es: `${pick(klass, 'es')}; EAD ${irb.ead.es}; el capital es el 8% de los APR, en millones de ${cname.es} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
+          es: `${pick(klass, 'es')}; EAD ${irb.ead.es}; el capital es el 8 % de los APR, en millones de ${cname.es} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
         }}
       >
         <div className="ct-row">
@@ -139,7 +139,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
                 {pick(
                   {
                     en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50%), ${names[0].en} and ${pipelineName.en}${sel.challenger === pipelineChallenger ? '' : ' (the pipeline\'s challenger)'}: ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
-                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50%), ${names[0].es} y ${pipelineName.es}${sel.challenger === pipelineChallenger ? '' : ' (el retador del pipeline)'}: ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
+                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50 %), ${names[0].es} y ${pipelineName.es}${sel.challenger === pipelineChallenger ? '' : ' (el retador del pipeline)'}: ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
                   },
                   lang,
                 )}

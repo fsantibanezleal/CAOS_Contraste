@@ -175,7 +175,7 @@ export function Ifrs9Readout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Weighted ECL', es: 'PCE ponderada' }, ...amount(live), hint: { en: `Sum of weight times the ECL of each component, with ${name.en} at ${formatNumber(sel.weight, 'en', { percent: true, decimals: 1 })} and the others in their ratios; overlays excluded. 100% on one scenario is a sensitivity, never the IFRS 9 measure.`, es: `Suma del peso por la PCE de cada componente, con ${name.es} en ${formatNumber(sel.weight, 'es', { percent: true, decimals: 1 })} y los otros en sus proporciones; sin ajustes. 100% en un escenario es una sensibilidad, nunca la medida IFRS 9.` } },
+        { label: { en: 'Weighted ECL', es: 'PCE ponderada' }, ...amount(live), hint: { en: `Sum of weight times the ECL of each component, with ${name.en} at ${formatNumber(sel.weight, 'en', { percent: true, decimals: 1 })} and the others in their ratios; overlays excluded. 100% on one scenario is a sensitivity, never the IFRS 9 measure.`, es: `Suma del peso por la PCE de cada componente, con ${name.es} en ${formatNumber(sel.weight, 'es', { percent: true, decimals: 1 })} y los otros en sus proporciones; sin ajustes. 100 % en un escenario es una sensibilidad, nunca la medida IFRS 9.` } },
         { label: { en: 'IFRS 9 total', es: 'Total IFRS 9' }, ...amount(live + o.ifrs9_detail.overlays_total), hint: { en: 'The weighted model ECL plus the overlays, which are kept apart from the model.', es: 'La PCE ponderada del modelo más los ajustes, que se mantienen aparte del modelo.' } },
       ]}
     />
