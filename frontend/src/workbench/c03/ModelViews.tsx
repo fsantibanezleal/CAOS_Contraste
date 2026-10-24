@@ -5,6 +5,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
+import { inputName } from '../names';
 import { U6TestsTable, p2, useCard } from './U6Shared';
 import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from './selection';
 
@@ -160,9 +161,11 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
     const window = fitWindow ? fitWindow.label[l] : rung.training_cutoff;
     const range = fitWindow ? fyRange(fitWindow.training.first_fy, fitWindow.training.last_fy) : '';
     const other = fitWindow && fitWindow.id !== o.cohort.id;
+    // each input by its name (the raw-id scan: log10_amount, term_months)
+    const inputs = rung.covariates.map((c) => (inputName(c) ?? { en: c, es: c })[l]).join(', ');
     return l === 'en'
-      ? `${label}: ${rung.covariates.join(', ')} (${rung.engine}). Rungs as fitted for the window of the cohort ${window}${range ? ` (vintages ${range})` : ''}, cut-off ${rung.training_cutoff}${other ? `, not for the window of this cohort (${o.cohort.label.en})` : ''}`
-      : `${label}: ${rung.covariates.join(', ')} (${rung.engine}). Peldaños tal como se ajustaron para la ventana de la cohorte ${window}${range ? ` (cosechas ${range})` : ''}, corte ${rung.training_cutoff}${other ? `, no para la ventana de esta cohorte (${o.cohort.label.es})` : ''}`;
+      ? `${label}: ${inputs} (${rung.engine}). Rungs as fitted for the window of the cohort ${window}${range ? ` (vintages ${range})` : ''}, cut-off ${rung.training_cutoff}${other ? `, not for the window of this cohort (${o.cohort.label.en})` : ''}`
+      : `${label}: ${inputs} (${rung.engine}). Peldaños tal como se ajustaron para la ventana de la cohorte ${window}${range ? ` (cosechas ${range})` : ''}, corte ${rung.training_cutoff}${other ? `, no para la ventana de esta cohorte (${o.cohort.label.es})` : ''}`;
   };
   return (
     <ViewsRow shares={[3, 2]}>
@@ -262,7 +265,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
                 ) : (
                   rung.coefficients.map((c) => (
                     <tr key={c.name}>
-                      <td className="ct-text">{c.name}</td>
+                      <td className="ct-text">{pick(inputName(c.name) ?? { en: c.name, es: c.name }, lang)}</td>
                       <td>{formatNumber(c.estimate, lang, { digits: 3 })}</td>
                       <td>
                         <MaybeNumber value={c.std_error} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />

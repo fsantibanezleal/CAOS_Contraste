@@ -137,9 +137,29 @@ const GERMAN_FIELD: Record<string, BiText> = {
   telephone: bi('Telephone', 'Teléfono'),
 };
 
-/** An input of a data file by name: a column of the German file or a field of the Fed portfolios; null for any other (a column
- * whose published name is its name, such as the Taiwan file's LIMIT_BAL, prints as written). */
-export const inputName = (col: string): BiText | null => GERMAN_FIELD[col] ?? FED_FIELD[col] ?? null;
+/** The model inputs C03 derives from the SBA 7(a) loan file by name (data-pipeline/pipeline/cases/c03/panel.py FEATURES). */
+const SBA_FIELD: Record<string, BiText> = {
+  log10_amount: bi('Log10 of the gross approved amount', 'Log10 del monto bruto aprobado'),
+  guarantee_share: bi('Share guaranteed by the SBA', 'Proporción garantizada por la SBA'),
+  term_months: bi('Term in months', 'Plazo en meses'),
+  sector: bi('Sector', 'Sector'),
+  revolver: bi('Revolving line', 'Línea rotativa'),
+  '(intercept)': bi('Intercept', 'Intercepto'),
+};
+
+/** An input of a data file by name: a column of the German file, a field of the Fed portfolios or an input C03 derives from the
+ * SBA file; null for any other (a column whose published name is its name, such as the Taiwan file's LIMIT_BAL, prints as
+ * written). */
+export const inputName = (col: string): BiText | null => GERMAN_FIELD[col] ?? FED_FIELD[col] ?? SBA_FIELD[col] ?? null;
+
+/** A rule over inputs (`log10_amount <= 5.00043 and sector > 0.0554929`) with each named input in words; an input whose
+ * published name is its name stays as written. */
+export function ruleNames(rule: string, lang: 'en' | 'es'): string {
+  return rule.replace(/[A-Za-z_][A-Za-z0-9_]*/g, (w) => {
+    const n = inputName(w);
+    return n ? n[lang] : w;
+  });
+}
 
 /** C20's Fed shift (`fed-higher-risk-x0.25`): the Fed's higher-risk portfolio drift at a multiple (c20/v_shift.py). */
 const fedShift = (k: string): BiText => bi(`the Fed higher-risk drift times ${num(k, 'en')}`, `la deriva de mayor riesgo de la Fed por ${num(k, 'es')}`);
