@@ -99,7 +99,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
   };
   return (
     <PlotCard fill title={{ en: 'The evidence of each finding', es: 'La evidencia de cada hallazgo' }} {...card} note={note}>
-      <div className="ct-stack" data-block="finding-evidence">
+      <div className="ct-stack" data-caos-flow="" data-block="finding-evidence">
         {kinds.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'No finding of this variant cites a controlled or rate-spread row.', es: 'Ningún hallazgo de esta variante cita una fila controlada o de diferencial de tasa.' }, lang)}</p>
         ) : null}

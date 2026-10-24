@@ -579,7 +579,7 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
           dataKey={stateKey}
           note={tableNote}
         >
-          <div className="ct-scroll" ref={fit.ref}>
+          <div className="ct-scroll" data-caos-flow="" ref={fit.ref}>
             <table className="caos-table ct-wrap-head" data-table="lra" data-definition={d}>
               <PdTableHead show={show} />
               <tbody>
@@ -780,7 +780,7 @@ export function ByYearView({ sel }: { sel: C04Sel | null }) {
   );
   const xLabel: BiText = { en: 'Cohort year', es: 'Año de la cohorte' };
   const yearTable = (
-    <div className="ct-scroll" ref={fit.ref}>
+    <div className="ct-scroll" data-caos-flow="" ref={fit.ref}>
       <table className="caos-table ct-wrap-head" data-table="by-year" data-grade={grade}>
         <thead>
           <tr>
@@ -1061,7 +1061,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       </PlotCard>
       <>
         <PlotCard fill title={{ en: 'What each definition counts', es: 'Qué cuenta cada definición' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={definitionsNote}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <p className="ct-note" data-esma="definitions">{pick(ESMA_DEFINITIONS, lang)}</p>
             <table className="caos-table ct-wrap-head" data-table="definitions">
               <thead>
@@ -1105,7 +1105,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             dataKey={stateKey}
             note={gapNote}
           >
-            <div className="ct-scroll">
+            <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
                 <thead>
                   <tr>
@@ -1411,7 +1411,7 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
       </PlotCard>
       <>
         <PlotCard fill title={bi((l) => t(l, `${grade}, window by window`, `${grade}, ventana por ventana`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="lifetime" data-grade={grade}>
               <thead>
                 <tr>

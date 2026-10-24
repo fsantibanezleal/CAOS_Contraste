@@ -129,7 +129,7 @@ export function emptyColumnNote(sel: C04Sel): Both {
 function ReasonTable({ reason }: { reason: BiText }) {
   const lang = useShellLang();
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table" data-table="reason">
         <tbody>
           <tr>
@@ -514,7 +514,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
       <ViewsRow>
         <PlotCard fill title={title} lane={LIVE} provenance={prov} dataKey={stateKey} note={note}>
           {agency && defs.length ? (
-            <div className="ct-scroll">
+            <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table" data-table="counts-by-definition">
                 <thead>
                   <tr>
@@ -613,7 +613,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
             es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par; los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="intervals">
               <thead>
                 <tr>
@@ -862,7 +862,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             es: `Fracción de la EAD con LGD ${lgd.es}: la PD y el ponderador del grado elegido con cada definición (su promedio de largo plazo, párrafo 84 de EBA/GL/2017/16) y generador, junto al promedio de la cartera; ${floor.es}.${missingText('es')} ${peakText.es} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <CapitalTable rows={rows} grade={g} />
           </div>
         </PlotCard>
@@ -1003,7 +1003,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
             es: `Fracción de la EAD con LGD ${lgd.es}; los deudores del diseño (${counts('es', obligors)}, de AAA a CCC-C) ponderan el promedio; ${floor.es}. ${peakText.es} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="capital">
               <thead>
                 <tr>

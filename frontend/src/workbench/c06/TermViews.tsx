@@ -283,7 +283,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The panel in numbers', es: 'El panel en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="non-linearity">
             <tbody>
               {rows.map((r) => (

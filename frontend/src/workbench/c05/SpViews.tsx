@@ -74,7 +74,7 @@ export function CurvesView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The live column follows the rail; the 2009 curve is replayed. The chart beside draws every case 1 approach grade by grade.', es: 'La columna en vivo sigue al panel; la curva 2009 se reproduce. El gráfico al lado dibuja cada enfoque del caso 1 grado a grado.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="curves">
             <thead>
               <tr>
@@ -131,7 +131,7 @@ export function ProfilesView({ sel }: { sel: C05Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The profiles and the PD', es: 'Los perfiles y la PD' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="profiles">
             <thead>
               <tr>
@@ -203,7 +203,7 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
           es: `El caso 1 conoce el perfil y la PD de ${o.year} (${pct(lang, o.pd1, 2)}, la observada, como el artículo); el caso 2 solo la PD; el caso 3 solo el perfil, así que pronostica la PD. La prueba del perfil es el chi-cuadrado del perfil de incumplimiento implícito del artículo, con valor p de Monte Carlo.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="approaches">
             <thead>
               <tr>
@@ -266,7 +266,7 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
           es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), desde 1500 px de ancho con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="default-profile">
             <thead>
               <tr>
@@ -334,7 +334,7 @@ export function GradeTestsView({ sel }: { sel: C05Sel | null }) {
           es: 'Unilateral: un valor p bajo significa más incumplimientos de los que permite la curva (la PD está subestimada). Los conteos por grado de la tabla S&P, solo derivados, no se publican; solo tasas y resultados.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-battery" data-table="jeffreys-by-grade">
             <thead>
               <tr>
@@ -386,7 +386,7 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
           es: `Tabla 5 (la curva QMM 2009, tres decimales) y Tabla 7 (${pick(approachShort(v, sel.approach), lang)}, ${v.outputs.year}, cuatro decimales), en porcentaje. Las diferencias de una unidad vienen del propio solucionador del artículo, medido en su Tabla 9.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="golden-sp">
             <thead>
               <tr>
@@ -414,7 +414,7 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'p-values and the case 3 forecasts', es: 'Valores p y los pronósticos del caso 3' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="golden-p">
             <thead>
               <tr>
@@ -487,7 +487,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
           es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece el backtest del artículo.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="capital">
             <thead>
               <tr>

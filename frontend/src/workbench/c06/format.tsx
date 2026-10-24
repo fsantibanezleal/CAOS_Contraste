@@ -108,7 +108,7 @@ export function alignTo(xs: readonly number[], ys: readonly number[], grid: read
 export function ChartOverTable({ chart, children, chartMin = '15rem' }: { chart: ReactNode; children?: ReactNode; chartMin?: string }) {
   // `chartMin`: a horizontal bar chart needs about 1.5rem a row, or its rows scroll inside the drawing
   return (
-    <div className="ct-stack">
+    <div className="ct-stack" data-caos-flow="">
       <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div>
       {children ? <div className="ct-stack-table">{children}</div> : null}
     </div>

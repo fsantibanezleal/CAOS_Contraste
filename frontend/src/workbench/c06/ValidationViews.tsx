@@ -61,7 +61,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The rungs, the conversion, LGD and EAD', es: 'Los peldaños, la conversión, LGD y EAD' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="ladder">
             <thead>
               <tr>
@@ -155,7 +155,7 @@ export function BacktestView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The backtest in numbers', es: 'El backtest en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="lifetime-backtest">
             <thead>
               <tr>
@@ -233,7 +233,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The deciles in numbers', es: 'Los deciles en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="decile-calibration">
             <thead>
               <tr>
@@ -355,7 +355,7 @@ export function IdentitiesView({ sel }: { sel: C06Sel | null }) {
           es: `La inicial más los movimientos es igual a la final dentro de ${formatNumber(basis, 'es', { digits: 3 })} ${cur}: ${formatNumber(r.tolerance, 'es', { digits: 1 })} veces el mayor entre 1 y el valor en libros bruto total.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="allowance-roll-forward">
             <thead>
               <tr>
@@ -432,7 +432,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
       ) : (
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="tests">
             <thead>
               <tr>

@@ -26,7 +26,7 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
       {!fit ? (
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no calibration.', es: 'No disponible: el artefacto de modelos no trae la calibración.' }, lang)}</p>
       ) : (
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>{`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source, lang)})`}</p>
           <table className="caos-table ct-wrap-head" data-table="calibration-targets">
             <thead>
@@ -120,7 +120,7 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
       {!fit ? (
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no B-1 table.', es: 'No disponible: el artefacto de modelos no trae tablas B-1.' }, lang)}</p>
       ) : (
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           {fit.b1_tables.map((t) => (
             <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
               <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}`}</caption>

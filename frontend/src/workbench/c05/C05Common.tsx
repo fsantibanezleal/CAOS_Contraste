@@ -55,7 +55,7 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'Each finding cites the tests behind it (their light under the rail\'s policy) or a stated design limit.', es: 'Cada hallazgo cita las pruebas que lo respaldan (su luz con la política del panel) o un límite de diseño declarado.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="findings">
             <thead>
               <tr>
@@ -115,7 +115,7 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
       <div className="ct-share-3">
         <PlotCard title={{ en: 'The calibration variants', es: 'Las variantes de calibración' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
           note={{ en: 'The default-profile p-value of each case 1 approach, and the least squares forecast of the PD (case 3) against the observed one. Pick a variant to load it.', es: 'El valor p del perfil de cada enfoque del caso 1, y el pronóstico de la PD por mínimos cuadrados (caso 3) contra la observada. Elija una variante para cargarla.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="variants-sp">
               <thead>
                 <tr>
@@ -148,7 +148,7 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
       <div className="ct-share-2">
         <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
           note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75%, grados A, B, C.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="variants-ldp">
               <thead>
                 <tr>

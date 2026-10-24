@@ -55,7 +55,7 @@ export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   return (
-    <div className="ct-stack" data-block="c13-findings">
+    <div className="ct-stack" data-caos-flow="" data-block="c13-findings">
       <KnownBanner o={o} />
       <div className="ct-c13-findings">
         <ViewsRow>

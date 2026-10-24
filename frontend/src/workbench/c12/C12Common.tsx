@@ -326,7 +326,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The swap book', es: 'La cartera de swaps' }} {...card} note={{ en: 'The netting set holds the swaps below; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene los swaps de abajo; la variante de un solo swap tiene el primero. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-book">
             <thead>
               <tr>
@@ -354,7 +354,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The Treasury curve and the calibration', es: 'La curva del Tesoro y la calibración' }} {...card} note={{ en: 'The par yields are the Treasury daily curve of the curve date; a tenor the source does not carry is listed as absent and never interpolated silently. The short-rate parameters are estimated only on data before the curve date.', es: 'Los rendimientos par son la curva diaria del Tesoro de la fecha de la curva; un plazo que la fuente no trae se lista como ausente y nunca se interpola en silencio. Los parámetros de la tasa corta se estiman solo con datos anteriores a la fecha de la curva.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-curve">
             <dt>{pick({ en: 'Curve date', es: 'Fecha de la curva' }, lang)}</dt>
             <dd>{o.curve.curve_date}</dd>
@@ -390,7 +390,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every notional, rate, term, CSA term, spread, grid, threshold and seed of the case is a convention, labelled as one.', es: 'Cada nocional, tasa, plazo, término del CSA, spread, grilla, umbral y semilla del caso es una convención, rotulada como tal.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-conventions">
             <thead>
               <tr>
@@ -413,7 +413,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       </PlotCard>
       {fit ? (
         <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha del backtest y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-fit">
               <dt>{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</dt>
               <dd><span translate="no">{fit.estimator}</span></dd>

@@ -83,7 +83,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
             />
           }
         >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-top" data-table="findings">
             <thead>
               <tr>

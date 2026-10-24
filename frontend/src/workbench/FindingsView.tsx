@@ -87,14 +87,14 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
         es: 'Política de severidad: una prueba de nivel roja (Jeffreys, binomial) del campeón o del retador es S2 y ámbar S3; una prueba de ajuste roja (chi-cuadrado sobre grados, Hosmer-Lemeshow, Spiegelhalter) S3 y ámbar S4, porque con miles de deudores rechazan desvíos demasiado pequeños para importar. La evidencia se muestra con la política del panel; los hallazgos se levantaron con la comprometida.',
       }}
     >
-      <div className="ct-stack">
+      <div className="ct-stack" data-caos-flow="">
         <Verdict
           compact
           title={{ en: 'Most severe open finding', es: 'Hallazgo abierto más severo' }}
           tone={worst === 'S1' || worst === 'S2' ? 'bad' : worst === 'S3' ? 'warn' : 'good'}
           verdict={worst ? SEVERITY_TEXT[worst as keyof typeof SEVERITY_TEXT] : { en: 'No open finding.', es: 'Ningún hallazgo abierto.' }}
         />
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-top">
             <thead>
               <tr>

@@ -287,7 +287,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
           </div>
         </PlotCard>
         <PlotCard fill title={{ en: 'The lines in numbers', es: 'Las líneas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="waterfall">
               <thead>
                 <tr>
@@ -325,7 +325,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
             {o.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="overlays">
               <thead>
                 <tr>
@@ -462,7 +462,7 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
           es: `Pesos en el orden: ${g.scenario_ids.map((id) => pick(scenarioLabel(id), 'es')).join(' / ')}.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="weight-grid">
             <thead>
               <tr>
@@ -517,7 +517,7 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The stages in numbers', es: 'Las etapas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="stage-summary">
             <thead>
               <tr>

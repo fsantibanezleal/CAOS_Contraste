@@ -88,7 +88,7 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
               };
             })()}
           />
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="sizes">
               <thead>
                 <tr>
@@ -235,7 +235,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5% dentro de la escala de la familia. ${blind.length} quedan bajo 20% en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
           }}
         />
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="detections">
             <thead>
               <tr>
@@ -272,7 +272,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             es: `El modelo es correcto en cada fila de abajo; solo falla un supuesto. ${exceeds.length} de ${alarms.length} curvas exceden la cota de tamaño (el nivel más 3,09 EE de Monte Carlo) en la mayor severidad: ${exceeds.map((a) => `${pick(a.test, 'es')} (${pick(a.familyTitle, 'es')}, ${pct('es', a.top)})`).join('; ')}.`,
           }}
         />
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="false-alarms">
             <thead>
               <tr>
