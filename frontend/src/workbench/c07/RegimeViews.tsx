@@ -9,6 +9,29 @@ import { Pending } from '../Pending';
 import { FixtureNotice } from '../c06/C06Common';
 import { componentLabel, outputsOf, type C07Outputs, type C07Sel, type RegimeId } from './selection';
 
+/** The short name of each regime, as the rail's chips name it: a grouped bar's member label (the full names are in the legend; R2b
+ * c08 M1: the full names were cut mid-word under every group). */
+const REGIME_SHORT: Record<RegimeId, BiText> = { 'cmf-b1': { en: 'B-1', es: 'B-1' }, ifrs9: { en: 'IFRS 9', es: 'IFRS 9' }, 'bde-annex9': { en: 'BdE 9', es: 'BdE 9' } };
+
+/** The macro drivers and units of a scenario's shocks in words (R2b c08 B2: "gdp-growth", "percentage points" in the Spanish page). */
+const DRIVER_TEXT: Record<string, BiText> = {
+  'gdp-growth': { en: 'GDP growth', es: 'Crecimiento del PIB' },
+  unemployment: { en: 'Unemployment', es: 'Desempleo' },
+  'house-prices': { en: 'House prices', es: 'Precios de la vivienda' },
+  'consumer-arrears': { en: 'Consumer arrears', es: 'Morosidad de consumo' },
+  'uf-inflation': { en: 'UF inflation', es: 'Inflación de la UF' },
+};
+const UNIT_TEXT: Record<string, BiText> = {
+  'percentage points': { en: 'percentage points', es: 'puntos porcentuales' },
+  percent: { en: 'percent', es: 'por ciento' },
+};
+
+/** A scenario by the name its variant has in the case manifest, never its id (R2b c08 B2). */
+function scenarioName(sel: C07Sel, id: string): BiText {
+  const a = sel.data.manifest.artifacts.find((x) => x.role === 'variant' && x.variant_id === id);
+  return (a?.short_title ?? a?.title ?? { en: id, es: id }) as BiText;
+}
+
 const LIVE = 'live' as const;
 const REGIME_TONE: Record<RegimeId, 'accent' | 'warn' | 'good'> = { 'cmf-b1': 'accent', ifrs9: 'warn', 'bde-annex9': 'good' };
 const STATUS_TEXT: Record<string, BiText> = {
@@ -50,7 +73,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
         data={segs.flatMap((r) =>
           ids.map((id) => ({
             id: `${r.segment_id}|${id}`,
-            label: nameOf(id),
+            label: REGIME_SHORT[id],
             group: { id: r.segment_id, label: segmentName(o, r.segment_id) },
             value: value(r, id) / 1e6,
             tone: REGIME_TONE[id],
@@ -79,7 +102,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
     <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
-        title={{ en: `The three regimes, scenario ${o.scenario_id} (${cur} millions)`, es: `Los tres regímenes, escenario ${o.scenario_id} (millones de ${cur})` }}
+        title={{ en: `The three regimes, scenario ${pick(scenarioName(sel, o.scenario_id), 'en')} (${cur} millions)`, es: `Los tres regímenes, escenario ${pick(scenarioName(sel, o.scenario_id), 'es')} (millones de ${cur})` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
@@ -162,7 +185,8 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
       dataKey={stateKey}
       note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
     >
-      <ChartOverTable chart={<GroupedBars o={o} sel={sel} />}>
+      {/* 18 bars in six groups: about 1.5 rem a bar (R2b c08 M1: the default 15 rem showed 3 of 6 segments) */}
+      <ChartOverTable chartMin="28rem" chart={<GroupedBars o={o} sel={sel} />}>
         <table className="caos-table ct-wrap-head" data-table="segments">
           <thead>
             <tr>
@@ -581,7 +605,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
   if (dv === null) {
     return (
       <ViewsRow>
-        <PlotCard title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <PlotCard title={{ en: `Scenario ${pick(scenarioName(sel, o.scenario_id), 'en')}`, es: `Escenario ${pick(scenarioName(sel, o.scenario_id), 'es')}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
           <p>{pick(o.scenario.description, lang)}</p>
           <p className="caos-pending" data-state="unavailable">
             {pick({ en: 'Not available: this is the base scenario, the reference the other scenarios are measured against, so it has no change to report.', es: 'No disponible: este es el escenario base, la referencia contra la que se miden los otros, así que no tiene cambio que informar.' }, lang)}
@@ -592,7 +616,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
   }
   return (
     <ViewsRow shares={[1, 1]}>
-      <PlotCard fill title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+      <PlotCard fill title={{ en: `Scenario ${pick(scenarioName(sel, o.scenario_id), 'en')}`, es: `Escenario ${pick(scenarioName(sel, o.scenario_id), 'es')}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <p>{pick(o.scenario.description, lang)}</p>
         {o.scenario.shocks.length === 0 ? (
           <p className="ct-note">{pick({ en: 'The scenario applies no shock to any driver.', es: 'El escenario no aplica shock a ningún motor.' }, lang)}</p>
@@ -608,9 +632,9 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
             <tbody>
               {o.scenario.shocks.map((s) => (
                 <tr key={s.driver} data-driver={s.driver}>
-                  <td className="ct-text">{s.driver}</td>
+                  <td className="ct-text">{pick(DRIVER_TEXT[s.driver] ?? { en: s.driver, es: s.driver }, lang)}</td>
                   <td>{formatNumber(s.value, lang, { digits: 3 })}</td>
-                  <td className="ct-text">{s.unit}</td>
+                  <td className="ct-text">{pick(UNIT_TEXT[s.unit] ?? { en: s.unit, es: s.unit }, lang)}</td>
                 </tr>
               ))}
             </tbody>
