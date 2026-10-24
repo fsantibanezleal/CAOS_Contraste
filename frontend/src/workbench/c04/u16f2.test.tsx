@@ -45,12 +45,13 @@ describe('U16-F2 C04', () => {
     expect(markup).not.toContain('tables transformed by Contraste');
   });
 
-  it('V04-1: the reference line of the ratio to D2 carries a short label, so it never covers the curves', () => {
+  it('V04-1 and R2b c05 M1: the reference line of the ratio to D2 carries no label, so it never covers the curves', () => {
     captured.length = 0;
     render(<DefinitionsView sel={makeSel(sp())} />, 'en');
     const marks = captured.flatMap((p) => p.yMarks ?? []);
     expect(marks.some((m) => m.y === 1)).toBe(true);
-    for (const m of marks) expect((m.label as { en: string }).en.length, JSON.stringify(m)).toBeLessThanOrEqual(16);
+    // a short label still covered the D3/D2 line at CCC-C; the note says what the dotted line at 1 is
+    for (const m of marks.filter((x) => x.y === 1)) expect(m.label, JSON.stringify(m)).toBeUndefined();
   });
 
   it('V04-3: the five-year window axis names the number only, the windows are listed in the note', () => {
