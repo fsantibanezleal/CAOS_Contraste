@@ -267,7 +267,7 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
               return (
                 <tr key={id} data-licence-class={s.class}>
                   <td className="caos-col-text">
-                    <a href={s.landing} target="_blank" rel="noreferrer">{s.name}</a>
+                    <a href={s.landing} target="_blank" rel="noreferrer">{sourceText(id, 'name', s.name, lang)}</a>
                   </td>
                   <td className="caos-col-text">
                     {sourceText(id, 'licence', s.licence, lang)} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
