@@ -31,11 +31,11 @@ describe('the Spanish views of C09', () => {
     expect(text).toContain('Cancelable sin condiciones');
     expect(text).toContain('Compromisos');
     expect(text).toContain('Contingentes relacionados con transacciones (NIF y RUF)');
-    expect(text).toContain('monto en balance + 50');
+    expect(text).toContain('Monto en balance + 50');
     expect(text).toContain('CRE20.94 a CRE20.101');
     setLang('en');
     const en = view(<FloorsView sel={sel} />);
     expect(en).toContain('Unconditionally cancellable');
-    expect(en).toContain('on-balance amount + 50');
+    expect(en).toContain('On-balance amount + 50');
   });
 });

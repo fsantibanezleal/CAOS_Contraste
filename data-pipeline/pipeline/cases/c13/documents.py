@@ -225,12 +225,19 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
                              f"Sin deficiencia el PLA es ámbar o rojo en {_p(p)} de {_n(d['n_replications'])} replicaciones (rojo en {_p(p_red)}): la tasa de falsa alarma del test")})
     else:
         sev, status = ("S4", "accepted") if p >= 0.95 else (("S3", "open") if p >= 0.5 else ("S2", "open"))
-        verb_en, verb_es = ("catches", "detecta") if p >= 0.5 else ("misses", "no detecta")
-        f.append({"id": "F-PLA", "severity": sev, "status": status, "evidence": ["market.pla_test"],
-                  "title": T(f"The PLA {verb_en} the planted {did.replace('-', ' ')} in {p:.1%} of {d['n_replications']:,} replications "
-                             f"(amber or red; red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
-                             f"El PLA {verb_es} la deficiencia plantada ({DEFICIENCY_ES.get(did, did.replace('-', ' '))}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
-                             f"(ámbar o rojo; rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")})
+        name_es = DEFICIENCY_ES.get(did, did.replace('-', ' '))
+        if p >= 0.5:
+            title = T(f"The PLA catches the planted {did.replace('-', ' ')} in {p:.1%} of {d['n_replications']:,} replications "
+                      f"(amber or red; red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
+                      f"El PLA detecta la deficiencia plantada ({name_es}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
+                      f"(ámbar o rojo; rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
+        else:
+            # a miss states the miss rate, then the catch rate it comes from (R2b c14 B1: "misses ... in 0.0%" read as never missing)
+            title = T(f"The PLA misses the planted {did.replace('-', ' ')} in {1 - p:.1%} of {d['n_replications']:,} replications: it is amber or "
+                      f"red in {p:.1%} (red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
+                      f"El PLA no detecta la deficiencia plantada ({name_es}) en {_p(1 - p)} de {_n(d['n_replications'])} replicaciones: es ámbar "
+                      f"o rojo en {_p(p)} (rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
+        f.append({"id": "F-PLA", "severity": sev, "status": status, "evidence": ["market.pla_test"], "title": title})
         n_int = d["intended_test_flagged"]
         f.append({"id": "F-INTENDED", "severity": "S3" if n_int / d["n_replications"] >= 0.5 else "S2", "status": "open", "evidence": ["market.pla_test"],
                   "title": T(f"The statistic meant to break ({INTENDED_NOTE[k['intended_to_fail']]['en']}) flags {n_int / d['n_replications']:.1%} of the replications",

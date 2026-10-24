@@ -433,7 +433,7 @@ def test_the_ci_runs_the_static_checks_and_never_the_notebooks():
 def test_the_adopted_scripts_are_the_template_scripts_byte_for_byte():
     for name, digest in ADOPTED.items():
         data = (SCRIPTS / name).read_bytes().replace(b"\r\n", b"\n")
-        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the template release 0.11.000"
+        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the adopted template release (.template-version)"
 
 
 @pytest.mark.skipif(not (ROOT / ".venv-notebooks").exists(), reason="the notebook environment .venv-notebooks is a local release gate (ADR-0074)")

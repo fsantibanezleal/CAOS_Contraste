@@ -62,7 +62,7 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{`${r.rung}: ${pick(r.label, lang)}`}</td>
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
-                  <td className="ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? (ran(r.id, r.n_scenarios).why ? pick(ran(r.id, r.n_scenarios).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
+                  <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? (ran(r.id, r.n_scenarios).why ? pick(ran(r.id, r.n_scenarios).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   <td className="ct-text ct-wide-only">{r.parameters.map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>

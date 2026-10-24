@@ -113,7 +113,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         lineage = _lineage(seed, rv)
         variants[f"level-{k}"] = build_artifact(
             case_id=CASE_ID, variant_id=f"level-{k}", model=docs.model_summaries(k, data[k], rv), outputs=out, tests=with_reference_text(tests),
-            impact=docs.impact(out), findings=docs.findings(out), lineage=lineage, lane={"lane": "precompute", "reasons": []})
+            impact=docs.impact(out), findings=docs.findings(out, data[k].test["cohort"].n_excluded / data[k].n_test_defaults), lineage=lineage, lane={"lane": "precompute", "reasons": []})
         say(f"level {k}: known CCF {params.known_ccf(k):.4f}")
     models = docs.models_document(pl, data, rv)
     models_doc = build_models_artifact(case_id=CASE_ID, fit_id=models["fit_id"], model=models["model"], fit=models["fit"],
