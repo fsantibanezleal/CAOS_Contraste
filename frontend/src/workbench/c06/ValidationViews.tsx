@@ -7,6 +7,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { modelName } from '../names';
 import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLabel, unionX } from './format';
 import { referenceText } from '../c03/U6Shared';
 import { cohortText, fitOf, ifrs9TestText, movementText, outputsOf, type C06Sel } from './selection';
@@ -421,6 +422,9 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const rows: TestRow[] = variant.tests;
+  // a segment by the label its document gives it (C07's portfolio segments), else the term words of C06 (R2b c08 B2)
+  const portfolio = (variant.outputs as { portfolio?: { segments?: Array<{ segment_id: string; label: { en: string; es: string } }> } }).portfolio;
+  const segmentOf = (id: string) => portfolio?.segments?.find((s) => s.segment_id === id)?.label ?? segmentLabel(id);
   return (
     <PlotCard
       title={{ en: 'The tests the engine returned', es: 'Las pruebas que devolvió el motor' }}
@@ -449,9 +453,9 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
                     <span title={t.test_id}>{pick(ifrs9TestText(t.test_id), lang)}</span>
-                    {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentLabel(t.segment), lang)}</span> : null}
+                    {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentOf(t.segment), lang)}</span> : null}
                   </td>
-                  <td className="ct-text">{t.model_id ?? '-'}</td>
+                  <td className="ct-text">{t.model_id ? pick(modelName(t.model_id, { caseId: variant.case_id, models: variant.model }) ?? { en: t.model_id, es: t.model_id }, lang) : '-'}</td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <td>{t.p_value === null ? formatNumber(null, lang) : formatNumber(t.p_value, lang, { digits: 2 })}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>

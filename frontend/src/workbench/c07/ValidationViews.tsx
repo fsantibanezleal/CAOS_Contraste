@@ -7,6 +7,23 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { fitOf, outputsOf, type C07Sel } from './selection';
 
+/** The calibration targets' metric and unit in Spanish (the models document writes them in English; R2b c08 B3). */
+const PART_ES: Record<string, string> = {
+  'loan mix': 'composición de la cartera', 'provision index': 'índice de provisiones', '90-day delinquency': 'morosidad de 90 días',
+  'consumer product split': 'división de productos de consumo', commercial: 'comercial', consumer: 'consumo', mortgage: 'vivienda',
+  total: 'total', 'instalment loans': 'créditos en cuotas',
+};
+const UNIT_ES: Record<string, string> = {
+  'share of the three portfolios': 'proporción de las tres carteras', 'share of loans': 'proporción de las colocaciones',
+  'share of consumer loans': 'proporción de las colocaciones de consumo',
+};
+/** "loan mix: commercial" in the language: each part by the map, the string as written when a part is not in it. */
+function metricText(metric: string, lang: 'en' | 'es'): string {
+  if (lang === 'en') return metric;
+  const parts = metric.split(': ');
+  return parts.every((p) => PART_ES[p]) ? parts.map((p) => PART_ES[p]).join(': ') : metric;
+}
+
 /** The calibration targets of the synthetic bank against what the calibration achieved. */
 export function CalibrationView({ sel }: { sel: C07Sel | null }) {
   const lang = useShellLang();
@@ -41,10 +58,10 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
             <tbody>
               {fit.calibration_targets.map((t) => (
                 <tr key={t.metric} data-metric={t.metric}>
-                  <td className="ct-text">{t.metric}</td>
+                  <td className="ct-text">{metricText(t.metric, lang)}</td>
                   <td>{formatNumber(t.target, lang, { digits: 4 })}</td>
                   <td>{formatNumber(t.achieved, lang, { digits: 4 })}</td>
-                  <td className="ct-text ct-wide-only">{t.unit}</td>
+                  <td className="ct-text ct-wide-only">{lang === 'es' ? UNIT_ES[t.unit] ?? t.unit : t.unit}</td>
                   <td className="ct-text ct-wide-only">{`${t.source} (${t.as_of})`}</td>
                 </tr>
               ))}
