@@ -77,6 +77,7 @@ import {
   attributionIn,
 } from './selection';
 import { esDecimals } from './esDecimals';
+import { OUTPUT_BLOCKS } from '../names';
 
 const LIVE = 'live' as const;
 /** Both languages of a string built here, readable field by field (a BiText may be a plain string). */
@@ -498,30 +499,8 @@ export function designChart(v: VariantArtifact<unknown>, points: EvidencePoint[]
   return null;
 }
 
-/** The outputs block a "design:" evidence names, and the group that draws it. */
-const DESIGN_NAME: Record<string, BiText> = {
-  definition_gap: { en: 'the definition gaps, pooled D4/D2 and D3/D2 by grade (Validation group)', es: 'las brechas de definición, D4/D2 y D3/D2 agrupadas por grado (grupo Validación)' },
-  'cohorts.defaulted_cohort': { en: "the default-rate page's own cohort against the transition page's, year by year (Validation group)", es: 'la cohorte propia de la página de tasas de incumplimiento contra la de la página de transiciones, año a año (grupo Validación)' },
-  'cohorts.counts': { en: "the transition page's counts by year, its default column (Validation group)", es: 'los conteos de la página de transiciones por año, su columna de incumplimiento (grupo Validación)' },
-  embedding: { en: "the embedding diagnostics: Israel et al.'s Theorem 3 and stochastic monotonicity (Model group)", es: 'los diagnósticos de inclusión: el Teorema 3 de Israel et al. y la monotonía estocástica (grupo Modelo)' },
-  generators: { en: "the generators' L1 distances to the pooled matrix (Model group)", es: 'las distancias L1 de los generadores a la matriz agrupada (grupo Modelo)' },
-  lra: { en: 'the long-run averages and their Jeffreys intervals (Validation group)', es: 'los promedios de largo plazo y sus intervalos de Jeffreys (grupo Validación)' },
-  pd: { en: 'the one-year PDs by cohort and grade (Validation group)', es: 'las PD anuales por cohorte y grado (grupo Validación)' },
-  lifetime: { en: 'the five-year windows: observed against the chained one-year matrices (Validation group)', es: 'las ventanas de cinco años: lo observado contra las matrices anuales encadenadas (grupo Validación)' },
-  ttc: { en: "the pooled matrix's TTC portfolio and the drift towards it (Impact group)", es: 'la cartera TTC de la matriz agrupada y la deriva hacia ella (grupo Impacto)' },
-  'rungs.estimators': { en: "the estimators' bias and RMSE by grade (Validation group)", es: 'el sesgo y el RMSE de los estimadores por grado (grupo Validación)' },
-  'rungs.estimators.zero': { en: 'the share of exactly zero PDs by estimator and grade (Validation group)', es: 'la proporción de PD exactamente cero por estimador y grado (grupo Validación)' },
-  'rungs.coverage': { en: "the intervals' coverage by grade (Validation group)", es: 'la cobertura de los intervalos por grado (grupo Validación)' },
-  'rungs.error_cohort_power': { en: "the Markov projections' errors against the five-year default frequency (Validation group)", es: 'los errores de las proyecciones de Markov contra la frecuencia de incumplimiento a cinco años (grupo Validación)' },
-  'rungs.pd_stressed_year': { en: "the stressed year's PD against the truth (Validation group)", es: 'la PD del año estresado contra la verdad (grupo Validación)' },
-  'rungs.pd_removed': { en: 'the PD with withdrawals removed against the truth (Validation group)', es: 'la PD con los retiros eliminados contra la verdad (grupo Validación)' },
-  'rungs.pd_followed': { en: 'the PD with withdrawals followed (EBA paragraph 76) against the truth (Validation group)', es: 'la PD con los retiros seguidos (párrafo 76 de la EBA) contra la verdad (grupo Validación)' },
-  'rungs.overlap_jeffreys': { en: "adjacent grades' Jeffreys overlap by cohort size (Validation group)", es: 'el traslape de Jeffreys de grados adyacentes por tamaño de cohorte (grupo Validación)' },
-  irw: { en: "Israel et al.'s nine distances, printed against recomputed (Validation group)", es: 'las nueve distancias de Israel et al., impresas contra recalculadas (grupo Validación)' },
-  sr190: { en: "Schuermann and Hanson's Table 5, printed against recomputed (Validation group)", es: 'la Tabla 5 de Schuermann y Hanson, impresa contra recalculada (grupo Validación)' },
-  engelmann: { en: "Engelmann's TTC portfolio and projections, printed against recomputed (Validation group)", es: 'la cartera TTC y las proyecciones de Engelmann, impresas contra recalculadas (grupo Validación)' },
-};
-const designName = (key: string): BiText => DESIGN_NAME[key] ?? { en: `the outputs block ${key}`, es: `el bloque de salidas ${key}` };
+/** The outputs block a "design:" evidence names, and the group that draws it (the product's one map, names/design.ts). */
+const designName = (key: string): BiText => OUTPUT_BLOCKS[key] ?? { en: `the outputs block ${key}`, es: `el bloque de salidas ${key}` };
 
 function segmentText(segment: string | null, lang: Lang): string {
   if (segment === null || segment === 'portfolio') return '';
