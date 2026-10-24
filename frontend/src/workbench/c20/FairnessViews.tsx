@@ -7,6 +7,7 @@ import { Pending } from '../Pending';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { SgcdNotice } from './C20Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc1, type NamedParam } from './U14Common';
+import { TallBars, barBox } from './C20Common';
 import { ATTRIBUTE_TEXT, FAIR_TESTS, outputsOf, text, type C20Sel } from './selection';
 import { testName } from './U14Common';
 import { es } from './localise';
@@ -115,11 +116,12 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
       >
         <LabelledOverTable
           head={<Labelled label={d.label} reason={{ en: 'The decision-rate effect at a stated cut-off.', es: 'El efecto en la tasa de decisiones en un corte declarado.' }} />}
-          chartMin={barMin(d.rows.length)}
+          chartMin={barBox(d.rows.length)}
           chart={
             d.rows.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the document carries no shift row.', es: 'No disponible: el documento no trae ninguna fila de cambio.' }, lang)}</p>
             ) : (
+              <TallBars rows={d.rows.length}>
               <BarChart
                 title={{ en: 'Share of decisions that flip', es: 'Parte de las decisiones que cambian' }}
                 height="fill"
@@ -127,6 +129,7 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
                 data={d.rows.map((r) => ({ id: r.shift_id, label: shiftName(r.shift_id), value: r.flip_share, tone: 'warn' as const }))}
                 axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 2 } }}
               />
+              </TallBars>
             )
           }
         >

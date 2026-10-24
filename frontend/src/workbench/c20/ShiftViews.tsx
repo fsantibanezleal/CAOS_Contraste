@@ -12,6 +12,7 @@ import { RULE_OF_THUMB } from './ShockViews';
 import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
 import { localTests } from './localise';
 import { inputName, segmentName, windowName } from '../names';
+import { TallBars, barBox } from './C20Common';
 
 const TITLE_REAL: BiText = { en: 'Real drift between the portfolios', es: 'Deriva real entre las carteras' };
 const TITLE_SYNTH: BiText = { en: 'Synthetic shift', es: 'Cambio sintético' };
@@ -27,7 +28,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_REAL} needs="shift" />;
   const d = o.real_drift;
   const name = (id: string) => pick(text(PORTFOLIO_TEXT, id), lang);
-  const bars = d.pairs.flatMap((p) => p.variables.map((v) => ({ id: `${p.a}-${p.b}-${v.name}`, label: { en: `${v.name} (${text(PORTFOLIO_TEXT, p.a).en} to ${text(PORTFOLIO_TEXT, p.b).en})`, es: `${v.name} (${text(PORTFOLIO_TEXT, p.a).es} a ${text(PORTFOLIO_TEXT, p.b).es})` }, value: v.psi })));
+  const bars = d.pairs.flatMap((p) => p.variables.map((v) => ({ id: `${p.a}-${p.b}-${v.name}`, label: { en: `${pick(inputName(v.name) ?? v.name, 'en')} (${text(PORTFOLIO_TEXT, p.a).en} to ${text(PORTFOLIO_TEXT, p.b).en})`, es: `${pick(inputName(v.name) ?? v.name, 'es')} (${text(PORTFOLIO_TEXT, p.a).es} a ${text(PORTFOLIO_TEXT, p.b).es})` }, value: v.psi })));
   const rules = RULE_OF_THUMB.map((v) => ({
     id: `rule-${v}`,
     label: { en: `Rule of thumb ${formatNumber(v, 'en', { decimals: 2 })} (convention)`, es: `Regla empírica ${formatNumber(v, 'es', { decimals: 2 })} (convención)` },
@@ -52,11 +53,12 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               reason={{ en: 'Real drift between the portfolios, with no model.', es: 'Deriva real entre las carteras, sin modelo.' }}
             />
           }
-          chartMin={barMin(bars.length + rules.length)}
+          chartMin={barBox(bars.length + rules.length)}
           chart={
             bars.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the document carries no variable of any portfolio pair.', es: 'No disponible: el documento no trae ninguna variable de ningún par de carteras.' }, lang)}</p>
             ) : (
+              <TallBars rows={bars.length + rules.length}>
               <BarChart
                 title={{ en: 'PSI by variable and portfolio pair', es: 'PSI por variable y par de carteras' }}
                 height="fill"
@@ -64,6 +66,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
                 data={[...bars, ...rules]}
                 axis={{ label: { en: 'Population stability index', es: 'Índice de estabilidad poblacional' }, format: { decimals: 2 } }}
               />
+              </TallBars>
             )
           }
         >
@@ -109,7 +112,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_SYNTH} needs="shift" />;
   const s = o.synthetic_shift;
   const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: 0 - x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id), value: 0 - x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
     { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
   ];
   return (
@@ -255,7 +258,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
   const s = o.synthetic_shift;
   const e = s.label_free.cbpe;
   const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: `Measured, ${x.shift_id}`, es: `Medido, ${x.shift_id}` } as BiText, value: x.metric.auc })),
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: `Measured, ${pick(windowName(x.shift_id), 'en')}`, es: `Medido, ${pick(windowName(x.shift_id), 'es')}` } as BiText, value: x.metric.auc })),
     { id: 'cbpe', label: { en: 'CBPE estimate (no labels)', es: 'Estimación CBPE (sin etiquetas)' } as BiText, value: e.estimated_auc, tone: 'warn' as const },
   ];
   return (

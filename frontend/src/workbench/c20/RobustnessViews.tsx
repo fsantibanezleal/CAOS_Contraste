@@ -7,7 +7,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NotInVariant, SgcdNotice } from './C20Common';
+import { NotInVariant, SgcdNotice, rungTitle } from './C20Common';
 import { LabelledOverTable, ParamTable, U14TestsTable, barMin, f3, f4, int, pc1, testsOf, type NamedParam } from './U14Common';
 import { SCREEN_TEXT, asKind, type C20Sel } from './selection';
 import { localParams, localTests } from './localise';
@@ -93,6 +93,9 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
   if (!sel) return <Pending />;
   const o = asKind(sel, 'seeds');
   if (!o) return <NotInVariant sel={sel} title={title} needs="seeds" />;
+  // a rung by its short title ("P4 LightGBM"), never its id ("P4-lightgbm"; R2b c20): the seeds rows carry the rung without the
+  // dataset of the model id ("P4-lightgbm-taiwan"), so the model of the document whose id extends it names it
+  const rungName = (id: string): BiText => rungTitle(id, sel.data.variant.model);
   return (
     <ViewsRow>
       <PlotCard
@@ -105,21 +108,28 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
         }}
       >
         <LabelledOverTable
-          chartMin={barMin(Math.max(1, o.rows.length) * 2)}
+          chartMin={barMin(Math.max(1, o.rows.length) * 2 + 2)}
           chart={
             o.rows.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the document carries no seed row.', es: 'No disponible: el documento no trae ninguna fila de semillas.' }, lang)}</p>
             ) : (
-              <BarChart
-                title={{ en: 'Spread of the AUC and the reason codes kept', es: 'Dispersión del AUC y códigos de razón que se mantienen' }}
-                height="fill"
-                orientation="horizontal"
-                data={o.rows.flatMap((r) => [
-                  { id: `${r.rung}-range`, label: { en: `${r.rung}: AUC range`, es: `${r.rung}: rango del AUC` } as BiText, value: r.auc.max - r.auc.min, highlight: r.rung === sel.rung },
-                  { id: `${r.rung}-reasons`, label: { en: `${r.rung}: reasons kept`, es: `${r.rung}: razones que se mantienen` } as BiText, value: r.reason_code_overlap.mean, tone: 'good' as const },
-                ])}
-                axis={{ label: { en: 'AUC points, or share kept', es: 'Puntos de AUC, o parte que se mantiene' }, format: { decimals: 3 } }}
-              />
+              // one drawing per unit: the AUC range in AUC points, the reason codes kept as a share (R2b c20: one axis held both)
+              <div className="ct-c20-pair" data-caos-flow="">
+                <BarChart
+                  title={{ en: 'Range of the AUC across seeds, by rung', es: 'Rango del AUC entre semillas, por peldaño' }}
+                  height="fill"
+                  orientation="horizontal"
+                  data={o.rows.map((r) => ({ id: `${r.rung}-range`, label: rungName(r.rung), value: r.auc.max - r.auc.min, highlight: r.rung === sel.rung }))}
+                  axis={{ label: { en: 'AUC range (points of AUC)', es: 'Rango del AUC (puntos de AUC)' }, format: { decimals: 3 } }}
+                />
+                <BarChart
+                  title={{ en: 'Top-four reason codes kept across refits, by rung', es: 'Cuatro códigos de razón principales que se mantienen entre reajustes, por peldaño' }}
+                  height="fill"
+                  orientation="horizontal"
+                  data={o.rows.map((r) => ({ id: `${r.rung}-reasons`, label: rungName(r.rung), value: r.reason_code_overlap.mean, tone: 'good' as const, highlight: r.rung === sel.rung }))}
+                  axis={{ label: { en: 'Share of the reasons kept', es: 'Parte de las razones que se mantienen' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+                />
+              </div>
             )
           }
         >
@@ -139,7 +149,7 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {o.rows.map((r) => (
                 <tr key={r.rung} data-rung={r.rung} className={r.rung === sel.rung ? 'ct-current' : undefined}>
-                  <td className="ct-text">{r.rung}</td>
+                  <td className="ct-text">{pick(rungName(r.rung), lang)}</td>
                   <td className="ct-wide-only">{int(r.n_seeds, lang)}</td>
                   <td>{f3(r.auc.mean, lang)}</td>
                   <td>{f4(r.auc.sd, lang)}</td>
