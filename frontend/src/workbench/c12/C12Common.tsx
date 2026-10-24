@@ -16,7 +16,7 @@ import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
 import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
-import { testText } from '../names';
+import { segmentName, testText } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -104,7 +104,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
-                        {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{segmentText(t.segment, lang)}</span> : null}
+                        {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{segmentText(t.segment, lang) === t.segment ? pick(segmentName(t.segment, { caseId: 'C12' }) ?? { en: t.segment, es: t.segment }, lang) : segmentText(t.segment, lang)}</span> : null}
                       </td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
