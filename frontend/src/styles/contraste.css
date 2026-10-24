@@ -257,3 +257,7 @@ table.ct-wrap-head th { white-space: normal; }
   .ct-c17-tall { height: 100%; min-height: 0; }
   .ct-c17-tall > .ct-stack > .ct-stack-table { max-height: 60%; }
 }
+
+/* C18 (U16-F9c, R2b c19 M-new-1): the stack view's two drawings share their card by their bars; a phone gives each its least height */
+.ct-c18-stack-charts { display: flex; flex-direction: column; flex: 1 1 0; height: 100%; min-height: 0; gap: 0.5rem; }
+@media (max-width: 900px) { .ct-c18-stack-charts { height: auto; } }

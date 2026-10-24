@@ -282,7 +282,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     bars.map((b) => ({ ...b, format: { percent: true, decimals: requirementDecimals(b.value ?? 0) } }));
   const tickFormat = { percent: true, decimals: 1 };
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={title}
@@ -292,11 +292,10 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
           es: 'El objetivo interno OI es la suma de sus capas, como parte de los APR; las barras bajo él son el patrimonio efectivo en el punto de partida y al final del estrés, y el mínimo legal. El segundo dibujo es el mínimo legal apilado de CET1 en Chile. Solo se dibuja el capital apilado chileno: los documentos no traen cifras de la UE ni del SSM, así que no se hace comparación con ellas.',
         }}
       >
-        <ChartOverTable
-          chartMin={`${(rowsAll + (legalBars?.length ?? 0)) * 1.3 + 4}rem`}
-          chart={
-            <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0 }}>
-              <div style={{ flex: `${rowsAll} 1 0`, minHeight: 0 }}>
+        {/* the two drawings take the whole card, each its share of the height by its bars, so neither is cut nor scrolls inside
+            itself (R2b c19 M-new-1: under the tables the upper drawing lost its axis and the legal minimum bar) */}
+            <div className="ct-c18-stack-charts" data-caos-flow="">
+              <div style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `${rowsAll * 1.4 + 4}rem` }}>
                 <BarChart
                   title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
                   data={ownDecimals([...oiBars, ...refBars])}
@@ -305,7 +304,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 />
               </div>
               {legalBars ? (
-                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: 0 }}>
+                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: `${legalBars.length * 1.4 + 4}rem` }}>
                   <BarChart
                     title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
                     data={ownDecimals(legalBars)}
@@ -315,8 +314,9 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 </div>
               ) : null}
             </div>
-          }
-        >
+      </PlotCard>
+      <PlotCard fill title={{ en: 'The stack in numbers', es: 'El capital apilado en números' }} {...card}>
+        <div className="ct-scroll" data-caos-flow="" data-block="numbers">
           <table className="caos-table ct-wrap-head" data-table="c18-stack">
             <thead>
               <tr>
@@ -390,7 +390,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <dt>{pick({ en: 'Statement', es: 'Declaración' }, lang)}</dt>
             <dd>{pick(o.p2g_proxy.statement, lang)}</dd>
           </Defs>
-        </ChartOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
