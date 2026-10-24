@@ -137,8 +137,8 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'How sure the fitted correlation is', es: 'Qué tan segura es la correlación ajustada' }}
         {...card}
         note={{
-          en: 'The log-likelihood of the yearly loss rates as the asset correlation moves, the probability of default re-optimised at each value. The correlation is as uncertain as the curve is flat: the 95% interval holds every value above the dashed cutoff. With 22 years the interval is wide.',
-          es: 'La log-verosimilitud de las tasas de pérdida anuales al mover la correlación de activos, con la probabilidad de incumplimiento re-optimizada en cada valor. La correlación es tan incierta como plana es la curva: el intervalo del 95% contiene todo valor sobre el corte punteado. Con 22 años el intervalo es ancho.',
+          en: `The log-likelihood of the yearly loss rates as the asset correlation moves, the probability of default re-optimised at each value. The correlation is as uncertain as the curve is flat: the 95% interval holds every value above the dashed cutoff. With ${count(o.fit.n_years_used, 'en')} years the interval is wide.`,
+          es: `La log-verosimilitud de las tasas de pérdida anuales al mover la correlación de activos, con la probabilidad de incumplimiento re-optimizada en cada valor. La correlación es tan incierta como plana es la curva: el intervalo del 95% contiene todo valor sobre el corte punteado. Con ${count(o.fit.n_years_used, 'es')} años el intervalo es ancho.`,
         }}
       >
         <ChartOverTable

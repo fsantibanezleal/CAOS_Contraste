@@ -47,14 +47,19 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
-          chart={<BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} />}
+          chartMin={`${Math.min(16, data.length * 1.1 + 3)}rem`}
+          chart={<BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
+            { tone: 'neutral' as const, label: { en: 'Known CCF', es: 'CCF conocido' } },
+            { tone: 'good' as const, label: { en: 'Within the tolerance', es: 'Dentro de la tolerancia' } },
+            { tone: 'warn' as const, label: { en: 'Outside the tolerance', es: 'Fuera de la tolerancia' } },
+            { tone: 'bad' as const, label: { en: 'Outside 0 to 1', es: 'Fuera de 0 a 1' } },
+          ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />}
         >
           <p className="ct-note" data-truth={truth.value}>
             {pick(
               {
-                en: `Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}.`,
-                es: `CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}.`,
+                en: `Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}, and the light of each test below follows that tolerance on the bias, not its p-value.`,
+                es: `CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}, y la luz de cada prueba de abajo sigue esa tolerancia sobre el sesgo, no su valor p.`,
               },
               lang,
             )}
@@ -67,7 +72,7 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</th>
                 <th>{pick({ en: 'Estimate', es: 'Estimación' }, lang)}</th>
                 <th>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Interval of the bias', es: 'Intervalo del sesgo' }, lang)}</th>
                 <th className="ct-wide-only">RMSE</th>
                 <th>{pick({ en: 'Below 0', es: 'Bajo 0' }, lang)}</th>
                 <th>{pick({ en: 'Above 1', es: 'Sobre 1' }, lang)}</th>
@@ -92,7 +97,7 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => !t.test_id.includes('ead')} />
+          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ccf_estimator_bias' && (!(t.model_id ?? '').startsWith('ccf-') || (t.model_id ?? '').startsWith(`ccf-${sel.design}-`))} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -127,9 +132,18 @@ export function DistributionView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
+          chartMin={`${Math.min(16, data.length * 0.8 + 3)}rem`}
           chart={<BarChart title={{ en: 'Defaults by realised CCF', es: 'Incumplimientos por CCF realizado' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Number of defaults', es: 'Número de incumplimientos' }, format: { decimals: 0 } }} />}
         >
+          <p className="ct-note" data-totals="true">
+            {pick(
+              {
+                en: `${count(d.n, 'en')} defaults in the design: ${count(d.n_below_zero, 'en')} below 0 and ${count(d.n_above_one, 'en')} above 1, kept and not clipped.`,
+                es: `${count(d.n, 'es')} incumplimientos en el diseño: ${count(d.n_below_zero, 'es')} bajo 0 y ${count(d.n_above_one, 'es')} sobre 1, conservados y no recortados.`,
+              },
+              lang,
+            )}
+          </p>
           <table className="caos-table ct-wrap-head" data-table="ccf-distribution" data-design={d.design}>
             <thead>
               <tr>

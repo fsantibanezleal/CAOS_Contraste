@@ -184,8 +184,8 @@ def floor_block(data: LevelData, preds: dict[str, np.ndarray]) -> dict[str, Any]
         rows.append({"facility_class": item, "sa_ccf": float(sa), "reference": ref, "n": int(pred.size),
                      "share_binding": float(bite.share_binding), "mean_ead_before": float(bite.mean_before),
                      "mean_ead_after": float(bite.mean_after)})
-    return {"currency": PARAMS["currency"], "rule": T("on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
-                  "monto en balance + 50 % de la exposición fuera de balance al CCF del método estandarizado (CRE32.36, CRE32.64)"),
+    return {"currency": PARAMS["currency"], "rule": T("On-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+                  "Monto en balance + 50 % de la exposición fuera de balance al CCF del método estandarizado (CRE32.36, CRE32.64)"),
             "off_balance_share": 0.5, "rows": rows}
 
 
@@ -260,7 +260,9 @@ def _side(bias: float) -> tuple[str, str]:
             else (f"{abs(bias):.3f} above", f"{number(abs(bias), 3, lang='es')} por encima"))
 
 
-def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
+def findings(out: dict[str, Any], first_month: float) -> list[dict[str, Any]]:
+    """The findings of a level. ``first_month`` is the share of the test defaulters that defaulted in the first month of their
+    cohort (the cohort design's excluded defaulters, ``Observations.n_excluded``), which the outputs do not carry."""
     truth = out["generator"]["true_ccf"]["value"]
     lvl = out["level"]
     fx = row_of(out, "fixed-horizon", "none", "mean")
@@ -303,10 +305,14 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
                          f"({_signed(fc['bias'], 3, 'es')} frente al valor conocido); {percent(fx['share_above_one'], 1, lang='es')} de los CCF están sobre 1 y "
                          f"{percent(fx['share_below_zero'], 1, lang='es')} bajo 0")})
     f.append({"id": "F-UNDEFINED", "severity": "S3", "status": "accepted", "evidence": ["design:undrawn-not-positive-is-undefined"],
-              "title": T(f"{undefined:.1%} of the defaulters have no CCF at the fixed horizon (fully drawn or over their limit) and {excluded:.1%} "
-                         "defaulted in the first month of their cohort; both are left out of the estimates and counted",
-                         f"{percent(undefined, 1, lang='es')} de los incumplidores no tiene CCF a horizonte fijo (línea totalmente usada o sobre su límite) y "
-                         f"{percent(excluded, 1, lang='es')} incumplió en el primer mes de su cohorte; ambos quedan fuera de las estimaciones y se cuentan")})
+              # the cohort design leaves out a first-month default (no reference date before it) and a line with no undrawn amount at
+              # the cohort start: `excluded` is both, `first_month` the first only (R2b c10 B2: 30.7 % was called the first-month share)
+              "title": T(f"{undefined:.1%} of the defaulters have no CCF at the fixed horizon (fully drawn or over their limit); in the cohort "
+                         f"design {excluded:.1%} have none, {first_month:.1%} because they defaulted in the first month of their cohort; all are "
+                         "left out of the estimates and counted",
+                         f"{percent(undefined, 1, lang='es')} de los incumplidores no tiene CCF a horizonte fijo (línea totalmente usada o sobre su límite); "
+                         f"en el diseño de cohorte {percent(excluded, 1, lang='es')} no lo tiene, {percent(first_month, 1, lang='es')} porque incumplió en "
+                         "el primer mes de su cohorte; todos quedan fuera de las estimaciones y se cuentan")})
     f.append({"id": "F-DIRECT", "severity": "S3", "status": "open", "evidence": ["lgd_ead.ead_backtest_by_band@direct-ead"],
               "title": T(f"The direct EAD model clips {dm['n_clipped_above']:,} development lines whose EAD exceeds their limit, so it cannot "
                          "predict the exposure of an overlimit line",

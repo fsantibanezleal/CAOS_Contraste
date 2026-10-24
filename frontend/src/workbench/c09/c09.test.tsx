@@ -155,7 +155,9 @@ describe('the C09 instrument', () => {
     const ccf = html(<ByDesignView sel={sel} />);
     const ead = html(<BacktestView sel={sel} />);
     for (const t of variant.tests) {
-      const host = t.test_id.includes('ead') ? ead : ccf;
+      // every C09 id starts `lgd_ead.`: the back-test rows are the EAD back-test's, the rest the estimates' (R2b c10 B1)
+      const host = t.test_id === 'lgd_ead.ead_backtest_by_band' ? ead : ccf;
+      expect(host === ead ? ccf : ead).not.toContain(`data-test="${t.test_id}"`);
       expect(host).toContain(`data-test="${t.test_id}"`);
       expect(host).toContain(escapeHtml(t.notes as string));
     }

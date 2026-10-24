@@ -68,7 +68,7 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
-                  <td className="ct-wide-only">{pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en ${g.acceleration_window_months} meses` }, lang)}</td>
+                  <td className="ct-wide-only">{g.acceleration_window_months === 0 ? pick({ en: 'none', es: 'ninguna' }, lang) : pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en ${g.acceleration_window_months} meses` }, lang)}</td>
                   <td>
                     <Flagged value={g.true_ccf.value} flag={g.true_ccf.flag} />
                   </td>
@@ -139,7 +139,7 @@ export function C09ContextView({ sel }: { sel: C09Sel | null }) {
             <Flagged value={g.true_ccf.value} flag={g.true_ccf.flag} />
           </dd>
           <dt>{pick({ en: 'Acceleration', es: 'Aceleración' }, lang)}</dt>
-          <dd>{pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over the last ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en los últimos ${g.acceleration_window_months} meses` }, lang)}</dd>
+          <dd>{g.acceleration_window_months === 0 ? pick({ en: 'none', es: 'ninguna' }, lang) : pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over the last ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en los últimos ${g.acceleration_window_months} meses` }, lang)}</dd>
           <dt>{pick({ en: 'Test replications', es: 'Replicaciones de prueba' }, lang)}</dt>
           <dd data-seeds="test">{`${count(r.test.n_replications, lang)} (${pick({ en: 'seeds', es: 'semillas' }, lang)} ${r.test.seeds.join(', ')}); ${count(r.test.n_facilities, lang)} ${pick({ en: 'facilities', es: 'líneas' }, lang)}, ${count(r.test.n_defaults, lang)} ${pick({ en: 'defaults', es: 'incumplimientos' }, lang)}`}</dd>
           <dt>{pick({ en: 'Development replications', es: 'Replicaciones de desarrollo' }, lang)}</dt>

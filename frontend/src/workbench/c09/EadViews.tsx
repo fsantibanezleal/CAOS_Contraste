@@ -7,7 +7,7 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { ChartOverTable, MaybeNumber, axisScale, money } from '../c06/format';
 import { U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { COVARIATE_TEXT, DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
 import { rangeText } from '../c08/words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -50,7 +50,7 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: rows.map((r) => r.utilisation_lower), label: { en: 'Utilisation at the reference date (lower edge of the band)', es: 'Utilización en la fecha de referencia (borde inferior del tramo)' }, format: { percent: true, decimals: 0 } }}
-              y={{ label: { en: `Exposure at default (${pick(scale.unit, 'en')})`, es: `Exposición al incumplimiento (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `Total EAD of the band (${pick(scale.unit, 'en')})`, es: `EAD total del tramo (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 { label: { en: 'Realised EAD', es: 'EAD realizada' }, values: rows.map((r) => r.realised_ead / scale.div), color: '--color-accent', width: 2.6 },
                 { label: { en: 'Predicted EAD', es: 'EAD predicha' }, values: rows.map((r) => (r.prediction_flag === 'in-range' ? r.predicted_ead / scale.div : null)), color: '--color-magenta', width: 2, dash: [6, 3] },
@@ -89,7 +89,7 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id.includes('ead')} />
+          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -104,6 +104,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
   if (!sel || !o) return <Pending />;
   const bandCount = bandsOf(o).length;
   const none = pick({ en: 'none', es: 'ninguna' }, lang);
+  const notApplicable = pick({ en: 'not applicable', es: 'no aplica' }, lang);
   return (
     <ViewsRow>
       <PlotCard
@@ -115,7 +116,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
           es: 'Un modelo de CCF estima la parte del monto no utilizado que se usa al incumplir; un modelo directo estima la exposición misma. Solo un modelo directo de EAD recorta observaciones para su ajuste, y dice cuántas.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="ead-models" data-bands={bandCount}>
             <thead>
               <tr>
@@ -131,11 +132,11 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
               {o.ead_models.map((m) => (
                 <tr key={m.model_id} data-model={m.model_id} data-kind={m.kind} className={m.model_id === sel.model ? 'ct-current' : undefined}>
                   <td className="ct-text" title={pick(kindText(m.kind), lang)}>{pick(modelLabel(o, m.model_id), lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.design ? pick(text(DESIGN_TEXT, m.design), lang) : formatNumber(null, lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.treatment ? pick(text(TREATMENT_TEXT, m.treatment), lang) : formatNumber(null, lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.covariates.length ? m.covariates.join(', ') : none}</td>
+                  <td className="ct-text ct-wide-only">{m.design ? pick(text(DESIGN_TEXT, m.design), lang) : notApplicable}</td>
+                  <td className="ct-text ct-wide-only">{m.treatment ? pick(text(TREATMENT_TEXT, m.treatment), lang) : notApplicable}</td>
+                  <td className="ct-text ct-wide-only">{m.covariates.length ? m.covariates.map((c) => pick(text(COVARIATE_TEXT, c), lang)).join(', ') : none}</td>
                   <td>
-                    <MaybeNumber value={m.n_clipped_below} reason={pick({ en: 'only a direct EAD model clips', es: 'solo un modelo directo de EAD recorta' }, lang)} format={(v) => count(v, lang)} />
+                    <MaybeNumber value={m.n_clipped_below} reason={null} format={(v) => count(v, lang)} />
                   </td>
                   <td>
                     <MaybeNumber value={m.n_clipped_above} reason={null} format={(v) => count(v, lang)} />
@@ -184,6 +185,9 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
           }
         >
           <p className="ct-note" data-floor-rule="true">{pick(f.rule, lang)}</p>
+          {f.rows.every((r) => r.share_binding === 0) ? (
+            <p className="ct-note" data-floor-binds="none">{pick({ en: 'At this level the floor binds for no facility: every bar is 0 %.', es: 'En este nivel el piso no se activa en ninguna línea: cada barra es 0 %.' }, lang)}</p>
+          ) : null}
           <table className="caos-table ct-wrap-head" data-table="ead-floor">
             <thead>
               <tr>
@@ -213,13 +217,13 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
         </ChartOverTable>
       </PlotCard>
       <PlotCard fill title={{ en: 'Supervisory CCFs and the small-undrawn rule', es: 'CCF supervisores y la regla de saldo no utilizado pequeño' }} {...card}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" data-table="small-undrawn" data-applied={String(s.applied)}>
             <dt>{pick({ en: 'Threshold', es: 'Umbral' }, lang)}</dt>
             <dd>{`${money(s.threshold, lang, s.currency)} ${s.currency}`}</dd>
             <dt>{pick({ en: 'Applied', es: 'Aplicada' }, lang)}</dt>
             <dd>{s.applied ? yes : no}</dd>
-            <dt>{pick({ en: 'Facilities switched', es: 'Líneas cambiadas' }, lang)}</dt>
+            <dt>{pick(s.applied ? { en: 'Facilities switched', es: 'Líneas cambiadas' } : { en: 'Lines the rule would switch (not applied)', es: 'Líneas que la regla cambiaría (no aplicada)' }, lang)}</dt>
             <dd>{count(s.n_switched, lang)}</dd>
             <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
             <dd translate="no">{s.reference}</dd>
