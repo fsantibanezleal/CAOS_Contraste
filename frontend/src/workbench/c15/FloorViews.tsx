@@ -166,8 +166,8 @@ export function ThresholdsView({ sel }: { sel: C15Sel | null }) {
         title={{ en: 'The prioritised-bank tests', es: 'Las pruebas de banco priorizado' }}
         {...card}
         note={{
-          en: 'A bank is prioritised when any of three tests is breached: delta NII over 5 percent of Tier 1, delta EVE over 15 percent of Tier 1, or delta NII over 18 percent of the twelve-month net interest and indexation margin. The dashed line joins the three thresholds, one per test, and a point above the line at its own test breaches.',
-          es: 'Un banco es priorizado cuando se supera cualquiera de tres pruebas: delta NII sobre el 5 por ciento del capital de nivel 1, delta EVE sobre el 15 por ciento del capital de nivel 1, o delta NII sobre el 18 por ciento del margen neto de intereses y reajustes a doce meses. La línea punteada une los tres umbrales, uno por prueba, y un punto sobre la línea en su propia prueba la supera.',
+          en: 'A bank is prioritised when any of three tests is breached: delta NII over 5 percent of Tier 1, delta EVE over 15 percent of Tier 1, or delta NII over 18 percent of the twelve-month net interest and indexation margin. Each red mark is the threshold of its test, and a blue point above the red mark of its own test breaches it.',
+          es: 'Un banco es priorizado cuando se supera cualquiera de tres pruebas: delta NII sobre el 5 por ciento del capital de nivel 1, delta EVE sobre el 15 por ciento del capital de nivel 1, o delta NII sobre el 18 por ciento del margen neto de intereses y reajustes a doce meses. Cada marca roja es el umbral de su prueba, y un punto azul sobre la marca roja de su propia prueba la supera.',
         }}
       >
         <ChartOverTable

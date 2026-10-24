@@ -77,7 +77,7 @@ REGISTRY: dict[str, Assumption] = {
         "definition of the outstanding notional of SRP31.121 is UNVERIFIED in the engine contract)."),
     "term_deposit_redemption_rate": Assumption(TERM_DEPOSIT_REDEMPTION_RATE, "share of the term deposit", "synthetic-stated",
         "Stated by Contraste (synthetic): the baseline early-redemption rate TDRR0 of SRP31.125, scaled by the Table 6 multiplier of each shock "
-        "through the engine's term_deposit_redemption_rate."),
+        "through the engine's term-deposit redemption function."),
     "deposit_beta": Assumption(DEPOSIT_BETA, "pass-through", "synthetic-stated",
         "Stated by Contraste (synthetic): one pass-through of the short rate to the rate paid on non-maturity deposits, used by the dynamic NII. "
         "No deposit-rate history exists for a synthetic bank, so no beta is fitted."),
