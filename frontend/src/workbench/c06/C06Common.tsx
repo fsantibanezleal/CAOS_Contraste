@@ -9,6 +9,7 @@ import { ChartOverTable, axisScale, compactMoney, pct } from './format';
 import { columnScale } from './amounts';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { truthStatusText } from '../c05/selection';
+import { SOURCE_TEXT } from '../c03/selection';
 import { evidenceText } from '../names';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, settingText, type C06Outputs, type C06Sel } from './selection';
 
@@ -182,7 +183,7 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
                   <td className="ct-text">{o.reporting_date}</td>
-                  <td className="ct-text ct-wide-only">{o.data_status.primary_source}</td>
+                  <td className="ct-text ct-wide-only">{pick(SOURCE_TEXT[o.data_status.primary_source] ?? { en: o.data_status.primary_source, es: o.data_status.primary_source }, lang)}</td>
                   <td>{eclScale.fmt(ecl('stage1'), lang)}</td>
                   <td>{eclScale.fmt(ecl('stage2'), lang)}</td>
                   <td>{eclScale.fmt(ecl('stage3'), lang)}</td>
@@ -235,7 +236,7 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
           <dt>{pick({ en: 'Reporting date', es: 'Fecha de reporte' }, lang)}</dt>
           <dd>{`${o.reporting_date} (${pick({ en: `periods of ${o.period_months} months`, es: `períodos de ${o.period_months} meses` }, lang)}; ${pick({ en: `horizon of ${o.horizon.stage1_months} months, lifetime cap ${o.horizon.lifetime_cap_months} months`, es: `horizonte de ${o.horizon.stage1_months} meses, tope de vida ${o.horizon.lifetime_cap_months} meses` }, lang)})`}</dd>
           <dt>{pick({ en: 'Primary data', es: 'Datos principales' }, lang)}</dt>
-          <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
+          <dd data-primary-source={d.primary_source}>{pick(SOURCE_TEXT[d.primary_source] ?? { en: d.primary_source, es: d.primary_source }, lang)}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
             {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang).replace(/^Freddie Mac: /, '') : ''}`}
@@ -282,8 +283,8 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
         <p className="ct-note" data-capital-bridge="not-in-contract">
           {pick(
             {
-              en: 'The capital bridge (the allowance against the IRB expected loss) is not in the c06-outputs 1.0.0 contract, so this instrument does not draw it; it comes with the capital case.',
-              es: 'El puente de capital (la cobertura contra la pérdida esperada IRB) no está en el contrato c06-outputs 1.0.0, así que este instrumento no lo dibuja; llega con el caso de capital.',
+              en: 'The capital bridge (the allowance against the IRB expected loss) is not in the contract of the C06 outputs, so this instrument does not draw it; it comes with the capital case.',
+              es: 'El puente de capital (la cobertura contra la pérdida esperada IRB) no está en el contrato de las salidas de C06, así que este instrumento no lo dibuja; llega con el caso de capital.',
             },
             lang,
           )}
