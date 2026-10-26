@@ -369,18 +369,6 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
             />
       </PlotCard>
       <NumbersCard card={card}>
-          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-girr">
-            <dt>{pick({ en: 'Delta charge, divided and undivided (USD)', es: 'Cargo delta, dividido y sin dividir (USD)' }, lang)}</dt>
-            <dd data-girr-charge={g.delta_charge.amount}><Nw>{`${cell(g.delta_charge.amount, lang)} / ${cell(g.delta_charge_undivided.amount, lang)}`}</Nw></dd>
-            <dt>{pick({ en: 'Division by sqrt(2)', es: 'División por raíz de 2' }, lang)}</dt>
-            <dd data-status={g.sqrt2_label}>{`${g.sqrt2_division ? pick({ en: 'applied', es: 'aplicada' }, lang) : pick({ en: 'not applied', es: 'no aplicada' }, lang)} (${g.sqrt2_label === 'convention' ? pick({ en: 'convention', es: 'convención' }, lang) : g.sqrt2_label})`}</dd>
-            {g.scenarios.map((s) => (
-              <Fragment key={s.scenario}>
-                <dt>{pick({ en: `Scenario ${s.scenario}: bucket charge (USD)`, es: `Escenario ${{ low: 'bajo', medium: 'medio', high: 'alto' }[s.scenario]}: cargo del tramo (USD)` }, lang)}</dt>
-                <dd data-scenario={s.scenario}><Nw>{cell(s.k_b, lang)}</Nw></dd>
-              </Fragment>
-            ))}
-          </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-girr-tenors">
             <thead>
               <tr>
@@ -401,6 +389,18 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-girr">
+            <dt>{pick({ en: 'Delta charge, divided and undivided (USD)', es: 'Cargo delta, dividido y sin dividir (USD)' }, lang)}</dt>
+            <dd data-girr-charge={g.delta_charge.amount}><Nw>{`${cell(g.delta_charge.amount, lang)} / ${cell(g.delta_charge_undivided.amount, lang)}`}</Nw></dd>
+            <dt>{pick({ en: 'Division by sqrt(2)', es: 'División por raíz de 2' }, lang)}</dt>
+            <dd data-status={g.sqrt2_label}>{`${g.sqrt2_division ? pick({ en: 'applied', es: 'aplicada' }, lang) : pick({ en: 'not applied', es: 'no aplicada' }, lang)} (${g.sqrt2_label === 'convention' ? pick({ en: 'convention', es: 'convención' }, lang) : g.sqrt2_label})`}</dd>
+            {g.scenarios.map((s) => (
+              <Fragment key={s.scenario}>
+                <dt>{pick({ en: `Scenario ${s.scenario}: bucket charge (USD)`, es: `Escenario ${{ low: 'bajo', medium: 'medio', high: 'alto' }[s.scenario]}: cargo del tramo (USD)` }, lang)}</dt>
+                <dd data-scenario={s.scenario}><Nw>{cell(s.k_b, lang)}</Nw></dd>
+              </Fragment>
+            ))}
+          </dl>
       </NumbersCard>
     </ViewsRow>
   );

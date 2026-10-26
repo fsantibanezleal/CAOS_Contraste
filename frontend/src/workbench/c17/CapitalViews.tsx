@@ -39,7 +39,7 @@ function HeadCells({ lang }: { lang: 'en' | 'es' }) {
       <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
       <th>{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
       <th className="ct-wide-only">{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
-      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desviación estándar log' }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desv. estándar log' }, lang)}</th>
     </>
   );
 }
@@ -176,7 +176,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
       >
         <div className="ct-c17-tall">
         <ChartOverTable
-          chartMin={`${data.length * 2 + 3}rem`}
+          chartMin={`${data.length * 1.4 + 3}rem`}
           chart={
             <BarChart
               title={{ en: `Median capital of ${inSentence(rung.en)} by cell, against the true quantile`, es: `Capital mediano de ${inSentence(rung.es)} por celda, contra el cuantil verdadero` }}
@@ -190,11 +190,11 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
           <table className="caos-table ct-wrap-head" data-table="capital-by-cell" data-rung={sel.rung}>
             <thead>
               <tr>
-                <th className="ct-text" style={{ minWidth: '8rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
+                <th className="ct-text" style={{ minWidth: lang === 'es' ? '7rem' : '9.5rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Definido para este método' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Losses per history, median', es: 'Pérdidas por historia, mediana' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Median losses', es: 'Pérdidas, mediana' }, lang)}</th>
                 <HeadCells lang={lang} />
               </tr>
             </thead>
