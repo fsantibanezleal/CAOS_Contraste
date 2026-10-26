@@ -59,8 +59,10 @@
 }
 /* a detail of a row under its first cell (the input a test row tests) */
 .ct-row-detail { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--color-fg-subtle); }
-/* a long reference (a DOI, a URL) breaks inside a text cell, so it does not widen its table past the card (R2b c09 B2) */
-.caos-table td.ct-text { overflow-wrap: anywhere; }
+/* a text cell breaks between words, so a number stays whole (gate G19); a long reference (a DOI, a URL, code) inside it breaks
+   anywhere, so it does not widen its table past the card (R2b c09 B2) */
+.caos-table td.ct-text { overflow-wrap: break-word; }
+.caos-table td.ct-text :is(a, code) { overflow-wrap: anywhere; }
 /* a table whose rows are several lines tall reads from the top of each row (U16-R2 b06 m4: centred cells left the first finding
    looking empty) */
 .caos-table.ct-top td { vertical-align: top; }
@@ -234,7 +236,8 @@ table.ct-wrap-head th { white-space: normal; }
 .ct-docfig-box { min-width: 0; max-width: 100%; }
 .prose svg.ct-docfig, svg.ct-docfig { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
 @media (max-width: 640px) {
-  .ct-docfig-box { overflow-x: auto; padding-right: 1.5rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent); }
+  /* the box contains its inline size, so the figure's minimum width scrolls inside it and never widens the page (gate G5) */
+  .ct-docfig-box { overflow-x: auto; contain: inline-size; padding-right: 1.5rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent); }
   .prose svg.ct-docfig, svg.ct-docfig { min-width: 440px; }
 }
 .ct-docfig text { overflow: visible; }

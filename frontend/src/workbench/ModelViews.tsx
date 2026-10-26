@@ -389,7 +389,9 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           )}
         </PlotCard>
         <PlotCard
-          fill
+          // with a scored applicant the chart fills the card; with none the information-value table above is tall, so the chart keeps
+          // a fixed height in a card that does not fill and is never squeezed (R2b c01 M2; a min-height wrapper broke the fill chain, gate G7)
+          fill={!!live}
           // with no scored applicant the card shows the two distributions only: titled and laned for what it draws (R2b c01 M2)
           title={live ? { en: 'Where this applicant sits', es: 'Dónde se ubica este solicitante' } : { en: "PD of this variant's defaulters and non-defaulters", es: 'PD de los incumplidores y no incumplidores de esta variante' }}
           lane={live ? 'live' : REPLAY}
@@ -397,10 +399,8 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           dataKey={stateKey}
           note={live ? { en: "The scorecard's PD of this variant's defaulters and non-defaulters; the marker is the applicant's live PD.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; la marca es la PD en vivo del solicitante.' } : { en: "The scorecard's PD of this variant's defaulters and non-defaulters; this variant carries no scored applicant to place.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; esta variante no trae un solicitante puntuado que ubicar.' }}
         >
-          {/* a floor for the drawing, so a tall card above it in the column never squeezes it to a strip (R2b c01 M2: about 10 px) */}
-          <div style={{ flex: '1 1 0', minHeight: '11rem', display: 'flex', flexDirection: 'column' }}>
           <UPlotChart
-            height="fill"
+            height={live ? 'fill' : 220}
             x={{ values: dist.x, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
             y={{ label: { en: 'Share of the group', es: 'Fracción' }, format: { percent: true, decimals: 0 } }}
             series={[
@@ -409,7 +409,6 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
             ]}
             marks={live ? [{ x: live.pdScorecard, label: { en: 'applicant', es: 'solicitante' } }] : undefined}
           />
-          </div>
         </PlotCard>
       </>
     </ViewsRow>

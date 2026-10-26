@@ -52,7 +52,7 @@ const FIT_NAME: Record<string, BiText> = {
   'C09/generator': bi('Generator', 'Generador'),
   'C10/c10': bi('Portfolio model ladder', 'Escalera de modelos de cartera'),
   'C11/ladder': bi('VaR and ES ladder', 'Escalera de VaR y ES'),
-  'C12/hw1f-treasury-2000-2025': bi('Hull-White on the Treasury curves, 2000 to 2025', 'Hull-White sobre las curvas del Tesoro, 2000 a 2025'),
+  'C12/hw1f-treasury-2000-2025': bi('Hull-White, Treasury 2000 to 2025', 'Hull-White, Tesoro 2000 a 2025'),
   'C13/generator': bi('Generator', 'Generador'),
   'C14/svb-2021-2022': bi('SVB, 2021 to 2022', 'SVB, 2021 a 2022'),
   'C15/banco-andino-2026-09': bi('Banco Andino, September 2026', 'Banco Andino, septiembre de 2026'),
