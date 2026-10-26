@@ -30,8 +30,10 @@ export function KnownBanner({ o }: { o: C13Outputs }) {
         {k.planted ? `${pick(deficiencyName(o), lang)}. ` : ''}
         {pick(k.mechanism, lang)}
         {k.planted ? ` ${pick({ en: 'Meant to be caught by:', es: 'Debe detectarla:' }, lang)} ${pick(text(INTENDED_TEXT, k.intended_to_fail), lang)}.` : ''}
+        {/* the synthetic notice in the same paragraph, so the Findings card keeps half the viewport at 1280 (gate G6: 49.8 %) */}
+        {' '}
+        <span data-synthetic="true">{pick(o.generator.notice, lang)}</span>
       </p>
-      <p className="ct-note" data-synthetic="true">{pick(o.generator.notice, lang)}</p>
     </div>
   );
 }

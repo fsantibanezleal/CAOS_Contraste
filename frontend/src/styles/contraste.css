@@ -238,7 +238,8 @@ table.ct-wrap-head th { white-space: normal; }
 @media (max-width: 640px) {
   /* the box contains its inline size, so the figure's minimum width scrolls inside it and never widens the page (gate G5) */
   .ct-docfig-box { overflow-x: auto; contain: inline-size; padding-right: 1.5rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent); }
-  .prose svg.ct-docfig, svg.ct-docfig { min-width: 440px; }
+  /* only a figure drawn in its box keeps 440 px; a figure of the methodology pages drawn without one scales with its column */
+  .ct-docfig-box > svg.ct-docfig { min-width: 440px; }
 }
 .ct-docfig text { overflow: visible; }
 
