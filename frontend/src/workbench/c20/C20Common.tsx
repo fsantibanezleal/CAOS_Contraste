@@ -1,7 +1,7 @@
 // C20's notices, Findings, Variants and Context groups and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls). Every view that shows SGCD carries the dataset card's prohibited-use
 // sentence (conventions/third-party-datasets.md; 07 A.3 l.212-213): `SgcdNotice` is the one place that writes it.
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
@@ -15,6 +15,30 @@ import {
   type C20Kind, type C20Outputs, type C20Sel,
 } from './selection';
 import { es, localParams } from './localise';
+import { modelName, type NameContext } from '../names';
+
+/** The rows a bar drawing holds whole in its card at 1280; past them the drawing keeps its full height in a box that scrolls (R2b c20:
+ * the real drift's 38 bars asked 72.8 rem and the seed flips' 20 bars 40.4 rem of a card that clips what overflows, so the axis and
+ * the tables could not be reached; ADR-0071, long content scrolls inside the one container that owns it). */
+export const BARS_WHOLE = 12;
+/** A rung of the seeds and noise rows ("P4-lightgbm") by the short title of the model of the document it names ("P4-lightgbm-taiwan"). */
+export function rungTitle(id: string, models: NameContext['models'] = []): BiText {
+  const own = modelName(id, { caseId: 'C20', models });
+  if (own) return own;
+  const full = models?.find((m) => m.id.startsWith(`${id}-`));
+  return (full && modelName(full.id, { caseId: 'C20', models })) ?? { en: id, es: id };
+}
+/** The least height of a drawing of `rows` bars over its tables: its own height up to BARS_WHOLE bars, a fixed box past them. */
+export const barBox = (rows: number): string => (rows > BARS_WHOLE ? '22rem' : barMin(rows));
+/** A drawing of many bars at its full height inside a box that scrolls; a phone flows (the stack is as tall as what it holds). */
+export function TallBars({ rows, children }: { rows: number; children: ReactNode }) {
+  if (rows <= BARS_WHOLE) return <>{children}</>;
+  return (
+    <div className="ct-c20-bars" data-caos-flow="" data-bars={rows}>
+      <div style={{ height: barMin(rows), display: 'flex', flexDirection: 'column' }}>{children}</div>
+    </div>
+  );
+}
 
 type Notice = NonNullable<C20Outputs['sgcd_notice']>;
 

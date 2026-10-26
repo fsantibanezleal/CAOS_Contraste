@@ -51,6 +51,32 @@ def evidence_id(r: dict[str, Any]) -> str:
 _SEVERITY = {"red": "S2", "amber": "S3"}
 
 
+#: the words of each test a C20 finding can name, as the views name them (frontend names/tests.ts); a finding title prints the words,
+#: never the engine's id (R2b c20, the raw-id scan: "ml.overfit: 1 red and 0 amber rows"); the evidence keeps the ids
+TEST_WORDS: dict[str, tuple[str, str]] = {
+    "fair.auc_by_group": ("AUC by group", "AUC por grupo"),
+    "fair.calibration_within_groups": ("Calibration within groups", "Calibración dentro de los grupos"),
+    "fair.equal_opportunity": ("Equal opportunity", "Igualdad de oportunidades"),
+    "fair.equalized_odds": ("Equalized odds", "Probabilidades igualadas"),
+    "ml.additivity": ("Additivity of the attributions", "Aditividad de las atribuciones"),
+    "ml.cbpe_estimate": ("Label-free performance estimate (CBPE)", "Estimación de desempeño sin etiquetas (CBPE)"),
+    "ml.conformal_coverage": ("Conformal coverage", "Cobertura conforme"),
+    "ml.data_quality": ("Data quality", "Calidad de datos"),
+    "ml.effect_agreement": ("Agreement of attributions and effect curves", "Acuerdo entre atribuciones y curvas de efecto"),
+    "ml.leakage_screen": ("Leakage screen", "Filtro de fuga"),
+    "ml.overfit": ("Overfit gap", "Brecha de sobreajuste"),
+    "ml.reason_code_stability": ("Stability of the reason codes", "Estabilidad de los códigos de razón"),
+    "ml.robustness": ("Robustness to input noise", "Robustez ante ruido en las entradas"),
+    "ml.seed_stability": ("Stability across retraining seeds", "Estabilidad entre semillas de reentrenamiento"),
+    "ml.shift_resilience": ("Resilience to distribution shift", "Resiliencia ante un cambio de distribución"),
+    "ml.weak_spot": ("Weak spots by slice", "Puntos débiles por segmento"),
+    "stability.chi2": ("Chi-square test of homogeneity", "Prueba chi-cuadrado de homogeneidad"),
+    "stability.csi": ("CSI of each input", "CSI de cada variable"),
+    "stability.ks": ("Two-sample Kolmogorov-Smirnov test", "Prueba de Kolmogorov-Smirnov de dos muestras"),
+    "stability.psi": ("PSI against the training slice", "PSI contra el tramo de entrenamiento"),
+}
+
+
 def findings(tests: list[dict[str, Any]], *, limits: list[tuple[str, dict[str, str]]], prefix: str) -> list[dict[str, Any]]:
     """Statistical findings about the document's own rows: one per test id that has an amber or red row (S3 for amber, S2 for red,
     ``open``), citing only those rows, and one S4 ``accepted`` finding per stated limit citing ``design:``. No finding is a claim of
@@ -63,11 +89,12 @@ def findings(tests: list[dict[str, Any]], *, limits: list[tuple[str, dict[str, s
     for tid, rows in sorted(by_test.items()):
         worst = "red" if any(r["light"] == "red" for r in rows) else "amber"
         n_red, n_amber = sum(r["light"] == "red" for r in rows), sum(r["light"] == "amber" for r in rows)
+        name_en, name_es = TEST_WORDS.get(tid, (tid, tid))
         out.append({
             "id": f"{prefix}-{tid}", "severity": _SEVERITY[worst], "status": "open", "evidence": [evidence_id(r) for r in rows],
-            "title": t(f"{tid}: {n_red} red and {n_amber} amber rows in this document; a statistical finding on the data and the model "
+            "title": t(f"{name_en}: {n_red} red and {n_amber} amber rows in this document; a statistical finding on the data and the model "
                        f"of this variant, not a compliance statement",
-                       f"{tid}: {n_red} {'fila roja' if n_red == 1 else 'filas rojas'} y {n_amber} ámbar en este documento; un hallazgo estadístico sobre los datos y el modelo de "
+                       f"{name_es}: {n_red} {'fila roja' if n_red == 1 else 'filas rojas'} y {n_amber} ámbar en este documento; un hallazgo estadístico sobre los datos y el modelo de "
                        f"esta variante, no una declaración de cumplimiento")})
     for key, title in limits:
         out.append({"id": f"{prefix}-limit-{key}", "severity": "S4", "status": "accepted", "evidence": [f"design:{key}"], "title": title})

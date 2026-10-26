@@ -38,9 +38,11 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
           es: `La parte de las solicitudes decididas que se aprobó, por grupo de ${text(FIELD_TEXT, a.field).es.toLowerCase()}, en ${o.fit_year}. El grupo de referencia es ${groupBi(a.reference_group).es}. Las tasas son solo indicadores: las disparidades brutas de HMDA no son una constatación de impacto adverso.`,
         }}
       >
+        {/* the table of a handful of groups shows every row at 1280 (R2b c21: 5 of 6): a taller box, a drawing of 1.6 rem a bar */}
+        <div className="ct-c21-tall">
         <LabelledOverTable
           head={<NoLegalClaim legal={legalOf(sel)} />}
-          chartMin={barMin(a.groups.length)}
+          chartMin={`${a.groups.length * 1.6 + 3.5}rem`}
           chart={
             <BarChart
               title={{ en: 'Approval rate by group', es: 'Tasa de aprobación por grupo' }}
@@ -87,6 +89,7 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
           <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.demographic', 'fair.adverse')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );

@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { platformText } from '../c08/notes';
-import { NOT_SWAP, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
+import { NOT_SWAP, TallTables, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { BASIS_TEXT, CASE_ORDER, CASE_TEXT, VARIANT_TEXT, axisOf, gridOf, outputsOf, sensitivityOf, text, type C12Profile, type C12Sel } from './selection';
 
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
@@ -152,6 +152,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
           es: 'La EE del conjunto de neteo sin colateral, con margen de variación diario a un periodo de riesgo de margen de 10 y de 20 días hábiles (el piso de CRE53.24 y el piso para conjuntos ilíquidos o grandes), y con margen inicial agregado. El margen inicial es un proxy por regresión del margen dinámico que documenta ORE, nunca ISDA SIMM. Las curvas vienen de las cuatro variantes con conjunto de neteo del caso.',
         }}
       >
+        <TallTables>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -218,6 +219,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
           </table>
           <p className="ct-note">{pick({ en: `The axis is in ${unit}; the table keeps the whole amounts.`, es: `El eje está en ${unit}; la tabla guarda los montos completos.` }, lang)}</p>
         </ChartOverTable>
+        </TallTables>
       </PlotCard>
     </ViewsRow>
   );

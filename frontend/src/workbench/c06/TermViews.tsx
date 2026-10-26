@@ -16,7 +16,7 @@ const TRIGGER_TEXT: Record<string, BiText> = {
   none: { en: 'none', es: 'ninguno' },
   'relative-absolute': { en: 'multiplier and floor', es: 'multiplicador y piso' },
   threefold: { en: 'threefold', es: 'triple' },
-  'dpd-backstop': { en: '30 dpd backstop', es: 'respaldo de 30 dpd' },
+  'dpd-backstop': { en: '30 days past due backstop', es: 'respaldo de 30 días de mora' },
   forbearance: { en: 'forbearance', es: 'refinanciación' },
   'watch-list': { en: 'watch list', es: 'lista de vigilancia' },
   default: { en: 'default', es: 'incumplimiento' },
@@ -163,8 +163,17 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
       size: 11,
     })),
   ];
+  // the sampled accounts (400) are drawn; the table counts them by stage and trigger, so the card reads whole at 1280 and a phone page
+  // is not 22,500 px of rows (R2b c07, the ruling of 2026-10-24 on long tables); one account is read on the chart or in the rail
+  const groups = [...new Set(o.sicr_points.map((p) => `${p.stage}|${p.trigger}`))]
+    .map((k) => {
+      const [stage, trigger] = k.split('|');
+      return { stage, trigger, n: o.sicr_points.filter((p) => p.stage === stage && p.trigger === trigger).length };
+    })
+    .sort((a, b) => stages.indexOf(a.stage as (typeof stages)[number]) - stages.indexOf(b.stage as (typeof stages)[number]) || b.n - a.n);
+  const total = o.sicr_points.length;
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={{ en: 'SICR: annualised PD at origination against now', es: 'SICR: PD anualizada en la originación contra hoy' }}
@@ -172,21 +181,19 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Log axes. An account above a line has had its risk rise past that test. Only the 30 dpd and 90 dpd presumptions are IFRS 9; the multiplier schedule and the absolute floor are Contraste policy, and the threefold ratio is an EBA supervisory expectation, not law.',
-          es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones de 30 y 90 dpd son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
+          en: 'Log axes. An account above a line has had its risk rise past that test. Only the presumptions at 30 and 90 days past due are IFRS 9; the multiplier schedule and the absolute floor are Contraste policy, and the threefold ratio is an EBA supervisory expectation, not law.',
+          es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones a 30 y 90 días de mora son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
         }}
       >
-        <ChartOverTable chartMin="18rem"
-          chart={
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'PD at origination (annualised)', es: 'PD en la originación (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           y={{ label: { en: 'PD now (annualised)', es: 'PD hoy (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           series={series}
         />
-          }
-        >
-        <div>
+      </PlotCard>
+      <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <div className="ct-scroll" data-caos-flow="">
           <ul className="ct-evidence" data-table="sicr-rule">
             {s.multiplier_schedule.map((m) => (
               <li key={m.pd_origination_upper} data-multiplier={m.multiplier}>
@@ -202,30 +209,36 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
                 : pick({ en: `Low-credit-risk exemption at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less.`, es: `Exención de bajo riesgo de crédito con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos.` }, lang)}
             </li>
           </ul>
-          <table className="caos-table" data-table="sicr-points">
+          <p className="ct-note" data-accounts={total}>
+            {pick(
+              {
+                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
+                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
+              },
+              lang,
+            )}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Account', es: 'Cuenta' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
-                <th>{pick({ en: 'Origination', es: 'Originación' }, lang)}</th>
-                <th>{pick({ en: 'Now', es: 'Hoy' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
+                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
-              {o.sicr_points.map((p) => (
-                <tr key={p.account_id} data-account={p.account_id} data-trigger={p.trigger}>
-                  <td className="ct-text">{p.account_id}</td>
-                  <td className="ct-text">{pick(STAGE_TEXT[p.stage], lang)}</td>
-                  <td>{pct(p.pd_origination_annualised, lang, 2)}</td>
-                  <td>{pct(p.pd_current_annualised, lang, 2)}</td>
-                  <td className="ct-text">{pick(TRIGGER_TEXT[p.trigger] ?? { en: p.trigger, es: p.trigger }, lang)}</td>
+              {groups.map((g) => (
+                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
+                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
+                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
+                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
+                  <td>{pct(g.n / total, lang, 1)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );
@@ -267,8 +280,8 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. The weighted PD sits above the PD at the weighted-average factor (mean z = ${n.mean_z}): averaging the scenarios first would understate the loss.`,
-          es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. La PD ponderada queda sobre la PD en el factor promedio ponderado (z medio = ${String(n.mean_z).replace('.', ',')}): promediar primero los escenarios subestimaría la pérdida.`,
+          en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. The weighted PD sits above the PD at the weighted-average factor (mean z = ${formatNumber(n.mean_z, 'en', { decimals: 2 })}): averaging the scenarios first would understate the loss.`,
+          es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. La PD ponderada queda sobre la PD en el factor promedio ponderado (z medio = ${formatNumber(n.mean_z, 'es', { decimals: 2 })}): promediar primero los escenarios subestimaría la pérdida.`,
         }}
       >
         <UPlotChart

@@ -25,8 +25,10 @@ def T(en: str, es: str) -> dict[str, str]:
 
 
 def es_num(x: float, spec: str) -> str:
-    """A number in a Spanish sentence: the decimal comma (the gate's G11 and the Spanish UI write 0,96, not 0.96)."""
-    return format(x, spec).replace(".", ",")
+    """A number in a Spanish sentence: the decimal comma (the gate's G11 and the Spanish UI write 0,96, not 0.96), and a percent with
+    the no-break space before its sign (86,9\u00a0%, the shell's es-CL form; U16-F9c)."""
+    out = format(x, spec).replace(".", ",")
+    return out[:-1] + "\u00a0%" if out.endswith("%") else out
 
 
 def rv_version() -> str:
@@ -156,16 +158,16 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
     s5, s10 = cells["y5-h10000"]["lda_splice"], cells["y10-h20000"]["lda_splice"]
     out.append({"id": "F-1", "severity": "S2", "status": "open", "evidence": ev("lda-splice", "y5-h10000") or ["design:replications"],
                 "title": T(f"At tail index {v.tail_index:g} with 5 years of data the splice LDA capital has an interquartile range of "
-                           f"{s5['iqr_over_truth']:.0%} of the true 99.9 percent quantile (10 years, threshold 20,000: {s10['iqr_over_truth']:.0%}).",
+                           f"{s5['iqr_over_truth']:.0%} of the true 99.9 percent quantile (10 years, threshold EUR 20,000: {s10['iqr_over_truth']:.0%}).",
                            f"Con índice de cola {es_num(v.tail_index, 'g')} y 5 años de datos el capital LDA con empalme tiene un rango intercuartil de "
-                           f"{s5['iqr_over_truth']:.0%} del cuantil 99,9 por ciento verdadero (10 años, umbral 20.000: {s10['iqr_over_truth']:.0%}).")})
+                           f"{es_num(s5['iqr_over_truth'], '.0%')} del cuantil 99,9 por ciento verdadero (10 años, umbral de EUR 20.000: {es_num(s10['iqr_over_truth'], '.0%')}).")})
     a, b = cells["y10-h20000"]["lda_lognormal"], cells["y10-h20000"]["lda_lognormal_truncated"]
     out.append({"id": "F-2", "severity": "S3", "status": "open",
                 "evidence": ev("lda-lognormal", "y10-h20000") + ev("lda-lognormal-truncated", "y10-h20000") or ["design:replications"],
                 "title": T(f"Ignoring the collection threshold gives a median capital of {a['ratio_to_truth']['median']:.2f} times the truth; "
-                           f"modelling the truncation gives {b['ratio_to_truth']['median']:.2f} (10 years, threshold 20,000).",
+                           f"modelling the truncation gives {b['ratio_to_truth']['median']:.2f} (10 years, threshold EUR 20,000).",
                            f"Ignorar el umbral de recolección da un capital mediano de {es_num(a['ratio_to_truth']['median'], '.2f')} veces la verdad; "
-                           f"modelar el truncamiento da {es_num(b['ratio_to_truth']['median'], '.2f')} (10 años, umbral 20.000).")})
+                           f"modelar el truncamiento da {es_num(b['ratio_to_truth']['median'], '.2f')} (10 años, umbral de EUR 20.000).")})
     out.append({"id": "F-3", "severity": "S3", "status": "open", "evidence": ["design:sma-not-calibrated-to-the-999-quantile"],
                 "title": T(f"The SMA operational risk capital is {orc_median / truth:.1%} of the true 99.9 percent quantile at tail index {v.tail_index:g}; "
                            "it depends on the losses only through the 10-year average and the BIC.",

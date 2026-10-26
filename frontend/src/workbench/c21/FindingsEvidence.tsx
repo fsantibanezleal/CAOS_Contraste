@@ -69,6 +69,7 @@ function EvidenceChart({ kind, rows, findings, lang }: { kind: EvidenceKind; row
     return <p className="ct-note" data-state="unavailable">{pick({ en: 'Not available: no cited row of this kind carries a number.', es: 'No disponible: ninguna fila citada de este tipo trae un número.' }, lang)}</p>;
   }
   const ids = findings.filter((f) => rows.some((r) => r.finding === f.id && r.metric !== null));
+  const numberOf = (id: string) => findings.findIndex((f) => f.id === id) + 1;
   return (
     <UPlotChart
       height="fill"
@@ -76,7 +77,8 @@ function EvidenceChart({ kind, rows, findings, lang }: { kind: EvidenceKind; row
       y={{ label: k.axis, format: { decimals: 2 }, log: k.log }}
       yMarks={[{ y: k.at, label: k.line, tone: 'neutral' }]}
       series={ids.map((f, i) => ({
-        label: { en: f.id, es: f.id },
+        // a finding by its number in the table below, never its id (R2b c21: the legend printed F-CONTROLLED-LOWER-ODDS)
+        label: { en: `Finding ${numberOf(f.id)}`, es: `Hallazgo ${numberOf(f.id)}` },
         values: rows.map((r) => (r.finding === f.id ? r.metric : null)),
         color: TOKENS[i % TOKENS.length],
         mode: 'points' as const,
@@ -129,7 +131,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
                     .map((r, i) => (
                       <tr key={`${r.finding}|${r.id}`} data-evidence-kind={kind} data-evidence-row={r.id} data-finding={r.finding} data-metric={r.metric ?? undefined} data-na={r.metric === null ? 'true' : undefined}>
                         <td>{`${kind === 'odds-ratio' ? 'OR' : 'pp'} ${i + 1}`}</td>
-                        <td className="ct-text ct-wide-only">{r.finding}</td>
+                        <td className="ct-text ct-wide-only">{`${findings.findIndex((f) => f.id === r.finding) + 1}. ${pick(findings.find((f) => f.id === r.finding)?.title ?? { en: r.finding, es: r.finding }, lang)}`}</td>
                         <td className="ct-text">{`${pick(text(FIELD_TEXT, r.field), lang)}: ${contrastText(r.contrast, lang)}`}</td>
                         <td>{r.metric === null ? formatNumber(null, lang) : f3(r.metric, lang)}</td>
                       </tr>
@@ -141,7 +143,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
           {designOnly.length > 0 ? (
             <p className="ct-note" data-note="design-only">
               {pick({ en: 'Accepted limits draw nothing, because they rest on a design limit and no test row: ', es: 'Los límites aceptados no dibujan nada, porque se apoyan en un límite de diseño y no en una fila de prueba: ' }, lang)}
-              {designOnly.map((f) => f.id).join(', ')}.
+              {designOnly.map((f) => pick(f.title, lang)).join('; ')}.
             </p>
           ) : null}
           {footer}

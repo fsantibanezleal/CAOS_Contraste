@@ -1,7 +1,7 @@
 // C06's validation views: the lifetime PD ladder the fit carries, the lifetime backtest, the calibration by predicted
 // risk decile, the rung comparison, the identities of the reconciliation on their one tolerance basis, and the rows of
 // the tests the engine returned. A value the contract allows to be null is "not available" with its reason.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -19,13 +19,25 @@ const ESTIMATOR = { 'kaplan-meier': 'Kaplan-Meier', 'aalen-johansen': 'Aalen-Joh
 
 /** The Spanish of the English strings of the models document the conversion table prints (the raw-id scan of 2026-10-24). */
 const DOC_ES: Record<string, string> = {
-  "one-factor Vasicek conversion (riskvalidation implied_z and ttc_to_pit): the factor of each past quarter from the book's realised default rate; each scenario's factor from the default rate the hazard rung implies for the book under that scenario; the satellite is the least-squares reduced form of the hazard rung":
-    'conversión de Vasicek de un factor (implied_z y ttc_to_pit de riskvalidation): el factor de cada trimestre pasado desde la tasa de incumplimiento realizada de la cartera; el factor de cada escenario desde la tasa de incumplimiento que el peldaño de riesgo implica para la cartera en ese escenario; el satélite es la forma reducida por mínimos cuadrados del peldaño de riesgo',
   'charge-off severity proxy': 'aproximación por la severidad del castigo',
   'original EIR, mid-period convention': 'TIE original, convención de mitad de periodo',
   'the file has no balance: a term loan amortises as a level-payment annuity at its EIR over its term; a revolving line is carried at its full approval (conversion factor 1)':
     'el archivo no trae saldo: un crédito a plazo se amortiza como una anualidad de cuota fija a su TIE durante su plazo; una línea revolvente se lleva a su aprobación completa (factor de conversión 1)',
 };
+
+/** The conversion of the models document in words in both languages: the engine's function names (`riskvalidation implied_z and
+ * ttc_to_pit`) are not words a reader has (R2b c07; the ruling of 2026-10-24: an engine function only in an Engine function column). */
+const PIT_METHOD_TEXT: Record<string, BiText> = {
+  "one-factor Vasicek conversion (riskvalidation implied_z and ttc_to_pit): the factor of each past quarter from the book's realised default rate; each scenario's factor from the default rate the hazard rung implies for the book under that scenario; the satellite is the least-squares reduced form of the hazard rung": {
+    en: "One-factor Vasicek conversion, through the cycle to point in time: the factor of each past quarter is implied by the book's realised default rate; each scenario's factor by the default rate the hazard rung implies for the book under that scenario; the satellite is the least-squares reduced form of the hazard rung",
+    es: 'Conversión de Vasicek de un factor, de a través del ciclo a puntual: el factor de cada trimestre pasado lo implica la tasa de incumplimiento realizada de la cartera; el de cada escenario, la tasa de incumplimiento que el peldaño de riesgo implica para la cartera en ese escenario; el satélite es la forma reducida por mínimos cuadrados del peldaño de riesgo',
+  },
+};
+
+/** A rung of the ladder by its short title ("L1 Hazard"), never its id ("L1-dth"; R2b c07). */
+export function rungName(sel: C06Sel, id: string): BiText {
+  return (sel.data.variant.model.find((m) => m.id === id)?.short_title as BiText | undefined) ?? { en: id, es: id };
+}
 
 /** The ladder of lifetime PD rungs, the one-factor conversion, LGD and EAD that the bake used (the models artifact). */
 export function LadderView({ sel }: { sel: C06Sel | null }) {
@@ -48,7 +60,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
   const grid = unionX(...fit.ladder.map((r) => r.baseline.months));
   const series = fit.ladder.map((r, i) => ({
     // the rung by its short title, never its id and kind (the raw-id scan: "L0-km (kaplan-meier)")
-    label: (sel.data.variant.model.find((m) => m.id === r.rung_id)?.short_title ?? { en: r.rung_id, es: r.rung_id }) as { en: string; es: string },
+    label: rungName(sel, r.rung_id),
     values: alignTo(r.baseline.months, r.baseline.cumulative_pd, grid),
     color: COLORS[i % COLORS.length],
     width: 2,
@@ -87,7 +99,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {fit.ladder.map((r) => (
                 <tr key={r.rung_id} data-rung={r.rung_id}>
-                  <td className="ct-text">{r.rung_id}</td>
+                  <td className="ct-text">{pick(rungName(sel, r.rung_id), lang)}</td>
                   <td className="ct-text">
                     {r.covariates.length || r.macro_covariates.length ? (
                       <details data-covariates={r.rung_id}>
@@ -105,24 +117,18 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               ))}
             </tbody>
           </table>
-          <table className="caos-table" data-table="conversion">
-            <tbody>
-              <tr data-row="pit">
-                <td className="ct-text">{pick({ en: 'Through the cycle to point in time', es: 'De a través del ciclo a puntual' }, lang)}</td>
-                <td>{`${lang === 'es' ? DOC_ES[fit.pit.method] ?? fit.pit.method : fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</td>
-              </tr>
-              <tr data-row="lgd">
-                <td className="ct-text">{pick({ en: 'LGD', es: 'LGD' }, lang)}</td>
-                <td>{`${es(fit.lgd.kind)}, ${es(fit.lgd.discounting)}: ${fit.lgd.segments.map((s) => `${pick(segmentLabel(s.segment_id), lang)} ${pct(s.lgd, lang, 0)}`).join(', ')}`}</td>
-              </tr>
-              <tr data-row="ead">
-                <td className="ct-text">{pick({ en: 'EAD: revolving conversion factor', es: 'EAD: factor de conversión revolvente' }, lang)}</td>
-                <td>
-                  <MaybeNumber value={fit.ead.ccf_revolving} reason={fit.ead.reason ? es(fit.ead.reason) : fit.ead.reason} format={(v) => pct(v, lang, 0)} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {/* terms and their values as a list, so the long method text wraps under its term (R2b c07: a two-cell table squeezed the
+              term to a letter a line and cut the method at 1280) */}
+          <dl className="ct-defs ct-note" data-table="conversion" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
+            <dt data-row="pit">{pick({ en: 'Through the cycle to point in time', es: 'De a través del ciclo a puntual' }, lang)}</dt>
+            <dd>{`${PIT_METHOD_TEXT[fit.pit.method] ? pick(PIT_METHOD_TEXT[fit.pit.method], lang) : fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</dd>
+            <dt data-row="lgd">{pick({ en: 'LGD', es: 'LGD' }, lang)}</dt>
+            <dd>{`${es(fit.lgd.kind)}, ${es(fit.lgd.discounting)}: ${fit.lgd.segments.map((s) => `${pick(segmentLabel(s.segment_id), lang)} ${pct(s.lgd, lang, 0)}`).join(', ')}`}</dd>
+            <dt data-row="ead">{pick({ en: 'EAD: revolving conversion factor', es: 'EAD: factor de conversión revolvente' }, lang)}</dt>
+            <dd>
+              <MaybeNumber value={fit.ead.ccf_revolving} reason={fit.ead.reason ? es(fit.ead.reason) : fit.ead.reason} format={(v) => pct(v, lang, 0)} />
+            </dd>
+          </dl>
         </div>
       </PlotCard>
     </ViewsRow>
@@ -232,7 +238,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
     <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
-        title={{ en: `Calibration by risk decile, rung ${d.rung_id}${cohort ? `, cohort ${cohortText(cohort).en}` : ''}`, es: `Calibración por decil de riesgo, peldaño ${d.rung_id}${cohort ? `, cohorte ${cohortText(cohort).es}` : ''}` }}
+        title={{ en: `Calibration by risk decile, ${pick(rungName(sel, d.rung_id), 'en')}${cohort ? `, cohort ${cohortText(cohort).en}` : ''}`, es: `Calibración por decil de riesgo, ${pick(rungName(sel, d.rung_id), 'es')}${cohort ? `, cohorte ${cohortText(cohort).es}` : ''}` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
@@ -302,7 +308,7 @@ export function RungsView({ sel }: { sel: C06Sel | null }) {
               title={{ en: 'Integrated Brier score by rung', es: 'Puntaje de Brier integrado por peldaño' }}
               height="fill"
               orientation="vertical"
-              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: { en: r.rung_id, es: r.rung_id }, value: r.integrated_brier, tone: 'accent' as const }))}
+              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: rungName(sel, r.rung_id), value: r.integrated_brier, tone: 'accent' as const }))}
               axis={{ label: { en: 'Integrated Brier', es: 'Brier integrado' }, format: { digits: 3 } }}
             />
           }
@@ -320,7 +326,7 @@ export function RungsView({ sel }: { sel: C06Sel | null }) {
               {o.rung_comparison.map((r) => (
                 <tr key={r.rung_id} data-rung={r.rung_id}>
                   <td className="ct-text">
-                    {r.rung_id}
+                    {pick(rungName(sel, r.rung_id), lang)}
                     {r.reason ? <span className="ct-note" data-reason="rung" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(r.reason, lang)}</span> : null}
                   </td>
                   <td>

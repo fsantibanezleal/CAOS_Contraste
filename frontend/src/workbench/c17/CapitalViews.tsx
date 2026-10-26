@@ -10,7 +10,7 @@ import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
-import { es } from './localise';
+import { es, inSentence } from './localise';
 
 const ratio = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -39,7 +39,7 @@ function HeadCells({ lang }: { lang: 'en' | 'es' }) {
       <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
       <th>{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
       <th className="ct-wide-only">{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
-      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desviación estándar log' }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desv. estándar log' }, lang)}</th>
     </>
   );
 }
@@ -174,11 +174,12 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
           es: 'El mismo método en cada celda de la grilla: 5 o 10 años de pérdidas registradas, y pérdidas registradas desde EUR 10.000 o desde EUR 20.000. Cada barra es la mediana sobre las historias independientes de la celda; la dispersión de las historias está en la tabla. La barra gris es el cuantil verdadero.',
         }}
       >
+        <div className="ct-c17-tall">
         <ChartOverTable
-          chartMin={`${data.length * 2.5 + 3}rem`}
+          chartMin={`${data.length * 1.4 + 3}rem`}
           chart={
             <BarChart
-              title={{ en: `Median capital of ${rung.en.toLowerCase()} by cell, against the true quantile`, es: `Capital mediano de ${rung.es.toLowerCase()} por celda, contra el cuantil verdadero` }}
+              title={{ en: `Median capital of ${inSentence(rung.en)} by cell, against the true quantile`, es: `Capital mediano de ${inSentence(rung.es)} por celda, contra el cuantil verdadero` }}
               height="fill"
               orientation="horizontal"
               data={data}
@@ -189,11 +190,11 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
           <table className="caos-table ct-wrap-head" data-table="capital-by-cell" data-rung={sel.rung}>
             <thead>
               <tr>
-                <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
+                <th className="ct-text" style={{ minWidth: lang === 'es' ? '7rem' : '9.5rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Definido para este método' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Losses per history, median', es: 'Pérdidas por historia, mediana' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Median losses', es: 'Pérdidas, mediana' }, lang)}</th>
                 <HeadCells lang={lang} />
               </tr>
             </thead>
@@ -218,6 +219,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
             </tbody>
           </table>
         </ChartOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -248,8 +250,8 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
         title={{ en: 'Influence of each scenario on the capital', es: 'Influencia de cada escenario en el capital' }}
         {...card}
         note={{
-          en: `One history (${where.en}, seed ${s.seed}) with its scenario points combined with the losses by ${method.en.toLowerCase()}. The influence of a scenario is the capital with all the points, minus the capital without that point, over the capital with all of them. A negative influence means the point lowers the capital.`,
-          es: `Una historia (${where.es}, semilla ${s.seed}) con sus puntos de escenario combinados con las pérdidas por ${method.es.toLowerCase()}. La influencia de un escenario es el capital con todos los puntos, menos el capital sin ese punto, sobre el capital con todos. Una influencia negativa significa que el punto baja el capital.`,
+          en: `One history (${where.en}, seed ${s.seed}) with its scenario points combined with the losses by ${inSentence(method.en)}. The influence of a scenario is the capital with all the points, minus the capital without that point, over the capital with all of them. A negative influence means the point lowers the capital.`,
+          es: `Una historia (${where.es}, semilla ${s.seed}) con sus puntos de escenario combinados con las pérdidas por ${inSentence(method.es)}. La influencia de un escenario es el capital con todos los puntos, menos el capital sin ese punto, sobre el capital con todos. Una influencia negativa significa que el punto baja el capital.`,
         }}
       >
         <ChartOverTable
