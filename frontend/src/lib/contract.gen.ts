@@ -3135,7 +3135,7 @@ export interface components {
         };
         /**
          * C10 models
-         * @description Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).
+         * @description Catalog row c10-models 2.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).
          */
         "c10-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -3802,6 +3802,8 @@ export interface components {
             estimator: "analytic" | "monte-carlo";
             /** @description Monte Carlo scenarios; null for an analytic rung. */
             n_scenarios: number | null;
+            /** @description Whether any variant evaluates the rung; a rung that never runs (the Student-t importance sampler: no twist is specified) keeps its planned count but is drawn as not run. */
+            evaluated: boolean;
             engine_function: string;
             reference: string;
             parameters: {

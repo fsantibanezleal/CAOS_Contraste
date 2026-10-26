@@ -14013,7 +14013,7 @@
       },
       "c10-models": {
         "title": "C10 models",
-        "description": "Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).",
+        "description": "Catalog row c10-models 2.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -16631,6 +16631,7 @@
           "label",
           "estimator",
           "n_scenarios",
+          "evaluated",
           "engine_function",
           "reference",
           "parameters"
@@ -16693,6 +16694,10 @@
               }
             ],
             "description": "Monte Carlo scenarios; null for an analytic rung."
+          },
+          "evaluated": {
+            "type": "boolean",
+            "description": "Whether any variant evaluates the rung; a rung that never runs (the Student-t importance sampler: no twist is specified) keeps its planned count but is drawn as not run."
           },
           "engine_function": {
             "type": "string",
