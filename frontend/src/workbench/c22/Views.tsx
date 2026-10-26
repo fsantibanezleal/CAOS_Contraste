@@ -439,13 +439,20 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         const rows = v.outputs.simulations.filter((s) => s.panel === p.id && s.p_histogram);
         const bins = rows[0]?.p_histogram?.length ?? 20;
         const x = Array.from({ length: bins }, (_, i) => (i + 0.5) / bins);
+        // a second curve of one test is numbered, never named by the key's suffix ("(dev1)", "(null-20000)"; R2b c22), and the
+        // number is read under the panels with where that curve's null holds (a legend of whole sentences left a phone panel no plot)
+        const notes: Array<{ label: BiText; scenario: BiText }> = [];
+        const seen = new Map<string, number>();
         const series: ChartSeries[] = rows.map((s, i) => {
           const total = (s.p_histogram ?? []).reduce((a, b) => a + b, 0) || 1;
-          // a second curve of one test is named by where its null holds, never by the key's suffix ("(dev1)", "(null-20000)"; R2b c22)
-          const label = s.key.endsWith('@null') ? s.label : { en: `${pick(s.label, 'en')} (${pick(s.scenario, 'en')})`, es: `${pick(s.label, 'es')} (${pick(s.scenario, 'es')})` };
+          const k = (seen.get(pick(s.label, 'en')) ?? 0) + 1;
+          seen.set(pick(s.label, 'en'), k);
+          const numbered = !s.key.endsWith('@null') || k > 1;
+          const label: BiText = numbered ? { en: `${pick(s.label, 'en')} (${k})`, es: `${pick(s.label, 'es')} (${k})` } : s.label;
+          if (numbered) notes.push({ label, scenario: s.scenario });
           return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), width: 1.6, ...seriesStyle(i) };
         });
-        return { panel: p, x, series, n: rows.length };
+        return { panel: p, x, series, n: rows.length, notes };
       })
       .filter((p) => p.n > 0);
   }, [v]);
@@ -474,6 +481,13 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
           </div>
         ))}
       </div>
+      {panels.some((pp) => pp.notes.length > 0) ? (
+        <ul className="ct-note" data-list="numbered-curves">
+          {panels.flatMap((pp) => pp.notes.map((n) => (
+            <li key={`${pp.panel.id}-${pick(n.label, 'en')}`}>{`${pick(pp.panel.label, lang)}, ${pick(n.label, lang)}: ${pick(n.scenario, lang)}`}</li>
+          )))}
+        </ul>
+      ) : null}
     </PlotCard>
   );
 }
