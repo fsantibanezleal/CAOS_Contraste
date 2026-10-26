@@ -277,3 +277,10 @@ table.ct-wrap-head th { white-space: normal; }
   .ct-c20-pair { flex: none; }
   .ct-c20-pair > * { flex: none; min-height: 10rem; }
 }
+
+/* C21 (U16-F9c, R2b c21): the rates and the replication tables hold a handful of rows; at 1280 their box takes 60 % of the card so
+   every row shows (a phone flows as every stack does) */
+@media (min-width: 901px) {
+  .ct-c21-tall { height: 100%; min-height: 0; }
+  .ct-c21-tall > .ct-stack > .ct-stack-table { max-height: 60%; }
+}

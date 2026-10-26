@@ -38,11 +38,26 @@ const R: ReadonlyArray<Rule> = [
   [/^As a work of the United States Government, this package \(excluding any exceptions listed below\) is in the public domain within the United States\. Additionally, we waive copyright and related rights in the work worldwide through the CC0 1\.0 Universal public domain dedication\.$/,
     () => 'Como obra del Gobierno de Estados Unidos, este paquete (salvo las excepciones listadas abajo) es de dominio público dentro de Estados Unidos. Además, renunciamos a los derechos de autor y derechos conexos sobre la obra en todo el mundo mediante la dedicación de dominio público CC0 1.0 Universal.'],
   [/^the software package, not the published datasets$/, () => 'el paquete de software, no los conjuntos de datos publicados'],
+  // the citations of the legal sentences (R2b c21: English in the Spanish page)
+  [/^12 CFR 1002\.6\(a\), as amended at (\d+) FR (\d+) \((\d{4}-\d{2}-\d{2}), effective (\d{4}-\d{2}-\d{2})\)$/,
+    (g) => `12 CFR 1002.6(a), modificado por ${g[1]} FR ${g[2]} (${g[3]}, vigente desde ${g[4]})`],
+  [/^(\d+) FR (\d+), recital of (.+)$/, (g) => `${g[1]} FR ${g[2]}, considerando sobre ${g[3]}`],
   [/^Interagency Fair Lending Examination Procedures, August 2009, appendix, printed page 26$/, () => 'Procedimientos Interagenciales de Examen de Préstamos Justos, agosto de 2009, apéndice, página impresa 26'],
 ];
 
-/** The Spanish of a document string, or the string itself in English or when no rule knows it. */
-export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => localise(s, lang, R);
+/** The engine's note of a controlled estimate lists its controls by field code; the English page names them too (the raw-id scan:
+ * "controlling for debt_to_income_ratio, combined_loan_to_value_ratio, ..."). */
+const CONTROLS_NOTE = /^(an approximation of comparative evidence controlling for )(.+)(; missing controls: )(.+)(, so the estimate may be confounded by them; never a finding of a violation; no legal claim)$/;
+const controlsEn = (ids: string): string => ids.split(', ').map((c) => text(CONTROL_TEXT, c).en).join(', ');
+
+/** The Spanish of a document string, or the string itself in English or when no rule knows it (the English controls note by name). */
+export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => {
+  if (lang === 'en') {
+    const m = CONTROLS_NOTE.exec(s ?? '');
+    if (m) return `${m[1]}${controlsEn(m[2])}${m[3]}${controlsEn(m[4])}${m[5]}`;
+  }
+  return localise(s, lang, R);
+};
 
 const TREATMENT_TEXT: Record<string, { en: string; es: string }> = {
   unmodified: { en: 'unmodified', es: 'sin modificar' },

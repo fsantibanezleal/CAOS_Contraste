@@ -150,9 +150,11 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
           es: `La estimación controlada ajustada en ${o.fit_year} y la misma estimación reajustada en ${o.confirm_year}. Un hallazgo es estable cuando el signo se mantiene; la razón de tamaño es el coeficiente posterior sobre el anterior. La estabilidad de un año es una verificación, no una prueba, y de ella no se sigue ninguna afirmación legal.`,
         }}
       >
+        {/* five groups of two points need no 22 rem: the table shows every row at 1280 (R2b c21: 2 of 5) */}
+        <div className="ct-c21-tall">
         <LabelledOverTable
           head={<NoLegalClaim legal={legalOf(sel)} />}
-          chartMin={barMin(have.length * 2)}
+          chartMin="14rem"
           chart={
             have.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: no group carries a confirmation.', es: 'No disponible: ningún grupo trae una confirmación.' }, lang)}</p>
@@ -202,6 +204,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
           <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.replication')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
