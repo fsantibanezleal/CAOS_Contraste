@@ -232,8 +232,9 @@ export function ageingBins(rows: FindingRow[], width = 30): Array<{ from: number
 }
 
 /** The entry key of a report file name's parts, for the reader's select: `C07/banco-andino`. */
-// the entry in words, then its case title (the R2b page review: the select printed `C01/german`)
-export const entryLabel = (e: InvEntry, lang: 'en' | 'es'): string => `${entryText(e.key)[lang]}: ${e.title[lang]}`;
+// the entry in words (the R2b page review: the select printed `C01/german`); the case title is the report's header, so a plain
+// select keeps a text that fits its room at 390 px (gate G5)
+export const entryLabel = (e: InvEntry, lang: 'en' | 'es'): string => entryText(e.key)[lang];
 
 /** The three states of a tab's one document, shown as the reason a reader can read. */
 export const NOT_YET: Text = { en: 'Not available yet', es: 'Aún no disponible' };
