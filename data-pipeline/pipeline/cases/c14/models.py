@@ -75,7 +75,7 @@ def models_document(dates: list[str], results: dict[str, VariantResult]) -> dict
                 "parameter": name, "category": "wholesale", "from_date": a, "to_date": b, "from_value": va, "to_value": vb, "unit": unit,
                 "limit_breach_in_window": bool(breach), "flagged": bool(va != vb and breach),
                 "note": t(f"{note_en} The standardised outlier test is {'breached' if breach else 'not breached'} at {b}.",
-                          f"{note_es} El test de valores atípicos estandarizado {'se supera' if breach else 'no se supera'} al {b}.")})
+                          f"{note_es} El umbral de la prueba estandarizada de valores atípicos {'se excede' if breach else 'no se excede'} al {b}.")})  # "se supera" read as "passes" (superar una prueba): the threshold is what is exceeded (R2b c15 m4)
     return {
         "currency": "USD", "sign_convention": SIGN, "units": UNITS, "bank": BANK,
         "buckets": [{"bucket": k + 1, "label": t(EN[k], ES[k]), "midpoint_years": float(MID[k])} for k in range(19)],
