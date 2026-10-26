@@ -30,6 +30,13 @@ MID = GRID.midpoints
 Text = dict[str, str]
 
 
+
+#: the deposit categories in words, as the views name them (frontend/src/workbench/c15/C15Common.tsx CATEGORY_TEXT; the raw-id scan of
+#: 2026-10-24: "Depósitos a la vista en pesos, retail-operational")
+CATEGORY_WORDS = {"retail-operational": ("retail operational", "minoristas operacionales"),
+                  "retail-non-operational": ("retail non-operational", "minoristas no operacionales"),
+                  "wholesale": ("wholesale", "mayoristas")}
+
 def t(en: str, es: str) -> Text:
     return {"en": en, "es": es}
 
@@ -349,7 +356,7 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
         s = rv_slotting.nmd_split(balance, cat, req.share, req.maturity, enforce_caps=True, grid=GRID)
         code = {"retail-operational": "RO", "retail-non-operational": "RN", "wholesale": "W"}[cat]
         legs["CLP"].items.append(Item(
-            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {cat}", f"Depósitos a la vista en pesos, {cat}"), "liability", "deposits-nmd",
+            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {CATEGORY_WORDS[cat][0]}", f"Depósitos a la vista en pesos, {CATEGORY_WORDS[cat][1]}"), "liability", "deposits-nmd",
             asm.CATEGORY_CLASS[cat], f"{cmf}: Depósitos totales, split synthetic (assumptions.deposit_split); core share and maturity requested "
             "synthetic, capped by SRP31 Table 4", float(balance), -np.asarray(s.flows, dtype=float), {"kind": "nmd", "margin": None}))
         segments.append({"category": cat, "balance": float(balance), "requested_core_share": float(s.requested_core_share),
