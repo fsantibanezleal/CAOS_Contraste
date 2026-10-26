@@ -14,6 +14,7 @@ import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import {
   C20ContextView, C20FindingsView, C20VariantsView, FairnessReadout, NoiseReadout, ScreenReadout, SeedReadout, ShiftReadout, ShockReadout, WindowReadout,
+  rungTitle,
 } from './C20Common';
 import { DecisionFlipView, FairnessView } from './FairnessViews';
 import { ExplainerView, LeakageView, PerturbationView, SeedsView } from './RobustnessViews';
@@ -138,7 +139,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       label: { en: 'Shift', es: 'Cambio' },
       content: (
         <>
-          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } }))} value={sel.shift} onChange={setShift} />}
+          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id) }))} value={sel.shift} onChange={setShift} />}
           <ShiftReadout sel={sel} />
           {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: windowName(w.window) }))} value={sel.window} onChange={setWin} />}
           <WindowReadout sel={sel} />
@@ -151,7 +152,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       label: { en: 'Rung', es: 'Peldaño' },
       content: (
         <>
-          {o.rows.length > 1 && <RailSelect id="c20-rung" label={{ en: 'Rung in focus', es: 'Peldaño en foco' }} options={o.rows.map((r) => ({ id: r.rung, label: { en: r.rung, es: r.rung } }))} value={sel.rung} onChange={setRung} />}
+          {o.rows.length > 1 && <RailSelect id="c20-rung" label={{ en: 'Rung in focus', es: 'Peldaño en foco' }} options={o.rows.map((r) => ({ id: r.rung, label: rungTitle(r.rung, sel.data.variant.model) }))} value={sel.rung} onChange={setRung} />}
           <SeedReadout sel={sel} />
         </>
       ),

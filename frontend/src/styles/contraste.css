@@ -246,3 +246,45 @@ table.ct-wrap-head th { white-space: normal; }
 /* the heading of a part inside one documentation section (a Methodology topic is one method section) */
 .ct-sub { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; font-weight: 650; color: var(--color-fg); }
 
+
+/* C12 (U16-F9c, R2b c13): a drawing over tables that need more than the shared 42 % box (the exceedances, the collateral) gives
+   them 68 % at 1280; a phone flows as every stack does. The pager of a long C12 table (the calibrations) */
+@media (min-width: 901px) {
+  .ct-c12-tall { height: 100%; min-height: 0; }
+  .ct-c12-tall > .ct-stack > .ct-stack-table { max-height: 68%; }
+}
+.ct-c12-pager { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+
+/* C17 (U16-F9c, R2b c18 M-3): the capital by years and threshold holds a 12-column table of four cells under five bars; at 1280 the
+   table gets 74 % of the card so its rows show whole (a phone flows as every stack does) */
+@media (min-width: 901px) {
+  .ct-c17-tall { height: 100%; min-height: 0; }
+  .ct-c17-tall > .ct-stack > .ct-stack-table { max-height: 74%; }
+}
+
+/* C18 (U16-F9c, R2b c19 M-new-1): the stack view's two drawings share their card by their bars; a phone gives each its least height */
+.ct-c18-stack-charts { display: flex; flex-direction: column; flex: 1 1 0; height: 100%; min-height: 0; gap: 0.5rem; }
+@media (max-width: 900px) {
+  .ct-c18-stack-charts { height: auto; }
+  /* a phone flows: each drawing gets a height of its own for its bars (a height, not a floor: a fill chart needs a sized parent) */
+  .ct-c18-stack-charts > div { flex: none !important; height: 12rem; }
+  .ct-c18-stack-charts > div:first-child { height: 22rem; }
+}
+
+/* C20 (U16-F9c, R2b c20): a drawing of many bars keeps its full height in a box that scrolls at 1280 (a phone flows); the seeds
+   drawing is two drawings, one per unit, sharing their box */
+.ct-c20-bars { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+.ct-c20-pair { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; gap: 0.5rem; }
+.ct-c20-pair > * { flex: 1 1 0; min-height: 0; }
+@media (max-width: 900px) {
+  .ct-c20-bars { flex: none; overflow-y: visible; }
+  .ct-c20-pair { flex: none; }
+  .ct-c20-pair > * { flex: none; min-height: 10rem; }
+}
+
+/* C21 (U16-F9c, R2b c21): the rates and the replication tables hold a handful of rows; at 1280 their box takes 60 % of the card so
+   every row shows (a phone flows as every stack does) */
+@media (min-width: 901px) {
+  .ct-c21-tall { height: 100%; min-height: 0; }
+  .ct-c21-tall > .ct-stack > .ct-stack-table { max-height: 60%; }
+}

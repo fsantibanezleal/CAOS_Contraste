@@ -242,6 +242,11 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
         add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
             f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points over all loans pooled ({lb[0]['light']})",
             f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
+    # the figure each title quotes, named by what it measures (R2b c07: "(metric 2)" and "(p 0)" said nothing of the quantity)
+    metric_words = {
+        "ifrs9.sicr_effectiveness": (lambda x: f"Stage 2 default rate {x} times the Stage 1 one", lambda x: f"tasa de incumplimiento de la Etapa 2 de {x} veces la de la Etapa 1"),
+        "ifrs9.ecl_backtest": (lambda x: f"realised losses {x} times the ECL", lambda x: f"pérdidas realizadas de {x} veces la PCE"),
+    }
     for tid, fid, en, es in (
         ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag against defaults and performing loans", "La marca de Etapa 2 frente a los incumplimientos y los préstamos sanos"),
         ("ifrs9.ecl_backtest", "F-ECL-BACKTEST", "The 12-month ECL against the losses realised after the date", "La PCE a 12 meses frente a las pérdidas realizadas después de la fecha"),
@@ -250,15 +255,26 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
         r = by.get(tid, [None])[0]
         if r is not None and r["light"] in ("amber", "red", "not_evaluated"):
             sev = "S2" if r["light"] == "red" else "S3"
-            val = "not evaluated" if r["light"] == "not_evaluated" else f"metric {r['metric']:.3g}" if r["metric"] is not None else f"p {r['p_value']:.3g}"
-            val_es = ("no evaluada" if r["light"] == "not_evaluated" else f"métrica {_g3(r['metric'])}" if r["metric"] is not None
-                      else f"p {_g3(r['p_value'])}")
-            add(f"{fid}-{r['light']}", sev if r["light"] != "not_evaluated" else "S4", "open", [key(r)],
-                f"{en}: {r['light']} ({val})", f"{es}: {tx.light(r['light'], 'es')} ({val_es})" if r["light"] != "not_evaluated" else f"{es}: no evaluada")
+            if r["light"] == "not_evaluated":
+                add(f"{fid}-{r['light']}", "S4", "open", [key(r)], f"{en}: not evaluated", f"{es}: no evaluada")
+                continue
+            if r["metric"] is not None:
+                words_en, words_es = metric_words.get(tid, (lambda x: f"metric {x}", lambda x: f"métrica {x}"))
+                val, val_es = words_en(f"{r['metric']:.3g}"), words_es(_g3(r["metric"]))
+            elif r["p_value"] < 1e-4:
+                # a p-value the engine returns as 0.0 (a chi-square far in its tail) is below the smallest one written
+                val, val_es = "p below 0.0001", "p menor que 0,0001"
+            else:
+                val, val_es = f"p {r['p_value']:.3g}", f"p {_g3(r['p_value'])}"
+            add(f"{fid}-{r['light']}", sev, "open", [key(r)], f"{en}: {r['light']} ({val})", f"{es}: {tx.light(r['light'], 'es')} ({val_es})")
     if ecl_by_scen_total[-1] < ecl_by_scen_total[0]:
         add("F-SCENARIO-ORDER", "S2", "open", ["ifrs9.scenario_sensitivity@L1-dth"],
-            "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date",
-            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del hazard tienen el signo equivocado en esta fecha")
+            "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date. "
+            "The scenario-sensitivity test it cites reads the non-linearity of the ECL in the scenarios, not the order of the scenarios, so its light does not "
+            "carry this finding",
+            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del hazard tienen el signo equivocado en esta fecha. "
+            "La prueba de sensibilidad a los escenarios que cita lee la no linealidad de la PCE en los escenarios, no el orden de los escenarios, así que su "
+            "luz no sostiene este hallazgo")
     rec = by.get("ifrs9.reconciliation_identities", [None])[0]
     if rec is not None and rec["light"] != "green":
         add("F-RECONCILIATION", "S1", "open", [key(rec)], "A reconciliation identity does not close", "Una identidad de la conciliación no cierra")

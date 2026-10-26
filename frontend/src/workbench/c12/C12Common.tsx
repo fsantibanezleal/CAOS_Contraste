@@ -4,7 +4,7 @@
 // over a real Treasury curve; the counterparty curve is a proxy (an AAA to A market spread derived from the Treasury HQM
 // curve, or a stated synthetic flat spread); initial margin is a regression proxy, never SIMM; every named parameter of the
 // book and the CSA is a convention; the wrong-way variant has no ORE reconciliation.
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -28,6 +28,46 @@ export const years = (v: number | null | undefined, lang: Lang) => formatNumber(
 
 /** The grid of a definition list in a narrow place: the term may wrap and the value keeps 60 percent, so a number never breaks over lines (G19). */
 export const DEFS_STYLE = { gridTemplateColumns: 'minmax(0, 40%) minmax(0, 1fr)' } as const;
+
+/** The numbers of a drawing in a card of their own beside it, so a table of a handful of rows shows every row at 1280 (R2b c13:
+ * under a drawing, the 42 % table box showed the PIT classes' header only and one GIRR tenor; the ruling of 2026-10-24). */
+export function NumbersCard({ card, title, children }: { card: ReturnType<typeof useCard>; title?: BiText; children: ReactNode }) {
+  return (
+    <PlotCard fill title={title ?? { en: 'In numbers', es: 'En números' }} {...card}>
+      <div className="ct-scroll" data-caos-flow="" data-block="numbers">
+        {children}
+      </div>
+    </PlotCard>
+  );
+}
+
+/** A drawing over tables that need more room than the shared 42 % box: the C12 box gives them 68 % at 1280 (a phone flows). */
+export function TallTables({ children }: { children: ReactNode }) {
+  return <div className="ct-c12-tall">{children}</div>;
+}
+
+/** A long table in pages of `size` rows, with how many rows there are and the buttons to turn the page (the ruling of 2026-10-24: a
+ * table of hundreds of rows is paged so the card shows a readable set; R2b c13 m6, the 309 calibrations ran 16,986 px at 390). */
+export function Paged<T>({ rows, size, name, children }: { rows: T[]; size: number; name: string; children: (page: T[]) => ReactNode }) {
+  const lang = useShellLang();
+  const [page, setPage] = useState(0);
+  const pages = Math.max(1, Math.ceil(rows.length / size));
+  const p = Math.min(page, pages - 1);
+  const first = p * size;
+  const last = Math.min(rows.length, first + size);
+  return (
+    <div data-paged={name} data-rows={rows.length}>
+      {children(rows.slice(first, last))}
+      <p className="ct-note ct-c12-pager">
+        <button type="button" className="ct-linkbutton" disabled={p === 0} onClick={() => setPage(p - 1)}>{pick({ en: 'Previous', es: 'Anteriores' }, lang)}</button>
+        <span data-page-range={`${first + 1}-${last}`}>
+          {pick({ en: `Rows ${formatNumber(first + 1, 'en', { decimals: 0 })} to ${formatNumber(last, 'en', { decimals: 0 })} of ${formatNumber(rows.length, 'en', { decimals: 0 })}`, es: `Filas ${formatNumber(first + 1, 'es', { decimals: 0 })} a ${formatNumber(last, 'es', { decimals: 0 })} de ${formatNumber(rows.length, 'es', { decimals: 0 })}` }, lang)}
+        </span>
+        <button type="button" className="ct-linkbutton" disabled={p >= pages - 1} onClick={() => setPage(p + 1)}>{pick({ en: 'Next', es: 'Siguientes' }, lang)}</button>
+      </p>
+    </div>
+  );
+}
 /** A value that must stay on one line: a number, an amount, a pair of them. */
 export function Nw({ children }: { children: ReactNode }) {
   return <span style={{ whiteSpace: 'nowrap' }}>{children}</span>;
@@ -423,7 +463,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
               <dd data-unverified="true">
                 <T en="transcribed from " es="transcritas de " />
                 <span translate="no">{fit.closed_forms_source}</span>
-                <T en="; the journal derivations are UNVERIFIED as papers" es="; las derivaciones de la literatura NO están verificadas como artículos" />
+                <T en="; the journal derivations are not verified as papers" es="; las derivaciones de la literatura no están verificadas como artículos" />
               </dd>
               <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
               <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
@@ -434,6 +474,8 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
               <dt>{pick({ en: 'Negative spread', es: 'Spread negativo' }, lang)}</dt>
               <dd>{pick({ en: 'A negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread.', es: 'Un spread HQM menos Tesoro negativo se fija en cero y se cuenta, nunca se arrastra como spread negativo.' }, lang)}</dd>
             </dl>
+            <Paged rows={fit.calibrations} size={12} name="c12-calibrations">
+              {(page) => (
             <table className="caos-table ct-wrap-head" data-table="c12-calibrations">
               <thead>
                 <tr>
@@ -445,7 +487,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 </tr>
               </thead>
               <tbody>
-                {fit.calibrations.map((c) => (
+                {page.map((c) => (
                   <tr key={c.backtest_date} data-calibration={c.backtest_date}>
                     <td className="ct-text">{c.backtest_date}</td>
                     <td>{formatNumber(c.a, lang, { digits: 4 })}</td>
@@ -456,6 +498,8 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 ))}
               </tbody>
             </table>
+              )}
+            </Paged>
             <ul className="ct-note" data-table="c12-limits">
               {fit.limits.map((l, i) => (
                 <li key={i}>{pick(l, lang)}</li>

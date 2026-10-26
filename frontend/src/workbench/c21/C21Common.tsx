@@ -49,7 +49,16 @@ export function LegalSentences({ legal }: { legal: C21Legal | null }) {
       <ul className="ct-note">
         {rows.map(([id, r]) => (
           <li key={id} data-legal={id}>
-            <span translate="no" lang="en">{`"${r.quote}"`}</span> (<Marked>{r.citation}</Marked>)
+            {/* the sentence in the reader's language; in Spanish the English original follows, marked as such (R2b c21) */}
+            {lang === 'es' ? (
+              <>
+                {`«${pick(r.text, 'es')}» `}
+                <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${r.quote}"`}</span>)</span>
+              </>
+            ) : (
+              <span translate="no" lang="en">{`"${r.quote}"`}</span>
+            )}{' '}
+            (<Marked>{es(r.citation, lang)}</Marked>)
           </li>
         ))}
       </ul>

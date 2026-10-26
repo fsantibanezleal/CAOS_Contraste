@@ -439,12 +439,20 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         const rows = v.outputs.simulations.filter((s) => s.panel === p.id && s.p_histogram);
         const bins = rows[0]?.p_histogram?.length ?? 20;
         const x = Array.from({ length: bins }, (_, i) => (i + 0.5) / bins);
+        // a second curve of one test is numbered, never named by the key's suffix ("(dev1)", "(null-20000)"; R2b c22), and the
+        // number is read under the panels with where that curve's null holds (a legend of whole sentences left a phone panel no plot)
+        const notes: Array<{ label: BiText; scenario: BiText }> = [];
+        const seen = new Map<string, number>();
         const series: ChartSeries[] = rows.map((s, i) => {
           const total = (s.p_histogram ?? []).reduce((a, b) => a + b, 0) || 1;
-          const label = s.key.endsWith('@null') ? s.label : { en: `${s.label.en} (${s.key.split('@')[1]})`, es: `${s.label.es} (${s.key.split('@')[1]})` };
+          const k = (seen.get(pick(s.label, 'en')) ?? 0) + 1;
+          seen.set(pick(s.label, 'en'), k);
+          const numbered = !s.key.endsWith('@null') || k > 1;
+          const label: BiText = numbered ? { en: `${pick(s.label, 'en')} (${k})`, es: `${pick(s.label, 'es')} (${k})` } : s.label;
+          if (numbered) notes.push({ label, scenario: s.scenario });
           return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), width: 1.6, ...seriesStyle(i) };
         });
-        return { panel: p, x, series, n: rows.length };
+        return { panel: p, x, series, n: rows.length, notes };
       })
       .filter((p) => p.n > 0);
   }, [v]);
@@ -473,6 +481,13 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
           </div>
         ))}
       </div>
+      {panels.some((pp) => pp.notes.length > 0) ? (
+        <ul className="ct-note" data-list="numbered-curves">
+          {panels.flatMap((pp) => pp.notes.map((n) => (
+            <li key={`${pp.panel.id}-${pick(n.label, 'en')}`}>{`${pick(pp.panel.label, lang)}, ${pick(n.label, lang)}: ${pick(n.scenario, lang)}`}</li>
+          )))}
+        </ul>
+      ) : null}
     </PlotCard>
   );
 }
@@ -557,7 +572,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Generator configuration', es: 'Configuración del generador' }, lang)}</th>
                 <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                 <th>{pick({ en: 'p-value', es: 'Valor p' }, lang)}</th>
               </tr>
@@ -566,7 +581,8 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
               {v.tests.map((t, i) => (
                 <tr key={`${t.test_id}-${i}`}>
                   <td className="ct-text" title={t.test_id}>{pick(testName(t.test_id), lang)}</td>
-                  <td className="ct-text">{t.model_id}</td>
+                  {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24) */}
+                  <td className="ct-text"><code translate="no">{t.model_id}</code></td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <LightCell row={t} alphas={sel.alphas} />
                 </tr>

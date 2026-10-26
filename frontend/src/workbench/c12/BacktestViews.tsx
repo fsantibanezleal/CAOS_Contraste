@@ -9,7 +9,7 @@ import { useMedia } from '../../lib/useMedia';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SWAP, UnavailableCard, digits, DEFS_STYLE, Nw } from './C12Common';
+import { NOT_SWAP, NumbersCard, TallTables, UnavailableCard, digits, DEFS_STYLE, Nw } from './C12Common';
 import { HORIZON_LONG, HORIZON_SHORT, HORIZONS, SUBJECT_LONG, histogram, horizonOf, horizonsOf, outputsOf, text, type C12Sel } from './selection';
 
 const WINDOW_TEXT: Record<string, Bi> = {
@@ -35,7 +35,7 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
   const expected = h.n / bins;
   const bt = o.backtest;
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={title}
@@ -45,33 +45,15 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
           es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, a ${pick(text(HORIZON_LONG, sel.horizon), 'es')}. Cada valor realizado se mapea a su PIT, la parte de la muestra simulada bajo él, con la regla ${bt.pit_rule}; si el modelo se sostiene, los PIT de las fechas del backtest son uniformes y cada clase tiene cerca de ${formatNumber(expected, 'es', { digits: 4 })} de las ${h.n} fechas. Cada fecha se calibró solo con datos hasta esa fecha.`,
         }}
       >
-        <ChartOverTable
-          chartMin="14rem"
-          chart={
-            <BarChart
+                    <BarChart
               title={narrow ? { en: 'Back-test dates by PIT class (lower edge)', es: 'Fechas del backtest por clase de PIT (borde inferior)' } : { en: 'Number of back-test dates by PIT class', es: 'Número de fechas del backtest por clase de PIT' }}
               height="fill"
               orientation="vertical"
               data={counts.map((n, i) => ({ id: `bin${i}`, label: narrow ? { en: formatNumber(i / bins, 'en', { decimals: 1 }), es: formatNumber(i / bins, 'es', { decimals: 1 }) } : { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
               axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { decimals: 0 }, range: [0, Math.max(4, ...counts)] }}
             />
-          }
-        >
-          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-pit">
-            <dt>{pick({ en: 'Statistic W²', es: 'Estadístico W²' }, lang)}</dt>
-            <dd data-w2={h.w2}><Nw>{digits(h.w2, lang)}</Nw></dd>
-            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5 % y 1 %' }, lang)}</dt>
-            <dd><Nw>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</Nw></dd>
-            <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5 % y 1 % (informada al lado, no en su lugar)' }, lang)}</dt>
-            <dd><Nw>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</Nw></dd>
-            <dt>{pick({ en: 'Dates and effective sample size', es: 'Fechas y tamaño de muestra efectivo' }, lang)}</dt>
-            <dd>
-              <Nw>{`${h.n} / ${formatNumber(h.effective_sample_size, lang, { digits: 4 })}`}</Nw>
-              {` (${pick({ en: 'overlapping horizons share information', es: 'los horizontes que se traslapan comparten información' }, lang)})`}
-            </dd>
-            <dt>{pick({ en: 'Decision at 5%', es: 'Decisión al 5 %' }, lang)}</dt>
-            <dd data-reject={String(h.reject_at_5pct)}>{h.reject_at_5pct ? pick({ en: 'the distribution is rejected', es: 'la distribución se rechaza' }, lang) : pick({ en: 'the distribution is not rejected', es: 'la distribución no se rechaza' }, lang)}</dd>
-          </dl>
+      </PlotCard>
+      <NumbersCard card={card}>
           <table className="caos-table ct-wrap-head" data-table="c12-pit-bins">
             <thead>
               <tr>
@@ -90,8 +72,22 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
-        </ChartOverTable>
-      </PlotCard>
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-pit">
+            <dt>{pick({ en: 'Statistic W²', es: 'Estadístico W²' }, lang)}</dt>
+            <dd data-w2={h.w2}><Nw>{digits(h.w2, lang)}</Nw></dd>
+            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5 % y 1 %' }, lang)}</dt>
+            <dd><Nw>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</Nw></dd>
+            <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5 % y 1 % (informada al lado, no en su lugar)' }, lang)}</dt>
+            <dd><Nw>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</Nw></dd>
+            <dt>{pick({ en: 'Dates and effective sample size', es: 'Fechas y tamaño de muestra efectivo' }, lang)}</dt>
+            <dd>
+              <Nw>{`${h.n} / ${formatNumber(h.effective_sample_size, lang, { digits: 4 })}`}</Nw>
+              {` (${pick({ en: 'overlapping horizons share information', es: 'los horizontes que se traslapan comparten información' }, lang)})`}
+            </dd>
+            <dt>{pick({ en: 'Decision at 5%', es: 'Decisión al 5 %' }, lang)}</dt>
+            <dd data-reject={String(h.reject_at_5pct)}>{h.reject_at_5pct ? pick({ en: 'the distribution is rejected', es: 'la distribución se rechaza' }, lang) : pick({ en: 'the distribution is not rejected', es: 'la distribución no se rechaza' }, lang)}</dd>
+          </dl>
+      </NumbersCard>
     </ViewsRow>
   );
 }
@@ -118,6 +114,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
           es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, de ${bt.window_start} a ${bt.window_end}, con ${bt.paths_per_date} trayectorias simuladas por fecha. Una barra roja es un horizonte que la prueba de Anderson-Darling rechaza al 5 por ciento contra el valor crítico simulado. Los horizontes incluyen los periodos de margen de 10 y 20 días hábiles y el año, y se cuentan varios percentiles, nunca uno (BCBS 185, párrafos 18, 19 y 31); los conteos de excedencias suponen independencia y son una fila secundaria.`,
         }}
       >
+        <TallTables>
         <ChartOverTable
           chartMin="clamp(11rem, 20rem - 15vw, 17rem)"
           chart={
@@ -158,7 +155,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
                   {h.exceedances.map((e) => (
                     <td key={e.quantile} className="ct-wide-only">{`${e.count} / ${formatNumber(e.expected, lang, { digits: 4 })}`}</td>
                   ))}
-                  <td className="ct-text">{h.reject_at_5pct ? pick({ en: 'rejected', es: 'rechazado' }, lang) : pick({ en: 'not rejected', es: 'no rechazado' }, lang)}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{h.reject_at_5pct ? pick({ en: 'rejected', es: 'rechazado' }, lang) : pick({ en: 'not rejected', es: 'no rechazado' }, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -194,6 +191,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
           )}
           <p className="ct-note">{pick({ en: 'The sub-windows before 2008, from 2008 to 2019 and from 2020 are reported apart for the book, so a failure in one regime is not averaged away.', es: 'Las subventanas antes de 2008, de 2008 a 2019 y desde 2020 se informan aparte para la cartera, de modo que una falla en un régimen no se diluya en el promedio.' }, lang)}</p>
         </ChartOverTable>
+        </TallTables>
       </PlotCard>
     </ViewsRow>
   );
