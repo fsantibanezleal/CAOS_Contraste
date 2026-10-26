@@ -141,7 +141,7 @@ def im_block(blk: dict[str, Any], c: vt.Core, run_dir: Path, flags: list[bool]) 
                           "the two regressions differ", ORE_REFERENCE,
                           "" if ok else f"the largest gap is {z:.1f} combined standard errors; ORE's mean DIM is "
                           f"{float(np.mean(o_mean / p_mean)):.3f} of the Python one on average (cause UNVERIFIED: the expected "
-                          "exposure after margin agrees, see ccr.reconcile_ee_profile)", {"agreement": ag})]
+                          "exposure after margin agrees, see the EE profile reconciled with ORE)", {"agreement": ag})]
 
 
 # ------------------------------------------------------------------------------------------------------------ QuantLib
