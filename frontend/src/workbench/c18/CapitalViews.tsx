@@ -295,7 +295,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
         {/* the two drawings take the whole card, each its share of the height by its bars, so neither is cut nor scrolls inside
             itself (R2b c19 M-new-1: under the tables the upper drawing lost its axis and the legal minimum bar) */}
             <div className="ct-c18-stack-charts" data-caos-flow="">
-              <div style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `${rowsAll * 1.4 + 4}rem` }}>
+              <div style={{ flex: `${rowsAll + 2} 1 0`, minHeight: 0 }}>
                 <BarChart
                   title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
                   data={ownDecimals([...oiBars, ...refBars])}
@@ -304,7 +304,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 />
               </div>
               {legalBars ? (
-                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: `${legalBars.length * 1.4 + 4}rem` }}>
+                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: 0 }}>
                   <BarChart
                     title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
                     data={ownDecimals(legalBars)}
