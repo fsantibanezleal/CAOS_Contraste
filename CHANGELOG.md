@@ -5,7 +5,7 @@ tagged.
 
 ## [1.00.000], 2026-10-22
 
-The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the patch of 1.0.0, the first stable engine (its public API stated under semantic versioning, the size and power of every registered p-value test measured, a packaged policy file for every battery); C22 measures the size and power of every p-value test; every producer states its depends_on; the Spanish texts carry their accents and the Spanish number forms; shell 0.19.1 (every chart operable: zoom, pan, brush, keyboard, readout, data table; a filling card flows on a phone) and template 0.11.000; the generated convergence verdict; the full capture review and its three fix rounds, the last of which names every id a reader sees.
+The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the patch of 1.0.0, the first stable engine (its public API stated under semantic versioning, the size and power of every registered p-value test measured, a packaged policy file for every battery); C22 measures the size and power of every p-value test; every producer states its depends_on; the Spanish texts carry their accents and the Spanish number forms; shell 0.19.2 (every chart operable: zoom, pan, brush, keyboard, readout, data table; a filling card flows on a phone) and template 0.11.000; the generated convergence verdict; the full capture review and its three fix rounds, the last of which names every id a reader sees.
 
 - U16-I: Contraste moves onto `riskvalidation` 1.0.0 from PyPI (the pin surfaces were moved by `tools/contraste/repin_engine.py`). The C16 depositor
   adapter follows `engine-liquidity-api` 2.0.0 (BL-082): `p_enter_stress` and `p_exit_stress` are built on `DepositorConfig`, the `c16GeneratorSegment`
