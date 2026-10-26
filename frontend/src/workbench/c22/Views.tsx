@@ -441,7 +441,8 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         const x = Array.from({ length: bins }, (_, i) => (i + 0.5) / bins);
         const series: ChartSeries[] = rows.map((s, i) => {
           const total = (s.p_histogram ?? []).reduce((a, b) => a + b, 0) || 1;
-          const label = s.key.endsWith('@null') ? s.label : { en: `${s.label.en} (${s.key.split('@')[1]})`, es: `${s.label.es} (${s.key.split('@')[1]})` };
+          // a second curve of one test is named by where its null holds, never by the key's suffix ("(dev1)", "(null-20000)"; R2b c22)
+          const label = s.key.endsWith('@null') ? s.label : { en: `${pick(s.label, 'en')} (${pick(s.scenario, 'en')})`, es: `${pick(s.label, 'es')} (${pick(s.scenario, 'es')})` };
           return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), width: 1.6, ...seriesStyle(i) };
         });
         return { panel: p, x, series, n: rows.length };
@@ -557,7 +558,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Generator configuration', es: 'Configuración del generador' }, lang)}</th>
                 <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                 <th>{pick({ en: 'p-value', es: 'Valor p' }, lang)}</th>
               </tr>
@@ -566,7 +567,8 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
               {v.tests.map((t, i) => (
                 <tr key={`${t.test_id}-${i}`}>
                   <td className="ct-text" title={t.test_id}>{pick(testName(t.test_id), lang)}</td>
-                  <td className="ct-text">{t.model_id}</td>
+                  {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24) */}
+                  <td className="ct-text"><code translate="no">{t.model_id}</code></td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   <LightCell row={t} alphas={sel.alphas} />
                 </tr>
