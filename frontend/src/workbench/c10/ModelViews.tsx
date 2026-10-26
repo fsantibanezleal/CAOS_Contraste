@@ -22,13 +22,15 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
   const o = outputsOf(sel);
   // the scenarios a rung ran: the variant's own simulation when it carries the rung (a rung that did not run has none, whatever the
   // ladder plans for it), the planned count of the models artifact for a document that does not (U16-R2 b05 B2)
-  const ran = (id: string, planned: number | null): { n: number | null; why: BiText | undefined } => {
+  const ran = (id: string, planned: number | null, evaluated?: boolean): { n: number | null; why: BiText | undefined } => {
     const rung = o ? rungOf(o, id) : undefined;
+    // a document without rungs of its own (a simulator grid) draws a rung no variant runs as not run, never its plan (R2b c11 B4)
+    if (!rung && evaluated === false) return { n: null, why: { en: 'Not run: no variant evaluates this rung.', es: 'No corre: ninguna variante evalúa este escalón.' } };
     if (!rung) return { n: planned, why: planned === null ? ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) : undefined };
     if (!rung.evaluated) return { n: null, why: { en: noteText(rung.reason, 'en'), es: noteText(rung.reason, 'es') } };
     return { n: rung.simulation?.n_scenarios ?? null, why: rung.simulation ? undefined : ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) };
   };
-  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: ran(r.id, r.n_scenarios).n, tone: 'accent' as const, hint: ran(r.id, r.n_scenarios).why }));
+  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: ran(r.id, r.n_scenarios, r.evaluated).n, tone: 'accent' as const, hint: ran(r.id, r.n_scenarios, r.evaluated).why }));
   return (
     <ViewsRow>
       <PlotCard
@@ -62,7 +64,7 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{`${r.rung}: ${pick(r.label, lang)}`}</td>
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
-                  <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? (ran(r.id, r.n_scenarios).why ? pick(ran(r.id, r.n_scenarios).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
+                  <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios, r.evaluated).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios, r.evaluated).n === null ? (ran(r.id, r.n_scenarios, r.evaluated).why ? pick(ran(r.id, r.n_scenarios, r.evaluated).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   <td className="ct-text ct-wide-only">{r.parameters.map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>

@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "22.0.0",
+    "version": "23.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "4d674c817bd82f94978e68c6b23c8459bdf9cdc590522b51509a3cb91da62a63"
+    "sha256": "c7f2a7c2f8e1f0ed055802a62d12808218b3cdfa0dc0c9bbfbbbb5e9054fc944"
   },
   "readiness": {
     "version": "1.0.1",
@@ -235,9 +235,9 @@
     "sha256": "9ca7b8391ba5c9da317753137c25950edb9a78a15570187fc85eb7485a73cb95"
   },
   "c10-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c10/models.schema.json",
-    "sha256": "2683c26b67ca79c94b1e08e6ff6091de50612009cff4c0b95f9c00a3f03351fe"
+    "sha256": "7de826b758ceb6317f4fe8baf144012ba2bb7aeb4fe12750b0a6e6bd0cbcbf04"
   },
   "engine-portfolio-api": {
     "version": "1.0.0",

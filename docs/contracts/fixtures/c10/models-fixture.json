@@ -163,6 +163,7 @@
         },
         "estimator": "analytic",
         "n_scenarios": null,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.portfolio.lhp_measures",
         "reference": "Vasicek (2002), Risk, December 2002; dossier 04 C.4",
         "parameters": [
@@ -188,6 +189,7 @@
         },
         "estimator": "monte-carlo",
         "n_scenarios": 1000000,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.copula.simulate_gaussian",
         "reference": "Li (2000); dossier 04 H.3",
         "parameters": [
@@ -208,6 +210,7 @@
         },
         "estimator": "monte-carlo",
         "n_scenarios": 1000000,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.copula.simulate_gaussian",
         "reference": "Li (2000); dossier 04 H.3",
         "parameters": [
@@ -228,6 +231,7 @@
         },
         "estimator": "monte-carlo",
         "n_scenarios": 1000000,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.copula.simulate_student_t",
         "reference": "Frey and McNeil (2003); Demarta and McNeil (2005); dossier 04 H.3",
         "parameters": [
@@ -248,6 +252,7 @@
         },
         "estimator": "analytic",
         "n_scenarios": null,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.creditrisk_plus.pmf_stable",
         "reference": "Haaf, Reiss and Schoenmakers (2004); dossier 04 H.4",
         "parameters": [
@@ -268,6 +273,7 @@
         },
         "estimator": "analytic",
         "n_scenarios": null,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.granularity.granularity_adjustment",
         "reference": "Gordy and Lutkebohmert (2013); dossier 04 H.5",
         "parameters": [
@@ -293,6 +299,7 @@
         },
         "estimator": "monte-carlo",
         "n_scenarios": 100000,
+        "evaluated": true,
         "engine_function": "riskvalidation.portfolio.importance.importance_sample_gaussian",
         "reference": "Glasserman and Li (2005); dossier 04 H.7 (the twist is UNVERIFIED there)",
         "parameters": []
@@ -307,6 +314,7 @@
         },
         "estimator": "monte-carlo",
         "n_scenarios": 100000,
+        "evaluated": false,
         "engine_function": "riskvalidation.portfolio.importance.importance_sample_gaussian",
         "reference": "Glasserman and Li (2005); no Student-t twist is specified, the rung is a not-evaluated row",
         "parameters": []

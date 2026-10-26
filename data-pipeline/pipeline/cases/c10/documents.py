@@ -24,6 +24,11 @@ from .ladder import T, named
 SHAPED_ON = "yearly default fractions of a large homogeneous portfolio with one systematic factor (dossier 04 C.4)"
 
 
+
+#: the two estimators of the correlation in words (frontend/src/workbench/c10/selection.ts ESTIMATOR_TEXT)
+ESTIMATOR_WORDS = {"maximum-likelihood": ("maximum-likelihood", "máxima verosimilitud"),
+                   "moments": ("method-of-moments", "método de momentos")}
+
 def rv_version() -> str:
     from importlib.metadata import version
 
@@ -411,9 +416,10 @@ def grid_findings(doc: dict[str, Any]) -> list[dict[str, Any]]:
         sev = {"green": ("S4", "accepted"), "amber": ("S3", "open"), "red": ("S2", "open")}.get(row["light"], ("S3", "open"))
         f.append({"id": f"f-c10-size-{e['estimator']}-{years}", "severity": sev[0], "status": sev[1],
                   "evidence": [f"portfolio.correlation_size_power@m-lhp@rho={size['known_rho']:g}/{e['estimator']}"],
-                  "title": T(f"With {years} years the {e['estimator']} test of rho = {P.NULL_RHO:g} rejects {e['rejection_rate']:.3f} of the "
+                  # the estimator in words, never its id (the raw-id scan of 2026-10-24)
+                  "title": T(f"With {years} years the {ESTIMATOR_WORDS[e['estimator']][0]} test of rho = {P.NULL_RHO:g} rejects {e['rejection_rate']:.3f} of the "
                              f"time when it is true (nominal {P.ALPHA:g}; interval {e['rejection_ci_low']:.3f} to {e['rejection_ci_high']:.3f})",
-                             f"Con {years} años el test de {e['estimator']} de rho = {_g(P.NULL_RHO)} rechaza {_n(e['rejection_rate'], 3)} de las "
+                             f"Con {years} años la prueba de {ESTIMATOR_WORDS[e['estimator']][1]} de rho = {_g(P.NULL_RHO)} rechaza {_n(e['rejection_rate'], 3)} de las "
                              f"veces cuando es verdadera (nominal {_g(P.ALPHA)}; intervalo {_n(e['rejection_ci_low'], 3)} a {_n(e['rejection_ci_high'], 3)})")})
     return f
 
@@ -447,8 +453,12 @@ def models_document(table_columns: dict[str, str], example: dict[str, Any], run:
          "Glasserman and Li (2005); no Student-t twist is specified, so the rung is a not-evaluated row", []),
     ]
     labels = {r["id"]: r["label"] for r in example["rungs"]}
+    # whether the rung runs: the loan variants evaluate the same rungs, so the example's flag is the ladder's (R2b c11 B4: a grid,
+    # which carries no rungs, drew the planned 100,000 scenarios of the Student-t importance sampler that never runs)
+    evaluated = {r["id"]: bool(r["evaluated"]) for r in example["rungs"]}
     for rid, rg, method, est, n, fn, ref, params in spec:
         ladder_rows.append({"id": rid, "rung": rg, "method": method, "label": labels[rid], "estimator": est, "n_scenarios": n,
+                            "evaluated": evaluated[rid],
                             "engine_function": fn, "reference": ref, "parameters": params})
     return {
         "currency": P.CURRENCY, "windows": {"fit": dict(P.FIT), "evaluation": dict(P.EVALUATION)},
