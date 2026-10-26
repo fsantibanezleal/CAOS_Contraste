@@ -114,11 +114,11 @@ def conventions() -> dict:
                 ("fast-run", "idiosyncratic", "acute", "fast-run", 5, "relevant-days"),
                 ("htm-losses", "idiosyncratic", "protracted", "list-adverse", 125, "relevant-days"))],
         "basis": txt("Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined "
-                     "stress over 30 calendar days (LCR20.2), a phase of its own, lcr-30-day, outside the acute (1 to 5 days) and "
+                     "stress over 30 calendar days (LCR20.2), a phase of its own (the 30-day LCR phase), outside the acute (1 to 5 days) and "
                      "protracted (6 to 12 months) wording of 05 l.277; the LiST 2019 shocks are idiosyncratic only (annex slide 5) and "
                      "protracted; the fast run is acute.",
                      "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estrés combinado "
-                     "a 30 días corridos (LCR20.2), una fase propia, lcr-30-day, fuera de lo agudo (1 a 5 días) y lo prolongado "
+                     "a 30 días corridos (LCR20.2), una fase propia (la fase del LCR a 30 días), fuera de lo agudo (1 a 5 días) y lo prolongado "
                      "(6 a 12 meses) del dossier 05 l.277; los choques LiST 2019 son solo idiosincráticos y prolongados; la corrida "
                      "rápida es aguda."),
     }
