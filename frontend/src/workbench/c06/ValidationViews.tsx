@@ -119,7 +119,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
           </table>
           {/* terms and their values as a list, so the long method text wraps under its term (R2b c07: a two-cell table squeezed the
               term to a letter a line and cut the method at 1280) */}
-          <dl className="ct-defs" data-table="conversion">
+          <dl className="ct-defs ct-note" data-table="conversion" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
             <dt data-row="pit">{pick({ en: 'Through the cycle to point in time', es: 'De a través del ciclo a puntual' }, lang)}</dt>
             <dd>{`${PIT_METHOD_TEXT[fit.pit.method] ? pick(PIT_METHOD_TEXT[fit.pit.method], lang) : fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</dd>
             <dt data-row="lgd">{pick({ en: 'LGD', es: 'LGD' }, lang)}</dt>
