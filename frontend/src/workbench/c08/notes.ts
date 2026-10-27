@@ -18,6 +18,9 @@ const LOAN_TYPE: Record<string, string> = { Commercial: 'Comerciales', Residenti
 
 /** The W^2 note of a C12 PIT test: its level, its subject and its horizon code ("10bd", "1m"). */
 const W2_NOTE = /^W\^2 is above the simulated (\d+) percent critical value (?:for )?the (book|risk factor) at the (\d+)(bd|m) horizon$/;
+// the producer's form since the R3 re-bake: the horizon already in words ("at the horizon of 10 business days")
+const W2_NOTE_WORDS = /^W\^2 is above the simulated (\d+) percent critical value for the (book|risk factor) at the horizon of (\d+) (business days?|months?)$/;
+const w2Unit = (words: string): string => (words.startsWith('business') ? 'bd' : 'm');
 
 /** A horizon code of C12 ("10bd", "1m", "12m") in words, the singular for one. */
 function horizonWords(n: string, unit: string, lang: Lang): string {
@@ -60,6 +63,7 @@ const RULES: Rule[] = [
   [/^BCBS (\d+) paragraph (\d+): exception counts assume independence and the overlapping horizons are not independent$/, (m) => `BCBS ${m[1]} párrafo ${m[2]}: los conteos de excepciones suponen independencia y los horizontes que se traslapan no son independientes`],
   // the horizon in words, never its code ("1m", "10bd"; R3 c13 BL1), and one month in the singular (m4)
   [W2_NOTE, (m, lang) => `W² supera el valor crítico simulado de ${whole(m[1], lang)} por ciento ${m[2] === 'book' ? 'de la cartera' : 'del factor de riesgo'} en el horizonte de ${horizonWords(m[3], m[4], 'es')}`],
+  [W2_NOTE_WORDS, (m, lang) => `W² supera el valor crítico simulado de ${whole(m[1], lang)} por ciento ${m[2] === 'book' ? 'de la cartera' : 'del factor de riesgo'} en el horizonte de ${horizonWords(m[3], w2Unit(m[4]), 'es')}`],
   [/^secondary row\. (\d+) exceedances in (\d+) dates against ([\d.]+) expected$/, (m, lang) => `fila secundaria. ${whole(m[1], lang)} excedencias en ${whole(m[2], lang)} fechas frente a ${fixed(m[3], lang)} esperadas`],
   [/^([\d.]+) combined standard errors$/, (m, lang) => `${fixed(m[1], lang)} errores estándar combinados`],
   [/^ORE (\d+) samples against Python (\d+) paths; the profile is the t-forward EE$/, (m, lang) => `ORE con ${whole(m[1], lang)} muestras frente a Python con ${whole(m[2], lang)} trayectorias; el perfil es la EE a plazo t`],

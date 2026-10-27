@@ -1,8 +1,7 @@
 // U16-F10b (fix round 4, the R3 capture review of C02, batch c03), on the committed C02 documents in both languages. The
-// producer now writes the named parameter's unit and basis and the ladder's engine as bilingual texts (c02-outputs 3.0.0,
-// c02-models 2.0.0); the committed documents carry the English strings until the integrator re-bakes, so each view is
-// rendered on both shapes: the re-baked one (the producer's texts, as tests/c02/test_c02_u16_f10b.py pins them) and the
-// committed one.
+// producer writes the named parameter's unit and basis and the ladder's engine as bilingual texts (c02-outputs 3.0.0,
+// c02-models 2.0.0), and the committed documents carry them since the integrator's re-bake; the English string form the
+// schema still accepts is rendered on a copy of the committed documents with those fields put back to their English strings.
 import { afterEach, describe, expect, it } from 'vitest';
 import type { components } from '../../lib/contract.gen';
 import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
@@ -32,13 +31,19 @@ const ENGINE_ES: Record<string, string> = {
   'scikit-learn trees and LogisticRegression, own rule extraction': 'árboles y regresión logística de scikit-learn, extracción de reglas propia',
 };
 
-/** The committed documents with the bilingual fields the producer now writes, as the integrator's re-bake will carry them. */
+/** The committed documents as they are (bilingual since the re-bake). */
 function rebaked(): { v: VariantArtifact<Outputs>; m: ModelsArtifact } {
+  return { v: h1, m: models };
+}
+
+/** The committed documents with the bilingual fields put back to their English strings, the form the schema still accepts. */
+function stringForm(): { v: VariantArtifact<Outputs>; m: ModelsArtifact } {
+  const en = (x: unknown) => (x !== null && typeof x === 'object' && 'en' in (x as object) ? (x as { en: string }).en : x);
   const v = structuredClone(h1);
-  const params = (o: { parameters: unknown[] }) => o.parameters.map((p) => ({ ...(p as object), unit: UNIT, basis: BASIS }));
+  const params = (o: { parameters: unknown[] }) => o.parameters.map((p) => ({ ...(p as object), unit: en((p as { unit: unknown }).unit), basis: en((p as { basis: unknown }).basis) }));
   (v.outputs as unknown as { parameters: unknown[] }).parameters = params(v.outputs as unknown as { parameters: unknown[] });
   const m = structuredClone(models) as unknown as { fit: { ladder: Array<{ engine: unknown }>; parameters: unknown[] } };
-  m.fit.ladder = m.fit.ladder.map((l) => ({ ...l, engine: { en: l.engine as string, es: ENGINE_ES[l.engine as string] ?? (l.engine as string) } }));
+  m.fit.ladder = m.fit.ladder.map((l) => ({ ...l, engine: en(l.engine) }));
   m.fit.parameters = params(m.fit);
   return { v, m: m as unknown as ModelsArtifact };
 }
@@ -64,11 +69,20 @@ describe('U16-R3 c03 on the committed C02 documents', () => {
     expect(text(html(<C02ContextView sel={selOf(v, m)} />))).toContain('0.05 AUC points');
   });
 
-  it('B2: the committed string form still renders, in both languages', () => {
-    for (const lang of ['en', 'es'] as const) {
-      setLang(lang);
-      expect(text(html(<C02ContextView sel={selOf(h1)} />))).toContain('AUC points');
-    }
+  it('B2: the English string form still renders, in both languages', () => {
+    const { v, m } = stringForm();
+    setLang('en');
+    expect(text(html(<C02ContextView sel={selOf(v, m)} />))).toContain('0.05 AUC points');
+    setLang('es');
+    expect(text(html(<C02ContextView sel={selOf(v, m)} />))).toContain('0,05');
+  });
+
+  it('B2 and B3: the committed documents carry the bilingual texts of the producer', () => {
+    const p = (h1.outputs as unknown as { parameters: Array<{ unit: unknown; basis: unknown }> }).parameters[0];
+    expect(p.unit).toEqual(UNIT);
+    expect(p.basis).toEqual(BASIS);
+    const ladder = (models as unknown as { fit: { ladder: Array<{ engine: { en: string; es: string } }> } }).fit.ladder;
+    for (const l of ladder) if (l.engine.en in ENGINE_ES) expect(l.engine.es).toBe(ENGINE_ES[l.engine.en]);
   });
 
   it('B3: the Spanish ladder prints its engine in Spanish, the library names as published', () => {

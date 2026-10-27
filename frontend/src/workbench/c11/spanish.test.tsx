@@ -44,7 +44,7 @@ describe('the Spanish views of C11', () => {
 
   it('the champion view says why a window has no champion', () => {
     setLang('es');
-    expect(view(<ChampionView sel={defaultSel(crisis)} />)).toContain('ningún modelo elegible tiene un ES cada día');
+    expect(view(<ChampionView sel={defaultSel(crisis)} />)).toContain('ningún modelo es elegible: cada modelo falla al menos una compuerta');
   });
 
   it('the exceedance bars keep their decimals (2.49 expected, not 2)', () => {
@@ -55,6 +55,6 @@ describe('the Spanish views of C11', () => {
     setLang('es');
     const v = crisis.variant as unknown as VariantArtifact<C11Outputs>;
     const text = view(<C11VariantsTable variants={[{ id: v.variant_id, title: { en: 'Equity 2007 to 2009', es: 'Renta variable 2007 a 2009' }, v }]} onPick={() => undefined} current={v.variant_id} />);
-    expect(text).toContain('sin campeón. Motivo: ningún modelo elegible tiene un ES cada día');
+    expect(text).toContain('sin campeón. Motivo: ningún modelo es elegible: cada modelo falla al menos una compuerta');
   });
 });

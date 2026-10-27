@@ -30,17 +30,26 @@ const view = (el: React.ReactElement, lang: 'en' | 'es') => { setLang(lang); ret
 function rebaked14(name: string): VariantArtifact {
   const v = clone(doc14(name)) as Any;
   for (const r of v.outputs.data.call_reports) {
+    if (typeof r.source !== 'string') continue; // re-baked: already bilingual
     const m = /^(\S+) \(file (\S+), sha256 (\w+), retrieved (\S+)\)$/.exec(r.source)!;
     r.source = { en: r.source, es: `${m[1]} (archivo ${m[2]}, sha256 ${m[3]}, obtenido el ${m[4]})` };
   }
   for (const i of v.outputs.balance_sheet.items) {
-    if (i.behavioural_class.startsWith('nmd')) {
+    if (i.behavioural_class.startsWith('nmd') && typeof i.slotting_assumption === 'string') {
       i.slotting_assumption = {
         en: "behavioural: non-core overnight, core around the used maturity (the engine's NMD split, SRP31 Table 4 caps); contractual: overnight",
         es: 'conductual: la parte no estable a la vista y la estable en torno al plazo usado (la división NMD del motor, topes de la Tabla 4 de SRP31); contractual: a la vista',
       };
     }
   }
+  return v as VariantArtifact;
+}
+/** The C14 variant with its bilingual texts put back to their English strings, the form the schema still accepts. */
+function english14(name: string): VariantArtifact {
+  const v = clone(doc14(name)) as Any;
+  const en = (x: any) => (x !== null && typeof x === 'object' && 'en' in x ? x.en : x);
+  for (const r of v.outputs.data.call_reports) r.source = en(r.source);
+  for (const i of v.outputs.balance_sheet.items) i.slotting_assumption = en(i.slotting_assumption);
   return v as VariantArtifact;
 }
 function rebakedModels14(): ModelsArtifact {
@@ -69,7 +78,7 @@ describe('U16-F10d C14 and C15', () => {
     const markup = html(<C14ContextView sel={sel14(rebaked14('vd-2022-q4'))} />);
     expect(markup).toMatch(/<a href="https:\/\/api\.fdic\.gov[^"]*"[^>]*>FDIC BankFind API<\/a>/);
     // a committed English string still renders
-    expect(view(<C14ContextView sel={sel14(doc14('vd-2022-q4'))} />, 'en')).toContain('(file financials-cert24735');
+    expect(view(<C14ContextView sel={sel14(english14('vd-2022-q4'))} />, 'en')).toContain('(file financials-cert24735');
   });
 
   it('C14 B3, n2: the Spanish shapes view prints the reference in Spanish and the forms as symbols with x', () => {
