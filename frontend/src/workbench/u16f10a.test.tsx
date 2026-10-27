@@ -65,7 +65,7 @@ function withoutDocTitles(text: string, v: string, lang: Lang): string {
   const d = committedData('C01', v);
   // a finding's register id (F-CF-P1-scorecard) is its key (the 2026-10-27 ruling on R3 c01 Q1)
   const own = withoutShell(text).replaceAll(d.manifest.question[lang], ' ');
-  return d.models.model.reduce((t, m) => t.replaceAll(m.title[lang], ' ').replaceAll(m.short_title[lang], ' '), own).replace(/F-[A-Z]+(?:-[A-Za-z0-9]+)*/g, ' ');
+  return d.models.model.reduce((t, m) => t.replaceAll(m.title[lang], ' ').replaceAll(m.short_title[lang], ' '), own).replace(/F-[A-Z]+(?:-[A-Za-z0-9]+)*/g, ' ').replace(/Prior ?Labs(?:-TabPFN| License v[\d.]+)?/g, ' '); // the TabPFN licence and attribution keep their published names
 }
 
 describe('U16-F10a C01 (R3 c01, c02)', () => {
