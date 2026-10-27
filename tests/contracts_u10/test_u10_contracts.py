@@ -859,7 +859,8 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == {"engine-irrbb-api": "1.1.0", "c15-outputs": "2.0.0"}.get(d["id"], "1.0.0")
+        # U16-F10d: c14-outputs 2.0.0, c14-models 2.0.0, c15-outputs 3.0.0 (the bilingual reader texts of R3 c15, c16)
+        assert d["version"] == {"engine-irrbb-api": "1.1.0", "c15-outputs": "3.0.0", "c14-outputs": "2.0.0", "c14-models": "2.0.0"}.get(d["id"], "1.0.0")
         # C14 and the engine are built (real at 0.11.000); C15 waits for the BCCh account on its fixture (active)
         assert d["status"] == "real"  # C15 is built since 0.12.000, so every U10 row is real
         assert d["provider"].startswith("fixture:")
