@@ -4701,8 +4701,8 @@ export interface components {
         };
         /** @description The HW1F calibration per backtest date with its sample window (which ends before the date), the counterparty curve, the GIRR parameters and the stated limits of the case. The calibration dates are unique and increasing. */
         c12Fit: {
-            /** @constant */
-            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)";
+            /** @description The estimator as the views print it, a bilingual text (c12-models 2.0.0); the English sentence alone in a document baked before 2.0.0. */
+            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)" | components["schemas"]["c12Label"];
             calibrations: components["schemas"]["c12Calibration"][];
             /** @constant */
             min_history_years: 3;
@@ -5950,7 +5950,8 @@ export interface components {
             source_field: string;
             reported_amount: number | null;
             reason_missing: components["schemas"]["c14Label"] | null;
-            slotting_assumption: string;
+            /** @description The slotting assumption of the item: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it. */
+            slotting_assumption: string | components["schemas"]["common-text"];
             amount: number;
             cash_flows: {
                 behavioural: components["schemas"]["c14Flow"][];
@@ -6356,7 +6357,8 @@ export interface components {
         /** @description One FDIC call-report quarter read for the case and the financials fields taken from it. */
         c14Report: {
             report_date: string;
-            source: string;
+            /** @description The provenance of the financials file: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it. */
+            source: string | components["schemas"]["common-text"];
             fields: string[];
         };
         /** @description nmd_treatment says what the behavioural flows use: the capped used values of nmd_segments (standardised-capped) or every NMD in the overnight bucket (contractual-overnight). One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test. */
@@ -6439,7 +6441,8 @@ export interface components {
             short_form: "exp(-t_k / x)";
             /** @constant */
             long_form: "1 - exp(-t_k / x)";
-            reference: string;
+            /** @description The reference of the shock shapes: a bilingual text from c14-models 2.0.0; the English string alone in a document baked before it. */
+            reference: string | components["schemas"]["common-text"];
         };
         /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
         c14ShockSize: {
@@ -7255,7 +7258,8 @@ export interface components {
             surprise_pp: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             effect: number;
-            formula: string;
+            /** @description The formula of the effect, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            formula: string | components["schemas"]["common-text"];
         } | null;
         /** @description A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). A currency with fewer than four published secondary-market tenors (the engine's Nelson-Siegel fit needs four points) takes the Banco Central's monetary policy rate (F022.TPM.TIN.D001.NO.Z.D, the overnight rate) as an extra point at 1/360 year; it is a policy rate and not a yield, it is listed in series_codes, and the source says so. Only the CLP curve has such an anchor. */
         c15Curve: {
@@ -7661,7 +7665,8 @@ export interface components {
             abs_pn_ur: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             charge: number;
-            formula: string;
+            /** @description The formula of the charge, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            formula: string | components["schemas"]["common-text"];
             note: components["schemas"]["common-text"];
         };
         /** @description One synthetic Banco Andino item in the currency of its leg, slotted into the buckets (the Annex 1 NMD caps applied). */
@@ -8737,7 +8742,8 @@ export interface components {
                 components["schemas"]["c15ThresholdTest"]
             ];
             prioritised: boolean;
-            reference: string;
+            /** @description The reference of the prioritised-bank tests: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            reference: string | components["schemas"]["common-text"];
         };
         /** @description A rolling tranche of the replicating portfolio and its weight. */
         c15Tranche: {
