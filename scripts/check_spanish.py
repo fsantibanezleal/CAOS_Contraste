@@ -13,9 +13,17 @@ Frontend tests and generated files (*.test.ts(x), *.gen.ts) are not scanned.
 A finding is (1) a word of scripts/check_spanish_words.txt written without its accent, in any text that is not an identifier,
 a path or a URL, (2) in a Spanish text, a word ending in -cion or -sion (the plurals need no accent), or (3) in a Spanish text, an
 English technical word the words file lists after a ``!`` (U16-F10a, the ruling of 2026-10-27: hazard, backtest, scorecard ...),
-with its English plural or -ing form; an English text may carry it. A Spanish text is the second
-argument of t(en, es), a value under an ``es`` or ``*_es`` key, or any text whose function words are Spanish. A docstring is not
-a text. A finding prints ``path:line: word -> fix`` and the exit code is 1. scripts/check_spanish_allow.txt lists the findings
+with its English plural or -ing form; an English text may carry it, or (4) in a Spanish text, an English subscript the words
+file lists after a ``_`` (U16-F12g, the R4 rulings 6 and 10: ``α_amber``, ``Score_ref``, ``K_reduced``), read in a word joined to
+another by "_" and, in a frontend file, in the text of a ``<sub>`` on a Spanish line (``α<sub>red</sub>``). A Spanish text is the
+second argument of t(en, es), a value under an ``es`` or ``*_es`` key, or any text whose function words are Spanish. A docstring
+is not a text.
+
+Without --documents the guard also reads the ``es`` values of the documents a view loads at run time (``RUNTIME_DOCS``: the
+regulatory calculators and the governance documents, U16-F12g, R4 ruling 10), so a producer's text that a page fetches after its
+first render is judged with the code; the case documents are judged with --documents, after the re-bake.
+
+A finding prints ``path:line: word -> fix`` and the exit code is 1. scripts/check_spanish_allow.txt lists the findings
 that are right as written (``path :: word  # reason``); an entry that matches nothing is itself a finding.
 
 Usage: check_spanish.py [--root DIR] [--documents] [--words FILE] [--allow FILE] [PATH ...]
@@ -42,6 +50,15 @@ HELPERS = frozenset({"t", "_t", "T", "txt", "text", "tr"})
 CODE_ROOTS = ("data-pipeline/pipeline", "data-pipeline/config")
 UI_ROOT = "frontend/src"
 DOC_ROOT = "data/derived"
+#: the documents a view fetches at run time, read without --documents (their es values): the regulation page's calculators and
+#: the governance views (R4 ruling 10: the guard never read the texts a view loads after its first render)
+RUNTIME_DOCS = ("data/derived/regulatory", "data/derived/governance")
+#: a symbol with a subscript: letters (Greek included) joined to letters by "_" (Score_ref, α_amber, RWA_nominated)
+JOINED = re.compile(r"[A-Za-zÀ-ÿͰ-Ͽ][A-Za-z0-9À-ÿͰ-Ͽ]*(?:_[A-Za-zÀ-ÿͰ-Ͽ0-9]+)+")
+SUB = re.compile(r"<sub>([A-Za-zÀ-ÿ]+)</sub>")
+#: an English table or figure locator in a Spanish text ("Table 8"; ruling 6), with its Spanish
+LOCATOR = re.compile(r"(?<![A-Za-zÀ-ÿ])(Table|Figure)s?(?= +[0-9])")
+LOCATOR_ES = {"table": "Tabla", "figure": "Figura"}
 
 
 def strip_accents(word: str) -> str:
@@ -53,7 +70,7 @@ def load_words(path: Path) -> dict[str, str]:
     pairs: dict[str, str] = {}
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.split("#", 1)[0].strip()
-        if line and not line.startswith("!"):
+        if line and not line.startswith(("!", "_")):
             key, fix = line.split()
             pairs[key] = fix
     return pairs
@@ -68,6 +85,31 @@ def load_english(path: Path) -> dict[str, str]:
             term, _, fix = line[1:].partition(" ")
             terms[term.lower()] = fix.strip()
     return terms
+
+
+def load_subscripts(path: Path) -> dict[str, str]:
+    """The English subscripts a Spanish symbol may not carry (``_word the Spanish to write``), lower case, with their fix."""
+    subs: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line.startswith("_"):
+            term, _, fix = line[1:].partition(" ")
+            subs[term.lower()] = fix.strip()
+    return subs
+
+
+def joined_terms(text: str, subs: dict[str, str]) -> list[tuple[str, str]]:
+    """The (token, fix) of every word joined by "_" one of whose parts is a listed English subscript; a path or a URL is code."""
+    out = []
+    for m in JOINED.finditer(text):
+        before = text[m.start() - 1] if m.start() > 0 else " "
+        after = text[m.end()] if m.end() < len(text) else " "
+        if before in "./-:#\\" or after in "/(\\" or (after == "." and text[m.end() + 1:m.end() + 2].isalnum()):
+            continue  # inside a path, a URL, an attribute or a call: code
+        bad = [subs[p.lower()] for p in m.group(0).split("_") if p.lower() in subs]
+        if bad:
+            out.append((m.group(0), " / ".join(bad)))
+    return out
 
 
 def english_terms(text: str, terms: dict[str, str]) -> list[tuple[str, str]]:
@@ -124,13 +166,18 @@ def fix_case(word: str, fix: str) -> str:
     return fix
 
 
-def check_text(text: str, certain: bool, words: dict[str, str], english: dict[str, str] | None = None) -> list[tuple[str, str]]:
+def check_text(text: str, certain: bool, words: dict[str, str], english: dict[str, str] | None = None,
+               subs: dict[str, str] | None = None) -> list[tuple[str, str]]:
     """The (word, fix) findings of one text; ``certain`` marks a text known to be Spanish by its position."""
     text = re.sub(r"\{[^{}]*\}", " ", text)    # a format placeholder is code, not text
     if not text.strip() or identifier_like(text):
         return []
     spanish = (certain and not english_copy(text)) or spanish_text(text)
     out = english_terms(text, english) if spanish and english else []
+    if spanish and subs:
+        out += joined_terms(text, subs)
+    if spanish:
+        out += [(m.group(0), LOCATOR_ES[m.group(1).lower()]) for m in LOCATOR.finditer(text)]
     for m in WORD.finditer(text):
         word = m.group(0)
         if any(ord(c) > 127 for c in word):
@@ -386,25 +433,42 @@ def _line_of(lines: list[str], first: int, last: int, word: str) -> int:
     return first
 
 
-def scan_file(path: Path, rel: str, words: dict[str, str], documents: bool, english: dict[str, str] | None = None):
+def sub_texts(lines: list[str]):
+    """(line, word) of the text of every ``<sub>`` in a Spanish part of a frontend line: the line is cut at each ``en=``,
+    ``es=``, ``en:`` or ``es:`` (a caption's two languages often share one line) and a part is read with its tags removed."""
+    for no, line in enumerate(lines, 1):
+        if "<sub>" not in line:
+            continue
+        for part in re.split(r"\b(?:en|es)\s*[=:]", line):
+            words = SUB.findall(part)
+            if words and spanish_text(re.sub(r"<[^<>]*>|[{}=]", " ", part)):
+                for w in words:
+                    yield no, w
+
+
+def scan_file(path: Path, rel: str, words: dict[str, str], documents: bool, english: dict[str, str] | None = None,
+              subs: dict[str, str] | None = None, only_es: bool | None = None):
     src = path.read_text(encoding="utf-8")
     lines = src.splitlines()
     found = []
     if path.suffix == ".py":
         for first, last, text, certain in py_texts(src):
-            for word, fix in check_text(text, certain, words, english):
+            for word, fix in check_text(text, certain, words, english, subs):
                 found.append((rel, _line_of(lines, first, last, word.split("_")[0]) if last > first else first, word, fix))
     elif path.suffix in (".ts", ".tsx"):
         for line, text, certain in ts_texts(src):
-            for word, fix in check_text(text, certain, words, english):
+            for word, fix in check_text(text, certain, words, english, subs):
                 found.append((rel, _line_of(lines, line, line + text.count("\n") + 2, word), word, fix))
         if path.suffix == ".tsx":
             for line, text, certain in jsx_texts(src):
-                for word, fix in check_text(text, certain, words, english):
+                for word, fix in check_text(text, certain, words, english, subs):
                     found.append((rel, _line_of(lines, line, line + text.count("\n"), word), word, fix))
+            for line, word in sub_texts(lines) if subs else ():
+                if word.lower() in subs:
+                    found.append((rel, line, word, subs[word.lower()]))
     elif path.suffix == ".json":
-        for text, certain in json_texts(json.loads(src), only_es=documents):
-            for word, fix in check_text(text, certain, words, english):
+        for text, certain in json_texts(json.loads(src), only_es=documents if only_es is None else only_es):
+            for word, fix in check_text(text, certain, words, english, subs):
                 found.append((rel, _line_of(lines, 1, len(lines), word), word, fix))
     return list(dict.fromkeys(found))
 
@@ -421,7 +485,12 @@ def collect(root: Path, documents: bool, explicit: list[str]) -> list[Path]:
     for p in (root / UI_ROOT).rglob("*"):
         if p.suffix in (".ts", ".tsx") and not re.search(r"\.(test|gen)\.tsx?$", p.name):
             files.append(p)
-    return sorted(files)
+    return sorted(files) + runtime_docs(root)
+
+
+def runtime_docs(root: Path) -> list[Path]:
+    """The documents a view loads at run time (``RUNTIME_DOCS``), read on their es values without --documents."""
+    return sorted(p for rel in RUNTIME_DOCS for p in (root / rel).rglob("*.json"))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -441,12 +510,14 @@ def main(argv: list[str] | None = None) -> int:
     root = args.root.resolve()
     words = load_words(args.words)
     english = load_english(args.words)
+    subs = load_subscripts(args.words)
     args.allow = args.allow or root / "scripts" / "check_spanish_allow.txt"
     allow = load_allow(args.allow)
     findings = []
     copies, no_reason = load_copies(args.copies or root / "scripts" / "check_spanish_copies.txt") if args.documents else ({}, [])
     for line in no_reason:
         findings.append(("scripts/check_spanish_copies.txt", 0, "a copy entry needs a reason after '  # '", line))
+    runtime = {p.relative_to(root).as_posix() for p in runtime_docs(root)}
     for path in collect(root, args.documents, args.paths):
         rel = path.relative_to(root).as_posix()
         if args.documents and path.suffix == ".json":
@@ -458,7 +529,7 @@ def main(argv: list[str] | None = None) -> int:
                 first = en.splitlines()[0][:40]
                 at = next((n for n, ln in enumerate(doc_lines, 1) if first in ln), 1)
                 findings.append((rel, at, "es copies the English", f"translate: {en[:70]}"))
-        for item in scan_file(path, rel, words, args.documents, english):
+        for item in scan_file(path, rel, words, args.documents, english, subs, only_es=True if rel in runtime else None):
             key = (item[0], item[2].lower())
             if key in allow:
                 allow[key] = True
@@ -468,7 +539,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{rel}:{line}: {word} -> {fix}")
     if not args.documents and not args.paths:
         for (where, word), used in allow.items():
-            if not used and not where.startswith("data/derived/"):  # the documents are judged with --documents only
+            # the case documents are judged with --documents only; the run-time documents with the code
+            if not used and (not where.startswith("data/derived/") or where in runtime):
                 print(f"{args.allow.name}: unused allow entry: {where} :: {word}")
                 findings.append((where, 0, word, ""))
     print(f"check_spanish: {len(findings)} finding{'s' if len(findings) != 1 else ''}")

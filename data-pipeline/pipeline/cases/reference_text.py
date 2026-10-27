@@ -6,6 +6,11 @@ published; the locator words and the remark are reader text and get their Spanis
 sentence in the reference column. ``reference_text`` returns the bilingual text the documents carry in
 ``extras.reference_text`` of every test row; a reference this module does not know raises, so a new engine reference cannot
 reach a Spanish view untranslated.
+
+A plan, unit or contract id inside the engine's string is not a citation (U16-R4 ruling 1): the English reader text names the
+engine's ML contract in words and drops the plan unit of a research addendum ("research addendum R4", never "U9 research
+addendum R4"), and the Spanish says the same. A third-party program and its function (SciPy ks_2samp, probatus
+sample_similarity, QuantLib discountBondOption) is a citation and stays (ruling 2).
 """
 from __future__ import annotations
 
@@ -25,6 +30,11 @@ _G5_ES = "dossier 05 G.5 (pruebas de validación de un modelo de capital económ
 _D06 = "dossier 06 (model risk management and validation) C.7 ML/AI validation and I.1, the validation engine catalogue"
 _D06_ES = "dossier 06 (gestión del riesgo de modelo y validación) C.7 validación de ML/IA e I.1, el catálogo de pruebas del motor de validación"
 _B185 = "BCBS 185 (2010), Sound practices for backtesting counterparty credit risk models"
+#: the engine's ML contract by its id, as riskvalidation writes it, and in words (U16-R4 ruling 1: a contract id is a raw id)
+_API = "contract engine-ml-api 2.0.0"
+_API_EN = "the engine's documented ML validation interface, version 2.0.0"
+_API_ES = "la interfaz documentada de validación de ML del motor, versión 2.0.0"
+_D04_ES = "dossier 04 (modelos de riesgo de crédito)"
 _GL19 = "BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350)"
 
 #: English reference -> Spanish. The citation parts are verbatim; the locators and the remarks are translated.
@@ -57,10 +67,10 @@ REFERENCE_ES: dict[str, str] = {
     _YN: _YN,
     f"{_YN}; the PSI formula applied to one characteristic (scorecard practice)":
         f"{_YN}; la fórmula del PSI aplicada a una característica (práctica de tarjeta de puntuación)",
-    f"{_D06}; contract engine-ml-api 2.0.0 (C.7 l.1016-1018, I.1 l.1187); ECB guide to internal models, paragraph 43 (randomness of the training process, overfitting) and 59 (stored seeds)(a); EBA recommendation (i)":
-        f"{_D06_ES}; contrato engine-ml-api 2.0.0 (C.7 l.1016-1018, I.1 l.1187); guía del BCE sobre modelos internos, párrafos 43 (aleatoriedad del proceso de entrenamiento, sobreajuste) y 59 (semillas almacenadas)(a); recomendación (i) de la EBA",
-    f"{_D06}; contract engine-ml-api 2.0.0 (C.7 l.1041-1044, I.1 l.1196); SS1/23 principle 3.3(b)(iii); ECB guide paragraph 60":
-        f"{_D06_ES}; contrato engine-ml-api 2.0.0 (C.7 l.1041-1044, I.1 l.1196); SS1/23 principio 3.3(b)(iii); guía del BCE párrafo 60",
+    f"{_D06}; {_API} (C.7 l.1016-1018, I.1 l.1187); ECB guide to internal models, paragraph 43 (randomness of the training process, overfitting) and 59 (stored seeds)(a); EBA recommendation (i)":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1016-1018, I.1 l.1187); guía del BCE sobre modelos internos, párrafos 43 (aleatoriedad del proceso de entrenamiento, sobreajuste) y 59 (semillas almacenadas)(a); recomendación (i) de la EBA",
+    f"{_D06}; {_API} (C.7 l.1041-1044, I.1 l.1196); SS1/23 principle 3.3(b)(iii); ECB guide paragraph 60":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1041-1044, I.1 l.1196); SS1/23 principio 3.3(b)(iii); guía del BCE párrafo 60",
     f"{_ECB}, section 2.5.5.1": f"{_ECB}, sección 2.5.5.1",
     f"{_ECB}, section 2.5.5.2; Holm (1979) adjustment across cells added by riskvalidation":
         f"{_ECB}, sección 2.5.5.2; ajuste de Holm (1979) entre celdas agregado por riskvalidation",
@@ -90,7 +100,7 @@ REFERENCE_ES: dict[str, str] = {
     f"{_LOT}; Spearman (1904), doi:10.2307/1412159": f"{_LOT}; Spearman (1904), doi:10.2307/1412159",
     f"{_LOT}; {_QZ}; dossier 04 F.3 (calibration over time)": f"{_LOT}; {_QZ}; dossier 04 F.3 (calibración en el tiempo)",
     f"EBA/GL/2019/03 and EBA/RTS/2018/04 are cross-references only; the add-on is Contraste's cohort-based one (dossier 04 F.4); {_LOT}":
-        f"EBA/GL/2019/03 y EBA/RTS/2018/04 son solo referencias cruzadas; el add-on es el propio de Contraste, basado en cohortes (dossier 04 F.4); {_LOT}",
+        f"EBA/GL/2019/03 y EBA/RTS/2018/04 son solo referencias cruzadas; el ajuste es el propio de Contraste, basado en cohortes (dossier 04 F.4); {_LOT}",
     f"{_TONG}; {_QI}; dossier 04 G.1 to G.3 (the CCF estimators and their reference-date designs)":
         f"{_TONG}; {_QI}; dossier 04 G.1 a G.3 (los estimadores del CCF y sus diseños de fecha de referencia)",
     f"{_TONG}; {_QI}; dossier 04 G.3 (back-test in currency by utilisation band)":
@@ -116,7 +126,7 @@ REFERENCE_ES: dict[str, str] = {
     "Acerbi and Szekely (2014), Backtesting expected shortfall, Risk, December 2014 (primary text not retrieved); the reference point -0.70 and -1.8 through Moldenhauer and Pitera, arXiv 1709.01337, section 6":
         "Acerbi and Szekely (2014), Backtesting expected shortfall, Risk, December 2014 (texto primario no recuperado); el punto de referencia -0,70 y -1,8 a través de Moldenhauer and Pitera, arXiv 1709.01337, sección 6",
     "U9 research addendum R4: the theta fit reprices today's curve, so discounted bond prices are martingales (QuantLib 1.44 hullwhite.hpp)":
-        "adenda de investigación U9 R4: el ajuste de theta revalora la curva de hoy, así que los precios descontados de bonos son martingalas (QuantLib 1.44 hullwhite.hpp)",
+        "adenda de investigación R4: el ajuste de theta revalora la curva de hoy, así que los precios descontados de bonos son martingalas (QuantLib 1.44 hullwhite.hpp)",
     "BCBS CRE53.12 and CRE53.13, Effective EE and Effective EPE (addendum R9); dossier 05 C.1":
         "BCBS CRE53.12 y CRE53.13, EE efectiva y EPE efectiva (adenda R9); dossier 05 C.1",
     "dossier 05 C.2, CVA = sum PD LGD EPE (ORE xva.tex, the advanced discretisation)":
@@ -133,16 +143,61 @@ REFERENCE_ES: dict[str, str] = {
     "ORE 1.8.17.0 (OpenSourceRisk Engine), xva.tex and the exposure example inputs; addendum R2 and R3":
         "ORE 1.8.17.0 (OpenSourceRisk Engine), xva.tex y las entradas del ejemplo de exposición; adendas R2 y R3",
     "dossier 05 C.4 and the U9 research addendum R4: the Hull-White one-factor closed forms (QuantLib 1.44 hullwhite.cpp and jamshidianswaptionengine.cpp); ladder rung 2 against rung 3 (dossier 05, counterparty ladder)":
-        "dossier 05 C.4 y la adenda de investigación U9 R4: las formas cerradas de Hull-White de un factor (QuantLib 1.44 hullwhite.cpp y jamshidianswaptionengine.cpp); peldaño 2 de la escalera contra el peldaño 3 (dossier 05, escalera de contrapartes)",
+        "dossier 05 C.4 y la adenda de investigación R4: las formas cerradas de Hull-White de un factor (QuantLib 1.44 hullwhite.cpp y jamshidianswaptionengine.cpp); peldaño 2 de la escalera contra el peldaño 3 (dossier 05, escalera de contrapartes)",
     "BCBS MAR32.36 to MAR32.42 and MAR32.20 (dossier 01 D.4)": "BCBS MAR32.36 a MAR32.42 y MAR32.20 (dossier 01 D.4)",
     "BCBS MAR32.18 to MAR32.19 (dossier 01 D.4)": "BCBS MAR32.18 a MAR32.19 (dossier 01 D.4)",
+    # C20 (the ML robustness and drift probes, U16-F12g): the engine's references of the six variants
+    "Hardt, Price and Srebro (2016), Equality of opportunity in supervised learning, arXiv:1610.02413; dossier 06 (Contraste research) section C.7 l.1029-1040 l.1029-1033":
+        "Hardt, Price and Srebro (2016), Equality of opportunity in supervised learning, arXiv:1610.02413; dossier 06 (investigación de Contraste) sección C.7 l.1029-1040 l.1029-1033",
+    "Pearson chi-square test of homogeneity on a 2 x B contingency table (SciPy chi2_contingency)":
+        "prueba chi-cuadrado de homogeneidad de Pearson sobre una tabla de contingencia de 2 x B (SciPy chi2_contingency)",
+    "Two-sample Kolmogorov-Smirnov test (SciPy ks_2samp)": "prueba de Kolmogorov-Smirnov de dos muestras (SciPy ks_2samp)",
+    f"dossier 04 (credit risk models) J.2 l.881-883 and ladder P4 l.968; {_D06}; {_API}":
+        f"{_D04_ES} J.2 l.881-883 y peldaño P4 de la escalera l.968; {_D06_ES}; {_API_ES}",
+    "dossier 04 section J.3 l.897-905; Hanley and McNeil (1982), doi:10.1148/radiology.143.1.7063747":
+        "dossier 04 sección J.3 l.897-905; Hanley and McNeil (1982), doi:10.1148/radiology.143.1.7063747",
+    "dossier 04 section J.3 l.897-905; Naeini, Cooper and Hauskrecht (2015), doi:10.1609/aaai.v29i1.9602":
+        "dossier 04 sección J.3 l.897-905; Naeini, Cooper and Hauskrecht (2015), doi:10.1609/aaai.v29i1.9602",
+    f"{_D06}; {_API} (C.7 l.1006-1008, I.1 l.1193); EBA/REP/2023/28 on machine learning for IRB models, recommendation 3; ECB paragraph 43(d), 62 and 64 to 66":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1006-1008, I.1 l.1193); EBA/REP/2023/28 sobre aprendizaje automático para modelos IRB, recomendación 3; BCE párrafos 43(d), 62 y 64 a 66",
+    f"{_D06}; {_API} (C.7 l.1009-1012, I.1 l.1189); SR 11-7 sensitivity analysis (historical reference text, superseded in the US by SR 26-2; dossier 06 A.1): unexpectedly large changes in outputs for small changes in inputs":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1009-1012, I.1 l.1189); análisis de sensibilidad de SR 11-7 (texto de referencia histórico, reemplazado en EE. UU. por SR 26-2; dossier 06 A.1): cambios inesperadamente grandes en los resultados ante cambios pequeños en las entradas",
+    f"{_D06}; {_API} (C.7 l.1013-1015, I.1 l.1190); PiML resilience; SS1/23 operating boundaries; Monte Carlo test against development-only draws (Phipson and Smyth 2010, doi:10.2202/1544-6115.1585)":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1013-1015, I.1 l.1190); resiliencia de PiML; límites de operación de SS1/23; prueba de Monte Carlo contra extracciones solo del desarrollo (Phipson and Smyth 2010, doi:10.2202/1544-6115.1585)",
+    f"{_D06}; {_API} (C.7 l.1016-1018, I.1 l.1188); PiML WeakSpot": f"{_D06_ES}; {_API_ES} (C.7 l.1016-1018, I.1 l.1188); WeakSpot de PiML",
+    f"{_D06}; {_API} (C.7 l.1019-1028, I.1 l.1194); Angelopoulos and Bates, arXiv 2107.07511; Vovk, Gammerman and Shafer (2022), doi:10.1007/978-3-031-06649-8":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1019-1028, I.1 l.1194); Angelopoulos and Bates, arXiv 2107.07511; Vovk, Gammerman and Shafer (2022), doi:10.1007/978-3-031-06649-8",
+    f"{_D06}; {_API} (C.7 l.1045-1047, I.1 l.1198); ECB paragraph 52(h)(vii) and Overarching paragraph 11":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1045-1047, I.1 l.1198); BCE párrafo 52(h)(vii) y párrafo 11 de la parte general",
+    f"{_D06}; {_API} (C.7 l.1048-1051, I.1 l.1197); dossier 07 D pattern 3 l.597-600; ING probatus sample_similarity":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1048-1051, I.1 l.1197); dossier 07 D patrón 3 l.597-600; ING probatus sample_similarity",
+    f"{_D06}; {_API} (C.7 l.1052-1058, I.1 l.1199); NannyML CBPE, https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html":
+        f"{_D06_ES}; {_API_ES} (C.7 l.1052-1058, I.1 l.1199); NannyML CBPE, https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html",
+    f"{_D06}; {_API} (C.7 l.990: f(x) = phi_0 + sum phi_i); Lundberg and Lee (2017), arXiv 1705.07874":
+        f"{_D06_ES}; {_API_ES} (C.7 l.990: f(x) = phi_0 + suma de phi_i); Lundberg and Lee (2017), arXiv 1705.07874",
+    f"{_D06}; {_API} (I.1 l.1191); ECB guide to internal models, paragraph 43 (randomness of the training process, overfitting) and 59 (stored seeds)":
+        f"{_D06_ES}; {_API_ES} (I.1 l.1191); guía del BCE sobre modelos internos, párrafos 43 (aleatoriedad del proceso de entrenamiento, sobreajuste) y 59 (semillas almacenadas)",
 }
+
+#: the English reader text of an engine reference: a contract id and a plan unit are said in words or dropped (U16-R4 ruling 1)
+READER_EN: tuple[tuple[str, str], ...] = (
+    (_API, _API_EN),
+    ("U9 research addendum R4", "research addendum R4"),
+)
+
+
+def reader_en(reference: str) -> str:
+    """The English of an engine reference as a reader sees it (``READER_EN`` applied; the citation otherwise verbatim)."""
+    for raw, words in READER_EN:
+        reference = reference.replace(raw, words)
+    return reference
 
 
 def reference_text(reference: str) -> dict[str, str]:
-    """The bilingual text of one engine reference; an unknown reference is an error (add it to ``REFERENCE_ES``)."""
+    """The bilingual text of one engine reference (its English through ``reader_en``); an unknown reference is an error (add it
+    to ``REFERENCE_ES``)."""
     try:
-        return {"en": reference, "es": REFERENCE_ES[reference]}
+        return {"en": reader_en(reference), "es": REFERENCE_ES[reference]}
     except KeyError:
         raise ValueError(f"the test reference {reference!r} has no Spanish text: add it to REFERENCE_ES") from None
 

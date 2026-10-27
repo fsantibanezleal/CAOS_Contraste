@@ -508,3 +508,41 @@ publicas públicas
 !pipeline cadena de cálculo
 !kernel núcleo
 !momentum impulso
+# U16-F12g (the R4 rulings 6 and 10, 2026-10-27): the words of ruling 6, one Spanish term each as the documentation pages write it.
+# The list is examples, not a closed set: a reader still judges an English word the guard does not know.
+!swap permuta
+!swaption opción sobre permuta
+!spread diferencial
+!spot contado
+!forward a plazo
+!commodities materias primas
+!commodity materia prima
+!bucket tramo
+!prior a priori
+!test prueba
+!tick pérdida cuantílica (en "pérdida tick")
+!hash huella
+!port puerto
+!shell intérprete de órdenes
+!benchmark referencia comparativa
+!wheel paquete (R4 c15 B1: "paquete wheel")
+!offset desplazamiento
+!points puntos
+!full completo (en "full allocation": asignación completa)
+!allocation asignación
+# An English table or figure locator ("Table 8", "Figure 42") in a Spanish text is refused by check_spanish.py itself (LOCATOR).
+# English subscripts of a symbol in a Spanish text, read in a word joined by "_" (Score_ref, α_amber, K_reduced) or in the text of a
+# <sub> (α<sub>red</sub>): "_word the Spanish to write" (ruling 6, c30 B2). A part of a code key in Spanish prose that is one of
+# these words is a finding too; a reviewed exception goes to check_spanish_allow.txt.
+_score puntaje
+_odds razón
+_amber ámbar
+_red rojo
+_green verde
+_full completo
+_reduced reducido
+_hedged cubierto
+_nominated designados
+_upper superior
+_lower inferior
+_only solo
