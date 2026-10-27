@@ -62,7 +62,8 @@ export function ruleText(rule: string, lang: 'en' | 'es', woe: readonly string[]
       const m = CONDITION.exec(part);
       if (!m) return part;
       const decimals = Math.min(RULE_DECIMALS, m[3].includes('.') ? m[3].split('.')[1].length : 0);
-      const value = lang === 'en' && decimals === (m[3].split('.')[1] ?? '').length ? m[3] : formatNumber(Number(m[3]), lang, { decimals });
+      // a threshold of a thousand or more is grouped in both languages (R4 c01 n16: "Given credit <= 145000" beside "145.000")
+      const value = lang === 'en' && decimals === (m[3].split('.')[1] ?? '').length && Math.abs(Number(m[3])) < 1000 ? m[3] : formatNumber(Number(m[3]), lang, { decimals });
       return `${m[1]}${woe.includes(m[1]) ? ' (WoE)' : ''} ${m[2]} ${value}`;
     })
     .join(lang === 'es' ? ' y ' : ' and ');

@@ -59,6 +59,11 @@ const RULES: Rule[] = [
   [/^A component of this portfolio is the Kenneth French equity return, a derived-only source \(dossier (\d+) C\.(\d+)\): only model outputs are committed, so the realised loss series is withheld; the exceedance days and the scores stand\.$/, (m) => `Un componente de esta cartera es el retorno accionario de Kenneth French, una fuente de solo derivados (dossier ${m[1]} C.${m[2]}): solo se versionan las salidas de los modelos, de modo que la serie de pérdida realizada se retiene; los días de excedencia y los puntajes se mantienen.`],
   [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in(?: \(decision D\d+\))?$/, (m, lang) => `menos de ${whole(m[1], lang)} días de pronóstico (${whole(m[2], lang)}): la luz de tráfico de Basilea de MAR${m[3]} se define sobre ${whole(m[4], lang)} observaciones y la ventana no tiene período previo`],
   [/^no eligible model has an ES on every day, so none has an FZ0 score to rank$/, () => 'ningún modelo elegible tiene un ES cada día, de modo que ninguno tiene un puntaje FZ0 que ordenar'],
+  // the reasons the C11 producer writes since U16-F10c (c11/documents.py; their Spanish as c11/selection.ts reads them), so a page that reads
+  // the documents through these notes (the Experiments page) prints them in Spanish too (R4 c28 B1)
+  [/^no model is eligible: every model fails at least one gate$/, () => 'ningún modelo es elegible: cada modelo falla al menos una compuerta'],
+  [/^challenger only: it must enter the (\d+) percent MCS on FZ0 out of sample, and the published run does not train it$/, (m, lang) => `solo retador: debe entrar al MCS de ${whole(m[1], lang)} por ciento sobre FZ0 fuera de muestra, y la corrida publicada no lo entrena`],
+  [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in$/, (m, lang) => `menos de ${whole(m[1], lang)} días de pronóstico (${whole(m[2], lang)}): la luz de tráfico de Basilea de MAR${m[3]} se define sobre ${whole(m[4], lang)} observaciones y la ventana no tiene período previo`],
   // C12: the counterparty credit risk tests and reconciliations
   [/^BCBS (\d+) paragraph (\d+): exception counts assume independence and the overlapping horizons are not independent$/, (m) => `BCBS ${m[1]} párrafo ${m[2]}: los conteos de excepciones suponen independencia y los horizontes que se traslapan no son independientes`],
   // the horizon in words, never its code ("1m", "10bd"; R3 c13 BL1), and one month in the singular (m4)
@@ -115,7 +120,8 @@ export function platformText(platform: string | null | undefined, lang: Lang): s
   if (!platform) return '';
   if (lang === 'en') return platform;
   return platform
-    .replace(/\bwheel\b/, 'paquete wheel')
+    // the distribution format in Spanish words, no English "wheel" (R4 c15 C12 B1, U16-F12d)
+    .replace(/\bwheel\b/, 'paquete')
     .replace('native (no WSL)', 'nativo (sin WSL)')
     .replace(/(\d+) samples, antithetic/, (_m, n: string) => `${whole(n, lang)} muestras, antitéticas`);
 }

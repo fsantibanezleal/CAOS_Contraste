@@ -94,12 +94,14 @@ describe('V21-4: each evidence chart keeps room for at least three y ticks, its 
 
 describe('V21-5: a scroll box never ends in a line cut through its middle', () => {
   const wide = media('min-width', 901);
+  // the bottom fade of V21-5 fell on a blank gap when a box ended on a row boundary (R4 ruling 8): the cue is now the measured band of
+  // layout.ts over the box's last visible line (u16f12a.test.tsx), and a wide box keeps its gap under its last row
   for (const cls of ['.ct-stack-table', '.ct-stack-rest', '.ct-stack-fill', '.ct-scroll']) {
-    it(`${cls} fades its bottom edge and keeps a gap under its last row`, () => {
+    it(`${cls} keeps a gap under its last row and draws the measured cue`, () => {
       const rule = new RegExp(`${cls.replace('.', '\\.')}[^{}]*\\{[^}]*\\}`, 'g');
       const rules = (wide.match(rule) ?? []).join('\n');
-      expect(rules).toMatch(/mask-image:\s*linear-gradient/);
       expect(rules).toMatch(/padding-bottom:/);
+      expect(css).toMatch(new RegExp(`:is\\([^)]*\\${cls}[^)]*\\)\\[data-more-y\\]::after`));
     });
   }
 });

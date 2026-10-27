@@ -141,8 +141,8 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
         provenance={provenanceOf(v.provenance.truth_status)}
         dataKey={stateKey}
         note={{
-          en: `The p-value of each cited test, numbered as in the table, on a log scale against the rail's amber (${formatNumber(sel.alphas.amber, 'en', { digits: 2 })}) and red (${formatNumber(sel.alphas.red, 'en', { digits: 2 })}) thresholds: how far past the line each finding's evidence lies. A p-value below 1e-16 is drawn at 1e-16.`,
-          es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales ámbar (${formatNumber(sel.alphas.amber, 'es', { digits: 2 })}) y rojo (${formatNumber(sel.alphas.red, 'es', { digits: 2 })}) del panel: cuán lejos de la línea está la evidencia de cada hallazgo. Un valor p bajo 1e-16 se dibuja en 1e-16.`,
+          en: `The p-value of each cited test, numbered as in the table, on a log scale against the rail's amber (${formatNumber(sel.alphas.amber, 'en', { digits: 2 })}) and red (${formatNumber(sel.alphas.red, 'en', { digits: 2 })}) thresholds: how far past the line each finding's evidence lies. A p-value below 1E-16 is drawn at 1E-16; the readout gives its value.`,
+          es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales ámbar (${formatNumber(sel.alphas.amber, 'es', { digits: 2 })}) y rojo (${formatNumber(sel.alphas.red, 'es', { digits: 2 })}) del panel: cuán lejos de la línea está la evidencia de cada hallazgo. Un valor p bajo 1E-16 se dibuja en 1E-16; la lectura da su valor.`,
         }}
       >
         <UPlotChart
@@ -152,6 +152,13 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
           series={[
             { label: { en: 'p-value', es: 'Valor p' }, values: evidence.values, color: '--color-accent', mode: 'points' },
           ]}
+          // the readout prints the committed p-value, not the drawing's floor (R4 c02 m9: "1E-16" read for 1.8E-27)
+          readout={(i) => {
+            const p = points[i]?.row?.p_value ?? null;
+            const shown = p === 0 ? '< 1E-300' : formatNumber(p, lang, { digits: 2 });
+            const drawn = p !== null && p < 1e-16 ? pick({ en: ' (drawn at 1E-16)', es: ' (dibujado en 1E-16)' }, lang) : '';
+            return `${pick({ en: 'Cited test', es: 'Prueba citada' }, lang)} ${i + 1}: p ${shown}${drawn}`;
+          }}
           yMarks={[
             { y: sel.alphas.amber, label: { en: 'Amber threshold', es: 'Umbral ámbar' }, tone: 'warn' },
             { y: sel.alphas.red, label: { en: 'Red threshold', es: 'Umbral rojo' }, tone: 'bad' },

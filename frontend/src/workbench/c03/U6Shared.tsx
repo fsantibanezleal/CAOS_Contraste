@@ -115,22 +115,13 @@ const TEST_TEXT: Record<string, BiText> = {
 };
 
 /**
- * The segment of each row of a tests table in words, or null where the row needs none: a row of one segment (a vintage, a grade, a
- * horizon, a cell, an input) always shows it, and a portfolio row shows it when the table holds the same test and model on another
- * segment, so no two rows read the same (the 2026-10-27 ruling on R3 c04 M1: every tests table shows the segment). A segment no form
- * names is shown as written (the names gate keeps that fallback unused).
+ * The segment of each row of a tests table in words, on every row that has one: a vintage, a grade, a horizon, a cell, an input, and a
+ * portfolio row says "portfolio" (the R4 ruling 3 on c04 M1: every tests table shows the segment on every row; labelling only the rows
+ * that would otherwise read alike did not meet it). Null only for a row with no segment. A segment no form names is shown as written
+ * (the names gate keeps that fallback unused).
  */
 export function segmentLabels(rows: ReadonlyArray<Pick<TestRow, 'test_id' | 'model_id' | 'segment'>>, caseId: string): Array<Bi | null> {
-  const segments = new Map<string, Set<string>>();
-  for (const t of rows) {
-    const k = `${t.test_id}|${t.model_id}`;
-    segments.set(k, (segments.get(k) ?? new Set()).add(t.segment ?? ''));
-  }
-  return rows.map((t) => {
-    if (!t.segment) return null;
-    if (t.segment === 'portfolio' && (segments.get(`${t.test_id}|${t.model_id}`)?.size ?? 1) < 2) return null;
-    return segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment };
-  });
+  return rows.map((t) => (t.segment ? segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment } : null));
 }
 
 /**
@@ -172,7 +163,8 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
                   </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
-                  <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
+                  {/* a p-value that underflowed to 0 reads below the smallest double, never "0" (R4 c04, c10: a red row printed p 0) */}
+                  <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? (t.p_value === 0 ? '< 1E-300' : formatNumber(t.p_value, lang, { digits: 2 })) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
