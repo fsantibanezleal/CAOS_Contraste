@@ -148,6 +148,9 @@
 /* C13's Findings box: it fills the instrument at 1280; on a phone it keeps a floor of min(70vh, 36rem) (U16-R2 b06 B4, R2b c14) */
 .ct-c13-findings { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
 @media (max-width: 900px) { .ct-c13-findings { flex: none; min-height: min(70vh, 36rem); } }
+/* its findings table shows every row at 1280, the headline F-PLA included (R3 c14 m1: the shared 42 % cap hid it in 3 of 7 captures) */
+.ct-c13-findings .ct-stack-chart { flex: 0 0 auto; }
+.ct-c13-findings .ct-stack-table { max-height: none; flex: 1 1 auto; }
 /* a box of the reports with a height of its own scrolls like the others */
 .ct-fade-scroll { overflow: auto; }
 /* a scroll box of a wide screen fades its bottom edge and keeps a gap under its last row, so no line ends cut through its

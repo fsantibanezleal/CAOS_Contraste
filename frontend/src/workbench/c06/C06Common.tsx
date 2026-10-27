@@ -93,6 +93,8 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
         </p>
       ) : (
         <ChartOverTable
+          // four severity bars need about 10 rem; the table of findings, the evidence a reader acts on, takes the rest (R3 c14 m1)
+          chartMin="10rem"
           chart={
             // the findings by severity, so a short list still shows its weight at a glance (and the stage is drawn)
             <BarChart
