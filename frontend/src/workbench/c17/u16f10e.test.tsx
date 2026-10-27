@@ -60,7 +60,7 @@ describe('U16-F10e C17', () => {
           const html = render(<View sel={selOf(name)} />, lang);
           const table = /<table[^>]*data-table="capital-by-(?:cell|rung)"[\s\S]*?<\/table>/.exec(html)![0];
           expect(textOf(table), `${name} ${lang}`).not.toMatch(/\d{1,3}(?:[.,]\d{3}){3,}/);
-          expect(textOf(table), `${name} ${lang}`).toMatch(/\((?:m EUR|M EUR|bn EUR|mil M EUR)\)/);
+          expect(textOf(table), `${name} ${lang}`).toMatch(/\((?:m EUR|mn EUR|M EUR|bn EUR|mil M EUR)\)/);
         }
       }
     }
