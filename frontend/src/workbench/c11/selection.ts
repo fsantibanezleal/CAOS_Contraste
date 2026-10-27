@@ -9,6 +9,7 @@ import type { components } from '../../lib/contract.gen';
 import type { TestRow } from '../../lib/contract.types';
 import type { Bi } from '../c03/U6Shared';
 import { testText } from '../names';
+import { daySeconds } from '../../lib/days';
 
 export type C11Outputs = components['schemas']['c11Outputs'];
 export type C11Fit = components['schemas']['c11Fit'];
@@ -175,8 +176,8 @@ export function rungOf(sel: Pick<C11Sel, 'data'> | null, id: string): string {
 /** A loss as a percent of the portfolio value, two decimals: 0.84%. */
 export const lossPct = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
-/** A date of the document (an ISO day) as epoch seconds, for the time axis of a chart. */
-export const seconds = (day: string): number => Date.parse(`${day}T00:00:00Z`) / 1000;
+/** A date of the document (an ISO day) as epoch seconds at the reader's local midnight, for the time axis of a chart. */
+export const seconds = daySeconds;
 
 /** The one-line convention every view states (the full definition is in the Context and the models document). */
 export const CONVENTION_LINE: Bi = {
