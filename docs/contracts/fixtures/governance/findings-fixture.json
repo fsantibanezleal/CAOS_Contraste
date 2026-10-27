@@ -20,102 +20,102 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "3740478671981bb1c35d54be65f0c8fb2efcb8a7424d26ab4c01d81b1aa1ff27",
+    "sha256": "41cd878f9b4ab3210d50583dd510b56fc901f31a079df5e486e36c48e978f8ab",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "cc31660ee1f225de62eeee73386ab4c1ed583f13fe0e431a535203a188763001",
+    "sha256": "d7c51ece804ce48857cabd50152c2218e1a91ac51dd1efeb818dee57b63fe7f1",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "9391a547d3eef1837ad93087ed4070a4ab63c6c74bbf2b402676dacee1c611bc",
+    "sha256": "024ac02a581a3b820c65afa70e43b17ca0153082f37c3d36b642b52bbd67e1f1",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "15751f2d493d4e0e8d705ef466767ac6692e5263e6f7dc21846b8ca70b12e51c",
+    "sha256": "8af4b7eaa63725ea76826003ade7279dbfa5e02b92525602194467f1e6bb11de",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "a0ef4730eb8f605197ab75461da50e48763193945974210403ba70a16f49d84e",
+    "sha256": "c570d7c9dc82c238726df741cdd9f7dbf1aa90634e410b43b62a0c3bd91ef64f",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "08837270538730e28777e8ce0adc6fabaa37ca0121a53690aa151e1eeb0df49d",
+    "sha256": "e25a3596e1ca1050874363e6d55ef68a6884228d190d356034456815ee91db3b",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "c5bb962b318819e88a3504e86a379e3fc103cad03dc3a6a7ce25d3ddd82a42b0",
+    "sha256": "475aa91d80397bf7bc243d8e924507a6cfc15ea6acc24d61c872f6752a643cee",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "dd36244aaa03007e0c85c3c7438661ff24883036284296cf1da2ad583d3dc27a",
+    "sha256": "5564c3ff959c5c9030b0df8b95a5335d422cb3e9a5cc33f4c2a55ae35d4d8b51",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "364d350144fcd14057150c7c3ada3b314f43063d530801b92a541500c6031500",
+    "sha256": "b9c8309189f6f0ccf6d26fd8faf35d66b5f94bfc00184f03ad9d94a8149ade7c",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "2e6f703c31c588736206faa0c64e1d463711d6635a404efa4a88f1c703dc510c",
+    "sha256": "c3897a659164ff5d91c85784aad6937d8337580f9f10ac8bc34a5a77e9f5fe74",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "d41309b1619c27f177d7789045f6ae60f0126b058778e0df7d60345509a766dd",
+    "sha256": "8f3c3ee5def90d067bd3ffb76278f19c38f0ee3d8139a24428166a159423fb4e",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "804a94c7931dd659360b7e9d28384e210d57228ac7242cead7b80c9481b57519",
+    "sha256": "94780bc67e8244524405ffcaccc96b81be0c565e65ffcc422e727a501c4f57da",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "46d55d6db98f735444d952efbb2ffb44a20cab6c613f4ad486c6913643092cc7",
+    "sha256": "97a92ffbd3bf68bf567cbcbcb20830bece6fc94439d31f31f352bfec35570264",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "e1b1f633f0feedd99a7e33984864f26a2fb28393dc8a2d1a6ebb30acf9f961f7",
+    "sha256": "2d734c8d335662c7021b3d54a9232fa8ad481339387d61ed60186b50af5577d0",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "0dc20d5b9050142a417597cc1e272569c753f6695b896cbf17643b79f79c4048",
+    "sha256": "612b1638abca316120f7a4bafef6118072a70cd1c358714b86ed3234fec1f647",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "7447e8aefcc714ef7c86de111fdb9ccec81893b908e852656ec95527bbb649bd",
+    "sha256": "3b97626361beee765c134887f7746030a6a802517f98b8640e7dfe4e4dbaf013",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "c1f0b8cb0b4a64271ce85881c15cefd469c2a4d98c75c07ecee2ada731b759a2",
+    "sha256": "3d5fb731116c77ec72ae41c1ff5887234da9adae92b2dd4df0965146abc10fdb",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "3e35f84b1a174374aa1d2b9c4121ef86f74e623ecd7c8ddc49efea05fcebd6d8",
+    "sha256": "665a589a01299df1b5fb63f0a2bec1b631378c395bea5981cc51adf08f6717ab",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "4eae557508a4191cbadba65f15a67fa74ade1ce84bf7dfa842d8ffe5371428ef",
+    "sha256": "057ae51454a040d84699a1d4216024cf2a5e66e317ca4ecbc179c9503c3f0dd1",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "002cedacacd0de96dd10ae4e8d3e85e30cda52bf6da341841030c6b5b902adc9",
+    "sha256": "8018d3e22ab5a2d369aade0a17337635e4a8a8c0305ff61ddac334e6f15e0e67",
     "ref": null
    },
    {
@@ -130,7 +130,7 @@
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "11ec30a8b184b23ab983f08a020aed88c00fe6b2b6aeaad171ac0fa9db973d5f",
+    "sha256": "3e371fab1bf77afe0d78b4f38ed11f6212128643187c32b013fa9518d4d092f9",
     "ref": null
    },
    {
@@ -160,7 +160,7 @@
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "38c911f2df75980ea4252a10a3bbb60180706fc9b10a0cd2d6299f789d223a51",
+    "sha256": "40a950411e92691c4246842244a3da075e62e832b68e615a255bf6bd192c6bbb",
     "ref": null
    }
   ]
@@ -450,7 +450,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.4%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,4 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,4 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -553,7 +553,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -697,7 +697,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.3%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,3 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 6,3 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -800,7 +800,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -898,7 +898,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.6%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,6 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 6,6 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1001,7 +1001,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1145,7 +1145,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.8%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,8 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,8 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1248,7 +1248,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1392,7 +1392,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.3%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,3 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,3 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1495,7 +1495,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1639,7 +1639,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.1%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,1 %"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,1 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1742,7 +1742,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1840,7 +1840,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1881,7 +1881,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio stays 0.81% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-    "es": "Bajo este escenario la razón de PE se mantiene 0,81% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
+    "es": "Bajo este escenario la razón de PE se mantiene 0,81 % de los APR sobre el objetivo interno de 14,50 % en su punto más bajo, el año 3."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2003,8 +2003,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2045,7 +2045,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2086,7 +2086,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio falls to 12.98% of RWA in year 3, 1.52% of RWA below the internal target of 14.50%.",
-    "es": "Bajo este escenario la razón de PE cae a 12,98% de los APR en el año 3, 1,52% de los APR bajo el objetivo interno de 14,50%."
+    "es": "Bajo este escenario la razón de PE cae a 12,98 % de los APR en el año 3, 1,52 % de los APR bajo el objetivo interno de 14,50 %."
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -2127,7 +2127,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "On the loss-only path CET1 falls to 7.09% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,09% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,09 % de los APR en el año 3, bajo el mínimo legal de 9,06 %; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
    },
    "severity": "S1",
    "ecb_f": "F4",
@@ -2249,8 +2249,8 @@
    "id": "scenario-milder-than-gfc",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-    "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
+    "en": "1 path variable of this scenario is milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variable de trayectoria de este escenario es más suave que la crisis financiera global (razón bajo 0,75)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2290,8 +2290,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2332,7 +2332,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2373,7 +2373,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio falls to 13.25% of RWA in year 3, 1.25% of RWA below the internal target of 14.50%.",
-    "es": "Bajo este escenario la razón de PE cae a 13,25% de los APR en el año 3, 1,25% de los APR bajo el objetivo interno de 14,50%."
+    "es": "Bajo este escenario la razón de PE cae a 13,25 % de los APR en el año 3, 1,25 % de los APR bajo el objetivo interno de 14,50 %."
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -2414,7 +2414,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "On the loss-only path CET1 falls to 7.36% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,36% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,36 % de los APR en el año 3, bajo el mínimo legal de 9,06 %; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
    },
    "severity": "S1",
    "ecb_f": "F4",
@@ -2536,8 +2536,8 @@
    "id": "scenario-milder-than-gfc",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-    "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
+    "en": "1 path variable of this scenario is milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variable de trayectoria de este escenario es más suave que la crisis financiera global (razón bajo 0,75)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2577,8 +2577,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2619,7 +2619,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2660,7 +2660,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio stays 0.56% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-    "es": "Bajo este escenario la razón de PE se mantiene 0,56% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
+    "es": "Bajo este escenario la razón de PE se mantiene 0,56 % de los APR sobre el objetivo interno de 14,50 % en su punto más bajo, el año 3."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2823,8 +2823,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2864,8 +2864,8 @@
    "id": "reverse-scenario",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
-    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 0,0%); la base de solo pérdidas ya termina bajo el mínimo."
+    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 2.4e-15).",
+    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 2,4e-15)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2906,7 +2906,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,517 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.517 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2% bajo la suma y es información, no capital."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.517 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2 % bajo la suma y es información, no capital."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2947,7 +2947,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The aggregation model moves the figure by up to 67.4% over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the validator, never capital.",
-    "es": "El modelo de agregación mueve la cifra hasta 67,4% sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el validador, nunca capital."
+    "es": "El modelo de agregación mueve la cifra hasta 67,4 % sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el validador, nunca capital."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2988,7 +2988,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The additive approximation exceeds the Gaussian copula figure by 33.8%; the published range of 30 to 40 percent is a reference and no gate.",
-    "es": "La aproximación aditiva excede la cifra de la cópula gaussiana en 33,8%; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
+    "es": "La aproximación aditiva excede la cifra de la cópula gaussiana en 33,8 %; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -3991,7 +3991,7 @@
    "entry_key": "C22/generators",
    "title": {
     "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.72%, Markov order (grouped by direction) 6.05%, Matrix against a reference 3.70%, Downward momentum (hazard) 4.45%); the order test, near its bound in 4,000 repetitions, rejects 5.05% at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Momentum a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Impulso a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4130,7 +4130,7 @@
    "entry_key": "C22/generators",
    "title": {
     "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile) (60 years at the 95% level), Tail back-test (LHP quantile) (250 years at the 99% level), CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
-    "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Backtest de cola (cuantil LHP) (60 años al nivel 95%), Backtest de cola (cuantil LHP) (250 años al nivel 99%), Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5%), Prueba de cuantil dinámico (250 días al 2,5%), Prueba de cuantil dinámico (750 días al 1%)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
+    "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP) (60 años al nivel 95%), Prueba retrospectiva de cola (cuantil LHP) (250 años al nivel 99%), Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5%), Prueba de cuantil dinámico (250 días al 2,5%), Prueba de cuantil dinámico (750 días al 1%)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
    },
    "severity": "S4",
    "ecb_f": "F1",
