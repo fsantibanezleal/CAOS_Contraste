@@ -192,6 +192,22 @@ const nameAndHint = (text: { en: string; es: string }): { label: { en: string; e
 };
 const docText = (text: { en: string; es: string }): { en: string; es: string } => ({ en: text.en, es: text.es.replace(/(?<![A-Za-z\d.])(\d+)\.(\d+)/g, '$1,$2') });
 
+/** A document statement with the subscript of each symbol set as a subscript: "K_reducido" reads K<sub>reducido</sub>, "ES_T(P)"
+ * ES<sub>T</sub>(P), as the captions write them (R4 c30 B2, c31 m1). */
+function withSubscripts(s: string): ReactNode {
+  return s.split(/([A-Za-zΑ-Ωα-ω]+_[\p{L}\d]+)/u).map((part, i) => {
+    const m = /^([A-Za-zΑ-Ωα-ω]+)_([\p{L}\d]+)$/u.exec(part);
+    return m ? (
+      <span key={i}>
+        {m[1]}
+        <sub>{m[2]}</sub>
+      </span>
+    ) : (
+      part
+    );
+  });
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // a live card and its parts
 
@@ -650,8 +666,8 @@ function SbmBody({ doc, initial }: { doc: RegulatoryDoc; initial?: SbmInit }) {
     <>
       <div className="ct-grid6">
         <DocSelect id="reg-sbm-case" label={bi('Case of the document', 'Caso del documento')} options={presets.map((e) => ({ id: e.id, ...nameAndHint(docText(e.title)) }))} value={entry.id} onChange={pick1} />
-        <Knob id="reg-sbm-gamma" label={bi('Correlation between buckets, gamma', 'Correlación entre buckets, gamma')} value={gamma} min={0} max={1} step={0.05} format={{ percent: true, decimals: 0 }} hint={bi('The medium-scenario gamma between every two buckets (MAR21.50 sets 50 percent for GIRR)', 'La gamma del escenario medio entre cada par de buckets (MAR21.50 fija 50 por ciento para GIRR)')} onChange={setGamma} />
-        <Knob id="reg-sbm-scale" label={bi('Scale of the second bucket', 'Escala del segundo bucket')} value={scale} min={-2} max={2} step={0.1} format={{ digits: 3 }} hint={bi('Multiplies every weighted sensitivity of bucket 2: a negative scale turns it into an offsetting position', 'Multiplica cada sensibilidad ponderada del bucket 2: una escala negativa la vuelve una posición compensatoria')} onChange={setScale} />
+        <Knob id="reg-sbm-gamma" label={bi('Correlation between buckets, gamma', 'Correlación entre tramos, gamma')} value={gamma} min={0} max={1} step={0.05} format={{ percent: true, decimals: 0 }} hint={bi('The medium-scenario gamma between every two buckets (MAR21.50 sets 50 percent for GIRR)', 'La gamma del escenario medio entre cada par de tramos (MAR21.50 fija 50 por ciento para GIRR)')} onChange={setGamma} />
+        <Knob id="reg-sbm-scale" label={bi('Scale of the second bucket', 'Escala del segundo tramo')} value={scale} min={-2} max={2} step={0.1} format={{ digits: 3 }} hint={bi('Multiplies every weighted sensitivity of bucket 2: a negative scale turns it into an offsetting position', 'Multiplica cada sensibilidad ponderada del tramo 2: una escala negativa la vuelve una posición compensatoria')} onChange={setScale} />
       </div>
       <Facts data-inputs="sbm" rows={[
           [<>{t('Weighted sensitivities, bucket 1', 'Sensibilidades ponderadas, tramo 1')}</>, <>{`${list(ws[0])} ${unit}`}</>],
@@ -663,7 +679,7 @@ function SbmBody({ doc, initial }: { doc: RegulatoryDoc; initial?: SbmInit }) {
           [<>{t('Paragraph', 'Párrafo')}</>, <><Ref>{out?.paragraph ?? entry.paragraph}</Ref> ({t('in force since', 'vigente desde')} {entry.in_force_date})</>],
         ]} />
       <BarChart
-        title={bi('The cross-bucket charge under each correlation scenario', 'El cargo entre buckets bajo cada escenario de correlación')}
+        title={bi('The cross-bucket charge under each correlation scenario', 'El cargo entre tramos bajo cada escenario de correlación')}
         orientation="horizontal"
         data={SCENARIOS.map((s) => ({
           id: s,
@@ -673,7 +689,7 @@ function SbmBody({ doc, initial }: { doc: RegulatoryDoc; initial?: SbmInit }) {
           highlight: s === res.binding,
           hint: res.scenarios[s].fallback ? bi('The fallback of MAR21.4(5)(b) applied', 'Se aplicó el recurso de MAR21.4(5)(b)') : undefined,
         }))}
-        axis={{ label: bi('Cross-bucket charge', 'Cargo entre buckets'), unit, format: { digits: 4 } }}
+        axis={{ label: bi('Cross-bucket charge', 'Cargo entre tramos'), unit, format: { digits: 4 } }}
       />
       <table className="caos-table ct-wrap-head" data-table="sbm-scenarios">
         <thead>
@@ -733,11 +749,11 @@ const FACTOR_TEXT: Record<string, BiText> = {
   'interest-rate-specified-currencies': bi('Interest rate, specified currencies', 'Tasa de interés, monedas especificadas'),
   'interest-rate-other': bi('Interest rate, other currencies', 'Tasa de interés, otras monedas'),
   'interest-rate-volatility': bi('Interest rate volatility', 'Volatilidad de tasa de interés'),
-  'credit-spread-sovereign-investment-grade': bi('Credit spread, sovereign, investment grade', 'Spread de crédito, soberano, grado de inversión'),
-  'credit-spread-sovereign-high-yield': bi('Credit spread, sovereign, high yield', 'Spread de crédito, soberano, alto rendimiento'),
-  'credit-spread-corporate-investment-grade': bi('Credit spread, corporate, investment grade', 'Spread de crédito, empresa, grado de inversión'),
-  'credit-spread-corporate-high-yield': bi('Credit spread, corporate, high yield', 'Spread de crédito, empresa, alto rendimiento'),
-  'credit-spread-volatility': bi('Credit spread volatility', 'Volatilidad de spread de crédito'),
+  'credit-spread-sovereign-investment-grade': bi('Credit spread, sovereign, investment grade', 'Diferencial de crédito, soberano, grado de inversión'),
+  'credit-spread-sovereign-high-yield': bi('Credit spread, sovereign, high yield', 'Diferencial de crédito, soberano, alto rendimiento'),
+  'credit-spread-corporate-investment-grade': bi('Credit spread, corporate, investment grade', 'Diferencial de crédito, empresa, grado de inversión'),
+  'credit-spread-corporate-high-yield': bi('Credit spread, corporate, high yield', 'Diferencial de crédito, empresa, alto rendimiento'),
+  'credit-spread-volatility': bi('Credit spread volatility', 'Volatilidad del diferencial de crédito'),
   'equity-large-cap': bi('Equity, large capitalisation', 'Acciones, gran capitalización'),
   'equity-small-cap': bi('Equity, small capitalisation', 'Acciones, pequeña capitalización'),
   'equity-large-cap-volatility': bi('Equity volatility, large capitalisation', 'Volatilidad de acciones, gran capitalización'),
@@ -825,9 +841,11 @@ export function ParameterCard({ doc, reason, id, lhs }: DocProps & { id: Paramet
                 <td className="caos-col-text">{factorText(k, lang)}</td>
                 {params.map((p) => {
                   const r = table.rows.find((x) => x.key === k && x.parameter === p);
-                  return <td key={p}>{r ? cell(p, r.value) : formatNumber(null, lang)}</td>;
+                  // a parameter the standard does not define for this key is not applicable, not missing (R4 c30 m8)
+                  return <td key={p}>{r ? cell(p, r.value) : t('not applicable', 'no aplica')}</td>;
                 })}
-                {subsets && <td className="caos-col-text">{subsets.length === 0 ? formatNumber(null, lang) : subsets.map((j) => `Q${j}`).join(', ')}</td>}
+                {/* the first subset is P, the others Q2 to Q5, as the figure names them (R4 c30 m9) */}
+                {subsets && <td className="caos-col-text">{subsets.length === 0 ? formatNumber(null, lang) : subsets.map((j) => (j === 1 ? 'P' : `Q${j}`)).join(', ')}</td>}
                 <td className="caos-col-text">
                   <Ref>{table.paragraph}</Ref>
                 </td>
@@ -906,7 +924,7 @@ function CascadeBody({ doc, initial, reason }: { doc: RegulatoryDoc; initial?: C
         orientation="horizontal"
         data={[
           ...terms.map((x) => ({ id: `j${x.j}`, label: bi(`Subset ${x.j}, horizon ${x.lh} days`, `Subconjunto ${x.j}, horizonte ${x.lh} días`), value: x.term, tone: 'accent' as Tone })),
-          { id: 'total', label: bi('Cascade ES (square root of the sum of squares)', 'ES de la cascada (raíz de la suma de cuadrados)'), value: total, tone: 'good' as Tone, highlight: true },
+          { id: 'total', label: bi('Cascade ES', 'ES de la cascada'), value: total, tone: 'good' as Tone, highlight: true },
         ]}
         axis={{ label: bi('Term of the cascade', 'Término de la cascada'), unit: 'USD', format: { digits: 4 } }}
       />
@@ -1000,7 +1018,7 @@ export function WorkedExamplesCard({ doc, reason }: DocProps) {
         </tbody>
       </table>
       <p className="ct-note">{t('The published EAD is the integer the framework prints; the recomputed one is the engine value from the trade inputs, which rounds to it exactly.', 'El EAD publicado es el entero que imprime el marco; el recalculado es el valor del motor desde los datos de las operaciones, que se redondea exactamente a él.')}</p>
-      <h4 className="ct-sub">{t('The invariants the live ports are held to', 'Las invariantes a las que se sujetan los puertos en vivo')}</h4>
+      <h4 className="ct-sub">{t('The invariants the live ports are held to', 'Las invariantes a las que se sujetan las implementaciones en vivo')}</h4>
       <table className="caos-table ct-wrap-head" data-table="invariants">
         <thead>
           <tr>
@@ -1013,7 +1031,7 @@ export function WorkedExamplesCard({ doc, reason }: DocProps) {
         <tbody>
           {invariants.map((e) => (
             <tr key={e.id} data-invariant={e.id} data-paragraph={e.paragraph} data-in-force={e.in_force_date}>
-              <td className="caos-col-text">{pick(docText(e.statement ?? e.title), lang)}</td>
+              <td className="caos-col-text">{withSubscripts(pick(docText(e.statement ?? e.title), lang))}</td>
               <td className="caos-col-text">
                 <Ref>{rangeText(e.paragraph_range, lang)}</Ref>
               </td>
@@ -1258,7 +1276,7 @@ export function FloorPart({ doc, reason }: DocProps) {
       />
       <Equation
         tex={String.raw`\mathrm{RWA} = \max\bigl(\mathrm{RWA}_{\mathrm{nominated}},\ f_t\cdot\mathrm{RWA}_{\mathrm{SA}\text{-}\mathrm{only}}\bigr), \qquad f_{2023},\dots,f_{2028} = 50,\ 55,\ 60,\ 65,\ 70,\ 72.5\ \%`}
-        caption={<T en={<>The output floor and its phase-in (dossier 01, C.1; <Ref>RBC20.4</Ref> and <Ref>RBC90.1</Ref>): RWA_nominated the assets computed with the approaches the bank has approved, RWA<sub>SA</sub>-only those computed with the standardised approaches alone, and f<sub>t</sub> the factor of year t. The result is never below the nominated assets. The factor is the BCBS schedule; the dates a jurisdiction applies differ (section L of the dossier).</>} es={<>El piso de salida y su implementación (dossier 01, C.1; <Ref>RBC20.4</Ref> y <Ref>RBC90.1</Ref>): RWA_nominated los activos calculados con los enfoques que el banco tiene aprobados, RWA<sub>SA</sub>-only los calculados solo con los enfoques estandarizados, y f<sub>t</sub> el factor del año t. El resultado nunca queda bajo los activos nominados. El factor es el calendario del BCBS; las fechas que aplica cada jurisdicción difieren (sección L del dossier).</>} />}
+        caption={<T en={<>The output floor and its phase-in (dossier 01, C.1; <Ref>RBC20.4</Ref> and <Ref>RBC90.1</Ref>): RWA_nominated the assets computed with the approaches the bank has approved, RWA<sub>SA</sub>-only those computed with the standardised approaches alone, and f<sub>t</sub> the factor of year t. The result is never below the nominated assets. The factor is the BCBS schedule; the dates a jurisdiction applies differ (section L of the dossier).</>} es={<>El piso de salida y su implementación (dossier 01, C.1; <Ref>RBC20.4</Ref> y <Ref>RBC90.1</Ref>): RWA<sub>designados</sub> los activos calculados con los enfoques que el banco tiene aprobados, RWA<sub>SA-solo</sub> los calculados solo con los enfoques estandarizados, y f<sub>t</sub> el factor del año t. El resultado nunca queda bajo los activos nominados. El factor es el calendario del BCBS; las fechas que aplica cada jurisdicción difieren (sección L del dossier).</>} />}
       />
       <P
         en={<>The worked example of <Ref>RBC20.13</Ref> has a bank whose own approaches give 76 and whose standardised approaches give 140: at the fully phased-in factor of 72.5 percent the floor base is 101.5, above 76, so the floor binds and the result is 101.5; with the optional cap the increase is limited to 25 percent of 76, which is 19, and the result is 95. Contraste reproduces both values exactly and holds the live calculator to them. Two limits are stated. The calculator carries the BCBS schedule only, because the document carries only that one; the European Union applies 50 percent in 2025 and 72.5 percent from 2030 under the amended Article 465(1) of Regulation (EU) 2024/1623, the United Kingdom&apos;s schedule is reported in search summaries that were not re-read, and no United States rule is final. And the factor multiplies standardised assets that the reader types in: a bank&apos;s full standardised calculation is the sum of the tables of the previous part over its book.</>}
@@ -1378,11 +1396,11 @@ export function CcrPart({ doc, reason }: DocProps) {
       />
       <P
         en={<>The basic approach to credit valuation adjustment risk, BA-CVA, prices the counterparty credit spread risk that SA-CCR ignores. A bank with aggregate non-centrally cleared derivatives of at most EUR 100 billion in notional may set the CVA capital equal to its counterparty credit risk capital (<Ref>MAR50.9</Ref>) <Cite id="regmar50" />. Otherwise the reduced version has the capital DS times K_reduced, with DS = 0.65, a correlation ρ of 50 percent, the discount factor (1 - exp(-0.05 M)) / (0.05 M) and the alpha of 1.4, and the counterparty risk weights of <Ref>MAR50.16</Ref> Table 1 by sector and credit quality, shown below (<Ref>MAR50.14</Ref> to <Ref>MAR50.16</Ref>). The full version blends K_reduced with a hedged capital, K_full = beta K_reduced + (1 - beta) K_hedged with beta = 0.25, and recognises only single-name CDS, single-name contingent CDS and index CDS as hedges (<Ref>MAR50.18</Ref> and <Ref>MAR50.20</Ref> to <Ref>MAR50.25</Ref>). No official numerical example of BA-CVA was found, so its tests rest on invariants: with ρ = 1 the reduced capital is the sum of the counterparty terms, and hedges never take K_full below beta K_reduced.</>}
-        es={<>El enfoque básico del riesgo de ajuste de valoración del crédito, BA-CVA, pone precio al riesgo de diferencial de crédito de la contraparte que SA-CCR ignora. Un banco con derivados no compensados centralmente de a lo más EUR 100.000 millones en nocional agregado puede fijar el capital por CVA igual a su capital por riesgo de crédito de contraparte (<Ref>MAR50.9</Ref>) <Cite id="regmar50" />. En otro caso la versión reducida tiene el capital DS por K_reduced, con DS = 0,65, una correlación ρ de 50 por ciento, el factor de descuento (1 - exp(-0,05 M)) / (0,05 M) y el alfa de 1,4, y los ponderadores de riesgo de contraparte de <Ref>MAR50.16</Ref> Tabla 1 por sector y calidad crediticia, mostrados abajo (<Ref>MAR50.14</Ref> a <Ref>MAR50.16</Ref>). La versión completa mezcla K_reduced con un capital con coberturas, K_full = beta K_reduced + (1 - beta) K_hedged con beta = 0,25, y reconoce como coberturas solo los CDS de nombre único, los CDS contingentes de nombre único y los CDS de índice (<Ref>MAR50.18</Ref> y <Ref>MAR50.20</Ref> a <Ref>MAR50.25</Ref>). No se encontró un ejemplo numérico oficial de BA-CVA, así que sus pruebas se apoyan en invariantes: con ρ = 1 el capital reducido es la suma de los términos de las contrapartes, y las coberturas nunca llevan K_full bajo beta K_reduced.</>}
+        es={<>El enfoque básico del riesgo de ajuste de valoración del crédito, BA-CVA, pone precio al riesgo de diferencial de crédito de la contraparte que SA-CCR ignora. Un banco con derivados no compensados centralmente de a lo más EUR 100.000 millones en nocional agregado puede fijar el capital por CVA igual a su capital por riesgo de crédito de contraparte (<Ref>MAR50.9</Ref>) <Cite id="regmar50" />. En otro caso la versión reducida tiene el capital DS por K<sub>reducido</sub>, con DS = 0,65, una correlación ρ de 50 por ciento, el factor de descuento (1 - exp(-0,05 M)) / (0,05 M) y el alfa de 1,4, y los ponderadores de riesgo de contraparte de <Ref>MAR50.16</Ref> Tabla 1 por sector y calidad crediticia, mostrados abajo (<Ref>MAR50.14</Ref> a <Ref>MAR50.16</Ref>). La versión completa mezcla K<sub>reducido</sub> con un capital con coberturas, K<sub>completo</sub> = beta K<sub>reducido</sub> + (1 - beta) K<sub>cubierto</sub> con beta = 0,25, y reconoce como coberturas solo los CDS de nombre único, los CDS contingentes de nombre único y los CDS de índice (<Ref>MAR50.18</Ref> y <Ref>MAR50.20</Ref> a <Ref>MAR50.25</Ref>). No se encontró un ejemplo numérico oficial de BA-CVA, así que sus pruebas se apoyan en invariantes: con ρ = 1 el capital reducido es la suma de los términos de las contrapartes, y las coberturas nunca llevan K<sub>completo</sub> bajo beta K<sub>reducido</sub>.</>}
       />
       <Equation
-        tex={String.raw`K_{\mathrm{reduced}} = \sqrt{\Bigl(\rho\sum_c \mathrm{SCVA}_c\Bigr)^2 + (1-\rho^2)\sum_c \mathrm{SCVA}_c^2}, \quad \mathrm{SCVA}_c = \tfrac{1}{\alpha}\,RW_c\sum_{NS} M_{NS}\,\mathrm{EAD}_{NS}\,DF_{NS}, \quad K_{\mathrm{full}} = \beta K_{\mathrm{reduced}} + (1-\beta)K_{\mathrm{hedged}}`}
-        caption={<T en={<>The BA-CVA capital bases (dossier 01, E.1; <Ref>MAR50.14</Ref> to <Ref>MAR50.16</Ref> and <Ref>MAR50.20</Ref>): SCVA<sub>c</sub> the stand-alone CVA of counterparty c, RW<sub>c</sub> its risk weight from the table, M<sub>NS</sub>, EAD<sub>NS</sub> and DF<sub>NS</sub> the effective maturity, the exposure at default and the discount factor of netting set NS, ρ = 50 percent the correlation, alpha = 1.4, beta = 0.25 and K_hedged the capital after the eligible hedges. The capital is 0.65 times K_reduced or K_full.</>} es={<>Las bases de capital de BA-CVA (dossier 01, E.1; <Ref>MAR50.14</Ref> a <Ref>MAR50.16</Ref> y <Ref>MAR50.20</Ref>): SCVA<sub>c</sub> el CVA individual de la contraparte c, RW<sub>c</sub> su ponderador de riesgo de la tabla, M<sub>NS</sub>, EAD<sub>NS</sub> y DF<sub>NS</sub> el vencimiento efectivo, la exposición en incumplimiento y el factor de descuento del conjunto de neteo NS, ρ = 50 por ciento la correlación, alfa = 1,4, beta = 0,25 y K_hedged el capital tras las coberturas elegibles. El capital es 0,65 veces K_reduced o K_full.</>} />}
+        tex={String.raw`K_{\mathrm{reduced}} = \sqrt{\Bigl(\rho\sum_c \mathrm{SCVA}_c\Bigr)^2 + (1-\rho^2)\sum_c \mathrm{SCVA}_c^2}, \quad \mathrm{SCVA}_c = \tfrac{1}{\alpha}\,RW_c\sum_{NS} M_{NS}\,\mathrm{EAD}_{NS}\,DF_{NS}, \quad K_{\mathrm{full }} = \beta K_{\mathrm{reduced}} + (1-\beta)K_{\mathrm{hedged}}`}
+        caption={<T en={<>The BA-CVA capital bases (dossier 01, E.1; <Ref>MAR50.14</Ref> to <Ref>MAR50.16</Ref> and <Ref>MAR50.20</Ref>): SCVA<sub>c</sub> the stand-alone CVA of counterparty c, RW<sub>c</sub> its risk weight from the table, M<sub>NS</sub>, EAD<sub>NS</sub> and DF<sub>NS</sub> the effective maturity, the exposure at default and the discount factor of netting set NS, ρ = 50 percent the correlation, alpha = 1.4, beta = 0.25 and K_hedged the capital after the eligible hedges. The capital is 0.65 times K_reduced or K_full.</>} es={<>Las bases de capital de BA-CVA (dossier 01, E.1; <Ref>MAR50.14</Ref> a <Ref>MAR50.16</Ref> y <Ref>MAR50.20</Ref>): SCVA<sub>c</sub> el CVA individual de la contraparte c, RW<sub>c</sub> su ponderador de riesgo de la tabla, M<sub>NS</sub>, EAD<sub>NS</sub> y DF<sub>NS</sub> el vencimiento efectivo, la exposición en incumplimiento y el factor de descuento del conjunto de neteo NS, ρ = 50 por ciento la correlación, alfa = 1,4, beta = 0,25 y K<sub>cubierto</sub> el capital tras las coberturas elegibles. El capital es 0,65 veces K<sub>reducido</sub> o K<sub>completo</sub>.</>} />}
       />
       <P
         en={<>The framework gives five worked examples that Contraste reproduces (<Ref>CRE99.20</Ref> to <Ref>CRE99.97</Ref>, in thousands of USD) <Cite id="regcre99" />. The first netting set, interest rate swaps and a swaption without margin, has a replacement cost of 60, effective notionals of 59,270 for USD and 10,083 for EUR, an interest rate add-on of 296.35 + 50.415 = 347, a swaption delta of -0.2694 and an exposure at default of 1.4 × (60 + 1 × 347) = 569. The second, credit derivatives, has no replacement cost, an add-on of the square root of (2,253 + 77,344) = 282, a multiplier of 0.965 and an exposure of 381. The third, commodity forwards and swaps, has a replacement cost of 20, add-ons of 2,041 for energy and 1,800 for metals, 3,841 in all, and 5,406. The fourth joins the first two: replacement cost 40, add-on 347 + 282 = 629 and 936. The fifth is margined, interest rate and commodity: a replacement cost of max(80 - 200, 0 + 5 - 150, 0) = 0, a maturity factor of 1.5 √(14/250), add-ons of 123 and 1,278, 1,401 in all, a multiplier of 0.958 and 1,879. The acceptance gate is exact: from the trade inputs, transcribed from the page with their paragraphs, every printed intermediate recomputes and each exposure rounds to its published integer.</>}
@@ -1425,7 +1443,7 @@ export function RegulationBody({ doc, reason }: DocProps) {
       <Callout variant="honest" title={t('What is exact, what is a choice and what these calculators are not', 'Qué es exacto, qué es una decisión y qué no son estas calculadoras')}>
         <T
           en={<>The tables, factors, horizons and formulas on this tab are published values of the Basel Framework in the chapter versions in force since 2023-01-01, transcribed with their paragraph and checked by the live ports against the regulatory-calculators document within 1e-9 relative: the five CRE99 SA-CCR examples round exactly to their published exposures at default of 569, 381, 5,406, 936 and 1,879, and the <Ref>RBC20.13</Ref> example gives 101.5 and, with the optional cap, 95. They reproduce published formulas and nothing more. They do not claim regulatory approval, compliance or equivalence to any bank&apos;s approved model, and a result of a calculator is not a bank&apos;s capital requirement. Three choices are named: the output-floor factor is the BCBS schedule and not any jurisdiction&apos;s; the weights of the GIRR delta may be divided by the square root of 2 for a specified currency at the bank&apos;s discretion, and the curvature shock stays undivided; and the correlation of the GIRR matrix is the published table, whose footnote formula is reconstructed and agrees with all 100 entries. Several items stay unverified: the text of the FAQ of 2026-03-23 on flooring credit spread curvature factors, any numerical BA-CVA example, the row of commodity volatility of the liquidity horizons, and the entry into force of the 2026 European relief for the FRTB. The dates on which the European Union, the United Kingdom and the United States apply the framework are not stated here as adopted.</>}
-          es={<>Las tablas, factores, horizontes y fórmulas de esta pestaña son valores publicados del Marco de Basilea en las versiones de los capítulos vigentes desde 2023-01-01, transcritos con su párrafo y verificados por los puertos en vivo contra el documento de calculadoras regulatorias dentro de 1e-9 relativo: los cinco ejemplos de SA-CCR de CRE99 se redondean exactamente a sus exposiciones en incumplimiento publicadas de 569, 381, 5.406, 936 y 1.879, y el ejemplo de <Ref>RBC20.13</Ref> da 101,5 y, con el tope opcional, 95. Reproducen fórmulas publicadas y nada más. No afirman aprobación regulatoria, cumplimiento ni equivalencia con el modelo aprobado de ningún banco, y el resultado de una calculadora no es el requerimiento de capital de un banco. Se nombran tres decisiones: el factor del piso de salida es el calendario del BCBS y no el de ninguna jurisdicción; los ponderadores de delta de GIRR pueden dividirse por la raíz de 2 para una moneda especificada a discreción del banco, y el choque de curvatura se deja sin dividir; y la correlación de la matriz de GIRR es la tabla publicada, cuya fórmula de nota al pie se reconstruye y coincide con las 100 entradas. Varios puntos quedan sin verificar: el texto de las preguntas frecuentes del 2026-03-23 sobre acotar en cero los factores de curvatura de diferencial de crédito, cualquier ejemplo numérico de BA-CVA, la fila de volatilidad de materias primas de los horizontes de liquidez y la entrada en vigor del alivio europeo de 2026 para el FRTB. Las fechas en que la Unión Europea, el Reino Unido y Estados Unidos aplican el marco no se dan aquí como adoptadas.</>}
+          es={<>Las tablas, factores, horizontes y fórmulas de esta pestaña son valores publicados del Marco de Basilea en las versiones de los capítulos vigentes desde 2023-01-01, transcritos con su párrafo y verificados por las implementaciones en vivo contra el documento de calculadoras regulatorias dentro de 1e-9 relativo: los cinco ejemplos de SA-CCR de CRE99 se redondean exactamente a sus exposiciones en incumplimiento publicadas de 569, 381, 5.406, 936 y 1.879, y el ejemplo de <Ref>RBC20.13</Ref> da 101,5 y, con el tope opcional, 95. Reproducen fórmulas publicadas y nada más. No afirman aprobación regulatoria, cumplimiento ni equivalencia con el modelo aprobado de ningún banco, y el resultado de una calculadora no es el requerimiento de capital de un banco. Se nombran tres decisiones: el factor del piso de salida es el calendario del BCBS y no el de ninguna jurisdicción; los ponderadores de delta de GIRR pueden dividirse por la raíz de 2 para una moneda especificada a discreción del banco, y el choque de curvatura se deja sin dividir; y la correlación de la matriz de GIRR es la tabla publicada, cuya fórmula de nota al pie se reconstruye y coincide con las 100 entradas. Varios puntos quedan sin verificar: el texto de las preguntas frecuentes del 2026-03-23 sobre acotar en cero los factores de curvatura de diferencial de crédito, cualquier ejemplo numérico de BA-CVA, la fila de volatilidad de materias primas de los horizontes de liquidez y la entrada en vigor del alivio europeo de 2026 para el FRTB. Las fechas en que la Unión Europea, el Reino Unido y Estados Unidos aplican el marco no se dan aquí como adoptadas.</>}
         />
       </Callout>
     </DocSection>

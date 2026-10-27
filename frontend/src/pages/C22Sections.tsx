@@ -30,6 +30,31 @@ function holds(v: C22Variant, s: C22Simulation, rule: string, level: number) {
   return r.exact !== null ? r.exact <= level + 1e-12 : (r.rate ?? 1) <= v.outputs.size_bounds[rule];
 }
 
+/** The words of the papers' cell labels in Spanish: "Table 8", "traffic", "shift 0.25 SD", "chi-square" (R4 c28 B7). */
+const CELL_WORDS_ES: Array<[RegExp, string]> = [
+  [/\bTables? (\d+)/g, 'tabla $1'],
+  [/\bsection (\d)/g, 'sección $1'],
+  [/\btraffic\b/g, 'semáforo'],
+  [/\bnested\b/g, 'anidados'],
+  [/\bshift\b/g, 'desplazamiento'],
+  [/\bSD\b/g, 'DE'],
+  [/\bchi-square\b/g, 'chi-cuadrado'],
+];
+
+/**
+ * The cell of a published table as the paper labels it (table, scenario or row, column). The English page keeps the paper's own
+ * label; the Spanish page writes it in Spanish with its decimals in the Spanish form, and keeps the paper's scenario codes
+ * (DV_LV, I_SC), which are the paper's names for them.
+ */
+export function goldenCellLabel(c: { table: string; row: string; column: string }, lang: 'en' | 'es'): string {
+  const label = `${c.table}, ${c.row}, ${c.column}`;
+  if (lang === 'en') return label;
+  const words = (x: string) => CELL_WORDS_ES.reduce((acc, [re, to]) => acc.replace(re, to), x);
+  // a decimal of the paper ("0.001", "0.25") in the Spanish form; the locator's section number ("section 2.3") is no decimal
+  const decimals = (x: string) => x.replace(/(?<![\w.])(\d+)\.(\d+)(?![\w.])/g, (_, a: string, b: string) => `${a},${b}`);
+  return [words(c.table), decimals(words(c.row)), decimals(words(c.column))].join(', ');
+}
+
 export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
   const t = useT();
@@ -40,7 +65,8 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
   const sizes = nul ? nul.outputs.simulations.filter((s) => s.key.endsWith('@null')) : [];
   return (
     <div data-state="ready">
-      <table className="caos-table ct-wrap-head" data-table="families">
+      {/* the rows read from the top: a centred row put the family name below the fold (R4 c28 m3) */}
+      <table className="caos-table ct-wrap-head ct-top" data-table="families">
         <thead>
           <tr>
             <th className="caos-col-text">{t('Family', 'Familia')}</th>
@@ -334,7 +360,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                         .map((c, k) => (
                           <span key={`${c.table}-${c.row}-${c.column}`}>
                             {k > 0 ? '; ' : ''}
-                            <span translate="no" lang="en">{`${c.table}, ${c.row}, ${c.column}`}</span>
+                            {lang === 'en' ? <span translate="no" lang="en">{goldenCellLabel(c, lang)}</span> : <span>{goldenCellLabel(c, lang)}</span>}
                             {`: ${formatNumber(c.published, lang, { digits: 3 })} / ${formatNumber(c.measured, lang, { digits: 3 })}`}
                           </span>
                         ))
@@ -346,7 +372,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
         </table>
         {golden.map((g) => (
           <p key={g.study} className="ct-note">
-            <WithQuotes text={pick(g.note, lang)} />
+            <WithQuotes text={pick(g.note, lang)} pageLang={lang} />
           </p>
         ))}
       </PlotCard>

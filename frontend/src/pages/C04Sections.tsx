@@ -104,9 +104,11 @@ function agencyShows(v: AgencyVariant, lang: Lang): string {
   return `${head}; ${homog}${ttc}.`;
 }
 
-function familyShows(f: FamilyVariant, lang: Lang): string {
+/** What a family variant shows: its impact items, then its findings by their titles (a register id is a key of the Findings id
+ * column, never reader text here: R4 c28 B5, the ruling of 2026-10-27), as the C22 section prints its own. */
+export function familyShows(f: FamilyVariant, lang: Lang): string {
   const items = Object.values(f.impact).map((it) => `${pick(it.label, lang)}: ${impactValue(it, lang)}`);
-  const findings = f.findings.map((x) => `${x.id} (${pick(SEVERITY_TEXT[x.severity] ?? x.severity, lang)})`).join(', ');
+  const findings = f.findings.map((x) => `${x.title ? pick(x.title, lang) : x.id} (${pick(SEVERITY_TEXT[x.severity] ?? x.severity, lang)})`).join('; ');
   return `${items.join('; ')}. ${lang === 'es' ? 'Hallazgos' : 'Findings'}: ${findings || '-'}.`;
 }
 
@@ -789,7 +791,8 @@ function PapersCard({ published }: { published: PublishedVariant }) {
         <table className="caos-table" data-table="bench-engelmann">
           <thead>
             <tr>
-              <th className="caos-col-text">{t('Value', 'Valor')}</th>
+              {/* the value's name keeps a readable width at 390: the long check note beside it wrapped it one word per line (R4 c28 m14) */}
+              <th className="caos-col-text" style={{ minWidth: '9rem' }}>{t('Value', 'Valor')}</th>
               <th>{t('Printed', 'Impreso')}</th>
               <th>{t('Recomputed', 'Recalculado')}</th>
               <th className="caos-col-text">{t('Check', 'Verificación')}</th>

@@ -51,8 +51,8 @@
   <text class="sub l-es" x="36" y="248">Cada gráfico y cada lectura se dibuja para una clave; cuando el panel cambia y una vista no lo alcanza, se muestra desactualizada.</text>
   <text class="sub l-en" x="36" y="266">Live computations (scores, lights, the decision) read only the committed artifacts, so they are reproducible.</text>
   <text class="sub l-es" x="36" y="266">Los cálculos en vivo (puntajes, luces, la decisión) leen solo los artefactos versionados, así son reproducibles.</text>
-  <text class="sub l-en" x="36" y="284">Parity tests hold them to the pipeline: points and scores exactly, PDs and logits within 1e-9.</text>
-  <text class="sub l-es" x="36" y="284">Las pruebas de paridad los sujetan a la cadena de cálculo: puntos y puntajes exactos, PD y logit dentro de 1e-9.</text>
+  <text class="sub l-en" x="36" y="284">Parity tests hold them to the pipeline: points and scores exactly, PDs and logits within 10⁻⁹.</text>
+  <text class="sub l-es" x="36" y="284">Las pruebas de paridad los sujetan a la cadena de cálculo: puntos y puntajes exactos, PD y logit dentro de 10⁻⁹.</text>
 
   <rect class="bx" x="20" y="322" width="860" height="118" rx="10"/>
   <text class="h l-en" x="36" y="346">Before any deploy: the measured gate</text>

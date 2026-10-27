@@ -3,7 +3,7 @@
 // before supervisors (the pain, the context, the current situation, the trends, the proposal), general and never tied to a
 // client, every figure linked to its source in the file. It then turns technical: the previous page, its subsections as
 // sub-tabs (problem, principles, math with its glossary, pipeline, honesty, how to read the App, the six pages).
-import { Callout, Cite, DocPage, DocSection, ExecutiveView, Figure, Glossary, SubTabs, Tabs } from '@fasl-work/caos-app-shell';
+import { Callout, Cite, DocPage, DocSection, ExecutiveView, Figure, Glossary, InlineMath, SubTabs, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { OverviewFigure } from '../architecture/figures';
 import { Equation, L, P, T, useT } from '../content/bi';
@@ -77,11 +77,11 @@ function Technical() {
         />
         <Equation
           tex={String.raw`\frac{\hat\alpha + \dfrac{z^2}{2R} \pm z\sqrt{\dfrac{\hat\alpha(1-\hat\alpha)}{R} + \dfrac{z^2}{4R^2}}}{1 + \dfrac{z^2}{R}}`}
-          caption={<T en={<>The Wilson interval of that rate: α̂ the measured rate, R the number of repetitions, z the standard normal quantile of the confidence level (1.96 for 95%). It stays inside 0 and 1 and is honest for rates near the edges.</>} es={<>El intervalo de Wilson de esa tasa: α̂ la tasa medida, R el número de repeticiones, z el cuantil normal estándar del nivel de confianza (1,96 para 95 %). Queda dentro de 0 y 1 y es honesto para tasas cercanas a los bordes.</>} />}
+          caption={<T en={<>The Wilson interval of that rate: <InlineMath tex={String.raw`\hat\alpha`} /> the measured rate, R the number of repetitions, z the standard normal quantile of the confidence level (1.96 for 95%). It stays inside 0 and 1 and is honest for rates near the edges.</>} es={<>El intervalo de Wilson de esa tasa: <InlineMath tex={String.raw`\hat\alpha`} /> la tasa medida, R el número de repeticiones, z el cuantil normal estándar del nivel de confianza (1,96 para 95 %). Queda dentro de 0 y 1 y es honesto para tasas cercanas a los bordes.</>} />}
         />
         <Equation
           tex={String.raw`\mathrm{AUC} = \Pr(S_B > S_G) + \tfrac{1}{2}\Pr(S_B = S_G), \qquad \mathrm{Gini} = 2\,\mathrm{AUC} - 1`}
-          caption={<T en={<>The ranking power of a score: S<sub>B</sub> the risk score of an obligor drawn at random among those who defaulted, S<sub>G</sub> of one drawn among those who did not, AUC the area under the ROC curve, Gini its rescaling to the range from -1 to 1.</>} es={<>El poder de ordenamiento de un puntaje: S<sub>B</sub> el puntaje de riesgo de un deudor tomado al azar entre los que incumplieron, S<sub>G</sub> el de uno tomado entre los que no, AUC el área bajo la curva ROC, Gini su reescalamiento al rango de -1 a 1.</>} />}
+          caption={<T en={<>The ranking power of a score: S<sub>B</sub> the risk score of an obligor drawn at random among those who defaulted, S<sub>G</sub> of one drawn among those who did not, AUC the area under the ROC curve, Gini its rescaling to the range from −1 to 1.</>} es={<>El poder de ordenamiento de un puntaje: S<sub>B</sub> el puntaje de riesgo de un deudor tomado al azar entre los que incumplieron, S<sub>G</sub> el de uno tomado entre los que no, AUC el área bajo la curva ROC, Gini su reescalamiento al rango de −1 a 1.</>} />}
         />
         <Equation
           tex={String.raw`K = \mathrm{LGD}\left[\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD}) + \sqrt{\rho}\,\Phi^{-1}(0.999)}{\sqrt{1-\rho}}\right) - \mathrm{PD}\right], \qquad \mathrm{RW} = 12.5\,K`}
