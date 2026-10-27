@@ -148,6 +148,9 @@ const SEGMENT_FIXED: Record<string, BiText> = {
   sex: bi('sex', 'sexo'),
   marital_status: bi('marital status', 'estado civil'),
   'minimum-transfer-amount-0': bi('minimum transfer amount 0', 'monto mínimo de transferencia 0'),
+  // C02's pooled file: the horizon indicator of each row, in years ahead (data-pipeline/pipeline/cases/c02/conventions.py HORIZON_FEATURE;
+  // R4 c03 NB3: "input horizon_years")
+  'characteristic:horizon_years': bi('horizon indicator of the pooled file (years ahead)', 'indicador de horizonte del archivo agrupado (años hacia adelante)'),
 };
 
 /** C20's Fed portfolios and the fields of their loans (the Federal Reserve's hypothetical portfolios, c20/v_shift.py). */
@@ -342,6 +345,13 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
   }
   // a grade of the master scale (C01: G01 to G12), so the per-grade rows of a tests table read apart (R3 c23 M1)
   if ((m = /^G(\d\d)$/.exec(seg))) return bi(`grade G${m[1]}`, `grado G${m[1]}`);
+  // C11's tail level of a back-test (`alpha=0.025`), as the C11 views write it ("2.5 % tail (97.5 % VaR)"; U16-F12g D3: 117 raw
+  // evidence keys in the Spanish Findings after the re-bake)
+  if ((m = /^alpha=(\d*\.?\d+)$/.exec(seg))) {
+    const a = Number(m[1]);
+    const pc = (v: number, lang: Lang) => num(String(Math.round(v * 1000) / 10), lang);
+    return bi(`${pc(a, 'en')}\u00a0% tail (${pc(1 - a, 'en')}\u00a0% VaR)`, `cola de ${pc(a, 'es')}\u00a0% (VaR al ${pc(1 - a, 'es')}\u00a0%)`);
+  }
   switch (ctx.caseId) {
     case 'C03':
       // a vintage of the SBA panel by its fiscal year, so the rows of the tests table read apart (R3 c04 M1)

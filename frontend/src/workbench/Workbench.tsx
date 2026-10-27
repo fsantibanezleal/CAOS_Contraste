@@ -27,6 +27,7 @@ import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
 import { caseLabel } from './caseLabels';
+import { useMeasuredLayout } from './layout';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
 import { FindingsWithOpinion } from './governance/OpinionBlock';
@@ -142,6 +143,8 @@ export function liveScores(sel: Selection | null) {
 
 export function Workbench() {
   const lang = useShellLang();
+  // the scroll boxes' cues and the plots' floors, measured in the browser (U16-F12a, R4 ruling 8)
+  useMeasuredLayout();
   const index = useArtifact((s) => loadIndex(s), [], { unavailable: true });
   const readiness = useReadiness();
   const [caseId, setCaseId] = useState<string | null>(null);
@@ -237,7 +240,7 @@ export function Workbench() {
           <Knob
             id="lgd"
             label={{ en: 'LGD', es: 'LGD' }}
-            hint={{ en: 'Loss given default, assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50 % es el piso de Basilea III para QRRE (CRE32.58).' }}
+            hint={{ en: 'Loss given default, assumed for every approved account; 50 % is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50 % es el piso de Basilea III para QRRE (CRE32.58).' }}
             value={lgd}
             min={0.1}
             max={1}

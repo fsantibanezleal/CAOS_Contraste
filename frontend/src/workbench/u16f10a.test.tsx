@@ -179,8 +179,10 @@ describe('U16-F10a C01 (R3 c01, c02)', () => {
         expect(t).not.toMatch(/resamples the holdout|remuestrea la muestra reservada/);
         const iv = m.slice(m.indexOf('data-table="iv"'));
         expect((iv.slice(0, iv.indexOf('</table>')).match(/<tr>/g) ?? []).length).toBe(5);
-        // two filling cards in the second column: the reasons replay does not fill, the chart's card fills
-        expect((m.match(/class="caos-plot fill"/g) ?? []).length).toBe(2);
+        // the points table, the replay and the chart each fill their card; the second column is split by measure, the chart's part
+        // keeping its plot's floor (R4 c01 M1)
+        expect((m.match(/class="caos-plot fill"/g) ?? []).length).toBe(3);
+        expect(m).toMatch(/data-plot-floor="11rem" data-block="applicant-distribution"/);
       }
     });
   }

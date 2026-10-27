@@ -81,7 +81,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
     payers === null || effects.every((e) => e === null)
       ? ''
       : l === 'en'
-        ? ` The ${formatNumber(payers, 'en')} six-month full payers as transactors (PD floor 0.05% instead of 0.1%): ${names[0].en} ${effectText(effects[0], 'en')}, ${names[1].en} ${effectText(effects[1], 'en')}.`
+        ? ` The ${formatNumber(payers, 'en')} six-month full payers as transactors (PD floor 0.05 % instead of 0.1 %): ${names[0].en} ${effectText(effects[0], 'en')}, ${names[1].en} ${effectText(effects[1], 'en')}.`
         : ` Los ${formatNumber(payers, 'es')} que pagaron todo en los seis meses, como transaccionales (piso de PD de 0,05 % en vez de 0,1 %): ${names[0].es} ${effectText(effects[0], 'es')}, ${names[1].es} ${effectText(effects[1], 'es')}.`;
   // the pipeline's books at exactly the committed approval rate, applicant by applicant (ties broken by the raw score)
   const exactA = v.impact.capital_champion?.value ?? null;
@@ -99,7 +99,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8% of the RWA, in million ${cname.en} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
+          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8 % of the RWA, in million ${cname.en} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
           es: `${pick(klass, 'es')}; EAD: ${irb.ead.es}; el capital es el 8 % de los APR, en millones de ${cname.es} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
         }}
       >
@@ -138,7 +138,7 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
               <p className="ct-note" data-exact="pipeline">
                 {pick(
                   {
-                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50%), ${names[0].en} and ${pipelineName.en}${sel.challenger === pipelineChallenger ? '' : ' (the pipeline\'s challenger)'}: ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
+                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50 %), ${names[0].en} and ${pipelineName.en}${sel.challenger === pipelineChallenger ? '' : ' (the pipeline\'s challenger)'}: ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
                     es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50 %), ${names[0].es} y ${pipelineName.es}${sel.challenger === pipelineChallenger ? '' : ' (el retador del cálculo previo)'}: ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
                   },
                   lang,

@@ -83,14 +83,15 @@
 }
 
 /* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
-   900 px. A row is never shorter than a panel with its key needs (320 px: at 1280 x 800 the rows shared 500 px and
-   a panel with eight series kept a plot of 30 px under its key), and the grid scrolls inside its card when the rows do
-   not fit */
+   900 px. A row is never shorter than its panel needs: the plot keeps its floor under its key (layout.ts measures it and
+   grows the panel's floor box; R4 c26 M1, c27 M1: a fixed 320 px row, or a floor on the box that also holds the key, left a
+   plot of 3 to 30 px under a key of eight series), and the grid scrolls inside its card, with its cue, when the rows do not
+   fit */
 .ct-panels-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0; overflow-y: auto;
-  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(320px, 1fr); }
+  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(auto, 1fr); }
 .ct-panels-fill[data-views="1"] { grid-template-columns: minmax(0, 1fr); }
 .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.ct-panels-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.ct-panels-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: auto; min-width: 0; }
 .ct-sm-title { margin: 0 0 0.15rem; font-size: 0.8rem; font-weight: 600; color: var(--color-fg-subtle); }
 @media (max-width: 900px) {
   .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -123,10 +124,12 @@
 /* the least height of a drawing over its tables; a box sets its own (ChartOverTable's `chartMin`) */
 :root { --ct-chart-min: 15rem; }
 /* the boxes of a drawing and its tables (ChartOverTable, LabelledOverTable, ChartAbove, the C21 evidence card): the
-   drawing takes the height the tables leave, the tables scroll under it; --ct-chart-min is the drawing's least height */
+   drawing takes the height the tables leave, the tables scroll under it; --ct-chart-min is the drawing's least height, and
+   its plot keeps its own floor (layout.ts). The tables take the room they need, up to what the drawing's least height leaves
+   (R4 ruling 8: a fixed 42 % cap left whole tables of C10, C16 and C21 at their header row while the drawing kept the rest) */
 .ct-stack-chart { flex: 1 1 0; min-height: var(--ct-chart-min, 15rem); display: flex; flex-direction: column; }
 .ct-stack-fixed { flex: 0 0 var(--ct-chart-min, 15rem); min-height: var(--ct-chart-min, 15rem); display: flex; flex-direction: column; }
-.ct-stack-table { flex: 0 1 auto; max-height: 42%; overflow: auto; min-height: 0; }
+.ct-stack-table { flex: 0 1 auto; overflow: auto; min-height: 0; }
 /* the C21 evidence card holds two drawings of 21 rem and a table: it scrolls inside its card when they do not fit */
 .ct-stack[data-block="finding-evidence"] { overflow-y: auto; }
 .ct-stack-rest, .ct-stack-fill { flex: 1 1 0; overflow: auto; min-height: 0; }
@@ -150,16 +153,29 @@
 @media (max-width: 900px) { .ct-c13-findings { flex: none; min-height: min(70vh, 36rem); } }
 /* its findings table shows every row at 1280, the headline F-PLA included (R3 c14 m1: the shared 42 % cap hid it in 3 of 7 captures) */
 .ct-c13-findings .ct-stack-chart { flex: 0 0 auto; }
-.ct-c13-findings .ct-stack-table { max-height: none; flex: 1 1 auto; }
+.ct-c13-findings .ct-stack-table { flex: 1 1 auto; }
 /* a box of the reports with a height of its own scrolls like the others */
 .ct-fade-scroll { overflow: auto; }
-/* a scroll box of a wide screen fades its bottom edge and keeps a gap under its last row, so no line ends cut through its
-   middle where the box ends (U16-R2 V21-5); the gap is blank and the fade only touches it once the box is scrolled to its end */
+/* A scroll box with content past its edge says so, at any width and wherever its edge falls (R4 ruling 8). layout.ts measures
+   each box and marks it: `data-more-y` while content lies below what it shows, with the count of table rows not wholly in view
+   in `data-more-text`; `data-more-x` while content lies past its right edge. Below: a band over the box's last visible line, a
+   fade into the card over that content with the count on it, which stays at the box's bottom as it scrolls and goes once the
+   box is scrolled to its end (the fade of U16-R2 V21-5 fell on a blank gap when a box ended on a row boundary: R4 c06 M1, c19
+   M1, c20 M1); and a fade of the right edge (R4 c09 M1: columns cut at 1280 with no cue). A wide screen keeps a small gap
+   under the last row, so scrolled to its end no line is cut */
 @media (min-width: 901px) {
-  .ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll {
-    padding-bottom: 1.25rem;
-    mask-image: linear-gradient(to bottom, #000 calc(100% - 1.25rem), transparent);
-  }
+  .ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll { padding-bottom: 0.5rem; }
+}
+:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box])[data-more-y]::after {
+  content: attr(data-more-text); display: block; position: sticky; bottom: 0; left: 0; z-index: 2;
+  box-sizing: border-box; height: 2.3rem; margin-top: -2.3rem; padding: 1.15rem 0.5rem 0.2rem;
+  background: linear-gradient(to bottom, transparent, var(--color-surface) 55%);
+  font-size: 0.74rem; line-height: 1; font-weight: 600; color: var(--color-fg-subtle); text-align: center; pointer-events: none;
+}
+/* in a panel grid the band spans the grid */
+.ct-panels-fill[data-more-y]::after { grid-column: 1 / -1; }
+:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box])[data-more-x] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
 }
 /* the C21 evidence card: two drawings of 21 rem (the plot of each keeps three ticks next to its title, key and readout) */
 @media (max-width: 900px) {
@@ -250,19 +266,18 @@ table.ct-wrap-head th { white-space: normal; }
 .ct-sub { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; font-weight: 650; color: var(--color-fg); }
 
 
-/* C12 (U16-F9c, R2b c13): a drawing over tables that need more than the shared 42 % box (the exceedances, the collateral) gives
-   them 68 % at 1280; a phone flows as every stack does. The pager of a long C12 table (the calibrations) */
+/* C12 (U16-F9c, R2b c13): a drawing over tables that need the room (the exceedances, the collateral); since the shared box has no
+   cap (R4 ruling 8) the tables take what the drawing's least height leaves, as every stack's do; a phone flows. The pager of a
+   long C12 table (the calibrations) */
 @media (min-width: 901px) {
   .ct-c12-tall { height: 100%; min-height: 0; }
-  .ct-c12-tall > .ct-stack > .ct-stack-table { max-height: 68%; }
 }
 .ct-c12-pager { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 
 /* C17 (U16-F9c, R2b c18 M-3): the capital by years and threshold holds a 12-column table of four cells under five bars; at 1280 the
-   table gets 74 % of the card so its rows show whole (a phone flows as every stack does) */
+   table takes the room it needs, as every stack's does since R4 (a phone flows as every stack does) */
 @media (min-width: 901px) {
   .ct-c17-tall { height: 100%; min-height: 0; }
-  .ct-c17-tall > .ct-stack > .ct-stack-table { max-height: 74%; }
 }
 
 /* C18 (U16-F9c, R2b c19 M-new-1): the stack view's two drawings share their card by their bars; a phone gives each its least height */
@@ -285,9 +300,8 @@ table.ct-wrap-head th { white-space: normal; }
   .ct-c20-pair > * { flex: none; min-height: 10rem; }
 }
 
-/* C21 (U16-F9c, R2b c21): the rates and the replication tables hold a handful of rows; at 1280 their box takes 60 % of the card so
-   every row shows (a phone flows as every stack does) */
+/* C21 (U16-F9c, R2b c21): the rates and the replication tables hold a handful of rows; at 1280 their box takes the room they need
+   (a 60 % cap left the four-fifths table 3.5 of 6 rows, R4 c25 m2), as every stack's does; a phone flows */
 @media (min-width: 901px) {
   .ct-c21-tall { height: 100%; min-height: 0; }
-  .ct-c21-tall > .ct-stack > .ct-stack-table { max-height: 60%; }
 }

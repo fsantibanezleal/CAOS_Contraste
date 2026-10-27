@@ -182,12 +182,12 @@ export const testsOf = (...prefixes: string[]) => (t: TestRow) => prefixes.some(
 
 /** The rows the engine returned for the tests of this variant, under the drawing they belong to: a test that did not run says why and shows no number. */
 /** `caseId` and `models` name a row's model and its input (segment) when the case passes no `modelLabel`; a row of the portfolio
- * shows no input. */
+ * says "portfolio" (R4 ruling 3: the segment on every row). */
 export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: { tests: TestRow[]; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean; caseId?: string; models?: NameContext['models'] }) {
   const lang = useShellLang();
   const rows = only ? tests.filter(only) : tests;
   const modelText = (id: string) => modelLabel?.(id) ?? pick(modelName(id, { caseId, models }) ?? { en: id, es: id }, lang);
-  // the segment of a row (an input, a slice, a window, a group contrast) where one is needed to tell the rows apart
+  // the segment of every row (an input, a slice, a window, a group contrast, the portfolio)
   const segments = segmentLabels(rows, caseId);
   return (
     <div data-block="tests">
