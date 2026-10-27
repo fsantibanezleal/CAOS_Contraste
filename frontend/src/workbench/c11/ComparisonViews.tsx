@@ -53,7 +53,8 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
                 tone: x.in_set ? ('good' as const) : ('bad' as const),
                 highlight: x.model_id === champion,
               }))}
-              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 }, range: [0, 1] }}
+              // three significant digits in the bars and the table alike: 0.0495 and 0.0511 do not both read 0.05 (R4 c14 m4, n7)
+              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: P_FORMAT, range: [0, 1] }}
             />
           }
         >
@@ -82,8 +83,8 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
                 <th className="ct-wide-only">{pick({ en: 'Rung', es: 'Escalón' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Eligible', es: 'Elegible' }, lang)}</th>
                 <th>{pick({ en: 'Average FZ0', es: 'FZ0 medio' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Average tick loss', es: 'Pérdida tick media' }, lang)}</th>
-                <th>{pick({ en: 'MCS p-value', es: 'Valor p del MCS' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Average tick loss', es: 'Pérdida cuantílica media' }, lang)}</th>
+                <th>{pick({ en: 'MCS p-value', es: 'Valor p del conjunto de confianza' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'In the set', es: 'En el conjunto' }, lang)}</th>
               </tr>
             </thead>
@@ -99,7 +100,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
                       <MaybeNumber value={lv?.fz0_mean ?? null} reason={lv?.fz0_reason ? reasonText(lv.fz0_reason, lang) : null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                     </td>
                     <td className="ct-wide-only">{lv ? formatNumber(lv.tick_loss_mean, lang, { digits: 3 }) : formatNumber(null, lang)}</td>
-                    <td data-na={member ? undefined : 'true'}>{member ? formatNumber(member.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
+                    <td data-na={member ? undefined : 'true'}>{member ? formatNumber(member.p_value, lang, P_FORMAT) : formatNumber(null, lang)}</td>
                     <td className="ct-text">{member ? (member.in_set ? pick({ en: 'in', es: 'dentro' }, lang) : pick({ en: 'out', es: 'fuera' }, lang)) : formatNumber(null, lang)}</td>
                   </tr>
                 );
@@ -111,6 +112,15 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
     </ViewsRow>
   );
 }
+
+/** The p-values of the comparison: three significant digits in the bars and the tables (R4 c14 m4, n7). */
+export const P_FORMAT = { digits: 3 } as const;
+
+/** The DM card's title with the tail level of its rows, as the timeline names it (R4 c14 n8). */
+const dmTitle = (alpha: number) => ({
+  en: `Diebold-Mariano against the champion, ${formatNumber(alpha, 'en', { percent: true, decimals: alpha === 0.025 ? 1 : 0 })} tail`,
+  es: `Diebold-Mariano contra el campeón, cola de ${formatNumber(alpha, 'es', { percent: true, decimals: alpha === 0.025 ? 1 : 0 })}`,
+});
 
 /** Every model against the champion under the FZ0 score and the tick loss: the Diebold-Mariano statistic and its p-value. */
 export function DmView({ sel }: { sel: C11Sel | null }) {
@@ -126,8 +136,9 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
   if (champion === null) {
     return (
       <ViewsRow>
-        <PlotCard fill title={{ en: 'Diebold-Mariano against the champion', es: 'Diebold-Mariano contra el campeón' }} {...card}>
-          <div className="ct-scroll" data-caos-flow="">
+        {/* a card as tall as its reason, not a filling card with a blank stage under one line (R4 c14 m3) */}
+        <PlotCard title={dmTitle(sel.alpha)} {...card}>
+          <div>
             <ConventionLine />
             <p className="ct-note" data-state="unavailable">{pick({ en: 'No champion at this level, so there is nothing to compare with.', es: 'No hay campeón en este nivel, así que no hay con qué comparar.' }, lang)}</p>
           </div>
@@ -139,7 +150,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: 'Diebold-Mariano against the champion', es: 'Diebold-Mariano contra el campeón' }}
+        title={dmTitle(sel.alpha)}
         {...card}
         note={{
           en: `The loss differential is the model minus the champion on the days both are defined: negative favours the model. Bartlett long-run variance with ${o.comparison.hac_lags} lags (one-step forecasts), significance ${formatNumber(o.comparison.significance, 'en', { percent: true, decimals: 0 })}.`,
@@ -154,7 +165,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={fz0.map((d) => ({ id: d.model_id, label: modelLabel(sel, d.model_id), value: d.p_value, tone: tone[d.direction] }))}
-              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 }, range: [0, 1] }}
+              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: P_FORMAT, range: [0, 1] }}
             />
           }
         >
@@ -188,7 +199,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
                     <MaybeNumber value={d.dm_statistic} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                   </td>
                   <td>
-                    <MaybeNumber value={d.p_value} reason={null} format={(v) => formatNumber(v, lang, { digits: 2 })} />
+                    <MaybeNumber value={d.p_value} reason={null} format={(v) => formatNumber(v, lang, P_FORMAT)} />
                   </td>
                   <td className="ct-wide-only">{d.n_common === null ? formatNumber(null, lang) : formatNumber(d.n_common, lang, { decimals: 0 })}</td>
                   <td className="ct-text">

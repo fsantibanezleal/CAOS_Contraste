@@ -149,7 +149,7 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
   );
 }
 
-/** The live read-out of the Model section: the model in focus on this cohort. */
+/** The live read-out of the Model section: the model in focus on this cohort, at the tables' three fixed decimals (R4 c10 m1). */
 export function RungReadout({ sel }: { sel: C08Sel | null }) {
   const o = outputsOf(sel);
   const r = o?.rung_comparison.find((x) => x.rung_id === sel?.rung) ?? null;
@@ -159,9 +159,9 @@ export function RungReadout({ sel }: { sel: C08Sel | null }) {
       variant={sel?.data.variant}
       title={{ en: 'This model on the cohort', es: 'Este modelo en la cohorte' }}
       items={[
-        { label: { en: 'R squared', es: 'R cuadrado' }, value: r?.r2 ?? null, unitless: true, format: { digits: 3 }, hint: why ?? { en: 'Share of the variance of the LGD that the model explains.', es: 'Proporción de la varianza de la LGD que explica el modelo.' } },
-        { label: { en: 'RMSE', es: 'RMSE' }, value: r?.rmse ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'Root mean squared error of the predicted LGD; lower is better.', es: 'Raíz del error cuadrático medio de la LGD predicha; menor es mejor.' } },
-        { label: { en: 'Spearman', es: 'Spearman' }, value: r?.spearman ?? null, unitless: true, format: { digits: 3 }, hint: why ?? { en: 'Rank correlation between predicted and realised LGD.', es: 'Correlación de rangos entre la LGD predicha y la realizada.' } },
+        { label: { en: 'R squared', es: 'R cuadrado' }, value: r?.r2 ?? null, unitless: true, format: { decimals: 3 }, hint: why ?? { en: 'Share of the variance of the LGD that the model explains.', es: 'Proporción de la varianza de la LGD que explica el modelo.' } },
+        { label: { en: 'RMSE', es: 'RMSE' }, value: r?.rmse ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Root mean squared error of the predicted LGD; lower is better.', es: 'Raíz del error cuadrático medio de la LGD predicha; menor es mejor.' } },
+        { label: { en: 'Spearman', es: 'Spearman' }, value: r?.spearman ?? null, unitless: true, format: { decimals: 3 }, hint: why ?? { en: 'Rank correlation between predicted and realised LGD.', es: 'Correlación de rangos entre la LGD predicha y la realizada.' } },
         { label: { en: 'Calibration gap', es: 'Brecha de calibración' }, value: r?.calibration_gap ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The signed calibration gap the engine reports for this model.', es: 'La brecha de calibración con signo que el motor informa para este modelo.' } },
       ]}
     />

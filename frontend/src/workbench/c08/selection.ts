@@ -54,6 +54,20 @@ export function rungLabel(sel: Pick<C08Sel, 'data'> | null, id: string): Bi {
   return k ? KIND_TEXT[k] : { en: id, es: id };
 }
 
+/** The short words of a model for the rail's select, which fits an option to 160 px: the full name is its hint (R4 c10 n4: "Árboles
+ * potenciados por…", "Modelo en dos etap…"). A kind not listed keeps its name. */
+export const KIND_SHORT: Record<string, Bi> = {
+  hurdle: { en: 'Two-stage hurdle', es: 'Dos etapas' },
+  'gradient-boosted': { en: 'Gradient boosting', es: 'Árboles potenciados' },
+  'cure-decomposition': { en: 'Cure-rate split', es: 'Tasa de cura' },
+};
+
+/** The rail's words for a model: its short name where it has one, else its name. */
+export function rungShortLabel(sel: Pick<C08Sel, 'data'> | null, id: string): Bi {
+  const k = kindOf(sel, id);
+  return (k ? KIND_SHORT[k] : undefined) ?? rungLabel(sel, id);
+}
+
 /** The first calendar year of a default cohort: the models artifact names it, else the id's four leading digits. */
 export function cohortYear(sel: Pick<C08Sel, 'data'> | null, id: string): number {
   return fitOf(sel)?.cohorts.find((c) => c.id === id)?.first_year ?? (Number.parseInt(id.slice(0, 4), 10) || 0);

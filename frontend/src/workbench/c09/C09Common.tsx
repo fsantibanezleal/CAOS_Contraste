@@ -1,6 +1,7 @@
 // C09's Validation, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls). The Findings card and the fixture notice are the ones C06 and C07 use.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { Fragment, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -13,8 +14,21 @@ import { truthText } from '../c08/words';
 import { SHAPED_ON_TEXT, bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, text, type C09Outputs, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
-/** The convention's formula with its reference date as a subscript: E(t_r) is written E(tᵣ), as the pages write it (R3 c10 m9). */
-export const formulaText = (formula: string): string => formula.replace(/\bt_r\b/g, 'tᵣ');
+/** The convention's formula with its reference date as a subscript: E(t_r) is written E(t<sub>r</sub>), as the pages write it (R3 c10
+ * m9); a subscript element, not the modifier letter, which at the page's size read as a comma (R4 c11 m8). */
+export function formulaText(formula: string): ReactNode {
+  const parts = formula.split(/\bt_r\b/);
+  return parts.map((p, i) => (
+    <Fragment key={i}>
+      {p}
+      {i < parts.length - 1 ? (
+        <>
+          t<sub>r</sub>
+        </>
+      ) : null}
+    </Fragment>
+  ));
+}
 
 export function C09FindingsView({ sel }: { sel: C09Sel | null }) {
   if (!sel) return <Pending />;

@@ -59,7 +59,7 @@ describe('U16-F10c, C11 (R3 c12)', () => {
 
   it('B2: the reasons the producer writes now (no "U8 bake", no decision id) read in Spanish', () => {
     const cases: Array<[string, string]> = [
-      ['challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it', 'solo retador: debe entrar al MCS de 90 por ciento sobre FZ0 fuera de muestra, y la corrida publicada no lo entrena'],
+      ['challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it', 'solo retador: debe entrar al conjunto de confianza de modelos al 90 por ciento sobre FZ0 fuera de muestra, y la corrida publicada no lo entrena'],
       ['fewer than 250 forecast days (104): the Basel traffic light of MAR32.9 is defined on 250 observations and the window has no lead-in', 'menos de 250 días de pronóstico (104): el semáforo de Basilea de MAR32.9 se define sobre 250 observaciones y la ventana no tiene período previo'],
       ['no model is eligible: every model fails at least one gate', 'ningún modelo es elegible: cada modelo falla al menos una compuerta'],
     ];
@@ -120,7 +120,8 @@ describe('U16-F10c, C11 (R3 c12)', () => {
     for (const d of expected) expect(d.format, d.id).toEqual({ decimals: 2 });
   });
 
-  it('m16: the FZ0 hint of the rail keeps the gender of the tables ("FZ0 no está definida")', () => {
+  // the tables' gender is "definido" (c08/notes.ts); the rail follows it since U16-F12c (R4 c14 m16: the R3 fix had inverted it)
+  it('m16: the FZ0 hint of the rail keeps the gender of the tables ("FZ0 no está definido")', () => {
     setLang('es');
     for (const w of WINDOWS) {
       const sel = selOf(w);
@@ -128,8 +129,8 @@ describe('U16-F10c, C11 (R3 c12)', () => {
       const m = o.models.find((x) => x.by_level.some((l) => l.fz0_reason));
       if (!m) continue;
       const markup = html(<ModelReadout sel={{ ...sel, model: m.model_id, alpha: m.by_level.find((l) => l.fz0_reason)!.alpha as C11Sel['alpha'] }} />);
-      expect(markup).not.toContain('FZ0 no está definido');
-      expect(markup).toContain('FZ0 no está definida');
+      expect(markup).not.toContain('FZ0 no está definida');
+      expect(markup).toContain('FZ0 no está definido');
       return;
     }
   });

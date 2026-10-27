@@ -49,5 +49,5 @@ def test_a_calibration_finding_title_writes_its_points_in_the_language():
         rows: list = []
 
     cal = {"light": "red", "metric": -0.1234}
-    f = variant._findings(cal, "L2-fractional-logit", "all", Down())[0]
+    f = variant._findings(cal, "L2-fractional-logit", "all", Down(), [])[0]
     assert "12.3 points" in f["title"]["en"] and "12,3 puntos" in f["title"]["es"]

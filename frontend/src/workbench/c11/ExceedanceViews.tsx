@@ -133,6 +133,9 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
   const tl = lv?.traffic_light ?? null;
   const name = modelLabel(sel, sel.model);
   const title = { en: `Basel traffic light: ${name.en}`, es: `Semáforo de Basilea: ${name.es}` };
+  // the table's reference is a paragraph above it, not its caption: a caption is as wide as the table, so at 390 its last word sat
+  // under the scroll box's fade (R4 c14 n9)
+  const captionId = `c11-mar32-9-${sel.alpha}`;
   if (!lv || tl === null) {
     return (
       <ViewsRow>
@@ -201,8 +204,10 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               ) : null}
             </dl>
             {table ? (
-              <table className="caos-table ct-wrap-head" data-table="mar32-9">
-                <caption className="ct-note">{tableRefText(table.reference, lang)}</caption>
+              <p className="ct-note" data-caption="mar32-9" id={captionId}>{tableRefText(table.reference, lang)}</p>
+            ) : null}
+            {table ? (
+              <table className="caos-table ct-wrap-head" data-table="mar32-9" aria-describedby={captionId}>
                 <thead>
                   <tr>
                     <th>{pick({ en: 'Exceptions in 250 days', es: 'Excepciones en 250 días' }, lang)}</th>
@@ -231,7 +236,8 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
           </ChartOverTable>
         ) : (
           <div className="ct-scroll" data-caos-flow="">
-            <p className="ct-note" data-state="unavailable">{`${formatNumber(null, lang)} (${reasonText(tl.reason, lang)})`}</p>
+            {/* the reason is the list's "Why not evaluated" row: stated once (R4 c14 n2) */}
+            <p className="ct-note" data-state="unavailable">{pick({ en: 'The traffic light is not evaluated in this window.', es: 'El semáforo no se evalúa en esta ventana.' }, lang)}</p>
           <div data-level={lv.alpha}>
             <ConventionLine />
             <dl className="ct-defs" data-table="traffic-light" data-final-zone={tl.final_zone}>
@@ -255,8 +261,10 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               ) : null}
             </dl>
             {table ? (
-              <table className="caos-table ct-wrap-head" data-table="mar32-9">
-                <caption className="ct-note">{tableRefText(table.reference, lang)}</caption>
+              <p className="ct-note" data-caption="mar32-9" id={captionId}>{tableRefText(table.reference, lang)}</p>
+            ) : null}
+            {table ? (
+              <table className="caos-table ct-wrap-head" data-table="mar32-9" aria-describedby={captionId}>
                 <thead>
                   <tr>
                     <th>{pick({ en: 'Exceptions in 250 days', es: 'Excepciones en 250 días' }, lang)}</th>

@@ -93,7 +93,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
                     <MaybeNumber value={ran ? t.statistic : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                   </td>
                   <td>
-                    <MaybeNumber value={ran ? t.p_value : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 2 })} />
+                    <MaybeNumber value={ran ? t.p_value : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
                   </td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(lightWord(t.light), lang)}</span>

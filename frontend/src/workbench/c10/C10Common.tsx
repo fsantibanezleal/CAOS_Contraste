@@ -40,7 +40,26 @@ export function segmentText(seg: string | null, lang: 'en' | 'es'): string {
     const what = m[1] === 'var' ? 'VaR' : 'ES';
     return lang === 'en' ? `${what} at ${level}` : `${what} al ${level}`;
   }
+  // the LHP anchor's level as the shell writes a percent, as the Euler rows do ("99.9 %"; R4 c12 n7)
+  const lhp = /^lhp-like-([\d.]+)$/.exec(seg);
+  if (lhp) {
+    const level = formatNumber(Number(lhp[1]) / 100, lang, { percent: true, decimals: Number(lhp[1]) % 1 === 0 ? 0 : 1 });
+    return lang === 'en' ? `the LHP anchor at ${level}` : `el ancla LHP al ${level}`;
+  }
   return segmentName(seg, { caseId: 'C10' })?.[lang] ?? seg;
+}
+
+/** The quarters a missing-quarter row stands for, from its reason ("1985Q1, 1985Q2, 1985Q3, 1985Q4: ..."): a whole year is named by the
+ * year (R4 c13 n8: the row printed "1985Q1" for four quarters). */
+export function missingQuartersText(quarter: string, reason: string, lang: 'en' | 'es'): string {
+  const listed = /^((?:\d{4}Q\d)(?:, \d{4}Q\d)*):/.exec(reason)?.[1].split(', ') ?? [quarter];
+  const years = [...new Set(listed.map((q) => q.slice(0, 4)))];
+  if (years.length !== 1) return listed.join(', ');
+  const qs = listed.map((q) => Number(q.slice(5))).sort((a, b) => a - b);
+  const Q = lang === 'en' ? 'Q' : 'T';
+  if (qs.length === 1) return `${years[0]}${Q}${qs[0]}`;
+  const run = qs.every((q, i) => i === 0 || q === qs[i - 1] + 1);
+  return run ? `${years[0]}, ${Q}${qs[0]} ${lang === 'en' ? 'to' : 'a'} ${Q}${qs.at(-1)}` : `${years[0]}, ${qs.map((q) => `${Q}${q}`).join(', ')}`;
 }
 
 const TRUTH_TEXT: Record<string, Bi> = {
@@ -297,14 +316,14 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
             <table className="caos-table ct-wrap-head" data-table="c10-missing-quarters">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: 'Missing quarter', es: 'Trimestre faltante' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Missing quarters', es: 'Trimestres faltantes' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Reason', es: 'Razón' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
                 {o.data_status.missing_quarters.map((q) => (
                   <tr key={q.quarter} data-quarter={q.quarter}>
-                    <td className="ct-text">{q.quarter}</td>
+                    <td className="ct-text">{missingQuartersText(q.quarter, q.reason, lang)}</td>
                     <td className="ct-text">{noteText(q.reason, lang)}</td>
                   </tr>
                 ))}

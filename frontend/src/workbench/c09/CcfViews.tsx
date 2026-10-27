@@ -51,11 +51,14 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
     <ViewsRow shares={[1, 2]}>
       <PlotCard
         fill
-        title={{ en: 'The CCF estimates against the known CCF', es: 'Las estimaciones de CCF contra el CCF conocido' }}
+        // the title and the note in fewer lines: the legend under the chart names the tones, so the note does not repeat them, and
+        // the chart keeps the height its bars, axis title and legend need (R4 c11 M1: in Spanish the stack lost 36 px and the host
+        // scrolled, cutting the axis title)
+        title={{ en: 'The CCF estimates against the known CCF', es: 'El CCF estimado y el conocido' }}
         {...card}
         note={{
-          en: 'The generator draws every balance with one CCF, so the estimators can be judged against the truth. Green is an estimate within the tolerance of the truth, amber one outside it, red one outside 0 to 1, which is printed as it is and never clipped.',
-          es: 'El generador simula cada saldo con un solo CCF, así que los estimadores se pueden juzgar contra la verdad. Verde es una estimación dentro de la tolerancia de la verdad, ámbar una fuera de ella, rojo una fuera de 0 a 1, que se imprime tal cual y nunca se recorta.',
+          en: 'The generator draws every balance with one CCF, so the estimators are judged against the truth; an estimate outside 0 to 1 is printed as it is, never clipped.',
+          es: 'El generador simula cada saldo con un solo CCF, así que los estimadores se juzgan contra la verdad; una estimación fuera de 0 a 1 se imprime tal cual.',
         }}
       >
         <ChartOverTable
@@ -69,8 +72,10 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{
-          en: `The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator. Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}. The light of each test follows that tolerance on the bias, not its p-value: green within it, amber up to twice it and red beyond. A red bar is an estimate outside 0 to 1.${shares.en}`,
-          es: `El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador. CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}. La luz de cada prueba sigue esa tolerancia sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá. Una barra roja es una estimación fuera de 0 a 1.${shares.es}`,
+          // the light rule of the tests is the Tests sub-view's note and the bar tones are the chart's legend: stated once each, so the
+          // eight rows show at 1280 in Spanish too (R4 c11 M2)
+          en: `The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator. Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}.${shares.en}`,
+          es: `El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador. CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}.${shares.es}`,
         }}>
         <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="ccf-by-design" data-truth={truth.value}>

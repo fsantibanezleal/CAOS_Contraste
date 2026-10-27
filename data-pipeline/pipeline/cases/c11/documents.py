@@ -26,6 +26,7 @@ from riskvalidation.market import scoring as rv_scoring
 from riskvalidation.validation import market as rv_val
 from riskvalidation.validation.market import _z_statistic
 
+from ...core.text import percent
 from . import portfolio as pf
 from .constants import (BASEL_DAYS, LEVELS, MC_DRAWS, MCS_BLOCK, MCS_BOOTSTRAP, MCS_CONFIDENCE, MCS_STATISTIC, SIGNIFICANCE, SPAN,
                         WINDOWS, Z2_DRAWS)
@@ -170,7 +171,7 @@ def _fz0_series(loss: np.ndarray, var: np.ndarray, es: np.ndarray, a: float) -> 
 #: the rule that picks the champion, in both languages (a Spanish view prints it: "pruebas retrospectivas", R3 c12 m5)
 SCORING_RULE = t(
     "Traditional back-tests (POF, conditional coverage, Z2) are eligibility gates; the champion is the lowest average FZ0 among the eligible models with an ES on every day; Diebold-Mariano and the model confidence set rank the ladder. The Z2 null is tail-consistent: an exponential excess over the VaR with mean ES minus VaR.",
-    "Las pruebas retrospectivas tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeón es el menor FZ0 medio entre los elegibles con ES todos los días; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")
+    "Las pruebas retrospectivas tradicionales (proporción de fallas, cobertura condicional, Z2) son compuertas de elegibilidad; el campeón es el menor FZ0 medio entre los elegibles con ES todos los días; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")
 
 
 def no_champion_reason(n_eligible: int) -> str:
@@ -328,8 +329,7 @@ def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_
                               "label": t("Champion average FZ0 at 1 percent", "FZ0 medio del campeón al 1 por ciento")},
         "champion_fz0_2_5pct": {"value": fz_of.get((champ[0.025], 0.025)) if champ[0.025] else None, "unit": "fz0-loss",
                                 "label": t("Champion average FZ0 at 2.5 percent", "FZ0 medio del campeón al 2,5 por ciento")},
-        "eligible_models": {"value": float(sum(eligible.values())), "unit": "models",
-                            "label": t("Models passing every eligibility gate", "Modelos que pasan todas las compuertas de elegibilidad")}}
+        "eligible_models": {"value": float(sum(eligible.values())), "unit": "models", "label": dict(ELIGIBLE_LABEL)}}
     outputs = {
         "kind": "window",
         "window": {"window_id": w.window_id, "asset_class": w.asset_class, "title": t(w.en, w.es), "start_date": w.start, "end_date": w.end,
@@ -348,6 +348,47 @@ def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_
             "lane": {"lane": "precompute", "reasons": []}}
 
 
+#: what the eligible count is: the models no gate rejects; a gate that did not run (no exceedance) rejects nothing, so the count is not
+#: "the models that pass every gate" (R4 c14 NB1)
+ELIGIBLE_LABEL = t("Models no eligibility gate rejects", "Modelos que ninguna compuerta de elegibilidad rechaza")
+
+#: the gate tests in words, in the order of GATES
+GATE_TEXT = {"market.kupiec_pof": t("the coverage test", "la prueba de cobertura"),
+             "market.christoffersen_conditional_coverage": t("the conditional coverage test", "la prueba de cobertura condicional"),
+             "market.acerbi_szekely": t("the ES test", "la prueba de ES")}
+
+
+def _tail(alpha: float, lang: str) -> str:
+    return percent(alpha, 0 if round(alpha * 100) == alpha * 100 else 1, lang=lang)
+
+
+def _not_run(n: int, tests: list[dict]) -> dict[str, str] | None:
+    """The gates that did not run, with their counts by tail level, in both languages; None when every gate ran for every model."""
+    parts_en, parts_es = [], []
+    for g in GATES:
+        counts = []
+        for a in LEVELS:
+            k = sum(1 for r in tests if r["test_id"] == g and r["segment"] == f"alpha={a}" and r["light"] == "not_evaluated")
+            if k:
+                counts.append((a, k))
+        if not counts:
+            continue
+        name = GATE_TEXT[g]
+        if len(counts) == len(LEVELS) and len({k for _, k in counts}) == 1:
+            parts_en.append(f"{name['en']} for {counts[0][1]} of {n} at each tail")
+            parts_es.append(f"{name['es']}, para {counts[0][1]} de {n} en cada cola")
+            continue
+        en = [f"{k} of {n} models at the {_tail(a, 'en')} tail" if i == 0 else f"{k} of {n} at the {_tail(a, 'en')} tail"
+              for i, (a, k) in enumerate(counts)]
+        es = [f"{k} de {n} modelos en la cola de {_tail(a, 'es')}" if i == 0 else f"{k} de {n} en la de {_tail(a, 'es')}"
+              for i, (a, k) in enumerate(counts)]
+        parts_en.append(f"{name['en']} was not evaluated for {' and '.join(en)}")
+        parts_es.append(f"{name['es']} no se evaluó para {' y para '.join(es)}")
+    if not parts_en:
+        return None
+    return {"en": ", ".join(parts_en), "es": "; ".join(parts_es)}
+
+
 def findings(models: list[dict], tests: list[dict]) -> list[dict]:
     n = len(models)
     failing = [m["model_id"] for m in models if not m["eligible"]]
@@ -358,10 +399,18 @@ def findings(models: list[dict], tests: list[dict]) -> list[dict]:
                     "title": t(f"{len(failing)} of {n} models fail at least one eligibility gate (coverage, conditional coverage or the ES test).",
                                f"{len(failing)} de {n} modelos fallan al menos una compuerta de elegibilidad (cobertura, cobertura condicional o la prueba de ES).")})
     else:
-        # every model passes: said so and accepted, never an open finding of "0 of 17 models fail" (R3 c12 m6)
-        out.append({"id": "c11-gates", "severity": "S4", "status": "accepted", "evidence": list(GATES),
-                    "title": t(f"All {n} models pass every eligibility gate (coverage, conditional coverage and the ES test).",
-                               f"Los {n} modelos pasan todas las compuertas de elegibilidad (cobertura, cobertura condicional y la prueba de ES).")})
+        not_run = _not_run(n, tests)
+        if not_run is None:
+            # every gate ran and none is red: said so and accepted, never an open finding of "0 of 17 models fail" (R3 c12 m6)
+            out.append({"id": "c11-gates", "severity": "S4", "status": "accepted", "evidence": list(GATES),
+                        "title": t(f"All {n} models pass every eligibility gate (coverage, conditional coverage and the ES test).",
+                                   f"Los {n} modelos pasan todas las compuertas de elegibilidad (cobertura, cobertura condicional y la prueba de ES).")})
+        else:
+            # no gate is red, but a gate that did not run passed nothing: the finding counts what did not run and stays open (R4 c14 NB1:
+            # mixed-2023 said every model passed conditional coverage, which ran for none of them at the 1 % tail)
+            out.append({"id": "c11-gates", "severity": "S4", "status": "open", "evidence": list(GATES),
+                        "title": t(f"No model fails an eligibility gate, but not every gate ran: {not_run['en']}.",
+                                   f"Ningún modelo falla una compuerta de elegibilidad, pero no todas corrieron: {not_run['es']}.")})
     if clustered:
         out.append({"id": "c11-clustering", "severity": "S3", "status": "open", "evidence": ["market.christoffersen_independence"],
                     "title": t(f"{len(clustered)} models show clustered exceedances (independence test red).",

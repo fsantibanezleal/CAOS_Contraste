@@ -211,7 +211,8 @@ def summaries(rv: str, pd: float, rho: float) -> list[dict[str, Any]]:
 
 
 def pct(x: float) -> str:
-    return f"{100 * x:.2f}%"
+    """A share as a percent in an English text, as the shell writes it ("1.77 %", a no-break space before the sign; R4 c12 n7)."""
+    return percent(x, 2, lang="en")
 
 
 def pct_es(x: float) -> str:
@@ -313,18 +314,18 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
     label = lt["label"]
     imp = {
         "ec_lhp_999_share": {"value": i["ec_lhp_fitted"], "unit": "share of EAD",
-                             "label": T("LHP capital at 99.9% with the fitted correlation", "Capital LHP al 99,9 % con la correlación ajustada")},
+                             "label": T("LHP capital at 99.9 % with the fitted correlation", "Capital LHP al 99,9 % con la correlación ajustada")},
         "ec_ratio_fitted_to_irb": {"value": i["ratio_fitted_to_irb"], "unit": "ratio",
                                    "label": T("Fitted capital over IRB capital", "Capital ajustado sobre capital IRB")},
         "var_999_gaussian_over_lhp": {"value": v2 / v1, "unit": "ratio",
-                                      "label": T("Gaussian copula VaR over LHP VaR, 99.9%", "VaR de la cópula gaussiana sobre el VaR LHP, 99,9 %")},
+                                      "label": T("Gaussian copula VaR over LHP VaR, 99.9 %", "VaR de la cópula gaussiana sobre el VaR LHP, 99,9 %")},
         "var_999_student_t_over_gaussian": {"value": v3 / v2, "unit": "ratio",
-                                            "label": T("Student-t copula VaR over Gaussian copula VaR, 99.9%",
+                                            "label": T("Student-t copula VaR over Gaussian copula VaR, 99.9 %",
                                                        "VaR de la cópula t sobre el de la cópula gaussiana, 99,9 %")},
         "ga_999_share": {"value": ga999["ga"], "unit": "share of EAD",
-                         "label": T("Granularity adjustment at 99.9%", "Ajuste por granularidad al 99,9 %")},
+                         "label": T("Granularity adjustment at 99.9 %", "Ajuste por granularidad al 99,9 %")},
         "tail_exceedances_99": {"value": float(bt99["observed_exceedances"]), "unit": "years",
-                                "label": T("Evaluation years above the fitted 99% quantile", "Años de evaluación sobre el cuantil 99 % ajustado")},
+                                "label": T("Evaluation years above the fitted 99 % quantile", "Años de evaluación sobre el cuantil 99 % ajustado")},
     }
     tid = {t["test_id"] + "@" + str(t["model_id"]) + (("@" + t["segment"]) if t["segment"] else "") for t in tests}
     find = []
@@ -332,8 +333,8 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
     ratio = i["ratio_fitted_to_irb"]
     find.append({"id": "f-c10-correlation", "severity": "S3" if not 0.8 <= ratio <= 1.25 else "S4",
                  "status": "open" if not 0.8 <= ratio <= 1.25 else "accepted", "evidence": ["design:irb-reference-block"],
-                 "title": T(f"{label['en']}: the fitted asset correlation is {rho_ml['estimate']:.3f} (95% interval {rho_ml['ci_low']:.3f} to "
-                            f"{rho_ml['ci_high']:.3f}) against the IRB's {i['irb_correlation']:.3f}; the LHP capital at 99.9% is {ratio:.2f} "
+                 "title": T(f"{label['en']}: the fitted asset correlation is {rho_ml['estimate']:.3f} (95 % interval {rho_ml['ci_low']:.3f} to "
+                            f"{rho_ml['ci_high']:.3f}) against the IRB's {i['irb_correlation']:.3f}; the LHP capital at 99.9 % is {ratio:.2f} "
                             "times the IRB capital",
                             f"{label['es']}: la correlación de activos ajustada es {_n(rho_ml['estimate'], 3)} (intervalo al 95 % de "
                             f"{_n(rho_ml['ci_low'], 3)} a {_n(rho_ml['ci_high'], 3)}) frente a {_n(i['irb_correlation'], 3)} de IRB; el capital "
@@ -341,7 +342,7 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
     sev = {"green": ("S4", "accepted"), "amber": ("S3", "open"), "red": ("S2", "open")}[bt99["light"]]
     find.append({"id": "f-c10-tail", "severity": sev[0], "status": sev[1], "evidence": ["portfolio.tail_backtest@m-lhp"],
                  "title": T(f"{bt99['observed_exceedances']} of {out['backtest']['n_years_evaluated']} evaluation years "
-                            f"({', '.join(map(str, bt99['years_exceeding'])) or 'none'}) lie above the fitted 99% quantile "
+                            f"({', '.join(map(str, bt99['years_exceeding'])) or 'none'}) lie above the fitted 99 % quantile "
                             f"{pct(bt99['fitted_quantile'])}; {bt99['expected_exceedances']:.2f} are expected (upper binomial tail "
                             f"{_p3(bt99['p_value_upper'], 'en')})",
                             f"{bt99['observed_exceedances']} de {n_years_evaluated} años de evaluación "
@@ -350,14 +351,14 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
                             f"{_p3(bt99['p_value_upper'], 'es')})")})
     find.append({"id": "f-c10-tail-dependence", "severity": "S3" if v3 / v2 > 1.1 else "S4", "status": "open" if v3 / v2 > 1.1 else "accepted",
                  "evidence": ["design:copula-ladder"],
-                 "title": T(f"At 99.9% the Student-t copula (ν {P.NU:g}) VaR is {v3 / v2:.2f} times the Gaussian copula's on the same "
+                 "title": T(f"At 99.9 % the Student-t copula (ν {P.NU:g}) VaR is {v3 / v2:.2f} times the Gaussian copula's on the same "
                             f"correlation, and CreditRisk+ is {v4 / v2:.2f} times",
                             f"Al 99,9 % el VaR de la cópula t (ν {_g(P.NU)}) es {_n(v3 / v2, 2)} veces el de la cópula gaussiana con la misma "
                             f"correlación, y CreditRisk+ es {_n(v4 / v2, 2)} veces")})
     ga_rel = (v5 - v1) / v1
     find.append({"id": "f-c10-granularity", "severity": "S3" if ga_rel > 0.03 else "S4", "status": "open" if ga_rel > 0.03 else "accepted",
                  "evidence": ["design:granularity-adjustment"],
-                 "title": T(f"The granularity adjustment adds {pct(ga999['ga'])} of EAD ({ga_rel:.1%} of the LHP VaR) at 99.9% on a portfolio "
+                 "title": T(f"The granularity adjustment adds {pct(ga999['ga'])} of EAD ({percent(ga_rel, 1, lang='en')} of the LHP VaR) at 99.9 % on a portfolio "
                             f"of {out['portfolio']['n_names']:,} names with {number(out['portfolio']['effective_names'], 0, lang='en')} effective names",
                             f"El ajuste por granularidad suma {pct_es(ga999['ga'])} de la EAD ({percent(ga_rel, 1, lang='es')} del VaR LHP) al 99,9 % en una "
                             f"cartera de {number(out['portfolio']['n_names'], 0, lang='es')} nombres con {number(out['portfolio']['effective_names'], 0, lang='es')} nombres efectivos")})
@@ -367,7 +368,7 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
         s = {"green": ("S4", "accepted"), "amber": ("S3", "open"), "red": ("S2", "open"), "not_evaluated": ("S3", "open"),
              "error": ("S2", "open")}[t["light"]]
         if fid == "f-c10-mc":
-            title = T(f"The 99.9% Monte Carlo VaR of a portfolio of many identical names is {t['statistic']:+.1f} standard errors from the "
+            title = T(f"The 99.9 % Monte Carlo VaR of a portfolio of many identical names is {t['statistic']:+.1f} standard errors from the "
                       "analytic LHP quantile",
                       f"El VaR al 99,9 % de Monte Carlo de una cartera de muchos nombres idénticos está a {_signed(t['statistic'], 1)} errores "
                       "estándar del cuantil LHP analítico")
@@ -388,7 +389,7 @@ GRID_NOTICE = T(
 SIZE_POWER_DEFINITION = T(
     "Size is the rate at which H0 (the asset correlation equals the correlation under the null) is rejected when the known correlation "
     "is the correlation under the null; power is the same rate at any other known correlation. H0 is rejected when the correlation "
-    "under the null lies outside the 95% interval of the estimator.",
+    "under the null lies outside the 95 % interval of the estimator.",
     "El tamaño es la tasa de rechazo de H0 (la correlación de activos es la correlación bajo la nula) cuando la correlación conocida es "
     "la correlación bajo la nula; la potencia es la misma tasa con otra correlación conocida. H0 se rechaza cuando la correlación bajo "
     "la nula queda fuera del intervalo al 95 % del estimador.")
@@ -460,7 +461,7 @@ def models_document(table_columns: dict[str, str], example: dict[str, Any], run:
          "Glasserman and Li (2005); dossier 04 H.7 (the twist is UNVERIFIED there; acceptance is unbiasedness against plain Monte Carlo)", []),
         ("c6-is-student-t", "C6", "importance-sampling", "monte-carlo", run.n_is,
          "riskvalidation.portfolio.importance.importance_sample_gaussian",
-         "Glasserman and Li (2005); no Student-t twist is specified, so the rung is a not-evaluated row", []),
+         "Glasserman and Li (2005); no Student-t twist is specified, so the rung does not run", []),
     ]
     labels = {r["id"]: r["label"] for r in example["rungs"]}
     # whether the rung runs: the loan variants evaluate the same rungs, so the example's flag is the ladder's (R2b c11 B4: a grid,

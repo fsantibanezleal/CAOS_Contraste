@@ -53,7 +53,7 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: grid, label: { en: 'Yearly loss rate', es: 'Tasa de pérdida anual' }, format: { percent: true, decimals: 1 } }}
+              x={{ values: grid, label: { en: 'Yearly loss rate', es: 'Tasa de pérdida anual' }, format: { percent: true, decimals: 2 } }}
               y={{ label: DENSITY_TITLE, format: { decimals: 0 } }}
               series={[
                 { label: { en: 'Fitted Vasicek density', es: 'Densidad de Vasicek ajustada' }, values: line, color: '--color-accent', width: 2.4 },
@@ -68,8 +68,8 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
           <p className="ct-note" data-fit="summary">
             {pick(
               {
-                en: `Fitted probability of default ${formatNumber(fd.pd, 'en', { percent: true, decimals: 2 })}, asset correlation ${formatNumber(fd.rho, 'en', { percent: true, decimals: 1 })}; ${count(o.fit.n_years_used, 'en')} years of the fit window carry a rate.`,
-                es: `Probabilidad de incumplimiento ajustada ${formatNumber(fd.pd, 'es', { percent: true, decimals: 2 })}, correlación de activos ${formatNumber(fd.rho, 'es', { percent: true, decimals: 1 })}; ${count(o.fit.n_years_used, 'es')} años de la ventana de ajuste traen una tasa.`,
+                en: `Fitted probability of default ${formatNumber(fd.pd, 'en', { percent: true, decimals: 2 })}, asset correlation ${formatNumber(fd.rho, 'en', { percent: true, decimals: 1 })}; ${count(o.fit.n_years_used, 'en')} years of the fit window have a rate.`,
+                es: `Probabilidad de incumplimiento ajustada ${formatNumber(fd.pd, 'es', { percent: true, decimals: 2 })}, correlación de activos ${formatNumber(fd.rho, 'es', { percent: true, decimals: 1 })}; ${count(o.fit.n_years_used, 'es')} años de la ventana de ajuste tienen tasa.`,
               },
               lang,
             )}
@@ -145,7 +145,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: p.rho, label: { en: 'Asset correlation', es: 'Correlación de activos' }, format: { percent: true, decimals: 0 } }}
+              x={{ values: p.rho, label: { en: 'Asset correlation', es: 'Correlación de activos' }, format: { percent: true, decimals: 1 } }}
               y={{ label: LIKELIHOOD_TITLE, format: { decimals: 0 } }}
               series={[{ label: { en: 'Profile log-likelihood', es: 'Log-verosimilitud perfilada' }, values: p.log_likelihood, color: '--color-accent', width: 2.4 }]}
               yMarks={[{ y: p.cutoff, label: { en: cutoffLabel(formatNumber(p.cutoff, 'en', { digits: 4 }), 'en'), es: cutoffLabel(formatNumber(p.cutoff, 'es', { digits: 4 }), 'es') }, tone: 'warn' }]}

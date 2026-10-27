@@ -13,6 +13,33 @@ export { YEAR_FORMAT };
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
+/** A cohort's name with its period kept whole: a phone breaks "Defaults 2009-10" before the period, never inside it (R4 c10 n1). */
+export function CohortName({ name }: { name: string }) {
+  const m = /^(.*\s)(\S*\d\S*)$/.exec(name);
+  if (!m) return <>{name}</>;
+  return (
+    <>
+      {m[1]}
+      <span style={{ whiteSpace: 'nowrap' }}>{m[2]}</span>
+    </>
+  );
+}
+
+/** The share of the plot height kept above the data for each mark label: the shell writes x-mark labels from the top row down, so a
+ * label row over the data hid the downturn line and the uncovered point at 390 (R4 c10 MJ1). */
+export const MARK_ROW_SHARE = 0.13;
+
+/** The y range of a chart whose x marks are labelled: the data from a little below its lowest value, and one label row of headroom per
+ * mark above its highest. */
+export function labelledRange(values: number[], nMarks: number): [number, number] {
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const span = Math.max(hi - lo, 0.01);
+  const bottom = lo - 0.1 * span;
+  const free = Math.min(MARK_ROW_SHARE * nMarks, 0.6);
+  return [bottom, bottom + (hi - bottom) / (1 - free)];
+}
+
 /** The downturn add-on: long-run LGD, downturn LGD and the LGD the crisis cohorts realised, with the coverage. */
 export function DownturnView({ sel }: { sel: C08Sel | null }) {
   const lang = useShellLang();
@@ -31,8 +58,10 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
     ...rows
       .filter((r) => !r.covered)
       .map((r) => {
+        // the period only ("2009-10"), so at 390 the label keeps its shortfall in the plot width (R4 c10 MJ1); the full name is the table's
         const name = cohortLabel(sel, r.cohort_id);
-        return { x: cohortYear(sel, r.cohort_id), label: { en: `${name.en}: not covered, shortfall ${p2(r.shortfall, 'en')}`, es: `${name.es}: no cubierta, faltante ${p2(r.shortfall, 'es')}` } };
+        const period = (t: string) => t.split(' ').at(-1) ?? t;
+        return { x: cohortYear(sel, r.cohort_id), label: { en: `${period(name.en)}: not covered, shortfall ${p2(r.shortfall, 'en')}`, es: `${period(name.es)}: no cubierta, faltante ${p2(r.shortfall, 'es')}` } };
       }),
   ];
   return (
@@ -57,7 +86,12 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
                 // the axis spans the downturn years, so the mark of the last one is drawn (a vertical mark does not widen the x scale)
                 range: [Math.min(t.period.first_year, ...rows.map((r) => cohortYear(sel, r.cohort_id))), Math.max(t.period.last_year, ...rows.map((r) => cohortYear(sel, r.cohort_id)))],
               }}
-              y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
+              y={{
+                label: { en: 'Mean LGD', es: 'LGD media' },
+                // two decimals, so the readout tells the covered 81.78 % from the uncovered 82.21 % (R4 c10 n2)
+                format: { percent: true, decimals: 2 },
+                range: labelledRange(rows.flatMap((r) => [r.long_run_lgd.value, r.downturn_lgd.value, r.crisis_realised_lgd.value]), marks.length),
+              }}
               series={[
                 { label: { en: 'Long-run LGD', es: 'LGD de largo plazo' }, values: rows.map((r) => r.long_run_lgd.value), color: '--color-fg-subtle', width: 1.8, dash: [6, 3] },
                 { label: { en: 'Downturn LGD', es: 'LGD de recesión' }, values: rows.map((r) => r.downturn_lgd.value), color: '--color-warn', width: 2.6 },
@@ -102,7 +136,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.cohort_id} data-cohort={r.cohort_id} data-covered={String(r.covered)} className={r.cohort_id === sel.cohort ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(cohortLabel(sel, r.cohort_id), lang)}</td>
+                  <td className="ct-text"><CohortName name={pick(cohortLabel(sel, r.cohort_id), lang)} /></td>
                   <td className="ct-wide-only">
                     <Flagged value={r.long_run_lgd.value} flag={r.long_run_lgd.flag} />
                   </td>

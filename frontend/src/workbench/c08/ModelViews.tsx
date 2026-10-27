@@ -8,6 +8,7 @@ import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { cohortLabel, cohortYear, outputsOf, rungLabel, type C08Sel } from './selection';
 import { YEAR_FORMAT } from './words';
+import { CohortName } from './DownturnViews';
 
 export { YEAR_FORMAT };
 
@@ -56,7 +57,8 @@ export function RungsView({ sel }: { sel: C08Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: label(r.rung_id), value: r.rmse, tone: 'accent' as const, highlight: r.rung_id === sel.rung, hint: label(r.rung_id) }))}
-              axis={{ label: { en: 'RMSE of the LGD', es: 'RMSE de la LGD' }, format: { digits: 3 } }}
+              // three fixed decimals, as the table: 0.300 beside 0.297, never 0.3 (R4 c10 m1)
+              axis={{ label: { en: 'RMSE of the LGD', es: 'RMSE de la LGD' }, format: { decimals: 3 } }}
             />
           }
         >
@@ -131,7 +133,7 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: years, label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT, ...(single ? { range: [years[0] - 1, years[0] + 1] as [number, number] } : {}) }}
-              y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
+              y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, decimals: 2 } }}
               zoomOff={single ? { en: 'One cohort: a single point has no range to zoom.', es: 'Una cohorte: un solo punto no tiene rango que acercar.' } : undefined}
               series={[
                 { label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', width: 2.6, ...(single ? { mode: 'points' as const, size: 11 } : {}) },
@@ -156,7 +158,7 @@ export function RealisedView({ sel }: { sel: C08Sel | null }) {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.cohort_id} data-cohort={r.cohort_id} className={r.cohort_id === sel.cohort ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(cohortLabel(sel, r.cohort_id), lang)}</td>
+                  <td className="ct-text"><CohortName name={pick(cohortLabel(sel, r.cohort_id), lang)} /></td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>
                     <Flagged value={r.realised.value} flag={r.realised.flag} />
@@ -202,12 +204,14 @@ export function CalibrationView({ sel }: { sel: C08Sel | null }) {
         }}
       >
         <ChartOverTable
+          // the parity box is square on the height it gets: 22 rem, so it is not a 180 px square in a wide card (R4 c10 m10)
+          chartMin="22rem"
           chart={
             <UPlotChart
               height="fill"
               parity
-              x={{ values: rows.map((r) => r.predicted.value), label: { en: 'Predicted mean LGD', es: 'LGD media predicha' }, format: { percent: true, digits: 2 } }}
-              y={{ label: { en: 'Realised mean LGD', es: 'LGD media realizada' }, format: { percent: true, digits: 2 } }}
+              x={{ values: rows.map((r) => r.predicted.value), label: { en: 'Predicted mean LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 2 } }}
+              y={{ label: { en: 'Realised mean LGD', es: 'LGD media realizada' }, format: { percent: true, decimals: 2 } }}
               series={[{ label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', mode: 'points', size: 10 }]}
             />
           }
