@@ -81,9 +81,9 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text ct-wide-only" translate="no">{r.evaluated === false ? <span translate="yes">{pick({ en: 'none: the rung does not run', es: 'ninguna: el escalón no corre' }, lang)}</span> : <code>{r.engine_function}</code>}</td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
-                  {/* a simulator grid has no rungs of its own: its inputs are the generator's known PD and correlation grid, never the
-                      calibration of a loan type from the models artifact (R4 c12 and c13 B1) */}
-                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{grid ? gridInputs(grid, lang) : ((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
+                  {/* a simulator grid has no rungs of its own: it runs the LHP estimators only, so the LHP rung takes the generator's known PD and
+                      correlation grid and the other rungs say they do not run on it, never a loan type's calibration (R4 c12, c13 B1; R5 c13 B1) */}
+                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{grid ? (r.id.endsWith('-lhp') ? gridInputs(grid, lang) : pick({ en: 'not run on the simulated grid', es: 'no corre en la grilla simulada' }, lang)) : ((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
