@@ -76,7 +76,7 @@ The documents were baked over the committed case documents with `riskvalidation`
 | `C13/generator` | 2 | 3 | 1 | 3 | 6 | 17 | 0 | 2 | 8 | 0 | 2027-10-22 |
 | `C14/svb-2021-2022` | 1 | 4 | 1 | 4 | 3 | 12 | 3 | 4 | 5 | 0 | 2027-10-22 |
 | `C15/banco-andino-2026-09` | 1 | 4 | 2 | 3 | 6 | 24 | 0 | 1 | 17 | 6 | 2027-10-22 |
-| `C16/svb-liquidity` | 1 | 4 | 1 | 3 | 6 | 11 | 0 | 8 | 2 | 1 | 2027-10-22 |
+| `C16/svb-liquidity` | 1 | 4 | 1 | 3 | 6 | 15 | 0 | 9 | 5 | 1 | 2027-10-22 |
 | `C17/generator` | 1 | 4 | 1 | 3 | 4 | 13 | 0 | 5 | 8 | 0 | 2027-10-22 |
 | `C18/banco-andino` | 1 | 4 | 2 | 4 | 6 | 29 | 2 | 2 | 17 | 8 | 2027-10-22 |
 | `C20/c20-ladder` | 2 | 3 | 2 | 3 | 6 | 39 | 0 | 18 | 9 | 0 | 2027-10-22 |
@@ -124,16 +124,16 @@ A document edge means the downstream package reads the upstream case's committed
 
 ### The findings register
 
-577 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
+581 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
 
 | Severity | ECB F | open | action_plan_agreed | in_progress | submitted_for_closure | validated_closed | overdue | risk_accepted |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | S1 | F4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| S2 | F3 | 163 | 0 | 0 | 0 | 3 | 0 | 5 |
-| S3 | F2 | 200 | 0 | 0 | 0 | 0 | 0 | 37 |
+| S2 | F3 | 164 | 0 | 0 | 0 | 3 | 0 | 5 |
+| S3 | F2 | 203 | 0 | 0 | 0 | 0 | 0 | 37 |
 | S4 | F1 | 25 | 0 | 0 | 0 | 4 | 0 | 135 |
 
-Finding rows in the variant documents: 593; in the register: 577; in the variants no fit could be determined for: 16.
+Finding rows in the variant documents: 597; in the register: 581; in the variants no fit could be determined for: 16.
 
 Cases with no finding row in the committed documents: none.
 
@@ -154,7 +154,7 @@ Cases with no finding row in the committed documents: none.
 | C13 | 17 | 0 | 2 | 8 | 7 | 0 |
 | C14 | 12 | 3 | 4 | 5 | 0 | 0 |
 | C15 | 24 | 0 | 1 | 17 | 6 | 0 |
-| C16 | 11 | 0 | 8 | 2 | 1 | 0 |
+| C16 | 15 | 0 | 9 | 5 | 1 | 0 |
 | C17 | 13 | 0 | 5 | 8 | 0 | 0 |
 | C18 | 29 | 2 | 2 | 17 | 8 | 0 |
 | C20 | 39 | 0 | 18 | 9 | 12 | 0 |
@@ -168,8 +168,8 @@ The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (
 | Metric | Value | Numerator | Denominator | Light |
 |---|---:|---:|---:|---:|
 | Share of Tier 1 entries validated on time | 1 | 18 | 18 | green |
-| Open high-severity findings (S1 and S2) | 92 | 92 | 266 | red |
-| Overdue remediation | 0 | 0 | 266 | green |
+| Open high-severity findings (S1 and S2) | 93 | 93 | 268 | red |
+| Overdue remediation | 0 | 0 | 268 | green |
 | Entries used under exception | 0 | 0 | 34 | green |
 | Entries in breach of their thresholds (a red test row) | 32 | 32 | 34 | red |
 | PMA magnitude relative to the model output | 0.0033 | 324129997.0 | 97592002519.53 | green |

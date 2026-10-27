@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "46f91fe75b124c230601e4b142f38190b5fbd4ed98872f8e656f788074100a66",
+    "sha256": "3740478671981bb1c35d54be65f0c8fb2efcb8a7424d26ab4c01d81b1aa1ff27",
     "ref": null
    },
    {
@@ -30,7 +30,7 @@
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "1cbd89dad92631fcd5dc39f131a3db7c2a994f8f502cf509550862f53ff2fb92",
+    "sha256": "9391a547d3eef1837ad93087ed4070a4ab63c6c74bbf2b402676dacee1c611bc",
     "ref": null
    },
    {
@@ -75,7 +75,7 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "1c73a85089e42dcefb1520d7eeee90fae50fb01eafcf3185677ac24ea51667bc",
+    "sha256": "804a94c7931dd659360b7e9d28384e210d57228ac7242cead7b80c9481b57519",
     "ref": null
    },
    {
@@ -85,27 +85,27 @@
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "72bcac78cf349777cf2410537f3fffa30a2dcb471cbde19d3806bab19e61f53a",
+    "sha256": "e1b1f633f0feedd99a7e33984864f26a2fb28393dc8a2d1a6ebb30acf9f961f7",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "e40fb42fe7284f3c7bf70a088385623921bf4b658ec04c2ab67095f2d52b1077",
+    "sha256": "0dc20d5b9050142a417597cc1e272569c753f6695b896cbf17643b79f79c4048",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "f34467fac576e8cca89b2d4f71c36bef05519944bb46e2be2a6398ad2d0cef28",
+    "sha256": "7447e8aefcc714ef7c86de111fdb9ccec81893b908e852656ec95527bbb649bd",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "925bdeaf36c4a19a49e8d6d6018a62785f813521bc8dc71ae0d4287edac4f61f",
+    "sha256": "c1f0b8cb0b4a64271ce85881c15cefd469c2a4d98c75c07ecee2ada731b759a2",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "f03f6f2df34c3a3c76d68186a1a7ea313bd80b4355968502d18f87264dd63a87",
+    "sha256": "3e35f84b1a174374aa1d2b9c4121ef86f74e623ecd7c8ddc49efea05fcebd6d8",
     "ref": null
    },
    {
@@ -257,8 +257,8 @@
    "id": "F-CF-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: calibration fit tests flag the variant \"German Credit twin\" (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)",
-    "es": "P4-lightgbm: las pruebas de ajuste de calibración alertan en la variante «Gemelo German Credit» (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)"
+    "en": "P4 LightGBM: calibration fit tests flag the variant \"German Credit twin\"",
+    "es": "P4 LightGBM: las pruebas de ajuste de calibración alertan en la variante «Gemelo German Credit»"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -305,8 +305,8 @@
    "id": "F-D-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: discrimination tests flag the variant \"German Credit twin\" (disc.auc_vs_initial)",
-    "es": "P4-lightgbm: las pruebas de discriminación alertan en la variante «Gemelo German Credit» (disc.auc_vs_initial)"
+    "en": "P4 LightGBM: discrimination tests flag the variant \"German Credit twin\"",
+    "es": "P4 LightGBM: las pruebas de discriminación alertan en la variante «Gemelo German Credit»"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2864,8 +2864,8 @@
    "id": "reverse-scenario",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real_gdp_growth by -2.58 and unemployment_rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
-    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza real_gdp_growth en -2,58 y unemployment_rate en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 0,0%); la base de solo pérdidas ya termina bajo el mínimo."
+    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
+    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 0,0%); la base de solo pérdidas ya termina bajo el mínimo."
    },
    "severity": "S3",
    "ecb_f": "F2",
