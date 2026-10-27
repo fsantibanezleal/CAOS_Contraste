@@ -37,16 +37,16 @@ def m(x: float) -> float:
 NOTICE = T(
     "Synthetic data: Banco Andino is a generated bank calibrated to public CMF system aggregates, not a real bank and not "
     "evidence about any bank. CMF B-1 is the statutory provision Chilean banks book on loans; the IFRS 9 column is a comparison "
-    "measure, not the provision Chilean banks book on loans (CNCB A-2 N 5 leaves loans to B-1); BdE Annex 9 is the Spanish GAAP "
+    "measure, not the provision Chilean banks book on loans (CNCB A-2 N° 5 leaves loans to B-1); BdE Annex 9 is the Spanish GAAP "
     "alternative solution. Amounts in CLP.",
     "Datos sintéticos: Banco Andino es un banco generado, calibrado a agregados públicos del sistema de la CMF; no es un banco real "
     "ni evidencia sobre ningún banco. CMF B-1 es la provisión estatutaria que los bancos chilenos constituyen sobre colocaciones; la "
-    "columna IFRS 9 es una medida de comparación, no la provisión que los bancos chilenos constituyen sobre colocaciones (CNCB A-2 N 5 "
+    "columna IFRS 9 es una medida de comparación, no la provisión que los bancos chilenos constituyen sobre colocaciones (CNCB A-2 N° 5 "
     "deja las colocaciones a B-1); el Anejo 9 del BdE es la solución alternativa del PGC español. Montos en CLP.")
 
 REGIME_LABEL = {
     "cmf-b1": T("CMF B-1 (statutory, Chile)", "CMF B-1 (estatutaria, Chile)"),
-    "ifrs9": T("IFRS 9 (probability-weighted ECL, comparison)", "IFRS 9 (ECL ponderada por probabilidad, comparación)"),
+    "ifrs9": T("IFRS 9 (probability-weighted ECL, comparison)", "IFRS 9 (PCE ponderada por probabilidad, comparación)"),
     "bde-annex9": T("BdE Annex 9 (Spain)", "BdE Anejo 9 (España)"),
 }
 STAGE_LABEL = {"stage1": T("Stage 1", "Etapa 1"), "stage2": T("Stage 2", "Etapa 2"), "stage3": T("Stage 3", "Etapa 3")}
@@ -90,11 +90,11 @@ def additional_provisions(book: Book) -> dict[str, Any]:
     total = float(book.e.sum())
     amount = cl.b1_additional_provisions(m(0.0005 * total), 0.0, m(0.0025 * total))
     return {"amount": m(amount), "rationale": T(
-        "Counter-cyclical general provisions under board policy (B-1 N 9): 0.05 per cent of gross exposure inside a policy range of "
+        "Counter-cyclical general provisions under board policy (B-1 N° 9): 0.05 per cent of gross exposure inside a policy range of "
         "0 to 0.25 per cent; assumption of the case. Their own line, outside the comparable total and never used to cover model "
         "deficiencies.",
-        "Provisiones generales contracíclicas según política del directorio (B-1 N 9): 0,05 % de la exposición bruta dentro de un "
-        "rango de política de 0 a 0,25 %; supuesto del caso. Línea propia, fuera del total comparable y nunca para cubrir deficiencias "
+        "Provisiones generales contracíclicas según política del directorio (B-1 N° 9): 0,05 % de la exposición bruta dentro de un "
+        "rango de política de 0 a 0,25 %; supuesto del caso. Línea propia, fuera del total comparable y nunca para cubrir deficiencias "
         "del modelo."), "policy_min": 0.0, "policy_max": m(0.0025 * total)}
 
 
@@ -132,9 +132,9 @@ def variant_outputs(book: Book, ev: dict[str, Any], base_ev: dict[str, Any], ove
         standard = m(segment_sum(book, res_b1.provision, s))
         applied, method = cl.b1_group_max_rule(standard, None)
         max_rule.append({"segment_id": s, "standard": standard, "internal": None, "applied": m(applied), "method": method,
-                         "internal_reason": T("Banco Andino has no internal method: the standard method applies (B-1 N 3); the CMF "
+                         "internal_reason": T("Banco Andino has no internal method: the standard method applies (B-1 N° 3); the CMF "
                                              "August 2026 report states that no institution uses internal methods for provisions",
-                                             "Banco Andino no tiene método interno: se aplica el método estándar (B-1 N 3); el informe de la CMF "
+                                             "Banco Andino no tiene método interno: se aplica el método estándar (B-1 N° 3); el informe de la CMF "
                                              "de agosto de 2026 indica que ninguna institución usa métodos internos para las provisiones")})
         b1_seg[s] = m(applied)
     b1_seg["commercial-individual"] = m(segment_sum(book, res_b1.provision, "commercial-individual"))
@@ -148,7 +148,7 @@ def variant_outputs(book: Book, ev: dict[str, Any], base_ev: dict[str, Any], ove
         "by_category": _b1_categories(book, ev), "status": "statutory-chile-loans",
         "unallocated_lines": [{"id": "minimum-top-up", "kind": "minimum-top-up", "amount": top_up, "label": T(
             "Top-up to the 0.50% minimum on the individually assessed normal portfolio",
-            "Complemento al mínimo de 0,50 % de la cartera normal de evaluación individual")}]}
+            "Complemento al mínimo de 0,50 % de la cartera normal de evaluación individual")}]}
     # --- IFRS 9
     ecl_acc = ifrs9.account_ecl(ifr)
     f_seg = {s: m(segment_sum(book, ecl_acc, s)) for s in SEG_IDS}
@@ -288,7 +288,7 @@ def findings(out: dict[str, Any], rows: list[dict[str, Any]], model_ids: dict[st
     f.append({"id": "F-NONLINEARITY", "severity": "S3" if nl["light"] == "green" else "S2", "status": "open",
               "evidence": [f"ifrs9.scenario_sensitivity@{mid}"],
               "title": T(f"The weighted ECL exceeds the ECL at the mean scenario path by {nl['metric']:.1%}",
-                         f"La ECL ponderada supera a la ECL en la trayectoria media de escenarios en {tx.percent(nl['metric'], 1, lang='es')}")})
+                         f"La PCE ponderada supera a la PCE en la trayectoria media de escenarios en {tx.percent(nl['metric'], 1, lang='es')}")})
     ov = byt["ifrs9.overlay_diagnostics"]
     f.append({"id": "F-OVERLAY", "severity": "S4" if ov["light"] == "green" else "S3", "status": "accepted" if ov["light"] == "green" else "open",
               "evidence": [f"ifrs9.overlay_diagnostics@{mid}"],
@@ -298,14 +298,14 @@ def findings(out: dict[str, Any], rows: list[dict[str, Any]], model_ids: dict[st
     f.append({"id": "F-MINIMUM", "severity": "S4", "status": "accepted", "evidence": ["design:b1-minimum-normal-individual"],
               "title": T("The 0.50% minimum on the individually assessed normal portfolio is "
                          + ("binding" if mc["binding"] else "not binding") + f" (top-up {mc['top_up'] / 1e6:,.1f} CLP million)",
-                         "El mínimo de 0,50 % de la cartera normal de evaluación individual "
+                         "El mínimo de 0,50 % de la cartera normal de evaluación individual "
                          + ("es vinculante" if mc["binding"] else "no es vinculante") + f" (complemento {tx.number(mc['top_up'] / 1e6, 1, lang='es')} millones CLP)")})
     bt = byt["ifrs9.ecl_backtest"]
     if bt["light"] in ("amber", "red"):
         f.append({"id": "F-ECL-BACKTEST", "severity": "S3" if bt["light"] == "amber" else "S2", "status": "open",
                   "evidence": [f"ifrs9.ecl_backtest@{mid}"],
                   "title": T(f"The 12-month ECL against the generator's own realised losses: ratio {bt['metric']:.2f} ({bt['light']})",
-                             f"La ECL a 12 meses frente a las pérdidas realizadas del propio generador: razón {tx.number(bt['metric'], 2, lang='es')} ({tx.light(bt['light'], 'es')})")})
+                             f"La PCE a 12 meses frente a las pérdidas realizadas del propio generador: razón {tx.number(bt['metric'], 2, lang='es')} ({tx.light(bt['light'], 'es')})")})
     sc_ = byt["ifrs9.sicr_effectiveness"]
     if sc_["light"] in ("amber", "red"):
         f.append({"id": "F-SICR", "severity": "S3" if sc_["light"] == "amber" else "S2", "status": "open",
@@ -325,7 +325,7 @@ def impact(out: dict[str, Any]) -> dict[str, Any]:
     return {
         "provision_cmf_b1": {"value": b1t, "unit": unit, "label": T("CMF B-1 comparable total", "Total comparable CMF B-1")},
         "provision_ifrs9": {"value": f9, "unit": unit, "label": T("IFRS 9 probability-weighted ECL plus overlays",
-                                                                  "IFRS 9 ECL ponderada por probabilidad más ajustes")},
+                                                                  "IFRS 9 PCE ponderada por probabilidad más ajustes")},
         "provision_bde": {"value": bd, "unit": unit, "label": T("BdE Annex 9", "BdE Anejo 9")},
         "gap_ifrs9_minus_b1": {"value": m(f9 - b1t), "unit": unit, "label": T("IFRS 9 minus CMF B-1", "IFRS 9 menos CMF B-1")},
         "ifrs9_over_b1": {"value": f9 / b1t, "unit": "ratio", "label": T("IFRS 9 over CMF B-1", "IFRS 9 sobre CMF B-1")},
@@ -344,7 +344,7 @@ def model_summaries(out: dict[str, Any], rv: str, scen: dict[str, Any]) -> list[
          "parameters": {"minimum_rate": {"value": mc["minimum_rate"], "unit": "share"},
                         "additional_provisions": {"value": out["b1_detail"]["additional_provisions"]["amount"], **P},
                         "total_provision": {"value": reg["cmf-b1"]["total_provision"], **P}}},
-        {"id": "IFRS9-ecl", "family": "ecl", "rung": ifrs9.PD_LADDER_RUNG, "title": T("IFRS 9 probability-weighted ECL", "ECL IFRS 9 ponderada por probabilidad"),
+        {"id": "IFRS9-ecl", "family": "ecl", "rung": ifrs9.PD_LADDER_RUNG, "title": T("IFRS 9 probability-weighted ECL", "PCE IFRS 9 ponderada por probabilidad"),
          "short_title": T("IFRS 9", "IFRS 9"), "engine": "riskvalidation.provisions.ecl", "engine_version": rv, "licence": "MIT",
          "calibration": None, "checkpoint_sha256": None,
          "parameters": {"z_shift": {"value": scen["z_shift"], "unit": "standard deviations"},
@@ -365,6 +365,14 @@ def parameter_hash() -> str:
                        "scenarios": [(s["id"], s["z_shift"], s["hpi"], s["channels"], s["shocks"]) for s in sc.SCENARIOS]},
                       sort_keys=True, default=str)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def calibration_source() -> dict[str, str]:
+    """Where the bank's calibration comes from, a bilingual text (U16-R3 c08 B1: the Spanish note printed the English remarks)."""
+    url = src.PUBLICATIONS["cmf-informe-2026-08"]["url"]
+    head = f"CMF Informe del Desempeño del Sistema Bancario y Cooperativas, {src.AS_OF[:7]} ({url})"
+    return T(f"{head}, public web publication (the CMF Bancos API key is absent); generator {GENERATOR}; parameters sha256 {parameter_hash()}",
+             f"{head}, publicación web pública (falta la clave de la API de CMF Bancos); generador {GENERATOR}; parámetros sha256 {parameter_hash()}")
 
 
 def b1_tables() -> list[dict[str, Any]]:
@@ -390,8 +398,9 @@ def b1_tables() -> list[dict[str, Any]]:
             pi, pdi, pe = cl.b1_commercial_pe(row, ptvg)
             com.append({"row": row, "column": col, "pi": pi, "pdi": pdi, "pe": pe})
     def src_(section: str, extra_en: str = "", extra_es: str = "", d: str = "D.5") -> dict[str, str]:
-        return T(f"CMF CNCB Chapter B-1 (Circular 2.346), dossier 03 section {d}; read through riskvalidation.provisions.local_cl ({section}){extra_en}",
-                 f"CMF CNCB Capítulo B-1 (Circular 2.346), dossier 03 sección {d}; leído con riskvalidation.provisions.local_cl ({section}){extra_es}")
+        # the B-1 section in words, not the engine module that reads it (the raw-id scan of R3 c08: riskvalidation.provisions.local_cl)
+        return T(f"CMF CNCB Chapter B-1 (Circular 2.346), dossier 03 section {d}; read through the engine's B-1 provisions (B-1 section {section}){extra_en}",
+                 f"CMF CNCB Capítulo B-1 (Circular 2.346), dossier 03 sección {d}; leído con las provisiones B-1 del motor (sección {section} de B-1){extra_es}")
 
     return [
         {"table_id": "mortgage-pe", "portfolio": "residential-mortgage", "source": src_("3.1.1"), "cells": mort},
@@ -457,9 +466,7 @@ def models_document(book: Book, base_ev: dict[str, Any], overlays: tuple, rv: st
     fit = {
         "currency": CURRENCY,
         "bank": {"name": "Banco Andino", "synthetic": True, "notice": notice, "seed": int(book.seed),
-                 "calibration_source": f"CMF Informe del Desempeno del Sistema Bancario y Cooperativas, {src.AS_OF[:7]} "
-                                       f"({src.PUBLICATIONS['cmf-informe-2026-08']['url']}), public web publication (the CMF Bancos API key is "
-                                       f"absent); generator {GENERATOR}; parameters sha256 {parameter_hash()}"},
+                 "calibration_source": calibration_source()},
         "calibration_targets": achieved_targets(book, base_ev), "segments": seg_rows, "b1_tables": b1_tables(),
         "b1_default_categories": default_categories(),
         "ifrs9": {"pd_ladder_rung": ifrs9.PD_LADDER_RUNG, "discount_convention": ifrs9.CONVENTION, "segments": ifrs_seg,
@@ -490,7 +497,7 @@ def models_document(book: Book, base_ev: dict[str, Any], overlays: tuple, rv: st
                                                       "instalment": cl.b1_consumer_pe(3, False, False, "instalment")[1],
                                                       "cards-lines-other": cl.b1_consumer_pe(3, False, False, "cards-lines-other")[1]}},
                      "individual_assessment_haircut": PARAMS["haircut"], "overlays_in_b1": False}},
-        {"id": "IFRS9-ecl", "family": "ecl", "rung": ifrs9.PD_LADDER_RUNG, "title": T("IFRS 9 probability-weighted ECL", "ECL IFRS 9 ponderada por probabilidad"),
+        {"id": "IFRS9-ecl", "family": "ecl", "rung": ifrs9.PD_LADDER_RUNG, "title": T("IFRS 9 probability-weighted ECL", "PCE IFRS 9 ponderada por probabilidad"),
          "short_title": T("IFRS 9", "IFRS 9"), "engine": "riskvalidation.provisions.ecl", "engine_version": rv, "licence": "MIT", "calibration": None,
          "checkpoint_sha256": None, "parameters": {"half_life_quarters": {"value": ifrs9.HALF_LIFE_QUARTERS, "unit": "quarters"}},
          "details": {"overlays": [{"id": o.id, "segment_id": o.segment_id, "stage": o.stage, "amount": m(o.amount), "method": o.method,

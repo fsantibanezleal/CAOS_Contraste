@@ -54,15 +54,19 @@ CUTOFF_NOTE = "undiscounted (effective interest rate 0), exposure at default 1"
 
 
 def parameters() -> list[dict[str, Any]]:
-    """The named parameters of the C02 documents: the overfit tolerance is the only one the case uses (the schema allows it alone)."""
-    return [{"name": "overfit_tolerance", "value": OVERFIT_TOLERANCE, "unit": "AUC points", "label": "convention",
-             "basis": "Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value); about 1.5 to 3 "
-                      "standard errors of an AUC on the Polish holdouts (271 to 515 events per file), approved as decision V6"}]
+    """The named parameters of the C02 documents: the overfit tolerance is the only one the case uses (the schema allows it alone).
+    The unit and the basis are bilingual texts, since the Spanish Context prints them (U16-R3 c03 B2)."""
+    return [{"name": "overfit_tolerance", "value": OVERFIT_TOLERANCE, "unit": t("AUC points", "puntos de AUC"), "label": "convention",
+             "basis": t("Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value); about 1.5 to 3 "
+                        "standard errors of an AUC on the Polish holdouts (271 to 515 events per file), approved as a named convention",
+                        "Brecha entre el AUC de entrenamiento y el de prueba sobre la cual se levanta la alerta de sobreajuste (06 C.7 "
+                        "l.1016-1018 no da un valor); entre 1,5 y 3 errores estándar de un AUC en las muestras reservadas polacas (271 a 515 "
+                        "eventos por archivo), aprobada como convención con nombre")}]
 
 
 # --- the texts every document repeats ----------------------------------------------------------------------------------------
-POOLED_EVENT = t("Bankruptcy of the company within the horizon of its file (h1 to h5, stacked with a horizon indicator)",
-                 "Quiebra de la empresa dentro del horizonte de su archivo (h1 a h5, apilados con un indicador de horizonte)")
+POOLED_EVENT = t("Bankruptcy of the company within the horizon of its file (the 1-year to 5-year files, stacked with a horizon indicator)",
+                 "Quiebra de la empresa dentro del horizonte de su archivo (los archivos de 1 a 5 años, apilados con un indicador de horizonte)")
 
 
 def event_definition(years: int, file: str) -> dict[str, str]:
@@ -87,14 +91,14 @@ TRANSFER_REASON = t(
     "no se afirma nada fuera del tiempo.")
 TERM_STRUCTURE_REASON = t(
     "The event rates of the five files read as a cumulative PD (cumulative = 1 - product of (1 - hazard)). The files may not draw one "
-    "population and their firm overlap is unknown, so the structure is exploratory (decision Q9).",
+    "population and their firm overlap is unknown, so the structure is exploratory.",
     "Las tasas de evento de los cinco archivos leídas como una PD acumulada (acumulada = 1 - producto de (1 - riesgo)). Los archivos "
-    "pueden no provenir de una sola población y su traslape de empresas se desconoce, así que la estructura es exploratoria (decisión Q9).")
+    "pueden no provenir de una sola población y su traslape de empresas se desconoce, así que la estructura es exploratoria.")
 IMPACT_REASON = t(
     "The 12-month and lifetime expected credit loss of one unit of exposure under the horizon PDs of the term-structure block (the five file event rates); an "
-    "illustration of how far the horizon moves a provision, not a provision (decision Q10). The loss given default is an assumption.",
+    "illustration of how far the horizon moves a provision, not a provision. The loss given default is an assumption.",
     "La pérdida crediticia esperada a 12 meses y de vida de una unidad de exposición bajo las PD por horizonte del bloque de estructura temporal (las cinco tasas de evento de los archivos); una "
-    "ilustración de cuánto mueve el horizonte a una provisión, no una provisión (decisión Q10). La pérdida dado el incumplimiento es un "
+    "ilustración de cuánto mueve el horizonte a una provisión, no una provisión. La pérdida dado el incumplimiento es un "
     "supuesto.")
 TERM_SOURCE = "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"
 
@@ -109,16 +113,16 @@ OBSERVATION_DATE_NOTE = t(
     "que da la página de UCI (2000 a 2013), como convención con nombre; ningún reclamo fuera del tiempo ni orden temporal descansa en ella.")
 
 MAPPING_NOTE = t(
-    "The horizon of a document is the dataset's own definition (decision G21): the UCI page describes the file named kyear as the financial "
+    "The horizon of a document is the dataset's own definition: the UCI page describes the file named kyear as the financial "
     "rates of the k-th year of the forecasting period with the class label 'bankruptcy status after' 6 - k years, so the horizon of n years "
-    "ahead reads the file {6-n}year (h1 reads 5year, h5 reads 1year). The scorecard's holdout AUC falls with the horizon under this mapping "
+    "ahead reads the file {6-n}year (the 1-year horizon reads 5year, the 5-year horizon reads 1year). The scorecard's holdout AUC falls with the horizon under this mapping "
     "and rises with it under the file name.",
-    "El horizonte de un documento es la definición del propio conjunto de datos (decisión G21): la página de UCI describe el archivo kyear "
+    "El horizonte de un documento es la definición del propio conjunto de datos: la página de UCI describe el archivo kyear "
     "como las razones financieras del k-ésimo año del período de pronóstico con la etiqueta 'estado de quiebra después de' 6 - k años, así "
-    "que el horizonte de n años hacia adelante lee el archivo {6-n}year (h1 lee 5year, h5 lee 1year). El AUC de la scorecard en la muestra "
+    "que el horizonte de n años hacia adelante lee el archivo {6-n}year (el horizonte de 1 año lee 5year, el de 5 años lee 1year). El AUC de la tarjeta de puntuación en la muestra "
     "reservada baja con el horizonte bajo esta correspondencia y sube con él bajo el nombre del archivo.")
 PAPER_READING = t(
     "The mapping follows the UCI page; the reading of the source paper (Zieba, Tomczak and Tomczak 2016) is UNVERIFIED against Zieba, "
     "Tomczak and Tomczak 2016, which the bake did not open.",
     "La correspondencia sigue la página de UCI; la lectura del artículo fuente (Zieba, Tomczak y Tomczak 2016) está SIN VERIFICAR contra "
-    "Zieba, Tomczak and Tomczak 2016, que el bake no abrió.")
+    "Zieba, Tomczak y Tomczak 2016, que la corrida no abrió.")

@@ -67,7 +67,7 @@ def build(test_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         sev = "S3" if any(r["light"] == "red" for r in gap) else "S4"
         out.append({"id": "F-CHALLENGER-GAP", "severity": sev, "status": "open", "evidence": sorted({key(r) for r in gap}),
                     "title": t(f"A paired DeLong test supports {', '.join(_short(m, 'en') for m in ids)} over the P1 scorecard: the champion is not the best rung",
-                               f"Una prueba de DeLong pareada respalda a {', '.join(_short(m, 'es') for m in ids)} sobre el scorecard P1: el campeón no es el mejor peldaño")})
+                               f"Una prueba de DeLong pareada respalda a {', '.join(_short(m, 'es') for m in ids)} sobre la tarjeta de puntuación P1: el campeón no es el mejor peldaño")})
     for fid, sev, status, ev, en, es in LIMITS:
         out.append({"id": fid, "severity": sev, "status": status, "evidence": [ev], "title": t(en, es)})
     return out

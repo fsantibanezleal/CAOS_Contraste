@@ -173,12 +173,12 @@ def overlays_for(base: Ifrs9Result, book: Book, currency: str) -> tuple[ov.Overl
         ov.Overlay(id="OVL-HOUSING", rationale_en="House price outlook on high-LTV mortgages, not in the model (expert, "
                    "assumption of the case: 10 per cent of the base Stage 2 ECL of the segment)",
                    rationale_es="Perspectiva de precios de viviendas en hipotecarios de PVG alto, fuera del modelo (experto, "
-                   "supuesto del caso: 10 % de la ECL de Etapa 2 del segmento en el base)",
+                   "supuesto del caso: 10 % de la PCE de Etapa 2 del segmento en el base)",
                    method="expert", target="lgd", segment_id="mortgage-ltv-gt80", stage="stage2", amount=round(a_house, 0),
                    staging_effect="none", review_date="2026-08-31", currency=currency),
         ov.Overlay(id="OVL-CARDS", rationale_en="Card utilisation drift not in the model (expert, assumption of the case: "
                    "8 per cent of the base Stage 1 ECL of the segment)",
-                   rationale_es="Deriva de uso de tarjetas fuera del modelo (experto, supuesto del caso: 8 % de la ECL de "
+                   rationale_es="Deriva de uso de tarjetas fuera del modelo (experto, supuesto del caso: 8 % de la PCE de "
                    "Etapa 1 del segmento en el base)",
                    method="expert", target="ead", segment_id="consumer-cards", stage="stage1", amount=round(a_cards, 0),
                    staging_effect="none", review_date="2026-08-31", currency=currency),
