@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 import sys
+from decimal import ROUND_HALF_UP, Decimal
 import time
 from pathlib import Path
 from typing import Any
@@ -59,6 +60,7 @@ from riskvalidation.validation.rating_system import concentration
 
 from .. import __version__
 from ..core import expect as expectations
+from ..core import text as tx
 from ..core import lineage as lin
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import papers
@@ -140,8 +142,50 @@ def _seed(case_seed: int, key: str) -> int:
 
 
 def _pct(x: float, decimals: int = 1) -> dict[str, str]:
-    en = f"{100 * x:.{decimals}f}%"
-    return _t(en, en.replace(".", ","))
+    """A share as a percent in both languages, rounded half up from its decimal value as the views round it (U16-R4 c27 m1: the
+    float format gave "1.32%" for 0.01325 where the views say 1.33 %), with the shell's forms (``pipeline.core.text``)."""
+    v = float((Decimal(repr(float(x))) * 100).quantize(Decimal(1).scaleb(-decimals), rounding=ROUND_HALF_UP))
+    return _t(tx.percent(v / 100, decimals, lang="en"), tx.percent(v / 100, decimals, lang="es"))
+
+
+def psi_rule_title(rule_rate: float, bench_rate: float, bench_within: bool) -> dict[str, str]:
+    """The F-PSI-RULE title from its numbers (U16-R4 c26 B1: it said the chi-square benchmark "controls the error" while its rate at 5%
+    exceeds its bound): the false-alarm rate of the 0.10 rule of thumb and the benchmark's rate at 5% against its bound."""
+    r, b = _pct(rule_rate), _pct(bench_rate)
+    side = ("within its bound", "dentro de su cota") if bench_within else ("above its bound at this size", "sobre su cota en este tamaño")
+    return _t(f"The PSI 0.10 rule of thumb raises a false alarm in {r['en']} of the samples of 100 where nothing changed; the chi-square "
+              f"benchmark is far closer to its level ({b['en']} at 5%, {side[0]})",
+              f"La regla empírica PSI 0,10 da una falsa alarma en el {r['es']} de las muestras de 100 en que nada cambió; la referencia "
+              f"chi-cuadrado queda mucho más cerca de su nivel ({b['es']} al 5{tx.NBSP}%, {side[1]})")
+
+
+def decay_title(power: float) -> dict[str, str]:
+    """The F-DECAY-POWER title with its rate (U16-R4 c26 n3: "rarely caught" for a power of 25 percent, one time in four)."""
+    p = _pct(power)
+    return _t(f"With 150 defaulters an AUC drop of two points is caught in {p['en']} of the samples, about one time in four: small portfolios "
+              "see only large decays",
+              f"Con 150 incumplidos una caída de dos puntos de AUC se detecta en el {p['es']} de las muestras, cerca de una vez en cuatro: las "
+              "carteras pequeñas solo ven deterioros grandes")
+
+
+def migration_title(power: float) -> dict[str, str]:
+    """The F-MIGRATION-POWER title with its rate (U16-R4 c26 n3: "unseen half the time" for a power of 55.5 percent, unseen 44.5)."""
+    miss = _pct(1.0 - power)
+    return _t("Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen in "
+              f"{miss['en']} of the samples with 500 obligors per grade",
+              "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa "
+              f"inadvertida en el {miss['es']} de las muestras con 500 deudores por grado")
+
+
+def mc_convergence_label(ex: dict[str, Any]) -> dict[str, str]:
+    """The impact label of the Monte Carlo convergence size: whether this run is above its bound (U16-R4 c27 n4: it said "the engine's
+    documented excess" beside a rate this run measures within its bound)."""
+    b = _pct(ex["bound"], 2)
+    if ex["exceeds"]:
+        return _t(f"Monte Carlo quantile convergence test: size at 1% (above its bound of {b['en']} in this run, as the engine documents)",
+                  f"Prueba de convergencia del cuantil Monte Carlo: tamaño al 1{tx.NBSP}% (sobre su cota de {b['es']} en esta corrida, como documenta el motor)")
+    return _t(f"Monte Carlo quantile convergence test: size at 1% (within its bound of {b['en']} in this run; the engine documents an excess)",
+              f"Prueba de convergencia del cuantil Monte Carlo: tamaño al 1{tx.NBSP}% (dentro de su cota de {b['es']} en esta corrida; el motor documenta un exceso)")
 
 
 class Book:
@@ -412,9 +456,9 @@ def _null(book: Book) -> dict[str, Any]:
         _finding("F-JEFFREYS-DISCRETE", "S4", "accepted", ["pd.jeffreys@null", "pd.binomial@null"],
                  "The Jeffreys test is Bayesian; on a discrete count its exact size moves with the number of obligors and can exceed the level (1.38% at 1% for 1,000 obligors at PD 1%)",
                  "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38% al 1% para 1.000 deudores con PD 1%)"),
-        _finding("F-PSI-RULE", "S2", "accepted", ["stability.psi@n100"],
-                 "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
-                 "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"),
+        {**_finding("F-PSI-RULE", "S2", "accepted", ["stability.psi@n100"], "", ""),
+         "title": psi_rule_title(book.rate("stability.psi@n100", "metric>0.1"), book.rate("stability.psi@n100"),
+                                 within_size(book.sims["stability.psi@n100"].rates["p<0.05"], 0.05))},
     ]
     trans = ("rating.time_homogeneity@null", "rating.markov_order@null", "rating.matrix_reference@null",
              "rating.momentum@null")
@@ -484,8 +528,7 @@ def _null_other(book: Book) -> dict[str, Any]:
     impact = {
         "other_tests_within_bound": _impact(len(kept), "tests", f"Tests of the other seven families that hold their size at 5% and 1% (of {len(by_test)})",
                                             f"Pruebas de las otras siete familias que mantienen su tamaño al 5% y 1% (de {len(by_test)})"),
-        "other_size_mc_convergence": _impact(ex["measured"], "probability", "Monte Carlo quantile convergence test: size at 1% (the engine's documented excess)",
-                                             "Prueba de convergencia del cuantil Monte Carlo: tamaño al 1% (el exceso documentado del motor)"),
+        "other_size_mc_convergence": {"value": float(ex["measured"]), "unit": "probability", "label": mc_convergence_label(ex)},
     }
     if undocumented:
         sev, status = "S2", "open"
@@ -874,9 +917,8 @@ def _decay(book: Book) -> dict[str, Any]:
         _finding("F-AUC-INIT-C01", "S2", "closed", ["disc.auc_vs_initial@m0.467", "disc.auc_vs_initial@m0.467-extended"],
                  "At C01's slice sizes the ECB form rejects about one time in six when nothing changed; C01 now adds the development AUC's variance",
                  "Con los tamaños de tramo de C01 la forma del BCE rechaza cerca de una vez en seis sin cambio; C01 ahora suma la varianza del AUC de desarrollo"),
-        _finding("F-DECAY-POWER", "S3", "accepted", ["disc.auc_vs_initial@d0.02", "disc.auc_vs_initial@d0.05"],
-                 "With 150 defaulters an AUC drop of two points is rarely caught: small portfolios see only large decays",
-                 "Con 150 incumplidos una caída de dos puntos de AUC rara vez se detecta: las carteras pequeñas solo ven deterioros grandes"),
+        {**_finding("F-DECAY-POWER", "S3", "accepted", ["disc.auc_vs_initial@d0.02", "disc.auc_vs_initial@d0.05"], "", ""),
+         "title": decay_title(book.rate("disc.auc_vs_initial@d0.02"))},
     ]
     values = {"ecb_size_c01_ratio": book.rate("disc.auc_vs_initial@m0.467"),
               "ext_size_c01_ratio": book.rate("disc.auc_vs_initial@m0.467-extended"),
@@ -981,9 +1023,8 @@ def _monotonicity(book: Book) -> dict[str, Any]:
                                        "Prueba del perfil: potencia al 5% cuando los grados 3 y 4 están invertidos"),
     }
     findings = [
-        _finding("F-MIGRATION-POWER", "S3", "accepted", ["rating.migration_ztests@r2-n500", "rating.migration_ztests@r1-n500"],
-                 "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen half the time with 500 obligors per grade",
-                 "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida la mitad de las veces con 500 deudores por grado"),
+        {**_finding("F-MIGRATION-POWER", "S3", "accepted", ["rating.migration_ztests@r2-n500", "rating.migration_ztests@r1-n500"], "", ""),
+         "title": migration_title(book.rate("rating.migration_ztests@r2-n500"))},
     ]
     values = {"migration_power_r2_n500": book.rate("rating.migration_ztests@r2-n500"),
               "migration_size_r1_n500": book.rate("rating.migration_ztests@r1-n500")}

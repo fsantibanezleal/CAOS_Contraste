@@ -12,7 +12,7 @@ import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell, digits } from './C18Com
 import {
   CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT,
   backcastOf, fitOf, outputsOf, satFitOf, text,
-  type C18Sel,
+  type C18Backcast, type C18Outputs, type C18Sel,
   inSentence, plottedUnit,
 } from './selection';
 import { unitEs } from './localise';
@@ -264,6 +264,22 @@ export function SatellitesView({ sel }: { sel: C18Sel | null }) {
   );
 }
 
+/**
+ * The peaks the back-cast test judges, drawn on the chart at their quarter and labelled with their rate (U16-R4 c23 M3, rubric
+ * law 2: the red test compares the size and the timing of the two peaks, so both are marked); one mark when both peaks fall in
+ * the same quarter. The x of a mark is the quarter's position in the window, as the chart's x axis counts it.
+ */
+export function backcastMarks(b: C18Backcast): Array<{ x: number; label: BiText }> {
+  const m = b.metrics;
+  const at = (q: string) => b.quarters.findIndex((x) => x.quarter_end === q) + 1;
+  const predicted = { en: `Predicted peak ${RATE(m.peak_predicted, 'en')}`, es: `Máximo predicho ${RATE(m.peak_predicted, 'es')}` };
+  const realised = { en: `Realised peak ${RATE(m.peak_realised, 'en')}`, es: `Máximo realizado ${RATE(m.peak_realised, 'es')}` };
+  const xp = at(m.peak_predicted_quarter);
+  const xr = at(m.peak_realised_quarter);
+  if (xp > 0 && xp === xr) return [{ x: xp, label: { en: `${predicted.en} · ${realised.en}`, es: `${predicted.es} · ${realised.es}` } }];
+  return [...(xp > 0 ? [{ x: xp, label: predicted }] : []), ...(xr > 0 ? [{ x: xr, label: realised }] : [])];
+}
+
 /** The satellites, fitted before 2020, predict 2020 to 2025; the realised charge-off rates are drawn as they are, signed. */
 export function BackcastView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
@@ -285,8 +301,8 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(loanName, 'en')}, link ${pick(text(LINK_TEXT, b.link), 'en')}, fitted on ${b.fit_window.start} to ${b.fit_window.end} and scored out of time on 2020 Q1 to 2025 Q4. A realised charge-off rate can be negative, a net recovery: it is drawn below the zero line and never floored. ${pick(o.backcast.statement, 'en')}`,
-          es: `${pick(loanName, 'es')}, enlace ${pick(text(LINK_TEXT, b.link), 'es')}, ajustado con ${b.fit_window.start} a ${b.fit_window.end} y evaluado fuera de tiempo en 2020 T1 a 2025 T4. Una tasa de castigo realizada puede ser negativa, una recuperación neta: se dibuja bajo la línea de cero y nunca se trunca. ${pick(o.backcast.statement, 'es')}`,
+          en: `${pick(loanName, 'en')}, link ${pick(text(LINK_TEXT, b.link), 'en')}, fitted on ${quarterText(b.fit_window.start, 'en')} to ${quarterText(b.fit_window.end, 'en')} and scored out of time on 2020 Q1 to 2025 Q4. A realised charge-off rate can be negative, a net recovery: it is drawn below the zero line and never floored. ${pick(o.backcast.statement, 'en')}`,
+          es: `${pick(loanName, 'es')}, enlace ${pick(text(LINK_TEXT, b.link), 'es')}, ajustado con ${quarterText(b.fit_window.start, 'es')} a ${quarterText(b.fit_window.end, 'es')} y evaluado fuera de tiempo en 2020 T1 a 2025 T4. Una tasa de castigo realizada puede ser negativa, una recuperación neta: se dibuja bajo la línea de cero y nunca se trunca. ${pick(o.backcast.statement, 'es')}`,
         }}
       >
         <ChartOverTable
@@ -301,6 +317,7 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
                 { label: { en: 'Realised', es: 'Realizada' }, values: b.quarters.map((x) => x.realised), color: '--color-bad', width: 2.2, dash: [5, 3] },
               ]}
               yMarks={[{ y: 0, label: { en: 'Zero: below it a net recovery', es: 'Cero: bajo él, una recuperación neta' }, tone: 'neutral' }]}
+              marks={backcastMarks(b)}
             />
           }
         >
@@ -394,6 +411,20 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
   );
 }
 
+/**
+ * The bars of the severity chart: each path's peak deviation over the crisis's, and the minimum ratio. A bar carries no note that
+ * repeats its own label (U16-R4 c22 m6). is_stress is the scenario's kind (not the baseline); the minimum-ratio rule is judged
+ * here, on a stress path only (PR-C18-2).
+ */
+export function severityBars(o: C18Outputs) {
+  const sv = o.severity;
+  const severe = (r: (typeof sv.rows)[number]): boolean => r.ratio >= sv.minimum_ratio;
+  return [
+    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor) as BiText, value: r.ratio, tone: !r.is_stress ? ('neutral' as const) : severe(r) ? ('accent' as const) : ('warn' as const), hint: undefined as BiText | undefined })),
+    { id: 'minimum', label: { en: 'Minimum ratio (a convention)', es: 'Razón mínima (una convención)' } as BiText, value: sv.minimum_ratio, tone: 'neutral' as const, hint: undefined as BiText | undefined },
+  ];
+}
+
 /** How severe each path is against the global financial crisis, and whether it reaches the case's minimum ratio. */
 export function SeverityView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
@@ -403,12 +434,8 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const sv = o.severity;
-  // is_stress is the scenario's kind (not the baseline); the minimum-ratio rule is judged here, on a stress path only (PR-C18-2)
   const severe = (r: (typeof sv.rows)[number]): boolean => r.ratio >= sv.minimum_ratio;
-  const bars = [
-    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor), value: r.ratio, tone: !r.is_stress ? ('neutral' as const) : severe(r) ? ('accent' as const) : ('warn' as const), hint: text(REGRESSOR_TEXT, r.maps_to_regressor) })),
-    { id: 'minimum', label: { en: 'Minimum ratio (a convention)', es: 'Razón mínima (una convención)' } as BiText, value: sv.minimum_ratio, tone: 'neutral' as const },
-  ];
+  const bars = severityBars(o);
   return (
     <ViewsRow>
       <PlotCard
@@ -469,6 +496,33 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
 const RISK_COLOR = { credit: '--color-accent', market: '--color-warn', irrbb: '--color-magenta', operational: '--color-good' } as const;
 
 /** The expected losses of the scenario by risk and year, the engine of the depletion of the capital. */
+/**
+ * What the key cannot show: the series that lie on each other (U16-R4 c22 m9, c23 m6: Market and IRRBB are zero in every year and draw
+ * one line, the credit line lies under the total). From the committed rows; null when every series has a line of its own.
+ */
+export function lossesOverlap(rows: ReadonlyArray<{ credit: number; market: number; irrbb: number; operational: number; total: number }>): Bi | null {
+  const zero = RISK_ORDER.filter((k) => rows.every((r) => r[k] === 0));
+  const share = Math.min(...rows.map((r) => (r.total > 0 ? r.credit / r.total : 0)));
+  const parts: Bi[] = [];
+  if (zero.length > 0) {
+    const en = zero.map((k) => pick(text(RISK_TEXT, k), 'en'));
+    const es = zero.map((k) => pick(text(RISK_TEXT, k), 'es'));
+    const join = (xs: string[], and: string) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} ${and} ${xs[xs.length - 1]}`);
+    parts.push(
+      zero.length === 1
+        ? { en: `${en[0]} is zero in every year: its line lies on the zero line.`, es: `${es[0]} es cero en todos los años: su línea queda sobre la línea de cero.` }
+        : { en: `${join(en, 'and')} are zero in every year: their lines lie on one another, on the zero line.`, es: `${join(es, 'y')} son cero en todos los años: sus líneas quedan una sobre otra, en la línea de cero.` },
+    );
+  }
+  if (share >= 0.95) {
+    parts.push({
+      en: `Credit is ${formatNumber(Math.floor(share * 100), 'en', { decimals: 0 })} percent or more of the total in every year, so its line lies just under the total line.`,
+      es: `El crédito es ${formatNumber(Math.floor(share * 100), 'es', { decimals: 0 })} por ciento o más del total en todos los años, así que su línea queda justo bajo la del total.`,
+    });
+  }
+  return parts.length ? { en: parts.map((p) => p.en).join(' '), es: parts.map((p) => p.es).join(' ') } : null;
+}
+
 export function LossesView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -477,6 +531,7 @@ export function LossesView({ sel }: { sel: C18Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const rows = o.losses.scenario_losses;
+  const overlap = lossesOverlap(rows);
   return (
     <ViewsRow>
       <PlotCard fill title={title} {...card} note={{ en: pick(o.losses.basis, 'en'), es: pick(o.losses.basis, 'es') }}>
@@ -516,7 +571,7 @@ export function LossesView({ sel }: { sel: C18Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: `Amounts in ${pick(MONEY_UNIT, 'en')}; the credit loss is the satellite projections times the book of each class.`, es: `Montos en ${pick(MONEY_UNIT, 'es')}; la pérdida de crédito son las proyecciones de los satélites por el libro de cada clase.` }, lang)}</p>
+          <p className="ct-note">{pick({ en: `Amounts in ${pick(MONEY_UNIT, 'en')}; the credit loss is the satellite projections times the book of each class.`, es: `Montos en ${pick(MONEY_UNIT, 'es')}; la pérdida de crédito son las proyecciones de los satélites por el libro de cada clase.` }, lang)}{overlap ? ` ${pick(overlap, lang)}` : ''}</p>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

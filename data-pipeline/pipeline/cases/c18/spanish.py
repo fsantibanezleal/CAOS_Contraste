@@ -25,12 +25,12 @@ SPANISH: dict[str, str] = {
         "Razón CET1 en el punto de quiebre: el mínimo legal apilado",
     "CET1 ratio at the jump-off (this variant runs the baseline aggregation, not a stress)":
         "Razón CET1 en el punto de partida (esta variante corre la agregación base, no un estrés)",
-    "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)":
-        "Grados de libertad de la cópula t: 4, 8 y 30 (30 se acerca a la cópula gaussiana); una convención del caso, G.5 pide varios nu (05 l.378)",
-    "Derived at bake time: Banco Andino's total assets (the C15 Tier 1 proxy over its equity-over-assets calibration target) over the C17 synthetic bank's stated assets, converted at the rate":
-        "Derivado al hornear: los activos totales de Banco Andino (el sustituto del capital de nivel 1 de C15 sobre su meta de calibración de patrimonio sobre activos) sobre los activos declarados del banco sintético de C17, convertidos a la tasa",
-    "Derived at bake time: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile":
-        "Derivado al hornear: la tasa EUR a CLP observada en la fecha de corte, del Banco Central de Chile",
+    "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several values of ν (05 l.378)":
+        "Grados de libertad de la cópula t: 4, 8 y 30 (30 se acerca a la cópula gaussiana); una convención del caso, G.5 pide varios valores de ν (05 l.378)",
+    "Derived when the case is computed: Banco Andino's total assets (the C15 Tier 1 proxy over its equity-over-assets calibration target) over the C17 synthetic bank's stated assets, converted at the rate":
+        "Derivado al calcular el caso: los activos totales de Banco Andino (el sustituto del capital de nivel 1 de C15 sobre su meta de calibración de patrimonio sobre activos) sobre los activos declarados del banco sintético de C17, convertidos a la tasa",
+    "Derived when the case is computed: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile":
+        "Derivado al calcular el caso: la tasa EUR a CLP observada en la fecha de corte, del Banco Central de Chile",
     "Expected aggregate loss under the Gaussian copula, and its worst case over reweightings of the sample within the relative entropy budget":
         "Pérdida agregada esperada bajo la cópula gaussiana, y su peor caso sobre reponderaciones de la muestra dentro del presupuesto de entropía relativa",
     "Headline capital: the simple sum of the four marginals":

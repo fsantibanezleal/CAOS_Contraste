@@ -209,7 +209,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                 <th className="ct-text" style={{ minWidth: lang === 'es' ? '7rem' : '9.5rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Con capital' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'With a capital', es: 'Con capital' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Median losses', es: 'Pérdidas, mediana' }, lang)}</th>
                 <HeadCells lang={lang} unit={money.unit} />
               </tr>

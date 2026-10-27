@@ -4,7 +4,7 @@
 import { PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { WithQuotes } from '../../content/bi';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C22WriteUp } from '../../content/cases/C22';
 import { TRUTH_TEXT } from '../../content/cases/C04Results';
@@ -145,8 +145,8 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
         provenance={provenanceOf(v.provenance.truth_status)}
         dataKey={stateKey}
         note={{
-          en: `${Object.keys(o.generators).length} generators from riskvalidation ${v.provenance.riskvalidation_version ?? ''}, each with its configuration and its exact truth committed; ${o.ladder ? `severity ladder: ${o.ladder.values.join(', ')} (${o.ladder.label.en})` : 'every test at the boundary of its null'}.`,
-          es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta versionadas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
+          en: `${Object.keys(o.generators).length} generators from riskvalidation ${v.provenance.riskvalidation_version ?? ''}, each with its configuration and its exact truth committed; ${o.ladder ? `severity ladder: ${o.ladder.values.join(', ')}; ${o.ladder.label.en}` : 'every test at the boundary of its null'}.`,
+          es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta versionadas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')}; ${o.ladder.label.es}` : 'cada prueba en la frontera de su nula'}.`,
         }}
       >
         <div className="ct-scroll" data-caos-flow="">
@@ -165,8 +165,8 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
                 <tr key={ref} data-generator={ref}>
                   {/* the engine's own reference and class of a generator: code, as its configuration keys (an engine-configuration
                       appendix; ruling of 2026-10-24) */}
-                  <td className="ct-text"><code translate="no">{ref}</code></td>
-                  <td className="ct-text"><code translate="no">{g.name}</code></td>
+                  <td className="ct-text"><code translate="no">{codeBreaks(ref)}</code></td>
+                  <td className="ct-text"><code translate="no">{codeBreaks(g.name)}</code></td>
                   <td className="ct-text"><RecordText items={config(g.config)} /></td>
                   <td className="ct-text ct-wide-only"><RecordText items={truth(g)} /></td>
                   <td className="ct-text ct-wide-only">{users(ref)}</td>
@@ -271,8 +271,8 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
       provenance={provenanceOf(v.provenance.truth_status)}
       dataKey={stateKey}
       note={{
-        en: `Against the family's ladder (${ladder.label.en}) unless a panel names its own axis; ${repetitions(v.outputs.simulations, 'en')}, so a rate's Monte Carlo SE is at most ${pct('en', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; dashed: the exact probability where one exists; dotted: the nominal level.${twoPoint ? ' Two points per study: its null (0, the rate is its size) and the one alternative the engine states (1, the rate is its power); a test with several studies has a curve each.' : ''}`,
-        es: `Contra la escala de la familia (${ladder.label.es}) salvo que un panel nombre su propio eje; ${repetitions(v.outputs.simulations, 'es')}, así que el EE de Monte Carlo de una tasa es a lo más ${pct('es', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; segmentada: la probabilidad exacta donde existe; punteada: el nivel nominal.${twoPoint ? ' Dos puntos por estudio: su nula (0, la tasa es su tamaño) y la única alternativa que declara el motor (1, la tasa es su potencia); una prueba con varios estudios tiene una curva cada uno.' : ''}`,
+        en: `Against the family's ladder, ${ladder.label.en}, unless a panel names its own axis; ${repetitions(v.outputs.simulations, 'en')}, so a rate's Monte Carlo SE is at most ${pct('en', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; dashed: the exact probability where one exists; dotted: the nominal level.${twoPoint ? ' Two points per study: its null (0, the rate is its size) and the one alternative the engine states (1, the rate is its power); a test with several studies has a curve each.' : ''}`,
+        es: `Contra la escala de la familia, ${ladder.label.es}, salvo que un panel nombre su propio eje; ${repetitions(v.outputs.simulations, 'es')}, así que el EE de Monte Carlo de una tasa es a lo más ${pct('es', 0.5 / Math.sqrt(Math.min(...v.outputs.simulations.map((s) => s.n_rep))), 1)}; segmentada: la probabilidad exacta donde existe; punteada: el nivel nominal.${twoPoint ? ' Dos puntos por estudio: su nula (0, la tasa es su tamaño) y la única alternativa que declara el motor (1, la tasa es su potencia); una prueba con varios estudios tiene una curva cada uno.' : ''}`,
       }}
     >
       <div className="ct-panels-fill" data-caos-flow="" data-views={String(panels.length)}>
@@ -779,9 +779,8 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
   // every cited rate, numbered in reading order: the table's [k] and the chart's x
   const points = findings.flatMap((f) => f.evidence.map((e) => ({ key: `${f.id}|${e}`, s: sim(e) }))).filter((x) => x.s);
   const number = new Map(points.map((x, i) => [x.key, i + 1]));
-  // half a step of room on each side, so the first and last points are not cut by the plot's edges
-  const xs = [0.5, ...points.map((_, i) => i + 1), points.length + 0.5];
-  const pad = (vals: Array<number | null>): Array<number | null> => [null, ...vals, null];
+  // half a step of room on each side as the axis range, so the first and last points are not cut by the plot's edges
+  const axis = citedAxis(points.length);
   const prov = provenanceOf(v.provenance.truth_status);
   return (
     <ViewsRow shares={shares}>
@@ -833,13 +832,13 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
       >
         <UPlotChart
           height="fill"
-          x={{ values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
+          x={{ values: axis.values, range: axis.range, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
           y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, Math.min(1, Math.max(sel.level, ...points.map((x) => (x.s ? rateOf(x.s, r).hi : 0))) * 1.1)] }}
           series={[
             // the interval ends are small dots drawn first; the rate is the larger accent dot drawn last, so the interval never covers it
-            { label: { en: 'Wilson 95%, low', es: 'Wilson 95 %, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
-            { label: { en: 'Wilson 95%, high', es: 'Wilson 95 %, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
-            { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points', size: 9 },
+            { label: { en: 'Wilson 95%, low', es: 'Wilson 95 %, inferior' }, values: points.map((x) => (x.s ? rateOf(x.s, r).lo : null)), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Wilson 95%, high', es: 'Wilson 95 %, superior' }, values: points.map((x) => (x.s ? rateOf(x.s, r).hi : null)), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Rate', es: 'Tasa' }, values: points.map((x) => (x.s ? rateOf(x.s, r).rate : null)), color: '--color-accent', mode: 'points', size: 9 },
           ]}
           yMarks={[{ ...NOMINAL(sel.level), tone: 'warn' }]}
         />
@@ -869,6 +868,32 @@ export function familyCell(f: C22Variant, testId: string, r: string): { rate: nu
 /** The families side by side: which test sees which defect. A row per test with a p-value; the null column is its
  * size, each defect column its rate at the family's highest severity on the family's ladder; a column header loads the
  * family. */
+/**
+ * The note of the detection matrix. A stronger colour is a higher rate in both themes (U16-R4 c26 n1: "darker" is false on the dark
+ * page), and a false alarm or a size carries a dagger, so the kind of a cell is read in text, not by hue alone (c27 n3, rubric
+ * section 8).
+ */
+export const HEAT_NOTE: { en: string; es: string } = {
+  en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). A stronger colour: a higher rate; † beside a rate: a false alarm or a size, the model being right; blank: a test the family does not measure. A column header loads the family. The Other families column is a test's power against the one alternative the engine states for it (blue); the tests of the five credit families are blank there, and the other tests are blank in the credit families' columns.",
+  es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Color más intenso: una tasa mayor; † junto a una tasa: una falsa alarma o un tamaño, con el modelo correcto; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia. La columna Otras familias es la potencia de una prueba contra la única alternativa que el motor declara para ella (azul); las pruebas de las cinco familias de crédito quedan vacías ahí, y las demás pruebas quedan vacías en las columnas de las familias de crédito.',
+};
+
+/** The text of a matrix cell: its rate, with a dagger when the cell is a false alarm or a size (the model is right). */
+export function heatText(c: { rate: number | null; kind: 'power' | 'size' }, lang: 'en' | 'es'): string {
+  return `${pct(lang, c.rate, 1)}${c.kind === 'size' ? '†' : ''}`;
+}
+
+/** A code identifier that breaks only after its separators (".", "_", "-"), never inside a word (U16-R4 c27 n5: "stage_tran / sitions"). */
+export function codeBreaks(id: string): ReactNode[] {
+  return id.split(/(?<=[._-])/).flatMap((part, i) => (i === 0 ? [part] : [<wbr key={i} />, part]));
+}
+
+/** The x axis of the cited-rates chart: the cited rates 1 to n only, with half a step of room on each side as the axis range, so no
+ * padding row enters the chart's summary and data table (U16-R4 c27 n1: "30 points ... from 1 to 29" for 28 cited rates). */
+export function citedAxis(n: number): { values: number[]; range: [number, number] } {
+  return { values: Array.from({ length: n }, (_, i) => i + 1), range: [0.5, n + 0.5] };
+}
+
 export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -905,10 +930,7 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{
-          en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family. The Other families column is a test's power against the one alternative the engine states for it (blue); the tests of the five credit families are blank there, and the other tests are blank in the credit families' columns.",
-          es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia. La columna Otras familias es la potencia de una prueba contra la única alternativa que el motor declara para ella (azul); las pruebas de las cinco familias de crédito quedan vacías ahí, y las demás pruebas quedan vacías en las columnas de las familias de crédito.',
-        }}
+        note={HEAT_NOTE}
       >
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head ct-heat-table" data-table="detections">
@@ -930,7 +952,7 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
                   <td className="ct-text">{pick(s.label, lang)}</td>
                   {cells.map((c, k) => (
                     <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)} data-kind={c?.kind}>
-                      {c ? pct(lang, c.rate, 1) : ''}
+                      {c ? heatText(c, lang) : ''}
                     </td>
                   ))}
                 </tr>

@@ -102,7 +102,7 @@ def granularity_text(g: dict[str, Any]) -> dict[str, str]:
           f"difference {n(g['se_var'], 'en')} for the VaR and {n(g['se_es'], 'en')} for the ES. The difference {'exceeds' if g['exceeds_two_se'] else 'does not exceed'} two "
           f"standard errors, so {n(g['names_used'], 'en')} names per segment are used.")
     es = (f"La cópula agrupada del motor sobre los seis segmentos de C07, cada uno un grupo de nombres representativos que llevan la exposición, PD, LGD y correlación de activos "
-          f"del segmento (un factor sistemático); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {n(lo['names'], 'es')} y con {n(hi['names'], 'es')} "
+          f"del segmento (un factor sistemático); las cuentas son 171.500, que ninguna simulación de 10^6 escenarios podría llevar nombre por nombre. El VaR y el ES al 99,9 por ciento se midieron con {n(lo['names'], 'es')} y con {n(hi['names'], 'es')} "
           f"nombres por segmento y la misma semilla, en millones de CLP: VaR {n(lo['var'], 'es')} y {n(hi['var'], 'es')} (diferencia {n(g['diff_var'], 'es')}), ES "
           f"{n(lo['es'], 'es')} y {n(hi['es'], 'es')} (diferencia {n(g['diff_es'], 'es')}), error estándar de Monte Carlo de la diferencia {n(g['se_var'], 'es')} para el VaR y "
           f"{n(g['se_es'], 'es')} para el ES. La diferencia {'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estándar, por lo que se usan "

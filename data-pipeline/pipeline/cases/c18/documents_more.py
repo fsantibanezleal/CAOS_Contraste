@@ -6,6 +6,7 @@ from typing import Any
 
 import numpy as np
 
+from ...core import text as tx
 from . import aggregation as agg
 from . import models
 from . import params as P
@@ -80,12 +81,15 @@ def reverse_finding_title(names: list[str], names_es: list[str], x: Any, distanc
     ends below the stack, which the baseline document contradicts (U16-R3 c19 B2: 9.42 % against 9.06 %). A tail probability under 0.1 percent
     is written with its exponent, not as "0.0%" (m4)."""
     small = p < 1e-3
-    p_en = f"{p:.1e}" if small else f"{p:.1%}"
-    p_es = P.es_num(f"{p:.1e}") if small else P.es(p, ".1%")
-    return T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and the {names[1]} by "
-             f"{x[1]:+.2f} points, a Mahalanobis distance of {distance:.2f} (tail probability {p_en}).",
-             f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el {names_es[0]} en {P.es(x[0], '+.2f')} y la {names_es[1]} en "
-             f"{P.es(x[1], '+.2f')} puntos, a una distancia de Mahalanobis de {P.es(distance, '.2f')} (probabilidad de cola {p_es}).")
+    # the exponent upper case, as the views write it ("2.4E-15"); both factors carry their unit, points (U16-R4 c23 m11)
+    p_en = f"{p:.1E}" if small else tx.percent(p, 1, lang="en")
+    p_es = P.es_num(f"{p:.1E}") if small else tx.percent(p, 1, lang="es")
+    sx = [f"{'+' if v >= 0 else '-'}{tx.number(abs(v), 2, lang='en')}" for v in x[:2]]
+    sx_es = [f"{'+' if v >= 0 else '-'}{tx.number(abs(v), 2, lang='es')}" for v in x[:2]]
+    return T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {sx[0]} points and the {names[1]} by "
+             f"{sx[1]} points, a Mahalanobis distance of {tx.number(distance, 2, lang='en')} (tail probability {p_en}).",
+             f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el {names_es[0]} en {sx_es[0]} puntos y la {names_es[1]} en "
+             f"{sx_es[1]} puntos, a una distancia de Mahalanobis de {tx.number(distance, 2, lang='es')} (probabilidad de cola {p_es}).")
 
 
 def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict[str, Any]:

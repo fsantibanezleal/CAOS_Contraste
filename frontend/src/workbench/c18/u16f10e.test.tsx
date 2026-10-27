@@ -62,7 +62,7 @@ describe('U16-F10e C18', () => {
 
   it('c19 M1: the lower stack drawing has a floor that holds its ticks, its axis title and the read-out hint', () => {
     const html = render(<StackView sel={selOf('fed-2026-severely-adverse')} />, 'en');
-    expect(html).toMatch(/data-box="legal-stack"[^>]*style="[^"]*min-height:9rem/);
+    expect(html).toMatch(/data-box="legal-stack"[^>]*style="[^"]*min-height:calc\(/);
   });
 
   it('c19 M2: a path drawn as a level carries the unit of the level, not of the published deviation', () => {

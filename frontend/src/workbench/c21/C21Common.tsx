@@ -162,7 +162,7 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
                 <tr key={id} data-variant={id} data-pair={o.pair_id} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
-                    <span className="ct-note">{` ${o.fit_year} - ${o.confirm_year}`}</span>
+                    {/* the title is the pair ("2018-19"): its years are not repeated beside it (U16-R4 c25 n2) */}
                   </td>
                   <td className="ct-wide-only">{int(o.scope.rows_fit, lang)}</td>
                   <td data-na={lowest ? undefined : 'true'}>{lowest ? `${pc1(lowest.selection_rate, lang)} (${pick(groupBi(lowest.group), lang)})` : formatNumber(null, lang)}</td>
@@ -262,7 +262,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           )}
           <dt>{pick({ en: 'Debt-to-income bins', es: 'Tramos de deuda sobre ingreso' }, lang)}</dt>
           <dd><Marked>{`${c.dti_recode.bins.join(', ')}. ${pick(c.dti_recode.note, lang)}`}</Marked></dd>
-          <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas de a pares' }, lang)}</dt>
+          <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas por pares' }, lang)}</dt>
           <dd><Marked>{pick(c.group_exclusion, lang)}</Marked></dd>
           <dt>{pick({ en: 'Identifiers', es: 'Identificadores' }, lang)}</dt>
           <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${formulaWords(c.identifiers.id, lang)}; ${formulaWords(c.identifiers.observation_date, lang)})`}</dd>
@@ -271,7 +271,8 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
       <PlotCard title={{ en: 'The licence of the data', es: 'La licencia de los datos' }} {...card}>
         <dl className="ct-defs" data-table="c21-licence" data-status={l.status}>
           <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
-          <dd>{`${l.status}: ${pick(l.note, lang)}`}</dd>
+          {/* the note says the status itself ("is UNVERIFIED", "está SIN VERIFICAR"): it is not said twice (U16-R4 c25 n3) */}
+          <dd>{/UNVERIFIED|SIN VERIFICAR/.test(pick(l.note, lang)) ? pick(l.note, lang) : `${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
           <dd><Quoted quote={l.platform_terms} lang={lang} /> (<Marked>{es(l.platform_terms_cover, lang)}</Marked>)</dd>
           <dt>{pick({ en: 'CFPB statement', es: 'Declaración de la CFPB' }, lang)}</dt>
@@ -296,7 +297,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
                   <td className="ct-text">{DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field] ? <>{pick(DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field], lang)} <code translate="no">{n.field}</code></> : n.field}</td>
                   <td className="ct-text">{treatmentName(n.treatment, lang)}</td>
                   <td data-na={n.n_missing === null ? 'true' : undefined}>{n.n_missing === null ? formatNumber(null, lang) : int(n.n_missing, lang)}</td>
-                  <td className="ct-text ct-wide-only">{pick(n.reason, lang)}</td>
+                  <td className="ct-text ct-wide-only"><Marked>{pick(n.reason, lang)}</Marked></td>
                 </tr>
               ))}
             </tbody>

@@ -28,8 +28,9 @@ const TEXT: Map = {
   // the unit of a named parameter
   'AUC points': 'puntos de AUC',
   'bootstrap refits': 'reajustes por remuestreo',
-  "multiple of each feature's standard deviation": 'múltiplo de la desviación estándar de cada variable',
-  'multiple of the average test error': 'múltiplo del error promedio de prueba',
+  // a list of scales and a value of 2: the plural (U16-R4 c24 n11)
+  "multiple of each feature's standard deviation": 'múltiplos de la desviación estándar de cada variable',
+  'multiple of the average test error': 'múltiplos del error promedio de prueba',
   'name of the score': 'nombre del puntaje',
   'retraining seeds': 'semillas de reentrenamiento',
   'share of baseline decisions declined': 'parte de las decisiones base rechazadas',
@@ -70,6 +71,9 @@ export const C20_RULES: ReadonlyArray<Rule> = [
 
 /** The Spanish of a document string, or the string itself in English or when no entry knows it. */
 export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => dropPlanTags(localise(s, lang, C20_RULES));
+
+/** The Spanish of a unit of a named parameter. */
+export const unitEs = (unit: string, lang: 'en' | 'es'): string => es(unit, lang);
 
 type Row = { notes?: string | null };
 /** The tests of a document with their notes in the language: the shared tests table prints `notes` as it finds it. */

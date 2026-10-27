@@ -144,14 +144,14 @@ LADDER: list[dict[str, Any]] = [{'rung_id': 'lda-lognormal',
   'truncated': True,
   'aggregation': 'closed-form',
   'status': 'UNVERIFIED',
-  'reference': 'dossier 05 F.4: the form is not checked against Bocker and Sprittulla (2006) or Degen (2010)'},
+  'reference': 'dossier 05 F.4: the form is not checked against Böcker and Sprittulla (2006) or Degen (2010)'},
  {'rung_id': 'scenario',
   'label': {'en': 'Scenario combination by Bayesian credibility', 'es': 'Combinación de escenarios por credibilidad bayesiana'},
   'severity_law': 'lognormal-gpd-splice',
   'truncated': True,
   'aggregation': 'panjer',
   'status': 'verified',
-  'reference': 'dossier 05 F.5, Shevchenko and Wuthrich (2006)'}]
+  'reference': 'dossier 05 F.5, Shevchenko and Wüthrich (2006)'}]
 
 SMA_SPEC: dict[str, Any] = {'currency': 'EUR',
  'buckets': [{'bucket': 1, 'upper_eur': 1000000000.0, 'coefficient': 0.12},
@@ -189,4 +189,4 @@ SCENARIO_SPEC: dict[str, Any] = {'methods': ['pseudo-observations', 'body-tail',
                       'solve the mean and the interval mass (decision D4); the scenario frequencies are redrawn as Poisson over the years of '
                       'the history (decision D6); the bootstrap seed is the first of 0 to 99 whose 100 refits all lie inside the search '
                       'bounds of the engine'},
- 'reference': 'dossier 05 F.5; Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26'}
+ 'reference': 'dossier 05 F.5; Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26'}
