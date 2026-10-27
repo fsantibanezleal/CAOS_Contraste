@@ -8,8 +8,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { fixtureData, html, setLang } from '../c03/u6-testkit';
 import { committed, committedData, view } from '../c08/spanish-testkit';
-import { ByDesignView, DistributionView } from './CcfViews';
-import { BacktestView, FloorsView, ModelsView } from './EadViews';
+import { ByDesignView, DistributionView, EstimatorTestsView } from './CcfViews';
+import { BacktestTestsView, BacktestView, FloorsView, ModelsView } from './EadViews';
 import { C09ContextView, C09VariantsTable } from './C09Common';
 import { useC09Instrument } from './instrument';
 import { defaultSel, outputsOf, type C09Outputs, type C09Sel } from './selection';
@@ -71,27 +71,29 @@ describe('U16-F10c, C09 (R3 c10)', () => {
     }
   });
 
-  it('M2: By design puts its tests in a card of their own and its estimates under a drawing of fixed height', () => {
+  it('M2: By design draws its chart whole in a card beside its estimates; its tests are a sub-view of their own', () => {
     const sel = selOf(3);
-    const cards = cardsOf(html(<ByDesignView sel={sel} />));
+    const markup = html(<ByDesignView sel={sel} />);
+    const cards = cardsOf(markup);
     expect(cards).toHaveLength(2);
-    expect(cards[0]).toContain('data-table="ccf-by-design"');
-    expect(cards[0]).not.toContain('data-table="tests"');
-    expect(cards[0]).toContain('ct-stack-rest');
-    expect(cards[0]).not.toContain('ct-stack-table');
-    expect(cards[1]).toContain('data-table="tests"');
-    expect((cards[1].match(/data-test="lgd_ead\.ccf_estimator_bias"/g) ?? []).length).toBe(8);
+    expect(cards[0]).not.toContain('data-table=');
+    expect(Number(/--ct-chart-min:([\d.]+)rem/.exec(cards[0])?.[1])).toBeGreaterThanOrEqual(9 * 1.5);
+    expect(cards[1]).toContain('data-table="ccf-by-design"');
+    expect(markup).not.toContain('data-table="tests"');
+    expect(markup).not.toContain('ct-stack-table');
+    const tests = html(<EstimatorTestsView sel={sel} />);
+    expect((tests.match(/data-test="lgd_ead\.ccf_estimator_bias"/g) ?? []).length).toBe(8);
     // the generator notice is the Context's, not repeated over the estimates
     expect(view(<ByDesignView sel={sel} />)).not.toContain(outputsOf(sel)!.generator.notice.en);
   });
 
-  it('M2: the Back-test puts its tests in a card of their own and its bands under a drawing of fixed height', () => {
-    const cards = cardsOf(html(<BacktestView sel={selOf(3)} />));
-    expect(cards).toHaveLength(2);
-    expect(cards[0]).toContain('data-table="ead-backtest"');
-    expect(cards[0]).toContain('ct-stack-rest');
-    expect(cards[0]).not.toContain('data-table="tests"');
-    expect((cards[1].match(/data-test="lgd_ead\.ead_backtest_by_band"/g) ?? []).length).toBe(8);
+  it('M2: the Back-test puts its bands under a drawing of fixed height; its tests are a sub-view of their own', () => {
+    const markup = html(<BacktestView sel={selOf(3)} />);
+    expect(cardsOf(markup)).toHaveLength(1);
+    expect(markup).toContain('data-table="ead-backtest"');
+    expect(markup).toContain('ct-stack-rest');
+    expect(markup).not.toContain('data-table="tests"');
+    expect((html(<BacktestTestsView sel={selOf(3)} />).match(/data-test="lgd_ead\.ead_backtest_by_band"/g) ?? []).length).toBe(8);
   });
 
   it('M2: the Floor table takes the room under a drawing of fixed height, in both languages', () => {
@@ -104,10 +106,10 @@ describe('U16-F10c, C09 (R3 c10)', () => {
   });
 
   it('m1: the by-design note states the whole light rule of the tests and what a red bar means', () => {
-    const markup = view(<ByDesignView sel={selOf(3)} />);
+    const markup = view(<EstimatorTestsView sel={selOf(3)} />);
     expect(markup).toContain('green within it, amber up to twice it and red beyond');
     setLang('es');
-    expect(view(<ByDesignView sel={selOf(3)} />)).toContain('verde dentro de ella, ámbar hasta el doble y rojo más allá');
+    expect(view(<EstimatorTestsView sel={selOf(3)} />)).toContain('verde dentro de ella, ámbar hasta el doble y rojo más allá');
   });
 
   it('m3: a CCF model clips nothing by design: "not applicable", never "not available"', () => {
