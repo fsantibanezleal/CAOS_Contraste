@@ -40,7 +40,6 @@ const o = variant.outputs;
 const fit = (models as unknown as { fit: components['schemas']['c13Fit'] }).fit;
 const sel = defaultSel(data) as C13Sel;
 const en = (b: unknown): string => (b as { en: string } | undefined)?.en ?? '';
-const NA = formatNumber(null, 'en');
 const pct = (v: number, d = 1) => formatNumber(v, 'en', { percent: true, decimals: d });
 const count = (v: number) => formatNumber(v, 'en', { decimals: 0 });
 const chartOf = (el: ReactElement) => {
@@ -115,7 +114,8 @@ describe('the C13 instrument', () => {
     expect(markup).toContain('data-known-deficiency="none"');
     expect(markup).toContain('No deficiency planted');
     expect(markup).toContain('false-alarm');
-    expect(markup).toContain(NA);
+    // the control has no test meant to catch a deficiency: "not applicable", with its reason (R3 c14 m7)
+    expect(markup).toContain('not applicable: no deficiency planted');
   });
 });
 

@@ -25,7 +25,8 @@ describe('U16-F7 C13 (b06 minors)', () => {
     expect(levelLabel(0.025, 'es')).toBe('Cola de 2,5 % (VaR al 97,5 %)');
     setLang('es');
     const text = view(<DeskView sel={sel()} />);
-    expect(text).toMatch(/Backtest de mesa en la cola de 2,5 %/);
+    // the 2026-10-27 ruling: back-test is translated (prueba retrospectiva)
+    expect(text).toMatch(/Prueba retrospectiva de la mesa en la cola de 2,5 %/);
     expect(text).not.toMatch(/en la Cola/);
     expect(view(<DetectionView sel={sel()} />)).not.toMatch(/EE de Monte Carlo/);
     expect(view(<DetectionView sel={sel()} />)).toMatch(/error estándar de Monte Carlo/);
