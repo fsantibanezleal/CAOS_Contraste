@@ -22,6 +22,7 @@ from typing import Any
 
 from . import APPETITE_REL, FINDINGS_REL, INVENTORY_REL, REPORTS_DIR, SUMS_REL, attributes, edge_table, report_rel
 from .readers import REPO_ROOT, BakeError, Case, Reader, newest_release, read_corpus, release_dates
+from .reader import reader_text
 
 INPUTS_REL = "data-pipeline/pipeline/governance/inputs.json"
 PAGE_REL = "docs/governance.md"
@@ -279,8 +280,8 @@ def _register_rows(E: SimpleNamespace, key: str, owner: str, tier: int, variants
             rows.append({
                 "key": f"{doc['case_id']}/{vid}/{f['id']}", "case_id": doc["case_id"], "variant_id": vid, "id": f["id"], "entry_key": key,
                 "title": f["title"], "severity": sev, "ecb_f": E.findings.severity_to_ecb(sev), "product_status": f["status"], "status": status,
-                "evidence": f["evidence"], "anchor": anchor, "anchor_reason": None if why is None else _engine_text(why),
-                "rwea_share": share, "rwea_share_reason": None if share_why is None else _engine_text(share_why),
+                "evidence": f["evidence"], "anchor": anchor, "anchor_reason": None if why is None else reader_text(_engine_text(why)),
+                "rwea_share": share, "rwea_share_reason": None if share_why is None else reader_text(_engine_text(share_why)),
                 "owner_role": owner, "tier": tier, "raised": raised.isoformat(), "deadline_days": days, "due": due.isoformat(),
                 "ageing_days": E.findings.ageing_days(raised, as_of), "overdue": E.findings.is_overdue(status, due, as_of),
                 "remediation": None,

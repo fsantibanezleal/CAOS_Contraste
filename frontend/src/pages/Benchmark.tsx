@@ -8,6 +8,7 @@ import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, relight } from '../lib/policy';
 import { P, T, useT } from '../content/bi';
+import { sourceText } from '../content/sources';
 import { CHAMPION, extra, test, value } from '../workbench/model';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
@@ -46,9 +47,9 @@ export function Comparison({ v, title }: { v: VariantArtifact; title: string }) 
           better.length
             ? {
                 en: `${better.map((r) => r.m.short_title.en).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
-                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5 %) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
+                es: `${better.map((r) => r.m.short_title.es).join(', ')} ordenan significativamente mejor que la tarjeta de puntuación (DeLong, política 5 %) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
               }
-            : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la scorecard aquí.' }
+            : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la tarjeta de puntuación aquí.' }
         }
       />
       <table className="caos-table">
@@ -141,7 +142,7 @@ function Provenance({ manifests }: { manifests: CaseManifest[] }) {
           return (
             <tr key={key}>
               <td>{m.case_id}</td>
-              <td className="caos-col-text">{d ? d.name : id}</td>
+              <td className="caos-col-text">{d ? sourceText(id, d.name, lang) : id}</td>
               <td className="caos-col-text">{d ? pick(CLASS_TEXT[d.class] ?? { en: d.class, es: d.class }, lang) : '-'}</td>
               <td className="caos-col-text">{truths.map((x) => pick(TRUTH[x] ?? { en: x, es: x }, lang)).join('; ')}</td>
             </tr>
@@ -175,14 +176,14 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
       title={{ en: `${manifest.case_id}: AUC across the perturbed variants`, es: `${manifest.case_id}: AUC a lo largo de las variantes perturbadas` }}
       lane="replay"
       provenance="real"
-      note={{ en: `The AUC of the scorecard and of the best rung on each variant, numbered: ${numbered}. A variant that perturbs the data shows how much each ranking degrades.`, es: `El AUC de la scorecard y del mejor peldaño en cada variante, numeradas: ${numbered}. Una variante que perturba los datos muestra cuánto se degrada cada ordenamiento.` }}
+      note={{ en: `The AUC of the scorecard and of the best rung on each variant, numbered: ${numbered}. A variant that perturbs the data shows how much each ranking degrades.`, es: `El AUC de la tarjeta de puntuación y del mejor peldaño en cada variante, numeradas: ${numbered}. Una variante que perturba los datos muestra cuánto se degrada cada ordenamiento.` }}
     >
       <UPlotChart
         height={260}
         x={{ values: rows.map((_, i) => i + 1), label: { en: 'Variant (the number in the note)', es: 'Variante (el número de la nota)' }, format: { decimals: 0 } }}
         y={{ label: { en: 'AUC', es: 'AUC' }, format: { decimals: 3 } }}
         series={[
-          { label: { en: 'Scorecard (P1)', es: 'Scorecard (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
+          { label: { en: 'Scorecard (P1)', es: 'Tarjeta de puntuación (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
           { label: { en: 'Best rung', es: 'Mejor peldaño' }, values: rows.map((r) => r.best.auc), color: '--color-magenta', mode: 'points' },
         ]}
       />
@@ -205,7 +206,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
         <tr>
           <th>{t('No.', 'N.º')}</th>
           <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-          <th>{t('AUC of the scorecard (P1)', 'AUC de la scorecard (P1)')}</th>
+          <th>{t('AUC of the scorecard (P1)', 'AUC de la tarjeta de puntuación (P1)')}</th>
           <th className="caos-col-text">{t('Best rung', 'Mejor peldaño')}</th>
           <th>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
         </tr>
@@ -228,7 +229,7 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
 export const HAS_OWN_BENCHMARK = new Set(['C04', 'C05', 'C22']);
 const IRRBB_REASON: { en: string; es: string } = {
   en: 'An IRRBB measure is a regulatory calculation under prescribed shocks, so there is no champion to rank against challengers; the case is compared in the App with and without the behavioural assumptions.',
-  es: 'Una medida de IRRBB es un cálculo regulatorio bajo shocks prescritos, así que no hay un campeón que ordenar frente a retadores; el caso se compara en la App con y sin los supuestos conductuales.',
+  es: 'Una medida de IRRBB es un cálculo regulatorio bajo choques prescritos, así que no hay un campeón que ordenar frente a retadores; el caso se compara en la App con y sin los supuestos conductuales.',
 };
 /** Cases with no champion-against-challenger comparison, each with the reason the page states: no section here, their data still appears under Provenance. */
 export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {

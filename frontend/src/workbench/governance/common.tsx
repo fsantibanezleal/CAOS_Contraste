@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import type { Text } from '../../lib/contract.types';
 import { Pending, Unavailable } from '../Pending';
 import { CONVENTION_NOTE, NOT_YET, TAG_NAME, useGovernance } from './model';
+import { readerWords } from './readerText';
 
 /** One governance document in its declared state: the view is drawn only from a document that was read. */
 export function GovernanceDoc<T>({ file, children, label }: { file: string; children: (doc: T) => ReactNode; label?: Text }) {
@@ -25,7 +26,9 @@ export function GovernanceDoc<T>({ file, children, label }: { file: string; chil
 /** Prose a document wrote in both languages. On the Spanish page it is already Spanish, and it may quote a reference such as "A D2 3.5" that is not a decimal: it is marked translate="no" so the page's Spanish-number check reads it as the reference it is. */
 export function Doc({ t, capital = false }: { t: Text; capital?: boolean }) {
   const lang = useShellLang();
-  const words = capital ? t[lang].replace(/^\s*(\p{L})/u, (m, c: string) => m.replace(c, c.toUpperCase())) : t[lang];
+  // in reader words: no plan or decision code, the engine keys in words (R3 c23 B3, B5)
+  const read = readerWords(t[lang], lang);
+  const words = capital ? read.replace(/^\s*(\p{L})/u, (m, c: string) => m.replace(c, c.toUpperCase())) : read;
   return <span translate={lang === 'es' ? 'no' : undefined}>{words}</span>;
 }
 
@@ -34,7 +37,7 @@ export function AsOf({ asOf, basis }: { asOf: string; basis: { label: string; ba
   const lang = useShellLang();
   return (
     <p className="ct-note" data-as-of={asOf}>
-      {pick({ en: 'As of', es: 'Al' }, lang)} {asOf} ({pick(TAG_NAME[basis.label] ?? { en: basis.label, es: basis.label }, lang)}): {pick(basis.basis, lang)}
+      {pick({ en: 'As of', es: 'Al' }, lang)} {asOf} ({pick(TAG_NAME[basis.label] ?? { en: basis.label, es: basis.label }, lang)}): {readerWords(pick(basis.basis, lang), lang)}
     </p>
   );
 }
@@ -60,7 +63,7 @@ export function Basis({ label, text }: { label: string; text: string }) {
         {label}: {pick({ en: 'the stated basis', es: 'la base declarada' }, lang)} {lang === 'es' ? '(texto de la fuente, en inglés)' : ''}
       </summary>
       <span lang="en" translate="no">
-        {text}
+        {readerWords(text, 'en')}
       </span>
     </details>
   );

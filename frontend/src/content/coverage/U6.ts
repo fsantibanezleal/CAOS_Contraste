@@ -21,7 +21,7 @@ export const CASES: PlannedCase[] = [
     id: 'C08',
     category: 'lgd-ead',
     title: t('LGD and downturn LGD', 'LGD y LGD de recesión'),
-    data: t('SBA 7(a) charge-off twin as the primary data (a charge-off LGD proxy with its bias stated); Freddie Mac loss fields when the account exists', 'Gemelo de castigos SBA 7(a) como dato principal (un proxy de LGD por castigo con su sesgo declarado); campos de pérdida de Freddie Mac cuando exista la cuenta'),
+    data: t('SBA 7(a) charge-off twin as the primary data (a charge-off LGD proxy with its bias stated); Freddie Mac loss fields when the account exists', 'Gemelo de castigos SBA 7(a) como dato principal (una aproximación de LGD por castigo con su sesgo declarado); campos de pérdida de Freddie Mac cuando exista la cuenta'),
     truth: t('real outcomes', 'resultados reales'),
     unit: 'U6',
   },
