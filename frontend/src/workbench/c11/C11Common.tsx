@@ -247,7 +247,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                       {esMethodText(r.es_method, lang)}
                       {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{reasonText(r.not_run_reason, lang)}</span> : null}
                     </td>
-                    <td data-na={wf ? undefined : 'true'}>{wf ? `${count(wf.n_refits, lang)} (${count(wf.n_convergence_failures, lang)} ${pick({ en: 'failed', es: 'fallidos' }, lang)})` : NONE(lang)}</td>
+                    <td data-na={wf ? undefined : 'true'}>{wf ? `${count(wf.n_refits, lang)} (${count(wf.n_convergence_failures, lang)} ${pick({ en: 'failed', es: wf.n_convergence_failures === 1 ? 'fallido' : 'fallidos' }, lang)})` : NONE(lang)}</td>
                   </tr>
                 );
               })}
@@ -309,7 +309,7 @@ export function TestReadout({ sel }: { sel: C11Sel | null }) {
       title={sel?.test ? testName(sel.test) : { en: 'This back-test', es: 'Esta prueba retrospectiva' }}
       items={[
         { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ? reasonText(t.notes, 'es') : 'El estadístico de la prueba, cuando corrió.' } },
-        { label: { en: 'p-value', es: 'Valor p' }, value: ran ? t.p_value : null, unitless: true, format: { digits: 2 }, hint: { en: 'The probability of a statistic this large if the model were right.', es: 'La probabilidad de un estadístico así de grande si el modelo fuera correcto.' } },
+        { label: { en: 'p-value', es: 'Valor p' }, value: ran ? t.p_value : null, unitless: true, format: { digits: 3 }, hint: { en: 'The probability of a statistic this large if the model were right.', es: 'La probabilidad de un estadístico así de grande si el modelo fuera correcto.' } },
         { label: { en: 'Light', es: 'Luz' }, text: t ? zoneText(t.light) : na(), hint: { en: 'Under the committed policy; a test that did not run is not evaluated.', es: 'Bajo la política versionada; una prueba que no corrió no se evalúa.' } },
       ]}
     />

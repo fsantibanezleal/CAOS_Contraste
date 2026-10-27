@@ -17,7 +17,7 @@ from riskvalidation.lgd_ead import floors as rv_floors
 from riskvalidation.lgd_ead import workout as rv_work
 from riskvalidation.validation import lgd_ead as rv_val
 
-from ...core.text import number
+from ...core.text import light, number
 from . import build as bd
 from .cutoff import cutoff_for, open_workout_mask, training_mask
 from .downturn import DownturnPlan
@@ -207,13 +207,37 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
         "downturn_add_on": {"value": float(down.downturn - down.long_run), "unit": "share",
                             "label": bd.t("Downturn add-on to the long-run LGD", "Ajuste de recesión sobre la LGD de largo plazo")},
     }
-    findings = _findings(cal_ref, ref.rung_id, seg, down)
+    findings = _findings(cal_ref, ref.rung_id, seg, down, tests)
     values = {f"mean-proxy@{cohort_id}": float(y_test.mean())}
     return VariantResult(bd.variant_id(cohort_id), cohort_id, cutoff, ladder, outputs, tests, impact, findings, int(train.n),
                          n_open, values)
 
 
-def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -> list[dict[str, Any]]:
+def _p_text(p: float, lang: str) -> str:
+    """A p-value of a finding title: two decimals, more for a small one, no trailing zero ("0.17", "0.2", "0.004")."""
+    if p < 1e-4:
+        return "< " + number(1e-4, 4, lang=lang)
+    decimals = max(2, -int(np.floor(np.log10(p))))
+    text = number(p, decimals, lang=lang)
+    sep = "." if lang == "en" else ","
+    return text.rstrip("0").rstrip(sep) if sep in text else text
+
+
+def _coverage_text(row: dict[str, Any], test: dict[str, Any] | None, lang: str, *, alone: bool) -> str:
+    """The shortfall of an uncovered cohort and the verdict of its coverage test (R4 c10 n3: the open finding cited a test that passed)."""
+    pts = number(100.0 * row["shortfall"], 2, lang=lang)
+    by = {"en": f"by {pts} points", "es": f"por {pts} puntos"}[lang]
+    if test is None or test["p_value"] is None:
+        return by
+    p = f"p {_p_text(test['p_value'], lang)}, {light(test['light'], lang)}"
+    if not alone:
+        return f"{by} ({p})"
+    if test["light"] == "green":
+        return {"en": f"{by}, within the noise of its coverage test ({p})", "es": f"{by}, dentro del ruido de su prueba de cobertura ({p})"}[lang]
+    return {"en": f"{by}, and its coverage test rejects the coverage ({p})", "es": f"{by}, y su prueba de cobertura rechaza la cobertura ({p})"}[lang]
+
+
+def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan, tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     if cal["light"] in ("amber", "red") and cal["metric"] is not None:
         sign_en, sign_es = ("under-predicts", "subestima") if cal["metric"] > 0 else ("over-predicts", "sobreestima")
@@ -223,16 +247,26 @@ def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -
                                   f"{bd.RUNG_TEXT[rung_id][1][1]} {sign_es} la LGD aproximada realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
     uncovered = [r for r in down.rows if not r["covered"]]
     if uncovered:
+        cov = {t["segment"]: t for t in tests if t["test_id"] == "lgd_ead.downturn_coverage"}
+
+        def test_of(r: dict[str, Any]) -> dict[str, Any] | None:
+            return cov.get(f"cohort-{r['cohort_id']}")
+
         ids = [r["cohort_id"] for r in uncovered]
-        # one cohort is "the cohort", several "the cohorts ... and ..." (R3 c09 m6)
+        # one cohort is "the cohort", several "the cohorts ... and ..." (R3 c09 m6); each with its shortfall and the light of its
+        # coverage test, so a shortfall within the test's noise is not read as a failed test (R4 c10 n3)
         if len(ids) == 1:
-            en, es = f"of the cohort {ids[0]}", f"de la cohorte {ids[0]}"
+            r = uncovered[0]
+            en = f"of the cohort {ids[0]} {_coverage_text(r, test_of(r), 'en', alone=True)}"
+            es = f"de la cohorte {ids[0]} {_coverage_text(r, test_of(r), 'es', alone=True)}"
         else:
-            en = f"of the cohorts {', '.join(ids[:-1])} and {ids[-1]}"
-            es = f"de las cohortes {', '.join(ids[:-1])} y {ids[-1]}"
+            each_en = ", ".join(f"{r['cohort_id']} {_coverage_text(r, test_of(r), 'en', alone=False)}" for r in uncovered)
+            each_es = ", ".join(f"{r['cohort_id']} {_coverage_text(r, test_of(r), 'es', alone=False)}" for r in uncovered)
+            en = f"of the cohorts {', '.join(ids[:-1])} and {ids[-1]}: {each_en}"
+            es = f"de las cohortes {', '.join(ids[:-1])} y {ids[-1]}: {each_es}"
         out.append({"id": "F-downturn-coverage", "severity": "S3", "status": "open", "evidence": ["lgd_ead.downturn_coverage"],
-                    "title": bd.t(f"The downturn LGD does not cover the realised loss {en}",
-                                  f"La LGD de recesión no cubre la pérdida realizada {es}")})
+                    "title": bd.t(f"The downturn LGD falls short of the realised loss {en}",
+                                  f"La LGD de recesión queda bajo la pérdida realizada {es}")})
     return out
 
 

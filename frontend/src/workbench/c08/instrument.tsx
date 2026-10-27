@@ -11,7 +11,7 @@ import { C08ContextView, C08FindingsView, C08VariantsView, CohortReadout, Endpoi
 import { DownturnView, FloorsView } from './DownturnViews';
 import { CalibrationView, EndpointsView, RealisedView, RungsView } from './ModelViews';
 import { DistributionView, ProxyView } from './SeverityViews';
-import { SEGMENT_SHORT, cohortIds, cohortLabel, defaultSel, fitOf, floorCellLabel, outputsOf, rungLabel, segmentLabel, type C08Sel } from './selection';
+import { SEGMENT_SHORT, cohortIds, cohortLabel, defaultSel, fitOf, floorCellLabel, outputsOf, rungLabel, rungShortLabel, segmentLabel, type C08Sel } from './selection';
 
 export interface C08Instrument {
   sel: C08Sel | null;
@@ -59,7 +59,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     label: { en: 'Model', es: 'Modelo' },
     content: (
       <>
-        <RailSelect id="c08-rung" label={{ en: 'Model', es: 'Modelo' }} options={o.rung_comparison.map((r) => ({ id: r.rung_id, label: rungLabel(sel, r.rung_id) }))} value={sel.rung} onChange={setRung} />
+        <RailSelect id="c08-rung" label={{ en: 'Model', es: 'Modelo' }} options={o.rung_comparison.map((r) => { const short = rungShortLabel(sel, r.rung_id); const full = rungLabel(sel, r.rung_id); return { id: r.rung_id, label: short, hint: short === full ? undefined : full }; })} value={sel.rung} onChange={setRung} />
         <RungReadout sel={sel} />
       </>
     ),

@@ -48,7 +48,8 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <ChartAbove
-          chartHeight="13rem"
+          // 16 rem, so the plot keeps several ticks on its value axis under its title, key and readout (R4 c11 m7: one tick at 13 rem)
+          chartHeight="16rem"
           chart={
             <UPlotChart
               height="fill"
@@ -104,10 +105,47 @@ export function BacktestTestsView({ sel }: { sel: C09Sel | null }) {
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
+  const rows = sel.data.variant.tests.filter((t) => t.test_id === 'lgd_ead.ead_backtest_by_band');
+  const th = (rows[0]?.extras as { thresholds?: { gap_amber: number; gap_red: number } } | undefined)?.thresholds;
+  const pct0 = (v: number, l: 'en' | 'es') => formatNumber(v, l, { percent: true, decimals: 0 });
   return (
     <ViewsRow>
-      <PlotCard fill title={{ en: 'The back-test of every band', es: 'La prueba retrospectiva de cada tramo' }} {...card}>
+      <PlotCard
+        fill
+        title={{ en: 'The back-test of every band', es: 'La prueba retrospectiva de cada tramo' }}
+        {...card}
+        // the light follows the largest band gap, which the tests table does not show: the rule and that gap are stated here, so a
+        // small total gap in amber can be traced (R4 c11 m3)
+        note={
+          th
+            ? {
+                en: `The statistic is the relative gap of the total EAD; the light follows the largest relative gap of a band: green up to ${pct0(th.gap_amber, 'en')}, amber up to ${pct0(th.gap_red, 'en')}, red above. This test has no p-value.`,
+                es: `El estadístico es la brecha relativa de la EAD total; la luz sigue la mayor brecha relativa de un tramo: verde hasta ${pct0(th.gap_amber, 'es')}, ámbar hasta ${pct0(th.gap_red, 'es')}, rojo sobre eso. Esta prueba no tiene valor p.`,
+              }
+            : undefined
+        }
+      >
         <div className="ct-scroll" data-caos-flow="">
+          <table className="caos-table ct-wrap-head" data-table="ead-band-gap">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
+                <th>{pick({ en: 'Largest band gap', es: 'Mayor brecha de un tramo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((t) => (
+                <tr key={t.model_id ?? 'none'} data-model={t.model_id ?? undefined} data-light={t.light}>
+                  <td className="ct-text">{pick(modelLabel(o, t.model_id ?? ''), lang)}</td>
+                  <td>{t.metric === null ? formatNumber(null, lang) : p2(t.metric, lang)}</td>
+                  <td className={`ct-text ct-light ct-light-${t.light}`}>
+                    <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />
         </div>
       </PlotCard>
@@ -184,7 +222,8 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
   const yes = pick({ en: 'yes', es: 'sí' }, lang);
   const no = pick({ en: 'no', es: 'no' }, lang);
   return (
-    <ViewsRow shares={[3, 2]}>
+    // even shares: the supervisory CCF card holds its five rows at 1280 (R4 c11 m6: 3 to 4 of 5 under the fade at 3 to 2)
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{ en: 'The EAD floor and where it binds', es: 'El piso de EAD y dónde se activa' }}

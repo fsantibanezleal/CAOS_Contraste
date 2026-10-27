@@ -247,6 +247,9 @@ const REFERENCE_ES: Record<string, string> = {
     'Glasserman y Li (2005); dossier 04 H.7 (la inclinación está SIN VERIFICAR allí; la aceptación es la ausencia de sesgo frente al Monte Carlo simple)',
   'Glasserman and Li (2005); no Student-t twist is specified, so the rung is a not-evaluated row':
     'Glasserman y Li (2005); no se especifica una inclinación para la t de Student, así que el escalón es una fila no evaluada',
+  // the producer's wording since U16-F12c (R4 c13 n5: "a not-evaluated row" is the document's jargon, not the reader's)
+  'Glasserman and Li (2005); no Student-t twist is specified, so the rung does not run':
+    'Glasserman y Li (2005); no se especifica una inclinación para la t de Student, así que el escalón no corre',
   'Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)',
   'Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ec. 15 y p. 46 (dossier 04 H.5)',
 };

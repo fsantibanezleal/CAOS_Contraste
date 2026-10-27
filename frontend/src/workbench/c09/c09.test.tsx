@@ -170,7 +170,9 @@ describe('the C09 instrument', () => {
   it('the context gives the convention with its US terms, the generator, the level and the replications', () => {
     const markup = html(<C09ContextView sel={sel} />);
     // the formula with its reference date as a subscript (R3 c10 m9)
-    expect(markup).toContain(escapeHtml(formulaText(o.convention.formula)));
+    // as a subscript element since U16-F12c (R4 c11 m8)
+    expect(markup).toContain(o.convention.formula.split('t_r').map((p) => escapeHtml(p)).join('t<sub>r</sub>'));
+    expect(formulaText(o.convention.formula)).toBeTruthy();
     expect(markup).toContain(escapeHtml(o.convention.us_terms.en));
     expect(markup).toContain(escapeHtml(o.level_description.en));
     expect(markup).toContain(o.generator.shaped_on);

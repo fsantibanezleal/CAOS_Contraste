@@ -255,9 +255,12 @@ def _signed(x: float, decimals: int, lang: str) -> str:
     return ("+" if x >= 0 else "") + number(x, decimals, lang=lang)
 
 
-def _side(bias: float) -> tuple[str, str]:
-    return ((f"{abs(bias):.3f} below", f"{number(abs(bias), 3, lang='es')} por debajo") if bias < 0
-            else (f"{abs(bias):.3f} above", f"{number(abs(bias), 3, lang='es')} por encima"))
+def _side(bias: float, decimals: int = 3) -> tuple[str, str]:
+    """The distance of an estimate from the known CCF, in words. Where the title prints the estimate and the known value at three
+    decimals, the distance takes four, so the printed difference agrees with the printed pair (R4 c11 m2: "0.752 against the known
+    0.754, 0.001 below")."""
+    en, es = number(abs(bias), decimals, lang="en"), number(abs(bias), decimals, lang="es")
+    return (f"{en} below", f"{es} por debajo") if bias < 0 else (f"{en} above", f"{es} por encima")
 
 
 def findings(out: dict[str, Any], first_month: float) -> list[dict[str, Any]]:
@@ -279,9 +282,9 @@ def findings(out: dict[str, Any], first_month: float) -> list[dict[str, Any]]:
     f.append({"id": "F-FIXED", "severity": "S4" if ok else "S2", "status": "accepted" if ok else "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "none", "mean")],
               "title": T(f"At level {lvl} the fixed-horizon mean CCF is {fx['estimate']['value']:.3f} against the known {truth:.3f}, "
-                         f"{_side(fx['bias'])[0]} (tolerance {out['ccf_by_design']['tolerance']:.2f})",
+                         f"{_side(fx['bias'], 4)[0]} (tolerance {out['ccf_by_design']['tolerance']:.2f})",
                          f"En el nivel {lvl} el CCF medio a horizonte fijo es {_n(fx['estimate']['value'], 3)} frente al conocido {_n(truth, 3)}, "
-                         f"{_side(fx['bias'])[1]} (tolerancia {_n(out['ccf_by_design']['tolerance'], 2)})")})
+                         f"{_side(fx['bias'], 4)[1]} (tolerancia {_n(out['ccf_by_design']['tolerance'], 2)})")})
     ok_p = fp["within_tolerance"]
     f.append({"id": "F-POOLED", "severity": "S4" if ok_p else "S3", "status": "accepted" if ok_p else "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "none", "pooled")],
@@ -299,10 +302,10 @@ def findings(out: dict[str, Any], first_month: float) -> list[dict[str, Any]]:
     f.append({"id": "F-TREATMENT", "severity": "S3", "status": "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "floor-cap", "mean")],
               "title": T(f"Flooring at 0 and capping at 1 moves the fixed-horizon mean CCF to {fc['estimate']['value']:.3f} "
-                         f"({fc['bias']:+.3f} against the known value); {fx['share_above_one']:.1%} of the CCFs lie above 1 and "
+                         f"({fc['bias']:+.4f} against the known {truth:.3f}); {fx['share_above_one']:.1%} of the CCFs lie above 1 and "
                          f"{fx['share_below_zero']:.1%} below 0",
                          f"Poner piso en 0 y tope en 1 lleva el CCF medio a horizonte fijo a {_n(fc['estimate']['value'], 3)} "
-                         f"({_signed(fc['bias'], 3, 'es')} frente al valor conocido); {percent(fx['share_above_one'], 1, lang='es')} de los CCF están sobre 1 y "
+                         f"({_signed(fc['bias'], 4, 'es')} frente al conocido {_n(truth, 3)}); {percent(fx['share_above_one'], 1, lang='es')} de los CCF están sobre 1 y "
                          f"{percent(fx['share_below_zero'], 1, lang='es')} bajo 0")})
     f.append({"id": "F-UNDEFINED", "severity": "S3", "status": "accepted", "evidence": ["design:undrawn-not-positive-is-undefined"],
               # the cohort design leaves out a first-month default (no reference date before it) and a line with no undrawn amount at

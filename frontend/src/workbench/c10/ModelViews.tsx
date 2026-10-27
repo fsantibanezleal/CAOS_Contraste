@@ -77,7 +77,8 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
                   <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios, r.evaluated).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios, r.evaluated).n === null ? (ran(r.id, r.n_scenarios, r.evaluated).why ? pick(ran(r.id, r.n_scenarios, r.evaluated).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
-                  <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
+                  {/* a rung that does not run calls no engine function: the planned one is not named (R4 c12 m-N3) */}
+                  <td className="ct-text ct-wide-only" translate="no">{r.evaluated === false ? <span translate="yes">{pick({ en: 'none: the rung does not run', es: 'ninguna: el escalón no corre' }, lang)}</span> : <code>{r.engine_function}</code>}</td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
                   {/* a simulator grid has no rungs of its own: its inputs are the generator's known PD and correlation grid, never the
@@ -226,7 +227,8 @@ export function EstimatorsView({ sel }: { sel: C10Sel | null }) {
           </tbody>
         </table>
       </PlotCard>
-      <PlotCard title={{ en: 'The simulator grid', es: 'La grilla del simulador' }} {...card}>
+      {/* the simulator's card is synthetic on every variant, a loan type's too (R4 c13 n4: it was badged real) */}
+      <PlotCard title={{ en: 'The simulator grid', es: 'La grilla del simulador' }} {...card} provenance="synthetic">
         <dl className="ct-defs" data-table="c10-simulator-spec">
           <dt>{pick({ en: 'Known correlations', es: 'Correlaciones conocidas' }, lang)}</dt>
           <dd>{s.rho_grid.map((r) => formatNumber(r, lang, { percent: true, decimals: 0 })).join(', ')}</dd>

@@ -10,6 +10,7 @@ import { Pending } from '../Pending';
 import { noteText } from '../c08/notes';
 import { referenceText, useCard } from '../c03/U6Shared';
 import { ConventionLine, MarketTestsTable, lightWord, rowsMin } from './MarketCommon';
+import { P_FORMAT } from './ComparisonViews';
 import { alphaLabel, fitOf, levelOf, modelLabel, outputsOf, testName, testsOf, type C11Sel } from './selection';
 
 const TONE = { green: 'good', amber: 'warn', red: 'bad' } as const;
@@ -25,11 +26,13 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
   const name = modelLabel(sel, sel.model);
   const failed = model?.failed_gates ?? [];
   const gates = fitOf(sel)?.eligibility_gates ?? [];
+  const tail = (l: 'en' | 'es') => formatNumber(sel.alpha, l, { percent: true, decimals: sel.alpha === 0.025 ? 1 : 0 });
   return (
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `Back-tests: ${name.en}`, es: `Pruebas retrospectivas: ${name.es}` }}
+        // the tail level of the rows in the title, as the timeline names it (R4 c14 n8)
+        title={{ en: `Back-tests at the ${tail('en')} tail: ${name.en}`, es: `Pruebas retrospectivas en la cola de ${tail('es')}: ${name.es}` }}
         {...card}
         note={{
           en: 'Each p-value is the engine\'s; the bar is empty for a test that did not run. A model is eligible for the comparison when no gate test is red at either level.',
@@ -49,7 +52,7 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
                 value: t.light === 'not_evaluated' || t.light === 'error' ? null : t.p_value,
                 tone: t.light === 'not_evaluated' || t.light === 'error' ? ('neutral' as const) : TONE[t.light],
               }))}
-              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 }, range: [0, 1] }}
+              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: P_FORMAT, range: [0, 1] }}
             />
           }
         >
@@ -160,7 +163,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 } }}
-              y={{ label: { en: 'Draws per bin', es: 'Simulaciones' }, format: { decimals: 0 } }}
+              y={{ label: { en: 'Draws per bin', es: 'Simulaciones por tramo' }, format: { decimals: 0 } }}
               series={[{ label: { en: 'Null distribution (one point per bin)', es: 'Distribución nula (un punto por tramo)' }, values: counts, color: '--color-accent', mode: 'points', size: 7 }]}
               marks={marks}
             />

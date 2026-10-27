@@ -155,8 +155,9 @@ describe('U16-F10c, C09 (R3 c10)', () => {
   });
 
   it('m9: the Context writes the formula with its reference date as a subscript, not ASCII t_r', () => {
-    const markup = view(<C09ContextView sel={selOf(3)} />);
-    expect(markup).toContain('CCF = (EAD - E(tᵣ)) / (L(tᵣ) - E(tᵣ))');
+    // a subscript element since U16-F12c (R4 c11 m8: the modifier letter read as a comma)
+    const markup = html(<C09ContextView sel={selOf(3)} />);
+    expect(markup).toContain('CCF = (EAD - E(t<sub>r</sub>)) / (L(t<sub>r</sub>) - E(t<sub>r</sub>))');
     expect(markup).not.toContain('t_r');
   });
 
