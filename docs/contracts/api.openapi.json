@@ -20592,7 +20592,15 @@
         ],
         "properties": {
           "estimator": {
-            "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+            "anyOf": [
+              {
+                "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+              },
+              {
+                "$ref": "#/components/schemas/c12Label"
+              }
+            ],
+            "description": "The estimator as the views print it, a bilingual text (c12-models 2.0.0); the English sentence alone in a document baked before 2.0.0."
           },
           "calibrations": {
             "type": "array",
@@ -26110,8 +26118,16 @@
             ]
           },
           "slotting_assumption": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The slotting assumption of the item: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it."
           },
           "amount": {
             "type": "number",
@@ -27914,8 +27930,16 @@
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           },
           "source": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The provenance of the financials file: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it."
           },
           "fields": {
             "type": "array",
@@ -28289,8 +28313,16 @@
             "const": "1 - exp(-t_k / x)"
           },
           "reference": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The reference of the shock shapes: a bilingual text from c14-models 2.0.0; the English string alone in a document baked before it."
           }
         },
         "description": "The six shock shapes of SRP31.91 to SRP31.92 with x = 4."
@@ -30175,8 +30207,16 @@
                 "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
               },
               "formula": {
-                "type": "string",
-                "minLength": 1
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/components/schemas/common-text"
+                  }
+                ],
+                "description": "The formula of the effect, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
               }
             },
             "description": "A CPI surprise applied to the net UF position, loss-positive: effect = -pn_ur x surprise_pp / 100."
@@ -31865,8 +31905,16 @@
             "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
           },
           "formula": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The formula of the charge, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
           },
           "note": {
             "$ref": "#/components/schemas/common-text"
@@ -34896,8 +34944,16 @@
             "type": "boolean"
           },
           "reference": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The reference of the prioritised-bank tests: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
           }
         },
         "description": "The banco priorizado tests; prioritised is true when any test is breached."
