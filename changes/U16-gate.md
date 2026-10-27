@@ -10,3 +10,8 @@
   ties the figure to the registry.
 - Shell 0.19.3 adopted (the shell's own Spanish labels: the lane badges without "offline", a reference link as "enlace").
 - The capture tool writes a full page taller than one image holds also in bands of 12,000 px (`segments` in its index): the /benchmark page at 390 came out blank past 14,900 px.
+- Fix round 4 integration: the C17 FFT exceedance is null past the last node of its grid, as the Panjer one since 2.0.0
+  (`c17-outputs` 3.0.0, `api` 26.0.0, the descriptor follows); the C15 calibration source keeps its one English string while the
+  C07 locators it reuses became bilingual; the C12 W² notes are read with the horizon in words. Every case is re-baked on the
+  fix round 4 producers; `classify_rebake` finds text, the widened bilingual fields and the record hashes that cover them, and
+  no changed number.
