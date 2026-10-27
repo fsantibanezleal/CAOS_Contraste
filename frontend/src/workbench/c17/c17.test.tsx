@@ -171,7 +171,7 @@ describe('the C17 instrument', () => {
       expect(markup).toContain(pct(sc.influence, 1).replace('-', '-'));
     }
     expect(markup).toContain(num(s.base_capital_eur));
-    expect(markup).toContain(escapeHtml(s.reference));
+    expect(markup).toContain(escapeHtml(s.reference.replace('Wuthrich', 'Wüthrich'))); // the authors as published (U16-R4 c21 m7)
     expect(markup).toMatch(/gamma/i);
     expect(markup).toContain('Settlement error');
   });

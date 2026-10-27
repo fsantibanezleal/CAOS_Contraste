@@ -18,8 +18,8 @@ export function C22WriteUp() {
       <Equation
         tex={String.raw`\hat r = \frac{1}{n_{sim}}\sum_{i=1}^{n_{sim}} \mathbb 1(p_i < \alpha), \qquad \widehat{\mathrm{SE}}(\hat r) = \sqrt{\frac{\hat r\,(1-\hat r)}{n_{sim}}}`}
         caption={t(
-          'The rejection rate over n_sim repetitions and its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6); each repetition draws its data from its own random stream, so it re-runs alone to the same result. The interval shown with every rate is Wilson\'s.',
-          'La tasa de rechazo en n_sim repeticiones y su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6); cada repetición toma sus datos de su propio flujo aleatorio, así que se repite sola con el mismo resultado. El intervalo de cada tasa es el de Wilson.',
+          'The rejection rate over nₛᵢₘ repetitions and its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6); each repetition draws its data from its own random stream, so it re-runs alone to the same result. The interval shown with every rate is Wilson\'s.',
+          'La tasa de rechazo en nₛᵢₘ repeticiones y su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6); cada repetición toma sus datos de su propio flujo aleatorio, así que se repite sola con el mismo resultado. El intervalo de cada tasa es el de Wilson.',
         )}
       />
       <P
@@ -58,8 +58,8 @@ export function C22WriteUp() {
             es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G - 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G - 2 en tales muestras la prueba rechaza PD correctas cerca de una vez en nueve al nivel de 5 % (11,0 %, más del doble del nivel). riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
           },
           {
-            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated on a sample less than half the size of the current one the test over-rejects: about one time in six at C01's slice sizes, about one in nine at equal sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
-            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó en una muestra de menos de la mitad del tamaño de la actual la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01, cerca de una en nueve con tamaños iguales. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
+            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated, the test over-rejects: about one time in six at C01's slice sizes (a development sample under half the size of the current one), about one in nine at equal sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
+            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó, la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01 (una muestra de desarrollo de menos de la mitad del tamaño de la actual), cerca de una en nueve con tamaños iguales. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
           },
           {
             en: <>The ECB's concentration statistic is bounded: as the current coefficient of variation c grows it peaks and falls back, so with ten grades and an initial CV of 0.6 no current distribution is rejected at 5%.</>,

@@ -149,7 +149,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
           <dd>{pick({ en: 'Synthetic, with a known truth', es: 'Sintético, con verdad conocida' }, lang)}</dd>
           <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-          <dd>{pick({ en: 'the BCBS 2008 Loss Data Collection Exercise', es: 'el Ejercicio de Recolección de Datos de Pérdida 2008 del BCBS' }, lang)}</dd>
+          <dd>{pick({ en: 'the BCBS 2008 Loss Data Collection Exercise', es: 'el Ejercicio de Recolección de Datos de Pérdidas 2008 del BCBS' }, lang)}</dd>
           <dt>{pick({ en: 'Frequency', es: 'Frecuencia' }, lang)}</dt>
           <dd>{pick({ en: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'en', { digits: 4 })} losses per year of ${whole(t.frequency.counted_above_eur, 'en')} EUR or more`, es: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'es', { digits: 4 })} pérdidas por año de ${whole(t.frequency.counted_above_eur, 'es')} EUR o más` }, lang)}</dd>
           <dt>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</dt>

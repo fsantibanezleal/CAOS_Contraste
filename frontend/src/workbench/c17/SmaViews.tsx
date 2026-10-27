@@ -154,7 +154,7 @@ export function ResponseView({ sel }: { sel: C17Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: r.rows.map((x) => x.added_loss_eur / 1e6), label: { en: 'Added loss', es: 'Pérdida sumada' }, unit: { en: 'm EUR', es: 'M EUR' }, format: { decimals: 0 } }}
+              x={{ values: r.rows.map((x) => x.added_loss_eur / 1e6), label: { en: 'Added loss', es: 'Pérdida sumada' }, unit: { en: 'mn EUR', es: 'M EUR' }, format: { decimals: 0 } }}
               y={{ label: { en: `Capital (${pick(scale.unit, 'en')})`, es: `Capital (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
               series={[
                 { label: { en: 'SMA capital', es: 'Capital SMA' }, values: r.rows.map((x) => x.orc_eur / scale.div), color: '--color-accent', width: 2.6 },

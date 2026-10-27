@@ -50,7 +50,9 @@ def test_nii_follows_the_variant_rate_path_and_the_floor_is_stated(built) -> Non
         pp = doc["outputs"]["headline_cet1"]["ppnr"]
         assert [r["nii_clp_m"] for r in pp["rows"]] == pytest.approx(want)
         # the engine's delta NII in words, no function name in prose; the Spanish names the rate in Spanish (U16-R3 c19 B3, m15 ruling)
-        assert variable in pp["statement"]["en"] and "delta NII" in pp["statement"]["en"] and "delta_nii" not in pp["statement"]["en"]
+        # the rate by the product's name, never the source variable string (U16-R4 c23 B1: "... ; %(combined)" in reader prose)
+        assert nii.rate_name_en(variable) in pp["statement"]["en"] and "; %(combined)" not in pp["statement"]["en"]
+        assert "delta NII" in pp["statement"]["en"] and "delta_nii" not in pp["statement"]["en"]
         assert nii.rate_name_es(variable) in pp["statement"]["es"] and variable not in pp["statement"]["es"]
         series[vid] = want
         losses = doc["outputs"]["losses"]

@@ -13,6 +13,11 @@ import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20S
 import { es, localTests } from './localise';
 import { inputName } from '../names';
 
+/** The share of fields present with one decimal, as the table writes it (U16-R4 c24 n10: a bar of 99.6 % was labelled "100 %"). */
+export const QUALITY_FORMAT = { percent: true, decimals: 1 } as const;
+/** A p value with three fixed decimals (0.498 beside 0.031 and 0.890; U16-R4 c24 n12: "0.5" for 0.4979), significant digits below 0.001. */
+const pText = (v: number, lang: 'en' | 'es'): string => (Math.abs(v) < 1e-3 ? sig(v, lang) : formatNumber(v, lang, { decimals: 3 }));
+
 const TITLE_DEGRADATION: BiText = { en: 'Degradation by shock', es: 'Degradación por choque' };
 const TITLE_DRIFT: BiText = { en: 'Drift by shock', es: 'Deriva por choque' };
 const TITLE_QUALITY: BiText = { en: 'Data quality and attribution by shock', es: 'Calidad de datos y atribución por choque' };
@@ -173,7 +178,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text" data-benchmark={r.drift.chi2_p_value === null ? 'none' : r.drift.chi2_p_value < 0.05 ? 'exceeded' : 'within'} data-na={r.drift.chi2_p_value === null ? 'true' : undefined}>
                     {r.drift.chi2_p_value === null
                       ? `${formatNumber(null, lang)} (${pick({ en: 'the test did not run', es: 'la prueba no corrió' }, lang)})`
-                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'significant at 5% (p below 0.05)', es: 'significativo al 5 % (p bajo 0,05)' } : { en: 'not significant at 5%', es: 'no significativo al 5 %' }, lang)}`}
+                      : `p = ${pText(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'significant at 5% (p below 0.05)', es: 'significativo al 5 % (p bajo 0,05)' } : { en: 'not significant at 5%', es: 'no significativo al 5 %' }, lang)}`}
                   </td>
                 </tr>
               ))}
@@ -205,7 +210,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text">{pick(inputName(v.name) ?? { en: v.name, es: v.name }, lang)}</td>
                   <td>{f3(v.psi, lang)}</td>
                   <td>{f3(v.csi, lang)}</td>
-                  <td data-na={v.chi2_p_value === null ? 'true' : undefined}>{v.chi2_p_value === null ? formatNumber(null, lang) : sig(v.chi2_p_value, lang)}</td>
+                  <td data-na={v.chi2_p_value === null ? 'true' : undefined}>{v.chi2_p_value === null ? formatNumber(null, lang) : pText(v.chi2_p_value, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -245,7 +250,7 @@ export function QualityView({ sel }: { sel: C20Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: r.data_quality.completeness, highlight: r.shock_id === sel.shock }))}
-              axis={{ label: { en: 'Share of fields present', es: 'Parte de los campos presentes' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+              axis={{ label: { en: 'Share of fields present', es: 'Parte de los campos presentes' }, format: QUALITY_FORMAT, range: [0, 1] }}
             />
           }
         >

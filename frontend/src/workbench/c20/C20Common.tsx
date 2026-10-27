@@ -150,10 +150,20 @@ export function worstLoss(o: C20Outputs): number | null {
   return null;
 }
 
+/**
+ * The bars of the Variants chart: one per variant that measures an AUC loss. The variant on screen is the selection; when it has no
+ * bar (the seed sweep, the leak), every bar takes the neutral tone, so none reads as selected (U16-R4 c24 n6).
+ */
+export function variantBars(measured: Array<{ id: string; title: BiText; loss: number | null }>, current: string) {
+  const has = measured.some((m) => m.id === current);
+  return measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current, ...(has ? {} : { tone: 'neutral' as const }) }));
+}
+
 /** The six variants of C20 in rows: what each is, on which data, and its headline number. */
 export function C20VariantsTable({ variants, onPick, current }: { variants: Entry[]; onPick: (id: string) => void; current: string }) {
   const lang = useShellLang();
-  const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
+  // the badges are those of the variant on screen, not of the first one (U16-R4 c24 n5: the seed sweep's card said "Synthetic data")
+  const card = useCard((variants.find((e) => e.id === current) ?? variants[0])?.v as unknown as VariantArtifact | undefined);
   const sgcd = variants.find((e) => e.v.outputs.dataset_id === 'sgcd');
   const measured = variants.map((e) => ({ id: e.id, title: e.title, loss: worstLoss(e.v.outputs) })).filter((m) => m.loss !== null);
   return (
@@ -173,7 +183,7 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
               title={{ en: 'Largest AUC loss by variant', es: 'Mayor pérdida de AUC por variante' }}
               height="fill"
               orientation="horizontal"
-              data={measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current }))}
+              data={variantBars(measured, current)}
               axis={{ label: { en: 'AUC loss (positive is a loss)', es: 'Pérdida de AUC (positiva)' }, format: { decimals: 3 } }}
             />
           )
@@ -261,7 +271,8 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
         </dl>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The data and the model', es: 'Los datos y el modelo' }} {...card} note={{ en: 'The model reads one view of each record; a shock that does not reach that view cannot move it.', es: 'El modelo lee una vista de cada registro; un choque que no llega a esa vista no puede moverlo.' }}>
+        // the sentence on the view a shock reaches is the SGCD variants' (U16-R4 c24 n13: it was printed on variants with no shock)
+        <PlotCard title={{ en: 'The data and the model', es: 'Los datos y el modelo' }} {...card} {...(o.kind === 'shock' ? { note: { en: 'The model reads one view of each record; a shock that does not reach that view cannot move it.', es: 'El modelo lee una vista de cada registro; un choque que no llega a esa vista no puede moverlo.' } } : {})}>
           <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c20-datasets">
               <thead>

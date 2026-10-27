@@ -101,7 +101,7 @@ export function shiftName(id: string): Bi {
   // the shifts of the other variants by their words (U16-R3 c20 B1: the flips printed fed-higher-risk-x0.25, noise-0.05, seed-42 and
   // decision-time-leak-unavailable)
   let n = /^noise-([\d.]+)$/.exec(id);
-  if (n) return { en: `noise at ${n[1]} standard deviations`, es: `ruido de ${n[1].replace('.', ',')} desviaciones estándar` };
+  if (n) return Number(n[1]) === 1 ? { en: 'noise at 1 standard deviation', es: 'ruido de 1 desviación estándar' } : { en: `noise at ${n[1]} standard deviations`, es: `ruido de ${n[1].replace('.', ',')} desviaciones estándar` };
   if ((n = /^seed-(\d+)$/.exec(id))) return { en: `retraining seed ${n[1]}`, es: `semilla de reentrenamiento ${n[1]}` };
   if (id === 'decision-time-leak-unavailable') return { en: 'at decision time, without the leak', es: 'en el momento de la decisión, sin la fuga' };
   if (/^fed-higher-risk-x[\d.]+$/.test(id)) return windowName(id);
@@ -112,6 +112,16 @@ export function shiftName(id: string): Bi {
   // a shock by its code and its words, as every other view names it (U16-R3 c20 B2: "Aplicado por Contraste, F1")
   const shock = text(SHOCK_TEXT, m[2]);
   return m[1] === 'shipped' ? { en: `Shipped, ${shock.en}`, es: `Provisto, ${shock.es}` } : { en: `Applied by Contraste, ${shock.en}`, es: `Aplicado por Contraste, ${shock.es}` };
+}
+
+/**
+ * The bars of the decision flips, largest first, so a box that scrolls opens on the extreme (U16-R4 c24 n9), each with the one decimal
+ * of the table and the rail (n10: the chart said 1.11 % where the table says 1.1 %).
+ */
+export function flipBars(rows: Array<{ shift_id: string; flip_share: number }>) {
+  return [...rows]
+    .sort((a, b) => b.flip_share - a.flip_share)
+    .map((r) => ({ id: r.shift_id, label: shiftName(r.shift_id) as BiText, value: r.flip_share, tone: 'warn' as const, format: { percent: true, decimals: 1 } }));
 }
 
 export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
@@ -145,8 +155,8 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
                 title={{ en: 'Share of decisions that flip', es: 'Parte de las decisiones que cambian' }}
                 height="fill"
                 orientation="horizontal"
-                data={d.rows.map((r) => ({ id: r.shift_id, label: shiftName(r.shift_id), value: r.flip_share, tone: 'warn' as const }))}
-                axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 2 } }}
+                data={flipBars(d.rows)}
+                axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 1 } }}
               />
               </TallBars>
             )

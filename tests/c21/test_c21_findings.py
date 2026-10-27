@@ -10,6 +10,7 @@ import contract_schemas as cs
 import pytest
 from c21_support import VARIANTS, committed
 
+from pipeline.cases.c21 import findings as c21_findings
 from pipeline.cases.c21 import legal
 
 LOGIT, OLS, RATES = "hmda-logistic-decision", "hmda-linear-rate-spread", "hmda-selection-rates"
@@ -70,11 +71,13 @@ def check_findings(name: str, doc: dict) -> dict[str, dict]:
         assert (f["severity"], f["status"], f["evidence"]) == ("S4", "accepted", [ev]), (name, fid)
     amber = [a["field"] for a in doc["outputs"]["attributes"]
              if next(r for r in doc["tests"] if r["test_id"] == "fair.demographic_parity" and r["segment"] == a["field"])["light"] != "green"]
-    indicator = bool(amber or expected["spread-lower"])
+    # the red rows of the unconditional pairwise tests join the gap finding at its S4 "indicator only" (U16-R4 c25 M1, ruling 4)
+    red_pairwise = {k for k, r in rows_of(doc).items() if r["test_id"] in ("fair.two_proportion_z", "fair.fisher_exact") and r["light"] == "red"}
+    indicator = bool(amber or expected["spread-lower"] or red_pairwise)
     if indicator:
         u = findings["F-UNCONDITIONAL-GAP"]
         assert (u["severity"], u["status"]) == ("S4", "open")
-        want = {f"fair.{t}@{RATES}@{f}" for t in ("demographic_parity", "adverse_impact") for f in amber} | expected["spread-lower"]
+        want = {f"fair.{t}@{RATES}@{f}" for t in ("demographic_parity", "adverse_impact") for f in amber} | expected["spread-lower"] | red_pairwise
         assert set(u["evidence"]) == want and len(u["evidence"]) == len(want)
         assert legal.QUOTES["procedures"][1] in u["title"]["en"] and "indicator only" in u["title"]["en"]
         assert ("lower rate spread" in u["title"]["en"]) == bool(expected["spread-lower"])
@@ -104,3 +107,10 @@ def test_the_committed_findings_are_statistical_findings_with_their_own_test_evi
 def test_the_findings_of_a_planted_bake_follow_the_same_rules(built) -> None:
     for name in built.order:
         check_findings(name, built.variants[name])
+
+
+@pytest.mark.parametrize("name", VARIANTS)
+def test_the_producer_findings_meet_the_same_oracle(name: str) -> None:
+    # the producer's rule on the committed test rows (U16-R4 c25 M1): the committed findings follow it once the integrator re-bakes C21
+    doc = committed(name)
+    check_findings(name, {**doc, "findings": c21_findings.build(doc["tests"])})

@@ -119,14 +119,22 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "diferencial de tasa mayor que su grupo de referencia, con el intervalo excluyendo 0"))
     n_attributes = sum(1 for r in tests if r["test_id"] == "fair.demographic_parity")
     gap = [r["segment"] for r in tests if r["test_id"] == "fair.demographic_parity" and r["light"] != "green"]
-    if gap or spread_lower:
+    # the red rows of the unconditional pairwise tests are the same gross gap, contrast by contrast: this finding cites them, at its S4
+    # "indicator only" (U16-R4 c25 M1 and ruling 4 of the R4 triage: every red test row is cited by an open finding)
+    red_pairwise = [f"{r['test_id']}@{r['model_id']}@{r['segment']}" for r in tests
+                    if r["test_id"] in ("fair.two_proportion_z", "fair.fisher_exact") and r["light"] == "red"]
+    if gap or spread_lower or red_pairwise:
         evidence = [f"{tid}@{MODEL_RATES}@{seg}" for seg in gap for tid in ("fair.demographic_parity", "fair.adverse_impact")]
+        evidence += [e for e in red_pairwise if e not in evidence]
         evidence += pairs(spread_lower)
         quote = legal.QUOTES["procedures"][1]
         extra_en = (f" and {len(spread_lower)} repeating rate-spread contrasts where the group has a lower rate spread than its reference "
                     "group") if spread_lower else ""
         extra_es = (f" y {len(spread_lower)} contrastes repetidos del diferencial de tasa donde el grupo tiene un diferencial menor que su "
                     "grupo de referencia") if spread_lower else ""
+        if red_pairwise:
+            extra_en = f", {len(red_pairwise)} red rows of the two-proportion z-test and the Fisher exact test" + extra_en
+            extra_es = f", {len(red_pairwise)} filas rojas de la prueba z de dos proporciones y de la prueba exacta de Fisher" + extra_es
         out.append(_finding(
             "F-UNCONDITIONAL-GAP", "S4", "open", evidence,
             f"Unconditional approval-rate gaps in {len(gap)} of the {n_attributes} attributes{extra_en} are an indicator only: \"{quote}\" "

@@ -17,6 +17,19 @@ import { localParams, localTests } from './localise';
 /** A feature by the name the names module gives it (the planted leak, the dataset codebooks), else as the file names it (U16-R3 c20 B4, B6). */
 export const featureLabel = (col: string): Bi => inputName(col) ?? { en: col, es: col };
 
+/**
+ * The level of the AUC below which the loss at the preset scale is a finding: the AUC without noise less the tolerance (a convention
+ * of Contraste), drawn as a reference line so the finding is read on the chart, not by eye (U16-R4 c24 n15). Null when the document
+ * carries no tolerance or no preset row.
+ */
+export function toleranceMark(o: { rows: Array<{ eps: number; metric: { auc: number; auc_delta: number } }>; preset_eps: number; parameters: Array<{ name: string; value: unknown }> }) {
+  const tol = o.parameters.find((p) => p.name === 'perturbation_tolerance');
+  const preset = o.rows.find((r) => r.eps === o.preset_eps);
+  if (!tol || typeof tol.value !== 'number' || !preset) return null;
+  const base = preset.metric.auc - preset.metric.auc_delta;
+  return { y: base - tol.value, label: { en: 'Tolerance (convention)', es: 'Tolerancia (convención)' } as BiText, tone: 'warn' as const };
+}
+
 export function PerturbationView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -48,6 +61,7 @@ export function PerturbationView({ sel }: { sel: C20Sel | null }) {
                 y={{ label: { en: 'AUC', es: 'AUC' }, format: { decimals: 3 } }}
                 series={[{ label: { en: 'AUC under noise', es: 'AUC bajo ruido' }, values: o.rows.map((r) => r.metric.auc), color: '--color-accent', width: 2.4 }]}
                 marks={[{ x: o.preset_eps, label: { en: 'Preset scale', es: 'Escala preestablecida' } }]}
+                yMarks={toleranceMark(o) ? [toleranceMark(o)!] : []}
               />
             )
           }
@@ -261,7 +275,7 @@ export function LeakageView({ sel }: { sel: C20Sel | null }) {
   const word = (b: boolean): BiText => (b ? { en: 'raised', es: 'activado' } : { en: 'clear', es: 'sin alerta' });
   const rows: Array<{ id: keyof typeof SCREEN_TEXT; value: string; limit: string; raised: boolean }> = [
     { id: 'temporal', value: int(s.temporal_order.violations, lang), limit: '0', raised: s.temporal_order.violations > 0 },
-    { id: 'single', value: `${f3(s.single_feature_auc.max_auc, lang)} (${pick(featureLabel(s.single_feature_auc.feature), lang)})`, limit: `${f3(t.single_feature_auc.value, lang)} (${pick({ en: 'convention', es: 'convención' }, lang)})`, raised: s.single_feature_auc.suspect },
+    { id: 'single', value: `${f3(s.single_feature_auc.max_auc, lang)}, ${pick(featureLabel(s.single_feature_auc.feature), lang)}`, limit: `${f3(t.single_feature_auc.value, lang)} (${pick({ en: 'convention', es: 'convención' }, lang)})`, raised: s.single_feature_auc.suspect },
     { id: 'overlap', value: pc1(s.entity_overlap.share, lang), limit: pc1(0, lang), raised: s.entity_overlap.share > 0 },
     { id: 'resemblance', value: f3(s.resemblance_auc, lang), limit: `${f3(t.resemblance_auc.value, lang)} (${pick({ en: 'convention', es: 'convención' }, lang)})`, raised: s.resemblance_auc > t.resemblance_auc.value },
   ];
@@ -272,8 +286,8 @@ export function LeakageView({ sel }: { sel: C20Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `A feature (${featureLabel(o.planted_feature).en}) was planted to leak the outcome. The screens are the temporal order, the best AUC of a single feature, the overlap of entities between training and test and the resemblance AUC of development against evaluation rows; the limits are conventions of Contraste.`,
-          es: `Se plantó una variable (${featureLabel(o.planted_feature).es}) que filtra el resultado. Los filtros son el orden temporal, el mejor AUC de una sola variable, el solapamiento de entidades entre entrenamiento y prueba y el AUC de parecido de las filas de desarrollo contra evaluación; los límites son convenciones de Contraste.`,
+          en: `A feature, ${featureLabel(o.planted_feature).en}, was planted to leak the outcome. The screens are the temporal order, the best AUC of a single feature, the overlap of entities between training and test and the resemblance AUC of development against evaluation rows; the limits are conventions of Contraste.`,
+          es: `Se plantó una variable, ${featureLabel(o.planted_feature).es}, que filtra el resultado. Los filtros son el orden temporal, el mejor AUC de una sola variable, el solapamiento de entidades entre entrenamiento y prueba y el AUC de parecido de las filas de desarrollo contra evaluación; los límites son convenciones de Contraste.`,
         }}
       >
         <LabelledOverTable
