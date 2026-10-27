@@ -40,6 +40,9 @@ ASSUMPTIONS = (
     ("adequate-sample", t("The window holds enough rows for the expected confusion to be stable", "La ventana tiene filas suficientes para que la confusión esperada sea estable")))
 
 
+#: the locked holdout of the Polish 3-year file the synthetic shift is injected into
+EVALUATION_SET = "uci-polish-3year-holdout"
+
 def psi_of(base: np.ndarray, cur: np.ndarray) -> float:
     from riskvalidation.validation.stability import bin_counts, quantile_edges, stability_psi
 
@@ -86,6 +89,13 @@ def real_drift(portfolios: dict[str, fed.Portfolio]) -> tuple[dict[str, Any], li
         pairs.append({"a": a, "b": b, "variables": variables})
         rows.extend(ops.row(r) for r in engine_rows)
     return {"label": "real-drift-no-model", "model": None, "portfolios": list(fed.PORTFOLIOS), "pairs": pairs}, rows
+
+
+def evaluation_set_block(n_rows: int) -> dict[str, Any]:
+    """The locked evaluation set of the shift as the contract writes it, its dataset id and its row count in one string the view reads
+    back into the dataset's name and the count in the reader's language (U16-R3 c20 B3; c20-outputs-shift 1.0.0 has no field of its own
+    for the count, and the web's descriptors take no optional key)."""
+    return {"evaluation_set": f"{EVALUATION_SET} ({int(n_rows):,} rows, locked)"}
 
 
 def build(frame: Frame, rungs: dict[str, Any], portfolios: dict[str, fed.Portfolio], seed: int) -> dict[str, Any]:
@@ -161,7 +171,7 @@ def build(frame: Frame, rungs: dict[str, Any], portfolios: dict[str, fed.Portfol
 
     synthetic = {
         "label": "synthetic-shift-fed-reference", "reference_portfolio": REFERENCE,
-        "evaluation_set": f"uci-polish-3year-holdout ({len(hold):,} rows, locked)", "shifts": shifts,
+        **evaluation_set_block(len(hold)), "shifts": shifts,
         "worst_subsample": {"share": WORST_SUBSAMPLE_SHARE, "metric": {"auc": float(worst.auc), "brier": float(worst.brier),
                                                                        "auc_delta": float(worst.auc - worst.auc_full)}},
         "label_free": {

@@ -9,7 +9,7 @@ import { Pending } from '../Pending';
 import { Labelled, LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { RULE_OF_THUMB } from './ShockViews';
-import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
+import { EVALUATION_SET_TEXT, PORTFOLIO_TEXT, asKind, cbpeNoteEn, evaluationSet, text, type C20Sel } from './selection';
 import { localTests } from './localise';
 import { inputName, segmentName, windowName } from '../names';
 import { TallBars, barBox } from './C20Common';
@@ -20,6 +20,14 @@ const TITLE_CONFORMAL: BiText = { en: 'Conformal coverage over time', es: 'Cober
 const TITLE_CBPE: BiText = { en: 'Label-free performance estimate', es: 'Estimación de desempeño sin etiquetas' };
 
 /** The real drift between two portfolios of the Federal Reserve, variable by variable, with no model: PSI, CSI, KS and the chi-square test. */
+/** The tone of a conformal window: its test's light (U16-R3 c20 m5: the baseline window, 89.5 % against a 90 % target with p 0.31 and a
+ * green test, was drawn red from the coverage alone); null when the document has no test row for the window. */
+export function windowTone(window: string, tests: ReadonlyArray<{ test_id: string; segment?: string | null; light: string }>): 'good' | 'warn' | 'bad' | null {
+  const t = tests.find((x) => x.test_id === 'ml.conformal_coverage' && x.segment === `window:${window}`);
+  if (!t) return null;
+  return t.light === 'green' ? 'good' : t.light === 'amber' ? 'warn' : t.light === 'red' ? 'bad' : null;
+}
+
 export function RealDriftView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -63,7 +71,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
                 title={{ en: 'PSI by variable and portfolio pair', es: 'PSI por variable y par de carteras' }}
                 height="fill"
                 orientation="horizontal"
-                data={[...bars, ...rules]}
+                data={[...rules, ...[...bars].sort((a, b) => b.value - a.value)]}
                 axis={{ label: { en: 'Population stability index', es: 'Índice de estabilidad poblacional' }, format: { decimals: 2 } }}
               />
               </TallBars>
@@ -115,6 +123,9 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
     ...s.shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id), value: 0 - x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
     { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
   ];
+  const ev = evaluationSet(s);
+  const evName = text(EVALUATION_SET_TEXT, ev.id);
+  const evalText: BiText = ev.rows === null ? evName : { en: `${evName.en} (${int(ev.rows, 'en')} rows)`, es: `${evName.es} (${int(ev.rows, 'es')} filas)` };
   return (
     <ViewsRow>
       <PlotCard
@@ -122,8 +133,8 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
         title={TITLE_SYNTH}
         {...card}
         note={{
-          en: `The ${text(PORTFOLIO_TEXT, s.reference_portfolio).en.toLowerCase()} portfolio is the reference of the shift, injected into the evaluation set ${s.evaluation_set} only. The score is the strength of the shift; the cut-off of the decision flips is held fixed. A stress test, not a forecast.`,
-          es: `La cartera de ${text(PORTFOLIO_TEXT, s.reference_portfolio).es.toLowerCase()} es la referencia del cambio, inyectado solo en el conjunto de evaluación ${s.evaluation_set}. El puntaje es la fuerza del cambio; el corte de las decisiones que cambian se mantiene fijo. Una prueba de estrés, no un pronóstico.`,
+          en: `The ${text(PORTFOLIO_TEXT, s.reference_portfolio).en.toLowerCase()} portfolio is the reference of the shift, injected into the evaluation set only: ${evalText.en}. The score is the strength of the shift; the cut-off of the decision flips is held fixed. A stress test, not a forecast.`,
+          es: `La cartera de ${text(PORTFOLIO_TEXT, s.reference_portfolio).es.toLowerCase()} es la referencia del cambio, inyectado solo en el conjunto de evaluación: ${evalText.es}. El puntaje es la fuerza del cambio; el corte de las decisiones que cambian se mantiene fijo. Una prueba de estrés, no un pronóstico.`,
         }}
       >
         <LabelledOverTable
@@ -187,7 +198,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_CONFORMAL} needs="shift" />;
   const c = o.synthetic_shift.label_free.conformal;
   const rows = [
-    ...c.coverage_by_window.map((w) => ({ id: w.window, label: windowName(w.window), value: w.coverage, highlight: w.window === sel.window, tone: w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const) })),
+    ...c.coverage_by_window.map((w) => ({ id: w.window, label: windowName(w.window), value: w.coverage, highlight: w.window === sel.window, tone: windowTone(w.window, sel.data.variant.tests) ?? (w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const)) })),
     { id: 'overall', label: { en: 'All windows', es: 'Todas las ventanas' } as BiText, value: c.coverage, highlight: false, tone: undefined },
     { id: 'target', label: { en: 'Target (1 minus alpha)', es: 'Meta (1 menos alfa)' } as BiText, value: c.target_coverage, highlight: false, tone: 'neutral' as const },
   ];
@@ -293,7 +304,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
               <li key={a.id} data-assumption={a.id}>{pick(a.text, lang)}</li>
             ))}
           </ul>
-          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} caseId="C20" models={sel.data.variant.model} />
+          <U14TestsTable tests={lang === 'en' ? sel.data.variant.tests.map((t) => (t.test_id === 'ml.cbpe_estimate' && t.notes ? { ...t, notes: cbpeNoteEn(t.notes) } : t)) : localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
           <p className="ct-note">{pick({ en: `Share of rows in the worst subsample: ${pc(s.worst_subsample.share, 'en')}.`, es: `Parte de las filas en la peor submuestra: ${pc(s.worst_subsample.share, 'es')}.` }, lang)}</p>
         </LabelledOverTable>

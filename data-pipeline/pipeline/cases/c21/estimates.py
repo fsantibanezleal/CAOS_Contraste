@@ -35,6 +35,7 @@ from riskvalidation.fairness import replication as rv_replication
 from riskvalidation.fairness import situation as rv_situation
 from riskvalidation.validation import fairness as rv_tests
 
+from ...core import text as tx
 from . import legal
 from .legal import t
 from .reader import Sample
@@ -330,10 +331,12 @@ def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = N
                     "Las filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión; sus conteos por código están en "
                     "los documentos de resultados.")
     else:
-        by_code = ", ".join(f"{k}: {action_counts.get(k, 0)}" for k in legal.EXCLUDED_CODES)
+        def by_code(lang: str) -> str:
+            return ", ".join(f"{k}: {tx.number(action_counts.get(k, 0), lang=lang)}" for k in legal.EXCLUDED_CODES)
         n_left_out = sum(v for k, v in action_counts.items() if k in legal.EXCLUDED_CODES)
-        left_out = (f"{n_left_out} rows of codes 4 to 8 are left out of every rate by the decision convention (by code, {by_code}).",
-                    f"{n_left_out} filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión (por código, {by_code}).")
+        # the counts in the shell's number forms (U16-R3 c21 m6: "13344 filas", "4: 5190")
+        left_out = (f"{tx.number(n_left_out, lang='en')} rows of codes 4 to 8 are left out of every rate by the decision convention (by code, {by_code('en')}).",
+                    f"{tx.number(n_left_out, lang='es')} filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión (por código, {by_code('es')}).")
     ls = None if s is None else s.action <= 2
     return [
         {"field": "action_taken", "treatment": "unmodified", "n_missing": None,

@@ -2,7 +2,7 @@
 
 The base is the C15 twelve-month net interest margin of Banco Andino. For each year of the horizon the engine's ``irrbb.eve_nii.delta_nii`` (loss
 positive, on C15's book and curve) gives the change of that margin when the curve is shifted in parallel by the variant's transposed rate change from
-the jump-off (decision Q6), with C15's floors (0 for the pesos leg, -2 percent for the UR leg, applied by ``shocks.apply_floor``). The rate is the
+the jump-off, with C15's floors (0 for the pesos leg, -2 percent for the UR leg, applied by ``shocks.apply_floor``). The rate is the
 variant's short rate where it carries one (the Fed prime rate, the NGFS policy rate, which the paths map to ``prime_rate``) and its 10-year rate
 otherwise (the EBA long-term rate). An EVE change is not a profit-and-loss item of the banking book: it stays out of the capital path.
 """
@@ -66,10 +66,24 @@ def nii_by_year(anchors: Anchors, shifts_bp: tuple[float, float, float]) -> list
     return out
 
 
+#: the Spanish of the rate a variant's NII follows (U16-R3 c19 B3: "(Prime rate)" in the Spanish view; the product names it tasa preferencial)
+RATE_NAME_ES = {"Prime rate": "tasa preferencial", "10-year Treasury rate": "tasa del Tesoro a 10 años", "Long-term interest rate": "tasa de interés de largo plazo",
+                "Long term interest rate": "tasa de interés de largo plazo",
+                "Central bank Intervention rate (policy interest rate)": "tasa de intervención del banco central (tasa de política monetaria)"}
+
+
+def rate_name_es(name: str) -> str:
+    """The Spanish name of a rate variable of a scenario (the NGFS suffix " ; %(combined)" dropped); an unknown name stops the bake."""
+    base = name.split(" ;")[0].strip()
+    if base not in RATE_NAME_ES:
+        raise ValueError(f"no Spanish name for the rate variable {name!r}: add it to nii.RATE_NAME_ES")
+    return RATE_NAME_ES[base]
+
+
 def rate_statement(name: str, regressor: str) -> dict[str, str]:
     kind = "short rate" if regressor == "prime_rate" else "10-year rate"
-    return P.text(f"The NII of each year follows the variant's {kind} ({name}): the C15 twelve-month margin less the engine's delta NII (irrbb.eve_nii.delta_nii) on "
+    return P.text(f"The NII of each year follows the variant's {kind} ({name}): the C15 twelve-month margin less the engine's delta NII on "
                   "C15's book and curve, shifted in parallel by the mean change of that rate in the year from the jump-off, with C15's floors.",
-                  f"El NII de cada año sigue la tasa de {'corto plazo' if regressor == 'prime_rate' else 'diez años'} de la variante ({name}): el margen de doce meses de C15 "
-                  "menos el delta NII del motor (irrbb.eve_nii.delta_nii) sobre el libro y la curva de C15, desplazada en paralelo por el cambio medio de esa tasa en el año "
-                  "desde el punto de partida, con los pisos de C15.")
+                  f"El NII de cada año sigue la tasa de {'corto plazo' if regressor == 'prime_rate' else 'diez años'} de la variante ({rate_name_es(name)}): "
+                  "el margen de doce meses de C15 menos el delta NII del motor sobre el libro y la curva de C15, desplazada en paralelo por el cambio medio de esa tasa "
+                  "en el año desde el punto de partida, con los pisos de C15.")

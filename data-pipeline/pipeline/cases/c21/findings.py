@@ -47,6 +47,16 @@ def _finding(fid: str, severity: str, status: str, evidence: list[str], en: str,
     return {"id": fid, "severity": severity, "status": status, "evidence": evidence, "title": t(f"{en}; {LABEL_EN}", f"{es}; {LABEL_ES}")}
 
 
+def contrasts(n: int) -> str:
+    """ "1 group contrast", "2 group contrasts" (U16-R3 c21 m4)."""
+    return f"{n} group contrast" if n == 1 else f"{n} group contrasts"
+
+
+def contrastes(n: int) -> str:
+    """ "1 contraste de grupos", "2 contrastes de grupos"."""
+    return f"{n} contraste de grupos" if n == 1 else f"{n} contrastes de grupos"
+
+
 def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """The findings of one pair document, from its test rows (as dicts), in a fixed order."""
     by_key = {_id(r): r for r in tests}
@@ -79,31 +89,33 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
         n = len(lower)
         out.append(_finding(
             "F-CONTROLLED-LOWER-ODDS", "S2", "open", pairs(lower),
-            f"Controlled disparity repeated on the next year in {n} group contrasts where the group is approved at lower controlled odds "
+            f"Controlled disparity repeated on the next year in {contrasts(n)} where the group is approved at lower controlled odds "
             "than its reference group (odds ratio below 1): an approximation of comparative evidence on public data",
-            f"Disparidad controlada que se repite el año siguiente en {n} contrastes de grupos donde el grupo es aprobado con menores odds "
-            "controlados que su grupo de referencia (razón de odds bajo 1): una aproximación de evidencia comparativa sobre datos públicos"))
+            f"Disparidad controlada que se repite el año siguiente en {contrastes(n)} donde el grupo es aprobado con una menor razón de "
+            "probabilidades controlada que su grupo de referencia (razón de probabilidades bajo 1): una aproximación de evidencia comparativa sobre "
+            "datos públicos"))
     if higher:
         n = len(higher)
         out.append(_finding(
             "F-CONTROLLED-HIGHER-ODDS", "S3", "open", pairs(higher),
-            f"Controlled disparity repeated on the next year in {n} group contrasts where the group is approved at higher controlled odds "
+            f"Controlled disparity repeated on the next year in {contrasts(n)} where the group is approved at higher controlled odds "
             "than its reference group (odds ratio above 1): an approximation of comparative evidence on public data",
-            f"Disparidad controlada que se repite el año siguiente en {n} contrastes de grupos donde el grupo es aprobado con mayores odds "
-            "controlados que su grupo de referencia (razón de odds sobre 1): una aproximación de evidencia comparativa sobre datos públicos"))
+            f"Disparidad controlada que se repite el año siguiente en {contrastes(n)} donde el grupo es aprobado con una mayor razón de "
+            "probabilidades controlada que su grupo de referencia (razón de probabilidades sobre 1): una aproximación de evidencia comparativa "
+            "sobre datos públicos"))
     if not_repeated:
         n = len(not_repeated)
         out.append(_finding(
             "F-CONTROLLED-NOT-REPEATED", "S3", "open", pairs(not_repeated),
-            f"Controlled disparity that does not repeat on the next year in {n} group contrasts: the sign differs between the two years",
-            f"Disparidad controlada que no se repite el año siguiente en {n} contrastes de grupos: el signo difiere entre los dos años"))
+            f"Controlled disparity that does not repeat on the next year in {contrasts(n)}: the sign differs between the two years",
+            f"Disparidad controlada que no se repite el año siguiente en {contrastes(n)}: el signo difiere entre los dos años"))
     if spread_higher:
         n = len(spread_higher)
         out.append(_finding(
             "F-RATE-SPREAD-HIGHER", "S3", "open", pairs(spread_higher),
-            f"Rate-spread disparity repeated on the next year in {n} group contrasts where the group has a higher rate spread than its "
+            f"Rate-spread disparity repeated on the next year in {contrasts(n)} where the group has a higher rate spread than its "
             "reference group, the interval excluding 0",
-            f"Disparidad del diferencial de tasa que se repite el año siguiente en {n} contrastes de grupos donde el grupo tiene un "
+            f"Disparidad del diferencial de tasa que se repite el año siguiente en {contrastes(n)} donde el grupo tiene un "
             "diferencial de tasa mayor que su grupo de referencia, con el intervalo excluyendo 0"))
     n_attributes = sum(1 for r in tests if r["test_id"] == "fair.demographic_parity")
     gap = [r["segment"] for r in tests if r["test_id"] == "fair.demographic_parity" and r["light"] != "green"]
@@ -120,7 +132,7 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
             f"Unconditional approval-rate gaps in {len(gap)} of the {n_attributes} attributes{extra_en} are an indicator only: \"{quote}\" "
             "(Interagency Fair Lending Examination Procedures)",
             f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los {n_attributes} atributos{extra_es} son solo un indicador: "
-            f"\"{quote}\" (Interagency Fair Lending Examination Procedures, cita en inglés)"))
+            f"«{legal.QUOTES_ES['procedures']}» (Procedimientos Interagenciales de Examen de Préstamos Justos; original en inglés: \"{quote}\")"))
     out.append(_finding(
         "F-LIMIT-CREDIT-SCORE", "S4", "accepted", ["design:credit-score-missing"],
         "Limit of the evidence: the credit score is not in public HMDA, so every controlled estimate may be confounded by it",

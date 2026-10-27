@@ -198,6 +198,24 @@ export function C21VariantsView({ sel, onPick }: { sel: C21Sel | null; onPick: (
 const dd = (children: ReactNode, key: string) => <Fragment key={key}>{children}</Fragment>;
 
 /** The case, the scope, the conventions of the outcome and the identifiers, the licence sentence (UNVERIFIED) and the data notes. */
+/** An English quotation: in Spanish its Spanish rendering first and the original after it, marked (U16-R3 c21 B3, as LegalSentences). */
+function Quoted({ quote, lang }: { quote: string; lang: 'en' | 'es' }) {
+  const spanish = es(quote, 'es');
+  if (lang === 'es' && spanish !== quote) {
+    return (
+      <>
+        {`«${spanish}» `}
+        <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${quote}"`}</span>)</span>
+      </>
+    );
+  }
+  return <span translate="no" lang="en">{`"${quote}"`}</span>;
+}
+
+/** A rule of the contract's identifiers ("<activity_year>-<row>") with its placeholders in words (U16-R3 c21 B7). */
+const PLACEHOLDER: Record<string, { en: string; es: string }> = { activity_year: { en: 'activity year', es: 'año de actividad' }, row: { en: 'row number', es: 'fila' } };
+export const formulaWords = (rule: string, lang: 'en' | 'es'): string => rule.replace(/<([a-z_]+)>/g, (m, k: string) => (PLACEHOLDER[k] ? `<${PLACEHOLDER[k][lang]}>` : m));
+
 export function C21ContextView({ sel }: { sel: C21Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -247,7 +265,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas de a pares' }, lang)}</dt>
           <dd><Marked>{pick(c.group_exclusion, lang)}</Marked></dd>
           <dt>{pick({ en: 'Identifiers', es: 'Identificadores' }, lang)}</dt>
-          <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${c.identifiers.id}; ${c.identifiers.observation_date})`}</dd>
+          <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${formulaWords(c.identifiers.id, lang)}; ${formulaWords(c.identifiers.observation_date, lang)})`}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The licence of the data', es: 'La licencia de los datos' }} {...card}>
@@ -255,9 +273,9 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
           <dd>{`${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> (<Marked>{es(l.platform_terms_cover, lang)}</Marked>)</dd>
+          <dd><Quoted quote={l.platform_terms} lang={lang} /> (<Marked>{es(l.platform_terms_cover, lang)}</Marked>)</dd>
           <dt>{pick({ en: 'CFPB statement', es: 'Declaración de la CFPB' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.modified_statement}"`}</span></dd>
+          <dd><Quoted quote={l.modified_statement} lang={lang} /></dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'How each field is published', es: 'Cómo se publica cada campo' }} {...card} note={{ en: 'A field the release bins, rounds, tops or withholds says so, with its reason; the public data carry no credit score.', es: 'Un campo que la publicación agrupa, redondea, trunca o retiene lo dice, con su razón; los datos públicos no traen puntaje de crédito.' }}>

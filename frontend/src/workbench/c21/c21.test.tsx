@@ -192,7 +192,7 @@ describe('the C21 instrument', () => {
     expect(markup).toContain('Counterfactual test: not run.');
     expect(markup).toContain(escapeHtml(s.counterfactual_test.reason.en));
     expect(markup).toContain('data-comparator="ceteris-paribus"');
-    expect(markup).toContain(`${s.n_significant} (${formatNumber(s.n_significant / s.n_cases, 'en', { percent: true, decimals: 1 })})`);
+    expect(markup).toContain(`${s.n_significant} (${formatNumber(s.n_significant / s.n_cases, 'en', { percent: true, decimals: 1 })} of the cases tested)`); // U16-R3 c21 M3: the share says what it is of
   });
 
   it('a test that did not run sits under its view and shows its reason, never a number', () => {
@@ -208,7 +208,7 @@ describe('the C21 instrument', () => {
     expect(markup).toContain('data-status="UNVERIFIED"');
     expect(markup).toContain(escapeHtml(o.licence.modified_statement));
     expect(markup).toContain('data-table="c21-conventions" data-status="convention"');
-    expect(markup).toContain('&lt;activity_year&gt;-&lt;row&gt;');
+    expect(markup).toContain('&lt;activity year&gt;-&lt;row number&gt;');
     expect(markup).toContain('data-field="debt_to_income_ratio"');
   });
 
