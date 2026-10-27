@@ -325,7 +325,7 @@
     "family": "market-var-es",
     "source": "arXiv 2606.04576 (preprint; challenger only)",
     "status": "challenger-not-run",
-    "not_run_reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the U8 bake does not train it",
+    "not_run_reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it",
     "innovation": "none",
     "estimation_window_days": null,
     "refit_every_days": null,

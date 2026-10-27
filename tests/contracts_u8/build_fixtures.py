@@ -383,7 +383,7 @@ def build_c11_models() -> dict:
                                        "n_convergence_failures": 0, "parameters": params}]})
     rungs.append({"model_id": "nn-fz", "rung": "R10", "title": txt("Quantile network trained on FZ0 (challenger)", "Red de cuantiles entrenada con FZ0 (retador)"),
                   "family": "market-var-es", "source": "arXiv 2606.04576 (preprint; challenger only)", "status": "challenger-not-run",
-                  "not_run_reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the U8 bake does not train it",
+                  "not_run_reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it",
                   "innovation": "none", "estimation_window_days": None, "refit_every_days": None, "forecasts_es": True,
                   "es_method": "network output", "window_fits": []})
     traffic = {"window_days": 250, "confidence": 0.99, "reference": "MAR32.9 Table 1 (dossier 01 D.4); 12 CFR 217.204 Table 1 (dossier 05 B.4)",
