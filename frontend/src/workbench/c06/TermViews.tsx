@@ -8,6 +8,7 @@ import { provenanceOf, REPLAY } from '../model';
 import { Pending } from '../Pending';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber, segmentLabel } from './format';
 import { outputsOf, type C06Outputs, type C06Sel } from './selection';
+import { PCT_AXIS } from './ValidationViews';
 
 const WEIGHTED: BiText = { en: 'Probability-weighted', es: 'Ponderada por probabilidad' };
 const SCENARIO_COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good'];
@@ -79,7 +80,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'Months after the reporting date', es: 'Meses desde la fecha de reporte' }, format: { decimals: 0 } }}
-          y={{ label: m.label, format: { percent: true, digits: 2 } }}
+          y={{ label: m.label, format: PCT_AXIS }}
           series={series}
         />
           }
@@ -118,6 +119,29 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
   );
 }
 
+/**
+ * The note of the non-linearity panel, each comparison stated as the committed numbers give it (R3 c07 B1: at Dec 2010 the index is
+ * -0.07 % and the note said averaging first would understate the loss). The PD comparison reads the two PDs; the loss conclusion
+ * reads the sign of the ECL index (ECL weighted over ECL at the mean path, minus 1).
+ */
+export function nonLinearityNote(n: C06Outputs['non_linearity']): BiText {
+  const mz = (lang: 'en' | 'es') => formatNumber(n.mean_z, lang, { decimals: 2 });
+  const pdSide: BiText = n.pd_weighted >= n.pd_at_mean_z
+    ? { en: 'The weighted PD sits above the PD at the weighted-average factor', es: 'La PD ponderada queda sobre la PD en el factor promedio ponderado' }
+    : { en: 'The weighted PD sits below the PD at the weighted-average factor', es: 'La PD ponderada queda bajo la PD en el factor promedio ponderado' };
+  const idx = (lang: 'en' | 'es') => pct(n.index, lang, 2);
+  const loss: BiText = n.index >= 0
+    ? { en: `The ECL index is ${idx('en')}: averaging the scenarios first would understate the loss.`, es: `El índice de la PCE es ${idx('es')}: promediar primero los escenarios subestimaría la pérdida.` }
+    : {
+        en: `The ECL index is ${idx('en')}: the weighted ECL is below the ECL at the mean path, because the loss of a path is not its PD alone, so here averaging the scenarios first would overstate the loss.`,
+        es: `El índice de la PCE es ${idx('es')}: la PCE ponderada queda bajo la PCE en la trayectoria media, porque la pérdida de una trayectoria no es solo su PD, así que aquí promediar primero los escenarios sobrestimaría la pérdida.`,
+      };
+  return {
+    en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. ${pdSide.en} (mean z = ${mz('en')}). ${loss.en}`,
+    es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. ${pdSide.es} (z medio = ${mz('es')}). ${loss.es}`,
+  };
+}
+
 /** The log-spaced x grid of the SICR lines, with the schedule boundaries on it. */
 function sicrGrid(o: C06Outputs): number[] {
   const xs = o.sicr_points.flatMap((p) => [p.pd_origination_annualised, p.pd_current_annualised]);
@@ -149,7 +173,8 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
   const reachable = (v: number): number | null => (v > 1 ? null : v);
   const series = [
     { label: { en: 'No change (current = origination)', es: 'Sin cambio (actual = originación)' }, values: grid.map((x) => x), color: '--color-fg-faint' as ShellColorToken, width: 1, dash: [2, 4] },
-    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => reachable(multiplierAt(o, x) * x)), color: '--color-warn' as ShellColorToken, width: 1.8 },
+    // the schedule in the subtle ink, apart from the Stage 2 points (warn; R3 c07 m2)
+    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => reachable(multiplierAt(o, x) * x)), color: '--color-fg-subtle' as ShellColorToken, width: 1.8 },
     { label: { en: 'Absolute floor', es: 'Piso absoluto' }, values: grid.map((x) => reachable(x + s.absolute_floor)), color: '--color-magenta' as ShellColorToken, width: 1.4, dash: [6, 3] },
     { label: { en: `Threefold backstop (x${s.threefold_ratio})`, es: `Respaldo del triple (x${s.threefold_ratio})` }, values: grid.map((x) => reachable(s.threefold_ratio * x)), color: '--color-bad' as ShellColorToken, width: 1.8, dash: [8, 3] },
     ...used.map((st) => ({
@@ -194,6 +219,36 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
       </PlotCard>
       <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <div className="ct-scroll" data-caos-flow="">
+          {/* the counts first, so they show at 1280 above the rule (R3 c07 m3) */}
+          <p className="ct-note" data-accounts={total}>
+            {pick(
+              {
+                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
+                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
+              },
+              lang,
+            )}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
+                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map((g) => (
+                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
+                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
+                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
+                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
+                  <td>{pct(g.n / total, lang, 1)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           {/* the rule as a table of test and condition: with the counts below, the card's tables span it, so the gate counts
               the card as drawn at 1280 (a list above one small table drew on 23% of its stage, G6) */}
           <table className="caos-table ct-wrap-head" data-table="sicr-rule">
@@ -230,35 +285,6 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
                     : pick({ en: `at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less`, es: `con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos` }, lang)}
                 </td>
               </tr>
-            </tbody>
-          </table>
-          <p className="ct-note" data-accounts={total}>
-            {pick(
-              {
-                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
-                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
-              },
-              lang,
-            )}
-          </p>
-          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
-                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
-                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {groups.map((g) => (
-                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
-                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
-                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
-                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
-                  <td>{pct(g.n / total, lang, 1)}</td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
@@ -302,15 +328,12 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{
-          en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. The weighted PD sits above the PD at the weighted-average factor (mean z = ${formatNumber(n.mean_z, 'en', { decimals: 2 })}): averaging the scenarios first would understate the loss.`,
-          es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. La PD ponderada queda sobre la PD en el factor promedio ponderado (z medio = ${formatNumber(n.mean_z, 'es', { decimals: 2 })}): promediar primero los escenarios subestimaría la pérdida.`,
-        }}
+        note={nonLinearityNote(n)}
       >
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'Systematic factor z (negative is adverse)', es: 'Factor sistemático z (negativo es adverso)' }, format: { decimals: 1 } }}
-          y={{ label: { en: 'Conditional PD', es: 'PD condicional' }, format: { percent: true, digits: 2 } }}
+          y={{ label: { en: 'Conditional PD', es: 'PD condicional' }, format: PCT_AXIS }}
           yMarks={[
             { y: n.pd_weighted, label: { en: 'Weighted PD', es: 'PD ponderada' }, tone: 'warn' },
             { y: n.pd_at_mean_z, label: { en: 'PD at the mean factor', es: 'PD en el factor medio' }, tone: 'neutral' },
