@@ -360,6 +360,11 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
     case 'C04':
       if (/^\d{4}$/.test(seg)) return bi(`cohort ${seg}`, `cohorte ${seg}`);
       break;
+    case 'C06':
+      // an origination cohort of the lifetime PD backtest, which the finding now cites row by row (R4 c08 minor, U16-F12b)
+      if (/^\d{4}$/.test(seg)) return bi(`the ${seg} origination cohort`, `la cohorte de originación ${seg}`);
+      if (seg === 'older') return bi('the earlier origination cohorts', 'las cohortes de originación anteriores');
+      break;
     case 'C05':
       if (/^(AAA|AA|A|BBB|BB|B|CCC-C|C)$/.test(seg)) return bi(`grade ${seg}`, `grado ${seg}`);
       break;
