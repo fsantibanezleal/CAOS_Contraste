@@ -92,9 +92,10 @@ def real_drift(portfolios: dict[str, fed.Portfolio]) -> tuple[dict[str, Any], li
 
 
 def evaluation_set_block(n_rows: int) -> dict[str, Any]:
-    """The locked evaluation set of the shift: its dataset id and its row count as two fields, so the view names the dataset and writes
-    the count in the reader's language (U16-R3 c20 B3: "uci-polish-3year-holdout (3,151 rows, locked)" was printed whole)."""
-    return {"evaluation_set": EVALUATION_SET, "evaluation_rows": int(n_rows)}
+    """The locked evaluation set of the shift as the contract writes it, its dataset id and its row count in one string the view reads
+    back into the dataset's name and the count in the reader's language (U16-R3 c20 B3; c20-outputs-shift 1.0.0 has no field of its own
+    for the count, and the web's descriptors take no optional key)."""
+    return {"evaluation_set": f"{EVALUATION_SET} ({int(n_rows):,} rows, locked)"}
 
 
 def build(frame: Frame, rungs: dict[str, Any], portfolios: dict[str, fed.Portfolio], seed: int) -> dict[str, Any]:
