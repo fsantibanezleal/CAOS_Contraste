@@ -68,7 +68,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
   // 18 bars in six groups need about 28 rem: on a phone the card is as tall as what it holds, and the stage kept 160 px, so the
   // drawing showed 4 of 6 segments and no axis (R3 c08 M2)
   return (
-    <div className="ct-map" style={{ minHeight: '28rem' }}>
+    <div className="ct-map" data-caos-flow="" style={{ minHeight: 'max(28rem, calc(50rem - 25vw))' }}>
       <BarChart
         title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
         height="fill"

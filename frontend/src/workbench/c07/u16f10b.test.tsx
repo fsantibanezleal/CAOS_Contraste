@@ -60,7 +60,7 @@ describe('U16-R3 c08 on the committed C07 documents', () => {
 
   it('M2: the provision-by-segment drawing of the Three regimes view keeps a least height for 18 bars on a phone', () => {
     const markup = html(<ThreeRegimeView sel={at('base.json')} />);
-    expect(markup).toMatch(/class="ct-map"[^>]*style="[^"]*min-height:\s*28rem/);
+    expect(markup).toMatch(/class="ct-map"[^>]*style="[^"]*min-height:\s*max\(28rem/);
   });
 
   it('m1: the grouped and bridge notes keep the colour key and leave the pointer instruction to the shell', () => {
