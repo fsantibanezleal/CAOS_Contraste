@@ -260,7 +260,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       ),
       group(
         'backtest',
-        { en: 'Back-test and tests', es: 'Prueba retrospectiva y pruebas' },
+        { en: 'Back-test and tests', es: 'Retrospectiva y pruebas' },
         tabs(
           [
             { id: 'pit', label: { en: 'PIT histogram', es: 'Histograma PIT' }, content: <PitView sel={sel} /> },
