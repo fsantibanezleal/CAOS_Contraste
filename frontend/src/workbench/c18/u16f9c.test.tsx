@@ -17,11 +17,11 @@ describe('U16-F9c C18 stack view', () => {
   for (const name of SCENARIOS) {
     it(`${name}: the drawings fill their card and the tables sit in a card beside them`, () => {
       const markup = html(<StackView sel={selOf(name)} />);
-      expect(markup).toContain('class="ct-c18-stack-charts"');
+      expect(markup).toContain('class="ct-c18-stack-charts ct-fade-scroll"');
       // no drawing over a 42 % table box: the stack is not a ChartOverTable any more
       expect(markup).not.toContain('class="ct-stack-table"');
       const at = markup.indexOf('data-block="numbers"');
-      expect(at).toBeGreaterThan(markup.indexOf('class="ct-c18-stack-charts"'));
+      expect(at).toBeGreaterThan(markup.indexOf('class="ct-c18-stack-charts ct-fade-scroll"'));
       for (const t of ['c18-stack', 'c18-stack-refs', 'c18-legal-stack']) expect(markup.indexOf(`data-table="${t}"`)).toBeGreaterThan(at);
     });
   }

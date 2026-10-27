@@ -17,10 +17,10 @@ const R: ReadonlyArray<Rule> = [
   [/^Results from the 2008 Loss Data Collection Exercise for Operational Risk$/, () => 'Resultados del Ejercicio de Recolección de Datos de Pérdidas de 2008 para Riesgo Operacional'],
   [/^dossier 05 F\.2, rung (\d)(?:; Mignola and Ugoccioni \((\d{4})\))?$/, (g) => `dossier 05 F.2, peldaño ${g[1]}${g[2] ? `; Mignola y Ugoccioni (${g[2]})` : ''}`],
   [/^dossier 05 F\.4, Shevchenko eq\. (\d+)$/, (g) => `dossier 05 F.4, Shevchenko ec. ${g[1]}`],
-  [/^dossier 05 F\.4: the form is not checked against Bocker and Sprittulla \((\d{4})\) or Degen \((\d{4})\)$/, (g) => `dossier 05 F.4: la forma no se ha verificado contra Böcker y Sprittulla (${g[1]}) ni Degen (${g[2]})`],
-  [/^dossier 05 F\.5, Shevchenko and Wuthrich \((\d{4})\)$/, (g) => `dossier 05 F.5, Shevchenko y Wüthrich (${g[1]})`],
-  [/^dossier 05 F\.5; Shevchenko and Wuthrich \((\d{4})\), (.*)$/, (g) => `dossier 05 F.5; Shevchenko y Wüthrich (${g[1]}), ${g[2]}`],
-  [/^Shevchenko and Wuthrich \((\d{4})\), (.*)$/, (g) => `Shevchenko y Wüthrich (${g[1]}), ${g[2]}`],
+  [/^dossier 05 F\.4: the form is not checked against B[oö]cker and Sprittulla \((\d{4})\) or Degen \((\d{4})\)$/, (g) => `dossier 05 F.4: la forma no se ha verificado contra Böcker y Sprittulla (${g[1]}) ni Degen (${g[2]})`],
+  [/^dossier 05 F\.5, Shevchenko and W[uü]thrich \((\d{4})\)$/, (g) => `dossier 05 F.5, Shevchenko y Wüthrich (${g[1]})`],
+  [/^dossier 05 F\.5; Shevchenko and W[uü]thrich \((\d{4})\), (.*)$/, (g) => `dossier 05 F.5; Shevchenko y Wüthrich (${g[1]}), ${g[2]}`],
+  [/^Shevchenko and W[uü]thrich \((\d{4})\), (.*)$/, (g) => `Shevchenko y Wüthrich (${g[1]}), ${g[2]}`],
   [/^dossier 01 section F \(OPE25, in force (\S+), published (\S+)\)$/, (g) => `dossier 01 sección F (OPE25, vigente desde ${g[1]}, publicado el ${g[2]})`],
   [/^OPE25\.7 footnote 2$/, () => 'OPE25.7 nota 2'],
 ];
@@ -35,5 +35,9 @@ export function inSentence(name: string): string {
   return name.charAt(0).toLowerCase() + name.slice(1);
 }
 
-/** The Spanish of a document string, or the string itself in English or when no rule knows it. */
-export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => localise(s, lang, R);
+/** The authors' names as published (U16-R4 c21 m7: the bake wrote "Bocker" and "Wuthrich"; the re-bake writes the umlauts). */
+const AUTHORS: ReadonlyArray<readonly [RegExp, string]> = [[/\bBocker\b/g, 'Böcker'], [/\bWuthrich\b/g, 'Wüthrich']];
+const authors = (s: string): string => AUTHORS.reduce((acc, [from, to]) => acc.replace(from, to), s);
+
+/** The Spanish of a document string, or the string itself in English or when no rule knows it; the authors' names as published in both. */
+export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => authors(localise(s, lang, R));

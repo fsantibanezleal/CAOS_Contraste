@@ -40,7 +40,7 @@ def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_sc
     corr_basis_es = "referencia de Rosenberg y Schuermann: mercado-crédito 0,5, mercado y crédito con operacional 0,2 (05 l.360); el IRRBB se trata como un riesgo de tipo mercado "
     return {
         "nu_set": {"name": "nu_set", "values": list(P.NU_SET), "unit": "degrees of freedom", "label": "convention",
-                   "basis": T("Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)")},
+                   "basis": T("Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several values of ν (05 l.378)")},
         "correlation_matrix_base": {"name": "correlation_matrix_base", "order": P.CORR_ORDER, "matrix": P.CORR_BASE, "unit": "correlation", "label": "convention",
                                     "basis": T("The " + corr_basis + "(0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation; "
                                                "the dependence band shows what it changes",
@@ -59,13 +59,13 @@ def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_sc
         "c_d": named("c_d", P.C_D, "share of RWA", "case assumption", "The voluntary stress buffer, component d of the internal target (03 l.152-169)"),
         "operational_conversion_rate": {
             **named("operational_conversion_rate", fx.value, "CLP per EUR", "case assumption",
-                    "Derived at bake time: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile"),
+                    "Derived when the case is computed: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile"),
             "derivation": {"kind": "observed-exchange-rate", "pair": "EUR/CLP", "observation_date": fx.observation_date,
                            "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
                            "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API", "source_series": fx.series_id}},
         "asset_scaling": {
             **named("asset_scaling", op_extras["asset_scaling"], "Banco Andino assets over the assets of the C17 bank", "case assumption",
-                    "Derived at bake time: Banco Andino's total assets (the C15 Tier 1 proxy over its equity-over-assets calibration target) over the C17 synthetic "
+                    "Derived when the case is computed: Banco Andino's total assets (the C15 Tier 1 proxy over its equity-over-assets calibration target) over the C17 synthetic "
                     "bank's stated assets, converted at the rate"),
             "derivation": {"kind": "asset-ratio", "banco_andino_assets_clp_m": anchors.total_assets_clp_m,
                            "c17_bank_assets_eur_m": anchors.c17_generator["assets_eur_bn"] * 1000.0, "converted_at": "operational_conversion_rate"}},
@@ -105,6 +105,10 @@ def model_summaries(ev: str) -> list[dict[str, Any]]:
     ]
 
 
+#: the rule that maps a draw through a marginal, in words: a reader text names no code function (U16-R4 c22 B4, c23 B2: "np.interp")
+MARGINAL_INTERPOLATION = "linear interpolation on the Hazen positions (i - 0.5) / n of the sorted sample, clamped at the ends"
+
+
 def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str, Any], named_p: dict[str, Any], credit_description: dict[str, str], n_draws: int = P.N_DRAWS,
               seed: int = P.SEED, grid: dict[str, Any] | None = None) -> dict[str, Any]:
     exp = [{"banco_andino_class": c, "exposure_clp_m": anchors.class_exposure_clp_m[c], "share": anchors.class_exposure_clp_m[c] / anchors.loans_clp_m}
@@ -125,7 +129,7 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
                        {"method": "worst-case", "engine_function": "aggregation.bounds.worst_var_bounds"}],
             "n_draws": n_draws, "seed": seed, "chunk_size": P.CHUNK, "horizon_years": P.HORIZON_YEARS, "confidence_level": P.LEVEL,
             "capital_basis": "economic-capital-var-less-el",
-            "marginal_interpolation": "np.interp on the Hazen positions (i - 0.5) / n of the sorted sample, clamped at the ends",
+            "marginal_interpolation": MARGINAL_INTERPOLATION,
             **({"quantile_grid": grid} if grid is not None else {})},
         "named_parameters": named_p,
         "bank_anchors": {

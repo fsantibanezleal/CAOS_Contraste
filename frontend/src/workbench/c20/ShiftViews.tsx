@@ -112,6 +112,21 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The synthetic shift of the evaluation set built from a portfolio as the reference: performance, PSI and flips under each shift, and the worst subsample. */
+/**
+ * The bars of the synthetic shift: the AUC loss under each shift and on the worst subsample, positive a loss. A loss is drawn in the
+ * bad tone and a gain in the good one (U16-R4 c24 n2: every loss was drawn green, the opposite of the shock chart).
+ */
+export function syntheticShiftBars(
+  s: { shifts: Array<{ shift_id: string; metric: { auc_delta: number } }>; worst_subsample: { share: number; metric: { auc_delta: number } } },
+  current: string | null,
+) {
+  const rows = [
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id) as BiText, value: 0 - x.metric.auc_delta, highlight: x.shift_id === current })),
+    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
+  ];
+  return rows.map((r) => ({ ...r, tone: r.value > 0 ? ('bad' as const) : ('good' as const) }));
+}
+
 export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -119,10 +134,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   const o = asKind(sel, 'shift');
   if (!o) return <NotInVariant sel={sel} title={TITLE_SYNTH} needs="shift" />;
   const s = o.synthetic_shift;
-  const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id), value: 0 - x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
-    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
-  ];
+  const rows = syntheticShiftBars(s, sel.shift);
   const ev = evaluationSet(s);
   const evName = text(EVALUATION_SET_TEXT, ev.id);
   const evalText: BiText = ev.rows === null ? evName : { en: `${evName.en} (${int(ev.rows, 'en')} rows)`, es: `${evName.es} (${int(ev.rows, 'es')} filas)` };
@@ -145,7 +157,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               title={{ en: 'AUC loss under each shift', es: 'Pérdida de AUC bajo cada cambio' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ ...r, tone: r.value < 0 ? ('bad' as const) : ('good' as const) }))}
+              data={rows}
               axis={{ label: { en: 'AUC loss against the unshifted set (positive is a loss)', es: 'Pérdida de AUC contra el conjunto sin cambio (positivo es una pérdida)' }, format: { decimals: 3 } }}
             />
           }

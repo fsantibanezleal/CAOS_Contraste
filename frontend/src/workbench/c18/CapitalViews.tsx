@@ -5,6 +5,7 @@
 // document; the running sums that stack a layer are layout.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import { Fragment } from 'react';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
@@ -16,6 +17,21 @@ import {
   type C18Cell, type C18Sel,
 } from './selection';
 import { phraseEs } from './localise';
+
+/**
+ * A formula or a sentence with the layer symbols written as symbols: c_DSIB as c with the subscript DSIB, ">=" as the sign, a
+ * Spanish percent with its no-break space (U16-R4 c22 B3: the document's keys c_DSIB, c_P2, c_d were printed as text). The layer
+ * table beside the formula names each symbol.
+ */
+export function Symbols({ text: s, lang }: { text: string; lang: 'en' | 'es' }) {
+  const signed = s.replace(/>=/g, '≥');
+  const spaced = lang === 'es' ? signed.replace(/(\d)%/g, '$1\u00a0%') : signed;
+  const parts = spaced.split(/\bc_([A-Za-z0-9]+)\b/);
+  return <>{parts.map((p, i) => (i % 2 === 1 ? <Fragment key={i}>c<sub>{p}</sub></Fragment> : <Fragment key={i}>{p}</Fragment>))}</>;
+}
+
+/** A reason after a colon starts in lower case (U16-R4 c22 m12: "not available: No mitigation ..."), an acronym kept as written. */
+const lowerFirst = (s: string): string => (/^[A-Z][a-z]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
 /** The requirement keeps the two decimals of every other cell of the table, and a third only where the legal figure needs it (9.125 %). */
 export const requirementDecimals = (v: number): 2 | 3 => (Math.abs(v * 1e4 - Math.round(v * 1e4)) < 1e-6 ? 2 : 3);
@@ -214,7 +230,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
               </tbody>
             </table>
           ) : (
-            <p className="ct-note" data-mitigation="none" data-na="true">{formatNumber(null, lang)}: <Marked>{m.reason ? pick(m.reason, lang) : ''}</Marked></p>
+            <p className="ct-note" data-mitigation="none" data-na="true">{formatNumber(null, lang)}: <Marked>{m.reason ? lowerFirst(pick(m.reason, lang)) : ''}</Marked></p>
           )}
           {o.capital_plan.alternative_sources.length > 0 ? (
             <p className="ct-note">
@@ -235,6 +251,8 @@ const LAYER_TEXT: Record<string, BiText> = {
   c_ccyb: { en: 'Countercyclical buffer', es: 'Colchón contracíclico' },
   c_d: { en: 'Stress buffer d', es: 'Colchón de estrés d' },
 };
+/** The subscript of each layer's symbol in the formula of the document (c_DSIB, c_P2, c_CCoB, c_CCyB, c_d). */
+const LAYER_SYMBOL: Record<string, string> = { dsib: 'DSIB', p2: 'P2', ccob: 'CCoB', ccyb: 'CCyB', d: 'd' };
 const LEGAL_TEXT: Record<string, BiText> = {
   cet1_min: { en: 'CET1 minimum', es: 'Mínimo CET1' },
   c_ccob: { en: 'Conservation buffer', es: 'Colchón de conservación' },
@@ -302,8 +320,11 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
       >
         {/* the two drawings take the whole card, each its share of the height by its bars, so neither is cut nor scrolls inside
             itself (R2b c19 M-new-1: under the tables the upper drawing lost its axis and the legal minimum bar) */}
-            <div className="ct-c18-stack-charts" data-caos-flow="">
-              <div style={{ flex: `${rowsAll + 2} 1 0`, minHeight: 0 }}>
+            {/* the two floors together can be taller than the card: the drawings then scroll in their own box with the fade cue (ADR-0071) */}
+            <div className="ct-c18-stack-charts ct-fade-scroll" data-caos-flow="">
+              {/* the upper drawing keeps a floor for its bars, its ticks, its axis title and the read-out hint too (U16-R4 c23 M1: the
+                  lower floor alone took the upper drawing its axis title) */}
+              <div data-box="oi-stack" style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `calc(${rowsAll} * 1.4rem + 6rem)` }}>
                 <BarChart
                   title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
                   data={ownDecimals([...oiBars, ...refBars])}
@@ -313,7 +334,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               </div>
               {legalBars ? (
                 // the lower drawing keeps a floor for its ticks, its axis title and the read-out hint (U16-R3 c19 M1: the hint hid the title)
-                <div data-box="legal-stack" style={{ flex: `${legalBars.length + 3} 1 0`, minHeight: '9rem' }}>
+                <div data-box="legal-stack" style={{ flex: `${legalBars.length + 3} 1 0`, minHeight: `calc(${legalBars.length} * 1.4rem + 6rem)` }}>
                   <BarChart
                     title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
                     data={ownDecimals(legalBars)}
@@ -337,7 +358,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <tbody>
               {layerDefs.map((l) => (
                 <tr key={l.id} data-layer={l.id} data-label={l.label ?? 'regulatory'}>
-                  <td className="ct-text">{pick(LAYER_TEXT[l.id], lang)}</td>
+                  <td className="ct-text">{pick(LAYER_TEXT[l.id], lang)}{l.id === 'min_pe' ? null : <> (<Symbols text={l.id.replace(/^c_(.+)$/, (_, k: string) => `c_${LAYER_SYMBOL[k] ?? k}`)} lang={lang} />)</>}</td>
                   <td>{PCT(l.size, lang, 3)}</td>
                   <td className="ct-text">{l.label ? pick(text(LABEL_TEXT, l.label), lang) : pick(REGULATORY, lang)}</td>
                 </tr>
@@ -349,7 +370,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <p className="ct-note">{phraseEs(t.formula, lang)}</p>
+          <p className="ct-note" data-formula="oi"><Symbols text={phraseEs(t.formula, lang)} lang={lang} /></p>
           <table className="caos-table ct-wrap-head" data-table="c18-stack-refs">
             <thead>
               <tr>
@@ -389,7 +410,8 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
           <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'La aproximación de P2G' }, lang)}</h3>
           <Defs data-table="c18-p2g" data-p2g={o.p2g_proxy.label}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
-            <dd>{`${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
+            {/* the status sentence starts with the label itself: the label is not repeated before it (U16-R4 c23 m13) */}
+            <dd>{o.p2g_proxy.label === 'contraste-approximation' ? pick(P2G_LABEL, lang) : `${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
             <dt>{pick({ en: 'Peak depletion of the CET1 ratio', es: 'Máxima caída de la razón de CET1' }, lang)}</dt>
             <dd>{`${PCT(o.p2g_proxy.peak_depletion, lang, 3)} (${pick({ en: 'year', es: 'año' }, lang)} ${o.p2g_proxy.peak_year})`}</dd>
             <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones usables y mitigación' }, lang)}</dt>
@@ -397,7 +419,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <dt>{pick({ en: 'Proxy', es: 'Aproximación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.value, lang, 3)}</dd>
             <dt>{pick({ en: 'Statement', es: 'Declaración' }, lang)}</dt>
-            <dd>{pick(o.p2g_proxy.statement, lang)}</dd>
+            <dd><Symbols text={pick(o.p2g_proxy.statement, lang)} lang={lang} /></dd>
           </Defs>
         </div>
       </PlotCard>
@@ -415,6 +437,30 @@ function CellText({ c, kind, lang }: { c: C18Cell; kind: 'pct' | 'money'; lang: 
   return <span data-na="true" data-cell-status={c.status}>{pick(text(CELL_TEXT, c.status), lang)}</span>;
 }
 
+/**
+ * The bars of the Annex 3 card: the capital needed by each risk row, from its legal requirement (C) or else its internal measure
+ * (D), for a cell with a value only. A bar carries no note: its cell's status is always "value", which says nothing to a reader
+ * (U16-R4 c22 B1: the raw status "value" was printed as each bar's note, in both languages).
+ */
+export function annex3Bars(a: { rows: Array<{ row_id: string; label_cmf: string; c: C18Cell; d: C18Cell }> }) {
+  const get = (id: string) => a.rows.find((r) => r.row_id === id);
+  const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
+    const r = get(id);
+    if (!r) return [];
+    const col = (['c', 'd'] as const).find((k) => r[k].status === 'value');
+    if (!col) return [];
+    return [{ r, col }];
+  });
+  const scale = axisOf(bars.flatMap(({ r, col }) => (r[col].status === 'value' ? [r[col].value] : [])));
+  const data = bars.map(({ r, col }) => ({
+    id: `${r.row_id}-${col}`,
+    label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${ANNEX3_ES[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
+    value: r[col].status === 'value' && r[col].value !== null ? r[col].value / scale.div : null,
+    tone: col === 'c' ? ('accent' as const) : ('warn' as const),
+  }));
+  return { bars, scale, data };
+}
+
 /** The summary table of Annex 3 of the IAPE as the CMF defines it: 34 rows, four columns, each cell a value or the reason it has none. */
 export function Annex3View({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
@@ -427,14 +473,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
   const rows = a.rows;
   const label = (r: (typeof rows)[number]) => (lang === 'es' ? ANNEX3_ES[r.row_id] ?? r.label_cmf : ANNEX3_EN[r.row_id] ?? r.label_cmf);
   const get = (id: string) => rows.find((r) => r.row_id === id);
-  const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
-    const r = get(id);
-    if (!r) return [];
-    const col = (['c', 'd'] as const).find((k) => r[k].status === 'value');
-    if (!col) return [];
-    return [{ r, col }];
-  });
-  const scale = axisOf(bars.flatMap(({ r, col }) => (r[col].status === 'value' ? [r[col].value] : [])));
+  const { bars, scale, data } = annex3Bars(a);
   return (
     <ViewsRow>
       <PlotCard
@@ -442,7 +481,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${a.entity}, ${a.report_date}, consolidation ${a.consolidation === 'local' ? 'local' : 'global consolidated'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value; the cells without one are in the table with their reason.`,
+          en: `${a.entity}, ${a.report_date}, ${a.consolidation === 'local' ? 'local (solo) consolidation' : 'global consolidation'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value; the cells without one are in the table with their reason.`,
           es: `${a.entity}, ${a.report_date}, consolidación ${a.consolidation === 'local' ? 'local' : 'global consolidada'}. La columna A es una parte de los APR al inicio, B el monto en ${pick(MONEY_UNIT, 'es')}, C la exigencia legal de cada riesgo y D la medición interna; RI marca un riesgo que el banco trata como inmaterial y no cuantifica. Las barras muestran el capital necesario por riesgo donde una celda tiene valor; las celdas sin él están en la tabla con su razón.`,
         }}
       >
@@ -453,13 +492,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
               title={{ en: 'Capital needed by risk, legal requirement and internal measure', es: 'Capital necesario por riesgo, exigencia legal y medición interna' }}
               height="fill"
               orientation="horizontal"
-              data={bars.map(({ r, col }) => ({
-                id: `${r.row_id}-${col}`,
-                label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${ANNEX3_ES[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
-                value: r[col].status === 'value' && r[col].value !== null ? r[col].value / scale.div : null,
-                tone: col === 'c' ? ('accent' as const) : ('warn' as const),
-                hint: text(CELL_TEXT, r[col].status),
-              }))}
+              data={data}
               axis={{ label: { en: 'Capital needed by risk', es: 'Capital necesario por riesgo' }, unit: scale.unit, format: { digits: 4 } }}
             />
           }

@@ -45,17 +45,20 @@ export function Defs({ children, ...rest }: { children: ReactNode; [key: `data-$
 }
 
 /**
- * The rule that maps a draw through a marginal, which the document writes as one English string. The call and the formula stay as
- * written (code, the gate skips code), the words around them are read in the page's language; a rule in another shape is shown
+ * The rule that maps a draw through a marginal, which the document writes as one English string. It is said in words in the
+ * page's language, never by the name of the code function that runs it (U16-R4 c22 B4, c23 B2: "np.interp" in reader prose is a
+ * raw id): linear interpolation on the Hazen positions, the formula with the page's decimal mark. The committed documents still
+ * write "np.interp" until the re-bake, which writes "linear interpolation"; both read the same. A rule in another shape is shown
  * as the document writes it.
  */
 export function InterpolationRule({ rule, lang }: { rule: string; lang: Lang }) {
-  const m = lang === 'es' ? rule.match(/^(np\.interp) on the Hazen positions (.+?) of the sorted sample, clamped at the ends$/) : null;
+  const m = rule.match(/^(?:np\.interp|linear interpolation) on the Hazen positions (.+?) of the sorted sample, clamped at the ends$/);
   if (!m) return <>{rule}</>;
-  return (
-    <>
-      <code>{m[1]}</code> sobre las posiciones de Hazen <code>{m[2]}</code> de la muestra ordenada, acotada en los extremos
-    </>
+  const formula = lang === 'es' ? m[1].replace(/(\d)\.(\d)/g, '$1,$2') : m[1];
+  return lang === 'es' ? (
+    <>interpolación lineal sobre las posiciones de Hazen {formula} de la muestra ordenada, acotada en los extremos</>
+  ) : (
+    <>linear interpolation on the Hazen positions {formula} of the sorted sample, clamped at the ends</>
   );
 }
 
@@ -217,9 +220,10 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             {reverse ? (
               <tr data-variant={reverse.variant_id} className={reverse.variant_id === current ? 'ct-current' : undefined}>
                 <td className="ct-text">
-                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick(variantName('C18', reverse.variant_id) ?? { en: 'Reverse stress', es: 'Estrés inverso' }, lang)}</button>
+                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick(variantName('C18', reverse.variant_id) ?? { en: 'Reverse stress', es: 'Tensión inversa' }, lang)}</button>
                 </td>
-                <td data-na="true">{maybe(null, (x) => cell(x, lang), nope)}</td>
+                {/* the reverse document carries the headline capital of the case, the simple sum (U16-R4 c22 M2: called not computed) */}
+                <td>{maybe(reverse.impact.capital_simple_sum.value, (x) => cell(x, lang), nope)}</td>
                 <td>{PCT(reverse.outputs.failure_point.stack.total, lang, 3)}</td>
                 <td className="ct-wide-only" data-na="true">{maybe(null, (x) => PCT(x, lang), null)}</td>
                 <td className="ct-wide-only" data-na="true">{maybe(null, (x) => PCT(x, lang), null)}</td>
@@ -229,7 +233,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
         </table>
         {reverse ? (
           <p className="ct-note">
-            {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En el estrés inverso la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
+            {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En la tensión inversa la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
           </p>
         ) : null}
       </ChartOverTable>
@@ -443,6 +447,8 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
   const m = sel.data.manifest;
   const agg = aggOf(sel);
   const fit = fitOf(sel);
+  // a fact of the aggregation that the document has not: not available, with the reason (U16-R4 c23 m3: no reason was given)
+  const noAggregation = `${formatNumber(null, lang)}: ${pick(r ? { en: 'the reverse stress runs no aggregation', es: 'la tensión inversa no corre una agregación' } : { en: 'this document carries no aggregation', es: 'este documento no trae una agregación' }, lang)}`;
   return (
     <div className="ct-context" data-case={m.case_id}>
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
@@ -460,11 +466,11 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
           <dt>{pick({ en: 'The capital of this case', es: 'El capital de este caso' }, lang)}</dt>
           <dd data-headline="simple-sum">{pick({ en: 'The headline capital is the simple sum of the capital of the four risks, as the IAPE adds them. Every diversified or bound figure is information for the validator, never capital.', es: 'El capital principal es la suma simple del capital de los cuatro riesgos, como los suma el IAPE. Toda cifra diversificada o acotada es información para el validador, nunca capital.' }, lang)}</dd>
           <dt>{pick({ en: 'Capital basis of a risk', es: 'Base del capital de un riesgo' }, lang)}</dt>
-          <dd data-capital-basis={agg?.capital_basis}>{agg ? pick(text(CAPITAL_BASIS_TEXT, agg.capital_basis), lang) : formatNumber(null, lang)}</dd>
+          <dd data-capital-basis={agg?.capital_basis}>{agg ? pick(text(CAPITAL_BASIS_TEXT, agg.capital_basis), lang) : noAggregation}</dd>
           <dt>{pick({ en: 'Horizon and confidence level', es: 'Horizonte y nivel de confianza' }, lang)}</dt>
-          <dd>{agg ? `${agg.horizon_years} ${pick({ en: 'year', es: 'año' }, lang)}; ${PCT(agg.confidence_level, lang, 1)}` : formatNumber(null, lang)}</dd>
+          <dd>{agg ? `${agg.horizon_years} ${pick({ en: 'year', es: 'año' }, lang)}; ${PCT(agg.confidence_level, lang, 1)}` : noAggregation}</dd>
           <dt>{pick({ en: 'Money', es: 'Dinero' }, lang)}</dt>
-          <dd>{`${pick(MONEY_UNIT, lang)}; ${base.units.ratio}`}</dd>
+          <dd>{`${pick(MONEY_UNIT, lang)}; ${base.units.ratio === 'decimal' ? pick({ en: 'ratios as decimals', es: 'razones como decimales' }, lang) : base.units.ratio}`}</dd>
           <dt>{pick({ en: 'Date of the bank', es: 'Fecha del banco' }, lang)}</dt>
           <dd>{base.bank.as_of}</dd>
           {o ? (
@@ -472,7 +478,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
               <dd data-scenario={o.scenario.scenario_id}>{`${pick(o.scenario.title, lang)}; ${pick(text(PROVIDER_TEXT, o.scenario.provider), lang)}; ${o.scenario.vintage_date}`}</dd>
               <dt>{pick({ en: 'Adaptation', es: 'Adaptación' }, lang)}</dt>
-              <dd data-adaptation={o.scenario.adaptation_label}>{`${asSentence(pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang))} ${pick(US_ADAPTATION, lang)}`}</dd>
+              <dd data-adaptation={o.scenario.adaptation_label}>{o.scenario.adaptation_label === 'us-calibrated-adaptation' ? pick(US_ADAPTATION, lang) : `${asSentence(pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang))} ${pick(US_ADAPTATION, lang)}`}</dd>
               <dt>{pick({ en: 'Source of the path', es: 'Fuente de la trayectoria' }, lang)}</dt>
               <dd>{`${phraseEs(o.scenario.source_document, lang)} (${o.scenario.source_url})`}</dd>
               <dt>{pick({ en: 'Capital at the jump-off', es: 'Capital en el punto de partida' }, lang)}</dt>

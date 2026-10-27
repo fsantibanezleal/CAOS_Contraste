@@ -39,8 +39,8 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `The capital of the four risks at ${PCT(a.confidence_level, 'en', 1)} and ${a.horizon_years} year, added in six ways over the same marginals. Only the simple sum is the capital of this case: it is how the IAPE adds the risks. Every other bar is information for the validator, never capital, and a bar above the simple sum is shown as it is, because VaR is not subadditive. ${pick(NOT_CAPITAL, 'en')}`,
-          es: `El capital de los cuatro riesgos a ${PCT(a.confidence_level, 'es', 1)} y ${a.horizon_years} año, sumado de seis maneras sobre las mismas marginales. Solo la suma simple es el capital de este caso: así suma el IAPE los riesgos. Toda otra barra es información para el validador, nunca capital, y una barra sobre la suma simple se muestra tal cual, porque el VaR no es subaditivo. ${pick(NOT_CAPITAL, 'es')}`,
+          en: `The capital of the four risks at ${PCT(a.confidence_level, 'en', 1)} and ${a.horizon_years} year, added in six ways over the same marginals. Only the simple sum is the capital of this case: it is how the IAPE adds the risks. Every other bar is information for the validator, never capital, and a bar above the simple sum is shown as it is, because VaR is not subadditive.`,
+          es: `El capital de los cuatro riesgos a ${PCT(a.confidence_level, 'es', 1)} y ${a.horizon_years} año, sumado de seis maneras sobre las mismas marginales. Solo la suma simple es el capital de este caso: así suma el IAPE los riesgos. Toda otra barra es información para el validador, nunca capital, y una barra sobre la suma simple se muestra tal cual, porque el VaR no es subaditivo.`,
         }}
       >
         <ChartOverTable
@@ -63,7 +63,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
           }
         >
           <p className="ct-note" data-headline="simple-sum">
-            {`${pick({ en: 'Headline capital, the simple sum', es: 'Capital principal, la suma simple' }, lang)}: ${cell(a.headline.capital_clp_m, lang)} ${pick(MONEY_UNIT, lang)}. ${pick(a.headline.label, lang)}`}
+            {`${pick({ en: 'Headline capital, the simple sum', es: 'Capital principal, la suma simple' }, lang)}: ${cell(a.headline.capital_clp_m, lang)} ${pick(MONEY_UNIT, lang)}. ${sentence(pick(a.headline.label, lang))}`}
           </p>
           <table className="caos-table ct-wrap-head" data-table="c18-band" data-matrix={a.correlation.name}>
             <thead>
@@ -110,7 +110,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
             </tbody>
           </table>
           <h3 className="ct-sub">{pick({ en: 'Model risk of the aggregation', es: 'Riesgo de modelo de la agregación' }, lang)}</h3>
-          <p className="ct-note" data-status={mr.status}>{`${pick(NOT_CAPITAL, lang)} ${pick(mr.label, lang)}`}</p>
+          <p className="ct-note" data-status={mr.status}>{/* the label says "Information, not capital" itself; the caption says once that only the simple sum is capital (U16-R4 c23 m8) */}{sentence(pick(mr.label, lang))}</p>
           <Defs data-table="c18-model-risk">
             <dt>{pick({ en: 'Reference model', es: 'Modelo de referencia' }, lang)}</dt>
             <dd>{pick(methodText(mr.reference_model), lang)}</dd>
@@ -121,7 +121,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
             <dt>{pick({ en: 'Relative measure, from 0 to 1', es: 'Medida relativa, de 0 a 1' }, lang)}</dt>
             <dd data-measure="rm">{formatNumber(mr.barrieu_scandolo.rm, lang, { digits: 4 })}</dd>
             <dt>{pick({ en: 'Worst case by reweighting, Glasserman and Xu', es: 'Peor caso por reponderación, Glasserman y Xu' }, lang)}</dt>
-            <dd>{`${cell(mr.glasserman_xu.baseline_clp_m, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${cell(mr.glasserman_xu.worst_case_clp_m, lang)}; ${pick({ en: 'entropy budget', es: 'presupuesto de entropía' }, lang)} ${formatNumber(mr.glasserman_xu.relative_entropy_budget, lang, { digits: 4 })}; theta ${formatNumber(mr.glasserman_xu.theta, lang, { digits: 4 })}`}</dd>
+            <dd>{`${cell(mr.glasserman_xu.baseline_clp_m, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${cell(mr.glasserman_xu.worst_case_clp_m, lang)}; ${pick({ en: 'entropy budget', es: 'presupuesto de entropía' }, lang)} ${formatNumber(mr.glasserman_xu.relative_entropy_budget, lang, { digits: 4 })}; θ ${formatNumber(mr.glasserman_xu.theta, lang, { digits: 4 })}`}</dd>
           </Defs>
           <p className="ct-note">{pick(mr.glasserman_xu.quantity, lang)}</p>
         </ChartOverTable>
@@ -131,6 +131,17 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
 }
 
 /** The Euler allocation of the expected shortfall of the aggregate, risk by risk, with the diversification benefit of each. */
+/**
+ * The two copulas at each degrees-of-freedom value of the convention set, drawn as markers: the three values (4, 8, 30) are a set,
+ * not a continuum, so no line joins them (U16-R4 c23 m2).
+ */
+export function sensitivitySeries(cs: Array<{ gaussian_capital_clp_m: number; t_capital_clp_m: number }>, div: number) {
+  return [
+    { label: { en: 'Gaussian copula', es: 'Cópula gaussiana' }, values: cs.map((r) => r.gaussian_capital_clp_m / div), color: '--color-accent' as const, mode: 'points' as const, size: 10 },
+    { label: { en: 'Student t copula', es: 'Cópula t de Student' }, values: cs.map((r) => r.t_capital_clp_m / div), color: '--color-warn' as const, mode: 'points' as const, size: 10 },
+  ];
+}
+
 /** A document label without its "Information, not capital:" lead, for a card whose caption already says it once (U16-R3 c19 m10). */
 const withoutNotCapital = (s: string): string => {
   const t = s.replace(/^(Information, not capital|Información, no capital):\s*/, '');
@@ -264,10 +275,11 @@ export function MarginalsView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Risk', es: 'Riesgo' }, lang)}</th>
-                <th>{pick({ en: 'Expected loss', es: 'Pérdida esperada' }, lang)}</th>
-                <th>{pick({ en: 'VaR', es: 'VaR' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Expected shortfall', es: 'Déficit esperado' }, lang)}</th>
-                <th>{pick({ en: 'Capital', es: 'Capital' }, lang)}</th>
+                {/* every money column carries its unit, as the VaR error does (U16-R4 c23 m5) */}
+                <th>{pick({ en: `Expected loss (${pick(MONEY_UNIT, 'en')})`, es: `Pérdida esperada (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
+                <th>{pick({ en: `VaR (${pick(MONEY_UNIT, 'en')})`, es: `VaR (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `Expected shortfall (${pick(MONEY_UNIT, 'en')})`, es: `Déficit esperado (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
+                <th>{pick({ en: `Capital (${pick(MONEY_UNIT, 'en')})`, es: `Capital (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: `VaR error (${pick(MONEY_UNIT, 'en')})`, es: `Error del VaR (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
               </tr>
             </thead>
@@ -339,10 +351,7 @@ export function SensitivityView({ sel }: { sel: C18Sel | null }) {
               height="fill"
               x={{ values: cs.map((r) => r.nu), label: { en: 'Degrees of freedom of the t copula', es: 'Grados de libertad de la cópula t' }, format: { decimals: 0 } }}
               y={{ label: { en: `Aggregate capital (${pick(scale.unit, 'en')})`, es: `Capital agregado (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
-              series={[
-                { label: { en: 'Gaussian copula', es: 'Cópula gaussiana' }, values: cs.map((r) => r.gaussian_capital_clp_m / scale.div), color: '--color-accent', width: 2.6 },
-                { label: { en: 'Student t copula', es: 'Cópula t de Student' }, values: cs.map((r) => r.t_capital_clp_m / scale.div), color: '--color-warn', width: 2.6 },
-              ]}
+              series={sensitivitySeries(cs, scale.div)}
             />
           }
         >

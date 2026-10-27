@@ -28,7 +28,7 @@ export function exceedanceChart(e: C17Outputs['exceedance'], truth?: C17Outputs[
     x: {
       values: e.grid_eur.map((v) => v / 1e6),
       label: { en: 'Annual loss', es: 'Pérdida anual' },
-      unit: { en: 'm EUR', es: 'M EUR' },
+      unit: { en: 'mn EUR', es: 'M EUR' },
       log: true,
       format: { digits: 3 },
     },
@@ -62,7 +62,9 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
   const t = o.truth;
   const q = t.annual_loss_quantile;
   const chart = exceedanceChart(e, t);
-  // the Panjer recursion computes the probabilities up to the end of its grid only: the points after it are absent in the document
+  // the Panjer recursion computes the probabilities up to the end of its grid only: the points after it are absent in the document.
+  // The sentence names the last point of the axis inside the grid, never the end of the grid itself, which lies between that point
+  // and the next one (U16-R4 c21 B1: the step times the point count puts the end up to 1.6 times later)
   const lastPanjer = e.panjer.exceedance.map((v) => v !== null).lastIndexOf(true);
   const panjerEnd = lastPanjer >= 0 && lastPanjer < e.grid_eur.length - 1 ? e.grid_eur[lastPanjer] : null;
   // the FFT too stops where its grid ends (U16-R3 c18 B2: past it the bake held the last value flat; the re-bake writes nulls)
@@ -79,8 +81,8 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
       },
     },
     { id: 'monte-carlo', label: { en: 'Monte Carlo', es: 'Monte Carlo' }, value: e.quantile_999_eur.monte_carlo, how: { en: `${whole(e.monte_carlo.n_years, 'en')} simulated years, seed ${e.monte_carlo.seed}`, es: `${whole(e.monte_carlo.n_years, 'es')} años simulados, semilla ${e.monte_carlo.seed}` } },
-    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR${panjerEnd === null ? '' : `; the recursion grid ends at ${whole(panjerEnd, 'en')} EUR and the curve stops there`}`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR${panjerEnd === null ? '' : `; la grilla de la recursión termina en ${whole(panjerEnd, 'es')} EUR y la curva se detiene ahí`}` } },
-    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}${fftEnd === null ? '' : `; the FFT grid ends at ${whole(fftEnd, 'en')} EUR and the curve stops there`}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}${fftEnd === null ? '' : `; la grilla de la FFT termina en ${whole(fftEnd, 'es')} EUR y la curva se detiene ahí`}` } },
+    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR${panjerEnd === null ? '' : `; its last point inside the grid is ${whole(panjerEnd, 'en')} EUR and the curve stops there`}`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR${panjerEnd === null ? '' : `; su último punto dentro de la grilla es ${whole(panjerEnd, 'es')} EUR y la curva se detiene ahí`}` } },
+    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}${fftEnd === null ? '' : `; its last point inside the grid is ${whole(fftEnd, 'en')} EUR and the curve stops there`}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}${fftEnd === null ? '' : `; su último punto dentro de la grilla es ${whole(fftEnd, 'es')} EUR y la curva se detiene ahí`}` } },
     { id: 'sla', label: { en: 'Single loss approximation', es: 'Aproximación de una pérdida' }, value: e.quantile_999_eur.sla, how: { en: 'closed form, from the true severity and frequency', es: 'forma cerrada, desde la severidad y la frecuencia verdaderas' } },
   ];
   return (
