@@ -1,2 +1,4 @@
 # Bilingual texts of the committed documents whose es equals their en on purpose (U16-F1): "path :: en text  # reason".
 # A line without a reason after two spaces, a hash and a space fails the guard (check_spanish.py --documents).
+data/derived/C02/models-polish-horizons.json :: optbinning + statsmodels Logit  # library and class names as published (ruling 2026-10-27: program names stay)
+data/derived/C02/models-polish-horizons.json :: scikit-learn LogisticRegression  # library and class names as published (ruling 2026-10-27: program names stay)
