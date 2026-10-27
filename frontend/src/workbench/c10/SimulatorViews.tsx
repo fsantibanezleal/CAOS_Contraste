@@ -31,7 +31,7 @@ export function SizePowerView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'Size and power of the correlation test', es: 'Tamaño y potencia de la prueba de correlación' }}
         {...card}
         note={{
-          en: `${g.size_power_definition.en} The simulator draws a yearly factor with the known correlation, so the truth is known. Where the known correlation equals the null the rejection rate is the exact size and should sit at the nominal level; elsewhere it is the power. The dotted curves are the 95% interval of the estimator in focus.`,
+          en: `${g.size_power_definition.en} The simulator draws a yearly factor with the known correlation, so the truth is known. Where the known correlation equals the null the rejection rate is the exact size and should sit at the nominal level; elsewhere it is the power. The dotted curves are the 95 % interval of the estimator in focus.`,
           es: `${g.size_power_definition.es} El simulador sortea un factor anual con la correlación conocida, así que la verdad se conoce. Donde la correlación conocida es la de la nula, la tasa de rechazo es el tamaño exacto y debería quedar en el nivel nominal; en las demás es la potencia. Las curvas punteadas son el intervalo del 95 % del estimador en foco.`,
         }}
       >
@@ -109,7 +109,7 @@ export function EstimatesView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'The estimates against the known correlation', es: 'Las estimaciones contra la correlación conocida' }}
         {...card}
         note={{
-          en: `The mean of the correlation estimates over the valid replications of ${count(g.generator.series_length_years, 'en')}-year series, against the line of the truth. An estimator on the line is unbiased; the table gives the bias, the root mean squared error and how often its 95% interval holds the known correlation. A replication whose fit failed is counted, not dropped.`,
+          en: `The mean of the correlation estimates over the valid replications of ${count(g.generator.series_length_years, 'en')}-year series, against the line of the truth. An estimator on the line is unbiased; the table gives the bias, the root mean squared error and how often its 95 % interval holds the known correlation. A replication whose fit failed is counted, not dropped.`,
           es: `La media de las estimaciones de la correlación en las replicaciones válidas de series de ${count(g.generator.series_length_years, 'es')} años, contra la línea de la verdad. Un estimador sobre la línea no tiene sesgo; la tabla da el sesgo, la raíz del error cuadrático medio y con qué frecuencia su intervalo del 95 % contiene la correlación conocida. Una replicación cuyo ajuste falló se cuenta, no se descarta.`,
         }}
       >
@@ -146,7 +146,8 @@ export function EstimatesView({ sel }: { sel: C10Sel | null }) {
                     <td className="ct-text">{pick(text(ESTIMATOR_SHORT, e.estimator), lang)}</td>
                     <td>{formatNumber(e.mean_estimate, lang, { percent: true, decimals: 1 })}</td>
                     <td>{formatNumber(e.bias, lang, { percent: true, decimals: 2 })}</td>
-                    <td>{formatNumber(e.rmse, lang, { digits: 3 })}</td>
+                    {/* in percent, as the bias beside it (R3 c11 m-U) */}
+                    <td>{formatNumber(e.rmse, lang, { percent: true, decimals: 2 })}</td>
                     <td>{formatNumber(e.coverage, lang, { percent: true, decimals: 1 })}</td>
                     <td className="ct-wide-only">{count(c.n_failed, lang)}</td>
                   </tr>
