@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import contract_schemas as cs
@@ -35,6 +36,17 @@ ELDERLY = "Elderly means age 62 or older."
 def _file(path: Path, rows: list[list[str]]) -> Path:
     write_file(path, rows)
     return path
+
+
+def unseparated(obj: object) -> object:
+    """The object with the thousands separator of every number in its texts removed ("17,320" and "17.320" read "17320")."""
+    if isinstance(obj, str):
+        return re.sub(r"(?<=\d)[,.](?=\d{3}(?!\d))", "", obj)
+    if isinstance(obj, list):
+        return [unseparated(x) for x in obj]
+    if isinstance(obj, dict):
+        return {k: unseparated(v) for k, v in obj.items()}
+    return obj
 
 
 def digest(obj: object) -> str:
@@ -187,11 +199,14 @@ def test_adversarial_every_old_contrast_test_and_model_is_byte_identical_to_the_
         assert digest([attr(doc, f) for f in OLD_FIELDS]) == want["attributes"], name
         assert digest(o["situation_testing"]) == want["situation_testing"], name
         conv = {k: v for k, v in o["conventions"].items() if k != "group_exclusion"}     # the reference-group sentence names the new reference
+        # the identifiers note is prose the R3 review reworded ("the identifier", never the key id; U16-R3 c21 B7): its fields stay pinned
+        conv["identifiers"] = {k: v for k, v in conv["identifiers"].items() if k != "note"}
         assert digest({**{k: o[k] for k in ("kind", "pair_id", "fit_year", "confirm_year", "scope", "legal", "licence")}, "conventions": conv}) == want["head"]
         assert "under 62" in o["conventions"]["group_exclusion"]["en"] and "menores de 62" in o["conventions"]["group_exclusion"]["es"]
         assert digest([r for r in doc["tests"] if not r["segment"].startswith(FIELD) and r["test_id"] != "fair.situation_testing"]) == want["tests"]
         assert digest([r for r in doc["tests"] if r["test_id"] == "fair.situation_testing"]) == want["situation_tests"]
-        assert digest([n for n in o["data_notes"] if n["field"] != FIELD]) == want["data_notes"], name
+        # the counts in the notes are pinned without their thousands separators (U16-F10e writes 17,320 and 17.320)
+        assert digest(unseparated([n for n in o["data_notes"] if n["field"] != FIELD])) == want["data_notes"], name
     m = committed(MODELS)["fit"]
     assert digest([d for d in m["decision_models"] if not any(t["term"].startswith(FIELD) for t in d["terms"])]) == BASELINE[MODELS]["decision_models"]
     assert digest([f for f in m["fields"] if f["name"] != FIELD]) == BASELINE[MODELS]["fields"]
