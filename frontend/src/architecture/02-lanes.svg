@@ -114,7 +114,7 @@
   <text class="sub l-en" x="618" y="260">the decision at any approval rate and LGD</text>
   <text class="sub l-es" x="618" y="260">la decisión con cualquier tasa de aprobación y LGD</text>
   <text class="acc l-en" x="618" y="286">held to the pipeline by parity tests</text>
-  <text class="acc l-es" x="618" y="286">sujeto a la cadena de cálculo por pruebas de paridad</text>
+  <text class="acc l-es" x="618" y="286">igual al cálculo previo por pruebas de paridad</text>
   <rect class="bx" x="608" y="314" width="258" height="102" rx="6"/>
   <text class="it l-en" x="618" y="332">Pyodide: by measurement only</text>
   <text class="it l-es" x="618" y="332">Pyodide: solo por medición</text>
