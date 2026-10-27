@@ -11,6 +11,9 @@ import { Pending } from './Pending';
 import { currencyName } from './c01Text';
 
 /** The Impact group: the decision (bad rate and expected loss) and the capital (CT-212 to CT-216). */
+
+/** The rung code that starts a rung's short name ("P1 Scorecard" reads "P1"). */
+const rungCode = (name: string): string => /^P\d[a-z]?/.exec(name)?.[0] ?? name;
 export function ImpactGroup({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const tabs = [
@@ -113,7 +116,9 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
           </tbody>
         </table>
       </PlotCard>
-      <ViewsRow shares={[3, 2]}>
+      {/* an even split: the applicant-by-applicant table and its note take half the row, so its five rows and its note show at 1280 x 800
+          in Spanish (R4 c01 M3, n1) */}
+      <ViewsRow shares={[1, 1]}>
         <PlotCard
           fill
           title={{ en: 'Bad rate against approval rate', es: 'Tasa de malos contra tasa de aprobación' }}
@@ -136,19 +141,22 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
         <>
           <PlotCard
             fill
-            title={{ en: 'At 80% approval, applicant by applicant (pipeline)', es: 'Con 80 % de aprobación, solicitante por solicitante (cálculo previo)' }}
+            title={{ en: 'At 80 % approval, applicant by applicant (pipeline)', es: 'Con 80 % de aprobación, solicitante por solicitante (cálculo previo)' }}
             lane={REPLAY}
             provenance={prov}
             dataKey={stateKey}
-            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}. The live figures interpolate the cut-off curve between its points; the pipeline's are exact, so the two can differ by a point or more, and a tie block on a model's curve can reverse which bad rate is lower.${sel.challenger === pipelineChallenger ? '' : ` The table compares the champion with ${pipelineName.en}, the pipeline's challenger, not the rail's.`}`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50 %, en ${pick(money, 'es')}. Las cifras en vivo interpolan la curva de corte; estas son exactas: pueden diferir en un punto o más, y un empate puede invertir cuál tasa de malos es menor.${sel.challenger === pipelineChallenger ? '' : ` La tabla compara al campeón con ${pipelineName.es}, el retador del cálculo previo, no el del panel.`}` }}
+            // the columns carry the rung codes and the note names them, so the third column stays in the card in Spanish and the five
+            // rows show at 1280 x 800 (R4 c01 M3, n1; c02 m1: "P1 Tarjeta de puntuación" pushed the challenger past the card edge and the
+            // note took the rows' room)
+            note={{ en: `${names[0].en} against ${pipelineName.en}, ties broken by the raw score; losses at LGD 50 %, in ${pick(money, 'en')}. The live figures interpolate the cut-off curve; these are exact, so the two can differ by a point or more, and a tie can reverse which bad rate is lower.${sel.challenger === pipelineChallenger ? '' : ` The table compares the champion with ${pipelineName.en}, the pipeline's challenger, not the rail's.`}`, es: `${names[0].es} contra ${pipelineName.es}, con empates resueltos por el puntaje crudo; pérdidas con LGD 50 %, en ${pick(money, 'es')}. Las cifras en vivo interpolan la curva de corte; estas son exactas: pueden diferir en un punto o más, y un empate puede invertir cuál tasa de malos es menor.${sel.challenger === pipelineChallenger ? '' : ` La tabla compara al campeón con ${pipelineName.es}, el retador del cálculo previo, no el del panel.`}` }}
           >
             <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table">
                 <thead>
                   <tr>
                     <th className="caos-col-text">{pick({ en: 'Champion, then challenger', es: 'Campeón, luego retador' }, lang)}</th>
-                    <th>{pick(names[0], lang)}</th>
-                    <th>{pick(pipelineName, lang)}</th>
+                    <th title={pick(names[0], lang)}>{rungCode(pick(names[0], lang))}</th>
+                    <th title={pick(pipelineName, lang)}>{rungCode(pick(pipelineName, lang))}</th>
                   </tr>
                 </thead>
                 <tbody>

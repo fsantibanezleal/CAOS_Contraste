@@ -13,7 +13,7 @@ import { FindingsView } from './FindingsView';
 import { CapitalView } from './CapitalView';
 import { ImpactView } from './ImpactView';
 import { defaultChallenger, type Selection } from './model';
-import { EbmView, GbmView, LadderView, PenalisedView, ScorecardView, TabPfnView, binText, droppedReason } from './ModelViews';
+import { EbmView, GbmView, LadderView, PenalisedView, ScorecardView, binText, droppedReason } from './ModelViews';
 import { BatteryView, CalibrationView, DiscriminationView, GroupsView, StabilityView } from './ValidationViews';
 import { Workbench } from './Workbench';
 
@@ -85,8 +85,10 @@ describe('the App instrument', () => {
         for (const c of found) expect(c.lane, `${label} ${name}: a view without its lane`).toBe(true);
       }
       if (sel.data.models.model.some((m) => m.id === 'P5-tabpfn')) {
-        const tab = html(<TabPfnView sel={sel} />);
+        // the research challenger's licence and attribution sit in the Ladder (R4 c01 M4: no seventh peer sub-view)
+        const tab = html(<LadderView sel={sel} />);
         expect(tab).toContain('Prior Labs License');
+        expect(tab).toContain('PriorLabs-TabPFN');
       }
     }
   });

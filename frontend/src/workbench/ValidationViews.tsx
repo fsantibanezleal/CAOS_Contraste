@@ -18,7 +18,7 @@ const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'disc.ks', label: { en: 'Kolmogorov-Smirnov (descriptive)', es: 'Kolmogorov-Smirnov (descriptiva)' }, descriptive: true },
   { id: 'pd.jeffreys', label: { en: 'Jeffreys, portfolio (ECB)', es: 'Jeffreys, cartera (BCE)' } },
   { id: 'pd.binomial', label: { en: 'Binomial (WP14)', es: 'Binomial (WP14)' } },
-  { id: 'pd.binomial_vasicek', label: { en: 'Binomial with asset correlation 4% (WP14, CRE31.15)', es: 'Binomial con correlación de activos 4 % (WP14, CRE31.15)' } },
+  { id: 'pd.binomial_vasicek', label: { en: 'Binomial with asset correlation 4 % (WP14, CRE31.15)', es: 'Binomial con correlación de activos 4 % (WP14, CRE31.15)' } },
   { id: 'pd.chi2_grades', label: { en: 'Chi-square over grades (WP14)', es: 'Chi-cuadrado sobre grados (WP14)' } },
   { id: 'pd.hosmer_lemeshow', label: { en: 'Hosmer-Lemeshow', es: 'Hosmer-Lemeshow' } },
   { id: 'pd.spiegelhalter', label: { en: 'Spiegelhalter', es: 'Spiegelhalter' } },
@@ -148,7 +148,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
                 <th className="ct-room-only">D</th>
                 <th className="ct-wide-only">{pick({ en: 'PD applied', es: 'PD aplicada' }, lang)}</th>
                 <th>{pick({ en: 'Default rate', es: 'Tasa observada' }, lang)}</th>
-                <th className="ct-room-only">{pick({ en: '95% posterior', es: 'Posterior 95 %' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: '95 % posterior', es: 'Posterior 95 %' }, lang)}</th>
                 <th>Jeffreys</th>
               </tr>
             </thead>
@@ -243,7 +243,7 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
           </thead>
           <tbody>
             <tr>
-              <td>{pick({ en: 'with the 95% interval', es: 'con el intervalo 95 %' }, lang)}</td>
+              <td>{pick({ en: 'with the 95 % interval', es: 'con el intervalo 95 %' }, lang)}</td>
               <td>
                 {formatNumber(value(test(v, 'disc.auc', CHAMPION)), lang, { decimals: 4 })}{' '}
                 {/* the interval on every width: at 390 it wraps under the value, the label says it is shown (R3 c01 M1) */}
@@ -325,7 +325,7 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
               <tr>
                 <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                 <th>PSI</th>
-                <th className="ct-room-only">{pick({ en: 'Benchmark at 5%', es: 'Umbral al 5 %' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: 'Benchmark at 5 %', es: 'Umbral al 5 %' }, lang)}</th>
                 <th className="ct-room-only">{pick({ en: 'Conventional band', es: 'Banda convencional' }, lang)}</th>
                 <th>{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
               </tr>

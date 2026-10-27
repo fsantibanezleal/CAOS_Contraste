@@ -19,7 +19,7 @@ export const CASE_LABEL: Record<string, Bi> = {
   C09: { en: 'EAD and CCF, revolving', es: 'EAD y CCF rotativos' },
   C10: { en: 'Portfolio capital, copula', es: 'Capital de cartera' },
   C11: { en: 'Market VaR/ES backtests', es: 'Validación de VaR y ES' },
-  C12: { en: 'Swap-book CVA exposure', es: 'CVA de cartera de swaps' },
+  C12: { en: 'Swap-book CVA exposure', es: 'CVA de cartera de permutas' },
   C13: { en: 'FRTB desk eligibility', es: 'Elegibilidad FRTB' },
   C14: { en: 'IRRBB, USD balance sheet', es: 'IRRBB, balance en USD' },
   C15: { en: 'IRRBB, CLP and UF balance', es: 'IRRBB, balance CLP y UF' },
