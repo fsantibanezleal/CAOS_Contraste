@@ -87,15 +87,21 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
+/** The programs of a manifest's `engine` map in words: its key `pipeline` is this product's pipeline, named, never printed as the key
+ * (R4 c28 B2); a package (riskvalidation) is named by its package name, which is a citation. */
+const ENGINE_NAME: Record<string, BiText> = { pipeline: { en: 'the Contraste pipeline', es: 'la cadena de cálculo de Contraste' } };
+export const engineText = (engine: Record<string, string> | undefined, lang: 'en' | 'es'): string =>
+  Object.entries(engine ?? {})
+    .map(([k, v]) => `${ENGINE_NAME[k] ? pick(ENGINE_NAME[k], lang) : k} ${v}`)
+    .join(', ');
+
 /** What a case declares and what its bake wrote, read from its manifest: the second paragraph of its question. */
-function CaseFacts({ m }: { m: CaseManifest }) {
+export function CaseFacts({ m }: { m: CaseManifest }) {
   const lang = useShellLang();
   const variants = m.artifacts.filter((a) => a.role === 'variant');
   const titles = variants.map((a) => pick(a.short_title, lang)).join(', ');
   const expected = Object.keys(m.expect ?? {}).length;
-  const engine = Object.entries(m.engine ?? {})
-    .map(([k, v]) => `${k} ${v}`)
-    .join(', ');
+  const engine = engineText(m.engine as Record<string, string> | undefined, lang);
   return (
     <P
       en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.map((s) => sourceText(s, m.source_details[s]?.name ?? s, 'en')).join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
@@ -155,23 +161,24 @@ export function Coverage({ built }: { built: Set<string> | null }) {
         <thead>
           <tr>
             <th>{t('Case', 'Caso')}</th>
-            <th>{t('Category', 'Categoría')}</th>
+            {/* the text columns read from the left (R4 c28 m7) */}
+            <th className="caos-col-text">{t('Category', 'Categoría')}</th>
             <th className="caos-col-text">{t('Question', 'Pregunta')}</th>
             <th className="caos-col-text">{t('Data', 'Datos')}</th>
-            <th>{t('Truth', 'Verdad')}</th>
-            <th>{t('Status', 'Estado')}</th>
+            <th className="caos-col-text">{t('Truth', 'Verdad')}</th>
+            <th className="caos-col-text">{t('Status', 'Estado')}</th>
           </tr>
         </thead>
         <tbody>
           {CASES.map((c) => (
             <tr key={c.id} data-built={built?.has(c.id) ? 'true' : 'false'}>
               <td>{c.id}</td>
-              <td>{pick(CATEGORY_TITLES[c.category], lang)}</td>
+              <td className="caos-col-text">{pick(CATEGORY_TITLES[c.category], lang)}</td>
               <td className="caos-col-text">{pick(c.title, lang)}</td>
               <td className="caos-col-text">{pick(c.data, lang)}</td>
-              <td>{pick(c.truth, lang)}</td>
+              <td className="caos-col-text">{pick(c.truth, lang)}</td>
               {/* the status alone: a plan-unit code is not reader text (R3 c23 B5) */}
-              <td>{built?.has(c.id) ? t('built', 'construido') : t('planned', 'planificado')}</td>
+              <td className="caos-col-text">{built?.has(c.id) ? t('built', 'construido') : t('planned', 'planificado')}</td>
             </tr>
           ))}
         </tbody>
