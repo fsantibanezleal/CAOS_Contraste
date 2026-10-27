@@ -10,8 +10,8 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { span } from './selection';
 import { UnavailableCard } from '../c14/C14Common';
-import { ParamTable, U14TestsTable, barMin, f2, f3, f4, int, pc, sig, testsOf, type NamedParam } from '../c20/U14Common';
-import { challengerFor, outputsOf, rungFor, rungName, type C02Sel } from './selection';
+import { ParamTable, U14TestsTable, barMin, f2, f3, f4, int, pc, sig, testsOf } from '../c20/U14Common';
+import { challengerFor, noNegZero, outputsOf, paramsIn, rungFor, rungName, type C02Sel } from './selection';
 
 const COLORS = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle'] as const;
 
@@ -53,8 +53,8 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
         title={{ en: 'ROC and the discrimination of each rung', es: 'ROC y discriminación de cada peldaño' }}
         {...card}
         note={{
-          en: 'AUC with its 95% DeLong interval, Gini = 2 AUC - 1 and the Kolmogorov-Smirnov distance, on the locked holdout of the file. The files carry no date, so this is a within-file holdout and never an out-of-time test.',
-          es: 'AUC con su intervalo DeLong de 95 %, Gini = 2 AUC - 1 y la distancia de Kolmogorov-Smirnov, en la muestra reservada del archivo. Los archivos no traen fecha, así que esto es una muestra reservada dentro del archivo y nunca una prueba fuera del tiempo.',
+          en: 'AUC with its 95% DeLong interval, Gini = 2 AUC - 1 and the Kolmogorov-Smirnov distance, on the locked holdout of the file. The files carry no date, so this is a within-file holdout and never an out-of-time test. The DeLong test is two-sided: a red DeLong row says the two rungs differ, not that the challenger is worse (the AUC difference gives the direction).',
+          es: 'AUC con su intervalo DeLong de 95 %, Gini = 2 AUC - 1 y la distancia de Kolmogorov-Smirnov, en la muestra reservada del archivo. Los archivos no traen fecha, así que esto es una muestra reservada dentro del archivo y nunca una prueba fuera del tiempo. La prueba DeLong es bilateral: una fila DeLong roja dice que los dos peldaños difieren, no que el retador sea peor (la diferencia de AUC da el sentido).',
         }}
       >
         <ChartOverTable chartMin="18rem" chart={<UPlotChart {...roc} />}>
@@ -181,7 +181,7 @@ export function CalibrationView({ sel }: { sel: C02Sel | null }) {
         {...card}
         note={{
           en: `${name}: Hosmer-Lemeshow ${f2(hl.statistic, 'en')} on ${hl.df} degrees of freedom, p = ${sig(hl.p_value, 'en')}; Brier ${f3(r.calibration.brier, 'en')}; expected calibration error ${f3(r.calibration.ece, 'en')}. On the dashed line a PD is calibrated; above it the PD under-estimates the bankruptcy rate. Hosmer-Lemeshow and the Brier score are evidence of fit, not proof that a PD is right.`,
-          es: `${name}: Hosmer-Lemeshow ${f2(hl.statistic, 'es')} con ${hl.df} grados de libertad, p = ${sig(hl.p_value, 'es')}; Brier ${f3(r.calibration.brier, 'es')}; error de calibración esperado ${f3(r.calibration.ece, 'es')}. Sobre la línea punteada una PD está calibrada; sobre ella, la PD subestima la tasa de quiebra. Hosmer-Lemeshow y el puntaje de Brier son evidencia de ajuste, no prueba de que una PD sea correcta.`,
+          es: `${name}: Hosmer-Lemeshow ${f2(hl.statistic, 'es')} con ${hl.df} grados de libertad, p = ${sig(hl.p_value, 'es')}; Brier ${f3(r.calibration.brier, 'es')}; error de calibración esperado ${f3(r.calibration.ece, 'es')}. En la línea discontinua una PD está calibrada; por encima de ella, la PD subestima la tasa de quiebra. Hosmer-Lemeshow y el puntaje de Brier son evidencia de ajuste, no prueba de que una PD sea correcta.`,
         }}
       >
         <ChartOverTable
@@ -242,8 +242,8 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
         title={{ en: 'Overfit gap and stability of the holdout', es: 'Brecha de sobreajuste y estabilidad de la muestra reservada' }}
         {...card}
         note={{
-          en: 'The gap is the training AUC minus the holdout AUC; the flag rises above the tolerance, which is a convention of Contraste (the dossier gives no value), never a regulatory threshold. PSI and the largest CSI compare the holdout with the training slice.',
-          es: 'La brecha es el AUC de entrenamiento menos el AUC de la muestra reservada; la alerta se levanta sobre la tolerancia, que es una convención de Contraste (el dossier no da un valor), nunca un umbral regulatorio. El PSI y el mayor CSI comparan la muestra reservada con el tramo de entrenamiento.',
+          en: 'The gap is the training AUC minus the holdout AUC; the flag rises above the tolerance, which is a convention of Contraste (the dossier gives no value), never a regulatory threshold. PSI and the largest CSI compare the holdout with the training slice; the light of a PSI or CSI row is its chi-square p-value, not the conventional band its note names, so a small PSI on a large file can be amber or red.',
+          es: 'La brecha es el AUC de entrenamiento menos el AUC de la muestra reservada; la alerta se levanta sobre la tolerancia, que es una convención de Contraste (el dossier no da un valor), nunca un umbral regulatorio. El PSI y el mayor CSI comparan la muestra reservada con el tramo de entrenamiento; la luz de una fila de PSI o CSI es su valor p de chi cuadrado, no la banda convencional que nombra su nota, así que un PSI pequeño en un archivo grande puede ser ámbar o rojo.',
         }}
       >
         <ChartOverTable
@@ -254,7 +254,7 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={[
-                ...o.rungs.map((r) => ({ id: r.model_id, label: rungName(sel, r.model_id), value: r.overfit.gap, tone: r.overfit.flag ? ('bad' as const) : ('good' as const), highlight: r.model_id === rungFor(sel)?.model_id })),
+                ...o.rungs.map((r) => ({ id: r.model_id, label: rungName(sel, r.model_id), value: noNegZero(r.overfit.gap), tone: r.overfit.flag ? ('bad' as const) : ('good' as const), highlight: r.model_id === rungFor(sel)?.model_id })),
                 ...(tol === null ? [] : [{ id: 'tolerance', label: { en: 'Tolerance (convention)', es: 'Tolerancia (convención)' }, value: tol, tone: 'warn' as const }]),
               ]}
               axis={{ label: { en: 'Train minus holdout AUC', es: 'AUC de entrenamiento menos de la muestra reservada' }, unit: { en: 'AUC points', es: 'puntos de AUC' }, format: { decimals: 3 } }}
@@ -279,7 +279,7 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
                   <td className="ct-text">{pick(rungName(sel, r.model_id), lang)}</td>
                   <td>{f3(r.overfit.train_auc, lang)}</td>
                   <td>{f3(r.overfit.holdout_auc, lang)}</td>
-                  <td>{f3(r.overfit.gap, lang)}</td>
+                  <td>{f3(noNegZero(r.overfit.gap), lang)}</td>
                   <td className="ct-text">{pick(r.overfit.flag ? { en: 'flagged', es: 'alertado' } : { en: 'within tolerance', es: 'dentro de la tolerancia' }, lang)}</td>
                   <td>{f3(r.stability.psi, lang)}</td>
                   <td className="ct-wide-only">{f3(r.stability.csi_max, lang)}</td>
@@ -287,7 +287,7 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
-          <ParamTable params={o.parameters as unknown as NamedParam[]} only={['overfit_tolerance']} />
+          <ParamTable params={paramsIn(o.parameters, lang)} only={['overfit_tolerance']} />
           <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.', 'ml.')} modelLabel={(id) => pick(rungName(sel, id), lang)} caseId="C02" />
         </ChartOverTable>
       </PlotCard>

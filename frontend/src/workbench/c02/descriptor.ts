@@ -1,5 +1,5 @@
 // The run-time descriptors of the C02 documents (outputs of a horizon variant, and the fit of the models artifact), one
-// key per key of the c02-outputs 1.1.0 and c02-models 1.0.0 schemas; contract.test.ts reads every committed document and the
+// key per key of the c02-outputs 3.0.0 and c02-models 2.0.0 schemas; contract.test.ts reads every committed document and the
 // schema files against them in both directions. `satisfies` ties the top-level keys to the generated types, so a key
 // added to a schema and not here fails `tsc`. Kept beside the instrument that reads them; contract.types.ts composes the
 // variant and models descriptors from these (`variantKind`, `modelsKind`), the integrator's lines for the case. The
@@ -15,6 +15,18 @@ export const PARAM: Kind = { object: {
   label: 'string',
   basis: 'string',
 } };
+
+/** The C02 named parameter (c02-outputs 3.0.0, c02-models 2.0.0): the unit and the basis are bilingual texts, or the English string
+ * of a document baked before (U16-R3 c03 B2). C20 keeps PARAM. */
+export const C02_PARAM: Kind = { object: {
+  name: 'string',
+  value: 'json',
+  unit: { anyOf: ['string', 'text'] },
+  label: 'string',
+  basis: { anyOf: ['string', 'text'] },
+} };
+
+export const C02_PARAMS: Kind = { array: C02_PARAM };
 
 export const PARAMS: Kind = { array: PARAM };
 
@@ -112,13 +124,13 @@ export const C02_OUTPUTS = { object: {
   term_structure: { nullable: TERM },
   term_structure_reason: { nullable: 'text' },
   impact_detail: IMPACT,
-  parameters: PARAMS,
+  parameters: C02_PARAMS,
   requirements: { array: 'string' },
 } } satisfies { object: Record<keyof components['schemas']['c02Outputs'], Kind> };
 
 export const C02_FIT = { object: {
   files: { array: { object: { horizon_id: 'string', years: 'integer', file: 'string', rows: 'integer', events: 'integer' } } },
-  ladder: { array: { object: { rung: 'string', label: 'text', engine: 'string', reference: 'string' } } },
+  ladder: { array: { object: { rung: 'string', label: 'text', engine: { anyOf: ['string', 'text'] }, reference: 'string' } } },
   protocol: SPLIT,
-  parameters: PARAMS,
+  parameters: C02_PARAMS,
 } } satisfies { object: Record<keyof components['schemas']['c02Fit'], Kind> };

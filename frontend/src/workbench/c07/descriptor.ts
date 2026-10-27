@@ -163,14 +163,14 @@ export const C07_FIT: Kind = { object: {
     synthetic: 'boolean',
     notice: 'text',
     seed: 'integer',
-    calibration_source: 'string',
+    calibration_source: { anyOf: ['string', 'text'] },
   } },
   calibration_targets: { array: { object: {
     metric: 'string',
     unit: 'string',
     target: 'number',
     achieved: 'number',
-    source: 'string',
+    source: { anyOf: ['string', 'text'] },
     as_of: 'string',
   } } },
   segments: { array: { object: {

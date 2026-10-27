@@ -68,7 +68,15 @@
               "type": "integer"
             },
             "calibration_source": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "../common/text.schema.json"
+                }
+              ],
+              "description": "Where the bank's calibration comes from, a bilingual text from c07-models 3.0.0 (an English string in a document baked before)."
             }
           }
         },
@@ -99,7 +107,15 @@
                 "type": "number"
               },
               "source": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "../common/text.schema.json"
+                  }
+                ],
+                "description": "The publication, locator, URL and file hash of the target, a bilingual text from c07-models 3.0.0 (an English string in a document baked before)."
               },
               "as_of": {
                 "type": "string",
