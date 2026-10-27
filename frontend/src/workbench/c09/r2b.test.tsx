@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { html, setLang } from '../c03/u6-testkit';
 import { committedData, view } from '../c08/spanish-testkit';
 import { ByDesignView, DistributionView, EstimatorTestsView } from './CcfViews';
-import { BacktestTestsView, BacktestView, ModelsView } from './EadViews';
+import { BacktestTestsView, ModelsView } from './EadViews';
 import { defaultSel, type C09Sel } from './selection';
 
 const data = committedData('C09', 'level-3.json', 'models-generator.json', { en: 'EAD and CCF for revolving lines', es: 'EAD y CCF de líneas rotativas' });
