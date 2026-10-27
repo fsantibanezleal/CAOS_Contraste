@@ -23,6 +23,18 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
   const rows = [...t.rows].sort((a, b) => cohortYear(sel, a.cohort_id) - cohortYear(sel, b.cohort_id));
   const yes = pick({ en: 'covered', es: 'cubierta' }, lang);
   const no = pick({ en: 'not covered', es: 'no cubierta' }, lang);
+  // the downturn years the bake detected and every cohort the add-on fails to cover are drawn and labelled on the chart, with the
+  // shortfall, not only named under it (rubric law 2; R3 c09 MN2)
+  const marks = [
+    { x: t.period.first_year, label: { en: `Downturn from ${t.period.first_year}`, es: `Recesión desde ${t.period.first_year}` } },
+    { x: t.period.last_year, label: { en: `Downturn to ${t.period.last_year}`, es: `Recesión hasta ${t.period.last_year}` } },
+    ...rows
+      .filter((r) => !r.covered)
+      .map((r) => {
+        const name = cohortLabel(sel, r.cohort_id);
+        return { x: cohortYear(sel, r.cohort_id), label: { en: `${name.en}: not covered, shortfall ${p2(r.shortfall, 'en')}`, es: `${name.es}: no cubierta, faltante ${p2(r.shortfall, 'es')}` } };
+      }),
+  ];
   return (
     <ViewsRow>
       <PlotCard
@@ -30,8 +42,8 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
         title={{ en: 'Downturn LGD against the crisis losses', es: 'LGD de recesión contra las pérdidas de la crisis' }}
         {...card}
         note={{
-          en: 'The downturn LGD is the long-run LGD plus an add-on. A crisis cohort whose realised LGD lies above the downturn line was not covered by the add-on, and the shortfall is the distance. The macro path that defines the downturn years is named below the chart.',
-          es: 'La LGD de recesión es la LGD de largo plazo más un ajuste. Una cohorte de crisis cuya LGD realizada queda sobre la línea de recesión no fue cubierta por el ajuste, y el faltante es la distancia. La trayectoria macro que define los años de recesión se nombra bajo el gráfico.',
+          en: 'The downturn LGD is the long-run LGD plus an add-on. A crisis cohort whose realised LGD lies above the downturn line was not covered by the add-on, and the shortfall is the distance. The downturn years are marked on the chart and named below it with the indicator that identifies them; a cohort the add-on does not cover is drawn in red and labelled with its shortfall.',
+          es: 'La LGD de recesión es la LGD de largo plazo más un ajuste. Una cohorte de crisis cuya LGD realizada queda sobre la línea de recesión no fue cubierta por el ajuste, y el faltante es la distancia. Los años de recesión se marcan en el gráfico y se nombran bajo él con el indicador que los identifica; una cohorte que el ajuste no cubre se dibuja en rojo y se rotula con su faltante.',
         }}
       >
         <ChartOverTable
@@ -43,16 +55,18 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
               series={[
                 { label: { en: 'Long-run LGD', es: 'LGD de largo plazo' }, values: rows.map((r) => r.long_run_lgd.value), color: '--color-fg-subtle', width: 1.8, dash: [6, 3] },
                 { label: { en: 'Downturn LGD', es: 'LGD de recesión' }, values: rows.map((r) => r.downturn_lgd.value), color: '--color-warn', width: 2.6 },
-                { label: { en: 'Realised in the crisis', es: 'Realizada en la crisis' }, values: rows.map((r) => r.crisis_realised_lgd.value), color: '--color-bad', mode: 'points', size: 11 },
+                { label: { en: 'Realised, covered by the add-on', es: 'Realizada, cubierta por el ajuste' }, values: rows.map((r) => (r.covered ? r.crisis_realised_lgd.value : null)), color: '--color-good', mode: 'points', size: 11 },
+                { label: { en: 'Realised, not covered by the add-on', es: 'Realizada, no cubierta por el ajuste' }, values: rows.map((r) => (r.covered ? null : r.crisis_realised_lgd.value)), color: '--color-bad', mode: 'points', size: 11 },
               ]}
+              marks={marks}
             />
           }
         >
           <p className="ct-note" data-downturn-period={`${t.period.first_year}-${t.period.last_year}`}>
             {pick(
               {
-                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by ${pick(t.period.indicator, 'en')}. Macro source: ${pick(t.period.macro_source, 'en')}.`,
-                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por ${pick(t.period.indicator, 'es')}. Fuente macro: ${pick(t.period.macro_source, 'es')}.`,
+                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by the ${pick(t.period.indicator, 'en')}. Macro source: ${pick(t.period.macro_source, 'en')}.`,
+                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por la ${pick(t.period.indicator, 'es')}. Fuente macro: ${pick(t.period.macro_source, 'es')}.`,
               },
               lang,
             )}
@@ -133,7 +147,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={fb.rows.map((r) => ({ id: r.segment_id, label: segmentLabel(r.segment_id), value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
-              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 } }}
+              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 }, range: [0, 1] }}
             />
           }
         >
@@ -166,7 +180,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
           </table>
         </ChartOverTable>
       </PlotCard>
-      <PlotCard fill title={{ en: 'The floor cells', es: 'Las celdas de los pisos' }} {...card} note={{ en: 'The LGD floors of the framework as the bake transcribed them: a floor per portfolio and collateral class.', es: 'Los pisos de LGD del marco tal como los transcribió la corrida: un piso por cartera y clase de garantía.' }}>
+      <PlotCard fill title={{ en: 'The floor cells', es: 'Las celdas de los pisos' }} {...card} note={{ en: 'The LGD floors of the framework as the run recorded them: a floor per portfolio and collateral class.', es: 'Los pisos de LGD del marco tal como los registró la corrida: un piso por cartera y clase de garantía.' }}>
         {cells.length === 0 ? (
           <p className="caos-pending" data-state="unavailable">
             {pick({ en: 'Not available: the models artifact carries no floor cells.', es: 'No disponible: el artefacto de modelos no trae las celdas de pisos.' }, lang)}
