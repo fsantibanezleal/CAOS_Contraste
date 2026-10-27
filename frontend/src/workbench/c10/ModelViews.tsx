@@ -38,8 +38,8 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'The ladder of portfolio models', es: 'La escalera de modelos de cartera' }}
         {...card}
         note={{
-          en: 'From the infinitely granular approximation to the sampled and recursive models: each rung is a function of the engine with its reference and its inputs. The bars are the Monte Carlo scenarios of the sampled rungs; an analytic rung has none.',
-          es: 'De la aproximación infinitamente granular a los modelos muestreados y recursivos: cada escalón es una función del motor con su referencia y sus entradas. Las barras son los escenarios de Monte Carlo de los escalones muestreados; un escalón analítico no tiene.',
+          en: 'From the infinitely granular approximation to the sampled and recursive models: each rung is a function of the engine with its reference and its inputs. The bars are the Monte Carlo scenarios of the sampled rungs; an analytic rung has none, so its bar reads not available.',
+          es: 'De la aproximación infinitamente granular a los modelos muestreados y recursivos: cada escalón es una función del motor con su referencia y sus entradas. Las barras son los escenarios de Monte Carlo de los escalones muestreados; un escalón analítico no tiene, así que su barra dice no disponible.',
         }}
       >
         <ChartOverTable

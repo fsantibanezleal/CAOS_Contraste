@@ -67,7 +67,7 @@ export const ESTIMATOR_TEXT: Record<string, Bi> = {
 };
 export const INTERVAL_TEXT: Record<string, Bi> = {
   'profile-likelihood': { en: 'profile likelihood', es: 'verosimilitud perfilada' },
-  'parametric-bootstrap': { en: 'parametric bootstrap', es: 'bootstrap paramétrico' },
+  'parametric-bootstrap': { en: 'parametric bootstrap', es: 'remuestreo paramétrico' },
 };
 export const ESTIMATOR_SHORT: Record<string, Bi> = {
   'maximum-likelihood': { en: 'Max. likelihood', es: 'Máx. verosimilitud' },
@@ -85,7 +85,7 @@ export const LIKELIHOOD_TITLE: Bi = { en: 'Log-likelihood', es: 'Log-verosimilit
 export const cutoffLabel = (value: string, lang: 'en' | 'es'): string => (lang === 'en' ? `Cutoff ${value}` : `Corte ${value}`);
 export const ESTIMATOR_HINT: Record<string, Bi> = {
   'maximum-likelihood': { en: 'Maximises the likelihood of the yearly loss rates under the Vasicek distribution; the interval is the profile likelihood.', es: 'Maximiza la verosimilitud de las tasas de pérdida anuales bajo la distribución de Vasicek; el intervalo es la verosimilitud perfilada.' },
-  moments: { en: 'Matches the mean and the variance of the yearly loss rates; the interval is a parametric bootstrap.', es: 'Iguala la media y la varianza de las tasas de pérdida anuales; el intervalo es un bootstrap paramétrico.' },
+  moments: { en: 'Matches the mean and the variance of the yearly loss rates; the interval is a parametric bootstrap.', es: 'Iguala la media y la varianza de las tasas de pérdida anuales; el intervalo es un remuestreo paramétrico.' },
 };
 
 export const METHOD_TEXT: Record<string, Bi> = {
@@ -153,6 +153,12 @@ export const PARAMETER_TEXT: Record<string, Bi> = {
   loss_unit: { en: 'loss unit', es: 'unidad de pérdida' },
   threshold: { en: 'threshold', es: 'umbral' },
   factor_shift: { en: 'factor shift', es: 'desplazamiento del factor' },
+  // the Greek parameters as their symbols, never their ASCII names (R3 c11 n5)
+  rho: { en: 'ρ', es: 'ρ' },
+  nu: { en: 'ν', es: 'ν' },
+  xi: { en: 'ξ', es: 'ξ' },
+  gamma: { en: 'γ', es: 'γ' },
+  sigma2: { en: 'σ²', es: 'σ²' },
 };
 export const UNIT_TEXT: Record<string, Bi> = {
   'loss units': { en: 'loss units', es: 'unidades de pérdida' },
@@ -161,9 +167,13 @@ export const UNIT_TEXT: Record<string, Bi> = {
   decimal: { en: 'decimal', es: 'decimal' },
 };
 
+/** The units a diagnostic or a parameter is written without a word for: the number says it, or the name does. */
+const NO_UNIT_WORD = new Set(['-', 'decimal', 'ratio', 'share', 'loss units']);
+
 /** A diagnostic or a parameter with its value and unit in the language: "variance ratio 388,7 razón". */
 export function measureText(map: Record<string, Bi>, name: string, value: number, unit: string, lang: 'en' | 'es'): string {
-  const unitText = unit === '-' ? '' : (UNIT_TEXT[unit]?.[lang] ?? unit);
+  // a pure number takes no unit word, and a count of loss units is already named so (R3 c11 n4: "388.7 ratio", "12,728 loss units")
+  const unitText = NO_UNIT_WORD.has(unit) ? '' : (UNIT_TEXT[unit]?.[lang] ?? unit);
   return `${(map[name] ?? { en: name, es: name })[lang]} ${formatNumber(value, lang, { digits: 4 })} ${unitText}`.trim();
 }
 export const EULER_METHOD_TEXT: Record<string, Bi> = {
@@ -173,7 +183,7 @@ export const EULER_METHOD_TEXT: Record<string, Bi> = {
   'creditrisk-plus': METHOD_TEXT['creditrisk-plus'],
 };
 export const VAR_METHOD_TEXT: Record<string, Bi> = {
-  kernel: { en: 'kernel estimate', es: 'estimador de kernel' },
+  kernel: { en: 'kernel estimate', es: 'estimador de núcleo' },
   'closed-form-one-factor': { en: 'closed form, one factor', es: 'forma cerrada, un factor' },
 };
 
@@ -228,11 +238,16 @@ export function defaultSel(data: CaseData | null): C10Sel | null {
  */
 const REFERENCE_ES: Record<string, string> = {
   'dossier 04 C.4 (E[L^2] = joint default probability)': 'dossier 04 C.4 (E[L^2] = probabilidad conjunta de incumplimiento)',
+  // the authors joined with "y" and the month in Spanish; the titles and the journals stay as published (R3 c11 n1)
+  'Vasicek (2002), Risk, December 2002; dossier 04 C.4': 'Vasicek (2002), Risk, diciembre de 2002; dossier 04 C.4',
+  'Frey and McNeil (2003); Demarta and McNeil (2005); dossier 04 H.3': 'Frey y McNeil (2003); Demarta y McNeil (2005); dossier 04 H.3',
+  'Haaf, Reiss and Schoenmakers (2004); dossier 04 H.4': 'Haaf, Reiss y Schoenmakers (2004); dossier 04 H.4',
+  'Gordy and Lutkebohmert (2013); dossier 04 H.5': 'Gordy y Lutkebohmert (2013); dossier 04 H.5',
   'Glasserman and Li (2005); dossier 04 H.7 (the twist is UNVERIFIED there; acceptance is unbiasedness against plain Monte Carlo)':
-    'Glasserman and Li (2005); dossier 04 H.7 (la inclinación está SIN VERIFICAR allí; la aceptación es la ausencia de sesgo frente al Monte Carlo simple)',
+    'Glasserman y Li (2005); dossier 04 H.7 (la inclinación está SIN VERIFICAR allí; la aceptación es la ausencia de sesgo frente al Monte Carlo simple)',
   'Glasserman and Li (2005); no Student-t twist is specified, so the rung is a not-evaluated row':
-    'Glasserman and Li (2005); no se especifica una inclinación para la t de Student, así que el escalón es una fila no evaluada',
-  'Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)': 'Gordy and Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)',
-  'Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)': 'Gordy and Lutkebohmert (2013), ec. 15 y p. 46 (dossier 04 H.5)',
+    'Glasserman y Li (2005); no se especifica una inclinación para la t de Student, así que el escalón es una fila no evaluada',
+  'Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)',
+  'Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ec. 15 y p. 46 (dossier 04 H.5)',
 };
 export const referenceNote = (reference: string, lang: 'en' | 'es'): string => (lang === 'es' ? REFERENCE_ES[reference] ?? reference : reference);

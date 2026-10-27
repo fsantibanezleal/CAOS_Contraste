@@ -45,7 +45,7 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'The fitted distribution and the years in it', es: 'La distribución ajustada y los años en ella' }}
         {...card}
         note={{
-          en: `The Vasicek distribution of the yearly loss rate fitted by maximum likelihood on ${o.windows.fit.first_year} to ${o.windows.fit.last_year}, with its 95%, 99% and 99.9% quantiles. Each year of the series is a point on the curve: grey for the fit window, amber for the evaluation window ${o.windows.evaluation.first_year} to ${o.windows.evaluation.last_year}, which the fit never saw. A year the table lacks has no point and says why below.`,
+          en: `The Vasicek distribution of the yearly loss rate fitted by maximum likelihood on ${o.windows.fit.first_year} to ${o.windows.fit.last_year}, with its 95 %, 99 % and 99.9 % quantiles. Each year of the series is a point on the curve: grey for the fit window, amber for the evaluation window ${o.windows.evaluation.first_year} to ${o.windows.evaluation.last_year}, which the fit never saw. A year the table lacks has no point and says why below.`,
           es: `La distribución de Vasicek de la tasa de pérdida anual ajustada por máxima verosimilitud en ${o.windows.fit.first_year} a ${o.windows.fit.last_year}, con sus cuantiles del 95 %, 99 % y 99,9 %. Cada año de la serie es un punto en la curva: gris para la ventana de ajuste, ámbar para la ventana de evaluación ${o.windows.evaluation.first_year} a ${o.windows.evaluation.last_year}, que el ajuste nunca vio. Un año que la tabla no tiene no lleva punto y dice por qué abajo.`,
         }}
       >
@@ -82,8 +82,8 @@ export function FittedView({ sel }: { sel: C10Sel | null }) {
                 <th>{pick({ en: 'Loss rate', es: 'Tasa de pérdida' }, lang)}</th>
                 <th>{pick({ en: 'Fitted distribution function', es: 'Función de distribución ajustada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Implied factor', es: 'Factor implícito' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Above 99%', es: 'Sobre el 99 %' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Above 99.9%', es: 'Sobre el 99,9 %' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Above 99 %', es: 'Sobre el 99 %' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Above 99.9 %', es: 'Sobre el 99,9 %' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -127,7 +127,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
   const mo = o.fit.moments;
   const rows = [
     { id: 'maximum-likelihood', pd: ml.pd, rho: ml.rho, method: ml.interval_method, extra: pick({ en: `log-likelihood ${formatNumber(ml.log_likelihood, 'en', { digits: 4 })}, ${ml.converged ? 'converged' : 'did not converge'}`, es: `log-verosimilitud ${formatNumber(ml.log_likelihood, 'es', { digits: 4 })}, ${ml.converged ? 'convergió' : 'no convergió'}` }, lang) },
-    { id: 'moments', pd: mo.pd, rho: mo.rho, method: mo.interval_method, extra: pick({ en: `${count(mo.n_bootstrap, 'en')} bootstrap samples`, es: `${count(mo.n_bootstrap, 'es')} muestras bootstrap` }, lang) },
+    { id: 'moments', pd: mo.pd, rho: mo.rho, method: mo.interval_method, extra: pick({ en: `${count(mo.n_bootstrap, 'en')} bootstrap samples`, es: `${count(mo.n_bootstrap, 'es')} muestras de remuestreo` }, lang) },
   ];
   const marks = rows.map((r) => ({ x: r.rho.estimate, label: { en: `${text(MARK_SHORT, r.id).en} ${formatNumber(r.rho.estimate, 'en', { percent: true, decimals: 1 })}`, es: `${text(MARK_SHORT, r.id).es} ${formatNumber(r.rho.estimate, 'es', { percent: true, decimals: 1 })}` } }));
   return (
@@ -137,7 +137,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'How sure the fitted correlation is', es: 'Qué tan segura es la correlación ajustada' }}
         {...card}
         note={{
-          en: `The log-likelihood of the yearly loss rates as the asset correlation moves, the probability of default re-optimised at each value. The correlation is as uncertain as the curve is flat: the 95% interval holds every value above the dashed cutoff. With ${count(o.fit.n_years_used, 'en')} years the interval is wide.`,
+          en: `The log-likelihood of the yearly loss rates as the asset correlation moves, the probability of default re-optimised at each value. The correlation is as uncertain as the curve is flat: the 95 % interval holds every value above the dashed cutoff. With ${count(o.fit.n_years_used, 'en')} years the interval is wide.`,
           es: `La log-verosimilitud de las tasas de pérdida anuales al mover la correlación de activos, con la probabilidad de incumplimiento re-optimizada en cada valor. La correlación es tan incierta como plana es la curva: el intervalo del 95 % contiene todo valor sobre el corte punteado. Con ${count(o.fit.n_years_used, 'es')} años el intervalo es ancho.`,
         }}
       >
@@ -276,7 +276,7 @@ export function IrbView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'The fitted correlation against the IRB correlation', es: 'La correlación ajustada contra la correlación IRB' }}
         {...card}
         note={{
-          en: 'Capital per unit of exposure at 99.9%: the IRB requirement of the loan type\'s regulatory class, and the large-homogeneous-portfolio capital with the fitted correlation, with the same loss given default, probability of default and maturity treatment on both sides, so the ratio isolates the correlation.',
+          en: 'Capital per unit of exposure at 99.9 %: the IRB requirement of the loan type\'s regulatory class, and the large-homogeneous-portfolio capital with the fitted correlation, with the same loss given default, probability of default and maturity treatment on both sides, so the ratio isolates the correlation.',
           es: 'Capital por unidad de exposición al 99,9 %: el requerimiento IRB de la clase regulatoria del tipo de crédito, y el capital de cartera homogénea grande con la correlación ajustada, con la misma pérdida dado el incumplimiento, probabilidad de incumplimiento y tratamiento del plazo en ambos lados, de modo que la razón aísla la correlación.',
         }}
       >
