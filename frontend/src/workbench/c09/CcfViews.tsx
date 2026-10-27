@@ -61,15 +61,17 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
           es: 'El generador simula cada saldo con un solo CCF, así que los estimadores se juzgan contra la verdad; una estimación fuera de 0 a 1 se imprime tal cual.',
         }}
       >
-        <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
-          chart={<BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
+        {/* the rows take the height they need (a horizontal chart without `fill`); where the card is shorter than that (20 bars and
+            their key need about 34rem, the card 31 at 1280 x 800) the drawing scrolls in its own box with the cue, never cut by the
+            card body (U16-R4 c11 M1, ADR-0071) */}
+        <div data-scroll-box="" data-caos-flow="" data-block="ccf-chart" style={{ height: '100%', minHeight: 0, overflowY: 'auto' }}>
+          <BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
             { tone: 'neutral' as const, label: { en: 'Known CCF', es: 'CCF conocido' } },
             { tone: 'good' as const, label: { en: 'Within the tolerance', es: 'Dentro de la tolerancia' } },
             { tone: 'warn' as const, label: { en: 'Outside the tolerance', es: 'Fuera de la tolerancia' } },
             { tone: 'bad' as const, label: { en: 'Outside 0 to 1', es: 'Fuera de 0 a 1' } },
-          ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />}
-        />
+          ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />
+        </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{
           // the light rule of the tests is the Tests sub-view's note and the bar tones are the chart's legend: stated once each, so the

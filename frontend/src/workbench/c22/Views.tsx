@@ -10,6 +10,7 @@ import { C22WriteUp } from '../../content/cases/C22';
 import { TRUTH_TEXT } from '../../content/cases/C04Results';
 import type { C22Simulation, Finding, VariantArtifact } from '../../lib/contract.types';
 import { useFindingsShares } from '../../lib/useMedia';
+import './c22-flow.css';
 import { LightCell } from '../ValidationViews';
 import { testName } from '../c20/U14Common';
 import { REPLAY, provenanceOf } from '../model';
@@ -489,6 +490,9 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
       dataKey={stateKey}
       note={{ en: 'Density of the p-values in 20 bins (1 = uniform). A test with an exact continuous null is flat; a discrete or conservative one piles up near 1; an oversized one rises near 0.', es: 'Densidad de los valores p en 20 intervalos (1 = uniforme). Una prueba con nula continua exacta es plana; una discreta o conservadora se acumula cerca de 1; una sobredimensionada sube cerca de 0.' }}
     >
+      {/* the grid takes the height left above the numbered-curves note, never the card's whole body (U16-R4 c26, c27: at height 100%
+          the note below it was cut by the body); it scrolls with its cue when the panels do not fit (c22-flow.css) */}
+      <div className="ct-c22-flow" data-caos-flow="">
       <div className="ct-panels-fill" data-caos-flow="" data-views={String(panels.length)}>
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
@@ -513,6 +517,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
           )))}
         </ul>
       ) : null}
+      </div>
     </PlotCard>
   );
 }
