@@ -68,6 +68,10 @@ class Design:
     situation: np.ndarray  # the nine non-protected attributes of the situation test, one column each
 
 
+#: why the counterfactual test is not run, as a sentence in both languages (U16-R4 c25 n4: the Spanish had no full stop)
+COUNTERFACTUAL_REASON = {"en": "Public HMDA gives no counterfactual dataset, so the counterfactual test (mutatis mutandis) is not run.",
+                         "es": "El HMDA público no entrega un conjunto contrafactual, de modo que la prueba contrafactual (mutatis mutandis) no se ejecuta."}
+
 def build_design(s: Sample) -> Design:
     with np.errstate(invalid="ignore", divide="ignore"):
         positive = (s.cltv > 0) & (s.income > 0) & (s.loan_amount > 0) & (s.property_value > 0)
@@ -286,10 +290,7 @@ def situation_result(fit_s: Sample, fit_d: Design, k: int = SITUATION_K) -> tupl
     res = rv_situation.situation_test(x, (attr[sel] == SITUATION_PROTECTED).astype(np.int64), fit_s.decision[sel], k, tau=0.0,
                                       alpha=0.05, comparator="ceteris-paribus", normalization="range", categorical=SITUATION_CATEGORICAL)
     block = {"label": "situation-testing", "comparator": "ceteris-paribus",
-             "counterfactual_test": {"run": False, "reason": t("Public HMDA gives no counterfactual dataset, so the counterfactual test "
-                                                              "(mutatis mutandis) is not run",
-                                                              "El HMDA público no entrega un conjunto contrafactual, de modo que la prueba "
-                                                              "contrafactual (mutatis mutandis) no se ejecuta")},
+             "counterfactual_test": {"run": False, "reason": COUNTERFACTUAL_REASON},
              "attribute": SITUATION_ATTRIBUTE, "k": k, "alpha": 0.05, "tau": 0, "distance_normalization": "range",
              "label_parameters": "convention", "centers": "excluded", "interval": "one-sided Wald, equation (10) of arXiv 2502.01267",
              "n_complainants": res.n_complainants, "n_cases": res.n_cases, "n_significant": res.n_significant}

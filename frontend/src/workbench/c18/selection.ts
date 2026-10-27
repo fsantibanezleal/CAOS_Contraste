@@ -189,7 +189,7 @@ export function methodText(r: { method: string; nu: number | null }): Bi {
 }
 /** The short form for a select or a chart row. */
 export function methodShort(r: { method: string; nu: number | null }): Bi {
-  if (r.method === 't-copula') return { en: `t copula, nu ${r.nu}`, es: `Cópula t, nu ${r.nu}` };
+  if (r.method === 't-copula') return { en: `t copula, ν ${r.nu}`, es: `Cópula t, ν ${r.nu}` };
   const map: Record<string, Bi> = {
     'lower-bound': { en: 'Lower bound', es: 'Cota inferior' },
     'simple-sum': { en: 'Simple sum (headline)', es: 'Suma simple (principal)' },

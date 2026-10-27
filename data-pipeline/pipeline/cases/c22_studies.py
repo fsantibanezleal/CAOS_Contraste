@@ -24,6 +24,7 @@ from typing import Any, Callable
 
 import numpy as np
 
+from ..core import text as tx
 from .c01_ladder import _t
 
 #: the five families C22 measured before U16 (CT-301); every other registered p-value family joins in U16-P2
@@ -369,11 +370,18 @@ def _es(text: str) -> str:
         raise StudyRegistryError(f"no Spanish text for the engine study text {text!r}: add it to c22_studies._ES") from None
 
 
+def _forms(text: str) -> dict[str, str]:
+    """An engine study text in both languages with the shell's number forms (U16-R4 c27 m5, c26 m4): the English groups a count of
+    thousands ("2,000 days"; the engine writes "2000 days"), the Spanish gives a percent its no-break space ("al 5 %")."""
+    en = re.sub(r"\b\d{4,}\b", lambda m: tx.number(int(m.group(0)), 0, lang="en"), text)
+    es = re.sub(r"(\d)%", "\\1\u00a0%", _es(text))
+    return _t(en, es)
+
+
 def study_texts(study: Any, index: int) -> dict[str, dict[str, str]]:
     """The study's label, null text and alternative text, in both languages (English from the engine)."""
-    null = _t(study.null_text, _es(study.null_text)) if study.null_text else _NULL_FALLBACK
-    return {"label": _t(study.label, _es(study.label)), "null": null,
-            "alternative": _t(study.alternative_text, _es(study.alternative_text))}
+    null = _forms(study.null_text) if study.null_text else _NULL_FALLBACK
+    return {"label": _forms(study.label), "null": null, "alternative": _forms(study.alternative_text)}
 
 
 def row_label(test_id: str, study: Any, index: int, n_studies: int) -> dict[str, str]:
@@ -382,6 +390,9 @@ def row_label(test_id: str, study: Any, index: int, n_studies: int) -> dict[str,
     if n_studies == 1:
         return base
     t = study_texts(study, index)["label"]
+    # a name that ends in its own parenthesis takes the study after a comma, never a second parenthesis (U16-R4 c27 m13)
+    if base["en"].endswith(")"):
+        return _t(f"{base['en']}, {t['en']}", f"{base['es']}, {t['es']}")
     return _t(f"{base['en']} ({t['en']})", f"{base['es']} ({t['es']})")
 
 

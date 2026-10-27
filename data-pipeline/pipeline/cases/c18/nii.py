@@ -69,7 +69,12 @@ def nii_by_year(anchors: Anchors, shifts_bp: tuple[float, float, float]) -> list
 #: the Spanish of the rate a variant's NII follows (U16-R3 c19 B3: "(Prime rate)" in the Spanish view; the product names it tasa preferencial)
 RATE_NAME_ES = {"Prime rate": "tasa preferencial", "10-year Treasury rate": "tasa del Tesoro a 10 años", "Long-term interest rate": "tasa de interés de largo plazo",
                 "Long term interest rate": "tasa de interés de largo plazo",
-                "Central bank Intervention rate (policy interest rate)": "tasa de intervención del banco central (tasa de política monetaria)"}
+                "Central bank Intervention rate (policy interest rate)": "tasa de intervención del banco central, la tasa de política monetaria"}
+#: the English name of the same rates, as the product writes them in a sentence (U16-R4 c23 B1: the NGFS sentence printed the source variable
+#: with its unit and aggregation suffix, "Central bank Intervention rate (policy interest rate) ; %(combined)")
+RATE_NAME_EN = {"Prime rate": "prime rate", "10-year Treasury rate": "10-year Treasury rate", "Long-term interest rate": "long-term interest rate",
+                "Long term interest rate": "long-term interest rate",
+                "Central bank Intervention rate (policy interest rate)": "central bank intervention rate, the policy rate"}
 
 
 def rate_name_es(name: str) -> str:
@@ -80,10 +85,19 @@ def rate_name_es(name: str) -> str:
     return RATE_NAME_ES[base]
 
 
+def rate_name_en(name: str) -> str:
+    """The English name of a rate variable of a scenario in a sentence (the NGFS suffix " ; %(combined)" dropped); an unknown name stops the bake."""
+    base = name.split(" ;")[0].strip()
+    if base not in RATE_NAME_EN:
+        raise ValueError(f"no English name for the rate variable {name!r}: add it to nii.RATE_NAME_EN")
+    return RATE_NAME_EN[base]
+
+
 def rate_statement(name: str, regressor: str) -> dict[str, str]:
+    """The sentence of the rate the NII follows, naming the rate as the product does, never the source's variable string (U16-R4 c23 B1)."""
     kind = "short rate" if regressor == "prime_rate" else "10-year rate"
-    return P.text(f"The NII of each year follows the variant's {kind} ({name}): the C15 twelve-month margin less the engine's delta NII on "
+    return P.text(f"The NII of each year follows the variant's {kind} (the {rate_name_en(name)}): the C15 twelve-month margin less the engine's delta NII on "
                   "C15's book and curve, shifted in parallel by the mean change of that rate in the year from the jump-off, with C15's floors.",
-                  f"El NII de cada año sigue la tasa de {'corto plazo' if regressor == 'prime_rate' else 'diez años'} de la variante ({rate_name_es(name)}): "
+                  f"El NII de cada año sigue la tasa de {'corto plazo' if regressor == 'prime_rate' else 'diez años'} de la variante (la {rate_name_es(name)}): "
                   "el margen de doce meses de C15 menos el delta NII del motor sobre el libro y la curva de C15, desplazada en paralelo por el cambio medio de esa tasa "
                   "en el año desde el punto de partida, con los pisos de C15.")

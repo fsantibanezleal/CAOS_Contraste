@@ -101,6 +101,6 @@ def scenario_influence(v: Variant, seed_first: int, years: int, threshold: float
                      for p, x in zip(points, infl)]
         block = {"prior_kind": "unrestricted-gamma-on-pareto-shape", "currency": P.CURRENCY, "cell_id": cell_id(years, threshold), "seed": int(seed),
                  "level": P.LEVEL, "method": "bayesian-credibility", "base_capital_eur": base, "scenarios": scenarios,
-                 "reference": "Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"}
+                 "reference": "Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26"}
         return {"block": block, "test": _row(val.scenario_influence(np.asarray(infl), model_id="scenario"), cell_id(years, threshold))}
     raise ValueError(f"the scenario rung was undefined on {tries} histories of the cell: {last}")

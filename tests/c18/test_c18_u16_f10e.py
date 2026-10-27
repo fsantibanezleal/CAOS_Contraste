@@ -42,10 +42,11 @@ def test_b2_the_reverse_finding_says_nothing_the_baseline_contradicts() -> None:
     t = documents_more.reverse_finding_title(["real GDP growth", "unemployment rate"], ["crecimiento del PIB real", "tasa de desempleo"],
                                              (-1.131, 8.205), 8.205, 2.4e-15)
     assert "already ends below" not in t["en"] and "ya termina bajo" not in t["es"]
-    assert "shifts real GDP growth by -1.13 and the unemployment rate by +8.21 points" in t["en"], t["en"]
-    assert "en -1,13 y la tasa de desempleo en +8,21 puntos" in t["es"], t["es"]
+    # both factors carry their unit, and the exponent is upper case as the views write it (U16-R4 c23 m11)
+    assert "shifts real GDP growth by -1.13 points and the unemployment rate by +8.21 points" in t["en"], t["en"]
+    assert "en -1,13 puntos y la tasa de desempleo en +8,21 puntos" in t["es"], t["es"]
     # m4: a tail probability under 0.1 percent keeps its exponent
-    assert "(tail probability 2.4e-15)" in t["en"] and "(probabilidad de cola 2,4e-15)" in t["es"]
+    assert "(tail probability 2.4E-15)" in t["en"] and "(probabilidad de cola 2,4E-15)" in t["es"]
 
 
 def test_b3_no_english_word_in_the_spanish_producer_texts() -> None:

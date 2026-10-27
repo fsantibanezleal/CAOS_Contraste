@@ -285,7 +285,8 @@ describe('the aggregation group', () => {
     expect(markup).toContain('data-headline="simple-sum"');
     expect(markup).toContain(cell(a.headline.capital_clp_m));
     expect((markup.match(/data-status="information-not-capital"/g) ?? []).length).toBeGreaterThanOrEqual(a.band.filter((b) => b.status === 'information-not-capital').length);
-    expect(markup).toContain(text({ en: 'Information, not capital: only the simple sum is the capital of this case.', es: 'Información, no capital: solo la suma simple es el capital de este caso.' }));
+    // the caption says once that only the simple sum is capital (U16-R4 c23 m8: it was said twice in the card)
+    expect(markup).toContain(text({ en: 'Only the simple sum is the capital of this case', es: 'Solo la suma simple es el capital de este caso' }));
     for (const b of a.band) expect(markup).toContain(cell(b.capital_clp_m));
     // the model risk measures sit beside the band as sensitivity information
     expect(markup).toContain(formatNumber(a.model_risk.barrieu_scandolo.am, 'en', { digits: 4 }));
@@ -402,7 +403,7 @@ describe('tests, findings, variants and context', () => {
     setLang('es');
     const band = html(<BandView sel={selOf(fedV)} />);
     expect(band).toContain('Suma simple');
-    expect(band).toContain('Información, no capital');
+    expect(band).toContain('información, no capital');
     const fan = html(<FanView sel={selOf(fedV)} />);
     expect(fan).toContain(pct(fedV.outputs.capital_plan.cases[1].years[2].cet1.pct_of_rwa, 'es'));
     expect(html(<PathsView sel={selOf(fedV)} />)).toContain(escapeHtml(fedV.outputs.scenario.adaptation_statement.es)); // the statement alone: the label and the model note repeated it (U16-R2 b09 m11)

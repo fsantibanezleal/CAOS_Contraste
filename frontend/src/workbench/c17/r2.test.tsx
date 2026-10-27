@@ -51,7 +51,7 @@ describe('U16-F4 C17: the Spanish view', () => {
       const lastReal = points.map((v) => v !== null).lastIndexOf(true);
       for (let i = lastReal + 1; i < points.length; i++) expect(values[i], `${name} ${i}`).toBeNull();
       expect(points.slice(lastReal + 1).every((v) => v === null), name).toBe(true);
-      if (lastReal < points.length - 1) expect(visibleText(html(<ExceedanceView sel={selOf(name)} />)), name).toMatch(/the recursion grid ends at/);
+      if (lastReal < points.length - 1) expect(visibleText(html(<ExceedanceView sel={selOf(name)} />)), name).toMatch(/its last point inside the grid is/);
     }
   });
 

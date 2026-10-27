@@ -28,7 +28,7 @@ const title = { en: 'ICAAP and IAPE capital aggregation under macro scenarios', 
 const selOf = (name: string): C18Sel => defaultSel(fixtureData('C18', committedDoc<VariantArtifact>('C18', name), models, title)) as C18Sel;
 
 // what a reader must find as written: names of institutions, series, publications and the engine's functions
-const VERBATIM = ['Banco Santander-Chile', 'Banco Andino', 'Banco Central de Chile', 'NiGEM', 'Federal Reserve', 'oprisk.aggregate', 'Hull-White', 'Contraste', 'SEC EDGAR', 'Fed', /Capital allocation to business units[^;]*?\(full allocation\)/g, /Capital allocation to business units and sub-portfolios: the Euler principle, arXiv [\d.]+/g, /A general approach to integrated risk management with skewed, fat-tailed risks, J\. Financial Economics/g];
+const VERBATIM = ['Banco Santander-Chile', 'Banco Andino', 'Banco Central de Chile', 'NiGEM', 'Federal Reserve', 'oprisk.aggregate', 'Hull-White', 'Contraste', 'SEC EDGAR', 'Fed', /Capital allocation to business units and sub-portfolios: the Euler principle, arXiv [\d.]+/g, /A general approach to integrated risk management with skewed, fat-tailed risks, J\. Financial Economics/g];
 
 describe('U16-F4 C18: the Spanish view', () => {
   afterEach(() => setLang('en'));

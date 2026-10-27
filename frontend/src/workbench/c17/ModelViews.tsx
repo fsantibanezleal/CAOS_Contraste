@@ -6,7 +6,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { KeyTable } from './KeyTable';
+import { KeyTable, keepDates } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { AGGREGATION_TEXT, DISCRETION_TEXT, SEVERITY_TEXT, STATUS_TEXT, capitalOf, cellLabel, cellOf, fitOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
 import { es } from './localise';
@@ -176,7 +176,7 @@ export function SmaSpecView({ sel }: { sel: C17Sel | null }) {
               { id: 'exponent', label: { en: 'Multiplier exponent', es: 'Exponente del multiplicador' }, value: formatNumber(s.ilm_exponent, lang, { digits: 3 }) },
               { id: 'rwa', label: { en: 'Risk-weighted assets', es: 'Activos ponderados por riesgo' }, value: pick({ en: `${formatNumber(s.rwa_factor, 'en', { digits: 4 })} times the capital`, es: `${formatNumber(s.rwa_factor, 'es', { digits: 4 })} veces el capital` }, lang) },
               { id: 'golden', label: { en: 'Golden value', es: 'Valor de referencia' }, attrs: { 'data-golden': String(s.golden.bic_eur) }, value: pick({ en: `a business indicator of ${whole(s.golden.bi_eur, 'en')} EUR gives a component of ${whole(s.golden.bic_eur, 'en')} EUR (${s.golden.reference})`, es: `un indicador de negocio de ${whole(s.golden.bi_eur, 'es')} EUR da un componente de ${whole(s.golden.bic_eur, 'es')} EUR (${es(s.golden.reference, 'es')})` }, lang) },
-              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: es(s.reference, lang) },
+              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: keepDates(es(s.reference, lang)) },
             ]}
           />
           <table className="caos-table ct-wrap-head" data-table="sma-discretions">
