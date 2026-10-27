@@ -41,6 +41,8 @@ def _plain(text: str) -> str:
     # citation locators, written the same in both languages: a circular's own number (Circular 2.346), the section of a module
     # (local_cl (2.1)), an equation after its authors (Anderson y Goodman 2.8)
     text = re.sub(r"\bCircular\s+(?:N[°º]\s*)?\d[\d.]*", "Circular", text)
+    # the section of a regulation (B-1 section 2.1, sección 2.1 de B-1)
+    text = re.sub(r"\b(?:section|sección)\s+\d+(?:\.\d+)+", "section", text)
     text = re.sub(r"\b([a-z_]+(?:\.[a-z_]+)+) \(\d+(?:\.\d+)+(?: [a-z])?\)", r"\1 ()", text)
     text = re.sub(r"\b([A-Z][a-z]+) \d+(?:\.\d+)+(?=\))", r"\1", text)
     return re.sub(r"\(\d+,\d+\)", "()", text)
@@ -64,6 +66,10 @@ def document_leaks(doc: Any, only: str | None = None) -> list[str]:
         # a test's reference keeps its citation as published (a locator such as "Annex 3.1" is a section number, not a
         # decimal); its Spanish is reviewed one reference at a time in REFERENCE_ES (pipeline/cases/reference_text.py)
         if path.endswith(".reference_text"):
+            continue
+        # a calibration target's source quotes its publication's locator and figures as published ("Comercial 163.602 de ...
+        # MMUSD" in the CMF table), the same in both languages: a citation, not a number of the product
+        if re.search(r"\.calibration_targets\[\d+\]\.source$", path):
             continue
         bad = leaks(en, es)
         if bad:
