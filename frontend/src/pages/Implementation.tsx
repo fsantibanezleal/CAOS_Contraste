@@ -8,6 +8,19 @@ import { ReadinessTable } from '../readiness/ReadinessTable';
 
 const THIS_REPO = { en: 'Describes this repository.', es: 'Describe este repositorio.' };
 
+/** A repository path with a break opportunity after each slash, so a narrow column breaks it between names, never inside one. */
+export const pathBreaks = (path: string) =>
+  path.split('/').map((part, i, all) => (
+    <span key={i}>
+      {part}
+      {i < all.length - 1 ? (
+        <>
+          /<wbr />
+        </>
+      ) : null}
+    </span>
+  ));
+
 function Pipeline() {
   const t = useT();
   return (
@@ -15,7 +28,7 @@ function Pipeline() {
       <DocSection area="architecture" title={{ en: 'The stages', es: 'Las etapas' }} noRefsReason={THIS_REPO}>
         <P
           en="The offline pipeline (data-pipeline/, invoked by path, never installed) runs each case through named stages: ingest (a fetched source through contract 1), split (the leakage-safe partition), the fit of every rung, evaluate (the battery and the outputs the views draw) and export (contract 2). It is the only lane that writes artifacts, it runs on a workstation, and never in CI or in the browser. Every generator is seeded, so a second bake of the same release writes the same bytes."
-          es="La cadena de cálculo fuera de línea (data-pipeline/, invocado por ruta, nunca instalado) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
+          es="La cadena de cálculo fuera de línea (data-pipeline/, invocada por ruta, nunca instalada) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
         />
         <Figure caption={t('Sources, the offline pipeline, the committed artifacts and the web.', 'Fuentes, la cadena de cálculo fuera de línea, los artefactos versionados y la web.')}>
           <OverviewFigure />
@@ -24,7 +37,7 @@ function Pipeline() {
       <DocSection area="reproducibility" title={{ en: 'The split and the expectations', es: 'La partición y las expectativas' }} noRefsReason={THIS_REPO}>
         <P
           en="A result is reproduced by baking its case again: every generator is seeded, so a second bake of the same release writes the same bytes; every file is hashed while it streams, so a source that changed is caught by its hash; the version is written in one place; and the expected range of each named result is declared before the bake and checked after it. A reader who doubts a number can recompute it from the committed artifacts or from the source."
-          es="Un resultado se reproduce generando de nuevo su caso: cada generador tiene semilla, así que una segunda generación de la misma versión escribe los mismos bytes; cada archivo se le calcula la huella mientras se descarga, así que una fuente que cambió se detecta por su huella; la versión se escribe en un solo lugar; y el rango esperado de cada resultado nombrado se declara antes de la generación y se verifica después. Quien dude de un número puede recalcularlo desde los artefactos versionados o desde la fuente."
+          es="Un resultado se reproduce generando de nuevo su caso: cada generador tiene semilla, así que una segunda generación de la misma versión escribe los mismos bytes; a cada archivo se le calcula la huella mientras se descarga, así que una fuente que cambió se detecta por su huella; la versión se escribe en un solo lugar; y el rango esperado de cada resultado nombrado se declara antes de la generación y se verifica después. Quien dude de un número puede recalcularlo desde los artefactos versionados o desde la fuente."
         />
         <Callout variant="note" title={<T en="What a rerun does not promise" es="Lo que una repetición no promete" />}>
           <T
@@ -77,8 +90,9 @@ function Contracts() {
             ].map(([what, where, schema]) => (
               <tr key={where}>
                 <td className="caos-col-text">{what}</td>
-                <td className="caos-col-text" style={{ overflowWrap: 'anywhere' }}><code>{where}</code></td>
-                <td className="caos-col-text" style={{ overflowWrap: 'anywhere' }}><code>{schema}</code></td>
+                {/* a path breaks after a slash, never inside a name (R3 c24 m6, open in R4 c29) */}
+                <td className="caos-col-text" style={{ overflowWrap: 'break-word' }}><code>{pathBreaks(where)}</code></td>
+                <td className="caos-col-text" style={{ overflowWrap: 'break-word' }}><code>{pathBreaks(schema)}</code></td>
               </tr>
             ))}
           </tbody>
@@ -104,7 +118,7 @@ function DataAndLicences() {
         <L
           items={[
             { en: 'The fetcher writes raw files to the device data root (an environment variable or an argument), never into the repository, and refuses a root inside it.', es: 'El descargador escribe los archivos crudos en la raíz de datos del equipo (una variable de entorno o un argumento), nunca en el repositorio, y rechaza una raíz dentro de él.' },
-            { en: 'Every file is hashed while it streams; the committed licence manifest records its URL, date, class, licence text, SHA-256 and bytes, and a later fetch with other bytes fails unless the refresh is explicit.', es: 'Cada archivo se le calcula la huella mientras se descarga; el manifiesto de licencias versionado registra su URL, fecha, clase, texto de licencia, SHA-256 y bytes, y una descarga posterior con otros bytes falla salvo que la actualización sea explícita.' },
+            { en: 'Every file is hashed while it streams; the committed licence manifest records its URL, date, class, licence text, SHA-256 and bytes, and a later fetch with other bytes fails unless the refresh is explicit.', es: 'A cada archivo se le calcula la huella mientras se descarga; el manifiesto de licencias versionado registra su URL, fecha, clase, texto de licencia, SHA-256 y bytes, y una descarga posterior con otros bytes falla salvo que la actualización sea explícita.' },
             { en: 'Every artifact carries the lineage of its inputs (source, class, file hashes) and its truth status; the export refuses an input that may only be linked, or one never fetched.', es: 'Cada artefacto lleva el linaje de sus entradas (fuente, clase, huellas de archivos) y su estado de verdad; la exportación rechaza una entrada que solo puede enlazarse, o una nunca descargada.' },
           ]}
         />

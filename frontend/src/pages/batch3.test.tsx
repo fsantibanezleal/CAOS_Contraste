@@ -136,7 +136,8 @@ describe('every batch 3 case has an Experiments table with one headline row per 
       for (const lang of ['en', 'es'] as const) {
         const tables = batch3ExperimentTables(m, vs, lang);
         expect(tables.length, id).toBeGreaterThan(0);
-        expect(tables.reduce((a, t) => a + t.rows.length, 0), id).toBe(vs.length);
+        // C21 lists its groups in a table per year pair below the headline table (R4 c28 M1): the headline table has one row per variant
+        expect(id === 'C21' ? tables[0].rows.length : tables.reduce((a, t) => a + t.rows.length, 0), id).toBe(vs.length);
         vs.forEach((v, i) => expect(String(tables[0].rows[i][0]), id).toContain(`${lang === 'en' ? 'Fixture' : 'Prueba'} ${v.variant_id}`));
         for (const t of tables) for (const r of t.rows) expect(r.length, id).toBe(t.head.length);
         expect(flat(tables), `${id} ${lang}`).not.toMatch(BAD);
@@ -259,26 +260,35 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     expect(String(t.rows[0][3])).toMatch(NOT_AVAILABLE);
   });
 
+  // the headline row holds the year pair and the four-fifths flags; each group is a row of the table of its year pair (R4 c28 M1)
+  const groupRows = (lang: 'en' | 'es' = 'en') => {
+    const vs = load('C21');
+    const tables = batch3ExperimentTables(manifestOf('C21', vs), vs, lang);
+    const t = tables.find((x) => x.key === 'groups-fixture-2018-19')!;
+    return t.rows.map((r) => r.map(cellText));
+  };
   it('C21: the year pair, the adverse impact ratio, the employment-benchmark flag, the conditional disparity and its replication', () => {
     const [row] = [rowOf('C21', 'fixture-2018-19')];
     expect(row[1]).toMatch(/2018/);
     expect(row[1]).toMatch(/2019/);
-    expect(row[2]).toMatch(/0\.91/);
-    expect(row[3]).toMatch(/employment benchmark/);
-    expect(row[4]).toMatch(/0\.61/);
-    expect(row[5]).toMatch(/Yes/);
+    expect(row[2]).toMatch(/employment benchmark/);
+    const [first] = groupRows();
+    // three digits: the four-fifths flag decides at 0.8 (R4 c29 m6)
+    expect(first[2]).toMatch(/0\.909/);
+    expect(first[3]).toMatch(/0\.61/);
+    expect(first[4]).toMatch(/Yes/);
     const es = rowOf('C21', 'fixture-2018-19', 'es');
-    expect(es[3]).toMatch(/referencia/i);
-    expect(es[5]).toMatch(/Sí/);
+    expect(es[2]).toMatch(/referencia/i);
+    expect(groupRows('es')[0][4]).toMatch(/Sí/);
   });
   it('C21: the four-fifths cell keeps the regulation citation as the source writes it, marked translate="no", and marks nothing else', () => {
     const vs = load('C21');
     const [t] = batch3ExperimentTables(manifestOf('C21', vs), vs, 'es');
     const i = vs.findIndex((v) => v.variant_id === 'fixture-2018-19');
-    const markup = renderToStaticMarkup(t.rows[i][3] as never);
+    const markup = renderToStaticMarkup(t.rows[i][2] as never);
     expect(markup).toMatch(/<span translate="no" lang="en">29 CFR 1607\.4[^<]*<\/span>/);
     expect(markup.replace(/<span translate="no"[^>]*>[^<]*<\/span>/g, '')).not.toMatch(/CFR/);
-    expect(cellText(t.rows[i][3])).toMatch(/referencia de empleo/);
+    expect(cellText(t.rows[i][2])).toMatch(/referencia de empleo/);
   });
   it('C21: the 62 contrast is named in Spanish on the Spanish page, attribute and groups, with no English left (BL-087)', () => {
     const vs = load('C21');
@@ -288,11 +298,13 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     v.outputs.attributes.push(age62);
     const withIt = [v as unknown as (typeof vs)[number]];
     const es = flat(batch3ExperimentTables(manifestOf('C21', withIt), withIt, 'es'));
-    expect(es).toContain('Edad, 62 o más, 62 o más:');
-    expect(es).toContain('Edad, 62 o más: ');
-    expect(es).not.toMatch(/applicant_age_above_62|Age, 62|62 or over|under 62/);
+    // the attribute is named once and the group beside it (R4 c29 m6: "Edad, 62 o más, 62 o más")
+    expect(es).toContain('Edad, corte en 62 | 62 o más |');
+    expect(es).toContain('Edad, corte en 62: ');
+    expect(es).not.toMatch(/applicant_age_above_62|Age, 62|62 or over|under 62|62 o más, 62 o más/);
     const en = flat(batch3ExperimentTables(manifestOf('C21', withIt), withIt, 'en'));
-    expect(en).toContain('Age, 62 or over, 62 or over:');
+    expect(en).toContain('Age, split at 62 | 62 or over |');
+    expect(en).not.toContain('62 or over, 62 or over');
   });
 
   it('C21: a confirmation the document leaves null shows not available with its reason', () => {
@@ -300,10 +312,13 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     const v = clone(vs[0]) as VariantArtifact<{ attributes: Array<{ contrasts: Array<{ confirmation: { estimate: unknown; reason: unknown } }> }> }>;
     for (const a of v.outputs.attributes)
       for (const c of a.contrasts) c.confirmation = { estimate: null, reason: 'the reason of the test' };
-    const [t] = batch3ExperimentTables(manifestOf('C21', [v]), [v], 'en');
-    expect(String(t.rows[0][5])).toMatch(NOT_AVAILABLE);
-    expect(String(t.rows[0][5])).toContain('the reason of the test');
-    expect(String(t.rows[0][5])).not.toMatch(/Yes/);
+    const [, t] = batch3ExperimentTables(manifestOf('C21', [v]), [v], 'en');
+    expect(t.rows.length).toBeGreaterThan(0);
+    for (const r of t.rows) {
+      expect(String(r[4])).toMatch(NOT_AVAILABLE);
+      expect(String(r[4])).toContain('the reason of the test');
+      expect(String(r[4])).not.toMatch(/Yes/);
+    }
   });
 });
 

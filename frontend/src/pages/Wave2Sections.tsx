@@ -15,7 +15,7 @@ import { DEFICIENCY_TEXT, INTENDED_TEXT, type C13Outputs } from '../workbench/c1
 import { SHOCK_TEXT as C14_SHOCK_TEXT, scenarioOf, type C14Outputs } from '../workbench/c14/selection';
 import { SHOCK_TEXT as C15_SHOCK_TEXT, type C15Outputs, type C15Pair } from '../workbench/c15/selection';
 import { AGGREGATION_TEXT, RUNG_ORDER, STATUS_TEXT, capitalOf, cellLabel, cellOf, rungName, type C17Outputs } from '../workbench/c17/selection';
-import { DIRECTION_TEXT, ZONE_TEXT, alphaShort, text as c11Text, type C11Outputs } from '../workbench/c11/selection';
+import { DIRECTION_TEXT, ZONE_TEXT, alphaShort, reasonText as c11Reason, text as c11Text, type C11Outputs } from '../workbench/c11/selection';
 import { ESTIMATOR_KIND_TEXT, ESTIMATOR_SHORT, METHOD_TEXT, estimatorOf, levelLabel, measureOf, text as c10Text, type C10GridOutputs, type C10Outputs } from '../workbench/c10/selection';
 
 type Lang = 'en' | 'es';
@@ -105,8 +105,13 @@ function c10GridRow(name: string, v: Variant, lang: Lang): Cell[] {
   return [name, `${o.cells.map((c) => num(c.known_rho, lang, 2)).join(', ')} (${lang === 'es' ? 'nula' : 'null'}: ${num(o.generator.null_rho, lang, 2)})`, size('maximum-likelihood'), size('moments'), pow('maximum-likelihood'), pow('moments')];
 }
 
+/** "not available" with a C11 reason in the page's language: the C11 producer's reasons are read by the C11 table, which holds the
+ * reasons written since U16-F10c (R4 c28 B1: "no model is eligible" was printed in English on the Spanish page). */
+const c11Na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${c11Reason(reason, lang)})` : ''}`;
+
 function c11Row(name: string, v: Variant, lang: Lang): Cell[] {
   const o = v.outputs as C11Outputs;
+  const na = c11Na;
   const per = (f: (alpha: number) => string): string => join(o.levels.map((l) => `${bi(alphaShort(l.alpha), lang)}: ${f(l.alpha)}`));
   const champ = (alpha: number) => o.comparison.champions.find((c) => c.alpha === alpha);
   const level = (alpha: number) => {
@@ -122,6 +127,8 @@ function c11Row(name: string, v: Variant, lang: Lang): Cell[] {
     per((a) => {
       const l = level(a);
       if (!l) return na(lang, champ(a)?.reason);
+      // a light the document could not evaluate says why, as every other missing value of the table does (R4 c29 m3)
+      if (l.traffic_light?.final_zone === 'not_evaluated') return na(lang, l.traffic_light.reason);
       return l.traffic_light ? bi(c11Text(ZONE_TEXT, l.traffic_light.final_zone), lang) : na(lang, lang === 'es' ? 'el semáforo de Basilea se define solo para el VaR al 99%' : 'the Basel traffic light is defined for the 99% VaR only');
     }),
     per((a) => {
@@ -180,6 +187,15 @@ function largestPair<T extends { shock: string; pair: C15Pair }>(rows: T[], fiel
   return best;
 }
 
+/** The one measure the CPI-surprise variant adds, so its row does not repeat the long-UF row cell for cell (R4 c29 m5). */
+function cpiEffect(o: C15Outputs, lang: Lang): string {
+  const c = (o as { cpi_scenario?: { surprise_pp: number; effect: number } | null }).cpi_scenario;
+  if (!c) return '';
+  const pp = `${c.surprise_pp > 0 ? '+' : ''}${num(c.surprise_pp, lang, 1)}\u00a0pp`;
+  const effect = scaled(c.effect, o.units, o.reporting_currency, lang);
+  return lang === 'es' ? `; efecto de la sorpresa de IPC de ${pp}: ${effect} (positivo es una pérdida)` : `; effect of the CPI surprise of ${pp}: ${effect} (positive is a loss)`;
+}
+
 function c15Row(name: string, v: Variant, lang: Lang): Cell[] {
   const o = v.outputs as C15Outputs;
   const shock = (s: string | null) => (s ? ` (${bi(C15_SHOCK_TEXT[s] ?? { en: s, es: s }, lang)})` : '');
@@ -195,7 +211,7 @@ function c15Row(name: string, v: Variant, lang: Lang): Cell[] {
     eve('with_offset'),
     eve('without_offset'),
     eveTest ? outlier(eveTest.ratio, eveTest.threshold, eveTest.breached, lang) : na(lang),
-    `${scaled(o.nii.delta_nii, o.units, o.reporting_currency, lang)} (${lang === 'es' ? 'con el cargo por reajustabilidad de' : 'with the indexation charge of'} ${scaled(o.nii.indexation_charge, o.units, o.reporting_currency, lang)})`,
+    `${scaled(o.nii.delta_nii, o.units, o.reporting_currency, lang)} (${lang === 'es' ? 'con el cargo por reajustabilidad de' : 'with the indexation charge of'} ${scaled(o.nii.indexation_charge, o.units, o.reporting_currency, lang)})${cpiEffect(o, lang)}`,
     niiTest ? outlier(niiTest.ratio, niiTest.threshold, niiTest.breached, lang) : na(lang),
   ];
 }
