@@ -76,8 +76,7 @@ def _shift(w: Any, d: dict[str, Any]) -> None:
     w("")
     w(f"#### Reading (b): the {s['reference_portfolio']} portfolio as the size of a synthetic shift on the Polish evaluation set")
     w("")
-    rows = f", {s['evaluation_rows']:,} rows, locked" if s.get("evaluation_rows") is not None else ""
-    w(f"Evaluation set: {s['evaluation_set']}{rows}. The score is the displacement, in robust standard deviations, of the model's five leading features.")
+    w(f"Evaluation set: {s['evaluation_set']}. The score is the displacement, in robust standard deviations, of the model's five leading features.")
     w("")
     w("| Shift | Score | AUC | Brier | Change in AUC | PSI of the score | Decisions that flip |")
     w("|---|---:|---:|---:|---:|---:|---:|")

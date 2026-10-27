@@ -27,8 +27,10 @@ def _spanish_args() -> list[tuple[str, int, str]]:
 
 
 def test_b3_the_evaluation_set_is_its_id_and_its_rows() -> None:
+    # the id and the count in the one string of the contract, the form the view parses into a name and a localised count
     block = v_shift.evaluation_set_block(3151)
-    assert block == {"evaluation_set": "uci-polish-3year-holdout", "evaluation_rows": 3151}
+    assert block == {"evaluation_set": "uci-polish-3year-holdout (3,151 rows, locked)"}
+    assert v_shift.EVALUATION_SET == "uci-polish-3year-holdout"
 
 
 def test_b7_the_sgcd_texts_say_scoring_and_benchmark_in_spanish() -> None:
