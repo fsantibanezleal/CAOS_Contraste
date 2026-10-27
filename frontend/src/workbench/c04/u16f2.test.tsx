@@ -64,8 +64,10 @@ describe('U16-F2 C04', () => {
 
   it('V04-4: the semester charts keep a table of the numbers they draw', () => {
     const markup = render(<SemestersView sel={makeSel(sp(), { grade: 3 })} />, 'en');
-    expect(markup).toContain('data-table="semesters-l1"');
+    // both drawn: the years card's table carries the two PDs and the L1 distance (U16-R4 c05: under its drawing the L1 table kept
+    // two rows readable at 1280, so it moved to a card of its own with the PDs)
     expect(markup).toContain('data-table="semesters-pd"');
+    expect(markup).toMatch(/<table[^>]*data-table="semesters-pd"[\s\S]*?<th>L1<\/th>/);
   });
 
   it('V04-2: the threshold labels of the p-value chart are short', () => {

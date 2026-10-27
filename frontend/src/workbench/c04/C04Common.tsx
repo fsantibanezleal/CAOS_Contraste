@@ -126,6 +126,19 @@ export type Cited =
   | { kind: 'design'; key: string }
   | { kind: 'missing' };
 
+/** A source registry's name or publisher in the language of the view: the title and the names as published, the locators and the
+ * joining word in Spanish ("(versión de los autores), sección 4", "Tabla 5", "J. S. Rosenthal y J. Z. Wei"; ruling 6 of 2026-10-27,
+ * U16-R4 c05 m11: English table locators in a Spanish view). */
+export function sourceTextIn(text: string, lang: Lang): string {
+  if (lang === 'en') return text;
+  return text
+    .replace(/\(authors' version\)/g, '(versión de los autores)')
+    .replace(/, section (\d+)/g, ', sección $1')
+    .replace(/, Table (\d+)/g, ', Tabla $1')
+    // "and" between two authors' names only (a journal title keeps its own: "Journal of Banking and Finance")
+    .replace(/(\b[A-Z][\w'-]+) and ([A-Z]\. )/g, '$1 y $2');
+}
+
 /** What a finding's evidence names: a test row ("test@model@segment"), a measured rate ("rate:<key>") or the block of
  * the outputs the bake computed the finding from ("design:<block>"). */
 export function citedOf(v: VariantArtifact<unknown>, ref: string): Cited {
@@ -485,7 +498,7 @@ export function papersChart(p: PublishedVariant, points: EvidencePoint[]): Desig
     yMarks: [{ y: 0, label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, tone: 'neutral' }],
     note: {
       en: `Every printed value of the three papers (each paper's own inputs recomputed by riskvalidation), as the recomputation over the print, minus one, in percent: 0 is exact. ${agree} of ${checks.length} agree at the printed digits; red, the ${differ} that do not; amber, Engelmann's W hat, judged within the rounding of its printed entries.${zeros.length ? ` ${zeros.length} printed zeros${exact ? ' are recomputed as exactly 0 and' : ''} have no ratio to draw.` : ''}`,
-      es: `Cada valor impreso de los tres artículos (los insumos de cada artículo recalculados por riskvalidation), como el recálculo sobre lo impreso, menos uno, en porcentaje: 0 es exacto. ${agree} de ${checks.length} concuerdan a los dígitos impresos; en rojo, los ${differ} que no; en ámbar, el W hat de Engelmann, juzgado dentro del redondeo de sus entradas impresas.${zeros.length ? ` ${zeros.length} ceros impresos${exact ? ' se recalculan como exactamente 0 y' : ''} no tienen razón que dibujar.` : ''}`,
+      es: `Cada valor impreso de los tres artículos (los insumos de cada artículo recalculados por riskvalidation), como el recálculo sobre lo impreso, menos uno, en porcentaje: 0 es exacto. ${agree} de ${checks.length} concuerdan a los dígitos impresos; en rojo, los ${differ} que no; en ámbar, la Ŵ de Engelmann, juzgada dentro del redondeo de sus entradas impresas.${zeros.length ? ` ${zeros.length} ceros impresos${exact ? ' se recalculan como exactamente 0 y' : ''} no tienen razón que dibujar.` : ''}`,
     },
   };
 }
@@ -955,7 +968,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
       dataKey={stateKey}
       note={{
         en: `The mean of the yearly one-year PDs over the cohorts where the grade has ratings (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition, dash the agency (${dashes('en')}); a zero average has no point. Grey: each agency's TTC default rate. Marked: the rail's grade. ${pick(ESMA_DEFINITIONS, 'en')} ${entities('en')}. ${attribution}.`,
-        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}.`,
+        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attributionIn(attribution, 'es')}.`,
       }}
     >
       <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
@@ -1051,9 +1064,9 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                 <tr key={id} data-licence-class={s.class} data-source={id}>
                   <td className="caos-col-text">
                     <a href={s.landing} target="_blank" rel="noreferrer">
-                      {s.name}
+                      {sourceTextIn(s.name, lang)}
                     </a>
-                    {` (${s.publisher})`}
+                    {` (${sourceTextIn(s.publisher, lang)})`}
                   </td>
                   <td className="caos-col-text">
                     {lang === 'es' && LICENCE_ES[s.licence] ? LICENCE_ES[s.licence] : s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>

@@ -98,7 +98,10 @@ describe('U16-F8 C07: the shell draws the grouped bars and the bridge', () => {
           run += st.amount / M;
           expect(x.span![1]).toBeCloseTo(run, 9);
           expect(x.tone).toBe(st.amount >= 0 ? 'bad' : 'good');
-          expect(x.label[lang]).toBe(st.label[lang]);
+          // the drawing names a step by the words before its colon, the full label is its hint (U16-R4 c09 n1)
+          const words = st.label[lang].includes(': ') ? st.label[lang].slice(0, st.label[lang].indexOf(': ')) : st.label[lang];
+          expect(x.label[lang]).toBe(words);
+          expect(((x as { hint?: { en: string; es: string } }).hint)?.[lang]).toBe(st.label[lang]);
         });
         const last = d[d.length - 1];
         expect(last.id).toBe('to');

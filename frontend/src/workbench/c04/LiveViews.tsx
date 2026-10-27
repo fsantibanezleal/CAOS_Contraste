@@ -50,6 +50,7 @@ import {
   type GradeIntervals,
   type StartPortfolio,
   attributionIn,
+  CORRELATION_PICKED,
 } from './selection';
 
 const LIVE = 'live' as const;
@@ -668,7 +669,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                 x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
                 y={{ label: { en: 'Interval width (log scale)', es: 'Ancho del intervalo (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
                 series={widths}
-                marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
+                marks={[{ x: sel.rho, label: CORRELATION_PICKED }]}
               />
             ) : (
               <ReasonTable reason={{ en: `${G} has no counts under this definition.`, es: `${G} no tiene conteos con esta definición.` }} />
@@ -701,6 +702,12 @@ const AXIS_NAME: Record<string, Both> = {
   jlt: { en: 'JLT', es: 'JLT' },
 };
 const isGenerator = (key: string) => key in ESTIMATOR_COLOR && !(key in DEFINITION_COLOR);
+
+/** A capital row's entry in the key: its number and axis name, then its label where the label says more ("1 D2 rated defaulters",
+ * "9 Truth: The true generator"), never the name twice ("5 EM: EM"; U16-R4 c05 n5, c06 n3). */
+export function keyLabel(n: number, short: string, label: string): string {
+  return label.toLowerCase().startsWith(short.toLowerCase()) ? `${n} ${label}` : `${n} ${short}: ${label}`;
+}
 
 /** The colour of a capital row: its definition's or its generator's, the truth's on a family. Some definitions and
  * generators share a colour (D2 and EM, D3 and the diagonal adjustment); their points are numbered and their lines
@@ -776,7 +783,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const x = padded(drawnRows.length);
   // one point per drawn row at its position, numbered as on the axis (two pairs of rows share a colour)
   const series: ChartSeries[] = drawnRows.map((r, i) => ({
-    label: { en: `${i + 1} ${axisName(r, 'en')}: ${pick(r.label, 'en')}`, es: `${i + 1} ${axisName(r, 'es')}: ${pick(r.label, 'es')}` },
+    label: { en: keyLabel(i + 1, axisName(r, 'en'), pick(r.label, 'en')), es: keyLabel(i + 1, axisName(r, 'es'), pick(r.label, 'es')) },
     values: drawnRows.map((_, j) => (j === i ? r.result?.average ?? null : null)),
     color: rowColor(r.key),
     mode: 'points',

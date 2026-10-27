@@ -953,22 +953,19 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       empty,
       credit(o, true),
     );
-    // the drawn chart keeps the numbers it draws beside it (a chart with no table is a picture only: U16-R2 b02 M7)
+    // the drawn chart keeps the numbers it draws in a card of its own (a chart with no table is a picture only: U16-R2 b02 M7; under
+    // the chart, at 1280 the table kept 0 of its 16 rows readable: U16-R4 c05, ruling 8)
     pdBody = (
-      <ChartOverTable
-        chart={
-          <UPlotChart
-            height="fill"
-            x={{ values: built.pd.x, label: built.pd.axis, format: YEAR_FORMAT }}
-            y={{ label: { en: `PD of ${g} (%, log scale)`, es: `PD de ${g} (%, escala log.)` }, log: true, format: { percent: true, digits: 2 } }}
-            series={built.pd.series}
-          />
-        }
-      >
-        {pdTable}
-      </ChartOverTable>
+      <UPlotChart
+        height="fill"
+        x={{ values: built.pd.x, label: built.pd.axis, format: YEAR_FORMAT }}
+        y={{ label: { en: `PD of ${g} (%, log scale)`, es: `PD de ${g} (%, escala log.)` }, log: true, format: { percent: true, digits: 2 } }}
+        series={built.pd.series}
+      />
     );
   }
+  // the years compared, a card of their own when both drawings are drawn: each table under its drawing kept one or two rows at 1280
+  const yearsCard = built.case === 'drawn' && built.l1.drawn;
   return (
     <ViewsRow>
       <PlotCard
@@ -980,19 +977,29 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
         note={built.l1.drawn ? l1Note : join({ en: 'No year has a distance to draw: the table gives what the artifact holds.', es: 'Ningún año tiene una distancia que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))}
       >
         {built.l1.drawn ? (
-          <ChartOverTable
-            chart={
-              <UPlotChart
-                height="fill"
-                x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
-                y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
-                series={built.l1.series}
-                marks={built.l1.marks}
-              />
-            }
-          >
-            <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
-          </ChartOverTable>
+          yearsCard ? (
+            <UPlotChart
+              height="fill"
+              x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
+              y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
+              series={built.l1.series}
+              marks={built.l1.marks}
+            />
+          ) : (
+            <ChartOverTable
+              chart={
+                <UPlotChart
+                  height="fill"
+                  x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
+                  y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
+                  series={built.l1.series}
+                  marks={built.l1.marks}
+                />
+              }
+            >
+              <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
+            </ChartOverTable>
+          )
         ) : (
           <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
         )}
@@ -1000,6 +1007,11 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       <PlotCard fill title={pdTitle} lane={REPLAY} provenance={prov} dataKey={stateKey} note={pdNote}>
         {pdBody}
       </PlotCard>
+      {yearsCard ? (
+        <PlotCard fill title={{ en: `${g} by year: the two PDs and the distance`, es: `${g} por año: las dos PD y la distancia` }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={credit(o, true)}>
+          {pdTable}
+        </PlotCard>
+      ) : null}
     </ViewsRow>
   );
 }

@@ -458,7 +458,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Every repetition simulates this chain: the one-year transition probabilities of the true generator Q, the EM generator of the pooled annual CEREP counts of S&P's EU entity, ${entity}. Rows: the grade at the start of the year; columns: the state at its end, default (D) last; percent. ${definitionNote('en')} A row picks its grade. ${att}.`,
-            `Cada repetición simula esta cadena: las probabilidades de transición a un año del generador verdadero Q, el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P, ${entity}. Filas: el grado al inicio del año; columnas: el estado al final, con el incumplimiento (D) al último; porcentaje. ${definitionNote('es')} Una fila elige su grado. Atribución: ${att}.`,
+            `Cada repetición simula esta cadena: las probabilidades de transición a un año del generador verdadero Q, el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P, ${entity}. Filas: el grado al inicio del año; columnas: el estado al final, con el incumplimiento (D) al último; porcentaje. ${definitionNote('es')} Una fila elige su grado. Atribución: ${attributionIn(att, 'es')}.`,
           )}
         >
           {/* the scale above the map, not in the card's head: there the title and the lane badges leave it no room (the

@@ -7,6 +7,7 @@ import type { Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import { shortName } from '../model';
+import { segmentName } from '../names';
 import type { NamedParam } from '../c20/U14Common';
 
 export type C02Outputs = components['schemas']['c02Outputs'];
@@ -59,6 +60,18 @@ export function rungName(sel: Pick<C02Sel, 'data'> | null, id: string): Bi {
   const m = sel?.data.variant.model.find((x) => x.id === id);
   const t = shortName(m, id);
   return typeof t === 'string' ? { en: t, es: t } : t;
+}
+
+/** The name of a ladder rung in the Context, from the loaded file's own model where the file carries it: the single-variable rung's
+ * input differs by file (U16-R4 c03 NB2: the 1-year file's "Attr39" on every variant) and is named as the codebook names it
+ * ("Single variable: profit on sales / sales (Attr39)", NB1), a `_missing` column as its missing-value indicator. */
+export function ladderLabel(sel: Pick<C02Sel, 'data'> | null, label: Bi): Bi {
+  const own = /^Single variable \(/.test(label.en) ? sel?.data.variant.model.find((m) => bareModel(m.id) === 'P0-single')?.title : undefined;
+  const title = (own as Bi | undefined) ?? label;
+  const col = /^Single variable \(([^()]+)\)$/.exec(title.en)?.[1];
+  if (!col) return title;
+  const name = segmentName(`characteristic:${col}`, { caseId: 'C02' });
+  return name ? { en: `Single variable: ${name.en}`, es: `Una variable: ${name.es}` } : title;
 }
 
 /** The selection a variant opens on: the challenger of the first comparison (else the last rung) in focus. */

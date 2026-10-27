@@ -475,8 +475,9 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
       const defsText = list(l, grp.defs.map((x) => pick(CODE[x], l)));
       parts.push(t(l, `the long-run average of ${list(l, grp.grades)} under ${defsText}`, `el promedio de largo plazo de ${list(l, grp.grades)} bajo ${defsText}`));
     }
-    if (chart.zeroLast5) parts.push(t(l, `${chart.zeroLast5} means of the last five cohorts`, `${chart.zeroLast5} medias de las últimas cinco cohortes`));
-    if (chart.zeroLower) parts.push(t(l, `${chart.zeroLower} lower bounds of a grade without a default`, `${chart.zeroLower} cotas inferiores de un grado sin incumplimientos`));
+    if (chart.zeroLast5) parts.push(chart.zeroLast5 === 1 ? t(l, 'a mean of the last five cohorts', 'una media de las últimas cinco cohortes') : t(l, `${chart.zeroLast5} means of the last five cohorts`, `${chart.zeroLast5} medias de las últimas cinco cohortes`));
+    // one bound in the singular (U16-R4 c06 n7: "1 lower bounds")
+    if (chart.zeroLower) parts.push(chart.zeroLower === 1 ? t(l, 'a lower bound of a grade without a default', 'una cota inferior de un grado sin incumplimientos') : t(l, `${chart.zeroLower} lower bounds of a grade without a default`, `${chart.zeroLower} cotas inferiores de un grado sin incumplimientos`));
     return parts.length
       ? t(l, ` A 0 cannot sit on a log axis and is left out (the table prints it): ${list(l, parts)}.`, ` Un 0 no cabe en un eje logarítmico y se omite (la tabla lo imprime): ${list(l, parts)}.`)
       : '';
