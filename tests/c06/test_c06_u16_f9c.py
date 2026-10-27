@@ -29,10 +29,11 @@ def test_a_metric_is_named_by_what_it_measures() -> None:
     sicr, ecl = got["F-SICR-amber"], got["F-ECL-BACKTEST-red"]
     for t in (sicr, ecl):
         assert "(metric " not in t["en"] and "(métrica " not in t["es"], t
-    assert "Stage 2 default rate 2 times the Stage 1 one" in sicr["en"]
-    assert "tasa de incumplimiento de la Etapa 2 de 2 veces la de la Etapa 1" in sicr["es"]
-    assert "realised losses 0.0713 times the ECL" in ecl["en"]
-    assert "pérdidas realizadas de 0,0713 veces la PCE" in ecl["es"]
+    # four significant digits since U16-R4 c07 N-m2 (an amber ratio of 1.9951 read as the green bar of 2)
+    assert "Stage 2 default rate 1.995 times the Stage 1 one" in sicr["en"]
+    assert "tasa de incumplimiento de la Etapa 2 de 1,995 veces la de la Etapa 1" in sicr["es"]
+    assert "realised losses 0.07126 times the ECL" in ecl["en"]
+    assert "pérdidas realizadas de 0,07126 veces la PCE" in ecl["es"]
 
 
 def test_a_test_not_evaluated_is_said_in_words() -> None:
