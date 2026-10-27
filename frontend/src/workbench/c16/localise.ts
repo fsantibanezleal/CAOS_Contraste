@@ -2,7 +2,7 @@
 // balance-sheet item, a source line, an LCR paragraph, a test note. A string without an entry is printed as it is, and the test
 // r2.test.tsx renders every view on every committed document in Spanish and fails on an English word or a slug left. The ids of the
 // documents (a variant, a source, a class of deposits) are named by the maps below, never printed as ids.
-import { localise, type Rule } from '../c14/localise';
+import { dropPlanTags, localise, type Rule } from '../c14/localise';
 
 type Map = Record<string, string>;
 
@@ -52,7 +52,8 @@ const TEXT: Map = {
   'US Treasury par yield curve of 2022-12-30 priced against the par curve of 2021-12-31 (a par bond per maturity band of the securities book, the profile applied to the held-to-maturity amortised cost)':
     'curva de rendimientos par del Tesoro de EE. UU. del 2022-12-30 valorada contra la curva par del 2021-12-31 (un bono a la par por banda de vencimiento del libro de valores, el perfil aplicado al costo amortizado mantenido al vencimiento)',
   // the notes of the tests
-  'not evaluated: the horizon of 5 days is shorter than far = 35': 'no evaluada: el horizonte de 5 días es menor que lejos = 35',
+  // the engine key "far" is the far end of the cliff diagnostic, day 35 (R3 c17 B4): the sentence says so
+  'not evaluated: the horizon of 5 days is shorter than far = 35': 'no evaluada: el horizonte de 5 días es más corto que el extremo lejano del diagnóstico de acantilado, el día 35',
   'not evaluated: the solve was refused, so there is no multiplier to round trip': 'no evaluada: la solución fue rechazada, así que no hay multiplicador para el viaje de ida y vuelta',
   // the reference of a test with no note of its own (U16-R2 b06 m3 and b07 m1: the cell shows it)
   // liq.list_compounding_golden
@@ -125,8 +126,15 @@ export const NAME_TEXT: Record<string, { en: string; es: string }> = {
 
 export const C16_RULES: ReadonlyArray<Rule> = exact(TEXT);
 
-/** The Spanish of a document string, or the string itself in English or when no entry knows it. */
-export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => localise(s, lang, C16_RULES);
+/** The English reader sentences of an engine note that carries a key (R3 c17 B4: "far = 35"). */
+const EN_TEXT: Map = {
+  'not evaluated: the horizon of 5 days is shorter than far = 35': 'not evaluated: the horizon of 5 days is shorter than the far end of the cliff diagnostic, day 35',
+};
+
+/** The Spanish of a document string, or the string itself in English or when no entry knows it; in both languages without the plan
+ * and decision tags (the 2026-10-27 ruling) and an engine key read as a sentence. */
+export const es = (s: string | null | undefined, lang: 'en' | 'es'): string =>
+  dropPlanTags(lang === 'en' ? EN_TEXT[s ?? ''] ?? s ?? '' : localise(s, lang, C16_RULES));
 
 /** The name of an id in the language; an id without a name keeps its text. */
 export const nameOf = (id: string, lang: 'en' | 'es'): string => NAME_TEXT[id]?.[lang] ?? id;

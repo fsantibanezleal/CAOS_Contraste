@@ -108,6 +108,21 @@ describe('the names gate: every id a reader can meet has a name', () => {
     expect([...bad].slice(0, 40)).toEqual([]);
   });
 
+  it('names the segment of every row a shared tests table shows, so no two rows read the same (U16-F10a, the 2026-10-27 ruling)', () => {
+    // C01's grades and inputs, C03's vintages, C08's cohorts, C10's Euler levels and correlation grid, C02's and C20's inputs and
+    // slices, C21's group contrasts
+    const bad = new Set<string>();
+    for (const { path, doc } of docs) {
+      const caseId = (doc as Obj).case_id;
+      if (!['C01', 'C02', 'C03', 'C08', 'C09', 'C10', 'C20', 'C21'].includes(caseId as string)) continue;
+      for (const t of ((doc as Obj).tests as Array<Obj> | undefined) ?? []) {
+        const seg = t.segment;
+        if (typeof seg === 'string' && seg !== 'portfolio' && !segmentName(seg, { caseId: caseId as string })) bad.add(`${path} ${seg}`);
+      }
+    }
+    expect([...bad].slice(0, 40)).toEqual([]);
+  });
+
   it('keeps models.gen.json equal to what the documents say (node scripts/gen-names.mjs)', () => {
     expect(serialise(committed)).toBe(serialise(collectModelNames(derived)));
   });

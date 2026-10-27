@@ -8,6 +8,7 @@ import type { Light, TestRow } from '../lib/contract.types';
 import { LIGHT_TEXT, relight, thresholdLabel, type PolicyAlphas } from '../lib/policy';
 import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
+import { segmentName } from './names';
 
 /** The portfolio-level tests of the battery, in the order a validation report reads them. */
 const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
@@ -23,7 +24,7 @@ const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'pd.spiegelhalter', label: { en: 'Spiegelhalter', es: 'Spiegelhalter' } },
   { id: 'pd.brier', label: { en: 'Brier score (descriptive)', es: 'Puntaje de Brier (descriptiva)' } },
   { id: 'pd.ece', label: { en: 'Expected calibration error (descriptive)', es: 'Error de calibración esperado (descriptiva)' } },
-  { id: 'stability.psi', label: { en: 'PSI against the training slice', es: 'PSI contra el tramo de entrenamiento' } },
+  { id: 'stability.psi', label: { en: 'PSI against the training slice', es: 'PSI contra la partición de entrenamiento' } },
   { id: 'rating.hhi', label: { en: 'Grade concentration, Herfindahl (ECB)', es: 'Concentración en grados, Herfindahl (BCE)' } },
 ];
 
@@ -39,7 +40,14 @@ export function LightCell({ row, alphas, className, descriptive }: { row: TestRo
   // the DeLong test is two-sided, so its light says the AUCs differ, not which is higher: the direction is named beside it (U16-R2 b01 m3)
   const diff = row.test_id === 'disc.delong' ? extra(row, 'difference') : null;
   const direction = diff === null || diff === 0 ? null : diff > 0 ? 'higher' : 'lower';
-  const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, p >= 0.1 && p < 1 ? { decimals: 2 } : { digits: 2 }) : formatNumber(value(row), lang, { digits: 3 });
+  // a p-value that rounds to a threshold it is not on takes a third digit, so it shows which side of the line it falls (R3 c02 m5: 0.049876
+  // printed "0.05 amber" under "amber below 0.05")
+  const pFormat = (x: number) => {
+    const two = x >= 0.1 && x < 1 ? { decimals: 2 } : { digits: 2 };
+    const rounded = Number(x.toPrecision(2));
+    return (rounded === alphas.amber || rounded === alphas.red) && rounded !== x ? { digits: 3 } : two;
+  };
+  const shown = stat !== null ? formatNumber(stat, lang, { digits: 3 }) : p === 0 ? '< 1E-300' : p !== null ? formatNumber(p, lang, pFormat(p)) : formatNumber(value(row), lang, { digits: 3 });
   return (
     <td data-light={light} className={`ct-light ct-light-${light}${className ? ` ${className}` : ''}`} title={pick(thresholdLabel(row, alphas), lang)}>
       {shown}
@@ -128,7 +136,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
         lane="live"
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The posterior interval column, shown from 1500 px wide, is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). La columna del intervalo posterior, visible desde 1500 px de ancho, es la posterior Beta(D + 1/2, N - D + 1/2).' }}
+        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The posterior interval column, which a wide window adds, is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). La columna del intervalo posterior, que una ventana ancha agrega, es la posterior Beta(D + 1/2, N - D + 1/2).' }}
       >
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
@@ -238,13 +246,14 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
               <td>{pick({ en: 'with the 95% interval', es: 'con el intervalo 95 %' }, lang)}</td>
               <td>
                 {formatNumber(value(test(v, 'disc.auc', CHAMPION)), lang, { decimals: 4 })}{' '}
-                <span className="ct-wide-only">
+                {/* the interval on every width: at 390 it wraps under the value, the label says it is shown (R3 c01 M1) */}
+                <span data-interval="">
                   ({formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_low'), lang, { decimals: 4 })} - {formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_high'), lang, { decimals: 4 })})
                 </span>
               </td>
               <td>
                 {formatNumber(value(test(v, 'disc.auc', sel.challenger)), lang, { decimals: 4 })}{' '}
-                <span className="ct-wide-only">
+                <span data-interval="">
                   ({formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_low'), lang, { decimals: 4 })} - {formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_high'), lang, { decimals: 4 })})
                 </span>
               </td>
@@ -270,11 +279,12 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
         <PlotCard fill title={{ en: 'PD of defaulters and non-defaulters, challenger', es: 'PD de incumplidores y no incumplidores, retador' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
           <UPlotChart
             height="fill"
-            x={{ values: dist.x, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
+            // log10 PD bins on a log axis, the two groups apart by the dash as well as the colour (R3 c02 m12, m13)
+            x={{ values: dist.x, log: true, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
             y={{ label: { en: 'Share of the group', es: 'Fracción del grupo' }, format: { percent: true, decimals: 0 } }}
             series={[
               { label: { en: 'Defaulters', es: 'Incumplidores' }, values: dist.def, color: '--color-bad' },
-              { label: { en: 'Non-defaulters', es: 'No incumplidores' }, values: dist.non, color: '--color-good' },
+              { label: { en: 'Non-defaulters', es: 'No incumplidores' }, values: dist.non, color: '--color-good', dash: [6, 4] },
             ]}
           />
         </PlotCard>
@@ -346,7 +356,8 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
               <tbody>
                 {csi.map((t) => (
                   <tr key={t.segment ?? t.inputs_hash}>
-                    <td className="caos-col-text">{(t.segment ?? '').replace('characteristic:', '')}</td>
+                    {/* the input by its codebook name (R3 c01 B2, B4) */}
+                    <td className="caos-col-text">{pick(segmentName(t.segment ?? '', { caseId: 'C01' }) ?? { en: t.segment ?? '', es: t.segment ?? '' }, lang)}</td>
                     <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
                     <LightCell row={t} alphas={sel.alphas} />
                   </tr>
@@ -362,7 +373,7 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: "Each bin's contribution to the PSI, on the training slice's PD deciles; tied values merge deciles, so a rung can have fewer than ten bins. The PSI is their sum.", es: 'La contribución de cada tramo al PSI, sobre los deciles de PD del tramo de entrenamiento; los valores empatados unen deciles, así que un peldaño puede tener menos de diez tramos. El PSI es su suma.' }}
+        note={{ en: "Each bin's contribution to the PSI, on the training slice's PD deciles; tied values merge deciles, so a rung can have fewer than ten bins. The PSI is their sum.", es: 'La contribución de cada tramo al PSI, sobre los deciles de PD de la partición de entrenamiento; los valores empatados unen deciles, así que un peldaño puede tener menos de diez tramos. El PSI es su suma.' }}
       >
         <UPlotChart
           height="fill"

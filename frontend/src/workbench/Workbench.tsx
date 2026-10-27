@@ -107,8 +107,8 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(sel?.data.variant.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La scorecard, desde la tabla de puntos versionada.' } },
-        { label: { en: 'PD, scorecard', es: 'PD, scorecard' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
+        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La tarjeta de puntuación, desde la tabla de puntos versionada.' } },
+        { label: { en: 'PD, scorecard', es: 'PD, tarjeta de puntuación' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'PD, EBM (raw)', es: 'PD, EBM (cruda)' }, value: live?.pdEbm ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Before its calibration map.', es: 'Antes de su mapa de calibración.' } },
         { label: { en: 'Outcome', es: 'Resultado' }, text: live ? (live.defaulted ? { en: 'defaulted', es: 'incumplió' } : { en: 'did not default', es: 'no incumplió' }) : undefined, unitless: true },
       ]}

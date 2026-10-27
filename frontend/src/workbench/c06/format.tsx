@@ -50,12 +50,14 @@ export function MaybeNumber({ value, reason, format }: { value: number | null; r
 
 /**
  * An amount for a place that is narrow (the rail's read-outs, an axis): the value scaled to billions or millions with
- * the unit that says so ("19.6 bn USD", "19,6 mil M USD"), never an eleven-digit amount. The table beside a drawing
+ * the unit that says so ("19.6 bn USD", "19,6 mil M USD", "3.2 mn USD"), never an eleven-digit amount. The table beside a drawing
  * keeps the whole amount; a null stays null so the read-out says "not available" in the same unit.
  */
 export function compactMoney(v: number | null | undefined, currency: string): { value: number | null; unit: BiText; format: FormatOptions } {
   const a = v === null || v === undefined || !Number.isFinite(v) ? 0 : Math.abs(v);
-  const [div, en, es] = a >= 1e9 || a === 0 ? [1e9, 'bn', 'mil M'] : a >= 1e6 ? [1e6, 'm', 'M'] : [1, '', ''];
+  // a million is "mn" in English, never "m", which reads as milli (R3 c13 m8); zero keeps the billion unit, so a read-out of several
+  // amounts keeps one unit (the C15 rail names it once, in its title)
+  const [div, en, es] = a >= 1e9 || a === 0 ? [1e9, 'bn', 'mil M'] : a >= 1e6 ? [1e6, 'mn', 'M'] : [1, '', ''];
   const unit: BiText = div === 1 ? { en: currency, es: currency } : { en: `${en} ${currency}`, es: `${es} ${currency}` };
   return { value: v === null || v === undefined || !Number.isFinite(v) ? null : v / div, unit, format: { digits: 4 } };
 }
@@ -106,7 +108,7 @@ export function alignTo(xs: readonly number[], ys: readonly number[], grid: read
  * drawing (ADR-0071 rule 8), not a short table beside it.
  */
 export function ChartOverTable({ chart, children, chartMin = '15rem' }: { chart: ReactNode; children?: ReactNode; chartMin?: string }) {
-  // `chartMin`: a horizontal bar chart needs about 1.5rem a row, or its rows scroll inside the drawing
+  // `chartMin`: a horizontal bar chart needs about 1.5rem a row (the axis aside), or its rows scroll inside the drawing
   return (
     <div className="ct-stack" data-caos-flow="">
       <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div>

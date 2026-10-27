@@ -22,7 +22,8 @@ describe('the Spanish views of C12', () => {
     setLang('es');
     const text = view(<C12TestsView sel={defaultSel(nettingData)} />);
     for (const re of ENGLISH) expect(text, String(re)).not.toMatch(re);
-    expect(text).toMatch(/W\^2 supera el valor crítico simulado/);
+    // R3 c13 m4 (U16-F10a): the statistic written W², the horizon in words
+    expect(text).toMatch(/W² supera el valor crítico simulado/);
   });
 
   it('the profile and the comparison write the ORE platform and the paragraph ranges in Spanish', () => {

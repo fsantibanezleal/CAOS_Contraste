@@ -51,7 +51,8 @@ describe('U16-F4 C15: the Spanish view', () => {
     setLang('es');
     const text = visibleText(html(<IndexationView sel={selOf('cpi-surprise')} />));
     expect(text).toContain('cargo = 0,025 x |PN_UR|, PN_UR = posición neta en UF x valor de la UF');
-    expect(text).toContain('efecto = -pn_ur x surprise_pp / 100 (pérdida positiva)');
+    // R3 c16 Q (U16-F10a): symbols with a legend, never the engine keys pn_ur and surprise_pp
+    expect(text).toContain('efecto = -PN_UR x S / 100 (pérdida positiva), con PN_UR la posición neta en UF y S la sorpresa de inflación en puntos porcentuales');
     expect(text).not.toContain('charge =');
   });
 

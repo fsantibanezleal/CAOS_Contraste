@@ -49,7 +49,7 @@ describe('U16-F2 C06', () => {
     const markup = render(<WeightsView sel={selOf('rd-2019-12')} />, 'en');
     expect(markup).toContain('data-colour-bar="simplex"');
     const note = textOf(markup).match(/Colour: ([^)]*)\)/)?.[1] ?? '';
-    expect(note).toMatch(/bn USD|m USD/);
+    expect(note).toMatch(/bn USD|mn USD/);
   });
 
   it('V06-5: the rung reason sits under its rung, in the language; a test of one name carries its segment', () => {

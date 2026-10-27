@@ -29,11 +29,12 @@ def _t(en: str, es: str) -> dict:
     return {"en": en, "es": es}
 
 
-#: the label a chip, a column header or a chart key shows; the title is the full name
+#: the label a chip, a column header or a chart key shows; the title is the full name. No English technical word in Spanish (the
+#: ruling of 2026-10-27): the scorecard is "tarjeta de puntuación", boosting "potenciación".
 SHORT_TITLES: dict[str, dict[str, str]] = {
     "P0-constant": {"en": "P0 Constant", "es": "P0 Constante"},
     "P0-single": {"en": "P0 One variable", "es": "P0 Una variable"},
-    "P1-scorecard": {"en": "P1 Scorecard", "es": "P1 Scorecard"},
+    "P1-scorecard": {"en": "P1 Scorecard", "es": "P1 Tarjeta de puntuación"},
     "P2a-l1": {"en": "P2a L1", "es": "P2a L1"},
     "P2b-pltr": {"en": "P2b PLTR", "es": "P2b PLTR"},
     "P3-ebm": {"en": "P3 EBM", "es": "P3 EBM"},
@@ -41,6 +42,28 @@ SHORT_TITLES: dict[str, dict[str, str]] = {
     "P4-xgboost": {"en": "P4 XGBoost", "es": "P4 XGBoost"},
     "P5-tabpfn": {"en": "P5 TabPFN", "es": "P5 TabPFN"},
 }
+
+
+#: the full name of each rung (the single-variable rung's names its input: ``single_title``)
+TITLES: dict[str, dict[str, str]] = {
+    "P0-constant": _t("Constant PD", "PD constante"),
+    "P1-scorecard": _t("WoE logistic scorecard", "Tarjeta de puntuación logística WoE"),
+    "P2a-l1": _t("L1 logistic regression on WoE", "Regresión logística L1 sobre WoE"),
+    "P2b-pltr": _t("Penalised logistic tree regression (PLTR)", "Regresión logística penalizada con árboles (PLTR)"),
+    "P3-ebm": _t("Explainable boosting machine (GA2M)", "Máquina de potenciación explicable (GA2M)"),
+    "P4-lightgbm": _t("Monotone gradient boosting (LightGBM)", "Potenciación de gradiente monótona (LightGBM)"),
+    "P4-xgboost": _t("Monotone gradient boosting (XGBoost cross-check)", "Potenciación de gradiente monótona (contraste con XGBoost)"),
+    "P5-tabpfn": _t("TabPFN v2 (research challenger)", "TabPFN v2 (retador de investigación)"),
+}
+
+
+def single_title(feature: str, names: dict[str, dict[str, str]] | None = None) -> dict[str, str]:
+    """The single-variable rung's title, its input named as the dataset's codebook does (U16-R3 c01 B2, B4: never the column code;
+    C01's two files by default, ``c01_features.FEATURE_NAME``); an input no codebook names keeps its column name."""
+    from .c01_features import FEATURE_NAME
+
+    name = (names or FEATURE_NAME).get(feature, {"en": feature, "es": feature})
+    return _t(f"Single variable ({name['en']})", f"Una variable ({name['es']})")
 
 
 @dataclass
@@ -77,8 +100,10 @@ def fit_ladder(
     X_tr: pd.DataFrame, y_tr: np.ndarray, X_cal: pd.DataFrame, y_cal: np.ndarray, folds, *,
     features: tuple[str, ...], categorical: tuple[str, ...], monotone: dict[str, int], seed: int,
     with_xgboost: bool = True, with_tabpfn: bool = False, log: Callable[[str], None] | None = None,
+    feature_names: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Rung]:
-    """Every rung fitted on (X_tr, y_tr); the calibration maps on (X_cal, y_cal); folds index into X_tr."""
+    """Every rung fitted on (X_tr, y_tr); the calibration maps on (X_cal, y_cal); folds index into X_tr. ``feature_names`` names the
+    inputs in the titles (C01's codebooks by default; a case on another file passes its own, or its column names stay)."""
     clock = [time.perf_counter()]
 
     def done(rung: str) -> None:
@@ -93,17 +118,17 @@ def fit_ladder(
     rungs: dict[str, Rung] = {}
 
     const = benchmark.fit_constant(y_tr)
-    rungs["P0-constant"] = Rung("P0-constant", "P0", _t("Constant PD", "PD constante"), "own", "n/a", "MIT", const,
+    rungs["P0-constant"] = Rung("P0-constant", "P0", TITLES["P0-constant"], "own", "n/a", "MIT", const,
                                 parameters={"pd": {"value": const.pd_value, "unit": "probability"}})
 
     done("P0-constant")
     sc = scorecard.fit_scorecard(X_tr, y_tr, features=feats, categorical=categorical, monotone=monotone)
     single = benchmark.fit_single_variable(sc, y_tr)
-    rungs["P0-single"] = Rung("P0-single", "P0", _t(f"Single variable ({single.feature})", f"Una variable ({single.feature})"),
+    rungs["P0-single"] = Rung("P0-single", "P0", single_title(single.feature, feature_names),
                               "own on optbinning", _v("optbinning"), "Apache-2.0", single, details=single.record(),
                               parameters={"bins": {"value": len(single.event_rates), "unit": "bins"}})
     rungs["P1-scorecard"] = Rung(
-        "P1-scorecard", "P1", _t("WoE logistic scorecard", "Scorecard logística WoE"),
+        "P1-scorecard", "P1", TITLES["P1-scorecard"],
         "optbinning + statsmodels Logit", f"optbinning {_v('optbinning')}, statsmodels {_v('statsmodels')}",
         "Apache-2.0, BSD-3-Clause", sc, details=scorecard.record(sc),
         parameters={"pdo": {"value": sc.pdo, "unit": "points"}, "odds_ref": {"value": sc.odds_ref, "unit": "odds"},
@@ -115,15 +140,14 @@ def fit_ladder(
     screened = [f for f in feats if sc.iv[f] >= scorecard.IV_MIN]
     binnings = sc.binnings | _all_binnings(sc, X_tr, y_tr, screened, categorical, monotone)
     l1 = penalised.fit_penalised_woe(sc, binnings, X_tr, y_tr, folds, seed=seed, screened=screened)
-    rungs["P2a-l1"] = Rung("P2a-l1", "P2", _t("L1 logistic regression on WoE", "Regresión logística L1 sobre WoE"),
+    rungs["P2a-l1"] = Rung("P2a-l1", "P2", TITLES["P2a-l1"],
                            "scikit-learn LogisticRegression", _v("scikit-learn"), "BSD-3-Clause", l1, details=l1.record(),
                            parameters={"C": {"value": l1.c, "unit": "inverse penalty"}})
 
     done("P2a-l1")
     cat_woe = {f: binnings.get(f) or scorecard._fit_binning(f, X_tr[f].to_numpy(), y_tr, True, 0) for f in categorical}
     pl = penalised.fit_pltr(X_tr, y_tr, feats, folds, seed=seed, woe=cat_woe)
-    rungs["P2b-pltr"] = Rung("P2b-pltr", "P2", _t("Penalised logistic tree regression (PLTR)",
-                                                  "Regresión logística penalizada con árboles (PLTR)"),
+    rungs["P2b-pltr"] = Rung("P2b-pltr", "P2", TITLES["P2b-pltr"],
                              "scikit-learn trees and LogisticRegression, own rule extraction", _v("scikit-learn"),
                              "BSD-3-Clause", pl, details=pl.record(),
                              parameters={"C": {"value": pl.c, "unit": "inverse penalty"},
@@ -132,15 +156,14 @@ def fit_ladder(
     done("P2b-pltr")
     e = ebm.fit_ebm(X_tr, y_tr, features=feats, categorical=categorical, monotone=monotone, seed=seed)
     ex = ebm.export(e)
-    rungs["P3-ebm"] = Rung("P3-ebm", "P3", _t("Explainable boosting machine (GA2M)", "Máquina de boosting explicable (GA2M)"),
+    rungs["P3-ebm"] = Rung("P3-ebm", "P3", TITLES["P3-ebm"],
                            "InterpretML ExplainableBoostingClassifier", _v("interpret-core"), "MIT", e,
                            calibration=fit_isotonic(clip_pd(e.predict_pd(X_cal)), y_cal), details={"export": ex},
                            parameters={k: {"value": v, "unit": "count"} for k, v in ex["config"].items()})
 
     done("P3-ebm")
     lg = gbm.fit_lightgbm(X_tr, y_tr, folds, features=feats, categorical=categorical, monotone=monotone, seed=seed)
-    rungs["P4-lightgbm"] = Rung("P4-lightgbm", "P4", _t("Monotone gradient boosting (LightGBM)",
-                                                        "Gradient boosting monótono (LightGBM)"),
+    rungs["P4-lightgbm"] = Rung("P4-lightgbm", "P4", TITLES["P4-lightgbm"],
                                 "LightGBM", _v("lightgbm"), "MIT", lg,
                                 calibration=fit_isotonic(clip_pd(lg.predict_pd(X_cal)), y_cal),
                                 details={**gbm.record(lg), "monotonicity": gbm.monotonicity(lg, X_tr, seed=seed)},
@@ -150,8 +173,7 @@ def fit_ladder(
     done("P4-lightgbm")
     if with_xgboost:
         xg = gbm.fit_xgboost(X_tr, y_tr, folds, features=feats, categorical=categorical, monotone=monotone, seed=seed)
-        rungs["P4-xgboost"] = Rung("P4-xgboost", "P4", _t("Monotone gradient boosting (XGBoost cross-check)",
-                                                          "Gradient boosting monótono (contraste con XGBoost)"),
+        rungs["P4-xgboost"] = Rung("P4-xgboost", "P4", TITLES["P4-xgboost"],
                                    "XGBoost", _v("xgboost"), "Apache-2.0", xg,
                                    calibration=fit_isotonic(clip_pd(xg.predict_pd(X_cal)), y_cal),
                                    details={**gbm.record(xg), "monotonicity": gbm.monotonicity(xg, X_tr, seed=seed)},
@@ -161,7 +183,7 @@ def fit_ladder(
         from ..model import tabpfn_rung
 
         tp = tabpfn_rung.fit_tabpfn(X_tr, y_tr, features=feats, categorical=categorical, seed=seed)
-        rungs["P5-tabpfn"] = Rung("P5-tabpfn", "P5", _t("TabPFN v2 (research challenger)", "TabPFN v2 (retador de investigación)"),
+        rungs["P5-tabpfn"] = Rung("P5-tabpfn", "P5", TITLES["P5-tabpfn"],
                                   "tabpfn", _v("tabpfn"), tabpfn_rung.WEIGHTS_LICENCE, tp,
                                   calibration=fit_isotonic(clip_pd(tp.predict_pd(X_cal)), y_cal),
                                   details=tp.record(), parameters={"n_estimators": {"value": tp.n_estimators, "unit": "ensemble members"}})
