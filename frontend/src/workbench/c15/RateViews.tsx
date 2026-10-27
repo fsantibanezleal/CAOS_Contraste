@@ -50,7 +50,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={bars}
-              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
@@ -106,7 +106,11 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
               ))}
             </tbody>
           </table>
-          <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'} />
+          <IrrbbTestsTable
+            variant={sel.data.variant}
+            only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'}
+            lead={{ en: 'The test of the CMF golden values, which covers the delta NII. The delta EVE view lists every test of the document.', es: 'La prueba de los valores de referencia de la CMF, que cubre el delta NII. La vista del delta EVE lista todas las pruebas del documento.' }}
+          />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -147,7 +151,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
                 { id: 'charge', label: { en: 'Standard charge', es: 'Cargo estándar' }, value: c.charge / axis.div, tone: 'warn' as const },
                 { id: 'cpi', label: { en: 'CPI surprise effect', es: 'Efecto de la sorpresa de IPC' }, value: s ? s.effect / axis.div : null, tone: s && s.effect > 0 ? ('bad' as const) : ('good' as const) },
               ]}
-              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >

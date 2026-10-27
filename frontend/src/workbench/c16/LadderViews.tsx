@@ -173,10 +173,10 @@ export function RunoffView({ sel }: { sel: C16Sel | null }) {
     <UPlotChart
       height="fill"
       x={{ values: l.day_index, label: { en: 'Day of the ladder', es: 'Día de la escalera' }, format: { decimals: 0 } }}
-      y={{ label: { en: 'Cumulative outflow (share)', es: 'Salida acumulada (parte)' }, format: { percent: true, decimals: 0 } }}
+      y={{ label: { en: 'Cumulative outflow (percent of the segment)', es: 'Salida acumulada (porcentaje del segmento)' }, format: { percent: true, decimals: 0 } }}
       series={[
         ...l.segments.map((g, i) => ({ label: text(SEGMENT_TEXT, g.segment), values: g.cumulative_outflow_share, color: (['--color-accent', '--color-warn', '--color-magenta', '--color-fg-subtle', '--color-good'] as const)[i % 5], width: 2.4 })),
-        ...s.denominators.map((d) => ({ label: { en: `Realised run, ${text(DENOMINATOR_SHORT, d.id).en}`, es: `Corrida realizada, ${text(DENOMINATOR_SHORT, d.id).es}` }, values: at(d.realised_share), color: '--color-bad' as const, mode: 'points' as const, size: d.id === sel.denominator ? 13 : 8 })),
+        ...s.denominators.map((d) => ({ label: { en: `Realised run, ${text(DENOMINATOR_SHORT, d.id).en}`, es: `Corrida realizada, ${text(DENOMINATOR_SHORT, d.id).es}` }, values: at(d.realised_share), color: d.id === sel.denominator ? ('--color-bad' as const) : ('--color-warn' as const), mode: 'points' as const, size: d.id === sel.denominator ? 13 : 8 })),
       ]}
       marks={l.day_index[l.day_index.length - 1] >= 30 && range ? [{ x: range.days, label: { en: 'LCR window: 30 days', es: 'Ventana del LCR: 30 días' } }] : []}
       yMarks={[{ y: chosen.realised_share, label: { en: `Realised run, ${text(DENOMINATOR_SHORT, chosen.id).en}: ${SHARE(chosen.realised_share, 'en')}`, es: `Corrida realizada, ${text(DENOMINATOR_SHORT, chosen.id).es}: ${SHARE(chosen.realised_share, 'es')}` }, tone: 'bad' }, ...lcrMarks]}
@@ -315,7 +315,9 @@ export function RunSpeedsView({ sel }: { sel: C16Sel | null }) {
                   <td data-na={r.modelled_share === null ? 'true' : undefined}>
                     <MaybeNumber value={r.modelled_share} reason={r.reason ? pick(r.reason, lang) : null} format={(v) => SHARE(v, lang)} />
                   </td>
-                  <td className="ct-wide-only" data-na={implied.has(r.row_id) ? undefined : 'true'}>{implied.has(r.row_id) ? SHARE(implied.get(r.row_id) ?? null, lang) : formatNumber(null, lang)}</td>
+                  <td className="ct-wide-only" data-na={implied.has(r.row_id) ? undefined : 'true'}>
+                    <MaybeNumber value={implied.has(r.row_id) ? implied.get(r.row_id) ?? null : null} reason={implied.has(r.row_id) ? null : pick({ en: 'only the calibration rows and the SVB anchor imply a daily rate', es: 'solo las filas de calibración y el ancla de SVB implican una tasa diaria' }, lang)} format={(v) => SHARE(v, lang)} />
+                  </td>
                   <td className="ct-text">{pick(text(ROLE_TEXT, r.role), lang)}</td>
                 </tr>
               ))}

@@ -51,6 +51,10 @@ LCR_STATEMENT = txt("A Basel LCR formula applied to FDIC call-report aggregates 
                     "Una fórmula LCR de Basilea aplicada a agregados del reporte de llamada FDIC con supuestos declarados y "
                     "comportamiento sintético de depósitos: no es el LCR informado ni regulatorio del banco.")
 
+#: the realised run the scoring reads: the run at the bank, never an apposition that makes the run the bank (R4 c20 n5)
+EVENT_LABEL = txt("The deposit run of 9 and 10 March 2023 at the bank that failed on 2023-03-10",
+                  "La corrida de depósitos del 9 y 10 de marzo de 2023 en el banco que quebró el 2023-03-10")
+
 
 # ------------------------------------------------------------------------------------------------------ small blocks
 
@@ -446,8 +450,7 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
             ms = modelled(r.days) / base
             rows.append({"row_id": r.row_id, "bank": r.bank, "year": r.year, "horizon_days": r.days, "observed_share": r.outflow_share, "modelled_share": ms,
                          "error": r.outflow_share - ms, "role": role, "reason": None})
-    blk = {"event": {"label": txt("The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10",
-                                  "La corrida de depósitos del 9 y 10 de marzo de 2023, el banco que quebró el 2023-03-10"),
+    blk = {"event": {"label": EVENT_LABEL,
                      "event_date": anchors.EVENT_DATE, "horizon_days": ev, "source": anchors.REVIEW_SOURCE},
            "model_deposit_base": base, "modelled_outflow": mo, "denominators": den, "svb_anchor": _anchor(), "table_a1_scoring": rows}
     return blk, tests

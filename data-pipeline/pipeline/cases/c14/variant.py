@@ -73,6 +73,15 @@ def curve_block(vd: str, curve: ParCurve) -> tuple[dict[str, Any], np.ndarray, n
     return block, ten, zero, r0
 
 
+#: the balance-sheet assumption of the dynamic NII: what it leaves out are the items not sensitive to rates; the non-interest
+#: deposits are an item at a zero rate (R4 c17 n7: "Non-interest items are left out" sat above the table that holds them)
+DYNAMIC_ASSUMPTION = t(
+    "Constant balance sheet: maturing and repricing flows are replaced by identical new ones. Items not sensitive to rates (other "
+    "assets, other liabilities) are left out; non-interest deposits stay at a zero rate.",
+    "Balance constante: los flujos que vencen o reprecian se reemplazan por otros idénticos. Las partidas no sensibles a tasas (otros "
+    "activos, otros pasivos) se omiten; los depósitos sin interés quedan a tasa cero.")
+
+
 def dynamic_items(r: Report, items: list[Item], r_short: float, beta: float) -> list[dict[str, Any]]:
     """The interest-bearing items of the dynamic NII: balance, current rate, spread and beta, reset months (non-interest items left out).
 
@@ -215,9 +224,7 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
                        "delta_vs_base": float(base_total - res.total)})
     dynamic = {
         "horizon_months": asm.HORIZON_MONTHS,
-        "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0, "description": t(
-            "Constant balance sheet: maturing and repricing flows are replaced by identical new ones. Non-interest items are left out.",
-            "Balance constante: los flujos que vencen o reprecian se reemplazan por otros idénticos. Las partidas sin interés se omiten.")},
+        "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0, "description": DYNAMIC_ASSUMPTION},
         "items": dyn_items, "scenarios": dyn_sc}
 
     # ---- rung 6: EaR and EVaR under Hull-White one-factor scenarios (engine: hw1f_scenarios, ear_evar, ear_evar_mc_error)

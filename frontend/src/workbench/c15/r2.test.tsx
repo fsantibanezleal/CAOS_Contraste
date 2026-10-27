@@ -33,8 +33,9 @@ describe('U16-F4 C15: the Spanish view', () => {
       for (const [view, View] of VIEWS) {
         const text = visibleText(html(<View sel={selOf(name)} />));
         for (const leak of englishLeaks(text, VERBATIM)) all.push(`${name} ${view} ${leak}`);
-        // a symbol or an engine function of a formula is kept; the evidence ids of the shared findings card are that card's
-        if (view !== 'Findings') for (const id of text.match(/\b[a-z]+(?:_[a-z0-9]+)+\b/g) ?? []) if (!SYMBOLS.includes(id)) all.push(`${name} ${view} id ${id}`);
+        // a symbol or an engine function of a formula is kept; the evidence ids of the shared findings card are that card's; a URL
+        // is a citation, its path kept as published (R4 c17 D2: "basel_framework: a URL path, which is fine")
+        if (view !== 'Findings') for (const id of text.replace(/https?:\/\/\S+/g, '').match(/\b[a-z]+(?:_[a-z0-9]+)+\b/g) ?? []) if (!SYMBOLS.includes(id)) all.push(`${name} ${view} id ${id}`);
       }
     }
     expect([...new Set(all)]).toEqual([]);

@@ -414,7 +414,7 @@ describe('the C16 instrument', () => {
     const run = html(<RunoffView sel={selOf(htmV)} />);
     expect(run).toContain(pct(0.85, 'es'));
     const lcr = html(<LcrView sel={selOf(lcrV)} />);
-    expect(lcr).toContain('no el LCR reportado del banco');
+    expect(lcr).toContain('no el LCR del banco'); // the callout title; the bold lead that said it a third time is gone (R4 c19 n6)
     expect(lcr).toContain(pct(lcrV.outputs.lcr!.ratio, 'es'));
     const ctx = html(<C16ContextView sel={selOf(htmV)} />);
     expect(ctx).toContain('convención');

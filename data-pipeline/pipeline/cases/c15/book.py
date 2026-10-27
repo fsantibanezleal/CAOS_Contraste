@@ -89,10 +89,12 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
           "Libro largo en UF fondeado con bonos largos en pesos (el doble de plazo): los dos tramos se mueven en sentido contrario y la "
           "compensación de 50 por ciento se lee activada y desactivada.",
           offset="compared", net_uf_share_tier1=0.30, clp_bond_years_scale=2.0),
-    _spec("floors-active", "Floors active", "Pisos activos",
-          "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor.",
+    # the book most exposed to the floor, not one where a floor binds: none does on the curves of the date (R4 c18 m13)
+    _spec("floors-active", "Floor-exposed UF book", "Libro en UF expuesto al piso",
+          "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor; "
+          "no floor binds on the curves of the valuation date.",
           "Posición en UF casi plana con 70 por ciento de los créditos comerciales en UF a tasa variable: el libro más expuesto al piso "
-          "posterior al choque de la UR.",
+          "posterior al choque de la UR; ningún piso actúa sobre las curvas de la fecha de valoración.",
           net_uf_share_tier1=0.05, ur_floating_share=0.70),
 )}
 

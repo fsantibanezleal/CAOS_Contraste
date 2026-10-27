@@ -317,8 +317,8 @@ def _sum(root: Path, rel: str) -> str:
 
 
 TITLES = {
-    "single-swap": ("Single swap", "Un solo swap", "One 10 year payer swap of 10M USD, uncollateralised.", "Un swap pagador a 10 años de 10M USD, sin colateral."),
-    "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro swaps bajo un acuerdo de neteo, sin colateral."),
+    "single-swap": ("Single swap", "Una sola permuta", "One 10 year payer swap of 10M USD, uncollateralised.", "Una permuta pagadora a 10 años de 10M USD, sin colateral."),
+    "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro permutas bajo un acuerdo de neteo, sin colateral."),
     "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR de 10 días", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 días hábiles."),
     "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR de 20 días", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 días hábiles."),
     "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (una aproximación por regresión, no SIMM)."),
@@ -326,12 +326,16 @@ TITLES = {
 }
 
 
+#: the regime of every C12 document in the manifest (R4 c15 B1: "permutas" in Spanish, ruling 6 of 2026-10-27)
+REGIME = vt.text("US Treasury curves read up to the date, a synthetic USD swap book, ORE and QuantLib as references.",
+                 "Curvas del Tesoro de EE. UU. leídas hasta la fecha, un libro sintético de permutas en USD, ORE y QuantLib como referencias.")
+
+
 def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_dir: Path | None = None, **kw: Any) -> dict[str, Any]:
     built = build(seed, data_root, ore_inputs_dir=INPUT_DIR_DEFAULT if ore_inputs_dir is None else ore_inputs_dir, **kw)
     root = Path(paths.root)
     entries, sums = [], []
-    regime = vt.text("US Treasury curves read up to the date, a synthetic USD swap book, ORE and QuantLib as references.",
-                     "Curvas del Tesoro de EE. UU. leídas hasta la fecha, un libro sintético de swaps en USD, ORE y QuantLib como referencias.")
+    regime = REGIME
     e = _check_and_write(root, MODELS_REL, built.models, "models")
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",
