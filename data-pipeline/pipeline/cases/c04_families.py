@@ -124,7 +124,7 @@ THIN_N = (50, 100, 200, 500, 1000)
 
 LADDERS: dict[str, dict[str, Any] | None] = {
     "markov": None,
-    "momentum": {"name": _t("Momentum alpha (beta 1 a year)", "Alfa de momentum (beta 1 por año)"),
+    "momentum": {"name": _t("Momentum alpha (beta 1 a year)", "Alfa del impulso (beta 1 por año)"),
                  "unit": "unitless", "values": list(ALPHAS)},
     "cycle": {"name": _t("Downgrade rates times k in the third year",
                          "Tasas de rebaja multiplicadas por k en el tercer año"),

@@ -184,7 +184,7 @@ class C03:
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
             depends_on=self.depends_on(),
-            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"}, question=self.question,
+            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Puntuación crediticia"}, question=self.question,
             sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))
         write_json(paths.manifests / f"{CASE_ID}.json", manifest)

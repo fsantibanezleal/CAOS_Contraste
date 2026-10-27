@@ -38,7 +38,7 @@ DERIVED_IDS = ("case-index", "case-manifest", "test-result", *ENVELOPES)
 # the catalog's reasons as (en, es) templates, in the order of its Missing-data table
 T_PROVIDER = ("Served by its provider ({provider}); the real producer is not built yet.",
               "Lo sirve su proveedor ({provider}); el productor real aún no está construido.")
-T_NOT_BAKED = ("The pipeline has not baked this build.", "El pipeline no ha generado esta versión.")
+T_NOT_BAKED = ("The pipeline has not baked this build.", "La cadena de cálculo no ha generado esta versión.")
 T_PLANNED = ("Cases planned and not built yet: {n} of {total} ({ids}).",
              "Casos planificados y aún no construidos: {n} de {total} ({ids}).")
 T_MANIFESTS = ("{n} of {total} manifests are absent.", "Faltan {n} de {total} manifiestos.")

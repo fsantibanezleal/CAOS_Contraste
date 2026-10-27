@@ -113,7 +113,7 @@ export function RungsView({ sel }: { sel: C02Sel | null }) {
         {...card}
         note={{
           en: 'The bars are the AUC of every rung. The table gives each challenger minus the champion: the AUC difference with its 95% DeLong interval and p-value (an interval that holds zero is no evidence of a gain), the Brier difference with its paired-bootstrap interval, and the share of firms whose grade moves by two grades or more.',
-          es: 'Las barras son el AUC de cada peldaño. La tabla da cada retador menos el campeón: la diferencia de AUC con su intervalo DeLong de 95 % y su valor p (un intervalo que contiene el cero no es evidencia de una ganancia), la diferencia de Brier con su intervalo bootstrap pareado, y la parte de empresas cuyo grado se mueve dos grados o más.',
+          es: 'Las barras son el AUC de cada peldaño. La tabla da cada retador menos el campeón: la diferencia de AUC con su intervalo DeLong de 95 % y su valor p (un intervalo que contiene el cero no es evidencia de una ganancia), la diferencia de Brier con su intervalo de remuestreo pareado, y la parte de empresas cuyo grado se mueve dos grados o más.',
         }}
       >
         <ChartOverTable
@@ -136,7 +136,7 @@ export function RungsView({ sel }: { sel: C02Sel | null }) {
                 <th>{pick({ en: '95% interval (DeLong)', es: 'Intervalo 95 % (DeLong)' }, lang)}</th>
                 <th>{pick({ en: 'p (DeLong)', es: 'p (DeLong)' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Brier difference', es: 'Diferencia de Brier' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: '95% interval (paired bootstrap)', es: 'Intervalo 95 % (bootstrap pareado)' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: '95% interval (paired bootstrap)', es: 'Intervalo 95 % (remuestreo pareado)' }, lang)}</th>
                 <th>{pick({ en: 'Grades moved', es: 'Grados movidos' }, lang)}</th>
               </tr>
             </thead>
