@@ -115,7 +115,7 @@ export function IrrbbTestsTable({ variant, only, lead }: { variant: VariantArtif
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? localise(t.notes, lang, NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
+                  <td className="ct-text">{t.notes ? localise(t.notes, lang, TEST_NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
                 </tr>
               );
             })}
@@ -125,16 +125,6 @@ export function IrrbbTestsTable({ variant, only, lead }: { variant: VariantArtif
     </div>
   );
 }
-
-/**
- * The engine notes of the IRRBB tests, with the note of the wholesale NMD stability row that C15's delta EVE view now shows (R4 c18
- * n1: the view listed one test of five). The rule belongs with the others in `localise.ts` TEST_NOTE_RULES (U16-F12a's file in fix
- * round 5); it sits here until the merge moves it, so the Spanish view never prints the English note.
- */
-const NOTE_RULES: ReadonlyArray<Rule> = [
-  ...TEST_NOTE_RULES,
-  [/^not evaluated: fewer than (\d+) estimation windows$/, (g) => `no evaluada: menos de ${g[1]} ventanas de estimación`],
-];
 
 /** "Unavailable" card for a view whose block the document lacks: a declared state, never an empty chart. */
 export function UnavailableCard({ sel, title, reason }: { sel: { data: CaseData } | null; title: BiText; reason: BiText }) {

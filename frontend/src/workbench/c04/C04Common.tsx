@@ -5,6 +5,7 @@
 import { PlotCard, Readout, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
+import './c04-notes.css';
 import { C04WriteUp } from '../../content/cases/C04';
 import {
   ATTRIBUTION_FALLBACK,
@@ -627,7 +628,9 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
 export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
-  const shares = useFindingsShares();
+  // the drawing's note is long: from a third to two fifths of the row, or its note leaves the plot under its floor at 1280 (U16-R4 C04
+  // notes); from 2000 px wide the shared split stands
+  const shares: [number, number] = useFindingsShares()[0] === 2 ? [3, 2] : [1, 2];
   // a short table stacks over its drawing only where the screen has the height for both: at 1280 x 800 the papers'
   // three findings left the drawing under them no plot at all
   const tall = useMedia('(min-height: 1100px)', true);

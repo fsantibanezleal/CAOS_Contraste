@@ -76,7 +76,7 @@ describe('C04 on a short screen', () => {
 
   it("Findings: the papers' short table beside its drawing, not over it", () => {
     const m = html(<C04FindingsView sel={makeSel(dataOf('published'))} />);
-    expect(m).toMatch(/<div class="caos-views-row" data-views="2"><div class="caos-views-col" data-share="2"/);
+    expect(m).toMatch(/<div class="caos-views-row" data-views="2"><div class="caos-views-col" data-share="3"/);
     expect(m).toContain('data-series=');
   });
 });

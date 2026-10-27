@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { noteText } from '../c08/notes';
-import { C10TestsTable, IllustrativeNotice } from './C10Common';
+import { C10TestsTable, NoticeFlow } from './C10Common';
 import { barMin, fullMoney, moneyAxis } from './format';
 import {
   DIAGNOSTIC_TEXT, ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, referenceNote, rungOf, text, measureText,
@@ -99,7 +99,7 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
           es: `${rung.label.es}: la densidad de la pérdida de la cartera en un año en ${unit.es}, con la pérdida esperada, el VaR y el déficit esperado al ${lv.es} marcados y, para un escalón muestreado, su error estándar de Monte Carlo. La curva punteada es la cartera homogénea grande del primer escalón: la aproximación infinitamente granular, que no tiene concentración por nombre, nunca la distribución de pérdidas verdadera de esta cartera.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -149,6 +149,7 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
               : pick({ en: 'An analytic rung: no scenarios, no sampling error.', es: 'Un escalón analítico: sin escenarios y sin error de muestreo.' }, lang)}
           </p>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -179,7 +180,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
           es: `El VaR al ${lv.es} de la misma cartera ilustrativa con cada modelo de la escalera, en ${unit.es}. La pérdida esperada es la misma en todos; lo que cambia es la cola: las cópulas agregan dependencia, CreditRisk+ un factor Gamma, el ajuste de granularidad la concentración por nombre que la cartera infinitamente granular omite. Un escalón que no corrió dice por qué y no tiene barra.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: `VaR at ${lv.en} by rung`, es: `VaR al ${lv.es} por escalón` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: `VaR (${unit.en})`, es: `VaR (${unit.es})` }, format: { decimals: div > 1 ? 2 : 0 } }} />}
@@ -245,6 +246,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
             ))}
           <C10TestsTable variant={sel.data.variant} only={(t) => t.test_id === 'portfolio.mc_convergence' || t.test_id === 'portfolio.crp_recursion_vs_mc'} />
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -289,7 +291,7 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
           es: `La contribución de Euler de cada grupo de la cartera ilustrativa al VaR y al déficit esperado al ${lv.es}, del escalón ${method.es}: la pérdida esperada del grupo dado que la cartera está en el VaR, o más allá. Suman el total. La parte de un grupo en la cola puede estar lejos de su parte en la exposición.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         {own ? null : (
           <p className="ct-note" data-state="fallback">
             {pick({ en: 'The rung in focus carries no Euler contributions (only the sampled rungs do); this view shows the first rung that does.', es: 'El escalón en foco no trae contribuciones de Euler (solo los escalones muestreados); esta vista muestra el primero que las trae.' }, lang)}
@@ -358,6 +360,7 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
           )}
           <C10TestsTable variant={sel.data.variant} only={(t) => t.test_id === 'portfolio.euler_additivity'} />
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -391,7 +394,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
           es: `El ajuste de granularidad de Gordy y Lutkebohmert se suma al VaR de la cartera infinitamente granular y es una parte de la EAD. La curva es el ajuste de n nombres idénticos de la mezcla de la cartera al ${lv.es}: cae como 1 sobre n, y la recursión de CreditRisk+ del mismo modelo de un factor se dibuja al lado como verificación. Un punto para el que no se corrió la recursión no tiene verificación y dice por qué.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -462,6 +465,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
             )}
           </p>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
