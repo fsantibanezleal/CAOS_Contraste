@@ -152,7 +152,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               term to a letter a line and cut the method at 1280) */}
           <dl className="ct-defs ct-note" data-table="conversion" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
             <dt data-row="pit">{pick({ en: 'Through the cycle to point in time', es: 'De a través del ciclo a puntual' }, lang)}</dt>
-            <dd>{`${PIT_METHOD_TEXT[fit.pit.method] ? pick(PIT_METHOD_TEXT[fit.pit.method], lang) : fit.pit.method}; rho ${pct(fit.pit.rho, lang, 0)}`}</dd>
+            <dd>{`${PIT_METHOD_TEXT[fit.pit.method] ? pick(PIT_METHOD_TEXT[fit.pit.method], lang) : fit.pit.method}; ${pick({ en: 'correlation', es: 'correlación' }, lang)} ρ ${pct(fit.pit.rho, lang, 0)}`}</dd>
             <dt data-row="lgd">{pick({ en: 'LGD', es: 'LGD' }, lang)}</dt>
             <dd>{`${es(fit.lgd.kind)}, ${es(fit.lgd.discounting)}: ${fit.lgd.segments.map((s) => `${pick(segmentLabel(s.segment_id), lang)} ${pct(s.lgd, lang, 0)}`).join(', ')}`}</dd>
             <dt data-row="ead">{pick({ en: 'EAD: revolving conversion factor', es: 'EAD: factor de conversión revolvente' }, lang)}</dt>
@@ -477,6 +477,9 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
   // a segment by the label its document gives it (C07's portfolio segments), else the term words of C06 (R2b c08 B2)
   const portfolio = (variant.outputs as { portfolio?: { segments?: Array<{ segment_id: string; label: { en: string; es: string } }> } }).portfolio;
   const segmentOf = (id: string) => portfolio?.segments?.find((s) => s.segment_id === id)?.label ?? (COHORT_TEXT[id] ? cohortText(id) : segmentLabel(id));
+  // a p column every row leaves empty is dropped, so the light stays in view at 390 (U16-R4 c09 m8: eleven "not available" cells
+  // pushed C07's Light column right of the box)
+  const withP = rows.some((t) => t.p_value !== null && t.p_value !== undefined);
   return (
     <PlotCard
       title={{ en: 'The tests the engine returned', es: 'Las pruebas que devolvió el motor' }}
@@ -495,7 +498,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
                 <th>{pick({ en: 'Statistic or metric', es: 'Estadístico o métrica' }, lang)}</th>
-                <th>p</th>
+                {withP ? <th>p</th> : null}
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
                 <th className="ct-text ct-wide-only ct-repeated">{pick({ en: 'Reference', es: 'Referencia' }, lang)}</th>
               </tr>
@@ -511,7 +514,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                   </td>
                   <td className="ct-text">{t.model_id ? pick(modelName(t.model_id, { caseId: variant.case_id, models: variant.model }) ?? { en: t.model_id, es: t.model_id }, lang) : '-'}</td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
-                  <td>{t.p_value === null ? formatNumber(null, lang) : t.p_value < 1e-4 ? `< ${formatNumber(0.0001, lang, { decimals: 4 })}` : formatNumber(t.p_value, lang, { digits: 2 })}</td>
+                  {withP ? <td>{t.p_value === null || t.p_value === undefined ? formatNumber(null, lang) : t.p_value < 1e-4 ? `< ${formatNumber(0.0001, lang, { decimals: 4 })}` : formatNumber(t.p_value, lang, { digits: 2 })}</td> : null}
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>

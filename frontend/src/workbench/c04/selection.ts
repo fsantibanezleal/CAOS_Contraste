@@ -41,6 +41,14 @@ export const GRADE_AXIS: BiText = { en: 'Grade (1 AAA, 2 AA, 3 A, 4 BBB, 5 BB, 6
  * exact value. C01's findings chart uses the same floor. */
 export const P_FLOOR = 1e-16;
 
+/** Engelmann's portfolios in the language of the view: the paper's symbols, with no English word in a Spanish one ("W hat" reads
+ * the symbol, and "init" takes its Spanish subscript; ruling 6 of 2026-10-27, U16-R4 c05 n2, c06 n5). */
+const ENGELMANN_ES: Record<string, string> = { 'W hat': 'Ŵ', 'W tilde': 'W̃', W_init: 'W_inic', 'W_init 2': 'W_inic 2' };
+export const engelmannName = (name: string, l: 'en' | 'es'): string => (l === 'en' ? name : (ENGELMANN_ES[name] ?? name));
+
+/** The mark of the correlation the rail sets, on the drawings that run over the correlation (U16-R4 c06 n2: it read "rail"). */
+export const CORRELATION_PICKED: BiText = { en: 'Correlation picked', es: 'Correlación elegida' };
+
 /** CEREP's default definitions (docs/cases/C04.md, "What CEREP counts"). */
 export type Definition = 'd2' | 'd3' | 'd4' | 'keep';
 export const DEFINITIONS: Definition[] = ['d2', 'd3', 'd4', 'keep'];

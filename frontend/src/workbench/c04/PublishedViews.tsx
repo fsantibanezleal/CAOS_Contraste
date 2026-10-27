@@ -12,7 +12,7 @@ import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/tra
 import type { C04PublishedOutputs, Text, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { isPublished, type C04Sel, type PublishedVariant } from './selection';
+import { CORRELATION_PICKED, engelmannName, isPublished, type C04Sel, type PublishedVariant } from './selection';
 
 const LIVE = 'live' as const;
 type Lang = 'en' | 'es';
@@ -129,7 +129,7 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
   for (const p of e.portfolios) {
     rows.push({
       key: `${p.name}-pd0`,
-      label: { en: `${p.name}, PD of year 1`, es: `${p.name}, PD del año 1` },
+      label: { en: `${p.name}, PD of year 1`, es: `${engelmannName(p.name, 'es')}, PD del año 1` },
       printed: p.pd0.printed,
       recomputed: p.pd0.recomputed,
       decimals: p.pd0.decimals,
@@ -140,7 +140,7 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
     if (p.extreme) {
       rows.push({
         key: `${p.name}-${p.extreme.kind}`,
-        label: p.extreme.kind === 'min' ? { en: `${p.name}, lowest projected PD`, es: `${p.name}, PD proyectada mínima` } : { en: `${p.name}, highest projected PD`, es: `${p.name}, PD proyectada máxima` },
+        label: p.extreme.kind === 'min' ? { en: `${p.name}, lowest projected PD`, es: `${engelmannName(p.name, 'es')}, PD proyectada mínima` } : { en: `${p.name}, highest projected PD`, es: `${engelmannName(p.name, 'es')}, PD proyectada máxima` },
         printed: p.extreme.printed,
         recomputed: p.extreme.recomputed,
         decimals: p.extreme.decimals,
@@ -186,13 +186,13 @@ export function pathChart(o: C04PublishedOutputs): { years: number[]; series: Ch
   const ps = o.engelmann.portfolios;
   const years = (ps[0]?.pd_path ?? []).map((_, i) => i + 1);
   const ttc = o.engelmann.ttc_pd.recomputed;
-  const series: ChartSeries[] = ps.map((p, i) => ({ label: p.name, values: p.pd_path, color: PATH_COLOR[i % PATH_COLOR.length], width: 2 }));
+  const series: ChartSeries[] = ps.map((p, i) => ({ label: { en: p.name, es: engelmannName(p.name, 'es') }, values: p.pd_path, color: PATH_COLOR[i % PATH_COLOR.length], width: 2 }));
   const yMarks = [{ y: ttc, label: both((l) => `${l === 'en' ? 'TTC PD' : 'PD TTC'} ${pctd(l, ttc, 4)}`), tone: 'neutral' as const }];
   const marks = ps.flatMap((p) => {
     const ext = p.extreme;
     if (!ext) return [];
     const word = (l: Lang) => (ext.kind === 'min' ? (l === 'en' ? 'min' : 'mín') : l === 'en' ? 'max' : 'máx');
-    return [{ x: extremeAt(p.pd_path, ext.kind) + 1, label: both((l) => `${p.name}, ${word(l)}`) }];
+    return [{ x: extremeAt(p.pd_path, ext.kind) + 1, label: both((l) => `${engelmannName(p.name, l)}, ${word(l)}`) }];
   });
   return { years, series: series.filter((s) => s.values.some((x) => x !== null)), yMarks, marks };
 }
@@ -582,7 +582,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
           y={{ label: { en: 'PD bound', es: 'Cota de la PD' }, format: { percent: true, decimals: 1 } }}
           series={series}
-          marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.rho, label: CORRELATION_PICKED }]}
         />
       </PlotCard>
       <PlotCard
@@ -631,7 +631,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
               })}
               {atRail.map((r) => (
                 <tr key={`rail-${r.key}`} data-row={`rail|${r.key}`} className="ct-current">
-                  <td className="ct-text">{`${pick(r.label, lang)}, ${pick({ en: 'rail', es: 'panel' }, lang)} ${rhoText(lang)}, ${lv(lang)}`}</td>
+                  <td className="ct-text">{`${pick(r.label, lang)}, ${pick(CORRELATION_PICKED, lang).toLowerCase()} ${rhoText(lang)}, ${lv(lang)}`}</td>
                   <td>-</td>
                   <td>{bpRange(lang, r.i.lower, r.i.upper, SR190_DECIMALS + 1)}</td>
                   <td className="ct-text">{`N† ${formatNumber(r.i.nEffective, lang, { digits: 4 })}`}</td>

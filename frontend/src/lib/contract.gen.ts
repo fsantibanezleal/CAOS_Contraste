@@ -332,6 +332,8 @@ export interface components {
             outputs: components["schemas"]["c02Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         } & unknown & unknown & unknown & unknown & unknown & unknown & {
             impact?: unknown;
         };

@@ -178,9 +178,10 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
   const cur = c.currency;
   const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
   // the drawing and the gap table a card each (R3 c08 M1: under a 28 rem drawing in one card, the table kept half a row at 1280 and
-  // the drawing lost its last bar and its value axis)
+  // the drawing lost its last bar and its value axis); the gap table takes three fifths of the row and shows the two gaps it is named
+  // for next to the segment (U16-R4 c09 M1: in half the row both gap columns were cut at the card edge)
   return (
-    <ViewsRow shares={[1, 1]}>
+    <ViewsRow shares={[2, 3]}>
       <PlotCard
         fill
         title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
@@ -203,33 +204,33 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
         <thead>
           <tr>
             <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
+            <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
+            <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
             <th>{`CMF B-1 (${cur})`}</th>
             <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
             <th>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</th>
-            <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
-            <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
           </tr>
         </thead>
         <tbody>
           {c.rows.map((r) => (
             <tr key={r.segment_id} data-segment={r.segment_id} className={sel.segment === r.segment_id ? 'ct-current' : undefined}>
               <td className="ct-text">{label(r.segment_id)}</td>
+              <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
+              <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
               <td>{money(r.cmf_b1_provision, lang, cur)}</td>
               <td>{money(r.ifrs9_provision, lang, cur)}</td>
               <td>{money(r.bde_annex9_provision, lang, cur)}</td>
-              <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
-              <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr data-row="unallocated">
             <td className="ct-text">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</td>
+            <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
+            <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
             <td>{money(c.unallocated.cmf_b1_provision, lang, cur)}</td>
             <td>{money(c.unallocated.ifrs9_provision, lang, cur)}</td>
             <td>{money(c.unallocated.bde_annex9_provision, lang, cur)}</td>
-            <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
-            <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
           </tr>
         </tfoot>
       </table>
@@ -237,6 +238,12 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
       </PlotCard>
     </ViewsRow>
   );
+}
+
+/** A bridge step's name on the drawing: the words before its colon ("Measurement basis"), else the whole label. */
+export function stepShort(label: { en: string; es: string }): { en: string; es: string } {
+  const cut = (t: string) => (t.includes(': ') ? t.slice(0, t.indexOf(': ')) : t);
+  return { en: cut(label.en), es: cut(label.es) };
 }
 
 /** The bridge from the B-1 comparable total to the IFRS 9 total: exhaustive steps that sum to the gap. */
@@ -260,10 +267,12 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
     ...b.steps.map((s): BarDatum => {
       const start = run;
       run += s.amount / 1e6;
-      return { id: s.id, label: s.label, value: s.amount / 1e6, span: [start, run], tone: s.amount >= 0 ? 'bad' : 'good' };
+      // the drawing names a step by the words before its colon, the full label is the bar's hint (U16-R4 c09 n1: cut with an ellipsis)
+      return { id: s.id, label: stepShort(s.label), hint: s.label, value: s.amount / 1e6, span: [start, run], tone: s.amount >= 0 ? 'bad' : 'good' };
     }),
     { id: 'to', label: IFRS9_NAME, value: to.total_provision / 1e6, span: [to.total_provision / 1e6, to.total_provision / 1e6], tone: 'warn' },
   ];
+  const zeros = b.steps.filter((s) => s.amount === 0).map((s) => s.label);
   const ends = bars.flatMap((x) => x.span as [number, number]);
   const lo0 = Math.min(...ends);
   const hi0 = Math.max(...ends);
@@ -286,7 +295,13 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
             axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 4 }, range: [lo0 - pad, hi0 + pad] }}
           />
           <p className="ct-note">
-            {pick({ en: `Millions of ${cur}; the axis spans the running total of the bridge, and the two totals are the dots.`, es: `Millones de ${cur}; el eje abarca el total acumulado del puente, y los dos totales son los puntos.` }, lang)}
+            {pick({ en: `Millions of ${cur}; the axis covers the running total of the bridge, and the two totals are the dots`, es: `Millones de ${cur}; el eje cubre el total acumulado del puente, y los dos totales son los puntos` }, lang)}
+            {/* a step of zero has no length, so the shell draws it as a dot too (U16-R4 c09 m2) */}
+            {zeros.length
+              ? lang === 'en'
+                ? `; a step of zero (${zeros.map((z) => z.en).join(', ')}) is a dot on the running total.`
+                : `; un paso de cero (${zeros.map((z) => z.es).join(', ')}) es un punto sobre el total acumulado.`
+              : '.'}
           </p>
         </div>
       </PlotCard>

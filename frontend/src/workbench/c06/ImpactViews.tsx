@@ -425,7 +425,7 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
         dataKey={stateKey}
         note={{
           en: 'Each corner is one scenario at 100% weight. Staging recomputed moves accounts between stages as the weights change; frozen keeps the staging at the weighted conditions, and then the ECL is linear in the weights. The ring is the rail\'s weights.',
-          es: 'Cada vértice es un escenario con 100 % de peso. Etapas recalculadas mueve cuentas entre etapas al cambiar los pesos; congeladas mantiene las etapas en las condiciones ponderadas, y entonces la PCE es lineal en los pesos. El anillo son los pesos del panel.',
+          es: 'Cada vértice es un escenario con 100 % de peso. Con etapas recalculadas, las cuentas se mueven entre etapas al cambiar los pesos; con etapas congeladas, las etapas se mantienen en las condiciones ponderadas, y entonces la PCE es lineal en los pesos. El anillo son los pesos del panel.',
         }}
       >
         {ternary ? (

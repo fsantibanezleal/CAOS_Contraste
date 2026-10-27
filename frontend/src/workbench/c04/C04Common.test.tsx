@@ -247,7 +247,8 @@ describe('C04 Variants', () => {
           if (v.outputs.lra.d4) expect(markup).toContain(`<td data-cell="d4">${esc(pct3(lang, v.outputs.lra.d4.rate[sel.grade]))}</td>`);
           expect(markup).toContain(esc(v.outputs.agency.name));
         }
-        expect(markup).toContain(esc('Source: ESMA CEREP; tables transformed by Contraste'));
+        // ESMA's attribution in the language of the view (U16-R4 c05 B1: an English attribution in a Spanish view is a blocker)
+        expect(markup).toContain(esc(attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang)));
       });
     }
   }
@@ -296,7 +297,7 @@ describe('C04 Context', () => {
         expectSound(markup, `context ${c.id} ${lang}`);
         for (const id of manifest.sources) {
           expect(markup).toContain(`data-licence-class="${manifest.source_details[id].class}"`);
-          expect(markup).toContain(esc(manifest.source_details[id].attribution));
+          expect(markup).toContain(esc(attributionIn(manifest.source_details[id].attribution, lang)));
         }
         expect(markup).toContain('data-licence-class="generator"');
         for (const e of entries) expect(markup).toContain(`data-truth="${e.truth_status}"`);
