@@ -90,6 +90,6 @@ def test_the_executive_brief_and_the_row_table_carry_the_figures_of_the_document
     # the row table: decision rows of each year are the fit-year rows (and the confirm rows of the last pair); the file rows add the left-out codes
     for v in VARIANTS:
         o = docs[v]["outputs"]
-        left = int(re.search(r"(\d+) rows of codes 4 to 8", next(n for n in o["data_notes"] if n["field"] == "action_taken")["reason"]["en"]).group(1))
+        left = int(re.search(r"(\d[\d,]*) rows of codes 4 to 8", next(n for n in o["data_notes"] if n["field"] == "action_taken")["reason"]["en"]).group(1).replace(",", ""))
         assert f"| {o['fit_year']} | {o['scope']['rows_fit'] + left:,} | {o['scope']['rows_fit']:,} |" in text
     assert f"{docs[VARIANTS[-1]]['outputs']['scope']['rows_confirm']:,} |" in text
