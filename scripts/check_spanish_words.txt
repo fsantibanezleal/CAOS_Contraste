@@ -486,3 +486,25 @@ visualizacion visualización
 vivio vivió
 critico crítico
 publicas públicas
+# English technical words a Spanish text may not carry (U16-F10a, the ruling of 2026-10-27): "!word the Spanish to write". The
+# guard also refuses the word's English plural and -ing form, in a Spanish text only; an English text may carry it. Acronyms the
+# Spanish literature uses (PD, LGD, EAD, VaR, ES, CVA, LCR, NSFR, IRRBB, SA-CCR), program and package names and the route name
+# Benchmark are not listed. A reviewed exception (a quotation kept in English and marked) goes to check_spanish_allow.txt.
+!hazard intensidad (de incumplimiento)
+!proxy aproximación, variable sustituta
+!proxies aproximaciones, variables sustitutas
+!backtest prueba retrospectiva
+!back-test prueba retrospectiva
+!roll-off salida, vencimiento
+!offline sin conexión, en diferido
+!odds razón de probabilidades
+!log-odds logaritmo de la razón de probabilidades
+!shock choque
+!scoring calificación, puntuación
+!scorecard tarjeta de puntuación
+!boosting potenciación
+!bootstrap remuestreo
+!commit versión
+!pipeline cadena de cálculo
+!kernel núcleo
+!momentum impulso

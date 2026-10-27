@@ -2,7 +2,7 @@
 // dataset, the description of an engine, an age group, the note of a test. A string without an entry is printed as it is, and r2.test.tsx
 // renders every view on every committed document in Spanish and fails on an English word left. The tests, units and bases are the
 // bake's (pipeline/cases/c20/conv.py, models.py); they stay English in the document, which is the contract's text.
-import { localise, type Rule } from '../c14/localise';
+import { dropPlanTags, localise, type Rule } from '../c14/localise';
 
 type Map = Record<string, string>;
 const exact = (m: Map): ReadonlyArray<Rule> => Object.entries(m).map(([en, es]) => [new RegExp(`^${en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), () => es] as const);
@@ -13,12 +13,12 @@ const TEXT: Map = {
     'Degradación del AUC tolerada a la escala preestablecida 0,1; cerca de 2,5 errores estándar de un AUC sobre la reserva de Taiwán (cerca de 6.000 filas de reserva).',
   'Noise scales for the perturbation robustness grid (06 C.7 l.1009-1012 gives the construction, no values).':
     'Escalas de ruido de la grilla de robustez a perturbaciones (06 C.7 l.1009-1012 da la construcción, no los valores).',
-  'Refits of the reason-code stability (04 J.2 l.881-883 gives none).': 'Reajustes de la estabilidad de los códigos de razón (04 J.2 l.881-883 no da ninguno).',
+  'Refits of the reason-code stability (04 J.2 l.881-883 gives none).': 'Reajustes por remuestreo de la estabilidad de los códigos de razón (04 J.2 l.881-883 no da ninguno).',
   'Seeds of the seed sweep (06 I.1 l.1191 gives none); 20 gives a standard deviation of the AUC with a relative error near 16 percent.':
     'Semillas del barrido de semillas (06 I.1 l.1191 no da ninguna); 20 da una desviación estándar del AUC con un error relativo cercano a 16 por ciento.',
   'The cut-off is the baseline score quantile that declines this share; held fixed under every shift (decision Q10).':
-    'El punto de corte es el cuantil del puntaje base que rechaza esta parte; se mantiene fijo bajo todo cambio (decisión Q10).',
-  "The dossier's example is the worst 10 percent (06 C.7 l.1013-1014).": 'El ejemplo del dossier es el peor 10 por ciento (06 C.7 l.1013-1014).',
+    'El punto de corte es el cuantil del puntaje base que rechaza esta parte; se mantiene fijo bajo todo cambio.',
+  "The dossier's example is the worst 10 percent (06 C.7 l.1013-1014).": 'El ejemplo del dosier es el peor 10 por ciento (06 C.7 l.1013-1014).',
   'The shift score ranking subsamples; a classifier of development against evaluation rows (06 C.7 l.1048-1051 resemblance AUC).':
     'El puntaje de cambio que ordena las submuestras; un clasificador de filas de desarrollo contra filas de evaluación (06 C.7 l.1048-1051, AUC de semejanza).',
   'Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value).':
@@ -27,7 +27,7 @@ const TEXT: Map = {
     'k: un corte es un punto débil cuando su error de prueba excede k veces el promedio (06 C.7 l.1016-1018).',
   // the unit of a named parameter
   'AUC points': 'puntos de AUC',
-  'bootstrap refits': 'reajustes bootstrap',
+  'bootstrap refits': 'reajustes por remuestreo',
   "multiple of each feature's standard deviation": 'múltiplo de la desviación estándar de cada variable',
   'multiple of the average test error': 'múltiplo del error promedio de prueba',
   'name of the score': 'nombre del puntaje',
@@ -53,6 +53,9 @@ const TEXT: Map = {
   'conventional band: significant change (0.10/0.25 rule of thumb, no error control)': 'banda convencional: cambio significativo (regla empírica 0,10/0,25, sin control del error)',
   'not evaluated: an estimate, not a test: CBPE estimates performance without labels (06 C.7 l.1052-1058); it assumes calibrated-probabilities, no-concept-drift, no-extrapolation, adequate-sample; it complements, never replaces, back-testing':
     'no evaluada: una estimación, no una prueba: CBPE estima el desempeño sin etiquetas (06 C.7 l.1052-1058); supone probabilidades calibradas, ausencia de deriva de concepto, ausencia de extrapolación y muestra adecuada; complementa y nunca reemplaza la prueba retrospectiva',
+  // the basis of C02's overfit tolerance (the same parameter, its value read on the Polish holdouts; R3 c03 B2)
+  'Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value); about 1.5 to 3 standard errors of an AUC on the Polish holdouts (271 to 515 events per file), approved as decision V6':
+    'Brecha de AUC entre entrenamiento y prueba sobre la cual se levanta la marca de sobreajuste (06 C.7 l.1016-1018 no da valor); cerca de 1,5 a 3 errores estándar de un AUC sobre las reservas polacas (271 a 515 eventos por archivo)',
   // the groups of the fairness battery
   'under 30': 'menores de 30',
   '50 and over': '50 y más',
@@ -66,7 +69,7 @@ export const C20_RULES: ReadonlyArray<Rule> = [
 ];
 
 /** The Spanish of a document string, or the string itself in English or when no entry knows it. */
-export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => localise(s, lang, C20_RULES);
+export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => dropPlanTags(localise(s, lang, C20_RULES));
 
 type Row = { notes?: string | null };
 /** The tests of a document with their notes in the language: the shared tests table prints `notes` as it finds it. */

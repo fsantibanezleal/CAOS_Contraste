@@ -7,7 +7,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { pct } from '../c06/format';
-import { testText } from '../names';
+import { segmentName, testText } from '../names';
 
 export const LIVE: Lane = 'live';
 
@@ -44,6 +44,13 @@ export function referenceText(t: Pick<TestRow, 'reference' | 'extras'>, lang: 'e
   const r = (t.extras as { reference_text?: { en?: unknown; es?: unknown } } | undefined)?.reference_text;
   const text = r?.[lang];
   return typeof r?.en === 'string' && typeof r?.es === 'string' && typeof text === 'string' ? text : t.reference;
+}
+
+/** The reference of a row in a language that has it: the bilingual reference, or the engine's English one on an English page; null on a
+ * Spanish page when the producer gives the reference in English only (no English remark in a Spanish column; R3 c03 m11). */
+export function referenceIn(t: Pick<TestRow, 'reference' | 'extras'>, lang: 'en' | 'es'): string | null {
+  const r = (t.extras as { reference_text?: { en?: unknown; es?: unknown } } | undefined)?.reference_text;
+  return lang === 'en' || (typeof r?.en === 'string' && typeof r?.es === 'string') ? referenceText(t, lang) : null;
 }
 
 /** An engine note in the page's language (see ENGINE_NOTES). */
@@ -104,17 +111,37 @@ const TEST_TEXT: Record<string, BiText> = {
   'lgd_ead.lgd_discrimination': { en: 'LGD discrimination', es: 'Discriminación de la LGD' },
   'lgd_ead.downturn_coverage': { en: 'Downturn coverage', es: 'Cobertura de la recesión' },
   'lgd_ead.ccf_estimator_bias': { en: 'CCF estimator bias', es: 'Sesgo del estimador de CCF' },
-  'lgd_ead.ead_backtest_by_band': { en: 'EAD back-test by utilisation band', es: 'Backtest de EAD por tramo de utilización' },
+  'lgd_ead.ead_backtest_by_band': { en: 'EAD back-test by utilisation band', es: 'Prueba retrospectiva de la EAD por tramo de utilización' },
 };
+
+/**
+ * The segment of each row of a tests table in words, or null where the row needs none: a row of one segment (a vintage, a grade, a
+ * horizon, a cell, an input) always shows it, and a portfolio row shows it when the table holds the same test and model on another
+ * segment, so no two rows read the same (the 2026-10-27 ruling on R3 c04 M1: every tests table shows the segment). A segment no form
+ * names is shown as written (the names gate keeps that fallback unused).
+ */
+export function segmentLabels(rows: ReadonlyArray<Pick<TestRow, 'test_id' | 'model_id' | 'segment'>>, caseId: string): Array<Bi | null> {
+  const segments = new Map<string, Set<string>>();
+  for (const t of rows) {
+    const k = `${t.test_id}|${t.model_id}`;
+    segments.set(k, (segments.get(k) ?? new Set()).add(t.segment ?? ''));
+  }
+  return rows.map((t) => {
+    if (!t.segment) return null;
+    if (t.segment === 'portfolio' && (segments.get(`${t.test_id}|${t.model_id}`)?.size ?? 1) < 2) return null;
+    return segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment };
+  });
+}
 
 /**
  * The rows the engine returned for the tests of this variant, as a block that sits under the drawing of the view the
  * tests belong to (a table alone cannot fill a stage, ADR-0071 rule 8): a test that did not run shows its reason, not a
- * number. `only` keeps the tests of one view.
+ * number. `only` keeps the tests of one view; each row names its segment where one is needed to tell it apart.
  */
 export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantArtifact; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean }) {
   const lang = useShellLang();
   const rows: TestRow[] = only ? variant.tests.filter(only) : variant.tests;
+  const segments = segmentLabels(rows, variant.case_id);
   return (
     <div data-block="tests">
       <p className="ct-note">
@@ -139,7 +166,10 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={t.test_id}>{pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}</td>
+                  <td className="ct-text" title={t.test_id}>
+                    {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                    {segments[i] ? <span className="ct-row-detail" data-segment={t.segment}>{pick(segments[i]!, lang)}</span> : null}
+                  </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>

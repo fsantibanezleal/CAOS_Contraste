@@ -304,8 +304,9 @@ describe('b12 m11, m12, m13, m9, m14: the Experiments page', () => {
     expect(rows.map((r) => String(r[3])).every((c) => / pp$/.test(c))).toBe(true);
   });
   it('a table amount prints one decimal when scaled so the amounts of a table read alike', () => {
-    expect(U6.money(867_000_000, 'USD', 'en')).toBe('867.0 m USD');
-    expect(U6.money(457_300_000, 'USD', 'en')).toBe('457.3 m USD');
+    // a million is "mn" in English, never "m", which reads as milli (R3 c13 m8, the shared compactMoney; U16-F10a)
+    expect(U6.money(867_000_000, 'USD', 'en')).toBe('867.0 mn USD');
+    expect(U6.money(457_300_000, 'USD', 'en')).toBe('457.3 mn USD');
     expect(U6.money(99_712_000_000, 'USD', 'en')).toBe('99.7 bn USD');
     expect(U6.money(99_600_000_000, 'USD', 'es')).toBe('99,6 mil M USD');
   });
@@ -367,7 +368,8 @@ describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation gro
     expect((markup.match(/ct-narrow-only/g) ?? []).length).toBeGreaterThanOrEqual(2 * 7);
   });
   it('m4: the calibration note says the posterior interval is shown where there is room', () => {
-    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/shown from \d+ px wide/i);
+    // R3 c01 m16 (U16-F10a): the note says what the reader can do, a wider window, not a pixel width
+    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/which a wide window adds/i);
   });
   it('m5: the PSI note says that ties merge deciles', () => {
     expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/tie[sd][^.]*merge/i);

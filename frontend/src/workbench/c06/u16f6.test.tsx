@@ -27,7 +27,7 @@ describe('U16-F6 C06 V06-3', () => {
       const t = table(markup, 'weight-grid');
       const h = heads(t);
       expect(h[0].length).toBeLessThanOrEqual(24);
-      expect(h[1]).toMatch(/bn USD|mil M USD|m USD|M USD/);
+      expect(h[1]).toMatch(/bn USD|mil M USD|mn USD|M USD/);
       for (const c of cells(t)) expect(c, c).not.toMatch(/\d[.,]\d{3}[.,]\d{3}[.,]\d{3}/);
       // the order of the weights is told once, in full, under the table
       expect(textOf(markup)).toMatch(lang === 'en' ? /Weights in the order: Baseline/ : /Pesos en el orden: Base/);
@@ -36,8 +36,8 @@ describe('U16-F6 C06 V06-3', () => {
     it(`stages (${lang}): amounts scaled in their column with the unit in the header`, () => {
       const t = table(render(<StageSummaryView sel={sel('rd-2020-06')} />, lang), 'stage-summary');
       const h = heads(t);
-      expect(h[2]).toMatch(/bn USD|mil M USD|m USD|M USD/);
-      expect(h[3]).toMatch(/m USD|M USD|bn USD|mil M USD/);
+      expect(h[2]).toMatch(/bn USD|mil M USD|mn USD|M USD/);
+      expect(h[3]).toMatch(/mn USD|M USD|bn USD|mil M USD/);
       for (const c of cells(t)) expect(c, c).not.toMatch(/\d[.,]\d{3}[.,]\d{3}[.,]\d{3}/);
     });
   }

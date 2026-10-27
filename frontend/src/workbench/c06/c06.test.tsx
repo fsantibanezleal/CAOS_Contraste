@@ -240,7 +240,8 @@ describe('the C06 rail on the real document', () => {
   it('compact money keeps the unit with the value and leaves a null as null', () => {
     expect(compactMoney(19_584_239_970.51, 'USD').unit).toEqual({ en: 'bn USD', es: 'mil M USD' });
     expect(compactMoney(19_584_239_970.51, 'USD').value).toBeCloseTo(19.58423997, 6);
-    expect(compactMoney(590_890_026.3, 'CLP').unit).toEqual({ en: 'm CLP', es: 'M CLP' });
+    // a million is "mn" in English (R3 c13 m8; U16-F10a)
+    expect(compactMoney(590_890_026.3, 'CLP').unit).toEqual({ en: 'mn CLP', es: 'M CLP' });
     expect(compactMoney(1234.5, 'USD').unit).toEqual({ en: 'USD', es: 'USD' });
     expect(compactMoney(null, 'USD').value).toBeNull();
     expect(axisScale(30_000_000_000, 'USD')).toEqual({ div: 1e9, unit: { en: 'bn USD', es: 'mil M USD' } });

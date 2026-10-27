@@ -452,7 +452,8 @@ describe('the C10 rail', () => {
     expect(markup).toContain('USD');
     expect(markup).not.toMatch(RAW_AMOUNT);
     expect(markup).toMatch(/0\.8738/);
-    expect(markup).toContain('m USD');
+    // a million is "mn" in English, never "m" (R3 c13 m8; U16-F10a)
+    expect(markup).toContain('mn USD');
     expect(html(<RungReadout sel={{ ...base, rung: 'c6-is-student-t' }} />)).toContain(NA);
   });
 

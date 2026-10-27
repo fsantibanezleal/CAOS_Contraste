@@ -32,11 +32,12 @@ describe('U16-F6 C01', () => {
 
   it('b01 m4: a note never names a column the width hides without saying from which width it shows', () => {
     const cal = both((l) => render(<CalibrationView sel={sel()} />, l));
-    expect(cal.en).toMatch(/posterior interval.*1500 px/);
-    expect(cal.es).toMatch(/intervalo posterior.*1500 px/);
+    // R3 c01 m16 (U16-F10a): the notes say what the reader can do (a wider window; on a narrow screen under the value), not a pixel width
+    expect(cal.en).toMatch(/posterior interval column, which a wide window adds/);
+    expect(cal.es).toMatch(/intervalo posterior, que una ventana ancha agrega/);
     const lad = both((l) => render(<LadderView sel={sel()} />, l));
-    expect(lad.en).toMatch(/641 px/);
-    expect(lad.es).toMatch(/641 px/);
+    expect(lad.en).toMatch(/on a narrow screen the interval and the ECE sit under their value/);
+    expect(lad.es).toMatch(/en una pantalla angosta el intervalo y el ECE quedan bajo su valor/);
   });
 
   it('b01 m5: the PSI by decile says that tied values merge deciles', () => {
