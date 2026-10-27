@@ -124,7 +124,7 @@ TEST_LABEL: dict[str, dict[str, str]] = {
     "rating.time_homogeneity": _t("Time homogeneity (chi-square)", "Homogeneidad temporal (chi-cuadrado)"),
     "rating.markov_order": _t("Markov order (grouped by direction)", "Orden de Markov (agrupado por dirección)"),
     "rating.matrix_reference": _t("Matrix against a reference", "Matriz contra una referencia"),
-    "rating.momentum": _t("Downward momentum (hazard)", "Momentum a la baja (riesgo)"),
+    "rating.momentum": _t("Downward momentum (hazard)", "Impulso a la baja (riesgo)"),
 }
 
 _T0 = time.perf_counter()
@@ -334,7 +334,7 @@ def _null(book: Book) -> dict[str, Any]:
          _t("the first year's counts against the chain's own one-year matrix", "los conteos del primer año contra la matriz anual de la propia cadena"), None),
         ("rating.momentum@null", "rating.momentum", chain, "paths-5x1000-5y",
          lambda d: {"paths": d["segments"]}, {}, "transitions",
-         _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin momentum (c = 0)"), None),
+         _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin impulso (c = 0)"), None),
         # the settings the harness found to matter
         ("pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow", logit, "logistic-5000", None, {"fitted": True}, "settings",
          _t("the same, with G - 2 degrees of freedom (the model fitted on the same sample)", "lo mismo, con G - 2 grados de libertad (el modelo ajustado sobre la misma muestra)"), None),
@@ -672,8 +672,8 @@ def _wp14_golden(book: Book, wp: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return {"study": "bcbs-wp14", "title": _t("BCBS WP14 Tables 7 and 8: the normal and traffic-lights tests",
                                               "BCBS WP14 Tablas 7 y 8: las pruebas normal y de semáforo"),
             "runs_published": wp["runs"], "runs": wp["runs"], "cells": cells, "agree": agree, "total": len(cells),
-            "note": _t("Traffic lights with the upper tie rule. The cell that does not agree, Table 8 DV_LV at 0.1%, prints 0.955; 200,000 runs give 0.9475 (SE 0.0005) and its neighbouring levels agree.",
-                       "Semáforo con la regla de empates superior. La celda que no concuerda, Tabla 8 DV_LV al 0,1%, imprime 0,955; 200.000 corridas dan 0,9475 (EE 0,0005) y sus niveles vecinos concuerdan.")}, agree
+            "note": _t("Traffic lights with the upper tie rule. The cell that does not agree, Table 8 at 0.1% in the scenario of time dependence, varying asset correlations, larger and varying unconditional PDs (WP14 Table 3), prints 0.955; 200,000 runs give 0.9475 (SE 0.0005) and its neighbouring levels agree.",
+                       "Semáforo con la regla de empates superior. La celda que no concuerda, Tabla 8 al 0,1\u00a0% en el escenario de dependencia temporal, correlaciones de activos variables y PD incondicionales mayores y variables (tabla 3 de WP14), imprime 0,955; 200.000 corridas dan 0,9475 (EE 0,0005) y sus niveles vecinos concuerdan.")}, agree
 
 
 def _clustering(book: Book, wp: dict[str, Any]) -> dict[str, Any]:
