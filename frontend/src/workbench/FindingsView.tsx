@@ -53,11 +53,16 @@ function Evidence({ f, sel, number }: { f: Finding; sel: Selection; number: Map<
   );
 }
 
-/** The portfolio row of the test a finding cites as `test@model`, or undefined for any other kind of evidence. */
-function cited(sel: Selection, e: string): TestRow | undefined {
+/** The test row a finding cites: `test@model@segment` (the row of that segment, R5 c01 and c02 B1: the grade rows the generic
+ * red-row findings cite printed the portfolio row's p and light), `test@-@segment` (a row of no model), `test@model` (the portfolio
+ * row, else the model's row of no segment) or the bare test (its only row); undefined for design or contract evidence. */
+export function cited(sel: Selection, e: string): TestRow | undefined {
   if (e.startsWith('design:') || e.startsWith('contract:')) return undefined;
-  const [testId, model] = e.split('@');
-  return sel.data.variant.tests.find((t) => t.test_id === testId && t.model_id === model && t.segment === 'portfolio');
+  const [testId, model, segment] = e.split('@');
+  const m = model === undefined || model === '-' ? null : model;
+  const rows = sel.data.variant.tests.filter((t) => t.test_id === testId && (t.model_id ?? null) === m);
+  if (segment !== undefined) return rows.find((t) => t.segment === segment);
+  return rows.find((t) => t.segment === 'portfolio') ?? rows.find((t) => (t.segment ?? null) === null) ?? (rows.length === 1 ? rows[0] : undefined);
 }
 
 /** The evidence chart's points: the cited tests numbered 1 to n, each p-value at the floor when below it, and the x range that gives the
