@@ -94,10 +94,11 @@ APPROVAL_ALLOWED: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\b(of|among|entre)\s+the\s+approved\b|\bde\s+los\s+aprobados\b|\bentre\s+aprobados\b|\bapproved\s+by\s+the\s+(challenger|champion)\s+only\b|"
                 r"\baprobados\s+solo\s+por\b|\bapproved\s+defaulters\b|\baprobados\s+que\s+incumplen\b", re.I),
      "the applicants a scorecard approves, as a population whose loss or bad rate is measured (C01)"),
-    (re.compile(r"\bgroup is approved at (higher|lower)\b|\bgrupo es aprobado con (mayores|menores)\b", re.I), "a protected group's approval odds in a disparity test (C21)"),
+    (re.compile(r"\bgroup is approved at (higher|lower)\b|\bgrupo es aprobado con una (mayor|menor)\b", re.I), "a protected group's approval odds in a disparity test (C21)"),
+    (re.compile(r"\bdenial or approval rate disparities\b|\bdenegaci[oó]n o aprobaci[oó]n de HMDA\b", re.I),
+     "the HMDA denial or approval rates the quoted examination procedures name, a lender's decisions on loans (C21)"),
     (re.compile(r"\bapplications? approved but not accepted\b|\bsolicitudes? aprobadas? pero no aceptadas?\b|\bsolicitudes? aprobadas? no aceptadas?\b|\bapproved applications not accepted\b|"
                 r"\b1 approval \(HMDA\b|\bApproval is action taken\b", re.I), "an HMDA action taken: the lender's decision on one application (C21)"),
-    (re.compile(r"\bapproved as decision V\d+\b", re.I), "a parameter value of the case, approved as a design decision of the build (decision V6), not a model"),
 ]
 _ALLOWED_RX = re.compile("|".join(f"(?:{rx.pattern})" for rx, _ in APPROVAL_ALLOWED), re.I)
 

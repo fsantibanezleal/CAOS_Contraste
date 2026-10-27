@@ -508,14 +508,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-22",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
      "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-22",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -542,7 +542,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-02-19"
+      "earliest_due": "2027-02-24"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -846,13 +846,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-22",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-22",
-    "next_full_revalidation": "2029-10-22",
-    "next_monitoring": "2027-04-22",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-04-27",
     "null_reason": null
    },
    "graph": {
@@ -1096,14 +1096,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-22",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
      "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C07/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-22",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1130,7 +1130,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-12-21"
+      "earliest_due": "2026-12-26"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1402,13 +1402,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-22",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-22",
-    "next_full_revalidation": "2029-10-22",
-    "next_monitoring": "2027-01-22",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-01-27",
     "null_reason": null
    },
    "graph": {
@@ -1648,14 +1648,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-22",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
      "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-22",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1682,7 +1682,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-11-21"
+      "earliest_due": "2026-11-26"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1941,13 +1941,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-22",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-22",
-    "next_full_revalidation": "2029-10-22",
-    "next_monitoring": "2027-01-22",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-01-27",
     "null_reason": null
    },
    "graph": {
@@ -2237,14 +2237,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-22",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
      "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2029-10-22",
+     "value": "2029-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -2271,7 +2271,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-04-20"
+      "earliest_due": "2027-04-25"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -2785,11 +2785,11 @@
     "profile": "default",
     "review_kind": "attestation",
     "last_validation": {
-     "date": "2026-10-22",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2029-10-22",
+    "next_review": "2029-10-27",
     "next_full_revalidation": null,
     "next_monitoring": null,
     "null_reason": {
