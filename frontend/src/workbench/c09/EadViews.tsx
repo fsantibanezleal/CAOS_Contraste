@@ -36,8 +36,8 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
   const scale = axisScale(Math.max(...rows.flatMap((r) => [r.predicted_ead, r.realised_ead])), b.currency);
   const ccy = b.currency;
   return (
-    // split, not scrolled (ADR-0071 rule 6; R3 c10 M2): the bands under a drawing of fixed height, the tests in a card of their own
-    <ViewsRow shares={[3, 2]}>
+    // split, not scrolled (ADR-0071 rule 6; R3 c10 M2): the bands under a drawing of fixed height, the tests a sub-view of their own
+    <ViewsRow>
       <PlotCard
         fill
         title={{ en: `EAD back-test by utilisation band: ${label.en}`, es: `Prueba retrospectiva de la EAD por tramo de utilización: ${label.es}` }}
@@ -94,6 +94,18 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
           </table>
         </ChartAbove>
       </PlotCard>
+    </ViewsRow>
+  );
+}
+
+/** The EAD back-test of every band, a sub-view of its own (R3 c10 M2). */
+export function BacktestTestsView({ sel }: { sel: C09Sel | null }) {
+  const lang = useShellLang();
+  const card = useCard(sel?.data.variant);
+  const o = outputsOf(sel);
+  if (!sel || !o) return <Pending />;
+  return (
+    <ViewsRow>
       <PlotCard fill title={{ en: 'The back-test of every band', es: 'La prueba retrospectiva de cada tramo' }} {...card}>
         <div className="ct-scroll" data-caos-flow="">
           <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />

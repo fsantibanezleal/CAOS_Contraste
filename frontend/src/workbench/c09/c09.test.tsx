@@ -11,8 +11,8 @@ import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, readFixture, setLang 
 import { useC09Instrument } from './instrument';
 import { defaultSel, outputsOf, type C09Sel } from './selection';
 import { BandReadout, C09ContextView, C09FindingsView, C09VariantsTable, DesignReadout, ModelReadout, TreatmentReadout, formulaText } from './C09Common';
-import { ByDesignView, DistributionView } from './CcfViews';
-import { BacktestView, FloorsView, ModelsView } from './EadViews';
+import { ByDesignView, DistributionView, EstimatorTestsView } from './CcfViews';
+import { BacktestTestsView, BacktestView, FloorsView, ModelsView } from './EadViews';
 
 type Outputs = components['schemas']['c09Outputs'];
 
@@ -154,9 +154,9 @@ describe('the C09 instrument', () => {
   });
 
   it('the tests of the engine sit under the view they belong to: one that did not run shows its reason and no number', () => {
-    // the CCF bias test sits under the estimates, the EAD back-test under the back-test
-    const ccf = html(<ByDesignView sel={sel} />);
-    const ead = html(<BacktestView sel={sel} />);
+    // the CCF bias tests are the Tests sub-view of the CCF, the EAD back-test rows that of the EAD (R3 c10 M2: split, not scrolled)
+    const ccf = html(<EstimatorTestsView sel={sel} />);
+    const ead = html(<BacktestTestsView sel={sel} />);
     for (const t of variant.tests) {
       // every C09 id starts `lgd_ead.`: the back-test rows are the EAD back-test's, the rest the estimates' (R2b c10 B1)
       const host = t.test_id === 'lgd_ead.ead_backtest_by_band' ? ead : ccf;

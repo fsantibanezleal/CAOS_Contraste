@@ -3,7 +3,6 @@
 // clipped. Each draws what the c09-outputs document carries.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { ChartOverTable } from '../c06/format';
-import { ChartAbove } from '../c16/C16Common';
 import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT, modelLabel, outputsOf, text, type C09Sel } from './selection';
@@ -40,72 +39,97 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
     })),
   ];
   return (
-    // split, not scrolled (ADR-0071 rule 6; R3 c10 M2): the estimates under a drawing of fixed height, the tests in a card of their own
-    <ViewsRow shares={[3, 2]}>
+    // split, not scrolled (ADR-0071 rule 6; R3 c10 M2: the estimates and the tests shared one 42 % box that showed one row): the drawing
+    // fills a card of its own beside the estimates, whole at 1280; the tests are a sub-view of their own (EstimatorTestsView)
+    <ViewsRow shares={[2, 3]}>
       <PlotCard
         fill
         title={{ en: 'The CCF estimates against the known CCF', es: 'Las estimaciones de CCF contra el CCF conocido' }}
         {...card}
         note={{
-          en: 'The generator draws every balance with one CCF, so the estimators can be judged against the truth. Green is an estimate within the tolerance of the truth, amber one outside it, red one outside 0 to 1, which is printed as it is and never clipped. The table gives the bias, the interval and the shares of defaults outside 0 to 1.',
-          es: 'El generador simula cada saldo con un solo CCF, así que los estimadores se pueden juzgar contra la verdad. Verde es una estimación dentro de la tolerancia de la verdad, ámbar una fuera de ella, rojo una fuera de 0 a 1, que se imprime tal cual y nunca se recorta. La tabla da el sesgo, el intervalo y las proporciones de incumplimientos fuera de 0 a 1.',
+          en: 'The generator draws every balance with one CCF, so the estimators can be judged against the truth. Green is an estimate within the tolerance of the truth, amber one outside it, red one outside 0 to 1, which is printed as it is and never clipped.',
+          es: 'El generador simula cada saldo con un solo CCF, así que los estimadores se pueden juzgar contra la verdad. Verde es una estimación dentro de la tolerancia de la verdad, ámbar una fuera de ella, rojo una fuera de 0 a 1, que se imprime tal cual y nunca se recorta.',
         }}
       >
-        <ChartAbove
-          chartHeight={`${Math.min(16, data.length * 1.1 + 3)}rem`}
+        <ChartOverTable
+          chartMin={`${data.length * 1.5 + 3}rem`}
           chart={<BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} legend={[
             { tone: 'neutral' as const, label: { en: 'Known CCF', es: 'CCF conocido' } },
             { tone: 'good' as const, label: { en: 'Within the tolerance', es: 'Dentro de la tolerancia' } },
             { tone: 'warn' as const, label: { en: 'Outside the tolerance', es: 'Fuera de la tolerancia' } },
             { tone: 'bad' as const, label: { en: 'Outside 0 to 1', es: 'Fuera de 0 a 1' } },
           ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />}
-        >
-          <p className="ct-note" data-truth={truth.value}>
-            {pick(
-              {
-                en: `Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}. The light of each test follows that tolerance on the bias, not its p-value: green within it, amber up to twice it and red beyond. A red bar is an estimate outside 0 to 1.`,
-                es: `CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}. La luz de cada prueba sigue esa tolerancia sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá. Una barra roja es una estimación fuera de 0 a 1.`,
-              },
-              lang,
-            )}
-          </p>
-          <table className="caos-table ct-wrap-head" data-table="ccf-by-design">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Treatment', es: 'Tratamiento' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</th>
-                <th>{pick({ en: 'Estimate', es: 'Estimación' }, lang)}</th>
-                <th>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Interval of the bias', es: 'Intervalo del sesgo' }, lang)}</th>
-                <th className="ct-wide-only">RMSE</th>
-                <th>{pick({ en: 'Below 0', es: 'Bajo 0' }, lang)}</th>
-                <th>{pick({ en: 'Above 1', es: 'Sobre 1' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Within tolerance', es: 'Dentro de la tolerancia' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={`${r.design}-${r.treatment}-${r.estimator}`} data-design={r.design} data-treatment={r.treatment} data-estimator={r.estimator} data-tolerance={String(r.within_tolerance)} className={r.treatment === sel.treatment ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(text(TREATMENT_TEXT, r.treatment), lang)}</td>
-                  <td className="ct-text">{pick(text(ESTIMATOR_TEXT, r.estimator), lang)}</td>
-                  <td data-estimate-flag={r.estimate.flag}>
-                    <Flagged value={r.estimate.value} flag={r.estimate.flag} />
-                  </td>
-                  <td>{p2(r.bias, lang)}</td>
-                  <td className="ct-wide-only">{`${p2(r.ci_low, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${p2(r.ci_high, lang)}`}</td>
-                  <td className="ct-wide-only">{p2(r.rmse, lang)}</td>
-                  <td>{p2(r.share_below_zero, lang)}</td>
-                  <td>{p2(r.share_above_one, lang)}</td>
-                  <td className="ct-text">{r.within_tolerance ? yes : no}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </ChartAbove>
+        />
       </PlotCard>
-      <PlotCard fill title={{ en: 'The estimator tests of this design', es: 'Las pruebas de los estimadores de este diseño' }} {...card}>
+      <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{ en: 'The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator.', es: 'El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador.' }}>
         <div className="ct-scroll" data-caos-flow="">
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ccf_estimator_bias' && (!(t.model_id ?? '').startsWith('ccf-') || (t.model_id ?? '').startsWith(`ccf-${sel.design}-`))} />
+            <p className="ct-note" data-truth={truth.value}>
+              {pick(
+                {
+                  en: `Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}. The light of each test follows that tolerance on the bias, not its p-value: green within it, amber up to twice it and red beyond. A red bar is an estimate outside 0 to 1.`,
+                  es: `CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}. La luz de cada prueba sigue esa tolerancia sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá. Una barra roja es una estimación fuera de 0 a 1.`,
+                },
+                lang,
+              )}
+            </p>
+            <table className="caos-table ct-wrap-head" data-table="ccf-by-design">
+              <thead>
+                <tr>
+                  <th className="ct-text">{pick({ en: 'Treatment', es: 'Tratamiento' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</th>
+                  <th>{pick({ en: 'Estimate', es: 'Estimación' }, lang)}</th>
+                  <th>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</th>
+                  <th className="ct-wide-only">{pick({ en: 'Interval of the bias', es: 'Intervalo del sesgo' }, lang)}</th>
+                  <th className="ct-wide-only">RMSE</th>
+                  <th>{pick({ en: 'Below 0', es: 'Bajo 0' }, lang)}</th>
+                  <th>{pick({ en: 'Above 1', es: 'Sobre 1' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Within tolerance', es: 'Dentro de la tolerancia' }, lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={`${r.design}-${r.treatment}-${r.estimator}`} data-design={r.design} data-treatment={r.treatment} data-estimator={r.estimator} data-tolerance={String(r.within_tolerance)} className={r.treatment === sel.treatment ? 'ct-current' : undefined}>
+                    <td className="ct-text">{pick(text(TREATMENT_TEXT, r.treatment), lang)}</td>
+                    <td className="ct-text">{pick(text(ESTIMATOR_TEXT, r.estimator), lang)}</td>
+                    <td data-estimate-flag={r.estimate.flag}>
+                      <Flagged value={r.estimate.value} flag={r.estimate.flag} />
+                    </td>
+                    <td>{p2(r.bias, lang)}</td>
+                    <td className="ct-wide-only">{`${p2(r.ci_low, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${p2(r.ci_high, lang)}`}</td>
+                    <td className="ct-wide-only">{p2(r.rmse, lang)}</td>
+                    <td>{p2(r.share_below_zero, lang)}</td>
+                    <td>{p2(r.share_above_one, lang)}</td>
+                    <td className="ct-text">{r.within_tolerance ? yes : no}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
+  );
+}
+
+/** The estimator-bias tests of the design in focus, a sub-view of their own (R3 c10 M2): the light of each follows the tolerance on the bias. */
+export function EstimatorTestsView({ sel }: { sel: C09Sel | null }) {
+  const lang = useShellLang();
+  const card = useCard(sel?.data.variant);
+  const o = outputsOf(sel);
+  if (!sel || !o) return <Pending />;
+  const c = o.ccf_by_design;
+  return (
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `The estimator tests, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `Las pruebas de los estimadores, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }}
+        {...card}
+        note={{
+          en: `The light of each test follows the tolerance of ${p2(c.tolerance, 'en')} on the bias, not its p-value: green within it, amber up to twice it and red beyond.`,
+          es: `La luz de cada prueba sigue la tolerancia de ${p2(c.tolerance, 'es')} sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá.`,
+        }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
+            <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ccf_estimator_bias' && (!(t.model_id ?? '').startsWith('ccf-') || (t.model_id ?? '').startsWith(`ccf-${sel.design}-`))} />
         </div>
       </PlotCard>
     </ViewsRow>
