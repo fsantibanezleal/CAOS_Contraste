@@ -15,13 +15,22 @@ import { es, inSentence } from './localise';
 const ratio = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
 
+/** The money scale of a capital table: the unit of its largest 95th percentile, so no cell carries an 11-digit amount and the last
+ * column fits at 1280 (U16-R3 c18 M2: on xi 0.96 and 1.1 the euro amounts reached 122,693,631,000 and cut the last column). */
+export function tableScale(capitals: ReadonlyArray<C17Capital | null>): { div: number; unit: BiText } {
+  return axisScale(Math.max(0, ...capitals.map((c) => c?.capital_eur.p95 ?? 0)), 'EUR');
+}
+
+/** An amount in the scale of its table, with three significant digits at least and no more than two decimals. */
+const scaled = (v: number, div: number, lang: 'en' | 'es') => formatNumber(v / div, lang, div === 1 ? { decimals: 0 } : { decimals: 2 });
+
 /** The cells of a summary row: the percentiles, the ratio to the truth, the share that underestimates, the spread. */
-function SummaryCells({ s, lang }: { s: C17Capital; lang: 'en' | 'es' }) {
+function SummaryCells({ s, lang, div }: { s: C17Capital; lang: 'en' | 'es'; div: number }) {
   return (
     <>
-      <td className="ct-wide-only">{whole(s.capital_eur.p05, lang)}</td>
-      <td>{whole(s.capital_eur.median, lang)}</td>
-      <td className="ct-wide-only">{whole(s.capital_eur.p95, lang)}</td>
+      <td className="ct-wide-only">{scaled(s.capital_eur.p05, div, lang)}</td>
+      <td>{scaled(s.capital_eur.median, div, lang)}</td>
+      <td className="ct-wide-only">{scaled(s.capital_eur.p95, div, lang)}</td>
       <td>{ratio(s.ratio_to_truth.median, lang)}</td>
       <td>{pct(s.share_underestimating, lang)}</td>
       <td className="ct-wide-only">{pct(s.iqr_over_truth, lang)}</td>
@@ -30,12 +39,13 @@ function SummaryCells({ s, lang }: { s: C17Capital; lang: 'en' | 'es' }) {
   );
 }
 
-function HeadCells({ lang }: { lang: 'en' | 'es' }) {
+function HeadCells({ lang, unit }: { lang: 'en' | 'es'; unit: BiText }) {
+  const u = pick(unit, lang);
   return (
     <>
-      <th className="ct-wide-only">{pick({ en: '5th percentile (EUR)', es: 'Percentil 5 (EUR)' }, lang)}</th>
-      <th>{pick({ en: 'Median (EUR)', es: 'Mediana (EUR)' }, lang)}</th>
-      <th className="ct-wide-only">{pick({ en: '95th percentile (EUR)', es: 'Percentil 95 (EUR)' }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: `5th percentile (${u})`, es: `Percentil 5 (${u})` }, lang)}</th>
+      <th>{pick({ en: `Median (${u})`, es: `Mediana (${u})` }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: `95th percentile (${u})`, es: `Percentil 95 (${u})` }, lang)}</th>
       <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
       <th>{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
       <th className="ct-wide-only">{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
@@ -43,6 +53,9 @@ function HeadCells({ lang }: { lang: 'en' | 'es' }) {
     </>
   );
 }
+
+/** The format of an influence bar: one decimal under half a percent, so a small negative influence is never "-0 %" (U16-R3 c18 m5). */
+export const influenceFormat = (v: number): { percent: true; decimals: number } => ({ percent: true, decimals: Math.abs(v) < 0.005 ? 1 : 0 });
 
 /** The capital of every rung of the ladder in the cell chosen, drawn beside the true quantile of the generator. */
 export function ByMethodView({ sel }: { sel: C17Sel | null }) {
@@ -55,6 +68,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
   const rungs = RUNG_ORDER.map((id) => ({ id, ...capitalOf(cell, id) }));
   const scale = axisScale(Math.max(truth, ...rungs.map((r) => r.summary?.capital_eur.median ?? 0)), 'EUR');
   const label = cellLabel(cell.years, cell.collection_threshold_eur);
+  const money = tableScale(rungs.map((r) => r.summary));
   const data = [
     { id: 'truth', label: { en: 'True quantile', es: 'Cuantil verdadero' }, value: truth / scale.div, tone: 'neutral' as const, hint: { en: 'The 99.9 percent quantile of the annual loss of the generator', es: 'El cuantil al 99,9 por ciento de la pérdida anual del generador' } },
     ...rungs.map((r) => ({
@@ -89,6 +103,36 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
             />
           }
         >
+          <table className="caos-table ct-wrap-head" data-table="capital-by-rung" data-cell={cell.id}>
+            <thead>
+              <tr>
+                <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Method', es: 'Método' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
+                <HeadCells lang={lang} unit={money.unit} />
+              </tr>
+            </thead>
+            <tbody>
+              {rungs.map((r) => {
+                const status = r.summary?.status ?? (r.id === 'sla-mean-corrected' ? UNVERIFIED : 'verified');
+                return (
+                  <tr key={r.id} data-rung={r.id} data-status={status} className={r.id === sel.rung ? 'ct-current' : undefined}>
+                    <td className="ct-text" title={pick(rungName(r.id), lang)}>{pick(rungName(r.id), lang)}</td>
+                    {r.summary ? (
+                      <>
+                        <td className="ct-wide-only">{whole(r.summary.n_defined, lang)}</td>
+                        <SummaryCells s={r.summary} lang={lang} div={money.div} />
+                      </>
+                    ) : (
+                      <td colSpan={8} data-na="true" className="ct-text">
+                        {na}
+                        <span className="ct-note">{` (${es(r.reason, lang)})`}</span>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
           <div data-infinite-mean={String(o.infinite_mean)}>
             {o.infinite_mean ? (
               <p className="ct-note">
@@ -105,37 +149,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
               lang,
             )}
           </p>
-          <table className="caos-table ct-wrap-head" data-table="capital-by-rung" data-cell={cell.id}>
-            <thead>
-              <tr>
-                <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Method', es: 'Método' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
-                <HeadCells lang={lang} />
-              </tr>
-            </thead>
-            <tbody>
-              {rungs.map((r) => {
-                const status = r.summary?.status ?? (r.id === 'sla-mean-corrected' ? UNVERIFIED : 'verified');
-                return (
-                  <tr key={r.id} data-rung={r.id} data-status={status} className={r.id === sel.rung ? 'ct-current' : undefined}>
-                    <td className="ct-text" title={pick(rungName(r.id), lang)}>{pick(rungName(r.id), lang)}</td>
-                    {r.summary ? (
-                      <>
-                        <td className="ct-wide-only">{whole(r.summary.n_defined, lang)}</td>
-                        <SummaryCells s={r.summary} lang={lang} />
-                      </>
-                    ) : (
-                      <td colSpan={8} data-na="true" className="ct-text">
-                        {na}
-                        <span className="ct-note">{` (${es(r.reason, lang)})`}</span>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <C17TestsTable variant={sel.data.variant} host="method" />
+          <C17TestsTable variant={sel.data.variant} host="method" cell={cell.id} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -151,6 +165,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
   const truth = o.truth.annual_loss_quantile.value_eur;
   const rung = rungName(sel.rung);
   const cells = o.cells.map((c) => ({ c, ...capitalOf(c, sel.rung) }));
+  const money = tableScale(cells.map((x) => x.summary));
   const scale = axisScale(Math.max(truth, ...cells.map((x) => x.summary?.capital_eur.median ?? 0)), 'EUR');
   const na = formatNumber(null, lang);
   const data = [
@@ -176,7 +191,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
       >
         <div className="ct-c17-tall">
         <ChartOverTable
-          chartMin={`${data.length * 1.4 + 3}rem`}
+          chartMin={`${data.length * 1.4 + 5}rem`}
           chart={
             <BarChart
               title={{ en: `Median capital of ${inSentence(rung.en)} by cell, against the true quantile`, es: `Capital mediano de ${inSentence(rung.es)} por celda, contra el cuantil verdadero` }}
@@ -193,9 +208,9 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                 <th className="ct-text" style={{ minWidth: lang === 'es' ? '7rem' : '9.5rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Definido para este método' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Con capital' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Median losses', es: 'Pérdidas, mediana' }, lang)}</th>
-                <HeadCells lang={lang} />
+                <HeadCells lang={lang} unit={money.unit} />
               </tr>
             </thead>
             <tbody>
@@ -207,7 +222,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                   <td className="ct-wide-only" data-n-defined={summary ? summary.n_defined : undefined}>{summary ? whole(summary.n_defined, lang) : na}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_losses_median, lang)}</td>
                   {summary ? (
-                    <SummaryCells s={summary} lang={lang} />
+                    <SummaryCells s={summary} lang={lang} div={money.div} />
                   ) : (
                     <td colSpan={7} data-na="true" className="ct-text">
                       {na}
@@ -241,6 +256,7 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
     label: x.label,
     value: x.influence,
     tone: x.influence < 0 ? ('warn' as const) : ('accent' as const),
+    format: influenceFormat(x.influence),
     highlight: x.scenario_id === focus?.scenario_id,
   }));
   return (

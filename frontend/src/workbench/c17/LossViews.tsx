@@ -65,6 +65,9 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
   // the Panjer recursion computes the probabilities up to the end of its grid only: the points after it are absent in the document
   const lastPanjer = e.panjer.exceedance.map((v) => v !== null).lastIndexOf(true);
   const panjerEnd = lastPanjer >= 0 && lastPanjer < e.grid_eur.length - 1 ? e.grid_eur[lastPanjer] : null;
+  // the FFT too stops where its grid ends (U16-R3 c18 B2: past it the bake held the last value flat; the re-bake writes nulls)
+  const lastFft = (e.fft.exceedance as Array<number | null>).map((v) => v !== null).lastIndexOf(true);
+  const fftEnd = lastFft >= 0 && lastFft < e.grid_eur.length - 1 ? e.grid_eur[lastFft] : null;
   const rows: Array<{ id: string; label: BiText; value: number; how: BiText }> = [
     {
       id: 'true',
@@ -77,7 +80,7 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
     },
     { id: 'monte-carlo', label: { en: 'Monte Carlo', es: 'Monte Carlo' }, value: e.quantile_999_eur.monte_carlo, how: { en: `${whole(e.monte_carlo.n_years, 'en')} simulated years, seed ${e.monte_carlo.seed}`, es: `${whole(e.monte_carlo.n_years, 'es')} años simulados, semilla ${e.monte_carlo.seed}` } },
     { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR${panjerEnd === null ? '' : `; the recursion grid ends at ${whole(panjerEnd, 'en')} EUR and the curve stops there`}`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR${panjerEnd === null ? '' : `; la grilla de la recursión termina en ${whole(panjerEnd, 'es')} EUR y la curva se detiene ahí`}` } },
-    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}` } },
+    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}${fftEnd === null ? '' : `; the FFT grid ends at ${whole(fftEnd, 'en')} EUR and the curve stops there`}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}${fftEnd === null ? '' : `; la grilla de la FFT termina en ${whole(fftEnd, 'es')} EUR y la curva se detiene ahí`}` } },
     { id: 'sla', label: { en: 'Single loss approximation', es: 'Aproximación de una pérdida' }, value: e.quantile_999_eur.sla, how: { en: 'closed form, from the true severity and frequency', es: 'forma cerrada, desde la severidad y la frecuencia verdaderas' } },
   ];
   return (
@@ -87,8 +90,8 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
         title={{ en: 'Exceedance curve of the annual loss', es: 'Curva de excedencia de la pérdida anual' }}
         {...card}
         note={{
-          en: 'The probability that the annual loss of the generator exceeds each value, on log axes. Monte Carlo, Panjer recursion and FFT are three computations of the same distribution; the true 99.9 percent quantile and the single loss approximation are marked. Where the curve crosses the level 0.1 percent is the capital.',
-          es: 'La probabilidad de que la pérdida anual del generador supere cada valor, en ejes logarítmicos. Monte Carlo, recursión de Panjer y FFT son tres cálculos de la misma distribución; se marcan el cuantil verdadero al 99,9 por ciento y la aproximación de una pérdida. Donde la curva cruza el nivel de 0,1 por ciento está el capital.',
+          en: 'The probability that the annual loss of the generator exceeds each value, on log axes. Monte Carlo, Panjer recursion and FFT are three computations of the same distribution; the true 99.9 percent quantile and the single loss approximation are marked. Where the curve crosses the level 0.1 percent is the capital. The Panjer cross-check runs on a coarser grid (its step is in the table), so at the smallest losses its curve can sit below the other two.',
+          es: 'La probabilidad de que la pérdida anual del generador supere cada valor, en ejes logarítmicos. Monte Carlo, recursión de Panjer y FFT son tres cálculos de la misma distribución; se marcan el cuantil verdadero al 99,9 por ciento y la aproximación de una pérdida. Donde la curva cruza el nivel de 0,1 por ciento está el capital. La verificación de Panjer corre en una grilla más gruesa (su paso está en la tabla), así que en las pérdidas menores su curva puede quedar bajo las otras dos.',
         }}
       >
         <ChartOverTable chart={<UPlotChart height="fill" {...chart} />}>
@@ -247,7 +250,7 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
               ))}
             </tbody>
           </table>
-          <C17TestsTable variant={sel.data.variant} host="tail" />
+          <C17TestsTable variant={sel.data.variant} host="tail" cell={cell.id} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

@@ -111,7 +111,8 @@ describe('the C17 instrument', () => {
     expect(markup).toContain(num(o.truth.annual_loss_quantile.value_eur));
     const cell = o.cells[0];
     for (const rung of ['lda-lognormal', 'lda-lognormal-truncated', 'lda-splice', 'sla', 'sla-mean-corrected', 'scenario']) expect(markup).toContain(`data-rung="${rung}"`);
-    expect(markup).toContain(num(cell.capital.lda_splice.capital_eur.median));
+    // the table writes its money in its own scale (U16-R3 c18 M2): millions of EUR here
+    expect(markup).toContain(formatNumber(cell.capital.lda_splice.capital_eur.median / 1e6, 'en', { decimals: 2 }));
     expect(markup).toContain(pct(cell.capital.lda_splice.share_underestimating));
     expect(markup).toMatch(/data-rung="sla-mean-corrected"[^>]*data-status="UNVERIFIED"/);
     expect(markup).toContain('UNVERIFIED');

@@ -1,4 +1,4 @@
-"""The four scenarios as published and transposed onto the Banco Andino jump-off (decision Q6), through ``riskvalidation.stress.paths``.
+"""The four scenarios as published and transposed onto the Banco Andino jump-off, through ``riskvalidation.stress.paths``.
 
 Every path is a published path (Fed 2026 baseline and severely adverse, the EBA/ESRB 2025 adverse, the NGFS Phase 5 Delayed transition)
 whose **shape** (its change from its own jump-off) is put on the last observed value of the same series (the United States history at
@@ -25,7 +25,7 @@ T = P.text
 RULE = "shape-onto-last-observed-then-revert-to-baseline"
 LABEL = "transposed-onto-banco-andino-jump-off"
 ADAPTATION = T("The path is a United States path transposed onto the last observed value of the United States history; the satellites are fitted "
-               "on United States charge-off rates and applied to Banco Andino (decision Q6): a US-calibrated adaptation.")
+               "on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation.")
 UNIT_NAMES = {"real_gdp_growth": "percent, annualised", "unemployment_rate": "percent", "prime_rate": "percent", "treasury_10y": "percent"}
 
 
@@ -152,7 +152,7 @@ def ngfs_scenario(fed: FedInputs, variables: list[ngfs_reader.NgfsVariable]) -> 
         "paths": paths,
         "policy_shock_window": {"start_year": years[0], "end_year": years[-1],
                                 "label": T("The policy shock acts in 2031 to 2033: zero deviation through 2030 and the first deviation in 2031 (F8 of the "
-                                           "research addendum). NGFS is the only Phase 5 scenario NGFS itself classes as disorderly (decision E2).")}}
+                                           "research addendum). NGFS is the only Phase 5 scenario NGFS itself classes as disorderly.")}}
     return Scenario("ngfs", P.SCENARIOS["ngfs"], block, transposed)
 
 

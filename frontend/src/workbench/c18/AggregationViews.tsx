@@ -131,6 +131,14 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
 }
 
 /** The Euler allocation of the expected shortfall of the aggregate, risk by risk, with the diversification benefit of each. */
+/** A document label without its "Information, not capital:" lead, for a card whose caption already says it once (U16-R3 c19 m10). */
+const withoutNotCapital = (s: string): string => {
+  const t = s.replace(/^(Information, not capital|Información, no capital):\s*/, '');
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};
+/** A text that ends as a sentence. */
+const sentence = (s: string): string => (/[.!?]$/.test(s) ? s : `${s}.`);
+
 export function EulerView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -168,7 +176,7 @@ export function EulerView({ sel }: { sel: C18Sel | null }) {
             />
           }
         >
-          <p className="ct-note" data-status={e.status}>{`${pick(NOT_CAPITAL, lang)} ${pick(e.label, lang)}`}</p>
+          <p className="ct-note" data-status={e.status}>{sentence(withoutNotCapital(pick(e.label, lang)))}</p>
           <table className="caos-table ct-wrap-head" data-table="c18-euler" data-additivity={String(additive)}>
             <thead>
               <tr>
@@ -207,7 +215,7 @@ export function EulerView({ sel }: { sel: C18Sel | null }) {
             )}
           </p>
           <p className="ct-note" data-status={d.status}>
-            {`${pick(NOT_CAPITAL, lang)} ${pick(d.label, lang)} ${pick({ en: 'Diversification factor', es: 'Factor de diversificación' }, lang)} ${PCT(d.factor, lang)}; ${pick({ en: 'benefit', es: 'beneficio' }, lang)} ${PCT(d.benefit, lang)} (${pick(methodText(d.reference_row), lang)}).`}
+            {`${sentence(withoutNotCapital(pick(d.label, lang)))} ${pick({ en: 'Diversification factor', es: 'Factor de diversificación' }, lang)} ${PCT(d.factor, lang)}; ${pick({ en: 'benefit', es: 'beneficio' }, lang)} ${PCT(d.benefit, lang)} (${pick(methodText(d.reference_row), lang)}).`}
           </p>
         </ChartOverTable>
       </PlotCard>
@@ -260,7 +268,7 @@ export function MarginalsView({ sel }: { sel: C18Sel | null }) {
                 <th>{pick({ en: 'VaR', es: 'VaR' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Expected shortfall', es: 'Déficit esperado' }, lang)}</th>
                 <th>{pick({ en: 'Capital', es: 'Capital' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'VaR error', es: 'Error del VaR' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `VaR error (${pick(MONEY_UNIT, 'en')})`, es: `Error del VaR (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
               </tr>
             </thead>
             <tbody>

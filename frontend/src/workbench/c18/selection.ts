@@ -296,3 +296,15 @@ export const TEST_TEXT: Record<string, Bi> = {
   'stress.scenario_severity': { en: 'Severity of each path against history', es: 'Severidad de cada trayectoria frente a la historia' },
   'stress.reverse_solution_check': { en: 'Reverse stress: the loss at the solution equals the threshold', es: 'Estrés inverso: la pérdida en la solución iguala el umbral' },
 };
+
+/** The unit of the level a path draws: the published unit when the path is published as a level, the unit of the regressor otherwise (a
+ * deviation added to a baseline is drawn as the level it builds; U16-R3 c19 M2: the NGFS line was titled "Abs. difference"). The four
+ * regressors a scenario maps to are rates or growth in percent. */
+export function plottedUnit(p: { unit: string; level_rule: { kind: string } }): Bi {
+  if (p.level_rule.kind === 'level') return { en: p.unit, es: UNIT_ES[p.unit] ?? p.unit };
+  return { en: 'percent', es: 'por ciento' };
+}
+const UNIT_ES: Record<string, string> = { percent: 'por ciento', 'percent, annualised': 'por ciento, anualizado' };
+
+/** A name inside a sentence: its first letter lower case, an acronym kept (U16-R3 c19 m8: "real gdp growth"). */
+export const inSentence = (name: string): string => name.charAt(0).toLowerCase() + name.slice(1);

@@ -43,41 +43,41 @@ def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_sc
                    "basis": T("Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)")},
         "correlation_matrix_base": {"name": "correlation_matrix_base", "order": P.CORR_ORDER, "matrix": P.CORR_BASE, "unit": "correlation", "label": "convention",
                                     "basis": T("The " + corr_basis + "(0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation; "
-                                               "the dependence band shows what it changes (decision T2)",
+                                               "the dependence band shows what it changes",
                                                "La " + corr_basis_es + "(0,5 con crédito y mercado, 0,2 con operacional): NO VERIFICADO, ningún dossier da una correlación del IRRBB; "
-                                               "la banda de dependencia muestra lo que cambia (decisión T2)")},
+                                               "la banda de dependencia muestra lo que cambia")},
         "correlation_matrix_stress": {"name": "correlation_matrix_stress", "order": P.CORR_ORDER, "matrix": P.CORR_STRESS, "unit": "correlation",
                                       "label": "convention", "basis": T("The base matrix with market-credit raised to 0.8, the upper end of the published ranges (05 l.378)",
                                                    "La matriz base con mercado-crédito elevada a 0,8, el extremo superior de los rangos publicados (05 l.378)")},
         "ppnr_fee_ratio": named("ppnr_fee_ratio", P.PPNR_FEE, "fee income over NII", "case assumption",
-                                "A stated constant ratio of the PPNR row (decision Q10, T3); not a Banco Andino or CMF figure"),
+                                "A stated constant ratio of the PPNR row; not a Banco Andino or CMF figure"),
         "ppnr_cost_ratio": named("ppnr_cost_ratio", P.PPNR_COST, "operating cost over (NII + fee income)", "case assumption",
-                                 "A stated constant cost-to-income ratio of the PPNR row (decision Q10, T3)"),
+                                 "A stated constant cost-to-income ratio of the PPNR row"),
         "c_p2": named("c_p2", P.C_P2, "share of RWA", "case assumption",
-                      "The bank's own capital for risks outside Pillar 1, at least the art. 66 quinquies requirement (03 l.152-169, decision Q4); the 4 percent cap "
-                      "binds the requirement p2r, never this estimate (decision W3)"),
-        "c_d": named("c_d", P.C_D, "share of RWA", "case assumption", "The voluntary stress buffer, component d of the internal target (03 l.152-169, decision Q4)"),
+                      "The bank's own capital for risks outside Pillar 1, at least the art. 66 quinquies requirement (03 l.152-169); the 4 percent cap "
+                      "binds the P2R requirement, never this estimate"),
+        "c_d": named("c_d", P.C_D, "share of RWA", "case assumption", "The voluntary stress buffer, component d of the internal target (03 l.152-169)"),
         "operational_conversion_rate": {
             **named("operational_conversion_rate", fx.value, "CLP per EUR", "case assumption",
-                    "Derived at bake time: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5)"),
+                    "Derived at bake time: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile"),
             "derivation": {"kind": "observed-exchange-rate", "pair": "EUR/CLP", "observation_date": fx.observation_date,
                            "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
                            "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API", "source_series": fx.series_id}},
         "asset_scaling": {
             **named("asset_scaling", op_extras["asset_scaling"], "Banco Andino assets over the assets of the C17 bank", "case assumption",
                     "Derived at bake time: Banco Andino's total assets (the C15 Tier 1 proxy over its equity-over-assets calibration target) over the C17 synthetic "
-                    "bank's stated assets, converted at the rate (decision Q5, W5)"),
+                    "bank's stated assets, converted at the rate"),
             "derivation": {"kind": "asset-ratio", "banco_andino_assets_clp_m": anchors.total_assets_clp_m,
                            "c17_bank_assets_eur_m": anchors.c17_generator["assets_eur_bn"] * 1000.0, "converted_at": "operational_conversion_rate"}},
         "market_rwa_share": named("market_rwa_share", anchors.rwa_mix["market"], "share of RWA", "case assumption",
-                                  "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to the market "
+                                  "The market share of the 20-F RWA mix, as a ratio; C11's mixed-portfolio VaR and ES are scaled to the market "
                                   "RWA it gives, taken as the position value"),
         "market_horizon_scaling": {
             **named("market_horizon_scaling", mk_scaling["value"], "multiplier on C11's 99 percent one-day measure", "convention",
                     "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, "
-                    "both named conventions (W4)",
+                    "both named conventions",
                     "Desde las cifras a un día al 99 por ciento de C11 hasta 99,9 por ciento y un año: la razón de cuantiles normales z_0,999 / z_0,99 por la raíz cuadrada de 250, "
-                    "ambas convenciones nombradas (W4)"),
+                    "ambas convenciones nombradas"),
             "source_confidence_level": P.SOURCE_LEVEL, "source_horizon_days": 1, "trading_days_per_year": P.TRADING_DAYS,
             "level_factor": named("market_level_factor", lf, "ratio of normal quantiles z_0.999 / z_0.99", "convention",
                                   "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
@@ -113,7 +113,7 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
         "currency": "CLP", "units": UNITS, "bank": {"name": "Banco Andino", "synthetic": True, "as_of": P.AS_OF, "notice": BANK_NOTICE},
         "satellites": [sat.record(s) for s in sats.values()],
         "class_mapping": [{"banco_andino_class": c, "fed_loan_types": list(P.CLASS_MAP[c][0]), "weights": list(P.CLASS_MAP[c][1]), "label": "us-calibrated-adaptation",
-                           "basis": T("Mortgage to residential, consumer to credit cards and other consumer, commercial to C&I and commercial real estate (decision Q6); "
+                           "basis": T("Mortgage to residential, consumer to credit cards and other consumer, commercial to C&I and commercial real estate; "
                                       "the weights are the case's mapping of Banco Andino's classes to Fed loan types, an adaptation and no estimate")} for c in P.CLASSES],
         "factor_space": space,
         "aggregation": {
@@ -131,8 +131,7 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
         "bank_anchors": {
             "rwa_basis": {"tier1_proxy_clp_m": anchors.tier1_clp_m, "cet1_ratio_anchor": P.CMF_ANCHOR_CET1, "rwa_total_clp_m": anchors.rwa_clp_m},
             "rwa_mix": anchors.rwa_mix, "chilean_stack": anchors.stack, "loan_exposures": exp,
-            "source": T("Ratios only, computed from the Banco Santander-Chile Form 20-F 2025 (SEC EDGAR), cited as the source; the absolute figures are not carried "
-                        "(decision Q4, E5)."),
+            "source": T("Ratios only, computed from the Banco Santander-Chile Form 20-F 2025 (SEC EDGAR), cited as the source; the absolute figures are not carried."),
             "licence_class": "derived-only", "ratios_only": True},
         "marginal_sources": [
             {"risk": "credit", "producer": "credit-grouped-copula-c07-segments", "description": credit_description,
@@ -142,7 +141,7 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
             {"risk": "irrbb", "producer": "irrbb-engine-simulation-c15-curve-and-book",
              "description": T("The engine's Hull-White simulation on C15's curve and book"), "documents": ["c15-outputs"], "c17_parameter_set": None},
             {"risk": "operational", "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
-             "description": T("oprisk.aggregate on the C17 generator parameters scaled by assets and converted at the observed rate"), "documents": ["c17-models"],
+             "description": T("The engine's Fourier aggregation on the C17 generator parameters, scaled by assets and converted at the observed rate"), "documents": ["c17-models"],
              "c17_parameter_set": {"document": "C17 models-generator", "variant_id": anchors.c17["variant_id"], "tail_index": anchors.c17["tail_index"],
                                    "infinite_mean": bool(anchors.c17["infinite_mean"]), "assets_eur_bn": anchors.c17_generator["assets_eur_bn"]}}],
         "scenario_sources": [
