@@ -41,7 +41,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
         {...card}
         note={{
           en: `CVA = the sum over the buckets of the default probability of the bucket, times the loss given default of ${formatNumber(c.lgd, 'en', { percent: true, decimals: 0 })}, times the discounted expected exposure at the bucket end (dossier 05, C.2); DVA is the same with the bank's own default probability and the discounted ENE. The counterparty curve is a proxy: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'en')}; the proxy of an AAA to A market spread, a floor for lower ratings.`,
-          es: `CVA = la suma sobre los tramos de la probabilidad de incumplimiento del tramo, por la pérdida dado el incumplimiento de ${formatNumber(c.lgd, 'es', { percent: true, decimals: 0 })}, por la exposición esperada descontada al final del tramo (dossier 05, C.2); el DVA es lo mismo con la probabilidad de incumplimiento propia del banco y la ENE descontada. La curva de la contraparte es un proxy: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'es')}; proxy de un spread de mercado AAA a A, un piso para calificaciones menores.`,
+          es: `CVA = la suma sobre los tramos de la probabilidad de incumplimiento del tramo, por la pérdida dado el incumplimiento de ${formatNumber(c.lgd, 'es', { percent: true, decimals: 0 })}, por la exposición esperada descontada al final del tramo (dossier 05, C.2); el DVA es lo mismo con la probabilidad de incumplimiento propia del banco y la ENE descontada. La curva de la contraparte es una aproximación: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'es')}; aproximación de un spread de mercado AAA a A, un piso para calificaciones menores.`,
         }}
       >
         <ChartOverTable
@@ -67,7 +67,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
               {')'}
             </dd>
             <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
-            <dd data-credit-source={c.credit_curve_source} data-label="proxy">{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(text(SOURCE_TEXT, c.credit_curve_source), lang)}`}</dd>
+            <dd data-credit-source={c.credit_curve_source} data-label="proxy">{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${pick(text(SOURCE_TEXT, c.credit_curve_source), lang)}`}</dd>
             <dt>{pick({ en: 'Negative spreads set to zero', es: 'Spreads negativos llevados a cero' }, lang)}</dt>
             <dd>{c.spreads_floored_at_zero}</dd>
           </dl>

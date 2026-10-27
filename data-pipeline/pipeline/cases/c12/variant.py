@@ -203,10 +203,12 @@ CSA_LIMIT = text("The Andersen, Pykhtin and Sokol timelines are not modelled. Th
                  "las filas de ORE).")
 
 IM_LIMIT = text(
-    "A regression proxy, never SIMM. The DIM reduces the exposure path by path, E[max(X - DIM, 0)] (ORE's method, decision B2): "
-    "the expected exposure after margin lies between max(ee_vm_only - dim, 0) and ee_vm_only, and `dim` is the mean regression DIM.",
-    "Un proxy de regresión, nunca SIMM. El DIM reduce la exposición camino por camino, E[max(X - DIM, 0)] (método de ORE, decisión "
-    "B2): la exposición esperada tras el margen está entre max(ee_vm_only - dim, 0) y ee_vm_only, y `dim` es el DIM de regresión medio.")
+    "A regression proxy, never SIMM. The DIM reduces the exposure path by path, E[max(X - DIM, 0)] (ORE's method): the expected "
+    "exposure after margin lies between the EE with variation margin only less the mean DIM (floored at 0) and the EE with "
+    "variation margin only.",
+    "Una aproximación por regresión, nunca SIMM. El DIM reduce la exposición camino por camino, E[max(X - DIM, 0)] (método de "
+    "ORE): la exposición esperada tras el margen está entre la EE con solo margen de variación menos el DIM medio (con piso en 0) "
+    "y la EE con solo margen de variación.")
 
 
 def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[str, Any]], ore_block: dict[str, Any],
@@ -302,7 +304,7 @@ def not_applicable_ore() -> dict[str, Any]:
     reason = text("ORE's wrong-way example is a different model (a correlated credit LGM), not the Hull and White (2012) hazard on the "
                   "portfolio value, so this variant has no ORE reconciliation.",
                   "El ejemplo de riesgo de correlación adversa de ORE es otro modelo (un LGM de crédito correlacionado), no el "
-                  "hazard de Hull y White (2012) sobre el valor del portafolio, por lo que esta variante no tiene conciliación con ORE.")
+                  "modelo de intensidad de incumplimiento de Hull y White (2012) sobre el valor del portafolio, por lo que esta variante no tiene conciliación con ORE.")
     return {"status": "not-applicable", "ore_version": None, "platform": None, "run_seconds": None, "ore_ee": None,
             "ore_ee_discounted": None, "ore_eepe": None, "ore_cva": None, "ore_dim": None, "agreement": None, "eepe_agreement": None,
             "cva_agreement": None, "dim_agreement": None, "all_within_two_se": None, "reason": reason}
@@ -318,7 +320,8 @@ WHAT = {
     "ccr.reconcile_ee_profile": ("the EE profile against ORE 1.8.17.0", "el perfil de EE frente a ORE 1.8.17.0"),
     "ccr.ore_eepe_agreement": ("the EEPE against ORE 1.8.17.0", "el EEPE frente a ORE 1.8.17.0"),
     "ccr.ore_cva_agreement": ("the CVA against ORE 1.8.17.0", "el CVA frente a ORE 1.8.17.0"),
-    "ccr.ore_dim_agreement": ("the mean initial margin against ORE's dim_cube", "el margen inicial medio frente al dim_cube de ORE"),
+    "ccr.ore_dim_agreement": ("the mean initial margin against ORE's dynamic initial margin",
+                              "el margen inicial medio frente al margen inicial dinámico de ORE"),
 }
 #: the measures of a finding ("book", "risk factor", a reconciliation case) in Spanish (U16-R2 b06 B2: "(book)" in a Spanish title)
 #: the measure of a finding title in English words (the raw-id scan: "(minimum-transfer-amount-0)")

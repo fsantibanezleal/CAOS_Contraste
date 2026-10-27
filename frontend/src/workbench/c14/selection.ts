@@ -124,8 +124,8 @@ export function axisOf(o: Pick<C14Outputs, 'units' | 'currency'>, values: Readon
   return { div: s.div / k, unit: s.unit };
 }
 
-/** A whole amount of a table cell, in the document's scale. */
-export const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A whole amount of a table cell; a value that rounds to zero prints 0, never "-0" (R3 c15 m5: liabilities of -0.0 in the gap table). */
+export const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v !== null && v !== undefined && Math.abs(v) < 0.5 ? 0 : v, lang, { decimals: 0 });
 
 /** The NMD categories of the replicating portfolios, in document order, once each. */
 export function categoriesOf(fit: C14Fit | null): NmdCategory[] {

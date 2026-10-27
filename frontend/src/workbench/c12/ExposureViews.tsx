@@ -6,7 +6,7 @@
 import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
-import { useCard } from '../c03/U6Shared';
+import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { platformText } from '../c08/notes';
 import { NOT_SWAP, TallTables, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
@@ -43,6 +43,7 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
           es: `${pick(text(VARIANT_TEXT, o.variant), 'es')}, ${pick(text(BASIS_TEXT, e.basis), 'es')}. ${pick(e.measure_note, 'es')} La banda es la EE más y menos dos errores estándar de Monte Carlo; el PFE es el cuantil ${formatNumber(e.pfe_quantile, 'es', { percent: true, decimals: 0 })}. La exposición es una simulación de Hull-White de un factor ajustada a la curva del Tesoro de la fecha.`,
         }}
       >
+        <TallTables>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -107,6 +108,7 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
           </table>
           <p className="ct-note">{pick({ en: `The axis is in ${unit}; the table keeps the whole amounts.`, es: `El eje está en ${unit}; la tabla guarda los montos completos.` }, lang)}</p>
         </ChartOverTable>
+        </TallTables>
       </PlotCard>
     </ViewsRow>
   );
@@ -116,9 +118,15 @@ const MPOR_LABEL: Record<string, BiText> = {
   'netting-set': { en: 'Uncollateralised', es: 'Sin colateral' },
   'csa-mpor-10d': { en: 'Variation margin, MPoR 10 days', es: 'Margen de variación, MPoR de 10 días' },
   'csa-mpor-20d': { en: 'Variation margin, MPoR 20 days', es: 'Margen de variación, MPoR de 20 días' },
-  'with-im': { en: 'Variation and initial margin (regression proxy)', es: 'Margen de variación e inicial (proxy por regresión)' },
+  'with-im': { en: 'Variation and initial margin (regression proxy)', es: 'Margen de variación e inicial (aproximación por regresión)' },
 };
 const MPOR_COLOR = { 'netting-set': '--color-accent', 'csa-mpor-10d': '--color-good', 'csa-mpor-20d': '--color-warn', 'with-im': '--color-magenta' } as const;
+
+/** The value axis of the collateral chart: it also draws the dynamic initial margin when the with-im document is loaded (R3 c13 m7). */
+export const collateralAxisLabel = (withDim: boolean, unit: BiText): Bi => {
+  const u = { en: pick(unit, 'en'), es: pick(unit, 'es') };
+  return withDim ? { en: `EE and initial margin (${u.en})`, es: `EE y margen inicial (${u.es})` } : { en: `EE (${u.en})`, es: `EE (${u.es})` };
+};
 
 /** The uncollateralised EE against variation margin at the two margin periods and initial margin, on one time axis, from the four netting-set documents. */
 export function CollateralView({ sel }: { sel: C12Sel | null }) {
@@ -149,7 +157,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
         {...card}
         note={{
           en: 'The EE of the netting set without collateral, with daily variation margin at a margin period of risk of 10 and of 20 business days (the CRE53.24 floor and the floor for illiquid or large netting sets), and with initial margin added. The initial margin is a regression proxy of the dynamic margin that ORE documents, never ISDA SIMM. The curves come from the four netting-set variants of the case.',
-          es: 'La EE del conjunto de neteo sin colateral, con margen de variación diario a un periodo de riesgo de margen de 10 y de 20 días hábiles (el piso de CRE53.24 y el piso para conjuntos ilíquidos o grandes), y con margen inicial agregado. El margen inicial es un proxy por regresión del margen dinámico que documenta ORE, nunca ISDA SIMM. Las curvas vienen de las cuatro variantes con conjunto de neteo del caso.',
+          es: 'La EE del conjunto de neteo sin colateral, con margen de variación diario a un periodo de riesgo de margen de 10 y de 20 días hábiles (el piso de CRE53.24 y el piso para conjuntos ilíquidos o grandes), y con margen inicial agregado. El margen inicial es una aproximación por regresión del margen dinámico que documenta ORE, nunca ISDA SIMM. Las curvas vienen de las cuatro variantes con conjunto de neteo del caso.',
         }}
       >
         <TallTables>
@@ -158,47 +166,15 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: grid, ...YEARS_AXIS }}
-              y={{ label: { en: `EE (${pick(axis.unit, 'en')})`, es: `EE (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: collateralAxisLabel(Boolean(dim && withIm), axis.unit), format: { digits: 4 } }}
               series={[
                 ...docs.map((d) => ({ label: MPOR_LABEL[d.id], values: line(d.o.exposure.time_grid_years, d.o.exposure.ee.values), color: MPOR_COLOR[d.id], width: d.id === 'netting-set' ? 2.6 : 2, ...(d.id === 'csa-mpor-20d' ? { dash: [6, 3] } : {}) })),
-                ...(dim && withIm ? [{ label: { en: 'Dynamic initial margin (regression proxy)', es: 'Margen inicial dinámico (proxy por regresión)' } as BiText, values: line(withIm.exposure.time_grid_years, dim.values), color: '--color-fg-subtle' as const, width: 1.6, dash: [2, 3] }] : []),
+                ...(dim && withIm ? [{ label: { en: 'Dynamic initial margin (regression proxy)', es: 'Margen inicial dinámico (aproximación por regresión)' } as BiText, values: line(withIm.exposure.time_grid_years, dim.values), color: '--color-fg-subtle' as const, width: 1.6, dash: [2, 3] }] : []),
               ]}
               marks={marks}
             />
           }
         >
-          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-csa">
-            <dt>{pick({ en: 'CSA of this variant', es: 'CSA de esta variante' }, lang)}</dt>
-            <dd data-na={csa ? undefined : 'true'}>
-              {csa
-                ? pick(
-                    {
-                      en: `threshold ${cell(csa.threshold.amount, 'en')}, minimum transfer ${cell(csa.minimum_transfer_amount.amount, 'en')}, independent amount ${cell(csa.independent_amount.amount, 'en')} USD; margin period ${csa.mpor_business_days} business days; re-margined every ${csa.remargining_days} day; sticky-date close-out; ${csa.floor_reference}`,
-                      es: `umbral ${cell(csa.threshold.amount, 'es')}, transferencia mínima ${cell(csa.minimum_transfer_amount.amount, 'es')}, monto independiente ${cell(csa.independent_amount.amount, 'es')} USD; periodo de margen ${csa.mpor_business_days} días hábiles; reajuste cada ${csa.remargining_days} día; cierre con fecha fija; piso de CRE53.24: 10 días hábiles, 20 para conjuntos ilíquidos o grandes`,
-                    },
-                    lang,
-                  )
-                : pick({ en: 'none: this variant has no CSA (the curves above come from the variants that do)', es: 'ninguno: esta variante no tiene CSA (las curvas de arriba vienen de las variantes que sí lo tienen)' }, lang)}
-            </dd>
-            <dt>{pick({ en: 'Initial margin', es: 'Margen inicial' }, lang)}</dt>
-            <dd data-im={im ? 'regression-proxy' : 'none'} data-simm-used={im ? String(im.simm_used) : undefined}>
-              {im
-                ? pick(
-                    {
-                      en: `a regression proxy, not SIMM: the ORE dynamic margin by regression of order ${im.regression_order}, quantile ${formatNumber(im.quantile, 'en', { percent: true, decimals: 0 })} (alpha ${formatNumber(im.alpha, 'en', { digits: 4 })}), horizon ${im.horizon_calendar_days} and margin period ${im.mpor_calendar_days} calendar days. ${pick(im.limit, 'en')}`,
-                      es: `un proxy por regresión, no SIMM: el margen dinámico de ORE por regresión de orden ${im.regression_order}, cuantil ${formatNumber(im.quantile, 'es', { percent: true, decimals: 0 })} (alfa ${formatNumber(im.alpha, 'es', { digits: 4 })}), horizonte de ${im.horizon_calendar_days} y periodo de margen de ${im.mpor_calendar_days} días corridos. ${pick(im.limit, 'es')}`,
-                    },
-                    lang,
-                  )
-                : pick({ en: 'none in this variant: only the variant with initial margin carries it, as a regression proxy and never SIMM', es: 'ninguno en esta variante: solo la variante con margen inicial lo trae, como proxy por regresión y nunca SIMM' }, lang)}
-            </dd>
-            {o.collateral ? (
-              <>
-                <dt>{pick({ en: 'Limit', es: 'Límite' }, lang)}</dt>
-                <dd>{pick(o.collateral.limit, lang)}</dd>
-              </>
-            ) : null}
-          </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-collateral">
             <thead>
               <tr>
@@ -217,6 +193,38 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-csa">
+            <dt>{pick({ en: 'CSA of this variant', es: 'CSA de esta variante' }, lang)}</dt>
+            <dd data-na={csa ? undefined : 'true'}>
+              {csa
+                ? pick(
+                    {
+                      en: `threshold ${cell(csa.threshold.amount, 'en')}, minimum transfer ${cell(csa.minimum_transfer_amount.amount, 'en')}, independent amount ${cell(csa.independent_amount.amount, 'en')} USD; margin period ${csa.mpor_business_days} business days; re-margined every ${csa.remargining_days} day; sticky-date close-out; ${csa.floor_reference}`,
+                      es: `umbral ${cell(csa.threshold.amount, 'es')}, transferencia mínima ${cell(csa.minimum_transfer_amount.amount, 'es')}, monto independiente ${cell(csa.independent_amount.amount, 'es')} USD; periodo de margen ${csa.mpor_business_days} días hábiles; reajuste cada ${csa.remargining_days} día; cierre con fecha fija; piso de CRE53.24: 10 días hábiles, 20 para conjuntos ilíquidos o grandes`,
+                    },
+                    lang,
+                  )
+                : pick({ en: 'none: this variant has no CSA (the curves above come from the variants that do)', es: 'ninguno: esta variante no tiene CSA (las curvas de arriba vienen de las variantes que sí lo tienen)' }, lang)}
+            </dd>
+            <dt>{pick({ en: 'Initial margin', es: 'Margen inicial' }, lang)}</dt>
+            <dd data-im={im ? 'regression-proxy' : 'none'} data-simm-used={im ? String(im.simm_used) : undefined}>
+              {im
+                ? pick(
+                    {
+                      en: `the ORE dynamic margin by regression of order ${im.regression_order}, quantile ${formatNumber(im.quantile, 'en', { percent: true, decimals: 0 })} (alpha ${formatNumber(im.alpha, 'en', { digits: 4 })}), horizon ${im.horizon_calendar_days} and margin period ${im.mpor_calendar_days} calendar days. ${pick(im.limit, 'en')}`,
+                      es: `el margen dinámico de ORE por regresión de orden ${im.regression_order}, cuantil ${formatNumber(im.quantile, 'es', { percent: true, decimals: 0 })} (alfa ${formatNumber(im.alpha, 'es', { digits: 4 })}), horizonte de ${im.horizon_calendar_days} y periodo de margen de ${im.mpor_calendar_days} días corridos. ${pick(im.limit, 'es')}`,
+                    },
+                    lang,
+                  )
+                : pick({ en: 'none in this variant: only the variant with initial margin carries it, as a regression proxy and never SIMM', es: 'ninguno en esta variante: solo la variante con margen inicial lo trae, como aproximación por regresión y nunca SIMM' }, lang)}
+            </dd>
+            {o.collateral ? (
+              <>
+                <dt>{pick({ en: 'Limit', es: 'Límite' }, lang)}</dt>
+                <dd>{pick(o.collateral.limit, lang)}</dd>
+              </>
+            ) : null}
+          </dl>
           <p className="ct-note">{pick({ en: `The axis is in ${unit}; the table keeps the whole amounts.`, es: `El eje está en ${unit}; la tabla guarda los montos completos.` }, lang)}</p>
         </ChartOverTable>
         </TallTables>
@@ -246,8 +254,8 @@ export function NettingView({ sel }: { sel: C12Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'Netting works on the sum of the swap values, not on the sum of their positive parts: the netted EE is never above the sum of the single-trade EE, and the difference is the benefit. A one-swap book has nothing to net, so the benefit is zero.',
-          es: 'El neteo opera sobre la suma de los valores de los swaps, no sobre la suma de sus partes positivas: la EE neteada nunca supera la suma de las EE individuales, y la diferencia es el beneficio. Una cartera de un solo swap no tiene qué netear, así que el beneficio es cero.',
+          en: `Netting works on the sum of the swap values, not on the sum of their positive parts: the netted EE is never above the sum of the single-trade EE, and the difference is the benefit. A one-swap book has nothing to net, so the benefit is zero.${o.collateral ? ' In this variant the comparison is made without collateral; the EE after margin is in the collateral view.' : ''}`,
+          es: `El neteo opera sobre la suma de los valores de los swaps, no sobre la suma de sus partes positivas: la EE neteada nunca supera la suma de las EE individuales, y la diferencia es el beneficio. Una cartera de un solo swap no tiene qué netear, así que el beneficio es cero.${o.collateral ? ' En esta variante la comparación se hace sin colateral; la EE tras el margen está en la vista del colateral.' : ''}`,
         }}
       >
         <ChartOverTable
@@ -285,7 +293,7 @@ export function NettingView({ sel }: { sel: C12Sel | null }) {
                 <td>{cell(nb.sum_of_single_trade_ee.values[at], lang)}</td>
               </tr>
               <tr data-row="netted">
-                <td className="ct-text">{pick({ en: 'Netted EE', es: 'EE neteada' }, lang)}</td>
+                <td className="ct-text">{pick(o.collateral ? { en: 'Netted EE, without collateral', es: 'EE neteada, sin colateral' } : { en: 'Netted EE', es: 'EE neteada' }, lang)}</td>
                 <td>{cell(nb.netted_ee.values[at], lang)}</td>
               </tr>
               <tr data-row="benefit">
@@ -319,7 +327,7 @@ export function SensitivityView({ sel }: { sel: C12Sel | null }) {
   const axisPfe = axisOf(cases.flatMap((c) => c.pfe.values));
   const note: BiText = {
     en: 'The short-rate parameters are estimated on data before the back-test date, so they carry a standard error. Each line moves the reversion a or the volatility sigma by one standard error and re-runs the exposure on the same paths.',
-    es: 'Los parámetros de la tasa corta se estiman con datos anteriores a la fecha del backtest, así que traen un error estándar. Cada línea mueve la reversión a o la volatilidad sigma en un error estándar y repite la exposición sobre las mismas trayectorias.',
+    es: 'Los parámetros de la tasa corta se estiman con datos anteriores a la fecha de la prueba retrospectiva, así que traen un error estándar. Cada línea mueve la reversión a o la volatilidad sigma en un error estándar y repite la exposición sobre las mismas trayectorias.',
   };
   const chart = (kind: 'ee' | 'pfe', axis: ReturnType<typeof axisOf>) => (
     <UPlotChart

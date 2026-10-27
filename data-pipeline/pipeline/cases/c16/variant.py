@@ -305,7 +305,8 @@ def lcr_block(report: Report, conv: dict) -> dict[str, Any]:
             "inflows_counted": net.inflows_counted, "net_outflows": net.net, "ratio": ratio, "mapping_sensitivity": band,
             "below_100_note": txt("A ratio below 100 percent under stress is not a breach: the institution is expected to monitor its decline "
                                   "(ECB ILAAP guide, dossier 01 J.3).",
-                                  "Una razón bajo 100 por ciento bajo estrés no es un incumplimiento: se espera monitorear su caída.")}
+                                  "Una razón bajo 100 por ciento bajo estrés no es un incumplimiento: se espera que la entidad monitoree su "
+                                  "caída (guía ILAAP del BCE, dossier 01 J.3).")}
 
 
 # ------------------------------------------------------------------------------------------------------ HTM
@@ -371,10 +372,13 @@ def htm_block(report: Report, conv: dict, curves: dict[str, treasury.ParCurve], 
     return {"reported": rep,
             "application": {"method": "whole-book", "statement": txt(
                 "The held-to-maturity fair-value loss (SCHF minus SCHA) is applied to the securities book as a whole, pro rata by type: a stated "
-                "assumption, never a reported by-type loss (A3).", "La pérdida a valor razonable HTM se aplica al libro completo, a prorrata por tipo.")},
+                "assumption, never a reported by-type loss.",
+                "La pérdida a valor razonable del libro mantenido hasta el vencimiento (SCHF menos SCHA) se aplica al libro de valores completo, "
+                "a prorrata por tipo: un supuesto declarado, nunca una pérdida por tipo informada.")},
             "cbc_without_loss": without, "cbc_with_loss": with_loss, "cbc_removed": without - with_loss,
             "btfp_par": {"label": txt("Counterfactual: Bank Term Funding Program par valuation, announced 2023-03-12 after the run; par is proxied by the carrying value",
-                                      "Contrafactual: valoración a la par del BTFP, anunciada el 2023-03-12 tras la corrida"),
+                                      "Contrafactual: valoración a la par del Bank Term Funding Program (BTFP), anunciada el 2023-03-12 tras la "
+                                      "corrida; la par se aproxima por el valor contable"),
                          "announced": "2023-03-12", "cbc_at_par": at_par, "uplift": at_par - without},
             "revaluation": htm_revaluation(report, curves, valuation_date)}
 
@@ -407,7 +411,8 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
         at_model = {"horizon_days": h, "amount": amount, "share_of_model_base": amount / base}
         mo = {"at_event_horizon": None, "at_event_horizon_reason": txt(
             "The LCR defines one 30-day aggregate and no daily path, so no outflow exists at the 2-day event horizon: the comparison is at the model's own horizon.",
-            "El LCR define un agregado a 30 días sin trayectoria diaria: la comparación es en el horizonte propio del modelo."), "at_model_horizon": at_model}
+            "El LCR define un agregado a 30 días y ninguna trayectoria diaria, así que no existe salida en el horizonte del evento de 2 días: "
+            "la comparación es en el horizonte propio del modelo."), "at_model_horizon": at_model}
         chosen_amount, chosen_share, compared = amount, at_model["share_of_model_base"], "model-horizon"
     else:
         a_ev, a_h = modelled(ev), modelled(h)
@@ -432,13 +437,17 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
         role = ("calibration" if r.year < 2023 else "scored") if vid == "fast-run" else "reference"
         if lad is None or r.days > h:
             rows.append({"row_id": r.row_id, "bank": r.bank, "year": r.year, "horizon_days": r.days, "observed_share": r.outflow_share, "modelled_share": None,
-                         "error": None, "role": role, "reason": txt("The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
-                                                                      "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria).")})
+                         "error": None, "role": role, "reason": (
+                             txt("The variant has no daily path (the LCR is a 30-day aggregate), so no row is modelled.",
+                                 "La variante no tiene trayectoria diaria (el LCR es un agregado a 30 días), así que ninguna fila se modela.")
+                             if lad is None else
+                             txt("The horizon of this row is beyond the model's ladder.", "El horizonte de esta fila excede la escalera del modelo."))})
         else:
             ms = modelled(r.days) / base
             rows.append({"row_id": r.row_id, "bank": r.bank, "year": r.year, "horizon_days": r.days, "observed_share": r.outflow_share, "modelled_share": ms,
                          "error": r.outflow_share - ms, "role": role, "reason": None})
-    blk = {"event": {"label": txt("The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10", "La corrida de depósitos del 9 y 10 de marzo de 2023"),
+    blk = {"event": {"label": txt("The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10",
+                                  "La corrida de depósitos del 9 y 10 de marzo de 2023, el banco que quebró el 2023-03-10"),
                      "event_date": anchors.EVENT_DATE, "horizon_days": ev, "source": anchors.REVIEW_SOURCE},
            "model_deposit_base": base, "modelled_outflow": mo, "denominators": den, "svb_anchor": _anchor(), "table_a1_scoring": rows}
     return blk, tests
@@ -446,7 +455,8 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
 
 def _impact_survival(sv: dict[str, Any] | None, h: int) -> dict[str, Any]:
     if sv is None:
-        return {"value": None, "unit": "relevant days", "label": txt("The LCR formula gives no daily path, so no survival period.", "El LCR no da trayectoria diaria.")}
+        return {"value": None, "unit": "relevant days", "label": txt("The LCR formula gives no daily path, so no survival period.",
+                                                                     "La fórmula del LCR no da trayectoria diaria, así que no hay periodo de supervivencia.")}
     if sv["kind"] == "survives-horizon":
         return {"value": None, "unit": "relevant days",
                 "label": txt(f"Survival period: survives the {h}-day horizon", f"Periodo de supervivencia: sobrevive el horizonte de {h} días")}

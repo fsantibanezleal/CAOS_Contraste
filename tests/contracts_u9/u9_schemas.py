@@ -392,7 +392,12 @@ def c12_models() -> dict:
     }, "The counterparty curve (B10): a derived AAA to A market spread, labelled a proxy; the synthetic spread stays for the "
        "BA-CVA rating and the sensitivity rows.")
     d[p + "Fit"] = Ob({
-        "estimator": C("exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"),
+        # c12-models 2.0.0 (U16-F10d, R3 c13 BL4): the estimator the views print is a bilingual text; a document baked before
+        # 2.0.0 carries the English sentence alone and stays valid until the case is re-baked
+        "estimator": {"anyOf": [C("exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 "
+                                  "to 57)"), LBL(p)],
+                      "description": "The estimator as the views print it, a bilingual text (c12-models 2.0.0); the English sentence "
+                                     "alone in a document baked before 2.0.0."},
         "calibrations": A(R(p + "Calibration"), 2), "min_history_years": C(3),
         "closed_forms_source": C("QuantLib 1.44: hullwhite.hpp, hullwhite.cpp, jamshidianswaptionengine.cpp"),
         "closed_forms_status": C("formulas transcribed from the engine source; the journal derivations are UNVERIFIED as papers"),

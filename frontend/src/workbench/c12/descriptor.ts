@@ -385,7 +385,8 @@ const CREDIT_CURVE: Kind = { object: {
 } };
 
 export const C12_FIT = { object: {
-  estimator: 'string',
+  // c12-models 2.0.0: a bilingual text; a document baked before it carries the English sentence alone
+  estimator: { anyOf: ['string', 'text'] },
   calibrations: { array: CALIBRATION },
   min_history_years: 'integer',
   closed_forms_source: 'string',

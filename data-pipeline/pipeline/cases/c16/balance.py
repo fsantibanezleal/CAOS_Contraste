@@ -124,9 +124,9 @@ def balance_sheet(r: Report) -> dict[str, Any]:
         return txt(f"{what} is not in the FDIC financials for this report: taken as zero.", f"{what} no está en los estados FDIC de este reporte: se toma como cero.")
 
     items = [
-        _item("cash", "Cash and balances due from depository institutions", "Efectivo y saldos en instituciones", "asset", "cash", "CHBAL",
+        _item("cash", "Cash and balances due from depository institutions", "Efectivo y saldos en instituciones depositarias", "asset", "cash", "CHBAL",
               cash, None, "Reported by the FDIC financials, taken as reserves at nominal value (Level 1).", cash, "level_1", 0, None, cash),
-        _item("reverse-repo", "Federal funds sold and reverse repurchase agreements", "Fondos federales vendidos y repos inversos", "asset",
+        _item("reverse-repo", "Federal funds sold and reverse repurchase agreements", "Fondos federales vendidos y pactos de retroventa", "asset",
               "reverse-repo", "FREPO", frepo, None if frepo is not None else missing("FREPO"),
               "Reported; an asset (addendum L3.1); assumed overnight, synthetic behaviour." if frepo is not None else zero,
               frepo or 0.0, "non_hqla", 1, None, frepo or 0.0),
@@ -149,7 +149,7 @@ def balance_sheet(r: Report) -> dict[str, Any]:
               fo_reported, txt("DEPFOR is not in the FDIC financials for this report: derived as DEP minus DEPDOM.",
                                "DEPFOR no está en los estados FDIC de este reporte: derivado como DEP menos DEPDOM.") if fo_derived else None,
               "Foreign-office deposits mapped to non-operational other financial customers, synthetic behaviour.", fo, None, 0, None, None),
-        _item("repo-borrowings", "Federal funds purchased and repurchase agreements", "Fondos federales comprados y repos", "liability",
+        _item("repo-borrowings", "Federal funds purchased and repurchase agreements", "Fondos federales comprados y pactos de retrocompra", "liability",
               "repo-borrowings", "FREPP", frepp, None if frepp is not None else missing("FREPP"),
               "Reported; a liability (addendum L3.1)." if frepp is not None else zero, frepp or 0.0, None, 1, None, None),
         _item("fhlb", "FHLB advances", "Anticipos FHLB", "liability", "fhlb-advances", "OTHBFHLB", fhlb, None if fhlb is not None else missing("OTHBFHLB"),
@@ -169,23 +169,32 @@ def balance_sheet(r: Report) -> dict[str, Any]:
         "assumptions": [
             a("deposit-mapping", "deposits", "Deposits are mapped to LiST classes by the named mapping table of the conventions: insured to other retail, "
               "uninsured to non-operational non-financial corporates, foreign offices to non-operational other financial.",
-              "Los depósitos se mapean a clases LiST por la tabla de mapeo nombrada de las convenciones."),
+              "Los depósitos se asignan a clases LiST con la tabla de asignación nombrada de las convenciones: los asegurados a otros "
+              "minoristas, los no asegurados a corporativos no financieros no operativos y los de oficinas en el exterior a otras "
+              "financieras no operativas."),
             a("pledged-pro-rata", "securities", "Pledged securities (SCPLEDGE) are encumbered pro rata across the securities types and leave the CBC.",
               "Los valores pignorados (SCPLEDGE) se gravan a prorrata entre los tipos y salen del CBC."),
             a("no-committed-lines", "off-balance-sheet", "The FDIC financials read give no undrawn commitments: no drawdown and no collateral call is "
               "modelled (a scenario input of zero, labelled).",
-              "Los estados FDIC leídos no dan compromisos no girados: no se modela giro ni llamada de colateral."),
+              "Los estados FDIC leídos no dan compromisos no girados: no se modela giro ni llamada de colateral (una entrada del "
+              "escenario igual a cero, rotulada)."),
             a("no-contractual-deposits", "deposits", "Every deposit runs on the open-maturity rate of its class: the term deposits (NTRTIME) are not run on the "
               "contractual roll-off of the LiST note, because the report gives no residual maturity of the uninsured balance.",
-              "Todo depósito corre a la tasa de vencimiento abierto de su clase; los depósitos a plazo no corren con el roll-off contractual."),
+              "Todo depósito sale a la tasa de vencimiento abierto de su clase: los depósitos a plazo (NTRTIME) no salen con la salida "
+              "contractual al vencimiento de la nota LiST, porque el reporte no da el plazo residual del saldo no asegurado."),
             a("lcr-hqla-levels", "lcr", "HQLA levels: reserves and Treasuries Level 1; agency and agency mortgage-backed securities Level 2A (the Level 1 part, "
               "GNMA, is not split by the report); municipal and other debt securities not HQLA. Securities enter at fair value (the whole-book loss), "
               "unencumbered.",
-              "Niveles HQLA: reservas y bonos del Tesoro nivel 1; agencias y MBS de agencias nivel 2A; municipales y otra deuda no HQLA."),
+              "Niveles HQLA: reservas y bonos del Tesoro nivel 1; valores de agencias y valores respaldados por hipotecas de agencias "
+              "nivel 2A (el reporte no separa la parte de nivel 1, GNMA); valores municipales y otra deuda, no HQLA. Los valores entran "
+              "a valor razonable (la pérdida del libro completo), sin gravámenes."),
             a("lcr-flows", "lcr", "Reverse repos are secured lending maturing in 30 days at 100 percent; loans of three months or less mature uniformly "
               "(a third of them in 30 days) at the 50 percent rate of retail and non-financial wholesale inflows (repricing is read as maturity: an "
               "upper bound); FHLB advances of one year or less mature uniformly (30 over 365 of them in 30 days) as other secured funding at 100 percent.",
-              "Los repos inversos vencen a 30 días al 100 por ciento; los préstamos a tres meses o menos vencen uniformemente."),
+              "Los repos inversos son préstamos garantizados que vencen en 30 días al 100 por ciento; los préstamos a tres meses o menos "
+              "vencen de manera uniforme (un tercio de ellos en 30 días) a la tasa de 50 por ciento de las entradas minoristas y "
+              "mayoristas no financieras (el reprecio se lee como vencimiento: una cota superior); los anticipos del FHLB a un año o "
+              "menos vencen de manera uniforme (30 de cada 365 en 30 días) como otro financiamiento garantizado al 100 por ciento."),
         ],
     }
 

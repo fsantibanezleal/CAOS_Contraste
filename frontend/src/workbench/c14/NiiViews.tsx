@@ -51,18 +51,6 @@ export function GapView({ sel }: { sel: C14Sel | null }) {
           }
         >
           <p className="ct-note" data-category-axis="buckets">{pick({ en: 'Horizontal axis: time bucket, 1 (overnight) to 19 (over 20 years).', es: 'Eje horizontal: tramo de tiempo, de 1 (a la vista) a 19 (más de 20 años).' }, lang)}</p>
-          <dl className="ct-defs" data-table="duration-gap">
-            <dt>{pick({ en: 'Asset duration', es: 'Duración de activos' }, lang)}</dt>
-            <dd>{`${digits(d.asset_duration_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
-            <dt>{pick({ en: 'Liability duration', es: 'Duración de pasivos' }, lang)}</dt>
-            <dd>{`${digits(d.liability_duration_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
-            <dt>{pick({ en: 'Duration gap', es: 'Brecha de duración' }, lang)}</dt>
-            <dd>{`${digits(d.duration_gap_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
-            <dt>{pick({ en: `Change in equity for +100 bp (${unit})`, es: `Cambio del patrimonio por +100 pb (${unit})` }, lang)}</dt>
-            <dd>{cell(d.equity_change_100bp_up, lang)}</dd>
-            <dt>{pick({ en: `Delta NII for +100 bp, from the gap (${unit}); positive is a loss`, es: `Delta NII por +100 pb, desde la brecha (${unit}); positivo es una pérdida` }, lang)}</dt>
-            <dd>{cell(ladder.delta_nii_gap_100bp_up, lang)}</dd>
-          </dl>
           <table className="caos-table ct-wrap-head" data-table="repricing-gap">
             <thead>
               <tr>
@@ -87,6 +75,18 @@ export function GapView({ sel }: { sel: C14Sel | null }) {
               ))}
             </tbody>
           </table>
+          <dl className="ct-defs" data-table="duration-gap">
+            <dt>{pick({ en: 'Asset duration', es: 'Duración de activos' }, lang)}</dt>
+            <dd>{`${digits(d.asset_duration_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
+            <dt>{pick({ en: 'Liability duration', es: 'Duración de pasivos' }, lang)}</dt>
+            <dd>{`${digits(d.liability_duration_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
+            <dt>{pick({ en: 'Duration gap', es: 'Brecha de duración' }, lang)}</dt>
+            <dd>{`${digits(d.duration_gap_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
+            <dt>{pick({ en: `Change in equity for +100 bp (${unit})`, es: `Cambio del patrimonio por +100 pb (${unit})` }, lang)}</dt>
+            <dd>{cell(d.equity_change_100bp_up, lang)}</dd>
+            <dt>{pick({ en: `Delta NII for +100 bp, from the gap (${unit}); positive is a loss`, es: `Delta NII por +100 pb, desde la brecha (${unit}); positivo es una pérdida` }, lang)}</dt>
+            <dd>{cell(ladder.delta_nii_gap_100bp_up, lang)}</dd>
+          </dl>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -125,8 +125,8 @@ export function DynamicNiiView({ sel }: { sel: C14Sel | null }) {
         title={{ en: 'The dynamic NII projection', es: 'La proyección dinámica del NII' }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} The projection runs month by month under the base path and the two parallel shocks of the 2024 calibration; floating items follow the short rate with the deposit beta of each item.`,
-          es: `${o.sign_convention.statement.es} La proyección corre mes a mes bajo la trayectoria base y los dos choques paralelos de la calibración 2024; las partidas variables siguen la tasa corta con el beta de depósitos de cada partida.`,
+          en: `${o.sign_convention.statement.en} The projection runs month by month under the base path and the two parallel shocks of the 2024 calibration; floating items follow the short rate with the deposit beta of each item. The delta NII of the shocks view comes from the repricing gap, where every item reprices in full; here the deposits follow the short rate with their beta, so the two can differ in size and in sign.`,
+          es: `${o.sign_convention.statement.es} La proyección corre mes a mes bajo la trayectoria base y los dos choques paralelos de la calibración 2024; las partidas variables siguen la tasa corta con el beta de depósitos de cada partida. El delta NII de la vista de choques viene de la brecha de repreciación, donde cada partida reprecia por completo; aquí los depósitos siguen la tasa corta con su beta, así que ambos pueden diferir en tamaño y en signo.`,
         }}
       >
         <ChartOverTable
@@ -241,8 +241,8 @@ export function EarEvarView({ sel }: { sel: C14Sel | null }) {
         title={{ en: 'Earnings at risk and economic value at risk', es: 'Ganancias en riesgo y valor económico en riesgo' }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} EaR is the base NII minus the lower quantile of the simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below, and carry the Monte Carlo error of the number of paths.`,
-          es: `${o.sign_convention.statement.es} El EaR es el NII base menos el cuantil inferior del NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo, y llevan el error de Monte Carlo del número de trayectorias.`,
+          en: `${o.sign_convention.statement.en} EaR is the base NII minus the lower quantile of the simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below, and carry the Monte Carlo error of the number of paths.${e.levels.some((l) => l.ear < 0) ? ' A negative EaR means that the lower quantile of the simulated NII is above the base NII.' : ''}`,
+          es: `${o.sign_convention.statement.es} El EaR es el NII base menos el cuantil inferior del NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo, y llevan el error de Monte Carlo del número de trayectorias.${e.levels.some((l) => l.ear < 0) ? ' Un EaR negativo significa que el cuantil inferior del NII simulado está sobre el NII base.' : ''}`,
         }}
       >
         <ChartOverTable
@@ -313,7 +313,7 @@ function Param({ name, value, unit }: { name: string; value: number; unit: strin
   return (
     <>
       <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
-      <dd data-parameter={name}>{`${name} = ${formatNumber(value, lang, { digits: 4 })} (${lang === 'es' ? (unit === 'per year' ? 'por año' : unit === 'per square-root year' ? 'por raíz cuadrada del año' : unit) : unit})`}</dd>
+      <dd data-parameter={name}>{`${name === 'sigma' ? 'σ' : name} = ${formatNumber(value, lang, { digits: 4 })} (${lang === 'es' ? (unit === 'per year' ? 'por año' : unit === 'per square-root year' ? 'por raíz cuadrada del año' : unit) : unit})`}</dd>
     </>
   );
 }

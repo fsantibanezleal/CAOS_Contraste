@@ -37,7 +37,8 @@ const BANK: Kind = { object: {
 
 const REPORT: Kind = { object: {
   report_date: 'string',
-  source: 'string',
+  // c14-outputs 2.0.0: a bilingual text; a document baked before it carries the English string alone
+  source: { anyOf: ['string', 'text'] },
   fields: { array: 'string' },
 } };
 
@@ -224,7 +225,8 @@ const SHOCK_SHAPE: Kind = { object: {
   flattener_long: 'number',
   short_form: 'string',
   long_form: 'string',
-  reference: 'string',
+  // c14-models 2.0.0: a bilingual text; a document baked before it carries the English string alone
+  reference: { anyOf: ['string', 'text'] },
 } };
 
 const NMD_CAP: Kind = 'json';

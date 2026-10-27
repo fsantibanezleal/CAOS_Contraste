@@ -137,7 +137,7 @@ def im_block(blk: dict[str, Any], c: vt.Core, run_dir: Path, flags: list[bool]) 
     z = max((abs(a["difference"]) / a["combined_se"] for a in ag if a["combined_se"] > 0), default=0.0)
     ok = all(a["within_two_se"] for a in ag)
     return [vt.custom_row("ccr.ore_dim_agreement", "green" if ok else "red", z, max(abs(a["difference"]) for a in ag),
-                          "the mean regression DIM of the Python run agrees with ORE's dim_cube within the combined Monte Carlo error",
+                          "the mean regression DIM of the Python run agrees with ORE's dynamic initial margin within the combined Monte Carlo error",
                           "the two regressions differ", ORE_REFERENCE,
                           "" if ok else f"the largest gap is {z:.1f} combined standard errors; ORE's mean DIM is "
                           f"{float(np.mean(o_mean / p_mean)):.3f} of the Python one on average (cause UNVERIFIED: the expected "

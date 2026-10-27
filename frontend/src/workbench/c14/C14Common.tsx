@@ -2,7 +2,7 @@
 // value that moves with its controls) and the tests table every IRRBB view shares. The Findings card and the fixture
 // notice are the ones C06 and C07 use. Money is the document's: `units.money_scale` says whether a table cell is in
 // units, thousands or millions, and a narrow place (a read-out, an axis) scales it to bn or m with the unit that says so.
-import { Fragment } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts';
@@ -16,8 +16,8 @@ import {
   CALIBRATION_TEXT, CATEGORY_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SOURCE_KIND_TEXT, SHOCK_TEXT, amount, axisOf, cell, categoriesOf, fitOf, nmdModelOf,
   outputsOf, scaleUnit, scenarioFor, scenarioOf, shockOf, text, type C14Outputs, type C14Sel,
 } from './selection';
-import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise } from './localise';
-import { testText } from '../names';
+import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise, type Rule } from './localise';
+import { segmentName, testText } from '../names';
 import { daySeconds } from '../../lib/days';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
@@ -30,6 +30,51 @@ const TEST_TEXT: Record<string, BiText> = {
   'irrbb.behavioural_change_at_breach': { en: 'Behavioural parameter change at a limit breach', es: 'Cambio de un parámetro conductual en un exceso de límite' },
   'irrbb.nii_out_of_sample': { en: 'NII projection against the realised NII', es: 'Proyección del NII contra el NII realizado' },
 };
+
+/** The provenance of a call report: the API address as a link named by its service (R3 c15 m9: the whole address wrapped over a long
+ * column at 390), then the file, its hash and the day it was read. */
+export function ReportSource({ text }: { text: string }) {
+  const m = /^(https:\/\/\S+) (\(.*\))$/.exec(text);
+  if (!m) return <>{text}</>;
+  return (
+    <>
+      <a href={m[1]} rel="noreferrer" target="_blank" translate="no">FDIC BankFind API</a>
+      {` ${m[2]}`}
+    </>
+  );
+}
+
+/** A text of a document in the language: a bilingual text (the IRRBB contracts from c14-outputs 2.0.0, c14-models 2.0.0 and
+ * c15-outputs 3.0.0, U16-F10d) is picked; an English string of a document baked before them goes through the rules, when given. */
+export function docText(v: string | { en: string; es: string } | null | undefined, lang: 'en' | 'es', rules?: ReadonlyArray<Rule>): string {
+  if (v === null || v === undefined) return '';
+  if (typeof v !== 'string') return v[lang];
+  return rules ? localise(v, lang, rules) : v;
+}
+
+/** A text with its ISO dates kept on one line each (R3 c15 n6: "al 2022-06-" / "30" split a date at its hyphen at 390). */
+export function NoBreakDates({ text }: { text: string }): ReactNode {
+  const parts = text.split(/(\d{4}-\d{2}-\d{2})/);
+  return (
+    <>
+      {parts.map((p, i) => (i % 2 === 1 ? <span key={i} style={{ whiteSpace: 'nowrap' }}>{p}</span> : p))}
+    </>
+  );
+}
+
+/** The segments of the IRRBB tests that the names module does not name: the leg of C15 and the deposit category. */
+const SEGMENT_TEXT: Record<string, BiText> = {
+  CLP: { en: 'CLP leg', es: 'Tramo CLP' },
+  UR: { en: 'UR leg', es: 'Tramo UR' },
+  wholesale: { en: 'Wholesale deposits', es: 'Depósitos mayoristas' },
+  'retail-transactional': { en: 'Retail transactional deposits', es: 'Depósitos minoristas transaccionales' },
+  'retail-non-transactional': { en: 'Retail non-transactional deposits', es: 'Depósitos minoristas no transaccionales' },
+  'retail-operational': { en: 'Retail operational deposits', es: 'Depósitos minoristas operativos' },
+  'retail-non-operational': { en: 'Retail non-operational deposits', es: 'Depósitos minoristas no operativos' },
+};
+
+/** The segment of a test row in words (the ruling of 2026-10-27: every tests table shows the segment of its rows). */
+export const testSegment = (seg: string, caseId: string): BiText => segmentName(seg, { caseId }) ?? SEGMENT_TEXT[seg] ?? { en: seg, es: seg };
 
 /**
  * The rows the engine returned for the tests of this variant, as a block that sits under the drawing of the view the
@@ -60,8 +105,11 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text">{pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}</td>
-                  <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
+                  <td className="ct-text">
+                    {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                    {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{pick(testSegment(t.segment, variant.case_id), lang)}</span> : null}
+                  </td>
+                  <td data-na={ran && t.statistic !== null ? undefined : 'true'} style={{ whiteSpace: 'nowrap' }}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
@@ -252,7 +300,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
           {o.data.call_reports.map((r) => (
             <Fragment key={r.report_date}>
               <dt>{`${pick({ en: 'Call report', es: 'Reporte' }, lang)} ${r.report_date}`}</dt>
-              <dd data-report={r.report_date}>{r.source}</dd>
+              <dd data-report={r.report_date}><ReportSource text={docText(r.source, lang)} /></dd>
             </Fragment>
           ))}
           <dt>{pick({ en: 'Treasury curve', es: 'Curva del Tesoro' }, lang)}</dt>
@@ -318,7 +366,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
                     )}
                   </td>
                   <td>{cell(i.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{localise(i.slotting_assumption, lang, IRRBB_SOURCE_RULES)}</td>
+                  <td className="ct-text ct-wide-only">{docText(i.slotting_assumption, lang, IRRBB_SOURCE_RULES)}</td>
                 </tr>
               ))}
             </tbody>

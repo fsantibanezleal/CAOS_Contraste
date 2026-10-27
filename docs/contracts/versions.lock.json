@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "23.0.0",
+    "version": "24.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "c7f2a7c2f8e1f0ed055802a62d12808218b3cdfa0dc0c9bbfbbbb5e9054fc944"
+    "sha256": "e36bd55af8907568a00df23fd746a9f44873a8e3e0d25b672b866f5cb1a4744e"
   },
   "readiness": {
     "version": "1.0.1",
@@ -185,19 +185,19 @@
     "sha256": "b218449ea32c4686c382da0bcb422da866281a70bba99a470bd86b627d87921a"
   },
   "c14-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c14/variant-valuation-date.schema.json",
-    "sha256": "a38314f7edfd743c1af8816592dd3aaaa389a26550c8da289ccceb867639a03e"
+    "sha256": "fa31e3615da9ecf16ddcae79a8d11311a583c6d201ce2cfcb0c5a3d4f562e59f"
   },
   "c14-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c14/models.schema.json",
-    "sha256": "cecd8f4c9d3083d92862ef81a532f8f47f57eced8c87e02ebe93e7bd3d5172ca"
+    "sha256": "a3df94076c8c9cc4b18e06345d1028db018626c7172fe7a333e5227426b48085"
   },
   "c15-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c15/variant-annex1-variant.schema.json",
-    "sha256": "6d6da49d833dd91e7f6573918ca7422dd9caa53662ae1f76ea1db8d609f33062"
+    "sha256": "5c79b5633ff0c612043345baba5dccd24c55e6526c76294beeeb7882361f8277"
   },
   "c15-models": {
     "version": "1.0.0",
@@ -385,9 +385,9 @@
     "sha256": "482b20e0a7ae636323f47531b84171963a696d124f6ca22442a72ed40c3af066"
   },
   "c12-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c12/models.schema.json",
-    "sha256": "9a2988050a173dc98aa1001385864480ba6e7d264ca35092501c02508c7c3d0e"
+    "sha256": "64e748ac39e96589f32922d0f50934fa7030e4dac501e7e05398f929fba595ae"
   },
   "regulatory-calculators": {
     "version": "1.0.0",
