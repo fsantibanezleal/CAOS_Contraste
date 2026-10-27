@@ -173,11 +173,15 @@ def test_the_c06_titles_say_what_they_measure():
             if f["id"] == "F-LIFETIME-GAP":
                 seen.add("gap")
                 assert "pooled" in f["title"]["en"] and "agrupados" in f["title"]["es"]
-            if f["id"].startswith("F-SICR"):
+            if f["id"].startswith("F-SICR-STABILITY"):
+                # the SICR threshold's stability against the conditions (R4 c07 N-M1, U16-F12b), its own measure
+                seen.add("stability")
+                assert "condiciones" in f["title"]["es"] and "conditions" in f["title"]["en"]
+            elif f["id"].startswith("F-SICR"):
                 seen.add("sicr")
                 assert "separates defaults" not in f["title"]["en"]
                 assert "frente a los incumplimientos" in f["title"]["es"]
-    assert seen == {"gap", "sicr"}
+    assert seen == {"gap", "sicr", "stability"}
 
 
 def test_the_c07_notice_has_its_punctuation_and_the_uf_value_in_spanish():
