@@ -21,8 +21,8 @@
 
   <rect class="bx" x="20" y="52" width="270" height="106" rx="8"/>
   <text class="mono" x="32" y="74">data-pipeline/config/sources.json</text>
-  <text class="sub l-en" x="32" y="94">49 sources, each with the verbatim fragment</text>
-  <text class="sub l-es" x="32" y="94">49 fuentes, cada una con el fragmento literal</text>
+  <text class="sub l-en" x="32" y="94">58 sources, each with the verbatim fragment</text>
+  <text class="sub l-es" x="32" y="94">58 fuentes, cada una con el fragmento literal</text>
   <text class="sub l-en" x="32" y="110">of its licence, its class and its cases;</text>
   <text class="sub l-es" x="32" y="110">de su licencia, su clase y sus casos;</text>
   <text class="bad l-en" x="32" y="130">a link-only or unusable source is never read</text>

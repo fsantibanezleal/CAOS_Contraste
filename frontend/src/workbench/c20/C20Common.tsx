@@ -231,7 +231,8 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
         </p>
         <dl className="ct-defs" data-table="c20-case">
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
-          <dd>{pick(KIND_TEXT[o.kind], lang)}</dd>
+          {/* the variant's whole title (the rail shows only its chip, DENSE_RAIL); it says what the kind says and more */}
+          <dd data-kind={o.kind}>{pick(m.artifacts.find((a) => a.role === 'variant' && a.variant_id === v.variant_id)?.title ?? KIND_TEXT[o.kind], lang)}</dd>
           <dt>{pick({ en: 'Data', es: 'Datos' }, lang)}</dt>
           <dd data-dataset={o.dataset_id}>{pick(text(DATASET_TEXT, o.dataset_id), lang)}</dd>
           <dt>{pick({ en: 'Model fitted on', es: 'Modelo ajustado con' }, lang)}</dt>
