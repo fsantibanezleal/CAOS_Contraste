@@ -50,9 +50,11 @@ describe('U16-F4 C15: the Spanish view', () => {
   it('V15-3: the formulas keep their symbols and translate their words in Spanish', () => {
     setLang('es');
     const text = visibleText(html(<IndexationView sel={selOf('cpi-surprise')} />));
-    expect(text).toContain('cargo = 0,025 x |PN_UR|, PN_UR = posición neta en UF x valor de la UF');
+    // the bilingual formulas of the c15-outputs 3.0.0 producer (pipeline/cases/c15/variant.py), re-baked
+    expect(text).toContain('cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF');
     // R3 c16 Q (U16-F10a): symbols with a legend, never the engine keys pn_ur and surprise_pp
-    expect(text).toContain('efecto = -PN_UR x S / 100 (pérdida positiva), con PN_UR la posición neta en UF y S la sorpresa de inflación en puntos porcentuales');
+    expect(text).toContain('efecto = −PN_UR × s / 100, positivo es una pérdida, donde PN_UR es la posición neta en UF en CLP y s la sorpresa de IPC en puntos porcentuales');
+    expect(text).not.toMatch(/pn_ur|surprise_pp/);
     expect(text).not.toContain('charge =');
   });
 
