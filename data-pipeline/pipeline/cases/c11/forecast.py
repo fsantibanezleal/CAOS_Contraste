@@ -103,7 +103,7 @@ LADDER: tuple[Spec, ...] = (
     Spec("caviar-as", "R8", "caviar", "as", "CAViaR, asymmetric slope", "CAViaR, pendiente asimétrica",
          "Engle and Manganelli 2004, JBES 22(4)", "none", "none: CAViaR forecasts the VaR only", False),
     Spec("caviar-es", "R8", "caviar-es", "sav", "ES-CAViaR (two-step, Taylor)", "ES-CAViaR (dos pasos, Taylor)",
-         "Taylor 2019, JBES 37(1); two-step estimation declared in the engine (D-10)", "none",
+         "Taylor 2019, JBES 37(1); two-step estimation declared in the engine", "none",
          "autoregressive gap below the CAViaR VaR, fitted by the asymmetric Laplace likelihood", True),
     Spec("gas-fz-1", "R9", "gas", "one-factor", "GAS-FZ, one factor", "GAS-FZ, un factor",
          "Patton, Ziegel and Chen 2019, J. Econometrics 211(2)", "none", "joint VaR and ES from one dynamic factor (FZ0 estimation)", True),
@@ -115,7 +115,7 @@ LADDER: tuple[Spec, ...] = (
 SPEC_BY_ID = {s.model_id: s for s in LADDER}
 CHALLENGER = {"model_id": "nn-fz", "rung": "R10", "en": "Quantile network trained on FZ0 (challenger)",
               "es": "Red de cuantiles entrenada con FZ0 (retador)", "source": "arXiv 2606.04576 (preprint; challenger only)",
-              "reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the U8 bake does not train it"}
+              "reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it"}
 
 #: a tail VaR below this share of the estimation window's standard deviation is a collapsed fit, not a forecast
 MIN_VAR_SCALE = 0.1

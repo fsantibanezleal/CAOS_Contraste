@@ -11,7 +11,9 @@ import { YEAR_FORMAT } from './words';
 
 export { YEAR_FORMAT };
 
-const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
+// fixed decimals, so models that differ in the third decimal never read 0.17 beside 0.175 (R3 c09 m1)
+const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
+const d4 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 4 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
 /** A card that says why there is nothing to draw for the model in focus, in place of an empty chart. */
@@ -285,7 +287,7 @@ export function EndpointsView({ sel }: { sel: C08Sel | null }) {
                   <td className="ct-text" title={r.rung_id}>{pick(rungLabel(sel, r.rung_id), lang)}</td>
                   <td>{eps(r.epsilon)}</td>
                   <td>{p2(r.mean_predicted.value, lang)}</td>
-                  <td>{d3(r.rmse, lang)}</td>
+                  <td>{d4(r.rmse, lang)}</td>
                 </tr>
               ))}
             </tbody>

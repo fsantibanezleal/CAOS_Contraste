@@ -8,8 +8,8 @@ import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { BandReadout, C09ContextView, C09FindingsView, C09VariantsView, DesignReadout, ModelReadout, TreatmentReadout } from './C09Common';
-import { ByDesignView, DistributionView } from './CcfViews';
-import { BacktestView, FloorsView, ModelsView } from './EadViews';
+import { ByDesignView, DistributionView, EstimatorTestsView } from './CcfViews';
+import { BacktestTestsView, BacktestView, FloorsView, ModelsView } from './EadViews';
 import { DESIGN_SHORT, DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, defaultSel, modelLabel, outputsOf, text, treatmentsOf, type C09Sel } from './selection';
 
 export interface C09Instrument {
@@ -114,7 +114,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   const ccf = tabs(
     [
-      { id: 'by-design', label: { en: 'By design and tests', es: 'Por diseño y pruebas' }, content: <ByDesignView sel={sel} /> },
+      { id: 'by-design', label: { en: 'By design', es: 'Por diseño' }, content: <ByDesignView sel={sel} /> },
+      { id: 'tests', label: { en: 'Tests', es: 'Pruebas' }, content: <EstimatorTestsView sel={sel} /> },
       { id: 'distribution', label: { en: 'Distribution', es: 'Distribución' }, content: <DistributionView sel={sel} /> },
     ],
     { en: 'Views of the CCF', es: 'Vistas del CCF' },
@@ -122,7 +123,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   const ead = tabs(
     [
-      { id: 'backtest', label: { en: 'Back-test and tests', es: 'Backtest y pruebas' }, content: <BacktestView sel={sel} /> },
+      { id: 'backtest', label: { en: 'Back-test', es: 'Prueba retrospectiva' }, content: <BacktestView sel={sel} /> },
+      { id: 'backtest-tests', label: { en: 'Tests', es: 'Pruebas' }, content: <BacktestTestsView sel={sel} /> },
       { id: 'models', label: { en: 'Models', es: 'Modelos' }, content: <ModelsView sel={sel} /> },
       { id: 'floors', label: { en: 'Floor', es: 'Piso' }, content: <FloorsView sel={sel} /> },
     ],

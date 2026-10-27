@@ -163,7 +163,8 @@ export function defaultSel(data: CaseData | null): C13Sel | null {
 
 /** The parameters of the generator and of a planted deficiency, and their units, in words (the document gives them as snake_case ids). */
 export const PARAMETER_TEXT: Record<string, Bi> = {
-  basis_sd_share: { en: 'basis share of the HPL deviation', es: 'parte de base de la desviación del HPL' },
+  // the unit says what the share is of ("0.65 of the HPL deviation"), so the name does not (R3 c14 m9)
+  basis_sd_share: { en: 'basis share', es: 'parte de base' },
   burn_days: { en: 'burn-in days', es: 'días de calentamiento' },
   correlation_error: { en: 'correlation error', es: 'error de correlación' },
   factor_correlation: { en: 'factor correlation', es: 'correlación entre factores' },
@@ -171,7 +172,7 @@ export const PARAMETER_TEXT: Record<string, Bi> = {
   loading_1: { en: 'loading of factor 1', es: 'carga del factor 1' },
   loading_2: { en: 'loading of factor 2', es: 'carga del factor 2' },
   omitted_loading_share: { en: 'omitted loading share', es: 'parte de la carga omitida' },
-  residual_sd_share: { en: 'residual share of the factor P&L deviation', es: 'parte residual de la desviación del P&L de factores' },
+  residual_sd_share: { en: 'residual share', es: 'parte residual' },
   vol_lag_days: { en: 'volatility lag', es: 'rezago de la volatilidad' },
   vol_log_sd: { en: 'volatility log deviation', es: 'desviación logarítmica de la volatilidad' },
   vol_persistence: { en: 'volatility persistence', es: 'persistencia de la volatilidad' },

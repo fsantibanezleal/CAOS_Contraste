@@ -5,6 +5,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
 import { noteText } from '../c08/notes';
 import { referenceText, useCard } from '../c03/U6Shared';
@@ -28,18 +29,18 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `Back-tests of ${name.en}`, es: `Backtests de ${name.es}` }}
+        title={{ en: `Back-tests: ${name.en}`, es: `Pruebas retrospectivas: ${name.es}` }}
         {...card}
         note={{
           en: 'Each p-value is the engine\'s; the bar is empty for a test that did not run. A model is eligible for the comparison when no gate test is red at either level.',
           es: 'Cada valor p es del motor; la barra queda vacía para una prueba que no corrió. Un modelo es elegible para la comparación cuando ninguna prueba de compuerta está en rojo en ningún nivel.',
         }}
       >
-        <ChartOverTable
-          chartMin={rowsMin(rows.length)}
+        <ChartAbove
+          chartHeight={rowsMin(rows.length)}
           chart={
             <BarChart
-              title={{ en: 'p-value of each back-test', es: 'Valor p de cada backtest' }}
+              title={{ en: 'p-value of each back-test', es: 'Valor p de cada prueba retrospectiva' }}
               height="fill"
               orientation="horizontal"
               data={rows.map((t) => ({
@@ -72,10 +73,22 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
             </p>
           ) : null}
           <MarketTestsTable rows={rows} table="c11-tests" />
-        </ChartOverTable>
+        </ChartAbove>
       </PlotCard>
     </ViewsRow>
   );
+}
+
+/** The x values of the Z2 chart: the bin centres, widened by one point at either end when a mark lies beyond the outer centre (the
+ * bars are drawn at the centres, so a mark between the outer edge and the outer centre extends the axis too; R2b c12 M1). `front` is
+ * the number of points added before the centres. Exported so the rule is tested by running it (R3 c12 m14). */
+export function z2Axis(centers: readonly number[], marks: readonly number[]): { xs: number[]; front: number } {
+  const c0 = centers[0];
+  const cN = centers[centers.length - 1];
+  const lo = Math.min(c0, ...marks);
+  const hi = Math.max(cN, ...marks);
+  const pad = (hi - lo) * 0.04;
+  return { xs: [...(lo < c0 ? [lo - pad] : []), ...centers, ...(hi > cN ? [hi + pad] : [])], front: lo < c0 ? 1 : 0 };
 }
 
 /** Z2 of Acerbi and Szekely against the model's simulated null: the realised statistic, the model's own critical values, and the published points as a reference. */
@@ -86,7 +99,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   if (!sel || !o) return <Pending />;
   const fit = fitOf(sel);
   const name = modelLabel(sel, sel.model);
-  const title: BiText = { en: `Expected shortfall back-test of ${name.en}`, es: `Backtest de la pérdida esperada de ${name.es}` };
+  const title: BiText = { en: `Expected shortfall back-test: ${name.en}`, es: `Prueba retrospectiva de la pérdida esperada: ${name.es}` };
   // Z2 is defined at the 2.5 percent tail: at the level in focus when the document has it, else at the level it does have
   const es = o.es_backtests.find((e) => e.model_id === sel.model && e.alpha === sel.alpha) ?? o.es_backtests.find((e) => e.model_id === sel.model) ?? null;
   const esAlpha = es?.alpha ?? sel.alpha;
@@ -101,7 +114,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             {row
               ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : referenceText(row, lang)})`
               : sel.alpha === 0.01
-                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5 % en el riel.' }, lang)
+                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'La prueba retrospectiva de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5 % en el riel.' }, lang)
                 : level && level.es_status === 'not-forecast'
                   ? pick({ en: 'Not available: this model forecasts no ES, so there is nothing to back-test.', es: 'No disponible: este modelo no pronostica la ES, así que no hay nada que probar.' }, lang)
                   : pick({ en: 'Not available: the document carries no Z2 for this model and level.', es: 'No disponible: el documento no trae Z2 para este modelo y nivel.' }, lang)}
@@ -128,13 +141,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   // the axis takes in every mark: a Z2 far from the null is drawn at its place, with the histogram between. The bars are drawn at
   // the bin centres, so a mark between the outer edge and the outer centre extends the axis too (R2b c12 M1: a Z2 of 1.0, the last
   // edge, fell outside an axis that ended at the last centre, in 45 of 168 states)
-  const c0 = centers[0];
-  const cN = centers[centers.length - 1];
-  const lo = Math.min(c0, ...marks.map((m) => m.x));
-  const hi = Math.max(cN, ...marks.map((m) => m.x));
-  const pad = (hi - lo) * 0.04;
-  const xs = [...(lo < c0 ? [lo - pad] : []), ...centers, ...(hi > cN ? [hi + pad] : [])];
-  const front = lo < c0 ? 1 : 0;
+  const { xs, front } = z2Axis(centers, marks.map((m) => m.x));
   const counts: Array<number | null> = xs.map((_, i) => (i >= front && i < front + centers.length ? h.counts[i - front] : null));
   const test = testsOf(sel, o, sel.model, esAlpha).find((t) => t.test_id === 'market.acerbi_szekely');
   return (
@@ -165,9 +172,9 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <dd data-level={esAlpha}>{pick(alphaLabel(esAlpha), lang)}</dd>
             <dt>{pick({ en: 'Realised Z2', es: 'Z2 realizado' }, lang)}</dt>
             <dd>{fmt(es.realised)}</dd>
-            <dt>{pick({ en: 'Model 5% critical value (yellow)', es: 'Valor crítico del modelo al 5 % (amarillo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 5% critical value, the amber boundary', es: 'Valor crítico del modelo al 5 %, el límite ámbar' }, lang)}</dt>
             <dd>{fmt(es.critical_5pct)}</dd>
-            <dt>{pick({ en: 'Model 0.01% critical value (red)', es: 'Valor crítico del modelo al 0,01 % (rojo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 0.01% critical value, the red boundary', es: 'Valor crítico del modelo al 0,01 %, el límite rojo' }, lang)}</dt>
             <dd>{fmt(es.critical_0_01pct)}</dd>
             <dt>{pick({ en: 'Simulated draws', es: 'Simulaciones' }, lang)}</dt>
             <dd>{formatNumber(es.n_draws, lang, { decimals: 0 })}</dd>

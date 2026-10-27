@@ -6,10 +6,9 @@ import { PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
-import { noteText } from '../c08/notes';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine, zoneText } from './MarketCommon';
-import { fitOf, levelOf, lossPct, modelLabel, outputsOf, rollingCounts, seconds, spanLine, zoneStart, type C11Sel } from './selection';
+import { fitOf, levelOf, lossPct, modelLabel, outputsOf, rollingCounts, seconds, spanLine, zoneStart, reasonText, tableRefText, type C11Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -49,7 +48,7 @@ export function TimelineView({ sel }: { sel: C11Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `VaR and ES of ${name.en} at the ${formatNumber(lv.alpha, 'en', { percent: true, decimals: lv.alpha === 0.025 ? 1 : 0 })} tail`, es: `VaR y ES de ${name.es} en la cola de ${formatNumber(lv.alpha, 'es', { percent: true, decimals: lv.alpha === 0.025 ? 1 : 0 })}` }}
+        title={{ en: `VaR and ES at the ${formatNumber(lv.alpha, 'en', { percent: true, decimals: lv.alpha === 0.025 ? 1 : 0 })} tail: ${name.en}`, es: `VaR y ES en la cola de ${formatNumber(lv.alpha, 'es', { percent: true, decimals: lv.alpha === 0.025 ? 1 : 0 })}: ${name.es}` }}
         {...card}
         note={{
           en: `${spanLine(o).en} One-step forecasts, each from data strictly before its day. A red point is a day the loss exceeded the VaR.`,
@@ -70,7 +69,7 @@ export function TimelineView({ sel }: { sel: C11Sel | null }) {
             <ConventionLine />
             {loss === null ? (
               <p className="ct-note" data-state="unavailable">
-                {`${formatNumber(null, lang)} (${noteText(grid.realised_loss.reason, lang)}) ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
+                {`${formatNumber(null, lang)} (${reasonText(grid.realised_loss.reason, lang)}) ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
               </p>
             ) : null}
             {lv.es_status === 'not-forecast' ? (
@@ -133,7 +132,7 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
   const lv = levelOf(o, sel.model, sel.alpha);
   const tl = lv?.traffic_light ?? null;
   const name = modelLabel(sel, sel.model);
-  const title = { en: `Basel traffic light of ${name.en}`, es: `Semáforo de Basilea de ${name.es}` };
+  const title = { en: `Basel traffic light: ${name.en}`, es: `Semáforo de Basilea: ${name.es}` };
   if (!lv || tl === null) {
     return (
       <ViewsRow>
@@ -154,6 +153,8 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
     ...(red !== null ? [{ y: red, label: { en: `Red from ${red}`, es: `Rojo desde ${red}` }, tone: 'bad' as const }] : []),
   ];
   const table = fit?.traffic_light;
+  // the axis starts at 0, so a count on the amber line is not drawn on the bottom edge (R3 c12 m8)
+  const yTop = Math.max(red ?? 0, ...rolling) + 1;
   return (
     <ViewsRow>
       <PlotCard
@@ -165,23 +166,18 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
           es: `${spanLine(o).es} La cuenta de excedencias en los últimos 250 días pronosticados, leída contra la Tabla 1 de MAR32.9 al nivel de 99 por ciento.`,
         }}
       >
-        <ChartOverTable
-          chart={
-            rolling.length > 0 ? (
+        {rolling.length > 0 ? (
+          <ChartOverTable
+            chart={
               <UPlotChart
                 height="fill"
                 x={{ values: o.grid.dates.slice(tl.window_days - 1).map((_, i) => tl.window_days + i), label: { en: 'Forecast day number at the end of the window', es: 'Número de día pronosticado al final de la ventana' }, format: { decimals: 0 } }}
-                y={{ label: { en: 'Exceedances in 250 days', es: 'Excedencias en 250 días' }, format: { decimals: 0 } }}
+                y={{ label: { en: 'Exceedances in 250 days', es: 'Excedencias en 250 días' }, format: { decimals: 0 }, range: [0, yTop] }}
                 series={[{ label: { en: 'Rolling exceedances', es: 'Excedencias móviles' }, values: rolling, color: '--color-accent', width: 2 }]}
                 yMarks={marks}
               />
-            ) : (
-              <p className="ct-note" data-state="unavailable">
-                {`${formatNumber(null, lang)} (${noteText(tl.reason, lang)})`}
-              </p>
-            )
-          }
-        >
+            }
+          >
           <div data-level={lv.alpha}>
             <ConventionLine />
             <dl className="ct-defs" data-table="traffic-light" data-final-zone={tl.final_zone}>
@@ -200,13 +196,13 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               {tl.reason ? (
                 <>
                   <dt>{pick({ en: 'Why not evaluated', es: 'Por qué no se evalúa' }, lang)}</dt>
-                  <dd>{noteText(tl.reason, lang)}</dd>
+                  <dd>{reasonText(tl.reason, lang)}</dd>
                 </>
               ) : null}
             </dl>
             {table ? (
               <table className="caos-table ct-wrap-head" data-table="mar32-9">
-                <caption className="ct-note">{`${table.reference}`}</caption>
+                <caption className="ct-note">{tableRefText(table.reference, lang)}</caption>
                 <thead>
                   <tr>
                     <th>{pick({ en: 'Exceptions in 250 days', es: 'Excepciones en 250 días' }, lang)}</th>
@@ -232,7 +228,62 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               </table>
             ) : null}
           </div>
-        </ChartOverTable>
+          </ChartOverTable>
+        ) : (
+          <div className="ct-scroll" data-caos-flow="">
+            <p className="ct-note" data-state="unavailable">{`${formatNumber(null, lang)} (${reasonText(tl.reason, lang)})`}</p>
+          <div data-level={lv.alpha}>
+            <ConventionLine />
+            <dl className="ct-defs" data-table="traffic-light" data-final-zone={tl.final_zone}>
+              <dt>{pick({ en: 'Zone at the last day', es: 'Zona al último día' }, lang)}</dt>
+              <dd>{pick(zoneText(tl.final_zone), lang)}</dd>
+              <dt>{pick({ en: 'Complete windows', es: 'Ventanas completas' }, lang)}</dt>
+              <dd>{count(tl.n_windows, lang)}</dd>
+              <dt>{pick({ en: 'Most exceedances in a window', es: 'Máximo de excedencias en una ventana' }, lang)}</dt>
+              <dd data-na={tl.max_rolling_exceedances === null ? 'true' : undefined}>{tl.max_rolling_exceedances === null ? formatNumber(null, lang) : count(tl.max_rolling_exceedances, lang)}</dd>
+              <dt>{pick({ en: 'Exceedances in the last window', es: 'Excedencias en la última ventana' }, lang)}</dt>
+              <dd data-na={tl.final_rolling_exceedances === null ? 'true' : undefined}>{tl.final_rolling_exceedances === null ? formatNumber(null, lang) : count(tl.final_rolling_exceedances, lang)}</dd>
+              <dt>{pick({ en: 'Days in green, amber, red', es: 'Días en verde, ámbar, rojo' }, lang)}</dt>
+              <dd data-na={tl.days_green === null ? 'true' : undefined}>
+                {tl.days_green === null ? formatNumber(null, lang) : `${count(tl.days_green, lang)}, ${count(tl.days_amber ?? 0, lang)}, ${count(tl.days_red ?? 0, lang)}`}
+              </dd>
+              {tl.reason ? (
+                <>
+                  <dt>{pick({ en: 'Why not evaluated', es: 'Por qué no se evalúa' }, lang)}</dt>
+                  <dd>{reasonText(tl.reason, lang)}</dd>
+                </>
+              ) : null}
+            </dl>
+            {table ? (
+              <table className="caos-table ct-wrap-head" data-table="mar32-9">
+                <caption className="ct-note">{tableRefText(table.reference, lang)}</caption>
+                <thead>
+                  <tr>
+                    <th>{pick({ en: 'Exceptions in 250 days', es: 'Excepciones en 250 días' }, lang)}</th>
+                    <th className="ct-text">{pick({ en: 'Zone', es: 'Zona' }, lang)}</th>
+                    <th>{pick({ en: 'FRTB multiplier', es: 'Multiplicador FRTB' }, lang)}</th>
+                    <th>{pick({ en: 'US factor', es: 'Factor de EE.UU.' }, lang)}</th>
+                    <th>{pick({ en: 'Cumulative probability', es: 'Probabilidad acumulada' }, lang)}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.rows.map((r) => (
+                    <tr key={r.exceptions} data-exceptions={r.exceptions} data-zone={r.zone} className={r.exceptions === Math.min(tl.final_rolling_exceedances ?? -1, 10) ? 'ct-current' : undefined}>
+                      <td>{r.exceptions === 10 ? `${count(10, lang)}+` : count(r.exceptions, lang)}</td>
+                      <td className={`ct-text ct-light ct-light-${r.zone}`}>
+                        <span className="ct-light-word">{pick(zoneText(r.zone), lang)}</span>
+                      </td>
+                      <td>{formatNumber(r.frtb_multiplier, lang, { decimals: 2 })}</td>
+                      <td>{formatNumber(r.us_multiplier, lang, { decimals: 2 })}</td>
+                      <td>{`${formatNumber(r.cumulative_probability_pct, lang, { decimals: 2 })} %`}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
+          </div>
+          </div>
+        )}
       </PlotCard>
     </ViewsRow>
   );

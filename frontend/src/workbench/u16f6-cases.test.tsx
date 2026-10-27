@@ -127,7 +127,8 @@ describe('U16-F6 C08 to C11 (b04, b05)', () => {
     expect(textOf(render(<LadderView sel={sel10(data('C10'))!} />, 'en'))).toContain('Analytic: no scenarios.');
   });
   it('b05: the ladder remarks are in Spanish and the citation is as published', () => {
-    expect(referenceNote('Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)', 'es')).toBe('Gordy and Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)');
+    // the authors are joined with "y" in Spanish since R3 c11 n1; the title and the journal stay as published
+    expect(referenceNote('Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)', 'es')).toBe('Gordy y Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)');
     expect(referenceNote('unknown', 'es')).toBe('unknown');
   });
   it('b05 m4: a unit of one is singular', () => {

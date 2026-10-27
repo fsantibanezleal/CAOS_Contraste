@@ -48,7 +48,7 @@ NOTICE = t(
     "Small-business loans, not mortgages: the SBA 7(a) charge-offs are the public twin of the mortgage case. Freddie Mac's data is "
     "not used (the owner's account is missing). The LGD is a proxy: the file has no recovery cash flows after the charge-off.",
     "Préstamos a pequeñas empresas, no hipotecas: los castigos SBA 7(a) son el gemelo público del caso hipotecario. No se usan los "
-    "datos de Freddie Mac (falta la cuenta del propietario). La LGD es un proxy: el archivo no tiene flujos de recuperación "
+    "datos de Freddie Mac (falta la cuenta del propietario). La LGD es una aproximación: el archivo no tiene flujos de recuperación "
     "posteriores al castigo.")
 
 
@@ -57,8 +57,8 @@ def lgd_proxy_block() -> dict[str, Any]:
         "definition": t(
             "LGD proxy = gross charge-off amount over the gross approved amount (SBA 7(a) fields GrossChargeOffAmount and "
             "GrossApproval, the only exposure field the file carries). It is a proxy, not a workout LGD.",
-            "Proxy de LGD = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y "
-            "GrossApproval, el único campo de exposición del archivo). Es un proxy, no una LGD de recuperación."),
+            "LGD aproximada = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y "
+            "GrossApproval, el único campo de exposición del archivo). Es una aproximación, no una LGD de recuperación."),
         "formula": "GrossChargeOffAmount / GrossApproval",
         "source_field": "GrossChargeOffAmount",
         "exposure_field": "GrossApproval",
@@ -68,13 +68,12 @@ def lgd_proxy_block() -> dict[str, Any]:
             "The proxy is biased low: the approved amount overstates the exposure at default of an amortising loan, so the "
             "denominator is too large. A second effect pushes the other way: the SBA 7(a) public file has no recovery cash flows "
             "after charge-off, so the proxy ignores recoveries and costs and overstates the loss net of recoveries; it can also "
-            "exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect "
-            "(decision D2).",
-            "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un crédito que se "
+            "exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect.",
+            "La aproximación tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un crédito que se "
             "amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: el archivo "
-            "público SBA 7(a) no tiene flujos de recuperación posteriores al castigo, de modo que el proxy ignora recuperaciones y "
+            "público SBA 7(a) no tiene flujos de recuperación posteriores al castigo, de modo que la aproximación ignora recuperaciones y "
             "costos y sobreestima la pérdida neta de recuperaciones; también puede superar 1 si se castigan intereses "
-            "capitalizados o comisiones. La dirección declarada es el efecto del denominador (decisión D2)."),
+            "capitalizados o comisiones. La dirección declarada es el efecto del denominador."),
     }
 
 
@@ -106,7 +105,7 @@ def workout_block() -> dict[str, Any]:
                                 "reason": t("the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record",
                                             "el archivo SBA no tiene flujos de recuperación que descontar ni proyectar; el castigo es todo el registro")},
         "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (the paragraph number is not confirmed).",
-                  "No se descuenta un proxy de castigo; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (el número de párrafo no está confirmado)."),
+                  "No se descuenta una aproximación por castigos; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (el número de párrafo no está confirmado)."),
     }
 
 

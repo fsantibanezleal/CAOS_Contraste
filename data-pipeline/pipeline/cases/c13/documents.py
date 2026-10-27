@@ -33,7 +33,7 @@ def rv_version() -> str:
 NOTICE = T(
     "Synthetic data: this is generated desk P&L with a risk model whose deficiency is planted, not the book of any real desk and not "
     "evidence about any bank. The truth is known by construction, so each result is shown beside the deficiency it is meant to detect.",
-    "Datos sintéticos: es un P&L de mesa generado con un modelo de riesgo cuya deficiencia está plantada, no el libro de ninguna mesa "
+    "Datos sintéticos: es un P&L de mesa generado con un modelo de riesgo cuya deficiencia está sembrada, no el libro de ninguna mesa "
     "real ni evidencia sobre ningún banco. La verdad es conocida por construcción, de modo que cada resultado se muestra junto a la "
     "deficiencia que debe detectar.")
 
@@ -43,7 +43,7 @@ SIGN_CONVENTION = {
                     "stores positive loss numbers, as decimals of the desk notional. HPL and RTPL are signed P&L as decimals of the "
                     "desk notional (a loss is negative).",
                     "El motor guarda VaR y ES en la convención de retornos (números negativos al nivel alfa); este documento guarda "
-                    "pérdidas positivas, como decimales del nominal de la mesa. HPL y RTPL son P&L con signo como decimales del nominal "
+                    "pérdidas positivas, como decimales del nocional de la mesa. HPL y RTPL son P&L con signo como decimales del nocional "
                     "de la mesa (una pérdida es negativa).")}
 
 TITLE = {
@@ -56,11 +56,11 @@ TITLE = {
 }
 SHORT = {"none": "None", "missing-basis": "Missing basis", "stale-volatility": "Stale vol", "wrong-correlation": "Wrong corr.",
          "omitted-factor": "Omitted factor", "time-misalignment": "Misaligned"}
-SHORT_ES = {"none": "Ninguna", "missing-basis": "Base omitida", "stale-volatility": "Vol. rezagada", "wrong-correlation": "Correl. errónea",
+SHORT_ES = {"none": "Ninguna", "missing-basis": "Base omitida", "stale-volatility": "Vol. desactualizada", "wrong-correlation": "Correl. errónea",
             "omitted-factor": "Factor omitido", "time-misalignment": "Desfasado"}
 MECHANISM = {
     "none": T("No deficiency: the risk model is exact up to the pricing noise (the size of the test).",
-              "Sin deficiencia: el modelo de riesgo es exacto salvo el ruido de valoración (el tamaño del test)."),
+              "Sin deficiencia: el modelo de riesgo es exacto salvo el ruido de valoración (el tamaño de la prueba)."),
     "missing-basis": T("The hypothetical P&L carries a basis between the traded instrument and the risk factor that the risk model leaves out.",
                        "El P&L hipotético incluye una base entre el instrumento y el factor de riesgo que el modelo de riesgo omite."),
     "stale-volatility": T("The risk model scales the day's factor shocks with the volatility of 20 days earlier, so its P&L and its VaR lag the true volatility.",
@@ -79,16 +79,20 @@ TRUE_MODEL = T(
     "of its P&L).",
     "Una mesa de spread con dos factores (largo el factor 1, corto el factor 2) con una volatilidad estocástica común conocida al "
     "inicio del día y factores correlacionados; el P&L hipotético es la revaluación exacta más un pequeño ruido de valoración, de "
-    "modo que el modelo de riesgo es exacto cuando no se planta nada. Una deficiencia cambia solo el modelo de riesgo (su base, su "
+    "modo que el modelo de riesgo es exacto cuando no se siembra nada. Una deficiencia cambia solo el modelo de riesgo (su base, su "
     "volatilidad de entrada, su correlación, su conjunto de factores o la fecha de su P&L).")
 INTENDED_NOTE = {
     "none": T("none", "ninguno"), "spearman": T("the Spearman statistic", "el estadístico de Spearman"),
     "ks": T("the Kolmogorov-Smirnov statistic", "el estadístico de Kolmogorov-Smirnov"), "either": T("either statistic", "cualquiera de los estadísticos")}
 
 
-#: the planted deficiencies in Spanish, for a title (U16-R2 b06 B2: "the planted omitted factor" inside a Spanish sentence)
-DEFICIENCY_ES = {"omitted-factor": "factor omitido", "wrong-correlation": "correlación errónea", "stale-volatility": "volatilidad desactualizada",
-                 "time-misalignment": "desfase temporal", "missing-basis": "base faltante"}
+#: the planted deficiencies in a sentence, by the names the views give them (frontend c13/selection.ts DEFICIENCY_TEXT): one name a
+#: deficiency in each language (U16-R2 b06 B2; R3 c14 m3: "base faltante" beside "Base omitida", "omitted factor" beside "Omitted risk
+#: factor")
+DEFICIENCY_EN = {"omitted-factor": "omitted risk factor", "wrong-correlation": "wrong correlation", "stale-volatility": "stale volatility",
+                 "time-misalignment": "time misalignment", "missing-basis": "missing basis"}
+DEFICIENCY_ES = {"omitted-factor": "factor de riesgo omitido", "wrong-correlation": "correlación errónea", "stale-volatility": "volatilidad desactualizada",
+                 "time-misalignment": "desfase temporal", "missing-basis": "base omitida"}
 
 
 def _p(x: float) -> str:
@@ -222,20 +226,20 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
         ok = p <= 0.05
         f.append({"id": "F-SIZE", "severity": "S4" if ok else "S3", "status": "accepted" if ok else "open", "evidence": ["market.pla_test"],
                   "title": T(f"With no deficiency the PLA is amber or red in {p:.1%} of {d['n_replications']:,} replications (red in {p_red:.1%}): the false-alarm rate of the test",
-                             f"Sin deficiencia el PLA es ámbar o rojo en {_p(p)} de {_n(d['n_replications'])} replicaciones (rojo en {_p(p_red)}): la tasa de falsa alarma del test")})
+                             f"Sin deficiencia el PLA es ámbar o rojo en {_p(p)} de {_n(d['n_replications'])} replicaciones (rojo en {_p(p_red)}): la tasa de falsa alarma de la prueba")})
     else:
         sev, status = ("S4", "accepted") if p >= 0.95 else (("S3", "open") if p >= 0.5 else ("S2", "open"))
-        name_es = DEFICIENCY_ES.get(did, did.replace('-', ' '))
+        name_en, name_es = DEFICIENCY_EN.get(did, did.replace('-', ' ')), DEFICIENCY_ES.get(did, did.replace('-', ' '))
         if p >= 0.5:
-            title = T(f"The PLA catches the planted {did.replace('-', ' ')} in {p:.1%} of {d['n_replications']:,} replications "
+            title = T(f"The PLA catches the planted {name_en} in {p:.1%} of {d['n_replications']:,} replications "
                       f"(amber or red; red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
-                      f"El PLA detecta la deficiencia plantada ({name_es}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
+                      f"El PLA detecta la deficiencia sembrada ({name_es}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
                       f"(ámbar o rojo; rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
         else:
             # a miss states the miss rate, then the catch rate it comes from (R2b c14 B1: "misses ... in 0.0%" read as never missing)
-            title = T(f"The PLA misses the planted {did.replace('-', ' ')} in {1 - p:.1%} of {d['n_replications']:,} replications: it is amber or "
+            title = T(f"The PLA misses the planted {name_en} in {1 - p:.1%} of {d['n_replications']:,} replications: it is amber or "
                       f"red in {p:.1%} (red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
-                      f"El PLA no detecta la deficiencia plantada ({name_es}) en {_p(1 - p)} de {_n(d['n_replications'])} replicaciones: es ámbar "
+                      f"El PLA no detecta la deficiencia sembrada ({name_es}) en {_p(1 - p)} de {_n(d['n_replications'])} replicaciones: es ámbar "
                       f"o rojo en {_p(p)} (rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
         f.append({"id": "F-PLA", "severity": sev, "status": status, "evidence": ["market.pla_test"], "title": title})
         n_int = d["intended_test_flagged"]

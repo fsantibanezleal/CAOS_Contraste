@@ -29,6 +29,16 @@ SOURCE = t("the SBA FOIA loan file (a credit indicator of the book itself; no ma
            "el archivo de préstamos FOIA de la SBA (un indicador de crédito de la propia cartera; no se lee una trayectoria macro)")
 
 
+#: how the add-on is built, in both languages (a Spanish view prints it: "aproximada", never "proxy", R3 c09)
+APPROACH = t(
+    "Cohort-based add-on: the default-weighted mean LGD proxy of the downturn cohorts minus the long-run mean over the six "
+    "cohorts, with the downturn identified from the annual charge-off rate of the SBA 7(a) book. An illustration, not a "
+    "regulatory estimate.",
+    "Ajuste por cohortes: la LGD aproximada media ponderada por incumplimientos de las cohortes de crisis menos la media de largo "
+    "plazo de las seis cohortes, con la crisis identificada por la tasa anual de castigos de la cartera SBA 7(a). Una "
+    "ilustración, no una estimación regulatoria.")
+
+
 @dataclass(frozen=True)
 class DownturnPlan:
     period: dict[str, Any]
@@ -101,12 +111,6 @@ def plan(defaults: Defaults, annual: AnnualRate, threshold: float | None = None)
         raise ValueError("no cohort has half of its default years inside the downturn period")
     coverage = {"n_cohorts": len(rows), "share_covered": float(sum(r["covered"] for r in rows) / len(rows))}
     period = {"first_year": first, "last_year": last, "indicator": dict(INDICATOR), "macro_source": dict(SOURCE)}
-    approach = t(
-        "Cohort-based add-on: the default-weighted mean LGD proxy of the downturn cohorts minus the long-run mean over the six "
-        "cohorts, with the downturn identified from the annual charge-off rate of the SBA 7(a) book. An illustration, not a "
-        "regulatory estimate.",
-        "Ajuste por cohortes: la LGD proxy media ponderada por incumplimientos de las cohortes de crisis menos la media de largo "
-        "plazo de las seis cohortes, con la crisis identificada por la tasa anual de castigos de la cartera SBA 7(a). Una "
-        "ilustración, no una estimación regulatoria.")
+    approach = dict(APPROACH)
     return DownturnPlan(period, approach, rows, coverage, tests, thr, sorted(flagged), [r["cohort_id"] for r in rows],
                         float(res.long_run), float(res.downturn))

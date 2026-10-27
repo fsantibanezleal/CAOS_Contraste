@@ -14,6 +14,8 @@ import { ConventionLine, rowsMin } from '../c11/MarketCommon';
 import { DEFICIENCY_TEXT, GENERATOR_TEXT, INTENDED_TEXT, PARAMETER_TEXT, UNIT_TEXT, parameterText, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, seedText, text, type C13Outputs, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A label that starts a line of a list starts with a capital (R3 c14 m9). */
+const capital = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 const pct = (v: number | null | undefined, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
 
 /** The deficiency of a document in words: its name, or the control. */
@@ -28,7 +30,8 @@ export function KnownBanner({ o }: { o: C13Outputs }) {
       <p className="ct-note">
         <strong>{pick(k.planted ? { en: 'Known deficiency: ', es: 'Deficiencia conocida: ' } : { en: 'No deficiency planted: ', es: 'Sin deficiencia sembrada: ' }, lang)}</strong>
         {k.planted ? `${pick(deficiencyName(o), lang)}. ` : ''}
-        {pick(k.mechanism, lang)}
+        {/* the control's mechanism starts with the words of the label before it: said once (R3 c14 m6) */}
+        {k.planted ? pick(k.mechanism, lang) : pick(k.mechanism, lang).replace(/^(No deficiency|Sin deficiencia): /, '')}
         {k.planted ? ` ${pick({ en: 'Meant to be caught by:', es: 'Debe detectarla:' }, lang)} ${pick(text(INTENDED_TEXT, k.intended_to_fail), lang)}.` : ''}
         {/* the synthetic notice in the same paragraph, so the Findings card keeps half the viewport at 1280 (gate G6: 49.8 %) */}
         {' '}
@@ -38,11 +41,17 @@ export function KnownBanner({ o }: { o: C13Outputs }) {
   );
 }
 
+/** The convention of the C13 numbers: decimals of the desk notional, not of a portfolio value (R3 c14 m8). */
+export const C13_CONVENTION: Bi = {
+  en: 'VaR is a positive loss and the HPL and RTPL are signed P&L, all as decimals of the desk notional: a VaR of 1\u00a0% means a loss of 1\u00a0% of the notional.',
+  es: 'El VaR es una pérdida positiva y el HPL y el RTPL son P&L con signo, todos como decimales del nocional de la mesa: un VaR de 1\u00a0% significa una pérdida de 1\u00a0% del nocional.',
+};
+
 /** The lines every C13 view carries under its drawing: the sign convention, once, and the known deficiency. */
 export function ViewFoot({ o }: { o: C13Outputs }) {
   return (
     <>
-      <ConventionLine />
+      <ConventionLine line={C13_CONVENTION} />
       <KnownBanner o={o} />
     </>
   );
@@ -95,7 +104,7 @@ export function C13VariantsTable({ variants, onPick, current }: { variants: Arra
           />
         }
       >
-        <ConventionLine />
+        <ConventionLine line={C13_CONVENTION} />
         {first ? <p className="ct-note" data-synthetic="true">{pick(first.generator.notice, lang)}</p> : null}
         <table className="caos-table ct-wrap-head" data-table="variants-c13">
           <thead>
@@ -117,7 +126,8 @@ export function C13VariantsTable({ variants, onPick, current }: { variants: Arra
                   </td>
                   <td className="ct-text ct-wide-only">{pick(text(INTENDED_TEXT, v.outputs.known_deficiency.intended_to_fail), lang)}</td>
                   <td>{pct(d.share_amber_or_red, lang)}</td>
-                  <td className="ct-wide-only">{`${pct(d.ci_low, lang)} - ${pct(d.ci_high, lang)}`}</td>
+                  {/* "a to b" with no-break spaces: a phone broke "a - b" at its hyphen (R3 c14 m14) */}
+                  <td className="ct-wide-only">{`${pct(d.ci_low, lang)}\u00a0${pick({ en: 'to', es: 'a' }, lang)}\u00a0${pct(d.ci_high, lang)}`}</td>
                   <td className="ct-text">{d.role === 'power' ? pick({ en: 'power', es: 'potencia' }, lang) : pick({ en: 'size', es: 'tamaño' }, lang)}</td>
                 </tr>
               );
@@ -179,7 +189,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
               <dd>{pick(fit.generator.true_risk_model, lang)}</dd>
               {fit.generator.parameters.map((p) => (
                 <Fragment key={p.name}>
-                  <dt>{pick(text(PARAMETER_TEXT, p.name), lang)}</dt>
+                  <dt>{capital(pick(text(PARAMETER_TEXT, p.name), lang))}</dt>
                   <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${pick(text(UNIT_TEXT, p.unit), lang)}`}</dd>
                 </Fragment>
               ))}

@@ -5,13 +5,16 @@ import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable, compactMoney } from '../c06/format';
+import { compactMoney } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
 import { truthText } from '../c08/words';
 import { SHAPED_ON_TEXT, bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, text, type C09Outputs, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** The convention's formula with its reference date as a subscript: E(t_r) is written E(tᵣ), as the pages write it (R3 c10 m9). */
+export const formulaText = (formula: string): string => formula.replace(/\bt_r\b/g, 'tᵣ');
 
 export function C09FindingsView({ sel }: { sel: C09Sel | null }) {
   if (!sel) return <Pending />;
@@ -38,7 +41,8 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
         es: 'Un nivel más alto sube la utilización con más fuerza antes del incumplimiento. Las barras son el sesgo del CCF medido un año fijo antes del incumplimiento en cada nivel, cuánto se aleja del CCF conocido; puede ser pequeño. Elija un nivel para cargarlo.',
       }}
     >
-      <ChartOverTable
+      <ChartAbove
+        chartHeight="13rem"
         chart={
           <BarChart
             title={{ en: 'Bias of the untreated fixed-horizon CCF by level', es: 'Sesgo del CCF a horizonte fijo sin tratar por nivel' }}
@@ -79,7 +83,7 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
             })}
           </tbody>
         </table>
-      </ChartOverTable>
+      </ChartAbove>
     </PlotCard>
   );
 }
@@ -123,7 +127,7 @@ export function C09ContextView({ sel }: { sel: C09Sel | null }) {
           <dt>{pick({ en: 'Convention', es: 'Convención' }, lang)}</dt>
           <dd>{pick(o.convention.definition, lang)}</dd>
           <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-          <dd translate="no">{o.convention.formula}</dd>
+          <dd translate="no">{formulaText(o.convention.formula)}</dd>
           <dt>{pick({ en: 'In US terms', es: 'En términos de EE.UU.' }, lang)}</dt>
           <dd>{pick(o.convention.us_terms, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>

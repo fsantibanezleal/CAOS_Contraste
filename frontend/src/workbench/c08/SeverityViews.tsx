@@ -6,7 +6,7 @@ import { ChartOverTable, axisScale, money } from '../c06/format';
 import { FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { Flagged, p2, useCard } from '../c03/U6Shared';
-import { INCOMPLETE_TEXT, WORKOUT_CONVENTION, outputsOf, type C08Sel } from './selection';
+import { INCOMPLETE_TEXT, WORKOUT_CONVENTION, freddieReason, outputsOf, type C08Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const edge = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 0 });
@@ -94,7 +94,7 @@ export function DistributionView({ sel }: { sel: C08Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <table className="caos-table ct-wrap-head ct-wide-only" data-table="lgd-bins">
+          <table className="caos-table ct-wrap-head" data-table="lgd-bins">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'LGD tenth', es: 'Décima de LGD' }, lang)}</th>
@@ -132,17 +132,17 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: 'The LGD proxy and its bias', es: 'El proxy de LGD y su sesgo' }}
+        title={{ en: 'The LGD proxy and its bias', es: 'La aproximación de la LGD y su sesgo' }}
         {...card}
         note={{
           en: 'The LGD of this case is a proxy, not a workout LGD: the public SBA 7(a) file carries no recovery cash flows, so the loss is the gross charge-off over the approved amount.',
-          es: 'La LGD de este caso es un proxy, no una LGD de recuperación: el archivo público SBA 7(a) no trae flujos de recuperación, así que la pérdida es el castigo bruto sobre el monto aprobado.',
+          es: 'La LGD de este caso es una aproximación, no una LGD de recuperación: el archivo público SBA 7(a) no trae flujos de recuperación, así que la pérdida es el castigo bruto sobre el monto aprobado.',
         }}
       >
         <ChartOverTable
           chart={
             <BarChart
-              title={{ en: 'The two totals of the proxy', es: 'Los dos totales del proxy' }}
+              title={{ en: 'The two totals of the proxy', es: 'Los dos totales de la aproximación' }}
               zoomOff={{ en: 'Two totals: there is no range of bars to zoom.', es: 'Dos totales: no hay un rango de barras que acercar.' }}
               height="fill"
               orientation="horizontal"
@@ -163,27 +163,23 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
             <dd>
               <code translate="no">{p.formula}</code>
             </dd>
-            <dt>{pick({ en: 'Fields', es: 'Campos' }, lang)}</dt>
-            <dd>
-              <code translate="no">{`${p.source_field} / ${p.exposure_field}`}</code>
-            </dd>
             <dt>{pick({ en: 'Recovery cash flows', es: 'Flujos de recuperación' }, lang)}</dt>
             <dd data-recovery-flows={String(p.recovery_cash_flows_available)}>{p.recovery_cash_flows_available ? pick({ en: 'available', es: 'disponibles' }, lang) : pick({ en: 'not available in the file', es: 'no disponibles en el archivo' }, lang)}</dd>
             <dt>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</dt>
-            <dd data-bias={p.bias_direction}>{pick({ en: 'The proxy is biased downward (low).', es: 'El proxy tiene un sesgo a la baja.' }, lang)}</dd>
+            <dd data-bias={p.bias_direction}>{pick({ en: 'The proxy is biased downward (low).', es: 'La aproximación tiene un sesgo a la baja.' }, lang)}</dd>
             <dt>{pick({ en: 'Why', es: 'Por qué' }, lang)}</dt>
             <dd>{pick(p.bias_statement, lang)}</dd>
             <dt>{pick({ en: 'Charged off, in total', es: 'Castigado, en total' }, lang)}</dt>
-            <dd data-total="gross-charge-off">{money(o.exposure.gross_charge_off_total, lang, o.exposure.currency)}</dd>
+            <dd data-total="gross-charge-off">{`${money(o.exposure.gross_charge_off_total, lang, o.exposure.currency)} ${o.exposure.currency}`}</dd>
             <dt>{pick({ en: 'Approved, in total', es: 'Aprobado, en total' }, lang)}</dt>
-            <dd data-total="gross-approval">{money(o.exposure.gross_approval_total, lang, o.exposure.currency)}</dd>
+            <dd data-total="gross-approval">{`${money(o.exposure.gross_approval_total, lang, o.exposure.currency)} ${o.exposure.currency}`}</dd>
             <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
             <dd data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
             <dt>{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
             <dd data-treatment={w.incomplete_workouts.treatment}>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
             <dt>Freddie Mac</dt>
             <dd data-freddie-mac={String(d.freddie_mac_available)}>
-              {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
+              {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${freddieReason(d.freddie_mac_reason, lang)}`}
             </dd>
           </dl>
           <Callout variant="honest" title={pick({ en: 'How the workout is treated', es: 'Cómo se trata la recuperación' }, lang)}>

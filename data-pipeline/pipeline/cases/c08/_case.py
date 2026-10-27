@@ -110,7 +110,7 @@ class C08:
                 f"Models trained on the SBA 7(a) defaults charged off before {res.cutoff}; tested on the defaults of {lo} to {hi} "
                 "(and the later cohorts). The LGD is a proxy: charge-off over the approved amount.",
                 f"Modelos entrenados con los incumplimientos SBA 7(a) castigados antes de {res.cutoff}; probados con los de {lo} a "
-                f"{hi} (y las cohortes posteriores). La LGD es un proxy: castigo sobre el monto aprobado.")
+                f"{hi} (y las cohortes posteriores). La LGD es una aproximación: castigo sobre el monto aprobado.")
             models_doc = build_models_artifact(case_id=CASE_ID, fit_id=vid, model=md_.model_records(res),
                                                fit=md_.fit_block(res, freddie_reason, down), lineage=lineage, lane=lane)
             rel_m = f"{CASE_ID}/models-{vid}.json"

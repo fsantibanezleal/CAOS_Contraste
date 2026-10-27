@@ -11,6 +11,7 @@ import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
 import { adjustmentText, noteText, seriesText } from '../c08/notes';
 import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
+import { segmentName } from '../names';
 import {
   ESTIMATOR_TEXT, GENERATOR_TEXT, INTERVAL_TEXT, SOURCE_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Estimator, type C10GridOutputs, type C10Outputs, type C10Sel,
@@ -21,12 +22,26 @@ const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') 
 
 /** The words of the portfolio tests; an id without an entry is shown as the document gives it. */
 export const TEST_TEXT: Record<string, Bi> = {
-  'portfolio.tail_backtest': { en: 'Tail back-test of the evaluation years', es: 'Backtest de cola de los años de evaluación' },
+  'portfolio.tail_backtest': { en: 'Tail back-test of the evaluation years', es: 'Prueba retrospectiva de cola de los años de evaluación' },
   'portfolio.mc_convergence': { en: 'Monte Carlo against the analytic anchor', es: 'Monte Carlo frente al ancla analítica' },
   'portfolio.euler_additivity': { en: 'Euler contributions add up', es: 'Las contribuciones de Euler suman el total' },
   'portfolio.crp_recursion_vs_mc': { en: 'CreditRisk+ recursion against Monte Carlo', es: 'Recursión de CreditRisk+ frente a Monte Carlo' },
   'portfolio.correlation_size_power': { en: 'Size and power of the correlation estimate', es: 'Tamaño y potencia de la estimación de la correlación' },
 };
+
+/** The segment of a test row in words: the measure and level of an Euler row ("VaR at 99.9 %"), the names module's words for the
+ * others (the LHP anchor, a known correlation and its estimator); "-" for a row without one. Every tests table shows it, so no two
+ * rows read the same (R3 c11 n3, the 2026-10-27 ruling). */
+export function segmentText(seg: string | null, lang: 'en' | 'es'): string {
+  if (!seg) return '-';
+  const m = /^(var|es)-([\d.]+)$/.exec(seg);
+  if (m) {
+    const level = formatNumber(Number(m[2]), lang, { percent: true, decimals: Number(m[2]) === 0.999 ? 1 : 0 });
+    const what = m[1] === 'var' ? 'VaR' : 'ES';
+    return lang === 'en' ? `${what} at ${level}` : `${what} al ${level}`;
+  }
+  return segmentName(seg, { caseId: 'C10' })?.[lang] ?? seg;
+}
 
 const TRUTH_TEXT: Record<string, Bi> = {
   'real-outcomes': { en: 'Real outcomes', es: 'Resultados reales' },
@@ -68,6 +83,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
             <tr>
               <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
               <th className="ct-text ct-wide-only">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
+              <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
               <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
               <th>p</th>
               <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
@@ -81,12 +97,14 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">{pick(text(TEST_TEXT, t.test_id), lang)}</td>
                   <td className="ct-text ct-wide-only">{modelName(t.model_id)}</td>
+                  <td className="ct-text" data-segment={t.segment ?? undefined}>{segmentText(t.segment, lang)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
+                  {/* a measure of its own, so a phone's scroll box does not wrap the reference one word a line (R3 c11 n2) */}
+                  <td className="ct-text" style={{ minWidth: '16rem' }}>{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
                 </tr>
               );
             })}
@@ -111,7 +129,8 @@ type AnyVariant = VariantArtifact<C10Outputs | C10GridOutputs>;
 /** The variants side by side: the fitted correlation of each loan type and the size of each simulator length. Pick one to load it. */
 export function C10VariantsTable({ variants, onPick, current }: { variants: Array<{ id: string; title: BiText; v: AnyVariant }>; onPick: (id: string) => void; current: string }) {
   const lang = useShellLang();
-  const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
+  // the badge is the loaded variant's truth status, not the first row's (R3 c11 m-P: "Real data" on a simulator grid)
+  const card = useCard((variants.find((x) => x.id === current) ?? variants[0])?.v as unknown as VariantArtifact | undefined);
   const loans = variants.filter((x) => x.v.outputs.kind === 'loan-type') as Array<{ id: string; title: BiText; v: VariantArtifact<C10Outputs> }>;
   const grids = variants.filter((x) => x.v.outputs.kind === 'correlation-grid') as Array<{ id: string; title: BiText; v: VariantArtifact<C10GridOutputs> }>;
   const backtest99 = (v: VariantArtifact<C10Outputs>) => v.outputs.backtest.rows.find((r) => r.level === 0.99) ?? null;
@@ -148,7 +167,7 @@ export function C10VariantsTable({ variants, onPick, current }: { variants: Arra
                 <th className="ct-text">{pick({ en: 'Loan type', es: 'Tipo de crédito' }, lang)}</th>
                 <th>{pick({ en: 'Fitted correlation', es: 'Correlación ajustada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'IRB correlation', es: 'Correlación IRB' }, lang)}</th>
-                <th>{pick({ en: 'Years above the 99% quantile', es: 'Años sobre el cuantil 99 %' }, lang)}</th>
+                <th>{pick({ en: 'Years above the 99 % quantile', es: 'Años sobre el cuantil 99 %' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -408,8 +427,8 @@ export function EstimatorReadout({ sel }: { sel: C10Sel | null }) {
       title={sel ? { en: `${text(ESTIMATOR_TEXT, sel.estimator).en}: the fit`, es: `${text(ESTIMATOR_TEXT, sel.estimator).es}: el ajuste` } : { en: 'The fit', es: 'El ajuste' }}
       items={[
         { label: { en: 'Asset correlation', es: 'Correlación de activos' }, value: f?.rho.estimate ?? null, unitless: true, format: fmt, hint: { en: 'The correlation of the obligors with the one systematic factor, squared loading.', es: 'La correlación de los deudores con el único factor sistemático, carga al cuadrado.' } },
-        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95 %.' } },
-        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95 %.' } },
+        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95 % interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95 % interval.', es: 'El intervalo del 95 %.' } },
+        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95 % interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95 % interval.', es: 'El intervalo del 95 %.' } },
         { label: { en: 'Probability of default', es: 'Probabilidad de incumplimiento' }, value: f?.pd.estimate ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The long-run yearly default or loss rate of the fitted distribution.', es: 'La tasa anual de incumplimiento o pérdida de largo plazo de la distribución ajustada.' } },
       ]}
     />
@@ -450,7 +469,7 @@ export function CellReadout({ sel }: { sel: C10Sel | null }) {
       items={[
         { label: { en: 'Role of the cell', es: 'Papel de la celda' }, text: role ?? NA, hint: { en: 'Size where the known correlation equals the null; power elsewhere.', es: 'Tamaño donde la correlación conocida es la de la nula; potencia en las demás.' } },
         { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, value: e?.rejection_rate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the test rejects that the correlation equals the null.', es: 'Con qué frecuencia la prueba rechaza que la correlación sea la de la nula.' } },
-        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95% interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95 % contiene la correlación conocida.' } },
+        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95 % interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95 % contiene la correlación conocida.' } },
         { label: { en: 'Mean estimate', es: 'Estimación media' }, value: e?.mean_estimate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The mean of the estimates over the valid replications.', es: 'La media de las estimaciones en las replicaciones válidas.' } },
       ]}
     />

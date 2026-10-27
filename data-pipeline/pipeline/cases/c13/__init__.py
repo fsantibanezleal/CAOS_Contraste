@@ -22,11 +22,11 @@ DEPENDS_REASONS: dict[str, dict[str, str]] = {}
 class C13:
     id = CASE_ID
     slug = "frtb-desk-eligibility"
-    title = {"en": "FRTB desk eligibility: PLA and desk backtesting", "es": "Elegibilidad de mesas FRTB: PLA y backtesting de mesa"}
+    title = {"en": "FRTB desk eligibility: PLA and desk backtesting", "es": "Elegibilidad de mesas FRTB: PLA y prueba retrospectiva de mesa"}
     category_id = "market-ccr"
     kind = "synthetic"
     question = {"en": "Do the P&L attribution and desk backtesting tests of FRTB detect planted model deficiencies?",
-                "es": "¿Detectan las pruebas de atribución de P&L y de backtesting de mesa de FRTB deficiencias de modelo plantadas?"}
+                "es": "¿Detectan las pruebas de atribución de P&L y la prueba retrospectiva de mesa de FRTB deficiencias de modelo sembradas?"}
     sources: tuple[str, ...] = ()  # a generator: no registered input file
 
     def depends_on(self) -> list[dict[str, Any]]:

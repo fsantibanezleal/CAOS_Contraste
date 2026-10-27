@@ -38,7 +38,7 @@ export const KIND_TEXT: Record<string, Bi> = {
   beta: { en: 'Beta regression', es: 'Regresión beta' },
   hurdle: { en: 'Two-stage hurdle', es: 'Modelo en dos etapas' },
   tobit: { en: 'Tobit', es: 'Tobit' },
-  'gradient-boosted': { en: 'Gradient boosting', es: 'Gradient boosting' },
+  'gradient-boosted': { en: 'Gradient boosting', es: 'Árboles potenciados por gradiente' },
   'cure-decomposition': { en: 'Cure-rate decomposition', es: 'Descomposición por tasa de cura' },
 };
 
@@ -87,6 +87,15 @@ export const SEGMENT_TEXT: Record<string, Bi> = {
   'sme-term-240-plus': { en: 'SME term loan, 240 months or more', es: 'Préstamo a plazo pyme, 240 meses o más' },
 };
 
+/** The short words of a segment for the rail's select, which fits an option to 160 px: the full name and the floor cell are its hint
+ * (the full names cut to one "SME term loan, ..." three times, R3 c09 BN1). */
+export const SEGMENT_SHORT: Record<string, Bi> = {
+  'sme-revolver': { en: 'Revolving line', es: 'Línea rotativa' },
+  'sme-term-up-to-84': { en: 'Up to 84 months', es: 'Hasta 84 meses' },
+  'sme-term-85-239': { en: '85 to 239 months', es: 'De 85 a 239 meses' },
+  'sme-term-240-plus': { en: '240 months or more', es: '240 meses o más' },
+};
+
 /** The words for a segment of the floors' bite; the id in words when the map lacks it. */
 export const segmentLabel = (id: string): Bi => SEGMENT_TEXT[id] ?? { en: humanize(id), es: humanize(id) };
 
@@ -96,7 +105,7 @@ const COLLATERAL_TEXT: Record<string, Bi> = {
   receivables: { en: 'receivables', es: 'cuentas por cobrar' },
   'real-estate': { en: 'real estate', es: 'bienes raíces' },
   'other-physical': { en: 'other physical collateral', es: 'otra garantía física' },
-  qrre: { en: 'qualifying revolving retail', es: 'minorista revolvente calificado' },
+  qrre: { en: 'qualifying revolving', es: 'revolvente calificado' },
   mortgage: { en: 'residential mortgage', es: 'hipoteca residencial' },
 };
 const PORTFOLIO_TEXT: Record<string, Bi> = { corporate: { en: 'Corporate', es: 'Corporativa' }, retail: { en: 'Retail', es: 'Minorista' } };
@@ -111,13 +120,18 @@ export function floorCellLabel(cell: { portfolio: string; collateral: string }):
 export const WORKOUT_CONVENTION: Record<string, Bi> = {
   'eba-interbank-plus-5pp': { en: 'EBA reading: an interbank rate plus 5 percentage points', es: 'Lectura de la EBA: una tasa interbancaria más 5 puntos porcentuales' },
   fixed: { en: 'A fixed rate', es: 'Una tasa fija' },
-  'none-proxy': { en: 'None: a charge-off proxy is not discounted', es: 'Ninguno: un proxy de castigo no se descuenta' },
+  'none-proxy': { en: 'None: a charge-off proxy is not discounted', es: 'Ninguno: una aproximación por castigos no se descuenta' },
 };
 export const INCOMPLETE_TEXT: Record<string, Bi> = {
   excluded: { en: 'excluded from the training set', es: 'excluidos del entrenamiento' },
   projected: { en: 'projected to closure', es: 'proyectados hasta el cierre' },
   'not-applicable': { en: 'not applicable', es: 'no aplica' },
 };
+
+/** Why the Freddie Mac data is not used, without the name the row already gives ("Freddie Mac: the owner's account is missing"). */
+export function freddieReason(reason: Bi | null | undefined, lang: 'en' | 'es'): string {
+  return reason ? reason[lang].replace(/^Freddie Mac:\s*/, '') : '';
+}
 
 /** The selection a variant opens on: the first model, the shift the beta rung uses, the cohort of the variant, the first floor row. */
 export function defaultSel(data: CaseData | null): C08Sel | null {
