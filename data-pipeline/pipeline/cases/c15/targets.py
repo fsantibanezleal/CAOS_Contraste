@@ -59,4 +59,9 @@ def targets() -> list[dict[str, Any]]:
 
 
 def source_text(row: dict[str, Any]) -> str:
-    return c07_src.source_text(row)
+    """The source string of a target (c15-models keeps one English string, localised by ``C15_SOURCE_RULES``); the C07
+    loan rows carry a bilingual locator since the C07 sources became bilingual, so their English text is taken."""
+    if isinstance(row["where"], dict):
+        return c07_src.source_text(row)["en"]
+    pub = c07_src.PUBLICATIONS[row["publication"]]
+    return f"{pub['title']}; {row['where']}; {pub['url']}; sha256 {pub['sha256']}"
