@@ -2639,7 +2639,7 @@
    },
    "rating.momentum@null": {
     "en": "the same paths: no momentum (c = 0)",
-    "es": "las mismas trayectorias: sin momentum (c = 0)"
+    "es": "las mismas trayectorias: sin impulso (c = 0)"
    },
    "rating.time_homogeneity@null": {
     "en": "five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain",
