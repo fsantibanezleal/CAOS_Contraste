@@ -50,7 +50,13 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: rows.map((r) => cohortYear(sel, r.cohort_id)), label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: YEAR_FORMAT }}
+              x={{
+                values: rows.map((r) => cohortYear(sel, r.cohort_id)),
+                label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' },
+                format: YEAR_FORMAT,
+                // the axis spans the downturn years, so the mark of the last one is drawn (a vertical mark does not widen the x scale)
+                range: [Math.min(t.period.first_year, ...rows.map((r) => cohortYear(sel, r.cohort_id))), Math.max(t.period.last_year, ...rows.map((r) => cohortYear(sel, r.cohort_id)))],
+              }}
               y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
               series={[
                 { label: { en: 'Long-run LGD', es: 'LGD de largo plazo' }, values: rows.map((r) => r.long_run_lgd.value), color: '--color-fg-subtle', width: 1.8, dash: [6, 3] },
