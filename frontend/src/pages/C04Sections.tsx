@@ -609,7 +609,7 @@ const METHOD_LABEL: Record<'wald' | 'agresti_coull' | 'jeffreys' | 'bootstrap', 
   wald: 'Wald',
   agresti_coull: 'Agresti-Coull',
   jeffreys: 'Jeffreys',
-  bootstrap: { en: 'Bootstrap (duration PD)', es: 'Bootstrap (PD de duración)' },
+  bootstrap: { en: 'Bootstrap (duration PD)', es: 'Remuestreo con reposición (PD de duración)' },
 };
 const METHOD_COLOR = { wald: '--color-bad', agresti_coull: '--color-warn', jeffreys: '--color-accent', bootstrap: '--color-magenta' } as const;
 

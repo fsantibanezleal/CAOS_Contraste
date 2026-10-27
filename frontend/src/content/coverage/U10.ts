@@ -13,7 +13,7 @@ export const CASES: PlannedCase[] = [
   {
     id: 'C14',
     category: 'balance-sheet',
-    title: t('IRRBB six shocks on a USD balance sheet (SVB 2022)', 'IRRBB con seis shocks en un balance en USD (SVB 2022)'),
+    title: t('IRRBB six shocks on a USD balance sheet (SVB 2022)', 'IRRBB con seis choques en un balance en USD (SVB 2022)'),
     data: t('FDIC call reports of the failed bank for 2021-Q4, 2022-Q2 and 2022-Q4, read only up to each valuation date, and the Treasury par curve of each date', 'Reportes de condición de la FDIC del banco quebrado para 2021-T4, 2022-T2 y 2022-T4, leídos solo hasta cada fecha de valoración, y la curva par del Tesoro de cada fecha'),
     truth: t('real aggregates, synthetic behaviour', 'agregados reales, comportamiento sintético'),
     unit: 'U10',

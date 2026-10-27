@@ -46,7 +46,7 @@ export function C22WriteUp() {
           },
           {
             en: <>Demler, Pencina and D'Agostino showed that DeLong's test on nested models fitted on the same data almost never rejects: 0.001 at the 5% level <Cite id="demler2012" /> <Cite id="delong1988" />. Their design rerun gives two rejections in 1,000 (one in the engine's suite); two non-nested scores on an independent sample hold the size.</>,
-            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel 5% <Cite id="demler2012" /> <Cite id="delong1988" />. Su diseño repetido da dos rechazos en 1.000 (uno en la suite del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
+            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel 5% <Cite id="demler2012" /> <Cite id="delong1988" />. Su diseño repetido da dos rechazos en 1.000 (uno en la batería del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
           },
         ]}
       />
@@ -58,8 +58,8 @@ export function C22WriteUp() {
             es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G - 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G - 2 en tales muestras la prueba rechaza PD correctas más de una vez en nueve al nivel 5%. riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
           },
           {
-            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated on a sample of similar size the test over-rejects: about one time in six at C01's slice sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
-            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó en una muestra de tamaño parecido la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
+            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated on a sample less than half the size of the current one the test over-rejects: about one time in six at C01's slice sizes, about one in nine at equal sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
+            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó en una muestra de menos de la mitad del tamaño de la actual la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01, cerca de una en nueve con tamaños iguales. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
           },
           {
             en: <>The ECB's concentration statistic is bounded: as the current coefficient of variation c grows it peaks and falls back, so with ten grades and an initial CV of 0.6 no current distribution is rejected at 5%.</>,

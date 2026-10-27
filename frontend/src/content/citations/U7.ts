@@ -12,7 +12,7 @@ export const CITATIONS: Citation[] = [
   // portfolio loss, risk measures and capital allocation
   { id: 'tasche2008euler', label: 'Tasche 2008', citation: 'Tasche, D. (2008). Capital allocation to business units and sub-portfolios: the Euler principle. arXiv 0708.2542 (v3, 2008-06-22).', url: 'https://arxiv.org/abs/0708.2542' },
   { id: 'tasche2009kernel', label: 'Tasche 2009b', citation: 'Tasche, D. (2009). Capital allocation for credit portfolios with kernel estimators. Quantitative Finance 9(5), 581-595.', doi: '10.1080/14697680802620599' },
-  { id: 'emmertasche2005', label: 'Emmer and Tasche 2005', citation: 'Emmer, S. and Tasche, D. (2005). Calculating credit risk capital charges with the one-factor model. Journal of Risk 7(2), 85-101.', doi: '10.21314/jor.2005.110' },
+  { id: 'emmertasche2005', label: { en: 'Emmer and Tasche 2005', es: 'Emmer y Tasche 2005' }, citation: 'Emmer, S. and Tasche, D. (2005). Calculating credit risk capital charges with the one-factor model. Journal of Risk 7(2), 85-101.', doi: '10.21314/jor.2005.110' },
   // structural and actuarial models
   { id: 'gupton1997', label: { en: 'Gupton et al. 1997', es: 'Gupton et al. 1997' }, citation: 'Gupton, G. M., Finger, C. C. and Bhatia, M. (1997). CreditMetrics Technical Document. J.P. Morgan; 2007 RiskMetrics Group reprint.', url: 'https://www.msci.com/documents/10199/93396227-d449-4229-9143-24a94dab122f' },
   { id: 'li2000', label: 'Li 2000', citation: 'Li, D. X. (2000). On default correlation: a copula function approach. Journal of Fixed Income 9(4), 43-54.', doi: '10.3905/jfi.2000.319253' },

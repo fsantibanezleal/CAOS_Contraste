@@ -90,7 +90,8 @@ describe('the counterparty credit risk Methodology topic', () => {
     expect(en).toContain('were not read');
     expect(en).toContain('proxy');
     const es = markup('es');
-    expect(es).toContain('proxy por regresión y nunca SIMM');
+    // "proxy" translated (R3 c25 B2, the ruling of 2026-10-27)
+    expect(es).toContain('aproximación por regresión y nunca SIMM');
     expect(es).toContain('no tiene conciliación con ORE');
     expect(es).toContain('no se leyeron');
   });

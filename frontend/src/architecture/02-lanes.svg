@@ -48,7 +48,7 @@
   <text class="sub l-en" x="44" y="314">unusable: the terms forbid it</text>
   <text class="sub l-es" x="44" y="314">inutilizable: lo prohíben</text>
   <text class="acc l-en" x="44" y="342">every file hashed in the</text>
-  <text class="acc l-es" x="44" y="342">cada archivo con su hash en</text>
+  <text class="acc l-es" x="44" y="342">cada archivo con su huella en</text>
   <text class="acc l-en" x="44" y="358">licence manifest</text>
   <text class="acc l-es" x="44" y="358">el manifiesto de licencias</text>
 
@@ -56,12 +56,12 @@
 
   <rect class="pn" x="252" y="50" width="300" height="380" rx="10"/>
   <text class="h l-en" x="266" y="74">Offline (canonical): the pipeline</text>
-  <text class="h l-es" x="266" y="74">Fuera de línea (canónico): el pipeline</text>
+  <text class="h l-es" x="266" y="74">Fuera de línea (canónico): la canalización</text>
   <rect class="bx" x="266" y="86" width="272" height="64" rx="6"/>
   <text class="it l-en" x="276" y="104">ingest, contract 1, leakage-safe split</text>
   <text class="it l-es" x="276" y="104">ingesta, contrato 1, partición sin fugas</text>
   <text class="sub l-en" x="276" y="120">holdout 30% locked; calibration slice disjoint;</text>
-  <text class="sub l-es" x="276" y="120">reservada 30% cerrada; tramo de calibración disjunto;</text>
+  <text class="sub l-es" x="276" y="120">reservada 30 % cerrada; tramo de calibración disjunto;</text>
   <text class="sub l-en" x="276" y="136">every fit on the training slice only</text>
   <text class="sub l-es" x="276" y="136">todo ajuste solo en el tramo de entrenamiento</text>
   <rect class="bx" x="266" y="160" width="272" height="64" rx="6"/>
@@ -74,8 +74,8 @@
   <rect class="on" x="266" y="234" width="272" height="64" rx="6"/>
   <text class="it l-en" x="276" y="252">the battery: riskvalidation</text>
   <text class="it l-es" x="276" y="252">la batería: riskvalidation</text>
-  <text class="sub l-en" x="276" y="268">one TestResult per test, H0, reference,</text>
-  <text class="sub l-es" x="276" y="268">un TestResult por prueba, H0, referencia,</text>
+  <text class="sub l-en" x="276" y="268">one test result per test, H0, reference,</text>
+  <text class="sub l-es" x="276" y="268">un resultado de prueba por prueba, H0, referencia,</text>
   <text class="sub l-en" x="276" y="284">versioned policy, light</text>
   <text class="sub l-es" x="276" y="284">política versionada, luz</text>
   <rect class="bx" x="266" y="308" width="272" height="108" rx="6"/>
@@ -108,13 +108,13 @@
   <text class="it l-en" x="618" y="210">Live</text>
   <text class="it l-es" x="618" y="210">En vivo</text>
   <text class="sub l-en" x="618" y="228">the scorecard and EBM scores of an applicant;</text>
-  <text class="sub l-es" x="618" y="228">los puntajes scorecard y EBM de un solicitante;</text>
+  <text class="sub l-es" x="618" y="228">los puntajes de la tarjeta de puntuación y EBM de un solicitante;</text>
   <text class="sub l-en" x="618" y="244">every light under the reader's policy;</text>
   <text class="sub l-es" x="618" y="244">cada luz con la política del lector;</text>
   <text class="sub l-en" x="618" y="260">the decision at any approval rate and LGD</text>
   <text class="sub l-es" x="618" y="260">la decisión con cualquier tasa de aprobación y LGD</text>
   <text class="acc l-en" x="618" y="286">held to the pipeline by parity tests</text>
-  <text class="acc l-es" x="618" y="286">sujeto al pipeline por pruebas de paridad</text>
+  <text class="acc l-es" x="618" y="286">sujeto a la canalización por pruebas de paridad</text>
   <rect class="bx" x="608" y="314" width="258" height="102" rx="6"/>
   <text class="it l-en" x="618" y="332">Pyodide: by measurement only</text>
   <text class="it l-es" x="618" y="332">Pyodide: solo por medición</text>

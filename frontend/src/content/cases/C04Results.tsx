@@ -106,8 +106,8 @@ export const ATTRIBUTION_FALLBACK = 'Source: ESMA CEREP; tables transformed by C
 /** What the known-truth families draw their paths from (contract.md section 2: the case computes the generator by EM
  * on S&P's pooled annual counts); the artifact's own source string is English only. */
 export const GENERATOR_TEXT = {
-  en: "the EM generator of S&P's pooled annual CEREP counts (riskvalidation.transitions.em)",
-  es: 'el generador EM de los conteos anuales agrupados de S&P en CEREP (riskvalidation.transitions.em)',
+  en: "the engine's EM generator of S&P's pooled annual CEREP counts",
+  es: 'el generador EM del motor sobre los conteos anuales agrupados de S&P en CEREP',
 } as const;
 
 export interface AgencyFacts {
@@ -292,7 +292,7 @@ export const TEST_NAME: Record<string, BiText> = {
   'rating.time_homogeneity': { en: 'Time homogeneity', es: 'Homogeneidad temporal' },
   'rating.matrix_reference': { en: 'Cohort against the pooled matrix', es: 'Cohorte contra la matriz agrupada' },
   'rating.markov_order': { en: 'Markov order', es: 'Orden de Markov' },
-  'rating.momentum': { en: 'Momentum hazard', es: 'Riesgo de momentum' },
+  'rating.momentum': { en: 'Momentum hazard', es: 'Riesgo de impulso' },
   'rating.migration_ztests': { en: 'ECB migration z-tests', es: 'Pruebas z de migración del BCE' },
   'rating.mwb': { en: 'ECB migration bandwidth', es: 'Ancho de banda de migración del BCE' },
 };
@@ -416,7 +416,7 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
       <p>
         {t(
           `Read from this release's artifacts (pipeline ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): CEREP's corporate long-term ratings by category, one-year cohorts, each agency's EU entity as ESMA computes its statistics. Every PD names its definition: D2 the default-rate page, D3 the defaults page, D4 the transition page's default column. ${attribution}.`,
-          `Leído desde los artefactos de esta versión (pipeline ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
+          `Leído desde los artefactos de esta versión (canalización ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
         )}{' '}
         {pick(ESMA_DEFINITIONS, lang)}
       </p>

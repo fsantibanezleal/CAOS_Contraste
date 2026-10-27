@@ -7,7 +7,7 @@ import type { Citation } from '@fasl-work/caos-app-shell';
 
 export const CITATIONS: Citation[] = [
   // the ECB stress test the ladder is read against
-  { id: 'ecblist', label: 'ECB LiST 2019', citation: 'ECB Banking Supervision (2019). Sensitivity analysis of liquidity risk, stress test 2019: methodological note, 6 February 2019.', url: 'https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ECB_sensitivity_analysis_of_liquidity_risk-stress_test_2019-methodological_note_20190206~6771e88926.en.pdf' },
+  { id: 'ecblist', label: { en: 'ECB LiST 2019', es: 'Prueba de liquidez del BCE (LiST) 2019' }, citation: 'ECB Banking Supervision (2019). Sensitivity analysis of liquidity risk, stress test 2019: methodological note, 6 February 2019.', url: 'https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ECB_sensitivity_analysis_of_liquidity_risk-stress_test_2019-methodological_note_20190206~6771e88926.en.pdf' },
   { id: 'ecblistannex', label: { en: 'ECB LiST 2019 results', es: 'Resultados de ECB LiST 2019' }, citation: 'ECB Banking Supervision (2019). Sensitivity analysis of liquidity risk, stress test 2019: final results, annex, 7 October 2019.', url: 'https://www.bankingsupervision.europa.eu/press/pr/date/2019/html/ssm.pr191007_annex~537c259b6d.en.pdf' },
   { id: 'ecbilaap', label: { en: 'ECB ILAAP guide', es: 'Guía ILAAP del BCE' }, citation: 'ECB Banking Supervision (2018). Guide to the internal liquidity adequacy assessment process (ILAAP), November 2018.', url: 'https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ilaap_guide_201811.en.pdf' },
   // the Basel liquidity standards and principles
