@@ -116,11 +116,11 @@ def _values(models: dict[str, Any], outs: dict[str, dict[str, Any]], rows_by: di
 
 _REGIME_TEXT = {
     "base": ("Base: the three regimes on the reporting-date state of the book", "Base: los tres regímenes sobre el estado de la cartera a la fecha de reporte"),
-    "recession": ("Recession: factor -1.0, house prices -5%", "Recesión: factor -1,0, precios de viviendas -5 %"),
-    "consumer-arrears-shock": ("Consumer arrears shock: 3% of consumer accounts in default", "Shock de mora de consumo: 3 % de las cuentas de consumo en incumplimiento"),
-    "house-price-fall": ("House price fall of 15%: collateral values", "Caída de 15 % de los precios de viviendas: valores de garantías"),
+    "recession": ("Recession: factor -1.0, house prices -5%", "Recesión: factor -1,0, precios de viviendas -5 %"),
+    "consumer-arrears-shock": ("Consumer arrears shock: 3% of consumer accounts in default", "Choque de mora de consumo: 3 % de las cuentas de consumo en incumplimiento"),
+    "house-price-fall": ("House price fall of 15%: collateral values", "Caída de 15 % de los precios de viviendas: valores de garantías"),
     "uf-inflation-spike": ("UF inflation 4 points above base", "Inflación UF 4 puntos sobre el base"),
-    "combined-severe": ("Combined severe: factor -2.0, house prices -25%", "Severo combinado: factor -2,0, precios de viviendas -25 %"),
+    "combined-severe": ("Combined severe: factor -2.0, house prices -25%", "Severo combinado: factor -2,0, precios de viviendas -25 %"),
 }
 
 

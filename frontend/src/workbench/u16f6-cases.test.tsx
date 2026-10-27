@@ -55,7 +55,7 @@ describe('U16-F6 C05 and C04 (b02, b03)', () => {
   it('b03 m9, m2, m6: the change column states its unit, the chi-square column says from which width, the model readout has a Spanish reason', () => {
     const sp = source('./c05/SpViews.tsx');
     expect(sp).toContain("es: 'Cambio, puntos'");
-    expect(sp).toContain('desde 1500 px de ancho');
+    expect(sp).toContain('donde la tabla tiene espacio para su columna'); // U16-F10b (R3 c06 m2): no pixel width in a caption
     expect(sp).not.toMatch(/\}%<\/td>/);
     expect(source('./c05/C05Common.tsx')).toContain('la condición (4.6a) no se cumple');
   });
@@ -65,7 +65,7 @@ describe('U16-F6 C05 and C04 (b02, b03)', () => {
     }
   });
   it('b02 m16 and m12: the headers say what they count, the generator note says the rail definition does not apply', () => {
-    expect(source('./c04/LiveViews.tsx')).toContain("es: 'N efectivo'");
+    expect(source('./c04/LiveViews.tsx')).toContain("es: 'N efectivo (N†)'"); // U16-F10b (R3 c05 m12)
     expect(source('./c04/AgencyValidationViews.tsx')).toContain('Cohorte, tabla 2 de CEREP');
     expect(source('./c04/FamilyViews.tsx')).toContain("The rail's default definition does not apply");
   });
@@ -93,7 +93,7 @@ describe('U16-F6 C06 (b03)', () => {
   it('b04 m11: the tests card names a test in words and shows the metric where there is no statistic', () => {
     const d = s().data;
     const es = textOf(render(<TestRowsCard variant={d.variant} prov={provenanceOf(d.variant.provenance.truth_status)} />, 'es'));
-    expect(es).toContain('Backtest de la PCE a 12 meses');
+    expect(es).toContain('Prueba retrospectiva de la PCE a 12 meses'); // the ruling of 2026-10-27: backtest is translated
     expect(es).toContain('Estadístico o métrica');
   });
 });

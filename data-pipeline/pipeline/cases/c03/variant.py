@@ -17,7 +17,7 @@ from ...core import text as tx
 from ..c01_ladder import SHORT_TITLES
 from ..c06.panel import months_between
 from . import evaluate, fit, models, panel, windows
-from .fit import MONTHS, WindowFit
+from .fit import MONTHS, RUNG_KINDS, WindowFit
 
 CURRENCY = "USD"
 CHAMPION = "P1-scorecard"
@@ -122,6 +122,24 @@ def _deciles(p: np.ndarray, y: np.ndarray) -> list[dict[str, Any]]:
     return rows
 
 
+#: a rung of C03 by the words the views name it with (``frontend/src/workbench/c03/selection.ts`` KIND_TEXT), so a model has one name
+#: in the findings and in the views (U16-R3 c04 m7: "P1 Scorecard" in the findings, "WoE scorecard" everywhere else)
+RUNG_TEXT: dict[str, dict[str, str]] = {
+    "constant": t("Constant (base rate)", "Constante (tasa base)"),
+    "woe-scorecard": t("WoE scorecard", "Tarjeta de puntuación WoE"),
+    "penalised-logit": t("Penalised logit", "Logit penalizado"),
+    "pltr": t("Logit with rule features", "Logit con reglas"),
+    "ebm": t("Explainable boosting machine", "Máquina de potenciación explicable"),
+    "monotone-gbm": t("Monotone gradient boosting", "Potenciación del gradiente monótona"),
+}
+
+
+def rung_text(rung: str) -> dict[str, str]:
+    """The words of a rung id (its kind), else the ladder's short title, else the id."""
+    kind = RUNG_KINDS.get(rung)
+    return RUNG_TEXT.get(kind, SHORT_TITLES.get(rung, t(rung, rung))) if kind else SHORT_TITLES.get(rung, t(rung, rung))
+
+
 def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort, crisis: int, champion: str) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for rung in dict.fromkeys((champion, "P4-lightgbm")):
@@ -136,12 +154,13 @@ def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort
             tag = "".join(w[0] for w in family.split()).upper()
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": sorted({f"{r['test_id']}@{rung}" for r in hit}),
                         # the rung by its short title and no test id: the evidence names each test (U16-R2b c04 B2)
-                        "title": t(f"{SHORT_TITLES.get(rung, {'en': rung})['en']}: {family} tests flag the {cohort.name} cohort",
-                                   f"{SHORT_TITLES.get(rung, {'es': rung})['es']}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]}")})
+                        "title": t(f"{rung_text(rung)['en']}: {family} tests flag the {cohort.name} cohort",
+                                   f"{rung_text(rung)['es']}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]}")})
     if crisis == 0:
         out.append({"id": "F-CRISIS", "severity": "S2", "status": "open", "evidence": ["design:training-window-before-the-crisis"],
-                    "title": t("The window closes before the 2007-09 recession: the rungs have seen no crisis outcome",
-                               "La ventana cierra antes de la recesión de 2007-09: los peldaños no han visto ningún resultado de la crisis")})
+                    # the years in words, not "2007-09", which reads as September 2007 beside ISO dates (U16-R3 c04 m12)
+                    "title": t("The window closes before the 2007 to 2009 recession: the rungs have seen no crisis outcome",
+                               "La ventana cierra antes de la recesión de 2007 a 2009: los peldaños no han visto ningún resultado de la crisis")})
     out.append({"id": "F-DATA", "severity": "S3", "status": "accepted", "evidence": ["design:sba-7a-is-not-a-bank-book"],
                 "title": t("SBA 7(a) small-business loans under a federal guarantee, not a bank's SME book; no delinquency, balance or rating",
                            "Créditos a pequeñas empresas SBA 7(a) bajo garantía federal, no la cartera pyme de un banco; sin mora, saldo ni calificación")})

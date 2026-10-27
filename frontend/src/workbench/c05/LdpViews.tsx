@@ -70,7 +70,7 @@ export function BoundsView({ sel }: { sel: C05Sel | null }) {
           x={{ values: chart.x, label: GAMMA_AXIS, format: { percent: true, decimals: 1 } }}
           y={{ label: { en: 'PD bound (log scale)', es: 'Cota de la PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
           series={chart.series}
-          marks={[{ x: sel.gamma, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.gamma, label: { en: 'Level picked', es: 'Nivel elegido' } }]}
         />
       </PlotCard>
       <PlotCard
@@ -526,7 +526,7 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
           x={{ values: LEVELS, label: GAMMA_AXIS, format: { percent: true, decimals: 1 } }}
           y={{ label: { en: 'Average risk weight (share of EAD)', es: 'Ponderador medio (fracción de la EAD)' }, format: { percent: true, decimals: 0 } }}
           series={data.series}
-          marks={[{ x: sel.gamma, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.gamma, label: { en: 'Level picked', es: 'Nivel elegido' } }]}
         />
       </PlotCard>
     </ViewsRow>

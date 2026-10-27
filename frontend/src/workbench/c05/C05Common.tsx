@@ -286,8 +286,8 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${truthStatusText(v.provenance.truth_status).en}. The readers check each paper against its own print (Table 2's grades add up to its All row; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el cálculo previo. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${truthStatusText(v.provenance.truth_status).en}. The data readers check each paper against its own print (Table 2's grades add up to its "All" row, the total; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores de datos verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila «All» (el total); cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el cálculo previo. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}

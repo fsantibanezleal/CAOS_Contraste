@@ -7,6 +7,7 @@ import type { Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import { shortName } from '../model';
+import type { NamedParam } from '../c20/U14Common';
 
 export type C02Outputs = components['schemas']['c02Outputs'];
 export type C02Fit = components['schemas']['c02Fit'];
@@ -77,3 +78,22 @@ export const HORIZON_TEXT = (years: number | null): Bi =>
 export function span(lo: string, hi: string, lang: 'en' | 'es'): string {
   return `${lo} ${lang === 'es' ? 'a' : 'to'} ${hi}`;
 }
+
+/** A document text in the language: a bilingual text (c02-outputs 3.0.0, c02-models 2.0.0) or the English string a document baked
+ * before carries until it is re-baked (the named parameter's unit and basis, the ladder's engine; U16-R3 c03 B2 and B3). */
+export function textIn(t: string | Bi | null | undefined, lang: 'en' | 'es'): string {
+  if (t === null || t === undefined) return '';
+  return typeof t === 'string' ? t : t[lang];
+}
+
+/** The named parameters of a C02 document with the unit and the basis in the language, as the shared table prints them. */
+export function paramsIn(params: unknown, lang: 'en' | 'es'): NamedParam[] {
+  return (params as Array<Omit<NamedParam, 'unit' | 'basis'> & { unit: string | Bi; basis: string | Bi }>).map((p) => ({
+    ...p,
+    unit: textIn(p.unit, lang),
+    basis: textIn(p.basis, lang),
+  }));
+}
+
+/** A value of three decimals that rounds to zero prints as 0, never "-0.000" (the pooled scorecard's gap is -0.000002; R3 c03 m5). */
+export const noNegZero = (v: number, decimals = 3): number => (Math.round(Math.abs(v) * 10 ** decimals) === 0 ? 0 : v);

@@ -3,6 +3,7 @@
 // is frozen), so moving a weight re-weights the per-scenario ECLs the document carries; nothing else is computed here.
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import { testText } from '../names';
 
 export type C06Outputs = components['schemas']['c06Outputs'];
@@ -13,11 +14,11 @@ export type C06Models = { fit?: C06Fit };
 export const COHORT_TEXT: Record<string, { en: string; es: string }> = { all: { en: 'all', es: 'todas' }, older: { en: 'older', es: 'anteriores' } };
 /** The tests of the IFRS 9 battery in words (the id stays in the cell's title, never printed as the name). */
 export const IFRS9_TEST_TEXT: Record<string, { en: string; es: string }> = {
-  'ifrs9.lifetime_pd_backtest': { en: 'Lifetime PD backtest', es: 'Backtest de la PD de vida' },
+  'ifrs9.lifetime_pd_backtest': { en: 'Lifetime PD backtest', es: 'Prueba retrospectiva de la PD de vida' },
   'ifrs9.sicr_effectiveness': { en: 'Effectiveness of the stage flag (SICR)', es: 'Efectividad de la marca de etapa (SICR)' },
   'ifrs9.sicr_threshold_stability': { en: 'Stability of the SICR threshold', es: 'Estabilidad del umbral de SICR' },
-  'ifrs9.stage_migration_backtest': { en: 'Stage migration backtest', es: 'Backtest de la migración de etapas' },
-  'ifrs9.ecl_backtest': { en: '12-month ECL backtest', es: 'Backtest de la PCE a 12 meses' },
+  'ifrs9.stage_migration_backtest': { en: 'Stage migration backtest', es: 'Prueba retrospectiva de la migración de etapas' },
+  'ifrs9.ecl_backtest': { en: '12-month ECL backtest', es: 'Prueba retrospectiva de la PCE a 12 meses' },
   'ifrs9.scenario_sensitivity': { en: 'Sensitivity to the scenarios', es: 'Sensibilidad a los escenarios' },
   'ifrs9.nonlinearity': { en: 'Nonlinearity of the ECL in the scenario weights', es: 'No linealidad de la PCE en los pesos de escenarios' },
   'ifrs9.overlay_diagnostics': { en: 'Overlay diagnostics', es: 'Diagnóstico de los ajustes' },
@@ -29,6 +30,7 @@ export const MOVEMENT_TEXT: Record<string, { en: string; es: string }> = {
   originations: { en: 'originations', es: 'originaciones' },
   derecognition: { en: 'derecognition', es: 'baja en cuentas' },
   'write-off': { en: 'write-off', es: 'castigo' },
+  repayments: { en: 'repayments', es: 'amortizaciones' },
   remeasurement: { en: 'remeasurement', es: 'remedición' },
   'macro-update': { en: 'macro update', es: 'actualización macro' },
   'transfer-1-2': { en: 'transfer 1 to 2', es: 'traspaso de 1 a 2' },
@@ -43,6 +45,54 @@ export const SETTING_TEXT: Record<string, { en: string; es: string }> = {
   'end-of-period': { en: 'end of period', es: 'a fin de período' },
 };
 export const settingText = (id: string): { en: string; es: string } => SETTING_TEXT[id] ?? { en: id, es: id };
+
+/** The sector groups of the fit by the first two digits of the NAICS code (``data-pipeline/pipeline/cases/c06/panel.py``
+ * SECTOR_GROUPS, from the SBA file's NAICS field), in words. */
+const SECTOR_TEXT: Record<string, { en: string; es: string }> = {
+  agriculture: { en: 'Agriculture', es: 'Agricultura' },
+  'mining-utilities-construction': { en: 'Mining, utilities and construction', es: 'Minería, servicios básicos y construcción' },
+  manufacturing: { en: 'Manufacturing', es: 'Manufactura' },
+  wholesale: { en: 'Wholesale trade', es: 'Comercio mayorista' },
+  retail: { en: 'Retail trade', es: 'Comercio minorista' },
+  transport: { en: 'Transport and warehousing', es: 'Transporte y almacenamiento' },
+  'information-finance-professional': { en: 'Information, finance and professional services', es: 'Información, finanzas y servicios profesionales' },
+  'education-health': { en: 'Education and health care', es: 'Educación y salud' },
+  'arts-recreation': { en: 'Arts and recreation', es: 'Artes y recreación' },
+  'accommodation-food': { en: 'Accommodation and food services', es: 'Alojamiento y servicios de comida' },
+  'other-services': { en: 'Other services', es: 'Otros servicios' },
+  'other-unknown': { en: 'Other or unknown sector', es: 'Sector otro o desconocido' },
+};
+/** The macro covariates of the hazard rung (the names C18 gives the same series). */
+const MACRO_TEXT: Record<string, { en: string; es: string }> = {
+  unemployment_rate: { en: 'Unemployment rate', es: 'Tasa de desempleo' },
+  real_gdp_growth: { en: 'Real GDP growth', es: 'Crecimiento del PIB real' },
+  prime_rate: { en: 'Prime rate', es: 'Tasa preferencial' },
+};
+const usd = (k: string, lang: 'en' | 'es') => `USD ${formatNumber(Number(k) * 1000, lang, { decimals: 0 })}`;
+
+/**
+ * A covariate code of the fit (``c06/ladder.py``: size, term and age bands, the sector groups, the revolving flag, the macro
+ * series) in words (R3 c07 B3: the disclosure printed ``size_50k_150k``, ``sector_retail``, ``unemployment_rate``). A code
+ * the patterns do not know is returned as written, so a new covariate is seen, not hidden.
+ */
+export function covariateText(code: string): { en: string; es: string } {
+  if (MACRO_TEXT[code]) return MACRO_TEXT[code];
+  if (code === 'revolver') return { en: 'Revolving line', es: 'Línea revolvente' };
+  if (code.startsWith('sector_') && SECTOR_TEXT[code.slice(7)]) return SECTOR_TEXT[code.slice(7)];
+  let m = /^size_(\d+)k_(\d+)k$/.exec(code);
+  if (m) return { en: `Size ${usd(m[1], 'en')} to ${formatNumber(Number(m[2]) * 1000, 'en', { decimals: 0 })}`, es: `Monto ${usd(m[1], 'es')} a ${formatNumber(Number(m[2]) * 1000, 'es', { decimals: 0 })}` };
+  m = /^size_over_(\d+)k$/.exec(code);
+  if (m) return { en: `Size above ${usd(m[1], 'en')}`, es: `Monto sobre ${usd(m[1], 'es')}` };
+  m = /^term_(\d+)_(\d+)$/.exec(code);
+  if (m) return { en: `Term ${m[1]} to ${m[2]} months`, es: `Plazo de ${m[1]} a ${m[2]} meses` };
+  m = /^term_over_(\d+)$/.exec(code);
+  if (m) return { en: `Term over ${m[1]} months`, es: `Plazo sobre ${m[1]} meses` };
+  m = /^age_q_(\d+)_(\d+)$/.exec(code);
+  if (m) return { en: `Loan age ${m[1]} to ${m[2]} quarters`, es: `Antigüedad de ${m[1]} a ${m[2]} trimestres` };
+  m = /^age_q_(\d+)_plus$/.exec(code);
+  if (m) return { en: `Loan age ${m[1]} quarters or more`, es: `Antigüedad de ${m[1]} trimestres o más` };
+  return { en: code, es: code };
+}
 
 export type Measure = 'cumulative' | 'marginal' | 'hazard';
 export type Staging = 'recomputed' | 'frozen';

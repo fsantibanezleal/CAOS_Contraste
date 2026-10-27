@@ -318,17 +318,32 @@
           ]
         },
         "unit": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The unit, a bilingual text (an English string in a document baked before c02-outputs 3.0.0)."
         },
         "label": {
           "const": "convention",
           "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
         },
         "basis": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "Where the construction comes from and how the value was proposed (decision Q8). A bilingual text (an English string in a document baked before c02-outputs 3.0.0)."
         }
       },
       "description": "A named parameter: its value and the label convention."

@@ -33,8 +33,9 @@ MONTHS = (12, 24, 36, 48, 60)
 RUNG_KINDS = {"P0-constant": "constant", "P1-scorecard": "woe-scorecard", "P2a-l1": "penalised-logit", "P2b-pltr": "pltr",
               "P3-ebm": "ebm", "P4-lightgbm": "monotone-gbm"}
 TABPFN_ID = "P5-tabpfn"
-TABPFN_REASON = ("TabPFN is the optional extra (data-pipeline/requirements-tabpfn.txt) and it is not installed in the bake "
-                 "environment: the challenger is declared absent, and no number stands in for it")
+# the extra by its name, not the repository path of its requirements file (U16-R3 c04 m9)
+TABPFN_REASON = ("TabPFN is an optional extra of the bake environment and it is not installed there: the challenger is declared "
+                 "absent, and no number stands in for it")
 
 
 @dataclass

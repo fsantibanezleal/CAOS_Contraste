@@ -66,14 +66,22 @@ LIGHT = E("green", "amber", "red", "not_evaluated", "error")
 RUNGS = E("P0", "P1", "P2a", "P2b", "P3", "P4")
 
 
-def named_params(prefix: str, names: list[str]) -> dict:
+def text_or_string(desc: str) -> dict:
+    """A bilingual text, or the English string a document baked before the text became bilingual carries (until it is re-baked)."""
+    return {"anyOf": [S(), TXT], "description": desc}
+
+
+def named_params(prefix: str, names: list[str], bilingual: bool = False) -> dict:
+    """``bilingual``: the unit and the basis are bilingual texts (C02 from c02-outputs 3.0.0, U16-R3 c03 B2; a document baked before
+    carries the English string)."""
+    basis = "Where the construction comes from and how the value was proposed (decision Q8)."
     return {
         f"{prefix}Param": Ob({
             "name": E(*NAMED),
             "value": {"anyOf": [N(), A(N(), 1), S()]},
-            "unit": S(),
+            "unit": text_or_string("The unit, a bilingual text (an English string in a document baked before c02-outputs 3.0.0).") if bilingual else S(),
             "label": CONV,
-            "basis": S("Where the construction comes from and how the value was proposed (decision Q8)."),
+            "basis": text_or_string(f"{basis} A bilingual text (an English string in a document baked before c02-outputs 3.0.0).") if bilingual else S(basis),
         }, "A named parameter: its value and the label convention."),
         f"{prefix}Params": contains_each(A(R(f"{prefix}Param"), desc="The named parameters of the document, each once."), "name", names),
     }
@@ -81,7 +89,7 @@ def named_params(prefix: str, names: list[str]) -> dict:
 
 # ======================================================================================================= C02
 def c02_defs() -> dict:
-    d = named_params("c02", C02_NAMES)
+    d = named_params("c02", C02_NAMES, bilingual=True)
     d["c02Ci"] = Ob({"lo": N(), "hi": N(), "level": C(0.95), "method": C("delong")}, "AUC interval, DeLong (the engine's disc_delong).")
     d["c02Counts"] = Ob({"rows": Int(1), "events": Int(0), "event_rate": UNIT, "features": Int(1),
                          "event_definition": TXT}, "Counts and event rate of the file (bankruptcy within the horizon).")
@@ -158,7 +166,7 @@ def c02_defs() -> dict:
     d["c02Outputs"]["properties"]["term_structure_reason"] = nullable(TXT, "A reason where term_structure is null, null where the block is present (checked by semantics.check_c02).")
     d["c02Fit"] = Ob({
         "files": A(Ob({"horizon_id": E("h1", "h2", "h3", "h4", "h5"), "years": Int(1, 5), "file": S(), "rows": Int(1), "events": Int(0)}), 5, 5),
-        "ladder": A(Ob({"rung": RUNGS, "label": TXT, "engine": S(), "reference": S()}), 1),
+        "ladder": A(Ob({"rung": RUNGS, "label": TXT, "engine": text_or_string("The engine of the rung, a bilingual text with the library names as published (an English string in a document baked before c02-models 2.0.0)."), "reference": S()}), 1),
         "protocol": R("c02Split"),
         "parameters": R("c02Params"),
     }, "C02 models: the five files, the ladder reused from C01 and the leakage-safe protocol.")

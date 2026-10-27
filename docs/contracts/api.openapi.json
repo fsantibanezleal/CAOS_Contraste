@@ -1876,8 +1876,16 @@
                   "$ref": "#/components/schemas/common-text"
                 },
                 "engine": {
-                  "type": "string",
-                  "minLength": 1
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "$ref": "#/components/schemas/common-text"
+                    }
+                  ],
+                  "description": "The engine of the rung, a bilingual text with the library names as published (an English string in a document baked before c02-models 2.0.0)."
                 },
                 "reference": {
                   "type": "string",
@@ -2144,17 +2152,32 @@
             ]
           },
           "unit": {
-            "type": "string",
-            "minLength": 1
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "The unit, a bilingual text (an English string in a document baked before c02-outputs 3.0.0)."
           },
           "label": {
             "const": "convention",
             "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
           },
           "basis": {
-            "type": "string",
-            "minLength": 1,
-            "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/components/schemas/common-text"
+              }
+            ],
+            "description": "Where the construction comes from and how the value was proposed (decision Q8). A bilingual text (an English string in a document baked before c02-outputs 3.0.0)."
           }
         },
         "description": "A named parameter: its value and the label convention."
@@ -10084,7 +10107,15 @@
                 "type": "integer"
               },
               "calibration_source": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/components/schemas/common-text"
+                  }
+                ],
+                "description": "Where the bank's calibration comes from, a bilingual text from c07-models 3.0.0 (an English string in a document baked before)."
               }
             }
           },
@@ -10115,7 +10146,15 @@
                   "type": "number"
                 },
                 "source": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/components/schemas/common-text"
+                    }
+                  ],
+                  "description": "The publication, locator, URL and file hash of the target, a bilingual text from c07-models 3.0.0 (an English string in a document baked before)."
                 },
                 "as_of": {
                   "type": "string",

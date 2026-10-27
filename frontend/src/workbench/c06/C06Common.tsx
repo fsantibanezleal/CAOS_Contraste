@@ -270,7 +270,7 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
       <PlotCard title={{ en: 'The policy of the run', es: 'La política de la corrida' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Only the presumptions at 30 and 90 days past due are in IFRS 9. The multipliers, the floor, the probation and the discounting convention are documented model settings, not requirements of the standard.', es: 'Solo las presunciones a 30 y 90 días de mora están en IFRS 9. Los multiplicadores, el piso, la prueba y la convención de descuento son parámetros documentados del modelo, no requisitos de la norma.' }}>
         <dl className="ct-defs" data-table="c06-settings">
           <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
-          <dd>{`${pick(settingText(s.discount_convention), lang)}; ${pick({ en: 'EIR basis', es: 'base de la TIE' }, lang)} ${pick(settingText(s.eir_basis), lang)}`}</dd>
+          <dd>{`${pick(settingText(s.discount_convention), lang)}; ${lang === 'en' ? `${settingText(s.eir_basis).en} EIR basis` : `base de la TIE ${settingText(s.eir_basis).es}`}`}</dd>
           <dt>{pick({ en: 'Probation', es: 'Prueba de cura' }, lang)}</dt>
           <dd>{pick({ en: `${s.probation_months} months`, es: `${s.probation_months} meses` }, lang)}</dd>
           <dt>{pick({ en: 'Low credit risk exemption', es: 'Exención de bajo riesgo' }, lang)}</dt>

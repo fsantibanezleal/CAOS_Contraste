@@ -2,9 +2,9 @@
 // months a gap with the reason), the five-year mark of each vintage read only at its mark, and the stability of the
 // vintages. Each draws what the c03-outputs document carries; a field the contract allows to be null is "not available"
 // with its reason, never a zero.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { ChartOverTable, MaybeNumber, money, unionX } from '../c06/format';
+import { ChartOverTable, MaybeNumber, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { p2, useCard, type Bi } from './U6Shared';
 import { outputsOf, type C03Sel } from './selection';
@@ -15,6 +15,16 @@ const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color
 export const fyText = (fy: number): Bi => ({ en: `FY${fy}`, es: `AF${fy}` });
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A statistic of a column (Brier, AUC, PSI) with three fixed decimals, so the precision does not change inside the column (R3 c04 m2). */
+const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
+
+/** The curves' x ticks on the 12-month grid of the data (R3 c04 m4: uPlot's own ticks fell at 15, 20, ...). */
+export function curveTicks(grid: number[]): Array<{ value: number; label: BiText }> {
+  return grid.filter((m) => m > 0 && m % 12 === 0).map((m) => ({ value: m, label: { en: `${m}`, es: `${m}` } }));
+}
+
+/** The month the rail's Horizon section reads, marked on the curves. */
+export const curveMarks = (horizon: number): Array<{ x: number; label: BiText }> => [{ x: horizon, label: { en: `Month ${horizon} (the rail)`, es: `Mes ${horizon} (el panel)` } }];
 
 /** The cumulative PD of every vintage by month since approval: the model's prediction against what was observed. */
 export function CurvesView({ sel }: { sel: C03Sel | null }) {
@@ -47,9 +57,10 @@ export function CurvesView({ sel }: { sel: C03Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: grid, label: { en: 'Months since approval', es: 'Meses desde la aprobación' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Cumulative PD', es: 'PD acumulada' }, format: { percent: true, digits: 2 } }}
+              x={{ values: grid, label: { en: 'Months since approval', es: 'Meses desde la aprobación' }, format: { decimals: 0 }, ticks: curveTicks(grid) }}
+              y={{ label: { en: 'Cumulative PD', es: 'PD acumulada' }, format: { percent: true, decimals: 1 } }}
               series={series}
+              marks={grid.includes(sel.horizon) ? curveMarks(sel.horizon) : undefined}
             />
           }
         >
@@ -111,7 +122,7 @@ export function FiveYearView({ sel }: { sel: C03Sel | null }) {
         }}
       >
         <ChartOverTable
-          chart={<BarChart title={{ en: 'Five-year PD by vintage', es: 'PD a cinco años por cosecha' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'PD at 60 months', es: 'PD a 60 meses' }, format: { percent: true, digits: 2 } }} />}
+          chart={<BarChart title={{ en: 'Five-year PD by vintage', es: 'PD a cinco años por cosecha' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'PD at 60 months', es: 'PD a 60 meses' }, format: { percent: true, decimals: 1 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="five-year-mark">
             <thead>
@@ -134,16 +145,18 @@ export function FiveYearView({ sel }: { sel: C03Sel | null }) {
                   <td className="ct-text">{pick(fyText(r.fiscal_year), lang)}</td>
                   <td className="ct-wide-only">{count(r.n_resolved, lang)}</td>
                   <td className="ct-wide-only">{count(r.n_exempt_censored, lang)}</td>
-                  <td className="ct-wide-only">{money(r.gross_approval, lang, o.vintage_summary.currency)}</td>
-                  <td className="ct-text">{r.five_year_mark_date}</td>
+                  {/* whole currency units: cents on billions read as noise (R3 c04 m3) */}
+                  <td className="ct-wide-only">{formatNumber(r.gross_approval, lang, { decimals: 0 })}</td>
+                  {/* a date stays on one line at 390 (R3 c04 m5: "2013-09-" over "30") */}
+                  <td style={{ whiteSpace: 'nowrap' }}>{r.five_year_mark_date}</td>
                   <td>{num(r.observed_5y_pd, r.reason)}</td>
                   <td>{p2(r.predicted_5y_pd, lang)}</td>
                   <td>{num(r.gap)}</td>
                   <td className="ct-wide-only">
-                    <MaybeNumber value={r.brier} reason={null} format={(x) => formatNumber(x, lang, { digits: 3 })} />
+                    <MaybeNumber value={r.brier} reason={null} format={(x) => d3(x, lang)} />
                   </td>
                   <td className="ct-wide-only">
-                    <MaybeNumber value={r.auc} reason={null} format={(x) => formatNumber(x, lang, { digits: 3 })} />
+                    <MaybeNumber value={r.auc} reason={null} format={(x) => d3(x, lang)} />
                   </td>
                 </tr>
               ))}
@@ -185,7 +198,7 @@ export function StabilityView({ sel }: { sel: C03Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={s.rows.map((r) => ({ id: `${r.fiscal_year}`, label: fyText(r.fiscal_year), value: r.psi, tone: 'accent' as const, highlight: r.fiscal_year === sel.vintage }))}
-              axis={{ label: { en: 'PSI against the training population', es: 'PSI contra la población de entrenamiento' }, format: { digits: 2 } }}
+              axis={{ label: { en: 'PSI against the training population', es: 'PSI contra la población de entrenamiento' }, format: { decimals: 2 } }}
             />
           }
         >
@@ -205,7 +218,7 @@ export function StabilityView({ sel }: { sel: C03Sel | null }) {
               {s.rows.map((r) => (
                 <tr key={r.fiscal_year} data-vintage={r.fiscal_year} className={r.fiscal_year === sel.vintage ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(fyText(r.fiscal_year), lang)}</td>
-                  <td>{formatNumber(r.psi, lang, { digits: 3 })}</td>
+                  <td>{d3(r.psi, lang)}</td>
                   <td className="ct-text" data-band>{pick(psiBand(r.psi), lang)}</td>
                   <td>
                     <MaybeNumber value={r.observed_5y_pd} reason={reasonOf(r.fiscal_year)} format={(v) => p2(v, lang)} />
