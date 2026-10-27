@@ -29,7 +29,7 @@ const BASIS = {
 const ENGINE_ES: Record<string, string> = {
   own: 'propio',
   'own on optbinning': 'propio sobre optbinning',
-  'scikit-learn trees and LogisticRegression, own rule extraction': 'árboles y LogisticRegression de scikit-learn, extracción de reglas propia',
+  'scikit-learn trees and LogisticRegression, own rule extraction': 'árboles y regresión logística de scikit-learn, extracción de reglas propia',
 };
 
 /** The committed documents with the bilingual fields the producer now writes, as the integrator's re-bake will carry them. */
@@ -76,7 +76,7 @@ describe('U16-R3 c03 on the committed C02 documents', () => {
     setLang('es');
     const t = text(html(<C02ContextView sel={selOf(v, m)} />));
     expect(t).toContain('propio sobre optbinning');
-    expect(t).toContain('árboles y LogisticRegression de scikit-learn, extracción de reglas propia');
+    expect(t).toContain('árboles y regresión logística de scikit-learn, extracción de reglas propia');
     expect(t).not.toMatch(/\bown\b/);
     expect(t).not.toContain('rule extraction');
     setLang('en');

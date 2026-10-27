@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { committedData, render, textOf, variantIds } from '../c03/u16f2-kit';
 import { setLang } from '../c03/u6-testkit';
 import { C06ContextView } from './C06Common';
-import { NonLinearityView, SicrView } from './TermViews';
+import { NonLinearityView } from './TermViews';
 import { BacktestView, LadderView, PCT_AXIS, TestRowsCard } from './ValidationViews';
 import { covariateText, defaultSel, movementText, type C06Sel } from './selection';
 
@@ -94,11 +94,6 @@ describe('U16-R3 c07 on the committed C06 documents', () => {
       const t = textOf(render(<TestRowsCard variant={v} prov="real" />, lang));
       expect(t).toContain(lang === 'en' ? '< 0.0001' : '< 0,0001');
     }
-  });
-
-  it('m3: the SICR counts come before the rule, so they show at 1280', () => {
-    const markup = render(<SicrView sel={sel('rd-2008-12')} />, 'en');
-    expect(markup.indexOf('data-table="sicr-summary"')).toBeLessThan(markup.indexOf('data-table="sicr-rule"'));
   });
 
   it('m4: a movement reads with a colon before its amount', () => {

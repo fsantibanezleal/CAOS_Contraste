@@ -15,7 +15,7 @@ ENGINE_TEXT: dict[str, dict[str, str]] = {
     "optbinning + statsmodels Logit": cv.t("optbinning + statsmodels Logit"),
     "scikit-learn LogisticRegression": cv.t("scikit-learn LogisticRegression"),
     "scikit-learn trees and LogisticRegression, own rule extraction": cv.t(
-        "scikit-learn trees and LogisticRegression, own rule extraction", "árboles y LogisticRegression de scikit-learn, extracción de reglas propia"),
+        "scikit-learn trees and LogisticRegression, own rule extraction", "árboles y regresión logística de scikit-learn, extracción de reglas propia"),
     "InterpretML ExplainableBoostingClassifier": cv.t("InterpretML ExplainableBoostingClassifier"),
     "LightGBM": cv.t("LightGBM"),
     "XGBoost": cv.t("XGBoost"),

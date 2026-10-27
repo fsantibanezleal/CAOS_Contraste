@@ -45,7 +45,7 @@ def test_b3_the_ladder_engine_is_bilingual_and_the_library_names_stay() -> None:
     assert models.engine_text("own") == {"en": "own", "es": "propio"}
     assert models.engine_text("own on optbinning") == {"en": "own on optbinning", "es": "propio sobre optbinning"}
     assert models.engine_text("scikit-learn trees and LogisticRegression, own rule extraction")["es"] == (
-        "árboles y LogisticRegression de scikit-learn, extracción de reglas propia")
+        "árboles y regresión logística de scikit-learn, extracción de reglas propia")
     for name in ("optbinning + statsmodels Logit", "scikit-learn LogisticRegression", "InterpretML ExplainableBoostingClassifier", "LightGBM", "XGBoost"):
         assert models.engine_text(name) == {"en": name, "es": name}
     with pytest.raises(KeyError):
