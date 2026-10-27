@@ -31,7 +31,7 @@ class C14:
     question = {
         "en": "Would the standardised EVE outlier test and the NII sensitivity have flagged the position of the bank that failed in March "
               "2023, read on its call reports, and how much does the answer hang on the deposit assumptions?",
-        "es": "¿Habría señalado el test de valores atípicos del EVE estandarizado y la sensibilidad del NII la posición del banco que quebró "
+        "es": "¿Habría señalado la prueba de valores atípicos del EVE estandarizado y la sensibilidad del NII la posición del banco que quebró "
               "en marzo de 2023, leída en sus reportes, y cuánto depende la respuesta de los supuestos sobre depósitos?"}
     sources = SOURCES
 

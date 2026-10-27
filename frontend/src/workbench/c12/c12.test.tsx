@@ -458,7 +458,7 @@ describe('the C12 instrument', () => {
     expect(markup).toContain(cell(netting.outputs.cva_dva.cva.amount, 'en'));
     expect(markup).toContain(cell(netting.outputs.girr.delta_charge.amount, 'en'));
     expect(markup).toContain(cell(netting.outputs.girr.delta_charge_undivided.amount, 'en'));
-    expect(markup).toContain('sqrt(2)');
+    expect(markup).toContain('√2'); // R4 c15 n2: the division in symbols
     expect(markup).toContain('convention');
     expect(markup).toContain(cell(r.stressed.effective_epe.amount, 'en'));
     expect(markup).toContain('data-spread-rose="true"');
@@ -474,7 +474,7 @@ describe('the C12 instrument', () => {
     expect(base).toContain('data-parity="match"');
     expect(base).toContain(`data-live-ead="${saCcr(saCcrInputFrom(sa)).ead}"`);
     expect(base).toContain(`data-committed-ead="${sa.ead.amount}"`);
-    expect(base).toContain('1e-9 relative');
+    expect(base).toContain('to a relative difference below <span style="white-space:nowrap">10⁻⁹</span>'); // R4 c15 n5
     for (const t of sa.trades) expect(base).toContain(`data-trade="${t.trade_id}"`);
     expect(base).toContain('data-hedging-set="USD"');
     expect(base).toContain(cell(sa.ead.amount, 'en'));

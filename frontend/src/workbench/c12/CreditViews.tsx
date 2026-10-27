@@ -8,14 +8,14 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SWAP, SHARE, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
+import { NOT_SWAP, SHARE, UnavailableCard, afterColon, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { amount, axisOf, outputsOf, runningSum, wwrOf, VARIANT_TEXT, text, type C12Sel } from './selection';
 
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
 
 const SOURCE_TEXT: Record<string, Bi> = {
-  'hqm-minus-treasury': { en: 'Treasury HQM corporate spot curve minus the Treasury zero curve of the same date', es: 'Curva spot corporativa HQM del Tesoro menos la curva cero del Tesoro de la misma fecha' },
-  'synthetic-flat': { en: 'a synthetic flat spread, a convention of the case', es: 'un spread plano sintético, una convención del caso' },
+  'hqm-minus-treasury': { en: 'Treasury HQM corporate spot curve minus the Treasury zero curve of the same date', es: 'curva corporativa HQM al contado del Tesoro menos la curva cero del Tesoro de la misma fecha' },
+  'synthetic-flat': { en: 'a synthetic flat spread, a convention of the case', es: 'un diferencial plano sintético, una convención del caso' },
 };
 
 /** The CVA and the DVA as the running sum of their terms over the time buckets, and each bucket's term, survival and default probability. */
@@ -41,7 +41,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
         {...card}
         note={{
           en: `CVA = the sum over the buckets of the default probability of the bucket, times the loss given default of ${formatNumber(c.lgd, 'en', { percent: true, decimals: 0 })}, times the discounted expected exposure at the bucket end (dossier 05, C.2); DVA is the same with the bank's own default probability and the discounted ENE. The counterparty curve is a proxy: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'en')}; the proxy of an AAA to A market spread, a floor for lower ratings.`,
-          es: `CVA = la suma sobre los tramos de la probabilidad de incumplimiento del tramo, por la pérdida dado el incumplimiento de ${formatNumber(c.lgd, 'es', { percent: true, decimals: 0 })}, por la exposición esperada descontada al final del tramo (dossier 05, C.2); el DVA es lo mismo con la probabilidad de incumplimiento propia del banco y la ENE descontada. La curva de la contraparte es una aproximación: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'es')}; aproximación de un spread de mercado AAA a A, un piso para calificaciones menores.`,
+          es: `CVA = la suma sobre los tramos de la probabilidad de incumplimiento del tramo, por la pérdida dado el incumplimiento de ${formatNumber(c.lgd, 'es', { percent: true, decimals: 0 })}, por la exposición esperada descontada al final del tramo (dossier 05, C.2); el DVA es lo mismo con la probabilidad de incumplimiento propia del banco y la ENE descontada. La curva de la contraparte es una aproximación: ${pick(text(SOURCE_TEXT, c.credit_curve_source), 'es')}; aproximación de un diferencial de mercado AAA a A, un piso para calificaciones menores.`,
         }}
       >
         <ChartOverTable
@@ -68,7 +68,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
             </dd>
             <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
             <dd data-credit-source={c.credit_curve_source} data-label="proxy">{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${pick(text(SOURCE_TEXT, c.credit_curve_source), lang)}`}</dd>
-            <dt>{pick({ en: 'Negative spreads set to zero', es: 'Spreads negativos llevados a cero' }, lang)}</dt>
+            <dt>{pick({ en: 'Negative spreads set to zero', es: 'Diferenciales negativos llevados a cero' }, lang)}</dt>
             <dd>{c.spreads_floored_at_zero}</dd>
           </dl>
         </ChartOverTable>
@@ -91,7 +91,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
             <thead>
               <tr>
                 <th>{pick({ en: 'Bucket end (years)', es: 'Fin del tramo (años)' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Spread', es: 'Spread' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Spread', es: 'Diferencial' }, lang)}</th>
                 <th>{pick({ en: 'Survival', es: 'Supervivencia' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Default probability', es: 'Prob. de incumplimiento' }, lang)}</th>
                 <th>{pick({ en: 'CVA term (USD)', es: 'Término CVA (USD)' }, lang)}</th>
@@ -161,7 +161,7 @@ export function WwrView({ sel }: { sel: C12Sel | null }) {
         >
           <p className="ct-note" data-block="ore-limit" data-ore-status={ore.status}>
             {own ? '' : `${pick({ en: 'Wrong-way variant:', es: 'Variante de correlación adversa:' }, lang)} `}
-            {pick(w.ore_limit, lang)}
+            {own ? pick(w.ore_limit, lang) : afterColon(pick(w.ore_limit, lang), lang)}
           </p>
           <table className="caos-table ct-wrap-head" data-table="c12-wwr">
             <thead>

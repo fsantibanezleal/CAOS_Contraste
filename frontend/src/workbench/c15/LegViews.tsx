@@ -72,7 +72,7 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={chartData}
-              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
@@ -111,7 +111,8 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{pick(OFFSET_LONG[sel.offset], lang)}.</p>
-          <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'} />
+          {/* every test of the document: the NII view keeps the CMF golden values only (R4 c18 n1) */}
+          <IrrbbTestsTable variant={sel.data.variant} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -349,7 +350,7 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="vertical"
               data={bars}
-              axis={{ label: { en: 'Loss at the confidence level', es: 'Pérdida al nivel de confianza' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Loss at the confidence level', es: 'Pérdida al nivel de confianza' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >

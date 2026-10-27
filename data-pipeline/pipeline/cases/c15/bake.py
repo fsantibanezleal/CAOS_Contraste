@@ -166,9 +166,7 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
                         riskvalidation_version=ev, manifest=manifest_in, generators=("banco-andino-irrbb-synthetic/1.0.0",))
     lane = {"lane": "precompute", "reasons": []}
     pub = c07_src.PUBLICATIONS[targets.PUBLICATION]
-    calibration_source = (f"{pub['title']}, Cuadro N 1 column Bancos, {pub['url']}, sha256 {pub['sha256']}; the three loan portfolios are the C07 "
-                          f"targets; securities, deposits, equity and loans to banks are the other figures of the same table; scaled to the C07 "
-                          f"total exposure; the UF shares, profiles, deposit split and behaviour are synthetic")
+    calibration_source = calibration_source_text(pub)
     docs: dict[str, dict[str, Any]] = {}
     values: dict[str, float] = {}
     contract: dict[str, Any] = {}
@@ -231,6 +229,13 @@ def _semantics():
 
 def _sum(root: Path, rel: str) -> str:
     return f"{hashlib.sha256((Path(root) / rel).read_bytes()).hexdigest()}  {rel}"
+
+
+def calibration_source_text(pub: dict[str, Any]) -> str:
+    """The calibration source of the book: the CMF table as the publication names it ("Cuadro N° 1", R4 c18 m3), and what is synthetic."""
+    return (f"{pub['title']}, Cuadro N° 1 column Bancos, {pub['url']}, sha256 {pub['sha256']}; the three loan portfolios are the C07 "
+            f"targets; securities, deposits, equity and loans to banks are the other figures of the same table; scaled to the C07 "
+            f"total exposure; the UF shares, profiles, deposit split and behaviour are synthetic")
 
 
 def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, Any]:

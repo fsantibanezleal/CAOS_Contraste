@@ -188,12 +188,12 @@ def conventions() -> dict:
     c["reverse_target_days"] = scalar(30, "days", "The dossier's example target of the reverse stress (05 E.5 rung 5).",
                                       "El objetivo de ejemplo del dossier para el estrés inverso (05 E.5).")
     c["list_compounding_tolerance"] = scalar(5e-7, "share, absolute",
-        "A golden value stated to six decimals holds to 5e-7 (the engine contract's rule).",
-        "Un valor de referencia dado con seis decimales se cumple a 5e-7 (la regla del contrato del motor).")
+        "A golden value stated to six decimals holds to 5E-7 (the engine contract's rule).",
+        "Un valor de referencia dado con seis decimales se cumple a 5E-7 (la regla del contrato del motor).")
     c["monotonicity_tolerance_days"] = scalar(0, "days", "The survival period must not lengthen as severity rises: no tolerance.",
                                               "El periodo de supervivencia no debe alargarse al subir la severidad: sin tolerancia.")
     c["nlp_identity_tolerance"] = scalar(1e-6, "USD thousands", "The NLP identity of 05 E.1 holds to the rounding of six decimals.",
-                                         "La identidad del NLP se cumple al redondeo de seis decimales.")
+                                         "La identidad de la NLP se cumple al redondeo de seis decimales.")
     c["cliff_amber_threshold"] = scalar(-0.01, "share of total assets",
         "The dossier defines the cliff diagnostic and no limit (05 E.1): amber below minus 1 percent of total assets.",
         "El dossier define el diagnóstico y ningún límite: ámbar bajo menos 1 por ciento de los activos.")

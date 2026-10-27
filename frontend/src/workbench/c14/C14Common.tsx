@@ -80,13 +80,15 @@ export const testSegment = (seg: string, caseId: string): BiText => segmentName(
  * The rows the engine returned for the tests of this variant, as a block that sits under the drawing of the view the
  * tests belong to: a test that did not run shows its reason, not a number. `only` keeps the tests of one view.
  */
-export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; only?: (t: TestRow) => boolean }) {
+export function IrrbbTestsTable({ variant, only, lead }: { variant: VariantArtifact; only?: (t: TestRow) => boolean; lead?: BiText }) {
   const lang = useShellLang();
   const rows: TestRow[] = only ? variant.tests.filter(only) : variant.tests;
   return (
     <div data-block="tests">
       <p className="ct-note">
         {pick({ en: 'The tests the engine returned: the statistic when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico cuando corrió, la luz bajo la política versionada y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {/* a view that shows some of the tests says which, and where the others are (R4 c18 n1) */}
+        {lead ? ` ${pick(lead, lang)}` : null}
       </p>
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row for this view.', es: 'Esta variante no trae filas de pruebas para esta vista.' }, lang)}</p>
@@ -113,7 +115,7 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ? localise(t.notes, lang, TEST_NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
+                  <td className="ct-text">{t.notes ? localise(t.notes, lang, NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
                 </tr>
               );
             })}
@@ -123,6 +125,16 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
     </div>
   );
 }
+
+/**
+ * The engine notes of the IRRBB tests, with the note of the wholesale NMD stability row that C15's delta EVE view now shows (R4 c18
+ * n1: the view listed one test of five). The rule belongs with the others in `localise.ts` TEST_NOTE_RULES (U16-F12a's file in fix
+ * round 5); it sits here until the merge moves it, so the Spanish view never prints the English note.
+ */
+const NOTE_RULES: ReadonlyArray<Rule> = [
+  ...TEST_NOTE_RULES,
+  [/^not evaluated: fewer than (\d+) estimation windows$/, (g) => `no evaluada: menos de ${g[1]} ventanas de estimación`],
+];
 
 /** "Unavailable" card for a view whose block the document lacks: a declared state, never an empty chart. */
 export function UnavailableCard({ sel, title, reason }: { sel: { data: CaseData } | null; title: BiText; reason: BiText }) {
@@ -199,7 +211,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
                 <tr key={id} data-variant={id} data-date={v.outputs.valuation_date} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
-                    <span className="ct-note">{` ${v.outputs.valuation_date}`}</span>
+                    <span className="ct-note"> <span style={{ whiteSpace: 'nowrap' }}>{v.outputs.valuation_date}</span></span>
                   </td>
                   <td>{b ? formatNumber(b.outlier.ratio, lang, { percent: true, decimals: 2 }) : formatNumber(null, lang)}</td>
                   <td>{c ? formatNumber(c.outlier.ratio, lang, { percent: true, decimals: 2 }) : formatNumber(null, lang)}</td>

@@ -100,9 +100,24 @@ export const DYN_TEXT: Record<string, BiText> = {
   'parallel-down': { en: 'Parallel down', es: 'Paralelo a la baja' },
 };
 
-/** The side of a dynamic-NII item in words, with its ordinal when the balance sheet has no label for the id. */
+/** The items of the dynamic NII by the ids the producer gives them (pipeline/cases/c14/variant.py `dynamic_items`: call-report
+ * lines grouped by repricing band); the document carries no label, so they printed "Asset 1" to "Liability 10" (R4 c17 m8). */
+const DYNAMIC_ITEM_TEXT: Record<string, BiText> = {
+  D1: { en: 'Cash, fed funds sold and reverse repos', es: 'Efectivo, fondos federales vendidos y pactos de retroventa' },
+  D2: { en: 'Loans repricing within 3 months', es: 'Préstamos que reprecian en 3 meses o menos' },
+  D3: { en: 'Loans repricing in 3 to 12 months', es: 'Préstamos que reprecian entre 3 y 12 meses' },
+  D4: { en: 'Loans repricing after 12 months', es: 'Préstamos que reprecian después de 12 meses' },
+  D5: { en: 'Securities repricing within 3 months', es: 'Valores que reprecian en 3 meses o menos' },
+  D6: { en: 'Securities repricing in 3 to 12 months', es: 'Valores que reprecian entre 3 y 12 meses' },
+  D7: { en: 'Securities repricing after 12 months', es: 'Valores que reprecian después de 12 meses' },
+  D8: { en: 'Non-interest-bearing deposits', es: 'Depósitos sin interés' },
+  D9: { en: 'Interest-bearing deposits', es: 'Depósitos con interés' },
+  D10: { en: 'Other borrowed money, fed funds purchased and repos', es: 'Otros fondos tomados, fondos federales comprados y pactos de retrocompra' },
+};
+
+/** The side of a dynamic-NII item in words, with its ordinal when neither the balance sheet nor the producer's ids name it. */
 export function itemName(side: 'asset' | 'liability', id: string, labels: Map<string, BiText>, ordinal: number): BiText {
-  return labels.get(id) ?? (side === 'asset' ? { en: `Asset ${ordinal}`, es: `Activo ${ordinal}` } : { en: `Liability ${ordinal}`, es: `Pasivo ${ordinal}` });
+  return labels.get(id) ?? DYNAMIC_ITEM_TEXT[id] ?? (side === 'asset' ? { en: `Asset ${ordinal}`, es: `Activo ${ordinal}` } : { en: `Liability ${ordinal}`, es: `Pasivo ${ordinal}` });
 }
 
 /** The monthly NII under the base path and the two parallel shocks, the totals and the loss against the base, and the projection against the realised NII. */
@@ -241,8 +256,8 @@ export function EarEvarView({ sel }: { sel: C14Sel | null }) {
         title={{ en: 'Earnings at risk and economic value at risk', es: 'Ganancias en riesgo y valor económico en riesgo' }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} EaR is the base NII minus the lower quantile of the simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below, and carry the Monte Carlo error of the number of paths.${e.levels.some((l) => l.ear < 0) ? ' A negative EaR means that the lower quantile of the simulated NII is above the base NII.' : ''}`,
-          es: `${o.sign_convention.statement.es} El EaR es el NII base menos el cuantil inferior del NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo, y llevan el error de Monte Carlo del número de trayectorias.${e.levels.some((l) => l.ear < 0) ? ' Un EaR negativo significa que el cuantil inferior del NII simulado está sobre el NII base.' : ''}`,
+          en: `${o.sign_convention.statement.en} EaR is the base NII minus the lower quantile of the simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named above, and carry the Monte Carlo error of the number of paths.${e.levels.some((l) => l.ear < 0) ? ' A negative EaR means that the lower quantile of the simulated NII is above the base NII.' : ''}`,
+          es: `${o.sign_convention.statement.es} El EaR es el NII base menos el cuantil inferior del NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado arriba, y llevan el error de Monte Carlo del número de trayectorias.${e.levels.some((l) => l.ear < 0) ? ' Un EaR negativo significa que el cuantil inferior del NII simulado está sobre el NII base.' : ''}`,
         }}
       >
         <ChartOverTable
