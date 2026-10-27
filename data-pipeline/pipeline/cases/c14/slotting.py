@@ -122,15 +122,17 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
                "Derivado como activos totales menos los activos detallados; no es una línea del reporte.")
     plug_l = t("Derived as total liabilities less the itemised liabilities; not a call-report line.",
                "Derivado como pasivos totales menos los pasivos detallados; no es una línea del reporte.")
+    # the FDIC insured-account threshold in each language's form, never "250 000 USD", which split at its space at 390 (R5 c19 n2)
+    lim = {lang: f"{number(asm.RETAIL_ACCOUNT_LIMIT_USD, lang=lang)} USD" for lang in ("en", "es")}
     split = t("The call report has no customer-type split: the item is the reported deposits times the retail share (accounts of "
-              "250 000 USD or less), a synthetic mapping.",
+              f"{lim['en']} or less), a synthetic mapping.",
               "El reporte no separa depósitos por tipo de cliente: la partida es el depósito informado por la proporción minorista "
-              "(cuentas de hasta 250 000 USD), un mapeo sintético.")
+              f"(cuentas de hasta {lim['es']}), un mapeo sintético.")
     # the wholesale lines are the remainder, not the product with the retail share (R3 c15 n1)
     split_wholesale = t("The call report has no customer-type split: the item is the reported deposits times one minus the retail share "
-                        "(the accounts above 250 000 USD), a synthetic mapping.",
+                        f"(the accounts above {lim['en']}), a synthetic mapping.",
                         "El reporte no separa depósitos por tipo de cliente: la partida es el depósito informado por uno menos la proporción "
-                        "minorista (las cuentas de más de 250 000 USD), un mapeo sintético.")
+                        f"minorista (las cuentas de más de {lim['es']}), un mapeo sintético.")
     # ---- assets
     add(item_id="A1", label=t("Cash and balances due from depository institutions", "Efectivo y saldos en instituciones depositarias"),
         side="asset", category="cash", behavioural_class="none", repricing_type="floating", source_field="CHBAL",

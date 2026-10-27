@@ -158,7 +158,9 @@ describe('the C16 instrument', () => {
     expect(markup).not.toContain('data-survival-day');
     expect(markup).toContain('Survives the 5-day horizon');
     // the cliff is not stated for a ladder shorter than 35 days: the reason, never a number
-    expect(markup).toContain(text(fastV.outputs.path!.cliff_reason!));
+    // in its value cell after a colon, in lower case (R5 c21 n5, U16-F13d)
+    const reason = text(fastV.outputs.path!.cliff_reason!).replace(/\.$/, '');
+    expect(markup).toContain(`: ${reason[0].toLowerCase()}${reason.slice(1)}`);
   });
 
   it('the LCR variant has no daily path: every ladder view says why and draws no chart', () => {

@@ -40,7 +40,8 @@ describe('U16-F7 C16 (b08 minors)', () => {
     const doc = committedDoc<VariantArtifact>('C16', 'lcr-standard');
     const withSegment = doc.tests.filter((t) => t.segment !== null).length;
     expect(withSegment).toBeGreaterThan(0);
-    expect((markup.match(/class="ct-narrow-only" data-segment=/g) ?? []).length).toBe(withSegment);
+    // every row from R5 ruling 2 on (U16-F13d): a row of no segment says "whole balance sheet, no comparator"
+    expect((markup.match(/class="ct-narrow-only" data-segment=/g) ?? []).length).toBe(doc.tests.length);
   });
 
   it('m8: one name for the call report, and the scenario phrase names the phase', () => {

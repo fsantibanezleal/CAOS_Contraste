@@ -88,6 +88,11 @@ const TEST_TEXT: Record<string, BiText> = {
 };
 const SEGMENT_NAMES: Record<string, Bi> = { ...DENOMINATOR_SHORT, ...BASE_TEXT };
 
+/** A row whose document gives no segment tests the whole balance sheet against no comparator, and says so at every width: the phone
+ * hides the Against column, so the line under the name carries it (R5 ruling 2; R5 c21 M1: 5 of 7 rows showed none at 390). */
+const BALANCE_SCOPE: Bi = { en: 'Whole balance sheet, no comparator', es: 'Todo el balance, sin comparador' };
+const against = (segment: string | null): Bi => (segment === null ? BALANCE_SCOPE : text(SEGMENT_NAMES, segment));
+
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
 export function C16TestsView({ sel }: { sel: C16Sel | null }) {
   const lang = useShellLang();
@@ -126,9 +131,9 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
-                        {t.segment === null ? null : <span className="ct-narrow-only" data-segment={t.segment}>{pick(text(SEGMENT_NAMES, t.segment), lang)}</span>}
+                        <span className="ct-narrow-only" data-segment={t.segment ?? 'whole-balance-sheet'}>{pick(against(t.segment), lang)}</span>
                       </td>
-                      <td className="ct-text ct-wide-only ct-repeated">{t.segment === null ? pick({ en: 'no comparator', es: 'sin comparador' }, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
+                      <td className="ct-text ct-wide-only ct-repeated">{pick(against(t.segment), lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
