@@ -6,3 +6,13 @@ data-pipeline/pipeline/io/contract.py :: decision  # the dataset field named dec
 data/derived/contract/scored_sample.json :: decision  # the dataset field named decision in the exported contract, the same code token as in its producer
 
 data-pipeline/pipeline/governance/reader.py :: pipeline  # the regular expressions that match the engine's English word and replace it with "cadena de cálculo" in an engine sentence (R3 rulings 2026-10-27); the word is code here
+
+# Release check of the documents (2026-10-27, after the full re-bake): words that are right as written in a Spanish text.
+data/derived/C02/models-polish-horizons.json :: LogisticRegression  # the scikit-learn class name as published, a program name (ruling 2026-10-27)
+data/derived/C07/models-banco-andino.json :: estadisticas  # inside the CMF address https://www.cmfchile.cl/portal/estadisticas/..., a URL stays as published
+data/derived/C21/pair-2018-19.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
+data/derived/C21/pair-2019-20.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
+data/derived/C21/pair-2020-21.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
+data/derived/C21/pair-2021-22.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
+data/derived/C21/pair-2022-23.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
+data/derived/C21/pair-2023-24.json :: scoring  # inside the English quotation of 12 CFR 1002.6(b)(2)(ii), rendered in Spanish before it and marked "cita en inglés" (ruling 2026-10-27)
