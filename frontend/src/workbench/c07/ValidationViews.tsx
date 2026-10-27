@@ -110,8 +110,11 @@ const axisText = (id: string): BiText => {
   return { en: id, es: id };
 };
 
-/** The CMF report's title as published, with its accents (a document baked before c07-models 3.0.0 wrote "Desempeno"). */
-const withAccents = (s: string): string => s.replace('Informe del Desempeno', 'Informe del Desempeño');
+/** The CMF report's own words as published, with their accents: a document baked before c07-models 3.0.0 wrote them without (the
+ * same words with the accents stripped), and the view restores them. */
+const QUOTED = ['Informe del Desempeño', 'días o más', 'índice de provisiones', 'créditos en cuotas', 'participación'];
+const bare = (w: string): string => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const withAccents = (s: string): string => QUOTED.reduce((acc, w) => acc.split(bare(w)).join(w), s);
 
 /** The calibration source of the bank in the page's language: a bilingual text (c07-models 3.0.0), or the English string of a document
  * baked before, rendered in Spanish here (the citation and the hash as published). */
@@ -128,12 +131,7 @@ export function calibrationSource(source: string | BiText, lang: 'en' | 'es'): s
  * document baked before, its remarks rendered in Spanish and the report's own words with their accents (R3 c08 B1). */
 export function targetSource(source: string | BiText, lang: 'en' | 'es'): string {
   if (typeof source !== 'string') return pick(source, lang);
-  const quoted = withAccents(source)
-    .replace('Cuadro N 1', 'Cuadro N° 1')
-    .replace('dias o mas', 'días o más')
-    .replace('indice de provisiones', 'índice de provisiones')
-    .replace('creditos en cuotas', 'créditos en cuotas')
-    .replace('participacion', 'participación');
+  const quoted = withAccents(source).replace('Cuadro N 1', 'Cuadro N° 1');
   if (lang === 'en') return quoted;
   return quoted
     .replace(/\(published (\d{4}-\d{2}-\d{2})\)/, '(publicado el $1)')

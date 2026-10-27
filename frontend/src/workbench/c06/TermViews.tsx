@@ -219,36 +219,6 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
       </PlotCard>
       <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <div className="ct-scroll" data-caos-flow="">
-          {/* the counts first, so they show at 1280 above the rule (R3 c07 m3) */}
-          <p className="ct-note" data-accounts={total}>
-            {pick(
-              {
-                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
-                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
-              },
-              lang,
-            )}
-          </p>
-          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
-                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
-                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {groups.map((g) => (
-                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
-                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
-                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
-                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
-                  <td>{pct(g.n / total, lang, 1)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
           {/* the rule as a table of test and condition: with the counts below, the card's tables span it, so the gate counts
               the card as drawn at 1280 (a list above one small table drew on 23% of its stage, G6) */}
           <table className="caos-table ct-wrap-head" data-table="sicr-rule">
@@ -285,6 +255,35 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
                     : pick({ en: `at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less`, es: `con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos` }, lang)}
                 </td>
               </tr>
+            </tbody>
+          </table>
+          <p className="ct-note" data-accounts={total}>
+            {pick(
+              {
+                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
+                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
+              },
+              lang,
+            )}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
+                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map((g) => (
+                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
+                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
+                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
+                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
+                  <td>{pct(g.n / total, lang, 1)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
