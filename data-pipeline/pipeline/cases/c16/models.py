@@ -74,9 +74,13 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
     segs = balance.deposit_segments(report)
     total = sum(s["opening"] for s in segs)
     lst = runoff.LIST_PARAMETERS["adverse"]["open_maturity"]
-    spec = {"retail-insured": (0.0, lst["other-retail"], "stress hazard: the LiST Adverse rate of other retail sight deposits"),
-            "non-operational-corporate": (0.0, fit_rate, "stress hazard: the fast-run daily rate calibrated on the pre-2023 Table A.1 rows"),
-            "financial": (0.0, lst["non-operational-other-financial"], "stress hazard: a financial customer's sight deposit leaves in full (LiST para 111)")}
+    # the stress rate of each segment in both languages (R3 c17: the English "stress hazard" sat inside the Spanish basis)
+    spec = {"retail-insured": (0.0, lst["other-retail"], ("stress hazard: the LiST Adverse rate of other retail sight deposits",
+                                                          "tasa de salida en estrés: la tasa LiST Adversa de los depósitos a la vista de otros minoristas")),
+            "non-operational-corporate": (0.0, fit_rate, ("stress hazard: the fast-run daily rate calibrated on the pre-2023 Table A.1 rows",
+                                                          "tasa de salida en estrés: la tasa diaria de la corrida rápida calibrada en las filas de la Tabla A.1 anteriores a 2023")),
+            "financial": (0.0, lst["non-operational-other-financial"], ("stress hazard: a financial customer's sight deposit leaves in full (LiST para 111)",
+                                                                        "tasa de salida en estrés: el depósito a la vista de un cliente financiero sale completo (párrafo 111 de LiST)"))}
     cfg_segments, doc_segments = [], []
     for s in segs:
         calm, stress, what = spec[s["segment"]]
@@ -84,9 +88,9 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
         cfg_segments.append(DepositorSegment(s["segment"], share, calm, stress))
         doc_segments.append({"segment": s["segment"], "share_of_deposits": share, "calm_daily_hazard": calm, "stress_daily_hazard": stress,
                              "p_enter_stress": P_ENTER, "p_exit_stress": P_EXIT,
-                             "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what}; the "
+                             "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what[0]}; the "
                                           "transition law is a convention.",
-                                          f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what}; la ley de "
+                                          f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what[1]}; la ley de "
                                           "transición es una convención.")})
     # engine-liquidity-api 2.0.0 (BL-082): one stress chain shared by every depositor, so its two probabilities belong to the configuration; the
     # document still writes them on each segment row (the c16GeneratorSegment schema requires both), equal to the configuration's
@@ -139,11 +143,12 @@ def models_fit(report: Report, conv: dict, cal: dict[str, Any], generator: dict[
                 "sources": {"annex": "ECB LiST 2019 results annex", "n_banks_slide": 9, "median_slides": [15], "dossier": "dossier 05 E.1 line 240"},
                 "statement": txt("Reference points of the LiST 2019 stress test, not results of this model: 103 banks, median reported survival period 176 days "
                                  "under the Adverse and 122 days under the Extreme shock (results annex slides 9 and 15).",
-                                 "Puntos de referencia del test de estrés LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
-                                 "informado de 176 días en el Adverso y 122 en el Extremo.")},
+                                 "Puntos de referencia de la prueba de estrés LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
+                                 "informado de 176 días en el choque Adverso y 122 días en el Extremo (anexo de resultados, láminas 9 y 15).")},
             "calendar_note": txt("The rates are defined on the 2019 TARGET2 relevant-day calendar (125 relevant days in six months); the C16 ladder runs on the "
                                  "US business-day convention.",
-                                 "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 días en seis meses); la escalera de C16 usa días hábiles de EE.UU.")},
+                                 "Las tasas se definen sobre el calendario de días relevantes TARGET2 de 2019 (125 días relevantes en seis meses); la "
+                                 "escalera de C16 usa la convención de días hábiles de EE.UU.")},
         "list_goldens": goldens,
         "table_a1": {"source": "BCBS, Report on the 2023 banking turmoil (d555), Box A, Table A.1",
                      "attribution": "Bank for International Settlements, source cited; one table within the limited-extract terms (addendum L2.1)",

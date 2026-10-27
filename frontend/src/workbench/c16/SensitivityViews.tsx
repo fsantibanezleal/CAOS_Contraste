@@ -174,8 +174,8 @@ export function ReverseCurveView({ sel }: { sel: C16Sel | null }) {
         title={{ en: `The reverse-stress curve: ${pick(b.label, 'en')}`, es: `La curva de la prueba de estrés inversa: ${pick(b.label, 'es')}` }}
         {...card}
         note={{
-          en: `${pick(r.target.statement, 'en')} The multiplier scales every deposit segment's daily rate and is capped so that each rate stays below 1.`,
-          es: `${pick(r.target.statement, 'es')} El multiplicador escala la tasa diaria de cada segmento de depósitos y tiene un tope para que cada tasa quede bajo 1.`,
+          en: `${pick(r.target.statement, 'en')} The multiplier scales every deposit segment's daily rate and is capped so that each rate stays at most 1; a rate already at 1 stays.`,
+          es: `${pick(r.target.statement, 'es')} El multiplicador escala la tasa diaria de cada segmento de depósitos y tiene un tope para que cada tasa quede como máximo en 1; una tasa que ya es 1 se mantiene.`,
         }}
       >
         <ChartOverTable

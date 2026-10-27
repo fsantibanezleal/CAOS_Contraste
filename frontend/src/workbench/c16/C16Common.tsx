@@ -77,7 +77,7 @@ export function SurvivalCell({ s, className }: { s: C16Survival | null | undefin
 const TEST_TEXT: Record<string, BiText> = {
   'liq.list_compounding_golden': { en: 'The LiST compounding example reproduced', es: 'Ejemplo de composición de LiST reproducido' },
   'liq.cbc_haircut_rules': { en: 'CBC haircut rules applied as specified', es: 'Reglas de recorte del CBC aplicadas como se especifican' },
-  'liq.runoff_adequacy_back_test': { en: 'The back-test of the run-off against the realised run', es: 'El backtest de la salida de depósitos contra la corrida realizada' },
+  'liq.runoff_adequacy_back_test': { en: 'The back-test of the run-off against the realised run', es: 'La prueba retrospectiva de la salida de depósitos contra la corrida realizada' },
   'liq.nlp_identity': { en: 'NLP identity on the ladder', es: 'Identidad de la NLP en la escalera' },
   'liq.cliff_effect_diagnostic': { en: 'Cliff-effect diagnostic', es: 'Diagnóstico del efecto acantilado' },
   'liq.runoff_vs_generator_truth': { en: 'Run-off against the generator truth', es: 'Salida de depósitos contra la verdad del generador' },
