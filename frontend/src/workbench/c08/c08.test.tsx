@@ -188,7 +188,7 @@ describe('the C08 instrument', () => {
     setLang('es');
     expect(html(<DistributionView sel={sel} />)).toContain('Distribución de la LGD');
     expect(html(<DistributionView sel={sel} />)).not.toContain('LGD distribution');
-    expect(html(<ProxyView sel={sel} />)).toContain('es un proxy');
+    expect(html(<ProxyView sel={sel} />)).toContain('es una aproximación');
   });
 });
 

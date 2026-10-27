@@ -10,7 +10,7 @@ import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, readFixture, setLang } from '../c03/u6-testkit';
 import { useC09Instrument } from './instrument';
 import { defaultSel, outputsOf, type C09Sel } from './selection';
-import { BandReadout, C09ContextView, C09FindingsView, C09VariantsTable, DesignReadout, ModelReadout, TreatmentReadout } from './C09Common';
+import { BandReadout, C09ContextView, C09FindingsView, C09VariantsTable, DesignReadout, ModelReadout, TreatmentReadout, formulaText } from './C09Common';
 import { ByDesignView, DistributionView } from './CcfViews';
 import { BacktestView, FloorsView, ModelsView } from './EadViews';
 
@@ -69,7 +69,9 @@ describe('the C09 instrument', () => {
       all.push(markup);
       expect(markup).toContain(`data-truth="${o.generator.true_ccf.value}"`);
       expect(markup).toContain(pct(o.generator.true_ccf.value));
-      expect(markup).toContain(escapeHtml(o.generator.notice.en));
+      // the generator notice is the Context's (R3 c10 M2: By design no longer repeats it over its estimates)
+      expect(markup).not.toContain(escapeHtml(o.generator.notice.en));
+      expect(html(<C09ContextView sel={{ ...sel, design }} />)).toContain(escapeHtml(o.generator.notice.en));
       expect(markup).toContain(pct(o.ccf_by_design.tolerance));
       for (const r of o.ccf_by_design.rows) {
         const row = `data-design="${r.design}" data-treatment="${r.treatment}" data-estimator="${r.estimator}"`;
@@ -97,13 +99,13 @@ describe('the C09 instrument', () => {
   });
 
   it('the distribution gives every bin, the counts below zero and above one, and states that nothing is clipped', () => {
+    // R3 c10 M1: the bins are the chart's bars (each labelled with its range and its flag, and a row of the chart's data table), and
+    // the totals are the card's note; no table of bins is stacked under the drawing
     const markup = html(<DistributionView sel={sel} />);
     const d = o.ccf_distribution;
-    for (let i = 0; i < d.counts.length; i++) expect(markup).toContain(`data-bin="${i}"`);
-    expect(markup).toContain(`data-range="below-zero"`);
-    expect(markup).toContain(formatNumber(d.n_below_zero, 'en', { decimals: 0 }));
-    expect(markup).toContain(`data-range="above-one"`);
-    expect(markup).toContain(formatNumber(d.n_above_one, 'en', { decimals: 0 }));
+    // (the bars and their labels are drawn in the browser; c09/f10c.test.tsx reads the chart's data)
+    expect(markup).toContain(`${formatNumber(d.n_below_zero, 'en', { decimals: 0 })} below 0`);
+    expect(markup).toContain(`${formatNumber(d.n_above_one, 'en', { decimals: 0 })} above 1`);
     expect(markup).toMatch(/never clipped|not clipped/);
   });
 
@@ -134,7 +136,8 @@ describe('the C09 instrument', () => {
     const direct = o.ead_models.find((m) => m.kind === 'direct-ead')!;
     expect(markup).toContain(formatNumber(direct.n_clipped_below as number, 'en', { decimals: 0 }));
     expect(markup).toContain(formatNumber(direct.n_clipped_above as number, 'en', { decimals: 0 }));
-    expect(markup).toContain(NA);
+    // a CCF model has nothing to clip: "not applicable", not a missing value (R3 c10 m3)
+    expect(markup).toContain('not applicable');
   });
 
   it('the floors give the supervisory CCF of each facility class, the binding share and the small-undrawn rule', () => {
@@ -166,7 +169,8 @@ describe('the C09 instrument', () => {
 
   it('the context gives the convention with its US terms, the generator, the level and the replications', () => {
     const markup = html(<C09ContextView sel={sel} />);
-    expect(markup).toContain(escapeHtml(o.convention.formula));
+    // the formula with its reference date as a subscript (R3 c10 m9)
+    expect(markup).toContain(escapeHtml(formulaText(o.convention.formula)));
     expect(markup).toContain(escapeHtml(o.convention.us_terms.en));
     expect(markup).toContain(escapeHtml(o.level_description.en));
     expect(markup).toContain(o.generator.shaped_on);

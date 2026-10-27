@@ -122,7 +122,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   const ead = tabs(
     [
-      { id: 'backtest', label: { en: 'Back-test and tests', es: 'Backtest y pruebas' }, content: <BacktestView sel={sel} /> },
+      { id: 'backtest', label: { en: 'Back-test and tests', es: 'Prueba retrospectiva' }, content: <BacktestView sel={sel} /> },
       { id: 'models', label: { en: 'Models', es: 'Modelos' }, content: <ModelsView sel={sel} /> },
       { id: 'floors', label: { en: 'Floor', es: 'Piso' }, content: <FloorsView sel={sel} /> },
     ],
