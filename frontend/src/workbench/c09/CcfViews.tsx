@@ -38,10 +38,17 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
       tone: r.estimate.flag !== 'in-range' ? ('bad' as const) : r.within_tolerance ? ('good' as const) : ('warn' as const),
     })),
   ];
+  // the shares of defaults outside 0 to 1 are the design's, the same on every row: then the note states them once and the table
+  // drops the two columns, so its 8 rows read on one line each at 1280 (R3 c10 M2)
+  const sameShares = rows.length > 0 && rows.every((r) => r.share_below_zero === rows[0].share_below_zero && r.share_above_one === rows[0].share_above_one);
+  const shares: { en: string; es: string } = sameShares
+    ? { en: ` In this design ${p2(rows[0].share_below_zero, 'en')} of the defaults are below 0 and ${p2(rows[0].share_above_one, 'en')} above 1, the same for every estimator.`, es: ` En este diseño ${p2(rows[0].share_below_zero, 'es')} de los incumplimientos están bajo 0 y ${p2(rows[0].share_above_one, 'es')} sobre 1, igual para todo estimador.` }
+    : { en: '', es: '' };
   return (
     // split, not scrolled (ADR-0071 rule 6; R3 c10 M2: the estimates and the tests shared one 42 % box that showed one row): the drawing
-    // fills a card of its own beside the estimates, whole at 1280; the tests are a sub-view of their own (EstimatorTestsView)
-    <ViewsRow shares={[2, 3]}>
+    // fills a card of its own beside the estimates, whole at 1280; the tests are a sub-view of their own (EstimatorTestsView).
+    // The estimates take two thirds of the row and the tolerance sentence is the card's note.
+    <ViewsRow shares={[1, 2]}>
       <PlotCard
         fill
         title={{ en: 'The CCF estimates against the known CCF', es: 'Las estimaciones de CCF contra el CCF conocido' }}
@@ -61,18 +68,12 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
           ].filter((l) => data.some((d) => d.tone === l.tone)) as Array<{ tone: 'neutral' | 'good' | 'warn' | 'bad'; label: { en: string; es: string } }>} />}
         />
       </PlotCard>
-      <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{ en: 'The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator.', es: 'El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador.' }}>
+      <PlotCard fill title={{ en: 'The estimates of this design', es: 'Las estimaciones de este diseño' }} {...card} note={{
+          en: `The bias, its interval and the shares of defaults outside 0 to 1 of each treatment and estimator. Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}. The light of each test follows that tolerance on the bias, not its p-value: green within it, amber up to twice it and red beyond. A red bar is an estimate outside 0 to 1.${shares.en}`,
+          es: `El sesgo, su intervalo y las proporciones de incumplimientos fuera de 0 a 1 de cada tratamiento y estimador. CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}. La luz de cada prueba sigue esa tolerancia sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá. Una barra roja es una estimación fuera de 0 a 1.${shares.es}`,
+        }}>
         <div className="ct-scroll" data-caos-flow="">
-            <p className="ct-note" data-truth={truth.value}>
-              {pick(
-                {
-                  en: `Known CCF of the generator: ${p2(truth.value, 'en')}; an estimate counts as recovered within ${p2(c.tolerance, 'en')}. The light of each test follows that tolerance on the bias, not its p-value: green within it, amber up to twice it and red beyond. A red bar is an estimate outside 0 to 1.`,
-                  es: `CCF conocido del generador: ${p2(truth.value, 'es')}; una estimación cuenta como recuperada dentro de ${p2(c.tolerance, 'es')}. La luz de cada prueba sigue esa tolerancia sobre el sesgo, no su valor p: verde dentro de ella, ámbar hasta el doble y rojo más allá. Una barra roja es una estimación fuera de 0 a 1.`,
-                },
-                lang,
-              )}
-            </p>
-            <table className="caos-table ct-wrap-head" data-table="ccf-by-design">
+            <table className="caos-table ct-wrap-head" data-table="ccf-by-design" data-truth={truth.value}>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Treatment', es: 'Tratamiento' }, lang)}</th>
@@ -81,8 +82,8 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
                   <th>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</th>
                   <th className="ct-wide-only">{pick({ en: 'Interval of the bias', es: 'Intervalo del sesgo' }, lang)}</th>
                   <th className="ct-wide-only">RMSE</th>
-                  <th>{pick({ en: 'Below 0', es: 'Bajo 0' }, lang)}</th>
-                  <th>{pick({ en: 'Above 1', es: 'Sobre 1' }, lang)}</th>
+                  {sameShares ? null : <th>{pick({ en: 'Below 0', es: 'Bajo 0' }, lang)}</th>}
+                  {sameShares ? null : <th>{pick({ en: 'Above 1', es: 'Sobre 1' }, lang)}</th>}
                   <th className="ct-text">{pick({ en: 'Within tolerance', es: 'Dentro de la tolerancia' }, lang)}</th>
                 </tr>
               </thead>
@@ -97,8 +98,8 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
                     <td>{p2(r.bias, lang)}</td>
                     <td className="ct-wide-only">{`${p2(r.ci_low, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${p2(r.ci_high, lang)}`}</td>
                     <td className="ct-wide-only">{p2(r.rmse, lang)}</td>
-                    <td>{p2(r.share_below_zero, lang)}</td>
-                    <td>{p2(r.share_above_one, lang)}</td>
+                    {sameShares ? null : <td>{p2(r.share_below_zero, lang)}</td>}
+                    {sameShares ? null : <td>{p2(r.share_above_one, lang)}</td>}
                     <td className="ct-text">{r.within_tolerance ? yes : no}</td>
                   </tr>
                 ))}
