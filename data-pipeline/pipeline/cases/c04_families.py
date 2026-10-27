@@ -99,7 +99,8 @@ YEARS = 5
 SNAPSHOTS = tuple(float(t) for t in range(YEARS + 1))
 LEVELS = (0.05, 0.01)            # the test levels every rate is read at
 LEVEL = 0.95                     # the intervals' confidence
-SOURCE = "EM generator (riskvalidation.transitions.em) of S&P's pooled annual CEREP counts, computed by the case"
+# the generator by what it is, not the engine module that fits it (U16-R3 c05 m10)
+SOURCE = "EM generator of riskvalidation on S&P's pooled annual CEREP counts, computed by the case"
 
 ESTIMATORS = ("cohort", "duration", "em", "diagonal", "weighted", "jlt")
 INTERVALS: dict[str, Callable[..., dict[str, Any]]] = {

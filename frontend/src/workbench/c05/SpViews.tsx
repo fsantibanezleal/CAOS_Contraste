@@ -72,7 +72,7 @@ export function CurvesView({ sel }: { sel: C05Sel | null }) {
         lane={LIVE}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The live column follows the rail; the 2009 curve is replayed. The chart beside draws every case 1 approach grade by grade.', es: 'La columna en vivo sigue al panel; la curva 2009 se reproduce. El gráfico al lado dibuja cada enfoque del caso 1 grado a grado.' }}
+        note={{ en: 'The live column follows the rail; the 2009 curve is replayed. The chart draws every case 1 approach grade by grade.', es: 'La columna en vivo sigue al panel; la curva 2009 se reproduce. El gráfico dibuja cada enfoque del caso 1 grado a grado.' }}
       >
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="curves">
@@ -262,8 +262,8 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), from 1500 px wide the chi-square approximation beside it for reference. The light follows the rail\'s policy.',
-          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), desde 1500 px de ancho con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
+          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), with the chi-square approximation for reference where the table has room for its column. The light follows the rail\'s policy.',
+          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado como referencia donde la tabla tiene espacio para su columna. La luz sigue la política del panel.',
         }}
       >
         <div className="ct-scroll" data-caos-flow="">

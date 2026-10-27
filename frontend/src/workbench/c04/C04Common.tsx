@@ -1065,7 +1065,7 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
               );
             })}
             <tr data-licence-class="generator">
-              <td className="caos-col-text">{pick({ en: "riskvalidation's RatingPaths generator (Contraste's own)", es: 'Generador RatingPaths de riskvalidation (de Contraste)' }, lang)}</td>
+              <td className="caos-col-text">{pick({ en: "riskvalidation's rating-path generator (Contraste's own)", es: 'Generador de trayectorias de calificación de riskvalidation (de Contraste)' }, lang)}</td>
               <td className="caos-col-text">{pick({ en: 'MIT; its generator is derived from mirror-allowed CEREP counts', es: 'MIT; su generador se deriva de conteos de CEREP con espejo permitido' }, lang)}</td>
               <td className="caos-col-text">
                 {gen
