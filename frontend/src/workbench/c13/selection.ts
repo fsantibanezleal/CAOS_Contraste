@@ -181,7 +181,7 @@ export const UNIT_TEXT: Record<string, Bi> = {
   'share-of-hpl-sd': { en: 'of the HPL deviation', es: 'de la desviación del HPL' },
   'share-of-factor-pnl-sd': { en: 'of the factor P&L deviation', es: 'de la desviación del P&L de factores' },
   days: { en: 'days', es: 'días' },
-  'correlation-points': { en: 'correlation points', es: 'puntos de correlación' },
+  'correlation-points': { en: 'points', es: 'puntos' },
   correlation: { en: 'correlation', es: 'correlación' },
   'decimal-per-sd': { en: 'decimal per deviation', es: 'decimal por desviación' },
   'log-points': { en: 'log points', es: 'puntos logarítmicos' },
@@ -193,6 +193,7 @@ export const GENERATOR_TEXT: Record<string, Bi> = {
 
 /** A named parameter with its value and unit in the language. */
 export function parameterText(p: { name: string; value: number; unit: string }, lang: 'en' | 'es', digits: number): string {
-  const unit = UNIT_TEXT[p.unit]?.[lang] ?? p.unit;
+  // a correlation is dimensionless and its name already says it ("factor correlation 0.6", R5 c18 m9)
+  const unit = p.unit === 'correlation' ? '' : UNIT_TEXT[p.unit]?.[lang] ?? p.unit;
   return `${(PARAMETER_TEXT[p.name] ?? { en: p.name, es: p.name })[lang]} ${formatNumber(p.value, lang, { digits })} ${p.unit === 'days' && p.value === 1 ? (lang === 'es' ? 'día' : 'day') : unit}`.trim();
 }

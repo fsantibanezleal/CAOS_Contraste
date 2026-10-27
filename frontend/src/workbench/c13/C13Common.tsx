@@ -190,7 +190,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
               {fit.generator.parameters.map((p) => (
                 <Fragment key={p.name}>
                   <dt>{capital(pick(text(PARAMETER_TEXT, p.name), lang))}</dt>
-                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${pick(text(UNIT_TEXT, p.unit), lang)}`}</dd>
+                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${p.unit === 'correlation' ? '' : pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</dd>
                 </Fragment>
               ))}
             </>
