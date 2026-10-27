@@ -28,6 +28,7 @@ import { FindingsWithOpinion, OpinionBlock, OpinionBlockView, OpinionCard, Repor
 import { AppetiteTable, FindingsTab, RegisterTable, SeverityStatusBars } from './RegisterView';
 import { ReportDocument, ReportReader } from './ReportView';
 import { MatrixDrawing } from './TierMatrix';
+import { readerWords } from './readerText';
 import {
   ECB_F_OF,
   GOVERNANCE_FILES,
@@ -151,7 +152,8 @@ describe('Findings and appetite', () => {
   it('gives an anchor or its absence with the reason', () => {
     const h = html(<RegisterTable rows={findings.rows} />);
     expect(count(h, /data-anchor="unavailable"/g)).toBe(findings.rows.filter((r) => r.anchor === null).length);
-    expect(text(h)).toContain(findings.rows.find((r) => r.anchor === null)!.anchor_reason!.en);
+    // in reader words (R3 c23 B3, the ruling of 2026-10-27: an engine key in reader text is a raw id)
+    expect(text(h)).toContain(readerWords(findings.rows.find((r) => r.anchor === null)!.anchor_reason!.en, 'en'));
   });
   it('sorts by a column and keeps the document order on ties', () => {
     const by = sortRows(findings.rows, 'severity', 'asc');
@@ -210,7 +212,9 @@ describe('Reports', () => {
         const op = (r.sections[10] as { opinion: { label: { en: string; es: string } } }).opinion;
         expect(text(h)).toContain(op.label[lang]);
         expect(op.label.en).toBe(RULE_OUTPUT_LABEL.en);
-        expect(text(h)).toContain('W15-7');
+        // the rule by what it is and in reader words, never by its decision id (R3 c23 B5, the ruling of 2026-10-27)
+        expect(text(h)).not.toContain('W15-7');
+        expect(text(h)).toContain(readerWords((r.sections[10] as { opinion: { rule: { text: { en: string; es: string } } } }).opinion.rule.text[lang], lang));
       }
     }
   });

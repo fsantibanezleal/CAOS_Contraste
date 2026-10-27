@@ -10,8 +10,8 @@
   "rule": "newest-changelog-release-heading",
   "tag": "convention",
   "basis": {
-   "en": "W15-13: the date of the newest release heading of CHANGELOG.md when the bake runs; committed, never a wall-clock date, never earlier than the date a finding was raised.",
-   "es": "W15-13: la fecha del encabezado de versión más reciente de CHANGELOG.md cuando corre el bake; versionada, nunca una fecha del reloj, nunca anterior a la fecha de registro de un hallazgo."
+   "en": "The date of the newest release heading of CHANGELOG.md when the documents are generated; committed, never a wall-clock date, never earlier than the date a finding was raised.",
+   "es": "La fecha del encabezado de versión más reciente de CHANGELOG.md cuando se generan los documentos; versionada, nunca una fecha del reloj, nunca anterior a la fecha de registro de un hallazgo."
   }
  },
  "synthetic_inventory": {

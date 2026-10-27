@@ -33,9 +33,9 @@
   <text class="sub l-en" x="344" y="94">downloads into the device data root,</text>
   <text class="sub l-es" x="344" y="94">descarga a la raíz de datos del equipo,</text>
   <text class="sub l-en" x="344" y="110">never into the repository; hashes each</text>
-  <text class="sub l-es" x="344" y="110">nunca al repositorio; calcula el hash de</text>
+  <text class="sub l-es" x="344" y="110">nunca al repositorio; calcula la huella de</text>
   <text class="sub l-en" x="344" y="126">file; a changed hash fails unless refreshed</text>
-  <text class="sub l-es" x="344" y="126">cada archivo; un hash cambiado falla</text>
+  <text class="sub l-es" x="344" y="126">cada archivo; una huella cambiada falla</text>
   <path class="ar" d="M584 104 H620"/>
   <rect class="on" x="624" y="52" width="256" height="106" rx="8"/>
   <text class="mono" x="636" y="74">data/sources/manifest.json</text>
@@ -51,9 +51,12 @@
   <text class="h l-es" x="36" y="200">Contrato 1: lo que puede entrar</text>
   <text class="sub l-en" x="36" y="222">eight families, one per kind of source data:</text>
   <text class="sub l-es" x="36" y="222">ocho familias, una por tipo de dato fuente:</text>
-  <text class="it" x="36" y="242">scored_sample, loan_panel, rating_history,</text>
-  <text class="it" x="36" y="258">market_series, curve, balance_sheet,</text>
-  <text class="it" x="36" y="274">loss_events, macro_path</text>
+  <text class="it l-en" x="36" y="242">scored samples, loan panels, rating histories,</text>
+  <text class="it l-es" x="36" y="242">muestras puntuadas, paneles de préstamos, historias de calificación,</text>
+  <text class="it l-en" x="36" y="258">market series, curves, balance sheets,</text>
+  <text class="it l-es" x="36" y="258">series de mercado, curvas, balances,</text>
+  <text class="it l-en" x="36" y="274">loss events, macroeconomic paths</text>
+  <text class="it l-es" x="36" y="274">eventos de pérdida, trayectorias macroeconómicas</text>
   <text class="sub l-en" x="36" y="300">each field with its kind, unit and range; rules across</text>
   <text class="sub l-es" x="36" y="300">cada campo con su tipo, unidad y rango; reglas entre</text>
   <text class="sub l-en" x="36" y="316">fields and records; parsed strictly, never coerced</text>
@@ -72,19 +75,19 @@
 
   <rect class="pn" x="482" y="176" width="398" height="264" rx="10"/>
   <text class="h l-en" x="498" y="200">Contract 2: what the pipeline commits</text>
-  <text class="h l-es" x="498" y="200">Contrato 2: lo que el pipeline versiona</text>
+  <text class="h l-es" x="498" y="200">Contrato 2: lo que la canalización versiona</text>
   <text class="mono" x="498" y="224">manifests/index.json, manifests/C01.json</text>
   <text class="mono" x="498" y="242">C01/models-*.json, C01/&lt;variant&gt;.json</text>
-  <text class="sub l-en" x="498" y="266">model records, outputs, TestResult rows, impact,</text>
-  <text class="sub l-es" x="498" y="266">registros de modelos, salidas, filas TestResult, impacto,</text>
+  <text class="sub l-en" x="498" y="266">model records, outputs, test-result rows, impact,</text>
+  <text class="sub l-es" x="498" y="266">registros de modelos, salidas, filas de resultados de prueba, impacto,</text>
   <text class="sub l-en" x="498" y="282">findings, provenance (truth status, licence class</text>
   <text class="sub l-es" x="498" y="282">hallazgos, procedencia (estado de verdad, clase de</text>
   <text class="sub l-en" x="498" y="298">and file hashes of every input), lane</text>
-  <text class="sub l-es" x="498" y="298">licencia y hashes de cada entrada), carril</text>
+  <text class="sub l-es" x="498" y="298">licencia y huellas de cada entrada), carril</text>
   <text class="bad l-en" x="498" y="324">the export refuses a non-publishable lineage</text>
   <text class="bad l-es" x="498" y="324">la exportación rechaza un linaje no publicable</text>
   <text class="sub l-en" x="498" y="350">held by: the two-way contract test of the web, the</text>
-  <text class="sub l-es" x="498" y="350">sujeto por: la prueba de contrato en dos sentidos, la</text>
+  <text class="sub l-es" x="498" y="350">sujeto por: la prueba de contrato en dos sentidos, las</text>
   <text class="sub l-en" x="498" y="366">provenance, data-class and licence guards in CI,</text>
   <text class="sub l-es" x="498" y="366">guardas de procedencia, clases de datos y licencias en CI,</text>
   <text class="sub l-en" x="498" y="382">and each case's expected ranges at bake time</text>

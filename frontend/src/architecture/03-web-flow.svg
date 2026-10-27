@@ -36,8 +36,8 @@
   <text class="mono" x="524" y="74">C01/models-taiwan.json, C01/holdout.json ...</text>
   <text class="sub l-en" x="524" y="94">a models artifact per fit (points table, EBM, PDP);</text>
   <text class="sub l-es" x="524" y="94">un artefacto de modelos por ajuste (puntos, EBM, PDP);</text>
-  <text class="sub l-en" x="524" y="110">a variant artifact per regime (outputs, TestResult rows,</text>
-  <text class="sub l-es" x="524" y="110">un artefacto por régimen (salidas, filas TestResult,</text>
+  <text class="sub l-en" x="524" y="110">a variant artifact per regime (outputs, test-result rows,</text>
+  <text class="sub l-es" x="524" y="110">un artefacto por régimen (salidas, filas de resultados de prueba,</text>
   <text class="sub l-en" x="524" y="126">impact, findings, provenance), each fetched once</text>
   <text class="sub l-es" x="524" y="126">impacto, hallazgos, procedencia), pedido una vez</text>
 
@@ -47,12 +47,12 @@
   <text class="h l-es" x="36" y="206">La selección y su clave</text>
   <text class="it l-en" x="36" y="228">case + variant + challenger + policy thresholds + approval rate + LGD + applicant = the state key</text>
   <text class="it l-es" x="36" y="228">caso + variante + retador + umbrales de política + tasa de aprobación + LGD + solicitante = la clave de estado</text>
-  <text class="sub l-en" x="36" y="248">Every PlotCard and Readout is drawn for a key; when the rail moves and a view has not caught up, it shows itself stale.</text>
-  <text class="sub l-es" x="36" y="248">Cada PlotCard y Readout se dibuja para una clave; cuando el panel cambia y una vista no lo alcanza, se muestra desactualizada.</text>
+  <text class="sub l-en" x="36" y="248">Every chart and read-out is drawn for a key; when the rail moves and a view has not caught up, it shows itself stale.</text>
+  <text class="sub l-es" x="36" y="248">Cada gráfico y cada lectura se dibuja para una clave; cuando el panel cambia y una vista no lo alcanza, se muestra desactualizada.</text>
   <text class="sub l-en" x="36" y="266">Live computations (scores, lights, the decision) read only the committed artifacts, so they are reproducible.</text>
   <text class="sub l-es" x="36" y="266">Los cálculos en vivo (puntajes, luces, la decisión) leen solo los artefactos versionados, así son reproducibles.</text>
   <text class="sub l-en" x="36" y="284">Parity tests hold them to the pipeline: points and scores exactly, PDs and logits within 1e-9.</text>
-  <text class="sub l-es" x="36" y="284">Las pruebas de paridad los sujetan al pipeline: puntos y puntajes exactos, PD y logits dentro de 1e-9.</text>
+  <text class="sub l-es" x="36" y="284">Las pruebas de paridad los sujetan a la canalización: puntos y puntajes exactos, PD y logit dentro de 1e-9.</text>
 
   <rect class="bx" x="20" y="322" width="860" height="118" rx="10"/>
   <text class="h l-en" x="36" y="346">Before any deploy: the measured gate</text>
