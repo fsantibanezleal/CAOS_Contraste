@@ -168,7 +168,10 @@ export function collateralRange(o: C12Outputs | null): { min: number; max: numbe
   const v = o?.sa_ccr.v.amount ?? 0;
   const top = Math.max(2 * Math.max(v, committedCollateral(o), 0), 100_000);
   const max = Math.ceil(top / 1000);
-  return { min: 0, max, step: Math.max(1, Math.round(max / 200)) };
+  // a negative collateral is collateral the bank posted, which raises the exposure (CRE52.17): the range reaches below 0 when the
+  // document's does, so the control and the chart can show it (R3 c13 BL5: the margined variants marked 0 and drew the EAD at 0)
+  const min = Math.min(0, Math.floor((2 * committedCollateral(o)) / 1000));
+  return { min, max, step: Math.max(1, Math.round((max - min) / 200)) };
 }
 
 /** The live SA-CCR on the collateral in focus, from the document's inputs: the port of CRE52. */

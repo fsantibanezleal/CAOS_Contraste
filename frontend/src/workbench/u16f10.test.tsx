@@ -7,6 +7,7 @@ import { setLang } from './c03/u6-testkit';
 import { LadderView } from './c10/ModelViews';
 import { defaultSel as c10Sel, outputsOf as c10Outputs } from './c10/selection';
 import { daySeconds } from '../lib/days';
+import { collateralRange, committedCollateral, defaultSel as c12Sel, outputsOf as c12Outputs } from './c12/selection';
 
 describe('U16-F10', () => {
   afterEach(() => setLang('en'));
@@ -33,4 +34,13 @@ describe('U16-F10', () => {
       expect(d.getHours()).toBe(0);
     }
   });
+  for (const v of variantIds('C12')) {
+    it(`C12 (${v}): the collateral range holds the document's collateral, a negative one included (R3 c13 BL5)`, () => {
+      const o = c12Outputs(c12Sel(committedData('C12', v)));
+      if (!o) return;
+      const r = collateralRange(o);
+      expect(r.min * 1000).toBeLessThanOrEqual(committedCollateral(o));
+      expect(r.max * 1000).toBeGreaterThanOrEqual(committedCollateral(o));
+    });
+  }
 });
