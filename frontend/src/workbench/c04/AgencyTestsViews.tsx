@@ -967,7 +967,9 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
   // the years compared, a card of their own when both drawings are drawn: each table under its drawing kept one or two rows at 1280
   const yearsCard = built.case === 'drawn' && built.l1.drawn;
   return (
-    <ViewsRow>
+    // the PD card carries the longest note of the case, so it takes the widest column of the three (U16-R4 C04 notes: at a third of the
+    // row its note left the drawing 67 px at 1280 in Spanish)
+    <ViewsRow shares={yearsCard ? [2, 3, 2] : undefined}>
       <PlotCard
         fill
         title={{ en: 'Two semesters against their year', es: 'Dos semestres contra su año' }}

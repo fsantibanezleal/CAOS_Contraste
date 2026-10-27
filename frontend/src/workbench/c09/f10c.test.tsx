@@ -77,7 +77,8 @@ describe('U16-F10c, C09 (R3 c10)', () => {
     const cards = cardsOf(markup);
     expect(cards).toHaveLength(2);
     expect(cards[0]).not.toContain('data-table=');
-    expect(Number(/--ct-chart-min:([\d.]+)rem/.exec(cards[0])?.[1])).toBeGreaterThanOrEqual(9 * 1.5);
+    // the rows take the height they need in a box of their own that scrolls with the cue when the card is shorter (U16-F12f)
+    expect(cards[0]).toMatch(/data-scroll-box=""[^>]*data-block="ccf-chart"/);
     expect(cards[1]).toContain('data-table="ccf-by-design"');
     expect(markup).not.toContain('data-table="tests"');
     expect(markup).not.toContain('ct-stack-table');
