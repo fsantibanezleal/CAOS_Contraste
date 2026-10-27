@@ -38,6 +38,8 @@ export function localise(s: string | null | undefined, lang: Lang, rules: Readon
 export const TEST_NOTE_RULES: ReadonlyArray<Rule> = [
   [/^(\d+) change\(s\) coincide with a breach$/, (g) => `${g[1]} ${g[1] === '1' ? 'cambio coincide' : 'cambios coinciden'} con un exceso`],
   [/^not evaluated: fewer than 2 dates$/, () => 'no evaluada: menos de 2 fechas'],
+  // C15 n1 (U16-F12d): the IRRBB note rule shared by C14 and C15, moved here from C14Common's local rules
+  [/^not evaluated: fewer than (\d+) estimation windows$/, (g) => `no evaluada: menos de ${g[1]} ventanas de estimación`],
   [/^not evaluated: the realised change in NII is not available$/, () => 'no evaluada: el cambio realizado del NII no está disponible'],
 ];
 

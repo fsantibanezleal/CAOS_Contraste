@@ -42,6 +42,6 @@ describe('the Spanish views of C12', () => {
   it('the platform string keeps its machine fields and translates its words', () => {
     const p = 'open-source-risk-engine 1.8.17.0 wheel, CPython 3.13.5, Windows 11 AMD64, native (no WSL); 10000 samples, antithetic';
     expect(platformText(p, 'en')).toBe(p);
-    expect(platformText(p, 'es')).toBe('open-source-risk-engine 1.8.17.0 paquete wheel, CPython 3.13.5, Windows 11 AMD64, nativo (sin WSL); 10.000 muestras, antitéticas');
+    expect(platformText(p, 'es')).toBe('open-source-risk-engine 1.8.17.0 paquete, CPython 3.13.5, Windows 11 AMD64, nativo (sin WSL); 10.000 muestras, antitéticas');
   });
 });

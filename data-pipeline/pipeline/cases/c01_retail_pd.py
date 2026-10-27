@@ -57,7 +57,7 @@ VARIANTS: tuple[dict[str, Any], ...] = (
      "title": _t("Covariate drift, severe", "Deriva de covariables, severa"), "short": _t("Drift 0.6", "Deriva 0,6"),
      "regime": _t("The same shift at exp(0.6 z).", "El mismo desplazamiento con exp(0,6 z).")},
     {"id": "prior-shift", "fit": "taiwan", "truth": "synthetic-known-truth",
-     "title": _t("Prior shift x1.5", "Cambio de prior x1,5"), "short": _t("Prior x1.5", "Prior x1,5"),
+     "title": _t("Prior shift x1.5", "Cambio de la probabilidad a priori x1,5"), "short": _t("Prior x1.5", "A priori x1,5"),
      "regime": _t("Real holdout rows resampled so the default rate is 1.5 times the observed one.",
                   "Filas reales remuestreadas para que la tasa de incumplimiento sea 1,5 veces la observada.")},
     {"id": "label-noise", "fit": "taiwan", "truth": "synthetic-known-truth",

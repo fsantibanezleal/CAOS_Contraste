@@ -15,7 +15,7 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   // C03 (data-pipeline/pipeline/cases/c03/)
   'right-censoring': { en: 'loans followed for less than 60 months carry no outcome', es: 'los créditos seguidos menos de 60 meses no tienen resultado' },
   'sba-7a-is-not-a-bank-book': { en: "SBA 7(a) loans are not a bank's SME book", es: 'los créditos SBA 7(a) no son la cartera pyme de un banco' },
-  'training-window-before-the-crisis': { en: 'the training window closes before the 2007-09 recession', es: 'la ventana de entrenamiento cierra antes de la recesión de 2007-09' },
+  'training-window-before-the-crisis': { en: 'the training window closes before the 2007 to 2009 recession', es: 'la ventana de entrenamiento cierra antes de la recesión de 2007 a 2009' },
   // C05 (data-pipeline/pipeline/cases/c05/)
   'known-truth-coverage': { en: 'the coverage of the bounds against the known truth', es: 'la cobertura de las cotas frente a la verdad conocida' },
   'known-truth-power': { en: 'the power of the battery against the known truth', es: 'la potencia de la batería frente a la verdad conocida' },
@@ -42,14 +42,17 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   // C14 (data-pipeline/pipeline/cases/c14/)
   'retail-share-is-a-synthetic-mapping': { en: 'the retail and wholesale split and the core shares are synthetic', es: 'la división entre minorista y mayorista y las partes estables son sintéticas' },
   // C15 (data-pipeline/pipeline/cases/c15/variant.py)
-  'annex1-prioritised-bank-tests': { en: 'the CMF Annex 1 prioritisation tests: delta EVE against 15 percent of Tier 1 capital, delta NII against 5 percent', es: 'las pruebas de priorización del Anexo 1 de la CMF: delta EVE contra el 15 por ciento del capital de nivel 1, delta NII contra el 5 por ciento' },
+  // the three tests of riskvalidation.irrbb.eve_nii.prioritised_bank, as the Thresholds view lists them (R4 c18 m11)
+  'annex1-prioritised-bank-tests': { en: 'the CMF Annex 1 prioritisation tests: delta EVE against 15 percent of Tier 1 capital, delta NII against 5 percent of Tier 1 capital and against 18 percent of the 12-month net interest and indexation margin', es: 'las pruebas de priorización del Anexo 1 de la CMF: delta EVE contra el 15 por ciento del capital de nivel 1, delta NII contra el 5 por ciento del capital de nivel 1 y contra el 18 por ciento del margen de intereses y reajustabilidad de 12 meses' },
   'clp-curve-fourth-point': { en: "the pesos curve's fourth point is the monetary policy rate", es: 'el cuarto punto de la curva en pesos es la tasa de política monetaria' },
-  'indexation-charge-is-a-standard-add-on': { en: 'the standard indexation charge depends on the net UF position, not on the rate shock', es: 'el cargo estándar por indexación depende de la posición neta en UF, no del choque de tasas' },
+  'indexation-charge-is-a-standard-add-on': { en: 'the standard indexation charge depends on the net UF position, not on the rate shock', es: 'el cargo estándar por reajustabilidad depende de la posición neta en UF, no del choque de tasas' },
   // C17 (data-pipeline/pipeline/cases/c17/documents.py)
   'infinite-mean': { en: 'the severity has an infinite mean', es: 'la severidad tiene media infinita' },
   'sma-not-calibrated-to-the-999-quantile': { en: 'the SMA is not calibrated to the 99.9 percent quantile', es: 'el SMA no está calibrado al cuantil del 99,9 por ciento' },
   // C18 (data-pipeline/pipeline/cases/c18/)
-  'non-credit-losses-at-expected-loss': { en: 'market, IRRBB and operational losses are held at their expected loss', es: 'las pérdidas de mercado, IRRBB y operacionales se fijan en su pérdida esperada' },
+  // the committed losses carry no IRRBB loss (losses.scenario_losses[*].irrbb = 0) while its marginal has an expected loss: IRRBB is out
+  // of the capital path, not held at its expected loss (R4 c22 M1, c23 M2)
+  'non-credit-losses-at-expected-loss': { en: 'market and operational losses are held at their expected loss; IRRBB stays out of the capital path', es: 'las pérdidas de mercado y operacional se fijan en su pérdida esperada; el IRRBB queda fuera de la trayectoria de capital' },
   // C20 (data-pipeline/pipeline/cases/c20/)
   'fed-no-outcome': { en: 'the Fed portfolios carry no default outcome and no decision', es: 'las carteras de la Fed no traen incumplimientos ni decisiones' },
   'fixed-rounds': { en: 'the boosting rounds are fixed on the first fit', es: 'las rondas de potenciación se fijan en el primer ajuste' },
@@ -90,5 +93,7 @@ export const OUTPUT_BLOCKS: Record<string, BiText> = {
   engelmann: { en: "Engelmann's TTC portfolio and projections, printed against recomputed (Validation group)", es: 'la cartera TTC y las proyecciones de Engelmann, impresas contra recalculadas (grupo Validación)' },
   // C18 (data-pipeline/pipeline/cases/c18/): the capital plan and the CET1 path of the scenario
   'outputs.capital_plan': { en: "the scenario's capital plan: the PE ratio against the internal target (Capital group)", es: 'el plan de capital del escenario: la razón de PE contra la meta interna (grupo Capital)' },
+  // C15 (U16-F12d, R4 c18 n2): the floors block a finding cites since the re-bake
+  'floors.distances': { en: 'the distance of each leg and shock to its post-shock floor (Floors view)', es: 'la distancia de cada tramo y choque a su piso posterior al choque (vista de pisos)' },
   'outputs.headline_cet1': { en: "the scenario's CET1 path on losses only (Capital group)", es: 'la trayectoria del CET1 del escenario solo con pérdidas (grupo Capital)' },
 };

@@ -22,6 +22,9 @@ const CLASS_TEXT: Record<string, BiText> = {
   unusable: { en: 'unusable: the terms forbid this use', es: 'inutilizable: los términos prohíben este uso' },
 };
 
+/** The licence class after the licence: it starts a sentence when the licence ends with a full stop (R4 c01 n4). */
+const classAfter = (licence: string, text: string): string => (/\.\s*$/.test(licence) ? text.charAt(0).toUpperCase() + text.slice(1) : text);
+
 const TRUTH_TEXT: Record<string, BiText> = {
   'real-outcomes': { en: 'real outcomes', es: 'resultados reales' },
   'synthetic-known-truth': { en: 'real rows perturbed by a known amount (known truth)', es: 'filas reales perturbadas en una cantidad conocida (verdad conocida)' },
@@ -70,7 +73,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                       })()
                     ) : (
                       <span translate="no">{s ? s.licence : ''}</span>
-                    )}{' '}<em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
+                    )}{' '}<em>{s ? classAfter(s.licence, pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)) : ''}</em>
                   </td>
                   {/* the source's required wording, verbatim in its own language */}
                   <td className="caos-col-text" translate="no" lang="en">
