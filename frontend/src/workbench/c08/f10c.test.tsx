@@ -95,6 +95,8 @@ describe('U16-F10c, C08 (R3 c09)', () => {
       const xs = (p.marks ?? []).map((m) => m.x);
       expect(xs).toContain(t.period.first_year);
       expect(xs).toContain(t.period.last_year);
+      expect(p.x.range![0]).toBeLessThanOrEqual(t.period.first_year);
+      expect(p.x.range![1]).toBeGreaterThanOrEqual(t.period.last_year);
       const uncovered = t.rows.filter((r) => !r.covered);
       expect(uncovered.length).toBeGreaterThan(0);
       const labels = (p.marks ?? []).map((m) => (typeof m.label === 'string' ? m.label : m.label[lang]));
