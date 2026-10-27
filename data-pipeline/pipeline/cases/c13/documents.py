@@ -77,7 +77,7 @@ TRUE_MODEL = T(
     "correlated factors; the hypothetical P&L is the exact revaluation plus a small pricing noise, so the risk model is exact when "
     "nothing is planted. A deficiency changes only the risk model (its basis, volatility input, correlation, factor set or the date "
     "of its P&L).",
-    "Una mesa de spread con dos factores (largo el factor 1, corto el factor 2) con una volatilidad estocástica común conocida al "
+    "Una mesa de diferenciales con dos factores (largo el factor 1, corto el factor 2) con una volatilidad estocástica común conocida al "
     "inicio del día y factores correlacionados; el P&L hipotético es la revaluación exacta más un pequeño ruido de valoración, de "
     "modo que el modelo de riesgo es exacto cuando no se siembra nada. Una deficiencia cambia solo el modelo de riesgo (su base, su "
     "volatilidad de entrada, su correlación, su conjunto de factores o la fecha de su P&L).")
