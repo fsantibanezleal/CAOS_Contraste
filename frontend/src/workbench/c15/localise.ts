@@ -1,7 +1,7 @@
 // The Spanish of the English-only strings of the C15 bake (U16-R2, b07 V15-1, V15-3 and V15-5), written through the rules of
 // c14/localise.ts: the calibration source, the assumption sources, the attribution of a curve, the UF source, and the two formulas
 // (their words are translated, their symbols stay: ruling of the main session, 2026-10-22).
-import { IRRBB_SOURCE_RULES, dec, type Rule } from '../c14/localise';
+import { IRRBB_SOURCE_RULES, dec, localise, type Rule } from '../c14/localise';
 
 export const C15_SOURCE_RULES: ReadonlyArray<Rule> = [
   ...IRRBB_SOURCE_RULES,
@@ -19,10 +19,30 @@ export const C15_SOURCE_RULES: ReadonlyArray<Rule> = [
     (g) => `Fuente: Banco Central de Chile (BDE), series ${g[1]}. La curva cero ajustada es una adaptación de Contraste de los datos del Banco Central de Chile y es de su exclusiva responsabilidad (términos del BCCh).`],
   [/^Banco Central de Chile, BDE series F073\.UFF\.PRE\.Z\.D \(Unidad de fomento\), value of ([\d-]+)$/,
     (g) => `Banco Central de Chile, serie BDE F073.UFF.PRE.Z.D (Unidad de fomento), valor del ${g[1]}`],
+  // the reference of a threshold ("RAN 21-13 Annex 1"; R3 c16 B2): the annex in Spanish, the code as written
+  [/^(.*\S) Annex (\d+)$/, (g) => `${g[1]} Anexo ${g[2]}`],
 ];
 
 /** The formulas of the indexation charge and of the CPI scenario: the words in Spanish, the symbols as written. */
 export const FORMULA_RULES: ReadonlyArray<Rule> = [
   [/^charge = ([\d.]+) x \|PN_UR\|, PN_UR = net UF position x UF value$/, (g) => `cargo = ${dec(g[1])} x |PN_UR|, PN_UR = posición neta en UF x valor de la UF`],
-  [/^effect = -pn_ur x surprise_pp \/ 100 \(loss-positive\)$/, () => 'efecto = -pn_ur x surprise_pp / 100 (pérdida positiva)'],
+  [/^effect = -pn_ur x surprise_pp \/ 100 \(loss-positive\)$/, () => 'efecto = -PN_UR x S / 100 (pérdida positiva), con PN_UR la posición neta en UF y S la sorpresa de inflación en puntos porcentuales'],
 ];
+
+/** The engine keys of the CPI formula are no reader text in either language (the ruling on R3 c16 Q): symbols with a legend. */
+const FORMULA_EN: ReadonlyArray<Rule> = [
+  [/^effect = -pn_ur x surprise_pp \/ 100 \(loss-positive\)$/, () => 'effect = -PN_UR x S / 100 (loss-positive), with PN_UR the net UF position and S the inflation surprise in percentage points'],
+];
+
+/** A formula of the C15 documents in the language: the words translated, the symbols named in a legend, never an engine key. */
+export function formulaText(s: string | null | undefined, lang: 'en' | 'es'): string {
+  if (s === null || s === undefined) return '';
+  if (lang === 'en') {
+    for (const [pattern, write] of FORMULA_EN) {
+      const m = pattern.exec(s);
+      if (m) return write([...m]);
+    }
+    return s;
+  }
+  return localise(s, lang, FORMULA_RULES);
+}

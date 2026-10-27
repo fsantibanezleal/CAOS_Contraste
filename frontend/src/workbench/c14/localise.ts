@@ -11,6 +11,19 @@ export type Rule = readonly [RegExp, (g: string[]) => string];
 /** An English decimal as the Spanish form: 0.0236 becomes 0,0236. */
 export const dec = (s: string): string => s.replace('.', ',');
 
+/**
+ * A text without the plan and decision tags of the build (the 2026-10-27 ruling: "(decision Q5)", "(Q13)", "(A3)", "approved as
+ * decision V6", "and decision Q11" are raw ids, a reader cannot resolve them): the tag goes, the sentence around it stays. A citation of
+ * a research dossier by number and section ("dossier 05 E.1") is a citation and stays.
+ */
+export function dropPlanTags(s: string): string {
+  return s
+    .replace(/,? (?:approved as|aprobad[oa] como) (?:decision|decisión) [A-Z]\d+\b/g, '')
+    .replace(/ (?:and|y) (?:decision|decisión) [A-Z]\d+\b/g, '')
+    .replace(/ (?:of|de la) (?:decision|decisión) [A-Z]\d+\b/g, '')
+    .replace(/ \((?:decision |decisión )?[QAD]\d{1,2}\)/g, '');
+}
+
 /** The Spanish of `s`, or `s` itself in English or when no rule knows it. */
 export function localise(s: string | null | undefined, lang: Lang, rules: ReadonlyArray<Rule>): string {
   if (s === null || s === undefined || lang === 'en') return s ?? '';
@@ -33,7 +46,7 @@ export const IRRBB_SOURCE_RULES: ReadonlyArray<Rule> = [
   [/^US Treasury daily par yield curve \(Daily Treasury Par Yield Curve Rates\), observation date (\S+?)(?:; carried to (\S+), the last curve published on or before it)?$/,
     (g) => `Curva de rendimientos par diaria del Tesoro de EE. UU. (Daily Treasury Par Yield Curve Rates), fecha de observación ${g[1]}${g[2] ? `; trasladada al ${g[2]}, la última curva publicada en esa fecha o antes` : ''}`],
   [/^par yields bootstrapped to continuously compounded zero rates \(the engine's zero-curve bootstrap, semiannual bond-equivalent, simple interest up to six months\); linear in tenor and flat outside the grid at the 19 midpoints$/,
-    () => 'rendimientos par convertidos por bootstrap en tasas cero de capitalización continua (bootstrap de la curva cero del motor, equivalente de bono semestral, interés simple hasta seis meses); lineal en el plazo y plana fuera de la grilla en los 19 puntos medios'],
+    () => 'rendimientos par convertidos por derivación recursiva en tasas cero de capitalización continua (la derivación recursiva de la curva cero del motor, equivalente de bono semestral, interés simple hasta seis meses); lineal en el plazo y plana fuera de la grilla en los 19 puntos medios'],
   [/^balance-weighted average of the used values of the deposit categories below \(the SRP31 Table 4 caps applied to the synthetic requests\)$/,
     () => 'promedio ponderado por saldo de los valores usados de las categorías de depósitos de abajo (los topes de la Tabla 4 de SRP31 aplicados a las solicitudes sintéticas)'],
   [/^balance-weighted average of the used values of the deposit categories below$/, () => 'promedio ponderado por saldo de los valores usados de las categorías de depósitos de abajo'],
@@ -55,11 +68,14 @@ export const IRRBB_SOURCE_RULES: ReadonlyArray<Rule> = [
   [/^amortising linearly over the remaining maturity band; behavioural flows prepay at the base CPR of ([\d.]+) a year$/,
     (g) => `amortización lineal sobre la banda de plazo restante; los flujos conductuales se prepagan al CPR base de ${dec(g[1])} al año`],
   [/^behavioural: non-core overnight, core around the used maturity \(nmd_split, SRP31 Table 4 caps\); contractual: overnight$/,
-    () => 'conductual: la parte no estable a la vista y la estable en torno al plazo usado (nmd_split, topes de la Tabla 4 de SRP31); contractual: a la vista'],
+    // the engine function (nmd_split) is no reader text (R3 c15 B4): the rule says what it does
+    () => 'conductual: la parte no estable a la vista y la estable en torno al plazo usado (la separación de los depósitos sin vencimiento del motor, topes de la Tabla 4 de SRP31); contractual: a la vista'],
   [/^non-mortgage debt at its maturity band, mortgage-backed securities amortising linearly over their remaining maturity band; behavioural flows prepay the mortgage-backed part at the base CPR of ([\d.]+) a year; split pro rata to the (held-to-maturity|available-for-sale) share$/,
     (g) => `deuda no hipotecaria en su banda de plazo, títulos respaldados por hipotecas con amortización lineal sobre su banda de plazo restante; los flujos conductuales prepagan la parte hipotecaria al CPR base de ${dec(g[1])} al año; reparto proporcional a la parte ${g[2] === 'held-to-maturity' ? 'mantenida hasta el vencimiento' : 'disponible para la venta'}`],
   // the reference of the outlier test
   [/^SRP31\.82 to SRP31\.83 \(15 percent of Tier 1\)$/, () => 'SRP31.82 a SRP31.83 (15 por ciento del capital de nivel 1)'],
+  // a span of paragraphs (the shock shapes, SRP31.91 to SRP31.92; R3 c15 B3)
+  [/^SRP31\.(\d+) to SRP31\.(\d+)$/, (g) => `SRP31.${g[1]} a SRP31.${g[2]}`],
 ];
 
 /** The references the IRRBB tests carry when a test has no note of its own (the cell then shows its source, in Spanish). */

@@ -4,6 +4,7 @@
 // the shell's formatter, not copied.
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import { engineNote } from '../c03/U6Shared';
+import { dropPlanTags } from '../c14/localise';
 
 type Lang = 'en' | 'es';
 type Rule = [RegExp, (m: RegExpMatchArray, lang: Lang) => string];
@@ -14,6 +15,22 @@ const fixed = (s: string, lang: Lang) => formatNumber(Number(s), lang, { decimal
 const whole = (s: string, lang: Lang) => formatNumber(Number(s), lang, { decimals: 0 });
 
 const LOAN_TYPE: Record<string, string> = { Commercial: 'Comerciales', Residential: 'Residenciales', 'Credit cards': 'Tarjetas de crédito', Other: 'Otros' };
+
+/** The W^2 note of a C12 PIT test: its level, its subject and its horizon code ("10bd", "1m"). */
+const W2_NOTE = /^W\^2 is above the simulated (\d+) percent critical value (?:for )?the (book|risk factor) at the (\d+)(bd|m) horizon$/;
+
+/** A horizon code of C12 ("10bd", "1m", "12m") in words, the singular for one. */
+function horizonWords(n: string, unit: string, lang: Lang): string {
+  const one = Number(n) === 1;
+  if (lang === 'es') return `${n} ${unit === 'bd' ? (one ? 'día hábil' : 'días hábiles') : one ? 'mes' : 'meses'}`;
+  return `${n} ${unit === 'bd' ? (one ? 'business day' : 'business days') : one ? 'month' : 'months'}`;
+}
+
+/** The English reader sentence of a note that carries a raw id: a plan unit, a horizon code (R3 c12 B2, c13 BL1). */
+const EN_RULES: Rule[] = [
+  [/^(challenger only: it must enter the \d+ percent MCS on FZ0 out of sample, and )the U\d+ bake( does not train it)$/, (m) => `${m[1]}the precomputation${m[2]}`],
+  [W2_NOTE, (m, lang) => `W² is above the simulated ${m[1]} percent critical value for the ${m[2]} at the ${horizonWords(m[3], m[4], lang)} horizon`],
+];
 
 const RULES: Rule[] = [
   // C10: the Federal Reserve series, the rungs of the ladder and the granularity recursion
@@ -31,15 +48,18 @@ const RULES: Rule[] = [
   [/^not evaluated: no exceedance$/, () => 'no evaluada: sin excedencias'],
   [/^the Weibull shape reached the bound of its search \[([^\]]+)\]: the statistic is capped$/, (m, lang) => `la forma de Weibull llegó al límite de su búsqueda [${m[1].split(', ').map((x) => fixed(x, lang)).join('; ')}]: el estadístico queda acotado`],
   [/^the critical values are simulated per model; (-?[\d.]+) and (-?[\d.]+) are a published reference point, not a threshold$/, (m, lang) => `los valores críticos se simulan por modelo; ${fixed(m[1], lang)} y ${fixed(m[2], lang)} son un punto de referencia publicado, no un umbral`],
-  [/^the model forecasts no ES: FZ0 is not defined$/, () => 'el modelo no pronostica ES: FZ0 no está definida'],
+  // FZ0 is a score ("el puntaje FZ0"): one gender, as the Model hint writes it (R3 c12 m16)
+  [/^the model forecasts no ES: FZ0 is not defined$/, () => 'el modelo no pronostica ES: FZ0 no está definido'],
   [/^the loss differential has no spread: the statistic is undefined$/, () => 'el diferencial de pérdidas no tiene dispersión: el estadístico queda indefinido'],
-  [/^challenger only: it must enter the (\d+) percent MCS on FZ0 out of sample, and the U(\d+) bake does not train it$/, (m, lang) => `solo retador: debe entrar al MCS de ${whole(m[1], lang)} por ciento sobre FZ0 fuera de muestra, y la corrida de U${m[2]} no lo entrena`],
+  // the plan unit of the bake is no reader text (R3 c12 B2)
+  [/^challenger only: it must enter the (\d+) percent MCS on FZ0 out of sample, and the U\d+ bake does not train it$/, (m, lang) => `solo retador: debe entrar al MCS de ${whole(m[1], lang)} por ciento sobre FZ0 fuera de muestra, y la precomputación no lo entrena`],
   [/^A component of this portfolio is the Kenneth French equity return, a derived-only source \(dossier (\d+) C\.(\d+)\): only model outputs are committed, so the realised loss series is withheld; the exceedance days and the scores stand\.$/, (m) => `Un componente de esta cartera es el retorno accionario de Kenneth French, una fuente de solo derivados (dossier ${m[1]} C.${m[2]}): solo se versionan las salidas de los modelos, de modo que la serie de pérdida realizada se retiene; los días de excedencia y los puntajes se mantienen.`],
-  [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in \(decision D(\d+)\)$/, (m, lang) => `menos de ${whole(m[1], lang)} días de pronóstico (${whole(m[2], lang)}): la luz de tráfico de Basilea de MAR${m[3]} se define sobre ${whole(m[4], lang)} observaciones y la ventana no tiene período previo (decisión D${m[5]})`],
+  [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in(?: \(decision D\d+\))?$/, (m, lang) => `menos de ${whole(m[1], lang)} días de pronóstico (${whole(m[2], lang)}): la luz de tráfico de Basilea de MAR${m[3]} se define sobre ${whole(m[4], lang)} observaciones y la ventana no tiene período previo`],
   [/^no eligible model has an ES on every day, so none has an FZ0 score to rank$/, () => 'ningún modelo elegible tiene un ES cada día, de modo que ninguno tiene un puntaje FZ0 que ordenar'],
   // C12: the counterparty credit risk tests and reconciliations
   [/^BCBS (\d+) paragraph (\d+): exception counts assume independence and the overlapping horizons are not independent$/, (m) => `BCBS ${m[1]} párrafo ${m[2]}: los conteos de excepciones suponen independencia y los horizontes que se traslapan no son independientes`],
-  [/^W\^2 is above the simulated (\d+) percent critical value the (book|risk factor) at the (\d+)(bd|m) horizon$/, (m, lang) => `W^2 supera el valor crítico simulado de ${whole(m[1], lang)} por ciento ${m[2] === 'book' ? 'de la cartera' : 'del factor de riesgo'} en el horizonte de ${whole(m[3], lang)} ${m[4] === 'bd' ? 'días hábiles' : 'meses'}`],
+  // the horizon in words, never its code ("1m", "10bd"; R3 c13 BL1), and one month in the singular (m4)
+  [W2_NOTE, (m, lang) => `W² supera el valor crítico simulado de ${whole(m[1], lang)} por ciento ${m[2] === 'book' ? 'de la cartera' : 'del factor de riesgo'} en el horizonte de ${horizonWords(m[3], m[4], 'es')}`],
   [/^secondary row\. (\d+) exceedances in (\d+) dates against ([\d.]+) expected$/, (m, lang) => `fila secundaria. ${whole(m[1], lang)} excedencias en ${whole(m[2], lang)} fechas frente a ${fixed(m[3], lang)} esperadas`],
   [/^([\d.]+) combined standard errors$/, (m, lang) => `${fixed(m[1], lang)} errores estándar combinados`],
   [/^ORE (\d+) samples against Python (\d+) paths; the profile is the t-forward EE$/, (m, lang) => `ORE con ${whole(m[1], lang)} muestras frente a Python con ${whole(m[2], lang)} trayectorias; el perfil es la EE a plazo t`],
@@ -54,12 +74,12 @@ const RULES: Rule[] = [
 /** A note or a reason of a document in the language; a text without an entry is returned as it is. */
 export function noteText(note: string | null | undefined, lang: Lang): string {
   if (note === null || note === undefined) return '';
-  if (lang === 'en') return note;
-  for (const [re, make] of RULES) {
+  for (const [re, make] of lang === 'en' ? EN_RULES : RULES) {
     const m = note.match(re);
     if (m) return make(m, lang);
   }
-  return engineNote(note, lang);
+  // a plan or decision tag is no reader text in either language (the 2026-10-27 ruling)
+  return dropPlanTags(lang === 'en' ? note : engineNote(note, lang));
 }
 
 /** The Federal Reserve series of C10 ("C&I loans (column CI of the table)") in the language. */

@@ -11,7 +11,9 @@ It reads, without evaluating anything:
 Frontend tests and generated files (*.test.ts(x), *.gen.ts) are not scanned.
 
 A finding is (1) a word of scripts/check_spanish_words.txt written without its accent, in any text that is not an identifier,
-a path or a URL, or (2) in a Spanish text, a word ending in -cion or -sion (the plurals need no accent). A Spanish text is the second
+a path or a URL, (2) in a Spanish text, a word ending in -cion or -sion (the plurals need no accent), or (3) in a Spanish text, an
+English technical word the words file lists after a ``!`` (U16-F10a, the ruling of 2026-10-27: hazard, backtest, scorecard ...),
+with its English plural or -ing form; an English text may carry it. A Spanish text is the second
 argument of t(en, es), a value under an ``es`` or ``*_es`` key, or any text whose function words are Spanish. A docstring is not
 a text. A finding prints ``path:line: word -> fix`` and the exit code is 1. scripts/check_spanish_allow.txt lists the findings
 that are right as written (``path :: word  # reason``); an entry that matches nothing is itself a finding.
@@ -47,13 +49,37 @@ def strip_accents(word: str) -> str:
 
 
 def load_words(path: Path) -> dict[str, str]:
+    """The unaccented forms and their accented fix (the lines without a leading ``!``)."""
     pairs: dict[str, str] = {}
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.split("#", 1)[0].strip()
-        if line:
+        if line and not line.startswith("!"):
             key, fix = line.split()
             pairs[key] = fix
     return pairs
+
+
+def load_english(path: Path) -> dict[str, str]:
+    """The English technical words a Spanish text may not carry (``!word the Spanish to write``), lower case, with their fix."""
+    terms: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line.startswith("!"):
+            term, _, fix = line[1:].partition(" ")
+            terms[term.lower()] = fix.strip()
+    return terms
+
+
+def english_terms(text: str, terms: dict[str, str]) -> list[tuple[str, str]]:
+    """The (word, fix) of every listed English word in a text, with its English plural or -ing form; a word inside an
+    identifier, a path or a URL (``pipeline.cases``, ``data-pipeline/``) is code, not text."""
+    out = []
+    for term in sorted(terms, key=len, reverse=True):
+        pattern = (r"(?<![A-Za-zÀ-ÿ0-9_./\-])" + re.escape(term) + r"(?:s|es|ing|ed)?"
+                   r"(?![A-Za-zÀ-ÿ0-9_/\-])(?!\.[A-Za-z0-9])")
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            out.append((m.group(0), terms[term]))
+    return out
 
 
 def load_allow(path: Path | None) -> dict[tuple[str, str], bool]:
@@ -98,13 +124,13 @@ def fix_case(word: str, fix: str) -> str:
     return fix
 
 
-def check_text(text: str, certain: bool, words: dict[str, str]) -> list[tuple[str, str]]:
+def check_text(text: str, certain: bool, words: dict[str, str], english: dict[str, str] | None = None) -> list[tuple[str, str]]:
     """The (word, fix) findings of one text; ``certain`` marks a text known to be Spanish by its position."""
     text = re.sub(r"\{[^{}]*\}", " ", text)    # a format placeholder is code, not text
     if not text.strip() or identifier_like(text):
         return []
     spanish = (certain and not english_copy(text)) or spanish_text(text)
-    out = []
+    out = english_terms(text, english) if spanish and english else []
     for m in WORD.finditer(text):
         word = m.group(0)
         if any(ord(c) > 127 for c in word):
@@ -360,25 +386,25 @@ def _line_of(lines: list[str], first: int, last: int, word: str) -> int:
     return first
 
 
-def scan_file(path: Path, rel: str, words: dict[str, str], documents: bool):
+def scan_file(path: Path, rel: str, words: dict[str, str], documents: bool, english: dict[str, str] | None = None):
     src = path.read_text(encoding="utf-8")
     lines = src.splitlines()
     found = []
     if path.suffix == ".py":
         for first, last, text, certain in py_texts(src):
-            for word, fix in check_text(text, certain, words):
+            for word, fix in check_text(text, certain, words, english):
                 found.append((rel, _line_of(lines, first, last, word.split("_")[0]) if last > first else first, word, fix))
     elif path.suffix in (".ts", ".tsx"):
         for line, text, certain in ts_texts(src):
-            for word, fix in check_text(text, certain, words):
+            for word, fix in check_text(text, certain, words, english):
                 found.append((rel, _line_of(lines, line, line + text.count("\n") + 2, word), word, fix))
         if path.suffix == ".tsx":
             for line, text, certain in jsx_texts(src):
-                for word, fix in check_text(text, certain, words):
+                for word, fix in check_text(text, certain, words, english):
                     found.append((rel, _line_of(lines, line, line + text.count("\n"), word), word, fix))
     elif path.suffix == ".json":
         for text, certain in json_texts(json.loads(src), only_es=documents):
-            for word, fix in check_text(text, certain, words):
+            for word, fix in check_text(text, certain, words, english):
                 found.append((rel, _line_of(lines, 1, len(lines), word), word, fix))
     return list(dict.fromkeys(found))
 
@@ -414,6 +440,7 @@ def main(argv: list[str] | None = None) -> int:
             pass
     root = args.root.resolve()
     words = load_words(args.words)
+    english = load_english(args.words)
     args.allow = args.allow or root / "scripts" / "check_spanish_allow.txt"
     allow = load_allow(args.allow)
     findings = []
@@ -431,7 +458,7 @@ def main(argv: list[str] | None = None) -> int:
                 first = en.splitlines()[0][:40]
                 at = next((n for n, ln in enumerate(doc_lines, 1) if first in ln), 1)
                 findings.append((rel, at, "es copies the English", f"translate: {en[:70]}"))
-        for item in scan_file(path, rel, words, args.documents):
+        for item in scan_file(path, rel, words, args.documents, english):
             key = (item[0], item[2].lower())
             if key in allow:
                 allow[key] = True

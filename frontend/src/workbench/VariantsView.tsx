@@ -9,6 +9,14 @@ import { LIGHT_TEXT, relight } from '../lib/policy';
 import { CHAMPION, REPLAY, provenanceOf, rung, shortName, test, value, type Selection } from './model';
 import { Pending } from './Pending';
 
+/** The truth status of a variant, in a word under its name. */
+const TRUTH_WORD: Record<string, { en: string; es: string }> = {
+  'real-outcomes': { en: 'real data', es: 'datos reales' },
+  'synthetic-known-truth': { en: 'perturbed data, known truth', es: 'datos perturbados, verdad conocida' },
+  'synthetic-calibrated': { en: 'synthetic data', es: 'datos sintéticos' },
+  'published-answer': { en: 'a published answer', es: 'una respuesta publicada' },
+};
+
 export function VariantsView({ sel, onPick }: { sel: Selection | null; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -57,6 +65,8 @@ export function VariantsView({ sel, onPick }: { sel: Selection | null; onPick: (
                   <button type="button" className="ct-linkbutton" onClick={() => onPick(r.id)}>
                     {pick(r.short, lang)}
                   </button>
+                  {/* the truth of each row: the card's chip is the selected variant's (R3 c02 m17) */}
+                  <span className="ct-row-detail" data-truth={r.truth}>{pick(TRUTH_WORD[r.truth] ?? { en: r.truth, es: r.truth }, lang)}</span>
                 </td>
                 <td className="ct-wide-only">{formatNumber(r.dr, lang, { percent: true, decimals: 1 })}</td>
                 <td>{formatNumber(r.aucChamp, lang, { decimals: 4 })}</td>

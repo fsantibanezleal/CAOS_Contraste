@@ -44,7 +44,8 @@ function Evidence({ f, sel, number }: { f: Finding; sel: Selection; number: Map<
         return (
           <li key={e}>
             {k ? `[${k}] ` : ''}
-            {evidenceText(e, ctx, lang)}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
+            {/* a p-value that underflowed to 0 in double precision lies below 1E-300, as the battery prints it (R3 c01 m2) */}
+            {evidenceText(e, ctx, lang)}: {row ? `p ${row.p_value === 0 ? '< 1E-300' : formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
           </li>
         );
       })}
@@ -59,6 +60,12 @@ function cited(sel: Selection, e: string): TestRow | undefined {
   return sel.data.variant.tests.find((t) => t.test_id === testId && t.model_id === model && t.segment === 'portfolio');
 }
 
+/** The evidence chart's points: the cited tests numbered 1 to n, each p-value at the floor when below it, and the x range that gives the
+ * first and last points room, so no padding point enters the chart's data table (R3 c02 m19). */
+export function evidenceSeries(ps: ReadonlyArray<number | null>, floorP = 1e-16): { x: number[]; values: number[]; range: [number, number] } {
+  return { x: ps.map((_, i) => i + 1), values: ps.map((p) => Math.max(floorP, p ?? 1)), range: [0.5, ps.length + 0.5] };
+}
+
 export function FindingsView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -71,10 +78,8 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
   // every cited test with a p-value, numbered in reading order: the table's [k] and the chart's x
   const points = findings.flatMap((f) => f.evidence.map((e) => ({ key: `${f.id}|${e}`, row: cited(sel, e) }))).filter((x) => x.row && x.row.p_value !== null);
   const number = new Map(points.map((x, i) => [x.key, i + 1]));
-  const floorP = 1e-16;
   // half a step of room on each side, so the first and last points are not cut by the plot's edges
-  const xs = [0.5, ...points.map((_, i) => i + 1), points.length + 0.5];
-  const pad = <T,>(v: T[]): Array<T | null> => [null, ...v, null];
+  const evidence = evidenceSeries(points.map((x) => x.row?.p_value ?? null));
   const table = (
     <PlotCard
       fill
@@ -83,8 +88,10 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(v.provenance.truth_status)}
       dataKey={stateKey}
       note={{
-        en: 'Severity policy: a red level test (Jeffreys, binomial) of the champion or the challenger is S2 and amber S3; a red fit test (chi-square over grades, Hosmer-Lemeshow, Spiegelhalter) S3 and amber S4, because at thousands of obligors they reject deviations too small to matter. Evidence is shown under the rail\'s policy; the findings were raised under the committed one.',
-        es: 'Política de severidad: una prueba de nivel roja (Jeffreys, binomial) del campeón o del retador es S2 y ámbar S3; una prueba de ajuste roja (chi-cuadrado sobre grados, Hosmer-Lemeshow, Spiegelhalter) S3 y ámbar S4, porque con miles de deudores rechazan desvíos demasiado pequeños para importar. La evidencia se muestra con la política del panel; los hallazgos se levantaron con la comprometida.',
+        // every family the producer's policy rates (c01_retail_pd.py SEVERITY), and the reason for the fit tests said of large books only
+        // (R3 c01 m15, c02 m14: the stability and discrimination findings, and the German twin of 300 obligors)
+        en: 'Severity policy: a red level test (Jeffreys, binomial) of the champion or the challenger is S2 and amber S3, and so is a red or amber stability (PSI) or discrimination (AUC against the initial) test; a red fit test (chi-square over grades, Hosmer-Lemeshow, Spiegelhalter) is S3 and amber S4, because on a large book they reject deviations too small to matter. Evidence is shown under the rail\'s policy; the findings were raised under the committed one.',
+        es: 'Política de severidad: una prueba de nivel roja (Jeffreys, binomial) del campeón o del retador es S2 y ámbar S3, igual que una prueba de estabilidad (PSI) o de discriminación (AUC contra el inicial) roja o ámbar; una prueba de ajuste roja (chi-cuadrado sobre grados, Hosmer-Lemeshow, Spiegelhalter) es S3 y ámbar S4, porque en una cartera grande rechazan desvíos demasiado pequeños para importar. La evidencia se muestra con la política del panel; los hallazgos se levantaron con la política versionada.',
       }}
     >
       <div className="ct-stack" data-caos-flow="">
@@ -140,10 +147,10 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
       >
         <UPlotChart
           height="fill"
-          x={{ values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
+          x={{ values: evidence.x, range: evidence.range, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
           y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
           series={[
-            { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
+            { label: { en: 'p-value', es: 'Valor p' }, values: evidence.values, color: '--color-accent', mode: 'points' },
           ]}
           yMarks={[
             { y: sel.alphas.amber, label: { en: 'Amber threshold', es: 'Umbral ámbar' }, tone: 'warn' },

@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 from .. import __version__
+from ..core.text import number
 from ..core import expect as expectations
 from ..core import lineage as lin
 from ..core.calibration import GRADES, MASTER_SCALE_UPPER
@@ -284,12 +285,15 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
                             "No es posible validar fuera del tiempo: los datos son una sola foto")})
     flags = (fit.contract.get("by_rule") or {}).get("flagged") or {}
     if flags:
+        # the rules in words and the counts in each language's form (U16-R3 c01 B1: never the rule id, and no list separator turned
+        # into a full stop by a blanket replace)
+        def counts(lang: str, unit: str) -> str:
+            return "; ".join(f"{number(v, lang=lang)}{f' {unit}' if i == 0 else ''} {feat.RULE_TEXT.get(k, {lang: k})[lang]}"
+                             for i, (k, v) in enumerate(sorted(flags.items())))
         out.append({"id": "F-CODES", "severity": "S4", "status": "accepted",
                     "evidence": [f"contract:{k}" for k in sorted(flags)],
-                    "title": _t("Codes outside the documented scale are kept as their own bins (" +
-                                ", ".join(f"{k}: {v:,}" for k, v in sorted(flags.items())) + " records)",
-                                "Códigos fuera de la escala documentada se conservan como tramos propios (" +
-                                ", ".join(f"{k}: {v:,}" for k, v in sorted(flags.items())).replace(",", ".") + " registros)")})
+                    "title": _t(f"Codes outside the documented scale are kept as their own bins: {counts('en', 'records')}",
+                                f"Códigos fuera de la escala documentada se conservan como tramos propios: {counts('es', 'registros')}")})
     return out
 
 
@@ -338,7 +342,7 @@ class C01:
     title = _t("Retail cards PD: champion vs challenger", "PD de tarjetas: campeón vs retador")
     question = _t("Does a monotone WoE scorecard match the challengers the literature says can beat it, once "
                   "calibration is required, and what do the validation tests say when the population shifts?",
-                  "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, "
+                  "¿Iguala una tarjeta de puntuación WoE monótona a los retadores que según la literatura pueden superarla, "
                   "cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?")
     sources = SOURCES
 

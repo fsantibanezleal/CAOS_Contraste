@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { components } from '../../lib/contract.gen';
 import { conform, type ModelsArtifact, type VariantArtifact } from '../../lib/contract.types';
 import { cards, escapeHtml, fixtureData, html, setLang } from '../c03/u6-testkit';
+import { noteText } from '../c08/notes';
 import { C11_FIT, C11_OUTPUTS } from './descriptor';
 import { C11ContextView, C11FindingsView, C11VariantsTable, LevelReadout, ModelReadout, TestReadout } from './C11Common';
 import { EsBacktestView, TestsView } from './BacktestViews';
@@ -349,7 +350,8 @@ describe('the windows, the context and the findings', () => {
     expect(markup).toContain(count(o.data_status.n_observed_days));
     for (const s of fit.data_sources) expect(markup).toContain(escapeHtml(s.url));
     const challenger = fit.ladder.find((r) => r.status === 'challenger-not-run')!;
-    expect(markup).toContain(escapeHtml(challenger.not_run_reason as string));
+    // the reason as the reader reads it: no plan unit ("the U8 bake", R3 c12 B2; U16-F10a)
+    expect(markup).toContain(escapeHtml(noteText(challenger.not_run_reason as string, 'en')));
     expect(markup).toContain(escapeHtml(fit.ladder[0].title.en));
     expect(markup).toContain('data-fixture="true"');
   });

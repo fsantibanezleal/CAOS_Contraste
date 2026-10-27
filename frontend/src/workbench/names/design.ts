@@ -26,7 +26,7 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   'tasche-2013-section-4.2.2': { en: 'Tasche (2013), section 4.2.2: the survivor profile approximated by the forecast profile', es: 'Tasche (2013), sección 4.2.2: el perfil de sobrevivientes aproximado por el perfil pronosticado' },
   'tasche-2013-table-8': { en: "Tasche (2013), Table 8: the case 3 approaches without the year's default rate", es: 'Tasche (2013), Tabla 8: los enfoques del caso 3 sin la tasa de incumplimiento del año' },
   // C06 (data-pipeline/pipeline/cases/c06/)
-  'backtest-population': { en: 'the lifetime backtest covers only accounts with at least 33 months of contractual life left', es: 'el backtest de vida cubre solo cuentas con al menos 33 meses de vida contractual por delante' },
+  'backtest-population': { en: 'the lifetime backtest covers only accounts with at least 33 months of contractual life left', es: 'la prueba retrospectiva de vida cubre solo cuentas con al menos 33 meses de vida contractual por delante' },
   'prepayment-as-censoring': { en: 'prepayment is treated as censoring', es: 'el prepago se trata como censura' },
   'sba-chargeoff-lgd-proxy': { en: 'the LGD is a charge-off severity proxy, before the SBA guarantee', es: 'la LGD es una aproximación de la severidad del castigo, antes de la garantía de la SBA' },
   'sba-modelled-balance': { en: 'the balance is modelled: the file has none', es: 'el saldo es modelado: el archivo no lo trae' },
@@ -44,7 +44,7 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   // C15 (data-pipeline/pipeline/cases/c15/variant.py)
   'annex1-prioritised-bank-tests': { en: 'the CMF Annex 1 prioritisation tests: delta EVE against 15 percent of Tier 1 capital, delta NII against 5 percent', es: 'las pruebas de priorización del Anexo 1 de la CMF: delta EVE contra el 15 por ciento del capital de nivel 1, delta NII contra el 5 por ciento' },
   'clp-curve-fourth-point': { en: "the pesos curve's fourth point is the monetary policy rate", es: 'el cuarto punto de la curva en pesos es la tasa de política monetaria' },
-  'indexation-charge-is-a-standard-add-on': { en: 'the standard indexation charge depends on the net UF position, not on the rate shock', es: 'el cargo estándar por indexación depende de la posición neta en UF, no del shock de tasas' },
+  'indexation-charge-is-a-standard-add-on': { en: 'the standard indexation charge depends on the net UF position, not on the rate shock', es: 'el cargo estándar por indexación depende de la posición neta en UF, no del choque de tasas' },
   // C17 (data-pipeline/pipeline/cases/c17/documents.py)
   'infinite-mean': { en: 'the severity has an infinite mean', es: 'la severidad tiene media infinita' },
   'sma-not-calibrated-to-the-999-quantile': { en: 'the SMA is not calibrated to the 99.9 percent quantile', es: 'el SMA no está calibrado al cuantil del 99,9 por ciento' },
@@ -52,13 +52,13 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   'non-credit-losses-at-expected-loss': { en: 'market, IRRBB and operational losses are held at their expected loss', es: 'las pérdidas de mercado, IRRBB y operacionales se fijan en su pérdida esperada' },
   // C20 (data-pipeline/pipeline/cases/c20/)
   'fed-no-outcome': { en: 'the Fed portfolios carry no default outcome and no decision', es: 'las carteras de la Fed no traen incumplimientos ni decisiones' },
-  'fixed-rounds': { en: 'the boosting rounds are fixed on the first fit', es: 'las rondas de boosting se fijan en el primer ajuste' },
+  'fixed-rounds': { en: 'the boosting rounds are fixed on the first fit', es: 'las rondas de potenciación se fijan en el primer ajuste' },
   'holdout-not-out-of-time': { en: 'Taiwan has no out-of-time sample: the locked holdout stands in for it', es: 'Taiwán no tiene muestra fuera de tiempo: la muestra reservada la reemplaza' },
   'noise-on-codes': { en: 'the noise is added to every feature, the coded ones included', es: 'el ruido se agrega a cada variable, incluidas las codificadas' },
   'planted-not-found': { en: 'the leak is planted, so the screen catches it by construction', es: 'la fuga es plantada, así que el filtro la detecta por construcción' },
   'rungs-swept': { en: 'only the two boosted-tree rungs are swept', es: 'solo se recorren los dos peldaños de árboles potenciados' },
   'sgcd-not-for-scoring': { en: 'SGCD is a research benchmark, not for credit scoring', es: 'SGCD es un referente de investigación, no para calificar crédito' },
-  'small-groups': { en: 'each shock row holds 30 to 90 records', es: 'cada fila de shock tiene entre 30 y 90 registros' },
+  'small-groups': { en: 'each shock row holds 30 to 90 records', es: 'cada fila de choque tiene entre 30 y 90 registros' },
   'synthetic-shift': { en: 'the shift is synthetic, of a known size', es: 'el cambio es sintético, de tamaño conocido' },
   'xgboost-float32': { en: 'XGBoost computes in single precision', es: 'XGBoost calcula en precisión simple' },
   // C21 (data-pipeline/pipeline/cases/c21/)

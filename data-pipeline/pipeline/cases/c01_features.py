@@ -113,6 +113,24 @@ GERMAN_FIELDS: tuple[Field, ...] = tuple(
     else Field(name, "float", _t(en, es), unit=unit, lo=0.0, on_missing="flag")
     for name, (en, es, unit) in _GERMAN_MEANING.items()
 )
+#: the name of every input of both files, as their codebooks give it (the UCI pages of datasets 350 and 144, read 2026-10-27): a
+#: title or a note names an input by these words, never by its column code (U16-R3 c01 B2, B4; the ruling of 2026-10-27). The frontend's
+#: names module (frontend/src/workbench/names/index.ts, TAIWAN_FIELD and GERMAN_FIELD) holds the same words.
+FEATURE_NAME: dict[str, dict[str, str]] = {
+    "LIMIT_BAL": _t("Given credit", "Crédito otorgado"),
+    "EDUCATION": _t("Education", "Educación"),
+    **{col: _t(f"Repayment status, {m} 2005", f"Estado de pago, {e} de 2005") for col, m, e in zip(TAIWAN_PAY, _MONTHS, _MESES)},
+    **{col: _t(f"Bill statement, {m} 2005", f"Estado de cuenta, {e} de 2005") for col, m, e in zip(TAIWAN_BILL, _MONTHS, _MESES)},
+    **{col: _t(f"Amount paid, {m} 2005", f"Monto pagado, {e} de 2005") for col, m, e in zip(TAIWAN_PAID, _MONTHS, _MESES)},
+    **{name: _t(en, es) for name, (en, es, _unit) in _GERMAN_MEANING.items()},
+}
+
+#: the contract rules of the Taiwan file in words, for a finding title: what each flags (U16-R3 c01 B1: never the rule's id)
+RULE_TEXT: dict[str, dict[str, str]] = {
+    "C01-EDU-CODE": _t("with an education code outside 1 to 4", "con un código de educación fuera de 1 a 4"),
+    "C01-PAY-CODE": _t("with a repayment status outside -1, 1 to 9", "con un estado de pago fuera de -1, 1 a 9"),
+}
+
 GERMAN_MONOTONE: dict[str, int] = {"duration_months": +1, "credit_amount": 0, "installment_rate": +1,
                                    **{n: 0 for n in GERMAN_FEATURES if n not in ("duration_months", "installment_rate")}}
 
