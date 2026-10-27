@@ -35,7 +35,7 @@ const c05Rail = (id: string, lang: 'en' | 'es') => {
   }
 };
 
-describe('the 1.00.000 full gate', () => {
+describe('the full gate on the first stable release candidate', () => {
   afterEach(() => setLang('en'));
 
   it('C16, C18 and C20 leave the variant title out of the rail, as the other dense rails do', () => {

@@ -8,3 +8,4 @@
   (G10).
 - The data-contracts architecture figure counts the 58 sources of the registry (it said 49 since U1), and a test
   ties the figure to the registry.
+- Shell 0.19.3 adopted (the shell's own Spanish labels: the lane badges without "offline", a reference link as "enlace").
