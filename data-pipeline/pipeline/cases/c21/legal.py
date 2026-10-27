@@ -211,14 +211,14 @@ def conventions_block() -> dict[str, Any]:
                              "from the pairwise tests; a convention. The reference group of each attribute is the customary comparison group, a "
                              "convention too: White, Not Hispanic or Latino and Male, and 35-44 for age, where no source names a reference "
                              "age band, and under 62 for the contrast of applicants 62 and over.",
-                             "Las categorías Joint, Not Available y Free Form Text Only se llevan como grupos propios y se excluyen de "
+                             "Las categorías Conjunto, No disponible y Solo texto libre se llevan como grupos propios y se excluyen de "
                              "las pruebas por pares; una convención. El grupo de referencia de cada atributo es el grupo de comparación habitual, "
-                             "también una convención: White, Not Hispanic or Latino y Male, y 35-44 para la edad, donde ninguna fuente "
+                             "también una convención: Blanco, No hispano ni latino y Hombre, y 35-44 para la edad, donde ninguna fuente "
                              "nombra un tramo de edad de referencia, y menores de 62 para el contraste de los solicitantes de 62 años o más."),
         "identifiers": {"id": ID_RULE, "observation_date": DATE_RULE, "label": "convention",
-                        "note": t("Public HMDA withholds the loan identifier and the application and action dates: id is the row "
+                        "note": t("Public HMDA withholds the loan identifier and the application and action dates: the identifier is the row "
                                   "position in the source file within its activity year, and the observation date is the activity "
                                   "year's last day. Both are conventions, not source values.",
-                                  "El HMDA público omite el identificador del préstamo y las fechas de solicitud y de acción: id es la "
+                                  "El HMDA público omite el identificador del préstamo y las fechas de solicitud y de acción: el identificador es la "
                                   "posición de la fila en el archivo fuente dentro de su año de actividad, y la fecha de observación es el "
                                   "último día del año de actividad. Ambas son convenciones, no valores de la fuente.")}}
