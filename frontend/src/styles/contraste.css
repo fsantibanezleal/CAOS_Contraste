@@ -291,3 +291,9 @@ table.ct-wrap-head th { white-space: normal; }
   .ct-c21-tall { height: 100%; min-height: 0; }
   .ct-c21-tall > .ct-stack > .ct-stack-table { max-height: 60%; }
 }
+
+/* Shell 0.19.3 defect (conventions/shell-known-defects.md entry 44): a lane badge is `white-space: nowrap`, and the Spanish replay
+   label "Reproduce el resultado precalculado" is wider than the 248 px rail with the wide font, so the badge spills out of the rail
+   and widens it (gate G5 at 1280 es wide-font). In the rail the badge wraps inside the rail's width; removed when the shell wraps it. */
+.caos-wb-rail .caos-badges { max-width: 100%; }
+.caos-wb-rail .badge.caos-lane { white-space: normal; max-width: 100%; }

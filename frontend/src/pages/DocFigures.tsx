@@ -160,7 +160,7 @@ export function ShapeFigure() {
       <line className="dg-axis" x1={X0} y1={Y0} x2={X0} y2={Y1} />
       <line className="dg-grid" x1={X0} y1={mid} x2={X1} y2={mid} />
       <text className="dg-axis-label" x={(X0 + X1) / 2} y={Y0 + 32} textAnchor="middle">{t('Value of one variable (64 bins in the case)', 'Valor de una variable (64 tramos en el caso)')}</text>
-      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución a el logaritmo de la razón de probabilidades')}</text>
+      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución al logit')}</text>
       <path className="dg-curve" d={d} />
       <Note>{t('Illustrative: one step per bin', 'Ilustrativo: un escalón por tramo')}</Note>
     </Frame>
@@ -171,7 +171,7 @@ export function ShapeFigure() {
 export function LadderFigure() {
   const t = useT();
   const rungs = [
-    [t('P1 Scorecard', 'P1 Tarjeta de puntuación'), t('WoE and logistic', 'WoE y logística')],
+    [t('P1 Scorecard', 'P1 Tarjeta'), t('WoE and logistic', 'de puntuación WoE')],
     [t('P3 EBM', 'P3 EBM'), t('additive, pairs', 'aditivo, pares')],
     [t('P4 Boosting', 'P4 Potenciación'), t('monotone trees', 'árboles monótonos')],
     [t('P5 TabPFN', 'P5 TabPFN'), t('in-context', 'en contexto')],
