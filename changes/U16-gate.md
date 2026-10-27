@@ -9,3 +9,4 @@
 - The data-contracts architecture figure counts the 58 sources of the registry (it said 49 since U1), and a test
   ties the figure to the registry.
 - Shell 0.19.3 adopted (the shell's own Spanish labels: the lane badges without "offline", a reference link as "enlace").
+- The capture tool writes a full page taller than one image holds also in bands of 12,000 px (`segments` in its index): the /benchmark page at 390 came out blank past 14,900 px.

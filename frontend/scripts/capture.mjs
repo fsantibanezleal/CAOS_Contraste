@@ -21,6 +21,8 @@ import { createRequire } from 'node:module';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+/** The band of a full-page capture taller than one image can hold: the page is also written in parts of this height. */
+const SEGMENT_PX = 12000;
 const here = dirname(fileURLToPath(import.meta.url));
 const frontend = resolve(here, '..');
 const repo = resolve(frontend, '..');
@@ -386,6 +388,20 @@ export async function runCapture(opts) {
         mkdirSync(dirname(join(out, file)), { recursive: true });
         await page.evaluate(() => window.scrollTo(0, 0)).catch(() => undefined);
         await page.screenshot({ path: join(out, file), animations: 'disabled', fullPage: fullPage });
+        // a full page taller than the browser paints in one image (about 16,384 px) came out blank past its band (U16-R3 c23 B7:
+        // /benchmark blank from 14,900 to 82,274 px at 390): such a page is also written in bands of SEGMENT_PX, listed as `segments`
+        const segments = [];
+        if (fullPage) {
+          const tall = await page.evaluate(() => Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)).catch(() => 0);
+          if (tall > SEGMENT_PX) {
+            const width = await page.evaluate(() => document.documentElement.clientWidth).catch(() => t.cap.width);
+            for (let y = 0, k = 1; y < tall; y += SEGMENT_PX, k += 1) {
+              const part = file.replace(/\.png$/, `__part-${String(k).padStart(2, '0')}.png`);
+              await page.screenshot({ path: join(out, part), animations: 'disabled', fullPage: true, clip: { x: 0, y, width, height: Math.min(SEGMENT_PX, tall - y) } });
+              segments.push(part);
+            }
+          }
+        }
         if (withText) {
           const seen = await page.evaluate(() => document.querySelector('main')?.innerText ?? document.body.innerText).catch(() => '');
           writeFileSync(join(out, file.replace(/\.png$/, '.txt')), seen, 'utf8');
@@ -412,6 +428,7 @@ export async function runCapture(opts) {
           built: true,
           captured: true,
           file,
+          segments,
           settled: settled.why === '',
           unsettled_reason: settled.why || null,
           settle_ms: settled.ms,
