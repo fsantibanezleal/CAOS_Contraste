@@ -10213,7 +10213,7 @@ export interface components {
                 n_points: number;
                 padding_factor: number;
                 tilt: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             quantile_999_eur: {
                 monte_carlo: number;
