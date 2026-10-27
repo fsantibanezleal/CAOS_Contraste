@@ -183,6 +183,13 @@ const unitText = (unit: string, lang: 'en' | 'es') => (UNIT_TEXT[unit] ? pick(UN
 const rangeText = (text: string, lang: 'en' | 'es') => (lang === 'es' ? text.replace(/\bto\b/g, 'a').replace(/\band\b/g, 'y').replace(/\bTable\b/g, 'Tabla') : text);
 
 /** A text of the document in both languages with the Spanish one written with decimal commas (a point between digits becomes a comma; a paragraph such as MAR21.4 is left as it is). */
+/** A document title "Name: what it computes" as a select option: the name, and the rest as the hint printed under the select. */
+const nameAndHint = (text: { en: string; es: string }): { label: { en: string; es: string }; hint?: { en: string; es: string } } => {
+  const cut = (x: string) => { const i = x.indexOf(': '); return i < 0 ? [x, ''] : [x.slice(0, i), x.slice(i + 2)]; };
+  const [en, enRest] = cut(text.en);
+  const [es, esRest] = cut(text.es);
+  return enRest && esRest ? { label: { en, es }, hint: { en: enRest, es: esRest } } : { label: text };
+};
 const docText = (text: { en: string; es: string }): { en: string; es: string } => ({ en: text.en, es: text.es.replace(/(?<![A-Za-z\d.])(\d+)\.(\d+)/g, '$1,$2') });
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -642,7 +649,7 @@ function SbmBody({ doc, initial }: { doc: RegulatoryDoc; initial?: SbmInit }) {
   return (
     <>
       <div className="ct-grid6">
-        <DocSelect id="reg-sbm-case" label={bi('Case of the document', 'Caso del documento')} options={presets.map((e) => ({ id: e.id, label: docText(e.title) }))} value={entry.id} onChange={pick1} />
+        <DocSelect id="reg-sbm-case" label={bi('Case of the document', 'Caso del documento')} options={presets.map((e) => ({ id: e.id, ...nameAndHint(docText(e.title)) }))} value={entry.id} onChange={pick1} />
         <Knob id="reg-sbm-gamma" label={bi('Correlation between buckets, gamma', 'Correlación entre buckets, gamma')} value={gamma} min={0} max={1} step={0.05} format={{ percent: true, decimals: 0 }} hint={bi('The medium-scenario gamma between every two buckets (MAR21.50 sets 50 percent for GIRR)', 'La gamma del escenario medio entre cada par de buckets (MAR21.50 fija 50 por ciento para GIRR)')} onChange={setGamma} />
         <Knob id="reg-sbm-scale" label={bi('Scale of the second bucket', 'Escala del segundo bucket')} value={scale} min={-2} max={2} step={0.1} format={{ digits: 3 }} hint={bi('Multiplies every weighted sensitivity of bucket 2: a negative scale turns it into an offsetting position', 'Multiplica cada sensibilidad ponderada del bucket 2: una escala negativa la vuelve una posición compensatoria')} onChange={setScale} />
       </div>
@@ -1440,7 +1447,8 @@ function Body() {
 export function DocSelect({ id, label, options, value, onChange }: { id: string; label: BiText; options: RailSelectOption[]; value: string; onChange: (id: string) => void }) {
   const lang = useShellLang();
   const domId = useId();
-  const full = (o: RailSelectOption) => (o.hint ? `${pick(o.label, lang)}: ${pick(o.hint, lang)}` : pick(o.label, lang));
+  // a native select cannot wrap: the option prints its name, and the hint of the chosen one prints whole below the select (gate G5 at 390)
+  const chosen = options.find((o) => o.id === value);
   return (
     <div className="caos-chipgroup" data-control={id}>
       <label className="caos-chipgroup-label" htmlFor={domId}>
@@ -1449,10 +1457,11 @@ export function DocSelect({ id, label, options, value, onChange }: { id: string;
       <select id={domId} className="select" value={value} onChange={(e) => onChange(e.target.value)} style={{ maxWidth: '100%', width: '100%' }}>
         {options.map((o) => (
           <option key={o.id} value={o.id}>
-            {full(o)}
+            {pick(o.label, lang)}
           </option>
         ))}
       </select>
+      {chosen?.hint ? <p className="ct-note" data-select-hint={id}>{pick(chosen.hint, lang)}</p> : null}
     </div>
   );
 }

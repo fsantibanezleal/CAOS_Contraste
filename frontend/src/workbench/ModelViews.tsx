@@ -586,17 +586,19 @@ export function EbmCategoriesView({ sel }: { sel: Selection | null }) {
       dataKey={stateKey}
       note={{
         en: "Each bar is a category's contribution to the log-odds of default; an input the codebook leaves a code undocumented for says so.",
-        es: 'Cada barra es la contribución de una categoría al logaritmo de la razón de probabilidades de incumplimiento; un código que el libro de códigos no documenta se indica como tal.',
+        es: 'Cada barra es la contribución de una categoría al logit (el logaritmo de la razón de probabilidades) de incumplimiento; un código que el libro de códigos no documenta se indica como tal.',
       }}
     >
-      <div className="ct-scroll" data-caos-flow="">
+      {/* the panels fill the stage at every size (a list of fixed-height charts drew 18 % of a 2560 stage, gate G6) */}
+      <div className="ct-panels-fill" data-caos-flow="" data-views={String(Math.min(shapes.length, 6))}>
         {shapes.map((s) => (
           <div key={s.name} className="ct-small-multiple" data-term={s.name}>
             <BarChart
               title={s.xLabel}
               orientation="horizontal"
+              height="fill"
               data={(s.categories ?? []).map((c, k) => ({ id: c.code, label: c.label, value: s.y[k], tone: 'accent' as const }))}
-              axis={{ label: { en: `${s.xLabel.en}: log-odds`, es: `${s.xLabel.es}: logaritmo de la razón` }, format: { decimals: 2 } }}
+              axis={{ label: { en: `${s.xLabel.en}: log-odds`, es: `${s.xLabel.es}: logit` }, format: { decimals: 2 } }}
             />
           </div>
         ))}
