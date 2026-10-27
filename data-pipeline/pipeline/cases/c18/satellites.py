@@ -5,7 +5,7 @@ Every fit, projection and back-cast statistic is ``riskvalidation.stress`` (``fi
 residential and commercial real estate series are missing before 1991 Q1 and hold quarters of net recoveries, so those two use the
 identity link and start in 1991 Q1; the other three use the probit link from 1985 Q1. No quarter is floored or dropped, and no quarter
 from 2020 on is read by a fit (the window is explicit and the function refuses to read outside it). Regressors are the agency series
-only (decision Q7); the satellites are fitted on United States data and applied to Banco Andino, a labelled adaptation (decision Q6).
+only (decision Q7); the satellites are fitted on United States data and applied to Banco Andino, a labelled adaptation.
 """
 from __future__ import annotations
 
@@ -125,7 +125,7 @@ def project_all(sats: dict[str, Satellite], transposed: dict[str, np.ndarray]) -
 
 
 def class_rates(proj: dict[str, rv_sat.SatelliteProjection]) -> dict[str, np.ndarray]:
-    """The weighted mix of the Fed loan types each Banco Andino class maps from (decision Q6)."""
+    """The weighted mix of the Fed loan types each Banco Andino class maps from."""
     out = {}
     for klass, (types, weights) in P.CLASS_MAP.items():
         out[klass] = sum(w * proj[t].rates for w, t in zip(weights, types, strict=True))

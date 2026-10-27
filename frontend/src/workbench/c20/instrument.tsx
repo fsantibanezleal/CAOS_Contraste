@@ -21,7 +21,7 @@ import { ExplainerView, LeakageView, PerturbationView, SeedsView } from './Robus
 import { CbpeView, ConformalView, RealDriftView, SyntheticShiftView } from './ShiftViews';
 import { DegradationView, DriftView, QualityView } from './ShockViews';
 import {
-  ATTRIBUTE_TEXT, FAIR_TESTS, SCREEN_TEXT, SHOCK_TEXT, blockRows, defaultSel, outputsOf, text, type Block, type C20Kind, type C20Sel, type Screen,
+  ATTRIBUTE_TEXT, FAIR_TESTS, SCREEN_TEXT, SHOCK_TEXT, blockRows, defaultSel, outputsOf, railShiftName, text, type Block, type C20Kind, type C20Sel, type Screen,
 } from './selection';
 import { testName } from './U14Common';
 import { windowName } from '../names';
@@ -139,9 +139,9 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       label: { en: 'Shift', es: 'Cambio' },
       content: (
         <>
-          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id) }))} value={sel.shift} onChange={setShift} />}
+          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: railShiftName(x.shift_id) ?? windowName(x.shift_id) }))} value={sel.shift} onChange={setShift} />}
           <ShiftReadout sel={sel} />
-          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: windowName(w.window) }))} value={sel.window} onChange={setWin} />}
+          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: railShiftName(w.window) ?? windowName(w.window) }))} value={sel.window} onChange={setWin} />}
           <WindowReadout sel={sel} />
         </>
       ),

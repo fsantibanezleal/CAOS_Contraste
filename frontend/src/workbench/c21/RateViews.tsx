@@ -82,8 +82,8 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
           </table>
           {a.excluded_groups.length > 0 ? (
             <p className="ct-note" data-excluded={a.excluded_groups.length}>
-              {pick({ en: `${n - a.groups.length} category(ies) kept out of the pairwise tests: `, es: `${n - a.groups.length} categoría(s) fuera de las pruebas de a pares: ` }, lang)}
-              {a.excluded_groups.map((e) => `${e.group} (${int(e.n, lang)}; ${pick(e.reason, lang)})`).join('; ')}
+              {pick({ en: `${n - a.groups.length} category(ies) kept out of the pairwise tests: `, es: `${n - a.groups.length} categoría(s) fuera de las pruebas por pares: ` }, lang)}
+              {a.excluded_groups.map((e) => `${pick(groupBi(e.group), lang)} (${int(e.n, lang)}; ${pick(e.reason, lang)})`).join('; ')}
             </p>
           ) : null}
           <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.demographic', 'fair.adverse')} />
@@ -116,6 +116,8 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
           es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${groupBi(f.highest_rate_group).es}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${es(f.rule, 'es')}.`,
         }}
       >
+        {/* a tall box like Rates, so the six rows show at 1280 (U16-R3 c21 m2) */}
+        <div className="ct-c21-tall">
         <LabelledOverTable
           head={
             <>
@@ -160,6 +162,7 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
           </table>
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -209,7 +212,7 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
                 <th className="ct-wide-only">{pick({ en: 'Parity ratio', es: 'Razón de paridad' }, lang)}</th>
                 <th>z</th>
                 <th>{pick({ en: 'p (z)', es: 'p (z)' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Odds ratio', es: 'Razón de odds' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Odds ratio', es: 'Razón de probabilidades' }, lang)}</th>
                 <th>{pick({ en: 'p (Fisher)', es: 'p (Fisher)' }, lang)}</th>
               </tr>
             </thead>

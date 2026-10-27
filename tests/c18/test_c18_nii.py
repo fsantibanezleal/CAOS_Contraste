@@ -6,6 +6,7 @@ import pytest
 from c18_support import requires_raw
 from riskvalidation.irrbb import eve_nii, shocks
 
+from pipeline.cases.c18 import nii
 from pipeline.cases.c18 import params as P
 
 pytestmark = requires_raw
@@ -48,7 +49,9 @@ def test_nii_follows_the_variant_rate_path_and_the_floor_is_stated(built) -> Non
         assert got_name == variable
         pp = doc["outputs"]["headline_cet1"]["ppnr"]
         assert [r["nii_clp_m"] for r in pp["rows"]] == pytest.approx(want)
-        assert variable in pp["statement"]["en"] and "delta_nii" in pp["statement"]["en"] and variable in pp["statement"]["es"]
+        # the engine's delta NII in words, no function name in prose; the Spanish names the rate in Spanish (U16-R3 c19 B3, m15 ruling)
+        assert variable in pp["statement"]["en"] and "delta NII" in pp["statement"]["en"] and "delta_nii" not in pp["statement"]["en"]
+        assert nii.rate_name_es(variable) in pp["statement"]["es"] and variable not in pp["statement"]["es"]
         series[vid] = want
         losses = doc["outputs"]["losses"]
         assert all(y["irrbb"] == 0.0 for y in losses["scenario_losses"])                   # an EVE change is not a profit-and-loss item

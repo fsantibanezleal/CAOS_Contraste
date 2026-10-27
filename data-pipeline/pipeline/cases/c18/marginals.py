@@ -33,6 +33,7 @@ from riskvalidation.portfolio import copula as rv_pcop
 from riskvalidation.portfolio import portfolio as rv_port
 from scipy import optimize, stats
 
+from ...core import text as tx
 from . import params as P
 from .anchors import Anchors
 
@@ -87,17 +88,25 @@ def granularity_choice(lo: dict[str, Any], hi: dict[str, Any]) -> dict[str, Any]
 
 
 def granularity_text(g: dict[str, Any]) -> dict[str, str]:
+    """The sentence of the granularity rule, its numbers written as the shell writes them in each language with their unit (U16-R3 c19 B4:
+    "1,600 nombres" and "VaR 298,227" read a thousand times smaller in Spanish)."""
     lo, hi = g["low"], g["high"]
+
+    def n(x: float, lang: str) -> str:
+        return tx.number(x, 0, lang=lang)
+
     en = (f"The engine's grouped copula on the six C07 segments, each a group of representative names that carry the segment's exposure, PD, LGD and asset correlation "
           f"(one systematic factor); the accounts number 171,500, which no simulation of 10^6 scenarios could carry name by name. The 99.9 percent VaR and ES were measured "
-          f"with {lo['names']:,} and with {hi['names']:,} names per segment and the same seed: VaR {lo['var']:,.0f} and {hi['var']:,.0f} (difference {g['diff_var']:,.0f}), ES "
-          f"{lo['es']:,.0f} and {hi['es']:,.0f} (difference {g['diff_es']:,.0f}), the Monte Carlo standard error of the difference {g['se_var']:,.0f} for the VaR and "
-          f"{g['se_es']:,.0f} for the ES. The difference {'exceeds' if g['exceeds_two_se'] else 'does not exceed'} two standard errors, so {g['names_used']:,} names per segment are used.")
+          f"with {n(lo['names'], 'en')} and with {n(hi['names'], 'en')} names per segment and the same seed, in CLP millions: VaR {n(lo['var'], 'en')} and {n(hi['var'], 'en')} "
+          f"(difference {n(g['diff_var'], 'en')}), ES {n(lo['es'], 'en')} and {n(hi['es'], 'en')} (difference {n(g['diff_es'], 'en')}), the Monte Carlo standard error of the "
+          f"difference {n(g['se_var'], 'en')} for the VaR and {n(g['se_es'], 'en')} for the ES. The difference {'exceeds' if g['exceeds_two_se'] else 'does not exceed'} two "
+          f"standard errors, so {n(g['names_used'], 'en')} names per segment are used.")
     es = (f"La cópula agrupada del motor sobre los seis segmentos de C07, cada uno un grupo de nombres representativos que llevan la exposición, PD, LGD y correlación de activos "
-          f"del segmento (un factor sistemático); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {lo['names']:,} y con {hi['names']:,} nombres por "
-          f"segmento y la misma semilla: VaR {lo['var']:,.0f} y {hi['var']:,.0f} (diferencia {g['diff_var']:,.0f}), ES {lo['es']:,.0f} y {hi['es']:,.0f} (diferencia {g['diff_es']:,.0f}), "
-          f"error estándar de Monte Carlo de la diferencia {g['se_var']:,.0f} para el VaR y {g['se_es']:,.0f} para el ES. La diferencia "
-          f"{'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estándar, por lo que se usan {g['names_used']:,} nombres por segmento.")
+          f"del segmento (un factor sistemático); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {n(lo['names'], 'es')} y con {n(hi['names'], 'es')} "
+          f"nombres por segmento y la misma semilla, en millones de CLP: VaR {n(lo['var'], 'es')} y {n(hi['var'], 'es')} (diferencia {n(g['diff_var'], 'es')}), ES "
+          f"{n(lo['es'], 'es')} y {n(hi['es'], 'es')} (diferencia {n(g['diff_es'], 'es')}), error estándar de Monte Carlo de la diferencia {n(g['se_var'], 'es')} para el VaR y "
+          f"{n(g['se_es'], 'es')} para el ES. La diferencia {'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estándar, por lo que se usan "
+          f"{n(g['names_used'], 'es')} nombres por segmento.")
     return {"en": en, "es": es}
 
 
@@ -252,8 +261,8 @@ def operational(anchors: Anchors, fx_rate: float, n_points: int = 1 << 21) -> Ma
     ec, el_agg = var - el, el
     return Marginal("operational", el, var, es, ec, None, rv_cop.marginal_ppf_pmf(grid, pmf), el_agg, "operational-oprisk-aggregate-c17-parameters-scaled",
                     ["c17-models generator parameters (xi-0-8)", "riskvalidation.oprisk.aggregate"],
-                    T("The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate (Fourier aggregation of the "
-                      "Poisson-generalised-Pareto compound) and converted at the BCCh EUR to CLP rate of the as-of date."),
+                    T("The C17 generator frequency scaled by assets, the loss distribution recomputed by the engine's Fourier aggregation of the "
+                      "Poisson-generalised-Pareto compound and converted at the BCCh EUR to CLP rate of the as-of date."),
                     ["asset_scaling", "operational_conversion_rate"],
                     {"lambda_per_year": lam, "asset_scaling": scaling, "grid_step_eur": step, "grid_points": n_points, "missing_mass": missing,
                      "infinite_mean": infinite, "fx_rate": fx_rate, "tail_index": xi})

@@ -2,17 +2,27 @@
 // by group) and its Impact view, the share of decisions that flip at a stated cut-off under each shift (decision Q10).
 // The battery is labelled evidence on one model with outcomes, never a compliance statement; the cut-off is a convention.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
-import { useCard } from '../c03/U6Shared';
+import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { SgcdNotice } from './C20Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc1, type NamedParam } from './U14Common';
 import { TallBars, barBox } from './C20Common';
-import { ATTRIBUTE_TEXT, FAIR_TESTS, outputsOf, text, type C20Sel } from './selection';
+import { ATTRIBUTE_TEXT, FAIR_TESTS, SHOCK_TEXT, outputsOf, text, type C20Sel } from './selection';
+import { windowName } from '../names';
 import { testName } from './U14Common';
 import { es } from './localise';
 
 /** The battery rows of the document: the gap per test and protected attribute, and the value of each group behind it. */
+/** What the group value of each fairness test is (U16-R3 c20 m9: the equalized-odds column showed one rate without saying which; its gap is
+ * the larger of the gaps of the false and the true positive rates, the true one is under equal opportunity). */
+const GROUP_VALUE: Record<string, BiText> = {
+  'fair.equalized_odds': { en: 'Groups (rows, false positive rate)', es: 'Grupos (filas, tasa de falsos positivos)' },
+  'fair.equal_opportunity': { en: 'Groups (rows, true positive rate)', es: 'Grupos (filas, tasa de verdaderos positivos)' },
+  'fair.calibration_within_groups': { en: 'Groups (rows, expected calibration error)', es: 'Grupos (filas, error de calibración esperado)' },
+  'fair.auc_by_group': { en: 'Groups (rows, AUC)', es: 'Grupos (filas, AUC)' },
+};
+
 export function FairnessView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -64,7 +74,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Attribute', es: 'Atributo' }, lang)}</th>
                 <th>{pick({ en: 'Gap', es: 'Brecha' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Groups (rows, value)', es: 'Grupos (filas, valor)' }, lang)}</th>
+                <th className="ct-text">{pick(GROUP_VALUE[test] ?? { en: 'Groups (rows, value)', es: 'Grupos (filas, valor)' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -87,12 +97,21 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
 
 /** The Impact view: the share of decisions that flip at the stated cut-off under each shift. */
 /** The name of a shift of the decision-flip view: the shipped shocks of the German data and Contraste's own application of each family. */
-export function shiftName(id: string): BiText {
+export function shiftName(id: string): Bi {
+  // the shifts of the other variants by their words (U16-R3 c20 B1: the flips printed fed-higher-risk-x0.25, noise-0.05, seed-42 and
+  // decision-time-leak-unavailable)
+  let n = /^noise-([\d.]+)$/.exec(id);
+  if (n) return { en: `noise at ${n[1]} standard deviations`, es: `ruido de ${n[1].replace('.', ',')} desviaciones estándar` };
+  if ((n = /^seed-(\d+)$/.exec(id))) return { en: `retraining seed ${n[1]}`, es: `semilla de reentrenamiento ${n[1]}` };
+  if (id === 'decision-time-leak-unavailable') return { en: 'at decision time, without the leak', es: 'en el momento de la decisión, sin la fuga' };
+  if (/^fed-higher-risk-x[\d.]+$/.test(id)) return windowName(id);
   const m = /^(shipped|applied)-(F\d|numeric-noise)$/.exec(id);
-  if (!m) return { en: id, es: id };
+  if (!m) return windowName(id);
   // a family of shocks without a code is named by its words (the raw-id scan: applied-numeric-noise)
   if (m[2] === 'numeric-noise') return m[1] === 'shipped' ? { en: 'Shipped, numeric noise', es: 'Provisto, ruido numérico' } : { en: 'Applied by Contraste, numeric noise', es: 'Aplicado por Contraste, ruido numérico' };
-  return m[1] === 'shipped' ? { en: `Shipped, ${m[2]}`, es: `Provisto, ${m[2]}` } : { en: `Applied by Contraste, ${m[2]}`, es: `Aplicado por Contraste, ${m[2]}` };
+  // a shock by its code and its words, as every other view names it (U16-R3 c20 B2: "Aplicado por Contraste, F1")
+  const shock = text(SHOCK_TEXT, m[2]);
+  return m[1] === 'shipped' ? { en: `Shipped, ${shock.en}`, es: `Provisto, ${shock.es}` } : { en: `Applied by Contraste, ${shock.en}`, es: `Aplicado por Contraste, ${shock.es}` };
 }
 
 export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {

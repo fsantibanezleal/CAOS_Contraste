@@ -42,6 +42,12 @@ export function TallBars({ rows, children }: { rows: number; children: ReactNode
 
 type Notice = NonNullable<C20Outputs['sgcd_notice']>;
 
+/** The Spanish rendering of the dataset card's prohibited-use sentence (data-pipeline/pipeline/cases/c20/conv.py SGCD_QUOTE). */
+const QUOTE_ES: Record<string, string> = {
+  'It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals.':
+    'Se ofrece solo para investigación y evaluación comparativa y no debe usarse para la calificación de crédito real ni para ninguna decisión de producción sobre personas.',
+};
+
 /** The sentence of the dataset card, in the page's language, with the card's own words quoted. */
 export function SgcdNoticeText({ notice }: { notice: Notice | null }) {
   const lang = useShellLang();
@@ -52,7 +58,16 @@ export function SgcdNoticeText({ notice }: { notice: Notice | null }) {
         <>
           {pick(notice.text, lang)}
           {': '}
-          <span translate="no" lang="en">{`"${notice.quote}"`}</span>
+          {/* in Spanish the card's sentence in Spanish, the English original after it, marked as such (ruling of 2026-10-27, as C21's
+              legal sentences); a quote without a known rendering stays in English, marked */}
+          {lang === 'es' && QUOTE_ES[notice.quote] ? (
+            <>
+              {`«${QUOTE_ES[notice.quote]}» `}
+              <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${notice.quote}"`}</span>)</span>
+            </>
+          ) : (
+            <span translate="no" lang="en">{`"${notice.quote}"`}</span>
+          )}
         </>
       ) : (
         pick({ en: 'The notice is not available in this document.', es: 'El aviso no está disponible en este documento.' }, lang)
@@ -266,7 +281,7 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
                 ))}
               </tbody>
             </table>
-            <p className="ct-note" data-sgcd-commit={fit.sgcd.commit}>{pick({ en: `SGCD at commit ${fit.sgcd.commit.slice(0, 7)}, shock seed ${fit.sgcd.seed}.`, es: `SGCD en el commit ${fit.sgcd.commit.slice(0, 7)}, semilla de los choques ${fit.sgcd.seed}.` }, lang)}</p>
+            <p className="ct-note" data-sgcd-commit={fit.sgcd.commit}>{pick({ en: `SGCD at commit ${fit.sgcd.commit.slice(0, 7)}, shock seed ${fit.sgcd.seed}.`, es: `SGCD en la versión ${fit.sgcd.commit.slice(0, 7)}, semilla de los choques ${fit.sgcd.seed}.` }, lang)}</p>
           </div>
         </PlotCard>
       ) : null}
@@ -340,7 +355,7 @@ export function SeedReadout({ sel }: { sel: C20Sel | null }) {
         { label: { en: 'AUC, mean', es: 'AUC, media' }, value: r?.auc.mean ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The mean AUC over the retraining seeds.', 'El AUC medio entre las semillas de reentrenamiento.') },
         { label: { en: 'AUC, sd', es: 'AUC, desv.' }, value: r?.auc.sd ?? null, unitless: true, format: { decimals: 4 }, hint: hint('The standard deviation of the AUC across seeds.', 'La desviación estándar del AUC entre semillas.') },
         { label: { en: 'Grades changed', es: 'Grados cambiados' }, value: r?.grade_assignment_changed_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The share of obligors whose grade changes with the seed.', 'La parte de deudores cuyo grado cambia con la semilla.') },
-        { label: { en: 'Reason codes kept', es: 'Códigos de razón que se mantienen' }, value: r?.reason_code_overlap.mean ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The mean overlap of the top four reasons across bootstrap refits.', 'El solapamiento medio de las cuatro razones principales entre reajustes bootstrap.') },
+        { label: { en: 'Reason codes kept', es: 'Códigos de razón que se mantienen' }, value: r?.reason_code_overlap.mean ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The mean overlap of the top four reasons across bootstrap refits.', 'El solapamiento medio de las cuatro razones principales entre reajustes por remuestreo.') },
       ]}
     />
   );

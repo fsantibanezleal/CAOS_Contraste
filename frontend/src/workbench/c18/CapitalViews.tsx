@@ -48,6 +48,8 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
   }
   const m = o.capital_plan.mitigation;
   const rowsOfPlan = plan.flatMap((c) => c.years.map((y) => ({ c, y })));
+  const baseCase = plan.find((c) => c.case === 'base');
+  const ppnrIsBase = !!baseCase && ppnr.rows.every((r) => Math.abs((baseCase.years.find((y) => y.year === r.year)?.cet1.pct_of_rwa ?? Number.NaN) - r.cet1_ratio_with_ppnr) < 1e-9);
   return (
     <ViewsRow>
       <PlotCard
@@ -75,7 +77,10 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
                   width: c.case === 'stress-without-mitigation' ? 3 : 2.2,
                 })),
                 {
-                  label: { en: 'Stress with the PPNR row (labelled row)', es: 'Estrés con la fila de PPNR (fila rotulada)' },
+                  // in the baseline variant the PPNR path is the Base line itself, drawn under it: the key says so (U16-R3 c19 m13)
+                  label: ppnrIsBase
+                    ? { en: 'Stress with the PPNR row (labelled row; identical to Base in this variant)', es: 'Estrés con la fila de PPNR (fila rotulada; idéntica a Base en esta variante)' }
+                    : { en: 'Stress with the PPNR row (labelled row)', es: 'Estrés con la fila de PPNR (fila rotulada)' },
                   values: [start, ...[1, 2, 3].map((yr) => ppnr.rows.find((r) => r.year === yr)?.cet1_ratio_with_ppnr ?? null)],
                   color: '--color-warn',
                   width: 1.8,
@@ -137,9 +142,10 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                <th>{pick({ en: `CET1 at the jump-off (${pick(MONEY_UNIT, 'en')})`, es: `CET1 en el punto de partida (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
-                <th>{pick({ en: 'Cumulative loss', es: 'Pérdida acumulada' }, lang)}</th>
-                <th>{pick({ en: 'CET1', es: 'CET1' }, lang)}</th>
+                <th>{pick({ en: `CET1 at the start of the year (${pick(MONEY_UNIT, 'en')})`, es: `CET1 al inicio del año (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
+                <th>{pick({ en: 'Loss in the year', es: 'Pérdida del año' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Cumulative loss', es: 'Pérdida acumulada' }, lang)}</th>
+                <th>{pick({ en: 'CET1 at the end of the year', es: 'CET1 al final del año' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'RWA', es: 'APR' }, lang)}</th>
                 <th>{pick({ en: 'CET1 / RWA', es: 'CET1 / APR' }, lang)}</th>
               </tr>
@@ -149,7 +155,9 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
                 <tr key={r.year} data-year={r.year}>
                   <td>{r.year}</td>
                   <td>{cell(r.cet1_start_clp_m, lang)}</td>
-                  <td>{cell(r.cumulative_loss_clp_m, lang)}</td>
+                  {/* the year's own loss, so start less loss is the end of the row (U16-R3 c19 B1: the column read "at the jump-off" and printed the start of the year beside the cumulative loss) */}
+                  <td>{cell(o.losses.scenario_losses.find((x) => x.year === r.year)?.total ?? null, lang)}</td>
+                  <td className="ct-wide-only">{cell(r.cumulative_loss_clp_m, lang)}</td>
                   <td>{cell(r.cet1_clp_m, lang)}</td>
                   <td className="ct-wide-only">{cell(r.rwa_clp_m, lang)}</td>
                   <td>{PCT(r.cet1_ratio, lang)}</td>
@@ -304,7 +312,8 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 />
               </div>
               {legalBars ? (
-                <div style={{ flex: `${legalBars.length + 2} 1 0`, minHeight: 0 }}>
+                // the lower drawing keeps a floor for its ticks, its axis title and the read-out hint (U16-R3 c19 M1: the hint hid the title)
+                <div data-box="legal-stack" style={{ flex: `${legalBars.length + 3} 1 0`, minHeight: '9rem' }}>
                   <BarChart
                     title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
                     data={ownDecimals(legalBars)}
@@ -377,7 +386,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
           ) : (
             <p className="ct-note" data-na="true">{`${formatNumber(null, lang)}: ${pick({ en: 'the models artifact carries no legal stack', es: 'el artefacto de modelos no trae el capital apilado legal' }, lang)}`}</p>
           )}
-          <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'El proxy de P2G' }, lang)}</h3>
+          <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'La aproximación de P2G' }, lang)}</h3>
           <Defs data-table="c18-p2g" data-p2g={o.p2g_proxy.label}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
             <dd>{`${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>

@@ -65,7 +65,8 @@ function numbers(x: unknown): number[] | null {
 /** "key value" for each entry of a generator's configuration or truth: a value repeated across an array once with its
  * count, a short list in full, a square matrix by its size, a long list by its range; text and flags as they are. */
 function describeRecord(rec: unknown, lang: 'en' | 'es'): Array<{ k: string; v: string }> {
-  const fmt = (v: number) => formatNumber(v, lang, { digits: 4 });
+  // a value under 1e-12 in size is 0: no "-0" and no floating-point noise shown as a truth (U16-R3 c22 m2, m3)
+  const fmt = (v: number) => formatNumber(Math.abs(v) < 1e-12 ? 0 : v, lang, { digits: 4 });
   const out: Array<{ k: string; v: string }> = [];
   for (const [k, x] of Object.entries((rec ?? {}) as Record<string, unknown>)) {
     if (x === null) out.push({ k, v: '-' });
@@ -83,6 +84,23 @@ function describeRecord(rec: unknown, lang: 'en' | 'es'): Array<{ k: string; v: 
   }
   return out;
 }
+
+/** The Spanish of the two published sources of C22 (the manifest writes them in English): the paper's title as published, the part of it the
+ * case reads, and its licence statement (U16-R3 c22 B4). */
+const SOURCE_ES: Record<string, { title: string; part: string; licence_en: string; licence: string }> = {
+  'bcbs-wp14': {
+    title: 'Studies on the Validation of Internal Rating Systems (revised)',
+    part: ', Working Paper 14, tablas 5 a 8 (la simulación de las pruebas normal y de semáforos)',
+    licence_en: '© Bank for International Settlements 2005. All rights reserved. Brief excerpts may be reproduced or translated provided the source is stated.',
+    licence: '© Bank for International Settlements 2005. Todos los derechos reservados. Se pueden reproducir o traducir extractos breves siempre que se cite la fuente.',
+  },
+  'yurdakul-naranjo-2020': {
+    title: 'Statistical properties of the population stability index',
+    part: ', tabla 4 (las tasas de rechazo de las reglas del PSI y de la prueba chi-cuadrado de referencia)',
+    licence_en: 'Copyright Infopro Digital Limited 2021. All rights reserved. You may share using our article tools. This article may be printed for the sole use of the Authorised User (named subscriber), as outlined in our terms and conditions.',
+    licence: 'Copyright Infopro Digital Limited 2021. Todos los derechos reservados. Puede compartirse con las herramientas de artículo del editor. Este artículo puede imprimirse para uso exclusivo del Usuario Autorizado (el suscriptor nombrado), según sus términos y condiciones.',
+  },
+};
 
 /** The licence classes of a source in words. */
 const LICENCE_CLASS_TEXT: Record<string, { en: string; es: string }> = {
@@ -185,7 +203,6 @@ function DesignsTable({ rows, ruleKey }: { rows: C22Simulation[]; ruleKey: strin
         <thead>
           <tr>
             <th className="ct-text">{pick({ en: 'Design', es: 'Diseño' }, lang)}</th>
-            <th className="ct-text ct-wide-only">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
             <th>{pick({ en: 'Repetitions', es: 'Repeticiones' }, lang)}</th>
             <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
           </tr>
@@ -193,8 +210,11 @@ function DesignsTable({ rows, ruleKey }: { rows: C22Simulation[]; ruleKey: strin
         <tbody>
           {rows.map((s) => (
             <tr key={s.key} data-sim={s.key}>
-              <td className="ct-text">{pick(s.label, lang)}</td>
-              <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
+              <td className="ct-text">
+                {pick(s.label, lang)}
+                {/* the scenario under the design (U16-R3 c22 M2: as a column it cut the Rate (SE) column at 1280) */}
+                <span className="ct-row-detail">{pick(s.scenario, lang)}</span>
+              </td>
               <td>{formatNumber(s.n_rep, lang)}</td>
               <td>{rateText(s, ruleKey, lang)}</td>
             </tr>
@@ -263,7 +283,9 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
               {mixed && pp.panel.measures === 'size' ? pick({ en: ' (sizes: the model is right)', es: ' (tamaños: el modelo es correcto)' }, lang) : ''}
             </p>
             {pp.x.length >= 2 ? (
-              // a panel of more than three series (Calibration draws nine) gets the solo key, so one curve can be read alone (b10 m16)
+              // a panel of more than three series (Calibration draws nine) gets the solo key, so one curve can be read alone (b10 m16);
+              // the plot keeps a floor under its key (U16-R3 c22 M1: squashed to 15 to 30 px)
+              <div data-plot-floor="14rem" style={{ flex: '1 1 auto', minHeight: '14rem', display: 'flex', flexDirection: 'column' }}>
               <UPlotChart
                 height="fill"
                 x={{ values: pp.x, label: pp.panel.axis ?? ladder.label, format: { digits: 3 } }}
@@ -272,6 +294,7 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
                 solo={pp.series.length > 3}
                 yMarks={[NOMINAL(sel.level)]}
               />
+              </div>
             ) : (
               <DesignsTable rows={pp.rows} ruleKey={pp.ruleKey} />
             )}
@@ -470,6 +493,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
             <p className="ct-sm-title">{pick(pp.panel.label, lang)}</p>
+            <div data-plot-floor="14rem" style={{ flex: '1 1 auto', minHeight: '14rem', display: 'flex', flexDirection: 'column' }}>
             <UPlotChart
               height="fill"
               x={{ values: pp.x, label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 } }}
@@ -478,6 +502,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
               solo
               yMarks={[{ y: 1, label: { en: 'Uniform', es: 'Uniforme' }, tone: 'neutral' }]}
             />
+            </div>
           </div>
         ))}
       </div>
@@ -554,6 +579,13 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const v = c22Of(sel);
   if (!sel || !v) return <Pending />;
+  // the severity is an index into the ladder: the note gives the rung itself with the ladder's label (U16-R3 c22 B2), and the null
+  // family has no ladder (m14)
+  const ladder = v.outputs.ladder;
+  const rung = ladder ? ladder.values[v.outputs.specimen.severity] : undefined;
+  const drawn = ladder && rung !== undefined
+    ? { en: `drawn at ${formatNumber(rung, 'en', { digits: 4 })} (${ladder.label.en})`, es: `generado en ${formatNumber(rung, 'es', { digits: 4 })} (${ladder.label.es})` }
+    : { en: 'drawn under its null', es: 'generado bajo su nula' };
   return (
     <ViewsRow>
       <PlotCard
@@ -563,8 +595,8 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
         provenance={provenanceOf(v.provenance.truth_status)}
         dataKey={stateKey}
         note={{
-          en: `The tests on one dataset drawn at severity ${v.outputs.specimen.severity}: what a validator would read in a single report. The rates of the other views say how often such a report is right.`,
-          es: `Las pruebas sobre un conjunto generado con severidad ${v.outputs.specimen.severity}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
+          en: `The tests on one dataset ${drawn.en}: what a validator would read in a single report. The rates of the other views say how often such a report is right.`,
+          es: `Las pruebas sobre un conjunto ${drawn.es}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
         }}
       >
         <div className="ct-scroll" data-caos-flow="">
@@ -584,7 +616,8 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
                   {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24) */}
                   <td className="ct-text"><code translate="no">{t.model_id}</code></td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
-                  <LightCell row={t} alphas={sel.alphas} />
+                  {/* a test with no p-value (a descriptive metric) shows none there, not its metric a second time (U16-R3 c22 B3) */}
+                  {t.p_value === null ? <td data-na="true" data-p="none">-</td> : <LightCell row={t} alphas={sel.alphas} />}
                 </tr>
               ))}
             </tbody>
@@ -696,7 +729,7 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
         >
           <UPlotChart
             height="fill"
-            x={{ values: live.rhos, label: { en: 'True asset correlation', es: 'Correlación de activos verdadera' }, format: { percent: true, decimals: 0 } }}
+            x={{ values: live.rhos, label: { en: 'True asset correlation', es: 'Correlación de activos verdadera' }, format: { percent: true, decimals: 1 } }}
             y={{ label: { en: 'Rejection probability', es: 'Probabilidad de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             series={live.byRho.map((s) => ({ label: s.label, values: s.values, color: s.color, width: 2 }))}
             yMarks={[NOMINAL(sel.level)]}
@@ -936,10 +969,20 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
               return (
                 <tr key={id} data-licence-class={s.class}>
                   <td className="caos-col-text">
-                    <a href={s.landing} target="_blank" rel="noreferrer">{s.name}</a>
+                    <a href={s.landing} target="_blank" rel="noreferrer">{lang === 'es' && SOURCE_ES[id] ? <><span lang="en" translate="no">{SOURCE_ES[id].title}</span>{SOURCE_ES[id].part}</> : s.name}</a>
                   </td>
-                  {/* the licence class in words (the raw-id scan: derived-only) */}
-                  <td className="caos-col-text">{s.licence} ({pick(LICENCE_CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</td>
+                  {/* the licence class in words (the raw-id scan: derived-only); in Spanish the licence in Spanish, the original marked (U16-R3 c22 B4) */}
+                  <td className="caos-col-text">
+                    {lang === 'es' && SOURCE_ES[id] && s.licence === SOURCE_ES[id].licence_en ? (
+                      <>
+                        {`«${SOURCE_ES[id].licence}» `}
+                        <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${s.licence}"`}</span>)</span>
+                      </>
+                    ) : (
+                      s.licence
+                    )}{' '}
+                    ({pick(LICENCE_CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})
+                  </td>
                   <td className="caos-col-text">{s.attribution}</td>
                 </tr>
               );

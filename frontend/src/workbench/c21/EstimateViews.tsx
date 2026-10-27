@@ -3,6 +3,7 @@
 // situation-testing panel, ceteris paribus only, the counterfactual test shown as not run with its reason). The controlled
 // estimate is an approximation of comparative evidence, never a finding of a violation; HMDA has no performance outcome,
 // so no outcome-conditioned view exists. Every view says "no legal claim" and carries the three legal sentences.
+import { useSyncExternalStore } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useCard } from '../c03/U6Shared';
@@ -20,18 +21,39 @@ type Which = 'controlled' | 'rate_spread';
 
 /** The x axis of the group charts (b10 m3): one named tick per group, the group's name as the table writes it (with its reference
  * when two contrasts share a group, so no label repeats), and half a step of room at each end. */
-export function groupAxis(contrasts: Array<{ group: string; reference_group: string }>) {
+export function groupAxis(contrasts: Array<{ group: string; reference_group: string }>, narrow = false) {
   const twice = (g: string) => contrasts.filter((c) => c.group === g).length > 1;
   const ticks = contrasts.map((c, i) => {
     const g = groupBi(c.group);
     const r = groupBi(c.reference_group);
+    // below 640 px the names overlap (U16-R3 c21 M2): the tick is the row's number in the table under the chart
+    if (narrow) return { value: i + 1, label: { en: String(i + 1), es: String(i + 1) } };
     return { value: i + 1, label: twice(c.group) ? { en: `${g.en} / ${r.en}`, es: `${g.es} / ${r.es}` } : g };
   });
   return { values: contrasts.map((_, i) => i + 1), ticks, range: [0.5, contrasts.length + 0.5] as [number, number], label: { en: 'Group', es: 'Grupo' }, format: { decimals: 0 } };
 }
 
+/** Whether the page is narrower than 640 px (false on the server and in a test). */
+const NARROW = '(max-width: 640px)';
+function useNarrow(): boolean {
+  return useSyncExternalStore(
+    (on) => {
+      if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+      const q = window.matchMedia(NARROW);
+      q.addEventListener('change', on);
+      return () => q.removeEventListener('change', on);
+    },
+    () => typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(NARROW).matches,
+    () => false,
+  );
+}
+
+/** A table row's number, keyed to the numbered ticks of the chart on a phone. */
+const rowNo = (i: number) => `${i + 1}. `;
+
 function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
   const lang = useShellLang();
+  const narrow = useNarrow();
   const card = useCard(sel.data.variant);
   const a = attributeFor(sel);
   const title: BiText = which === 'controlled' ? { en: 'Approval disparity after the controls', es: 'Disparidad de aprobación tras los controles' } : { en: 'Rate-spread disparity', es: 'Disparidad en el diferencial de tasa' };
@@ -41,7 +63,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
   const note: BiText = which === 'controlled'
     ? {
         en: 'The coefficient of the group in a logistic decision model of approval with the permitted underwriting controls HMDA publishes, with its 95% interval: negative means lower odds of approval than the reference group at the same controls. The public data carry no credit score, so every estimate names it as a missing control. An approximation of comparative evidence.',
-        es: 'El coeficiente del grupo en un modelo logístico de decisión de aprobación con los controles de suscripción permitidos que publica HMDA, con su intervalo de 95 %: negativo significa menores odds de aprobación que el grupo de referencia con los mismos controles. Los datos públicos no traen puntaje de crédito, así que cada estimación lo nombra como control faltante. Una aproximación de evidencia comparativa.',
+        es: 'El coeficiente del grupo en un modelo logístico de decisión de aprobación con los controles de suscripción permitidos que publica HMDA, con su intervalo de 95 %: negativo significa una menor razón de probabilidades de aprobación que el grupo de referencia con los mismos controles. Los datos públicos no traen puntaje de crédito, así que cada estimación lo nombra como control faltante. Una aproximación de evidencia comparativa.',
       }
     : {
         en: 'The coefficient of the group in a linear model of the rate spread of the approved loans with the same controls, in percentage points of rate spread, with its 95% interval: positive means a higher spread than the reference group. An approximation of comparative evidence.',
@@ -57,8 +79,8 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
           ) : (
             <UPlotChart
               height="fill"
-              x={groupAxis(have.map((r) => r.c))}
-              y={{ label: which === 'controlled' ? { en: 'Coefficient (log-odds)', es: 'Coeficiente (log-odds)' } : { en: 'Coefficient (percentage points)', es: 'Coeficiente (puntos porcentuales)' }, format: { decimals: 2 } }}
+              x={groupAxis(have.map((r) => r.c), narrow)}
+              y={{ label: which === 'controlled' ? { en: 'Coefficient (log-odds)', es: 'Coeficiente (logaritmo de la razón de probabilidades)' } : { en: 'Coefficient (percentage points)', es: 'Coeficiente (puntos porcentuales)' }, format: { decimals: 2 } }}
               series={[
                 { label: { en: 'Estimate', es: 'Estimación' }, values: have.map((r) => r.e.estimate!.coefficient), color: '--color-accent', mode: 'points', size: 11 },
                 { label: { en: 'Interval, upper', es: 'Intervalo, superior' }, values: have.map((r) => r.e.estimate!.ci.hi), color: '--color-magenta', dash: [3, 3], width: 1, mode: 'points', size: 6 },
@@ -75,7 +97,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
               <th className="ct-text">{pick({ en: 'Group', es: 'Grupo' }, lang)}</th>
               <th>{pick({ en: 'Coefficient', es: 'Coeficiente' }, lang)}</th>
               <th>{pick({ en: '95% interval', es: 'Intervalo 95 %' }, lang)}</th>
-              <th className="ct-wide-only">{which === 'controlled' ? pick({ en: 'Odds ratio', es: 'Razón de odds' }, lang) : pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
+              <th className="ct-wide-only">{which === 'controlled' ? pick({ en: 'Odds ratio', es: 'Razón de probabilidades' }, lang) : pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
               <th className="ct-wide-only">N</th>
             </tr>
           </thead>
@@ -83,7 +105,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
             {rows.map(({ c, e }) =>
               e.estimate ? (
                 <tr key={c.group} data-group={c.group} data-label={e.estimate.label} className={c.group === sel.group ? 'ct-current' : undefined}>
-                  <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
+                  <td className="ct-text">{`${rowNo(have.findIndex((h) => h.c === c))}${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td>{f3(e.estimate.coefficient, lang)}</td>
                   <td>{`${f3(e.estimate.ci.lo, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${f3(e.estimate.ci.hi, lang)}`}</td>
                   <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : lang === 'es' ? es(e.estimate.unit, lang) : e.estimate.unit.replace('rate_spread', 'rate spread')}</td>
@@ -131,6 +153,7 @@ export function RateSpreadView({ sel }: { sel: C21Sel | null }) {
 /** The year-pair replication panel: the estimate fitted on year t and refitted on year t+1, its sign and its size. */
 export function ReplicationView({ sel }: { sel: C21Sel | null }) {
   const lang = useShellLang();
+  const narrow = useNarrow();
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
   const a = attributeFor(sel);
@@ -161,8 +184,8 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
             ) : (
               <UPlotChart
                 height="fill"
-                x={groupAxis(have.map((r) => r.c))}
-                y={{ label: { en: 'Coefficient (log-odds of approval)', es: 'Coeficiente (log-odds de aprobación)' }, format: { decimals: 2 } }}
+                x={groupAxis(have.map((r) => r.c), narrow)}
+                y={{ label: { en: 'Coefficient (log-odds of approval)', es: 'Coeficiente (logaritmo de la razón de probabilidades de aprobación)' }, format: { decimals: 2 } }}
                 series={[
                   { label: { en: `Fitted on ${o.fit_year}`, es: `Ajustado en ${o.fit_year}` }, values: have.map((r) => r.e!.fit_coefficient), color: '--color-accent', mode: 'points', size: 11 },
                   { label: { en: `Refitted on ${o.confirm_year}`, es: `Reajustado en ${o.confirm_year}` }, values: have.map((r) => r.e!.confirm_coefficient), color: '--color-magenta', mode: 'points', size: 11 },
@@ -186,7 +209,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
               {rows.map(({ c, e }) =>
                 e ? (
                   <tr key={c.group} data-group={c.group} data-same-sign={e.same_sign} className={c.group === sel.group ? 'ct-current' : undefined}>
-                    <td className="ct-text">{pick(groupBi(c.group), lang)}</td>
+                    <td className="ct-text">{`${rowNo(have.findIndex((h) => h.c === c))}${pick(groupBi(c.group), lang)}`}</td>
                     <td>{f3(e.fit_coefficient, lang)}</td>
                     <td>{f3(e.confirm_coefficient, lang)}</td>
                     <td className="ct-text">{pick(e.same_sign ? { en: 'held', es: 'se mantuvo' } : { en: 'changed', es: 'cambió' }, lang)}</td>
@@ -218,6 +241,9 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
   const title: BiText = { en: 'Situation testing', es: 'Pruebas de situación' };
   if (!sel || !o) return <Pending />;
   const s = o.situation_testing;
+  const st = sel.data.variant.tests.find((t) => t.test_id === 'fair.situation_testing') ?? null;
+  const amberRaw = (st?.extras as { thresholds?: { amber?: unknown } } | null | undefined)?.thresholds?.amber;
+  const amber = typeof amberRaw === 'number' ? amberRaw : null;
   return (
     <ViewsRow>
       <PlotCard
@@ -226,7 +252,7 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
         {...card}
         note={{
           en: `Each complainant is compared with its ${s.k} nearest neighbours of each group under a range-normalised distance (a convention), at level ${formatNumber(s.alpha, 'en', { decimals: 2 })} with the one-sided Wald interval. A case is significant when the neighbours of the other group were treated better; this is individual comparative evidence and no legal claim.`,
-          es: `Cada demandante se compara con sus ${s.k} vecinos más cercanos de cada grupo bajo una distancia normalizada por rango (una convención), al nivel ${formatNumber(s.alpha, 'es', { decimals: 2 })} con el intervalo de Wald unilateral. Un caso es significativo cuando los vecinos del otro grupo fueron tratados mejor; es evidencia comparativa individual y no una afirmación legal.`,
+          es: `Cada denunciante se compara con sus ${s.k} vecinos más cercanos de cada grupo bajo una distancia normalizada por rango (una convención), al nivel ${formatNumber(s.alpha, 'es', { decimals: 2 })} con el intervalo de Wald unilateral. Un caso es significativo cuando los vecinos del otro grupo fueron tratados mejor; es evidencia comparativa individual y no una afirmación legal.`,
         }}
       >
         <LabelledOverTable
@@ -241,11 +267,11 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
           chartMin={barMin(3)}
           chart={
             <BarChart
-              title={{ en: 'Complainants, cases and significant cases', es: 'Demandantes, casos y casos significativos' }}
+              title={{ en: 'Complainants, cases and significant cases', es: 'Denunciantes, casos y casos significativos' }}
               height="fill"
               orientation="horizontal"
               data={[
-                { id: 'complainants', label: { en: 'Complainants', es: 'Demandantes' }, value: s.n_complainants },
+                { id: 'complainants', label: { en: 'Complainants', es: 'Denunciantes' }, value: s.n_complainants },
                 { id: 'cases', label: { en: 'Cases tested', es: 'Casos evaluados' }, value: s.n_cases },
                 { id: 'significant', label: { en: 'Significant cases', es: 'Casos significativos' }, value: s.n_significant, tone: 'warn' },
               ]}
@@ -258,10 +284,15 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
               <tr><td className="ct-text">{pick({ en: 'Comparator', es: 'Comparador' }, lang)}</td><td className="ct-text">{pick({ en: 'ceteris paribus only', es: 'solo ceteris paribus' }, lang)}</td></tr>
               <tr><td className="ct-text">{pick({ en: 'Neighbours per group (k)', es: 'Vecinos por grupo (k)' }, lang)}</td><td>{int(s.k, lang)}</td></tr>
               <tr><td className="ct-text">{pick({ en: 'Level (alpha)', es: 'Nivel (alfa)' }, lang)}</td><td>{f2(s.alpha, lang)}</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'Complainants', es: 'Demandantes' }, lang)}</td><td>{int(s.n_complainants, lang)}</td></tr>
+              <tr><td className="ct-text">{pick({ en: 'Complainants', es: 'Denunciantes' }, lang)}</td><td>{int(s.n_complainants, lang)}</td></tr>
               <tr><td className="ct-text">{pick({ en: 'Cases tested', es: 'Casos evaluados' }, lang)}</td><td>{int(s.n_cases, lang)}</td></tr>
-              <tr data-measure="significant"><td className="ct-text">{pick({ en: 'Significant cases', es: 'Casos significativos' }, lang)}</td><td>{`${int(s.n_significant, lang)}${s.n_cases > 0 ? ` (${pc1(s.n_significant / s.n_cases, lang)})` : ''}`}</td></tr>
-              <tr data-status={s.label_parameters}><td className="ct-text">{pick({ en: 'Distance and level', es: 'Distancia y nivel' }, lang)}</td><td className="ct-text">{pick({ en: `${s.distance_normalization} normalisation; convention`, es: `normalización ${es(s.distance_normalization, 'es')}; convención` }, lang)}</td></tr>
+              <tr data-measure="significant"><td className="ct-text">{pick({ en: 'Significant cases', es: 'Casos significativos' }, lang)}</td><td>{`${int(s.n_significant, lang)}${s.n_cases > 0 ? ` (${pc1(s.n_significant / s.n_cases, lang)} ${pick({ en: 'of the cases tested', es: 'de los casos evaluados' }, lang)})` : ''}`}</td></tr>
+              {/* the share that decides the light, with its cut (U16-R3 c21 M3: neither was shown, and the 36.6 % beside the count is
+                  another ratio) */}
+              {st && typeof st.metric === 'number' ? (
+                <tr data-measure="deciding-share"><td className="ct-text">{pick({ en: 'Significant share, which sets the light', es: 'Parte significativa, que fija la luz' }, lang)}</td><td>{`${pc1(st.metric, lang)} ${pick({ en: 'of the complainants', es: 'de los denunciantes' }, lang)}${amber !== null ? `; ${pick({ en: 'amber from', es: 'ámbar desde' }, lang)} ${f2(amber, lang)} (${pick({ en: 'convention', es: 'convención' }, lang)})` : ''}`}</td></tr>
+              ) : null}
+              <tr data-status={s.label_parameters}><td className="ct-text">{pick({ en: 'Distance and level', es: 'Distancia y nivel' }, lang)}</td><td className="ct-text">{pick({ en: `${s.distance_normalization} normalisation; parameters by convention`, es: `normalización por ${es(s.distance_normalization, 'es')}; parámetros por convención` }, lang)}</td></tr>
             </tbody>
           </table>
           <p className="ct-note">{es(s.interval, lang)}</p>

@@ -13,8 +13,11 @@ import {
   CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT,
   backcastOf, fitOf, outputsOf, satFitOf, text,
   type C18Sel,
+  inSentence, plottedUnit,
 } from './selection';
 import { unitEs } from './localise';
+
+export { plottedUnit };
 
 type Lang = 'en' | 'es';
 /** A quarter end as "2026 Q1" (T1 in Spanish). */
@@ -22,7 +25,8 @@ export function quarterText(date: string, lang: Lang): string {
   const [y, m] = date.split('-').map(Number);
   return `${y} ${lang === 'es' ? 'T' : 'Q'}${Math.ceil(m / 3)}`;
 }
-const RATE = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { percent: true, decimals: 3 });
+// a rate under half the last shown decimal is 0, never "-0.000 %" (U16-R3 c19 m11)
+const RATE = (v: number | null | undefined, lang: Lang) => formatNumber(v !== null && v !== undefined && Math.abs(v) < 5e-6 ? 0 : v, lang, { percent: true, decimals: 3 });
 
 const COEF_TEXT: Record<string, Bi> = {
   intercept: { en: 'Intercept', es: 'Constante' },
@@ -65,8 +69,8 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(s.title, 'en')} (${pick(text(PROVIDER_TEXT, s.provider), 'en')}, vintage ${s.vintage_date}). The line is the path of ${name(p.maps_to_regressor).toLowerCase()} after the shape of the published path was carried onto the last observed value of the bank; the published values and the levels are in the tables.`,
-          es: `${pick(s.title, 'es')} (${pick(text(PROVIDER_TEXT, s.provider), 'es')}, versión ${s.vintage_date}). La línea es la trayectoria de ${name(p.maps_to_regressor).toLowerCase()} tras llevar la forma de la trayectoria publicada al último valor observado del banco; los valores publicados y los niveles están en las tablas.`,
+          en: `${pick(s.title, 'en')} (${pick(text(PROVIDER_TEXT, s.provider), 'en')}, vintage ${s.vintage_date}). The line is the path of ${inSentence(name(p.maps_to_regressor))} after the shape of the published path was carried onto the last observed value of the bank; the published values and the levels are in the tables.`,
+          es: `${pick(s.title, 'es')} (${pick(text(PROVIDER_TEXT, s.provider), 'es')}, versión ${s.vintage_date}). La línea es la trayectoria de ${inSentence(name(p.maps_to_regressor))} tras llevar la forma de la trayectoria publicada al último valor observado del banco; los valores publicados y los niveles están en las tablas.`,
         }}
       >
         <ChartOverTable
@@ -75,7 +79,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: p.transposed.map((_, i) => i + 1), label: { en: `Quarter of the projection (1 is ${quarterText(p.transposed[0].date, 'en')})`, es: `Trimestre de la proyección (1 es ${quarterText(p.transposed[0].date, 'es')})` }, format: { decimals: 0 } }}
-              y={{ label: { en: `${name(p.maps_to_regressor)} (${p.unit})`, es: `${name(p.maps_to_regressor)} (${unitEs(p.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `${name(p.maps_to_regressor)} (${plottedUnit(p).en})`, es: `${name(p.maps_to_regressor)} (${plottedUnit(p).es})` }, format: { digits: 4 } }}
               series={[{ label: { en: 'Transposed onto Banco Andino', es: 'Transpuesta a Banco Andino' }, values: p.transposed.map((q) => q.value), color: '--color-accent', width: 2.8 }]}
               yMarks={marks}
             />
@@ -89,7 +93,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Path', es: 'Trayectoria' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Published unit', es: 'Unidad publicada' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'How the level is built', es: 'Cómo se arma el nivel' }, lang)}</th>
                 <th>{pick({ en: 'Published at the jump-off', es: 'Publicado en el punto de partida' }, lang)}</th>
                 <th>{pick({ en: 'Jump-off of the bank', es: 'Punto de partida del banco' }, lang)}</th>
@@ -432,9 +436,9 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Variable', es: 'Variable' }, lang)}</th>
-                <th>{pick({ en: 'Path peak', es: 'Máximo de la trayectoria' }, lang)}</th>
+                <th>{pick({ en: 'Peak deviation of the path', es: 'Desviación máxima de la trayectoria' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Quarter', es: 'Trimestre' }, lang)}</th>
-                <th>{pick({ en: 'Crisis peak', es: 'Máximo de la crisis' }, lang)}</th>
+                <th>{pick({ en: 'Peak deviation of the crisis', es: 'Desviación máxima de la crisis' }, lang)}</th>
                 <th>{pick({ en: 'Ratio', es: 'Razón' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Severe enough?', es: '¿Lo bastante severa?' }, lang)}</th>
               </tr>

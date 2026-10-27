@@ -48,7 +48,7 @@ FED_TYPES: dict[str, tuple[str, str, str]] = {
     "other-consumer": ("CONOTH", "probit", "1985-03-31"),
 }
 CLASSES = ("commercial", "consumer", "mortgage")
-#: Banco Andino class -> (Fed loan types, weights); the weights are the case's mapping (decision Q6), an adaptation
+#: Banco Andino class -> (Fed loan types, weights); the weights are the case's mapping, an adaptation
 CLASS_MAP: dict[str, tuple[tuple[str, ...], tuple[float, ...]]] = {
     "commercial": (("commercial-industrial", "commercial-real-estate"), (0.6, 0.4)),
     "consumer": (("credit-cards", "other-consumer"), (0.5, 0.5)),
@@ -119,8 +119,10 @@ def es_num(formatted: str) -> str:
 
 
 def es(value: float, spec: str) -> str:
-    """``format(value, spec)`` written the Spanish way (``es(0.1234, ".2%")`` is ``12,34%``)."""
-    return es_num(format(value, spec))
+    """``format(value, spec)`` written the Spanish way (``es(0.1234, ".2%")`` is ``12,34 %``: a percent takes the shell's no-break space
+    before its sign, U16-R3 c19 m2)."""
+    out = es_num(format(value, spec))
+    return out[:-1] + " %" if out.endswith("%") else out
 
 
 def quarter_end(year: int, quarter: int) -> str:

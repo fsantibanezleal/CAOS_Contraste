@@ -17,7 +17,7 @@ import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
 import {
   CLASS_TEXT, LABEL_TEXT, LINK_TEXT, LOAN_TEXT, MONEY_UNIT, PLAN_ORDER, PLAN_TEXT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_TEXT, TEST_TEXT, US_ADAPTATION,
-  aggDocOf, aggOf, amount, backcastOf, fitOf, marginalOf, outputsOf, planOf, reverseOf, text, yearOf, methodShort, methodText,
+  aggDocOf, aggOf, amount, backcastOf, fitOf, marginalOf, outputsOf, planOf, plottedUnit, reverseOf, text, yearOf, methodShort, methodText,
   type C18AggOutputs, type C18Fit, type C18Outputs, type C18Reverse, type C18Sel,
 } from './selection';
 import { phraseEs, unitEs } from './localise';
@@ -60,6 +60,9 @@ export function InterpolationRule({ rule, lang }: { rule: string; lang: Lang }) 
 }
 
 /** The words an absent block says when the view is given a document of another kind. */
+/** A label as the start of a sentence: capital first letter, one full stop (U16-R3 c19 m6: "EE. UU.. Adaptación"). */
+const asSentence = (s: string): string => `${s.charAt(0).toUpperCase()}${s.slice(1)}${s.endsWith('.') ? '' : '.'}`;
+
 export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni prueba retrospectiva.' };
 export const NOT_AGGREGATION: BiText = { en: 'Not available: this document carries no aggregation block.', es: 'No disponible: este documento no trae un bloque de agregación.' };
 export const NOT_AGG_VARIANT: BiText = { en: 'Not available: this view reads the t-copula aggregation variant, which holds the stressed matrix, the copula sensitivity and the reference.', es: 'No disponible: esta vista lee la variante de agregación con cópula t, que trae la matriz bajo estrés, la sensibilidad a la cópula y la referencia.' };
@@ -185,7 +188,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
               <th>{pick({ en: 'Headline capital (CLP millions)', es: 'Capital principal (millones de CLP)' }, lang)}</th>
               <th>{pick({ en: 'CET1, end of stress', es: 'CET1, fin del estrés' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Smallest headroom over the OI', es: 'Holgura mínima sobre el OI' }, lang)}</th>
-              <th className="ct-wide-only">{pick({ en: 'P2G proxy (Contraste approximation)', es: 'Proxy de P2G (aproximación de Contraste)' }, lang)}</th>
+              <th className="ct-wide-only">{pick({ en: 'P2G proxy (Contraste approximation)', es: 'Aproximación de P2G (de Contraste)' }, lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -203,7 +206,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             {aggregation ? (
               <tr data-variant={aggregation.variant_id} className={aggregation.variant_id === current ? 'ct-current' : undefined}>
                 <td className="ct-text">
-                  <button type="button" className="ct-linkbutton" onClick={() => onPick(aggregation.variant_id)}>{pick({ en: 'Student t copula aggregation', es: 'Agregación con cópula t de Student' }, lang)}</button>
+                  <button type="button" className="ct-linkbutton" onClick={() => onPick(aggregation.variant_id)}>{pick(variantName('C18', aggregation.variant_id) ?? { en: 'Student t copula aggregation', es: 'Agregación con cópula t de Student' }, lang)}</button>
                 </td>
                 <td>{cell(aggregation.outputs.aggregation.headline.capital_clp_m, lang)}</td>
                 <td data-na="true">{maybe(null, (x) => PCT(x, lang), nope)}</td>
@@ -214,7 +217,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             {reverse ? (
               <tr data-variant={reverse.variant_id} className={reverse.variant_id === current ? 'ct-current' : undefined}>
                 <td className="ct-text">
-                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick({ en: 'Reverse stress', es: 'Estrés inverso' }, lang)}</button>
+                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick(variantName('C18', reverse.variant_id) ?? { en: 'Reverse stress', es: 'Estrés inverso' }, lang)}</button>
                 </td>
                 <td data-na="true">{maybe(null, (x) => cell(x, lang), nope)}</td>
                 <td>{PCT(reverse.outputs.failure_point.stack.total, lang, 3)}</td>
@@ -365,7 +368,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
         <div className="ct-scroll" data-caos-flow="">
           <Defs data-table="c18-anchors">
             <dt>{pick({ en: 'Anchor of the RWA', es: 'Anclaje de los APR' }, lang)}</dt>
-            <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Proxy de Tier 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>
+            <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Aproximación del capital de nivel 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>
             <dt>{pick({ en: 'Mix of the RWA', es: 'Mezcla de los APR' }, lang)}</dt>
             <dd>{`${pick(RISK_TEXT.credit, lang)} ${PCT(a.rwa_mix.credit, lang)}; ${pick(RISK_TEXT.market, lang)} ${PCT(a.rwa_mix.market, lang)}; ${pick(RISK_TEXT.operational, lang)} ${PCT(a.rwa_mix.operational, lang)}`}</dd>
             <dt>{pick({ en: 'Chilean capital stack', es: 'Capital apilado chileno' }, lang)}</dt>
@@ -469,7 +472,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
               <dd data-scenario={o.scenario.scenario_id}>{`${pick(o.scenario.title, lang)}; ${pick(text(PROVIDER_TEXT, o.scenario.provider), lang)}; ${o.scenario.vintage_date}`}</dd>
               <dt>{pick({ en: 'Adaptation', es: 'Adaptación' }, lang)}</dt>
-              <dd data-adaptation={o.scenario.adaptation_label}>{`${pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang)}. ${pick(US_ADAPTATION, lang)}`}</dd>
+              <dd data-adaptation={o.scenario.adaptation_label}>{`${asSentence(pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang))} ${pick(US_ADAPTATION, lang)}`}</dd>
               <dt>{pick({ en: 'Source of the path', es: 'Fuente de la trayectoria' }, lang)}</dt>
               <dd>{`${phraseEs(o.scenario.source_document, lang)} (${o.scenario.source_url})`}</dd>
               <dt>{pick({ en: 'Capital at the jump-off', es: 'Capital en el punto de partida' }, lang)}</dt>
@@ -510,7 +513,8 @@ export function PathReadout({ sel }: { sel: C18Sel | null }) {
   const o = outputsOf(sel);
   const p = o?.scenario.paths[sel?.path ?? 0] ?? null;
   const s = p ? o?.severity.rows.find((r) => r.maps_to_regressor === p.maps_to_regressor) ?? null : null;
-  const unit: BiText | undefined = p ? { en: p.unit, es: unitEs(p.unit, 'es') } : undefined;
+  // the level a path draws carries the unit of the level (U16-R3 c19 M2)
+  const unit: BiText | undefined = p ? plottedUnit(p) : undefined;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -617,7 +621,8 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
       items={[
         { label: { en: 'Shock', es: 'Choque' }, value: r?.solution.x_star[i] ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The deviation from the baseline in the minimum-distance scenario that breaks the bank.', es: 'La desviación desde la línea base en el escenario de mínima distancia que quiebra al banco.' } },
         { label: { en: 'Standardised', es: 'Estandarizado' }, value: r?.solution.z_star[i] ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The same shock in standard deviations of the factor.', es: 'El mismo choque en desviaciones estándar del factor.' } },
-        { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, unit: gm.unit, format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },
+        // no unit after "not available" (U16-R3 c19 m4)
+        { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, ...(gm.value === null ? { unitless: true as const } : { unit: gm.unit }), format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },
       ]}
     />
   );

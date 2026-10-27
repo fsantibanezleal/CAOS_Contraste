@@ -158,8 +158,9 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Shock', es: 'Choque' }, lang)}</th>
-                <th>PSI</th>
-                <th>CSI</th>
+                {/* the largest PSI and CSI over the inputs, not the PSI of the test row below (U16-R3 c20 m6) */}
+                <th>{pick({ en: 'Largest input PSI', es: 'Mayor PSI de las entradas' }, lang)}</th>
+                <th>{pick({ en: 'Largest input CSI', es: 'Mayor CSI de las entradas' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Chi-square test', es: 'Prueba chi-cuadrado' }, lang)}</th>
               </tr>
             </thead>
@@ -172,7 +173,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text" data-benchmark={r.drift.chi2_p_value === null ? 'none' : r.drift.chi2_p_value < 0.05 ? 'exceeded' : 'within'} data-na={r.drift.chi2_p_value === null ? 'true' : undefined}>
                     {r.drift.chi2_p_value === null
                       ? `${formatNumber(null, lang)} (${pick({ en: 'the test did not run', es: 'la prueba no corrió' }, lang)})`
-                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'above the benchmark at 5%', es: 'sobre el umbral al 5 %' } : { en: 'within the benchmark at 5%', es: 'dentro del umbral al 5 %' }, lang)}`}
+                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'significant at 5% (p below 0.05)', es: 'significativo al 5 % (p bajo 0,05)' } : { en: 'not significant at 5%', es: 'no significativo al 5 %' }, lang)}`}
                   </td>
                 </tr>
               ))}
@@ -184,7 +185,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
       </PlotCard>
       <PlotCard
         fill
-        title={{ en: `CSI by shock and the inputs of ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'en').toLowerCase() : 'the shock'}`, es: `CSI por choque y las entradas de ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'es').toLowerCase() : 'el choque'}` }}
+        title={{ en: `CSI by shock and the inputs of ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'en') : 'the shock'}`, es: `CSI por choque y las entradas de ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'es') : 'el choque'}` }}
         {...card}
         note={{ en: 'The CSI applies the PSI formula to each input. The table lists every input of the shock in focus with its own PSI, CSI and chi-square p-value.', es: 'El CSI aplica la fórmula del PSI a cada entrada. La tabla lista cada entrada del choque en foco con su propio PSI, CSI y valor p de chi-cuadrado.' }}
       >
