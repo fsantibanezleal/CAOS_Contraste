@@ -19,7 +19,6 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { useMedia } from '../../lib/useMedia';
-import { Ref } from '../../content/bi';
 import { yearRanges } from '../../content/cases/C04Results';
 import { emptyDefaultYears } from './AgencyValidationViews';
 import { PublishedImpactView, RHO_GRID } from './PublishedViews';
@@ -621,7 +620,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                   <th>D</th>
                   <th>N</th>
                   <th>
-                    {pick({ en: 'Effective N', es: 'N efectivo' }, lang)} <Ref>(3.4)</Ref>
+                    {pick({ en: 'Effective N (N†)', es: 'N efectivo (N†)' }, lang)}
                   </th>
                   <th>{pick({ en: 'Wald width', es: 'Ancho Wald' }, lang)}</th>
                   <th>{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
