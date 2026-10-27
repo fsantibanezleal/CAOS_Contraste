@@ -11,7 +11,7 @@
    },
    "P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "P2a-l1": {
     "en": "P2a L1",
@@ -49,7 +49,7 @@
    },
    "h1-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "h1-P2a-l1": {
     "en": "P2a L1",
@@ -81,7 +81,7 @@
    },
    "h2-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "h2-P2a-l1": {
     "en": "P2a L1",
@@ -113,7 +113,7 @@
    },
    "h3-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "h3-P2a-l1": {
     "en": "P2a L1",
@@ -145,7 +145,7 @@
    },
    "h4-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "h4-P2a-l1": {
     "en": "P2a L1",
@@ -177,7 +177,7 @@
    },
    "h5-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "h5-P2a-l1": {
     "en": "P2a L1",
@@ -209,7 +209,7 @@
    },
    "pooled-P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "pooled-P2a-l1": {
     "en": "P2a L1",
@@ -239,7 +239,7 @@
    },
    "P1-scorecard": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "P2a-l1": {
     "en": "P2a L1",
@@ -691,15 +691,15 @@
    },
    "P1-scorecard-german-sgcd": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "P1-scorecard-polish": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "P1-scorecard-taiwan": {
     "en": "P1 Scorecard",
-    "es": "P1 Scorecard"
+    "es": "P1 Tarjeta de puntuación"
    },
    "P2a-l1-german-sgcd": {
     "en": "P2a L1",
@@ -2967,7 +2967,7 @@
    },
    "consumer-arrears-shock": {
     "en": "Consumer arrears shock",
-    "es": "Shock de mora de consumo"
+    "es": "Choque de mora de consumo"
    },
    "house-price-fall": {
     "en": "House price fall",
