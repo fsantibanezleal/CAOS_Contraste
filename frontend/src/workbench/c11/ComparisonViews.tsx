@@ -3,12 +3,12 @@
 // Diebold-Mariano view compares every model with the champion under the FZ0 score and the tick loss. A score that is not
 // available (a model that forecasts no ES has no FZ0) shows its reason, never a zero.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import { ChartOverTable, MaybeNumber } from '../c06/format';
+import { MaybeNumber } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
-import { noteText } from '../c08/notes';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine, rowsMin } from './MarketCommon';
-import { DIRECTION_TEXT, LOSS_TEXT, championOf, fitOf, modelLabel, outputsOf, rungOf, text, type C11Sel } from './selection';
+import { DIRECTION_TEXT, LOSS_TEXT, championOf, fitOf, modelLabel, outputsOf, rungOf, text, reasonText, type C11Sel } from './selection';
 
 const rowsHeight = rowsMin;
 
@@ -38,8 +38,8 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
           es: 'Ordenados por puntaje FZ0 medio, menor es mejor. Las barras son el valor p de eliminación del conjunto de confianza de modelos sobre FZ0.',
         }}
       >
-        <ChartOverTable
-          chartMin={rowsHeight(mcs?.members.length ?? 0)}
+        <ChartAbove
+          chartHeight={rowsHeight(mcs?.members.length ?? 0)}
           chart={
             <BarChart
               title={{ en: 'Model confidence set p-value on FZ0', es: 'Valor p del conjunto de confianza de modelos sobre FZ0' }}
@@ -60,7 +60,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
           <ConventionLine />
           <p className="ct-note" data-state={champion === null ? 'unavailable' : undefined}>
             {champion === null
-              ? `${formatNumber(null, lang)} (${noteText(champ?.reason, lang)})`
+              ? `${formatNumber(null, lang)} (${reasonText(champ?.reason, lang)})`
               : pick({ en: `Champion at this level: ${modelLabel(sel, champion).en}, the lowest average FZ0 among the eligible models.`, es: `Campeón en este nivel: ${modelLabel(sel, champion).es}, el menor FZ0 medio entre los modelos elegibles.` }, lang)}
           </p>
           {mcs ? (
@@ -96,7 +96,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
                     <td className="ct-wide-only">{rungOf(sel, m.model_id)}</td>
                     <td className="ct-text">{m.eligible ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                     <td>
-                      <MaybeNumber value={lv?.fz0_mean ?? null} reason={lv?.fz0_reason ? noteText(lv.fz0_reason, lang) : null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
+                      <MaybeNumber value={lv?.fz0_mean ?? null} reason={lv?.fz0_reason ? reasonText(lv.fz0_reason, lang) : null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                     </td>
                     <td className="ct-wide-only">{lv ? formatNumber(lv.tick_loss_mean, lang, { digits: 3 }) : formatNumber(null, lang)}</td>
                     <td data-na={member ? undefined : 'true'}>{member ? formatNumber(member.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
@@ -106,7 +106,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
               })}
             </tbody>
           </table>
-        </ChartOverTable>
+        </ChartAbove>
       </PlotCard>
     </ViewsRow>
   );
@@ -122,6 +122,19 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
   const champion = championOf(o, sel.alpha);
   const fz0 = rows.filter((d) => d.loss === 'fz0');
   const tone = { better: 'good', worse: 'bad', indistinguishable: 'neutral', 'not-evaluated': 'neutral' } as const;
+  // no champion, nothing to draw: the reason is the view, with no empty stage above it (R3 c12 m3)
+  if (champion === null) {
+    return (
+      <ViewsRow>
+        <PlotCard fill title={{ en: 'Diebold-Mariano against the champion', es: 'Diebold-Mariano contra el campeón' }} {...card}>
+          <div className="ct-scroll" data-caos-flow="">
+            <ConventionLine />
+            <p className="ct-note" data-state="unavailable">{pick({ en: 'No champion at this level, so there is nothing to compare with.', es: 'No hay campeón en este nivel, así que no hay con qué comparar.' }, lang)}</p>
+          </div>
+        </PlotCard>
+      </ViewsRow>
+    );
+  }
   return (
     <ViewsRow>
       <PlotCard
@@ -133,8 +146,8 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
           es: `El diferencial de pérdida es el modelo menos el campeón en los días en que ambos están definidos: negativo favorece al modelo. Varianza de largo plazo de Bartlett con ${o.comparison.hac_lags} rezagos (pronósticos a un paso), significancia ${formatNumber(o.comparison.significance, 'es', { percent: true, decimals: 0 })}.`,
         }}
       >
-        <ChartOverTable
-          chartMin={rowsHeight(fz0.length)}
+        <ChartAbove
+          chartHeight={rowsHeight(fz0.length)}
           chart={
             <BarChart
               title={{ en: 'Diebold-Mariano p-value on FZ0', es: 'Valor p de Diebold-Mariano sobre FZ0' }}
@@ -180,7 +193,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
                   <td className="ct-wide-only">{d.n_common === null ? formatNumber(null, lang) : formatNumber(d.n_common, lang, { decimals: 0 })}</td>
                   <td className="ct-text">
                     {pick(text(DIRECTION_TEXT, d.direction), lang)}
-                    {d.not_evaluated_reason ? <span className="ct-note" style={{ display: 'block' }}>{noteText(d.not_evaluated_reason, lang)}</span> : null}
+                    {d.not_evaluated_reason ? <span className="ct-note" style={{ display: 'block' }}>{reasonText(d.not_evaluated_reason, lang)}</span> : null}
                   </td>
                 </tr>
               ))}
@@ -191,7 +204,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
               ) : null}
             </tbody>
           </table>
-        </ChartOverTable>
+        </ChartAbove>
       </PlotCard>
     </ViewsRow>
   );

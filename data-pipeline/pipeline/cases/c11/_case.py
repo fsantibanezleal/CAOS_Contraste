@@ -23,9 +23,9 @@ class C11:
     slug = "market-var-es"
     category_id = "market-ccr"
     kind = "real"
-    title = _t("Market VaR/ES backtesting across 2008, 2020, 2022, 2023", "Backtesting de VaR/ES de mercado en 2008, 2020, 2022 y 2023")
+    title = _t("Market VaR/ES backtesting across 2008, 2020, 2022, 2023", "Pruebas retrospectivas de VaR/ES de mercado en 2008, 2020, 2022 y 2023")
     question = _t("Do VaR and expected shortfall models pass their backtests across the 2008, 2020, 2022 and 2023 episodes?",
-                  "¿Pasan los modelos de VaR y de pérdida esperada en cola sus backtests en los episodios de 2008, 2020, 2022 y 2023?")
+                  "¿Pasan los modelos de VaR y de pérdida esperada en cola sus pruebas retrospectivas en los episodios de 2008, 2020, 2022 y 2023?")
     sources = SOURCES
 
     def depends_on(self) -> list[dict[str, Any]]:
