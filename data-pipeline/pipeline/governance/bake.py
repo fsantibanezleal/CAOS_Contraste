@@ -348,7 +348,7 @@ def _governance_findings(E: SimpleNamespace) -> list[dict[str, Any]]:
          "title": T("Independence of the validator is not established", "La independencia del validador no está establecida"),
          "description": T("The pipeline (developer) and the engine (validator) are built in the same programme, so the separation of the first and second "
                           "line is a convention, not a fact (A D1 A31).",
-                          "El pipeline (desarrollador) y el motor (validador) se construyen en el mismo programa, por lo que la separación entre primera y segunda "
+                          "La cadena de cálculo (desarrollador) y el motor (validador) se construyen en el mismo programa, por lo que la separación entre primera y segunda "
                           "línea es una convención y no un hecho (A D1 A31)."),
          "basis": "W15-4; A D1 A31"},
     ]

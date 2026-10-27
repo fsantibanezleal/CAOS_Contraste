@@ -598,7 +598,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: rc,
       note: {
         en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power.${rc.marks?.length ? ' Marked: the rates at the empirical momentum strength (alpha 0.125).' : ''} ${src.en}`,
-        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5 % con su intervalo de Wilson al 95 %, y al 1 %, contra los niveles nominales (discontinua 5 %, punteada 1 %). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
+        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5 % con su intervalo de Wilson al 95 %, y al 1 %, contra los niveles nominales (discontinua 5 %, punteada 1 %). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del impulso (alfa 0,125).' : ''} ${src.es}`,
       },
     };
   }
@@ -1101,7 +1101,7 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
           {pick(
             {
               en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Cadena de cálculo ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
@@ -1286,7 +1286,7 @@ export function familyReading(sel: C04Sel, v: FamilyVariant): Reading {
         truthItem(),
         ppItem({ en: 'Cohort PD bias', es: 'Sesgo de cohortes' }, pp(r?.pd_1y_cohort.bias[g]), {
           en: `The one-year cohort PD over ${reps.en} repetitions minus the plain chain's, in percentage points (Monte Carlo SE ${se.en}): momentum raises the defaults of recently downgraded obligors.`,
-          es: `La PD anual de cohortes en ${reps.es} repeticiones menos la de la cadena simple, en puntos porcentuales (EE de Monte Carlo ${se.es}): el momentum eleva los incumplimientos de los deudores recién rebajados.`,
+          es: `La PD anual de cohortes en ${reps.es} repeticiones menos la de la cadena simple, en puntos porcentuales (EE de Monte Carlo ${se.es}): el impulso eleva los incumplimientos de los deudores recién rebajados.`,
         }),
       ],
     };

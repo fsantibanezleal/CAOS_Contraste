@@ -21,7 +21,7 @@ export class ArtifactUnavailable extends Error {
 async function requireAvailable(path: string): Promise<void> {
   const row = unavailableRow(await loadReadiness(), path);
   if (!row) return;
-  const why = row.reason ?? { en: 'the pipeline did not write it', es: 'el pipeline no lo escribió' };
+  const why = row.reason ?? { en: 'the pipeline did not write it', es: 'la cadena de cálculo no lo escribió' };
   throw new ArtifactUnavailable(path, {
     en: `${path} is not available yet: ${why.en}`,
     es: `${path} aún no está disponible: ${why.es}`,

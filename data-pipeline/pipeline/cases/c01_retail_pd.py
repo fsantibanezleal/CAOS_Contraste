@@ -452,7 +452,7 @@ class C01:
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
             depends_on=self.depends_on(),
-            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"},
+            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Puntuación crediticia"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries, default_variant="holdout",
             contract={"uci-taiwan": tw_rep.summary(), "uci-german": de_rep.summary()}, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))

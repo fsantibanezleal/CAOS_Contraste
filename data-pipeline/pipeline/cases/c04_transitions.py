@@ -56,8 +56,8 @@ AGENCY_VARIANTS = (
 FAMILY_VARIANTS = (
     {"id": "markov", "title": _t("Markov chain: the estimators and tests against the truth", "Cadena de Markov: estimadores y pruebas contra la verdad"),
      "short": _t("Markov", "Markov")},
-    {"id": "momentum", "title": _t("Rating momentum (dos Reis, Pfeuffer and Smith)", "Momentum de calificación (dos Reis, Pfeuffer y Smith)"),
-     "short": _t("Momentum", "Momentum")},
+    {"id": "momentum", "title": _t("Rating momentum (dos Reis, Pfeuffer and Smith)", "Impulso de calificación (dos Reis, Pfeuffer y Smith)"),
+     "short": _t("Momentum", "Impulso")},
     {"id": "cycle", "title": _t("A recession year in a stable chain", "Un año de recesión en una cadena estable"),
      "short": _t("Cycle", "Ciclo")},
     {"id": "withdrawals", "title": _t("Informative withdrawals", "Retiros informativos"),
@@ -124,7 +124,7 @@ EXPECT: dict[str, tuple[float, float]] = {
 TEST_WORDS = {"rating.markov_order": ("Markov order", "orden de Markov"),
               "rating.time_homogeneity": ("time homogeneity", "homogeneidad temporal"),
               "rating.matrix_reference": ("migration matrix against a reference matrix", "matriz de migración contra una matriz de referencia"),
-              "rating.momentum": ("momentum hazard", "riesgo de momentum")}
+              "rating.momentum": ("momentum hazard", "riesgo instantáneo de impulso")}
 
 def _log(msg: str) -> None:
     print(f"[C04] {msg}", file=sys.stderr, flush=True)
@@ -630,8 +630,8 @@ def family_impact(out: dict[str, Any]) -> dict[str, Any]:
     if fid == "momentum":
         r = _rung(out, EMPIRICAL_ALPHA)
         err = r["error_cohort_power"]["mean"][3]
-        return {"projection_error_bbb": {"value": err, "unit": "probability difference", "label": _t("Markov projection error of the five-year BBB PD at the empirical momentum (alpha 0.125)", "Error de la proyección de Markov de la PD a cinco años de BBB con el momentum empírico (alfa 0,125)")},
-                "momentum_power_weak": {"value": _sim(out, "rating.momentum@alpha0.025"), "unit": "probability", "label": _t("The momentum test's rejection rate at a fifth of the empirical strength (alpha 0.025)", "Tasa de rechazo de la prueba de momentum a un quinto de la fuerza empírica (alfa 0,025)")}}
+        return {"projection_error_bbb": {"value": err, "unit": "probability difference", "label": _t("Markov projection error of the five-year BBB PD at the empirical momentum (alpha 0.125)", "Error de la proyección de Markov de la PD a cinco años de BBB con el impulso empírico (alfa 0,125)")},
+                "momentum_power_weak": {"value": _sim(out, "rating.momentum@alpha0.025"), "unit": "probability", "label": _t("The momentum test's rejection rate at a fifth of the empirical strength (alpha 0.025)", "Tasa de rechazo de la prueba del impulso a un quinto de la fuerza empírica (alfa 0,025)")}}
     if fid == "cycle":
         return {"th_power_k_1_5": {"value": _sim(out, "rating.time_homogeneity@k1.5"), "unit": "probability", "label": _t("Time homogeneity's rejection rate with downgrades times 1.5 for a year", "Tasa de rechazo de homogeneidad temporal con rebajas por 1,5 durante un año")}}
     if fid == "withdrawals":
@@ -713,7 +713,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         res.append({"id": "F-MOMENTUM-TESTS", "severity": "S3", "status": "open",
                     "evidence": [f"rate:rating.{k}@alpha{a:g}" for k in ("time_homogeneity", "momentum") for a in (weak, emp)],
                     "title": _t(f"Momentum at the empirical strength, alpha 0.125{c_en}, is seen by the hazard test in {hz_e:.0f}% of repetitions and by time homogeneity in {th_e:.0f}%; at a fifth of it (alpha 0.025) in {hz_w:.0f}% and {th_w:.0f}%",
-                                f"El momentum con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {_num(hz_e, 0)[1]} % de las repeticiones y la homogeneidad temporal en {_num(th_e, 0)[1]} %; a un quinto de ella (alfa 0,025) en {_num(hz_w, 0)[1]} % y {_num(th_w, 0)[1]} %")})
+                                f"El impulso con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {_num(hz_e, 0)[1]} % de las repeticiones y la homogeneidad temporal en {_num(th_e, 0)[1]} %; a un quinto de ella (alfa 0,025) en {_num(hz_w, 0)[1]} % y {_num(th_w, 0)[1]} %")})
         r = _rung(out, emp)
         err, freq = r["error_cohort_power"]["mean"][3], r["pd_5y_frequency"]["mean"][3]
         err_se = r["error_cohort_power"]["bias_mcse"][3]
@@ -723,13 +723,13 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         z = err / err_se if err_se else float("inf")
         res.append({"id": "F-MOMENTUM-PROJECTION", "severity": "S3", "status": "open", "evidence": ["design:rungs.error_cohort_power"],
                     "title": _t(f"Momentum at the empirical strength (alpha 0.125) raises the BBB cohort's five-year default frequency from {_pct(base)[0]} (no momentum) to {_pct(freq)[0]}; the one-year matrix estimated from the same paths, to the fifth power, gives {_pct(chained)[0]}: it carries most of the effect and misses {100 * err:+.2f} points ({rel:+.0f}%, {abs(z):.1f} Monte Carlo errors)",
-                                f"El momentum con la fuerza empírica (alfa 0,125) sube la frecuencia de incumplimiento a cinco años de la cohorte BBB de {_pct(base)[1]} (sin momentum) a {_pct(freq)[1]}; la matriz anual estimada de las mismas trayectorias, a la quinta potencia, da {_pct(chained)[1]}: lleva la mayor parte del efecto y yerra {_num(100 * err)[1]} puntos ({_signed_pct(rel / 100, 0)}, {_num(abs(z), 1)[1]} errores de Monte Carlo)")})
+                                f"El impulso con la fuerza empírica (alfa 0,125) sube la frecuencia de incumplimiento a cinco años de la cohorte BBB de {_pct(base)[1]} (sin impulso) a {_pct(freq)[1]}; la matriz anual estimada de las mismas trayectorias, a la quinta potencia, da {_pct(chained)[1]}: lleva la mayor parte del efecto y yerra {_num(100 * err)[1]} puntos ({_signed_pct(rel / 100, 0)}, {_num(abs(z), 1)[1]} errores de Monte Carlo)")})
         r = _rung(out, 0.25)
         err, freq = r["error_cohort_power"]["mean"][3], r["pd_5y_frequency"]["mean"][3]
         chained = r["pd_5y_cohort_power"]["mean"][3]
         res.append({"id": "F-MOMENTUM-PROJECTION-STRONG", "severity": "S3", "status": "open", "evidence": ["design:rungs.error_cohort_power"],
                     "title": _t(f"At twice the empirical momentum (alpha 0.25) the BBB cohort defaults {_pct(freq)[0]} within five years and the one-year matrix to the fifth power gives {_pct(chained)[0]}, {100 * err:+.2f} points",
-                                f"Con el doble del momentum empírico (alfa 0,25) la cohorte BBB incumple {_pct(freq)[1]} en cinco años y la matriz anual a la quinta potencia da {_pct(chained)[1]}, {_num(100 * err)[1]} puntos")})
+                                f"Con el doble del impulso empírico (alfa 0,25) la cohorte BBB incumple {_pct(freq)[1]} en cinco años y la matriz anual a la quinta potencia da {_pct(chained)[1]}, {_num(100 * err)[1]} puntos")})
     elif fid == "cycle":
         th = _sim(out, "rating.time_homogeneity@k1.5")
         r = _rung(out, 2.0)

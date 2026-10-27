@@ -111,7 +111,7 @@ const TEST_LABEL: Record<string, BiText> = {
   'rating.time_homogeneity': t('Time homogeneity', 'Homogeneidad temporal'),
   'rating.markov_order': t('Markov order', 'Orden de Markov'),
   'rating.matrix_reference': t('Against the reference matrix', 'Contra la matriz de referencia'),
-  'rating.momentum': t('Momentum hazard', 'Riesgo de momentum'),
+  'rating.momentum': t('Momentum hazard', 'Riesgo instantáneo de impulso'),
 };
 const TEST_COLOR: Record<string, ShellColorToken> = {
   'rating.time_homogeneity': '--color-accent',
@@ -126,7 +126,7 @@ const INTERVAL_LABEL: Record<Interval, BiText> = {
   wald: t('Wald', 'Wald'),
   agresti_coull: t('Agresti-Coull', 'Agresti-Coull'),
   jeffreys: t('Jeffreys', 'Jeffreys'),
-  bootstrap: t('Bootstrap', 'Bootstrap'),
+  bootstrap: t('Bootstrap', 'Remuestreo'),
 };
 const INTERVAL_COLOR: Record<Interval, ShellColorToken> = { wald: '--color-bad', agresti_coull: '--color-accent-2', jeffreys: '--color-accent', bootstrap: '--color-magenta' };
 const ANALYTIC: Analytic[] = ['wald', 'agresti_coull', 'jeffreys'];
@@ -985,7 +985,7 @@ export function MarkovCoverageView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The share of repetitions whose interval holds the true one-year PD, in percent: Wald, Agresti-Coull and Jeffreys on the pooled cohort counts (${num('en', n)} repetitions), and the resampling bootstrap of the duration PD (${num('en', r.bootstrap.n_boot)} replicates, in the first ${num('en', nb)} repetitions). Dashed: ${pct0('en', r.level)} plus or minus two Monte Carlo SEs at ${num('en', n)} repetitions, where a correct interval's coverage falls. ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `La fracción de repeticiones cuyo intervalo contiene la PD anual verdadera, en porcentaje: Wald, Agresti-Coull y Jeffreys sobre los conteos de cohortes agrupados (${num('es', n)} repeticiones), y el bootstrap por remuestreo de la PD de duración (${num('es', r.bootstrap.n_boot)} réplicas, en las primeras ${num('es', nb)} repeticiones). Discontinuas: ${pct0('es', r.level)} más o menos dos EE de Monte Carlo a ${num('es', n)} repeticiones, donde cae la cobertura de un intervalo correcto. ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `La fracción de repeticiones cuyo intervalo contiene la PD anual verdadera, en porcentaje: Wald, Agresti-Coull y Jeffreys sobre los conteos de cohortes agrupados (${num('es', n)} repeticiones), y el remuestreo de la PD de duración (${num('es', r.bootstrap.n_boot)} réplicas, en las primeras ${num('es', nb)} repeticiones). Discontinuas: ${pct0('es', r.level)} más o menos dos EE de Monte Carlo a ${num('es', n)} repeticiones, donde cae la cobertura de un intervalo correcto. ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1005,7 +1005,7 @@ export function MarkovCoverageView({ sel }: { sel: C04Sel | null }) {
         <TableCard
           v={v}
           title={t('Coverage by grade', 'Cobertura por grado')}
-          note={L(lang, `Percent of the repetitions, each with its Monte Carlo SE in parentheses; the bootstrap over ${num('en', nb)} repetitions.`, `Porcentaje de las repeticiones, cada uno con su EE de Monte Carlo entre paréntesis; el bootstrap sobre ${num('es', nb)} repeticiones.`)}
+          note={L(lang, `Percent of the repetitions, each with its Monte Carlo SE in parentheses; the bootstrap over ${num('en', nb)} repetitions.`, `Porcentaje de las repeticiones, cada uno con su EE de Monte Carlo entre paréntesis; el remuestreo sobre ${num('es', nb)} repeticiones.`)}
         >
           <table className="caos-table ct-wrap-head" data-table="markov-coverage">
             <thead>
@@ -1043,7 +1043,7 @@ interface LadderAxis {
   format: FormatOptions;
 }
 const LADDER_AXIS: Record<'momentum' | 'cycle' | 'withdrawals', LadderAxis> = {
-  momentum: { label: t('Momentum alpha (beta 1 a year)', 'Alfa de momentum (beta 1 por año)'), short: t('Alpha', 'Alfa'), format: { decimals: 3 } },
+  momentum: { label: t('Momentum alpha (beta 1 a year)', 'Alfa del impulso (beta 1 por año)'), short: t('Alpha', 'Alfa'), format: { decimals: 3 } },
   cycle: { label: t('k, the downgrade multiplier of the third year', 'k, el multiplicador de las rebajas del tercer año'), short: 'k', format: { decimals: 2 } },
   withdrawals: { label: t('k: withdrawal times 1 + k in the year before default', 'k: retiro por 1 + k en el año previo al incumplimiento'), short: 'k', format: { decimals: 0 } },
 };
@@ -1186,7 +1186,7 @@ export function MomentumPowerView({ sel }: { sel: C04Sel | null }) {
         <ChartCard
           v={v}
           spec={charts[0]}
-          title={t('What the tests see of rating momentum', 'Lo que ven las pruebas del momentum de calificación')}
+          title={t('What the tests see of rating momentum', 'Lo que ven las pruebas del impulso de calificación')}
           note={L(
             lang,
             `Rejection rates in percent along alpha (${num('en', n)} repetitions per rung, Monte Carlo SE at most ${num('en', 100 * maxSe, { decimals: 1 })} points; each in the table): solid at ${pct0('en', 0.05)}, dashed at ${pct0('en', 0.01)}, dotted the nominal ${pct0('en', 0.05)}. Alpha 0 is a Markov chain, so its rates are the tests' size; alpha ${num('en', EMPIRICAL_ALPHA)} (marked) gives the hazard coefficient dos Reis, Pfeuffer and Smith estimate on Moody's data: c, with which a stay entered by a downgrade is left exp(c) times faster. ${truthNote('en', sel)}`,
@@ -1265,10 +1265,10 @@ export function momentumProjectionCharts(v: FamilyVariant, sel: C04Sel): ChartSp
       x,
       y: pdAxis((l) => `${L(l, 'Five-year PD of', 'PD a cinco años de')} ${GRADES[g]}`, [freq, power, dur, plain]),
       series: [
-        { label: t('Default frequency of the momentum chain', 'Frecuencia de incumplimiento de la cadena con momentum'), values: freq, color: '--color-fg', width: 2.6 },
+        { label: t('Default frequency of the momentum chain', 'Frecuencia de incumplimiento de la cadena con impulso'), values: freq, color: '--color-fg', width: 2.6 },
         { label: powName, values: power, color: '--color-accent', width: 2 },
         { label: durName, values: dur, color: '--color-magenta', width: 2 },
-        { label: t('Plain chain, no momentum', 'Cadena sin momentum'), values: plain, color: '--color-fg-subtle', width: 1.2, dash: [6, 4] },
+        { label: t('Plain chain, no momentum', 'Cadena sin impulso'), values: plain, color: '--color-fg-subtle', width: 1.2, dash: [6, 4] },
       ],
       marks,
     },
@@ -1309,7 +1309,7 @@ export function MomentumProjectionView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Means over ${num('en', n)} repetitions, in percent: the initial cohort's default frequency after five years (the momentum chain's own), the pooled one-year cohort matrix to the fifth power and exp(5Q) of the duration generator, both from the same paths, against the plain chain's five-year PD (dashed). Alpha ${num('en', EMPIRICAL_ALPHA)} marked. ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `Medias sobre ${num('es', n)} repeticiones, en porcentaje: la frecuencia de incumplimiento de la cohorte inicial a cinco años (la propia de la cadena con momentum), la matriz de cohortes anual agrupada a la quinta potencia y exp(5Q) del generador de duración, ambas de las mismas trayectorias, contra la PD a cinco años de la cadena sin momentum (discontinua). Alfa ${num('es', EMPIRICAL_ALPHA)} marcado. ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `Medias sobre ${num('es', n)} repeticiones, en porcentaje: la frecuencia de incumplimiento de la cohorte inicial a cinco años (la propia de la cadena con impulso), la matriz de cohortes anual agrupada a la quinta potencia y exp(5Q) del generador de duración, ambas de las mismas trayectorias, contra la PD a cinco años de la cadena sin impulso (discontinua). Alfa ${num('es', EMPIRICAL_ALPHA)} marcado. ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1332,7 +1332,7 @@ export function MomentumProjectionView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Percent, the mean over the repetitions with its Monte Carlo SE in parentheses; the errors are the projection minus the frequency. Plain chain's five-year PD of ${grade}: ${pctText('en', rungs[0]?.pd_5y_frequency.truth[g])}. The one-year cohort PD shows momentum raising the one-year rate as well.`,
-            `Porcentaje, la media sobre las repeticiones con su EE de Monte Carlo entre paréntesis; los errores son la proyección menos la frecuencia. PD a cinco años de ${grade} en la cadena sin momentum: ${pctText('es', rungs[0]?.pd_5y_frequency.truth[g])}. La PD de cohorte a un año muestra que el momentum también sube la tasa a un año.`,
+            `Porcentaje, la media sobre las repeticiones con su EE de Monte Carlo entre paréntesis; los errores son la proyección menos la frecuencia. PD a cinco años de ${grade} en la cadena sin impulso: ${pctText('es', rungs[0]?.pd_5y_frequency.truth[g])}. La PD de cohorte a un año muestra que el impulso también sube la tasa a un año.`,
           )}
         >
           <table className="caos-table ct-wrap-head" data-table="momentum-projection">

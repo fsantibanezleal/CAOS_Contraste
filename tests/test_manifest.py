@@ -20,7 +20,7 @@ MODELS = {"role": "models", "variant_id": "models-taiwan", "title": {"en": "Mode
 
 
 def _manifest(**over):
-    kw = dict(case_id="C01", title=T, category={"en": "Credit scoring", "es": "Scoring de crédito"},
+    kw = dict(case_id="C01", title=T, category={"en": "Credit scoring", "es": "Puntuación crediticia"},
               question={"en": "Does the challenger beat the champion?", "es": "¿Supera el retador al campeón?"},
               sources=["uci-taiwan"], seed=42, variants=[MODELS, VARIANT], default_variant="holdout",
               contract={"family": "scored_sample", "counts": {"input": 1}}, expect={"auc": (0.70, 0.80)},
