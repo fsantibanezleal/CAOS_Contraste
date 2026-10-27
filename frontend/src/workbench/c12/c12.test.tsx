@@ -363,7 +363,7 @@ describe('the C12 instrument', () => {
     expect(markup).toContain('regression proxy');
     expect(markup).toContain('data-im="regression-proxy"');
     expect(markup).toContain('data-simm-used="false"');
-    expect(markup).toContain('not SIMM');
+    expect(markup).toContain('never SIMM'); // U16-F10d (R3 c13 BL2): the read-out leaves the sentence to the document's limit, said once
     expect(markup).not.toMatch(/ISDA SIMM (risk weights|methodology) (are|is) used/);
     const im = withIm.outputs.initial_margin!;
     expect(markup).toContain(`${im.horizon_calendar_days}`);
@@ -607,8 +607,8 @@ describe('the C12 instrument', () => {
     setLang('es');
     expect(html(<ProfileView sel={selOf(netting)} />)).toContain('Perfiles de exposición');
     const imM = html(<CollateralView sel={selOf(withIm)} />);
-    expect(imM).toContain('proxy por regresión');
-    expect(imM).toContain('no SIMM');
+    expect(imM).toContain('aproximación por regresión'); // U16-F10d: "proxy" is translated (the ruling of 2026-10-27)
+    expect(imM).toContain('nunca SIMM');
     expect(imM).toContain(cell(netting.outputs.exposure.eepe.amount, 'es'));
     expect(html(<WwrView sel={selOf(wwr)} />)).toContain(escapeHtml(wwr.outputs.wrong_way_risk!.ore_limit.es));
     expect(html(<WwrView sel={selOf(wwr)} />)).toContain(formatNumber(wwr.outputs.wrong_way_risk!.largest_b_w, 'es', { digits: 4 }));

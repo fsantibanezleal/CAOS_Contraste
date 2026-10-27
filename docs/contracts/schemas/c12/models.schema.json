@@ -357,7 +357,15 @@
       ],
       "properties": {
         "estimator": {
-          "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+          "anyOf": [
+            {
+              "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+            },
+            {
+              "$ref": "#/$defs/c12Label"
+            }
+          ],
+          "description": "The estimator as the views print it, a bilingual text (c12-models 2.0.0); the English sentence alone in a document baked before 2.0.0."
         },
         "calibrations": {
           "type": "array",

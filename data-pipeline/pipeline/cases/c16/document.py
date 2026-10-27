@@ -163,9 +163,10 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
             "data_cutoff": vd, "read_up_to_valuation_date": True,
             "rule": txt("No call report dated after the valuation date is read.", "No se lee ningún reporte de llamada posterior a la fecha de valoración.")}
     reasons = {"path": txt("The LCR is a 30-day aggregate ratio: its formula gives no daily path, so no ladder, survival period or cliff is stated.",
-                           "El LCR es una razón agregada a 30 días: su fórmula no da trayectoria diaria."),
+                           "El LCR es una razón agregada a 30 días: su fórmula no da trayectoria diaria, así que no se declara escalera, "
+                           "periodo de supervivencia ni acantilado."),
                "lcr": txt("This variant runs the run-off ladder, not the LCR formula.", "Esta variante corre la escalera de salidas, no la fórmula del LCR."),
-               "htm": txt("Only the HTM variant takes the held-to-maturity book at fair value.", "Solo la variante HTM toma el libro a valor razonable.")}
+               "htm": txt("Only the HTM variant takes the held-to-maturity book at fair value.", "Solo la variante HTM toma el libro mantenido hasta el vencimiento a valor razonable.")}
     o = {"kind": "scenario", "valuation_date": vd, "currency": "USD", "units": UNITS, "bank": BANK,
          "variant": {"id": vid, "label": txt(*VARIANT_LABEL[vid][:2]), "description": txt(*VARIANT_LABEL[vid][2:]), "scenario_family": row["scenario_family"],
                      "phase": row["phase"], "parameter_set": row["parameter_set"], "horizon_days": h, "axis": row["axis"]},

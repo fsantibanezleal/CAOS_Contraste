@@ -12,7 +12,7 @@ import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, readIrrbbFixture, set
 import { C14_FIT, C14_OUTPUTS } from './descriptor';
 import { useC14Instrument } from './instrument';
 import { amount, cell, defaultSel, nmdModelOf, outputsOf, scenarioOf, type C14Sel } from './selection';
-import { C14ContextView, C14FindingsView, C14VariantsTable, CalibrationReadout, NmdReadout, SegmentReadout, ShockReadout } from './C14Common';
+import { C14ContextView, C14FindingsView, C14VariantsTable, CalibrationReadout, NmdReadout, SegmentReadout, ShockReadout, docText } from './C14Common';
 import { EveByShockView, OutlierView, ShapesView, outlierChart } from './ShockViews';
 import { CapsView, ChangesView, ReplicatingView, WithWithoutView } from './BehaviouralViews';
 import { DynamicNiiView, EarEvarView, GapView } from './NiiViews';
@@ -149,10 +149,10 @@ describe('the C14 instrument', () => {
       expect(markup).toContain(`data-shock="${r.shock}"`);
       expect(markup).toContain(`data-floored="${r.floor_bound_buckets.length}"`);
     }
-    const shape = (models as unknown as { fit: { shock_shape: { short_form: string; long_form: string; reference: string } } }).fit.shock_shape;
+    const shape = (models as unknown as { fit: { shock_shape: { short_form: string; long_form: string; reference: string | { en: string; es: string } } } }).fit.shock_shape;
     expect(markup).toContain(escapeHtml(shape.short_form));
     expect(markup).toContain(escapeHtml(shape.long_form));
-    expect(markup).toContain(escapeHtml(shape.reference));
+    expect(markup).toContain(escapeHtml(docText(shape.reference, 'en')));
     expect(markup).toContain(pct(-0.65));
   });
 
@@ -326,7 +326,8 @@ describe('the C14 instrument', () => {
     Object.assign(odd.outputs.balance_sheet.items[0], { reported_amount: null, reason_missing: { en: 'The call report has no such line.', es: 'El reporte no trae esa línea.' } });
     const markup = html(<C14ContextView sel={withVariant(odd)} />);
     expect(markup).toContain('The call report has no such line.');
-    expect(markup).toContain(escapeHtml(odd.outputs.balance_sheet.items[0].slotting_assumption));
+    // c14-outputs 2.0.0 (U16-F10d): the slotting assumption is bilingual, the English view prints its English
+    expect(markup).toContain(escapeHtml(docText(odd.outputs.balance_sheet.items[0].slotting_assumption, 'en')));
     expect(markup).toContain(NA);
   });
 

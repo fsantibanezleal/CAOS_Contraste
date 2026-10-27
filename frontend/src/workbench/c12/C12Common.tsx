@@ -89,8 +89,8 @@ const TEST_TEXT: Record<string, BiText> = {
   'ccr.cva_recomputed': { en: 'CVA recomputed from the discounted EE', es: 'CVA recalculado desde la EE descontada' },
   'ccr.path_convergence': { en: 'Convergence in the number of paths', es: 'Convergencia en el número de trayectorias' },
   'ccr.reconcile_ee_profile': { en: 'EE profile reconciled with ORE', es: 'Perfil de EE conciliado con ORE' },
-  'ccr.pfe_exceedance_backtest': { en: 'PFE exceedance back-test (secondary)', es: 'Backtest de excedencias del PFE (secundario)' },
-  'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Backtest PIT de la distribución de exposición' },
+  'ccr.pfe_exceedance_backtest': { en: 'PFE exceedance back-test (secondary)', es: 'Prueba retrospectiva de excedencias del PFE (secundaria)' },
+  'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Prueba retrospectiva PIT de la distribución de exposición' },
 };
 
 const LIGHT_ORDER = ['green', 'amber', 'red', 'not_evaluated', 'error'] as const;
@@ -188,8 +188,8 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
       note={{
-        en: 'The six variants of the SDD on the same book and curve. The bars give the effective expected positive exposure (EEPE) of each: collateral and initial margin lower it, the wrong-way variant changes the CVA and not the exposure. The table holds the headline numbers of each document.',
-        es: 'Las seis variantes del SDD sobre la misma cartera y curva. Las barras dan la exposición positiva esperada efectiva (EEPE) de cada una: el colateral y el margen inicial la bajan, la variante de correlación adversa cambia el CVA y no la exposición. La tabla trae las cifras principales de cada documento.',
+        en: 'The six variants of the case on the same book and curve. The bars give the effective expected positive exposure (EEPE) of each: collateral and initial margin lower it; the wrong-way variant keeps the exposure, and its CVA moves with the dependence b of the default intensity on the portfolio value: the table gives it at b = 0, where it equals the netting set’s. The table holds the headline numbers of each document.',
+        es: 'Las seis variantes del caso sobre la misma cartera y curva. Las barras dan la exposición positiva esperada efectiva (EEPE) de cada una: el colateral y el margen inicial la bajan; la variante de correlación adversa mantiene la exposición, y su CVA se mueve con la dependencia b de la intensidad de incumplimiento respecto del valor de la cartera: la tabla lo da en b = 0, donde iguala al del conjunto de neteo. La tabla trae las cifras principales de cada documento.',
       }}
     >
       <ChartOverTable
@@ -228,7 +228,7 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
                   <td>{cell(o.cva_dva.cva.amount, lang)}</td>
                   <td>{cell(o.sa_ccr.ead.amount, lang)}</td>
                   <td className="ct-wide-only" data-ore={o.ore_reconciliation.status}>
-                    {o.ore_reconciliation.status === 'reconciled' ? pick({ en: 'reconciled', es: 'conciliada' }, lang) : pick({ en: 'no reconciliation', es: 'sin conciliación' }, lang)}
+                    {o.ore_reconciliation.status !== 'reconciled' ? pick({ en: 'no reconciliation', es: 'sin conciliación' }, lang) : o.ore_reconciliation.all_within_two_se === false ? pick({ en: 'compared, outside two SE', es: 'comparada, fuera de dos ES' }, lang) : pick({ en: 'reconciled', es: 'conciliada' }, lang)}
                   </td>
                 </tr>
               );
@@ -281,9 +281,9 @@ const NAMED_TEXT: Record<string, Bi> = {
   ba_cva_rating: { en: 'Rating class of the counterparty (BA-CVA)', es: 'Clase de calificación de la contraparte (BA-CVA)' },
   stress_window_start: { en: 'Start of the stress window', es: 'Inicio de la ventana de estrés' },
   stress_window_end: { en: 'End of the stress window', es: 'Fin de la ventana de estrés' },
-  backtest_window_start: { en: 'Start of the back-test window', es: 'Inicio de la ventana del backtest' },
-  backtest_paths_per_date: { en: 'Paths per back-test date', es: 'Trayectorias por fecha del backtest' },
-  backtest_simulated_critical_count: { en: 'Simulated back-tests for the critical values', es: 'Backtests simulados para los valores críticos' },
+  backtest_window_start: { en: 'Start of the back-test window', es: 'Inicio de la ventana de la prueba retrospectiva' },
+  backtest_paths_per_date: { en: 'Paths per back-test date', es: 'Trayectorias por fecha de la prueba retrospectiva' },
+  backtest_simulated_critical_count: { en: 'Simulated back-tests for the critical values', es: 'Pruebas retrospectivas simuladas para los valores críticos' },
   reconciliation_se_threshold: { en: 'ORE agreement threshold', es: 'Umbral de acuerdo con ORE' },
   ee_check_k_se: { en: 'Threshold of the analytic EE check', es: 'Umbral de la verificación de la EE analítica' },
 };
@@ -306,7 +306,7 @@ const UNIT_TEXT: Record<string, Bi> = {
   class: { en: 'class', es: 'clase' },
   date: { en: 'date', es: 'fecha' },
   month: { en: 'month', es: 'mes' },
-  'simulated backtests': { en: 'simulated back-tests', es: 'backtests simulados' },
+  'simulated backtests': { en: 'simulated back-tests', es: 'pruebas retrospectivas simuladas' },
   'combined standard errors': { en: 'combined standard errors', es: 'errores estándar combinados' },
   'standard errors': { en: 'standard errors', es: 'errores estándar' },
 };
@@ -319,8 +319,33 @@ const VALUE_TEXT: Record<string, Bi> = {
   'high-yield-or-not-rated': RATING_TEXT['high-yield-or-not-rated'],
 };
 /** Units that name the kind of value, not a measure: the value already says it ("payer, receiver"), so no unit is appended. */
-const KIND_UNITS = new Set(['payer or receiver', 'trade ids', 'trade id', 'rule']);
+const KIND_UNITS = new Set(['payer or receiver', 'trade ids', 'trade id', 'rule', 'date', 'month']);
+/** Units that name what a word or a count is (a sector, a class, an order): printed after the value in brackets, never joined to it (R3 c13 m10: "Financieras sector de la Tabla 1"). */
+const LABEL_UNITS = new Set(['MAR50.16 Table 1 sector', 'class', 'polynomial order']);
 const CONVENTION_WORD: Bi = { en: 'convention', es: 'convención' };
+
+/** The value cell of a named parameter: the value with its unit after it, a label unit in brackets, a kind unit not repeated. */
+export function conventionCell(v: unknown, unit: string, lang: Lang): string {
+  const value = conventionValue(v, unit, lang);
+  if (KIND_UNITS.has(unit)) return value;
+  const u = pick(text(UNIT_TEXT, unit), lang);
+  if (!u) return value;
+  return LABEL_UNITS.has(unit) ? `${value} (${u})` : `${value} ${u}`;
+}
+
+/** The case's short title and its question: the question alone, in bold, when it already holds the title's words (R3 c13 m13: the
+ * short question and the full one repeated most words), both otherwise. */
+export function questionLead(title: string, question: string): ReactNode {
+  const words = (t: string) => t.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+  const inQuestion = new Set(words(question));
+  const own = words(title);
+  if (own.length > 0 && own.filter((w) => inQuestion.has(w)).length / own.length >= 0.8) return <strong>{question}</strong>;
+  return (
+    <>
+      <strong>{title}</strong>{/[?!.]$/.test(title) ? ' ' : '. '}{question}
+    </>
+  );
+}
 
 function conventionValue(v: unknown, unit: string, lang: Lang): string {
   const one = (x: unknown): string => {
@@ -348,17 +373,17 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
         <FixtureNotice variant={v} />
         <p>
-          <strong>{pick(m.title, lang)}</strong>{/[?!.]$/.test(pick(m.title, lang)) ? ' ' : '. '}{pick(m.question, lang)}
+          {questionLead(pick(m.title, lang), pick(m.question, lang))}
         </p>
         <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-case" data-variant-id={o.variant}>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd>{pick(text(VARIANT_TEXT, o.variant), lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
-          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de swaps y el CSA son sintéticos, con parámetros con nombre que son convenciones; el spread de la contraparte es un proxy o un spread sintético declarado.' }, lang)}</dd>
+          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de swaps y el CSA son sintéticos, con parámetros con nombre que son convenciones; el spread de la contraparte es una aproximación o un spread sintético declarado.' }, lang)}</dd>
           <dt>{pick({ en: 'Sign convention', es: 'Convención de signos' }, lang)}</dt>
           <dd>{pick(o.sign_convention.statement, lang)}</dd>
           <dt>{pick({ en: 'Initial margin', es: 'Margen inicial' }, lang)}</dt>
-          <dd>{pick({ en: 'A regression proxy of the dynamic initial margin that ORE documents, never ISDA SIMM, whose public methodology restricts its use to a market participant\'s own transactions.', es: 'Un proxy por regresión del margen inicial dinámico que documenta ORE, nunca ISDA SIMM, cuya metodología pública restringe su uso a las operaciones propias de un participante del mercado.' }, lang)}</dd>
+          <dd>{pick({ en: 'A regression proxy of the dynamic initial margin that ORE documents, never ISDA SIMM, whose public methodology restricts its use to a market participant\'s own transactions.', es: 'Una aproximación por regresión del margen inicial dinámico que documenta ORE, nunca ISDA SIMM, cuya metodología pública restringe su uso a las operaciones propias de un participante del mercado.' }, lang)}</dd>
           <dt>{pick({ en: 'Wrong-way variant', es: 'Variante de correlación adversa' }, lang)}</dt>
           <dd>{pick({ en: 'It has no ORE reconciliation: ORE\'s wrong-way example is a different model.', es: 'No tiene conciliación con ORE: el ejemplo de correlación adversa de ORE es otro modelo.' }, lang)}</dd>
           <dt>{pick({ en: 'Units', es: 'Unidades' }, lang)}</dt>
@@ -407,7 +432,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
             <dt>{pick({ en: 'Sample of the calibration', es: 'Muestra de la calibración' }, lang)}</dt>
             <dd>{`${cal.sample_start} ${pick({ en: 'to', es: 'a' }, lang)} ${cal.sample_end}; ${cal.n_obs} ${pick({ en: 'observations', es: 'observaciones' }, lang)}; ${years(cal.history_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
             <dt>{pick({ en: 'Reversion a and volatility sigma', es: 'Reversión a y volatilidad sigma' }, lang)}</dt>
-            <dd data-calibration={cal.backtest_date}>{`a = ${formatNumber(cal.a, lang, { digits: 4 })} (SE ${formatNumber(cal.a_se, lang, { digits: 4 })}); sigma = ${formatNumber(cal.sigma, lang, { digits: 4 })} (SE ${formatNumber(cal.sigma_se, lang, { digits: 4 })})`}</dd>
+            <dd data-calibration={cal.backtest_date}>{`a = ${formatNumber(cal.a, lang, { digits: 4 })} (${lang === 'es' ? 'ES' : 'SE'} ${formatNumber(cal.a_se, lang, { digits: 4 })}); sigma = ${formatNumber(cal.sigma, lang, { digits: 4 })} (${lang === 'es' ? 'ES' : 'SE'} ${formatNumber(cal.sigma_se, lang, { digits: 4 })})`}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-curve-points">
             <thead>
@@ -443,7 +468,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
               {params.map(([k, p]) => (
                 <tr key={k} data-convention={k} data-status={p.label}>
                   <td className="ct-text">{pick(text(NAMED_TEXT, k), lang)}</td>
-                  <td className="ct-text">{`${conventionValue(p.value, p.unit, lang)} ${KIND_UNITS.has(p.unit) ? '' : pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</td>
+                  <td className="ct-text">{conventionCell(p.value, p.unit, lang)}</td>
                   <td className="ct-text">{p.label === 'convention' ? word : p.label}</td>
                 </tr>
               ))}
@@ -452,11 +477,11 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </div>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha del backtest y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
+        <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha de la prueba retrospectiva y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
           <div className="ct-scroll" data-caos-flow="">
             <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-fit">
               <dt>{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</dt>
-              <dd><span translate="no">{fit.estimator}</span></dd>
+              <dd>{typeof fit.estimator === 'string' ? <span translate="no">{fit.estimator}</span> : pick(fit.estimator, lang)}</dd>
               <dt>{pick({ en: 'Minimum history', es: 'Historia mínima' }, lang)}</dt>
               <dd>{`${fit.min_history_years} ${pick({ en: 'years (CRE53.51)', es: 'años (CRE53.51)' }, lang)}`}</dd>
               <dt>{pick({ en: 'Closed forms', es: 'Formas cerradas' }, lang)}</dt>
@@ -466,7 +491,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 <T en="; the journal derivations are not verified as papers" es="; las derivaciones de la literatura no están verificadas como artículos" />
               </dd>
               <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
-              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
+              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
               <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del spread' }, lang)}</dt>
               <dd>{pick(fit.credit_curve.licence_basis, lang)}</dd>
               <dt>{pick({ en: 'Synthetic spread', es: 'Spread sintético' }, lang)}</dt>
@@ -479,7 +504,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
             <table className="caos-table ct-wrap-head" data-table="c12-calibrations">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: 'Back-test date', es: 'Fecha del backtest' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Back-test date', es: 'Fecha de la prueba retrospectiva' }, lang)}</th>
                   <th>{pick({ en: 'a', es: 'a' }, lang)}</th>
                   <th>{pick({ en: 'sigma', es: 'sigma' }, lang)}</th>
                   <th className="ct-wide-only">{pick({ en: 'Observations', es: 'Observaciones' }, lang)}</th>
@@ -547,7 +572,7 @@ export function HorizonReadout({ sel }: { sel: C12Sel | null }) {
       title={sel ? { en: `${pick(text(HORIZON_LONG, sel.horizon), 'en')}, ${pick(text(SUBJECT_TEXT, sel.subject), 'en').toLowerCase()}`, es: `${pick(text(HORIZON_LONG, sel.horizon), 'es')}, ${pick(text(SUBJECT_TEXT, sel.subject), 'es').toLowerCase()}` } : { en: 'The horizon', es: 'El horizonte' }}
       items={[
         { label: { en: 'W²', es: 'W²' }, value: h?.w2 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The Anderson-Darling statistic of the PITs: large when they are not uniform.', es: 'El estadístico de Anderson-Darling de los PIT: grande cuando no son uniformes.' } },
-        { label: { en: '5% value', es: 'Valor al 5 %' }, value: h?.critical_simulated.p05 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The 95th percentile of W² when the whole back-test is simulated under the model itself.', es: 'El percentil 95 de W² cuando todo el backtest se simula bajo el propio modelo.' } },
+        { label: { en: '5% value', es: 'Valor al 5 %' }, value: h?.critical_simulated.p05 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The 95th percentile of W² when the whole back-test is simulated under the model itself.', es: 'El percentil 95 de W² cuando toda la prueba retrospectiva se simula bajo el propio modelo.' } },
         { label: { en: 'Decision', es: 'Decisión' }, text: h ? (h.reject_at_5pct ? { en: 'rejected at 5%', es: 'rechazado al 5 %' } : { en: 'not rejected', es: 'no rechazado' }) : NA, hint: { en: 'Against the simulated critical value, not the independent-sample table.', es: 'Contra el valor crítico simulado, no la tabla de muestras independientes.' } },
       ]}
     />

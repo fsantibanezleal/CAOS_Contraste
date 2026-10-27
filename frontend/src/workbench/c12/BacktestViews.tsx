@@ -10,7 +10,7 @@ import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { NOT_SWAP, NumbersCard, TallTables, UnavailableCard, digits, DEFS_STYLE, Nw } from './C12Common';
-import { HORIZON_LONG, HORIZON_SHORT, HORIZONS, SUBJECT_LONG, histogram, horizonOf, horizonsOf, outputsOf, text, type C12Sel } from './selection';
+import { HORIZON_LONG, HORIZON_SHORT, HORIZONS, SUBJECT_LONG, histogram, horizonOf, horizonsOf, outputsOf, text, type C12Horizon, type C12Sel } from './selection';
 
 const WINDOW_TEXT: Record<string, Bi> = {
   'before-2008': { en: 'Before 2008', es: 'Antes de 2008' },
@@ -29,7 +29,7 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SWAP} />;
   const h = horizonOf(o, sel.subject, sel.horizon);
-  if (!h) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document holds no back-test of this horizon.', es: 'No disponible: el documento no trae el backtest de este horizonte.' }} />;
+  if (!h) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document holds no back-test of this horizon.', es: 'No disponible: el documento no trae la prueba retrospectiva de este horizonte.' }} />;
   const bins = 10;
   const counts = histogram(h.pits, bins);
   const expected = h.n / bins;
@@ -42,15 +42,15 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
         {...card}
         note={{
           en: `Back-tested: ${pick(text(SUBJECT_LONG, sel.subject), 'en')}, at ${pick(text(HORIZON_LONG, sel.horizon), 'en')}. Each realised value is mapped to its PIT, the share of the simulated sample below it, by the rule ${bt.pit_rule}; if the model holds, the PITs of the back-test dates are uniform and each class holds about ${formatNumber(expected, 'en', { digits: 4 })} of the ${h.n} dates. Each date was calibrated only on data up to that date.`,
-          es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, a ${pick(text(HORIZON_LONG, sel.horizon), 'es')}. Cada valor realizado se mapea a su PIT, la parte de la muestra simulada bajo él, con la regla ${bt.pit_rule}; si el modelo se sostiene, los PIT de las fechas del backtest son uniformes y cada clase tiene cerca de ${formatNumber(expected, 'es', { digits: 4 })} de las ${h.n} fechas. Cada fecha se calibró solo con datos hasta esa fecha.`,
+          es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, a ${pick(text(HORIZON_LONG, sel.horizon), 'es')}. Cada valor realizado se mapea a su PIT, la parte de la muestra simulada bajo él, con la regla ${bt.pit_rule}; si el modelo se sostiene, los PIT de las fechas de la prueba retrospectiva son uniformes y cada clase tiene cerca de ${formatNumber(expected, 'es', { digits: 4 })} de las ${h.n} fechas. Cada fecha se calibró solo con datos hasta esa fecha.`,
         }}
       >
                     <BarChart
-              title={narrow ? { en: 'Back-test dates by PIT class (lower edge)', es: 'Fechas del backtest por clase de PIT (borde inferior)' } : { en: 'Number of back-test dates by PIT class', es: 'Número de fechas del backtest por clase de PIT' }}
+              title={narrow ? { en: 'Back-test dates by PIT class (lower edge)', es: 'Fechas de la prueba retrospectiva por clase de PIT (borde inferior)' } : { en: 'Number of back-test dates by PIT class', es: 'Número de fechas de la prueba retrospectiva por clase de PIT' }}
               height="fill"
               orientation="vertical"
               data={counts.map((n, i) => ({ id: `bin${i}`, label: narrow ? { en: formatNumber(i / bins, 'en', { decimals: 1 }), es: formatNumber(i / bins, 'es', { decimals: 1 }) } : { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
-              axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { decimals: 0 }, range: [0, Math.max(4, ...counts)] }}
+              axis={{ label: { en: 'Back-test dates', es: 'Fechas de la prueba retrospectiva' }, format: { decimals: 0 }, range: [0, Math.max(4, ...counts)] }}
             />
       </PlotCard>
       <NumbersCard card={card}>
@@ -75,7 +75,7 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
           <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-pit">
             <dt>{pick({ en: 'Statistic W²', es: 'Estadístico W²' }, lang)}</dt>
             <dd data-w2={h.w2}><Nw>{digits(h.w2, lang)}</Nw></dd>
-            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5 % y 1 %' }, lang)}</dt>
+            <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos de la prueba retrospectiva simulada, 5 % y 1 %' }, lang)}</dt>
             <dd><Nw>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</Nw></dd>
             <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5 % y 1 % (informada al lado, no en su lugar)' }, lang)}</dt>
             <dd><Nw>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</Nw></dd>
@@ -90,6 +90,24 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
       </NumbersCard>
     </ViewsRow>
   );
+}
+
+/** The bars of the W² chart, one per horizon in order: red where the test rejects at 5 percent, and the label says "rejected" so the
+ * rejection is not told by colour alone (R3 c13 m12); the hint carries the 5 percent critical value. */
+export function w2Bars(rows: C12Horizon[], focus: string) {
+  return HORIZONS.flatMap((id) => {
+    const h = rows.find((r) => r.horizon === id);
+    if (!h) return [];
+    const name = text(HORIZON_LONG, id);
+    return [{
+      id,
+      label: h.reject_at_5pct ? { en: `${name.en}, rejected`, es: `${name.es}, rechazado` } : name,
+      value: h.w2,
+      tone: h.reject_at_5pct ? ('bad' as const) : ('accent' as const),
+      highlight: id === focus,
+      hint: { en: `5% critical value ${formatNumber(h.critical_simulated.p05, 'en', { digits: 4 })}`, es: `Valor crítico al 5 % ${formatNumber(h.critical_simulated.p05, 'es', { digits: 4 })}` },
+    }];
+  });
 }
 
 /** The statistic W² of every horizon of the subject in focus against its critical value, the exceedance counts beside, and the sub-windows. */
@@ -116,16 +134,13 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
       >
         <TallTables>
         <ChartOverTable
-          chartMin="clamp(11rem, 20rem - 15vw, 17rem)"
+          chartMin="clamp(13.5rem, 20rem - 15vw, 17rem)"
           chart={
             <BarChart
               title={{ en: 'W² by horizon', es: 'W² por horizonte' }}
               height="fill"
               orientation="horizontal"
-              data={HORIZONS.flatMap((id) => {
-                const h = rows.find((r) => r.horizon === id);
-                return h ? [{ id, label: text(HORIZON_LONG, id), value: h.w2, tone: h.reject_at_5pct ? ('bad' as const) : ('accent' as const), highlight: id === sel.horizon, hint: { en: `5% critical value ${formatNumber(h.critical_simulated.p05, 'en', { digits: 4 })}`, es: `Valor crítico al 5 % ${formatNumber(h.critical_simulated.p05, 'es', { digits: 4 })}` } }] : [];
-              })}
+              data={w2Bars(rows, sel.horizon)}
               axis={{ label: { en: 'Anderson-Darling W²', es: 'W² de Anderson-Darling' }, format: { digits: 4 } }}
             />
           }
@@ -187,7 +202,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
               </tbody>
             </table>
           ) : (
-            <p className="ct-note" data-block="risk-factor">{pick({ en: `The risk factor is the zero rate of ${formatNumber(bt.risk_factor.proxy_tenor_years, 'en', { digits: 4 })} years, the proxy of the short rate; the exposure operator is not applied to it (BCBS 185 paragraph 20).`, es: `El factor de riesgo es la tasa cero de ${formatNumber(bt.risk_factor.proxy_tenor_years, 'es', { digits: 4 })} años, el proxy de la tasa corta; el operador de exposición no se le aplica (BCBS 185, párrafo 20).` }, lang)}</p>
+            <p className="ct-note" data-block="risk-factor">{pick({ en: `The risk factor is the zero rate of ${formatNumber(bt.risk_factor.proxy_tenor_years, 'en', { digits: 4 })} years, the proxy of the short rate; the exposure operator is not applied to it (BCBS 185 paragraph 20).`, es: `El factor de riesgo es la tasa cero de ${formatNumber(bt.risk_factor.proxy_tenor_years, 'es', { digits: 4 })} años, el sustituto de la tasa corta; el operador de exposición no se le aplica (BCBS 185, párrafo 20).` }, lang)}</p>
           )}
           <p className="ct-note">{pick({ en: 'The sub-windows before 2008, from 2008 to 2019 and from 2020 are reported apart for the book, so a failure in one regime is not averaged away.', es: 'Las subventanas antes de 2008, de 2008 a 2019 y desde 2020 se informan aparte para la cartera, de modo que una falla en un régimen no se diluya en el promedio.' }, lang)}</p>
         </ChartOverTable>

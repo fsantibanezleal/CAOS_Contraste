@@ -79,8 +79,8 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
           <dl className="ct-defs" data-table="eve-measure" data-measure={measure} data-offset={sel.offset}>
             <dt>{pick({ en: `Annex 1 delta EVE under the offset chosen (${unit})`, es: `Delta EVE del Anexo 1 con la compensación elegida (${unit})` }, lang)}</dt>
             <dd>{cell(measure, lang)}</dd>
-            <dt>{pick({ en: `The document's own measure (${unit}), offset ${o.offset_rule.state === 'compared' ? 'compared' : o.offset_rule.state}`, es: `La medida propia del documento (${unit}), compensación ${o.offset_rule.state === 'compared' ? 'comparada' : o.offset_rule.state === 'on' ? 'activa' : 'inactiva'}` }, lang)}</dt>
-            <dd>{`${cell(o.eve.delta_eve, lang)} (${formatNumber(o.eve.delta_eve_share_tier1, lang, { percent: true, decimals: 2 })} ${pick({ en: 'of Tier 1', es: 'del capital N1' }, lang)})`}</dd>
+            <dt>{pick({ en: `The document's own measure (${unit}), ${o.offset_rule.state === 'compared' ? 'with the offset (the rule is compared, on against off)' : `offset ${o.offset_rule.state}`}`, es: `La medida propia del documento (${unit}), ${o.offset_rule.state === 'compared' ? 'con la compensación (la regla se compara, activa contra inactiva)' : `compensación ${o.offset_rule.state === 'on' ? 'activa' : 'inactiva'}`}` }, lang)}</dt>
+            <dd>{`${cell(o.eve.delta_eve, lang)} (${formatNumber(o.eve.delta_eve_share_tier1, lang, { percent: true, decimals: 2 })} ${pick({ en: 'of Tier 1', es: 'del capital de nivel 1' }, lang)})`}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="eve-by-leg">
             <thead>
@@ -337,8 +337,8 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
         title={{ en: `Earnings at risk and economic value at risk: ${text(LEG_SHORT, e.leg).en} leg`, es: `Ganancias en riesgo y valor económico en riesgo: tramo ${text(LEG_SHORT, e.leg).es}` }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} EaR is the base NII of the leg minus the lower quantile of its simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below and carry the Monte Carlo error of the number of paths${converted ? '; the UF leg is converted at the UF value' : ''}.`,
-          es: `${o.sign_convention.statement.es} El EaR es el NII base del tramo menos el cuantil inferior de su NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo y llevan el error de Monte Carlo del número de trayectorias${converted ? '; el tramo UF se convierte al valor de la UF' : ''}.`,
+          en: `${o.sign_convention.statement.en} EaR is the base NII of the leg minus the lower quantile of its simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named in the list and carry the Monte Carlo error of the number of paths${converted ? '; the UF leg is converted at the UF value' : ''}.`,
+          es: `${o.sign_convention.statement.es} El EaR es el NII base del tramo menos el cuantil inferior de su NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado en la lista y llevan el error de Monte Carlo del número de trayectorias${converted ? '; el tramo UF se convierte al valor de la UF' : ''}.`,
         }}
       >
         <ChartOverTable

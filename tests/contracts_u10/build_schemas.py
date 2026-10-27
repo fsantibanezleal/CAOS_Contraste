@@ -19,6 +19,13 @@ SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 BASE = "https://contraste.fasl-work.com/contracts/"
 TXT = {"$ref": "../common/text.schema.json"}
 
+
+def STR_OR_TXT(what: str, version: str) -> dict:
+    """A reader text that a view prints in both languages: bilingual from ``version`` (U16-F10d, the third capture review R3); a
+    document baked before it carries the English string alone and stays valid until its case is re-baked."""
+    return {"anyOf": [S(minLength=1), TXT],
+            "description": f"{what}: a bilingual text from {version}; the English string alone in a document baked before it."}
+
 SHOCKS = ["parallel-up", "parallel-down", "steepener", "flattener", "short-up", "short-down"]
 MIDPOINTS = [0.0028, 0.0417, 0.1667, 0.375, 0.625, 0.875, 1.25, 1.75, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 12.5, 17.5, 25.0]
 CCY21 = ["ARS", "AUD", "BRL", "CAD", "CHF", "CNY", "EUR", "GBP", "HKD", "IDR", "INR", "JPY", "KRW", "MXN", "RUB", "SAR", "SEK",
@@ -359,7 +366,8 @@ def c14_defs() -> dict:
     d["c14Bank"] = Ob({
         "name": S(minLength=1), "cert": Int(1), "aggregates": C("real"), "behaviour": C("synthetic"), "notice": TXT,
     }, "The bank of the case (real FDIC aggregates, synthetic behaviour: SDD section 5).")
-    d["c14Report"] = Ob({"report_date": DATE, "source": S(minLength=1), "fields": A(S(minLength=1), 1)},
+    d["c14Report"] = Ob({"report_date": DATE, "source": STR_OR_TXT("The provenance of the financials file", "c14-outputs 2.0.0"),
+                         "fields": A(S(minLength=1), 1)},
                         "One FDIC call-report quarter read for the case and the financials fields taken from it.")
     d["c14Data"] = Ob({
         "call_reports": A(R("c14Report"), 1), "data_cutoff": DATE, "read_up_to_valuation_date": C(True), "rule": R("c14Label"),
@@ -382,7 +390,7 @@ def c14_defs() -> dict:
         "repricing_type": E("fixed", "floating", "non-maturity"),
         "source_field": S(minLength=1),
         "reported_amount": nullable(MONEY), "reason_missing": nullable(R("c14Label")),
-        "slotting_assumption": S(minLength=1), "amount": N(minimum=0),
+        "slotting_assumption": STR_OR_TXT("The slotting assumption of the item", "c14-outputs 2.0.0"), "amount": N(minimum=0),
         "cash_flows": Ob({"behavioural": A(R("c14Flow"), 1), "contractual": A(R("c14Flow"), 1)}),
     }, "One balance-sheet item slotted into the buckets. A call-report item the FDIC financials lack has reported_amount null "
        "with its reason and the slotting assumption that replaces it, never a fabricated number; a reported item has no reason. "
@@ -491,7 +499,8 @@ def c14_defs() -> dict:
     }, "A BCBS shock-size table transcribed as data, the 21 currencies in table order.")
     d["c14ShockShape"] = Ob({
         "x": C(4), "steepener_short": C(-0.65), "steepener_long": C(0.9), "flattener_short": C(0.8), "flattener_long": C(-0.6),
-        "short_form": C("exp(-t_k / x)"), "long_form": C("1 - exp(-t_k / x)"), "reference": S(minLength=1),
+        "short_form": C("exp(-t_k / x)"), "long_form": C("1 - exp(-t_k / x)"),
+        "reference": STR_OR_TXT("The reference of the shock shapes", "c14-models 2.0.0"),
     }, "The six shock shapes of SRP31.91 to SRP31.92 with x = 4.")
     d["c14OutlierRule"] = Ob({"threshold_share_tier1": C(0.15), "reference": S(minLength=1)})
     d["c14ParamChange"] = Ob({
@@ -613,11 +622,11 @@ def c15_defs() -> dict:
     }, "The state of the CLP and CLF offset rule: on, off, or compared (both are in every pair; the rule applies in used).")
     d["c15Indexation"] = Ob({
         "rate": C(0.025), "net_position_uf_units": N(), "pn_ur": MONEY, "abs_pn_ur": MONEY, "charge": MONEY,
-        "formula": S(minLength=1), "note": TXT,
+        "formula": STR_OR_TXT("The formula of the charge, with symbols and a legend", "c15-outputs 3.0.0"), "note": TXT,
     }, "The standardised indexation (reajustabilidad) charge: 2.5 percent of the absolute net UF position PN_UR (an implied "
        "2.5 percent inflation surprise). pn_ur = net UF position x uf_value, assets positive.")
     d["c15CpiScenario"] = nullable(Ob({
-        "surprise_pp": N(), "effect": MONEY, "formula": S(minLength=1),
+        "surprise_pp": N(), "effect": MONEY, "formula": STR_OR_TXT("The formula of the effect, with symbols and a legend", "c15-outputs 3.0.0"),
     }, "A CPI surprise applied to the net UF position, loss-positive: effect = -pn_ur x surprise_pp / 100."),
         "Null when the variant applies no CPI surprise.")
     d["c15ThresholdTest"] = Ob({
@@ -627,7 +636,7 @@ def c15_defs() -> dict:
        "the 12-month net interest and indexation margin (18 percent).")
     d["c15Thresholds"] = Ob({
         "tier1": MONEY, "net_interest_and_indexation_margin_12m": MONEY, "tests": ordered([pin("c15ThresholdTest", id=i, threshold=t) for i, t in (("nii-tier1", 0.05), ("eve-tier1", 0.15), ("nii-margin", 0.18))]),
-        "prioritised": B, "reference": S(minLength=1),
+        "prioritised": B, "reference": STR_OR_TXT("The reference of the prioritised-bank tests", "c15-outputs 3.0.0"),
     }, "The banco priorizado tests; prioritised is true when any test is breached.")
     d["c15DynamicLeg"] = Ob({"leg": E("CLP", "UR"), "items": A(R("c15DynItem"), 1), "scenarios": R("c15DynScenarios")},
                             "The dynamic NII of one leg; balances and NII are in the reporting currency (the UR leg converted at the UF value).")

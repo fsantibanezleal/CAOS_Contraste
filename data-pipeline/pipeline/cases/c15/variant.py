@@ -67,6 +67,18 @@ OFFSET_RULE = t("When delta CLP and delta CLF have opposite signs, half of the C
                 "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al revés), con piso en cero.")
 
 
+# The texts a Spanish view prints, bilingual at the source (U16-F10d, R3 c16): the reference of the prioritised-bank tests (B2:
+# "Annex" in the Spanish view) and the two formulas, written with symbols and a legend instead of the document keys pn_ur and
+# surprise_pp (the ruling of 2026-10-27), PN_UR in one case in both (m14).
+THRESHOLDS_REFERENCE = {"en": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)", "es": "RAN 21-13 Anexo 1 (banco priorizado, dossier 03 F.2)"}
+CHARGE_FORMULA = {"en": "charge = 0.025 × |PN_UR|, where PN_UR is the net UF position times the UF value",
+                  "es": "cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF"}
+CPI_FORMULA = {"en": "effect = −PN_UR × s / 100, positive is a loss, where PN_UR is the net UF position in CLP and s the CPI surprise in "
+                     "percentage points",
+               "es": "efecto = −PN_UR × s / 100, positivo es una pérdida, donde PN_UR es la posición neta en UF en CLP y s la sorpresa de "
+                     "IPC en puntos porcentuales"}
+
+
 @dataclass
 class VariantResult:
     document: dict[str, Any]
@@ -252,7 +264,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     # ---- the indexation charge and the CPI surprise
     ic = float(eve_nii.indexation_charge(pn_ur))
     indexation = {"rate": 0.025, "net_position_uf_units": float(book.net_uf_position), "pn_ur": float(pn_ur), "abs_pn_ur": float(abs(pn_ur)), "charge": ic,
-                  "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+                  "formula": CHARGE_FORMULA,
                   "note": t("The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise on the net UF position, "
                             "added once to the largest pair of the delta NII.",
                             "El cargo estándar por reajustabilidad, equivalente a una sorpresa de inflación de 2,5 por ciento sobre la posición neta en "
@@ -260,7 +272,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     cpi = None
     if spec.cpi_surprise_pp is not None:
         cpi = {"surprise_pp": float(spec.cpi_surprise_pp), "effect": float(-pn_ur * spec.cpi_surprise_pp / 100.0),
-               "formula": "effect = -pn_ur x surprise_pp / 100 (loss-positive)"}
+               "formula": CPI_FORMULA}
 
     # ---- the dynamic NII of both legs under the base path and the two parallel shocks (engine: simulate_nii)
     dyn_legs = []
@@ -311,7 +323,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     pb = eve_nii.prioritised_bank(a2.delta_nii, a1.delta_eve, tier1, margin_12m)
     thresholds = {"tier1": float(tier1), "net_interest_and_indexation_margin_12m": margin_12m,
                   "tests": [{k: _plain(v) for k, v in x.items()} for x in pb.tests], "prioritised": bool(pb.prioritised),
-                  "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"}
+                  "reference": THRESHOLDS_REFERENCE}
 
     # ---- the validation tests (engine: riskvalidation.validation.irrbb)
     rows = []

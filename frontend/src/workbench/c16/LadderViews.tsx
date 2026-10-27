@@ -272,8 +272,8 @@ export function RunSpeedsView({ sel }: { sel: C16Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'Deposit outflow shares of the nine rows of BCBS Table A.1, with the days each took. The fast run is calibrated on the rows dated before 2023 and scored on the 2023 rows; the other variants show the rows only as reference points. A row whose horizon is beyond the ladder has no modelled share, and says so. Orange bars are the rows scored on, blue bars the rows calibrated on, grey bars rows shown only as reference.',
-          es: 'Partes de salida de depósitos de las nueve filas de la Tabla A.1 del BCBS, con los días que tomó cada una. La corrida rápida se calibra con las filas anteriores a 2023 y se evalúa en las filas de 2023; las otras variantes muestran las filas solo como puntos de referencia. Una fila cuyo horizonte excede la escalera no tiene parte modelada, y lo dice. Las barras naranjas son las filas en que se evalúa, las azules las filas con que se calibra, las grises filas que solo se muestran como referencia.',
+          en: 'Deposit outflow shares of the nine rows of BCBS Table A.1, with the days each took. The fast run is calibrated on the rows dated before 2023 and scored on the 2023 rows; the other variants show the rows only as reference points. A row whose horizon is beyond the ladder has no modelled share, and says so. Amber bars are the rows scored on, blue bars the rows calibrated on, grey bars rows shown only as reference.',
+          es: 'Partes de salida de depósitos de las nueve filas de la Tabla A.1 del BCBS, con los días que tomó cada una. La corrida rápida se calibra con las filas anteriores a 2023 y se evalúa en las filas de 2023; las otras variantes muestran las filas solo como puntos de referencia. Una fila cuyo horizonte excede la escalera no tiene parte modelada, y lo dice. Las barras ámbar son las filas en que se evalúa, las azules las filas con que se calibra, las grises filas que solo se muestran como referencia.',
         }}
       >
         <ChartOverTable

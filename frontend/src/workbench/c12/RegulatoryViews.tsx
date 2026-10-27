@@ -13,7 +13,7 @@ import { useMedia } from '../../lib/useMedia';
 import { Fragment } from 'react';
 import { BA_CVA_DS, SECTORS, baCvaMismatches, riskWeight } from './bacva';
 import { saCcr, saCcrInputFrom, saCcrMismatches } from './saccr';
-import { NOT_SWAP, NumbersCard, SHARE, UnavailableCard, cell, digits, years, DEFS_STYLE, Nw } from './C12Common';
+import { NOT_SWAP, NumbersCard, SHARE, TallTables, UnavailableCard, cell, digits, years, DEFS_STYLE, Nw } from './C12Common';
 import { RATING_SHORT, RATING_TEXT, SECTOR_TEXT, amount, axisOf, collateralRange, committedCollateral, fitOf, liveBaCva, liveSaCcr, outputsOf, text, type C12Sel } from './selection';
 import { axisScale } from '../c06/format';
 
@@ -48,6 +48,7 @@ export function ComparisonView({ sel }: { sel: C12Sel | null }) {
           es: 'La medida regulatoria es una fórmula supervisora (SA-CCR para la exposición, BA-CVA para el riesgo de CVA, el cargo delta del método basado en sensibilidades para el riesgo de tasa); la modelada es la simulación del caso (alfa 1,4 por la EPE efectiva, el CVA descontado). Las barras azules son regulatorias, las verdes modeladas. La división de los ponderadores GIRR por raíz de 2 es una opción del banco para una moneda especificada (MAR21.44) y una convención del caso; el cargo sin dividir se muestra al lado.',
         }}
       >
+        <TallTables>
         <ChartOverTable
           chartMin="clamp(11rem, 20rem - 15vw, 17rem)"
           chart={
@@ -101,6 +102,7 @@ export function ComparisonView({ sel }: { sel: C12Sel | null }) {
           </table>
           <p className="ct-note">{pick({ en: `The axis is in ${unit}; the table keeps the whole amounts. Alpha ${r.alpha} (${r.alpha_paragraph}); effective maturity ${years(r.effective_maturity_years, 'en')} years.`, es: `El eje está en ${unit}; la tabla guarda los montos completos. Alfa ${formatNumber(r.alpha, 'es', { digits: 4 })} (${r.alpha_paragraph}); vencimiento efectivo ${years(r.effective_maturity_years, 'es')} años.` }, lang)}</p>
         </ChartOverTable>
+        </TallTables>
       </PlotCard>
     </ViewsRow>
   );
@@ -149,8 +151,8 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
         {...card}
         lane="live"
         note={{
-          en: `EAD = 1.4 (RC + PFE) (CRE52.1). The port computes the interest rate class of CRE52 on the swaps of the book: supervisory duration, delta, maturity factor, the three maturity buckets and the offset formula of CRE52.57, the multiplier with its 5 percent floor. The other four asset classes hold no trade here. Move the collateral held: the replacement cost falls to zero and the multiplier falls with the over-collateralisation.`,
-          es: `EAD = 1,4 (RC + PFE) (CRE52.1). La réplica calcula la clase de tasa de interés de CRE52 sobre los swaps de la cartera: duración supervisora, delta, factor de vencimiento, los tres tramos de vencimiento y la fórmula de compensación de CRE52.57, el multiplicador con su piso de 5 por ciento. Las otras cuatro clases de activos no tienen operaciones aquí. Mueva el colateral mantenido: el costo de reemplazo baja a cero y el multiplicador baja con la sobrecolateralización.`,
+          en: `EAD = 1.4 (RC + PFE) (CRE52.1). The port computes the interest rate class of CRE52 on the swaps of the book: supervisory duration, delta, maturity factor, the three maturity buckets and the offset formula of CRE52.57, the multiplier with its 5 percent floor. The other four asset classes hold no trade here. Move the collateral held: the replacement cost falls to its floor (zero without a CSA; under one, the threshold plus the minimum transfer amount less the independent amount) and the multiplier falls with the over-collateralisation.`,
+          es: `EAD = 1,4 (RC + PFE) (CRE52.1). La réplica calcula la clase de tasa de interés de CRE52 sobre los swaps de la cartera: duración supervisora, delta, factor de vencimiento, los tres tramos de vencimiento y la fórmula de compensación de CRE52.57, el multiplicador con su piso de 5 por ciento. Las otras cuatro clases de activos no tienen operaciones aquí. Mueva el colateral mantenido: el costo de reemplazo baja a su piso (cero sin CSA; con uno, el umbral más el monto mínimo de transferencia menos el monto independiente) y el multiplicador baja con la sobrecolateralización.`,
         }}
       >
                     <UPlotChart
@@ -182,9 +184,9 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
             <tbody>
               {[
                 { id: 'rc', label: { en: 'RC, replacement cost', es: 'RC, costo de reemplazo' }, live: live.rc, doc: sa.rc.amount },
-                { id: 'addon', label: { en: 'Aggregate add-on', es: 'Add-on agregado' }, live: live.addOnAggregate, doc: sa.addon_aggregate.amount },
+                { id: 'addon', label: { en: 'Aggregate add-on', es: 'Complemento agregado' }, live: live.addOnAggregate, doc: sa.addon_aggregate.amount },
                 { id: 'multiplier', label: { en: 'Multiplier (unitless)', es: 'Multiplicador (sin unidad)' }, live: live.multiplier, doc: sa.multiplier },
-                { id: 'pfe', label: { en: 'PFE, multiplier times add-on', es: 'PFE, multiplicador por add-on' }, live: live.pfe, doc: sa.pfe.amount },
+                { id: 'pfe', label: { en: 'PFE, multiplier times add-on', es: 'PFE, multiplicador por complemento' }, live: live.pfe, doc: sa.pfe.amount },
                 { id: 'ead', label: { en: 'EAD, 1.4 (RC + PFE)', es: 'EAD, 1,4 (RC + PFE)' }, live: live.ead, doc: sa.ead.amount },
               ].map((r) => (
                 <tr key={r.id} data-step={r.id}>
@@ -220,7 +222,7 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
               })}
               {live.hedgingSets.map((h) => (
                 <tr key={h.hedgingSet} data-hedging-set={h.hedgingSet}>
-                  <td className="ct-text" colSpan={3}>{pick({ en: `Hedging set ${h.hedgingSet}: offset formula of CRE52.57, add-on = 0.5 percent of`, es: `Conjunto de cobertura ${h.hedgingSet}: fórmula de compensación de CRE52.57, add-on = 0,5 por ciento de` }, lang)}</td>
+                  <td className="ct-text" colSpan={3}>{pick({ en: `Hedging set ${h.hedgingSet}: effective notional after the offset formula of CRE52.57 (the add-on is 0.5 percent of it)`, es: `Conjunto de cobertura ${h.hedgingSet}: nocional efectivo tras la fórmula de compensación de CRE52.57 (el complemento es 0,5 por ciento de él)` }, lang)}</td>
                   <td>{cell(h.effectiveNotional, lang)}</td>
                   <td>{cell(sa.hedging_sets.find((x) => x.hedging_set === h.hedgingSet)?.effective_notional ?? null, lang)}</td>
                 </tr>

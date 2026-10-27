@@ -404,6 +404,6 @@ def _findings(o: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, 
         out.append({"id": "F5", "severity": "S2", "status": "open", "evidence": ["irrbb.behavioural_change_at_breach"], "title": t(
             f"The fitted weighted average maturity changed at {n_dates} {'date' if n_dates == 1 else 'dates'} where the standardised outlier test was breached: "
             "a deposit-duration assumption that moves with a breach is the pattern the Federal Reserve review describes.",
-            f"El plazo promedio ponderado ajustado cambió en {n_dates} {'fecha' if n_dates == 1 else 'fechas'} en que se superó la prueba de valores atípicos "
-            "estandarizada: un supuesto de duración de depósitos que se mueve con un exceso es el patrón que describe la revisión de la Reserva Federal.")})
+            f"El plazo promedio ponderado ajustado cambió en {n_dates} {'fecha' if n_dates == 1 else 'fechas'} en que se excedió el umbral de la prueba de valores "
+            "atípicos estandarizada: un supuesto de duración de depósitos que se mueve con un exceso es el patrón que describe la revisión de la Reserva Federal.")})
     return out

@@ -53,7 +53,7 @@ LIMITS = [
          "observation from 1990 up to the day before each date (an expanding window of at least ten years for the first backtest "
          "date; a rolling window of five or ten years was measured and refused because the regression is not mean-reverting at a "
          "third of the dates). The fit to the curve of the date is the engine's phi.",
-         "a y sigma del mundo real vienen de un solo proxy de la tasa corta (la tasa cero a 3 meses) por la regresión AR(1) exacta sobre "
+         "a y sigma del mundo real vienen de un solo sustituto de la tasa corta (la tasa cero a 3 meses) por la regresión AR(1) exacta sobre "
          "cada observación desde 1990 hasta el día anterior a cada fecha (una ventana creciente de al menos diez años para la primera "
          "fecha; una ventana móvil de cinco o diez años se midió y se rechazó porque la regresión no revierte a la media en un tercio "
          "de las fechas). El ajuste a la curva de la fecha es el phi del motor."),
@@ -63,11 +63,11 @@ LIMITS = [
          "baja a 2,99 solo para esta ventana) y revalúa el mismo libro en la fecha de la curva."),
     text("The counterparty curve is a market proxy (HQM minus Treasury, AAA to A), a floor for lower ratings; the base-credit "
          "spread of the BA-CVA rating and the sensitivity rows is the synthetic flat 0.0125.",
-         "La curva de la contraparte es un proxy de mercado (HQM menos Tesoro, AAA a A), un piso para calificaciones menores; el spread "
+         "La curva de la contraparte es una aproximación de mercado (HQM menos Tesoro, AAA a A), un piso para calificaciones menores; el spread "
          "base de la calificación BA-CVA y de las filas de sensibilidad es el sintético plano 0,0125."),
     text("Dynamic initial margin is ORE's regression proxy, never ISDA SIMM; the Andersen, Pykhtin and Sokol margin-period timelines are "
          "not modelled.",
-         "El margen inicial dinámico es el proxy de regresión de ORE, nunca ISDA SIMM; no se modelan las cronologías del periodo de "
+         "El margen inicial dinámico es la aproximación por regresión de ORE, nunca ISDA SIMM; no se modelan las cronologías del periodo de "
          "margen de Andersen, Pykhtin y Sokol."),
     text("The journal derivations of the Hull-White closed forms (Hull and White 1990 and 1994, Jamshidian 1989) were not read as "
          "papers; the engine's bond option and swaption are reconciled to QuantLib 1.44 numerically instead.",
@@ -80,6 +80,6 @@ LIMITS = [
 
 def fit_block(records: list[dict[str, Any]]) -> dict[str, Any]:
     """The ``fit`` object: the calibration of every backtest date in date order."""
-    return {"estimator": calibration.ESTIMATOR, "calibrations": records, "min_history_years": 3,
+    return {"estimator": calibration.ESTIMATOR_TEXT, "calibrations": records, "min_history_years": 3,
             "closed_forms_source": CLOSED_FORMS_SOURCE, "closed_forms_status": CLOSED_FORMS_STATUS, "credit_curve": credit_curve_block(),
             "girr_parameters": girr_block(), "limits": LIMITS}

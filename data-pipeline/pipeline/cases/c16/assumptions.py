@@ -98,10 +98,10 @@ def conventions() -> dict:
              "list_class": "non-operational-other-financial",
              "label": txt("Uninsured balance as other legal entities", "Saldo no asegurado como otras personas jurídicas")},
         ],
-        "basis": txt("The call report carries no customer type: the mapping is an assumption, proposed by U11-S from dossier 05 E.5 "
-                     "and 01 G.1 (Q13); the band is the dossier's plausible classes. A convention, never a regulatory classification.",
-                     "El reporte de llamada no trae tipo de cliente: el mapeo es un supuesto propuesto por U11-S (Q13). "
-                     "Una convención, nunca una clasificación regulatoria."),
+        "basis": txt("The call report carries no customer type: the mapping is an assumption of the case design, from dossier 05 E.5 "
+                     "and 01 G.1; the band is the dossier's plausible classes. A convention, never a regulatory classification.",
+                     "El reporte de llamada no trae tipo de cliente: el mapeo es un supuesto del diseño del caso, a partir del dossier 05 "
+                     "E.5 y 01 G.1; la banda son las clases plausibles del dossier. Una convención, nunca una clasificación regulatoria."),
     }
     c["variant_scenarios"] = {
         "status": "convention",
@@ -126,9 +126,10 @@ def conventions() -> dict:
         "status": "convention", "kind": "us-business-days", "first_day": FIRST_DAY, "excluded_weekdays": ["saturday", "sunday"],
         "holidays": HOLIDAYS,
         "holiday_rule": "2023 US federal holidays as observed on weekdays (a proposed convention, not read from a source)",
-        "basis": txt("The LiST rates are defined on the 2019 TARGET2 relevant-day calendar (A2); the ladder of the 2022-12-31 balance "
+        "basis": txt("The LiST rates are defined on the 2019 TARGET2 relevant-day calendar; the ladder of the 2022-12-31 balance "
                      "sheet runs on US business days from the day after the valuation date.",
-                     "Las tasas LiST se definen sobre el calendario TARGET2 de 2019 (A2); la escalera corre sobre días hábiles de "
+                     "Las tasas LiST se definen sobre el calendario de días relevantes TARGET2 de 2019; la escalera del balance al "
+                     "2022-12-31 corre sobre días hábiles de "
                      "EE.UU. desde el día siguiente a la fecha de valoración."),
     }
     c["cbc_securities_mapping"] = {
@@ -139,10 +140,10 @@ def conventions() -> dict:
                   "source": "Federal Reserve discount window securities margins effective 2022-03-14 to 2023-03-12 (addendum L4)"
                   if rule == "central-bank-framework" else "ECB LiST 2019 methodological note para 74 (addendum L1.6)"}
                  for cid, cat, bucket, margin, rule in SEC_ROWS],
-        "basis": txt("The securities book split by type at the FDIC carrying values (A3); the duration bucket is an assumption "
+        "basis": txt("The securities book split by type at the FDIC carrying values; the duration bucket is an assumption "
                      "(the call report gives maturity buckets, not durations); a class with no framework row takes the fallback.",
-                     "El libro de valores por tipo a valores contables FDIC (A3); el tramo de duración es un supuesto; una clase "
-                     "sin fila del marco toma el respaldo."),
+                     "El libro de valores separado por tipo a los valores contables de la FDIC; el tramo de duración es un supuesto (el "
+                     "reporte da tramos de vencimiento, no duraciones); una clase sin fila en el marco toma el valor de respaldo."),
     }
     c["monetisation_schedule"] = {
         "status": "convention", "points": [{"day": d, "cumulative_share": s} for d, s in SCHEDULE],
@@ -150,27 +151,29 @@ def conventions() -> dict:
             {"id": "immediate", "points": [{"day": 1, "cumulative_share": 1.0}]},
             {"id": "slow", "points": [{"day": 1, "cumulative_share": 0.25}, {"day": 5, "cumulative_share": 0.6},
                                       {"day": 10, "cumulative_share": 1.0}]}],
-        "basis": txt("Dossier 05 E.5 names the monetisation capacity per day with no value (Q6): a step schedule of the share of the "
+        "basis": txt("Dossier 05 E.5 names the monetisation capacity per day with no value: a step schedule of the share of the "
                      "liquidity value usable by day, with an immediate and a slow bound.",
-                     "El dossier 05 E.5 nombra la capacidad de monetización por día sin valor (Q6): un calendario escalonado con "
-                     "cotas inmediata y lenta."),
+                     "El dossier 05 E.5 nombra la capacidad de monetización por día sin darle valor: un calendario escalonado de la parte "
+                     "del valor de liquidez utilizable por día, con una cota inmediata y una lenta."),
     }
     c["fast_run_calibration_rule"] = {
         "status": "convention", "rule": "maximum-implied-daily-rate",
-        "basis": txt("The dossiers give no calibration method (Q4): the fast run takes the fastest implied daily rate of the pre-2023 "
+        "basis": txt("The dossiers give no calibration method: the fast run takes the fastest implied daily rate of the pre-2023 "
                      "Table A.1 rows, a severe-scenario choice.",
-                     "Los dossiers no dan método de calibración (Q4): la corrida rápida toma la mayor tasa diaria implícita de las "
+                     "Los dossiers no dan método de calibración: la corrida rápida toma la mayor tasa diaria implícita de las "
                      "filas de la Tabla A.1 anteriores a 2023."),
     }
     c["cliff_days"] = {
         "status": "convention", "near": 30, "far": 35, "day_basis": "relevant-days",
         "basis": txt("The days of the cliff diagnostic are 30 and 35 (05 E.1); the LiST note does not say whether they count calendar "
                      "or relevant days (UNVERIFIED), so the basis is a convention.",
-                     "Los días del diagnóstico son 30 y 35 (05 E.1); la nota LiST no dice si son corridos o hábiles (SIN VERIFICAR)."),
+                     "Los días del diagnóstico de acantilado son 30 y 35 (05 E.1); la nota LiST no dice si cuentan días corridos o "
+                     "relevantes (SIN VERIFICAR), así que la base es una convención."),
     }
     c["contractual_bucket_edges_days"] = grid([1, 7, 30, 90, 180, 365], "days",
         "Upper edges of the contractual maturity buckets, a convention (SRP50 names no buckets for the mismatch tool).",
-        "Bordes superiores de los tramos de vencimiento contractual, una convención.")
+        "Bordes superiores de los tramos de vencimiento contractual, una convención (SRP50 no nombra tramos para la herramienta "
+        "de descalce).")
     c["event_horizon_days"] = scalar(2, "days", "The event horizon of the March 2023 run: SVB's 85 percent in 2 days (05 E.2, Table A.1).",
                                      "El horizonte del evento de marzo 2023: 85 por ciento de SVB en 2 días (05 E.2, Tabla A.1).")
     c["uninsured_share_grid"] = grid([0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95], "share of domestic deposits",
@@ -185,8 +188,8 @@ def conventions() -> dict:
     c["reverse_target_days"] = scalar(30, "days", "The dossier's example target of the reverse stress (05 E.5 rung 5).",
                                       "El objetivo de ejemplo del dossier para el estrés inverso (05 E.5).")
     c["list_compounding_tolerance"] = scalar(5e-7, "share, absolute",
-        "A golden stated to six decimals holds to 5e-7 (the engine contract's rule).",
-        "Un valor dorado a seis decimales se cumple a 5e-7.")
+        "A golden value stated to six decimals holds to 5e-7 (the engine contract's rule).",
+        "Un valor de referencia dado con seis decimales se cumple a 5e-7 (la regla del contrato del motor).")
     c["monotonicity_tolerance_days"] = scalar(0, "days", "The survival period must not lengthen as severity rises: no tolerance.",
                                               "El periodo de supervivencia no debe alargarse al subir la severidad: sin tolerancia.")
     c["nlp_identity_tolerance"] = scalar(1e-6, "USD thousands", "The NLP identity of 05 E.1 holds to the rounding of six decimals.",
@@ -197,24 +200,24 @@ def conventions() -> dict:
     c["cliff_red_threshold"] = scalar(-0.03, "share of total assets", "Red below minus 3 percent of total assets (a convention).",
                                       "Rojo bajo menos 3 por ciento de los activos (una convención).")
     c["scoring_ratio_green"] = scalar(0.8, "modelled over realised cumulative outflow",
-        "Green when the model reaches 80 percent of the realised outflow at the event horizon (Q5, a descriptive score).",
-        "Verde cuando el modelo alcanza 80 por ciento de la salida realizada en el horizonte del evento.")
+        "Green when the model reaches 80 percent of the realised outflow at the event horizon (a descriptive score).",
+        "Verde cuando el modelo alcanza 80 por ciento de la salida realizada en el horizonte del evento (un puntaje descriptivo).")
     c["scoring_ratio_amber"] = scalar(0.5, "modelled over realised cumulative outflow",
         "Amber from 50 percent of the realised outflow; red below.", "Ámbar desde 50 por ciento de la salida realizada; rojo bajo ello.")
     c["generator_truth_se_green"] = scalar(2.0, "Monte Carlo standard errors",
-        "Green when the model's rate is within 2 Monte Carlo standard errors of the generator's truth (Q5).",
+        "Green when the model's rate is within 2 Monte Carlo standard errors of the generator's truth.",
         "Verde cuando la tasa del modelo está a menos de 2 errores estándar Monte Carlo de la verdad del generador.")
     c["generator_truth_se_red"] = scalar(3.0, "Monte Carlo standard errors", "Red beyond 3 Monte Carlo standard errors.",
                                          "Rojo sobre 3 errores estándar Monte Carlo.")
     c["htm_revaluation_green"] = scalar(0.05, "share of the reported unrealised loss",
-        "Green when the revalued HTM book is within 5 percent of the reported unrealised loss (Q11).",
+        "Green when the revalued HTM book is within 5 percent of the reported unrealised loss.",
         "Verde cuando el libro HTM revaluado está a menos de 5 por ciento de la pérdida no realizada informada.")
     c["htm_revaluation_amber"] = scalar(0.15, "share of the reported unrealised loss", "Amber within 15 percent; red beyond.",
                                         "Ámbar a menos de 15 por ciento; rojo sobre ello.")
     c["round_trip_tolerance_days"] = scalar(0, "days", "The solved multiplier must return the target survival period exactly.",
                                             "El multiplicador resuelto debe devolver exactamente el periodo objetivo.")
     c["cbc_haircut_band"] = scalar(BAND, "share, added to and taken from each haircut",
-        "The width of the sensitivity band of the central bank haircuts (Q6, A4).",
+        "The width of the sensitivity band of the central bank haircuts.",
         "El ancho de la banda de sensibilidad de los recortes del banco central.")
     return c
 
