@@ -117,6 +117,85 @@ The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the
   workbench test pin the regenerated counts.
 - The governance fixture builder reads the 1.0 packaged battery labels (`contraste-<battery> X.Y.Z`): the extract copies the policy file's entries for the
   tested ids, and every report-fixture policy identity equals `resolve_policy` of the engine.
+- Names for every id a reader sees (fix round 3, U16-F9a). One names module (`frontend/src/workbench/names/`) names every test the
+  engine registers and the product's own (141), every model the documents cite (generated from them by
+  `frontend/scripts/gen-names.mjs`), the segments of each case, the design limits and outputs blocks a finding rests on, the
+  rate configurations of C04 and C22, and C01's contract rules. The Findings card of every case, C01's, C05's and C22's
+  evidence lists, the governance register's anchor and the governance report's test rows print the names; every tests table
+  falls back to the shared test name, never to the id. The names gate (`names.test.ts`) walks every committed document and fails
+  on any key, test, model or tests-table input without a name.
+- The U14 tests table (C02, C20) names each row's model and its input: C02's 66 CSI rows name the column they test.
+- 390 px: a table wider than its card scrolls sideways in its own box with the right-edge fade, instead of being cut at the card
+  edge; a column is hidden on a phone only when its value is repeated under the row text. C13's Findings box keeps its floor
+  height on a phone only, so at 1280 it no longer spills under the governance disclosure.
+- C01's Context names each data source by its published name.
+- Shell 0.19.1 adopted: a filling card flows on a phone through the shell's `data-caos-flow` contract and the equation's fade is
+  the shell's, so the product restyles no shell class (the template 0.11 web-baseline guard is OK).
+- The capture tool writes each view's text (`--text true`), and `frontend/scripts/scan-raw-ids.mjs` reports every id of the
+  committed documents a reader can see; fix round 3 named every id it found.
+- C01: the pipeline's exact figures name the pipeline's challenger whatever the rail picked; the German twin's bins and inputs are
+  named from the UCI codebook; the finding titles name the model by its short title and list no test id; the applicant
+  distribution keeps a floor and, with no applicant, is titled for what it draws.
+- C02: the By horizon, Transfer and CSI rows join and name their models and inputs; the finding titles name models by short title.
+- C03: the finding titles name the rung; the Context names the truth status and the source; the TabPFN reason in Spanish; the
+  model inputs by name in the fit caption, the coefficients, the L1 variables and the PLTR rules (the names module's input maps
+  gain the SBA file's inputs).
+- C04: the size finding names its tests; the truth status, the licence glosses and the unlabelled line at 1.
+- C05: the source names, the size-and-power rows and the notes of the recomputed tables in Spanish.
+- C06: the ladder by short title, the conversion table in Spanish, the LGD segments and the source in words.
+- C07: the scenario, drivers, units, segments and model named; the calibration targets in Spanish; short member names and room for
+  the Segments bars.
+- C08: the rung by its short title, the single-cohort chart drawn as points, cerró, the source in words, the proxy chart's zoom reason;
+  the SBA file's field codes print as code beside the definition that names them.
+- C09: each sub-tab lists its own tests; F-UNDEFINED states the first-month share (8.3 %) beside the share with no cohort CCF
+  (30.7 %); the covariates and estimate models in words; the distribution totals, the bias interval and the colour legend.
+- C10: the correlation note counts the fit's years; the ladder's Scenarios cell wraps; a rung no variant runs is drawn as not run
+  (c10-models 2.0.0: `evaluated` on each ladder rung; api 23.0.0); the size finding names its estimator.
+- C11: every hyperparameter named, the Z2 marks kept between the outer edge and centre, the FZ0 reason in Spanish.
+- C12, C18: the remaining segments and the scenario sources named.
+- C13: a miss states the miss rate.
+- C14, C15: shocks, legs, deposit categories, the floor function and the assumption sources in words; capital de nivel 1, pruebas,
+  combinaciones, sobre él; the Thresholds and Variants notes match the charts and the documents.
+- C16: every red or amber test raises a finding; the LCR phase named.
+- C17: each test row names its method and cell; the Variants table counts the histories with a capital.
+- C20: the finding titles name their tests; the German and Fed inputs, the shifts, the windows and the score named.
+- C21: the tests tables name the model, the estimate unit and the data-note fields in words.
+- Pages and governance (the partial R2b page reviews and the raw-id scan of the pages): every inventory entry, related link,
+  left-out variant, register entry and report header is named (case and fit in words, from the names module's fit table and
+  the variant titles; the gate checks every governance key); the register's Entry cell shows the finding's title and its
+  unavailable anchor says what the evidence is; the engine's report sentences that print a fit id, source ids or an
+  unagreeing plural are read whole in words; sources print their published names (models.gen.json gains them from the
+  manifests); the Experiments case intros name their sources; C09's EAD models, C20's rungs, shock families and planted leak,
+  and C22's findings are named, C22's generator references print as code and its banner says when a size is exact; an
+  element cell of a page table wraps; English-only engine reasons on the Experiments tables read in Spanish; the readiness
+  table names the catalog status and prints the contract id as code.
+- Documentation pages: captions and prose write their symbols as subscripts, superscripts and Greek letters (205 text nodes;
+  `p_r`, `S_B`, `Phi^-1` were ASCII); the figures carry their label in the page's language; the lanes diagram's Spanish label
+  fits its box; the doc figures keep their 520 px cap (the shell's `.prose svg` rule had widened them to the page) and 440 px
+  on a phone in a sideways box; the protocol figure has no empty band above it.
+- Spanish percent: every Spanish literal of the frontend writes a no-break space before `%` (231), the form the shell's
+  formatter writes.
+- C18: the reverse-stress finding title names its factors by their labels; the bank note says what the 20-F terms allow in
+  words and writes capital de nivel 1 in Spanish.
+- C12: the DIM agreement note names the test it points to (the EE profile reconciled with ORE) in words, in both languages.
+- Shell 0.19.2 adopted (the gate reads the sticky header right).
+- The open rows of the partial R2b reviews of C06, C12, C17, C18, C20, C21 and C22 (fix round 3, U16-F9c). A table of a
+  handful of rows shows its rows at 1280: C06's SICR accounts are counted by stage and trigger beside the chart (no 400-row
+  table), C12's PIT classes, GIRR tenors and SA-CCR trades sit in a card beside their drawing and the exceedances and collateral
+  tables get a taller box, C17's capital by years and threshold, C18's capital stack (its two drawings in one card, the tables
+  beside), C21's rates and replication; C12's 309 calibrations are paged with their count; C20's drawings of more than 12 bars
+  keep their height in a box that scrolls, and its seeds drawing gives each unit an axis.
+- Names where ids were printed: C06's rungs by short title, the conversion without the engine's function names, the scenario
+  sources and the days past due in words, the corner labels of the simplex whole; C20's Fed inputs, shifts and rungs; C21's
+  findings by number and title in the evidence, the legal sentences in Spanish with the English original marked, the controls
+  note by field name; C22's p-value curves numbered with where their null holds, the generator configuration as code in the
+  one-report view; C12's with-im variant by its one name, no plan id in the CVA caption, no UNVERIFIED marker in the view's words;
+  C17's method names keep their proper names and acronyms in a sentence, the ladder shows no empty tests block and the rail counts
+  the histories with a capital.
+- Producer texts (re-baked by the main session): C06's finding titles name the figure they quote and the scenario-order finding
+  says what its test reads; C12's measure note names the SA-CCR block, the BA-CVA limit and the HQM licence say what was not
+  checked in words, a finding title names its measure; C17's finding titles name the threshold's currency and write the Spanish
+  percent with its no-break space; C20's finding titles name their test in words.
 
 ## [0.15.000], 2026-10-21
 
