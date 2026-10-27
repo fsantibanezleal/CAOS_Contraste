@@ -96,15 +96,32 @@ def row_id(row: Mapping[str, Any]) -> str:
     return f"{tid}@-@{seg}" if seg is not None else tid
 
 
-def cited_tests(findings: Sequence[Mapping[str, Any]]) -> set[str]:
-    """The test ids the open findings cite (a ``design:``, ``contract:`` or ``rate:`` evidence cites no test)."""
+def cited_rows(findings: Sequence[Mapping[str, Any]], tests: Sequence[Mapping[str, Any]]) -> set[str]:
+    """The full ids of the test rows the open findings cite (R5: every red ROW is cited, not every test). An evidence id cites the
+    rows it resolves to: ``test@model@segment`` and ``test@-@segment`` that row; ``test@model`` the model's portfolio row, else its
+    row of no segment; a bare ``test`` its only row, else its row of no model and no segment. ``design:``, ``contract:`` and
+    ``rate:`` evidence cites no test row."""
+    by_test: dict[str, list[Mapping[str, Any]]] = {}
+    for r in tests:
+        by_test.setdefault(r["test_id"], []).append(r)
     out: set[str] = set()
     for f in findings:
         if f.get("status") != "open":
             continue
         for e in f.get("evidence") or []:
-            if not e.startswith(("design:", "contract:", "rate:")):
-                out.add(e.split("@", 1)[0])
+            if e.startswith(("design:", "contract:", "rate:")):
+                continue
+            parts = e.split("@")
+            rows = by_test.get(parts[0], [])
+            if len(parts) == 3:
+                model = None if parts[1] == "-" else parts[1]
+                hit = [r for r in rows if r.get("model_id") == model and r.get("segment") == parts[2]]
+            elif len(parts) == 2:
+                mine = [r for r in rows if r.get("model_id") == parts[1]]
+                hit = [r for r in mine if r.get("segment") == "portfolio"] or [r for r in mine if r.get("segment") is None]
+            else:
+                hit = rows if len(rows) == 1 else [r for r in rows if r.get("model_id") is None and r.get("segment") is None]
+            out.update(row_id(r) for r in hit)
     return out
 
 
@@ -120,22 +137,20 @@ def _title(name: Mapping[str, str], n: int, models: list[Mapping[str, str]]) -> 
         who = f" ({listed})" if shown else ""
         if lang == "en":
             rows = "row" if n == 1 else "rows"
-            out[lang] = (f"{name[lang]}: red on {count} {rows}{who} that no other finding cites; every red light is an open finding, "
-                         f"and these rows are its evidence")
+            out[lang] = f"{name[lang]}: red on {count} {rows}{who} that no other finding cites"
         else:
             rows = "fila" if n == 1 else "filas"
-            out[lang] = (f"{name[lang]}: en rojo en {count} {rows}{who} que ningún otro hallazgo cita; cada luz roja es un hallazgo "
-                         f"abierto, y estas filas son su evidencia")
+            out[lang] = f"{name[lang]}: en rojo en {count} {rows}{who} que ningún otro hallazgo cita"
     return out
 
 
 def red_findings(case_id: str, tests: Sequence[Mapping[str, Any]], findings: Sequence[Mapping[str, Any]],
                  models: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    """The findings to add: one per red test that no open finding cites, in test-id order (none when every red test is cited)."""
-    cited = cited_tests(findings)
+    """The findings to add: one per test with red rows no open finding cites, citing those rows, in test-id order (none when every red row is cited)."""
+    cited = cited_rows(findings, tests)
     red: dict[str, list[Mapping[str, Any]]] = {}
     for r in tests:
-        if r.get("light") == "red" and r["test_id"] not in cited:
+        if r.get("light") == "red" and row_id(r) not in cited:
             red.setdefault(r["test_id"], []).append(r)
     if not red:
         return []
