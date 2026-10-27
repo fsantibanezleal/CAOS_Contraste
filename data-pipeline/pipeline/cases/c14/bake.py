@@ -59,6 +59,13 @@ EXPECT: dict[str, tuple[float, float]] = {
 _T0 = time.perf_counter()
 
 
+
+def report_source(fd: dict) -> dict[str, str]:
+    """The provenance of the FDIC financials file a call report is read from, in both languages (R3 c15 B2: the Spanish Context
+    printed "file" and "retrieved"); the URL, the file name, the hash and the date are the same in both."""
+    url, name, sha, day = fd["url"], fd["name"], fd["sha256"][:12], fd["retrieved"]
+    return {"en": f"{url} (file {name}, sha256 {sha}, retrieved {day})", "es": f"{url} (archivo {name}, sha256 {sha}, obtenido el {day})"}
+
 def _log(msg: str) -> None:
     print(f"[C14 {time.perf_counter() - _T0:7.1f}s] {msg}", file=sys.stderr, flush=True)
 
@@ -145,7 +152,7 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
         reports = fdic.up_to(reports, drop_after)
         curves = {d: c for d, c in curves.items() if d <= drop_after}
     fd = prov[fetch.FDIC_DIR][0]
-    raw_urls = {"fdic": f"{fd['url']} (file {fd['name']}, sha256 {fd['sha256'][:12]}, retrieved {fd['retrieved']})"}
+    raw_urls = {"fdic": report_source(fd)}
     manifest_in = {"sources": {
         "fdic-bankfind": {"files": [{"name": r["name"], "sha256": r["sha256"]} for r in prov[fetch.FDIC_DIR]]},
         "treasury-par-curve": {"files": [{"name": r["name"], "sha256": r["sha256"]} for r in prov[fetch.TREASURY_DIR]]}}}

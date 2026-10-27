@@ -15,6 +15,7 @@ from riskvalidation.irrbb import slotting as rv_slotting
 
 from . import assumptions as asm
 from .bands import spread
+from ...core.text import number
 from ...io.fdic import Report
 
 CATEGORIES = (
@@ -39,7 +40,7 @@ class Item:
     source_field: str
     reported_amount: float | None
     reason_missing: Text | None
-    slotting_assumption: str
+    slotting_assumption: Text
     amount: float
     behavioural: np.ndarray
     contractual: np.ndarray
@@ -88,9 +89,20 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
     # contractual: bullets at their maturity, mortgage pools amortising; behavioural: the mortgage pools also prepay at the base CPR
     sec_con = (spread(nonmort) + spread(mort, amortising=True)) / debt                    # per unit of debt securities
     sec_beh = (spread(nonmort) + prepaid_profile(spread(mort, amortising=True), cpr)) / debt
-    no_flow = "uniform spread of the report bands over the buckets they overlap"
-    sec_assumption = ("non-mortgage debt at its maturity band, mortgage-backed securities amortising linearly over their remaining "
-                      f"maturity band; behavioural flows prepay the mortgage-backed part at the base CPR of {cpr:g} a year")
+    # every slotting assumption is bilingual at the source (R3 c15 B4: the Spanish rendered an English-only string through a rule)
+    cpr_text = {lang: number(cpr, len(f"{cpr:g}".partition(".")[2]), lang=lang) for lang in ("en", "es")}
+    no_flow = t("uniform spread of the report bands over the buckets they overlap",
+                "reparto uniforme de las bandas del reporte entre los tramos que cubren")
+    overnight_bucket = t("overnight bucket", "tramo a la vista")
+    at_par = t("not interest-sensitive: overnight bucket at par", "no sensible a tasas: tramo a la vista a la par")
+
+    def sec_assumption(share_en: str, share_es: str) -> Text:
+        return t("non-mortgage debt at its maturity band, mortgage-backed securities amortising linearly over their remaining maturity "
+                 f"band; behavioural flows prepay the mortgage-backed part at the base CPR of {cpr_text['en']} a year; split pro rata to "
+                 f"the {share_en} share",
+                 "deuda no hipotecaria en su banda de plazo, títulos respaldados por hipotecas con amortización lineal sobre su banda de "
+                 f"plazo restante; los flujos conductuales prepagan la parte hipotecaria al CPR base de {cpr_text['es']} al año; reparto "
+                 f"proporcional a la parte {share_es}")
 
     def add(**kw: Any) -> None:
         amount = kw["amount"]
@@ -114,23 +126,28 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
               "250 000 USD or less), a synthetic mapping.",
               "El reporte no separa depósitos por tipo de cliente: la partida es el depósito informado por la proporción minorista "
               "(cuentas de hasta 250 000 USD), un mapeo sintético.")
+    # the wholesale lines are the remainder, not the product with the retail share (R3 c15 n1)
+    split_wholesale = t("The call report has no customer-type split: the item is the reported deposits times one minus the retail share "
+                        "(the accounts above 250 000 USD), a synthetic mapping.",
+                        "El reporte no separa depósitos por tipo de cliente: la partida es el depósito informado por uno menos la proporción "
+                        "minorista (las cuentas de más de 250 000 USD), un mapeo sintético.")
     # ---- assets
     add(item_id="A1", label=t("Cash and balances due from depository institutions", "Efectivo y saldos en instituciones depositarias"),
         side="asset", category="cash", behavioural_class="none", repricing_type="floating", source_field="CHBAL",
-        reported_amount=r.get("CHBAL"), reason_missing=None, slotting_assumption="overnight bucket", amount=r.get("CHBAL"),
+        reported_amount=r.get("CHBAL"), reason_missing=None, slotting_assumption=overnight_bucket, amount=r.get("CHBAL"),
         contractual=overnight(r.get("CHBAL")))
     add(item_id="A2", label=t("Federal funds sold and reverse repurchase agreements", "Fondos federales vendidos y pactos de retroventa"),
         side="asset", category="cash", behavioural_class="none", repricing_type="floating", source_field="FREPO",
-        reported_amount=r.get("FREPO"), reason_missing=None, slotting_assumption="overnight bucket", amount=r.get("FREPO"),
+        reported_amount=r.get("FREPO"), reason_missing=None, slotting_assumption=overnight_bucket, amount=r.get("FREPO"),
         contractual=overnight(r.get("FREPO")))
     sec_bands = "bands SCNM*, SCPT*, SCO3YLES, SCOOV3Y"
     add(item_id="A3", label=t("Securities held to maturity", "Valores mantenidos al vencimiento"), side="asset",
         category="securities-htm", behavioural_class="none", repricing_type="fixed", source_field=f"SC - SCAF; {sec_bands}",
-        reported_amount=htm_amount, reason_missing=None, slotting_assumption=f"{sec_assumption}; split pro rata to the held-to-maturity share",
+        reported_amount=htm_amount, reason_missing=None, slotting_assumption=sec_assumption("held-to-maturity", "mantenida hasta el vencimiento"),
         amount=htm_amount, contractual=htm_amount * sec_con, behavioural=htm_amount * sec_beh)
     add(item_id="A4", label=t("Securities available for sale", "Valores disponibles para la venta"), side="asset",
         category="securities-afs", behavioural_class="none", repricing_type="fixed", source_field=f"SCAF; {sec_bands}",
-        reported_amount=afs_amount, reason_missing=None, slotting_assumption=f"{sec_assumption}; split pro rata to the available-for-sale share",
+        reported_amount=afs_amount, reason_missing=None, slotting_assumption=sec_assumption("available-for-sale", "disponible para la venta"),
         amount=afs_amount, contractual=afs_amount * sec_con, behavioural=afs_amount * sec_beh)
     floating = r.sum("LNOT3LES", "LNRS3LES")
     add(item_id="A5", label=t("Loans repricing within three months", "Préstamos con reprecio dentro de tres meses"), side="asset",
@@ -149,13 +166,14 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
     add(item_id="A7", label=t("Closed-end residential loans (prepayable)", "Préstamos residenciales a plazo (prepagables)"), side="asset",
         category="loans-fixed", behavioural_class="prepayable-loan", repricing_type="fixed",
         source_field="LNRS3T12 + LNRS1T3 + LNRS3T5 + LNRS5T15 + LNRSOV15", reported_amount=sum(a for a, _ in res), reason_missing=None,
-        slotting_assumption=f"amortising linearly over the remaining maturity band; behavioural flows prepay at the base CPR of {cpr:g} a year",
+        slotting_assumption=t(f"amortising linearly over the remaining maturity band; behavioural flows prepay at the base CPR of {cpr_text['en']} a year",
+                              f"amortización lineal sobre la banda de plazo restante; los flujos conductuales se prepagan al CPR base de {cpr_text['es']} al año"),
         amount=sum(a for a, _ in res), contractual=res_c, behavioural=prepaid_profile(res_c, cpr))
     others = r.get("ASSET") - sum(i.amount for i in items)
     add(item_id="A8", label=t("Other assets, net of the allowance, and loans without a repricing band",
                               "Otros activos, netos de provisión, y préstamos sin banda de reprecio"),
         side="asset", category="other-assets", behavioural_class="none", repricing_type="fixed", source_field="ASSET less the items above",
-        reported_amount=None, reason_missing=plug_a, slotting_assumption="not interest-sensitive: overnight bucket at par",
+        reported_amount=None, reason_missing=plug_a, slotting_assumption=at_par,
         amount=others, contractual=overnight(others))
     # ---- liabilities
     r_share = retail_share(r)
@@ -167,9 +185,12 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
         req = requests[cat]
         sl = rv_slotting.nmd_split(amount, cat, req.share, req.maturity, enforce_caps=True)
         add(item_id=item_id, label=label, side="liability", category=category, behavioural_class=cat_class,
-            repricing_type="non-maturity", source_field=source, reported_amount=None, reason_missing=split,
-            slotting_assumption="behavioural: non-core overnight, core around the used maturity (nmd_split, SRP31 Table 4 caps); "
-                                "contractual: overnight",
+            repricing_type="non-maturity", source_field=source, reported_amount=None,
+            reason_missing=split_wholesale if cat_class == "nmd-wholesale" else split,
+            slotting_assumption=t("behavioural: non-core overnight, core around the used maturity (the engine's NMD split, SRP31 Table 4 "
+                                  "caps); contractual: overnight",
+                                  "conductual: la parte no estable a la vista y la estable en torno al plazo usado (la división NMD del "
+                                  "motor, topes de la Tabla 4 de SRP31); contractual: a la vista"),
             amount=amount, behavioural=-sl.flows, contractual=overnight(-amount))
 
     nmd("L1", t("Noninterest-bearing deposits, retail", "Depósitos sin interés, minoristas"), "nmd-retail-transactional",
@@ -199,12 +220,12 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
         reason_missing=None, slotting_assumption=no_flow, amount=other_b, contractual=-spread(ob))
     add(item_id="L8", label=t("Federal funds purchased and repurchase agreements", "Fondos federales comprados y pactos de retrocompra"),
         side="liability", category="borrowings", behavioural_class="none", repricing_type="floating", source_field="FREPP",
-        reported_amount=r.get("FREPP"), reason_missing=None, slotting_assumption="overnight bucket", amount=r.get("FREPP"),
+        reported_amount=r.get("FREPP"), reason_missing=None, slotting_assumption=overnight_bucket, amount=r.get("FREPP"),
         contractual=overnight(-r.get("FREPP")))
     other_l = r.get("LIAB") - sum(i.amount for i in items if i.side == "liability")
     add(item_id="L9", label=t("Other liabilities", "Otros pasivos"), side="liability", category="other-liabilities", behavioural_class="none",
         repricing_type="fixed", source_field="LIAB less the items above", reported_amount=None, reason_missing=plug_l,
-        slotting_assumption="not interest-sensitive: overnight bucket at par", amount=other_l, contractual=overnight(-other_l))
+        slotting_assumption=at_par, amount=other_l, contractual=overnight(-other_l))
     return items
 
 

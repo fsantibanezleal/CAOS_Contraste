@@ -13,6 +13,7 @@ import { C15_FIT, C15_OUTPUTS } from './descriptor';
 import { useC15Instrument } from './instrument';
 import { amount, defaultSel, moneyDoc, outputsOf, worst, type C15Sel } from './selection';
 import { C15ContextView, C15FindingsView, C15VariantsTable, LegReadout, OffsetReadout, ShockReadout } from './C15Common';
+import { docText } from '../c14/C14Common';
 import { DynamicLegView, EarEvarLegView, EveByLegView, PositionsView } from './LegViews';
 import { IndexationView, NiiView } from './RateViews';
 import { FloorsView, ThresholdsView, thresholdsChart } from './FloorViews';
@@ -145,7 +146,7 @@ describe('the C15 instrument', () => {
   it('the indexation charge is derived from the net UF position and is never folded into the rate result', () => {
     const markup = html(<IndexationView sel={sel} />);
     const c = o.indexation_charge;
-    expect(markup).toContain(escapeHtml(c.formula));
+    expect(markup).toContain(escapeHtml(docText(c.formula, 'en'))); // c15-outputs 3.0.0 (U16-F10d): the formula is bilingual
     expect(markup).toContain(formatNumber(c.net_position_uf_units, 'en', { digits: 4 }));
     expect(markup).toContain(cell(c.pn_ur));
     expect(markup).toContain(cell(c.charge));
@@ -159,7 +160,7 @@ describe('the C15 instrument', () => {
     const withCpi = html(<IndexationView sel={selOf(cpi)} />);
     const s = cpi.outputs.cpi_scenario!;
     expect(withCpi).toContain('data-cpi="present"');
-    expect(withCpi).toContain(escapeHtml(s.formula));
+    expect(withCpi).toContain(escapeHtml(docText(s.formula, 'en')));
     expect(withCpi).toContain(cell(s.effect));
     expect(withCpi).toContain(formatNumber(s.surprise_pp, 'en', { digits: 4 }));
     const without = html(<IndexationView sel={sel} />);
@@ -303,7 +304,7 @@ describe('the C15 instrument', () => {
     }
     expect(markup).toContain('data-breached="false"');
     expect(markup).toContain('data-prioritised="false"');
-    expect(markup).toContain(escapeHtml(o.thresholds.reference));
+    expect(markup).toContain(escapeHtml(docText(o.thresholds.reference, 'en'))); // c15-outputs 3.0.0: the reference is bilingual (R3 c16 B2)
     expect(thresholdsChart(null)).toBeNull();
   });
 

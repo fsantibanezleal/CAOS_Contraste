@@ -3359,8 +3359,16 @@
           "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
         },
         "formula": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The formula of the charge, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
         },
         "note": {
           "$ref": "../common/text.schema.json"
@@ -3387,8 +3395,16 @@
               "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
             },
             "formula": {
-              "type": "string",
-              "minLength": 1
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "$ref": "../common/text.schema.json"
+                }
+              ],
+              "description": "The formula of the effect, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
             }
           },
           "description": "A CPI surprise applied to the net UF position, loss-positive: effect = -pn_ur x surprise_pp / 100."
@@ -3504,8 +3520,16 @@
           "type": "boolean"
         },
         "reference": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The reference of the prioritised-bank tests: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it."
         }
       },
       "description": "The banco priorizado tests; prioritised is true when any test is breached."
