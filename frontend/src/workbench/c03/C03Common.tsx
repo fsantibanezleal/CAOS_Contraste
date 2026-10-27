@@ -71,7 +71,7 @@ export function C03VariantsTable({ variants, onPick, current, label }: { variant
               const c = champion(v);
               return (
                 <tr key={id} data-variant={id} className={id === current ? 'ct-current' : undefined}>
-                  <td className="ct-text">
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
                   <td style={{ whiteSpace: 'nowrap' }}>{fyRange(v.outputs.training.first_fy, v.outputs.training.last_fy)}</td>

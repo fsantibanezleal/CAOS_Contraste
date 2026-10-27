@@ -50,7 +50,7 @@ describe('U16-R4 c04 minors on the committed C03 documents', () => {
     for (const lang of LANGS) {
       const r = rows(render(<C03VariantsTable variants={variants as never} onPick={() => undefined} current={variants[0].id} />, lang), 'variants-c03');
       expect(r.length).toBe(variants.length);
-      for (const row of r) expect(row[1].attrs, `${lang} ${row[1].text}`).toContain('white-space:nowrap');
+      for (const row of r) for (const k of [0, 1]) expect(row[k].attrs, `${lang} ${row[k].text}`).toContain('white-space:nowrap');
     }
   });
 });
