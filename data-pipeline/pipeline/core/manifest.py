@@ -26,6 +26,7 @@ from typing import Any
 
 from .. import __version__
 from .lineage import Lineage, assert_publishable
+from .red_findings import red_findings
 
 INDEX_SCHEMA = "contraste.index/v1"
 MANIFEST_SCHEMA = "contraste.manifest/v1"
@@ -154,6 +155,10 @@ def build_artifact(
         raise ContractViolation(f"{where}: the lineage belongs to {lineage.case_id}")
     _check_models(model, where)
     test_ids = _check_tests(tests, where)
+    _check_findings(findings, test_ids, where, _rate_keys(outputs))
+    # every red test row is cited by an open finding: the generic step adds one per red test no open finding cites, before the
+    # document is validated and written (U16-R4 ruling 4, unit U16-F12g)
+    findings = [*findings, *red_findings(case_id, tests, findings, model)]
     _check_findings(findings, test_ids, where, _rate_keys(outputs))
     _check_impact(impact, where)
     if lane.get("lane") not in LANES:
