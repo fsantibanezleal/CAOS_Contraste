@@ -285,7 +285,7 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
             {pp.x.length >= 2 ? (
               // a panel of more than three series (Calibration draws nine) gets the solo key, so one curve can be read alone (b10 m16);
               // the plot keeps a floor under its key (U16-R3 c22 M1: squashed to 15 to 30 px)
-              <div data-plot-floor="10rem" style={{ flex: '1 1 auto', minHeight: '10rem', display: 'flex', flexDirection: 'column' }}>
+              <div data-plot-floor="14rem" style={{ flex: '1 1 auto', minHeight: '14rem', display: 'flex', flexDirection: 'column' }}>
               <UPlotChart
                 height="fill"
                 x={{ values: pp.x, label: pp.panel.axis ?? ladder.label, format: { digits: 3 } }}
@@ -493,7 +493,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
             <p className="ct-sm-title">{pick(pp.panel.label, lang)}</p>
-            <div data-plot-floor="10rem" style={{ flex: '1 1 auto', minHeight: '10rem', display: 'flex', flexDirection: 'column' }}>
+            <div data-plot-floor="14rem" style={{ flex: '1 1 auto', minHeight: '14rem', display: 'flex', flexDirection: 'column' }}>
             <UPlotChart
               height="fill"
               x={{ values: pp.x, label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 } }}
