@@ -77,6 +77,10 @@ def _check_tests(tests: Sequence[Mapping[str, Any]], where: str) -> set[str]:
             ids.add(f"{tid}@{model}")
             if row.get("segment") is not None:
                 ids.add(f"{tid}@{model}@{row['segment']}")
+        elif row.get("segment") is not None:
+            # a row of no model cited by its segment, ``test@-@segment``, so a finding names which pair or variable it rests on
+            # (U16-R3 c20 M2: the Fed findings listed one test name 18 times)
+            ids.add(f"{tid}@-@{row['segment']}")
     return ids
 
 

@@ -45,6 +45,8 @@ def evidence_id(r: dict[str, Any]) -> str:
         out += f"@{r['model_id']}"
         if r.get("segment") is not None:
             out += f"@{r['segment']}"
+    elif r.get("segment") is not None:
+        out += f"@-@{r['segment']}"  # a row of no model, named by its segment (U16-R3 c20 M2)
     return out
 
 

@@ -29,6 +29,8 @@ const UNIT: Record<string, string> = {
 export const unitEs = (unit: string, lang: 'en' | 'es'): string => (lang === 'es' ? UNIT[unit] ?? unit : unit);
 
 const PHRASES: Array<[string, string]> = [
+  // the EBA workbook keeps its published English title; the locator Contraste adds after it is Spanish (R3 c19 B3)
+  [', United States rows', ', filas de Estados Unidos'],
   ['dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level)',
     'dossier 05 G.5 (pruebas de validación de un modelo de capital económico: contrastar la agregación con la suma simple y con la fórmula de varianza-covarianza, la sensibilidad a la elección de cópula, las cotas del peor caso, el estrés de correlación, el signo de todo beneficio de diversificación, un horizonte y un nivel de confianza)'],
   ['dossier 05 G.5 (validation tests of an economic capital model: check the allocation sums to the total, the sensitivity checks)',
