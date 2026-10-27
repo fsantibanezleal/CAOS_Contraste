@@ -60,7 +60,7 @@ def parameters_block() -> list[dict[str, Any]]:
 def sgcd_notice() -> dict[str, Any]:
     return {"kind": "dataset-card-prohibition", "quote": SGCD_QUOTE, "commit": SGCD_COMMIT,
             "text": t("The SGCD dataset card forbids real-world credit scoring and production decisions about individuals",
-                      "La ficha del conjunto SGCD prohíbe el scoring de crédito real y las decisiones de producción sobre personas")}
+                      "La ficha del conjunto SGCD prohíbe la calificación de crédito real y las decisiones de producción sobre personas")}
 
 
 def impact_cutoff() -> dict[str, Any]:

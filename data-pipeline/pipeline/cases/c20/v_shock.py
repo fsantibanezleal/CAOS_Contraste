@@ -24,6 +24,11 @@ APPLIED_SHOCKS = {"seen": ("F0", "F1", "F2", "F3", "numeric-noise"), "held-out":
 N_CHECK_FEATURES = len(sgcd.feature_names())
 
 
+#: the design limit of the SGCD variants; the Spanish names the benchmark and the scoring in Spanish (U16-R3 c20 B7)
+SGCD_LIMIT = t("SGCD is a research benchmark and must not be used for real-world credit scoring; nothing here scores a person",
+               "SGCD es un conjunto de referencia de investigación y no debe usarse para la calificación de crédito real; nada aquí puntúa a una persona")
+
+
 def _levels(ref: pd.Series, cur: pd.Series) -> list[str]:
     return sorted({"<missing>" if v is None or (isinstance(v, float) and np.isnan(v)) else str(v) for v in (*ref, *cur)})
 
@@ -208,7 +213,6 @@ def build(frame: Frame, rungs: dict[str, Any], ds: sgcd.Dataset, codebook: dict[
                                       "label": t("Decisions that flip at the stated cut-off, largest over the applied shocks",
                                                  "Decisiones que cambian en el punto de corte indicado, la mayor entre los choques aplicados")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [fits.rung_id("P4-lightgbm", frame)],
-            "limits": [("sgcd-not-for-scoring", t("SGCD is a research benchmark and must not be used for real-world credit scoring; nothing here scores a person",
-                                                  "SGCD es un benchmark de investigación y no debe usarse para scoring de crédito real; nada aquí puntúa a una persona")),
+            "limits": [("sgcd-not-for-scoring", SGCD_LIMIT),
                        ("small-groups", t("Each shock row holds 30 to 90 records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
                                          "Cada fila de choque tiene de 30 a 90 registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso"))]}

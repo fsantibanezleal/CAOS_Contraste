@@ -61,12 +61,12 @@ TITLES = {
                   t("The three Fed 2025 corporate portfolios read as real drift with no model and as the size of a synthetic shift on the Polish evaluation set.",
                     "Las tres carteras corporativas 2025 de la Fed leídas como deriva real sin modelo y como el tamaño de un desplazamiento sintético sobre el conjunto de evaluación polaco.")),
     "seed-sweep": (t("Seed sweep and reason-code stability", "Barrido de semillas y estabilidad de códigos de razón"), t("Seeds", "Semillas"),
-                   t("The boosted Taiwan rungs refitted across 20 seeds and 100 bootstrap refits.", "Las etapas potenciadas de Taiwan reajustadas con 20 semillas y 100 remuestreos.")),
+                   t("The boosted Taiwan rungs refitted across 20 seeds and 100 bootstrap refits.", "Las etapas potenciadas de Taiwán reajustadas con 20 semillas y 100 remuestreos.")),
     "perturbation-grid": (t("Perturbation grid", "Grilla de perturbación"), t("Noise", "Ruido"),
-                          t("Performance of the Taiwan model against Gaussian input noise on the locked holdout.", "Desempeño del modelo de Taiwan frente a ruido gaussiano de entrada en la muestra reservada.")),
+                          t("Performance of the Taiwan model against Gaussian input noise on the locked holdout.", "Desempeño del modelo de Taiwán frente a ruido gaussiano de entrada en la muestra reservada.")),
     "leakage-planted": (t("Planted leakage", "Fuga plantada"), t("Leakage", "Fuga"),
                         t("A leaking feature planted in the Taiwan training set, caught by the leakage screen while performance collapses at decision time.",
-                          "Una variable filtrada plantada en el entrenamiento de Taiwan, detectada por la prueba de fuga mientras el desempeño colapsa al decidir.")),
+                          "Una variable filtrada plantada en el entrenamiento de Taiwán, detectada por la prueba de fuga mientras el desempeño colapsa al decidir.")),
 }
 _T0 = time.perf_counter()
 
@@ -306,7 +306,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, only: tupl
     e = _check_and_write(root, MODELS_REL, built.models)
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-known-truth",
-                    "title": t("Fitted ladders: German as carried by SGCD, Taiwan and Polish", "Escaleras ajustadas: alemán según SGCD, Taiwan y polaco"),
+                    "title": t("Fitted ladders: German as carried by SGCD, Taiwan and Polish", "Escaleras ajustadas: alemán según SGCD, Taiwán y polaco"),
                     "short_title": t("Models", "Modelos"),
                     "regime": t("The C01 ladder rungs fitted on each dataset of C20, with the fit sizes and the named parameters.",
                                 "Las etapas de la escalera de C01 ajustadas en cada conjunto de C20, con los tamaños de ajuste y los parámetros con nombre."),
