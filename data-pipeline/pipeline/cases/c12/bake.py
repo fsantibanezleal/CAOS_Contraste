@@ -321,7 +321,7 @@ TITLES = {
     "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro swaps bajo un acuerdo de neteo, sin colateral."),
     "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR de 10 días", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 días hábiles."),
     "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR de 20 días", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 días hábiles."),
-    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (un proxy de regresión, no SIMM)."),
+    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (una aproximación por regresión, no SIMM)."),
     "wrong-way-risk": ("Wrong-way risk", "Riesgo de correlación adversa", "The netting set with a counterparty hazard that rises with the portfolio value.", "El conjunto de neteo con una tasa de riesgo de la contraparte que sube con el valor del portafolio."),
 }
 

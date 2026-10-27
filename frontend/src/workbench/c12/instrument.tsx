@@ -260,7 +260,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       ),
       group(
         'backtest',
-        { en: 'Back-test and tests', es: 'Backtest y pruebas' },
+        { en: 'Back-test and tests', es: 'Prueba retrospectiva y pruebas' },
         tabs(
           [
             { id: 'pit', label: { en: 'PIT histogram', es: 'Histograma PIT' }, content: <PitView sel={sel} /> },
@@ -268,7 +268,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             { id: 'tests', label: { en: 'Tests', es: 'Pruebas' }, content: <C12TestsView sel={sel} /> },
             { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, content: <C12FindingsView sel={sel} /> },
           ],
-          { en: 'Views of the back-test and the tests', es: 'Vistas del backtest y las pruebas' },
+          { en: 'Views of the back-test and the tests', es: 'Vistas de la prueba retrospectiva y las pruebas' },
           'c12-backtest',
         ),
       ),

@@ -65,7 +65,7 @@ export const SUBJECT_TEXT: Record<Subject, Bi> = {
 };
 export const SUBJECT_LONG: Record<Subject, Bi> = {
   book: { en: 'the value of the synthetic book revalued on the realised curve', es: 'el valor de la cartera sintética revalorada con la curva realizada' },
-  'risk-factor': { en: 'the risk factor: the shortest Treasury zero rate, the proxy of the short rate', es: 'el factor de riesgo: la tasa cero más corta del Tesoro, el proxy de la tasa corta' },
+  'risk-factor': { en: 'the risk factor: the shortest Treasury zero rate, the proxy of the short rate', es: 'el factor de riesgo: la tasa cero más corta del Tesoro, el sustituto de la tasa corta' },
 };
 export const CASE_ORDER: readonly CaseId[] = ['base', 'a-plus-1se', 'a-minus-1se', 'sigma-plus-1se', 'sigma-minus-1se'];
 export const CASE_TEXT: Record<string, Bi> = {

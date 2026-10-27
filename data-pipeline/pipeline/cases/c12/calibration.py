@@ -19,6 +19,10 @@ from riskvalidation.ccr.hw1f import Ar1Fit, calibrate_ar1
 from . import data
 
 ESTIMATOR = "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+#: the estimator as the views print it, in both languages (R3 c13 BL4: the Spanish Context printed the English sentence); every
+#: calibration record keeps the English ``ESTIMATOR`` as its schema constant
+ESTIMATOR_TEXT = {"en": ESTIMATOR,
+                  "es": "AR(1) exacto por MCO sobre la tasa cero más corta del Tesoro (Brigo et al., arXiv 0812.4210, ecuaciones 55 a 57)"}
 FIT_TO_CURVE = "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
 DAYS_PER_YEAR = 365.25
 

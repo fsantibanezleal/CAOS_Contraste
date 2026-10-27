@@ -210,6 +210,18 @@ def backtest_document(res: Result, name: str, cvs: dict[str, vc.CriticalValues],
             "sub_windows": sub_windows(res, name)}
 
 
+#: the horizons of the backtest in words, as the views name them (R3 c13 BL1: the notes printed the ids 10bd, 1m)
+HORIZON_WORDS = {"10bd": "10 business days", "20bd": "20 business days", "1m": "1 month", "3m": "3 months", "6m": "6 months",
+                 "12m": "12 months"}
+
+
+def pit_note(engine_note: str, tag: str, h: str) -> str:
+    """The note of a PIT row: the engine's note, then the measure and the horizon in words ("... for the book at the horizon of
+    10 business days")."""
+    tail = f"for the {tag} at the horizon of {HORIZON_WORDS[h]}"
+    return f"{engine_note} {tail}" if engine_note else tail
+
+
 def test_rows(res: Result, name: str, cvs: dict[str, vc.CriticalValues]) -> list[dict[str, Any]]:
     """The engine's test rows of the backtest: the PIT test of the book at every horizon, the same for the rate, and the PFE
     exceedance test (a secondary row: BCBS 185 paragraph 27, the counts assume independence and the data overlap)."""
@@ -221,7 +233,7 @@ def test_rows(res: Result, name: str, cvs: dict[str, vc.CriticalValues]) -> list
             m = res.measures[who][h]
             r = vc.pit_exposure_backtest(m.realised, m.simulated, crit, vc.effective_sample_size(m.pits)).to_dict()
             r["segment"] = f"{tag}-{h}"
-            r["notes"] = (r["notes"] + " " if r["notes"] else "") + f"the {tag} at the {h} horizon"
+            r["notes"] = pit_note(r["notes"], tag, h)
             rows.append(r)
         m = res.measures[name][h]
         for k, q in enumerate(QUANTILES):
