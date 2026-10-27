@@ -44,7 +44,7 @@ MODELS = [
 def fixture_tests() -> list[dict]:
     return [
         row("pd.jeffreys", "P1-scorecard", "portfolio", "red"),             # cited by F-OWN (open)
-        row("pd.jeffreys", "P4-lightgbm", "grade-3", "red"),                 # same test: the test is cited, no generic finding
+        row("pd.jeffreys", "P4-lightgbm", "grade-3", "red"),                 # same test, another row: no finding cites THIS row (R5), so it gets one
         row("stability.csi", "P1-scorecard", "characteristic:age", "red"),  # uncited
         row("stability.csi", "P4-lightgbm", "characteristic:age", "red"),   # uncited
         row("stability.csi", "P4-lightgbm", "characteristic:income", "amber"),
@@ -69,8 +69,14 @@ def fixture_findings() -> list[dict]:
 def test_one_finding_per_red_test_that_no_open_finding_cites():
     out = rf.red_findings("C01", fixture_tests(), fixture_findings(), MODELS)
     cited = {f["evidence"][0].split("@")[0] for f in out}
-    assert cited == {"stability.csi", "disc.auc_vs_initial", "stability.chi2"}
+    # per row (R5): the Jeffreys grade-3 row is red and no finding cites it, although F-OWN cites the test's portfolio row
+    assert cited == {"stability.csi", "disc.auc_vs_initial", "stability.chi2", "pd.jeffreys"}
     assert all(f["status"] == "open" for f in out)
+
+
+def test_a_cited_row_is_not_cited_again_and_an_uncited_row_of_the_same_test_is():
+    out = {f["evidence"][0].split("@")[0]: f for f in rf.red_findings("C01", fixture_tests(), fixture_findings(), MODELS)}
+    assert out["pd.jeffreys"]["evidence"] == ["pd.jeffreys@P4-lightgbm@grade-3"]
 
 
 def test_the_evidence_is_every_red_row_of_the_test_by_its_full_id():
@@ -106,7 +112,7 @@ def test_the_ids_are_numbered_and_never_clash_with_the_case_findings():
                                       "title": {"en": "x y z", "es": "x y z"}}]
     out = rf.red_findings("C01", fixture_tests(), findings, MODELS)
     ids = [f["id"] for f in out]
-    assert len(set(ids)) == len(ids) == 3
+    assert len(set(ids)) == len(ids) == 4
     assert "F-RED-01" not in ids
     assert all(i.startswith("F-RED-") for i in ids)
 
@@ -165,7 +171,7 @@ def test_build_artifact_adds_the_generic_findings_and_they_pass_the_contract():
     art = m.build_artifact(case_id="C99", variant_id="v", model=models, outputs={}, tests=fixture_tests(), impact={},
                            findings=fixture_findings(), lineage=lineage, lane={"lane": "precompute", "reasons": []})
     ids = [f["id"] for f in art["findings"]]
-    assert ids[:2] == ["F-OWN", "F-LIMIT"] and len(ids) == 5
+    assert ids[:2] == ["F-OWN", "F-LIMIT"] and len(ids) == 6
     m._check_findings(art["findings"], m._check_tests(art["tests"], "C99/v"), "C99/v")
 
 
