@@ -27,6 +27,21 @@ describe('U16-F10', () => {
     });
   }
 
+  for (const v of variantIds('C10').filter((id) => id.startsWith('grid-'))) {
+    it(`C10 (${v}): a simulator grid's ladder states the grid's own inputs on every rung, never a loan type's calibration (R4 c12 and c13 B1)`, () => {
+      const sel = c10Sel(committedData('C10', v));
+      const markup = render(<LadderView sel={sel} />, 'en');
+      const cells = [...markup.matchAll(/<td[^>]*data-inputs="[^"]*"[^>]*>([^<]*)<\/td>/g)].map((m) => m[1]);
+      expect(cells.length).toBeGreaterThan(0);
+      for (const c of cells) {
+        expect(c).toContain('set by the simulated grid: known PD 0.02');
+        expect(c).not.toMatch(/0\.009105|0\.06368/);
+      }
+      const es = render(<LadderView sel={sel} />, 'es');
+      expect(es).toContain('fijadas por la grilla simulada: PD conocida 0,02');
+    });
+  }
+
   it("a document day is drawn at the reader's local midnight, so the shell formats it as that day in any zone (R3 c12 B1, c15 B1)", () => {
     for (const day of ['2021-12-31', '2022-01-03', '2024-02-29', '2025-06-30']) {
       const d = new Date(daySeconds(day) * 1000);

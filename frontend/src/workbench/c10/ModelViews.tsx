@@ -9,9 +9,20 @@ import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { IllustrativeNotice } from './C10Common';
 import { noteText } from '../c08/notes';
-import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, measureText, outputsOf, referenceNote, rungOf, text, type C10Sel } from './selection';
+import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, gridOf, measureText, outputsOf, referenceNote, rungOf, text, type C10GridOutputs, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+
+/** The inputs a simulator grid sets for every rung: the known PD and the asset correlations of its cells, as its generator states them. */
+export function gridInputs(g: C10GridOutputs, lang: 'en' | 'es'): string {
+  const pd = formatNumber(g.generator.known_pd, lang, { digits: 4 });
+  const rhos = g.generator.rho_grid;
+  const lo = formatNumber(Math.min(...rhos), lang, { digits: 4 });
+  const hi = formatNumber(Math.max(...rhos), lang, { digits: 4 });
+  return lang === 'es'
+    ? `fijadas por la grilla simulada: PD conocida ${pd}; correlación de activos de ${lo} a ${hi} según la celda`
+    : `set by the simulated grid: known PD ${pd}; asset correlation ${lo} to ${hi} by cell`;
+}
 
 /** The ladder: every rung of the models artifact with its method, scenarios, engine function, reference and inputs. */
 export function LadderView({ sel }: { sel: C10Sel | null }) {
@@ -20,6 +31,7 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
   const fit = fitOf(sel);
   if (!sel || !fit) return <Pending />;
   const o = outputsOf(sel);
+  const grid = o ? null : gridOf(sel);
   // the scenarios a rung ran: the variant's own simulation when it carries the rung (a rung that did not run has none, whatever the
   // ladder plans for it), the planned count of the models artifact for a document that does not (U16-R2 b05 B2)
   const ran = (id: string, planned: number | null, evaluated?: boolean): { n: number | null; why: BiText | undefined } => {
@@ -68,7 +80,9 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
                   {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
-                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
+                  {/* a simulator grid has no rungs of its own: its inputs are the generator's known PD and correlation grid, never the
+                      calibration of a loan type from the models artifact (R4 c12 and c13 B1) */}
+                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{grid ? gridInputs(grid, lang) : ((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
