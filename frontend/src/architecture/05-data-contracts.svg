@@ -75,7 +75,7 @@
 
   <rect class="pn" x="482" y="176" width="398" height="264" rx="10"/>
   <text class="h l-en" x="498" y="200">Contract 2: what the pipeline commits</text>
-  <text class="h l-es" x="498" y="200">Contrato 2: lo que la canalización versiona</text>
+  <text class="h l-es" x="498" y="200">Contrato 2: lo que la cadena de cálculo versiona</text>
   <text class="mono" x="498" y="224">manifests/index.json, manifests/C01.json</text>
   <text class="mono" x="498" y="242">C01/models-*.json, C01/&lt;variant&gt;.json</text>
   <text class="sub l-en" x="498" y="266">model records, outputs, test-result rows, impact,</text>

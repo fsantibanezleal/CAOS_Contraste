@@ -33,7 +33,7 @@ function Technical() {
           en={<>Model risk management grew from the US supervisory guidance of 2011 <Cite id="sr117" />, which defined a model, model risk and effective challenge, and asked validation for conceptual soundness, ongoing monitoring and outcomes analysis. Its successor of April 2026 <Cite id="sr262" /> narrows the definition and states that it is not binding; the PRA's principles <Cite id="ss123" /> and the ECB's internal-model supervision keep the same structure, and the ECB fixes the tests an IRB validation reports, with no pass or fail threshold <Cite id="ecb2019" />. Contraste follows that structure case by case.</>}
           es={<>La gestión del riesgo de modelos nació de la guía supervisora de Estados Unidos de 2011 <Cite id="sr117" />, que definió un modelo, el riesgo de modelo y el desafío efectivo, y pidió a la validación solidez conceptual, monitoreo continuo y análisis de resultados. Su sucesora de abril de 2026 <Cite id="sr262" /> estrecha la definición y declara que no es vinculante; los principios de la PRA <Cite id="ss123" /> y la supervisión de modelos internos del BCE mantienen la misma estructura, y el BCE fija las pruebas que reporta una validación IRB, sin umbral de aprobación <Cite id="ecb2019" />. Contraste sigue esa estructura caso por caso.</>}
         />
-        <Figure caption={t('Contraste end to end: public sources and generators, the offline pipeline with the engine riskvalidation, the committed artifacts, and the web that replays them and recomputes what is light enough.', 'Contraste de extremo a extremo: fuentes públicas y generadores, la canalización fuera de línea con el motor riskvalidation, los artefactos versionados, y la web que los reproduce y recalcula lo que es lo bastante liviano.')}>
+        <Figure caption={t('Contraste end to end: public sources and generators, the offline pipeline with the engine riskvalidation, the committed artifacts, and the web that replays them and recomputes what is light enough.', 'Contraste de extremo a extremo: fuentes públicas y generadores, la cadena de cálculo fuera de línea con el motor riskvalidation, los artefactos versionados, y la web que los reproduce y recalcula lo que es lo bastante liviano.')}>
           <OverviewFigure />
         </Figure>
       </DocSection>
@@ -110,9 +110,9 @@ function Technical() {
     },
     {
       id: 'pipeline',
-      label: t('The pipeline', 'La canalización'),
+      label: t('The pipeline', 'La cadena de cálculo'),
       content: (
-      <DocSection area="pipeline" title={{ en: 'The pipeline', es: 'La canalización' }} noRefsReason={{ en: 'Describes this repository.', es: 'Describe este repositorio.' }}>
+      <DocSection area="pipeline" title={{ en: 'The pipeline', es: 'La cadena de cálculo' }} noRefsReason={{ en: 'Describes this repository.', es: 'Describe este repositorio.' }}>
         <ol>
           <Li en="Ingest: a fetched public source is read through the input contract, which checks every field's kind, unit and range, and the licence class of the source decides what may be committed." es="Ingesta: una fuente pública descargada se lee a través del contrato de entrada, que revisa el tipo, la unidad y el rango de cada campo, y la clase de licencia de la fuente decide qué puede versionarse." />
           <Li en="Split and fit: a leakage-safe partition, then every rung of the model ladder fitted for real on the training slice." es="Partición y ajuste: una partición sin fugas, y luego cada peldaño de la escalera de modelos ajustado de verdad sobre el tramo de entrenamiento." />
@@ -130,7 +130,7 @@ function Technical() {
       <DocSection area="honesty" title={{ en: 'What is exact, and what is not', es: 'Qué es exacto y qué no' }} noRefsReason={{ en: 'States the product\'s limits.', es: 'Declara los límites del producto.' }}>
         <P
           en="What is exact: the formulas and constants of each test as the engine runs them, the reproduction of published tables with the gap recorded, and every number a view draws, which comes from a committed artifact or from a recomputation that a test compares with the pipeline. What is illustrative: the generators, whose truth is known because it is assumed, the synthetic institutions, which are labelled as such, and the cases still planned, which show no number at all."
-          es="Lo que es exacto: las fórmulas y constantes de cada prueba tal como las corre el motor, la reproducción de tablas publicadas con la brecha registrada, y cada número que dibuja una vista, que viene de un artefacto versionado o de un recálculo que una prueba compara con la canalización. Lo que es ilustrativo: los generadores, cuya verdad se conoce porque se supone, las instituciones sintéticas, que se rotulan como tales, y los casos aún planificados, que no muestran ningún número."
+          es="Lo que es exacto: las fórmulas y constantes de cada prueba tal como las corre el motor, la reproducción de tablas publicadas con la brecha registrada, y cada número que dibuja una vista, que viene de un artefacto versionado o de un recálculo que una prueba compara con la cadena de cálculo. Lo que es ilustrativo: los generadores, cuya verdad se conoce porque se supone, las instituciones sintéticas, que se rotulan como tales, y los casos aún planificados, que no muestran ningún número."
         />
         <Callout variant="honest" title={<T en="What Contraste is not" es="Qué no es Contraste" />}>
           <L
@@ -167,7 +167,7 @@ function Technical() {
             { en: 'Introduction: the landing page, with the executive view of the problem first and then the technical view (this page).', es: 'Introducción: la página de inicio, con la vista ejecutiva del problema primero y luego la vista técnica (esta página).' },
             { en: 'App: the workbench, opened from the navigation or from the link at the end of the executive view.', es: 'App: el banco de trabajo, que se abre desde la navegación o desde el enlace al final de la vista ejecutiva.' },
             { en: 'Methodology: the model families and the validation tests, with their equations, assumptions and sources.', es: 'Metodología: las familias de modelos y las pruebas de validación, con sus ecuaciones, supuestos y fuentes.' },
-            { en: 'Implementation: the pipeline, the contracts, the sources and their licences, the lanes, the engine and the gates.', es: 'Implementación: la canalización, los contratos, las fuentes y sus licencias, los carriles, el motor y las compuertas.' },
+            { en: 'Implementation: the pipeline, the contracts, the sources and their licences, the lanes, the engine and the gates.', es: 'Implementación: la cadena de cálculo, los contratos, las fuentes y sus licencias, los carriles, el motor y las compuertas.' },
             { en: 'Experiments: the coverage of the 22 cases and, case by case, every variant read from its artifacts.', es: 'Experimentos: la cobertura de los 22 casos y, caso por caso, cada variante leída desde sus artefactos.' },
             { en: 'Benchmark: the held-out comparisons, challenger against champion, with their tests.', es: 'Benchmark: las comparaciones reservadas, retador contra campeón, con sus pruebas.' },
           ]}
