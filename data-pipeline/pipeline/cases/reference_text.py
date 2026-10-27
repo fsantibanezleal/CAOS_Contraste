@@ -14,6 +14,8 @@ sample_similarity, QuantLib discountBondOption) is a citation and stays (ruling 
 """
 from __future__ import annotations
 
+import re
+
 from typing import Any
 
 _ECB = "ECB (2019), Instructions for reporting the validation results of internal models: IRB Pillar I models for credit risk"
@@ -178,6 +180,17 @@ REFERENCE_ES: dict[str, str] = {
     f"{_D06}; {_API} (I.1 l.1191); ECB guide to internal models, paragraph 43 (randomness of the training process, overfitting) and 59 (stored seeds)":
         f"{_D06_ES}; {_API_ES} (I.1 l.1191); guía del BCE sobre modelos internos, párrafos 43 (aleatoriedad del proceso de entrenamiento, sobreajuste) y 59 (semillas almacenadas)",
 }
+
+#: an author list in a Spanish reference joins its last two names with "y" (R5 c15 B1: "Christoffersen and Pelletier" in a Spanish
+#: view is English body text, ruling 6); the match ends at the year, so a published title or journal ("Theory and Methods") keeps its words
+_AUTHORS_AND = re.compile(r"(?<![\w])((?:[A-Z][\w'À-ɏ.-]+, )*[A-Z][\w'À-ɏ.-]+) and ([A-Z][\w'À-ɏ.-]+(?: et al\.)? \(\d{4}[a-z]?\))")
+
+
+def _spanish_authors(text: str) -> str:
+    return _AUTHORS_AND.sub(r"\1 y \2", text)
+
+
+REFERENCE_ES = {k: _spanish_authors(v) for k, v in REFERENCE_ES.items()}
 
 #: the English reader text of an engine reference: a contract id and a plan unit are said in words or dropped (U16-R4 ruling 1)
 READER_EN: tuple[tuple[str, str], ...] = (
