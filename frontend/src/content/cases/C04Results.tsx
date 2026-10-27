@@ -416,7 +416,7 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
       <p>
         {t(
           `Read from this release's artifacts (pipeline ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): CEREP's corporate long-term ratings by category, one-year cohorts, each agency's EU entity as ESMA computes its statistics. Every PD names its definition: D2 the default-rate page, D3 the defaults page, D4 the transition page's default column. ${attribution}.`,
-          `Leído desde los artefactos de esta versión (canalización ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
+          `Leído desde los artefactos de esta versión (cadena de cálculo ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
         )}{' '}
         {pick(ESMA_DEFINITIONS, lang)}
       </p>

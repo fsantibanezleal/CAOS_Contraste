@@ -44,3 +44,14 @@ def test_the_as_of_basis_the_bake_writes_carries_no_plan_code_and_no_developer_w
     for lang in ("en", "es"):
         assert not PLAN.search(basis[lang]), basis[lang]
         assert not ENGINE.search(basis[lang]), basis[lang]
+
+
+def test_the_engine_report_element_reads_cadena_de_calculo_in_spanish():
+    # U16-F11 (ruling of 2026-10-27): the engine (riskvalidation 1.0.1) writes "pipeline"; the Spanish page says one term for it.
+    out = reader_text({"en": "Independent replication of the pipeline", "es": "Replicación independiente del pipeline"})
+    assert out["es"] == "Replicación independiente de la cadena de cálculo"
+    assert out["en"] == "Independent replication of the pipeline"
+    assert reader_text({"es": "el pipeline corre; el pipeline y pipeline"})["es"] == "la cadena de cálculo corre; la cadena de cálculo y cadena de cálculo"
+    assert "canalización" not in reader_text({"es": "del pipeline"})["es"]
+    # a path or a key that holds the word is code, never text
+    assert reader_text({"es": "data-pipeline/ y el pipeline"})["es"] == "data-pipeline/ y la cadena de cálculo"

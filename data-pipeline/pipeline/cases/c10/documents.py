@@ -309,6 +309,7 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
     v4, v5 = _rung_var(by_id, "c4-creditrisk-plus", 0.999), _rung_var(by_id, "c5-granularity", 0.999)
     ga999 = next(x for x in out["granularity"]["levels"] if x["q"] == 0.999)
     bt99 = next(r for r in out["backtest"]["rows"] if r["level"] == 0.99)
+    n_years_evaluated = out["backtest"]["n_years_evaluated"]
     label = lt["label"]
     imp = {
         "ec_lhp_999_share": {"value": i["ec_lhp_fitted"], "unit": "share of EAD",
@@ -343,7 +344,7 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
                             f"({', '.join(map(str, bt99['years_exceeding'])) or 'none'}) lie above the fitted 99% quantile "
                             f"{pct(bt99['fitted_quantile'])}; {bt99['expected_exceedances']:.2f} are expected (upper binomial tail "
                             f"{_p3(bt99['p_value_upper'], 'en')})",
-                            f"{bt99['observed_exceedances']} de {out['backtest']['n_years_evaluated']} años de evaluación "
+                            f"{bt99['observed_exceedances']} de {n_years_evaluated} años de evaluación "
                             f"({', '.join(map(str, bt99['years_exceeding'])) or 'ninguno'}) quedan sobre el cuantil 99 % ajustado "
                             f"{pct_es(bt99['fitted_quantile'])}; se esperan {_n(bt99['expected_exceedances'], 2)} (cola binomial superior "
                             f"{_p3(bt99['p_value_upper'], 'es')})")})

@@ -108,7 +108,7 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
         {...card}
         note={{
           en: 'Each rung is retrained across seeds. The AUC range shows how much a model changes with the randomness of its own training; the grade share and the attribution rank correlation show whether obligors and explanations move with it; the reason codes are the share of the top four reasons kept across bootstrap refits.',
-          es: 'Cada peldaño se reentrena con varias semillas. El rango del AUC muestra cuánto cambia un modelo con el azar de su propio entrenamiento; la parte de grados y la correlación de rangos de atribución muestran si los deudores y las explicaciones se mueven con él; los códigos de razón son la parte de las cuatro razones principales que se mantiene entre reajustes bootstrap.',
+          es: 'Cada peldaño se reentrena con varias semillas. El rango del AUC muestra cuánto cambia un modelo con el azar de su propio entrenamiento; la parte de grados y la correlación de rangos de atribución muestran si los deudores y las explicaciones se mueven con él; los códigos de razón son la parte de las cuatro razones principales que se mantiene entre reajustes por remuestreo.',
         }}
       >
         <LabelledOverTable

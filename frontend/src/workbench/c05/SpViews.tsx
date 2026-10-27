@@ -484,7 +484,7 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `IRB corporate function, maturity ${formatNumber(v.outputs.irb.maturity, 'en', { decimals: 1 })} years, one unit of EAD per obligor, the PD floored at the regime's floor; regime and LGD from the rail. Relative to the scaled likelihood ratio, the approach the paper's backtest favours.`,
-          es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece el backtest del artículo.`,
+          es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece la prueba retrospectiva del artículo.`,
         }}
       >
         <div className="ct-scroll" data-caos-flow="">

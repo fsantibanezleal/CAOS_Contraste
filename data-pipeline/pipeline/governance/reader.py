@@ -29,8 +29,8 @@ _KEYS = {
     "es": [(re.compile(r"\bno risk_accepted\b"), "no aceptados como riesgo"), (re.compile(r"\brisk_accepted\b"), "riesgo aceptado"),
            (re.compile(r"\bdim_cube\b"), "cubo de margen inicial dinámico"),
            # the words, never a path or a key that holds them (`data-pipeline/`, `content_hash`)
-           (re.compile(r"(?<![\w/-])del pipeline(?![\w/-])"), "de la canalización"), (re.compile(r"(?<![\w/-])el pipeline(?![\w/-])"), "la canalización"),
-           (re.compile(r"(?<![\w/-])pipeline(?![\w/-])"), "canalización"), (re.compile(r"(?<![\w/-])del hash(?![\w/-])"), "de la huella"),
+           (re.compile(r"(?<![\w/-])del pipeline(?![\w/-])"), "de la cadena de cálculo"), (re.compile(r"(?<![\w/-])el pipeline(?![\w/-])"), "la cadena de cálculo"),
+           (re.compile(r"(?<![\w/-])pipeline(?![\w/-])"), "cadena de cálculo"), (re.compile(r"(?<![\w/-])del hash(?![\w/-])"), "de la huella"),
            (re.compile(r"(?<![\w/-])el hash(?![\w/-])"), "la huella"), (re.compile(r"(?<![\w/-])hashes(?![\w/-])"), "huellas"),
            (re.compile(r"(?<![\w/-])hash(?![\w/-])"), "huella"),
            (re.compile(r"\bcuando corre el bake\b"), "cuando se generan los documentos"), (re.compile(r"\bel bake\b"), "la generación"),

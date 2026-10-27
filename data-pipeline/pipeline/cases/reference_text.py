@@ -56,7 +56,7 @@ REFERENCE_ES: dict[str, str] = {
         "Hosmer and Lemeshow (1980), Communications in Statistics, Theory and Methods 9(10), doi:10.1080/03610928008827941",
     _YN: _YN,
     f"{_YN}; the PSI formula applied to one characteristic (scorecard practice)":
-        f"{_YN}; la fórmula del PSI aplicada a una característica (práctica de scorecard)",
+        f"{_YN}; la fórmula del PSI aplicada a una característica (práctica de tarjeta de puntuación)",
     f"{_D06}; contract engine-ml-api 2.0.0 (C.7 l.1016-1018, I.1 l.1187); ECB guide to internal models, paragraph 43 (randomness of the training process, overfitting) and 59 (stored seeds)(a); EBA recommendation (i)":
         f"{_D06_ES}; contrato engine-ml-api 2.0.0 (C.7 l.1016-1018, I.1 l.1187); guía del BCE sobre modelos internos, párrafos 43 (aleatoriedad del proceso de entrenamiento, sobreajuste) y 59 (semillas almacenadas)(a); recomendación (i) de la EBA",
     f"{_D06}; contract engine-ml-api 2.0.0 (C.7 l.1041-1044, I.1 l.1196); SS1/23 principle 3.3(b)(iii); ECB guide paragraph 60":
