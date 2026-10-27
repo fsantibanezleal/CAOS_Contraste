@@ -171,7 +171,8 @@ export function ShapeFigure() {
 export function LadderFigure() {
   const t = useT();
   const rungs = [
-    [t('P1 Scorecard', 'P1 Tarjeta'), t('WoE and logistic', 'de puntuación WoE')],
+    // a sub-label fits its 96-unit box at 390 (R4 c30 m11: "WoE and logistic" ran past the box)
+    [t('P1 Scorecard', 'P1 Tarjeta'), t('WoE, logistic', 'puntuación WoE')],
     [t('P3 EBM', 'P3 EBM'), t('additive, pairs', 'aditivo, pares')],
     [t('P4 Boosting', 'P4 Potenciación'), t('monotone trees', 'árboles monótonos')],
     [t('P5 TabPFN', 'P5 TabPFN'), t('in-context', 'en contexto')],

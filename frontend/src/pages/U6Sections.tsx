@@ -60,6 +60,10 @@ const LONG_CELL = 28;
 const TABLE_BOX = { overflowX: 'auto', maxWidth: '100%', minWidth: 0, paddingRight: '1.5rem', maskImage: 'linear-gradient(to right, #000 calc(100% - 1.5rem), transparent)' } as const;
 
 export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
+  // a column that holds a text cell is a text column, header and every cell: one alignment per column (R4 c29 m8, C16: a reason
+  // left-aligned under a right-aligned header beside right-aligned values)
+  const isText = (c: Cell | undefined) => (typeof c === 'string' && c.length > LONG_CELL) || isValidElement(c);
+  const textCol = head.map((_, j) => j < wide || rows.some((r) => isText(r[j])));
   return (
     <div data-table-box style={TABLE_BOX}>
     {/* rows several lines tall read from the top (R3 c23 M3: the C21 year pair sat 500 px down its centred row) */}
@@ -67,7 +71,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
       <thead>
         <tr>
           {head.map((h, i) => (
-            <th key={h} className={i < wide ? 'caos-col-text' : undefined}>
+            <th key={h} className={textCol[i] ? 'caos-col-text' : undefined}>
               {h}
             </th>
           ))}
@@ -79,7 +83,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
             {r.map((c, j) => (
               // an element cell (a marked citation) is text that wraps like a long string (the R2b review: the C21 four-fifths cell ran
               // the table past the pane at 1280)
-              <td key={j} className={j < wide || (typeof c === 'string' && c.length > LONG_CELL) || isValidElement(c) ? 'caos-col-text' : undefined}>
+              <td key={j} className={textCol[j] ? 'caos-col-text' : undefined}>
                 {c}
               </td>
             ))}

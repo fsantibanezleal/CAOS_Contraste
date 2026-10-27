@@ -60,10 +60,13 @@ export const READOUT_HEIGHT = 28;
  * arrow keys (unzoomed) or a pointer read it out in the line under the drawing. The edges table beside the map is the data-table
  * fallback.
  */
-export function MapDrawing({ inv, width, height }: { inv: GovInventory; width: number; height: number }) {
+export function MapDrawing({ inv, width, height, current: shownKey, onCurrent, readout = true }: { inv: GovInventory; width: number; height: number; current?: string | null; onCurrent?: (key: string) => void; readout?: boolean }) {
   const lang = useShellLang();
   const [view, setView] = useState({ k: 1, x: 0, y: 0 });
-  const [current, setCurrent] = useState<string | null>(null);
+  const [own, setOwn] = useState<string | null>(null);
+  // the node read out: the host's when it holds the read-out line below its stage (DependencyMap), else the drawing's own
+  const current = onCurrent ? (shownKey ?? null) : own;
+  const setCurrent = (key: string) => (onCurrent ? onCurrent(key) : setOwn(key));
   const drag = useRef<{ x: number; y: number; vx: number; vy: number } | null>(null);
   const nodeRefs = useRef(new Map<string, SVGGElement>());
   const { engine, nodes, colW } = placeNodes(inv.entries, width, height);
@@ -78,13 +81,7 @@ export function MapDrawing({ inv, width, height }: { inv: GovInventory; width: n
       return clamp(k, cx - ((cx - v.x) * k) / v.k, cy - ((cy - v.y) * k) / v.k);
     });
   const reset = () => setView({ k: 1, x: 0, y: 0 });
-  const entryWords = (e: InvEntry) => {
-    const worst = worstOpen(e);
-    const open = worst ? `${pick({ en: 'worst open finding ', es: 'peor hallazgo abierto ' }, lang)}${worst}` : pick({ en: 'no open finding', es: 'sin hallazgos abiertos' }, lang);
-    const ups = inv.edges.filter((d) => d.downstream === e.key).length;
-    const downs = inv.edges.filter((d) => d.upstream === e.key).length;
-    return `${nodes.get(e.key)?.n ?? ''}. ${pick(entryText(e.key), lang)}: ${pick(e.title, lang)}, ${tierName(e.tier_block.tier, lang)}, ${open}; ${pick({ en: 'depends on ', es: 'depende de ' }, lang)}${ups}, ${pick({ en: 'feeds ', es: 'alimenta a ' }, lang)}${downs}`;
-  };
+  const entryWords = (e: InvEntry) => entryWordsOf(inv, e, lang);
   const focusEntry = (i: number) => {
     const e = inv.entries[(i + inv.entries.length) % inv.entries.length];
     if (e) nodeRefs.current.get(e.key)?.focus();
@@ -119,7 +116,6 @@ export function MapDrawing({ inv, width, height }: { inv: GovInventory; width: n
   const onUp = () => {
     drag.current = null;
   };
-  const shown = current ? inv.entries.find((e) => e.key === current) : undefined;
   const button = (kind: 'in' | 'out' | 'reset', label: string, title: { en: string; es: string }, act: () => void) => (
     <button type="button" className="chip" data-map-zoom={kind} aria-label={pick(title, lang)} title={pick(title, lang)} onClick={act} style={{ minWidth: '2rem', padding: '0 0.4rem' }}>
       {label}
@@ -209,21 +205,48 @@ export function MapDrawing({ inv, width, height }: { inv: GovInventory; width: n
       })}
       </g>
     </svg>
-      <p className="ct-note" data-map-readout aria-live="polite" style={{ margin: 0, height: READOUT_HEIGHT, lineHeight: `${READOUT_HEIGHT / 2}px`, overflow: 'hidden' }}>
-        {shown
-          ? entryWords(shown)
-          : pick({ en: 'Point at a node, or Tab to it, to read it; + and - zoom, the arrows pan when zoomed, 0 resets.', es: 'Apunte a un nodo, o llegue a él con Tab, para leerlo; + y - acercan y alejan, las flechas desplazan con zoom, 0 restablece.' }, lang)}
-      </p>
+      {readout ? <MapReadout inv={inv} current={current} /> : null}
     </div>
   );
 }
 
-/** The map in a sized box: the stage measures it and draws once it has a width. */
+/** What the read-out line says of a node: its number, name, title, tier, worst open finding and its dependencies. */
+function entryWordsOf(inv: GovInventory, e: InvEntry, lang: 'en' | 'es'): string {
+  const worst = worstOpen(e);
+  const open = worst ? `${pick({ en: 'worst open finding ', es: 'peor hallazgo abierto ' }, lang)}${worst}` : pick({ en: 'no open finding', es: 'sin hallazgos abiertos' }, lang);
+  const ups = inv.edges.filter((d) => d.downstream === e.key).length;
+  const downs = inv.edges.filter((d) => d.upstream === e.key).length;
+  // the node's number is its place in the inventory, as placeNodes numbers it
+  const n = inv.entries.findIndex((x) => x.key === e.key) + 1;
+  return `${n}. ${pick(entryText(e.key), lang)}: ${pick(e.title, lang)}, ${tierName(e.tier_block.tier, lang)}, ${open}; ${pick({ en: 'depends on ', es: 'depende de ' }, lang)}${ups}, ${pick({ en: 'feeds ', es: 'alimenta a ' }, lang)}${downs}`;
+}
+
+/**
+ * The read-out line of the map. It wraps: a node's description runs to about 150 characters, and a line capped at two lines of
+ * 28 px cut its tier, findings and dependencies at 390 (R4 c28 M2). It keeps at least that height, so the page does not jump.
+ */
+export function MapReadout({ inv, current }: { inv: GovInventory; current: string | null }) {
+  const lang = useShellLang();
+  const shown = current ? inv.entries.find((e) => e.key === current) : undefined;
+  return (
+    <p className="ct-note" data-map-readout aria-live="polite" style={{ margin: 0, minHeight: READOUT_HEIGHT, lineHeight: `${READOUT_HEIGHT / 2}px` }}>
+      {shown
+        ? entryWordsOf(inv, shown, lang)
+        : pick({ en: 'Point at a node, or Tab to it, to read it; + and - zoom, the arrows pan when zoomed, 0 resets.', es: 'Apunte a un nodo, o llegue a él con Tab, para leerlo; + y - acercan y alejan, las flechas desplazan con zoom, 0 restablece.' }, lang)}
+    </p>
+  );
+}
+
+/** The map in a sized box: the stage measures the drawing's box and draws once it has a width; the read-out wraps below it. */
 export function DependencyMap({ inv }: { inv: GovInventory }) {
   const height = mapHeight(inv.entries);
+  const [current, setCurrent] = useState<string | null>(null);
   return (
-    <div style={{ height: height + READOUT_HEIGHT, minWidth: 0 }} data-map-host>
-      <Stage label={{ en: 'The dependency map of the model inventory', es: 'El mapa de dependencias del inventario de modelos' }}>{({ width }) => <MapDrawing inv={inv} width={width} height={height} />}</Stage>
+    <div style={{ minWidth: 0 }} data-map-host>
+      <div style={{ height, minWidth: 0 }}>
+        <Stage label={{ en: 'The dependency map of the model inventory', es: 'El mapa de dependencias del inventario de modelos' }}>{({ width }) => <MapDrawing inv={inv} width={width} height={height} current={current} onCurrent={setCurrent} readout={false} />}</Stage>
+      </div>
+      <MapReadout inv={inv} current={current} />
     </div>
   );
 }
