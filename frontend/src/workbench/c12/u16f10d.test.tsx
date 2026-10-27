@@ -29,11 +29,16 @@ const selOf = (name: string, m: ModelsArtifact = models): C12Sel =>
   defaultSel(fixtureData('C12', committed<VariantArtifact>('C12', `${name}.json`), m, title), peers) as C12Sel;
 /** The models document as the 2.0.0 producer writes it: the estimator bilingual (pipeline/cases/c12/calibration.py ESTIMATOR_TEXT). */
 const ESTIMATOR_ES = 'AR(1) exacto por MCO sobre la tasa cero más corta del Tesoro (Brigo et al., arXiv 0812.4210, ecuaciones 55 a 57)';
-const rebaked = (): ModelsArtifact => {
+const estimatorOf = (m: ModelsArtifact): unknown => (m as unknown as { fit: { estimator: unknown } }).fit.estimator;
+const withEstimator = (estimator: unknown): ModelsArtifact => {
   const m = structuredClone(models) as unknown as { fit: { estimator: unknown } };
-  m.fit.estimator = { en: (models as unknown as { fit: { estimator: string } }).fit.estimator, es: ESTIMATOR_ES };
+  m.fit.estimator = estimator;
   return m as unknown as ModelsArtifact;
 };
+/** The committed models document, bilingual since the re-bake. */
+const rebaked = (): ModelsArtifact => models;
+/** The English sentence alone, the form a document baked before c12-models 2.0.0 carries. */
+const english = (): ModelsArtifact => withEstimator((estimatorOf(models) as { en: string }).en);
 
 describe('U16-F10d C12', () => {
   afterEach(() => setLang('en'));
@@ -45,7 +50,8 @@ describe('U16-F10d C12', () => {
     const en = textOf(render(<C12ContextView sel={selOf('netting-set', rebaked())} />, 'en'));
     expect(en).toContain('exact AR(1) OLS on the shortest Treasury zero rate');
     // a document baked before c12-models 2.0.0 (the English sentence alone) still renders
-    expect(textOf(render(<C12ContextView sel={selOf('netting-set')} />, 'en'))).toContain('exact AR(1) OLS');
+    expect(estimatorOf(models)).toEqual({ en: expect.stringContaining('exact AR(1) OLS'), es: ESTIMATOR_ES });
+    expect(textOf(render(<C12ContextView sel={selOf('netting-set', english())} />, 'en'))).toContain('exact AR(1) OLS');
   });
 
   for (const lang of ['en', 'es'] as const) {
