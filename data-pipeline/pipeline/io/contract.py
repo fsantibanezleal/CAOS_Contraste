@@ -842,7 +842,7 @@ MARKET_SERIES = Family(
     name="market_series",
     title=_t("Market series", "Serie de mercado"),
     used_by=_t("VaR and ES, backtests and stress windows: one row per series and date.",
-               "VaR y ES, backtests y ventanas de estrés: una fila por serie y fecha."),
+               "VaR y ES, pruebas retrospectivas y ventanas de estrés: una fila por serie y fecha."),
     fields=(
         Field("date", "date", _t("Observation date", "Fecha de observación")),
         Field("series_id", "str", _t("Series identifier", "Identificador de la serie")),

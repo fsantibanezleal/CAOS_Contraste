@@ -56,7 +56,7 @@
 
   <rect class="pn" x="252" y="50" width="300" height="380" rx="10"/>
   <text class="h l-en" x="266" y="74">Offline (canonical): the pipeline</text>
-  <text class="h l-es" x="266" y="74">Fuera de línea (canónico): la canalización</text>
+  <text class="h l-es" x="266" y="74">Fuera de línea (canónico): la cadena de cálculo</text>
   <rect class="bx" x="266" y="86" width="272" height="64" rx="6"/>
   <text class="it l-en" x="276" y="104">ingest, contract 1, leakage-safe split</text>
   <text class="it l-es" x="276" y="104">ingesta, contrato 1, partición sin fugas</text>
@@ -114,7 +114,7 @@
   <text class="sub l-en" x="618" y="260">the decision at any approval rate and LGD</text>
   <text class="sub l-es" x="618" y="260">la decisión con cualquier tasa de aprobación y LGD</text>
   <text class="acc l-en" x="618" y="286">held to the pipeline by parity tests</text>
-  <text class="acc l-es" x="618" y="286">sujeto a la canalización por pruebas de paridad</text>
+  <text class="acc l-es" x="618" y="286">sujeto a la cadena de cálculo por pruebas de paridad</text>
   <rect class="bx" x="608" y="314" width="258" height="102" rx="6"/>
   <text class="it l-en" x="618" y="332">Pyodide: by measurement only</text>
   <text class="it l-es" x="618" y="332">Pyodide: solo por medición</text>

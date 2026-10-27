@@ -61,7 +61,7 @@ function ReasonFigure() {
   const x = (v: number) => zero + v * 380;
   const row = (i: number) => 14 + i * 28;
   return (
-    <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('Seven horizontal bars for the contribution of seven features to the log-odds of default of one applicant, four positive bars selected as the reasons and the others not, one of them negative', 'Siete barras horizontales con la contribución de siete variables a el logaritmo de la razón de probabilidades de incumplimiento de un solicitante, cuatro barras positivas elegidas como razones y las otras no, una de ellas negativa')}>
+    <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('Seven horizontal bars for the contribution of seven features to the log-odds of default of one applicant, four positive bars selected as the reasons and the others not, one of them negative', 'Siete barras horizontales con la contribución de siete variables al logaritmo de la razón de probabilidades de incumplimiento de un solicitante, cuatro barras positivas elegidas como razones y las otras no, una de ellas negativa')}>
       <line className="dg-axis" x1={zero} y1={8} x2={zero} y2={row(6) + 24} />
       {rows.map(([name, v], i) => (
         <g key={name}>
@@ -70,7 +70,7 @@ function ReasonFigure() {
           <text className="dg-note" x={v >= 0 ? x(v) + 4 : x(v) - 4} y={row(i) + 14} textAnchor={v >= 0 ? 'start' : 'end'}>{i < 4 ? t('reason', 'razón') : ''}</text>
         </g>
       ))}
-      <text className="dg-axis-label" x={W / 2} y={H - 24} textAnchor="middle">{t('contribution to the log-odds of default', 'contribución a el logaritmo de la razón de probabilidades de incumplimiento')}</text>
+      <text className="dg-axis-label" x={W / 2} y={H - 24} textAnchor="middle">{t('contribution to the log-odds of default', 'contribución al logaritmo de la razón de probabilidades de incumplimiento')}</text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );

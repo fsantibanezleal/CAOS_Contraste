@@ -394,7 +394,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <dd>{`${PCT(o.p2g_proxy.peak_depletion, lang, 3)} (${pick({ en: 'year', es: 'año' }, lang)} ${o.p2g_proxy.peak_year})`}</dd>
             <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones usables y mitigación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.usable_buffers_and_mitigation, lang, 3)}</dd>
-            <dt>{pick({ en: 'Proxy', es: 'Proxy' }, lang)}</dt>
+            <dt>{pick({ en: 'Proxy', es: 'Aproximación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.value, lang, 3)}</dd>
             <dt>{pick({ en: 'Statement', es: 'Declaración' }, lang)}</dt>
             <dd>{pick(o.p2g_proxy.statement, lang)}</dd>

@@ -631,13 +631,13 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
       <PlotCard fill title={{ en: `Scenario ${pick(scenarioName(sel, o.scenario_id), 'en')}`, es: `Escenario ${pick(scenarioName(sel, o.scenario_id), 'es')}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <p>{pick(o.scenario.description, lang)}</p>
         {o.scenario.shocks.length === 0 ? (
-          <p className="ct-note">{pick({ en: 'The scenario applies no shock to any driver.', es: 'El escenario no aplica shock a ningún motor.' }, lang)}</p>
+          <p className="ct-note">{pick({ en: 'The scenario applies no shock to any driver.', es: 'El escenario no aplica choque a ningún motor.' }, lang)}</p>
         ) : (
           <table className="caos-table" data-table="shocks">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Driver', es: 'Motor' }, lang)}</th>
-                <th>{pick({ en: 'Shock', es: 'Shock' }, lang)}</th>
+                <th>{pick({ en: 'Shock', es: 'Choque' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
               </tr>
             </thead>

@@ -5,31 +5,4 @@ data-pipeline/pipeline/io/bcch.py :: Codigo  # the BDE answer key "Codigo" and "
 data-pipeline/pipeline/io/contract.py :: decision  # the dataset field named decision, written in the Spanish notes as a code token
 data/derived/contract/scored_sample.json :: decision  # the dataset field named decision in the exported contract, the same code token as in its producer
 
-# U16-F10a (2026-10-27): English technical words the guard now refuses in Spanish text (the ruling of 2026-10-27), found in files
-# outside the unit's write scope. Each is reported to its owner in wip/contraste/u16-f10a-shared-c01-2026-10-27.md (section D-guard);
-# the owner's fix makes the entry unused, and an unused entry fails the guard, so each line is removed with its fix.
-data-pipeline/pipeline/cases/c01_retail_pd.py :: scoring  # the category label "Scoring de crédito", kept equal to registry.py and C02/C03 until the integrator renames the category in one change
-data-pipeline/pipeline/cases/c02/bake.py :: scoring  # owned by U16-F10b: line 261; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c03/_case.py :: scoring  # owned by U16-F10b: line 187; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c04_families.py :: momentum  # owned by U16-F10b: line 126; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c04_transitions.py :: momentum  # owned by U16-F10b: line 127, 59, 60, 626, 627, 709 ...; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c10/documents.py :: backtest  # owned by U16-F10c: line 339; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c16/models.py :: hazard  # owned by U16-F10d: line 79; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/reference_text.py :: scorecard  # owned by the integrator: line 59; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/core/readiness.py :: pipeline  # owned by the integrator (a shared pipeline module): line 41; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/governance/bake.py :: pipeline  # owned by the integrator (a shared pipeline module): line 350; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/io/contract.py :: backtests  # owned by the integrator (a shared pipeline module): line 845; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/registry.py :: scoring  # owned by the integrator (a shared pipeline module): line 16; to translate under the 2026-10-27 ruling
-frontend/src/api/artifacts.ts :: pipeline  # owned by the integrator: line 24; to translate under the 2026-10-27 ruling
-frontend/src/pages/C04Sections.tsx :: bootstrap  # owned by U16-F10p: line 612, 651; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c02/DiscriminationViews.tsx :: bootstrap  # owned by U16-F10b: line 116, 139; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c04/C04Common.tsx :: momentum  # owned by U16-F10b: line 600, 1288; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c04/C04Common.tsx :: pipeline  # owned by U16-F10b: line 1103; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c04/FamilyViews.tsx :: momentum  # owned by U16-F10b: line 114, 1046, 1189, 1268, 1271, 1312 ...; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c04/FamilyViews.tsx :: bootstrap  # owned by U16-F10b: line 129, 988, 1008; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c05/SpViews.tsx :: backtest  # owned by U16-F10b: line 487; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c07/RegimeViews.tsx :: shock  # owned by U16-F10b: line 622, 628; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/RegulatoryViews.tsx :: shock  # owned by U16-F10d: line 360; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c18/CapitalViews.tsx :: proxy  # owned by U16-F10e: line 380, 388; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c20/RobustnessViews.tsx :: bootstrap  # owned by U16-F10e: line 107; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/governance/reader.py :: pipeline  # the rule that replaces the English word with "canalización" in an engine sentence (R3 rulings 2026-10-27)
+data-pipeline/pipeline/governance/reader.py :: pipeline  # the regular expressions that match the engine's English word and replace it with "cadena de cálculo" in an engine sentence (R3 rulings 2026-10-27); the word is code here

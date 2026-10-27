@@ -79,7 +79,7 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
                                                           "tasa de salida en estrés: la tasa LiST Adversa de los depósitos a la vista de otros minoristas")),
             "non-operational-corporate": (0.0, fit_rate, ("stress hazard: the fast-run daily rate calibrated on the pre-2023 Table A.1 rows",
                                                           "tasa de salida en estrés: la tasa diaria de la corrida rápida calibrada en las filas de la Tabla A.1 anteriores a 2023")),
-            "financial": (0.0, lst["non-operational-other-financial"], ("stress hazard: a financial customer's sight deposit leaves in full (LiST para 111)",
+            "financial": (0.0, lst["non-operational-other-financial"], ("stress hazard: a financial customer's sight deposit leaves in full (LiST paragraph 111)",
                                                                         "tasa de salida en estrés: el depósito a la vista de un cliente financiero sale completo (párrafo 111 de LiST)"))}
     cfg_segments, doc_segments = [], []
     for s in segs:
