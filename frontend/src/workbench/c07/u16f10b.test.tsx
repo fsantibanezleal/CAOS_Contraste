@@ -82,7 +82,8 @@ describe('U16-R3 c08 on the committed C07 documents', () => {
       const t = view(<TablesView sel={at('base.json')} />);
       const reasons = (t.match(/la tabla no da PDI para esta celda|the table gives no PDI for this cell/g) ?? []).length;
       expect(reasons).toBe(0);
-      expect(t).toMatch(lang === 'en' ? /gives no PDI for its cells/ : /no da PDI para sus celdas/);
+      // one sentence with its capital since U16-R4 c09 n2 ("The table gives no PDI or PE for its cells.")
+      expect(t).toMatch(lang === 'en' ? /The table gives no PDI or PE for its cells\./ : /La tabla no da PDI ni PE para sus celdas\./);
       const individual = markup.match(/<table[^>]*data-table-id="individual-categories"[\s\S]*?<\/table>/)?.[0] ?? '';
       expect(individual).not.toMatch(/>(?:category|categoría)</);
       expect(t).toContain('PE = PI × PDI');

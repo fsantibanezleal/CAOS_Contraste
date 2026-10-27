@@ -83,17 +83,21 @@ OVERLAP_CAVEAT = t(
     "se sabe si una empresa aparece en varios archivos (SIN VERIFICAR, 08 l.855-856). Ningún vector de variables se repite entre dos "
     "archivos, pero las razones de una empresa cambian de un año al siguiente, así que eso no es evidencia de que las empresas no se "
     "repitan. Un puntaje agrupado puede por tanto estar favorecido por empresas repetidas.")
+#: the pooled variant's title and short title, in the gender of the file it is ("el archivo agrupado"), as the By horizon table and the
+#: Context say it (U16-R4 c03 n3: the chip read "Agrupada", the table "Agrupado")
+POOLED_TITLE = t("Pooled: the five files stacked", "Agrupado: los cinco archivos apilados")
+POOLED_SHORT = t("Pooled", "Agrupado")
 TRANSFER_REASON = t(
     "A rung fitted on the training slice of one file and scored on the holdout of another. The firm overlap across the files is unknown, "
     "so a transfer AUC may be inflated by firms that repeat; the block is exploratory and no out-of-time claim is made.",
-    "Un peldaño ajustado en el tramo de entrenamiento de un archivo y puntuado en la muestra reservada de otro. El traslape de empresas "
-    "entre archivos se desconoce, de modo que el AUC de traslado puede estar inflado por empresas repetidas; el bloque es exploratorio y "
+    "Un peldaño ajustado en el tramo de entrenamiento de un archivo y puntuado en la muestra reservada de otro. El solapamiento de empresas "
+    "entre archivos se desconoce, de modo que el AUC de transferencia puede estar inflado por empresas repetidas; el bloque es exploratorio y "
     "no se afirma nada fuera del tiempo.")
 TERM_STRUCTURE_REASON = t(
     "The event rates of the five files read as a cumulative PD (cumulative = 1 - product of (1 - hazard)). The files may not draw one "
     "population and their firm overlap is unknown, so the structure is exploratory.",
     "Las tasas de evento de los cinco archivos leídas como una PD acumulada (acumulada = 1 - producto de (1 - riesgo)). Los archivos "
-    "pueden no provenir de una sola población y su traslape de empresas se desconoce, así que la estructura es exploratoria.")
+    "pueden no provenir de una sola población y su solapamiento de empresas se desconoce, así que la estructura es exploratoria.")
 IMPACT_REASON = t(
     "The 12-month and lifetime expected credit loss of one unit of exposure under the horizon PDs of the term-structure block (the five file event rates); an "
     "illustration of how far the horizon moves a provision, not a provision. The loss given default is an assumption.",

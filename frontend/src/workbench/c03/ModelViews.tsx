@@ -13,6 +13,9 @@ import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from '.
 const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
+/** A date, a window or a cohort keeps one line. */
+const NOWRAP = { whiteSpace: 'nowrap' } as const;
+
 /** The PD rungs on this test cohort: discrimination with its interval, Brier and the calibration gap at five years. */
 export function RungsView({ sel }: { sel: C03Sel | null }) {
   const lang = useShellLang();
@@ -37,8 +40,9 @@ export function RungsView({ sel }: { sel: C03Sel | null }) {
               title={{ en: 'AUC by rung', es: 'AUC por peldaño' }}
               height="fill"
               orientation="horizontal"
-              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: label(r.rung_id), value: r.auc, tone: 'accent' as const, highlight: r.rung_id === sel.rung, hint: label(r.rung_id) }))}
-              axis={{ label: { en: 'AUC (higher is better)', es: 'AUC (más alto es mejor)' }, format: { digits: 3 } }}
+              // three fixed decimals, as the table beside the bars (U16-R4 c04 m2: "0.5" beside "0.815"); no note that repeats the label (n4)
+              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: label(r.rung_id), value: r.auc, tone: 'accent' as const, highlight: r.rung_id === sel.rung }))}
+              axis={{ label: { en: 'AUC (higher is better)', es: 'AUC (más alto es mejor)' }, format: { decimals: 3 } }}
             />
           }
         >
@@ -108,8 +112,8 @@ export function CalibrationView({ sel }: { sel: C03Sel | null }) {
             <UPlotChart
               height="fill"
               parity
-              x={{ values: rows.map((r) => r.predicted_pd), label: { en: 'Predicted PD', es: 'PD predicha' }, format: { percent: true, digits: 2 } }}
-              y={{ label: { en: 'Observed rate', es: 'Tasa observada' }, format: { percent: true, digits: 2 } }}
+              x={{ values: rows.map((r) => r.predicted_pd), label: { en: 'Predicted PD', es: 'PD predicha' }, format: { percent: true, decimals: 2 } }}
+              y={{ label: { en: 'Observed rate', es: 'Tasa observada' }, format: { percent: true, decimals: 2 } }}
               series={series}
             />
           }
@@ -210,9 +214,10 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
               <tbody>
                 {windows.map((w) => (
                   <tr key={w.id} data-window={w.id} className={w.id === o.cohort.id ? 'ct-current' : undefined}>
-                    <td className="ct-text">{pick(w.label, lang)}</td>
-                    <td>{fyRange(w.training.first_fy, w.training.last_fy)}</td>
-                    <td className="ct-wide-only">{w.training.cutoff_date}</td>
+                    {/* the cohort, the window and the cut-off stay whole at 390 (U16-R4 c04 m5: "2005-" over "09-30") */}
+                    <td className="ct-text" style={NOWRAP}>{pick(w.label, lang)}</td>
+                    <td style={NOWRAP}>{fyRange(w.training.first_fy, w.training.last_fy)}</td>
+                    <td className="ct-wide-only" style={NOWRAP}>{w.training.cutoff_date}</td>
                     <td className="ct-wide-only">{count(w.training.n_loans, lang)}</td>
                     <td data-crisis={String(w.training.crisis_included)}>{w.training.crisis_included ? yes : no}</td>
                   </tr>

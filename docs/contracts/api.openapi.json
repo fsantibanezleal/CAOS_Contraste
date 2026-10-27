@@ -1415,6 +1415,23 @@
             }
           },
           {
+            "properties": {
+              "tests": {
+                "items": {
+                  "properties": {
+                    "extras": {
+                      "properties": {
+                        "reference_text": {
+                          "$ref": "#/components/schemas/common-text"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
             "if": {
               "properties": {
                 "outputs": {

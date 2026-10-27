@@ -223,12 +223,14 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
             const { markup, drawn } = render(<View sel={makeSel(a.data, { grade })} />, lang);
             const where = `${a.id} ${name} ${GRADES[grade]} ${lang}`;
             expect(markup, `${where}: a Pending`).not.toContain('data-state="loading"');
-            expect(markup.startsWith('<div class="caos-views-row" data-views="2">'), `${where}: not a row of cards`).toBe(true);
+            // the Semesters view gives the years compared a card of their own when both of its drawings are drawn (U16-R4 c05)
+            const want = name === 'Semesters' && drawn.length === 2 ? 3 : n;
+            expect(markup.startsWith(`<div class="caos-views-row" data-views="${want}">`), `${where}: not a row of cards`).toBe(true);
             expect(drawn.length, `${where}: the charts drawn`).toBe(hostCharts(markup).length);
             expect(drawn.length, `${where}: no chart`).toBeGreaterThan(0);
             for (const p of drawn) expectDrawable(p, `${where}, ${pick(p.y.label, 'en')}`, lang);
             const found = cards(markup);
-            expect(found.length, `${where}: cards`).toBe(n);
+            expect(found.length, `${where}: cards`).toBe(want);
             for (const c of found) {
               expect(c.lane, `${where} ${c.title}`).toBe('replay');
               expect(c.provenance, `${where} ${c.title}`).toBe('real');

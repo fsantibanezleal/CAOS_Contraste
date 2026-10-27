@@ -44,7 +44,9 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no calibration.', es: 'No disponible: el artefacto de modelos no trae la calibración.' }, lang)}</p>
       ) : (
         <div className="ct-scroll" data-caos-flow="">
-          <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>{`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source as string | BiText, lang)})`}</p>
+          <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>
+            <WithCode text={`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source as string | BiText, lang)})`} />
+          </p>
           <table className="caos-table ct-wrap-head" data-table="calibration-targets">
             <thead>
               <tr>
@@ -116,6 +118,25 @@ const QUOTED = ['Informe del Desempeño', 'días o más', 'índice de provisione
 const bare = (w: string): string => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const withAccents = (s: string): string => QUOTED.reduce((acc, w) => acc.split(bare(w)).join(w), s);
 
+/** A provenance text with each versioned generator id (`banco-andino-synthetic/1.0.0`) printed as code the page does not translate:
+ * a reference, not prose (ruling of 2026-10-24; U16-R4 c09 m9). */
+export function WithCode({ text }: { text: string }) {
+  const parts = text.split(/([a-z0-9]+(?:-[a-z0-9]+)+\/\d+\.\d+\.\d+)/);
+  return (
+    <>
+      {parts.map((p, i) =>
+        i % 2 === 1 ? (
+          <code key={i} translate="no">
+            {p}
+          </code>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  );
+}
+
 /** The calibration source of the bank in the page's language: a bilingual text (c07-models 3.0.0), or the English string of a document
  * baked before, rendered in Spanish here (the citation and the hash as published). */
 export function calibrationSource(source: string | BiText, lang: 'en' | 'es'): string {
@@ -166,13 +187,18 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
             const noPdi = t.cells.every((c) => c.pdi === null);
             const noPe = t.cells.every((c) => c.pe === null);
             const oneColumn = new Set(t.cells.map((c) => c.column)).size === 1;
-            const absent: BiText[] = [
-              ...(noPdi ? [{ en: 'the table gives no PDI for its cells', es: 'la tabla no da PDI para sus celdas' }] : []),
-              ...(noPe ? [{ en: 'the table gives no PE for its cells', es: 'la tabla no da PE para sus celdas' }] : []),
-            ];
+            // one sentence with its capital (U16-R4 c09 n2: ". the table gives no PDI for its cells; the table gives no PE ...")
+            const absent: BiText | null =
+              noPdi && noPe
+                ? { en: 'The table gives no PDI or PE for its cells', es: 'La tabla no da PDI ni PE para sus celdas' }
+                : noPdi
+                  ? { en: 'The table gives no PDI for its cells', es: 'La tabla no da PDI para sus celdas' }
+                  : noPe
+                    ? { en: 'The table gives no PE for its cells', es: 'La tabla no da PE para sus celdas' }
+                    : null;
             return (
               <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
-                <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}${absent.length ? `. ${absent.map((a) => pick(a, lang)).join('; ')}.` : ''}`}</caption>
+                <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}${absent ? `. ${pick(absent, lang)}.` : ''}`}</caption>
                 <thead>
                   <tr>
                     <th className="ct-text">{pick({ en: 'Row', es: 'Fila' }, lang)}</th>

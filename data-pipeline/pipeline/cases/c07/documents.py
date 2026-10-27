@@ -446,6 +446,18 @@ def achieved_targets(book: Book, base_ev: dict[str, Any]) -> list[dict[str, Any]
              "source": src.source_text(t), "as_of": t["as_of"]} for t in src.TARGETS]
 
 
+def bank_notice() -> dict[str, str]:
+    """The synthetic-bank notice of the models document; the Spanish names the hash a "huella criptográfica" (ruling 6 of 2026-10-27,
+    U16-R4 c09 B1: "hash" is an English word in a Spanish view)."""
+    return T(
+        "Synthetic: Banco Andino is a generated bank, calibrated to public CMF system aggregates (parameters and hash in the generator "
+        "model record); its rows are not observations of any bank. UF-indexed mortgages are converted to CLP at the SII value of "
+        f"{src.UF_DATE}: {src.UF_VALUE:,.2f} CLP per UF.",
+        "Sintético: Banco Andino es un banco generado, calibrado a agregados públicos del sistema de la CMF (parámetros y huella "
+        "criptográfica en el registro del modelo generador); sus filas no son observaciones de ningún banco. Las hipotecas indexadas a "
+        f"UF se convierten a CLP al valor del SII del {src.UF_DATE}: {tx.number(src.UF_VALUE, 2, lang='es')} CLP por UF.")
+
+
 def models_document(book: Book, base_ev: dict[str, Any], overlays: tuple, rv: str) -> dict[str, Any]:
     ifr = base_ev["ifrs"]
     seg_rows, ifrs_seg = [], []
@@ -456,13 +468,7 @@ def models_document(book: Book, base_ev: dict[str, Any], overlays: tuple, rv: st
         w = book.e[mk]
         ifrs_seg.append({"segment_id": s["id"], "pd_ttc": float(np.clip(np.average(book.pd_now[mk], weights=w), 1e-4, 0.9)),
                          "rho": s["rho"], "lgd": float(np.clip(np.average(ifr.lgd[mk], weights=w), 0.0, 1.0))})
-    notice = T(
-        "Synthetic: Banco Andino is a generated bank, calibrated to public CMF system aggregates (parameters and hash in the generator "
-        "model record); its rows are not observations of any bank. UF-indexed mortgages are converted to CLP at the SII value of "
-        f"{src.UF_DATE}: {src.UF_VALUE:,.2f} CLP per UF.",
-        "Sintético: Banco Andino es un banco generado, calibrado a agregados públicos del sistema de la CMF (parámetros y hash en el "
-        "registro del modelo generador); sus filas no son observaciones de ningún banco. Las hipotecas indexadas a UF se convierten a CLP "
-        f"al valor del SII del {src.UF_DATE}: {tx.number(src.UF_VALUE, 2, lang='es')} CLP por UF.")
+    notice = bank_notice()
     fit = {
         "currency": CURRENCY,
         "bank": {"name": "Banco Andino", "synthetic": True, "notice": notice, "seed": int(book.seed),
