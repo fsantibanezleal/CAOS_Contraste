@@ -276,6 +276,23 @@ The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the
   C07 locators it reuses became bilingual; the C12 W² notes are read with the horizon in words. Every case is re-baked on the
   fix round 4 producers; `classify_rebake` finds text, the widened bilingual fields, the record hashes that cover them, the C20
   evidence ids with their segment and the C17 FFT points past the grid now null; no other number changed.
+- The Spanish texts of the producers and views carry no English technical word of the 2026-10-27 ruling: the case category reads
+  "Puntuación crediticia", the rating momentum reads "impulso", the pipeline reads "cadena de cálculo", backtests read "pruebas
+  retrospectivas", the bootstrap reads "remuestreo", a shock reads "choque", a proxy reads "aproximación" and a scorecard reads
+  "tarjeta de puntuación"; the governance reader writes "Replicación independiente de la cadena de cálculo" for the engine's report element.
+- The deferred entries of the Spanish guard's allow list are fixed at their source and removed; one entry stays, for the regular
+  expressions of the governance reader that match the engine's English word.
+- The release check of the documents (`check_spanish.py --documents`) is at 0 findings: C01 to C04, C10, C16 and C22, the contract
+  export and governance re-baked on the Spanish terms; the governance reports write the engine's missing-element sentences in reader
+  words, as the governance views show them; the catalog's missing-data template and the dormant API's not-baked reason say "cadena de
+  cálculo"; the library and class names, a CMF address and the marked English quotation of 12 CFR are reviewed entries.
+- The full gate's fixes: the Methodology SBM select prints the name and, below it, the chosen option's hint (a native select cannot
+  wrap at 390); the documentation figures' Spanish labels fit their boxes with the wide font ("Contribución al logit", the model
+  ladder's first box on two lines, the lanes figure's labels); the C01 EBM categories view fills its stage at every size.
+- Shell 0.19.4 adopted: a lane badge in the workbench rail wraps inside the rail (the override of known shell defect 44 is removed),
+  and gate G6 judges a drawing only by a visible part at least its minimum size.
+- The C22 credit baseline pins its numbers without the bilingual texts; the C21 age-62 identity pins the identifier fields and the
+  note counts without their thousands separators; both are proved equal on the documents before the re-bake.
 
 ## [0.15.000], 2026-10-21
 
