@@ -69,7 +69,7 @@ describe('U16-F10e C22', () => {
       const html = render(<View sel={selOf(id)} />, 'en');
       const panels = [...html.matchAll(/class="ct-small-multiple"[^>]*>/g)].map((m) => m[0]);
       expect(panels.length, id).toBeGreaterThan(0);
-      expect(html, id).toMatch(/data-plot-floor="10rem"/);
+      expect(html, id).toMatch(/data-plot-floor="14rem"/);
     }
   });
 

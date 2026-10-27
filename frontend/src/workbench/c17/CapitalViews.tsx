@@ -18,11 +18,12 @@ const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang
 /** The money scale of a capital table: the unit of its largest 95th percentile, so no cell carries an 11-digit amount and the last
  * column fits at 1280 (U16-R3 c18 M2: on xi 0.96 and 1.1 the euro amounts reached 122,693,631,000 and cut the last column). */
 export function tableScale(capitals: ReadonlyArray<C17Capital | null>): { div: number; unit: BiText } {
-  return axisScale(Math.max(0, ...capitals.map((c) => c?.capital_eur.p95 ?? 0)), 'EUR');
+  // the scale of the medians, as the drawing's axis: a 95th percentile in thousands of that unit still fits, a median keeps its digits
+  return axisScale(Math.max(0, ...capitals.map((c) => c?.capital_eur.median ?? 0)), 'EUR');
 }
 
-/** An amount in the scale of its table, with three significant digits at least and no more than two decimals. */
-const scaled = (v: number, div: number, lang: 'en' | 'es') => formatNumber(v / div, lang, div === 1 ? { decimals: 0 } : { decimals: 2 });
+/** An amount in the scale of its table, with four significant digits (0.009415, 108.5, 4,316). */
+const scaled = (v: number, div: number, lang: 'en' | 'es') => formatNumber(v / div, lang, div === 1 ? { decimals: 0 } : { digits: 4 });
 
 /** The cells of a summary row: the percentiles, the ratio to the truth, the share that underestimates, the spread. */
 function SummaryCells({ s, lang, div }: { s: C17Capital; lang: 'en' | 'es'; div: number }) {
