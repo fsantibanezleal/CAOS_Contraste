@@ -62,6 +62,32 @@ def aggregation_document(core: Core) -> dict[str, Any]:
     return {"outputs": plain(outputs), "tests": rows, "impact": impact, "findings": findings}
 
 
+#: the loss the reverse stress solves for; IRRBB carries no loss on the capital path (U16-R3 c19 M3)
+REVERSE_LOSS_DESCRIPTION = T("The three-year loss of Banco Andino net of the cumulative PPNR of the baseline scenario, when real GDP growth and the unemployment rate are both shifted for the "
+             "twelve quarters by the same deviation from the Federal Reserve baseline path: CET1 at the jump-off plus the cumulative PPNR less the cumulative losses reaches the "
+             "legal minimum stack when this net loss equals the headroom of CET1 over the stack. The satellites give the credit loss, the market and operational risks carry their expected "
+             "loss and IRRBB none. The basis is the labelled PPNR row and rests on its assumptions (the fee and cost ratios); the headline CET1 path is the loss-only one. The loss is nonlinear "
+             "through the probit link.",
+             "La pérdida de tres años de Banco Andino neta del PPNR acumulado del escenario base, cuando el crecimiento del PIB real y la tasa de desempleo se desplazan juntos en "
+             "los doce trimestres por la misma desviación respecto de la trayectoria base de la Reserva Federal: el CET1 de partida más el PPNR acumulado menos las pérdidas "
+             "acumuladas llega al mínimo legal cuando esta pérdida neta iguala la holgura del CET1 sobre ese mínimo. Los satélites dan la pérdida de crédito, los riesgos de mercado y operacional "
+             "llevan su pérdida esperada y el IRRBB ninguna. La base es la fila rotulada de PPNR y descansa en sus supuestos (las razones de comisiones y de costos); la trayectoria principal de "
+             "CET1 es la de solo pérdidas. La pérdida es no lineal por el enlace probit.")
+
+
+def reverse_finding_title(names: list[str], names_es: list[str], x: Any, distance: float, p: float) -> dict[str, str]:
+    """The reverse-stress finding: the factor shifts, the distance and the tail probability. It no longer adds that the loss-only baseline
+    ends below the stack, which the baseline document contradicts (U16-R3 c19 B2: 9.42 % against 9.06 %). A tail probability under 0.1 percent
+    is written with its exponent, not as "0.0%" (m4)."""
+    small = p < 1e-3
+    p_en = f"{p:.1e}" if small else f"{p:.1%}"
+    p_es = P.es_num(f"{p:.1e}") if small else P.es(p, ".1%")
+    return T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and the {names[1]} by "
+             f"{x[1]:+.2f} points, a Mahalanobis distance of {distance:.2f} (tail probability {p_en}).",
+             f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el {names_es[0]} en {P.es(x[0], '+.2f')} y la {names_es[1]} en "
+             f"{P.es(x[1], '+.2f')} puntos, a una distancia de Mahalanobis de {P.es(distance, '.2f')} (probabilidad de cola {p_es}).")
+
+
 def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict[str, Any]:
     """The minimum Mahalanobis distance scenario that takes CET1 to the Chilean legal minimum stack on the labelled PPNR path (decision Z10).
 
@@ -75,16 +101,7 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
     net_zero = float(loss_fn(np.zeros(len(space["factors"]))))
     rev.check_baseline(net_zero, threshold)
     best, each, test, p = rev.solve(loss_fn, space, threshold)
-    desc = T("The three-year loss of Banco Andino net of the cumulative PPNR of the baseline scenario, when real GDP growth and the unemployment rate are both shifted for the "
-             "twelve quarters by the same deviation from the Federal Reserve baseline path: CET1 at the jump-off plus the cumulative PPNR less the cumulative losses reaches the "
-             "legal minimum stack when this net loss equals the headroom of CET1 over the stack. The satellites give the credit loss and the other risks carry their expected "
-             "loss. The basis is the labelled PPNR row and rests on its assumptions (the fee and cost ratios); the headline CET1 path is the loss-only one. The loss is nonlinear "
-             "through the probit link.",
-             "La pérdida de tres años de Banco Andino neta del PPNR acumulado del escenario base, cuando el crecimiento del PIB real y la tasa de desempleo se desplazan juntos en "
-             "los doce trimestres por la misma desviación respecto de la trayectoria base de la Reserva Federal: el CET1 de partida más el PPNR acumulado menos las pérdidas "
-             "acumuladas llega al mínimo legal cuando esta pérdida neta iguala la holgura del CET1 sobre ese mínimo. Los satélites dan la pérdida de crédito y los demás riesgos "
-             "llevan su pérdida esperada. La base es la fila rotulada de PPNR y descansa en sus supuestos (las razones de comisiones y de costos); la trayectoria principal de "
-             "CET1 es la de solo pérdidas. La pérdida es no lineal por el enlace probit.")
+    desc = REVERSE_LOSS_DESCRIPTION
     outputs = {
         "kind": "reverse", "currency": "CLP", "units": UNITS, "bank": _bank(),
         "failure_point": {"label": "contraste-formulation-not-regulatory",
@@ -107,11 +124,7 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
     assert [f["id"] for f in space["factors"]] == ["real_gdp_growth", "unemployment_rate"], space["factors"]
     names = [f["label"]["en"][0].lower() + f["label"]["en"][1:] for f in space["factors"]]
     names_es = [f["label"]["es"][0].lower() + f["label"]["es"][1:] for f in space["factors"]]
-    x = best.x_star
     findings = [{"id": "reverse-scenario", "severity": "S3", "status": "open", "evidence": ["stress.reverse_solution_check"],
-                 "title": T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and the {names[1]} by "
-                            f"{x[1]:+.2f} points, a Mahalanobis distance of {best.distance:.2f} (tail probability {p:.1%}); the loss-only baseline already ends below the stack.",
-                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el {names_es[0]} en {P.es(x[0], '+.2f')} y la {names_es[1]} en "
-                            f"{P.es(x[1], '+.2f')} puntos, a una distancia de Mahalanobis de {P.es(best.distance, '.2f')} (probabilidad de cola {P.es(p, '.1%')}); la base de solo pérdidas ya termina bajo el mínimo.")}]
+                 "title": reverse_finding_title(names, names_es, best.x_star, best.distance, p)}]
     return {"outputs": plain(outputs), "tests": rows_of([test]), "impact": impact, "findings": findings, "solution": best, "plausibility": p,
             "net_loss_at_zero": net_zero}

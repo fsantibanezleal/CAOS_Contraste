@@ -16,6 +16,23 @@ const METHOD_TEXT: Record<string, BiText> = {
 };
 
 /** The solved scenario, factor by factor, with its distance, its plausibility and the failure point it reaches. */
+type Start = { start_id: string; converged: boolean; distance: number };
+
+/** The bars of the reverse search: every start at its committed distance; a start that did not converge is drawn and says so (U16-R3
+ * c19 M4: its bar read "not available" beside a table that shows its distance). */
+export function startBars(starts: ReadonlyArray<Start>, focus: string | undefined) {
+  return starts.map((x, i) => ({
+    id: x.start_id,
+    label: x.converged ? { en: `Start ${i + 1}`, es: `Inicio ${i + 1}` } : { en: `Start ${i + 1} (did not converge)`, es: `Inicio ${i + 1} (no convergió)` },
+    value: x.distance,
+    tone: x.converged ? ('accent' as const) : ('warn' as const),
+    highlight: x.start_id === focus,
+  }));
+}
+
+/** A tail probability: a percent, or with its exponent under 0.1 percent (U16-R3 c19 m4: 2.4e-15 read "0.00 %"). */
+const tailText = (p: number, lang: 'en' | 'es') => (p < 1e-3 ? formatNumber(p, lang, { digits: 2 }) : PCT(p, lang));
+
 export function ReverseSolutionView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -65,7 +82,7 @@ export function ReverseSolutionView({ sel }: { sel: C18Sel | null }) {
             <dt>{pick({ en: 'Mahalanobis distance', es: 'Distancia de Mahalanobis' }, lang)}</dt>
             <dd data-distance={s.mahalanobis_distance}>{formatNumber(s.mahalanobis_distance, lang, { digits: 4 })}</dd>
             <dt>{pick({ en: 'Plausibility', es: 'Plausibilidad' }, lang)}</dt>
-            <dd data-tail-probability={s.plausibility.tail_probability}>{`${PCT(s.plausibility.tail_probability, lang)} ${pick({ en: `(chi-square tail with ${s.plausibility.chi_square_df} degrees of freedom: the probability of a scenario at least this far from the baseline)`, es: `(cola chi cuadrado con ${s.plausibility.chi_square_df} grados de libertad: la probabilidad de un escenario al menos así de lejos de la línea base)` }, lang)}`}</dd>
+            <dd data-tail-probability={s.plausibility.tail_probability}>{`${tailText(s.plausibility.tail_probability, lang)} ${pick({ en: `(chi-square tail with ${s.plausibility.chi_square_df} degrees of freedom: the probability of a scenario at least this far from the baseline)`, es: `(cola chi cuadrado con ${s.plausibility.chi_square_df} grados de libertad: la probabilidad de un escenario al menos así de lejos de la línea base)` }, lang)}`}</dd>
             <dt>{pick({ en: 'Loss model', es: 'Modelo de pérdida' }, lang)}</dt>
             <dd data-loss-model={lm.kind}>{pick(lm.description, lang)}</dd>
           </Defs>
@@ -152,7 +169,7 @@ export function ReverseSearchView({ sel }: { sel: C18Sel | null }) {
               title={{ en: 'Distance reached from each start', es: 'Distancia alcanzada desde cada inicio' }}
               height="fill"
               orientation="horizontal"
-              data={r.starts.map((x, i) => ({ id: x.start_id, label: { en: `Start ${i + 1}`, es: `Inicio ${i + 1}` }, value: x.converged ? x.distance : null, tone: 'accent' as const, highlight: x.start_id === sel.start }))}
+              data={startBars(r.starts, sel.start)}
               axis={{ label: { en: 'Mahalanobis distance of the scenario found', es: 'Distancia de Mahalanobis del escenario hallado' }, format: { digits: 4 } }}
             />
           }

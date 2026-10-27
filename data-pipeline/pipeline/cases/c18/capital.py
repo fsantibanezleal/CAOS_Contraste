@@ -38,19 +38,24 @@ def internal_target(named: dict[str, dict[str, Any]], anchors: Anchors) -> Targe
     return Target(t, legal, block)
 
 
+#: the basis of the capital at the jump-off; the Spanish writes the Tier 1 proxy as the approximation of the capital de nivel 1 (U16-R3 c19 B3)
+CAPITAL_BASIS = T("RWA is the C15 Tier 1 proxy over the 11.0 percent CET1 anchor, split by the mix of the Banco Santander-Chile Form 20-F 2025 (ratios only: "
+                  "its terms let derived results be published, not its figures); CET1 is the proxy. The PE ratio is the 20-F effective equity over its RWA (a ratio). "
+                  "UNVERIFIED assumption: no source splits the part above CET1 between AT1 and T2, so it is carried as T2 and AT1 is nil; no CET1 figure depends on it, "
+                  "and it makes Tier 1 equal to CET1, the conservative Tier 1.",
+                  "El APR es la aproximación de C15 al capital de nivel 1 sobre el ancla de CET1 de 11,0 por ciento, repartido según la mezcla del Formulario 20-F 2025 de "
+                  "Banco Santander-Chile (solo razones: sus términos permiten publicar resultados derivados, no sus cifras); el CET1 es esa aproximación. La razón de PE es el "
+                  "patrimonio efectivo del 20-F sobre sus APR (una razón). Supuesto NO VERIFICADO (UNVERIFIED): ninguna fuente reparte la parte sobre el CET1 entre AT1 y T2, "
+                  "por lo que se lleva como T2 y el AT1 es nulo; ninguna cifra de CET1 depende de ello y deja el capital de nivel 1 igual al CET1, el capital de nivel 1 "
+                  "conservador.")
+
+
 def capital_start(anchors: Anchors) -> dict[str, Any]:
     return {"rwa_clp_m": anchors.rwa_clp_m, "rwa_by_risk": anchors.rwa_by_risk, "cet1_clp_m": anchors.cet1_clp_m, "at1_clp_m": anchors.at1_clp_m,
             "t2_clp_m": anchors.t2_clp_m, "pe_clp_m": anchors.cet1_clp_m + anchors.at1_clp_m + anchors.t2_clp_m,
             "cet1_ratio": anchors.cet1_clp_m / anchors.rwa_clp_m,
             "pe_ratio": (anchors.cet1_clp_m + anchors.at1_clp_m + anchors.t2_clp_m) / anchors.rwa_clp_m,
-            "basis": T("RWA is the C15 Tier 1 proxy over the 11.0 percent CET1 anchor, split by the mix of the Banco Santander-Chile Form 20-F 2025 (ratios only: "
-                       "its terms let derived results be published, not its figures); CET1 is the proxy. The PE ratio is the 20-F effective equity over its RWA (a ratio). UNVERIFIED assumption: no source splits the part "
-                       "above CET1 between AT1 and T2, so it is carried as T2 and AT1 is nil; no CET1 figure depends on it, and it makes Tier 1 equal to CET1, the conservative "
-                       "Tier 1 (decisions Q4 and Z12).",
-                       "El APR es el proxy de capital de nivel 1 de C15 sobre el ancla de CET1 de 11,0 por ciento, repartido según la mezcla del Formulario 20-F 2025 de Banco Santander-Chile "
-                       "(solo razones: sus términos permiten publicar resultados derivados, no sus cifras); el CET1 es el proxy. La razón de PE es el patrimonio efectivo del 20-F sobre sus APR (una razón). Supuesto NO VERIFICADO "
-                       "(UNVERIFIED): ninguna fuente reparte la parte sobre el CET1 entre AT1 y T2, por lo que se lleva como T2 y el AT1 es nulo; ninguna cifra de CET1 depende de "
-                       "ello y deja el Tier 1 igual al CET1, el Tier 1 conservador (decisiones Q4 y Z12).")}
+            "basis": CAPITAL_BASIS}
 
 
 def cap_row(available: float, rwa: float, need: float | None = None) -> dict[str, Any]:

@@ -9,8 +9,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import math
+
 import numpy as np
 from riskvalidation.validation import oprisk as val
+
+from ...core import text as tx
 
 from . import params as P
 from .generator import Variant
@@ -29,6 +33,21 @@ def es_num(x: float, spec: str) -> str:
     the no-break space before its sign (86,9\u00a0%, the shell's es-CL form; U16-F9c)."""
     out = format(x, spec).replace(".", ",")
     return out[:-1] + "\u00a0%" if out.endswith("%") else out
+
+
+def sig2(x: float, lang: str) -> str:
+    """A ratio with two significant digits and at least two decimals, in the language's form: 0.0044 (not "0.00 times the truth",
+    U16-R3 c18 m6), 0.042, 0.26, 1.50."""
+    decimals = 2 if x == 0 else max(2, 1 - math.floor(math.log10(abs(x))))
+    return tx.number(x, decimals, lang=lang)
+
+
+#: the generator's notice: the English acronym of the Loss Data Collection Exercise is glossed once in Spanish (U16-R3 c18 m8)
+GENERATOR_NOTICE = T("Synthetic data: a bank invented for the case whose annual loss distribution is known by construction; the LDCE medians "
+                     "shape it and it describes no real bank.",
+                     "Datos sintéticos: un banco inventado para el caso cuya distribución de pérdida anual se conoce por construcción; "
+                     "las medianas del Ejercicio de Recolección de Datos de Pérdidas (LDCE, por su sigla en inglés) lo moldean y no "
+                     "describe a ningún banco real.")
 
 
 def rv_version() -> str:
@@ -157,17 +176,18 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
     out: list[dict[str, Any]] = []
     s5, s10 = cells["y5-h10000"]["lda_splice"], cells["y10-h20000"]["lda_splice"]
     out.append({"id": "F-1", "severity": "S2", "status": "open", "evidence": ev("lda-splice", "y5-h10000") or ["design:replications"],
-                "title": T(f"At tail index {v.tail_index:g} with 5 years of data the splice LDA capital has an interquartile range of "
+                "title": T(f"At tail index {v.tail_index:g} with 5 years of data and threshold EUR 10,000 the splice LDA capital has an interquartile range of "
                            f"{s5['iqr_over_truth']:.0%} of the true 99.9 percent quantile (10 years, threshold EUR 20,000: {s10['iqr_over_truth']:.0%}).",
-                           f"Con índice de cola {es_num(v.tail_index, 'g')} y 5 años de datos el capital LDA con empalme tiene un rango intercuartil de "
-                           f"{es_num(s5['iqr_over_truth'], '.0%')} del cuantil 99,9 por ciento verdadero (10 años, umbral de EUR 20.000: {es_num(s10['iqr_over_truth'], '.0%')}).")})
+                           f"Con índice de cola {es_num(v.tail_index, 'g')}, 5 años de datos y umbral de EUR 10.000 el capital LDA con empalme tiene un rango intercuartil de "
+                           f"{tx.percent(s5['iqr_over_truth'], 0, lang='es')} del cuantil 99,9 por ciento verdadero (10 años, umbral de EUR 20.000: "
+                           f"{tx.percent(s10['iqr_over_truth'], 0, lang='es')}).")})
     a, b = cells["y10-h20000"]["lda_lognormal"], cells["y10-h20000"]["lda_lognormal_truncated"]
     out.append({"id": "F-2", "severity": "S3", "status": "open",
                 "evidence": ev("lda-lognormal", "y10-h20000") + ev("lda-lognormal-truncated", "y10-h20000") or ["design:replications"],
-                "title": T(f"Ignoring the collection threshold gives a median capital of {a['ratio_to_truth']['median']:.2f} times the truth; "
-                           f"modelling the truncation gives {b['ratio_to_truth']['median']:.2f} (10 years, threshold EUR 20,000).",
-                           f"Ignorar el umbral de recolección da un capital mediano de {es_num(a['ratio_to_truth']['median'], '.2f')} veces la verdad; "
-                           f"modelar el truncamiento da {es_num(b['ratio_to_truth']['median'], '.2f')} (10 años, umbral de EUR 20.000).")})
+                "title": T(f"Ignoring the collection threshold gives a median capital of {sig2(a['ratio_to_truth']['median'], 'en')} times the truth; "
+                           f"modelling the truncation gives {sig2(b['ratio_to_truth']['median'], 'en')} (10 years, threshold EUR 20,000).",
+                           f"Ignorar el umbral de recolección da un capital mediano de {sig2(a['ratio_to_truth']['median'], 'es')} veces la verdad; "
+                           f"modelar el truncamiento da {sig2(b['ratio_to_truth']['median'], 'es')} (10 años, umbral de EUR 20.000).")})
     out.append({"id": "F-3", "severity": "S3", "status": "open", "evidence": ["design:sma-not-calibrated-to-the-999-quantile"],
                 "title": T(f"The SMA operational risk capital is {orc_median / truth:.1%} of the true 99.9 percent quantile at tail index {v.tail_index:g}; "
                            "it depends on the losses only through the 10-year average and the BIC.",
@@ -251,10 +271,7 @@ def models_document(vs: list[Variant], truths: dict[float, Truth], seed_base: in
         "currency": P.CURRENCY,
         "generator": {"name": P.GENERATOR, "shaped_on": "bcbs160-ldce-2008", "assets_eur_bn": P.ASSETS_EUR_BN, "frequency_law": "poisson",
                       "severity_law": "gpd", "generator_floor_eur": P.FLOOR_EUR,
-                      "notice": T("Synthetic data: a bank invented for the case whose annual loss distribution is known by construction; the LDCE medians "
-                                  "shape it and it describes no real bank.",
-                                  "Datos sintéticos: un banco inventado para el caso cuya distribución de pérdida anual se conoce por construcción; "
-                                  "las medianas de la LDCE lo moldean y no describe a ningún banco real.")},
+                      "notice": GENERATOR_NOTICE},
         "calibration": P.LDCE_TARGETS,
         "variants": [{"variant_id": v.variant_id, "tail_index": v.tail_index, "infinite_mean": v.infinite_mean, "lambda_per_year": v.lambda_per_year,
                       "location_eur": P.FLOOR_EUR, "scale_eur": v.scale_eur, "true_quantile_999_eur": truths[v.tail_index].quantile_eur,

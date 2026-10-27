@@ -146,7 +146,7 @@ export function cellLabel(years: number, threshold: number): Bi {
 
 /** The words of an engine test of operational risk; an id without an entry is shown as it is. */
 export const TEST_TEXT: Record<string, BiText> = {
-  'oprisk.benchmark_reproduction': { en: 'Benchmark reproduction: Monte Carlo, Panjer and FFT', es: 'Reproducción del benchmark: Monte Carlo, Panjer y FFT' },
+  'oprisk.benchmark_reproduction': { en: 'Benchmark reproduction: Monte Carlo, Panjer and FFT', es: 'Reproducción del valor de referencia: Monte Carlo, Panjer y FFT' },
   'oprisk.threshold_stability': { en: 'Stability of the tail index across thresholds', es: 'Estabilidad del índice de cola entre umbrales' },
   'oprisk.capital_stability': { en: 'Stability of the 99.9 percent capital across histories', es: 'Estabilidad del capital al 99,9 por ciento entre historias' },
   'oprisk.sma_ilm_response': { en: 'Response of the SMA ILM to one large loss', es: 'Respuesta del ILM del SMA a una pérdida grande' },

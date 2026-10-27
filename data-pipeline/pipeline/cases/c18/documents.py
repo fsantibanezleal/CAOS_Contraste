@@ -35,7 +35,22 @@ NON_CREDIT_BASIS = T(
     "lo que cada uno lleva su pérdida esperada anual en todo escenario y año; la pérdida bajo tensión es por tanto un piso (suelo). IRRBB es nulo aquí: un cambio de EVE no es "
     "una partida de resultados del libro bancario y queda fuera de la trayectoria de capital; la trayectoria de tasas actúa sobre el margen financiero de la fila de PPNR.")
 BACKCAST_SENTENCE = T("The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-                      "La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025.")
+                      "La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025.")
+#: the design limit of the non-credit losses: market and operational at their expected loss, IRRBB out of the capital path (its losses are
+#: nil in the documents; U16-R3 c19 M3: the title said IRRBB was held at its expected loss)
+NON_CREDIT_FINDING = T("Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital "
+                       "path, so the stressed loss is a floor.",
+                       "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la "
+                       "trayectoria de capital, por lo que la pérdida bajo tensión es un piso.")
+
+
+def milder_title(n: int) -> dict[str, str]:
+    """The finding on the path variables milder than the crisis, singular for one (U16-R3 c19 m3: "1 path variables ... are milder")."""
+    if n == 1:
+        return T("1 path variable of this scenario is milder than the global financial crisis (ratio below 0.75).",
+                 "1 variable de trayectoria de este escenario es más suave que la crisis financiera global (razón bajo 0,75).")
+    return T(f"{n} path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
+             f"{n} variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75).")
 
 
 def _join(a: dict[str, str], b: dict[str, str]) -> dict[str, str]:
@@ -209,11 +224,9 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     mild = [t for t in tests if t["test_id"] == "stress.scenario_severity" and t["light"] == "amber"]
     if mild and sc.key != "baseline":
         out.append({"id": "scenario-milder-than-gfc", "severity": "S3", "status": "open", "evidence": ["stress.scenario_severity"],
-                    "title": T(f"{len(mild)} path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-                               f"{len(mild)} variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75).")})
+                    "title": milder_title(len(mild))})
     out.append({"id": "non-credit-losses-at-expected-loss", "severity": "S3", "status": "open", "evidence": ["design:non-credit-losses-at-expected-loss"],
-                "title": T("Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-                           "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso.")})
+                "title": NON_CREDIT_FINDING})
     return out
 
 

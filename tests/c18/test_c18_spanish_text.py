@@ -43,7 +43,7 @@ def decimal_points(text: str) -> list[str]:
 
 
 def test_es_writes_the_spanish_separators() -> None:
-    assert P.es(0.1234, ".2%") == "12,34%"
+    assert P.es(0.1234, ".2%") == "12,34 %"  # the shell's no-break space before the sign (U16-R3 c19 m2)
     assert P.es(658046.4, ",.0f") == "658.046"
     assert P.es(-0.5, "+.2f") == "-0,50"
     assert P.es_num("1,234.5") == "1.234,5"
