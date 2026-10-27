@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "23.0.0",
+    "version": "23.1.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "c7f2a7c2f8e1f0ed055802a62d12808218b3cdfa0dc0c9bbfbbbb5e9054fc944"
+    "sha256": "57e82a2d144c22d53ad5d186882e31fedc8ad9959e32e67e9a8de48a0fc86b6c"
   },
   "readiness": {
     "version": "1.0.1",
@@ -305,9 +305,9 @@
     "sha256": "51033adc205fdb31ace5f775f396f8b794d0e735316c077be63cdbebbe3d9b33"
   },
   "c20-outputs-shift": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c20/variant-shift.schema.json",
-    "sha256": "df52a383a218f127948e2dcc676f0beb71049be231508ec1ebbf6c17a95c75f8"
+    "sha256": "359cadc0c35d2a16a2af9d1eb5433e144c5a022f4b10ce8b4d79cbc2a3cfd3b0"
   },
   "c20-outputs-seeds": {
     "version": "1.0.0",

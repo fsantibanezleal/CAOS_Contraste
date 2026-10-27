@@ -54236,6 +54236,11 @@
             "type": "string",
             "minLength": 1
           },
+          "evaluation_rows": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The rows of the locked evaluation set (U16-R3 c20 B3: the count is a field, so the view writes it in the reader's language; a 1.0.0 document carried it inside evaluation_set)."
+          },
           "shifts": {
             "type": "array",
             "items": {

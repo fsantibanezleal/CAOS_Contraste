@@ -12693,6 +12693,8 @@ export interface components {
             /** @enum {unknown} */
             reference_portfolio: "typical" | "higher-risk" | "lower-risk";
             evaluation_set: string;
+            /** @description The rows of the locked evaluation set (U16-R3 c20 B3: the count is a field, so the view writes it in the reader's language; a 1.0.0 document carried it inside evaluation_set). */
+            evaluation_rows?: number;
             shifts: {
                 shift_id: string;
                 score: number;
