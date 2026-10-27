@@ -7,7 +7,7 @@ import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
-import { IllustrativeNotice } from './C10Common';
+import { NoticeFlow } from './C10Common';
 import { noteText } from '../c08/notes';
 import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, gridOf, measureText, outputsOf, referenceNote, rungOf, text, type C10GridOutputs, type C10Sel } from './selection';
 
@@ -115,7 +115,7 @@ export function PortfolioView({ sel }: { sel: C10Sel | null }) {
           es: 'Nombres agrupados por tamaño, probabilidad de incumplimiento y carga en el factor sistemático: pocos nombres grandes, un grupo medio y muchos pequeños. Está construida para mostrar cómo la concentración y la dependencia mueven la cola, y nunca es la cartera de un banco.',
         }}
       >
-        <IllustrativeNotice notice={spec.notice} />
+        <NoticeFlow notice={spec.notice}>
         <ChartOverTable
           chartMin={barMin(spec.groups.length)}
           chart={
@@ -173,6 +173,7 @@ export function PortfolioView({ sel }: { sel: C10Sel | null }) {
             ) : null}
           </dl>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );

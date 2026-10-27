@@ -85,9 +85,10 @@ describe('U16-F12e C18', () => {
 
   it('c23 M1: the upper stack drawing has a floor for its bars, its axis title and the read-out hint', () => {
     const html = render(<StackView sel={selOf('ngfs-delayed-transition')} />, 'en');
-    const box = /<div data-box="oi-stack" style="([^"]*)"/.exec(html);
+    const box = /<div data-box="oi-stack" data-plot-floor="([\d.]+rem)" style="([^"]*)"/.exec(html);
     expect(box).not.toBeNull();
-    expect(box![1]).toMatch(/min-height:calc\(/);
+    // layout.ts reads the floor from a plain rem length (a calc() counts as none), so the attribute and the min-height agree
+    expect(box![2]).toContain(`min-height:${box![1]}`);
   });
 
   it('c23 M3: the back-cast chart marks the predicted and realised peaks its red test judges, with their values', () => {

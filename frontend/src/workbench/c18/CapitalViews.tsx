@@ -323,8 +323,9 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             {/* the two floors together can be taller than the card: the drawings then scroll in their own box with the fade cue (ADR-0071) */}
             <div className="ct-c18-stack-charts ct-fade-scroll" data-caos-flow="">
               {/* the upper drawing keeps a floor for its bars, its ticks, its axis title and the read-out hint too (U16-R4 c23 M1: the
-                  lower floor alone took the upper drawing its axis title) */}
-              <div data-box="oi-stack" style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `calc(${rowsAll} * 1.4rem + 6rem)` }}>
+                  lower floor alone took the upper drawing its axis title); `data-plot-floor` is a plain rem length, which layout.ts reads
+                  to grow the box under its plot (a calc() is read as no floor) */}
+              <div data-box="oi-stack" data-plot-floor={`${Math.round((rowsAll * 1.4 + 6) * 100) / 100}rem`} style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `${Math.round((rowsAll * 1.4 + 6) * 100) / 100}rem` }}>
                 <BarChart
                   title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
                   data={ownDecimals([...oiBars, ...refBars])}

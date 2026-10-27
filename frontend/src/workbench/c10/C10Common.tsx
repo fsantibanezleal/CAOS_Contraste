@@ -3,6 +3,7 @@
 // that moves with its controls). The Findings card and the fixture notice are the ones C06 and C07 use.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText, type FormatOptions } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
+import './c10-flow.css';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -74,6 +75,19 @@ export function IllustrativeNotice({ notice }: { notice: Bi }) {
     <p className="ct-note" data-portfolio="illustrative">
       <strong>{pick(notice, lang)}</strong>
     </p>
+  );
+}
+
+/**
+ * The body of a C10 card that opens with the illustrative-portfolio notice and holds a drawing over its tables: the notice, then
+ * what follows it in a column whose stack takes the height left under the notice (U16-R4 c13 M1; `c10-flow.css`).
+ */
+export function NoticeFlow({ notice, children }: { notice: Bi; children: ReactNode }) {
+  return (
+    <div className="ct-c10-flow" data-caos-flow="">
+      <IllustrativeNotice notice={notice} />
+      {children}
+    </div>
   );
 }
 
