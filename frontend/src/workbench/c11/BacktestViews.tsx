@@ -79,6 +79,18 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
   );
 }
 
+/** The x values of the Z2 chart: the bin centres, widened by one point at either end when a mark lies beyond the outer centre (the
+ * bars are drawn at the centres, so a mark between the outer edge and the outer centre extends the axis too; R2b c12 M1). `front` is
+ * the number of points added before the centres. Exported so the rule is tested by running it (R3 c12 m14). */
+export function z2Axis(centers: readonly number[], marks: readonly number[]): { xs: number[]; front: number } {
+  const c0 = centers[0];
+  const cN = centers[centers.length - 1];
+  const lo = Math.min(c0, ...marks);
+  const hi = Math.max(cN, ...marks);
+  const pad = (hi - lo) * 0.04;
+  return { xs: [...(lo < c0 ? [lo - pad] : []), ...centers, ...(hi > cN ? [hi + pad] : [])], front: lo < c0 ? 1 : 0 };
+}
+
 /** Z2 of Acerbi and Szekely against the model's simulated null: the realised statistic, the model's own critical values, and the published points as a reference. */
 export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   const lang = useShellLang();
@@ -129,13 +141,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   // the axis takes in every mark: a Z2 far from the null is drawn at its place, with the histogram between. The bars are drawn at
   // the bin centres, so a mark between the outer edge and the outer centre extends the axis too (R2b c12 M1: a Z2 of 1.0, the last
   // edge, fell outside an axis that ended at the last centre, in 45 of 168 states)
-  const c0 = centers[0];
-  const cN = centers[centers.length - 1];
-  const lo = Math.min(c0, ...marks.map((m) => m.x));
-  const hi = Math.max(cN, ...marks.map((m) => m.x));
-  const pad = (hi - lo) * 0.04;
-  const xs = [...(lo < c0 ? [lo - pad] : []), ...centers, ...(hi > cN ? [hi + pad] : [])];
-  const front = lo < c0 ? 1 : 0;
+  const { xs, front } = z2Axis(centers, marks.map((m) => m.x));
   const counts: Array<number | null> = xs.map((_, i) => (i >= front && i < front + centers.length ? h.counts[i - front] : null));
   const test = testsOf(sel, o, sel.model, esAlpha).find((t) => t.test_id === 'market.acerbi_szekely');
   return (
