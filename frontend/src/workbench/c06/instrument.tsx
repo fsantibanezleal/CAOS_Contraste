@@ -180,7 +180,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   const validation = tabs(
     [
-      { id: 'backtest', label: { en: 'Backtest', es: 'Backtest' }, content: <BacktestView sel={sel} /> },
+      { id: 'backtest', label: { en: 'Backtest', es: 'Retrospectiva' }, content: <BacktestView sel={sel} /> },
       { id: 'deciles', label: { en: 'Deciles', es: 'Deciles' }, content: <DecileView sel={sel} /> },
       { id: 'rungs', label: { en: 'Rungs', es: 'Peldaños' }, content: <RungsView sel={sel} /> },
     ],
