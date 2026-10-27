@@ -129,13 +129,14 @@ export function SaCcrView({ sel }: { sel: C12Sel | null }) {
   const mism = moved ? [] : saCcrMismatches(live, sa);
   const state = moved ? 'moved' : mism.length ? 'mismatch' : 'match';
   const range = collateralRange(o);
+  const xmin = range.min * 1000;
   const xmax = range.max * 1000;
-  const xs = Array.from({ length: 41 }, (_, i) => (i / 40) * xmax);
+  const xs = Array.from({ length: 41 }, (_, i) => xmin + (i / 40) * (xmax - xmin));
   const input = saCcrInputFrom(sa);
   const sweep = xs.map((x) => saCcr({ ...input, c: x }));
-  const ax = axisScale(xmax, 'USD');
+  const ax = axisScale(Math.max(xmax, -xmin), 'USD');
   const ay = axisOf(sweep.flatMap((s) => [s.ead, 1.4 * s.rc, 1.4 * s.pfe]));
-  const clamp = (x: number) => Math.min(Math.max(x, 0), xmax) / ax.div;
+  const clamp = (x: number) => Math.min(Math.max(x, xmin), xmax) / ax.div;
   const marks = [
     { x: clamp(c), label: { en: `Collateral in focus: ${formatNumber(clamp(c), 'en', { digits: 4 })} ${pick(ax.unit, 'en')}`, es: `Colateral en foco: ${formatNumber(clamp(c), 'es', { digits: 4 })} ${pick(ax.unit, 'es')}` } },
     ...(moved ? [{ x: clamp(committed), label: { en: 'Committed collateral', es: 'Colateral del documento' } }] : []),
