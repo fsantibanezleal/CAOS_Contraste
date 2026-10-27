@@ -46,22 +46,26 @@ export function engineText(engine: string, lang: 'en' | 'es'): string {
 
 const CONDITION = /^([A-Za-z_]\w*) (<=|>=|<|>|==) (-?\d+(?:\.\d+)?)$/;
 
+/** The decimals a rule's threshold keeps: as the engine wrote it, at most four (a WoE cut written to 7 digits, R3 c01 m14). */
+const RULE_DECIMALS = 4;
+
 /**
  * A PLTR rule, written from its conditions: `PAY_0 <= 1.5 and PAY_2 <= 1.5` reads `PAY_0 <= 1,5 y PAY_2 <= 1,5` in Spanish,
- * the threshold in the language's number format (as many decimals as the engine wrote). A condition that does not parse is
- * kept as written.
+ * the threshold in the language's number format (as many decimals as the engine wrote, at most four). A condition on an input
+ * the rung encodes by its WoE (`woe`, the record's `woe_encoded`) says so: its threshold is a WoE, not a code (R3 c01 m14). A
+ * condition that does not parse is kept as written.
  */
-export function ruleText(rule: string, lang: 'en' | 'es'): string {
-  if (lang === 'en') return rule;
+export function ruleText(rule: string, lang: 'en' | 'es', woe: readonly string[] = []): string {
   return rule
     .split(' and ')
     .map((part) => {
       const m = CONDITION.exec(part);
       if (!m) return part;
-      const decimals = m[3].includes('.') ? m[3].split('.')[1].length : 0;
-      return `${m[1]} ${m[2]} ${formatNumber(Number(m[3]), lang, { decimals })}`;
+      const decimals = Math.min(RULE_DECIMALS, m[3].includes('.') ? m[3].split('.')[1].length : 0);
+      const value = lang === 'en' && decimals === (m[3].split('.')[1] ?? '').length ? m[3] : formatNumber(Number(m[3]), lang, { decimals });
+      return `${m[1]}${woe.includes(m[1]) ? ' (WoE)' : ''} ${m[2]} ${value}`;
     })
-    .join(' y ');
+    .join(lang === 'es' ? ' y ' : ' and ');
 }
 
 /** A design limit a finding cites (`design:<id>`) in words, from the product's one map (names/design.ts); an id not listed there

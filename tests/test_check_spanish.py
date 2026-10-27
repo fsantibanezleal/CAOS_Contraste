@@ -322,3 +322,52 @@ def test_the_copy_list_of_the_real_tree_has_a_reason_on_every_line(guard):
     for raw in path.read_text(encoding="utf-8").splitlines():
         if raw.strip() and not raw.lstrip().startswith("#"):
             assert "  # " in raw and raw.split("  # ", 1)[1].strip(), raw
+
+
+# --- U16-F10a: the English technical words a Spanish text may not carry (the ruling of 2026-10-27) -----------------------
+
+def test_an_english_technical_word_in_a_spanish_text_is_found_with_its_spanish(guard, tmp_path, capsys):
+    _write(tmp_path, PY, 'T = {"en": "The scorecard backtest", "es": "El backtest de la scorecard"}\n')
+    code, out = _run(guard, tmp_path, capsys)
+    assert code == 1
+    assert f"{PY}:1: backtest -> prueba retrospectiva" in out
+    assert "scorecard -> tarjeta de puntuación" in out
+
+
+def test_the_english_word_is_free_in_an_english_text_and_inside_an_identifier(guard, tmp_path, capsys):
+    _write(tmp_path, PY, 'T = {"en": "The scorecard of the pipeline", "es": "La tarjeta de puntuación de la cadena"}\n'
+                         'P = {"es": "ver data-pipeline/pipeline/cases y pipeline.cases.c01 de la base"}\n')
+    code, out = _run(guard, tmp_path, capsys)
+    assert code == 0, out
+
+
+def test_plural_ing_and_hyphenated_forms_are_found_in_frontend_spanish(guard, tmp_path, capsys):
+    _write(tmp_path, TSX, "const a = { en: 'x', es: 'Los shocks de tasas' };\n"
+                          "const b = { en: 'y', es: 'Coeficiente (log-odds) del Backtesting' };\n")
+    code, out = _run(guard, tmp_path, capsys)
+    assert code == 1
+    assert f"{TSX}:1: shocks -> choque" in out
+    assert f"{TSX}:2: log-odds -> logaritmo de la razón de probabilidades" in out
+    assert "Backtesting -> prueba retrospectiva" in out
+
+
+def test_documents_find_an_english_word_in_an_es_value(guard, tmp_path, capsys):
+    _write(tmp_path, DOC, json.dumps({"title": {"en": "Hazard of default", "es": "Hazard de incumplimiento"}}))
+    code, out = _run(guard, tmp_path, capsys, "--documents")
+    assert code == 1
+    assert "Hazard -> intensidad (de incumplimiento)" in out
+
+
+def test_an_allow_entry_accepts_a_reviewed_english_word(guard, tmp_path, capsys):
+    _write(tmp_path, PY, 'T = {"en": "x", "es": "Una cita en inglés: odds ratio"}\n')
+    _write(tmp_path, "scripts/check_spanish_allow.txt", f"{PY} :: odds  # a quotation kept in English and marked\n")
+    code, out = _run(guard, tmp_path, capsys)
+    assert code == 0, out
+
+
+def test_the_ruled_english_words_are_listed(guard):
+    terms = guard.load_english(ROOT / "scripts" / "check_spanish_words.txt")
+    ruled = {"hazard", "proxy", "backtest", "roll-off", "offline", "odds", "log-odds", "shock", "scoring", "scorecard", "boosting",
+             "bootstrap", "commit", "pipeline", "kernel", "momentum"}
+    assert ruled <= set(terms), ruled - set(terms)
+    assert all(terms[t] for t in terms)

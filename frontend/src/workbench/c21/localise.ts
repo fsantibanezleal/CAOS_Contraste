@@ -18,11 +18,12 @@ const R: ReadonlyArray<Rule> = [
     () => 'la diferencia de tasas es el grupo 1 menos el grupo 2; diferencias menores pueden importar cuando son estadísticamente significativas; sin afirmación legal'],
   [/^replication by sign and size only, no verdict beyond them; no legal claim$/, () => 'replicación solo por signo y tamaño, sin veredicto más allá de ellos; sin afirmación legal'],
   [/^individual-level indicator over the complainants of the protected group, centers excluded; the cut point is a convention, never a regulatory threshold, and sits in extras\.thresholds, not in the p-value alphas; never red; no legal claim$/,
-    () => 'indicador a nivel individual sobre los denunciantes del grupo protegido, centros excluidos; el punto de corte es una convención, nunca un umbral regulatorio, y está en extras.thresholds, no en los alfa del valor p; nunca rojo; sin afirmación legal'],
+    // the configuration key is no reader text (R3 c21 B6): the note says what it holds
+    () => 'indicador a nivel individual sobre los denunciantes del grupo protegido, centros excluidos; el punto de corte es una convención, nunca un umbral regulatorio, y es la parte ámbar de denunciantes significativos de la prueba, no los alfa del valor p; nunca rojo; sin afirmación legal'],
   [/^approximation of comparative evidence$/, () => 'aproximación de evidencia comparativa'],
   // the unit names the field in words, never its code (the raw-id scan of 2026-10-24)
   [/^percentage points of rate_spread$/, () => 'puntos porcentuales de diferencial de tasa'],
-  [/^odds ratio$/, () => 'razón de odds'],
+  [/^odds ratio$/, () => 'razón de probabilidades'],
   [/^action_taken 1 or 2$/, () => 'action_taken 1 o 2'],
   [/^flag when 5 \* x_g \* n_h < 4 \* x_h \* n_g$/, () => 'marcar cuando 5 * x_g * n_h < 4 * x_h * n_g'],
   [/^flag when 5 x_g n_h < 4 x_h n_g, exact counts$/, () => 'marcar cuando 5 x_g n_h < 4 x_h n_g, conteos exactos'],
@@ -51,10 +52,14 @@ const CONTROLS_NOTE = /^(an approximation of comparative evidence controlling fo
 const controlsEn = (ids: string): string => ids.split(', ').map((c) => text(CONTROL_TEXT, c).en).join(', ');
 
 /** The Spanish of a document string, or the string itself in English or when no rule knows it (the English controls note by name). */
+const SITUATION_NOTE = /^(individual-level indicator over the complainants of the protected group, centers excluded; the cut point is a convention, never a regulatory threshold, and )sits in extras\.thresholds(, not in the p-value alphas; never red; no legal claim)$/;
+
 export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => {
   if (lang === 'en') {
     const m = CONTROLS_NOTE.exec(s ?? '');
     if (m) return `${m[1]}${controlsEn(m[2])}${m[3]}${controlsEn(m[4])}${m[5]}`;
+    const t = SITUATION_NOTE.exec(s ?? '');
+    if (t) return `${t[1]}is the test's amber share of significant complainants${t[2]}`;
   }
   return localise(s, lang, R);
 };

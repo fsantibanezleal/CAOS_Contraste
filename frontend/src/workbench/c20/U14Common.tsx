@@ -6,8 +6,10 @@ import { formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-a
 import type { CSSProperties, ReactNode } from 'react';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
-import type { Bi } from '../c03/U6Shared';
-import { modelName, segmentName, testText, type NameContext } from '../names';
+import { engineNote, referenceIn, segmentLabels, type Bi } from '../c03/U6Shared';
+import { dropPlanTags } from '../c14/localise';
+import { modelName, testText, type NameContext } from '../names';
+import { es as c20Text } from './localise';
 
 export type Lang = 'en' | 'es';
 
@@ -68,7 +70,7 @@ export const PARAM_TEXT: Record<string, Bi> = {
   perturbation_grid: { en: 'Noise scales of the perturbation grid', es: 'Escalas de ruido de la grilla de perturbación' },
   perturbation_tolerance: { en: 'Tolerated AUC degradation under noise', es: 'Degradación de AUC tolerada bajo ruido' },
   n_seeds: { en: 'Retraining seeds', es: 'Semillas de reentrenamiento' },
-  n_bootstrap_refits: { en: 'Bootstrap refits for the reason codes', es: 'Reajustes bootstrap de los códigos de razón' },
+  n_bootstrap_refits: { en: 'Bootstrap refits for the reason codes', es: 'Reajustes por remuestreo de los códigos de razón' },
   overfit_tolerance: { en: 'Overfit tolerance', es: 'Tolerancia de sobreajuste' },
   weak_spot_multiple: { en: 'Weak-spot multiple of the average error', es: 'Múltiplo del error medio para un punto débil' },
   shift_score: { en: 'Shift score ranking the subsamples', es: 'Puntaje de cambio que ordena las submuestras' },
@@ -76,6 +78,7 @@ export const PARAM_TEXT: Record<string, Bi> = {
   decision_cutoff_reject_share: { en: 'Share of baseline decisions declined at the cut-off', es: 'Parte de las decisiones base rechazadas en el corte' },
 };
 
+/** The value of a parameter that is the name of a score, not a number: it takes no unit after it (R3 c20 m3). */
 const SCORE_TEXT: Record<string, Bi> = {
   'resemblance-classifier-probability': { en: "the resemblance classifier's probability", es: 'la probabilidad del clasificador de parecido' },
 };
@@ -97,8 +100,18 @@ export interface NamedParam {
   basis: string;
 }
 
+/** A named parameter as the table reads it: its unit and basis one English string (the contracts of C02, C20 and C21 today, read in
+ * Spanish through the rules of c20/localise.ts) or a text in both languages (a contract that makes them bilingual). */
+export type ParamRow = Omit<NamedParam, 'unit' | 'basis'> & { unit: string | Bi; basis: string | Bi };
+
+/** A unit or a basis of a named parameter in the language: picked when bilingual, else the Spanish rule of its English text; a plan
+ * or decision tag ("approved as decision V6") is no reader text in either language (the 2026-10-27 ruling). */
+export function paramText(t: string | Bi, lang: Lang): string {
+  return dropPlanTags(typeof t === 'string' ? c20Text(t, lang) : t[lang]);
+}
+
 /** The named parameters of a document, each with the word "convention" (never a regulatory threshold) and where its value comes from. */
-export function ParamTable({ params, only }: { params: NamedParam[]; only?: string[] }) {
+export function ParamTable({ params, only }: { params: ParamRow[]; only?: string[] }) {
   const lang = useShellLang();
   const rows = only ? params.filter((p) => only.includes(p.name)) : params;
   return (
@@ -115,9 +128,9 @@ export function ParamTable({ params, only }: { params: NamedParam[]; only?: stri
         {rows.map((p) => (
           <tr key={p.name} data-parameter={p.name} data-status={p.label}>
             <td className="ct-text">{pick(PARAM_TEXT[p.name] ?? { en: p.name, es: p.name }, lang)}</td>
-            <td>{`${paramValue(p.value, lang)} ${p.unit === 'name of the score' ? '' : p.unit}`.trim()}</td>
+            <td>{`${paramValue(p.value, lang)} ${typeof p.value === 'string' && SCORE_TEXT[p.value] ? '' : paramText(p.unit, lang)}`.trim()}</td>
             <td className="ct-text">{p.label === 'convention' ? pick({ en: 'convention', es: 'convención' }, lang) : p.label}</td>
-            <td className="ct-text ct-wide-only">{p.basis}</td>
+            <td className="ct-text ct-wide-only">{paramText(p.basis, lang)}</td>
           </tr>
         ))}
       </tbody>
@@ -174,7 +187,8 @@ export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: 
   const lang = useShellLang();
   const rows = only ? tests.filter(only) : tests;
   const modelText = (id: string) => modelLabel?.(id) ?? pick(modelName(id, { caseId, models }) ?? { en: id, es: id }, lang);
-  const input = (t: TestRow) => (t.segment && t.segment !== 'portfolio' ? segmentName(t.segment, { caseId }) : null);
+  // the segment of a row (an input, a slice, a window, a group contrast) where one is needed to tell the rows apart
+  const segments = segmentLabels(rows, caseId);
   return (
     <div data-block="tests">
       <p className="ct-note">
@@ -200,15 +214,16 @@ export function U14TestsTable({ tests, modelLabel, only, caseId = '', models }: 
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
                     {pick(testName(t.test_id), lang)}
-                    {/* the input of a row that tests one (C02's CSI of each input), so the rows can be told apart */}
-                    {input(t) ? <span className="ct-row-detail" data-segment={t.segment}>{pick(input(t)!, lang)}</span> : null}
+                    {segments[i] ? <span className="ct-row-detail" data-segment={t.segment}>{pick(segments[i]!, lang)}</span> : null}
                   </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : modelText(t.model_id)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  {/* the engine's note in the language, else the row's reference where the language has it (R3 c03 B1 and m11: an empty note
+                      is no note) */}
+                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : referenceIn(t, lang) ?? ''}</td>
                 </tr>
               );
             })}
