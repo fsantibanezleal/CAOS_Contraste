@@ -5,15 +5,14 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
-import { noteText } from '../c08/notes';
 import { truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin, zoneText } from './MarketCommon';
 import {
   CLASS_TEXT, HYPERPARAMETER_TEXT, REASON_ES, esMethodText, rungSourceText, SOURCE_CLASS_TEXT, WINDOW_TEXT, unitFor, alphaLabel, championOf, fitOf, levelOf, modelLabel, outputsOf, rungOf, spanLine, testName, testsOf, text,
-  type C11Outputs, type C11Sel,
+  reasonText, type C11Outputs, type C11Sel,
 } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -44,7 +43,8 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
   });
   const bars = rows.flatMap((r) => [
     { id: `${r.id}-observed`, label: { en: `${r.title.en}, observed`, es: `${r.title.es}, observadas` }, value: r.lv?.n_exceedances ?? null, tone: 'accent' as const, highlight: r.id === current },
-    { id: `${r.id}-expected`, label: { en: `${r.title.en}, expected`, es: `${r.title.es}, esperadas` }, value: r.lv?.expected_exceedances ?? null, tone: 'neutral' as const },
+    // two decimals, as the table and the rail write the expected count (R3 c12 m15: "7.5" beside "7.50")
+    { id: `${r.id}-expected`, label: { en: `${r.title.en}, expected`, es: `${r.title.es}, esperadas` }, value: r.lv?.expected_exceedances ?? null, tone: 'neutral' as const, format: { decimals: 2 } },
   ]);
   return (
     <PlotCard
@@ -56,8 +56,8 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
         es: 'Cada ventana es un período de tensión o calma de series públicas diarias, pronosticado un día adelante con datos estrictamente anteriores al día. Las barras son las excedencias del campeón en la cola de 1 % frente a las esperadas; las ventanas difieren en largo. Elija una para cargarla.',
       }}
     >
-      <ChartOverTable
-        chartMin={rowsMin(bars.length)}
+      <ChartAbove
+        chartHeight={rowsMin(bars.length)}
         chart={
           <BarChart
             title={{ en: 'Exceedances of the champion at the 1% tail', es: 'Excedencias del campeón en la cola de 1 %' }}
@@ -105,10 +105,10 @@ export function C11VariantsTable({ variants, onPick, current }: { variants: Arra
           .map((r) => (
             <p key={r.id} className="ct-note" data-state="unavailable" data-no-champion={r.id}>
               <strong>{pick(r.title, lang)}</strong>
-              {`: ${pick({ en: 'no champion. Why: ', es: 'sin campeón. Motivo: ' }, lang)}${noteText(r.v.outputs.comparison.champions.find((c) => c.alpha === alpha)?.reason, lang)}`}
+              {`: ${pick({ en: 'no champion. Why: ', es: 'sin campeón. Motivo: ' }, lang)}${reasonText(r.v.outputs.comparison.champions.find((c) => c.alpha === alpha)?.reason, lang)}`}
             </p>
           ))}
-      </ChartOverTable>
+      </ChartAbove>
     </PlotCard>
   );
 }
@@ -170,7 +170,8 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           <dt>{pick({ en: 'EVT threshold fraction', es: 'Fracción del umbral EVT' }, lang)}</dt>
           <dd>{formatNumber(h.evt_threshold_fraction, lang, { percent: true, decimals: 0 })}</dd>
           <dt>{pick({ en: 'GARCH refit every', es: 'Reajuste GARCH cada' }, lang)}</dt>
-          <dd>{pick({ en: `${count(h.garch_refit_every_days, 'en')} days`, es: `${count(h.garch_refit_every_days, 'es')} días` }, lang)}</dd>
+          {/* "1 día", never "1 días" (R3 c12 m2) */}
+          <dd>{`${count(h.garch_refit_every_days, lang)} ${pick(unitFor('days', h.garch_refit_every_days), lang)}`}</dd>
           <dt>{pick({ en: 'CAViaR and GAS starts', es: 'Inicios de CAViaR y GAS' }, lang)}</dt>
           <dd>{`${count(h.caviar_n_starts, lang)}, ${count(h.gas_n_starts, lang)}`}</dd>
           <dt>{pick({ en: 'Seed', es: 'Semilla' }, lang)}</dt>
@@ -209,7 +210,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
           </dd>
         </dl>
         {o.grid.realised_loss.status === 'withheld-derived-only' ? (
-          <p className="ct-note" data-state="unavailable">{`${NONE(lang)} (${noteText(o.grid.realised_loss.reason, lang)})`}</p>
+          <p className="ct-note" data-state="unavailable">{`${NONE(lang)} (${reasonText(o.grid.realised_loss.reason, lang)})`}</p>
         ) : null}
         {fit ? (
           <ul className="ct-evidence" data-table="c11-sources">
@@ -230,7 +231,8 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                 <th className="ct-wide-only">{pick({ en: 'Rung', es: 'Escalón' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'Source', es: 'Fuente' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'How it forecasts the ES', es: 'Cómo pronostica la ES' }, lang)}</th>
-                <th>{pick({ en: 'Refits here', es: 'Reajustes aquí' }, lang)}</th>
+                {/* a rung refits at each tail level: the count is of both (R3 c12 m12) */}
+                <th>{pick({ en: 'Refits here, both tail levels', es: 'Reajustes aquí, ambos niveles de cola' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -243,7 +245,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                     <td className="ct-text ct-wide-only">{rungSourceText(r.source, lang)}</td>
                     <td className="ct-text">
                       {esMethodText(r.es_method, lang)}
-                      {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{noteText(r.not_run_reason, lang)}</span> : null}
+                      {r.not_run_reason ? <span className="ct-note" style={{ display: 'block' }}>{reasonText(r.not_run_reason, lang)}</span> : null}
                     </td>
                     <td data-na={wf ? undefined : 'true'}>{wf ? `${count(wf.n_refits, lang)} (${count(wf.n_convergence_failures, lang)} ${pick({ en: 'failed', es: 'fallidos' }, lang)})` : NONE(lang)}</td>
                   </tr>
@@ -289,7 +291,7 @@ export function ModelReadout({ sel }: { sel: C11Sel | null }) {
       title={sel ? modelLabel(sel, sel.model) : { en: 'This model', es: 'Este modelo' }}
       items={[
         { label: { en: 'Eligible', es: 'Elegible' }, text: model ? (model.eligible ? yes : no) : na(), hint: { en: 'No gate back-test is red at either level.', es: 'Ninguna prueba de compuerta está en rojo en ningún nivel.' } },
-        { label: { en: 'Average FZ0', es: 'FZ0 medio' }, value: lv?.fz0_mean ?? null, unitless: true, format: { digits: 4 }, hint: lv?.fz0_reason ? { en: lv.fz0_reason, es: REASON_ES[lv.fz0_reason] ?? lv.fz0_reason } : { en: 'The joint VaR and ES score, lower is better.', es: 'El puntaje conjunto de VaR y ES, menor es mejor.' } },
+        { label: { en: 'Average FZ0', es: 'FZ0 medio' }, value: lv?.fz0_mean ?? null, unitless: true, format: { digits: 4 }, hint: lv?.fz0_reason ? { en: lv.fz0_reason, es: REASON_ES[lv.fz0_reason] ?? reasonText(lv.fz0_reason, 'es') } : { en: 'The joint VaR and ES score, lower is better.', es: 'El puntaje conjunto de VaR y ES, menor es mejor.' } },
         { label: { en: 'Rung', es: 'Escalón' }, text: sel && rungOf(sel, sel.model) ? { en: rungOf(sel, sel.model), es: rungOf(sel, sel.model) } : na(), hint: { en: 'The place of the model on the ladder from historical simulation to a challenger.', es: 'El lugar del modelo en la escalera desde la simulación histórica hasta un retador.' } },
       ]}
     />
@@ -304,9 +306,9 @@ export function TestReadout({ sel }: { sel: C11Sel | null }) {
   return (
     <LiveReadout
       variant={sel?.data.variant}
-      title={sel?.test ? testName(sel.test) : { en: 'This back-test', es: 'Este backtest' }}
+      title={sel?.test ? testName(sel.test) : { en: 'This back-test', es: 'Esta prueba retrospectiva' }}
       items={[
-        { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ? noteText(t.notes, 'es') : 'El estadístico de la prueba, cuando corrió.' } },
+        { label: { en: 'Statistic', es: 'Estadístico' }, value: ran ? t.statistic : null, unitless: true, format: { digits: 4 }, hint: { en: t?.notes ?? 'The statistic of the test, when it ran.', es: t?.notes ? reasonText(t.notes, 'es') : 'El estadístico de la prueba, cuando corrió.' } },
         { label: { en: 'p-value', es: 'Valor p' }, value: ran ? t.p_value : null, unitless: true, format: { digits: 2 }, hint: { en: 'The probability of a statistic this large if the model were right.', es: 'La probabilidad de un estadístico así de grande si el modelo fuera correcto.' } },
         { label: { en: 'Light', es: 'Luz' }, text: t ? zoneText(t.light) : na(), hint: { en: 'Under the committed policy; a test that did not run is not evaluated.', es: 'Bajo la política versionada; una prueba que no corrió no se evalúa.' } },
       ]}

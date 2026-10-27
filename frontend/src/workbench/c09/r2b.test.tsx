@@ -5,8 +5,8 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import { html, setLang } from '../c03/u6-testkit';
 import { committedData, view } from '../c08/spanish-testkit';
-import { ByDesignView, DistributionView } from './CcfViews';
-import { BacktestView, ModelsView } from './EadViews';
+import { ByDesignView, DistributionView, EstimatorTestsView } from './CcfViews';
+import { BacktestTestsView, ModelsView } from './EadViews';
 import { defaultSel, type C09Sel } from './selection';
 
 const data = committedData('C09', 'level-3.json', 'models-generator.json', { en: 'EAD and CCF for revolving lines', es: 'EAD y CCF de líneas rotativas' });
@@ -17,14 +17,15 @@ describe('U16-R2b c10: the C09 sub-tabs', () => {
   afterEach(() => setLang('en'));
 
   it('B1: By design lists the estimator-bias tests of the design in focus, and no back-test row', () => {
-    const markup = html(<ByDesignView sel={sel} />);
+    // the tests are the CCF's Tests sub-view since R3 c10 M2
+    const markup = html(<EstimatorTestsView sel={sel} />);
     expect(testRows(markup, 'lgd_ead.ccf_estimator_bias')).toBe(8);
     expect(testRows(markup, 'lgd_ead.ead_backtest_by_band')).toBe(0);
     expect(markup).not.toMatch(/ccf-fixed-horizon-[a-z-]+</);
   });
 
   it('B1: the back-test lists the EAD back-test rows only', () => {
-    const markup = html(<BacktestView sel={sel} />);
+    const markup = html(<BacktestTestsView sel={sel} />);
     expect(testRows(markup, 'lgd_ead.ead_backtest_by_band')).toBe(8);
     expect(testRows(markup, 'lgd_ead.ccf_estimator_bias')).toBe(0);
   });

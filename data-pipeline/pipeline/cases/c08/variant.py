@@ -200,7 +200,7 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
     cal_ref = next(t for t in tests if t["test_id"] == "lgd_ead.lgd_calibration_by_segment" and t["model_id"] == ref.rung_id
                    and t["segment"] == seg)
     impact = {
-        "mean_lgd_proxy": {"value": float(y_test.mean()), "unit": "share", "label": bd.t("Mean LGD proxy of the cohort", "LGD proxy media de la cohorte")},
+        "mean_lgd_proxy": {"value": float(y_test.mean()), "unit": "share", "label": bd.t("Mean LGD proxy of the cohort", "LGD aproximada media de la cohorte")},
         "calibration_gap_reference": {"value": comparison[[c["rung_id"] for c in comparison].index(ref.rung_id)]["calibration_gap"],
                                       "unit": "share", "label": bd.t(f"Mean realised minus mean predicted LGD, {bd.RUNG_TEXT[ref.rung_id][1][0]}",
                                                                       f"LGD realizada media menos predicha media, {bd.RUNG_TEXT[ref.rung_id][1][1]}")},
@@ -220,13 +220,19 @@ def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -
         out.append({"id": f"F-cal-{rung_id}", "severity": "S2" if cal["light"] == "red" else "S3", "status": "open",
                     "evidence": [f"lgd_ead.lgd_calibration_by_segment@{rung_id}@{seg}"],
                     "title": bd.t(f"{bd.RUNG_TEXT[rung_id][1][0]} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
-                                  f"{bd.RUNG_TEXT[rung_id][1][1]} {sign_es} la LGD proxy realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
+                                  f"{bd.RUNG_TEXT[rung_id][1][1]} {sign_es} la LGD aproximada realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
     uncovered = [r for r in down.rows if not r["covered"]]
     if uncovered:
-        ids = ", ".join(r["cohort_id"] for r in uncovered)
+        ids = [r["cohort_id"] for r in uncovered]
+        # one cohort is "the cohort", several "the cohorts ... and ..." (R3 c09 m6)
+        if len(ids) == 1:
+            en, es = f"of the cohort {ids[0]}", f"de la cohorte {ids[0]}"
+        else:
+            en = f"of the cohorts {', '.join(ids[:-1])} and {ids[-1]}"
+            es = f"de las cohortes {', '.join(ids[:-1])} y {ids[-1]}"
         out.append({"id": "F-downturn-coverage", "severity": "S3", "status": "open", "evidence": ["lgd_ead.downturn_coverage"],
-                    "title": bd.t(f"The downturn LGD does not cover the realised loss of the cohorts {ids}",
-                                  f"La LGD de recesión no cubre la pérdida realizada de las cohortes {ids}")})
+                    "title": bd.t(f"The downturn LGD does not cover the realised loss {en}",
+                                  f"La LGD de recesión no cubre la pérdida realizada {es}")})
     return out
 
 

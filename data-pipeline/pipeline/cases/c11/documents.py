@@ -129,7 +129,7 @@ def traffic_light(flags: np.ndarray, n: int) -> dict:
         return {"window_days": BASEL_DAYS, "n_windows": 0, "max_rolling_exceedances": None, "final_rolling_exceedances": None,
                 "final_zone": "not_evaluated", "days_green": None, "days_amber": None, "days_red": None,
                 "reason": f"fewer than {BASEL_DAYS} forecast days ({n}): the Basel traffic light of MAR32.9 is defined on {BASEL_DAYS} "
-                          "observations and the window has no lead-in (decision D3)"}
+                          "observations and the window has no lead-in"}
     c = np.concatenate([[0], np.cumsum(flags)])
     counts = (c[BASEL_DAYS:] - c[:-BASEL_DAYS]).astype(int)
     zones = [rv_frtb.traffic_light_zone(int(k)) for k in counts]
@@ -167,6 +167,19 @@ def _fz0_series(loss: np.ndarray, var: np.ndarray, es: np.ndarray, a: float) -> 
     return out
 
 
+#: the rule that picks the champion, in both languages (a Spanish view prints it: "pruebas retrospectivas", R3 c12 m5)
+SCORING_RULE = t(
+    "Traditional back-tests (POF, conditional coverage, Z2) are eligibility gates; the champion is the lowest average FZ0 among the eligible models with an ES on every day; Diebold-Mariano and the model confidence set rank the ladder. The Z2 null is tail-consistent: an exponential excess over the VaR with mean ES minus VaR.",
+    "Las pruebas retrospectivas tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeón es el menor FZ0 medio entre los elegibles con ES todos los días; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")
+
+
+def no_champion_reason(n_eligible: int) -> str:
+    """Why a level has no champion: no model is eligible at all, or none of the eligible ones has an ES on every day (R3 c12 m6)."""
+    if n_eligible == 0:
+        return "no model is eligible: every model fails at least one gate"
+    return "no eligible model has an ES on every day, so none has an FZ0 score to rank"
+
+
 def comparison(specs: list[Spec], loss: np.ndarray, arrays: dict[str, dict[float, dict]], eligible: dict[str, bool], hp: Hyper) -> dict:
     n = loss.size
     champions, dm_rows, mcs = [], [], []
@@ -176,8 +189,7 @@ def comparison(specs: list[Spec], loss: np.ndarray, arrays: dict[str, dict[float
         full = [m for m, f in fz.items() if np.isfinite(f).all()]
         cands = [(float(np.mean(fz[m])), m) for m in full if eligible[m]]
         champ = min(cands)[1] if cands else None
-        champions.append({"alpha": a, "model_id": champ, "reason": None if champ else
-                          "no eligible model has an ES on every day, so none has an FZ0 score to rank"})
+        champions.append({"alpha": a, "model_id": champ, "reason": None if champ else no_champion_reason(sum(eligible.values()))})
         for s in specs:
             m = s.model_id
             if champ is None or m == champ:
@@ -341,10 +353,15 @@ def findings(models: list[dict], tests: list[dict]) -> list[dict]:
     failing = [m["model_id"] for m in models if not m["eligible"]]
     clustered = sorted({r["model_id"] for r in tests if r["test_id"] == "market.christoffersen_independence" and r["light"] == "red"})
     out = []
-    sev = "S2" if failing else "S4"
-    out.append({"id": "c11-gates", "severity": sev, "status": "open", "evidence": list(GATES),
-                "title": t(f"{len(failing)} of {n} models fail at least one eligibility gate (coverage, conditional coverage or the ES test).",
-                           f"{len(failing)} de {n} modelos fallan al menos una compuerta de elegibilidad (cobertura, cobertura condicional o la prueba de ES).")})
+    if failing:
+        out.append({"id": "c11-gates", "severity": "S2", "status": "open", "evidence": list(GATES),
+                    "title": t(f"{len(failing)} of {n} models fail at least one eligibility gate (coverage, conditional coverage or the ES test).",
+                               f"{len(failing)} de {n} modelos fallan al menos una compuerta de elegibilidad (cobertura, cobertura condicional o la prueba de ES).")})
+    else:
+        # every model passes: said so and accepted, never an open finding of "0 of 17 models fail" (R3 c12 m6)
+        out.append({"id": "c11-gates", "severity": "S4", "status": "accepted", "evidence": list(GATES),
+                    "title": t(f"All {n} models pass every eligibility gate (coverage, conditional coverage and the ES test).",
+                               f"Los {n} modelos pasan todas las compuertas de elegibilidad (cobertura, cobertura condicional y la prueba de ES).")})
     if clustered:
         out.append({"id": "c11-clustering", "severity": "S3", "status": "open", "evidence": ["market.christoffersen_independence"],
                     "title": t(f"{len(clustered)} models show clustered exceedances (independence test red).",
@@ -401,8 +418,7 @@ def build_models(portfolios: dict[str, pf.Portfolio], runs: dict[str, dict[str, 
                                          "Un punto de referencia publicado (Acerbi y Szekely), no un umbral regulatorio; los valores críticos simulados de cada modelo están en los resultados.")},
             "scoring": {"fz0_formula": "-(1/(alpha*e))*1{y<=v}*(v-y) + v/e + log(-e) - 1", "tick_formula": "(alpha - 1{y<v})*(y - v)",
                         "hac_kernel": "bartlett", "mcs_confidence": MCS_CONFIDENCE, "mcs_statistic": MCS_STATISTIC,
-                        "selection_rule": t("Traditional back-tests (POF, conditional coverage, Z2) are eligibility gates; the champion is the lowest average FZ0 among the eligible models with an ES on every day; Diebold-Mariano and the model confidence set rank the ladder. The Z2 null is tail-consistent: an exponential excess over the VaR with mean ES minus VaR.",
-                                            "Los back-tests tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeón es el menor FZ0 medio entre los elegibles con ES todos los días; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")},
+                        "selection_rule": dict(SCORING_RULE)},
             "eligibility_gates": [
                 {"test_id": "market.kupiec_pof", "rule": t("Red at the 5 percent level at either tail level: ineligible.", "Rojo al 5 por ciento en cualquiera de los dos niveles: inelegible.")},
                 {"test_id": "market.christoffersen_conditional_coverage", "rule": t("Red at the 5 percent level at either tail level: ineligible.", "Rojo al 5 por ciento en cualquiera de los dos niveles: inelegible.")},

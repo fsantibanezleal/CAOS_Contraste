@@ -11,7 +11,7 @@ import { C08ContextView, C08FindingsView, C08VariantsView, CohortReadout, Endpoi
 import { DownturnView, FloorsView } from './DownturnViews';
 import { CalibrationView, EndpointsView, RealisedView, RungsView } from './ModelViews';
 import { DistributionView, ProxyView } from './SeverityViews';
-import { cohortIds, cohortLabel, defaultSel, fitOf, floorCellLabel, humanize, outputsOf, rungLabel, type C08Sel } from './selection';
+import { SEGMENT_SHORT, cohortIds, cohortLabel, defaultSel, fitOf, floorCellLabel, outputsOf, rungLabel, segmentLabel, type C08Sel } from './selection';
 
 export interface C08Instrument {
   sel: C08Sel | null;
@@ -104,7 +104,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           label={{ en: 'Segment', es: 'Segmento' }}
           options={o.floors_bite.rows.map((r) => {
             const cell = cells.find((c) => c.id === r.floor_id);
-            return { id: r.segment_id, label: { en: humanize(r.segment_id), es: humanize(r.segment_id) }, hint: cell ? floorCellLabel(cell) : undefined };
+            const name = segmentLabel(r.segment_id);
+            const floor = cell ? floorCellLabel(cell) : null;
+            return {
+              id: r.segment_id,
+              label: SEGMENT_SHORT[r.segment_id] ?? name,
+              hint: floor ? { en: `${name.en}; floor cell ${floor.en}`, es: `${name.es}; celda de piso ${floor.es}` } : name,
+            };
           })}
           value={sel.segment}
           onChange={setSegment}
@@ -120,7 +126,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const severity = tabs(
     [
       { id: 'distribution', label: { en: 'Distribution', es: 'Distribución' }, content: <DistributionView sel={sel} /> },
-      { id: 'proxy', label: { en: 'The proxy', es: 'El proxy' }, content: <ProxyView sel={sel} /> },
+      { id: 'proxy', label: { en: 'The proxy', es: 'La aproximación' }, content: <ProxyView sel={sel} /> },
     ],
     { en: 'Views of the severity', es: 'Vistas de la severidad' },
     'c08-severity',

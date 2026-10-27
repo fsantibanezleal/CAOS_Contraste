@@ -7,7 +7,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
-import { DATASET_TEXT, INCOMPLETE_TEXT, WORKOUT_CONVENTION, outputsOf, type C08Outputs, type C08Sel } from './selection';
+import { DATASET_TEXT, INCOMPLETE_TEXT, WORKOUT_CONVENTION, freddieReason, outputsOf, type C08Outputs, type C08Sel } from './selection';
 import { truthText, wordsOf } from './words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -31,16 +31,16 @@ export function C08VariantsTable({ variants, onPick, current }: { variants: Arra
       fill
       title={{ en: 'The default cohorts', es: 'Las cohortes de incumplimiento' }}
       {...card}
-      note={{ en: 'The mean LGD proxy of the defaults of each cohort; a mean outside 0 to 1 would carry its flag. Pick a cohort to load it.', es: 'La media del proxy de LGD de los incumplimientos de cada cohorte; una media fuera de 0 a 1 llevaría su marca. Elija una cohorte para cargarla.' }}
+      note={{ en: 'The mean LGD proxy of the defaults of each cohort; a mean outside 0 to 1 would carry its flag. Pick a cohort to load it.', es: 'La media de la LGD aproximada de los incumplimientos de cada cohorte; una media fuera de 0 a 1 llevaría su marca. Elija una cohorte para cargarla.' }}
     >
       <ChartOverTable
         chart={
           <BarChart
-            title={{ en: 'Mean LGD proxy by default cohort', es: 'Proxy de LGD medio por cohorte de incumplimiento' }}
+            title={{ en: 'Mean LGD proxy by default cohort', es: 'LGD aproximada media por cohorte de incumplimiento' }}
             height="fill"
             orientation="vertical"
             data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.lgd_distribution.mean.value, tone: v.outputs.lgd_distribution.mean.flag === 'in-range' ? ('accent' as const) : ('bad' as const), highlight: id === current }))}
-            axis={{ label: { en: 'Mean LGD proxy', es: 'Proxy de LGD medio' }, format: { percent: true, digits: 2 } }}
+            axis={{ label: { en: 'Mean LGD proxy', es: 'LGD aproximada media' }, format: { percent: true, digits: 2 } }}
           />
         }
       >
@@ -119,7 +119,7 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
           <dd data-primary-source={d.primary_source}>{pick(wordsOf(DATASET_TEXT, d.primary_source), lang)}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
-            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
+            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${freddieReason(d.freddie_mac_reason, lang)}`}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>

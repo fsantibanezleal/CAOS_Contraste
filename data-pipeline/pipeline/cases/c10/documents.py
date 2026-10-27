@@ -232,6 +232,13 @@ def _g(x: float) -> str:
     return number(x, 6, lang="es")
 
 
+def _p3(p: float, lang: str) -> str:
+    """A p-value with three decimals in the language, or "below 0.001" when three decimals would print 0.000 (R3 c11 n6)."""
+    if p < 0.0005:
+        return "below 0.001" if lang == "en" else f"menor que {number(0.001, 3, lang='es')}"
+    return number(p, 3, lang=lang)
+
+
 def _signed(x: float, decimals: int) -> str:
     return ("+" if x >= 0 else "") + number(x, decimals, lang="es")
 
@@ -335,22 +342,22 @@ def impact_and_findings(lt: dict[str, Any], out: dict[str, Any], by_id: dict[str
                  "title": T(f"{bt99['observed_exceedances']} of {out['backtest']['n_years_evaluated']} evaluation years "
                             f"({', '.join(map(str, bt99['years_exceeding'])) or 'none'}) lie above the fitted 99% quantile "
                             f"{pct(bt99['fitted_quantile'])}; {bt99['expected_exceedances']:.2f} are expected (upper binomial tail "
-                            f"{bt99['p_value_upper']:.3f})",
+                            f"{_p3(bt99['p_value_upper'], 'en')})",
                             f"{bt99['observed_exceedances']} de {out['backtest']['n_years_evaluated']} años de evaluación "
                             f"({', '.join(map(str, bt99['years_exceeding'])) or 'ninguno'}) quedan sobre el cuantil 99 % ajustado "
                             f"{pct_es(bt99['fitted_quantile'])}; se esperan {_n(bt99['expected_exceedances'], 2)} (cola binomial superior "
-                            f"{_n(bt99['p_value_upper'], 3)})")})
+                            f"{_p3(bt99['p_value_upper'], 'es')})")})
     find.append({"id": "f-c10-tail-dependence", "severity": "S3" if v3 / v2 > 1.1 else "S4", "status": "open" if v3 / v2 > 1.1 else "accepted",
                  "evidence": ["design:copula-ladder"],
-                 "title": T(f"At 99.9% the Student-t copula (nu {P.NU:g}) VaR is {v3 / v2:.2f} times the Gaussian copula's on the same "
+                 "title": T(f"At 99.9% the Student-t copula (ν {P.NU:g}) VaR is {v3 / v2:.2f} times the Gaussian copula's on the same "
                             f"correlation, and CreditRisk+ is {v4 / v2:.2f} times",
-                            f"Al 99,9 % el VaR de la cópula t (nu {_g(P.NU)}) es {_n(v3 / v2, 2)} veces el de la cópula gaussiana con la misma "
+                            f"Al 99,9 % el VaR de la cópula t (ν {_g(P.NU)}) es {_n(v3 / v2, 2)} veces el de la cópula gaussiana con la misma "
                             f"correlación, y CreditRisk+ es {_n(v4 / v2, 2)} veces")})
     ga_rel = (v5 - v1) / v1
     find.append({"id": "f-c10-granularity", "severity": "S3" if ga_rel > 0.03 else "S4", "status": "open" if ga_rel > 0.03 else "accepted",
                  "evidence": ["design:granularity-adjustment"],
                  "title": T(f"The granularity adjustment adds {pct(ga999['ga'])} of EAD ({ga_rel:.1%} of the LHP VaR) at 99.9% on a portfolio "
-                            f"of {out['portfolio']['n_names']:,} names with {out['portfolio']['effective_names']:.0f} effective names",
+                            f"of {out['portfolio']['n_names']:,} names with {number(out['portfolio']['effective_names'], 0, lang='en')} effective names",
                             f"El ajuste por granularidad suma {pct_es(ga999['ga'])} de la EAD ({percent(ga_rel, 1, lang='es')} del VaR LHP) al 99,9 % en una "
                             f"cartera de {number(out['portfolio']['n_names'], 0, lang='es')} nombres con {number(out['portfolio']['effective_names'], 0, lang='es')} nombres efectivos")})
     for tname, fid in (("portfolio.mc_convergence@m-gaussian-1f@lhp-like-99.9", "f-c10-mc"), ("portfolio.crp_recursion_vs_mc@m-creditrisk-plus", "f-c10-crp")):
@@ -401,9 +408,9 @@ def grid_document(years: int, cells_and_rows: list[tuple[dict[str, Any], list[di
                     "size_power_definition": SIZE_POWER_DEFINITION, "cells": cells},
         "tests": tests,
         "impact": {"size_ml": {"value": ml["rejection_rate"], "unit": "rate",
-                               "label": T("Size of the maximum-likelihood test", "Tamaño del test de máxima verosimilitud")},
+                               "label": T("Size of the maximum-likelihood test", "Tamaño de la prueba de máxima verosimilitud")},
                    "size_moments": {"value": size["estimators"][1]["rejection_rate"], "unit": "rate",
-                                    "label": T("Size of the method-of-moments test", "Tamaño del test de método de momentos")}},
+                                    "label": T("Size of the method-of-moments test", "Tamaño de la prueba de método de momentos")}},
         "model": [model_summary("m-lhp", "C1", MODEL_IDS[0][2], "LHP", MODEL_IDS[0][4], rv)],
     }
 
@@ -419,9 +426,9 @@ def grid_findings(doc: dict[str, Any]) -> list[dict[str, Any]]:
         f.append({"id": f"f-c10-size-{e['estimator']}-{years}", "severity": sev[0], "status": sev[1],
                   "evidence": [f"portfolio.correlation_size_power@m-lhp@rho={size['known_rho']:g}/{e['estimator']}"],
                   # the estimator in words, never its id (the raw-id scan of 2026-10-24)
-                  "title": T(f"With {years} years the {ESTIMATOR_WORDS[e['estimator']][0]} test of rho = {P.NULL_RHO:g} rejects {e['rejection_rate']:.3f} of the "
+                  "title": T(f"With {years} years the {ESTIMATOR_WORDS[e['estimator']][0]} test of ρ = {P.NULL_RHO:g} rejects {e['rejection_rate']:.3f} of the "
                              f"time when it is true (nominal {P.ALPHA:g}; interval {e['rejection_ci_low']:.3f} to {e['rejection_ci_high']:.3f})",
-                             f"Con {years} años la prueba de {ESTIMATOR_WORDS[e['estimator']][1]} de rho = {_g(P.NULL_RHO)} rechaza {_n(e['rejection_rate'], 3)} de las "
+                             f"Con {years} años la prueba de {ESTIMATOR_WORDS[e['estimator']][1]} de ρ = {_g(P.NULL_RHO)} rechaza {_n(e['rejection_rate'], 3)} de las "
                              f"veces cuando es verdadera (nominal {_g(P.ALPHA)}; intervalo {_n(e['rejection_ci_low'], 3)} a {_n(e['rejection_ci_high'], 3)})")})
     return f
 

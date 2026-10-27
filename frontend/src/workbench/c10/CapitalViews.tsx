@@ -455,8 +455,8 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
           <p className="ct-note" data-ga="parameters">
             {pick(
               {
-                en: `Gamma factor with shape and rate ${formatNumber(gr.xi, 'en', { digits: 3 })}, loss-given-default dispersion ${formatNumber(gr.gamma, 'en', { digits: 3 })}, portfolio capital K* ${p(gr.k_star, 3)} from the IRB formula at the regulatory correlation. Reference value: delta ${formatNumber(gr.delta_reference, 'en', { digits: 3 })} at xi 0.25 and level ${levelBi(0.999).en} (${gr.delta_reference_source}).`,
-                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: delta ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con xi 0,25 y nivel ${levelBi(0.999).es} (${referenceNote(gr.delta_reference_source, 'es')}).`,
+                en: `Gamma factor with shape and rate ${formatNumber(gr.xi, 'en', { digits: 3 })}, loss-given-default dispersion ${formatNumber(gr.gamma, 'en', { digits: 3 })}, portfolio capital K* ${p(gr.k_star, 3)} from the IRB formula at the regulatory correlation. Reference value: delta ${formatNumber(gr.delta_reference, 'en', { digits: 3 })} at ξ 0.25 and level ${levelBi(0.999).en} (${gr.delta_reference_source}).`,
+                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: delta ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con ξ 0,25 y nivel ${levelBi(0.999).es} (${referenceNote(gr.delta_reference_source, 'es')}).`,
               },
               lang,
             )}

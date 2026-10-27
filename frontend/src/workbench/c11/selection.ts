@@ -3,6 +3,7 @@
 // The helpers find, name and map; the one count made here is the rolling 250-day exceedance count, a tally of the
 // exceedance days the document lists, which the tests check against the document's own maximum and final count.
 // Every VaR and ES the document holds is a positive loss, a decimal of the portfolio value (dossier 05 A.0).
+import { noteText } from '../c08/notes';
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
@@ -69,7 +70,7 @@ export const TEST_TEXT: Record<string, Bi> = {
   'market.mcneil_frey_residual_test': { en: 'McNeil-Frey exceedance residuals', es: 'Residuos de excedencia de McNeil-Frey' },
   'market.dynamic_quantile_test': { en: 'Dynamic quantile test', es: 'Prueba de cuantil dinámico' },
   'market.basel_traffic_light': { en: 'Basel traffic light', es: 'Semáforo de Basilea' },
-  'market.desk_backtest': { en: 'Desk back-test', es: 'Backtest de mesa' },
+  'market.desk_backtest': { en: 'Desk back-test', es: 'Prueba retrospectiva de la mesa' },
   'market.pla_test': { en: 'P&L attribution test', es: 'Prueba de atribución de P&L' },
 };
 export const testName = (id: string): Bi => TEST_TEXT[id] ?? testText(id);
@@ -105,13 +106,13 @@ export const WINDOW_TEXT: Record<string, Bi> = {
 /** The units a document names ("5 days", "draws"), in words. */
 export const UNIT_TEXT: Record<string, Bi> = {
   days: { en: 'days', es: 'días' },
-  draws: { en: 'draws', es: 'remuestreos' },
+  draws: { en: 'draws', es: 'extracciones' },
   models: { en: 'models', es: 'modelos' },
   'fz0-loss': { en: 'FZ0 loss', es: 'pérdida FZ0' },
 };
 const UNIT_ONE: Record<string, Bi> = {
   days: { en: 'day', es: 'día' },
-  draws: { en: 'draw', es: 'remuestreo' },
+  draws: { en: 'draw', es: 'extracción' },
   models: { en: 'model', es: 'modelo' },
 };
 /** A unit in words, in the singular for a value of one ("1 day", never "1 days"; U16-R2 b05 m4). */
@@ -130,7 +131,35 @@ export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
 
 /** The reasons a document gives for a score it could not compute, in Spanish (the document writes them in English). */
 export const REASON_ES: Record<string, string> = {
-  'the model forecasts no ES: FZ0 is not defined': 'el modelo no pronostica ES: FZ0 no está definido',
+  // the gender of the tables' translation (c08/notes.ts), so the rail and the tables say the same (R3 c12 m16)
+  'the model forecasts no ES: FZ0 is not defined': 'el modelo no pronostica ES: FZ0 no está definida',
+};
+
+/**
+ * The reasons the C11 producer writes since U16-F10c, without a plan-unit code or a decision id (R3 c12 B2, the 2026-10-27 ruling on raw
+ * ids), in Spanish; any other reason is read by the shared notes (c08/notes.ts), and English is never changed.
+ */
+const C11_REASONS: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es') => string]> = [
+  [/^challenger only: it must enter the (\d+) percent MCS on FZ0 out of sample, and the published run does not train it$/, (m, lang) => `solo retador: debe entrar al MCS de ${formatNumber(Number(m[1]), lang, { decimals: 0 })} por ciento sobre FZ0 fuera de muestra, y la corrida publicada no lo entrena`],
+  [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in$/, (m, lang) => `menos de ${formatNumber(Number(m[1]), lang, { decimals: 0 })} días de pronóstico (${formatNumber(Number(m[2]), lang, { decimals: 0 })}): el semáforo de Basilea de MAR${m[3]} se define sobre ${formatNumber(Number(m[4]), lang, { decimals: 0 })} observaciones y la ventana no tiene período previo`],
+  [/^no model is eligible: every model fails at least one gate$/, () => 'ningún modelo es elegible: cada modelo falla al menos una compuerta'],
+];
+
+/** A reason or note of a C11 document in the page's language. */
+export function reasonText(note: string | null | undefined, lang: 'en' | 'es'): string {
+  if (!note) return '';
+  if (lang === 'en') return note;
+  for (const [re, make] of C11_REASONS) {
+    const m = note.match(re);
+    if (m) return make(m, lang);
+  }
+  return noteText(note, lang);
+}
+
+/** The reference of a table of the framework in the language: "MAR32.9 Table 1" is "Tabla 1 de MAR32.9" (R3 c12 m11). */
+export const tableRefText = (reference: string, lang: 'en' | 'es'): string => {
+  const m = /^(\S+) Table (\d+)$/.exec(reference);
+  return lang === 'es' && m ? `Tabla ${m[2]} de ${m[1]}` : reference;
 };
 
 export const CLASS_TEXT: Record<string, Bi> = {
@@ -252,6 +281,11 @@ export const rungSourceText = (source: string, lang: 'en' | 'es'): string =>
   lang === 'en'
     ? source
     : source
-        .replace('historical simulation (textbook;', 'simulación histórica (de texto;')
-        .replace('(preprint; challenger only)', '(preprint; solo retador)')
-        .replace('; two-step estimation declared in the engine', '; estimación en dos pasos declarada en el motor');
+        .replace('historical simulation (textbook;', 'simulación histórica (libro de texto;')
+        .replace('(preprint; challenger only)', '(preimpresión; solo retador)')
+        .replace('; two-step estimation declared in the engine', '; estimación en dos pasos declarada en el motor')
+        // the authors joined with "y", the locators in Spanish; the titles and the journals stay (R3 c12 m11)
+        .replace(/, ([A-Z][a-z]+) and ([A-Z][a-z]+) (\d{4})/g, ', $1 y $2 $3')
+        .replace(/^([A-Z][a-z]+) and ([A-Z][a-z]+) (\d{4})/, '$1 y $2 $3')
+        .replace(/\beq (\d+)/g, 'ec. $1')
+        .replace(/\bsection (\d)/g, 'sección $1');

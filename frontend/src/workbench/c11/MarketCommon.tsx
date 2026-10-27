@@ -9,12 +9,13 @@ import { MaybeNumber } from '../c06/format';
 import { noteText } from '../c08/notes';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
 
-/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. */
-export function ConventionLine() {
+/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. A case whose
+ * numbers are decimals of another base (C13: the desk notional) states its own line (R3 c14 m8). */
+export function ConventionLine({ line = CONVENTION_LINE }: { line?: Bi } = {}) {
   const lang = useShellLang();
   return (
     <p className="ct-note" data-convention="true">
-      {pick(CONVENTION_LINE, lang)}
+      {pick(line, lang)}
     </p>
   );
 }
@@ -75,7 +76,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
         <table className="caos-table ct-wrap-head" data-table={table}>
           <thead>
             <tr>
-              <th className="ct-text">{pick({ en: 'Back-test', es: 'Backtest' }, lang)}</th>
+              <th className="ct-text">{pick({ en: 'Back-test', es: 'Prueba retrospectiva' }, lang)}</th>
               <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
               <th>p</th>
               <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
