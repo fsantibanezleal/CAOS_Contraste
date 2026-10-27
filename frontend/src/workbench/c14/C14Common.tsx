@@ -76,6 +76,21 @@ const SEGMENT_TEXT: Record<string, BiText> = {
 /** The segment of a test row in words (the ruling of 2026-10-27: every tests table shows the segment of its rows). */
 export const testSegment = (seg: string, caseId: string): BiText => segmentName(seg, { caseId }) ?? SEGMENT_TEXT[seg] ?? { en: seg, es: seg };
 
+/** A row whose document gives no segment tests the whole balance sheet, and says so (R5 ruling 2; R5 c19 and c20 M1). */
+const BALANCE_SCOPE: BiText = { en: 'Whole balance sheet', es: 'Todo el balance' };
+/** The two C14 tests that read the wholesale fit (models: `fit.nmd_models[*].category`): the documents baked before U16-F13d leave
+ * their segment null, the producer names it from the re-bake on, and this then changes nothing. */
+const C14_WHOLESALE = new Set(['irrbb.nmd_parameter_stability', 'irrbb.behavioural_change_at_breach']);
+
+/** The segment key and words of a tests row: its own segment, the wholesale fit's, or the whole balance sheet. */
+export function rowScope(t: Pick<TestRow, 'test_id' | 'segment'>, caseId: string): { key: string; text: BiText } {
+  const seg = t.segment ?? (caseId === 'C14' && C14_WHOLESALE.has(t.test_id) ? 'wholesale' : null);
+  return seg ? { key: seg, text: testSegment(seg, caseId) } : { key: 'whole-balance-sheet', text: BALANCE_SCOPE };
+}
+
+/** A quarter in the language's form: "2022-Q4" in English, "2022-T4" (trimestre) in Spanish (R5 c19 n3); any text with one. */
+export const quarterText = (s: string, lang: 'en' | 'es'): string => (lang === 'es' ? s.replace(/(\d{4})-Q([1-4])/g, '$1-T$2') : s);
+
 /**
  * The rows the engine returned for the tests of this variant, as a block that sits under the drawing of the view the
  * tests belong to: a test that did not run shows its reason, not a number. `only` keeps the tests of one view.
@@ -109,7 +124,7 @@ export function IrrbbTestsTable({ variant, only, lead }: { variant: VariantArtif
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
                     {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
-                    {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{pick(testSegment(t.segment, variant.case_id), lang)}</span> : null}
+                    <span className="ct-note" data-segment={rowScope(t, variant.case_id).key} style={{ display: 'block' }}>{pick(rowScope(t, variant.case_id).text, lang)}</span>
                   </td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'} style={{ whiteSpace: 'nowrap' }}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
@@ -176,7 +191,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
               { label: NMD_TEXT.behavioural, values: sorted.map((e) => ratio(e.v, 'behavioural')), color: '--color-accent', width: 2.6, mode: 'points', size: 11 },
               { label: NMD_TEXT.contractual, values: sorted.map((e) => ratio(e.v, 'contractual')), color: '--color-magenta', width: 2.2, mode: 'points', size: 11 },
             ]}
-            marks={sorted.map((e, i) => ({ x: x[i], label: { en: e.v.outputs.quarter, es: e.v.outputs.quarter } }))}
+            marks={sorted.map((e, i) => ({ x: x[i], label: { en: e.v.outputs.quarter, es: quarterText(e.v.outputs.quarter, 'es') } }))}
             yMarks={[{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15 % del capital de nivel 1' }, tone: 'bad' }]}
           />
         }
@@ -200,7 +215,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
               return (
                 <tr key={id} data-variant={id} data-date={v.outputs.valuation_date} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
-                    <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
+                    <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{quarterText(pick(title, lang), lang)}</button>
                     <span className="ct-note"> <span style={{ whiteSpace: 'nowrap' }}>{v.outputs.valuation_date}</span></span>
                   </td>
                   <td>{b ? formatNumber(b.outlier.ratio, lang, { percent: true, decimals: 2 }) : formatNumber(null, lang)}</td>
@@ -286,7 +301,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(o.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'Valuation date', es: 'Fecha de valoración' }, lang)}</dt>
-          <dd>{`${o.valuation_date} (${o.quarter})`}</dd>
+          <dd>{`${o.valuation_date} (${quarterText(o.quarter, lang)})`}</dd>
           <dt>{pick({ en: 'Sign convention', es: 'Convención de signo' }, lang)}</dt>
           <dd>{pick(o.sign_convention.statement, lang)}</dd>
           <dt>{pick({ en: 'Money', es: 'Dinero' }, lang)}</dt>

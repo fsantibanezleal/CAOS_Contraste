@@ -98,6 +98,21 @@ const TEST_TEXT: Record<string, BiText> = {
   'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Prueba retrospectiva PIT de la distribución de exposición' },
 };
 
+/** A row with no segment in the document is a test of the whole counterparty book, and says so (R5 ruling 2: every tests row names its
+ * segment, a row of no segment its scope in words; R5 c16 and c17 M1). */
+const BOOK_SCOPE: BiText = { en: 'Whole book', es: 'Toda la cartera' };
+
+/** The segment of a tests row in words: a back-test horizon, a CSA term, or the whole book. */
+export function rowSegment(segment: string | null, lang: Lang): string {
+  if (!segment) return pick(BOOK_SCOPE, lang);
+  const own = segmentText(segment, lang);
+  return own === segment ? pick(segmentName(segment, { caseId: 'C12' }) ?? { en: segment, es: segment }, lang) : own;
+}
+
+const SUPERSCRIPT: Record<string, string> = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+/** "1e-6" in a reference is a power of ten, "10⁻⁶", as the SA-CCR and BA-CVA views print it (R5 c17 n2). */
+export const powerOfTen = (s: string): string => s.replace(/\b1e-(\d+)\b/g, (_m, n: string) => `10⁻${[...n].map((d) => SUPERSCRIPT[d]).join('')}`);
+
 const LIGHT_ORDER = ['green', 'amber', 'red', 'not_evaluated', 'error'] as const;
 const LIGHT_TONE_BAR = { green: 'good', amber: 'warn', red: 'bad', not_evaluated: 'neutral', error: 'bad' } as const;
 
@@ -149,13 +164,13 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                       <td className="ct-text" title={t.test_id}>
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
-                        {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{segmentText(t.segment, lang) === t.segment ? pick(segmentName(t.segment, { caseId: 'C12' }) ?? { en: t.segment, es: t.segment }, lang) : segmentText(t.segment, lang)}</span> : null}
+                        <span className="ct-note" data-segment={t.segment ?? 'whole-book'} style={{ display: 'block' }}>{rowSegment(t.segment, lang)}</span>
                       </td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? <Nw>{formatNumber(t.statistic, lang, { digits: 4 })}</Nw> : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{(t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²')}</td>
+                      <td className="ct-text">{powerOfTen((t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²'))}</td>
                     </tr>
                   );
                 })}
@@ -354,7 +369,7 @@ export function questionLead(title: string, question: string): ReactNode {
 
 function conventionValue(v: unknown, unit: string, lang: Lang): string {
   const one = (x: unknown): string => {
-    if (typeof x === 'number') return unit === 'USD' && Math.abs(x) >= 1e6 ? `${formatNumber(x / 1e6, lang, { digits: 4 })} ${lang === 'es' ? 'M' : 'm'}` : formatNumber(x, lang, { digits: 4, grouping: unit !== 'integer' });
+    if (typeof x === 'number') return unit === 'USD' && Math.abs(x) >= 1e6 ? `${formatNumber(x / 1e6, lang, { digits: 4 })} ${lang === 'es' ? 'M' : 'mn'}` : formatNumber(x, lang, { digits: 4, grouping: unit !== 'integer' });
     if (typeof x === 'string') return VALUE_TEXT[x] ? pick(VALUE_TEXT[x], lang) : x;
     return String(x);
   };
@@ -395,7 +410,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           <dd>{pick({ en: 'Money in USD, rates as decimals with continuous compounding, time in years from the curve date, the margin period in business days.', es: 'Dinero en USD, tasas como decimales con capitalización continua, tiempo en años desde la fecha de la curva, el periodo de margen en días hábiles.' }, lang)}</dd>
         </dl>
       </PlotCard>
-      <PlotCard title={{ en: 'The swap book', es: 'La cartera de permutas' }} {...card} note={{ en: 'The netting set holds the swaps below; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene las permutas de abajo; la variante de una sola permuta tiene la primera. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
+      <PlotCard title={{ en: 'The swap book', es: 'La cartera de permutas' }} {...card} note={{ en: 'The netting set holds the swaps above; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene las permutas de arriba; la variante de una sola permuta tiene la primera. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-book">
             <thead>

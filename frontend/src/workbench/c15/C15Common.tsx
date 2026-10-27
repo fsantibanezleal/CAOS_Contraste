@@ -352,6 +352,8 @@ function CurveRows({ curve }: { curve: C15Outputs['curves']['clp'] }) {
 // --- the read-outs of the rail ---------------------------------------------------------------------------------------
 
 /** A read-out title carrying the unit of its money rows once: in the narrow rail a unit on every row wrapped the rows to two lines (ADR-0071 rule 6). */
+/** The rail's amounts at the bars' two decimals, so one value reads the same on both ("140.65", not "140.6"; R5 c20 m-n1). */
+const BAR_FORMAT = { decimals: 2 } as const;
 const withUnit = (title: BiText, unit: BiText): BiText => ({ en: `${pick(title, 'en')} (${pick(unit, 'en')})`, es: `${pick(title, 'es')} (${pick(unit, 'es')})` });
 
 /** The live read-out of the Shock section: the two legs apart and the pair without and with the offset. */
@@ -362,7 +364,7 @@ export function ShockReadout({ sel }: { sel: C15Sel | null }) {
   const money = (v: number | null | undefined) => (doc ? amount(doc, v ?? null) : { value: null, unit: NA, format: { digits: 4 } });
   const item = (label: BiText, v: number | null | undefined, hint: BiText) => {
     const a = money(v);
-    return { label, value: a.value, unitless: true as const, format: a.format, hint };
+    return { label, value: a.value, unitless: true as const, format: BAR_FORMAT, hint };
   };
   const shockTitle = sel ? text(SHOCK_TEXT, sel.shock) : { en: 'The shock', es: 'El choque' };
   return (
@@ -392,8 +394,8 @@ export function OffsetReadout({ sel }: { sel: C15Sel | null }) {
       variant={sel?.data.variant}
       title={doc ? withUnit({ en: 'Offset', es: 'Compensación' }, on.unit) : sel ? text(OFFSET_TEXT, sel.offset) : { en: 'The offset', es: 'La compensación' }}
       items={[
-        { label: { en: 'Offset on', es: 'Con comp.' }, value: on.value, unitless: true, format: on.format, hint: { en: 'The largest pair total over the six shocks with the offset applied.', es: 'El mayor total del par entre los seis choques con la compensación aplicada.' } },
-        { label: { en: 'Offset off', es: 'Sin comp.' }, value: off.value, unitless: true, format: off.format, hint: { en: 'The largest pair total over the six shocks with no offset.', es: 'El mayor total del par entre los seis choques sin compensación.' } },
+        { label: { en: 'Offset on', es: 'Con comp.' }, value: on.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The largest pair total over the six shocks with the offset applied.', es: 'El mayor total del par entre los seis choques con la compensación aplicada.' } },
+        { label: { en: 'Offset off', es: 'Sin comp.' }, value: off.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The largest pair total over the six shocks with no offset.', es: 'El mayor total del par entre los seis choques sin compensación.' } },
         { label: { en: 'Share offset', es: 'Parte compensada' }, value: o?.offset_rule.share ?? null, unitless: true, format: { percent: true, decimals: 0 }, hint: { en: 'The share of one leg that the rule offsets against the other.', es: 'La parte de un tramo que la regla compensa contra el otro.' } },
         { label: { en: 'The document applies', es: 'El documento aplica' }, text: state, hint: { en: 'The state of the offset in the document\'s own measure.', es: 'El estado de la compensación en la medida propia del documento.' } },
       ]}
@@ -417,9 +419,9 @@ export function LegReadout({ sel }: { sel: C15Sel | null }) {
       variant={sel?.data.variant}
       title={doc && leg ? withUnit(sel ? text(LEG_TEXT, sel.leg) : { en: 'The leg', es: 'El tramo' }, a.unit) : sel ? text(LEG_TEXT, sel.leg) : { en: 'The leg', es: 'El tramo' }}
       items={[
-        { label: { en: 'Assets', es: 'Activos' }, value: a.value, unitless: true, format: a.format, hint: { en: 'The assets of the leg in its own currency (CLF for the UF leg).', es: 'Los activos del tramo en su propia moneda (CLF para el tramo UF).' } },
-        { label: { en: 'Liabilities', es: 'Pasivos' }, value: l.value, unitless: true, format: l.format, hint: { en: 'The liabilities of the leg in its own currency.', es: 'Los pasivos del tramo en su propia moneda.' } },
-        { label: { en: 'Net position', es: 'Posición neta' }, value: n.value, unitless: true, format: n.format, hint: { en: 'Assets minus liabilities; the net UF position drives the indexation charge.', es: 'Activos menos pasivos; la posición neta en UF determina el cargo por reajustabilidad.' } },
+        { label: { en: 'Assets', es: 'Activos' }, value: a.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The assets of the leg in its own currency (CLF for the UF leg).', es: 'Los activos del tramo en su propia moneda (CLF para el tramo UF).' } },
+        { label: { en: 'Liabilities', es: 'Pasivos' }, value: l.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The liabilities of the leg in its own currency.', es: 'Los pasivos del tramo en su propia moneda.' } },
+        { label: { en: 'Net position', es: 'Posición neta' }, value: n.value, unitless: true, format: BAR_FORMAT, hint: { en: 'Assets minus liabilities; the net UF position drives the indexation charge.', es: 'Activos menos pasivos; la posición neta en UF determina el cargo por reajustabilidad.' } },
         { label: { en: 'Floored buckets', es: 'Tramos con piso' }, value: floored, unitless: true, format: { decimals: 0 }, hint: { en: 'How many of the 19 buckets have the post-shock floor binding for this leg under the shock chosen.', es: 'En cuántos de los 19 tramos el piso posterior al choque rige para este tramo bajo el choque elegido.' } },
       ]}
     />

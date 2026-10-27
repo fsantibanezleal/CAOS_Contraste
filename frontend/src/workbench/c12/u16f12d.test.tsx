@@ -72,10 +72,10 @@ describe('U16-F12d C12', () => {
     it(`m2 (${lang}): the profile read-out says "compared", not "reconciled", where a point is outside two standard errors`, () => {
       for (const name of ['csa-mpor-10d', 'csa-mpor-20d']) {
         const text = textOf(render(<ProfileView sel={selOf(name)} />, lang));
-        expect(text, name).not.toMatch(lang === 'en' ? /reconciled on open-source/ : /conciliada en open-source/);
-        expect(text, name).toMatch(lang === 'en' ? /compared on open-source-risk-engine/ : /comparada en open-source-risk-engine/);
+        expect(text, name).not.toMatch(lang === 'en' ? /reconciled on open-source/ : /conciliada en el paquete open-source/);
+        expect(text, name).toMatch(lang === 'en' ? /compared on open-source-risk-engine/ : /comparada en el paquete open-source-risk-engine/);
       }
-      expect(textOf(render(<ProfileView sel={selOf('netting-set')} />, lang))).toMatch(lang === 'en' ? /reconciled on open-source/ : /conciliada en open-source/);
+      expect(textOf(render(<ProfileView sel={selOf('netting-set')} />, lang))).toMatch(lang === 'en' ? /reconciled on open-source/ : /conciliada en el paquete open-source/);
     });
 
     it(`m4 (${lang}): no tests note prints the ASCII W^2`, () => {
