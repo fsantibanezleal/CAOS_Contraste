@@ -39,7 +39,7 @@ export function CbcView({ sel }: { sel: C16Sel | null }) {
         }}
       >
         <ChartAbove
-          chartHeight="17rem"
+          chartHeight="12rem"
           chart={
             <BarChart
               title={{ en: 'Liquidity value of the CBC by class', es: 'Valor de liquidez del CBC por clase' }}
@@ -225,7 +225,8 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
   }
   const axis = axisOf([l.hqla.hqla, l.total_outflows, l.total_inflows, l.inflows_counted, l.net_outflows]);
   return (
-    <ViewsRow>
+    // the tables take the wider card, so their rows are not three lines tall (R4 c19 M1)
+    <ViewsRow shares={[2, 3]}>
       <PlotCard
         fill
         title={title}
@@ -255,7 +256,6 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
         >
           <Callout variant="honest" title={pick({ en: 'A formula on aggregates, not the bank\'s LCR', es: 'Una fórmula sobre agregados, no el LCR del banco' }, lang)}>
             <span data-reported-or-regulatory={String(l.reported_or_regulatory)}>
-              <strong>{pick({ en: 'A Basel formula on call-report aggregates, not the bank\'s reported LCR.', es: 'Una fórmula de Basilea sobre agregados del reporte de llamada, no el LCR reportado del banco.' }, lang)}</strong>{' '}
               {pick(l.statement, lang)}
             </span>
           </Callout>
@@ -273,6 +273,19 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
               ? pick(l.hqla.shares_reason ?? { en: 'Not available: the HQLA stock is empty.', es: 'No disponible: el stock de HQLA está vacío.' }, lang)
               : `${SHARE(l.hqla.l2_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2_cap, lang)}), ${SHARE(l.hqla.l2b_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2b_cap, lang)})`}</dd>
           </dl>
+        </ChartAbove>
+      </PlotCard>
+      {/* the flows and the mapping in a card of their own: at 1280 one card hid both tables and the note with no cue (R4 c19 M1) */}
+      <PlotCard
+        fill
+        title={{ en: 'The flows of the LCR and the mapping of the uninsured balance', es: 'Los flujos del LCR y el mapeo del saldo no asegurado' }}
+        {...card}
+        note={{
+          en: 'Each outflow and inflow category with its balance, Basel rate and amount, and the ratio under each plausible class of the uninsured balance; the chosen mapping is highlighted.',
+          es: 'Cada categoría de salida y de entrada con su saldo, su tasa de Basilea y su monto, y la razón bajo cada clase plausible del saldo no asegurado; el mapeo elegido se destaca.',
+        }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-lcr-flows">
             <thead>
               <tr>
@@ -325,7 +338,7 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{pick(l.below_100_note, lang)}</p>
-        </ChartAbove>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -364,7 +377,7 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
         }}
       >
         <ChartAbove
-          chartHeight="14rem"
+          chartHeight="18rem"
           chart={
             <UPlotChart
               height="fill"

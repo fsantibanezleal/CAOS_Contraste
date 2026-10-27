@@ -28,7 +28,7 @@ export type Subject = 'book' | 'risk-factor';
 /** The variants of the case in the order the SDD states them, and the words for each. */
 export const VARIANT_ORDER: readonly VariantId[] = ['single-swap', 'netting-set', 'csa-mpor-10d', 'csa-mpor-20d', 'with-im', 'wrong-way-risk'];
 export const VARIANT_TEXT: Record<string, Bi> = {
-  'single-swap': { en: 'Single swap', es: 'Un solo swap' },
+  'single-swap': { en: 'Single swap', es: 'Una sola permuta' },
   'netting-set': { en: 'Netting set', es: 'Conjunto de neteo' },
   'csa-mpor-10d': { en: 'CSA, MPoR 10 days', es: 'CSA, MPoR de 10 días' },
   'csa-mpor-20d': { en: 'CSA, MPoR 20 days', es: 'CSA, MPoR de 20 días' },
@@ -244,6 +244,6 @@ export function segmentText(segment: string | null | undefined, lang: 'en' | 'es
   const horizon = m ? HORIZON_LONG[m[2]] : undefined;
   if (!m || !horizon) return segment;
   const subject = SUBJECT_TEXT[m[1] === 'book' ? 'book' : 'risk-factor'][lang];
-  const quantile = m[3] ? `${lang === 'es' ? 'cuantil' : 'quantile'} ${m[3]} %` : '';
+  const quantile = m[3] ? `${lang === 'es' ? 'cuantil' : 'quantile'} ${m[3]} %` : '';
   return [subject, horizon[lang], quantile].filter(Boolean).join(', ');
 }

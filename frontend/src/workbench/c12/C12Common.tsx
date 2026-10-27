@@ -73,17 +73,22 @@ export function Nw({ children }: { children: ReactNode }) {
   return <span style={{ whiteSpace: 'nowrap' }}>{children}</span>;
 }
 
+/** A sentence after a colon: lower case in Spanish (R4 c15 n7, "aproximación: La tasa"), unless it opens with an acronym. */
+export const afterColon = (s: string, lang: Lang): string => (lang === 'es' && /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
+
 /** The unit of a column of the documents' money. */
 export const MONEY_UNIT: Bi = { en: 'USD', es: 'USD' };
 
 /** The words an absent block says when the view is given a document of another kind. */
-export const NOT_SWAP: BiText = { en: 'Not available: this document is not a swap-exposure document of the counterparty credit risk case.', es: 'No disponible: este documento no es un documento de exposición de swaps del caso de riesgo de crédito de contraparte.' };
+export const NOT_SWAP: BiText = { en: 'Not available: this document is not a swap-exposure document of the counterparty credit risk case.', es: 'No disponible: este documento no es un documento de exposición de permutas del caso de riesgo de crédito de contraparte.' };
 
 // --- the tests table ---------------------------------------------------------------------------------------------------
 
 /** The words of the tests the counterparty engine returns for C12; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
-  'ccr.ee_analytic_vs_simulated': { en: 'Analytic and simulated EE of a single swap', es: 'EE analítica y simulada de un solo swap' },
+  'ccr.ee_analytic_vs_simulated': { en: 'Analytic and simulated EE of a single swap', es: 'EE analítica y simulada de una sola permuta' },
+  'ccr.quantlib_swaption_payer': { en: 'Payer swaption against QuantLib 1.44', es: 'Opción sobre permuta pagadora frente a QuantLib 1.44' },
+  'ccr.quantlib_swaption_receiver': { en: 'Receiver swaption against QuantLib 1.44', es: 'Opción sobre permuta receptora frente a QuantLib 1.44' },
   'ccr.martingale_discounted_bonds': { en: 'Discounted bond prices are martingales', es: 'Los precios de bonos descontados son martingalas' },
   'ccr.eepe_recomputed': { en: 'EEPE recomputed from the EE profile', es: 'EEPE recalculada desde el perfil de EE' },
   'ccr.cva_recomputed': { en: 'CVA recomputed from the discounted EE', es: 'CVA recalculado desde la EE descontada' },
@@ -146,11 +151,11 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
                         {t.segment ? <span className="ct-note" data-segment={t.segment} style={{ display: 'block' }}>{segmentText(t.segment, lang) === t.segment ? pick(segmentName(t.segment, { caseId: 'C12' }) ?? { en: t.segment, es: t.segment }, lang) : segmentText(t.segment, lang)}</span> : null}
                       </td>
-                      <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
+                      <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? <Nw>{formatNumber(t.statistic, lang, { digits: 4 })}</Nw> : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
+                      <td className="ct-text">{(t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²')}</td>
                     </tr>
                   );
                 })}
@@ -253,20 +258,20 @@ export function C12VariantsView({ sel, onPick }: { sel: C12Sel | null; onPick: (
 // --- the context ------------------------------------------------------------------------------------------------------
 
 const NAMED_TEXT: Record<string, Bi> = {
-  notionals: { en: 'Notionals of the four swaps', es: 'Nocionales de los cuatro swaps' },
-  maturities_years: { en: 'Maturities of the four swaps', es: 'Vencimientos de los cuatro swaps' },
-  sides: { en: 'Side of each swap', es: 'Lado de cada swap' },
+  notionals: { en: 'Notionals of the four swaps', es: 'Nocionales de las cuatro permutas' },
+  maturities_years: { en: 'Maturities of the four swaps', es: 'Vencimientos de las cuatro permutas' },
+  sides: { en: 'Side of each swap', es: 'Lado de cada permuta' },
   netting_set_members: { en: 'Members of the netting set', es: 'Miembros del conjunto de neteo' },
-  single_swap_member: { en: 'The swap of the single-swap variant', es: 'El swap de la variante de un solo swap' },
+  single_swap_member: { en: 'The swap of the single-swap variant', es: 'La permuta de la variante de una sola permuta' },
   fixed_rate_rule: { en: 'Rule of the fixed rate', es: 'Regla de la tasa fija' },
   csa_threshold: { en: 'CSA threshold', es: 'Umbral del CSA' },
   csa_minimum_transfer_amount: { en: 'CSA minimum transfer amount', es: 'Monto mínimo de transferencia del CSA' },
   csa_independent_amount: { en: 'CSA independent amount', es: 'Monto independiente del CSA' },
   mpor_business_days_short: { en: 'Margin period of risk, short', es: 'Periodo de riesgo de margen, corto' },
   mpor_business_days_long: { en: 'Margin period of risk, long', es: 'Periodo de riesgo de margen, largo' },
-  counterparty_spread: { en: 'Counterparty spread, synthetic', es: 'Spread de la contraparte, sintético' },
+  counterparty_spread: { en: 'Counterparty spread, synthetic', es: 'Diferencial de la contraparte, sintético' },
   counterparty_lgd: { en: 'Counterparty loss given default', es: 'Pérdida dado el incumplimiento de la contraparte' },
-  bank_spread: { en: 'Own spread of the bank', es: 'Spread propio del banco' },
+  bank_spread: { en: 'Own spread of the bank', es: 'Diferencial propio del banco' },
   bank_lgd: { en: 'Own loss given default', es: 'Pérdida dado el incumplimiento propia' },
   pfe_quantile: { en: 'Quantile of the PFE', es: 'Cuantil del PFE' },
   path_count: { en: 'Monte Carlo paths', es: 'Trayectorias de Monte Carlo' },
@@ -313,7 +318,7 @@ const UNIT_TEXT: Record<string, Bi> = {
 const VALUE_TEXT: Record<string, Bi> = {
   payer: { en: 'payer', es: 'pagador' },
   receiver: { en: 'receiver', es: 'receptor' },
-  "the par yield at the swap's maturity on the curve date, rounded to 10 bp": { en: "the par yield at the swap's maturity on the curve date, rounded to 10 bp", es: 'el rendimiento par al vencimiento del swap en la fecha de la curva, redondeado a 10 pb' },
+  "the par yield at the swap's maturity on the curve date, rounded to 10 bp": { en: "the par yield at the swap's maturity on the curve date, rounded to 10 bp", es: 'el rendimiento par al vencimiento de la permuta en la fecha de la curva, redondeado a 10 pb' },
   financials: SECTOR_TEXT.financials,
   'investment-grade': RATING_TEXT['investment-grade'],
   'high-yield-or-not-rated': RATING_TEXT['high-yield-or-not-rated'],
@@ -379,7 +384,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd>{pick(text(VARIANT_TEXT, o.variant), lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
-          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de swaps y el CSA son sintéticos, con parámetros con nombre que son convenciones; el spread de la contraparte es una aproximación o un spread sintético declarado.' }, lang)}</dd>
+          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de permutas y el CSA son sintéticos, con parámetros con nombre que son convenciones; el diferencial de la contraparte es una aproximación o un diferencial sintético declarado.' }, lang)}</dd>
           <dt>{pick({ en: 'Sign convention', es: 'Convención de signos' }, lang)}</dt>
           <dd>{pick(o.sign_convention.statement, lang)}</dd>
           <dt>{pick({ en: 'Initial margin', es: 'Margen inicial' }, lang)}</dt>
@@ -390,12 +395,12 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           <dd>{pick({ en: 'Money in USD, rates as decimals with continuous compounding, time in years from the curve date, the margin period in business days.', es: 'Dinero en USD, tasas como decimales con capitalización continua, tiempo en años desde la fecha de la curva, el periodo de margen en días hábiles.' }, lang)}</dd>
         </dl>
       </PlotCard>
-      <PlotCard title={{ en: 'The swap book', es: 'La cartera de swaps' }} {...card} note={{ en: 'The netting set holds the swaps below; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene los swaps de abajo; la variante de un solo swap tiene el primero. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
+      <PlotCard title={{ en: 'The swap book', es: 'La cartera de permutas' }} {...card} note={{ en: 'The netting set holds the swaps below; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene las permutas de abajo; la variante de una sola permuta tiene la primera. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-book">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Swap', es: 'Swap' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Swap', es: 'Permuta' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Side', es: 'Lado' }, lang)}</th>
                 <th>{pick({ en: 'Notional (USD)', es: 'Nocional (USD)' }, lang)}</th>
                 <th>{pick({ en: 'Fixed rate', es: 'Tasa fija' }, lang)}</th>
@@ -454,7 +459,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           </table>
         </div>
       </PlotCard>
-      <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every notional, rate, term, CSA term, spread, grid, threshold and seed of the case is a convention, labelled as one.', es: 'Cada nocional, tasa, plazo, término del CSA, spread, grilla, umbral y semilla del caso es una convención, rotulada como tal.' }}>
+      <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every notional, rate, term, CSA term, spread, grid, threshold and seed of the case is a convention, labelled as one.', es: 'Cada nocional, tasa, plazo, término del CSA, diferencial, grilla, umbral y semilla del caso es una convención, rotulada como tal.' }}>
         <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-conventions">
             <thead>
@@ -491,13 +496,13 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 <T en="; the journal derivations are not verified as papers" es="; las derivaciones de la literatura no están verificadas como artículos" />
               </dd>
               <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
-              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
-              <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del spread' }, lang)}</dt>
+              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${afterColon(pick(fit.credit_curve.derivation, lang), lang)}`}</dd>
+              <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del diferencial' }, lang)}</dt>
               <dd>{pick(fit.credit_curve.licence_basis, lang)}</dd>
-              <dt>{pick({ en: 'Synthetic spread', es: 'Spread sintético' }, lang)}</dt>
+              <dt>{pick({ en: 'Synthetic spread', es: 'Diferencial sintético' }, lang)}</dt>
               <dd data-status={fit.credit_curve.synthetic_spread.label}>{`${formatNumber(Number(fit.credit_curve.synthetic_spread.value), lang, { percent: true, decimals: 2 })} (${word})`}</dd>
-              <dt>{pick({ en: 'Negative spread', es: 'Spread negativo' }, lang)}</dt>
-              <dd>{pick({ en: 'A negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread.', es: 'Un spread HQM menos Tesoro negativo se fija en cero y se cuenta, nunca se arrastra como spread negativo.' }, lang)}</dd>
+              <dt>{pick({ en: 'Negative spread', es: 'Diferencial negativo' }, lang)}</dt>
+              <dd>{pick({ en: 'A negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread.', es: 'Un diferencial HQM menos Tesoro negativo se fija en cero y se cuenta, nunca se arrastra como diferencial negativo.' }, lang)}</dd>
             </dl>
             <Paged rows={fit.calibrations} size={12} name="c12-calibrations">
               {(page) => (

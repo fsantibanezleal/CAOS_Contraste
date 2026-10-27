@@ -45,8 +45,8 @@ export function UninsuredShareView({ sel }: { sel: C16Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'The survival period of the variant when the uninsured share of the domestic deposits (DEPUNA over DEPDOM) takes each value of the grid, a convention of the case; a larger uninsured share runs faster. The document\'s own share is marked.',
-          es: 'El periodo de supervivencia de la variante cuando la parte no asegurada de los depósitos domésticos (DEPUNA sobre DEPDOM) toma cada valor de la grilla, una convención del caso; una parte no asegurada mayor sale más rápido. Se marca la parte propia del documento.',
+          en: `The survival period of the variant when the uninsured share of the domestic deposits (DEPUNA over DEPDOM) takes each value of the grid, a convention of the case; a larger uninsured share runs faster.${drawn ? ' The document\'s own share is marked.' : ''}`,
+          es: `El periodo de supervivencia de la variante cuando la parte no asegurada de los depósitos domésticos (DEPUNA sobre DEPDOM) toma cada valor de la grilla, una convención del caso; una parte no asegurada mayor sale más rápido.${drawn ? ' Se marca la parte propia del documento.' : ''}`,
         }}
       >
         <ChartOverTable
@@ -98,6 +98,7 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
   const rows = o.sensitivities.htm_loss;
   if (!rows) return <UnavailableCard sel={sel} title={title} reason={o.sensitivities.htm_loss_reason ?? { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' }} />;
   const days = rows.map((r) => survivalDay(r.survival));
+  const survivesAt = rows.map((r) => (survivalDay(r.survival) === null ? o.variant.horizon_days : null));
   const drawn = days.some((d) => d !== null);
   return (
     <ViewsRow>
@@ -106,8 +107,8 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'The survival period when the unrealised loss on the held-to-maturity book is a multiple of the reported loss: 1 is the reported loss and 0 is no loss. The CBC under each multiple is in the table. The multiples are a grid, a convention of the case.',
-          es: 'El periodo de supervivencia cuando la pérdida no realizada de la cartera mantenida al vencimiento es un múltiplo de la pérdida reportada: 1 es la pérdida reportada y 0 es sin pérdida. El CBC bajo cada múltiplo está en la tabla. Los múltiplos son una grilla, una convención del caso.',
+          en: 'The survival period when the unrealised loss on the held-to-maturity book is a multiple of the reported loss: 1 is the reported loss and 0 is no loss. The chart draws the survival period of each multiple; the table keeps the whole amounts of the loss and the CBC. The multiples are a grid, a convention of the case.',
+          es: 'El periodo de supervivencia cuando la pérdida no realizada de la cartera mantenida al vencimiento es un múltiplo de la pérdida reportada: 1 es la pérdida reportada y 0 es sin pérdida. El gráfico dibuja el periodo de supervivencia de cada múltiplo; la tabla conserva los montos completos de la pérdida y del CBC. Los múltiplos son una grilla, una convención del caso.',
         }}
       >
         <ChartOverTable
@@ -117,7 +118,13 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
                 height="fill"
                 x={{ values: rows.map((r) => r.multiple), label: { en: 'Multiple of the reported HTM loss', es: 'Múltiplo de la pérdida HTM reportada' }, format: { digits: 3 } }}
                 y={{ label: { en: 'Survival period (days)', es: 'Supervivencia (días)' }, format: { decimals: 0 } }}
-                series={[{ label: { en: 'Survival period', es: 'Periodo de supervivencia' }, values: days, color: '--color-bad', width: 2.6, mode: 'points', size: 10 }]}
+                series={[
+                  { label: { en: 'Survival period', es: 'Periodo de supervivencia' }, values: days, color: '--color-bad', width: 2.6, mode: 'points', size: 10 },
+                  // a multiple that survives the horizon is drawn at the horizon, labelled so, never left out (R4 c19 m5)
+                  ...(survivesAt.some((d) => d !== null)
+                    ? [{ label: { en: `Survives the horizon, drawn at day ${o.variant.horizon_days}`, es: `Sobrevive el horizonte, dibujado en el día ${o.variant.horizon_days}` }, values: survivesAt, color: '--color-good' as const, width: 2.6, mode: 'points' as const, size: 10 }]
+                    : []),
+                ]}
                 marks={[{ x: 1, label: { en: 'Reported loss', es: 'Pérdida reportada' } }]}
               />
             ) : (
@@ -130,7 +137,7 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
               <tr>
                 <th>{pick({ en: 'Multiple', es: 'Múltiplo' }, lang)}</th>
                 <th>{pick({ en: `Unrealised loss (${pick(MONEY_UNIT, 'en')})`, es: `Pérdida no realizada (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
-                <th>{pick({ en: 'CBC', es: 'CBC' }, lang)}</th>
+                <th>{pick({ en: `CBC (${pick(MONEY_UNIT, 'en')})`, es: `CBC (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Survival period', es: 'Periodo de supervivencia' }, lang)}</th>
               </tr>
             </thead>
@@ -145,7 +152,6 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: 'The chart draws the survival period of each multiple; the table keeps the whole amounts of the loss and the CBC.', es: 'El gráfico dibuja el periodo de supervivencia de cada múltiplo; la tabla conserva los montos completos de la pérdida y del CBC.' }, lang)}</p>
           <SurvivorsNote survivals={rows.map((r) => ({ label: formatNumber(r.multiple, lang, { digits: 3 }), s: r.survival }))} />
         </ChartOverTable>
       </PlotCard>

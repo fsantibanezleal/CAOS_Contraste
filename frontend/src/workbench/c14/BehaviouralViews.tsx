@@ -137,7 +137,7 @@ export function ReplicatingView({ sel }: { sel: C14Sel | null }) {
               </tr>
               {m.stability.map((w) => (
                 <tr key={w.window_start} data-window={w.window_start}>
-                  <td className="ct-text">{`${w.window_start} ${pick({ en: 'to', es: 'a' }, lang)} ${w.window_end}`}</td>
+                  <td className="ct-text"><NoBreakDates text={`${w.window_start} ${pick({ en: 'to', es: 'a' }, lang)} ${w.window_end}`} /></td>
                   {w.weights.map((x, i) => (
                     <td key={i}>{SHARE(x, lang)}</td>
                   ))}
@@ -262,7 +262,9 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
   const o = outputsOf(sel);
   const fit = sel ? fitOf(sel) : null;
   if (!sel || !o) return <Pending />;
-  const changes = fit?.nmd_parameter_changes ?? [];
+  // only the changes up to the selected valuation date: the models document holds every date, and a reader at an earlier date
+  // must not see changes its own test row never counted (R4 c17 M1, ruling 5 of 2026-10-27)
+  const changes = (fit?.nmd_parameter_changes ?? []).filter((c) => c.to_date <= o.valuation_date);
   if (!fit) {
     return <UnavailableCard sel={sel} title={{ en: 'Parameter changes', es: 'Cambios de parámetros' }} reason={{ en: 'Not available: the models artifact carries no parameter changes.', es: 'No disponible: el artefacto de modelos no trae cambios de parámetros.' }} />;
   }
@@ -294,7 +296,7 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
                 <tr key={i} data-flagged={c.flagged} data-breach={c.limit_breach_in_window}>
                   <td className="ct-text">
                     {pick(parameterLabel(c.parameter, c.category), lang)}
-                    <span className="ct-note" style={{ display: 'block' }} data-window={`${c.from_date} ${c.to_date}`}>{`${c.from_date} ${pick({ en: 'to', es: 'a' }, lang)} ${c.to_date}`}</span>
+                    <span className="ct-note" style={{ display: 'block' }} data-window={`${c.from_date} ${c.to_date}`}><NoBreakDates text={`${c.from_date} ${pick({ en: 'to', es: 'a' }, lang)} ${c.to_date}`} /></span>
                   </td>
                   <td>{assumptionValue(c.from_value, c.unit, lang)}</td>
                   <td>{assumptionValue(c.to_value, c.unit, lang)}</td>

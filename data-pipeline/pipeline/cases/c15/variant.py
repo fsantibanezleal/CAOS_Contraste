@@ -380,6 +380,11 @@ def _impact(o: dict[str, Any]) -> dict[str, Any]:
                           "label": t("Delta NII with the indexation charge", "Delta NII con el cargo por reajustabilidad")}}
 
 
+#: the evidence of the floors finding: the floor distances of the document, the block the finding reads (R4 c18 n2: it cited the CMF
+#: golden-value test, which checks the shock sizes, the offset and the charge, not the floors)
+FLOORS_EVIDENCE = ["design:floors.distances"]
+
+
 def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: tuple[str, str], effects: list[dict[str, Any]]) -> list[dict[str, Any]]:
     by = {x["id"]: x for x in th["tests"]}
     e, n = by["eve-tier1"], by["nii-tier1"]
@@ -396,13 +401,13 @@ def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: tuple[s
         f"El cargo estándar por reajustabilidad es {es(ic / d_nii * 100, 0)} por ciento del delta NII: depende del tamaño de la posición neta en UF y no "
         "del choque de tasas, y no se modela ninguna cobertura.")})
     if effects:
-        out.append({"id": "F3", "severity": "S3", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
+        out.append({"id": "F3", "severity": "S3", "status": "open", "evidence": FLOORS_EVIDENCE, "title": t(
             f"The post-shock floors bind in {len(effects)} combinations of shock and leg and change the measures; the smallest distance to a floor elsewhere is "
             f"{dist:.1f} bp.",
             f"Los pisos posteriores al choque actúan en {len(effects)} combinaciones de choque y tramo y modifican las medidas; la menor distancia a un piso "
             f"en el resto es {es(dist)} pb.")})
     else:
-        out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
+        out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": FLOORS_EVIDENCE, "title": t(
             f"No post-shock floor binds on the curves of the valuation date: the smallest distance to a floor is {dist:.1f} bp ({where[0]}); the floors would "
             "matter only at lower rates.",
             f"Ningún piso posterior al choque actúa sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where[1]}); los "

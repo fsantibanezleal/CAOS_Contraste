@@ -56,7 +56,7 @@ export function C15VariantsTable({ variants, onPick, current }: { variants: Arra
             height="fill"
             orientation="vertical"
             data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.nii.delta_nii / axis.div, tone: 'accent' as const, highlight: id === current }))}
-            axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+            axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
           />
         }
       >
@@ -312,12 +312,26 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
   );
 }
 
+/** A variant parameter as a value with its unit: a share as a percent of its base, a factor as times the maturity (R4 c18 m12:
+ * "0.3 share of Tier 1", "1 factor on the maturity"). */
+export function paramValue(value: number, unit: string, lang: 'en' | 'es'): string {
+  if (unit.startsWith('share of ')) {
+    const base = lang === 'es' ? unitText(unit, 'es').replace(/^parte de(l)? /, (_m, l: string | undefined) => (l ? 'del ' : 'de ')) : unit.slice('share '.length);
+    return `${formatNumber(value, lang, { percent: true, decimals: 0 })} ${base}`;
+  }
+  if (unit === 'factor on the maturity') {
+    const n = formatNumber(value, lang, { digits: 4 });
+    return lang === 'es' ? `${n} ${value === 1 ? 'vez' : 'veces'} el plazo` : `${n} times the maturity`;
+  }
+  return `${formatNumber(value, lang, { digits: 4 })} ${unitText(unit, lang)}`;
+}
+
 function ParamRow({ name, value, unit }: { name: string; value: number; unit: string }) {
   const lang = useShellLang();
   return (
     <>
       <dt>{pick(text(PARAMETER_TEXT, name), lang)}</dt>
-      <dd data-parameter={name}>{`${formatNumber(value, lang, { digits: 4 })} ${unitText(unit, lang)}`}</dd>
+      <dd data-parameter={name}>{paramValue(value, unit, lang)}</dd>
     </>
   );
 }
