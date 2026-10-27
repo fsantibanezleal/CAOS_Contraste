@@ -2392,8 +2392,16 @@
           "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
         },
         "source": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The provenance of the financials file: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it."
         },
         "fields": {
           "type": "array",
@@ -2609,8 +2617,16 @@
           ]
         },
         "slotting_assumption": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The slotting assumption of the item: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it."
         },
         "amount": {
           "type": "number",

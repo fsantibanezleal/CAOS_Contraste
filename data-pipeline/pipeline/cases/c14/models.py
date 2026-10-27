@@ -27,6 +27,12 @@ TABLES = {
 }
 
 
+#: the shock shapes of SRP31.91 to SRP31.92; the reference in both languages (R3 c15 B3: "to" in the Spanish view)
+SHOCK_SHAPE = {"x": 4, "steepener_short": -0.65, "steepener_long": 0.9, "flattener_short": 0.8, "flattener_long": -0.6,
+               "short_form": "exp(-t_k / x)", "long_form": "1 - exp(-t_k / x)",
+               "reference": {"en": "SRP31.91 to SRP31.92", "es": "SRP31.91 a SRP31.92"}}
+
+
 def _rows(calibration: str) -> list[dict[str, Any]]:
     return [{"currency": c, "parallel_bp": p, "short_bp": s, "long_bp": lg} for c, (p, s, lg) in shocks.shock_table(calibration).items()]
 
@@ -82,8 +88,7 @@ def models_document(dates: list[str], results: dict[str, VariantResult]) -> dict
         "shock_tables": [{"calibration": c, "source": TABLES[c][0], "data_window": TABLES[c][1], "percentile": TABLES[c][2],
                           "rounding_bp": TABLES[c][3], "rows": _rows(c)} for c in ("2024", "2016")],
         "applied_sizes": [_applied("2024"), _applied("2016")],
-        "shock_shape": {"x": 4, "steepener_short": -0.65, "steepener_long": 0.9, "flattener_short": 0.8, "flattener_long": -0.6,
-                        "short_form": "exp(-t_k / x)", "long_form": "1 - exp(-t_k / x)", "reference": "SRP31.91 to SRP31.92"},
+        "shock_shape": SHOCK_SHAPE,
         "nmd_caps": [{"category": c, "core_share_cap": cs, "core_maturity_cap_years": cm,
                       "reference": "SRP31 Table 4 (SRP31.107 to SRP31.112)"} for c, (cs, cm) in asm.CAPS.items()],
         "multipliers": {

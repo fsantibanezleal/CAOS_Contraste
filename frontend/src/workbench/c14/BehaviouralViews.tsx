@@ -6,7 +6,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { IrrbbTestsTable, UnavailableCard, assumptionValue } from './C14Common';
+import { IrrbbTestsTable, NoBreakDates, UnavailableCard, assumptionValue } from './C14Common';
 import {
   CALIBRATION_SHORT, CATEGORY_TEXT, SHOCK_TEXT, SOURCE_KIND_TEXT, axisOf, cell, fitOf, nmdModelOf, outputsOf, scaleUnit, text, type C14Sel,
 } from './selection';
@@ -15,6 +15,12 @@ import { IRRBB_SOURCE_RULES, localise } from './localise';
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
 /** The delta EVE of every shock under the behavioural and the contractual deposit assumption, for both calibrations, and the difference. */
+/** The kind of a source and the source, without saying the kind twice when the source already opens with it (R3 c15 n4: "ajustado:
+ * Ajustado por fecha ..."). */
+export function kindAndSource(kind: string, source: string): string {
+  return source.toLowerCase().startsWith(kind.toLowerCase()) ? source : `${kind}: ${source}`;
+}
+
 export function WithWithoutView({ sel }: { sel: C14Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -152,7 +158,7 @@ export function ReplicatingView({ sel }: { sel: C14Sel | null }) {
             <dt>{pick({ en: 'Deposit beta, down', es: 'Beta de depósitos, a la baja' }, lang)}</dt>
             <dd>{SHARE(m.deposit_beta.down, lang)}</dd>
             <dt>{pick({ en: 'Where the beta comes from', es: 'De dónde viene el beta' }, lang)}</dt>
-            <dd>{`${pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang)}: ${localise(m.deposit_beta.source, lang, IRRBB_SOURCE_RULES)}`}</dd>
+            <dd>{kindAndSource(pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang), localise(m.deposit_beta.source, lang, IRRBB_SOURCE_RULES))}</dd>
           </dl>
           <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.nmd_parameter_stability'} />
         </ChartOverTable>
@@ -294,7 +300,7 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
                   <td>{assumptionValue(c.to_value, c.unit, lang)}</td>
                   <td className="ct-text">{pick(c.limit_breach_in_window ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang)}</td>
                   <td className="ct-text">{pick(c.flagged ? { en: 'flagged', es: 'marcado' } : { en: 'not flagged', es: 'sin marca' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{pick(c.note, lang)}</td>
+                  <td className="ct-text ct-wide-only"><NoBreakDates text={pick(c.note, lang)} /></td>
                 </tr>
               ))}
             </tbody>

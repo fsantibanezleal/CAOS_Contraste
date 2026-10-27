@@ -7,6 +7,7 @@ import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/char
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { docText } from '../c14/C14Common';
 import { LEG_SHORT, SHOCK_TEXT, moneyDoc, outputsOf, scaleUnit, text, type C15Sel } from './selection';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -122,6 +123,9 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
               ))}
             </tbody>
           </table>
+          {f.effects.length === 0 ? (
+            <p className="ct-note" data-block="floor-effects-none">{pick({ en: 'The effects table is empty: in this variant no floor changes the measure.', es: 'La tabla de efectos está vacía: en esta variante ningún piso cambia la medida.' }, lang)}</p>
+          ) : null}
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -205,9 +209,9 @@ export function ThresholdsView({ sel }: { sel: C15Sel | null }) {
             <dt>{pick({ en: `Net interest and indexation margin, 12 months (${unit})`, es: `Margen neto de intereses y reajustes, 12 meses (${unit})` }, lang)}</dt>
             <dd>{cell(t.net_interest_and_indexation_margin_12m, lang)}</dd>
             <dt>{pick({ en: 'The bank', es: 'El banco' }, lang)}</dt>
-            <dd>{pick(t.prioritised ? { en: 'is prioritised: at least one test is breached', es: 'es priorizado: al menos una prueba es superada' } : { en: 'is not prioritised: no test is breached', es: 'no es priorizado: ninguna prueba es superada' }, lang)}</dd>
+            <dd>{pick(t.prioritised ? { en: 'is prioritised: at least one test is breached', es: 'es priorizado: al menos una prueba excede su umbral' } : { en: 'is not prioritised: no test is breached', es: 'no es priorizado: ninguna prueba excede su umbral' }, lang)}</dd>
             <dt>{pick({ en: 'Reference', es: 'Referencia' }, lang)}</dt>
-            <dd>{t.reference}</dd>
+            <dd>{docText(t.reference, lang)}</dd>
           </dl>
         </ChartOverTable>
       </PlotCard>

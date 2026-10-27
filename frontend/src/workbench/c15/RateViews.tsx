@@ -7,8 +7,7 @@ import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { SHOCK_TEXT, ORIGIN_TEXT, axisOf, documentOffset, moneyDoc, outputsOf, scaleUnit, text, worst, type C15Sel } from './selection';
-import { IrrbbTestsTable } from '../c14/C14Common';
-import { localise } from '../c14/localise';
+import { IrrbbTestsTable, docText } from '../c14/C14Common';
 import { FORMULA_RULES } from './localise';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -79,7 +78,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
                 <td>{sameAsDocument ? cell(n.delta_nii, lang) : formatNumber(null, lang)}</td>
                 <td className="ct-text ct-wide-only">
                   {sameAsDocument
-                    ? `${pick({ en: 'The rate result plus the charge', es: 'El resultado de tasa más el cargo' }, lang)}; ${SHARE(n.delta_nii_share_tier1, lang)} ${pick({ en: 'of Tier 1', es: 'del capital N1' }, lang)}.`
+                    ? `${pick({ en: 'The rate result plus the charge', es: 'El resultado de tasa más el cargo' }, lang)}; ${SHARE(n.delta_nii_share_tier1, lang)} ${pick({ en: 'of Tier 1', es: 'del capital de nivel 1' }, lang)}.`
                     : pick({ en: 'The document gives the total under its own offset state only.', es: 'El documento da el total solo con su propio estado de compensación.' }, lang)}
                 </td>
               </tr>
@@ -166,7 +165,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
             <dt>{pick({ en: `Indexation charge (${unit})`, es: `Cargo por reajustabilidad (${unit})` }, lang)}</dt>
             <dd>{cell(c.charge, lang)}</dd>
             <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-            <dd translate="no">{localise(c.formula, lang, FORMULA_RULES)}</dd>
+            <dd translate="no">{docText(c.formula, lang, FORMULA_RULES)}</dd>
             <dt>{pick({ en: 'In words', es: 'En palabras' }, lang)}</dt>
             <dd>{pick(c.note, lang)}</dd>
             <dt>{pick({ en: `Rate result of delta NII (${unit})`, es: `Resultado de tasa del delta NII (${unit})` }, lang)}</dt>
@@ -181,7 +180,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
               <dt>{pick({ en: `Effect (${unit}); positive is a loss`, es: `Efecto (${unit}); positivo es una pérdida` }, lang)}</dt>
               <dd>{cell(s.effect, lang)}</dd>
               <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-              <dd translate="no">{localise(s.formula, lang, FORMULA_RULES)}</dd>
+              <dd translate="no">{docText(s.formula, lang, FORMULA_RULES)}</dd>
             </dl>
           ) : (
             <p className="ct-note" data-table="cpi-scenario" data-cpi="absent" data-na="true" data-state="unavailable">

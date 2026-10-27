@@ -1,12 +1,13 @@
 // C14's Shocks group: how large the loss is under each of the six prescribed shocks (delta EVE and, for the parallel
 // shocks, delta NII), the shapes of the six shock curves, and the outlier test against 15 percent of Tier 1. A positive
 // delta is a loss and the document's convention is printed on every view that shows one; the numbers are the bake's.
+import { Fragment, type ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { IrrbbTestsTable, UnavailableCard } from './C14Common';
+import { IrrbbTestsTable, UnavailableCard, docText } from './C14Common';
 import {
   CALIBRATION_SHORT, CALIBRATION_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SHOCK_ORDER, SHOCK_TEXT, axisOf, cell, outputsOf, scaleUnit, scenarioFor, scenarioOf, text,
   type C14Sel,
@@ -16,6 +17,21 @@ import { IRRBB_SOURCE_RULES, localise } from './localise';
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
 /** The prescribed shocks in rows, the delta EVE of the scenario in focus in currency and as a share of Tier 1, and the NII of the parallel ones. */
+/** A shock form of the models document ("exp(-t_k / x)") as the symbols a reader reads: a minus sign and the subscript k (R3 c15 n2). */
+export function formOf(form: string): ReactNode {
+  const parts = form.replace(/-/g, '\u2212').split('t_k');
+  return (
+    <>
+      {parts.map((p, j) => (
+        <Fragment key={j}>
+          {p}
+          {j < parts.length - 1 ? <>t<sub>k</sub></> : null}
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
 export function EveByShockView({ sel }: { sel: C14Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -154,15 +170,17 @@ export function ShapesView({ sel }: { sel: C14Sel | null }) {
           {shape ? (
             <dl className="ct-defs" data-table="shock-shape-constants">
               <dt>{pick({ en: 'Short-rate form', es: 'Forma de tasa corta' }, lang)}</dt>
-              <dd translate="no">{shape.short_form}</dd>
+              <dd translate="no" data-form={shape.short_form}>{formOf(shape.short_form)}</dd>
               <dt>{pick({ en: 'Long-rate form', es: 'Forma de tasa larga' }, lang)}</dt>
-              <dd translate="no">{shape.long_form}</dd>
+              <dd translate="no" data-form={shape.long_form}>{formOf(shape.long_form)}</dd>
+              <dt>{pick({ en: 'Decay constant x', es: 'Constante de decaimiento x' }, lang)}</dt>
+              <dd>{`${formatNumber(shape.x, lang, { decimals: 0 })} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
               <dt>{pick({ en: 'Steepener', es: 'Empinamiento' }, lang)}</dt>
               <dd>{pick({ en: `${share(shape.steepener_short)} of the short-rate size, ${share(shape.steepener_long)} of the long-rate size`, es: `${share(shape.steepener_short)} del tamaño de tasa corta, ${share(shape.steepener_long)} del tamaño de tasa larga` }, lang)}</dd>
               <dt>{pick({ en: 'Flattener', es: 'Aplanamiento' }, lang)}</dt>
               <dd>{pick({ en: `${share(shape.flattener_short)} of the short-rate size, ${share(shape.flattener_long)} of the long-rate size`, es: `${share(shape.flattener_short)} del tamaño de tasa corta, ${share(shape.flattener_long)} del tamaño de tasa larga` }, lang)}</dd>
               <dt>{pick({ en: 'Reference', es: 'Referencia' }, lang)}</dt>
-              <dd>{shape.reference}</dd>
+              <dd>{docText(shape.reference, lang)}</dd>
             </dl>
           ) : (
             <p className="ct-note" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no shock-shape constants.', es: 'No disponible: el artefacto de modelos no trae las constantes de forma de los choques.' }, lang)}</p>
@@ -183,7 +201,7 @@ export function outlierChart(sel: C14Sel | null): Pick<UPlotChartProps, 'x' | 'y
   };
   return {
     x: { values: SHOCK_ORDER.map((_, i) => i + 1), label: { en: 'Shock (numbered as in the table)', es: 'Choque (numerado como en la tabla)' }, format: { decimals: 0 } },
-    y: { label: { en: 'Delta EVE over Tier 1', es: 'Delta EVE sobre el capital de nivel 1' }, format: { percent: true, decimals: 0 } },
+    y: { label: { en: 'Delta EVE over Tier 1', es: 'Delta EVE sobre el capital de nivel 1' }, format: { percent: true, decimals: 1 } },
     series: [
       { label: NMD_TEXT.behavioural, values: share('behavioural'), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
       { label: NMD_TEXT.contractual, values: share('contractual'), color: '--color-magenta', width: 2.4, mode: 'points', size: 12 },

@@ -1233,7 +1233,10 @@
       "pn_ur": 624000.0,
       "abs_pn_ur": 624000.0,
       "charge": 15600.0,
-      "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+      "formula": {
+        "en": "charge = 0.025 × |PN_UR|, where PN_UR is the net UF position times the UF value",
+        "es": "cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF"
+      },
       "note": {
         "en": "The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise.",
         "es": "El cargo estandar por reajustabilidad, equivalente a una sorpresa de inflacion de 2,5 por ciento."
@@ -1242,7 +1245,10 @@
     "cpi_scenario": {
       "surprise_pp": 2.5,
       "effect": -15600.0,
-      "formula": "effect = -pn_ur x surprise_pp / 100 (loss-positive)"
+      "formula": {
+        "en": "effect = −PN_UR × s / 100, positive is a loss, where PN_UR is the net UF position in CLP and s the CPI surprise in percentage points",
+        "es": "efecto = −PN_UR × s / 100, positivo es una pérdida, donde PN_UR es la posición neta en UF en CLP y s la sorpresa de IPC en puntos porcentuales"
+      }
     },
     "eve": {
       "base_eve_clp": -273087.59616,
@@ -2041,7 +2047,10 @@
         }
       ],
       "prioritised": false,
-      "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"
+      "reference": {
+        "en": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)",
+        "es": "RAN 21-13 Anexo 1 (banco priorizado, dossier 03 F.2)"
+      }
     }
   },
   "tests": [

@@ -59,7 +59,10 @@
       "call_reports": [
         {
           "report_date": "2021-09-30",
-          "source": "fixture: FDIC BankFind financials (not read)",
+          "source": {
+            "en": "fixture: FDIC BankFind financials (not read)",
+            "es": "fixture: estados financieros de FDIC BankFind (no leídos)"
+          },
           "fields": [
             "fixture:total-assets",
             "fixture:deposits"
@@ -67,7 +70,10 @@
         },
         {
           "report_date": "2021-12-31",
-          "source": "fixture: FDIC BankFind financials (not read)",
+          "source": {
+            "en": "fixture: FDIC BankFind financials (not read)",
+            "es": "fixture: estados financieros de FDIC BankFind (no leídos)"
+          },
           "fields": [
             "fixture:total-assets",
             "fixture:deposits"
@@ -258,7 +264,10 @@
           "source_field": "fixture:cash-and-balances",
           "reported_amount": 6800000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 6800000.0,
           "cash_flows": {
             "behavioural": [
@@ -290,7 +299,10 @@
           "source_field": "fixture:securities-htm",
           "reported_amount": 76500000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 76500000.0,
           "cash_flows": {
             "behavioural": [
@@ -352,7 +364,10 @@
           "source_field": "fixture:securities-afs",
           "reported_amount": 21250000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 21250000.0,
           "cash_flows": {
             "behavioural": [
@@ -394,7 +409,10 @@
           "source_field": "fixture:loans-floating",
           "reported_amount": 29750000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 29750000.0,
           "cash_flows": {
             "behavioural": [
@@ -436,7 +454,10 @@
           "source_field": "fixture:loans-fixed",
           "reported_amount": 17000000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 17000000.0,
           "cash_flows": {
             "behavioural": [
@@ -488,7 +509,10 @@
           "source_field": "fixture:deposits-wholesale",
           "reported_amount": 93500000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 93500000.0,
           "cash_flows": {
             "behavioural": [
@@ -530,7 +554,10 @@
           "source_field": "fixture:deposits-rt",
           "reported_amount": 21250000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 21250000.0,
           "cash_flows": {
             "behavioural": [
@@ -575,7 +602,10 @@
             "en": "The FDIC financials do not split non-transaction deposits between retail and wholesale.",
             "es": "Los estados financieros de la FDIC no separan los depositos sin transaccion entre minoristas y mayoristas."
           },
-          "slotting_assumption": "split-of-total-non-transaction-deposits-assumed",
+          "slotting_assumption": {
+            "en": "split-of-total-non-transaction-deposits-assumed",
+            "es": "fixture: split-of-total-non-transaction-deposits-assumed"
+          },
           "amount": 17000000.0,
           "cash_flows": {
             "behavioural": [
@@ -617,7 +647,10 @@
           "source_field": "fixture:deposits-time",
           "reported_amount": 10200000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 10200000.0,
           "cash_flows": {
             "behavioural": [
@@ -649,7 +682,10 @@
           "source_field": "fixture:borrowings",
           "reported_amount": 8500000.0,
           "reason_missing": null,
-          "slotting_assumption": "reported-repricing-profile",
+          "slotting_assumption": {
+            "en": "reported-repricing-profile",
+            "es": "fixture: reported-repricing-profile"
+          },
           "amount": 8500000.0,
           "cash_flows": {
             "behavioural": [
