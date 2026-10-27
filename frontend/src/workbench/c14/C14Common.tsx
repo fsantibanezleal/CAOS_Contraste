@@ -18,6 +18,7 @@ import {
 } from './selection';
 import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise } from './localise';
 import { testText } from '../names';
+import { daySeconds } from '../../lib/days';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
@@ -104,7 +105,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
   const card = useCard(first as unknown as VariantArtifact | undefined);
   const sorted = [...variants].sort((a, b) => a.v.outputs.valuation_date.localeCompare(b.v.outputs.valuation_date));
   const ratio = (v: VariantArtifact<C14Outputs>, nmd: string) => scenarioOf(v.outputs, calibration, nmd)?.outlier.ratio ?? null;
-  const x = sorted.map((e) => Date.parse(`${e.v.outputs.valuation_date}T00:00:00Z`) / 1000);
+  const x = sorted.map((e) => daySeconds(e.v.outputs.valuation_date));
   return (
     <PlotCard
       fill
