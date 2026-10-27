@@ -36,9 +36,9 @@ const KEYS: Record<'en' | 'es', Array<[RegExp, string]>> = {
     [/\bdim_cube\b/g, 'cubo de margen inicial dinámico'],
     [/\breading ([A-D])\b/g, 'lectura $1'],
     // the words, never a path or a key that holds them (`data-pipeline/`, `content_hash`)
-    [/(?<![\w/-])del pipeline(?![\w/-])/g, 'de la canalización'],
-    [/(?<![\w/-])el pipeline(?![\w/-])/g, 'la canalización'],
-    [/(?<![\w/-])pipeline(?![\w/-])/g, 'canalización'],
+    [/(?<![\w/-])del pipeline(?![\w/-])/g, 'de la cadena de cálculo'],
+    [/(?<![\w/-])el pipeline(?![\w/-])/g, 'la cadena de cálculo'],
+    [/(?<![\w/-])pipeline(?![\w/-])/g, 'cadena de cálculo'],
     [/(?<![\w/-])del hash(?![\w/-])/g, 'de la huella'],
     [/(?<![\w/-])el hash(?![\w/-])/g, 'la huella'],
     [/(?<![\w/-])hashes(?![\w/-])/g, 'huellas'],

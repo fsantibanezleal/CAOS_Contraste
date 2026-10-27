@@ -15,9 +15,9 @@ function Pipeline() {
       <DocSection area="architecture" title={{ en: 'The stages', es: 'Las etapas' }} noRefsReason={THIS_REPO}>
         <P
           en="The offline pipeline (data-pipeline/, invoked by path, never installed) runs each case through named stages: ingest (a fetched source through contract 1), split (the leakage-safe partition), the fit of every rung, evaluate (the battery and the outputs the views draw) and export (contract 2). It is the only lane that writes artifacts, it runs on a workstation, and never in CI or in the browser. Every generator is seeded, so a second bake of the same release writes the same bytes."
-          es="La canalización fuera de línea (data-canalización/, invocado por ruta, nunca instalado) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
+          es="La cadena de cálculo fuera de línea (data-cadena de cálculo/, invocado por ruta, nunca instalado) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
         />
-        <Figure caption={t('Sources, the offline pipeline, the committed artifacts and the web.', 'Fuentes, la canalización fuera de línea, los artefactos versionados y la web.')}>
+        <Figure caption={t('Sources, the offline pipeline, the committed artifacts and the web.', 'Fuentes, la cadena de cálculo fuera de línea, los artefactos versionados y la web.')}>
           <OverviewFigure />
         </Figure>
       </DocSection>
@@ -54,7 +54,7 @@ function Contracts() {
           es="Ocho familias, una por tipo de dato fuente: muestras puntuadas, paneles de préstamos, historias de calificación, series de mercado, curvas de tasas, balances, eventos de pérdida operacional y trayectorias macro. Cada campo tiene su tipo, unidad y rango; hay reglas entre campos (una originación posterior a su reporte se rechaza) y entre registros (días de mora que suben más de 31 por mes se marcan). Los valores se leen estrictamente según su tipo declarado y nunca se fuerzan. Un registro se acepta, se rechaza con el campo, el valor, el rango esperado y la política, se marca y se cuenta, o se excluye y se cuenta. Las declaraciones se exportan para la web y se reflejan en TypeScript."
         />
       </DocSection>
-      <DocSection area="contract" title={{ en: 'Contract 2: what the pipeline commits', es: 'Contrato 2: lo que versiona la canalización' }} noRefsReason={THIS_REPO}>
+      <DocSection area="contract" title={{ en: 'Contract 2: what the pipeline commits', es: 'Contrato 2: lo que versiona la cadena de cálculo' }} noRefsReason={THIS_REPO}>
         <P
           en="An index of the cases; one manifest per case (its question, sources and their licences, the contract-1 report of its inputs, its expected ranges, and one entry per artifact); one models artifact per fit (the record of every rung: engine, version, licence, parameters with units, calibration map, and internals such as the points table, the EBM shape functions and the GBM partial dependence); and one artifact per variant (the outputs the views draw, the test-result rows of the battery, the impact, the findings and the provenance). The web declares the same contract and a test reads every committed artifact against it in both directions."
           es="Un índice de los casos; un manifiesto por caso (su pregunta, sus fuentes y sus licencias, el reporte del contrato 1 de sus entradas, sus rangos esperados y una entrada por artefacto); un artefacto de modelos por ajuste (el registro de cada peldaño: motor, versión, licencia, parámetros con unidades, mapa de calibración, e interiores como la tabla de puntos, las funciones de forma del EBM y la dependencia parcial del GBM); y un artefacto por variante (las salidas que dibujan las vistas, las filas de resultados de prueba de la batería, el impacto, los hallazgos y la procedencia). La web declara el mismo contrato y una prueba lee cada artefacto versionado contra él en ambos sentidos."
@@ -119,11 +119,11 @@ function Engines() {
     <DocSection area="engine" title={{ en: 'The engines', es: 'Los motores' }} noRefsReason={THIS_REPO}>
       <P
         en="The validation tests and, as the cases grow, the regulatory calculators and the reference engines come from riskvalidation, a separate package (MIT, pure NumPy and SciPy) that a validator can audit on its own; this product only calls it. The web holds a port of what is light and exact, and a test compares the port with the pipeline's own numbers on every committed sample, so a live view can never drift from the artifact it replays."
-        es="Las pruebas de validación y, a medida que crecen los casos, las calculadoras regulatorias y los motores de referencia vienen de riskvalidation, un paquete aparte (MIT, NumPy y SciPy puros) que un validador puede auditar por sí solo; este producto solo lo invoca. La web contiene una adaptación de lo que es liviano y exacto, y una prueba compara la adaptación con los números propios de la canalización en cada muestra versionada, de modo que una vista en vivo nunca se aparta del artefacto que reproduce."
+        es="Las pruebas de validación y, a medida que crecen los casos, las calculadoras regulatorias y los motores de referencia vienen de riskvalidation, un paquete aparte (MIT, NumPy y SciPy puros) que un validador puede auditar por sí solo; este producto solo lo invoca. La web contiene una adaptación de lo que es liviano y exacto, y una prueba compara la adaptación con los números propios de la cadena de cálculo en cada muestra versionada, de modo que una vista en vivo nunca se aparta del artefacto que reproduce."
       />
       <P
         en="One computation shows the pattern: the exact size and power of the tests that see a portfolio only through its default count integrate a binomial tail over the systematic factor, on a Gauss-Hermite rule of 256 nodes, in the pipeline and in the browser alike, and the two agree to the digits the artifact keeps."
-        es="Un cálculo muestra el patrón: el tamaño y la potencia exactos de las pruebas que ven una cartera solo a través de su conteo de incumplimientos integran una cola binomial sobre el factor sistemático, con una regla de Gauss-Hermite de 256 nodos, en la canalización y en el navegador por igual, y ambos concuerdan hasta los dígitos que conserva el artefacto."
+        es="Un cálculo muestra el patrón: el tamaño y la potencia exactos de las pruebas que ven una cartera solo a través de su conteo de incumplimientos integran una cola binomial sobre el factor sistemático, con una regla de Gauss-Hermite de 256 nodos, en la cadena de cálculo y en el navegador por igual, y ambos concuerdan hasta los dígitos que conserva el artefacto."
       />
       <Equation
         tex={String.raw`P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
@@ -132,7 +132,7 @@ function Engines() {
       <Callout variant="honest" title={<T en="What the engine does not do" es="Lo que el motor no hace" />}>
         <T
           en="The tree-ensemble scores (gradient boosting, TabPFN) are replayed, never recomputed in the browser, because ONNX Runtime Web has no tree-ensemble kernel; and a port that cannot be compared with the pipeline is not admitted."
-          es="Los puntajes de ensambles de árboles (potenciación del gradiente, TabPFN) se reproducen, nunca se recalculan en el navegador, porque ONNX Runtime Web no tiene un núcleo de ensambles de árboles; y una adaptación que no se pueda comparar con la canalización no se admite."
+          es="Los puntajes de ensambles de árboles (potenciación del gradiente, TabPFN) se reproducen, nunca se recalculan en el navegador, porque ONNX Runtime Web no tiene un núcleo de ensambles de árboles; y una adaptación que no se pueda comparar con la cadena de cálculo no se admite."
         />
       </Callout>
     </DocSection>
@@ -144,15 +144,15 @@ function Lanes() {
     <DocSection area="lanes" title={{ en: 'The lanes', es: 'Los carriles' }} noRefsReason={THIS_REPO}>
       <P
         en="Every view says where its number was computed. The offline lane is the pipeline: canonical, run on a workstation, and the only lane that writes artifacts. The replay lane is the web reading what the pipeline committed, with no computation of its own beyond formatting. The live lane is the web recomputing from those committed artifacts what is light and exact, so that a reader's choice moves a number immediately."
-        es="Cada vista dice dónde se calculó su número. El carril fuera de línea es la canalización: canónica, se ejecuta en una estación de trabajo y es el único carril que escribe artefactos. El carril de reproducción es la web leyendo lo que la canalización versionó, sin más cómputo propio que el formato. El carril en vivo es la web recalculando desde esos artefactos versionados lo que es liviano y exacto, de modo que la elección del lector mueve un número al instante."
+        es="Cada vista dice dónde se calculó su número. El carril fuera de línea es la cadena de cálculo: canónica, se ejecuta en una estación de trabajo y es el único carril que escribe artefactos. El carril de reproducción es la web leyendo lo que la cadena de cálculo versionó, sin más cómputo propio que el formato. El carril en vivo es la web recalculando desde esos artefactos versionados lo que es liviano y exacto, de modo que la elección del lector mueve un número al instante."
       />
       <P
         en="A feature is admitted to the live lane only when its cold start and its run time are measured under the gate and its result is compared with the pipeline's; anything heavier, and everything that depends on a trained ensemble, stays in the replay lane. The live lane is TypeScript ports of the engine's calculators, each held to the engine by a parity test. riskvalidation is published on PyPI and its core needs only NumPy and SciPy, so Pyodide could install it, but Pyodide is admitted only by measurement, feature by feature; no such measurement exists and none is planned."
-        es="Una funcionalidad se admite en el carril en vivo solo cuando su arranque en frío y su tiempo de ejecución se miden bajo la compuerta y su resultado se compara con el de la canalización; todo lo más pesado, y todo lo que depende de un ensamble entrenado, queda en el carril de reproducción. El carril en vivo son versiones en TypeScript de los calculadores del motor, cada una sujeta al motor por una prueba de paridad. riskvalidation está publicado en PyPI y su núcleo solo necesita NumPy y SciPy, así que Pyodide podría instalarlo, pero Pyodide se admite solo por medición, funcionalidad por funcionalidad; esa medición no existe y no hay ninguna planeada."
+        es="Una funcionalidad se admite en el carril en vivo solo cuando su arranque en frío y su tiempo de ejecución se miden bajo la compuerta y su resultado se compara con el de la cadena de cálculo; todo lo más pesado, y todo lo que depende de un ensamble entrenado, queda en el carril de reproducción. El carril en vivo son versiones en TypeScript de los calculadores del motor, cada una sujeta al motor por una prueba de paridad. riskvalidation está publicado en PyPI y su núcleo solo necesita NumPy y SciPy, así que Pyodide podría instalarlo, pero Pyodide se admite solo por medición, funcionalidad por funcionalidad; esa medición no existe y no hay ninguna planeada."
       />
       <L
         items={[
-          { en: 'Offline: the pipeline, canonical, the only lane that writes artifacts.', es: 'Fuera de línea: la canalización, canónica, el único carril que escribe artefactos.' },
+          { en: 'Offline: the pipeline, canonical, the only lane that writes artifacts.', es: 'Fuera de línea: la cadena de cálculo, canónica, el único carril que escribe artefactos.' },
           { en: 'Replay: the web reads the committed artifacts. Gradient-boosting and TabPFN scores are always replayed, since ONNX Runtime Web has no tree-ensemble kernel.', es: 'Reproducción: la web lee los artefactos versionados. Los puntajes de potenciación del gradiente y TabPFN siempre se reproducen, porque ONNX Runtime Web no tiene un núcleo de ensambles de árboles.' },
           { en: "Live: the web recomputes what is light and exact from the committed artifacts: an applicant's scorecard and EBM scores, every light under the reader's policy, the decision and the IRB capital at any approval rate.", es: 'En vivo: la web recalcula lo que es liviano y exacto desde los artefactos versionados: las puntuaciones de la tarjeta de puntuación y EBM de un solicitante, cada luz bajo la política del lector, la decisión y el capital IRB a cualquier tasa de aprobación.' },
         ]}
@@ -167,7 +167,7 @@ function Readiness() {
     <DocSection title={{ en: 'What is real in this build', es: 'Qué es real en esta versión' }} noRefsReason={THIS_REPO}>
       <P
         en="The pipeline writes a readiness document beside the data: for every row of the contract catalog it says whether the build is available, partial, stale, provided by a provider, training or missing, with the provenance and a reason in both languages. Every view reads its note from this document and never decides a state itself: a case that is planned and not built yet is listed as such and is shown as not available yet, never as an empty chart."
-        es="La canalización escribe un documento de disponibilidad junto a los datos: para cada fila del catálogo de contratos dice si la versión está disponible, parcial, desactualizada, provista por un proveedor, en entrenamiento o faltante, con la procedencia y una razón en ambos idiomas. Cada vista lee su nota de este documento y nunca decide un estado por sí misma: un caso planificado y aún no construido figura como tal y se muestra como aún no disponible, nunca como un gráfico vacío."
+        es="La cadena de cálculo escribe un documento de disponibilidad junto a los datos: para cada fila del catálogo de contratos dice si la versión está disponible, parcial, desactualizada, provista por un proveedor, en entrenamiento o faltante, con la procedencia y una razón en ambos idiomas. Cada vista lee su nota de este documento y nunca decide un estado por sí misma: un caso planificado y aún no construido figura como tal y se muestra como aún no disponible, nunca como un gráfico vacío."
       />
       <ReadinessTable />
       <p className="ct-note">{t('Read from the readiness document served with the site.', 'Leído del documento de disponibilidad que sirve el sitio.')}</p>
@@ -183,8 +183,8 @@ function Gates() {
         <L
           items={[
             { en: 'Every requirement of the design document names the test or guard that fails when it is violated, and a guard fails on a requirement whose gate does not exist.', es: 'Cada requisito del documento de diseño nombra la prueba o guarda que falla cuando se viola, y una guarda falla ante un requisito cuya compuerta no existe.' },
-            { en: 'The pipeline\'s tests run in a sandbox: a test that writes into the committed artifacts fails the session.', es: 'Las pruebas de la canalización corren en un entorno aislado: una prueba que escribe en los artefactos versionados hace fallar la sesión.' },
-            { en: 'In CI, without installing the pipeline: the artifacts and their manifests agree, every artifact carries true provenance, no raw rows of a non-mirror source anywhere, the licences of the default install, one version, one deploy place, no em-dash or emoji, and every guard proven by a test that plants its failure.', es: 'En CI, sin instalar la canalización: los artefactos y sus manifiestos coinciden, cada artefacto lleva procedencia verdadera, ninguna fila cruda de una fuente que no es espejo en ningún lugar, las licencias de la instalación por defecto, una versión, un lugar de despliegue, sin rayas largas ni emojis, y cada guarda probada por una prueba que siembra su falla.' },
+            { en: 'The pipeline\'s tests run in a sandbox: a test that writes into the committed artifacts fails the session.', es: 'Las pruebas de la cadena de cálculo corren en un entorno aislado: una prueba que escribe en los artefactos versionados hace fallar la sesión.' },
+            { en: 'In CI, without installing the pipeline: the artifacts and their manifests agree, every artifact carries true provenance, no raw rows of a non-mirror source anywhere, the licences of the default install, one version, one deploy place, no em-dash or emoji, and every guard proven by a test that plants its failure.', es: 'En CI, sin instalar la cadena de cálculo: los artefactos y sus manifiestos coinciden, cada artefacto lleva procedencia verdadera, ninguna fila cruda de una fuente que no es espejo en ningún lugar, las licencias de la instalación por defecto, una versión, un lugar de despliegue, sin rayas largas ni emojis, y cada guarda probada por una prueba que siembra su falla.' },
           ]}
         />
       </DocSection>
@@ -206,7 +206,7 @@ function Deploy() {
     <DocSection area="deployment" title={{ en: 'Versions and the deploy', es: 'Versiones y despliegue' }} noRefsReason={THIS_REPO}>
       <P
         en="VERSION is the only place the version is written; the pipeline, the web and the changelog read it, and a guard fails when any of them disagrees. Contraste has one deploy place, decided first: GitHub Pages with its own domain, since the repository is public and every capability is static replay or client-side compute. The deploy runs only after CI passes on main and ends by checking the live site: every route answers, a missing file answers 404, the artifact index answers JSON, and build.json names the commit that was pushed."
-        es="VERSION es el único lugar donde se escribe la versión; la canalización, la web y el registro de cambios la leen, y una guarda falla cuando alguno discrepa. Contraste tiene un único lugar de despliegue, decidido primero: GitHub Pages con su propio dominio, porque el repositorio es público y toda capacidad es reproducción estática o cálculo en el cliente. El despliegue corre solo después de que CI pasa en main y termina verificando el sitio en vivo: cada ruta responde, un archivo faltante responde 404, el índice de artefactos responde JSON, y build.json nombra la versión del repositorio que se publicó."
+        es="VERSION es el único lugar donde se escribe la versión; la cadena de cálculo, la web y el registro de cambios la leen, y una guarda falla cuando alguno discrepa. Contraste tiene un único lugar de despliegue, decidido primero: GitHub Pages con su propio dominio, porque el repositorio es público y toda capacidad es reproducción estática o cálculo en el cliente. El despliegue corre solo después de que CI pasa en main y termina verificando el sitio en vivo: cada ruta responde, un archivo faltante responde 404, el índice de artefactos responde JSON, y build.json nombra la versión del repositorio que se publicó."
       />
     </DocSection>
   );
@@ -221,7 +221,7 @@ export function Implementation() {
       title={{ en: 'Implementation', es: 'Implementación' }}
       lede={t(
         'How Contraste is built: the pipeline, the contracts, the data and its licences, the engines, the lanes, what is real in this build, the gates and the deploy, each in its own topic with the exact algorithm, the contract or the rule it follows.',
-        'Cómo está construido Contraste: la canalización, los contratos, los datos y sus licencias, los motores, los carriles, qué es real en esta versión, las compuertas y el despliegue, cada uno en su propio tema con el algoritmo exacto, el contrato o la regla que sigue.',
+        'Cómo está construido Contraste: la cadena de cálculo, los contratos, los datos y sus licencias, los motores, los carriles, qué es real en esta versión, las compuertas y el despliegue, cada uno en su propio tema con el algoritmo exacto, el contrato o la regla que sigue.',
       )}
     >
       <TabGroups
@@ -231,7 +231,7 @@ export function Implementation() {
             id: 'build',
             label: t('How is a case built?', '¿Cómo se construye un caso?'),
             tabs: [
-              { id: 'pipeline', label: t('Pipeline', 'Canalización'), content: <Pipeline /> },
+              { id: 'pipeline', label: t('Pipeline', 'Cadena de cálculo'), content: <Pipeline /> },
               { id: 'contracts', label: t('Contracts', 'Contratos'), content: <Contracts /> },
               { id: 'data', label: t('Data and licences', 'Datos y licencias'), content: <DataAndLicences /> },
             ],
