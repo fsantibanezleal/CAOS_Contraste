@@ -360,7 +360,9 @@ export function RungReadout({ sel }: { sel: C10Sel | null }) {
   const ccy = o?.currency ?? '';
   const level = sel ? levelBi(sel.level) : { en: '', es: '' };
   const why: BiText = r && !r.evaluated ? { en: 'This rung did not run, so it has no number.', es: 'Este escalón no corrió, así que no tiene número.' } : { en: 'Not in this document.', es: 'No está en este documento.' };
-  const [elM, varM, esM, seM] = moneySet([m?.el ?? null, m?.var ?? null, m?.es ?? null, m?.var_se ?? null], ccy);
+  // three rows: the VaR's Monte Carlo error is in the rung view's measure table beside it (a fourth row made the rail
+  // scroll at 1280 x 800 in Spanish in the gate's wide font, ADR-0071 rule 6)
+  const [elM, varM, esM] = moneySet([m?.el ?? null, m?.var ?? null, m?.es ?? null], ccy);
   const esWhy: BiText = m && m.es === null ? { en: noteText(m.es_reason, 'en'), es: noteText(m.es_reason, 'es') } : { en: 'The expected shortfall: the mean loss beyond the VaR.', es: 'El déficit esperado: la pérdida media más allá del VaR.' };
   return (
     <LiveReadout
@@ -370,9 +372,6 @@ export function RungReadout({ sel }: { sel: C10Sel | null }) {
         { label: { en: 'Expected loss', es: 'Pérdida esperada' }, ...elM, hint: m ? { en: 'The mean of the portfolio loss over one year.', es: 'La media de la pérdida de la cartera en un año.' } : why },
         { label: { en: 'VaR', es: 'VaR' }, ...varM, hint: { en: 'The loss the portfolio does not exceed with the confidence of the level.', es: 'La pérdida que la cartera no supera con la confianza del nivel.' } },
         { label: { en: 'Expected shortfall', es: 'Déficit esperado' }, ...esM, hint: esWhy },
-        m && m.var_se === null && r?.evaluated
-          ? { label: { en: 'Error of the VaR', es: 'Error del VaR' }, text: { en: 'none, analytic', es: 'ninguno, analítico' }, hint: { en: 'An analytic rung has no sampling error.', es: 'Un escalón analítico no tiene error de muestreo.' } }
-          : { label: { en: 'Error of the VaR', es: 'Error del VaR' }, ...seM, hint: { en: 'The Monte Carlo standard error of the VaR.', es: 'El error estándar de Monte Carlo del VaR.' } },
       ]}
     />
   );

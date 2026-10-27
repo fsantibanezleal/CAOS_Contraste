@@ -364,7 +364,6 @@ const CORNER_ANGLES = [-90, 30, 150];
  * over half the drawing, room for a scenario's full name in a few lines (R2b c07: "Adverso (punto medio de las formas Fed, propio de
  * Contraste)" ran outwards and was cut to two lines with an ellipsis). */
 export const cornerLabelWidth = (width: number): number => Math.max(width / 2 - 12, 60);
-const CORNER_LINES = 4;
 
 /** A corner label broken at words into lines of at most `width` pixels, never shortened (the shell's fitLabel keeps two lines and
  * then cuts with an ellipsis); a word wider than the line keeps a line of its own. */
@@ -376,6 +375,18 @@ export function cornerLines(label: string, width: number, px = 12): string[] {
     else lines.push(word);
   }
   return lines;
+}
+
+/** The simplex in a drawing of this size whose top label takes `topLines` lines and whose lower labels take at most
+ * `bottomLines`: the radius, the apex and the centre. The drawing keeps the room the labels take: the top label's last line sits
+ * 20 px over the apex (clear of the corner's point and ring) with its first line's ascent inside the drawing, and the lower labels
+ * start 28 px under their corners (the 1.00.000 gate found the top label cut by 14 px when the triangle took the height, G10). */
+export function simplexLayout(width: number, height: number, topLines: number, bottomLines: number): { r: number; apex: number; cx: number; cy: number } {
+  const topRoom = 33 + (topLines - 1) * 13;
+  const bottomRoom = 32 + (bottomLines - 1) * 13;
+  const r = Math.max(Math.min((width / 2 - 14) / 0.866, (height - topRoom - bottomRoom) / 1.5), 30);
+  const apex = topRoom + Math.max(0, (height - topRoom - bottomRoom - 1.5 * r) / 2);
+  return { r, apex, cx: width / 2, cy: apex + r };
 }
 
 /** The ternary heat map of the scenario-weight simplex, with the live weights marked; a table of every grid point. */
@@ -423,9 +434,8 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
               {({ width, height }) => {
                 // the two lower labels sit under their corners and run inwards, each over half the drawing, in as many lines as they need
                 const labelW = cornerLabelWidth(width);
-                const r = Math.max(Math.min((width / 2 - 14) / 0.866, (height - 48 - CORNER_LINES * 13) / 1.5), 30);
-                const cx = width / 2;
-                const cy = height / 2 + r * 0.1;
+                const lines = g.scenario_ids.map((id, i) => cornerLines(pick(scenarioLabel(id), lang), i === 0 ? Math.min(width * 0.8, 220) : labelW));
+                const { r, cx, cy } = simplexLayout(width, height, lines[0].length, Math.max(lines[1]?.length ?? 1, lines[2]?.length ?? 1));
                 const corner = CORNER_ANGLES.map((a) => [cx + r * Math.cos((a * Math.PI) / 180), cy + r * Math.sin((a * Math.PI) / 180)] as const);
                 const at = (w: number[]) => [w[0] * corner[0][0] + w[1] * corner[1][0] + w[2] * corner[2][0], w[0] * corner[0][1] + w[1] * corner[1][1] + w[2] * corner[2][1]] as const;
                 const live = at(weights);
@@ -440,12 +450,12 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                     {g.scenario_ids.map((id, i) => {
                       const [x, y] = corner[i];
                       const anchor = i === 0 ? 'middle' : i === 1 ? 'end' : 'start';
-                      const dy = i === 0 ? -20 : 28;
+                      const dy = i === 0 ? -20 - (lines[0].length - 1) * 13 : 28;
                       const lx = i === 0 ? x : i === 1 ? width - 4 : 4;
                       const full = pick(scenarioLabel(id), lang);
                       return (
                         <text key={id} x={lx} y={y + dy} textAnchor={anchor} className="dg-axis-label">
-                          {cornerLines(full, i === 0 ? Math.min(width * 0.8, 220) : labelW).map((line, k) => (
+                          {lines[i].map((line, k) => (
                             <tspan key={k} x={lx} dy={k === 0 ? 0 : 13}>{line}</tspan>
                           ))}
                           <title>{full}</title>

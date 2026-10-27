@@ -121,8 +121,10 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
  * list below). The Focus button of shell 0.14.0 takes 37 px at the head of the rail, so C01 (in Spanish), C04, C07 and C22 each
  * overflowed it by 10 to 39 px (ADR-0071 rule 6) until their variant note went to the Variants and Context groups. Shell 0.14.1 put
  * the button beside the case select; C10's five loan types and two grids still overflowed by 2 px at 1280 x 800 in English.
+ * The 1.00.000 full gate found C16, C18 and C20 over by 6 to 7 px in Spanish in the gate's wide font, where each read-out's
+ * lane and data badges take two lines; C16's and C18's titles say what their chips say, and C20's Context names its title.
  */
-const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C10', 'C22']);
+export const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C10', 'C16', 'C18', 'C20', 'C22']);
 
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {

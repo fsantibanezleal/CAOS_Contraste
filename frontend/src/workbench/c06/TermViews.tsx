@@ -194,21 +194,44 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
       </PlotCard>
       <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <div className="ct-scroll" data-caos-flow="">
-          <ul className="ct-evidence" data-table="sicr-rule">
-            {s.multiplier_schedule.map((m) => (
-              <li key={m.pd_origination_upper} data-multiplier={m.multiplier}>
-                {pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}: the PD must reach ${formatNumber(m.multiplier, 'en', { decimals: 1 })} times`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}: la PD debe llegar a ${formatNumber(m.multiplier, 'es', { decimals: 1 })} veces` }, lang)}
-              </li>
-            ))}
-            <li data-floor={s.absolute_floor}>{pick({ en: `and rise by at least ${pct(s.absolute_floor, 'en', 2)} in absolute terms`, es: `y subir al menos ${pct(s.absolute_floor, 'es', 2)} en términos absolutos` }, lang)}</li>
-            <li data-threefold={s.threefold_ratio}>{pick({ en: `or reach ${formatNumber(s.threefold_ratio, 'en', { decimals: 1 })} times the origination PD (backstop)`, es: `o llegar a ${formatNumber(s.threefold_ratio, 'es', { decimals: 1 })} veces la PD de originación (respaldo)` }, lang)}</li>
-            <li data-dpd={s.dpd_backstop}>{pick({ en: `${s.dpd_backstop} days past due (presumption) and ${s.default_dpd} (default)`, es: `${s.dpd_backstop} días de mora (presunción) y ${s.default_dpd} (incumplimiento)` }, lang)}</li>
-            <li data-lcr={String(s.low_credit_risk_pd)}>
-              {s.low_credit_risk_pd === null
-                ? pick({ en: 'No low-credit-risk exemption is used.', es: 'No se usa la exención de bajo riesgo de crédito.' }, lang)
-                : pick({ en: `Low-credit-risk exemption at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less.`, es: `Exención de bajo riesgo de crédito con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos.` }, lang)}
-            </li>
-          </ul>
+          {/* the rule as a table of test and condition: with the counts below, the card's tables span it, so the gate counts
+              the card as drawn at 1280 (a list above one small table drew on 23% of its stage, G6) */}
+          <table className="caos-table ct-wrap-head" data-table="sicr-rule">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Condition', es: 'Condición' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {s.multiplier_schedule.map((m) => (
+                <tr key={m.pd_origination_upper} data-multiplier={m.multiplier}>
+                  <td className="ct-text">{pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}` }, lang)}</td>
+                  <td className="ct-text">{pick({ en: `the PD must reach ${formatNumber(m.multiplier, 'en', { decimals: 1 })} times`, es: `la PD debe llegar a ${formatNumber(m.multiplier, 'es', { decimals: 1 })} veces` }, lang)}</td>
+                </tr>
+              ))}
+              <tr data-floor={s.absolute_floor}>
+                <td className="ct-text">{pick({ en: 'Absolute floor', es: 'Piso absoluto' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `and rise by at least ${pct(s.absolute_floor, 'en', 2)} in absolute terms`, es: `y subir al menos ${pct(s.absolute_floor, 'es', 2)} en términos absolutos` }, lang)}</td>
+              </tr>
+              <tr data-threefold={s.threefold_ratio}>
+                <td className="ct-text">{pick({ en: 'Threefold backstop', es: 'Respaldo del triple' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `or reach ${formatNumber(s.threefold_ratio, 'en', { decimals: 1 })} times the origination PD`, es: `o llegar a ${formatNumber(s.threefold_ratio, 'es', { decimals: 1 })} veces la PD de originación` }, lang)}</td>
+              </tr>
+              <tr data-dpd={s.dpd_backstop}>
+                <td className="ct-text">{pick({ en: 'Days past due', es: 'Días de mora' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `${s.dpd_backstop} (presumption) and ${s.default_dpd} (default)`, es: `${s.dpd_backstop} (presunción) y ${s.default_dpd} (incumplimiento)` }, lang)}</td>
+              </tr>
+              <tr data-lcr={String(s.low_credit_risk_pd)}>
+                <td className="ct-text">{pick({ en: 'Low-credit-risk exemption', es: 'Exención de bajo riesgo de crédito' }, lang)}</td>
+                <td className="ct-text">
+                  {s.low_credit_risk_pd === null
+                    ? pick({ en: 'not used', es: 'no se usa' }, lang)
+                    : pick({ en: `at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less`, es: `con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos` }, lang)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <p className="ct-note" data-accounts={total}>
             {pick(
               {

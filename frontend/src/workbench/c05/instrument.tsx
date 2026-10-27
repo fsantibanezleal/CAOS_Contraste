@@ -7,6 +7,7 @@ import type { Regime, Case1 } from '../../engine/credit';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { COMMITTED, type PolicyAlphas } from '../../lib/policy';
 import { provenanceOf } from '../model';
+import { RailSelect } from '../c06/RailSelect';
 import { BoundsReadout, C05ContextView, C05FindingsView, C05PolicyReadout, C05VariantsView, CalibrationReadout, CapitalReadout } from './C05Common';
 import { BoundsView, KnownTruthView, LdpImpactView, LdpTestsView, ScalingView } from './LdpViews';
 import { CASE1, approachShort, isLdp, isSp, type C05Sel } from './selection';
@@ -18,9 +19,8 @@ const REGIMES: Array<{ id: Regime; label: BiText; hint: BiText }> = [
   { id: 'basel2', label: { en: 'Basel II', es: 'Basilea II' }, hint: { en: 'Basel II (CRE30.4): the 1.06 scaling factor, PD floor 0.03%.', es: 'Basilea II (CRE30.4): el factor de escala 1,06, piso de PD 0,03 %.' } },
 ];
 
-// The rail is 248 px wide at 1280x800: the four approach chips keep the paper's order on two rows when the accuracy
-// ratio goes by its usual abbreviation (the chip's hint carries the full title).
-const RAIL_LABEL: Partial<Record<Case1, BiText>> = { 'A2-iar': { en: 'AR', es: 'AR' } };
+// The rail is 248 px wide at 1280x800: the four approaches, in the paper's order, are one select (as chips they took
+// three rows in Spanish in the gate's wide font and the rail scrolled, ADR-0071 rule 6); each option carries the full title.
 
 export interface C05Instrument {
   sel: C05Sel | null;
@@ -136,10 +136,10 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         label: { en: 'Calibration', es: 'Calibración' },
         content: (
           <>
-            <ChipGroup
+            <RailSelect
               id="c05-approach"
               label={{ en: 'Approach (case 1)', es: 'Enfoque (caso 1)' }}
-              options={CASE1.map((id) => ({ id, label: RAIL_LABEL[id] ?? approachShort(sp, id), hint: sp.model.find((m) => m.id === id)?.title }))}
+              options={CASE1.map((id) => ({ id, label: approachShort(sp, id), hint: sp.model.find((m) => m.id === id)?.title }))}
               value={approach}
               onChange={(id) => setApproach(id as Case1)}
             />
