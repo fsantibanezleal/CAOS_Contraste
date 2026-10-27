@@ -527,7 +527,7 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
                      "riskvalidation_version": by_id[v][1]["provenance"].get("riskvalidation_version")} for v in order]
         own = {case.manifest_path, d["_models"].path, *[p for _, p, _ in d["_variants"]], "CHANGELOG.md", INPUTS_REL, edge_table.EDGES_REL}
         scoped = {"provenance": _filtered_provenance(provenance, own), "as_of_basis": as_of_basis}
-        reports[key] = _drop_battery_key(E.report.build_report(e, scoped, [r for r in all_rows if r["entry_key"] == key], variants, as_of))
+        reports[key] = _reader_missing(_drop_battery_key(E.report.build_report(e, scoped, [r for r in all_rows if r["entry_key"] == key], variants, as_of)))
 
     check_documents(inventory, findings, appetite, reports)
     from . import page
@@ -543,6 +543,17 @@ def _drop_battery_key(report: dict[str, Any]) -> dict[str, Any]:
             if block.get("kind") == "outcomes":
                 for row in block["rows"]:
                     row["policy"].pop("battery", None)
+    return report
+
+
+def _reader_missing(report: dict[str, Any]) -> dict[str, Any]:
+    """The engine's sentences on what a report section misses, in reader words (``reader_text``, the rules the governance views apply): its Spanish
+    "Replicación independiente del pipeline" reads "de la cadena de cálculo", as the views already showed it (2026-10-27 ruling)."""
+    for section in report["sections"]:
+        for m in section.get("missing", []):
+            for k in ("element", "reason"):
+                if isinstance(m.get(k), dict):
+                    m[k] = reader_text(m[k])
     return report
 
 
