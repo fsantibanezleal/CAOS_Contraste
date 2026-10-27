@@ -52,7 +52,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       <>
         <ChipGroup
           id="c13-level"
-          label={{ en: 'Desk back-test level', es: 'Nivel del backtest de mesa' }}
+          label={{ en: 'Desk back-test level', es: 'Nivel de la prueba de la mesa' }}
           options={o.desk_backtest.map((l) => ({ id: String(l.alpha), label: { en: levelShort(l.alpha, 'en'), es: levelShort(l.alpha, 'es') }, hint: { en: levelLabel(l.alpha, 'en'), es: levelLabel(l.alpha, 'es') } }))}
           value={String(sel.alpha)}
           onChange={(v) => setAlpha(Number(v) as C13Alpha)}
@@ -95,7 +95,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     rail: [levelSection, statisticSection],
     groups: [
       { id: 'pla', label: { en: 'PLA', es: 'PLA' }, lane: 'replay', provenance: prov, content: pla },
-      { id: 'desk', label: { en: 'Desk back-test', es: 'Backtest de mesa' }, lane: 'replay', provenance: prov, content: <DeskView sel={sel} /> },
+      { id: 'desk', label: { en: 'Desk back-test', es: 'Prueba retrospectiva' }, lane: 'replay', provenance: prov, content: <DeskView sel={sel} /> },
       { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <C13FindingsView sel={sel} /> },
     ],
     compare: { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <C13VariantsView sel={sel} onPick={onPick} /> },

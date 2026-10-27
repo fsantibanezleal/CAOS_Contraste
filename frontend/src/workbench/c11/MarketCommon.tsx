@@ -9,12 +9,13 @@ import { MaybeNumber } from '../c06/format';
 import { noteText } from '../c08/notes';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
 
-/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. */
-export function ConventionLine() {
+/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. A case whose
+ * numbers are decimals of another base (C13: the desk notional) states its own line (R3 c14 m8). */
+export function ConventionLine({ line = CONVENTION_LINE }: { line?: Bi } = {}) {
   const lang = useShellLang();
   return (
     <p className="ct-note" data-convention="true">
-      {pick(CONVENTION_LINE, lang)}
+      {pick(line, lang)}
     </p>
   );
 }

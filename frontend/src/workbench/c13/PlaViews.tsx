@@ -4,7 +4,7 @@
 // control). Every view names the deficiency the generator planted.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { ChartOverTable, MaybeNumber } from '../c06/format';
+import { ChartOverTable } from '../c06/format';
 import { rowsMin } from '../c11/MarketCommon';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
@@ -230,7 +230,7 @@ export function DetectionView({ sel }: { sel: C13Sel | null }) {
     { id: 'red', label: { en: 'Red zone', es: 'Zona roja' }, value: d.n_red, tone: 'bad' as const },
     { id: 'spearman', label: { en: 'Spearman flagged', es: 'Marcada por Spearman' }, value: d.by_test.spearman_flagged, tone: 'neutral' as const },
     { id: 'ks', label: { en: 'KS flagged', es: 'Marcada por KS' }, value: d.by_test.ks_flagged, tone: 'neutral' as const },
-    { id: 'desk', label: { en: 'Desk back-test flagged', es: 'Marcada por el backtest de mesa' }, value: d.by_test.desk_backtest_flagged, tone: 'neutral' as const },
+    { id: 'desk', label: { en: 'Desk back-test flagged, at either level', es: 'Marcada por la prueba de la mesa, en cualquier nivel' }, value: d.by_test.desk_backtest_flagged, tone: 'neutral' as const },
   ];
   return (
     <ViewsRow>
@@ -270,11 +270,15 @@ export function DetectionView({ sel }: { sel: C13Sel | null }) {
             <dd>{`${pct(d.ci_low, lang, 2)} - ${pct(d.ci_high, lang, 2)} (${pick({ en: 'Monte Carlo SE', es: 'error estándar de Monte Carlo' }, lang)} ${pct(d.mc_se, lang, 2)})`}</dd>
             <dt>{pick({ en: 'Red', es: 'Roja' }, lang)}</dt>
             <dd>{`${pct(d.share_red, lang, 2)} (${count(d.n_red, lang)})`}</dd>
-            <dt>{pick({ en: 'Flagged by Spearman, KS, desk back-test', es: 'Marcadas por Spearman, KS, backtest de mesa' }, lang)}</dt>
-            <dd>{`${count(d.by_test.spearman_flagged, lang)}, ${count(d.by_test.ks_flagged, lang)}, ${count(d.by_test.desk_backtest_flagged, lang)}`}</dd>
+            <dt>{pick({ en: 'Flagged by Spearman / KS / desk back-test at either level', es: 'Marcadas por Spearman / KS / prueba de la mesa en cualquier nivel' }, lang)}</dt>
+            {/* " / " between the counts: a comma read as the thousands separator ("0, 1,000, 954", R3 c14 m11) */}
+            <dd>{`${count(d.by_test.spearman_flagged, lang)} / ${count(d.by_test.ks_flagged, lang)} / ${count(d.by_test.desk_backtest_flagged, lang)}`}</dd>
             <dt>{pick({ en: 'Flagged by the test meant to catch it', es: 'Marcadas por la prueba que debe detectarla' }, lang)}</dt>
             <dd>
-              <MaybeNumber value={d.intended_test_flagged} reason={d.intended_test_flagged === null ? pick({ en: 'no deficiency planted, so no test is meant to catch it', es: 'no se siembra deficiencia, así que ninguna prueba debe detectarla' }, lang) : null} format={(v) => count(v, lang)} />
+              {/* the control has no test to catch a deficiency: "not applicable" with its reason inline, never "not available" (R3 c14 m7) */}
+              {d.intended_test_flagged === null
+                ? pick({ en: 'not applicable: no deficiency planted, so no test is meant to catch it', es: 'no aplica: no se siembra deficiencia, así que ninguna prueba debe detectarla' }, lang)
+                : count(d.intended_test_flagged, lang)}
             </dd>
           </dl>
           <ViewFoot o={o} />
