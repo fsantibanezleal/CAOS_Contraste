@@ -2,7 +2,7 @@
 // they carry no firm identifier and no date and the overlap of firms across them is unknown (UNVERIFIED, 08 l.855-856),
 // so the cross-file transfer, the term structure read from the five event rates and the ECL effect of the horizon PDs are
 // each labelled exploratory, with the reason, wherever they are drawn. A null field says "not available" with its reason.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
@@ -14,6 +14,20 @@ import { bareModel, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel }
 
 /** The display band of a transfer AUC (a shade, not a threshold): below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above. */
 const band = (auc: number): 1 | 2 | 3 | 4 => (auc < 0.6 ? 1 : auc < 0.7 ? 2 : auc < 0.8 ? 3 : 4);
+
+const yearsText = (n: number): { en: string; es: string } => ({ en: n === 1 ? '1 year' : `${n} years`, es: n === 1 ? '1 año' : `${n} años` });
+
+/** The bars of the transfer cells of one model, in fitted then scored order whatever file is loaded (R3 c03 m13), named in years in
+ * both languages (m14: "Ajustado en 1a" read as "primera"). */
+export function transferBars(cells: C02Outputs['transfer']['cells']): Array<{ id: string; label: { en: string; es: string }; value: number }> {
+  return [...cells]
+    .sort((a, b) => a.fitted_on_years - b.fitted_on_years || a.scored_on_years - b.scored_on_years)
+    .map((c) => {
+      const fit = yearsText(c.fitted_on_years);
+      const scored = yearsText(c.scored_on_years);
+      return { id: `${c.fitted_on_years}-${c.scored_on_years}`, label: { en: `Fitted on ${fit.en}, scored on ${scored.en}`, es: `Ajustado en ${fit.es}, puntuado en ${scored.es}` }, value: c.auc };
+    });
+}
 
 /** The exploratory transfer heat map: a rung fitted on one horizon file and scored on the holdout of another. */
 export function TransferView({ sel }: { sel: C02Sel | null }) {
@@ -61,47 +75,54 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
           es: 'AUC del peldaño ajustado en el archivo de la fila y puntuado en la muestra reservada del archivo de la columna. El tono es una banda de visualización (bajo 0,6, de 0,6 a 0,7, de 0,7 a 0,8, de 0,8 y más), no un umbral. Una celda que ningún documento trae queda vacía. La fila de cada archivo viene del documento ajustado en él.',
         }}
       >
+        {/* the 5 x 5 matrix first and the 25 bars under it in a drawing of bounded height, where the bars scroll (R3 c03 M1: at 1280 the
+            bars' least height of 49 rem pushed the matrix, 10 bars and the axis below the card's clip) */}
         <LabelledOverTable
-          head={<Labelled label="exploratory" reason={o.transfer.reason} />}
-          chartMin={barMin(cells.length)}
+          head={
+            <>
+              <Labelled label="exploratory" reason={o.transfer.reason} />
+              <div data-block="transfer-matrix">
+              <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
+                <thead>
+                  <tr>
+                    <th className="ct-text">{pick({ en: 'Fitted on, scored on', es: 'Ajustado en, puntuado en' }, lang)}</th>
+                    {years.map((y) => (
+                      <th key={y}>{pick({ en: `${y}-year file`, es: y === 1 ? 'archivo de 1 año' : `archivo de ${y} años` }, lang)}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {years.map((fit) => (
+                    <tr key={fit}>
+                      <td className="ct-text">{pick({ en: `${fit}-year file`, es: fit === 1 ? 'archivo de 1 año' : `archivo de ${fit} años` }, lang)}</td>
+                      {years.map((scored) => {
+                        const c = at(fit, scored);
+                        return c ? (
+                          <td key={scored} className="ct-heat" data-heat={band(c.auc)} data-fitted={c.fitted_on_years} data-scored={c.scored_on_years} data-n={c.n} data-events={c.events} title={pick({ en: `AUC on ${int(c.n, 'en')} firms, ${int(c.events, 'en')} bankruptcies`, es: `AUC sobre ${int(c.n, 'es')} empresas, ${int(c.events, 'es')} quiebras` }, lang)}>
+                            {f3(c.auc, lang)}
+                          </td>
+                        ) : (
+                          <td key={scored} data-na="true">{na}</td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+            </>
+          }
+          chartMin="12rem"
           chart={
             <BarChart
               title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
               height="fill"
               orientation="horizontal"
-              data={cells.map((c) => ({ id: `${c.fitted_on_years}-${c.scored_on_years}`, label: { en: `Fitted on ${c.fitted_on_years}y, scored on ${c.scored_on_years}y`, es: `Ajustado en ${c.fitted_on_years}a, puntuado en ${c.scored_on_years}a` } as BiText, value: c.auc }))}
-              axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 2 }, range: [0, 1] }}
+              data={transferBars(cells)}
+              axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
             />
           }
-        >
-          <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Fitted on, scored on', es: 'Ajustado en, puntuado en' }, lang)}</th>
-                {years.map((y) => (
-                  <th key={y}>{pick({ en: `${y}-year file`, es: y === 1 ? 'archivo de 1 año' : `archivo de ${y} años` }, lang)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {years.map((fit) => (
-                <tr key={fit}>
-                  <td className="ct-text">{pick({ en: `${fit}-year file`, es: fit === 1 ? 'archivo de 1 año' : `archivo de ${fit} años` }, lang)}</td>
-                  {years.map((scored) => {
-                    const c = at(fit, scored);
-                    return c ? (
-                      <td key={scored} className="ct-heat" data-heat={band(c.auc)} data-fitted={c.fitted_on_years} data-scored={c.scored_on_years} data-n={c.n} data-events={c.events} title={pick({ en: `AUC on ${int(c.n, 'en')} firms, ${int(c.events, 'en')} bankruptcies`, es: `AUC sobre ${int(c.n, 'es')} empresas, ${int(c.events, 'es')} quiebras` }, lang)}>
-                        {f3(c.auc, lang)}
-                      </td>
-                    ) : (
-                      <td key={scored} data-na="true">{na}</td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </LabelledOverTable>
+        />
       </PlotCard>
     </ViewsRow>
   );
@@ -177,7 +198,7 @@ export function TermStructureView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: 'Source: the engine provisions API, from_cumulative and the lifetime PD back-test (dossier 04, E.2).', es: 'Fuente: la API de provisiones del motor, from_cumulative y el backtest de la PD de toda la vida (dossier 04, E.2).' }, lang)}</p>
+          <p className="ct-note">{pick({ en: 'Source: the engine provisions API, the cumulative PD read as a term structure and the lifetime PD back-test (dossier 04, E.2).', es: 'Fuente: la API de provisiones del motor, la PD acumulada leída como estructura de plazos y la prueba retrospectiva de la PD de toda la vida (dossier 04, E.2).' }, lang)}</p>
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>

@@ -421,7 +421,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
   const rows: Array<[string, string]> = [
     [
       L(lang, 'Generator', 'Generador'),
-      L(lang, "EM generator of the pooled annual CEREP counts of S&P's EU entity (riskvalidation.transitions.em)", 'Generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (riskvalidation.transitions.em)'),
+      L(lang, "EM generator of the pooled annual CEREP counts of S&P's EU entity (the EM of riskvalidation)", 'Generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (el EM de riskvalidation)'),
     ],
     [L(lang, 'Entity', 'Entidad'), entity],
     [
@@ -838,8 +838,8 @@ export function MarkovSizeView({ sel }: { sel: C04Sel | null }) {
           title={bi((l) => `${L(l, 'Size of the transition tests on a Markov chain, at', 'Tamaño de las pruebas de transición en una cadena de Markov, al')} ${pct0(l, 0.05)}`)}
           note={L(
             lang,
-            `The chain is Markov and stable, so every rejection is a false alarm. Each test's rejection rate in percent (dots) with its ${pct0('en', 0.95)} Wilson interval (small dots), against its size bound (dashed): the level plus 3.09 Monte Carlo SEs at its repetitions, riskvalidation's size_bound. Tests and repetitions: ${numbered('en')}; the order test's two forms run on a seed of their own. The reference matrix is the true one, against the first year's counts. ${truthNote('en', sel)}`,
-            `La cadena es de Markov y estable, así que cada rechazo es una falsa alarma. La tasa de rechazo de cada prueba en porcentaje (puntos) con su intervalo de Wilson al ${pct0('es', 0.95)} (puntos pequeños), contra su cota de tamaño (discontinua): el nivel más 3,09 EE de Monte Carlo a sus repeticiones, el size_bound de riskvalidation. Pruebas y repeticiones: ${numbered('es')}; las dos formas de la prueba de orden corren con una semilla propia. La matriz de referencia es la verdadera, contra los conteos del primer año. ${truthNote('es', sel)}`,
+            `The chain is Markov and stable, so every rejection is a false alarm. Each test's rejection rate in percent (dots) with its ${pct0('en', 0.95)} Wilson interval (small dots), against its size bound (dashed): the level plus 3.09 Monte Carlo SEs at its repetitions, riskvalidation's size bound. Tests and repetitions: ${numbered('en')}; the order test's two forms run on a seed of their own. The reference matrix is the true one, against the first year's counts. ${truthNote('en', sel)}`,
+            `La cadena es de Markov y estable, así que cada rechazo es una falsa alarma. La tasa de rechazo de cada prueba en porcentaje (puntos) con su intervalo de Wilson al ${pct0('es', 0.95)} (puntos pequeños), contra su cota de tamaño (discontinua): el nivel más 3,09 EE de Monte Carlo a sus repeticiones, la cota de tamaño de riskvalidation. Pruebas y repeticiones: ${numbered('es')}; las dos formas de la prueba de orden corren con una semilla propia. La matriz de referencia es la verdadera, contra los conteos del primer año. ${truthNote('es', sel)}`,
           )}
         />
       }

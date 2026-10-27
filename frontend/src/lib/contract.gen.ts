@@ -394,7 +394,8 @@ export interface components {
                 /** @enum {unknown} */
                 rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
                 label: components["schemas"]["common-text"];
-                engine: string;
+                /** @description The engine of the rung, a bilingual text with the library names as published (an English string in a document baked before c02-models 2.0.0). */
+                engine: string | components["schemas"]["common-text"];
                 reference: string;
             }[];
             protocol: components["schemas"]["c02Split"];
@@ -450,14 +451,15 @@ export interface components {
             /** @enum {unknown} */
             name: "perturbation_grid" | "perturbation_tolerance" | "n_seeds" | "n_bootstrap_refits" | "overfit_tolerance" | "weak_spot_multiple" | "shift_score" | "worst_subsample_share" | "decision_cutoff_reject_share";
             value: number | number[] | string;
-            unit: string;
+            /** @description The unit, a bilingual text (an English string in a document baked before c02-outputs 3.0.0). */
+            unit: string | components["schemas"]["common-text"];
             /**
              * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
              * @constant
              */
             label: "convention";
-            /** @description Where the construction comes from and how the value was proposed (decision Q8). */
-            basis: string;
+            /** @description Where the construction comes from and how the value was proposed (decision Q8). A bilingual text (an English string in a document baked before c02-outputs 3.0.0). */
+            basis: string | components["schemas"]["common-text"];
         };
         /** @description The named parameters of the document, each once. */
         c02Params: components["schemas"]["c02Param"][] & unknown;
@@ -2096,14 +2098,16 @@ export interface components {
                 synthetic: true;
                 notice: components["schemas"]["common-text"];
                 seed: number;
-                calibration_source: string;
+                /** @description Where the bank's calibration comes from, a bilingual text from c07-models 3.0.0 (an English string in a document baked before). */
+                calibration_source: string | components["schemas"]["common-text"];
             };
             calibration_targets: {
                 metric: string;
                 unit: string;
                 target: number;
                 achieved: number;
-                source: string;
+                /** @description The publication, locator, URL and file hash of the target, a bilingual text from c07-models 3.0.0 (an English string in a document baked before). */
+                source: string | components["schemas"]["common-text"];
                 as_of: string;
             }[];
             segments: {

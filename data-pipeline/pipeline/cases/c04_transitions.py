@@ -476,6 +476,14 @@ def agency_impact(out: dict[str, Any]) -> dict[str, Any]:
     return items
 
 
+def homog_title(name: str, th: dict[str, Any]) -> dict[str, str]:
+    """The F-HOMOG title: the statistic and its degrees of freedom grouped as the tests table prints them (U16-R3 c05 m7: "12028 on
+    1075" in English and "12.028 con 1075" in Spanish beside the table's 12,028 / 1,075)."""
+    stat, dof = tx.bi_number(th["statistic"], 0), tx.bi_number(th["dof"], 0)
+    return _t(f"{name}: the one-year matrix is not the same every year (chi-square {stat['en']} on {dof['en']} degrees of freedom, {_p(th['p_value'])}); a matrix pooled over the years averages different regimes",
+              f"{name}: la matriz anual no es la misma cada año (chi-cuadrado {stat['es']} con {dof['es']} grados de libertad, {_p(th['p_value'])}); una matriz agrupada en los años promedia regímenes distintos")
+
+
 def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     code, name = v["code"], v["short"]["en"]
     lra, f = out["lra"], []
@@ -519,8 +527,7 @@ def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str
     th = out["homogeneity"]["annual"]
     if th and th.get("p_value") is not None and th["p_value"] < 0.01:
         f.append({"id": "F-HOMOG", "severity": "S2", "status": "open", "evidence": [f"rating.time_homogeneity@{code}@annual"],
-                  "title": _t(f"{name}: the one-year matrix is not the same every year (chi-square {th['statistic']:.0f} on {th['dof']} degrees of freedom, {_p(th['p_value'])}); a matrix pooled over the years averages different regimes",
-                              f"{name}: la matriz anual no es la misma cada año (chi-cuadrado {_num(th['statistic'], 0)[1]} con {th['dof']} grados de libertad, {_p(th['p_value'])}); una matriz agrupada en los años promedia regímenes distintos")})
+                  "title": homog_title(name, th)})
     refs = [r for r in out["homogeneity"]["reference"] if r.get("p_value") is not None]
     rejected = [r for r in refs if r["p_value"] < 0.01]
     if rejected:

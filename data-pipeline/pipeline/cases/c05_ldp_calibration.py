@@ -329,7 +329,7 @@ def _sp_findings(year: int, tests: list[dict[str, Any]], appr: dict[str, dict[st
             out.append({"id": f"F-PROFILE-{aid}", "severity": "S3" if r["light"] == "amber" else "S2", "status": "open",
                         "evidence": [f"pd.default_profile@{aid}"],
                         "title": _t(f"{byid[aid]['title']['en']}: the {year} defaults fall on the grades unlike the calibrated curve implies (p = {r['p_value']:.3f})",
-                                    f"{byid[aid]['title']['es']}: los incumplimientos de {year} se reparten en los grados distinto de lo que implica la curva calibrada (p = {_es(r['p_value'], 3)})")})
+                                    f"{byid[aid]['title']['es']}: los incumplimientos de {year} se reparten en los grados de forma distinta a lo que implica la curva calibrada (p = {_es(r['p_value'], 3)})")})
     worst = papers.SP_GRADES[-1]
     flagged = [aid for aid in CASE1 if any(t["test_id"] == "pd.jeffreys" and t["model_id"] == aid and t["segment"] == worst
                                            and t["light"] == "red" for t in tests)]

@@ -33,7 +33,7 @@ SEGMENT_LABELS = {
 }
 RUNG_TEXT = {
     "L0-km": (("Kaplan-Meier lifetime PD", "PD de vida completa de Kaplan-Meier"), ("L0 Kaplan-Meier", "L0 Kaplan-Meier")),
-    "L1-dth": (("Discrete-time hazard with macro covariates", "Hazard en tiempo discreto con covariables macro"),
+    "L1-dth": (("Discrete-time hazard with macro covariates", "Riesgo en tiempo discreto con covariables macro"),
                ("L1 Hazard", "L1 Riesgo en tiempo discreto")),
     "L2-cox": (("Cox proportional hazards", "Riesgos proporcionales de Cox"), ("L2 Cox", "L2 Cox")),
 }
@@ -241,7 +241,7 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     if lb and lb[0]["light"] in ("amber", "red") and lb[0]["metric"] is not None:
         add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
             f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points over all loans pooled ({lb[0]['light']})",
-            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
+            f"La PD de vida completa del peldaño de riesgo en tiempo discreto se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
     # the figure each title quotes, named by what it measures (R2b c07: "(metric 2)" and "(p 0)" said nothing of the quantity)
     metric_words = {
         "ifrs9.sicr_effectiveness": (lambda x: f"Stage 2 default rate {x} times the Stage 1 one", lambda x: f"tasa de incumplimiento de la Etapa 2 de {x} veces la de la Etapa 1"),
@@ -272,7 +272,7 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
             "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date. "
             "The scenario-sensitivity test it cites reads the non-linearity of the ECL in the scenarios, not the order of the scenarios, so its light does not "
             "carry this finding",
-            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del hazard tienen el signo equivocado en esta fecha. "
+            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del peldaño de riesgo en tiempo discreto tienen el signo equivocado en esta fecha. "
             "La prueba de sensibilidad a los escenarios que cita lee la no linealidad de la PCE en los escenarios, no el orden de los escenarios, así que su "
             "luz no sostiene este hallazgo")
     rec = by.get("ifrs9.reconciliation_identities", [None])[0]
@@ -283,17 +283,17 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
         "El archivo SBA no tiene historia de mora, refinanciación ni lista de vigilancia: solo la prueba cuantitativa de SICR puede pasar un préstamo a Etapa 2, y la Etapa 3 no tiene saldo en una fecha")
     add("F-LGD-PROXY", "S4", "accepted", ["design:sba-chargeoff-lgd-proxy"],
         "LGD is a charge-off severity proxy with an upward bias (the file has no recovery after the charge-off) and the ECL is before the SBA guarantee",
-        "La PDI es un proxy de severidad del castigo con sesgo al alza (el archivo no tiene recuperaciones tras el castigo) y la PCE es antes de la garantía SBA")
+        "La LGD es una aproximación de la severidad del castigo con sesgo al alza (el archivo no tiene recuperaciones tras el castigo) y la PCE es antes de la garantía SBA")
     add("F-EAD-MODEL", "S4", "accepted", ["design:sba-modelled-balance"],
         "The balance is modelled (a level-payment annuity at the EIR; revolving lines at their approval): the file has no balance",
         "El saldo es modelado (una anualidad de cuota nivelada a la TIE; líneas rotativas a su monto aprobado): el archivo no tiene saldo")
     add("F-PREPAYMENT", "S4", "accepted", ["design:prepayment-as-censoring"],
         "Prepayment is treated as censoring: the lifetime PD is the cause-specific default hazard and carries no prepayment attrition",
-        "El prepago se trata como censura: la PD de vida completa es el hazard de incumplimiento por causa y no incluye atrición por prepago")
+        "El prepago se trata como censura: la PD de vida completa es el riesgo de incumplimiento por causa y no incluye atrición por prepago")
     if lifetime_left_out:
         add("F-SHORT-LIFE", "S4", "accepted", ["design:backtest-population"],
             f"{lifetime_left_out:,} accounts with less than 33 months of contractual life left are outside the lifetime backtest",
-            f"{tx.number(lifetime_left_out, 0, lang='es')} cuentas con menos de 33 meses de vida contractual quedan fuera del backtest de vida completa")
+            f"{tx.number(lifetime_left_out, 0, lang='es')} cuentas con menos de 33 meses de vida contractual quedan fuera de la prueba retrospectiva de vida completa")
     return out
 
 

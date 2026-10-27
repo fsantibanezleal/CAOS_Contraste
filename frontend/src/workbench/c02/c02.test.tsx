@@ -11,7 +11,7 @@ import { conform, type ModelsArtifact, type VariantArtifact } from '../../lib/co
 import { cards, escapeHtml, fixtureData, html, readU14Fixture, setLang } from '../c20/testkit';
 import { C02_FIT, C02_OUTPUTS } from './descriptor';
 import { useC02Instrument } from './instrument';
-import { defaultSel, outputsOf, type C02Sel } from './selection';
+import { defaultSel, outputsOf, textIn, type C02Sel } from './selection';
 import { C02ContextView, C02FindingsView, C02VariantsTable, ChallengerReadout, RungReadout } from './C02Common';
 import { CalibrationView, RocCapView, RungsView, StabilityView, rocChart } from './DiscriminationViews';
 import { EclImpactView, TermStructureView, TransferView } from './HorizonViews';
@@ -146,7 +146,7 @@ describe('the C02 instrument', () => {
       expect(markup).toContain(f3(r.stability.psi));
     }
     expect(markup).toContain('convention');
-    expect(markup).toContain(escapeHtml(o.parameters[0].basis));
+    expect(markup).toContain(escapeHtml(textIn(o.parameters[0].basis, 'en')));
     const odd = clone();
     Object.assign(odd.outputs.rungs[0].overfit, { gap: 0.09, flag: true });
     expect(html(<StabilityView sel={withVariant(odd)} />)).toContain('data-flag="true"');

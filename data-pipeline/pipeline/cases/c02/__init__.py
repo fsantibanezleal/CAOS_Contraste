@@ -35,7 +35,7 @@ class C02:
     question = {
         "en": "How fast does discrimination fall from the 1-year to the 5-year horizon, do the learned rungs beat the scorecard by a margin "
               "a paired test supports, and do they stay calibrated?",
-        "es": "¿Qué tan rápido cae la discriminación del horizonte de 1 año al de 5 años, superan los peldaños aprendidos al scorecard "
+        "es": "¿Qué tan rápido cae la discriminación del horizonte de 1 año al de 5 años, superan los peldaños aprendidos a la tarjeta de puntuación "
               "por un margen que respalda una prueba pareada y se mantienen calibrados?"}
     sources = SOURCES
 

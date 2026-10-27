@@ -97,7 +97,7 @@ DEPENDS_REASONS: dict[str, dict[str, str]] = {
 class C03:
     id = CASE_ID
     slug = "sme-pd-vintage"
-    title = _t("SME PD by vintage through 2008", "PD de pymes por cosecha a través de 2008")
+    title = _t("SME PD by vintage through 2008", "PD de pymes por cosecha hasta 2008")
     category_id = "credit-scoring"
     kind = "real"
     question = _t(

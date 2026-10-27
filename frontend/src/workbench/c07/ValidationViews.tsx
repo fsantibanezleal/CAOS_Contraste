@@ -44,7 +44,7 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no calibration.', es: 'No disponible: el artefacto de modelos no trae la calibración.' }, lang)}</p>
       ) : (
         <div className="ct-scroll" data-caos-flow="">
-          <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>{`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source, lang)})`}</p>
+          <p className="ct-note" data-bank={fit.bank.name} style={{ overflowWrap: 'anywhere' }}>{`${pick(fit.bank.notice, lang)} (${pick({ en: 'seed', es: 'semilla' }, lang)} ${fit.bank.seed}; ${calibrationSource(fit.bank.calibration_source as string | BiText, lang)})`}</p>
           <table className="caos-table ct-wrap-head" data-table="calibration-targets">
             <thead>
               <tr>
@@ -62,7 +62,7 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
                   <td>{formatNumber(t.target, lang, { digits: 4 })}</td>
                   <td>{formatNumber(t.achieved, lang, { digits: 4 })}</td>
                   <td className="ct-text ct-wide-only">{lang === 'es' ? UNIT_ES[t.unit] ?? t.unit : t.unit}</td>
-                  <td className="ct-text ct-wide-only">{`${t.source} (${t.as_of})`}</td>
+                  <td className="ct-text ct-wide-only">{`${targetSource(t.source as string | BiText, lang)} (${t.as_of})`}</td>
                 </tr>
               ))}
             </tbody>
@@ -110,13 +110,35 @@ const axisText = (id: string): BiText => {
   return { en: id, es: id };
 };
 
-/** The calibration source the producer writes in English (a citation with the registry's remarks), in the page's language: the citation and the hash as published. */
-export function calibrationSource(source: string, lang: 'en' | 'es'): string {
-  if (lang === 'en') return source;
-  return source
+/** The CMF report's own words as published, with their accents: a document baked before c07-models 3.0.0 wrote them without (the
+ * same words with the accents stripped), and the view restores them. */
+const QUOTED = ['Informe del Desempeño', 'días o más', 'índice de provisiones', 'créditos en cuotas', 'participación'];
+const bare = (w: string): string => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const withAccents = (s: string): string => QUOTED.reduce((acc, w) => acc.split(bare(w)).join(w), s);
+
+/** The calibration source of the bank in the page's language: a bilingual text (c07-models 3.0.0), or the English string of a document
+ * baked before, rendered in Spanish here (the citation and the hash as published). */
+export function calibrationSource(source: string | BiText, lang: 'en' | 'es'): string {
+  if (typeof source !== 'string') return pick(source, lang);
+  if (lang === 'en') return withAccents(source);
+  return withAccents(source)
     .replace('public web publication (the CMF Bancos API key is absent)', 'publicación web pública (falta la clave de la API de CMF Bancos)')
     .replace(/; generator /, '; generador ')
     .replace(/; parameters sha256 /, '; parámetros sha256 ');
+}
+
+/** The source of a calibration target in the page's language: a bilingual text (c07-models 3.0.0), or the English string of a
+ * document baked before, its remarks rendered in Spanish and the report's own words with their accents (R3 c08 B1). */
+export function targetSource(source: string | BiText, lang: 'en' | 'es'): string {
+  if (typeof source !== 'string') return pick(source, lang);
+  const quoted = withAccents(source).replace('Cuadro N 1', 'Cuadro N° 1');
+  if (lang === 'en') return quoted;
+  return quoted
+    .replace(/\(published (\d{4}-\d{2}-\d{2})\)/, '(publicado el $1)')
+    .replace('column Bancos', 'columna Bancos')
+    .replace(' of Comercial + ', ' de Comercial + ')
+    .replace(/; section (\d)/, '; sección $1')
+    .replace('(includes loans to banks)', '(incluye créditos a bancos)');
 }
 
 export function TablesView({ sel }: { sel: C07Sel | null }) {
@@ -132,41 +154,56 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
       lane={REPLAY}
       provenance={prov}
       dataKey={stateKey}
-      note={{ en: 'PI is the probability of default, PDI the loss given default and PE the expected loss, each a share; where a table gives both, PE = PI x PDI to the table\'s rounding. These are statutory parameters transcribed from the CMF compendium, not estimates.', es: 'PI es la probabilidad de incumplimiento, PDI la pérdida dado el incumplimiento y PE la pérdida esperada, cada una una fracción; donde una tabla da ambas, PE = PI x PDI al redondeo de la tabla. Son parámetros estatutarios transcritos del compendio de la CMF, no estimaciones.' }}
+      note={{ en: 'PI is the probability of default, PDI the loss given default and PE the expected loss, each a share; where a table gives both, PE = PI × PDI to the table\'s rounding. These are statutory parameters transcribed from the CMF compendium, not estimates.', es: 'PI es la probabilidad de incumplimiento, PDI la pérdida dado el incumplimiento y PE la pérdida esperada, cada una una fracción; donde una tabla da ambas, PE = PI × PDI al redondeo de la tabla. Son parámetros estatutarios transcritos del compendio de la CMF, no estimaciones.' }}
     >
       {!fit ? (
         <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the models artifact carries no B-1 table.', es: 'No disponible: el artefacto de modelos no trae tablas B-1.' }, lang)}</p>
       ) : (
         <div className="ct-scroll" data-caos-flow="">
-          {fit.b1_tables.map((t) => (
-            <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
-              <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}`}</caption>
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Row', es: 'Fila' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Column', es: 'Columna' }, lang)}</th>
-                  <th>PI</th>
-                  <th>PDI</th>
-                  <th>PE</th>
-                </tr>
-              </thead>
-              <tbody>
-                {t.cells.map((c) => (
-                  <tr key={`${c.row}|${c.column}`} data-cell={`${c.row}|${c.column}`}>
-                    <td className="ct-text">{pick(axisText(c.row), lang)}</td>
-                    <td className="ct-text">{pick(axisText(c.column), lang)}</td>
-                    <td>{pct(c.pi, lang, 4)}</td>
-                    <td>
-                      <MaybeNumber value={c.pdi} reason={pick({ en: 'the table gives no PDI for this cell', es: 'la tabla no da PDI para esta celda' }, lang)} format={(v) => pct(v, lang, 4)} />
-                    </td>
-                    <td>
-                      <MaybeNumber value={c.pe} reason={pick({ en: 'the table gives no PE for this cell', es: 'la tabla no da PE para esta celda' }, lang)} format={(v) => pct(v, lang, 4)} />
-                    </td>
+          {fit.b1_tables.map((t) => {
+            // a reason every cell shares is said once, in the caption, and a column that holds one value in every row is dropped
+            // (R3 c08 m4: "no disponible (la tabla no da PDI ...)" in all 16 rows; m5: "categoría" in all ten)
+            const noPdi = t.cells.every((c) => c.pdi === null);
+            const noPe = t.cells.every((c) => c.pe === null);
+            const oneColumn = new Set(t.cells.map((c) => c.column)).size === 1;
+            const absent: BiText[] = [
+              ...(noPdi ? [{ en: 'the table gives no PDI for its cells', es: 'la tabla no da PDI para sus celdas' }] : []),
+              ...(noPe ? [{ en: 'the table gives no PE for its cells', es: 'la tabla no da PE para sus celdas' }] : []),
+            ];
+            return (
+              <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
+                <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}${absent.length ? `. ${absent.map((a) => pick(a, lang)).join('; ')}.` : ''}`}</caption>
+                <thead>
+                  <tr>
+                    <th className="ct-text">{pick({ en: 'Row', es: 'Fila' }, lang)}</th>
+                    {oneColumn ? null : <th className="ct-text">{pick({ en: 'Column', es: 'Columna' }, lang)}</th>}
+                    <th>PI</th>
+                    {noPdi ? null : <th>PDI</th>}
+                    {noPe ? null : <th>PE</th>}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ))}
+                </thead>
+                <tbody>
+                  {t.cells.map((c) => (
+                    <tr key={`${c.row}|${c.column}`} data-cell={`${c.row}|${c.column}`}>
+                      <td className="ct-text">{pick(axisText(c.row), lang)}</td>
+                      {oneColumn ? null : <td className="ct-text">{pick(axisText(c.column), lang)}</td>}
+                      <td>{pct(c.pi, lang, 4)}</td>
+                      {noPdi ? null : (
+                        <td>
+                          <MaybeNumber value={c.pdi} reason={pick({ en: 'the table gives no PDI for this cell', es: 'la tabla no da PDI para esta celda' }, lang)} format={(v) => pct(v, lang, 4)} />
+                        </td>
+                      )}
+                      {noPe ? null : (
+                        <td>
+                          <MaybeNumber value={c.pe} reason={pick({ en: 'the table gives no PE for this cell', es: 'la tabla no da PE para esta celda' }, lang)} format={(v) => pct(v, lang, 4)} />
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })}
           <table className="caos-table" data-table="b1-default-categories">
             <caption className="ct-note">{pick({ en: 'Individual assessment, default categories', es: 'Evaluación individual, categorías de incumplimiento' }, lang)}</caption>
             <thead>

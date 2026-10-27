@@ -12,8 +12,9 @@ import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
-import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
-import { HORIZON_TEXT, bareModel, challengerFor, fitOf, outputsOf, rungFor, rungName, span, type C02Outputs, type C02Sel } from './selection';
+import { ParamTable, f3, int, pc } from '../c20/U14Common';
+import { HORIZON_TEXT, bareModel, challengerFor, fitOf, outputsOf, noNegZero, paramsIn, rungFor, rungName, span, textIn, type C02Outputs, type C02Sel } from './selection';
+import { REPLAY } from '../model';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
   if (!sel) return <Pending />;
@@ -159,8 +160,9 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
       </PlotCard>
       <PlotCard title={{ en: 'The protocol', es: 'El protocolo' }} {...card} note={{ en: 'The files carry no date and no firm identifier, so every reading is a holdout within a file and none is out of time.', es: 'Los archivos no traen fecha ni identificador de empresa, así que toda lectura es una muestra reservada dentro de un archivo y ninguna es fuera del tiempo.' }}>
         <dl className="ct-defs" data-table="c02-split">
-          <dt>{pick({ en: 'Split', es: 'Partición' }, lang)}</dt>
-          <dd>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)} (${pick({ en: 'training / calibration / holdout', es: 'entrenamiento / calibración / reservada' }, lang)})`}</dd>
+          {/* the slices named in the label, so the value column keeps the three numbers on one line (R3 c03 m10) */}
+          <dt>{pick({ en: 'Split (training / calibration / holdout)', es: 'Partición (entrenamiento / calibración / reservada)' }, lang)}</dt>
+          <dd>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)}`}</dd>
           <dt>{pick({ en: 'Bankruptcies in the holdout', es: 'Quiebras en la muestra reservada' }, lang)}</dt>
           <dd>{int(o.split.holdout_events, lang)}</dd>
           <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Agrupación en tramos, imputación y selección ajustadas solo en el tramo de entrenamiento' }, lang)}</dt>
@@ -174,7 +176,14 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
         </dl>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The five files and the ladder', es: 'Los cinco archivos y la escalera' }} {...card}>
+        <PlotCard
+          title={{ en: 'The five files and the ladder', es: 'Los cinco archivos y la escalera' }}
+          {...card}
+          note={{
+            en: 'The constant PD is fitted and recorded, but it has no risk groups, so the test battery (Hosmer-Lemeshow among it) is undefined for it and no view shows a row for it.',
+            es: 'La PD constante se ajusta y se registra, pero no tiene grupos de riesgo, así que la batería de pruebas (Hosmer-Lemeshow entre ellas) no está definida para ella y ninguna vista muestra una fila suya.',
+          }}
+        >
           <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c02-files">
               <thead>
@@ -207,7 +216,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
                   <tr key={`${l.rung}-${l.label.en}`} data-ladder={l.rung}>
                     <td className="ct-text">{l.rung}</td>
                     <td className="ct-text">{pick(l.label, lang)}</td>
-                    <td className="ct-text ct-wide-only">{l.engine}</td>
+                    <td className="ct-text ct-wide-only">{textIn(l.engine as unknown as string | { en: string; es: string }, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -217,7 +226,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
         <div className="ct-scroll" data-caos-flow="">
-          <ParamTable params={o.parameters as unknown as NamedParam[]} />
+          <ParamTable params={paramsIn(o.parameters, lang)} />
         </div>
       </PlotCard>
     </div>
@@ -226,28 +235,31 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
 
 // --- the read-outs of the rail ---------------------------------------------------------------------------------------
 
-/** The live read-out of the Rung section: the discrimination and the overfit gap of the rung in focus. */
+/** The read-out of the Rung section: the discrimination and the overfit gap of the rung in focus, looked up in the bake (a replay,
+ * not a live computation; R3 c03 m9). */
 export function RungReadout({ sel }: { sel: C02Sel | null }) {
   const r = rungFor(sel);
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={sel && r ? rungName(sel, r.model_id) : { en: 'The rung', es: 'El peldaño' }}
       items={[
         { label: { en: 'AUC', es: 'AUC' }, value: r?.discrimination.auc ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Area under the ROC curve on the holdout of the file.', es: 'Área bajo la curva ROC en la muestra reservada del archivo.' } },
         { label: { en: 'Gini', es: 'Gini' }, value: r?.discrimination.gini ?? null, unitless: true, format: { decimals: 3 }, hint: { en: '2 AUC - 1.', es: '2 AUC - 1.' } },
         { label: { en: 'KS', es: 'KS' }, value: r?.discrimination.ks ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The largest gap between the score distributions of the bankrupt and the others.', es: 'La mayor brecha entre las distribuciones del puntaje de las empresas en quiebra y las demás.' } },
-        { label: { en: 'Overfit gap', es: 'Brecha de sobreajuste' }, value: r?.overfit.gap ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Training AUC minus holdout AUC; the tolerance is a convention.', es: 'AUC de entrenamiento menos AUC reservada; la tolerancia es una convención.' } },
+        { label: { en: 'Overfit gap', es: 'Brecha de sobreajuste' }, value: r ? noNegZero(r.overfit.gap) : null, unitless: true, format: { decimals: 3 }, hint: { en: 'Training AUC minus holdout AUC; the tolerance is a convention.', es: 'AUC de entrenamiento menos AUC reservada; la tolerancia es una convención.' } },
       ]}
     />
   );
 }
 
-/** The live read-out of the Challenger section: the AUC difference with the champion and what its interval and p-value say. */
+/** The read-out of the Challenger section: the AUC difference with the champion and what its interval and p-value say (a replay). */
 export function ChallengerReadout({ sel }: { sel: C02Sel | null }) {
   const c = challengerFor(sel);
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={sel && c ? { en: `${rungName(sel, c.challenger).en} against ${rungName(sel, c.champion).en}`, es: `${rungName(sel, c.challenger).es} contra ${rungName(sel, c.champion).es}` } : { en: 'The challenger', es: 'El retador' }}
       items={[

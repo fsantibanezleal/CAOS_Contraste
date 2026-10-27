@@ -65,8 +65,10 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
   const value = (r: (typeof segs)[number], id: RegimeId) => (id === 'cmf-b1' ? r.cmf_b1_provision : id === 'ifrs9' ? r.ifrs9_provision : r.bde_annex9_provision);
   const ids: RegimeId[] = ['cmf-b1', 'ifrs9', 'bde-annex9'];
   const nameOf = (id: RegimeId) => regimeName(id, o.regimes.find((r) => r.regime === id)?.label ?? { en: id, es: id });
+  // 18 bars in six groups need about 28 rem: on a phone the card is as tall as what it holds, and the stage kept 160 px, so the
+  // drawing showed 4 of 6 segments and no axis (R3 c08 M2)
   return (
-    <div className="ct-map">
+    <div className="ct-map" data-caos-flow="" style={{ minHeight: 'max(28rem, calc(50rem - 25vw))' }}>
       <BarChart
         title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
         height="fill"
@@ -84,7 +86,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
         axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 3 } }}
       />
       <p className="ct-note">
-        {pick({ en: 'Point at a bar, or use the arrow keys, to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Apunte a una barra, o use las flechas, para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anejo 9 del BdE.' }, lang)}
+        {pick({ en: 'Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anejo 9 del BdE.' }, lang)}
       </p>
     </div>
   );
@@ -175,54 +177,64 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
   const c = o.comparison;
   const cur = c.currency;
   const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
+  // the drawing and the gap table a card each (R3 c08 M1: under a 28 rem drawing in one card, the table kept half a row at 1280 and
+  // the drawing lost its last bar and its value axis)
   return (
-    <ViewsRow>
-    <PlotCard
-      fill
-      title={{ en: 'Provision by segment and the gaps against B-1', es: 'Provisión por segmento y las brechas contra B-1' }}
-      lane={REPLAY}
-      provenance={prov}
-      dataKey={stateKey}
-      note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
-    >
-      {/* 18 bars in six groups: about 1.5 rem a bar (R2b c08 M1: the default 15 rem showed 3 of 6 segments) */}
-      <ChartOverTable chartMin="28rem" chart={<GroupedBars o={o} sel={sel} />}>
-        <table className="caos-table ct-wrap-head" data-table="segments">
-          <thead>
-            <tr>
-              <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
-              <th>{`CMF B-1 (${cur})`}</th>
-              <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
-              <th>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</th>
-              <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
-              <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
+    <ViewsRow shares={[1, 1]}>
+      <PlotCard
+        fill
+        title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+      >
+        <GroupedBars o={o} sel={sel} />
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'The gaps against B-1 by segment', es: 'Las brechas contra B-1 por segmento' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
+      <table className="caos-table ct-wrap-head" data-table="segments">
+        <thead>
+          <tr>
+            <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
+            <th>{`CMF B-1 (${cur})`}</th>
+            <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
+            <th>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</th>
+            <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
+            <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.rows.map((r) => (
+            <tr key={r.segment_id} data-segment={r.segment_id} className={sel.segment === r.segment_id ? 'ct-current' : undefined}>
+              <td className="ct-text">{label(r.segment_id)}</td>
+              <td>{money(r.cmf_b1_provision, lang, cur)}</td>
+              <td>{money(r.ifrs9_provision, lang, cur)}</td>
+              <td>{money(r.bde_annex9_provision, lang, cur)}</td>
+              <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
+              <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {c.rows.map((r) => (
-              <tr key={r.segment_id} data-segment={r.segment_id} className={sel.segment === r.segment_id ? 'ct-current' : undefined}>
-                <td className="ct-text">{label(r.segment_id)}</td>
-                <td>{money(r.cmf_b1_provision, lang, cur)}</td>
-                <td>{money(r.ifrs9_provision, lang, cur)}</td>
-                <td>{money(r.bde_annex9_provision, lang, cur)}</td>
-                <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
-                <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr data-row="unallocated">
-              <td className="ct-text">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</td>
-              <td>{money(c.unallocated.cmf_b1_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.ifrs9_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.bde_annex9_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
-              <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </ChartOverTable>
-    </PlotCard>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr data-row="unallocated">
+            <td className="ct-text">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</td>
+            <td>{money(c.unallocated.cmf_b1_provision, lang, cur)}</td>
+            <td>{money(c.unallocated.ifrs9_provision, lang, cur)}</td>
+            <td>{money(c.unallocated.bde_annex9_provision, lang, cur)}</td>
+            <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
+            <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
+          </tr>
+        </tfoot>
+      </table>
+        </div>
+      </PlotCard>
     </ViewsRow>
   );
 }
@@ -274,7 +286,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
             axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 4 }, range: [lo0 - pad, hi0 + pad] }}
           />
           <p className="ct-note">
-            {pick({ en: `Millions of ${cur}; the axis spans the running total of the bridge, and the two totals are the dots. Point at a bar, or use the arrow keys, to read it.`, es: `Millones de ${cur}; el eje abarca el total acumulado del puente, y los dos totales son los puntos. Apunte a una barra, o use las flechas, para leerla.` }, lang)}
+            {pick({ en: `Millions of ${cur}; the axis spans the running total of the bridge, and the two totals are the dots.`, es: `Millones de ${cur}; el eje abarca el total acumulado del puente, y los dos totales son los puntos.` }, lang)}
           </p>
         </div>
       </PlotCard>

@@ -1,11 +1,5 @@
 # Findings of check_spanish.py that are right as written, or owned by another unit: "path :: word  # reason" (U16-P1a).
 # An entry that matches no finding fails the guard, so this list cannot outlive its reasons.
-data-pipeline/pipeline/cases/c07/sources.py :: Desempeno  # English-text title of a CMF publication, quoted as the file names it
-data-pipeline/pipeline/cases/c07/sources.py :: dias  # English-text locator quoting the CMF source line (not a Spanish text)
-data-pipeline/pipeline/cases/c07/sources.py :: mas  # same locator
-data-pipeline/pipeline/cases/c07/sources.py :: creditos  # same locator
-data-pipeline/pipeline/cases/c07/sources.py :: participacion  # same locator
-data-pipeline/pipeline/cases/c07/documents.py :: Desempeno  # English calibration_source text naming the CMF publication
 data-pipeline/pipeline/cases/c15/targets.py :: Depositos  # English locator quoting the CMF table row
 data-pipeline/pipeline/io/bcch.py :: Codigo  # the BDE answer key "Codigo" and "Descripcion" as the API spells them
 data-pipeline/pipeline/io/contract.py :: decision  # the dataset field named decision, written in the Spanish notes as a code token
@@ -15,32 +9,11 @@ data/derived/contract/scored_sample.json :: decision  # the dataset field named 
 # outside the unit's write scope. Each is reported to its owner in wip/contraste/u16-f10a-shared-c01-2026-10-27.md (section D-guard);
 # the owner's fix makes the entry unused, and an unused entry fails the guard, so each line is removed with its fix.
 data-pipeline/pipeline/cases/c01_retail_pd.py :: scoring  # the category label "Scoring de crédito", kept equal to registry.py and C02/C03 until the integrator renames the category in one change
-data-pipeline/pipeline/cases/c02/__init__.py :: scorecard  # owned by U16-F10b: line 38; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c02/bake.py :: scoring  # owned by U16-F10b: line 261; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c02/conventions.py :: scorecard  # owned by U16-F10b: line 118; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c02/findings.py :: scorecard  # owned by U16-F10b: line 70; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c03/_case.py :: scoring  # owned by U16-F10b: line 187; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c04_families.py :: momentum  # owned by U16-F10b: line 126; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c04_transitions.py :: momentum  # owned by U16-F10b: line 127, 59, 60, 626, 627, 709 ...; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c06/build.py :: proxy  # owned by U16-F10b: line 286; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c06/build.py :: hazard  # owned by U16-F10b: line 292, 36, 275, 244; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c06/build.py :: backtest  # owned by U16-F10b: line 296; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c07/bake.py :: shock  # owned by U16-F10b: line 120; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c07/scenarios.py :: shock  # owned by U16-F10b: line 35, 48, 51; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c08/_case.py :: proxy  # owned by U16-F10c: line 113; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c08/build.py :: proxy  # owned by U16-F10c: line 51, 60, 61, 73, 109; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c08/downturn.py :: proxy  # owned by U16-F10c: line 108; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c08/variant.py :: proxy  # owned by U16-F10c: line 203, 223; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c10/documents.py :: backtest  # owned by U16-F10c: line 339; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c11/_case.py :: backtesting  # owned by U16-F10c: line 26; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c11/_case.py :: backtests  # owned by U16-F10c: line 28; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c11/documents.py :: back-tests  # owned by U16-F10c: line 405; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c12/bake.py :: proxy  # owned by U16-F10d: line 324; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c12/models.py :: proxy  # owned by U16-F10d: line 56, 66, 70; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c12/variant.py :: proxy  # owned by U16-F10d: line 208; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c12/variant.py :: hazard  # owned by U16-F10d: line 305; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c13/__init__.py :: backtesting  # owned by U16-F10c: line 25, 29; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c16/balance.py :: roll-off  # owned by U16-F10d: line 180; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c16/models.py :: hazard  # owned by U16-F10d: line 79; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c18/capital.py :: proxy  # owned by U16-F10e: line 50; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c20/conv.py :: scoring  # owned by U16-F10e: line 63; to translate under the 2026-10-27 ruling
@@ -56,110 +29,15 @@ data-pipeline/pipeline/governance/bake.py :: pipeline  # owned by the integrator
 data-pipeline/pipeline/io/contract.py :: backtests  # owned by the integrator (a shared pipeline module): line 845; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/registry.py :: scoring  # owned by the integrator (a shared pipeline module): line 16; to translate under the 2026-10-27 ruling
 frontend/src/api/artifacts.ts :: pipeline  # owned by the integrator: line 24; to translate under the 2026-10-27 ruling
-frontend/src/architecture/index.ts :: pipeline  # owned by U16-F10p: line 33, 63; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C01.tsx :: scorecard  # owned by U16-F10p: line 13; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C01.tsx :: boosting  # owned by U16-F10p: line 13, 35; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C01.tsx :: odds  # owned by U16-F10p: line 35; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C04.tsx :: momentum  # owned by U16-F10b: line 91; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C04Results.tsx :: momentum  # owned by U16-F10b: line 295; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C04Results.tsx :: pipeline  # owned by U16-F10b: line 419; to translate under the 2026-10-27 ruling
-frontend/src/content/cases/C05.tsx :: backtest  # owned by U16-F10b: line 39, 67; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/base.ts :: scoring  # owned by U16-F10p: line 18; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/base.ts :: backtesting  # owned by U16-F10p: line 42, 44; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/base.ts :: shocks  # owned by U16-F10p: line 45; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/U10.ts :: shocks  # owned by U16-F10p: line 16; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/U6.ts :: proxy  # owned by U16-F10p: line 24; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/U8.ts :: backtesting  # owned by U16-F10p: line 17, 28; to translate under the 2026-10-27 ruling
-frontend/src/content/coverage/U9.ts :: proxy  # owned by U16-F10p: line 19; to translate under the 2026-10-27 ruling
-frontend/src/pages/Batch3Sections.tsx :: shocks  # owned by U16-F10p: line 323, 327, 329, 527; to translate under the 2026-10-27 ruling
-frontend/src/pages/Batch3Sections.tsx :: shock  # owned by U16-F10p: line 326; to translate under the 2026-10-27 ruling
-frontend/src/pages/Benchmark.tsx :: scorecard  # owned by U16-F10p: line 49, 51, 178, 185, 208; to translate under the 2026-10-27 ruling
-frontend/src/pages/Benchmark.tsx :: shocks  # owned by U16-F10p: line 231; to translate under the 2026-10-27 ruling
 frontend/src/pages/C04Sections.tsx :: bootstrap  # owned by U16-F10p: line 612, 651; to translate under the 2026-10-27 ruling
-frontend/src/pages/DocFigures.tsx :: boosting  # owned by U16-F10p: line 159, 176; to translate under the 2026-10-27 ruling
-frontend/src/pages/DocFigures.tsx :: log-odds  # owned by U16-F10p: line 163; to translate under the 2026-10-27 ruling
-frontend/src/pages/DocFigures.tsx :: scorecard  # owned by U16-F10p: line 174, 182; to translate under the 2026-10-27 ruling
-frontend/src/pages/Experiments.tsx :: scorecard  # owned by U16-F10p: line 51, 53, 54, 74, 80; to translate under the 2026-10-27 ruling
-frontend/src/pages/Experiments.tsx :: scoring  # owned by U16-F10p: line 221, 222; to translate under the 2026-10-27 ruling
-frontend/src/pages/Implementation.tsx :: pipeline  # owned by U16-F10p: line 18, 20, 57, 122, 126, 135 ...; to translate under the 2026-10-27 ruling
-frontend/src/pages/Implementation.tsx :: boosting  # owned by U16-F10p: line 135, 156; to translate under the 2026-10-27 ruling
-frontend/src/pages/Implementation.tsx :: kernel  # owned by U16-F10p: line 135, 156; to translate under the 2026-10-27 ruling
-frontend/src/pages/Implementation.tsx :: scorecard  # owned by U16-F10p: line 157; to translate under the 2026-10-27 ruling
-frontend/src/pages/Implementation.tsx :: commit  # owned by U16-F10p: line 209; to translate under the 2026-10-27 ruling
-frontend/src/pages/Introduction.tsx :: pipeline  # owned by U16-F10p: line 36, 113, 115, 133, 170; to translate under the 2026-10-27 ruling
-frontend/src/pages/Introduction.tsx :: scorecard  # owned by U16-F10p: line 121, 142; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ccr.tsx :: proxy  # owned by U16-F10p: line 78, 294; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ccr.tsx :: backtest  # owned by U16-F10p: line 139, 300, 331, 298, 309; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/market.tsx :: backtests  # owned by U16-F10p: line 251, 258, 147; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/market.tsx :: backtest  # owned by U16-F10p: line 174, 201; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/market.tsx :: bootstrap  # owned by U16-F10p: line 201; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ml-validation.tsx :: log-odds  # owned by U16-F10p: line 64, 73; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ml-validation.tsx :: bootstrap  # owned by U16-F10p: line 112, 127; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ml-validation.tsx :: backtesting  # owned by U16-F10p: line 119; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/ml-validation.tsx :: boosting  # owned by U16-F10p: line 142; to translate under the 2026-10-27 ruling
-frontend/src/pages/methodology/portfolio-capital.tsx :: kernel  # owned by U16-F10p: line 168; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: scorecard  # owned by U16-F10p: line 64; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: odds  # owned by U16-F10p: line 73, 72; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: boosting  # owned by U16-F10p: line 127, 320, 111; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: log-odds  # owned by U16-F10p: line 130; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: scorecards  # owned by U16-F10p: line 318; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: bootstrap  # owned by U16-F10p: line 130; to translate under the 2026-10-27 ruling
-frontend/src/pages/Methodology.tsx :: backtest  # owned by U16-F10p: line 189; to translate under the 2026-10-27 ruling
-frontend/src/pages/MethodologyExtras.tsx :: scorecard  # owned by U16-F10p: line 47, 48, 64, 96, 107; to translate under the 2026-10-27 ruling
-frontend/src/pages/MethodologyExtras.tsx :: boosting  # owned by U16-F10p: line 64, 68, 75, 61; to translate under the 2026-10-27 ruling
-frontend/src/pages/MethodologyExtras.tsx :: log-odds  # owned by U16-F10p: line 75; to translate under the 2026-10-27 ruling
-frontend/src/pages/MethodologyTransitions.tsx :: momentum  # owned by U16-F10p: line 124, 131, 136; to translate under the 2026-10-27 ruling
-frontend/src/pages/U6Sections.tsx :: proxy  # owned by U16-F10p: line 147; to translate under the 2026-10-27 ruling
-frontend/src/pages/Wave2Sections.tsx :: shocks  # owned by U16-F10p: line 276, 286; to translate under the 2026-10-27 ruling
-frontend/src/pages/Wave2Sections.tsx :: shock  # owned by U16-F10p: line 276; to translate under the 2026-10-27 ruling
-frontend/src/pages/Wave2Sections.tsx :: backtest  # owned by U16-F10p: line 421; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c02/DiscriminationViews.tsx :: bootstrap  # owned by U16-F10b: line 116, 139; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c02/HorizonViews.tsx :: backtest  # owned by U16-F10b: line 180; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c03/selection.ts :: scorecard  # owned by U16-F10b: line 43; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c03/selection.ts :: boosting  # owned by U16-F10b: line 46, 47; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c04/C04Common.tsx :: momentum  # owned by U16-F10b: line 600, 1288; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c04/C04Common.tsx :: pipeline  # owned by U16-F10b: line 1103; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c04/FamilyViews.tsx :: momentum  # owned by U16-F10b: line 114, 1046, 1189, 1268, 1271, 1312 ...; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c04/FamilyViews.tsx :: bootstrap  # owned by U16-F10b: line 129, 988, 1008; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c05/SpViews.tsx :: backtest  # owned by U16-F10b: line 487; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c06/instrument.tsx :: backtest  # owned by U16-F10b: line 183; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c06/selection.ts :: backtest  # owned by U16-F10b: line 16, 19, 20; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c06/ValidationViews.tsx :: backtest  # owned by U16-F10b: line 160, 176; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c07/RegimeViews.tsx :: shock  # owned by U16-F10b: line 622, 628; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c08/C08Common.tsx :: proxy  # owned by U16-F10c: line 34, 39, 43; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c08/instrument.tsx :: proxy  # owned by U16-F10c: line 123; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c08/selection.ts :: boosting  # owned by U16-F10c: line 41; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c08/selection.ts :: proxy  # owned by U16-F10c: line 114; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c08/SeverityViews.tsx :: proxy  # owned by U16-F10c: line 135, 139, 145, 173; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c09/EadViews.tsx :: backtest  # owned by U16-F10c: line 27, 29, 41; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c09/instrument.tsx :: backtest  # owned by U16-F10c: line 125; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c10/C10Common.tsx :: backtest  # owned by U16-F10c: line 24; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c10/FitViews.tsx :: bootstrap  # owned by U16-F10c: line 130; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c10/instrument.tsx :: backtest  # owned by U16-F10c: line 198; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c10/selection.ts :: bootstrap  # owned by U16-F10c: line 70, 88; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c10/selection.ts :: kernel  # owned by U16-F10c: line 176; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/BacktestViews.tsx :: backtests  # owned by U16-F10c: line 31; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/BacktestViews.tsx :: backtest  # owned by U16-F10c: line 42, 89, 104; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/C11Common.tsx :: backtest  # owned by U16-F10c: line 307; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/instrument.tsx :: backtest  # owned by U16-F10c: line 82, 85; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/instrument.tsx :: backtests  # owned by U16-F10c: line 107, 123; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/MarketCommon.tsx :: backtest  # owned by U16-F10c: line 78; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c11/selection.ts :: backtest  # owned by U16-F10c: line 72; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/BacktestViews.tsx :: backtest  # owned by U16-F10d: line 32, 45, 49, 53, 78; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/BacktestViews.tsx :: proxy  # owned by U16-F10d: line 190; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/C12Common.tsx :: backtest  # owned by U16-F10d: line 92, 93, 284, 285, 455, 482 ...; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/C12Common.tsx :: backtests  # owned by U16-F10d: line 286, 309; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/C12Common.tsx :: proxy  # owned by U16-F10d: line 357, 361, 469; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/CreditViews.tsx :: proxy  # owned by U16-F10d: line 44, 70; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/ExposureViews.tsx :: proxy  # owned by U16-F10d: line 119, 152, 164, 189, 193; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/ExposureViews.tsx :: backtest  # owned by U16-F10d: line 322; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/instrument.tsx :: backtest  # owned by U16-F10d: line 263, 271; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c12/RegulatoryViews.tsx :: shock  # owned by U16-F10d: line 360; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c12/selection.ts :: proxy  # owned by U16-F10d: line 68; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c13/DeskViews.tsx :: backtest  # owned by U16-F10c: line 25, 26, 46; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c13/instrument.tsx :: backtest  # owned by U16-F10c: line 55, 98; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c13/PlaViews.tsx :: backtest  # owned by U16-F10c: line 233, 273; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c16/C16Common.tsx :: backtest  # owned by U16-F10d: line 80; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c18/C18Common.tsx :: proxy  # owned by U16-F10e: line 188, 368; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c18/CapitalViews.tsx :: proxy  # owned by U16-F10e: line 380, 388; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c20/C20Common.tsx :: commit  # owned by U16-F10e: line 269; to translate under the 2026-10-27 ruling
@@ -169,3 +47,4 @@ frontend/src/workbench/c21/EstimateViews.tsx :: odds  # owned by U16-F10e: line 
 frontend/src/workbench/c21/EstimateViews.tsx :: log-odds  # owned by U16-F10e: line 61, 165; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c21/FindingsEvidence.tsx :: odds  # owned by U16-F10e: line 51, 52, 100; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c21/RateViews.tsx :: odds  # owned by U16-F10e: line 212; to translate under the 2026-10-27 ruling
+data-pipeline/pipeline/governance/reader.py :: pipeline  # the rule that replaces the English word with "canalización" in an engine sentence (R3 rulings 2026-10-27)
