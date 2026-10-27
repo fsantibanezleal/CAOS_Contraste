@@ -26,7 +26,7 @@ def test_a_miss_states_the_miss_rate_then_the_catch_rate() -> None:
     out["detection"]["share_amber_or_red"] = 0.0
     out["detection"]["share_red"] = 0.0
     t = _pla(out)["title"]
-    assert "misses" in t["en"] and "in 100.0% of" in t["en"] and "amber or red in 0.0%" in t["en"]
+    assert "misses" in t["en"] and "in 100.0\u00a0% of" in t["en"] and "amber or red in 0.0\u00a0%" in t["en"]
     assert "no detecta" in t["es"] and "en 100,0" in t["es"]
 
 
@@ -34,4 +34,4 @@ def test_a_catch_states_the_catch_rate() -> None:
     out = _outputs()
     out["detection"]["share_amber_or_red"] = 0.97
     t = _pla(out)["title"]
-    assert t["en"].startswith("The PLA catches") and "in 97.0% of" in t["en"]
+    assert t["en"].startswith("The PLA catches") and "in 97.0\u00a0% of" in t["en"]
