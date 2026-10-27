@@ -38,6 +38,10 @@ describe('U16-F7 C13 (b06 minors)', () => {
     expect(parameterText({ name: 'lag_days', value: 1, unit: 'days' }, 'en', 3)).toBe('lag 1 day');
     expect(parameterText({ name: 'lag_days', value: 1, unit: 'days' }, 'es', 3)).toBe('rezago 1 día');
     expect(parameterText({ name: 'lag_days', value: 20, unit: 'days' }, 'en', 3)).toBe('lag 20 days');
+    // R5 c18 m9: a correlation's value does not repeat its name's word
+    expect(parameterText({ name: 'factor_correlation', value: 0.6, unit: 'correlation' }, 'en', 3)).toBe('factor correlation 0.6');
+    expect(parameterText({ name: 'factor_correlation', value: 0.6, unit: 'correlation' }, 'es', 3)).toBe('correlación entre factores 0,6');
+    expect(parameterText({ name: 'correlation_error', value: 0.3, unit: 'correlation-points' }, 'en', 3)).toBe('correlation error 0.3 points');
     const ctx = view(<C13ContextView sel={sel()} />);
     expect(ctx).toMatch(/seed 14000 plus the index/);
     expect(ctx).not.toMatch(/14,000 plus/);
