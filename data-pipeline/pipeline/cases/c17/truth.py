@@ -57,7 +57,8 @@ def _compute(v: Variant, mc_years: int, seed: int) -> Truth:
     srt = np.sort(sample.losses)
     sf_mc = 1.0 - np.searchsorted(srt, axis, side="right") / srt.size
     del srt, sample
-    sf_fft = ga.sf_on_grid(h_fft, step, axis)
+    # past the FFT grid the engine computes no probability: none, never the last value held flat (R3 c18 B2, as Panjer since U16-F4)
+    sf_fft = ga.sf_within_grid(h_fft, step, axis)
     sf_pan = ga.sf_within_grid(h_pan, step_p, axis)
     q_sla = sla.sla_var(lam, "gpd", par, P.LEVEL)
     finite_mean = np.isfinite(dist.severity_moment("gpd", par, 1))
@@ -79,7 +80,7 @@ def _compute(v: Variant, mc_years: int, seed: int) -> Truth:
         "currency": P.CURRENCY, "grid_eur": [float(x) for x in axis],
         "monte_carlo": {"n_years": int(mc_years), "seed": int(seed), "exceedance": [float(x) for x in sf_mc]},
         "panjer": {"step_eur": float(step_p), "exceedance": sf_pan},
-        "fft": {"n_points": TRUTH_POINTS, "padding_factor": 4, "tilt": 0.0, "exceedance": [float(x) for x in sf_fft]},
+        "fft": {"n_points": TRUTH_POINTS, "padding_factor": 4, "tilt": 0.0, "exceedance": [None if x is None else float(x) for x in sf_fft]},
         "quantile_999_eur": {"monte_carlo": float(q_mc), "panjer": float(q_pan), "fft": float(q_fft), "sla": float(q_sla)},
     }
     return Truth(float(q_fft), "fft", float(step), truth_block, exceedance, mean)

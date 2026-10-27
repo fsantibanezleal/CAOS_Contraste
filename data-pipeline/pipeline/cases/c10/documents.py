@@ -378,10 +378,12 @@ GRID_NOTICE = T(
     "Datos sintéticos: fracciones anuales de incumplimiento de una cartera homogénea grande simuladas con una correlación de activos "
     "conocida, no observaciones. Cada estimación se muestra junto a la correlación que debe recuperar.")
 SIZE_POWER_DEFINITION = T(
-    "Size is the rate at which H0: rho = null_rho is rejected when the known correlation equals null_rho; power is the same rate at any "
-    "other known correlation. H0 is rejected when null_rho lies outside the 95% interval of the estimator.",
-    "El tamaño es la tasa de rechazo de H0: rho = null_rho cuando la correlación conocida es null_rho; la potencia es la misma tasa con "
-    "otra correlación conocida. H0 se rechaza cuando null_rho queda fuera del intervalo al 95 % del estimador.")
+    "Size is the rate at which H0 (the asset correlation equals the correlation under the null) is rejected when the known correlation "
+    "is the correlation under the null; power is the same rate at any other known correlation. H0 is rejected when the correlation "
+    "under the null lies outside the 95% interval of the estimator.",
+    "El tamaño es la tasa de rechazo de H0 (la correlación de activos es la correlación bajo la nula) cuando la correlación conocida es "
+    "la correlación bajo la nula; la potencia es la misma tasa con otra correlación conocida. H0 se rechaza cuando la correlación bajo "
+    "la nula queda fuera del intervalo al 95 % del estimador.")
 
 
 def grid_document(years: int, cells_and_rows: list[tuple[dict[str, Any], list[dict[str, Any]]]], n_replications: int,
