@@ -338,7 +338,7 @@ _ES: dict[str, str] = {
     "the sample has sector variance 0.6, the recursion's pmf 0.5 (loss variance 172 units against 150)":
         "la muestra tiene varianza sectorial 0,6, la pmf de la recursión 0,5 (varianza de pérdida 172 unidades contra 150)",
     "the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)":
-        "el umbral de decisión del grupo protegido es 0,3 más bajo en log-odds (una brecha de tasa de selección sobre 8 puntos)",
+        "el umbral de decisión del grupo protegido es 0,3 más bajo en el logaritmo de la razón de probabilidades (una brecha de tasa de selección sobre 8 puntos)",
     "the VaR is exceeded 1.3 times too often (a hit rate of 6.5%, not 5%)":
         "el VaR se excede 1,3 veces más de lo debido (una tasa de excedencia de 6,5%, no 5%)",
     "a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)":
@@ -356,7 +356,7 @@ _ES: dict[str, str] = {
     "the tail PITs (below 0.10) cluster: one follows another with probability 20%, not 10%":
         "los PIT de cola (bajo 0,10) se agrupan: uno sigue a otro con probabilidad 20%, no 10%",
     "a quarter of the rows shifted 3 sd on feature 0": "un cuarto de las filas desplazado 3 desviaciones estándar en la variable 0",
-    "log-odds drift 0.5 between calibration and test": "deriva de 0,5 en log-odds entre calibración y prueba",
+    "log-odds drift 0.5 between calibration and test": "deriva de 0,5 en el logaritmo de la razón de probabilidades entre calibración y prueba",
 }
 
 _NULL_FALLBACK = _t("the test's null holds at its boundary", "la nula de la prueba se cumple en su frontera")
