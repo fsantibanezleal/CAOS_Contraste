@@ -13,5 +13,5 @@
 - Fix round 4 integration: the C17 FFT exceedance is null past the last node of its grid, as the Panjer one since 2.0.0
   (`c17-outputs` 3.0.0, `api` 26.0.0, the descriptor follows); the C15 calibration source keeps its one English string while the
   C07 locators it reuses became bilingual; the C12 W² notes are read with the horizon in words. Every case is re-baked on the
-  fix round 4 producers; `classify_rebake` finds text, the widened bilingual fields and the record hashes that cover them, and
-  no changed number.
+  fix round 4 producers; `classify_rebake` finds text, the widened bilingual fields, the record hashes that cover them, the C20
+  evidence ids with their segment and the C17 FFT points past the grid now null; no other number changed.
