@@ -130,6 +130,6 @@ def build(frame: Frame, rungs: dict[str, Any], seed: int) -> dict[str, Any]:
                                                  "Decisiones que cambian en el punto de corte indicado cuando la variable filtrada no está disponible al decidir")}}
     return {"outputs": outputs, "tests": [planted_row, control_row, *bat_rows], "impact": impact, "models": [mid_leaky, mid_clean],
             "leaky": leaky, "limits": [("holdout-not-out-of-time", t("Taiwan has no out-of-time sample: the locked holdout stands in for it in the resemblance screen",
-                                                                  "Taiwan no tiene una muestra fuera de tiempo: la muestra reservada la reemplaza en la prueba de semejanza")),
+                                                                  "Taiwán no tiene una muestra fuera de tiempo: la muestra reservada la reemplaza en la prueba de semejanza")),
                                       ("planted-not-found", t("The leak is planted by construction, so the screen is shown catching a known leak; it does not show that a real extract has none",
                                                              "La fuga se planta por construcción, de modo que la prueba se muestra detectando una fuga conocida; no muestra que una extracción real no tenga ninguna"))]}

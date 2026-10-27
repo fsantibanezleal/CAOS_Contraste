@@ -145,3 +145,30 @@ export function defaultSel(data: CaseData | null): C20Sel | null {
     attribute: first?.attribute ?? 'sex',
   };
 }
+
+/** The locked evaluation set of the synthetic shift: its dataset id and its rows, from the two fields of the document, or from the one string
+ * an older document committed ("uci-polish-3year-holdout (3,151 rows, locked)"; U16-R3 c20 B3). */
+export function evaluationSet(s: { evaluation_set: string; evaluation_rows?: number | null }): { id: string; rows: number | null } {
+  const m = /^(\S+)(?: \(([\d,]+) rows, locked\))?$/.exec(s.evaluation_set);
+  const id = m ? m[1] : s.evaluation_set;
+  const rows = typeof s.evaluation_rows === 'number' ? s.evaluation_rows : m && m[2] ? Number(m[2].replaceAll(',', '')) : null;
+  return { id, rows };
+}
+
+/** The datasets of an evaluation set by name: the Polish 3-year file's locked holdout. */
+export const EVALUATION_SET_TEXT: Record<string, Bi> = {
+  'uci-polish-3year-holdout': { en: 'the locked holdout of UCI Polish company bankruptcy, 3-year file', es: 'la muestra reservada bloqueada de UCI quiebra de empresas polacas, archivo a 3 años' },
+};
+
+/** The name of a Fed shift in the rail's select: the multiple first, so the three options differ in their first words (U16-R3 c20 M1: a
+ * select fits an option to one line, and the three names shared their first 27 characters). Other windows keep the names module's name. */
+export function railShiftName(id: string): Bi | null {
+  const m = /^fed-higher-risk-x([\d.]+)$/.exec(id);
+  if (!m) return null;
+  return { en: `${m[1]} x the Fed higher-risk drift`, es: `${m[1].replace('.', ',')} x la deriva de mayor riesgo de la Fed` };
+}
+
+/** The four assumptions of the CBPE estimate in words, as the engine's note lists their ids (U16-R3 c20 B5); the Spanish note is the
+ * localised one. */
+export const ASSUMPTION_WORDS_EN = 'calibrated probabilities, no concept drift, no extrapolation and an adequate sample';
+export const cbpeNoteEn = (note: string): string => note.replace('calibrated-probabilities, no-concept-drift, no-extrapolation, adequate-sample', ASSUMPTION_WORDS_EN);

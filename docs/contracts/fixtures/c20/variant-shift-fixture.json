@@ -146,6 +146,7 @@
       "label": "synthetic-shift-fed-reference",
       "reference_portfolio": "higher-risk",
       "evaluation_set": "fixture-uci-polish-holdout",
+      "evaluation_rows": 600,
       "shifts": [
         {
           "shift_id": "fixture-shift",
