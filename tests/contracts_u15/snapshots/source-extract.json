@@ -5,14 +5,14 @@
    "fit_id": "german",
    "manifest": {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "41cd878f9b4ab3210d50583dd510b56fc901f31a079df5e486e36c48e978f8ab",
+    "sha256": "4fd7924ae93237d3e5809c597ff2c9300ec5df9434d74835e618288e7d5efff2",
     "title": {
      "en": "Retail cards PD: champion vs challenger",
      "es": "PD de tarjetas: campeón vs retador"
     },
     "category": {
      "en": "Credit scoring",
-     "es": "Scoring de crédito"
+     "es": "Puntuación crediticia"
     },
     "question": {
      "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
@@ -6324,7 +6324,7 @@
    "fit_id": "generators",
    "manifest": {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "8018d3e22ab5a2d369aade0a17337635e4a8a8c0305ff61ddac334e6f15e0e67",
+    "sha256": "3b242fa2a49c5ab9f022bd630517e27c862d9ecfdbe6a3f907d4beb8041c2032",
     "title": {
      "en": "Validating the validator: size and power of every test",
      "es": "Validar al validador: tamaño y potencia de cada prueba"

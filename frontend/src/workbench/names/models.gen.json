@@ -1711,7 +1711,7 @@
    },
    "fair.fisher_exact@d1": {
     "en": "2000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
-    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en log-odds (una brecha de tasa de selección sobre 8 puntos)"
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en el logaritmo de la razón de probabilidades (una brecha de tasa de selección sobre 8 puntos)"
    },
    "fair.fisher_exact@null": {
     "en": "2000 applicants, two groups; no threshold gap",
@@ -1723,7 +1723,7 @@
    },
    "fair.two_proportion_z@d1": {
     "en": "2000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
-    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en log-odds (una brecha de tasa de selección sobre 8 puntos)"
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en el logaritmo de la razón de probabilidades (una brecha de tasa de selección sobre 8 puntos)"
    },
    "fair.two_proportion_z@null": {
     "en": "2000 applicants, two groups; no threshold gap",
@@ -1927,7 +1927,7 @@
    },
    "ml.conformal_coverage@d1": {
     "en": "2000 test rows, 90% coverage; log-odds drift 0.5 between calibration and test",
-    "es": "2.000 filas de prueba, cobertura 90%; deriva de 0,5 en log-odds entre calibración y prueba"
+    "es": "2.000 filas de prueba, cobertura 90%; deriva de 0,5 en el logaritmo de la razón de probabilidades entre calibración y prueba"
    },
    "ml.conformal_coverage@null": {
     "en": "2000 test rows, 90% coverage; drift 0",
@@ -2881,7 +2881,7 @@
    },
    "momentum": {
     "en": "Rating momentum (dos Reis, Pfeuffer and Smith)",
-    "es": "Momentum de calificación (dos Reis, Pfeuffer y Smith)"
+    "es": "Impulso de calificación (dos Reis, Pfeuffer y Smith)"
    },
    "moodys": {
     "en": "Moody's EU entity: CEREP's corporate cohorts",

@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "41cd878f9b4ab3210d50583dd510b56fc901f31a079df5e486e36c48e978f8ab",
+    "sha256": "4fd7924ae93237d3e5809c597ff2c9300ec5df9434d74835e618288e7d5efff2",
     "ref": null
    },
    {
@@ -115,7 +115,7 @@
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "8018d3e22ab5a2d369aade0a17337635e4a8a8c0305ff61ddac334e6f15e0e67",
+    "sha256": "3b242fa2a49c5ab9f022bd630517e27c862d9ecfdbe6a3f907d4beb8041c2032",
     "ref": null
    },
    {
