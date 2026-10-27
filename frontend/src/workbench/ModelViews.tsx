@@ -359,7 +359,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
         {/* the column is split by measure, not by the reasons' height (R4 c01 M1, c02 M1: the reasons' two-line Spanish names left the
             distribution a plot of 10 px): the distribution's part keeps its plot's floor (data-plot-floor, measured by layout.ts) and
             the reasons' card gives up the rest, its table scrolling with its cue */}
-        <div className="ct-part" style={{ flex: '1 1 auto' }}>
+        <div className="ct-part" style={{ flex: '0 1 auto' }}>
         <PlotCard
           fill
           title={live ? { en: 'The applicant in the rail: principal reasons', es: 'El solicitante del panel: razones principales' } : { en: 'The four strongest characteristics', es: 'Las cuatro características más fuertes' }}
@@ -424,7 +424,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           </div>
         </PlotCard>
         </div>
-        <div className="ct-part" data-plot-floor="11rem" data-block="applicant-distribution" style={{ flex: '0 0 auto' }}>
+        <div className="ct-part" data-plot-floor="11rem" data-block="applicant-distribution" style={{ flex: '1 1 auto' }}>
         <PlotCard
           // the chart fills its card in both states (R3 c01 M2: a fixed 220 px chart under a six-row table was cut by its column at 1280 x 800)
           fill
