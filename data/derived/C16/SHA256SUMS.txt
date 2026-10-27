@@ -1,4 +1,4 @@
-ee504879bf2063a35ab154c61604e4a7bcaf21ce674a2dafa93eef2b5204c7aa  C16/models-svb-liquidity.json
+69e545f0bc68110e3c561bb33edbab60c95ccff976f21d439d7bd77cdbc23a11  C16/models-svb-liquidity.json
 bc2812eb276a35fc79967de04b08ec5fe5cc8442ca03037623865d6d930f71b5  C16/lcr-standard.json
 334263522236e33cdf015dbf73d519cad2ab3ba9fbdb0692e550f04aa9a4816d  C16/list-adverse.json
 d241d79e7e7fb76c70f9148f3afcd1a2423ed832ea32742ce30c486b91938415  C16/list-extreme.json
