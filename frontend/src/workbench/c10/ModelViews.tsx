@@ -67,7 +67,8 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios, r.evaluated).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios, r.evaluated).n === null ? (ran(r.id, r.n_scenarios, r.evaluated).why ? pick(ran(r.id, r.n_scenarios, r.evaluated).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
                   <td className="ct-text">{referenceNote(r.reference, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.parameters.map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
+                  {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
+                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
