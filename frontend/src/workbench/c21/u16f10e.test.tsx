@@ -52,7 +52,9 @@ describe('U16-F10e C21', () => {
     for (const lang of ['en', 'es'] as const) {
       const text = textOf(render(<SituationView sel={selOf('pair-2018-19')} />, lang));
       expect(text, lang).not.toMatch(/extras\.thresholds/);
-      expect(text, lang).toMatch(lang === 'en' ? /the amber share 0\.20 of significant complainants/ : /la parte ámbar 0,20 de denunciantes significativos/);
+      // the re-baked note states the cut in words itself (the amber share of significant complainants), and the row gives its value
+      expect(text, lang).toMatch(lang === 'en' ? /amber share of significant complainants/ : /denunciantes significativos/);
+      expect(text, lang).toMatch(lang === 'en' ? /amber from 0\.20 \(convention\)/ : /ámbar desde 0,20/);
     }
   });
 
