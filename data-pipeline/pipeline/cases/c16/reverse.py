@@ -32,7 +32,8 @@ def effective_cbc(lad: dict[str, Any]) -> np.ndarray:
 def _es(reason: str, target: int) -> str:
     m = re.match(r"the target of (\d+) days is not below the horizon of (\d+) days", reason)
     if m:
-        return f"El objetivo de {m.group(1)} días no es menor que el horizonte de {m.group(2)} días: no existe un intervalo."
+        return (f"El objetivo de {m.group(1)} días no es menor que el horizonte de {m.group(2)} días, así que un periodo de supervivencia "
+                "bajo él no se puede separar de sobrevivir el horizonte: no existe un intervalo.")
     m = re.match(r"the base survival period of (\d+) days is already at or below the target", reason)
     if m:
         return f"El periodo de supervivencia base de {m.group(1)} días ya es menor o igual que el objetivo de {target} días."
@@ -102,10 +103,13 @@ def reverse_document(paths: dict[str, Path], sh: Shared) -> dict[str, Any]:
          "target": {"days": target, "statement": txt(
              f"The run-off multiplier at which the survival period first falls to {target} days (dossier 05 E.5 rung 5): the threshold multiplier, the "
              "smallest one at which the survival period is at most the target, with the survival reached there.",
-             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} días: el multiplicador umbral.")},
+             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} días (dossier 05 E.5, "
+             "peldaño 5): el multiplicador umbral, el menor con el que el periodo de supervivencia es como máximo el objetivo, con la "
+             "supervivencia alcanzada allí.")},
          "cap_rule": {"each_rate_below_one": True, "statement": txt(
              "The multiplier scales every segment's daily rate and is capped so that each rate stays at most 1; a rate already at 1 stays.",
-             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como máximo 1.")},
+             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como máximo 1; una tasa que ya "
+             "es 1 se mantiene.")},
          "bases": bases}
     impact = {"multiplier_list_adverse": mi(bases[0], "Reverse-stress multiplier, LiST Adverse", "Multiplicador del estrés inverso, LiST adverso"),
               "multiplier_list_extreme": mi(bases[1], "Reverse-stress multiplier, LiST Extreme", "Multiplicador del estrés inverso, LiST extremo"),
