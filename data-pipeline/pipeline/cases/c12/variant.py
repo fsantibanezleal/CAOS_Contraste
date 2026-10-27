@@ -190,8 +190,8 @@ MEASURE_NOTE = text(
     "own measure differs by the convexity gap. The discounted profiles feed the CVA. The PFE is the quantile of the simulated "
     "exposure in the simulation measure. Effective EE starts from zero: the current exposure is the replacement cost of the "
     "SA-CCR block. EPE and EEPE are averages over the first year; their errors are batch errors of 20 antithetic batches.",
-    "EE y ENE no están descontados (estilo Basilea) en la medida t-forward: el EE descontado del motor dividido por P(0, t), la "
-    "cantidad que da la identidad analítica de la swaption y la que reproduce el perfil de ORE; la esperanza en la medida propia de "
+    "EE y ENE no están descontados (estilo Basilea) en la medida a plazo t: el EE descontado del motor dividido por P(0, t), la "
+    "cantidad que da la identidad analítica de la opción sobre permuta y la que reproduce el perfil de ORE; la esperanza en la medida propia de "
     "la simulación difiere por la brecha de convexidad. Los perfiles descontados alimentan el CVA. El PFE es el cuantil de la "
     "exposición simulada en la medida de la simulación. El EE efectivo parte de cero: la exposición actual es el costo de "
     "reemplazo del bloque SA-CCR. EPE y EEPE son promedios del primer año; sus errores son errores de 20 lotes antitéticos.")

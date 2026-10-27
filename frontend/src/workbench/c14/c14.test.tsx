@@ -230,8 +230,12 @@ describe('the C14 instrument', () => {
   });
 
   it('a behavioural parameter that changed in a window with a limit breach is flagged', () => {
-    const markup = html(<ChangesView sel={sel} />);
-    const flagged = (models as unknown as { fit: { nmd_parameter_changes: Array<{ parameter: string; flagged: boolean; note: { en: string } }> } }).fit.nmd_parameter_changes;
+    // the 2022-Q4 variant: the view keeps the changes up to the valuation date (R4 c17 M1), and every change of the models
+    // document ends by 2022-12-31
+    const markup = html(<ChangesView sel={withVariant(variant22)} />);
+    const flagged = (models as unknown as { fit: { nmd_parameter_changes: Array<{ parameter: string; flagged: boolean; to_date: string; note: { en: string } }> } }).fit.nmd_parameter_changes
+      .filter((c) => c.to_date <= variant22.outputs.valuation_date);
+    expect(flagged.length).toBeGreaterThan(0);
     for (const c of flagged) {
       expect(markup).toContain(`data-flagged="${c.flagged}"`);
       expect(markup).toContain(escapeHtml(c.note.en));

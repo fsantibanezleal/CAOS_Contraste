@@ -26,13 +26,13 @@ class C12:
     id = CASE_ID
     slug = "swap-exposure-cva-sa-ccr"
     title = {"en": "How large is the counterparty exposure of a swap book, and what CVA does it imply?",
-             "es": "¿Qué tan grande es la exposición a la contraparte de un libro de swaps y qué CVA implica?"}
+             "es": "¿Qué tan grande es la exposición a la contraparte de un libro de permutas y qué CVA implica?"}
     category_id = "market-ccr"
     kind = "synthetic"
     question = {
         "en": "How large is the counterparty exposure of a swap book, what CVA does it imply, and would the simulated exposures have held "
               "against the curves later realised?",
-        "es": "¿Qué tan grande es la exposición a la contraparte de un libro de swaps, qué CVA implica y habrían resistido las exposiciones "
+        "es": "¿Qué tan grande es la exposición a la contraparte de un libro de permutas, qué CVA implica y habrían resistido las exposiciones "
               "simuladas frente a las curvas realizadas después?"}
     sources = SOURCES
 

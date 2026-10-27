@@ -12,6 +12,9 @@ import { platformText } from '../c08/notes';
 import { NOT_SWAP, TallTables, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { BASIS_TEXT, CASE_ORDER, CASE_TEXT, VARIANT_TEXT, axisOf, gridOf, outputsOf, sensitivityOf, text, type C12Profile, type C12Sel } from './selection';
 
+/** The ORE platform in Spanish: the shared rule, with the package kind left out ("paquete wheel" kept the English word, R4 c15 B1). */
+const platformSpanish = (platform: string | null | undefined): string => platformText(platform, 'es').replace('paquete wheel', 'paquete');
+
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
 
 /** The EE, ENE and PFE of the document over the grid, with the Monte Carlo band of the EE and the ORE profile where the variant has one. */
@@ -69,18 +72,6 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
               <Nw>{`${cell(e.epe.amount, lang)} / ${cell(e.eepe.amount, lang)}`}</Nw>
               {` (${e.eepe_horizon_years === 1 ? pick({ en: 'first year', es: 'primer año' }, lang) : `${pick({ en: 'first', es: 'primeros' }, lang)} ${years(e.eepe_horizon_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}; ${pick({ en: 'Monte Carlo SE', es: 'error estándar de Monte Carlo' }, lang)} ${cell(e.eepe.mc_se, lang)})`}
             </dd>
-            <dt>{pick({ en: 'ORE 1.8.17.0', es: 'ORE 1.8.17.0' }, lang)}</dt>
-            <dd data-ore={ore.status}>
-              {ore.status === 'reconciled' && ore.eepe_agreement && ore.cva_agreement
-                ? pick(
-                    {
-                      en: `reconciled on ${platformText(ore.platform, 'en')}: EEPE ${cell(ore.eepe_agreement.python, 'en')} against ${cell(ore.eepe_agreement.ore, 'en')}, CVA ${cell(ore.cva_agreement.python, 'en')} against ${cell(ore.cva_agreement.ore, 'en')}; every point within two combined standard errors: ${ore.all_within_two_se ? 'yes' : 'no'}`,
-                      es: `conciliada en ${platformText(ore.platform, 'es')}: EEPE ${cell(ore.eepe_agreement.python, 'es')} contra ${cell(ore.eepe_agreement.ore, 'es')}, CVA ${cell(ore.cva_agreement.python, 'es')} contra ${cell(ore.cva_agreement.ore, 'es')}; todos los puntos dentro de dos errores estándar combinados: ${ore.all_within_two_se ? 'sí' : 'no'}`,
-                    },
-                    lang,
-                  )
-                : `${pick({ en: 'no ORE reconciliation', es: 'sin conciliación con ORE' }, lang)}${ore.reason ? `: ${pick(ore.reason, lang)}` : ''}`}
-            </dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-profile-grid">
             <thead>
@@ -106,6 +97,21 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
               ))}
             </tbody>
           </table>
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-profile-ore">
+            <dt>{pick({ en: 'ORE 1.8.17.0', es: 'ORE 1.8.17.0' }, lang)}</dt>
+            <dd data-ore={ore.status}>
+              {ore.status === 'reconciled' && ore.eepe_agreement && ore.cva_agreement
+                ? pick(
+                    {
+                      // "reconciled" only when every point is within two combined standard errors (R4 c15 m2: the Variants wording)
+                      en: `${ore.all_within_two_se ? 'reconciled' : 'compared'} on ${platformText(ore.platform, 'en')}: EEPE ${cell(ore.eepe_agreement.python, 'en')} against ${cell(ore.eepe_agreement.ore, 'en')}, CVA ${cell(ore.cva_agreement.python, 'en')} against ${cell(ore.cva_agreement.ore, 'en')}; every point within two combined standard errors: ${ore.all_within_two_se ? 'yes' : 'no'}`,
+                      es: `${ore.all_within_two_se ? 'conciliada' : 'comparada'} en ${platformSpanish(ore.platform)}: EEPE ${cell(ore.eepe_agreement.python, 'es')} contra ${cell(ore.eepe_agreement.ore, 'es')}, CVA ${cell(ore.cva_agreement.python, 'es')} contra ${cell(ore.cva_agreement.ore, 'es')}; todos los puntos dentro de dos errores estándar combinados: ${ore.all_within_two_se ? 'sí' : 'no'}`,
+                    },
+                    lang,
+                  )
+                : `${pick({ en: 'no ORE reconciliation', es: 'sin conciliación con ORE' }, lang)}${ore.reason ? `: ${pick(ore.reason, lang)}` : ''}`}
+            </dd>
+          </dl>
           <p className="ct-note">{pick({ en: `The axis is in ${unit}; the table keeps the whole amounts.`, es: `El eje está en ${unit}; la tabla guarda los montos completos.` }, lang)}</p>
         </ChartOverTable>
         </TallTables>
@@ -162,6 +168,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
       >
         <TallTables>
         <ChartOverTable
+          chartMin="19rem"
           chart={
             <UPlotChart
               height="fill"
@@ -255,7 +262,7 @@ export function NettingView({ sel }: { sel: C12Sel | null }) {
         {...card}
         note={{
           en: `Netting works on the sum of the swap values, not on the sum of their positive parts: the netted EE is never above the sum of the single-trade EE, and the difference is the benefit. A one-swap book has nothing to net, so the benefit is zero.${o.collateral ? ' In this variant the comparison is made without collateral; the EE after margin is in the collateral view.' : ''}`,
-          es: `El neteo opera sobre la suma de los valores de los swaps, no sobre la suma de sus partes positivas: la EE neteada nunca supera la suma de las EE individuales, y la diferencia es el beneficio. Una cartera de un solo swap no tiene qué netear, así que el beneficio es cero.${o.collateral ? ' En esta variante la comparación se hace sin colateral; la EE tras el margen está en la vista del colateral.' : ''}`,
+          es: `El neteo opera sobre la suma de los valores de las permutas, no sobre la suma de sus partes positivas: la EE neteada nunca supera la suma de las EE individuales, y la diferencia es el beneficio. Una cartera de una sola permuta no tiene qué netear, así que el beneficio es cero.${o.collateral ? ' En esta variante la comparación se hace sin colateral; la EE tras el margen está en la vista del colateral.' : ''}`,
         }}
       >
         <ChartOverTable

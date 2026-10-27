@@ -58,7 +58,7 @@ describe('U16-F7 C12 (b06 minors)', () => {
   });
 
   it('m3: the tests table names the segment of every row, so no two rows read alike', () => {
-    expect(segmentText('book-10bd-q90', 'en')).toBe('Book, 10 business days, quantile 90 %');
+    expect(segmentText('book-10bd-q90', 'en')).toBe('Book, 10 business days, quantile 90 %'); // R4 c15 n5: a no-break space before the sign
     expect(segmentText('risk factor-10bd', 'es')).toBe('Tasa, 10 días hábiles');
     const doc = committed<VariantArtifact>('C12', 'netting-set.json');
     const rows = [...view(<C12TestsView sel={sel('netting-set')} />).matchAll(/(PIT|exceedance)[^|]{0,80}/gi)];

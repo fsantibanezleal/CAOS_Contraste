@@ -9,7 +9,6 @@ import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
@@ -129,7 +128,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                         {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
                         {t.segment === null ? null : <span className="ct-narrow-only" data-segment={t.segment}>{pick(text(SEGMENT_NAMES, t.segment), lang)}</span>}
                       </td>
-                      <td className="ct-text ct-wide-only ct-repeated">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
+                      <td className="ct-text ct-wide-only ct-repeated">{t.segment === null ? pick({ en: 'no comparator', es: 'sin comparador' }, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
@@ -165,7 +164,7 @@ export interface MedianRef {
 }
 
 /** The survival period of each variant that has a daily path, with the LiST medians as reference bars, and the variants in a table. */
-export function C16VariantsTable({ variants, onPick, current, medians, reverse }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>; onPick: (id: string) => void; current: string; medians?: MedianRef | null; reverse?: VariantArtifact<C16Reverse> | null }) {
+export function C16VariantsTable({ variants, onPick, current, medians }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>; onPick: (id: string) => void; current: string; medians?: MedianRef | null }) {
   const lang = useShellLang();
   const first = variants[0]?.v;
   const card = useCard(first as unknown as VariantArtifact | undefined);
@@ -190,8 +189,10 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
         es: 'Las cinco variantes del SDD en el último reporte de llamada antes de la corrida. Las barras dan el periodo de supervivencia de cada variante con trayectoria diaria que lo alcanza; una variante que sobrevive su horizonte está en la tabla con su horizonte y no tiene barra, y el LCR da una razón y no una trayectoria diaria. Elija una variante para cargarla.',
       }}
     >
-      <ChartOverTable
-        chartMin="17rem"
+      {/* the drawing at its size (seven bars) and the table in the height it leaves, not the shared 42 % box: at 1280 the box ended on
+          a row boundary and hid two variant rows, the reverse stress and the note with no cue (R4 c19 and c20 M1) */}
+      <ChartAbove
+        chartHeight={`${Math.max(bars.length + refs.length, 2) * 1.5 + 3}rem`}
         chart={
           <BarChart
             title={{ en: 'Survival period by variant, in days', es: 'Periodo de supervivencia por variante, en días' }}
@@ -232,7 +233,6 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
             })}
           </tbody>
         </table>
-        {reverse ? <C16ReverseTable reverse={reverse} current={current} onPick={onPick} /> : null}
         {survivors.length > 0 ? (
           <p className="ct-note" data-state="survives">
             {pick(
@@ -244,12 +244,32 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
             )}
           </p>
         ) : null}
-      </ChartOverTable>
+      </ChartAbove>
     </PlotCard>
   );
 }
 
-/** The reverse-stress document as a table under the variants: the multiplier at which each base scenario first falls to the target. */
+/** The reverse stress beside the variants, a card of its own: the multiplier at which each base first falls to the target. */
+export function C16ReverseCard({ reverse, current, onPick }: { reverse: VariantArtifact<C16Reverse>; current: string; onPick: (id: string) => void }) {
+  const card = useCard(reverse as unknown as VariantArtifact);
+  return (
+    <PlotCard
+      fill
+      title={{ en: 'The reverse stress', es: 'La prueba de estrés inversa' }}
+      {...card}
+      note={{
+        en: 'The multiplier of the daily run-off rates at which each base scenario first falls to the target survival period; a base whose ladder is shorter than the target is refused. Pick the reverse stress to load it.',
+        es: 'El multiplicador de las tasas diarias de salida con el que cada escenario base cae por primera vez al periodo de supervivencia objetivo; una base cuya escalera es más corta que el objetivo se rechaza. Elija la prueba de estrés inversa para cargarla.',
+      }}
+    >
+      <div className="ct-scroll" data-caos-flow="">
+        <C16ReverseTable reverse={reverse} current={current} onPick={onPick} />
+      </div>
+    </PlotCard>
+  );
+}
+
+/** The reverse-stress document as a table beside the variants: the multiplier at which each base scenario first falls to the target. */
 function C16ReverseTable({ reverse, current, onPick }: { reverse: VariantArtifact<C16Reverse>; current: string; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const r = reverse.outputs;
@@ -290,8 +310,9 @@ export function C16VariantsView({ sel, onPick }: { sel: C16Sel | null; onPick: (
   const annex = fitOf(sel)?.list_parameters.results_annex;
   const medians = annex ? { adverse: annex.median_survival_days.adverse, extreme: annex.median_survival_days.extreme, nBanks: annex.n_banks } : null;
   return (
-    <ViewsRow>
-      <C16VariantsTable variants={scenarios} onPick={onPick} current={sel.data.variant.variant_id} medians={medians} reverse={reverse ?? null} />
+    <ViewsRow shares={reverse ? [2, 1] : undefined}>
+      <C16VariantsTable variants={scenarios} onPick={onPick} current={sel.data.variant.variant_id} medians={medians} />
+      {reverse ? <C16ReverseCard reverse={reverse} current={sel.data.variant.variant_id} onPick={onPick} /> : null}
     </ViewsRow>
   );
 }
@@ -547,7 +568,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
               <dd>{`${scenarioPhrase(o.variant.scenario_family, o.variant.phase, lang)}, ${o.variant.horizon_days} ${pick({ en: 'days', es: 'días' }, lang)}`}</dd>
               <dt>{pick({ en: 'Call reports read', es: 'Reportes de llamada leídos' }, lang)}</dt>
-              <dd>{`${o.data.call_reports.map((c) => c.report_date).join(', ')}; ${pick({ en: 'data cut-off', es: 'corte de datos' }, lang)} ${o.data.data_cutoff}`}</dd>
+              <dd>{`${o.data.call_reports.map((c) => c.report_date).sort().join(', ')}; ${pick({ en: 'data cut-off', es: 'corte de datos' }, lang)} ${o.data.data_cutoff}`}</dd>
               <dt>{pick({ en: 'Dating rule', es: 'Regla de fechas' }, lang)}</dt>
               <dd>{pick(o.data.rule, lang)}</dd>
             </>
