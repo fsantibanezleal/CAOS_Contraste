@@ -37,6 +37,14 @@ NOTICE = T(
     "real ni evidencia sobre ningún banco. La verdad es conocida por construcción, de modo que cada resultado se muestra junto a la "
     "deficiencia que debe detectar.")
 
+#: the control (no deficiency planted) says so in its own notice (R5 c18 m6)
+NOTICE_CONTROL = T(
+    "Synthetic data: this is generated desk P&L with an exact risk model, no deficiency planted, not the book of any real desk and not "
+    "evidence about any bank. The truth is known by construction, so the result shows how often the tests raise a false alarm.",
+    "Datos sintéticos: es un P&L de mesa generado con un modelo de riesgo exacto, sin deficiencia sembrada, no el libro de ninguna mesa "
+    "real ni evidencia sobre ningún banco. La verdad es conocida por construcción, de modo que el resultado muestra con qué frecuencia "
+    "las pruebas dan una falsa alarma.")
+
 SIGN_CONVENTION = {
     "engine_convention": "return-negative", "document_convention": "positive-loss",
     "definition": T("The engine stores VaR and ES in the return convention (negative numbers at the tail level alpha); this document "
@@ -100,13 +108,19 @@ def _p(x: float) -> str:
     return percent(x, 1, lang="es")
 
 
+def _pe(x: float) -> str:
+    # the shell's English form, "13.0 %" with a no-break space, as on the rail and the tables of the same view (R5 c18 m12)
+    return percent(x, 1, lang="en")
+
+
 def _n(x: float) -> str:
     return number(x, 0, lang="es")
 
 
 def generator_block(did: str, n: int) -> dict[str, Any]:
     return {"name": params.GENERATOR_NAME, "n_risk_factors": 3 if did == "omitted-factor" else 2, "pnl_unit": "decimal-of-desk-notional",
-            "window_days": WINDOW_DAYS, "n_replications": n, "seed_base": params.seed_base(did), "seed_rule": params.SEED_RULE, "notice": NOTICE}
+            "window_days": WINDOW_DAYS, "n_replications": n, "seed_base": params.seed_base(did), "seed_rule": params.SEED_RULE,
+            "notice": NOTICE_CONTROL if did == "none" else NOTICE}
 
 
 def known_block(did: str) -> dict[str, Any]:
@@ -225,32 +239,32 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
     if did == "none":
         ok = p <= 0.05
         f.append({"id": "F-SIZE", "severity": "S4" if ok else "S3", "status": "accepted" if ok else "open", "evidence": ["market.pla_test"],
-                  "title": T(f"With no deficiency the PLA is amber or red in {p:.1%} of {d['n_replications']:,} replications (red in {p_red:.1%}): the false-alarm rate of the test",
+                  "title": T(f"With no deficiency the PLA is amber or red in {_pe(p)} of {d['n_replications']:,} replications (red in {_pe(p_red)}): the false-alarm rate of the test",
                              f"Sin deficiencia el PLA es ámbar o rojo en {_p(p)} de {_n(d['n_replications'])} replicaciones (rojo en {_p(p_red)}): la tasa de falsa alarma de la prueba")})
     else:
         sev, status = ("S4", "accepted") if p >= 0.95 else (("S3", "open") if p >= 0.5 else ("S2", "open"))
         name_en, name_es = DEFICIENCY_EN.get(did, did.replace('-', ' ')), DEFICIENCY_ES.get(did, did.replace('-', ' '))
         if p >= 0.5:
-            title = T(f"The PLA catches the planted {name_en} in {p:.1%} of {d['n_replications']:,} replications "
-                      f"(amber or red; red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
+            title = T(f"The PLA catches the planted {name_en} in {_pe(p)} of {d['n_replications']:,} replications "
+                      f"(amber or red; red in {_pe(p_red)}; 95% interval {_pe(d['ci_low'])} to {_pe(d['ci_high'])})",
                       f"El PLA detecta la deficiencia sembrada ({name_es}) en {_p(p)} de {_n(d['n_replications'])} replicaciones "
                       f"(ámbar o rojo; rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
         else:
             # a miss states the miss rate, then the catch rate it comes from (R2b c14 B1: "misses ... in 0.0%" read as never missing)
-            title = T(f"The PLA misses the planted {name_en} in {1 - p:.1%} of {d['n_replications']:,} replications: it is amber or "
-                      f"red in {p:.1%} (red in {p_red:.1%}; 95% interval {d['ci_low']:.1%} to {d['ci_high']:.1%})",
+            title = T(f"The PLA misses the planted {name_en} in {_pe(1 - p)} of {d['n_replications']:,} replications: it is amber or "
+                      f"red in {_pe(p)} (red in {_pe(p_red)}; 95% interval {_pe(d['ci_low'])} to {_pe(d['ci_high'])})",
                       f"El PLA no detecta la deficiencia sembrada ({name_es}) en {_p(1 - p)} de {_n(d['n_replications'])} replicaciones: es ámbar "
                       f"o rojo en {_p(p)} (rojo en {_p(p_red)}; intervalo de 95 % {_p(d['ci_low'])} a {_p(d['ci_high'])})")
         f.append({"id": "F-PLA", "severity": sev, "status": status, "evidence": ["market.pla_test"], "title": title})
         n_int = d["intended_test_flagged"]
         f.append({"id": "F-INTENDED", "severity": "S3" if n_int / d["n_replications"] >= 0.5 else "S2", "status": "open", "evidence": ["market.pla_test"],
-                  "title": T(f"The statistic meant to break ({INTENDED_NOTE[k['intended_to_fail']]['en']}) flags {n_int / d['n_replications']:.1%} of the replications",
+                  "title": T(f"The statistic meant to break ({INTENDED_NOTE[k['intended_to_fail']]['en']}) flags {_pe(n_int / d['n_replications'])} of the replications",
                              f"El estadístico que debía romperse ({INTENDED_NOTE[k['intended_to_fail']]['es']}) marca {_p(n_int / d['n_replications'])} de las replicaciones")})
     f.append({"id": "F-DESK", "severity": "S3" if desk[0.01]["share_over_limit"] >= 0.05 or desk[0.025]["share_over_limit"] >= 0.05 else "S4",
               "status": "open" if max(desk[0.01]["share_over_limit"], desk[0.025]["share_over_limit"]) >= 0.05 else "accepted",
               "evidence": ["market.desk_backtest"],
-              "title": T(f"The desk exceeds its exception limit in {desk[0.025]['share_over_limit']:.1%} of the replications at 97.5% "
-                         f"(limit {desk[0.025]['limit_exceptions']}) and {desk[0.01]['share_over_limit']:.1%} at 99% (limit {desk[0.01]['limit_exceptions']})",
+              "title": T(f"The desk exceeds its exception limit in {_pe(desk[0.025]['share_over_limit'])} of the replications at 97.5% "
+                         f"(limit {desk[0.025]['limit_exceptions']}) and {_pe(desk[0.01]['share_over_limit'])} at 99% (limit {desk[0.01]['limit_exceptions']})",
                          f"La mesa supera su límite de excepciones en {_p(desk[0.025]['share_over_limit'])} de las replicaciones al 97,5 % "
                          f"(límite {desk[0.025]['limit_exceptions']}) y {_p(desk[0.01]['share_over_limit'])} al 99 % (límite {desk[0.01]['limit_exceptions']})")})
     return f
