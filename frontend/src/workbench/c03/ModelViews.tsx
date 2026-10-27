@@ -9,7 +9,8 @@ import { inputName } from '../names';
 import { U6TestsTable, p2, useCard } from './U6Shared';
 import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from './selection';
 
-const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
+// three fixed decimals: the precision does not change inside a column (R3 c04 m2)
+const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
 /** The PD rungs on this test cohort: discrimination with its interval, Brier and the calibration gap at five years. */
@@ -100,7 +101,9 @@ export function CalibrationView({ sel }: { sel: C03Sel | null }) {
           es: 'Cada punto es una décima parte de los créditos, ordenados por PD predicha: la PD predicha en el eje horizontal, la tasa observada en el vertical, la línea identidad es una calibración perfecta.',
         }}
       >
+        {/* the parity plot keeps a stage of 22 rem, so it is drawn square at about 300 px at 1280 (R3 c04 m1: 140 x 170 px) */}
         <ChartOverTable
+          chartMin="22rem"
           chart={
             <UPlotChart
               height="fill"

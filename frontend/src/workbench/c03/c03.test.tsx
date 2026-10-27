@@ -164,7 +164,9 @@ describe('the C03 instrument', () => {
   it('the cohorts table lists a row per test cohort with the champion AUC and the training window', () => {
     const markup = html(<C03VariantsTable variants={[{ id: variant.variant_id, title: { en: 'FY2018-20', es: 'AF2018-20' }, v: variant }]} onPick={() => undefined} current={variant.variant_id} />);
     expect(markup).toContain(`data-variant="${variant.variant_id}"`);
-    expect(markup).toContain(formatNumber(o.rung_comparison[0].auc, 'en', { digits: 3 }));
+    // the champion is the rung the calibration is drawn for, not the first row of the comparison (R3 c04 m8)
+    const champion = o.rung_comparison.find((r) => r.rung_id === o.calibration.rung_id) ?? o.rung_comparison[0];
+    expect(markup).toContain(formatNumber(champion.auc, 'en', { digits: 3 }));
     expect(markup).toContain(`${o.training.first_fy}`);
     expect(markup).toContain(`${o.training.last_fy}`);
   });

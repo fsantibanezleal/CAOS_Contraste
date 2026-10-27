@@ -40,11 +40,11 @@ export function defaultSel(data: CaseData | null): C03Sel | null {
 /** What each kind of PD rung is called. */
 export const KIND_TEXT: Record<string, Bi> = {
   constant: { en: 'Constant (base rate)', es: 'Constante (tasa base)' },
-  'woe-scorecard': { en: 'WoE scorecard', es: 'Scorecard WoE' },
+  'woe-scorecard': { en: 'WoE scorecard', es: 'Tarjeta de puntuación WoE' },
   'penalised-logit': { en: 'Penalised logit', es: 'Logit penalizado' },
   pltr: { en: 'Logit with rule features', es: 'Logit con reglas' },
-  ebm: { en: 'Explainable boosting machine', es: 'Máquina de boosting explicable' },
-  'monotone-gbm': { en: 'Monotone gradient boosting', es: 'Gradient boosting monótono' },
+  ebm: { en: 'Explainable boosting machine', es: 'Máquina de potenciación explicable' },
+  'monotone-gbm': { en: 'Monotone gradient boosting', es: 'Potenciación del gradiente monótona' },
   tabpfn: { en: 'TabPFN', es: 'TabPFN' },
 };
 
@@ -68,9 +68,15 @@ export const SOURCE_TEXT: Record<string, { en: string; es: string }> = {
   'sba-7a': { en: 'SBA 7(a) loan-level file (FOIA)', es: 'Archivo a nivel de préstamo SBA 7(a) (FOIA)' },
 };
 
-/** The reasons a document gives for a rung it did not run, in Spanish beside the English (the document writes them in English; c04 M2). */
-const REASON_ES: Record<string, string> = {
-  'TabPFN is the optional extra (data-pipeline/requirements-tabpfn.txt) and it is not installed in the bake environment: the challenger is declared absent, and no number stands in for it':
-    'TabPFN es el extra opcional (data-pipeline/requirements-tabpfn.txt) y no está instalado en el entorno de la corrida: el retador se declara ausente y ningún número lo reemplaza',
+/** The reasons a document gives for a rung it did not run, in both languages (the document writes them in English; c04 M2). The
+ * TabPFN reason names the extra, not the path of its requirements file (R3 c04 m9): the committed string and the re-baked one read
+ * the same words. */
+const TABPFN_TEXT = {
+  en: 'TabPFN is an optional extra of the bake environment and it is not installed there: the challenger is declared absent, and no number stands in for it',
+  es: 'TabPFN es un extra opcional del entorno de la corrida y no está instalado en él: el retador se declara ausente y ningún número lo reemplaza',
 };
-export const reasonText = (reason: string): { en: string; es: string } => ({ en: reason, es: REASON_ES[reason] ?? reason });
+const REASON_TEXT: Record<string, { en: string; es: string }> = {
+  'TabPFN is the optional extra (data-pipeline/requirements-tabpfn.txt) and it is not installed in the bake environment: the challenger is declared absent, and no number stands in for it': TABPFN_TEXT,
+  [TABPFN_TEXT.en]: TABPFN_TEXT,
+};
+export const reasonText = (reason: string): { en: string; es: string } => REASON_TEXT[reason] ?? { en: reason, es: reason };
