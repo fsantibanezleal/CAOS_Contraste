@@ -33,8 +33,9 @@ export function OpinionCard({ opinion }: { opinion: Opinion }) {
     <div data-opinion data-level={opinion.level} data-outcome={opinion.recommendation.outcome}>
       <Callout variant={tone} title={`${pick({ en: 'Opinion level ', es: 'Nivel de opinión ' }, lang)}${opinion.level}: ${pick(OPINION_NAME[opinion.level] ?? opinion.level_label, lang)}`}>
         <p data-opinion-rule>
-          {pick({ en: 'Rule ', es: 'Regla ' }, lang)}
-          <span translate="no">{opinion.rule.id}</span>: <Doc t={opinion.rule.text} />
+          {/* the rule by what it is, not by its decision id (R3 c23 B5) */}
+          {pick({ en: 'The rule of the opinion: ', es: 'La regla de la opinión: ' }, lang)}
+          <Doc t={opinion.rule.text} />
         </p>
         <p data-opinion-findings>
           {opinion.open_findings.length === 0

@@ -156,11 +156,11 @@ export function ShapeFigure() {
   const scale = (Y0 - Y1) / 2.2;
   const d = steps.map((s, i) => `${i ? 'L' : 'M'}${r1(X0 + i * slot)} ${r1(mid - s * scale)} L${r1(X0 + (i + 1) * slot)} ${r1(mid - s * scale)}`).join(' ');
   return (
-    <Frame label={t('An illustrative shape function of an explainable boosting machine', 'Una función de forma ilustrativa de una explainable boosting machine')}>
+    <Frame label={t('An illustrative shape function of an explainable boosting machine', 'Una función de forma ilustrativa de una máquina de potenciación explicable')}>
       <line className="dg-axis" x1={X0} y1={Y0} x2={X0} y2={Y1} />
       <line className="dg-grid" x1={X0} y1={mid} x2={X1} y2={mid} />
       <text className="dg-axis-label" x={(X0 + X1) / 2} y={Y0 + 32} textAnchor="middle">{t('Value of one variable (64 bins in the case)', 'Valor de una variable (64 tramos en el caso)')}</text>
-      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución a las log-odds')}</text>
+      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución a el logaritmo de la razón de probabilidades')}</text>
       <path className="dg-curve" d={d} />
       <Note>{t('Illustrative: one step per bin', 'Ilustrativo: un escalón por tramo')}</Note>
     </Frame>
@@ -171,15 +171,15 @@ export function ShapeFigure() {
 export function LadderFigure() {
   const t = useT();
   const rungs = [
-    [t('P1 Scorecard', 'P1 Scorecard'), t('WoE and logistic', 'WoE y logística')],
+    [t('P1 Scorecard', 'P1 Tarjeta de puntuación'), t('WoE and logistic', 'WoE y logística')],
     [t('P3 EBM', 'P3 EBM'), t('additive, pairs', 'aditivo, pares')],
-    [t('P4 Boosting', 'P4 Boosting'), t('monotone trees', 'árboles monótonos')],
+    [t('P4 Boosting', 'P4 Potenciación'), t('monotone trees', 'árboles monótonos')],
     [t('P5 TabPFN', 'P5 TabPFN'), t('in-context', 'en contexto')],
   ];
   const w = 96;
   const gap = 18;
   return (
-    <Frame label={t('The model ladder, from the scorecard to the foundation model', 'La escalera de modelos, de la scorecard al modelo fundacional')}>
+    <Frame label={t('The model ladder, from the scorecard to the foundation model', 'La escalera de modelos, de la tarjeta de puntuación al modelo fundacional')}>
       {rungs.map(([name, sub], i) => (
         <g key={name}>
           <rect className={i === 0 ? 'dg-box accent' : 'dg-box'} x={X0 - 30 + i * (w + gap)} y={150 - i * 28} width={w} height={54} rx={4} />

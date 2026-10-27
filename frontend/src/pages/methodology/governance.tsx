@@ -5,8 +5,8 @@
 // SR 26-2, PRA SS1/23, OSFI E-23 and the ECB reporting instructions were read at their primary sources on 2026-10-20. Every
 // tier count, band, deadline, frequency, threshold and the opinion rule is a stated convention of Contraste, said to be one
 // wherever it appears. The recommendation is the rule's output on the evidence; Contraste approves no model (SDD non-goal 1).
-import { Callout, Cite, DocSection, Equation, Figure, useShellLang } from '@fasl-work/caos-app-shell';
-import { P, T, useT } from '../../content/bi';
+import { Callout, Cite, DocSection, Figure, useShellLang } from '@fasl-work/caos-app-shell';
+import { Equation, P, T, useT } from '../../content/bi';
 import { tierColor } from '../../workbench/governance/DependencyMap';
 import { RULE_OUTPUT_LABEL, TIER_RULE_TEX, tierOf } from '../../workbench/governance/model';
 import type { MethodologySection } from '../methodologyRegistry';

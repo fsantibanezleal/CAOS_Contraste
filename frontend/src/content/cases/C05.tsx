@@ -37,7 +37,7 @@ export function C05WriteUp() {
       />
       <P
         en="The paper's backtest on Moody's data for 1987 to 2012 ranks the scaled likelihood ratio first on average and the invariant accuracy ratio last; its conclusion is that scaled PDs mix up the unconditional PD of the estimation period with the target one."
-        es="El backtest del artículo con datos de Moody's para 1987 a 2012 pone primera en promedio a la razón de verosimilitud escalada y última a la razón de precisión invariante; su conclusión es que las PD escaladas mezclan la PD incondicional del período de estimación con la objetivo."
+        es="El prueba retrospectiva del artículo con datos de Moody's para 1987 a 2012 pone primera en promedio a la razón de verosimilitud escalada y última a la razón de precisión invariante; su conclusión es que las PD escaladas mezclan la PD incondicional del período de estimación con la objetivo."
       />
       <h3>{t('Low-default portfolios', 'Carteras de bajo incumplimiento')}</h3>
       <P
@@ -64,7 +64,7 @@ export function C05WriteUp() {
       <L
         items={[
           { en: 'The S&P table is quoted from the paper and treated as derived-only: the PDF stays in the device data root, the artifacts publish rates and results, never the grade counts.', es: 'La tabla S&P se cita desde el artículo y se trata como solo derivados: el PDF queda en la raíz de datos del dispositivo y los artefactos publican tasas y resultados, nunca los conteos por grado.' },
-          { en: 'The Moody\'s backtest cannot be rerun from the paper: it needs Moody\'s yearly grade frequencies, which the paper prints for 1986 only.', es: 'El backtest con Moody\'s no se puede repetir desde el artículo: requiere las frecuencias anuales por grado de Moody\'s, que el artículo imprime solo para 1986.' },
+          { en: 'The Moody\'s backtest cannot be rerun from the paper: it needs Moody\'s yearly grade frequencies, which the paper prints for 1986 only.', es: 'El prueba retrospectiva con Moody\'s no se puede repetir desde el artículo: requiere las frecuencias anuales por grado de Moody\'s, que el artículo imprime solo para 1986.' },
           { en: 'Nothing here certifies a calibration: the approaches are the paper\'s, and which one suits a portfolio is the validator\'s judgement, which the tests inform.', es: 'Nada aquí certifica una calibración: los enfoques son los del artículo, y cuál conviene a una cartera es juicio del validador, que las pruebas informan.' },
         ]}
       />

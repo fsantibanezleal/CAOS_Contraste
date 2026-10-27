@@ -29,14 +29,19 @@ def test_the_scope_rationales_are_the_engine_bilingual_pair(baked):
     assert n >= 12
 
 
-def test_the_anchor_and_share_reasons_are_the_engine_bilingual_pair(baked):
-    from riskvalidation.governance.reasons import bilingual
+def test_the_anchor_and_share_reasons_are_the_engine_bilingual_pair_in_reader_words(baked):
+    """The engine's bilingual pair, read through pipeline.governance.reader (U16-F10p, R3 c23 B3: no `test_id@model` developer text)."""
+    import re
+
+    from pipeline.governance.reader import reader_text
 
     seen = 0
     for row in baked.findings["rows"]:
         for field in ("anchor_reason", "rwea_share_reason"):
             if row[field] is not None:
-                assert row[field] == bilingual(row[field]["en"]), (row["key"], field)
+                assert row[field] == reader_text(row[field]), (row["key"], field)
+                assert row[field]["es"] != row[field]["en"], (row["key"], field)
+                assert not re.search(r"test_id@|risk_accepted|dim_cube|spec\(", row[field]["en"] + row[field]["es"]), (row["key"], field)
                 seen += 1
     assert seen > 0
 

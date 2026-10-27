@@ -310,7 +310,11 @@ function c18Band(name: string, v: Variant, lang: Lang): B3Table | null {
 type C20Doc = C20Shock | C20Shift | C20Seeds | C20Perturbation | C20Leakage;
 
 /** A C20 rung by its name in the variant's models (the R2b page review: `P4-lightgbm`). */
-const c20Rung = (v: Variant, id: string, lang: Lang): string => bi(modelName(id, { caseId: 'C20', models: v.model }) ?? { en: id, es: id }, lang);
+const c20Rung = (v: Variant, id: string, lang: Lang): string => {
+  // the seeds rows name the rung (`P4-lightgbm`), the model records the rung on its dataset (`P4-lightgbm-taiwan`, R3 c23 B2)
+  const own = v.model.find((m) => m.id === id) ?? v.model.find((m) => m.id.startsWith(`${id}-`));
+  return bi(modelName(own?.id ?? id, { caseId: 'C20', models: v.model }) ?? { en: id, es: id }, lang);
+};
 
 function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
@@ -320,13 +324,13 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
       const aucs = o.shipped.rows.map((r) => r.performance.auc);
       const lo = Math.min(...aucs);
       const hi = Math.max(...aucs);
-      const range = aucs.length ? (lo === hi ? num(lo, lang, 3) : `${num(lo, lang, 3)} ${t('to', 'a')} ${num(hi, lang, 3)}`) : na(lang, t('the document holds no shipped shock', 'el documento no contiene shocks entregados'));
+      const range = aucs.length ? (lo === hi ? num(lo, lang, 3) : `${num(lo, lang, 3)} ${t('to', 'a')} ${num(hi, lang, 3)}`) : na(lang, t('the document holds no shipped shock', 'el documento no contiene choques entregados'));
       return [
         name,
-        t('Shock', 'Shock'),
-        o.seen_or_held_out === 'seen' ? t('AUC under the seen shocks', 'AUC bajo los shocks vistos') : t('AUC under the held-out shocks', 'AUC bajo los shocks reservados'),
+        t('Shock', 'Choque'),
+        o.seen_or_held_out === 'seen' ? t('AUC under the seen shocks', 'AUC bajo los choques vistos') : t('AUC under the held-out shocks', 'AUC bajo los choques reservados'),
         range,
-        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).en).join(', ')})`, `${o.shipped.rows.length} familias de shocks tal como se entregaron (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).es).join(', ')})`),
+        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).en).join(', ')})`, `${o.shipped.rows.length} familias de choques tal como se entregaron (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).es).join(', ')})`),
       ];
     }
     case 'shift': {
@@ -379,7 +383,7 @@ function c20Seeds(name: string, v: Variant, lang: Lang): B3Table | null {
     title: name,
     head: [t('Rung', 'Peldaño'), t('Seeds', 'Semillas'), t('AUC, mean', 'AUC, media'), t('AUC, standard deviation', 'AUC, desviación estándar'), t('AUC, lowest to highest', 'AUC, de menor a mayor'), t('Grade assignment changed', 'Asignación de grado cambiada'), t('Attribution rank correlation (mean)', 'Correlación de rango de atribución (media)'), t('Reason-code overlap (mean)', 'Solapamiento de códigos de razón (media)')],
     rows: o.rows.map((r): Cell[] => [
-      r.rung,
+      c20Rung(v, r.rung, lang),
       formatNumber(r.n_seeds, lang),
       num(r.auc.mean, lang, 3),
       num(r.auc.sd, lang, 3),
@@ -524,7 +528,7 @@ export function batch3ExperimentTables(manifest: CaseManifest, vs: Variant[], la
         c20Row,
         t(
           'Each kind of variant asks one question of the same model and states one measure: how the AUC holds under seen and held-out shocks, how far it falls in the worst subsample, how much it varies across seeds, how it degrades under noise, and whether a planted leak is caught.',
-          'Cada tipo de variante hace una pregunta al mismo modelo y declara una medida: cómo se mantiene el AUC bajo shocks vistos y reservados, cuánto cae en la peor submuestra, cuánto varía entre semillas, cómo se degrada con ruido y si se detecta una fuga sembrada.',
+          'Cada tipo de variante hace una pregunta al mismo modelo y declara una medida: cómo se mantiene el AUC bajo choques vistos y reservados, cuánto cae en la peor submuestra, cuánto varía entre semillas, cómo se degrada con ruido y si se detecta una fuga sembrada.',
         ),
         3,
       );

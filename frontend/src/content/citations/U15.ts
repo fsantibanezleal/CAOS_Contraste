@@ -7,13 +7,13 @@ import type { Citation } from '@fasl-work/caos-app-shell';
 export const CITATIONS: Citation[] = [
   {
     id: 'osfibackgrounder',
-    label: 'OSFI E-23 backgrounder',
+    label: { en: 'OSFI E-23 backgrounder', es: 'Nota de antecedentes de la OSFI E-23' },
     citation: 'Office of the Superintendent of Financial Institutions. Backgrounder: Guideline E-23, Model Risk Management. States that the guideline will come into effect in May 2027, following an 18-month transition period, and that pension plans are excluded from its scope.',
     url: 'https://www.osfi-bsif.gc.ca/en/news/backgrounder-guideline-e-23-model-risk-management',
   },
   {
     id: 'osfie23letter',
-    label: 'OSFI E-23 letter',
+    label: { en: 'OSFI E-23 letter', es: 'Carta de la OSFI sobre la E-23' },
     citation: 'Office of the Superintendent of Financial Institutions (2025-09-11). Letter: Guideline E-23, Model Risk Management (2027); takes effect for all federally regulated financial institutions on 2027-05-01.',
     url: 'https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027-letter',
   },

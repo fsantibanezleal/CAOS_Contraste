@@ -8,6 +8,7 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
 import { CASES, CATEGORY_TITLES } from '../content/coverage';
 import { P, T, useT } from '../content/bi';
+import { sourceText } from '../content/sources';
 import { ProtocolFigure } from './DocFigures';
 import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
@@ -48,10 +49,10 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
             <th className="caos-col-text">{t('Variant', 'Variante')}</th>
             <th>{t('Holdout records', 'Registros reservados')}</th>
             <th>{t('Default rate', 'Tasa de incumplimiento')}</th>
-            <th>{t('AUC, scorecard', 'AUC, scorecard')}</th>
+            <th>{t('AUC, scorecard', 'AUC, tarjeta de puntuación')}</th>
             <th>{t('Best rung by AUC', 'Mejor peldaño por AUC')}</th>
-            <th>{t('Jeffreys, scorecard', 'Jeffreys, scorecard')}</th>
-            <th>{t('PSI, scorecard', 'PSI, scorecard')}</th>
+            <th>{t('Jeffreys, scorecard', 'Jeffreys, tarjeta de puntuación')}</th>
+            <th>{t('PSI, scorecard', 'PSI, tarjeta de puntuación')}</th>
           </tr>
         </thead>
         <tbody>
@@ -71,13 +72,13 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
           ))}
         </tbody>
       </table>
-      <PlotCard title={{ en: 'Discrimination of the scorecard and of the best rung, variant by variant', es: 'Discriminación de la scorecard y del mejor peldaño, variante por variante' }} lane="replay" provenance="real">
+      <PlotCard title={{ en: 'Discrimination of the scorecard and of the best rung, variant by variant', es: 'Discriminación de la tarjeta de puntuación y del mejor peldaño, variante por variante' }} lane="replay" provenance="real">
         <UPlotChart
           height={260}
           x={{ values: x, label: { en: 'Variant (the number in the table)', es: 'Variante (el número de la tabla)' }, format: { decimals: 0 } }}
           y={{ label: { en: 'AUC', es: 'AUC' }, format: { decimals: 3 } }}
           series={[
-            { label: { en: 'Scorecard (P1)', es: 'Scorecard (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
+            { label: { en: 'Scorecard (P1)', es: 'Tarjeta de puntuación (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
             { label: { en: 'Best rung', es: 'Mejor peldaño' }, values: rows.map((r) => r.best.auc), color: '--color-magenta', mode: 'points' },
           ]}
         />
@@ -97,8 +98,8 @@ function CaseFacts({ m }: { m: CaseManifest }) {
     .join(', ');
   return (
     <P
-      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.map((s) => m.source_details[s]?.name ?? s).join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
-      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.map((s) => m.source_details[s]?.name ?? s).join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
+      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.map((s) => sourceText(s, m.source_details[s]?.name ?? s, 'en')).join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'la canalización'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.map((s) => sourceText(s, m.source_details[s]?.name ?? s, 'es')).join('; ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
     />
   );
 }
@@ -141,7 +142,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
   );
 }
 
-function Coverage({ built }: { built: Set<string> | null }) {
+export function Coverage({ built }: { built: Set<string> | null }) {
   const lang = useShellLang();
   const t = useT();
   return (
@@ -169,7 +170,8 @@ function Coverage({ built }: { built: Set<string> | null }) {
               <td className="caos-col-text">{pick(c.title, lang)}</td>
               <td className="caos-col-text">{pick(c.data, lang)}</td>
               <td>{pick(c.truth, lang)}</td>
-              <td>{built?.has(c.id) ? t('built', 'construido') : `${t('planned', 'planificado')} (${c.unit})`}</td>
+              {/* the status alone: a plan-unit code is not reader text (R3 c23 B5) */}
+              <td>{built?.has(c.id) ? t('built', 'construido') : t('planned', 'planificado')}</td>
             </tr>
           ))}
         </tbody>
@@ -210,7 +212,7 @@ function Metrics() {
       />
       <Equation
         tex="p = F_{\mathrm{Beta}\left(D+\frac12,\; N-D+\frac12\right)}(\mathrm{PD})"
-        caption={<T en={<>The Jeffreys p-value of the level of a PD: D the defaults among N obligors, F the distribution function of the Beta posterior with the Jeffreys prior, evaluated at the PD applied (ECB 2019).</>} es={<>El valor p de Jeffreys del nivel de una PD: D los incumplimientos entre N deudores, F la función de distribución del posterior Beta con el prior de Jeffreys, evaluada en la PD aplicada (BCE 2019).</>} />}
+        caption={<T en={<>The Jeffreys p-value of the level of a PD: D the defaults among N obligors, F the distribution function of the Beta posterior with the Jeffreys prior, evaluated at the PD applied (ECB 2019).</>} es={<>El valor p de Jeffreys del nivel de una PD: D los incumplimientos entre N deudores, F la función de distribución del posterior Beta con la distribución a priori de Jeffreys, evaluada en la PD aplicada (BCE 2019).</>} />}
       />
     </DocSection>
   );
@@ -218,8 +220,8 @@ function Metrics() {
 
 /** The question families the case tabs are grouped by (ADR-0071 rule 5: at most six peer tabs, then group by the question), keyed by the category of the coverage registry; a category without a family keeps its own title. */
 const FAMILY: Record<string, { id: string; label: BiText }> = {
-  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
-  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
+  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
+  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
   provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'portfolio-capital': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },

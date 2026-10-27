@@ -43,7 +43,15 @@ const C10_LEVEL_FOCUS = 0.999;
 
 /** What a value the artifact leaves out reads like: "not available", and the reason when the document gives one. */
 // a reason the documents write in English only reads in the page's language, as in the views (the R2b review: the C11 champion reason)
-const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${noteText(reason, lang)})` : ''}`;
+/** Reasons of the C17 documents the shared note table does not hold, in Spanish (R3 c23 B1: the xi 1.1 reason printed in English). */
+const C17_REASON_ES: Record<string, string> = {
+  'the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist':
+    'el índice de cola es 1 o más: la severidad tiene media infinita y la corrección por la media, lambda por E[X], no existe',
+  'the tail index is 1 or more: the severity has an infinite mean, so the annual loss has no mean':
+    'el índice de cola es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media',
+};
+const reasonIn = (reason: string, lang: Lang): string => (lang === 'es' && C17_REASON_ES[reason] ? C17_REASON_ES[reason] : noteText(reason, lang));
+const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${reasonIn(reason, lang)})` : ''}`;
 const bi = (t: BiText | undefined, lang: Lang, fallback = ''): string => (t ? pick(t, lang) : fallback);
 const join = (parts: string[]): string => parts.join('; ');
 /** A value between two bounds: "0.0030 (0.0025 to 0.0036)". */
@@ -273,7 +281,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c14Row,
       t(
         'The largest of the six prescribed shocks of the 2024 calibration, with the shock that gives it; the outlier test compares it with 15% of Tier 1 capital. A positive delta is a loss; contractual puts every non-maturity deposit in the overnight bucket.',
-        'El mayor de los seis shocks prescritos de la calibración 2024, con el shock que lo da; la prueba de valor atípico lo compara con 15 % del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
+        'El mayor de los seis choques prescritos de la calibración 2024, con el choque que lo da; la prueba de valor atípico lo compara con 15 % del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
       ),
       5,
     );
@@ -283,7 +291,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c15Row,
       t(
         'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows stay on the fixtures until the owner supplies the data.',
-        'El mayor de los seis shocks del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50 % aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
+        'El mayor de los seis choques del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50 % aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
       ),
       6,
     );
@@ -418,7 +426,7 @@ function c13Detection(manifest: CaseManifest, vs: Variant[], lang: Lang): W2Tabl
   });
   return {
     key: 'detection',
-    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por el backtest de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95 %)')],
+    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por la prueba retrospectiva de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95 %)')],
     rows,
     wide: 3,
     note: t(

@@ -8,7 +8,7 @@ import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
 import { modelName } from '../workbench/names';
-import type { C03Outputs } from '../workbench/c03/selection';
+import { reasonText, type C03Outputs } from '../workbench/c03/selection';
 import type { C06Outputs } from '../workbench/c06/selection';
 import type { C07Outputs } from '../workbench/c07/selection';
 import type { C08Outputs } from '../workbench/c08/selection';
@@ -55,9 +55,15 @@ function wmean(items: Array<{ v: number | null | undefined; w: number }>): numbe
 /** A text cell longer than this wraps like a text column: a "not available (reason)" cell must not widen the table past its pane. */
 const LONG_CELL = 28;
 
+/** The box of a comparison table: it scrolls sideways at every width with a faded right edge and a gap after the last column, so
+ * a table wider than its pane is reached, never cut (R3 c23 M2: above 900 px the C18 table was clipped at the pane edge). */
+const TABLE_BOX = { overflowX: 'auto', maxWidth: '100%', minWidth: 0, paddingRight: '1.5rem', maskImage: 'linear-gradient(to right, #000 calc(100% - 1.5rem), transparent)' } as const;
+
 export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
   return (
-    <table className="caos-table" data-state="ready">
+    <div data-table-box style={TABLE_BOX}>
+    {/* rows several lines tall read from the top (R3 c23 M3: the C21 year pair sat 500 px down its centred row) */}
+    <table className="caos-table ct-top" data-state="ready">
       <thead>
         <tr>
           {head.map((h, i) => (
@@ -81,6 +87,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -144,7 +151,7 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
     C03: [t('Variant', 'Variante'), t('Training loans', 'Créditos de entrenamiento'), t('Vintages with a 5-year mark', 'Cosechas con marca de 5 años'), t('Predicted 5-year PD', 'PD a 5 años predicha'), t('Observed 5-year PD', 'PD a 5 años observada'), t('Largest PSI', 'PSI máximo')],
     C06: [t('Variant', 'Variante'), t('Accounts', 'Cuentas'), t('Gross carrying amount', 'Importe en libros bruto'), t('Expected credit loss', 'Pérdida crediticia esperada'), t('Coverage', 'Cobertura'), t('Share not in stage 1', 'Parte fuera de la etapa 1')],
     C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anejo 9 del BdE')],
-    C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD proxy media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
+    C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD aproximación media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
     C09: [t('Variant', 'Variante'), t('Known CCF', 'CCF conocido'), t('Mean estimator, fixed horizon', 'Estimador de media, horizonte fijo'), t('Its bias', 'Su sesgo'), t('Estimates inside the tolerance', 'Estimaciones dentro de la tolerancia')],
   };
   return (
@@ -166,6 +173,19 @@ export function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): s
 /** A rung the document declares absent has no model record, so no short title: its name is here (the identifier stays the same in both languages). */
 const ABSENT_RUNG: Record<string, { en: string; es: string }> = { 'P5-tabpfn': { en: 'P5 TabPFN', es: 'P5 TabPFN' } };
 
+/** The C03 Benchmark rows of one variant: each rung with its AUC (or "not available" and the reason), interval, Brier and gap. */
+export function c03BenchmarkRows(v: VariantArtifact<unknown>, lang: Lang): Cell[][] {
+  const o = v.outputs as C03Outputs;
+  return o.rung_comparison.map((r) => [
+    rungName(v, r.rung_id, lang),
+    // the reason in the reader language (R3 c23 B1: the Spanish Benchmark printed the engine's English)
+    r.auc === null ? `${formatNumber(null, lang)}${r.reason ? ` (${pick(reasonText(r.reason), lang)})` : ''}` : num(r.auc, lang, 4),
+    r.auc_ci_low === null || r.auc_ci_high === null ? '' : `${num(r.auc_ci_low, lang, 4)} - ${num(r.auc_ci_high, lang, 4)}`,
+    num(r.brier, lang, 4),
+    pct(r.calibration_gap_5y, lang),
+  ]);
+}
+
 /** The Benchmark section of a case: its rungs compared with its own metrics, one table per variant. */
 export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
@@ -178,19 +198,13 @@ export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
       {all.data.map((v) => {
         const name = title[v.variant_id] ?? v.variant_id;
         if (manifest.case_id === 'C03') {
-          const o = v.outputs as C03Outputs;
+          
           return (
             <section key={v.variant_id}>
               <h4>{name}</h4>
               <Table
                 head={[t('Rung', 'Peldaño'), 'AUC', t('95% interval', 'Intervalo 95 %'), 'Brier', t('5-year calibration gap', 'Brecha de calibración a 5 años')]}
-                rows={o.rung_comparison.map((r) => [
-                  rungName(v, r.rung_id, lang),
-                  r.auc === null ? `${formatNumber(null, lang)}${r.reason ? ` (${r.reason})` : ''}` : num(r.auc, lang, 4),
-                  r.auc_ci_low === null || r.auc_ci_high === null ? '' : `${num(r.auc_ci_low, lang, 4)} - ${num(r.auc_ci_high, lang, 4)}`,
-                  num(r.brier, lang, 4),
-                  pct(r.calibration_gap_5y, lang),
-                ])}
+                rows={c03BenchmarkRows(v, lang)}
               />
             </section>
           );

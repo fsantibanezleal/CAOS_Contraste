@@ -5,8 +5,8 @@
 // the standard, each table and each reference was read at its primary source on 2026-10-04. Every display equation
 // carries a caption that defines its symbols. The registry mounts it as one tab of the models group; one file exports one
 // section, so the family is one topic with one honest callout, one part per question.
-import { Callout, Cite, DocSection, Equation, Figure } from '@fasl-work/caos-app-shell';
-import { P, Ref, T, useT } from '../../content/bi';
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
+import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
 
 const W = 480;
