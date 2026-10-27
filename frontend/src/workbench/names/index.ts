@@ -503,7 +503,8 @@ export function evidenceLabel(key: string, ctx: NameContext): EvidenceLabel | nu
   const t = testName(testId);
   if (!t) return null;
   const parts: BiText[] = [];
-  if (modelId !== undefined) {
+  // `-` is a row of no model, cited by its segment (`test@-@segment`, U16-R3 c20 M2)
+  if (modelId !== undefined && modelId !== '-') {
     const mn = modelName(modelId, ctx);
     if (!mn) return null;
     parts.push(mn);

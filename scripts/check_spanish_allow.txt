@@ -15,14 +15,7 @@ data-pipeline/pipeline/cases/c04_families.py :: momentum  # owned by U16-F10b: l
 data-pipeline/pipeline/cases/c04_transitions.py :: momentum  # owned by U16-F10b: line 127, 59, 60, 626, 627, 709 ...; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c10/documents.py :: backtest  # owned by U16-F10c: line 339; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c16/models.py :: hazard  # owned by U16-F10d: line 79; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c18/capital.py :: proxy  # owned by U16-F10e: line 50; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c20/conv.py :: scoring  # owned by U16-F10e: line 63; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c20/v_shock.py :: scoring  # owned by U16-F10e: line 212; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c21/findings.py :: odds  # owned by U16-F10e: line 84, 92; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/c22_studies.py :: log-odds  # owned by U16-F10e: line 341, 359; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c22_studies.py :: backtest  # owned by U16-F10e: line 239, 240, 245; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c22_studies.py :: backtests  # owned by U16-F10e: line 282; to translate under the 2026-10-27 ruling
-data-pipeline/pipeline/cases/c22_validator.py :: momentum  # owned by U16-F10e: line 127, 337; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/cases/reference_text.py :: scorecard  # owned by the integrator: line 59; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/core/readiness.py :: pipeline  # owned by the integrator (a shared pipeline module): line 41; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/governance/bake.py :: pipeline  # owned by the integrator (a shared pipeline module): line 350; to translate under the 2026-10-27 ruling
@@ -38,13 +31,6 @@ frontend/src/workbench/c04/FamilyViews.tsx :: bootstrap  # owned by U16-F10b: li
 frontend/src/workbench/c05/SpViews.tsx :: backtest  # owned by U16-F10b: line 487; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c07/RegimeViews.tsx :: shock  # owned by U16-F10b: line 622, 628; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c12/RegulatoryViews.tsx :: shock  # owned by U16-F10d: line 360; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c18/C18Common.tsx :: proxy  # owned by U16-F10e: line 188, 368; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c18/CapitalViews.tsx :: proxy  # owned by U16-F10e: line 380, 388; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c20/C20Common.tsx :: commit  # owned by U16-F10e: line 269; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c20/C20Common.tsx :: bootstrap  # owned by U16-F10e: line 343; to translate under the 2026-10-27 ruling
 frontend/src/workbench/c20/RobustnessViews.tsx :: bootstrap  # owned by U16-F10e: line 107; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c21/EstimateViews.tsx :: odds  # owned by U16-F10e: line 44, 78; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c21/EstimateViews.tsx :: log-odds  # owned by U16-F10e: line 61, 165; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c21/FindingsEvidence.tsx :: odds  # owned by U16-F10e: line 51, 52, 100; to translate under the 2026-10-27 ruling
-frontend/src/workbench/c21/RateViews.tsx :: odds  # owned by U16-F10e: line 212; to translate under the 2026-10-27 ruling
 data-pipeline/pipeline/governance/reader.py :: pipeline  # the rule that replaces the English word with "canalización" in an engine sentence (R3 rulings 2026-10-27)

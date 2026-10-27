@@ -7,6 +7,7 @@ import { setLang } from './c03/u6-testkit';
 import { LadderView } from './c10/ModelViews';
 import { defaultSel as c10Sel, outputsOf as c10Outputs } from './c10/selection';
 import { daySeconds } from '../lib/days';
+import { evidenceText } from './names';
 import { collateralRange, committedCollateral, defaultSel as c12Sel, outputsOf as c12Outputs } from './c12/selection';
 
 describe('U16-F10', () => {
@@ -43,4 +44,14 @@ describe('U16-F10', () => {
       expect(r.max * 1000).toBeGreaterThanOrEqual(committedCollateral(o));
     });
   }
+  it('a finding cites a row of no model by its segment, and its evidence names the pair and the variable (R3 c20 M2)', () => {
+    const keys = ['stability.chi2@-@typical>higher-risk:committed_exposure_amt', 'stability.chi2@-@typical>higher-risk:interest_rate'];
+    for (const lang of ['en', 'es'] as const) {
+      const texts = keys.map((k) => evidenceText(k, { caseId: 'C20' }, lang));
+      for (const t of texts) {
+        expect(t).not.toMatch(/@|committed_exposure_amt|interest_rate|typical>/);
+      }
+      expect(new Set(texts).size).toBe(keys.length);
+    }
+  });
 });
