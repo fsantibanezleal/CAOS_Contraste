@@ -21,20 +21,19 @@ C22_CREDIT_FAMILIES = frozenset({"discrimination", "pd-calibration", "rating-sys
 #: what U16-P2 adds to a document carries one of these prefixes, so the credit view leaves it out
 NEW_PREFIXES = ("F-OTHER-", "other_")
 
-#: sha256 of the canonical JSON of credit_view(document), per variant, from the artifacts before U16-P2. Re-pinned at U16-F4 (2026-10-22): the
-#: only change is the last binary digit of the generators' exact truth.auc_model (about 1e-16, riskvalidation 1.0 on the bake host); checked
-#: path by path against the documents of bd42589, no rate, seed, histogram or count moved.
+#: sha256 of the canonical JSON of credit_view(document), its bilingual texts left out (numbers_only), per variant. Pinned at the
+#: 1.00.000 release (2026-10-27) from the documents of 7db68ec (the U16-F4 pins, checked path by path against bd42589, the documents
+#: before U16-P2) and equal on the re-baked documents: no rate, seed, histogram or count moved; the texts are reviewed by the Spanish
+#: guard and the views, not by this digest.
 BASELINE = {
-    "broken-monotonicity": "1353430545beba524d04b5869e8006e4348be47e083f54d7645408a99a9aa986",
-    "clustering": "14ef54b5b8e450ba644850964f444fcf00b383a664300974e59c12af1a7e412f",
-    "concentration": "b854fa1e8ab1455aba25c2152dd1da0c1ee2a46512254eddaad2ac12254ff37f",
-    "discrimination-decay": "0a7f17d26796dee90bb8f615ba72f06e0bf4ed4856d5480f13a0564287582f02",
-    "drift": "46a6974a98addf80803a775db2edbbb09f7e69e96523b732b6b98870267255b4",
-    "leakage": "ad0ce3fdfb19516b3cbab87dd3ff99cb7761ff6033410c2c2f4a5db614fac1e1",
-    "miscalibration": "bbeb3090c2bb034cf8892b4814d2a7be771d39fc93f5c3b8b2f212dd7195621f",
-    # re-pinned at U16 b10 m11 (2026-10-22): the HL scenario text of simulation 21 says "the model fitted on the same sample"
-    # where it said "(fitted=True)", in both languages; checked path by path, no number moved
-    "null": "95199739ed70fcda8d464a27f3f7620506fcc578f3feeddb638a8ea63d67dc5b",
+    "broken-monotonicity": "8fc911616fe7cdbd0c0cde539f9c1364cc444f1963c70ea94152de1cd67659df",
+    "clustering": "f276a5266a1a5416bb35113cc4758e833ade52e700cd41cc10b1bd295236dc2c",
+    "concentration": "bbca530dc53888ddb9c2d87bbbbb9c772793674de62e0a765b3d814adf0bd2ce",
+    "discrimination-decay": "5f52891afe717b684f8f7eda8ca60cbe129c494e97cd40f7474af6ecb95790e9",
+    "drift": "ef001f02b3a053411b14ce5ac02d1aa27780d03b95afc36b62c3cbc191588677",
+    "leakage": "f03b69868fbf4ca3cdf2364c6b9e2f577e2ff901ce2385e276e3ce4d4480944b",
+    "miscalibration": "260b4f95a91e3dd6b49fa95574b3f7e611b83fa9bb50743d1220a044fc9e2b5d",
+    "null": "ceb29a4e5e591f2bd90ea5fd1088425420c857872ec1a8526456cf898174dafe",
 }
 
 
@@ -71,8 +70,20 @@ def credit_view(doc: dict, credit_ids: frozenset[str] | None = None) -> dict:
     }
 
 
+def numbers_only(obj):
+    """The object with every bilingual text ({en, es}) left out: the baseline pins the numbers, never the wording of a label or a
+    scenario, which the reader-text reviews change (U16-F11: log-odds in Spanish)."""
+    if isinstance(obj, dict):
+        if set(obj) == {"en", "es"}:
+            return None
+        return {k: numbers_only(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [numbers_only(x) for x in obj]
+    return obj
+
+
 def digest(view: dict) -> str:
-    return hashlib.sha256(json.dumps(view, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+    return hashlib.sha256(json.dumps(numbers_only(view), sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
 def _documents() -> dict[str, dict]:
