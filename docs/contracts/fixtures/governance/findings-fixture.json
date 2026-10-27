@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "4fd7924ae93237d3e5809c597ff2c9300ec5df9434d74835e618288e7d5efff2",
+    "sha256": "5f4d7eef7e6fe2560a4a470327cbbce1f74ad58988f9fbf3ee00623fb9502ff9",
     "ref": null
    },
    {
@@ -30,17 +30,17 @@
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "024ac02a581a3b820c65afa70e43b17ca0153082f37c3d36b642b52bbd67e1f1",
+    "sha256": "1d0b9119aa92265d54ae11ad126f80ce0a9af0994e79a60015ddca5a2c41992e",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "8af4b7eaa63725ea76826003ade7279dbfa5e02b92525602194467f1e6bb11de",
+    "sha256": "b40674ab12d4ab4b54799bb168f55ed1fe4f6d8616611a15c716448e944a8e34",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "c570d7c9dc82c238726df741cdd9f7dbf1aa90634e410b43b62a0c3bd91ef64f",
+    "sha256": "aca66adaa70dd735e3dba9d2293319b6a62813e14d61a307deeb92327d2d4a15",
     "ref": null
    },
    {
@@ -75,57 +75,57 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "94780bc67e8244524405ffcaccc96b81be0c565e65ffcc422e727a501c4f57da",
+    "sha256": "f76802076ad7b65f367665f6dd177148a50c0d7835ce438f8eebbea25225ee45",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "97a92ffbd3bf68bf567cbcbcb20830bece6fc94439d31f31f352bfec35570264",
+    "sha256": "e611baa926c51e2bb1757898f0bb32a27aa2ef28425b4afe4fabc4ffa760e83d",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "2d734c8d335662c7021b3d54a9232fa8ad481339387d61ed60186b50af5577d0",
+    "sha256": "a36e5dd61f6a3e51c6ee5b4f3cef556398122b47da5634b0d19ee98e31178248",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "612b1638abca316120f7a4bafef6118072a70cd1c358714b86ed3234fec1f647",
+    "sha256": "dacaa09f616a35150f55e7fbf880c7125560df5023f114741e51705ae3984cec",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "3b97626361beee765c134887f7746030a6a802517f98b8640e7dfe4e4dbaf013",
+    "sha256": "2a21fcfd8523e5ecd2262a12595e310f689b88d6413f87a6755a17957e174cb3",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "3d5fb731116c77ec72ae41c1ff5887234da9adae92b2dd4df0965146abc10fdb",
+    "sha256": "9f4152056b2b6185e266408d85a424810baa95565c9c23d280dc02187b786e22",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "665a589a01299df1b5fb63f0a2bec1b631378c395bea5981cc51adf08f6717ab",
+    "sha256": "ab1114038649eaa005c5ab5ae574d1542d73c8fe0034b5bf35e8cfcfa09b00b6",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "057ae51454a040d84699a1d4216024cf2a5e66e317ca4ecbc179c9503c3f0dd1",
+    "sha256": "87201d6738417ebecfd8995daf1c6aef23236d170b69e7817fa1ee3b38da36da",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "3b242fa2a49c5ab9f022bd630517e27c862d9ecfdbe6a3f907d4beb8041c2032",
+    "sha256": "d52844ea66e86196ab9c1a47dfd6c4779d69045d2ede4c0d3b103ca6ba63a751",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "287d586e469bbd2bbad8f10b023f5e639f9f0585f8f10c0e67d0e7389f994ac3",
+    "sha256": "d97e6a99bb6c2ac448256a0c86b413fad0358e110aa5babfd00926bd61e0d29b",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "26fd3794c1c52908697e3a46ae1b6d8ff7084bfe1189fd2c674a4d0f0d81c618",
+    "sha256": "8080a0ec9b9f6354ce84e482b4f4d1a4beebd1c59fcc86179122258173cfabf7",
     "ref": null
    },
    {
@@ -140,27 +140,27 @@
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "63e993be95a126486afa6c709c7bbab472c3eacea37b3e2114715fd3e7419412",
+    "sha256": "68b3f5bc4e467e328e5d52a4d8229e39d277f62814cf99ecdfa3fe344afc8450",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "91f0187ebb47cf69b17c84e88e8cd5e2dc38e7710839d3837314e96cd7837ac6",
+    "sha256": "d6705a64976d3ecb28255f7b6cd6d1ddd9f0b2f002c9e53938ca224e13b0890a",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "5340d8ddadd8ada4b00d5c78ac9717f210098b779bbc5995a6f523309e90e275",
+    "sha256": "cad42e22c6d7e5cc0ce5f2966089b250bf318ef8927674b03611acf6e69179ba",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "04391984ee332f994663e146e046e95bad28e4a437ff70fa7742c80b93dabeb1",
+    "sha256": "31f1670d355f85d18c2b24e98187eddf0985b89ab1ecba77a7d06412a5fd622e",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "40a950411e92691c4246842244a3da075e62e832b68e615a255bf6bd192c6bbb",
+    "sha256": "e8a68a4daa66b71b59658762a1cf22c59fd8b43ede71df243caa0ea0654419b0",
     "ref": null
    }
   ]
@@ -395,6 +395,55 @@
      "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
     }
    }
+  },
+  {
+   "key": "C01/german-twin/F-RED-01",
+   "case_id": "C01",
+   "variant_id": "german-twin",
+   "id": "F-RED-01",
+   "entry_key": "C01/german",
+   "title": {
+    "en": "Jeffreys: red on 4 rows (P3 EBM; P4 LightGBM; P5 TabPFN) that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Jeffreys: en rojo en 4 filas (P3 EBM; P4 LightGBM; P5 TabPFN) que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.jeffreys@P3-ebm@G01",
+    "pd.jeffreys@P4-lightgbm@G01",
+    "pd.jeffreys@P4-lightgbm@G07",
+    "pd.jeffreys@P5-tabpfn@G01"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.jeffreys",
+    "model_id": "P3-ebm",
+    "segment": "G01",
+    "value": 0.0689655172,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C01/german-twin.json#/tests/103/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of PD models (synthetic role)",
+   "tier": 2,
+   "raised": "2026-10-27",
+   "deadline_days": 90,
+   "due": "2027-01-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
   },
   {
    "key": "C07/base/F-GAP",
@@ -2864,8 +2913,8 @@
    "id": "reverse-scenario",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 2.4e-15).",
-    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 2,4e-15)."
+    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 points and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 2.4E-15).",
+    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 puntos y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 2,4E-15)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -3028,8 +3077,8 @@
    "id": "F-MIGRATION-POWER",
    "entry_key": "C22/generators",
    "title": {
-    "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen half the time with 500 obligors per grade",
-    "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida la mitad de las veces con 500 deudores por grado"
+    "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen in 44.5 % of the samples with 500 obligors per grade",
+    "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida en el 44,5 % de las muestras con 500 deudores por grado"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -3073,6 +3122,52 @@
      "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
     }
    }
+  },
+  {
+   "key": "C22/broken-monotonicity/F-RED-01",
+   "case_id": "C22",
+   "variant_id": "broken-monotonicity",
+   "id": "F-RED-01",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "ECB migration z-tests: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Pruebas z de migración del BCE: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "rating.migration_ztests@migrations-7-500-r2"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "rating.migration_ztests",
+    "model_id": "migrations-7-500-r2",
+    "segment": null,
+    "value": 1.0,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/broken-monotonicity.json#/tests/0/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
   },
   {
    "key": "C22/clustering/F-BINOM-RHO",
@@ -3272,8 +3367,8 @@
    "id": "F-DECAY-POWER",
    "entry_key": "C22/generators",
    "title": {
-    "en": "With 150 defaulters an AUC drop of two points is rarely caught: small portfolios see only large decays",
-    "es": "Con 150 incumplidos una caída de dos puntos de AUC rara vez se detecta: las carteras pequeñas solo ven deterioros grandes"
+    "en": "With 150 defaulters an AUC drop of two points is caught in 25.5 % of the samples, about one time in four: small portfolios see only large decays",
+    "es": "Con 150 incumplidos una caída de dos puntos de AUC se detecta en el 25,5 % de las muestras, cerca de una vez en cuatro: las carteras pequeñas solo ven deterioros grandes"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -3425,6 +3520,98 @@
    }
   },
   {
+   "key": "C22/drift/F-RED-01",
+   "case_id": "C22",
+   "variant_id": "drift",
+   "id": "F-RED-01",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Two-sample Kolmogorov-Smirnov test: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Prueba de Kolmogorov-Smirnov de dos muestras: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stability.ks@two-sample-1000-s0.2"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "stability.ks",
+    "model_id": "two-sample-1000-s0.2",
+    "segment": null,
+    "value": 0.114,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/drift.json#/tests/1/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/drift/F-RED-02",
+   "case_id": "C22",
+   "variant_id": "drift",
+   "id": "F-RED-02",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "PSI against the training slice: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "PSI contra el tramo de entrenamiento: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stability.psi@two-sample-1000-s0.2"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "stability.psi",
+    "model_id": "two-sample-1000-s0.2",
+    "segment": null,
+    "value": 0.053111818,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/drift.json#/tests/0/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
    "key": "C22/leakage/F-LEAK-SIGNAL",
    "case_id": "C22",
    "variant_id": "leakage",
@@ -3531,6 +3718,52 @@
    }
   },
   {
+   "key": "C22/leakage/F-RED-01",
+   "case_id": "C22",
+   "variant_id": "leakage",
+   "id": "F-RED-01",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "AUC against the AUC at initial validation: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "AUC contra el AUC de la validación inicial: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "disc.auc_vs_initial@binormal-150-leak1"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "disc.auc_vs_initial",
+    "model_id": "binormal-150-leak1",
+    "segment": null,
+    "value": 8.03806208,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/leakage.json#/tests/0/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
    "key": "C22/miscalibration/F-PROFILE-BLIND",
    "case_id": "C22",
    "variant_id": "miscalibration",
@@ -3635,6 +3868,190 @@
      "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
     }
    }
+  },
+  {
+   "key": "C22/miscalibration/F-RED-01",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-RED-01",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Binomial: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Binomial: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.binomial@port-5000-k1.5"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.binomial",
+    "model_id": "port-5000-k1.5",
+    "segment": null,
+    "value": 141.0,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/miscalibration.json#/tests/0/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/miscalibration/F-RED-02",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-RED-02",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Hosmer-Lemeshow: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Hosmer-Lemeshow: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.hosmer_lemeshow@logistic-5000-k1.5"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.hosmer_lemeshow",
+    "model_id": "logistic-5000-k1.5",
+    "segment": null,
+    "value": 30.9148408,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/miscalibration.json#/tests/2/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/miscalibration/F-RED-03",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-RED-03",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Jeffreys: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Jeffreys: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.jeffreys@port-5000-k1.5"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.jeffreys",
+    "model_id": "port-5000-k1.5",
+    "segment": null,
+    "value": 0.0282,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/miscalibration.json#/tests/1/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/miscalibration/F-RED-04",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-RED-04",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Spiegelhalter test: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
+    "es": "Prueba de Spiegelhalter: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.spiegelhalter@logistic-5000-k1.5"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.spiegelhalter",
+    "model_id": "logistic-5000-k1.5",
+    "segment": null,
+    "value": 3.86286751,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C22/miscalibration.json#/tests/3/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
   },
   {
    "key": "C22/null/F-HL-DOF",
@@ -3938,8 +4355,8 @@
    "id": "F-PSI-RULE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
-    "es": "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"
+    "en": "The PSI 0.10 rule of thumb raises a false alarm in 85.0 % of the samples of 100 where nothing changed; the chi-square benchmark is far closer to its level (7.0 % at 5%, above its bound at this size)",
+    "es": "La regla empírica PSI 0,10 da una falsa alarma en el 85,0 % de las muestras de 100 en que nada cambió; la referencia chi-cuadrado queda mucho más cerca de su nivel (7,0 % al 5 %, sobre su cota en este tamaño)"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -3990,8 +4407,8 @@
    "id": "F-TRANSITION-SIZE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.72%, Markov order (grouped by direction) 6.05%, Matrix against a reference 3.70%, Downward momentum (hazard) 4.45%); the order test, near its bound in 4,000 repetitions, rejects 5.05% at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Impulso a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.73 %, Markov order (grouped by direction) 6.05 %, Matrix against a reference 3.70 %, Downward momentum (hazard) 4.45 %); the order test, near its bound in 4,000 repetitions, rejects 5.05 % at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05 % al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4077,8 +4494,8 @@
    "id": "F-OTHER-MC-EXCESS",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The Monte Carlo quantile convergence test measures 1.32% at 1% against a bound of 1.49% (within it in this run); the engine documents this excess on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
-    "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,32% al 1% contra una cota de 1,49% (dentro de ella en esta corrida); el motor documenta este exceso en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55% al 1% contra una cota de 1,49% (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1%; con el error estándar exacto su tamaño es 1,20%, dentro de ambas cotas."
+    "en": "The Monte Carlo quantile convergence test measures 1.33 % at 1% against a bound of 1.49 % (within it in this run); the engine documents this excess on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
+    "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,33 % al 1% contra una cota de 1,49 % (dentro de ella en esta corrida); el motor documenta este exceso en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55% al 1% contra una cota de 1,49% (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1%; con el error estándar exacto su tamaño es 1,20%, dentro de ambas cotas."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4129,8 +4546,8 @@
    "id": "F-OTHER-CONSERVATIVE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile) (60 years at the 95% level), Tail back-test (LHP quantile) (250 years at the 99% level), CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
-    "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP) (60 años al nivel 95%), Prueba retrospectiva de cola (cuantil LHP) (250 años al nivel 99%), Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5%), Prueba de cuantil dinámico (250 días al 2,5%), Prueba de cuantil dinámico (750 días al 1%)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
+    "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile), 60 years at the 95% level, Tail back-test (LHP quantile), 250 years at the 99% level, CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1,500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
+    "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP), 60 años al nivel 95 %, Prueba retrospectiva de cola (cuantil LHP), 250 años al nivel 99 %, Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5 %), Prueba de cuantil dinámico (250 días al 2,5 %), Prueba de cuantil dinámico (750 días al 1 %)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4183,15 +4600,15 @@
   }
  ],
  "counts": {
-  "total": 84,
+  "total": 93,
   "by_severity": {
    "S1": 2,
-   "S2": 15,
+   "S2": 24,
    "S3": 41,
    "S4": 26
   },
   "by_status": {
-   "open": 50,
+   "open": 59,
    "action_plan_agreed": 0,
    "in_progress": 0,
    "submitted_for_closure": 0,
@@ -4203,15 +4620,15 @@
   "by_case": [
    {
     "case_id": "C01",
-    "total": 3,
+    "total": 4,
     "by_severity": {
      "S1": 0,
-     "S2": 0,
+     "S2": 1,
      "S3": 3,
      "S4": 0
     },
     "by_status": {
-     "open": 2,
+     "open": 3,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,
@@ -4263,15 +4680,15 @@
    },
    {
     "case_id": "C22",
-    "total": 23,
+    "total": 31,
     "by_severity": {
      "S1": 0,
-     "S2": 10,
+     "S2": 18,
      "S3": 7,
      "S4": 6
     },
     "by_status": {
-     "open": 2,
+     "open": 10,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,

@@ -48,40 +48,40 @@ The documents were baked over the committed case documents with `riskvalidation`
 
 | Entry | Tier | M | C | Opinion level | Variants | Register rows | Open S1 | Open S2 | Open S3 | Open S4 | Next review |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `C01/german` | 2 | 3 | 2 | 2 | 1 | 3 | 0 | 0 | 2 | 0 | 2027-10-27 |
-| `C01/taiwan` | 2 | 3 | 2 | 3 | 5 | 32 | 0 | 12 | 9 | 1 | 2027-10-27 |
-| `C01/taiwan-small` | 2 | 3 | 2 | 2 | 1 | 4 | 0 | 0 | 2 | 0 | 2027-10-27 |
-| `C02/polish-horizons` | 2 | 3 | 2 | 3 | 6 | 39 | 0 | 1 | 20 | 0 | 2027-10-27 |
-| `C03/sba-7a` | 2 | 3 | 2 | 3 | 5 | 40 | 0 | 19 | 11 | 0 | 2027-10-27 |
-| `C04/transitions` | 1 | 4 | 1 | 3 | 9 | 43 | 0 | 13 | 17 | 0 | 2027-10-27 |
+| `C01/german` | 2 | 3 | 2 | 3 | 1 | 4 | 0 | 1 | 2 | 0 | 2027-10-27 |
+| `C01/taiwan` | 2 | 3 | 2 | 3 | 5 | 45 | 0 | 20 | 14 | 1 | 2027-10-27 |
+| `C01/taiwan-small` | 2 | 3 | 2 | 3 | 1 | 7 | 0 | 2 | 3 | 0 | 2027-10-27 |
+| `C02/polish-horizons` | 2 | 3 | 2 | 3 | 6 | 40 | 0 | 2 | 20 | 0 | 2027-10-27 |
+| `C03/sba-7a` | 2 | 3 | 2 | 3 | 5 | 45 | 0 | 19 | 16 | 0 | 2027-10-27 |
+| `C04/transitions` | 1 | 4 | 1 | 3 | 9 | 44 | 0 | 14 | 17 | 0 | 2027-10-27 |
 | `C05/ldp` | 1 | 4 | 1 | 3 | 1 | 3 | 0 | 1 | 1 | 0 | 2027-10-27 |
-| `C05/sp2009` | 1 | 4 | 1 | 3 | 2 | 9 | 0 | 3 | 2 | 0 | 2027-10-27 |
+| `C05/sp2009` | 1 | 4 | 1 | 3 | 2 | 11 | 0 | 5 | 2 | 0 | 2027-10-27 |
 | `C06/rd-2006-12` | 1 | 4 | 1 | 3 | 1 | 9 | 0 | 3 | 1 | 0 | 2027-10-27 |
 | `C06/rd-2008-12` | 1 | 4 | 1 | 3 | 1 | 8 | 0 | 2 | 1 | 0 | 2027-10-27 |
 | `C06/rd-2010-12` | 1 | 4 | 1 | 3 | 1 | 8 | 0 | 2 | 1 | 0 | 2027-10-27 |
 | `C06/rd-2019-12` | 1 | 4 | 1 | 3 | 1 | 8 | 0 | 1 | 1 | 1 | 2027-10-27 |
-| `C06/rd-2020-06` | 1 | 4 | 1 | 3 | 1 | 10 | 0 | 4 | 1 | 0 | 2027-10-27 |
+| `C06/rd-2020-06` | 1 | 4 | 1 | 3 | 1 | 11 | 0 | 5 | 1 | 0 | 2027-10-27 |
 | `C06/rd-2023-06` | 1 | 4 | 1 | 3 | 1 | 8 | 0 | 1 | 1 | 1 | 2027-10-27 |
 | `C07/banco-andino` | 1 | 4 | 1 | 3 | 6 | 29 | 0 | 3 | 14 | 0 | 2027-10-27 |
-| `C08/dc-2003-06` | 2 | 3 | 2 | 3 | 1 | 2 | 0 | 1 | 1 | 0 | 2027-10-27 |
-| `C08/dc-2007-08` | 2 | 3 | 2 | 3 | 1 | 2 | 0 | 1 | 1 | 0 | 2027-10-27 |
-| `C08/dc-2009-10` | 2 | 3 | 2 | 3 | 1 | 2 | 0 | 1 | 1 | 0 | 2027-10-27 |
-| `C08/dc-2011-13` | 2 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 1 | 0 | 2027-10-27 |
-| `C08/dc-2014-19` | 2 | 3 | 2 | 3 | 1 | 2 | 0 | 1 | 1 | 0 | 2027-10-27 |
-| `C08/dc-2020-23` | 2 | 3 | 2 | 3 | 1 | 2 | 0 | 1 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2003-06` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2007-08` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2009-10` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2011-13` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2014-19` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
+| `C08/dc-2020-23` | 2 | 3 | 2 | 3 | 1 | 3 | 0 | 2 | 1 | 0 | 2027-10-27 |
 | `C09/generator` | 2 | 3 | 1 | 3 | 6 | 36 | 0 | 6 | 15 | 0 | 2027-10-27 |
 | `C10/c10` | 1 | 4 | 1 | 3 | 7 | 34 | 0 | 7 | 13 | 0 | 2027-10-27 |
-| `C11/ladder` | 2 | 3 | 2 | 3 | 6 | 8 | 0 | 5 | 2 | 0 | 2027-10-27 |
+| `C11/ladder` | 2 | 3 | 2 | 3 | 6 | 18 | 0 | 15 | 2 | 1 | 2027-10-27 |
 | `C12/hw1f-treasury-2000-2025` | 1 | 4 | 1 | 3 | 6 | 27 | 0 | 27 | 0 | 0 | 2027-10-27 |
 | `C13/generator` | 2 | 3 | 1 | 3 | 6 | 17 | 0 | 2 | 8 | 0 | 2027-10-27 |
 | `C14/svb-2021-2022` | 1 | 4 | 1 | 4 | 3 | 12 | 3 | 4 | 5 | 0 | 2027-10-27 |
 | `C15/banco-andino-2026-09` | 1 | 4 | 2 | 3 | 6 | 24 | 0 | 1 | 17 | 6 | 2027-10-27 |
 | `C16/svb-liquidity` | 1 | 4 | 1 | 3 | 6 | 15 | 0 | 9 | 5 | 1 | 2027-10-27 |
-| `C17/generator` | 1 | 4 | 1 | 3 | 4 | 13 | 0 | 5 | 8 | 0 | 2027-10-27 |
+| `C17/generator` | 1 | 4 | 1 | 3 | 4 | 17 | 0 | 9 | 8 | 0 | 2027-10-27 |
 | `C18/banco-andino` | 1 | 4 | 2 | 4 | 6 | 29 | 2 | 2 | 17 | 8 | 2027-10-27 |
 | `C20/c20-ladder` | 2 | 3 | 2 | 3 | 6 | 39 | 0 | 18 | 9 | 0 | 2027-10-27 |
 | `C21/hmda-de-2018-2023` | 1 | 4 | 1 | 3 | 6 | 38 | 0 | 6 | 14 | 6 | 2027-10-27 |
-| `C22/generators` | 4 | 1 | 1 | 3 | 9 | 25 | 0 | 2 | 0 | 0 | 2029-10-27 |
+| `C22/generators` | 4 | 1 | 1 | 3 | 9 | 33 | 0 | 10 | 0 | 0 | 2029-10-27 |
 
 ### Tier counts under the four readings
 
@@ -124,42 +124,42 @@ A document edge means the downstream package reads the upstream case's committed
 
 ### The findings register
 
-581 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
+637 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
 
 | Severity | ECB F | open | action_plan_agreed | in_progress | submitted_for_closure | validated_closed | overdue | risk_accepted |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | S1 | F4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| S2 | F3 | 164 | 0 | 0 | 0 | 3 | 0 | 5 |
-| S3 | F2 | 203 | 0 | 0 | 0 | 0 | 0 | 37 |
-| S4 | F1 | 24 | 0 | 0 | 0 | 4 | 0 | 136 |
+| S2 | F3 | 209 | 0 | 0 | 0 | 3 | 0 | 5 |
+| S3 | F2 | 214 | 0 | 0 | 0 | 0 | 0 | 37 |
+| S4 | F1 | 25 | 0 | 0 | 0 | 4 | 0 | 135 |
 
-Finding rows in the variant documents: 597; in the register: 581; in the variants no fit could be determined for: 16.
+Finding rows in the variant documents: 653; in the register: 637; in the variants no fit could be determined for: 16.
 
 Cases with no finding row in the committed documents: none.
 
 | Case | Rows | S1 | S2 | S3 | S4 | Overdue |
 |---|---:|---:|---:|---:|---:|---:|
-| C01 | 39 | 0 | 12 | 20 | 7 | 0 |
-| C02 | 39 | 0 | 1 | 20 | 18 | 0 |
-| C03 | 40 | 0 | 19 | 16 | 5 | 0 |
-| C04 | 43 | 0 | 13 | 27 | 3 | 0 |
-| C05 | 12 | 0 | 4 | 3 | 5 | 0 |
-| C06 | 51 | 0 | 13 | 6 | 32 | 0 |
+| C01 | 56 | 0 | 23 | 26 | 7 | 0 |
+| C02 | 40 | 0 | 2 | 20 | 18 | 0 |
+| C03 | 45 | 0 | 19 | 21 | 5 | 0 |
+| C04 | 44 | 0 | 14 | 27 | 3 | 0 |
+| C05 | 14 | 0 | 6 | 3 | 5 | 0 |
+| C06 | 52 | 0 | 14 | 6 | 32 | 0 |
 | C07 | 29 | 0 | 3 | 14 | 12 | 0 |
-| C08 | 11 | 0 | 5 | 6 | 0 | 0 |
+| C08 | 18 | 0 | 12 | 6 | 0 | 0 |
 | C09 | 36 | 0 | 6 | 21 | 9 | 0 |
 | C10 | 34 | 0 | 7 | 13 | 14 | 0 |
-| C11 | 8 | 0 | 5 | 2 | 1 | 0 |
+| C11 | 18 | 0 | 15 | 2 | 1 | 0 |
 | C12 | 27 | 0 | 27 | 0 | 0 | 0 |
 | C13 | 17 | 0 | 2 | 8 | 7 | 0 |
 | C14 | 12 | 3 | 4 | 5 | 0 | 0 |
 | C15 | 24 | 0 | 1 | 17 | 6 | 0 |
 | C16 | 15 | 0 | 9 | 5 | 1 | 0 |
-| C17 | 13 | 0 | 5 | 8 | 0 | 0 |
+| C17 | 17 | 0 | 9 | 8 | 0 | 0 |
 | C18 | 29 | 2 | 2 | 17 | 8 | 0 |
 | C20 | 39 | 0 | 18 | 9 | 12 | 0 |
 | C21 | 38 | 0 | 6 | 14 | 18 | 0 |
-| C22 | 25 | 0 | 10 | 9 | 6 | 0 |
+| C22 | 33 | 0 | 18 | 9 | 6 | 0 |
 
 ### The model risk appetite
 
@@ -168,8 +168,8 @@ The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (
 | Metric | Value | Numerator | Denominator | Light |
 |---|---:|---:|---:|---:|
 | Share of Tier 1 entries validated on time | 1 | 18 | 18 | green |
-| Open high-severity findings (S1 and S2) | 93 | 93 | 268 | red |
-| Overdue remediation | 0 | 0 | 268 | green |
+| Open high-severity findings (S1 and S2) | 117 | 117 | 295 | red |
+| Overdue remediation | 0 | 0 | 295 | green |
 | Entries used under exception | 0 | 0 | 34 | green |
 | Entries in breach of their thresholds (a red test row) | 32 | 32 | 34 | red |
 | PMA magnitude relative to the model output | 0.0033 | 324129997.0 | 97592002519.53 | green |
@@ -182,8 +182,8 @@ The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (
 | Opinion level | Entries |
 |---|---:|
 | 1 | 0 |
-| 2 | 3 |
-| 3 | 29 |
+| 2 | 0 |
+| 3 | 32 |
 | 4 | 2 |
 
 ### What the bake leaves out
