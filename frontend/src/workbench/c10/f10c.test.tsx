@@ -120,7 +120,7 @@ describe('U16-F10c, C10 (R3 c11)', () => {
   });
 
   it('m-P: the Variants card carries the truth status of the loaded variant', () => {
-    const variants = [...LOANS, ...GRIDS].map((id) => ({ id, title: { en: id, es: id }, v: committed<VariantArtifact>('C10', `${id}.json`) })) as Parameters<typeof C10VariantsTable>[0]['variants'];
+    const variants = [...LOANS, ...GRIDS].map((id) => ({ id, title: { en: id, es: id }, v: committed<VariantArtifact>("C10", `${id}.json`) })) as unknown as Parameters<typeof C10VariantsTable>[0]['variants'];
     for (const current of ['commercial-industrial', 'grid-22']) {
       const markup = html(<C10VariantsTable variants={variants} onPick={() => undefined} current={current} />);
       const prov = /data-provenance="([^"]+)"/.exec(markup)?.[1];

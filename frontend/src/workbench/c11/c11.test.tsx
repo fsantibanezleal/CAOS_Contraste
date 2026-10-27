@@ -413,6 +413,7 @@ describe('the C11 rail', () => {
   it('is written in Spanish', () => {
     expect(railHtml(0, 'es')).toContain(`Cola de ${formatNumber(0.01, 'es', { percent: true, decimals: 0 })}`);
     expect(railHtml(1, 'es')).toContain('Modelo');
-    expect(railHtml(2, 'es')).toContain('Backtest');
+    // the 2026-10-27 ruling: back-test is translated (prueba retrospectiva)
+    expect(railHtml(2, 'es')).toContain('Prueba retrospectiva');
   });
 });

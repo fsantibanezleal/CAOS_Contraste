@@ -75,7 +75,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
         <table className="caos-table ct-wrap-head" data-table={table}>
           <thead>
             <tr>
-              <th className="ct-text">{pick({ en: 'Back-test', es: 'Backtest' }, lang)}</th>
+              <th className="ct-text">{pick({ en: 'Back-test', es: 'Prueba retrospectiva' }, lang)}</th>
               <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
               <th>p</th>
               <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
