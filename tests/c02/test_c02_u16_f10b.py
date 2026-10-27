@@ -35,7 +35,7 @@ def test_b2_the_named_parameter_unit_and_basis_are_bilingual_and_name_no_decisio
     assert p["unit"] == {"en": "AUC points", "es": "puntos de AUC"}
     assert "Train minus test AUC gap" in p["basis"]["en"]                     # the English wording keeps its sense
     assert "AUC" in p["basis"]["es"] and "Train minus" not in p["basis"]["es"] and " gap " not in p["basis"]["es"]
-    assert "1,5 a 3" in p["basis"]["es"]                                      # Spanish numbers
+    assert "entre 1,5 y 3" in p["basis"]["es"]                                # Spanish numbers
     for text in p["basis"].values():
         assert not DECISION_ID.search(text), text
         assert "V6" not in text, text
