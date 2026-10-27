@@ -58,7 +58,8 @@ export function CurvesView({ sel }: { sel: C03Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: grid, label: { en: 'Months since approval', es: 'Meses desde la aprobación' }, format: { decimals: 0 }, ticks: curveTicks(grid) }}
-              y={{ label: { en: 'Cumulative PD', es: 'PD acumulada' }, format: { percent: true, decimals: 1 } }}
+              // two decimals, so the data table keeps the curve's start (U16-R4 c04 n2: 0.044 % read "0.0 %")
+              y={{ label: { en: 'Cumulative PD', es: 'PD acumulada' }, format: { percent: true, decimals: 2 } }}
               series={series}
               marks={grid.includes(sel.horizon) ? curveMarks(sel.horizon) : undefined}
             />

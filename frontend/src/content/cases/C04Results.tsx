@@ -15,6 +15,8 @@ import {
   GENERATOR_KEYS,
   GRADES,
   N_GRADES,
+  attributionIn,
+  engelmannName,
   isAgency,
   isFamily,
   isPublished,
@@ -260,7 +262,7 @@ export function paperAgreements(p: PublishedVariant): PaperAgreement[] {
       total: checks.length,
       detail: {
         en: `TTC PD printed ${pctText('en', e.ttc_pd.printed, 4)}, recomputed ${pctText('en', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${q.name} is judged within the rounding of its printed entries${q.pd0.note ? ` (${q.pd0.note.en})` : ''}`).join('; ')}` : ''}`,
-        es: `PD TTC impresa ${pctText('es', e.ttc_pd.printed, 4)}, recalculada ${pctText('es', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${q.name} se juzga dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`).join('; ')}` : ''}`,
+        es: `PD TTC impresa ${pctText('es', e.ttc_pd.printed, 4)}, recalculada ${pctText('es', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${engelmannName(q.name, 'es')} se juzga dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`).join('; ')}` : ''}`,
       },
     },
   ];
@@ -409,7 +411,9 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
   if (all.state === 'error') return <LoadError error={all.error} />;
   const { agencies, families, published } = kindsOf(all.data);
   const t = (en: string, es: string) => (lang === 'es' ? es : en);
-  const attribution = agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK;
+  // ESMA's attribution in the language of the page: the source name verbatim, the words around it translated (U16-R4 c05 B1: the
+  // Spanish results printed "Source: ESMA CEREP; tables transformed by Contraste.")
+  const attribution = attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, lang);
   return (
     <div data-state="ready" data-results={manifest.case_id}>
       <h3>{t('Measured: the agencies', 'Medido: las agencias')}</h3>
@@ -435,8 +439,8 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
       <h3>{t('Measured: the known-truth families', 'Medido: las familias de verdad conocida')}</h3>
       <p>
         {t(
-          `Rating paths drawn by riskvalidation's RatingPaths from ${GENERATOR_TEXT.en}, so every error is measured against a truth that is known (${attribution}).`,
-          `Trayectorias de calificación generadas por RatingPaths de riskvalidation desde ${GENERATOR_TEXT.es}, así que cada error se mide contra una verdad conocida (${attribution}).`,
+          `Rating paths drawn by riskvalidation's rating-path generator from ${GENERATOR_TEXT.en}, so every error is measured against a truth that is known (${attribution}).`,
+          `Trayectorias de calificación generadas por el generador de trayectorias de calificación de riskvalidation desde ${GENERATOR_TEXT.es}, así que cada error se mide contra una verdad conocida (${attribution}).`,
         )}
       </p>
       <ul data-results="families">

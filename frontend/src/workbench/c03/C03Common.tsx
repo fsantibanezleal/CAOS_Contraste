@@ -74,7 +74,7 @@ export function C03VariantsTable({ variants, onPick, current, label }: { variant
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
-                  <td>{fyRange(v.outputs.training.first_fy, v.outputs.training.last_fy)}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{fyRange(v.outputs.training.first_fy, v.outputs.training.last_fy)}</td>
                   <td className="ct-wide-only">{v.outputs.training.crisis_included ? yes : no}</td>
                   <td className="ct-text ct-wide-only">{c ? rungName(c.rung_id) : '-'}</td>
                   <td>

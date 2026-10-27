@@ -668,7 +668,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         lo_rm, hi_rm = min(rm[m] for m in snap), max(rm[m] for m in snap)
         res.append({"id": "F-EM-RARE", "severity": "S3", "status": "open", "evidence": ["design:rungs.estimators"],
                     "title": _t(f"AAA's one-year PD ({1e4 * truth:.2f}bp) from annual snapshots: EM, the diagonal and weighted adjustments and the cohort all miss it by {1e4 * lo_rm:.1f}bp to {1e4 * hi_rm:.1f}bp in RMSE (biases {1e4 * b['em']:+.2f}, {1e4 * b['diagonal']:+.2f}, {1e4 * b['weighted']:+.2f} and {1e4 * b['cohort']:+.2f}bp, Monte Carlo error about {1e4 * se['em']:.2f}bp), and {verdict}; the duration estimator, which needs the transition times CEREP's stock model does not publish, reaches {1e4 * rm['duration']:.2f}bp",
-                                f"La PD anual de AAA ({_num(1e4 * truth)[1]}pb) desde instantáneas anuales: EM, los ajustes diagonal y ponderado y la cohorte la yerran en {_num(1e4 * lo_rm, 1)[1]}pb a {_num(1e4 * hi_rm, 1)[1]}pb de RMSE (sesgos {_num(1e4 * b['em'])[1]}, {_num(1e4 * b['diagonal'])[1]}, {_num(1e4 * b['weighted'])[1]} y {_num(1e4 * b['cohort'])[1]}pb, error de Monte Carlo cerca de {_num(1e4 * se['em'])[1]}pb), y {verdict_es}; el estimador de duración, que necesita los tiempos de transición que el modelo de stock de CEREP no publica, llega a {_num(1e4 * rm['duration'])[1]}pb")})
+                                f"La PD anual de AAA ({_num(1e4 * truth)[1]}pb) desde instantáneas anuales: EM, los ajustes diagonal y ponderado y la cohorte la yerran en {_num(1e4 * lo_rm, 1)[1]}pb a {_num(1e4 * hi_rm, 1)[1]}pb de RMSE (sesgos {_num(1e4 * b['em'])[1]}, {_num(1e4 * b['diagonal'])[1]}, {_num(1e4 * b['weighted'])[1]} y {_num(1e4 * b['cohort'])[1]}pb, error de Monte Carlo cerca de {_num(1e4 * se['em'])[1]}pb), y {verdict_es}; el estimador de duración, que necesita los tiempos de transición que el modelo de concepto de saldo de CEREP no publica, llega a {_num(1e4 * rm['duration'])[1]}pb")})
         bound = size_bound(0.05, reps)
         nulls = [s for s in out["simulations"] if s["key"].endswith("@null")]
         over = [s["test_id"] for s in nulls if s["rates"]["p<0.05"]["rate"] > bound]
@@ -712,8 +712,8 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         hz_e, hz_w = 100 * tests["momentum"][emp], 100 * tests["momentum"][weak]
         res.append({"id": "F-MOMENTUM-TESTS", "severity": "S3", "status": "open",
                     "evidence": [f"rate:rating.{k}@alpha{a:g}" for k in ("time_homogeneity", "momentum") for a in (weak, emp)],
-                    "title": _t(f"Momentum at the empirical strength, alpha 0.125{c_en}, is seen by the hazard test in {hz_e:.0f}% of repetitions and by time homogeneity in {th_e:.0f}%; at a fifth of it (alpha 0.025) in {hz_w:.0f}% and {th_w:.0f}%",
-                                f"El impulso con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {_num(hz_e, 0)[1]} % de las repeticiones y la homogeneidad temporal en {_num(th_e, 0)[1]} %; a un quinto de ella (alfa 0,025) en {_num(hz_w, 0)[1]} % y {_num(th_w, 0)[1]} %")})
+                    "title": _t(f"Momentum at the empirical strength, alpha 0.125{c_en}, is seen by the hazard test in {hz_e:.1f}% of repetitions and by time homogeneity in {th_e:.1f}%; at a fifth of it (alpha 0.025) in {hz_w:.1f}% and {th_w:.1f}%",
+                                f"El impulso con la fuerza empírica, alfa 0,125{c_es}, lo ve la prueba de riesgo en {_num(hz_e, 1)[1]} % de las repeticiones y la homogeneidad temporal en {_num(th_e, 1)[1]} %; a un quinto de ella (alfa 0,025) en {_num(hz_w, 1)[1]} % y {_num(th_w, 1)[1]} %")})
         r = _rung(out, emp)
         err, freq = r["error_cohort_power"]["mean"][3], r["pd_5y_frequency"]["mean"][3]
         err_se = r["error_cohort_power"]["bias_mcse"][3]

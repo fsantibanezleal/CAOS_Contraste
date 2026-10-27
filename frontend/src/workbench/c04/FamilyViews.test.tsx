@@ -41,7 +41,7 @@ import {
   trueYearProfile,
   type ChartSpec,
 } from './FamilyViews';
-import { ESTIMATORS, GRADES, isFamily, makeSel, type C04Sel, type FamilyVariant } from './selection';
+import { ESTIMATORS, GRADES, attributionIn, isFamily, makeSel, type C04Sel, type FamilyVariant } from './selection';
 
 type Lang = 'en' | 'es';
 
@@ -279,7 +279,7 @@ describe('C04 generator families: the constants the views state are the artifact
       expect((c.data.variant as unknown as FamilyVariant).outputs.generator.source).toMatch(/EM generator .*S&P's pooled annual CEREP counts/);
       for (const lang of ['en', 'es'] as const) {
         const markup = render(<GeneratorView sel={sel(c.data)} />, lang);
-        expect(markup).toContain(esc(attribution));
+        expect(markup).toContain(esc(attributionIn(attribution, lang)));
         expect(markup).toContain(esc(SP_ENTITY.name));
       }
     }

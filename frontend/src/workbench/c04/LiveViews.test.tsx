@@ -494,7 +494,8 @@ describe('the C04 Impact group (live)', () => {
       expect(chart.series).toBe(3);
       // the axis title is short; the key numbers the points, with each row's short name
       expect(chart.axes[0]).toBe('PD definition or generator, numbered as in the key');
-      expect(chart.keys.slice(0, 2)).toEqual(['1 D2: D2 rated defaulters', '2 D3: D3 default events']);
+      // a short name the label already starts with is not printed twice (U16-R4 c05 n5, c06 n3)
+      expect(chart.keys.slice(0, 2)).toEqual(['1 D2 rated defaulters', '2 D3 default events']);
       expect(cards(markup)[0].note).toContain("Moody's cohort mix");
       expect(cards(markup)[0].note).toContain('A row without a PD has no point (the table says why).');
       expect(cards(markup)[1].note).toContain("No PD, so no risk weight: EM, Diagonal, Weighted, JLT (Moody's transition page has no default category");

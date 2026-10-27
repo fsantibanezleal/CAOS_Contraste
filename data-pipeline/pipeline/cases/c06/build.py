@@ -219,6 +219,13 @@ def _g3(x: float) -> str:
     return f"{x:.3g}".replace(".", ",")
 
 
+def _g4(x: float) -> tuple[str, str]:
+    """``x`` to four significant digits in both languages: a ratio of 1.9951 under an amber light reads 1.995, never the green
+    bar's 2 (U16-R4 c07 N-m2)."""
+    en = f"{x:.4g}"
+    return en, en.replace(".", ",")
+
+
 def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.ndarray, stage_summary: dict[str, Any],
              lifetime_left_out: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
@@ -238,8 +245,11 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     for tr in tests:
         by.setdefault(tr["test_id"], []).append(tr)
     lb = [r for r in by.get("ifrs9.lifetime_pd_backtest", []) if r["model_id"] == "L1-dth" and r["segment"] == "all"]
+    # the red cohort rows of the same rung are part of the same gap, so the finding cites them too (ruling 4 of 2026-10-27: every
+    # red test row is cited by an open finding; U16-R4 c08 N2: the 2018 cohort missed by more than the pooled figure, uncited)
+    red_cohorts = [r for r in by.get("ifrs9.lifetime_pd_backtest", []) if r["model_id"] == "L1-dth" and r["segment"] != "all" and r["light"] == "red"]
     if lb and lb[0]["light"] in ("amber", "red") and lb[0]["metric"] is not None:
-        add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
+        add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0]), *(key(r) for r in red_cohorts)],
             f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points over all loans pooled ({lb[0]['light']})",
             f"La PD de vida completa del peldaño de riesgo en tiempo discreto se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
     # the figure each title quotes, named by what it measures (R2b c07: "(metric 2)" and "(p 0)" said nothing of the quantity)
@@ -260,13 +270,27 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
                 continue
             if r["metric"] is not None:
                 words_en, words_es = metric_words.get(tid, (lambda x: f"metric {x}", lambda x: f"métrica {x}"))
-                val, val_es = words_en(f"{r['metric']:.3g}"), words_es(_g3(r["metric"]))
+                m_en, m_es = _g4(r["metric"])
+                val, val_es = words_en(m_en), words_es(m_es)
             elif r["p_value"] < 1e-4:
                 # a p-value the engine returns as 0.0 (a chi-square far in its tail) is below the smallest one written
                 val, val_es = "p below 0.0001", "p menor que 0,0001"
             else:
                 val, val_es = f"p {r['p_value']:.3g}", f"p {_g3(r['p_value'])}"
             add(f"{fid}-{r['light']}", sev, "open", [key(r)], f"{en}: {r['light']} ({val})", f"{es}: {tx.light(r['light'], 'es')} ({val_es})")
+    # the SICR threshold against worsening conditions: the engine counts the reporting periods in which the threshold loosened while
+    # the condition index rose (U16-R4 c07 N-M1, c08 N1: a red row of Jun 2020 that no finding cited)
+    st = by.get("ifrs9.sicr_threshold_stability", [None])[0]
+    if st is not None and st["light"] in ("amber", "red", "not_evaluated"):
+        en, es = "The SICR threshold against worsening conditions", "El umbral de SICR frente al empeoramiento de las condiciones"
+        if st["light"] == "not_evaluated" or st["metric"] is None:
+            add("F-SICR-STABILITY-not_evaluated", "S4", "open", [key(st)], f"{en}: not evaluated", f"{es}: no evaluada")
+        else:
+            n, periods = int(st["metric"]), int(st.get("extras", {}).get("periods", st.get("n") or 0))
+            add(f"F-SICR-STABILITY-{st['light']}", "S2" if st["light"] == "red" else "S3", "open", [key(st)],
+                f"{en}: {st['light']} (the threshold loosened while conditions worsened in {n:,} of the {periods:,} reporting periods)",
+                f"{es}: {tx.light(st['light'], 'es')} (el umbral se relajó mientras las condiciones empeoraban en {tx.number(n, 0, lang='es')} "
+                f"de los {tx.number(periods, 0, lang='es')} períodos de reporte)")
     if ecl_by_scen_total[-1] < ecl_by_scen_total[0]:
         add("F-SCENARIO-ORDER", "S2", "open", ["ifrs9.scenario_sensitivity@L1-dth"],
             "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date. "

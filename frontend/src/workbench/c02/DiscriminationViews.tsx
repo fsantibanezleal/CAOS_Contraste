@@ -38,6 +38,9 @@ export function rocChart(sel: C02Sel | null, kind: 'roc' | 'cap'): UPlotChartPro
   };
 }
 
+/** An interval keeps its two ends on one line, inside its table's sideways scroll (U16-R4 c03 n6: "0.770 to" over "0.856" at 390). */
+const NOWRAP = { whiteSpace: 'nowrap' } as const;
+
 /** ROC and CAP with the AUC, its DeLong interval, Gini and KS of every rung. */
 export function RocCapView({ sel }: { sel: C02Sel | null }) {
   const lang = useShellLang();
@@ -73,7 +76,7 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
                 <tr key={r.model_id} data-rung={r.model_id} className={r.model_id === rungFor(sel)?.model_id ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(rungName(sel, r.model_id), lang)}</td>
                   <td>{f3(r.discrimination.auc, lang)}</td>
-                  <td>{span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang)}</td>
+                  <td style={NOWRAP}>{span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang)}</td>
                   <td>{f3(r.discrimination.gini, lang)}</td>
                   <td>{f3(r.discrimination.ks, lang)}</td>
                 </tr>
@@ -145,10 +148,10 @@ export function RungsView({ sel }: { sel: C02Sel | null }) {
                 <tr key={`${c.champion}-${c.challenger}`} data-champion={c.champion} data-challenger={c.challenger} className={c.challenger === focus?.challenger ? 'ct-current' : undefined}>
                   <td className="ct-text">{`${pick(rungName(sel, c.challenger), lang)} ${pick({ en: 'against', es: 'contra' }, lang)} ${pick(rungName(sel, c.champion), lang)}`}</td>
                   <td>{f3(c.auc_diff, lang)}</td>
-                  <td>{span(f3(c.auc_diff_ci.lo, lang), f3(c.auc_diff_ci.hi, lang), lang)}</td>
+                  <td style={NOWRAP}>{span(f3(c.auc_diff_ci.lo, lang), f3(c.auc_diff_ci.hi, lang), lang)}</td>
                   <td>{sig(c.delong_p_value, lang)}</td>
                   <td className="ct-wide-only">{f4(c.brier_diff, lang)}</td>
-                  <td className="ct-wide-only">{span(f4(c.brier_diff_ci.lo, lang), f4(c.brier_diff_ci.hi, lang), lang)}</td>
+                  <td className="ct-wide-only" style={NOWRAP}>{span(f4(c.brier_diff_ci.lo, lang), f4(c.brier_diff_ci.hi, lang), lang)}</td>
                   <td>{pc(c.grade_disagreement_share, lang)}</td>
                 </tr>
               ))}
@@ -216,7 +219,7 @@ export function CalibrationView({ sel }: { sel: C02Sel | null }) {
                   <td className="ct-wide-only">{int(b.n, lang)}</td>
                   <td>{pc(b.pd, lang)}</td>
                   <td>{pc(b.dr, lang)}</td>
-                  <td>{span(pc(b.lo, lang), pc(b.hi, lang), lang)}</td>
+                  <td style={NOWRAP}>{span(pc(b.lo, lang), pc(b.hi, lang), lang)}</td>
                 </tr>
               ))}
             </tbody>

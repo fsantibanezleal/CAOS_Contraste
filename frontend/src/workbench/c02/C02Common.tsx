@@ -13,7 +13,7 @@ import { Pending } from '../Pending';
 import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { ParamTable, f3, int, pc } from '../c20/U14Common';
-import { HORIZON_TEXT, bareModel, challengerFor, fitOf, outputsOf, noNegZero, paramsIn, rungFor, rungName, span, textIn, type C02Outputs, type C02Sel } from './selection';
+import { HORIZON_TEXT, bareModel, challengerFor, fitOf, ladderLabel, outputsOf, noNegZero, paramsIn, rungFor, rungName, span, textIn, type C02Outputs, type C02Sel } from './selection';
 import { REPLAY } from '../model';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
@@ -147,7 +147,8 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
           <dt>{pick({ en: 'Firms and bankruptcies', es: 'Empresas y quiebras' }, lang)}</dt>
           <dd>{`${int(o.counts.rows, lang)} / ${int(o.counts.events, lang)} (${pc(o.counts.event_rate, lang)})`}</dd>
           <dt>{pick({ en: 'Ratios', es: 'Razones' }, lang)}</dt>
-          <dd>{int(o.counts.features, lang)}</dd>
+          {/* the pooled file's inputs are the 64 ratios and the horizon indicator (U16-R4 c03 n1: "Ratios 65") */}
+          <dd>{o.pooled ? `${int(o.counts.features - 1, lang)} ${pick({ en: 'and the horizon indicator', es: 'y el indicador de horizonte' }, lang)}` : int(o.counts.features, lang)}</dd>
           <dt>{pick({ en: 'Event', es: 'Evento' }, lang)}</dt>
           <dd>{pick(o.counts.event_definition, lang)}</dd>
           {o.firm_overlap_caveat ? (
@@ -162,7 +163,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
         <dl className="ct-defs" data-table="c02-split">
           {/* the slices named in the label, so the value column keeps the three numbers on one line (R3 c03 m10) */}
           <dt>{pick({ en: 'Split (training / calibration / holdout)', es: 'Partición (entrenamiento / calibración / reservada)' }, lang)}</dt>
-          <dd>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)}`}</dd>
+          <dd style={{ whiteSpace: 'nowrap' }}>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)}`}</dd>
           <dt>{pick({ en: 'Bankruptcies in the holdout', es: 'Quiebras en la muestra reservada' }, lang)}</dt>
           <dd>{int(o.split.holdout_events, lang)}</dd>
           <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Agrupación en tramos, imputación y selección ajustadas solo en el tramo de entrenamiento' }, lang)}</dt>
@@ -215,7 +216,7 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
                 {fit.ladder.map((l) => (
                   <tr key={`${l.rung}-${l.label.en}`} data-ladder={l.rung}>
                     <td className="ct-text">{l.rung}</td>
-                    <td className="ct-text">{pick(l.label, lang)}</td>
+                    <td className="ct-text">{pick(ladderLabel(sel, l.label), lang)}</td>
                     <td className="ct-text ct-wide-only">{textIn(l.engine as unknown as string | { en: string; es: string }, lang)}</td>
                   </tr>
                 ))}

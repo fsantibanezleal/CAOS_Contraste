@@ -28,6 +28,7 @@ from ...io import fetch as fetching
 from ...io import sources as registry
 from ...io.formats import write_json
 from ...stages.export import write_artifact
+from ..reference_text import with_reference_text
 from . import battery, blocks, findings, models, reader
 from . import conventions as cv
 from .fits import Fit, build_fits
@@ -95,6 +96,12 @@ def _semantics():
 def check(doc: dict[str, Any]) -> list[str]:
     """The cross-field checks of the producer (a non-empty list refuses the document)."""
     return list(_semantics().check_c02(doc))
+
+
+def document_tests(test_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The test rows of a document with each reference in both languages (``extras.reference_text``, c02-outputs 4.0.0): the Spanish
+    Reason column printed nothing for the rows whose reference the engine writes in English only (U16-R4 c03 m11)."""
+    return with_reference_text(test_rows)
 
 
 def _split_block(f: Fit, seed: int) -> dict[str, Any]:
@@ -167,7 +174,7 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
             "split": _split_block(f, seed), "rungs": rung_blocks, "challenger": table, "transfer": battery.transfer_block(fits, f),
             "term_structure": term, "term_structure_reason": term_reason, "impact_detail": detail, "parameters": cv.parameters(), "requirements": REQUIREMENTS}
         doc = build_artifact(case_id=CASE_ID, variant_id=hid, model=models.model_records(f, False, cv.BATTERY_RUNGS), outputs=outputs,
-                             tests=test_rows, impact=impact, findings=findings.build(test_rows), lineage=lineage, lane=lane)
+                             tests=document_tests(test_rows), impact=impact, findings=findings.build(test_rows), lineage=lineage, lane=lane)
         docs[hid] = doc
         values[f"event_rate_{hid}"] = outputs["counts"]["event_rate"]
         for r in rung_blocks:
@@ -243,7 +250,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: 
         sums.append(_sum(root, rel))
         o = doc["outputs"]
         if vid == cv.POOLED:
-            title, short = cv.t("Pooled: the five files stacked", "Agrupada: los cinco archivos apilados"), cv.t("Pooled", "Agrupada")
+            title, short = cv.POOLED_TITLE, cv.POOLED_SHORT
         else:
             title = cv.t(f"{o['years']}-year file", f"Archivo de {o['years']} año{'s' if o['years'] > 1 else ''}")
             short = cv.t(f"{o['years']} y", f"{o['years']} a")
