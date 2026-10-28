@@ -16,9 +16,11 @@ What it does, in order:
   5. writes deploy/TARGET and removes the other deploy place (one deploy place, decided first): `pages` removes the
      VPS unit and site templates and, with --domain, writes frontend/public/CNAME; `vps` removes the Pages workflow
      and fills the unit and site templates with the slug and domain;
-  6. deletes the sentinel, the template blueprint files (STRUCTURE.md, .vscode/) and the template's own guide to
-     instantiating (docs/guides/00_instantiate.md);
-  7. writes a README for the product (its name, taglines, badges, how to run it);
+  6. deletes the sentinel, the template blueprint files (STRUCTURE.md, .vscode/), the template's own guide to
+     instantiating (docs/guides/00_instantiate.md) and the template's own tests (tests/template/, the planted-defect
+     tests of the base guards that need the example), with the feature rows whose gate is one of those tests;
+  7. writes a README for the product (its name, taglines, badges, the `## Areas` section that scripts/check_readme_areas.py
+     holds, how to run it);
   8. unless --no-run: bakes the cases, runs the tests, builds the web once, and reports what of the example remains
      (scripts/check_template_residue.py), which is the list of what the product replaces next.
 Stdlib only.
@@ -69,6 +71,34 @@ def write(rel: str, text: str) -> None:
     print(f"  wrote   {rel}")
 
 
+def drop_template_test_rows() -> None:
+    """Remove the feature rows whose gate is a test under tests/template/ (BD-3).
+
+    The base features (contracts, notebooks, repository, web) describe the guards a product takes verbatim, and the planted-defect
+    tests of those guards live in tests/template/, which is removed. A requirement or validation row naming such a test would fail
+    the product's SDD guard on the first run, so both rows of that requirement id go with the tests: the guard they describe is
+    tested in the template, and the product writes the rows of its own features."""
+    features = ROOT / "docs" / "design" / "features"
+    if not features.is_dir():
+        return
+    for folder in sorted(p for p in features.iterdir() if p.is_dir()):
+        files = {f: f.read_text(encoding="utf-8").split("\n") for f in (folder / "requirements.md", folder / "validation.md") if f.is_file()}
+
+        def row_id(line: str) -> str:
+            return line.strip().strip("|").split("|")[0].strip() if line.startswith("|") else ""
+
+        ids = {row_id(ln) for lines in files.values() for ln in lines if ln.startswith("|") and "tests/template/" in ln}
+        ids.discard("")
+        if not ids:
+            continue
+        for f, lines in files.items():
+            write(f.relative_to(ROOT).as_posix(), "\n".join(ln for ln in lines if row_id(ln) not in ids))
+        print(f"  pruned  {len(ids)} requirement(s) of {folder.name} whose gate is a test under tests/template/")
+        left = [ln for ln in (folder / "requirements.md").read_text(encoding="utf-8").splitlines() if re.match(r"\|\s*[A-Z]{1,4}-\d{3}\s*\|", ln)]
+        if not left:  # a feature whose every requirement was tested in the template has nothing left to state
+            remove(f"docs/design/features/{folder.name}")
+
+
 def remove(rel: str) -> None:
     path = ROOT / rel
     if path.is_dir():
@@ -78,6 +108,38 @@ def remove(rel: str) -> None:
     else:
         return
     print(f"  removed {rel}")
+
+
+def areas(a: argparse.Namespace) -> list[str]:
+    """The README's `## Areas` section (conventions/product-notebooks.md section 8), as the template states it; the product
+    rewrites each row as its areas become its own. scripts/check_readme_areas.py holds the section."""
+    return [
+        "## Areas",
+        "",
+        "The repository by area: its folder, whether the area is active or dormant, and what it holds.",
+        "",
+        "| Area | Folder | Status | What it holds |",
+        "|---|---|---|---|",
+        "| Web | [`frontend/`](frontend/) | active | The workbench and the documentation routes on the shared shell. "
+        "Build and test: `cd frontend && npm ci && npm run build && npm test`. |",
+        "| API | [`app/`](app/) | dormant: this solution does not require it at the moment | Ships dormant; "
+        "activation is [guide 04](docs/guides/04_run-the-api.md). |",
+        "| Core pipelines | [`data-pipeline/`](data-pipeline/) | active | The named pipeline stages and the bake: "
+        "`./scripts/precompute.sh`. See [data-pipeline/README.md](data-pipeline/README.md). |",
+        "| Packages | (PyPI) [numpy](https://pypi.org/project/numpy/) | active: consumes numpy | Each package the product publishes "
+        "or consumes for its methods, with its version and its PyPI and repository links. |",
+        "| Notebooks | [`notebooks/`](notebooks/) | active | The didactic notebooks in English and Spanish, by topic and level. "
+        "Run: `./scripts/setup.sh --notebooks`, then `python scripts/run_notebooks.py`. "
+        "Guide: [guide 08](docs/guides/08_notebooks.md). |",
+        "| Data | [`data/`](data/) | active | The committed derived artifacts and the sources with their licence classes. |",
+        "| Contracts | [`docs/contracts/`](docs/contracts/) | active | The contract catalog and the schemas. |",
+        "| Documentation | [`docs/`](docs/) | active | The SDD ([docs/design/SDD.md](docs/design/SDD.md)), the "
+        "[guides](docs/guides.md) and the case pages. |",
+        "| Tests and gates | [`tests/`](tests/), [`scripts/`](scripts/) | active | `python -m pytest` and the checks "
+        "(`scripts/check_*.py`). See [scripts/README.md](scripts/README.md). |",
+        f"| Deploy | [`deploy/`](deploy/) | active: deployed to {a.deploy} | Where it is deployed and how, never credentials. |",
+        "",
+    ]
 
 
 def readme(a: argparse.Namespace) -> str:
@@ -99,12 +161,15 @@ def readme(a: argparse.Namespace) -> str:
         "",
         f"*{a.tagline_es}*",
         "",
+        *areas(a),
         "## Run it",
         "",
         "```bash",
         "./scripts/setup.sh                     # the pipeline environment (.venv-pipeline); setup.ps1 on Windows",
         "./scripts/precompute.sh                # the canonical bake into data/derived (a release operation)",
         ".venv-pipeline/bin/python -m pytest    # the pipeline tests, sandboxed",
+        "./scripts/setup.sh --notebooks         # the notebook environment (.venv-notebooks); setup.ps1 -Notebooks on Windows",
+        "python scripts/run_notebooks.py --check # every notebook runs top to bottom (a local release gate, never CI)",
         "cd frontend && npm ci && npm run build && npm test && npm run gate",
         "```",
         "",
@@ -169,6 +234,8 @@ def main() -> int:
         "license": "MIT",
         "holder": a.holder,
         "year": a.year,
+        # the dotted names (module.function or module.Class) that run this product's method: the notebooks' floors count nothing else
+        "method_entrypoints": [],
     }
     write("product.json", json.dumps(product, indent=2, ensure_ascii=False) + "\n")
     pkg_path = ROOT / "frontend" / "package.json"
@@ -224,6 +291,13 @@ def main() -> int:
         remove(rel)
     # the guide to instantiating is the template's, read before this step; in a product it only names the example
     remove("docs/guides/00_instantiate.md")
+    # the base's own tests that plant into or read the example: the guards a product takes verbatim are tested in the
+    # template, a product tests its own guards and features under tests/adversarial/ (BD-3)
+    remove("tests/template")
+    ci = ROOT / ".github" / "workflows" / "ci.yml"
+    if ci.exists():  # the template's CI also runs those plants; the product's runs only its own tests/adversarial
+        write(".github/workflows/ci.yml", ci.read_text(encoding="utf-8").replace(" tests/template/adversarial", ""))
+    drop_template_test_rows()
     guides = ROOT / "docs" / "guides.md"
     if guides.exists():
         kept = [ln for ln in guides.read_text(encoding="utf-8").splitlines() if "guides/00_instantiate.md" not in ln]
