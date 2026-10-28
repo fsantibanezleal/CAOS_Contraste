@@ -534,7 +534,7 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
   const eclScale = columnScale(s.rows.map((r) => r.ecl), s.currency);
   const closingScale = columnScale(s.rows.map((r) => closing(r.stage)), s.currency);
   return (
-    <ViewsRow shares={[2, 3]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard fill title={{ en: 'Coverage by stage', es: 'Cobertura por etapa' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Coverage is the model ECL over the gross carrying amount of the stage.', es: 'La cobertura es la PCE del modelo sobre el valor en libros bruto de la etapa.' }}>
         <BarChart
           title={{ en: 'Coverage by stage', es: 'Cobertura por etapa' }}
