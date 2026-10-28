@@ -4,6 +4,7 @@
 // each labelled exploratory, with the reason, wherever they are drawn. A null field says "not available" with its reason.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import type { CSSProperties } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { useCard } from '../c03/U6Shared';
@@ -11,6 +12,9 @@ import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc } from '../c20/U14Common';
 import { bareModel, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
+
+/** The transfer drawing's least height: its bars scroll in their box under the matrix. */
+const TRANSFER_MIN = '12rem';
 
 /** The display band of a transfer AUC (a shade, not a threshold): below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above. */
 const band = (auc: number): 1 | 2 | 3 | 4 => (auc < 0.6 ? 1 : auc < 0.7 ? 2 : auc < 0.8 ? 3 : 4);
@@ -75,11 +79,10 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
           es: 'AUC del peldaño ajustado en el archivo de la fila y puntuado en la muestra reservada del archivo de la columna. El tono es una banda de visualización (bajo 0,6, de 0,6 a 0,7, de 0,7 a 0,8, de 0,8 y más), no un umbral. Una celda que ningún documento trae queda vacía. La fila de cada archivo viene del documento ajustado en él.',
         }}
       >
-        {/* the 5 x 5 matrix first and the 25 bars under it in a drawing of bounded height, where the bars scroll (R3 c03 M1: at 1280 the
-            bars' least height of 49 rem pushed the matrix, 10 bars and the axis below the card's clip) */}
-        <LabelledOverTable
-          head={
-            <>
+        {/* the 5 x 5 matrix first and the 25 bars under it in a box of bounded height, where the bars scroll with the cue (R3 c03 M1: at
+            1280 the bars' least height of 49 rem pushed the matrix, 10 bars and the axis below the card's clip; R5 c03 M2: the drawing
+            grown to its bars' height in the stack overflowed the card body, which clipped 14 bars and the axis with no cue) */}
+        <div className="ct-stack" data-caos-flow="">
               <Labelled label="exploratory" reason={o.transfer.reason} />
               <div data-block="transfer-matrix">
               <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
@@ -110,19 +113,20 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
                 </tbody>
               </table>
               </div>
-            </>
-          }
-          chartMin="12rem"
-          chart={
-            <BarChart
-              title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
-              height="fill"
-              orientation="horizontal"
-              data={transferBars(cells)}
-              axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
-            />
-          }
-        />
+          {/* the drawing box takes the bars' height (layout.ts) inside a box that scrolls under the matrix: a flex column, so the
+              drawing's height is definite and the bars fill it */}
+          <div className="ct-stack-rest" data-caos-flow="" data-block="transfer-bars" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="ct-stack-chart" style={{ minHeight: TRANSFER_MIN, '--ct-chart-min': TRANSFER_MIN } as CSSProperties}>
+              <BarChart
+                title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
+                height="fill"
+                orientation="horizontal"
+                data={transferBars(cells)}
+                axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
+              />
+            </div>
+          </div>
+        </div>
       </PlotCard>
     </ViewsRow>
   );

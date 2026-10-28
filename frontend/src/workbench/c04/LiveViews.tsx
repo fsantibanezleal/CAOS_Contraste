@@ -388,7 +388,7 @@ function CompositionCard({ sel, projection, note }: { sel: C04Sel; projection: P
     >
       <UPlotChart
         height="fill"
-        x={{ values: steps, label: { en: 'Years from the start', es: 'Años desde el inicio' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
+        x={{ values: steps, label: { en: 'Year from the start', es: 'Año desde el inicio' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
         y={{ label: { en: 'Share of the balance', es: 'Fracción del saldo' }, format: { percent: true, decimals: 0 } }}
         series={drawable(series)}
       />

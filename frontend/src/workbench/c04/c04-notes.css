@@ -1,4 +1,10 @@
-/* C04's card notes are whole (U16-R4 C04 notes): the shell caps the note of a filling card at 35 % of the card and scrolls it
-   beyond that with no cue, which cut 9 to 117 px of the long data-driven notes of this case's views. Here the note keeps its own
-   height and the drawing and the tables above it give way (the stack's table box scrolls with its cue, the plot keeps its floor). */
-[data-case-workbench][data-case="C04"] .caos-plot.fill > .caos-plot-note { max-height: none; overflow-y: visible; flex: 0 0 auto; }
+/* C04's card notes (U16-R4 C04 notes, R5 c05 M1): the shell caps the note of a filling card at 35 % of the card and scrolls it
+   beyond that with no cue, which cut 9 to 117 px of the long data-driven notes of this case's views. Fix round 5 gave every note
+   its whole height, and the long Spanish notes then took the drawings' height (a plot of 55 px under its 9rem floor). Here the
+   note has no cap: it takes the height it needs while the card has room, and where the drawing needs its floor (layout.ts grows
+   the card's body for it) the note keeps its first lines and scrolls in its own box with the shared cue. On a phone the card is
+   as tall as what it holds and the note is whole (the shell). */
+[data-case-workbench][data-case="C04"] .caos-plot.fill > .caos-plot-note { max-height: none; }
+@media (min-width: 901px) {
+  [data-case-workbench][data-case="C04"] .caos-plot.fill > .caos-plot-note { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
