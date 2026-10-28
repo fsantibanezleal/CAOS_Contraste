@@ -397,196 +397,6 @@
    }
   },
   {
-   "key": "C01/german-twin/F-RED-01",
-   "case_id": "C01",
-   "variant_id": "german-twin",
-   "id": "F-RED-01",
-   "entry_key": "C01/german",
-   "title": {
-    "en": "Chi-square test over grades: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-    "es": "Prueba chi-cuadrado sobre grados: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-   },
-   "severity": "S3",
-   "ecb_f": "F2",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.chi2_grades@P3-ebm@portfolio",
-    "pd.chi2_grades@P5-tabpfn@portfolio"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.chi2_grades",
-    "model_id": "P3-ebm",
-    "segment": "portfolio",
-    "value": 137933.357,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C01/german-twin.json#/tests/115/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of PD models (synthetic role)",
-   "tier": 2,
-   "raised": "2026-10-27",
-   "deadline_days": 120,
-   "due": "2027-02-24",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C01/german-twin/F-RED-02",
-   "case_id": "C01",
-   "variant_id": "german-twin",
-   "id": "F-RED-02",
-   "entry_key": "C01/german",
-   "title": {
-    "en": "Hosmer-Lemeshow: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-    "es": "Hosmer-Lemeshow: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-   },
-   "severity": "S3",
-   "ecb_f": "F2",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.hosmer_lemeshow@P3-ebm@portfolio",
-    "pd.hosmer_lemeshow@P5-tabpfn@portfolio"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.hosmer_lemeshow",
-    "model_id": "P3-ebm",
-    "segment": "portfolio",
-    "value": 85.525782,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C01/german-twin.json#/tests/116/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of PD models (synthetic role)",
-   "tier": 2,
-   "raised": "2026-10-27",
-   "deadline_days": 120,
-   "due": "2027-02-24",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C01/german-twin/F-RED-03",
-   "case_id": "C01",
-   "variant_id": "german-twin",
-   "id": "F-RED-03",
-   "entry_key": "C01/german",
-   "title": {
-    "en": "Jeffreys: red on 4 rows (P3 EBM; P4 LightGBM; P5 TabPFN) that no other finding cites",
-    "es": "Jeffreys: en rojo en 4 filas (P3 EBM; P4 LightGBM; P5 TabPFN) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.jeffreys@P3-ebm@G01",
-    "pd.jeffreys@P4-lightgbm@G01",
-    "pd.jeffreys@P4-lightgbm@G07",
-    "pd.jeffreys@P5-tabpfn@G01"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.jeffreys",
-    "model_id": "P3-ebm",
-    "segment": "G01",
-    "value": 0.0689655172,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C01/german-twin.json#/tests/103/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of PD models (synthetic role)",
-   "tier": 2,
-   "raised": "2026-10-27",
-   "deadline_days": 90,
-   "due": "2027-01-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C01/german-twin/F-RED-04",
-   "case_id": "C01",
-   "variant_id": "german-twin",
-   "id": "F-RED-04",
-   "entry_key": "C01/german",
-   "title": {
-    "en": "Spiegelhalter test: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-    "es": "Prueba de Spiegelhalter: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-   },
-   "severity": "S3",
-   "ecb_f": "F2",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.spiegelhalter@P3-ebm@portfolio",
-    "pd.spiegelhalter@P5-tabpfn@portfolio"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.spiegelhalter",
-    "model_id": "P3-ebm",
-    "segment": "portfolio",
-    "value": 2.43649828,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C01/german-twin.json#/tests/117/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of PD models (synthetic role)",
-   "tier": 2,
-   "raised": "2026-10-27",
-   "deadline_days": 120,
-   "due": "2027-02-24",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C07/base/F-GAP",
    "case_id": "C07",
    "variant_id": "base",
@@ -2228,56 +2038,6 @@
    "risk_acceptance": null
   },
   {
-   "key": "C18/baseline/F-RED-01",
-   "case_id": "C18",
-   "variant_id": "baseline",
-   "id": "F-RED-01",
-   "entry_key": "C18/banco-andino",
-   "title": {
-    "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-    "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-    "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-    "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-    "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-    "stress.satellite_backcast@c18-satellite-residential@residential"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stress.satellite_backcast",
-    "model_id": "c18-satellite-commercial-industrial",
-    "segment": "commercial-industrial",
-    "value": 0.005504706031024595,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C18/baseline.json#/tests/8/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of capital planning (synthetic role)",
-   "tier": 1,
-   "raised": "2026-10-27",
-   "deadline_days": 60,
-   "due": "2026-12-26",
-   "ageing_days": 65,
-   "overdue": true,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C18/eba-2025-adverse/headline-simple-sum",
    "case_id": "C18",
    "variant_id": "eba-2025-adverse",
@@ -2557,56 +2317,6 @@
    "due": "2027-01-25",
    "ageing_days": 65,
    "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C18/eba-2025-adverse/F-RED-01",
-   "case_id": "C18",
-   "variant_id": "eba-2025-adverse",
-   "id": "F-RED-01",
-   "entry_key": "C18/banco-andino",
-   "title": {
-    "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-    "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-    "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-    "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-    "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-    "stress.satellite_backcast@c18-satellite-residential@residential"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stress.satellite_backcast",
-    "model_id": "c18-satellite-commercial-industrial",
-    "segment": "commercial-industrial",
-    "value": 0.005504706031024595,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C18/eba-2025-adverse.json#/tests/8/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of capital planning (synthetic role)",
-   "tier": 1,
-   "raised": "2026-10-27",
-   "deadline_days": 60,
-   "due": "2026-12-26",
-   "ageing_days": 65,
-   "overdue": true,
    "remediation": null,
    "remediation_reason": {
     "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
@@ -2902,56 +2612,6 @@
    "risk_acceptance": null
   },
   {
-   "key": "C18/fed-2026-severely-adverse/F-RED-01",
-   "case_id": "C18",
-   "variant_id": "fed-2026-severely-adverse",
-   "id": "F-RED-01",
-   "entry_key": "C18/banco-andino",
-   "title": {
-    "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-    "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-    "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-    "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-    "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-    "stress.satellite_backcast@c18-satellite-residential@residential"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stress.satellite_backcast",
-    "model_id": "c18-satellite-commercial-industrial",
-    "segment": "commercial-industrial",
-    "value": 0.005504706031024595,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C18/fed-2026-severely-adverse.json#/tests/8/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of capital planning (synthetic role)",
-   "tier": 1,
-   "raised": "2026-10-27",
-   "deadline_days": 60,
-   "due": "2026-12-26",
-   "ageing_days": 65,
-   "overdue": true,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C18/ngfs-delayed-transition/headline-simple-sum",
    "case_id": "C18",
    "variant_id": "ngfs-delayed-transition",
@@ -3198,56 +2858,6 @@
    "risk_acceptance": null
   },
   {
-   "key": "C18/ngfs-delayed-transition/F-RED-01",
-   "case_id": "C18",
-   "variant_id": "ngfs-delayed-transition",
-   "id": "F-RED-01",
-   "entry_key": "C18/banco-andino",
-   "title": {
-    "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-    "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-    "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-    "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-    "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-    "stress.satellite_backcast@c18-satellite-residential@residential"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stress.satellite_backcast",
-    "model_id": "c18-satellite-commercial-industrial",
-    "segment": "commercial-industrial",
-    "value": 0.005504706031024595,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C18/ngfs-delayed-transition.json#/tests/8/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of capital planning (synthetic role)",
-   "tier": 1,
-   "raised": "2026-10-27",
-   "deadline_days": 60,
-   "due": "2026-12-26",
-   "ageing_days": 65,
-   "overdue": true,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C18/reverse-stress/reverse-scenario",
    "case_id": "C18",
    "variant_id": "reverse-stress",
@@ -3463,52 +3073,6 @@
      "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
     }
    }
-  },
-  {
-   "key": "C22/broken-monotonicity/F-RED-01",
-   "case_id": "C22",
-   "variant_id": "broken-monotonicity",
-   "id": "F-RED-01",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "ECB migration z-tests: red on 1 row (grade 4 to grade 2 at 2 times grade 4 to grade 3; 500 obligors per grade) that no other finding cites",
-    "es": "Pruebas z de migración del BCE: en rojo en 1 fila (grado 4 a grado 2 a 2 veces grado 4 a grado 3; 500 deudores por grado) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "rating.migration_ztests@migrations-7-500-r2"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "rating.migration_ztests",
-    "model_id": "migrations-7-500-r2",
-    "segment": null,
-    "value": 1.0,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/broken-monotonicity.json#/tests/0/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
   },
   {
    "key": "C22/clustering/F-BINOM-RHO",
@@ -3861,98 +3425,6 @@
    }
   },
   {
-   "key": "C22/drift/F-RED-01",
-   "case_id": "C22",
-   "variant_id": "drift",
-   "id": "F-RED-01",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "Two-sample Kolmogorov-Smirnov test: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
-    "es": "Prueba de Kolmogorov-Smirnov de dos muestras: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stability.ks@two-sample-1000-s0.2"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stability.ks",
-    "model_id": "two-sample-1000-s0.2",
-    "segment": null,
-    "value": 0.114,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/drift.json#/tests/1/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C22/drift/F-RED-02",
-   "case_id": "C22",
-   "variant_id": "drift",
-   "id": "F-RED-02",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "PSI against the training slice: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
-    "es": "PSI contra el tramo de entrenamiento: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "stability.psi@two-sample-1000-s0.2"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "stability.psi",
-    "model_id": "two-sample-1000-s0.2",
-    "segment": null,
-    "value": 0.053111818,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/drift.json#/tests/0/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C22/leakage/F-LEAK-SIGNAL",
    "case_id": "C22",
    "variant_id": "leakage",
@@ -4059,52 +3531,6 @@
    }
   },
   {
-   "key": "C22/leakage/F-RED-01",
-   "case_id": "C22",
-   "variant_id": "leakage",
-   "id": "F-RED-01",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "AUC against the AUC at initial validation: red on 1 row (the leaked feature shifted by 1 for defaulters in development) that no other finding cites",
-    "es": "AUC contra el AUC de la validación inicial: en rojo en 1 fila (la variable filtrada desplazada 1 para incumplidos en desarrollo) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "disc.auc_vs_initial@binormal-150-leak1"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "disc.auc_vs_initial",
-    "model_id": "binormal-150-leak1",
-    "segment": null,
-    "value": 8.03806208,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/leakage.json#/tests/0/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
    "key": "C22/miscalibration/F-PROFILE-BLIND",
    "case_id": "C22",
    "variant_id": "miscalibration",
@@ -4209,190 +3635,6 @@
      "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
     }
    }
-  },
-  {
-   "key": "C22/miscalibration/F-RED-01",
-   "case_id": "C22",
-   "variant_id": "miscalibration",
-   "id": "F-RED-01",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "Binomial: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
-    "es": "Binomial: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.binomial@port-5000-k1.5"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.binomial",
-    "model_id": "port-5000-k1.5",
-    "segment": null,
-    "value": 141.0,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/miscalibration.json#/tests/0/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C22/miscalibration/F-RED-02",
-   "case_id": "C22",
-   "variant_id": "miscalibration",
-   "id": "F-RED-02",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "Hosmer-Lemeshow: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
-    "es": "Hosmer-Lemeshow: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.hosmer_lemeshow@logistic-5000-k1.5"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.hosmer_lemeshow",
-    "model_id": "logistic-5000-k1.5",
-    "segment": null,
-    "value": 30.9148408,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/miscalibration.json#/tests/2/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C22/miscalibration/F-RED-03",
-   "case_id": "C22",
-   "variant_id": "miscalibration",
-   "id": "F-RED-03",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "Jeffreys: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
-    "es": "Jeffreys: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.jeffreys@port-5000-k1.5"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.jeffreys",
-    "model_id": "port-5000-k1.5",
-    "segment": null,
-    "value": 0.0282,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/miscalibration.json#/tests/1/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
-  },
-  {
-   "key": "C22/miscalibration/F-RED-04",
-   "case_id": "C22",
-   "variant_id": "miscalibration",
-   "id": "F-RED-04",
-   "entry_key": "C22/generators",
-   "title": {
-    "en": "Spiegelhalter test: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
-    "es": "Prueba de Spiegelhalter: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
-   },
-   "severity": "S2",
-   "ecb_f": "F3",
-   "product_status": "open",
-   "status": "open",
-   "evidence": [
-    "pd.spiegelhalter@logistic-5000-k1.5"
-   ],
-   "anchor": {
-    "metric": "statistic",
-    "test_id": "pd.spiegelhalter",
-    "model_id": "logistic-5000-k1.5",
-    "segment": null,
-    "value": 3.86286751,
-    "unit": "test statistic (dimensionless)",
-    "basis": "data/derived/C22/miscalibration.json#/tests/3/statistic"
-   },
-   "anchor_reason": null,
-   "rwea_share": null,
-   "rwea_share_reason": {
-    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
-    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
-   },
-   "owner_role": "Head of validation tooling (synthetic role)",
-   "tier": 4,
-   "raised": "2026-10-27",
-   "deadline_days": 180,
-   "due": "2027-04-25",
-   "ageing_days": 65,
-   "overdue": false,
-   "remediation": null,
-   "remediation_reason": {
-    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
-    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
-   },
-   "risk_acceptance": null
   },
   {
    "key": "C22/null/F-HL-DOF",
@@ -4941,15 +4183,15 @@
   }
  ],
  "counts": {
-  "total": 100,
+  "total": 84,
   "by_severity": {
    "S1": 2,
-   "S2": 28,
-   "S3": 44,
+   "S2": 15,
+   "S3": 41,
    "S4": 26
   },
   "by_status": {
-   "open": 66,
+   "open": 50,
    "action_plan_agreed": 0,
    "in_progress": 0,
    "submitted_for_closure": 0,
@@ -4957,19 +4199,19 @@
    "overdue": 0,
    "risk_accepted": 30
   },
-  "overdue": 11,
+  "overdue": 7,
   "by_case": [
    {
     "case_id": "C01",
-    "total": 7,
+    "total": 3,
     "by_severity": {
      "S1": 0,
-     "S2": 1,
-     "S3": 6,
+     "S2": 0,
+     "S3": 3,
      "S4": 0
     },
     "by_status": {
-     "open": 6,
+     "open": 2,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,
@@ -5001,15 +4243,15 @@
    },
    {
     "case_id": "C18",
-    "total": 33,
+    "total": 29,
     "by_severity": {
      "S1": 2,
-     "S2": 6,
+     "S2": 2,
      "S3": 17,
      "S4": 8
     },
     "by_status": {
-     "open": 33,
+     "open": 29,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,
@@ -5017,19 +4259,19 @@
      "overdue": 0,
      "risk_accepted": 0
     },
-    "overdue": 8
+    "overdue": 4
    },
    {
     "case_id": "C22",
-    "total": 31,
+    "total": 23,
     "by_severity": {
      "S1": 0,
-     "S2": 18,
+     "S2": 10,
      "S3": 7,
      "S4": 6
     },
     "by_status": {
-     "open": 10,
+     "open": 2,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,

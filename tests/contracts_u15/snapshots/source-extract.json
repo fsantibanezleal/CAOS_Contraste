@@ -162,60 +162,6 @@
         "en": "No out-of-time validation is possible: the data is a single snapshot",
         "es": "No es posible validar fuera del tiempo: los datos son una sola foto"
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S3",
-       "status": "open",
-       "evidence": [
-        "pd.chi2_grades@P3-ebm@portfolio",
-        "pd.chi2_grades@P5-tabpfn@portfolio"
-       ],
-       "title": {
-        "en": "Chi-square test over grades: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-        "es": "Prueba chi-cuadrado sobre grados: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-02",
-       "severity": "S3",
-       "status": "open",
-       "evidence": [
-        "pd.hosmer_lemeshow@P3-ebm@portfolio",
-        "pd.hosmer_lemeshow@P5-tabpfn@portfolio"
-       ],
-       "title": {
-        "en": "Hosmer-Lemeshow: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-        "es": "Hosmer-Lemeshow: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-03",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "pd.jeffreys@P3-ebm@G01",
-        "pd.jeffreys@P4-lightgbm@G01",
-        "pd.jeffreys@P4-lightgbm@G07",
-        "pd.jeffreys@P5-tabpfn@G01"
-       ],
-       "title": {
-        "en": "Jeffreys: red on 4 rows (P3 EBM; P4 LightGBM; P5 TabPFN) that no other finding cites",
-        "es": "Jeffreys: en rojo en 4 filas (P3 EBM; P4 LightGBM; P5 TabPFN) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-04",
-       "severity": "S3",
-       "status": "open",
-       "evidence": [
-        "pd.spiegelhalter@P3-ebm@portfolio",
-        "pd.spiegelhalter@P5-tabpfn@portfolio"
-       ],
-       "title": {
-        "en": "Spiegelhalter test: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
-        "es": "Prueba de Spiegelhalter: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -4954,22 +4900,6 @@
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-        "stress.satellite_backcast@c18-satellite-residential@residential"
-       ],
-       "title": {
-        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -5361,22 +5291,6 @@
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-        "stress.satellite_backcast@c18-satellite-residential@residential"
-       ],
-       "title": {
-        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -5632,22 +5546,6 @@
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-        "stress.satellite_backcast@c18-satellite-residential@residential"
-       ],
-       "title": {
-        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -5890,22 +5788,6 @@
        "title": {
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
-       }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
-        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
-        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
-        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
-        "stress.satellite_backcast@c18-satellite-residential@residential"
-       ],
-       "title": {
-        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
-        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
        }
       }
      ],
@@ -6712,18 +6594,6 @@
         "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen in 44.5 % of the samples with 500 obligors per grade",
         "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida en el 44,5 % de las muestras con 500 deudores por grado"
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "rating.migration_ztests@migrations-7-500-r2"
-       ],
-       "title": {
-        "en": "ECB migration z-tests: red on 1 row (grade 4 to grade 2 at 2 times grade 4 to grade 3; 500 obligors per grade) that no other finding cites",
-        "es": "Pruebas z de migración del BCE: en rojo en 1 fila (grado 4 a grado 2 a 2 veces grado 4 a grado 3; 500 deudores por grado) que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -6940,30 +6810,6 @@
         "en": "Drift is not miscalibration: a right model stays calibrated under a covariate shift, so stability alarms and calibration tests answer different questions",
         "es": "La deriva no es descalibración: un modelo correcto sigue calibrado ante un desplazamiento de covariables; las alarmas de estabilidad y las pruebas de calibración responden preguntas distintas"
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stability.ks@two-sample-1000-s0.2"
-       ],
-       "title": {
-        "en": "Two-sample Kolmogorov-Smirnov test: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
-        "es": "Prueba de Kolmogorov-Smirnov de dos muestras: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-02",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "stability.psi@two-sample-1000-s0.2"
-       ],
-       "title": {
-        "en": "PSI against the training slice: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
-        "es": "PSI contra el tramo de entrenamiento: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -7020,18 +6866,6 @@
         "en": "DeLong on nested models fitted on the comparison sample almost never rejects (Demler et al.); compare non-nested models on a holdout",
         "es": "DeLong en modelos anidados ajustados en la muestra de comparación casi nunca rechaza (Demler et al.); compárense modelos no anidados en una reserva"
        }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "disc.auc_vs_initial@binormal-150-leak1"
-       ],
-       "title": {
-        "en": "AUC against the AUC at initial validation: red on 1 row (the leaked feature shifted by 1 for defaulters in development) that no other finding cites",
-        "es": "AUC contra el AUC de la validación inicial: en rojo en 1 fila (la variable filtrada desplazada 1 para incumplidos en desarrollo) que ningún otro hallazgo cita"
-       }
       }
      ],
      "tests": [
@@ -7087,54 +6921,6 @@
        "title": {
         "en": "Correcting for a correlation the defaults do not have costs power: the Vasicek test misses most underestimations the binomial test catches",
         "es": "Corregir por una correlación que los incumplimientos no tienen cuesta potencia: la prueba de Vasicek pierde la mayoría de las subestimaciones que la binomial detecta"
-       }
-      },
-      {
-       "id": "F-RED-01",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "pd.binomial@port-5000-k1.5"
-       ],
-       "title": {
-        "en": "Binomial: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
-        "es": "Binomial: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-02",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "pd.hosmer_lemeshow@logistic-5000-k1.5"
-       ],
-       "title": {
-        "en": "Hosmer-Lemeshow: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
-        "es": "Hosmer-Lemeshow: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-03",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "pd.jeffreys@port-5000-k1.5"
-       ],
-       "title": {
-        "en": "Jeffreys: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
-        "es": "Jeffreys: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
-       }
-      },
-      {
-       "id": "F-RED-04",
-       "severity": "S2",
-       "status": "open",
-       "evidence": [
-        "pd.spiegelhalter@logistic-5000-k1.5"
-       ],
-       "title": {
-        "en": "Spiegelhalter test: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
-        "es": "Prueba de Spiegelhalter: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
        }
       }
      ],

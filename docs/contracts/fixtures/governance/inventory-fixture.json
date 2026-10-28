@@ -533,8 +533,8 @@
     "A37": {
      "value": {
       "S1": 0,
-      "S2": 1,
-      "S3": 5,
+      "S2": 0,
+      "S3": 2,
       "S4": 0
      },
      "status": "present",
@@ -542,7 +542,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-01-25"
+      "earliest_due": "2027-02-24"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1673,7 +1673,7 @@
     "A37": {
      "value": {
       "S1": 2,
-      "S2": 6,
+      "S2": 2,
       "S3": 17,
       "S4": 8
      },
@@ -2262,7 +2262,7 @@
     "A37": {
      "value": {
       "S1": 0,
-      "S2": 10,
+      "S2": 2,
       "S3": 0,
       "S4": 0
      },

@@ -16,7 +16,8 @@ LEVELS = sorted(p.name for p in (ROOT / "data" / "derived" / "C09").glob("level-
 def test_no_spanish_text_carries_an_english_number_form(name):
     doc = load(f"data/derived/C09/{name}")
     assert document_leaks(doc) == []
-    assert len(list(bitexts(doc["findings"]))) == 6
+    # the case's six findings; the generic red-row findings (F-RED-NN) are read by the same leak check above
+    assert len(list(bitexts([f for f in doc["findings"] if not f["id"].startswith("F-RED-")]))) == 6
 
 
 @pytest.mark.parametrize("name", LEVELS)
