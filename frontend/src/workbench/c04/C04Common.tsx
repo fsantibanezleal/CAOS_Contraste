@@ -5,7 +5,6 @@
 import { PlotCard, Readout, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
-import './c04-notes.css';
 import { C04WriteUp } from '../../content/cases/C04';
 import {
   ATTRIBUTION_FALLBACK,
