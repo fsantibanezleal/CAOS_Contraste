@@ -185,15 +185,18 @@ def _variants():
             yield p, d
 
 
+def _generic(d: dict) -> list[dict]:
+    """The generic red-row findings a committed document carries (baked since the fix round 6 re-bake)."""
+    return [f for f in d["findings"] if f["id"].startswith("F-RED-")]
+
+
 def test_every_committed_document_with_its_generic_findings_still_validates():
     n = 0
     for p, d in _variants():
-        added = rf.red_findings(d["case_id"], d["tests"], d["findings"], d["model"])
-        if not added:
+        if not _generic(d):
             continue
-        doc = {**d, "findings": [*d["findings"], *added]}
-        validate_document(p.relative_to(ROOT).as_posix(), doc)
-        m._check_findings(doc["findings"], m._check_tests(doc["tests"], p.name), p.name, m._rate_keys(doc["outputs"]))
+        validate_document(p.relative_to(ROOT).as_posix(), d)
+        m._check_findings(d["findings"], m._check_tests(d["tests"], p.name), p.name, m._rate_keys(d["outputs"]))
         n += 1
     assert n > 0
 
@@ -213,8 +216,6 @@ def count_on_committed() -> tuple[Counter, Counter]:
     return rows, pairs
 
 
-@pytest.mark.xfail(strict=True, reason="the committed documents predate U16-F12g (base a95c27d): the integrator's re-bake adds the generic "
-                                       "findings, then this test passes and its mark is removed")
 def test_every_red_row_of_every_committed_document_is_cited_by_an_open_finding():
     rows, _pairs = count_on_committed()
     assert sum(rows.values()) == 0, dict(rows)
@@ -235,12 +236,13 @@ def test_the_models_are_named_as_the_web_names_them_and_at_most_three_are_listed
 
 
 def test_a_model_whose_name_is_its_id_is_not_listed():
-    """C22's configurations are named by their ids in models.gen.json; the title lists none of them."""
-    models = [{"id": "port-5000-k1.5", "short_title": {"en": "port-5000-k1.5", "es": "port-5000-k1.5"}}]
-    (f,) = rf.red_findings("C22", [row("pd.jeffreys", "port-5000-k1.5", None, "red")], [], models)
-    assert "port-5000" not in f["title"]["en"] + f["title"]["es"]
+    """A configuration the names module does not name and whose short title is its id is listed by no name (since fix round 6
+    C22's configurations carry their scenario words, so the case uses an id no document has)."""
+    models = [{"id": "port-9999-k9", "short_title": {"en": "port-9999-k9", "es": "port-9999-k9"}}]
+    (f,) = rf.red_findings("C22", [row("pd.jeffreys", "port-9999-k9", None, "red")], [], models)
+    assert "port-9999" not in f["title"]["en"] + f["title"]["es"]
     assert f["title"]["en"].startswith("Jeffreys: red on 1 row that no other finding cites")
-    assert f["evidence"] == ["pd.jeffreys@port-5000-k1.5"]
+    assert f["evidence"] == ["pd.jeffreys@port-9999-k9"]
 
 
 def test_no_generic_title_on_the_committed_documents_prints_a_model_or_a_test_id():
@@ -248,7 +250,7 @@ def test_no_generic_title_on_the_committed_documents_prints_a_model_or_a_test_id
 
     for p, d in _variants():
         ids = {mm["id"] for mm in d["model"]} | {t["test_id"] for t in d["tests"]}
-        for f in rf.red_findings(d["case_id"], d["tests"], d["findings"], d["model"]):
+        for f in _generic(d):
             for lang in ("en", "es"):
                 text = f["title"][lang]
                 raw = [i for i in ids if not re.fullmatch(r"[A-Z][A-Za-z]+", i)
@@ -264,7 +266,7 @@ def test_the_governance_register_reads_the_generic_findings_through_the_engine_a
 
     n = 0
     for p, d in _variants():
-        for f in rf.red_findings(d["case_id"], d["tests"], d["findings"], d["model"]):
+        for f in _generic(d):
             anchor, why = gov.anchor_from_test_row(f["evidence"], d["tests"], document=p.name)
             if "@-@" in f["evidence"][0]:
                 assert anchor is None and why
