@@ -11,6 +11,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
 import { adjustmentText, noteText, seriesText } from '../c08/notes';
+import { WHOLE_PORTFOLIO } from '../c08/words';
 import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
 import { segmentName } from '../names';
 import {
@@ -30,11 +31,27 @@ export const TEST_TEXT: Record<string, Bi> = {
   'portfolio.correlation_size_power': { en: 'Size and power of the correlation estimate', es: 'Tamaño y potencia de la estimación de la correlación' },
 };
 
-/** The segment of a test row in words: the measure and level of an Euler row ("VaR at 99.9 %"), the names module's words for the
- * others (the LHP anchor, a known correlation and its estimator); "-" for a row without one. Every tests table shows it, so no two
- * rows read the same (R3 c11 n3, the 2026-10-27 ruling). */
-export function segmentText(seg: string | null, lang: 'en' | 'es'): string {
-  if (!seg) return '-';
+
+/** The segment of a test row in words: the measure and level of an Euler row ("VaR at 99.9 %"), the LHP anchor, a known correlation
+ * as a percent with its estimator ("known correlation 2.0 %, maximum likelihood", as the cell table writes it; R5 c13 N3), the names
+ * module's words for the others. A row with no segment names its scope: the whole portfolio, and for the tail back-test its primary
+ * level, which is the level of the row's count and p-value (R5 c13 M1, c14 M1-R5, ruling 2). Every tests table shows it, so no two rows
+ * read the same (R3 c11 n3, the 2026-10-27 ruling). */
+export function segmentText(seg: string | null, lang: 'en' | 'es', row?: Pick<TestRow, 'test_id' | 'extras'>): string {
+  if (!seg) {
+    const primary = row?.test_id === 'portfolio.tail_backtest' ? (row.extras as { primary_level?: unknown } | null)?.primary_level : undefined;
+    if (typeof primary === 'number') {
+      const level = formatNumber(primary, lang, { percent: true, decimals: primary === 0.999 ? 1 : 0 });
+      return lang === 'en' ? `${WHOLE_PORTFOLIO.en}, the ${level} level` : `${WHOLE_PORTFOLIO.es}, nivel de ${level}`;
+    }
+    return pick(WHOLE_PORTFOLIO, lang);
+  }
+  const rho = /^rho=([\d.]+)\/(maximum-likelihood|moments)$/.exec(seg);
+  if (rho && ESTIMATOR_TEXT[rho[2]]) {
+    const e = pick(ESTIMATOR_TEXT[rho[2]], lang).toLowerCase();
+    const known = formatNumber(Number(rho[1]), lang, { percent: true, decimals: 1 });
+    return lang === 'en' ? `known correlation ${known}, ${e}` : `correlación conocida ${known}, ${e}`;
+  }
   const m = /^(var|es)-([\d.]+)$/.exec(seg);
   if (m) {
     const level = formatNumber(Number(m[2]), lang, { percent: true, decimals: Number(m[2]) === 0.999 ? 1 : 0 });
@@ -48,6 +65,27 @@ export function segmentText(seg: string | null, lang: 'en' | 'es'): string {
     return lang === 'en' ? `the LHP anchor at ${level}` : `el ancla LHP al ${level}`;
   }
   return segmentName(seg, { caseId: 'C10' })?.[lang] ?? seg;
+}
+
+/** What the light of a size-power row grades, ahead of its reference: the rejection rate of the replications, against alpha at the null
+ * correlation (the size) or against the power thresholds elsewhere (R5 c13 N4: a red row printed "not available" twice and no reason).
+ * Null for any other test. */
+export function sizePowerText(t: Pick<TestRow, 'test_id' | 'extras'>, lang: 'en' | 'es'): string | null {
+  if (t.test_id !== 'portfolio.correlation_size_power') return null;
+  const e = t.extras as { role?: string; rate?: number; alpha?: number; null_rho?: number; thresholds?: { power_green?: number; power_amber?: number } } | null;
+  if (!e || typeof e.rate !== 'number' || (e.role !== 'size' && e.role !== 'power')) return null;
+  const pc = (v: number, d: number) => formatNumber(v, lang, { percent: true, decimals: d });
+  const rate = pc(e.rate, 1);
+  if (e.role === 'size') {
+    const alpha = typeof e.alpha === 'number' ? pc(e.alpha, 0) : formatNumber(null, lang);
+    return lang === 'en' ? `size: rejection rate ${rate} against alpha ${alpha}` : `tamaño: tasa de rechazo ${rate} frente a alfa ${alpha}`;
+  }
+  const nul = typeof e.null_rho === 'number' ? pc(e.null_rho, 1) : formatNumber(null, lang);
+  const th = e.thresholds;
+  const bands = th && typeof th.power_green === 'number' && typeof th.power_amber === 'number'
+    ? (lang === 'en' ? ` (green from ${pc(th.power_green, 0)}, amber from ${pc(th.power_amber, 0)})` : ` (verde desde ${pc(th.power_green, 0)}, ámbar desde ${pc(th.power_amber, 0)})`)
+    : '';
+  return lang === 'en' ? `power: rejection rate ${rate} against the null correlation ${nul}${bands}` : `potencia: tasa de rechazo ${rate} frente a la correlación nula ${nul}${bands}`;
 }
 
 /** The quarters a missing-quarter row stands for, from its reason ("1985Q1, 1985Q2, 1985Q3, 1985Q4: ..."): a whole year is named by the
@@ -130,14 +168,14 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">{pick(text(TEST_TEXT, t.test_id), lang)}</td>
                   <td className="ct-text ct-wide-only">{modelName(t.model_id)}</td>
-                  <td className="ct-text" data-segment={t.segment ?? undefined}>{segmentText(t.segment, lang)}</td>
+                  <td className="ct-text" data-segment={t.segment ?? undefined}>{segmentText(t.segment, lang, t)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
                   {/* a measure of its own, so a phone's scroll box does not wrap the reference one word a line (R3 c11 n2) */}
-                  <td className="ct-text" style={{ minWidth: '16rem' }}>{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
+                  <td className="ct-text" style={{ minWidth: '16rem' }}>{[sizePowerText(t, lang), t.notes ? noteText(t.notes, lang) : referenceText(t, lang)].filter(Boolean).join('; ')}</td>
                 </tr>
               );
             })}

@@ -25,3 +25,17 @@ export const rangeText = (reference: string, lang: 'en' | 'es'): string => (lang
 export const referenceText = rangeText;
 
 export const YEAR_FORMAT = { decimals: 0, grouping: false } as const;
+
+/** The scope of a tests row whose document gives no segment, in the words of R5 ruling 2 for a credit or market portfolio. */
+export const WHOLE_PORTFOLIO: Words = { en: 'whole portfolio', es: 'toda la cartera' };
+
+/**
+ * A variant whose tests rows each name a segment, for the shared tests table, which prints a row's segment in the names module's
+ * words or, for a segment no form names, as written: a row its document gives no segment (C08's "LGD calibration over time", every
+ * C09 row) is a row of the whole portfolio of the variant, and carries those words in the page language (R5 ruling 2, c11 M1: a
+ * tests row names its scope in words, never a blank). The rows that carry a segment are kept as they are; nothing else changes.
+ */
+export function withPortfolioScope<V extends { tests: ReadonlyArray<{ segment: string | null }> }>(variant: V, lang: 'en' | 'es'): V {
+  if (variant.tests.every((t) => t.segment)) return variant;
+  return { ...variant, tests: variant.tests.map((t) => (t.segment ? t : { ...t, segment: WHOLE_PORTFOLIO[lang] })) };
+}

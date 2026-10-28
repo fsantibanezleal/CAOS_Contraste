@@ -35,13 +35,16 @@ def t(en: str, es: str) -> dict[str, str]:
     return {"en": en, "es": es}
 
 
+#: each rung's title and its short name; the short name is the one every C08 view prints for the model (frontend c08/selection.ts
+#: KIND_TEXT), so a finding that names the model by its short title says the same words in both languages (U16-R5 c11 B1: the Spanish
+#: "L4 Hurdle"; n1: "L1 OLS" beside "Linear regression")
 RUNG_TEXT = {
-    "L1-ols": (("OLS, clipped to [0, 1]", "MCO, recortado a [0, 1]"), ("L1 OLS", "L1 MCO")),
-    "L2-fractional-logit": (("Fractional logit (quasi-likelihood)", "Logit fraccional (cuasi-verosimilitud)"), ("L2 Fractional logit", "L2 Logit fraccional")),
-    "L3-beta": (("Beta regression on the endpoint-adjusted LGD", "Regresión beta sobre la LGD con extremos ajustados"), ("L3 Beta", "L3 Beta")),
-    "L4-hurdle": (("Two-stage hurdle (loss or not, then severity)", "Dos etapas (hay pérdida o no, luego severidad)"), ("L4 Hurdle", "L4 Hurdle")),
-    "L5-gradient-boosted": (("Gradient-boosted trees (catboost, cross-entropy)", "Árboles con gradiente (catboost, entropía cruzada)"), ("L5 Boosted trees", "L5 Árboles")),
-    "L6-tobit": (("Two-limit Tobit", "Tobit de dos límites"), ("L6 Tobit", "L6 Tobit")),
+    "L1-ols": (("OLS, clipped to [0, 1]", "MCO, recortado a [0, 1]"), ("Linear regression", "Regresión lineal")),
+    "L2-fractional-logit": (("Fractional logit (quasi-likelihood)", "Logit fraccional (cuasi-verosimilitud)"), ("Fractional logit", "Logit fraccional")),
+    "L3-beta": (("Beta regression on the endpoint-adjusted LGD", "Regresión beta sobre la LGD con extremos ajustados"), ("Beta regression", "Regresión beta")),
+    "L4-hurdle": (("Two-stage hurdle (loss or not, then severity)", "Dos etapas (hay pérdida o no, luego severidad)"), ("Two-stage hurdle", "Modelo en dos etapas")),
+    "L5-gradient-boosted": (("Gradient-boosted trees (catboost, cross-entropy)", "Árboles con gradiente (catboost, entropía cruzada)"), ("Gradient boosting", "Árboles potenciados por gradiente")),
+    "L6-tobit": (("Two-limit Tobit", "Tobit de dos límites"), ("Tobit", "Tobit")),
 }
 
 NOTICE = t(

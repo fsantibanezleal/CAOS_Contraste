@@ -13,6 +13,10 @@ type Rule = [RegExp, (m: RegExpMatchArray, lang: Lang) => string];
 const decimalsOf = (s: string) => (s.includes('.') ? s.split('.')[1].length : 0);
 const fixed = (s: string, lang: Lang) => formatNumber(Number(s), lang, { decimals: decimalsOf(s) });
 const whole = (s: string, lang: Lang) => formatNumber(Number(s), lang, { decimals: 0 });
+const two = (s: string, lang: Lang) => formatNumber(Number(s), lang, { decimals: 2 });
+
+/** The engine's note on the Acerbi-Szekely Z2 row (C11, C13): the published reference points it names. */
+const AS_NOTE = /^the critical values are simulated per model; (-?[\d.]+) and (-?[\d.]+) are a published reference point, not a threshold$/;
 
 const LOAN_TYPE: Record<string, string> = { Commercial: 'Comerciales', Residential: 'Residenciales', 'Credit cards': 'Tarjetas de crédito', Other: 'Otros' };
 
@@ -32,6 +36,7 @@ function horizonWords(n: string, unit: string, lang: Lang): string {
 /** The English reader sentence of a note that carries a raw id: a plan unit, a horizon code (R3 c12 B2, c13 BL1). */
 const EN_RULES: Rule[] = [
   [/^(challenger only: it must enter the \d+ percent MCS on FZ0 out of sample, and )the U\d+ bake( does not train it)$/, (m) => `${m[1]}the precomputation${m[2]}`],
+  [AS_NOTE, (m, lang) => `the critical values are simulated per model; ${two(m[1], lang)} and ${two(m[2], lang)} are a published reference point, not a threshold`],
   [W2_NOTE, (m, lang) => `W² is above the simulated ${m[1]} percent critical value for the ${m[2]} at the ${horizonWords(m[3], m[4], lang)} horizon`],
 ];
 
@@ -50,7 +55,8 @@ const RULES: Rule[] = [
   [/^not evaluated: fewer than (\d+) exceedances: no completed no-hit duration$/, (m, lang) => `no evaluada: menos de ${whole(m[1], lang)} excedencias: no hay una duración completa sin excedencia`],
   [/^not evaluated: no exceedance$/, () => 'no evaluada: sin excedencias'],
   [/^the Weibull shape reached the bound of its search \[([^\]]+)\]: the statistic is capped$/, (m, lang) => `la forma de Weibull llegó al límite de su búsqueda [${m[1].split(', ').map((x) => fixed(x, lang)).join('; ')}]: el estadístico queda acotado`],
-  [/^the critical values are simulated per model; (-?[\d.]+) and (-?[\d.]+) are a published reference point, not a threshold$/, (m, lang) => `los valores críticos se simulan por modelo; ${fixed(m[1], lang)} y ${fixed(m[2], lang)} son un punto de referencia publicado, no un umbral`],
+  // the published points with two decimals, as the Z2 mark and card write them ("-0,70 y -1,80", never "-1,8"; R5 c15 n4)
+  [AS_NOTE, (m, lang) => `los valores críticos se simulan por modelo; ${two(m[1], lang)} y ${two(m[2], lang)} son un punto de referencia publicado, no un umbral`],
   // FZ0 is a score ("el puntaje FZ0"): one gender, as the Model hint writes it (R3 c12 m16)
   [/^the model forecasts no ES: FZ0 is not defined$/, () => 'el modelo no pronostica ES: FZ0 no está definido'],
   [/^the loss differential has no spread: the statistic is undefined$/, () => 'el diferencial de pérdidas no tiene dispersión: el estadístico queda indefinido'],

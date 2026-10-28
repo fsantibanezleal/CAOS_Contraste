@@ -15,6 +15,13 @@ import { alphaLabel, fitOf, levelOf, modelLabel, outputsOf, testName, testsOf, t
 
 const TONE = { green: 'good', amber: 'warn', red: 'bad' } as const;
 
+/** A sentence of the document printed after a colon: in Spanish the clause starts in lower case ("Kupiec: rojo al 5 por ciento",
+ * R5 c15 n3), unless its first word is an acronym or a proper name in capitals ("FRTB", "MAR32"); English keeps it as written. */
+export function afterColon(sentence: string, lang: 'en' | 'es'): string {
+  if (lang === 'en' || !/^\p{Lu}\p{Ll}/u.test(sentence)) return sentence;
+  return sentence.charAt(0).toLocaleLowerCase('es') + sentence.slice(1);
+}
+
 /** The traditional back-tests of the model at the level, with the eligibility they decide and the gates that failed. */
 export function TestsView({ sel }: { sel: C11Sel | null }) {
   const lang = useShellLang();
@@ -72,7 +79,7 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
           </p>
           {gates.length > 0 ? (
             <p className="ct-note">
-              {gates.map((g) => `${pick(testName(g.test_id), lang)}: ${pick(g.rule, lang)}`).join(' ')}
+              {gates.map((g) => `${pick(testName(g.test_id), lang)}: ${afterColon(pick(g.rule, lang), lang)}`).join(' ')}
             </p>
           ) : null}
           <MarketTestsTable rows={rows} table="c11-tests" />
@@ -192,7 +199,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
                   {pick(
                     {
                       en: `${formatNumber(ref.yellow, 'en', { decimals: 2 })} (yellow) and ${formatNumber(ref.red, 'en', { decimals: 2 })} (red) for ${ref.n_days} days at ${formatNumber(ref.alpha, 'en', { percent: true, decimals: 1 })}: ${ref.status.en}`,
-                      es: `${formatNumber(ref.yellow, 'es', { decimals: 2 })} (amarillo) y ${formatNumber(ref.red, 'es', { decimals: 2 })} (rojo) para ${ref.n_days} días al ${formatNumber(ref.alpha, 'es', { percent: true, decimals: 1 })}: ${ref.status.es}`,
+                      es: `${formatNumber(ref.yellow, 'es', { decimals: 2 })} (amarillo) y ${formatNumber(ref.red, 'es', { decimals: 2 })} (rojo) para ${ref.n_days} días al ${formatNumber(ref.alpha, 'es', { percent: true, decimals: 1 })}: ${afterColon(ref.status.es, 'es')}`,
                     },
                     lang,
                   )}
