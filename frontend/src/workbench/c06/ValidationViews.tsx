@@ -224,7 +224,8 @@ export function BacktestView({ sel }: { sel: C06Sel | null }) {
                       Estimator column were cut at the card edge with no cue) */}
                   <td className="ct-text">
                     {pick(cohortText(r.origination_cohort), lang)}
-                    <span className="ct-row-detail">{ESTIMATOR[r.estimator]}</span>
+                    {/* the observed side's estimator, so the row does not read as a backtest of the L0 rung (R5 c09 n1) */}
+                    <span className="ct-row-detail">{pick({ en: `observed by ${ESTIMATOR[r.estimator]}`, es: `observada por ${ESTIMATOR[r.estimator]}` }, lang)}</span>
                   </td>
                   <td>{r.months}</td>
                   <td>{pct(r.predicted_cumulative_pd, lang, 3)}</td>
@@ -469,6 +470,9 @@ export function IdentitiesView({ sel }: { sel: C06Sel | null }) {
   );
 }
 
+// the scope of a credit portfolio's tests row whose document gives no segment (R5 ruling 2; C06 and C07 are both credit portfolios)
+const WHOLE_PORTFOLIO = { en: 'whole portfolio', es: 'toda la cartera' };
+
 /** The rows the engine returned for the tests of this variant, each with its light, its reference and its notes. */
 export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov: ReturnType<typeof provenanceOf> }) {
   const lang = useShellLang();
@@ -508,7 +512,8 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">
                     <span title={t.test_id}>{pick(ifrs9TestText(t.test_id), lang)}</span>
-                    {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentOf(t.segment), lang)}</span> : null}
+                    {/* every row names its segment; a portfolio-level row of no segment names its scope in words (R5 ruling 2) */}
+                    <span className="ct-note" data-segment="" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(t.segment ? segmentOf(t.segment) : WHOLE_PORTFOLIO, lang)}</span>
                     {/* on a phone the reference sits under the test, so the light stays in view (R3 c08 m8) */}
                     <span className="ct-narrow-only">{referenceText(t, lang)}</span>
                   </td>

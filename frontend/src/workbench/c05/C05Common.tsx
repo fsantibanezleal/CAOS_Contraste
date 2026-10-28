@@ -107,14 +107,18 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
   // the chip's short label names the row, as it does in the rail; the full title is the button's tooltip
   const short = (id: string) => entries.find((e) => e.variant_id === id)?.short_title ?? title(id);
   const prov = provenanceOf((sel.data.variant as VariantArtifact<unknown>).provenance.truth_status);
+  // each table carries the badge of the variants it lists, not of the variant loaded (R3 c06 m1: the published S&P table read
+  // "Synthetic data" while a generated low-default variant was loaded)
+  const spProv = sp.length ? provenanceOf(sp[0].provenance.truth_status) : prov;
+  const ldpProv = ldp.length ? provenanceOf(ldp[0].provenance.truth_status) : prov;
   const dp = (v: (typeof sp)[number], id: string) => v.tests.find((t) => t.test_id === 'pd.default_profile' && t.model_id === id);
   const chart = isSp(sel.data.variant as VariantArtifact<unknown>) ? spCompare(sp, sel, dp) : ldpCompare(ldp, short);
   return (
     <>
       <div className="ct-row">
       <div className="ct-share-3">
-        <PlotCard title={{ en: 'The calibration variants', es: 'Las variantes de calibración' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
-          note={{ en: 'The default-profile p-value of each case 1 approach, and the least squares forecast of the PD (case 3) against the observed one. Pick a variant to load it.', es: 'El valor p del perfil de cada enfoque del caso 1, y el pronóstico de la PD por mínimos cuadrados (caso 3) contra la observada. Elija una variante para cargarla.' }}>
+        <PlotCard title={{ en: 'The calibration variants', es: 'Las variantes de calibración' }} lane={REPLAY} provenance={spProv} dataKey={stateKey}
+          note={{ en: 'The default-profile p-value of each case 1 approach, over the whole portfolio, and the least squares forecast of the PD (case 3) against the observed one. Pick a variant to load it.', es: 'El valor p del perfil de cada enfoque del caso 1, sobre toda la cartera, y el pronóstico de la PD por mínimos cuadrados (caso 3) contra la observada. Elija una variante para cargarla.' }}>
           <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="variants-sp">
               <thead>
@@ -146,7 +150,7 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
         </PlotCard>
       </div>
       <div className="ct-share-2">
-        <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
+        <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={ldpProv} dataKey={stateKey}
           note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75 %, grados A, B, C.' }}>
           <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="variants-ldp">
@@ -309,7 +313,16 @@ export function CalibrationReadout({ sel }: { sel: C05Sel | null }) {
   const live = useLiveCurve(sel);
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   const sp = v && isSp(v) ? v : null;
-  const label: BiText = sel?.approach === 'A3-spd' ? { en: 'c_PD', es: 'c_PD' } : sel?.approach === 'A4-slr' ? { en: 'c_LR', es: 'c_LR' } : sel?.approach === 'A1-idp' ? { en: 'Forecast AR', es: 'AR pronosticada' } : { en: 'AR kept', es: 'AR conservada' };
+  // the constant by its name, never a code token (R5 ruling 4: `c_LR` and `c_PD` in prose are raw ids); the Spanish names the
+  // accuracy ratio in words, as the tables beside it do
+  const label: BiText =
+    sel?.approach === 'A3-spd'
+      ? { en: 'Scaled PD constant', es: 'Constante de las PD escaladas' }
+      : sel?.approach === 'A4-slr'
+        ? { en: 'Scaled LR constant', es: 'Constante de la RV escalada' }
+        : sel?.approach === 'A1-idp'
+          ? { en: 'Forecast AR', es: 'Razón de precisión pronosticada' }
+          : { en: 'AR kept', es: 'Razón de precisión conservada' };
   const constant = sel?.approach === 'A2-iar' ? sp?.outputs.ar0 ?? null : live?.constant ?? null;
   return (
     <Readout
@@ -322,7 +335,7 @@ export function CalibrationReadout({ sel }: { sel: C05Sel | null }) {
         { label: { en: 'PD of CCC-C', es: 'PD de CCC-C' }, value: live?.curve.length ? live.curve[16] : null, unitless: true, format: { percent: true, decimals: 2 } },
         {
           label: { en: 'Joint distribution', es: 'Distribución conjunta' },
-          text: live?.improper ? { en: 'improper', es: 'impropia' } : { en: 'proper', es: 'propia (suma 1)' },
+          text: live?.improper ? { en: 'improper', es: 'impropia' } : { en: 'proper', es: 'propia' },
           tone: live?.improper ? 'bad' : 'good',
           unitless: true,
           hint: { en: live?.improper ?? 'A proper joint distribution of grade and state.', es: live?.improper ? improperText(live.improper) : 'Una distribución conjunta propia de grado y estado.' },

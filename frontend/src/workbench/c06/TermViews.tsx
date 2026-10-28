@@ -272,7 +272,7 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
                 <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
-                <th>{pick({ en: 'Share', es: 'Parte' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Participación' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -317,13 +317,13 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
     { id: 'pd-at-mean', label: { en: 'PD at the weighted-average factor', es: 'PD en el factor promedio ponderado' }, value: n.pd_at_mean_z, format: (v) => pct(v, lang, 3) },
     { id: 'ecl-weighted', label: { en: `ECL, weighted scenarios (${n.currency})`, es: `PCE, escenarios ponderados (${n.currency})` }, value: n.ecl_weighted, format: (v) => money(v, lang, n.currency) },
     { id: 'ecl-mean', label: { en: `ECL at the mean path (${n.currency})`, es: `PCE en la trayectoria media (${n.currency})` }, value: n.ecl_at_mean_path, format: (v) => money(v, lang, n.currency) },
-    { id: 'index', label: { en: 'Non-linearity index, ECL weighted / ECL at the mean path - 1', es: 'Índice de no linealidad, PCE ponderada / PCE en la trayectoria media - 1' }, value: n.index, format: (v) => pct(v, lang, 2) },
+    { id: 'index', label: { en: 'Nonlinearity index, ECL weighted / ECL at the mean path - 1', es: 'Índice de no linealidad, PCE ponderada / PCE en la trayectoria media - 1' }, value: n.index, format: (v) => pct(v, lang, 2) },
   ];
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
-        title={{ en: 'Non-linearity: the PD is convex in the systematic factor', es: 'No linealidad: la PD es convexa en el factor sistemático' }}
+        title={{ en: 'Nonlinearity: the PD is convex in the systematic factor', es: 'No linealidad: la PD es convexa en el factor sistemático' }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
