@@ -110,7 +110,8 @@ describe('U16-F10d C14 and C15', () => {
       const markup = html(<IrrbbTestsTable variant={v} />);
       setLang(lang);
       const text = visibleText(html(<IrrbbTestsTable variant={v} />));
-      expect((markup.match(/data-segment=/g) ?? []).length).toBe(v.tests.filter((t) => t.segment).length);
+      // R5 ruling 2 (U16-F13d): every row names its segment, a row of no segment its scope in words
+      expect((markup.match(/data-segment=/g) ?? []).length).toBe(v.tests.length);
       expect(text).toContain(lang === 'en' ? 'CLP leg' : 'Tramo CLP');
       expect(text).toContain(lang === 'en' ? 'UR leg' : 'Tramo UR');
     });

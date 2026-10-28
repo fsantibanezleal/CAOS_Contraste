@@ -215,6 +215,8 @@ export function defaultSel(data: CaseData | null, peers: Peers | null = null): C
 
 /** An amount of USD for a narrow place: scaled to bn or m with the unit that says so (the table beside keeps the whole amount). */
 export function amount(v: number | null | undefined, currency = 'USD') {
+  // zero is plain USD, never "0 bn USD" (the shared form gives zero the billion unit; R4 c16 m3, R5 c17 m3)
+  if (v === 0) return { ...compactMoney(0, currency), value: 0, unit: { en: currency, es: currency } };
   return compactMoney(v ?? null, currency);
 }
 /** The scale of a money axis in USD: the divisor and the unit its title carries. */

@@ -246,10 +246,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_paths: int 
         rel = f"{CASE_ID}/{vid}.json"
         e = _check_and_write(root, rel, doc)
         sums.append(_sum(root, rel))
-        q = doc["outputs"]["quarter"]
+        q = vt.quarter_text(doc["outputs"]["valuation_date"])
         entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated",
-                        "title": t(f"Valuation date {doc['outputs']['valuation_date']} ({q})", f"Fecha de valoración {doc['outputs']['valuation_date']} ({q})"),
-                        "short_title": t(q, q), "regime": regime, "models_ref": MODELS_REL, **e})
+                        "title": vt.variant_title(doc["outputs"]["valuation_date"]),
+                        "short_title": t(q["en"], q["es"]), "regime": regime, "models_ref": MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
     write_json(root / RAW_REL, built.raw_sources)
     sums.append(_sum(root, RAW_REL))
