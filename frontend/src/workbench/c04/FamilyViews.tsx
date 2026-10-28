@@ -441,7 +441,8 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
     [
       L(lang, 'Seeds', 'Semillas'),
       design.seed_key
-        ? L(lang, `case seed ${num(lang, v.provenance.seed)}, one seed per rung from the key ${design.seed_key}`, `semilla del caso ${num(lang, v.provenance.seed)}, una semilla por peldaño desde la clave ${design.seed_key}`)
+        // the key itself is a raw id in prose (R6 c06 B1); it stays in the committed document's design block
+        ? L(lang, `case seed ${num(lang, v.provenance.seed)}, one seed per rung derived from it`, `semilla del caso ${num(lang, v.provenance.seed)}, una semilla por peldaño derivada de ella`)
         : L(lang, 'none: nothing is drawn', 'ninguna: no se sortea nada'),
     ],
     [L(lang, 'Engine', 'Motor'), `riskvalidation ${v.provenance.riskvalidation_version ?? ''}`.trim()],

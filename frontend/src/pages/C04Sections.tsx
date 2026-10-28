@@ -84,6 +84,13 @@ export function engelmannSymbol(name: string, lang: Lang): ReactNode {
   );
 }
 
+/** The same symbols in a plain string, for a verdict line, which takes text only (R6 c30 B2: the verdict printed "W hat" and
+ * "W_ttc"): Ŵ and W̃ as characters, a subscript as the word in parentheses ("W (TTC)", "W (inicial)"). */
+export function engelmannText(text: string, lang: Lang): string {
+  return text.replace(/W(?: (hat|tilde)|_(init|ttc))(?= |\b|$)/g, (_, accent, sub) =>
+    accent ? (accent === 'hat' ? 'Ŵ' : 'W̃') : `W (${sub === 'ttc' ? 'TTC' : lang === 'es' ? 'inicial' : 'init'})`);
+}
+
 /** A sentence of the papers' check with its symbols set as engelmannSymbol sets them (the W-hat note names W_ttc). */
 export function withEngelmannSymbols(text: string, lang: Lang): ReactNode {
   const parts = text.split(/(W_(?:init|ttc)(?: \d+)?|W (?:hat|tilde)(?: \d+)?)/);
@@ -764,8 +771,8 @@ function PapersCard({ published }: { published: PublishedVariant }) {
         title={{ en: 'What the recomputation supports', es: 'Lo que respalda el recálculo' }}
         tone={agreements.every((p) => p.agree === p.total) ? 'good' : 'accent'}
         verdict={{
-          en: agreements.map((p) => `${pick(p.name, 'en')}: ${p.agree} of ${p.total} at the printed digits (${pick(p.detail, 'en')})`).join('. '),
-          es: agreements.map((p) => `${pick(p.name, 'es')}: ${p.agree} de ${p.total} a los dígitos impresos (${pick(p.detail, 'es')})`).join('. '),
+          en: engelmannText(agreements.map((p) => `${pick(p.name, 'en')}: ${p.agree} of ${p.total} at the printed digits (${pick(p.detail, 'en')})`).join('. '), 'en'),
+          es: engelmannText(agreements.map((p) => `${pick(p.name, 'es')}: ${p.agree} de ${p.total} a los dígitos impresos (${pick(p.detail, 'es')})`).join('. '), 'es'),
         }}
       />
       <div className="ct-scroll" data-caos-flow="">

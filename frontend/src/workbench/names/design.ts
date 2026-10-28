@@ -61,7 +61,8 @@ export const DESIGN_LIMITS: Record<string, BiText> = {
   'planted-not-found': { en: 'the leak is planted, so the screen catches it by construction', es: 'la fuga es plantada, así que el filtro la detecta por construcción' },
   'rungs-swept': { en: 'only the two boosted-tree rungs are swept', es: 'solo se recorren los dos peldaños de árboles potenciados' },
   'sgcd-not-for-scoring': { en: 'SGCD is a research benchmark, not for credit scoring', es: 'SGCD es un referente de investigación, no para calificar crédito' },
-  'small-groups': { en: 'each shock row holds 30 to 90 records', es: 'cada fila de choque tiene entre 30 y 90 registros' },
+  // no count here: the finding's title states the span from the document's rows (R6 c26 B1: "30 to 90" beside a row of 27)
+  'small-groups': { en: 'each shock row holds few records, so its AUC carries a wide interval', es: 'cada fila de choque tiene pocos registros, así que su AUC tiene un intervalo amplio' },
   'synthetic-shift': { en: 'the shift is synthetic, of a known size', es: 'el cambio es sintético, de tamaño conocido' },
   'xgboost-float32': { en: 'XGBoost computes in single precision', es: 'XGBoost calcula en precisión simple' },
   // C21 (data-pipeline/pipeline/cases/c21/)
