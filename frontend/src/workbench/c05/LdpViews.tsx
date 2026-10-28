@@ -238,7 +238,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
               {v.tests.map((t) => (
                 <tr key={`${t.test_id}-${t.segment}`}>
                   <td className="ct-text">{pick(NAME[t.test_id] ?? testText(t.test_id), lang)}</td>
-                  <td className="ct-text">{t.segment === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : t.segment}</td>
+                  <td className="ct-text">{t.segment === 'portfolio' || !t.segment ? pick({ en: 'whole portfolio', es: 'toda la cartera' }, lang) : pick({ en: `grade ${t.segment}`, es: `grado ${t.segment}` }, lang)}</td>
                   <td>{t.n_events !== null && t.n !== null ? `${formatNumber(t.n_events, lang)} / ${formatNumber(t.n, lang)}` : '-'}</td>
                   <LightCell row={t} alphas={sel.alphas} />
                 </tr>

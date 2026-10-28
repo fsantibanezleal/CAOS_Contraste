@@ -103,7 +103,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <Knob
           id="c05-lgd"
           label={{ en: 'LGD', es: 'LGD' }}
-          hint={{ en: 'Loss given default for every obligor; 45% is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).', es: 'Pérdida dado el incumplimiento de todo deudor; 45 % es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).' }}
+          hint={{ en: 'Loss given default for every obligor; 45% is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).', es: 'Pérdida dado el incumplimiento de todo deudor; 45 % es la LGD F-IRB preferente no garantizada de instituciones financieras (CRE32.6).' }}
           value={lgd}
           min={0.1}
           max={0.9}

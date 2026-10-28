@@ -43,7 +43,7 @@ NOTICE = {
            "not used (the owner's account is missing). Default is a charge-off; the file has no delinquency history, no balance "
            "and no recovery after charge-off."),
     "es": ("Préstamos a pequeñas empresas, no hipotecas: los préstamos SBA 7(a) son el gemelo público del caso hipotecario. No se "
-           "usan los datos de Freddie Mac (falta la cuenta del propietario). El incumplimiento es un castigo; el archivo no tiene "
+           "usan los datos de Freddie Mac (falta la cuenta del titular). El incumplimiento es un castigo; el archivo no tiene "
            "historia de mora, saldo ni recuperaciones tras el castigo."),
 }
 

@@ -6,6 +6,7 @@ import { MaybeNumber, pct } from '../c06/format';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { fitOf, outputsOf, type C07Sel } from './selection';
+import { Fragment } from 'react';
 
 /** The calibration targets' metric and unit in Spanish (the models document writes them in English; R2b c08 B3). */
 const PART_ES: Record<string, string> = {
@@ -196,9 +197,13 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
                   : noPe
                     ? { en: 'The table gives no PE for its cells', es: 'La tabla no da PE para sus celdas' }
                     : null;
+            const caption = `${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}${absent ? `. ${pick(absent, lang)}.` : ''}`;
+            // the caption is a paragraph above its table, as wide as the box: a <caption> spans the table's scroll width, so at 390 its
+            // centred text was cut at the box edge (R5 c10 n1); the table keeps it as its accessible name
             return (
-              <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
-                <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}${absent ? `. ${pick(absent, lang)}.` : ''}`}</caption>
+              <Fragment key={t.table_id}>
+              <p className="ct-note" data-caption={t.table_id}>{caption}</p>
+              <table className="caos-table ct-wrap-head" data-table-id={t.table_id} aria-label={caption}>
                 <thead>
                   <tr>
                     <th className="ct-text">{pick({ en: 'Row', es: 'Fila' }, lang)}</th>
@@ -228,10 +233,11 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
                   ))}
                 </tbody>
               </table>
+              </Fragment>
             );
           })}
-          <table className="caos-table" data-table="b1-default-categories">
-            <caption className="ct-note">{pick({ en: 'Individual assessment, default categories', es: 'Evaluación individual, categorías de incumplimiento' }, lang)}</caption>
+          <p className="ct-note" data-caption="b1-default-categories">{pick({ en: 'Individual assessment, default categories', es: 'Evaluación individual, categorías de incumplimiento' }, lang)}</p>
+          <table className="caos-table" data-table="b1-default-categories" aria-label={pick({ en: 'Individual assessment, default categories', es: 'Evaluación individual, categorías de incumplimiento' }, lang)}>
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>

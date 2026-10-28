@@ -560,7 +560,8 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {s.rows.map((r) => (
                 <tr key={r.stage} data-stage={r.stage}>
-                  <td className="ct-text">{pick(STAGE_TEXT[r.stage], lang)}</td>
+                  {/* the stage on one line, as the other cells (R5 c09 n2: "Stage / 1" wrapped at 1280) */}
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{pick(STAGE_TEXT[r.stage], lang)}</td>
                   <td>{formatNumber(r.accounts, lang, { decimals: 0 })}</td>
                   <td>{gcaScale.fmt(r.gross_carrying_amount, lang)}</td>
                   <td>{eclScale.fmt(r.ecl, lang)}</td>

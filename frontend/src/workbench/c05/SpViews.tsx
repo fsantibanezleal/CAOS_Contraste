@@ -3,7 +3,7 @@
 // curve and capital are the ports in engine/credit.ts at the rail's approach, forecast PD, regime and LGD.
 import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { irbCapital } from '../../engine/credit';
 import type { TestRow } from '../../lib/contract.types';
 import { LightCell } from '../ValidationViews';
@@ -22,6 +22,8 @@ function spOf(sel: C05Sel | null): SpVariant | null {
 }
 
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 3) => formatNumber(v, lang, { percent: true, decimals });
+// the scope of a tests row whose document gives no segment, in words (R5 ruling 2: a credit portfolio's row names the whole portfolio)
+const WHOLE = { en: 'whole portfolio', es: 'toda la cartera' } as const;
 
 /** The forecast curves: the year's observed default rates, every case 1 curve, the 2009 curve, the live one. */
 export function CurvesView({ sel }: { sel: C05Sel | null }) {
@@ -182,12 +184,14 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
   if (!sel || !v) return <Pending />;
   const o = v.outputs;
   const prov = provenanceOf(v.provenance.truth_status);
-  const constant = (id: string): string => {
+  // the constants as the paper's symbols with their subscripts, never code tokens (R5 ruling 4); the Spanish subscript of the likelihood
+  // ratio is RV, as the approach's Spanish name (R4 ruling 6)
+  const constant = (id: string): ReactNode => {
     const c = o.approaches[id].constants;
-    if ('c_pd' in c) return `c_PD ${formatNumber(c.c_pd, lang, { decimals: 4 })}`;
-    if ('c_lr' in c) return `c_LR ${formatNumber(c.c_lr, lang, { decimals: 4 })}`;
-    if ('accuracy_ratio_target' in c) return `AR1 ${pct(lang, c.accuracy_ratio_target, 1)}`;
-    if ('beta' in c) return `alpha ${formatNumber(c.alpha, lang, { decimals: 3 })}, beta ${formatNumber(c.beta, lang, { decimals: 3 })}`;
+    if ('c_pd' in c) return <><i>c</i><sub>PD</sub> {formatNumber(c.c_pd, lang, { decimals: 4 })}</>;
+    if ('c_lr' in c) return <><i>c</i><sub>{lang === 'es' ? 'RV' : 'LR'}</sub> {formatNumber(c.c_lr, lang, { decimals: 4 })}</>;
+    if ('accuracy_ratio_target' in c) return `${pick({ en: 'Forecast accuracy ratio', es: 'Razón de precisión pronosticada' }, lang)} ${pct(lang, c.accuracy_ratio_target, 1)}`;
+    if ('beta' in c) return `α ${formatNumber(c.alpha, lang, { decimals: 3 })}, β ${formatNumber(c.beta, lang, { decimals: 3 })}`;
     return '';
   };
   return (
@@ -204,7 +208,7 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
         }}
       >
         <div className="ct-scroll" data-caos-flow="">
-          <table className="caos-table" data-table="approaches">
+          <table className="caos-table ct-wrap-head" data-table="approaches">
             <thead>
               <tr>
                 <th>{pick({ en: 'Case', es: 'Caso' }, lang)}</th>
@@ -212,7 +216,7 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
                 <th>{pick({ en: 'Forecast PD', es: 'PD pronosticada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Accuracy ratio', es: 'Razón de precisión' }, lang)}</th>
                 <th className="ct-wide-only ct-text">{pick({ en: 'Constants', es: 'Constantes' }, lang)}</th>
-                <th>{pick({ en: 'Default profile, p', es: 'Perfil de incumpl., p' }, lang)}</th>
+                <th>{pick({ en: `Default profile, p (${WHOLE.en})`, es: `Perfil de incumpl., p (${WHOLE.es})` }, lang)}</th>
                 <th className="ct-room-only">{pick({ en: 'Average risk weight', es: 'Ponderador medio' }, lang)}</th>
               </tr>
             </thead>
@@ -252,7 +256,9 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
   }, [v, sel]);
   if (!sel || !v || !chart) return <Pending />;
   const prov = provenanceOf(v.provenance.truth_status);
-  const rows = v.model.map((m) => ({ m, row: defaultProfileRow(v, m.id) }));
+  // the chi-square test over grades (WP14) beside the paper's test: the open findings cite it, so the view shows it (R5 c07 M2)
+  const chi2 = (id: string) => v.tests.find((t) => t.test_id === 'pd.chi2_grades' && t.model_id === id);
+  const rows = v.model.map((m) => ({ m, row: defaultProfileRow(v, m.id), grades: chi2(m.id) }));
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -262,27 +268,33 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), with the chi-square approximation for reference where the table has room for its column. The light follows the rail\'s policy.',
-          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado como referencia donde la tabla tiene espacio para su columna. La luz sigue la política del panel.',
+          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), with the chi-square approximation for reference where the table has room for its column. The chi-square test over grades (BCBS Working Paper 14), which the findings cite, asks another question: whether the PD of each grade matches its defaults, not only how the defaults spread over the grades; it is the fourth column. Every row is the whole portfolio. The lights follow the rail\'s policy.',
+          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado como referencia donde la tabla tiene espacio para su columna. La prueba chi-cuadrado sobre grados (documento de trabajo 14 del BCBS), que citan los hallazgos, hace otra pregunta: si la PD de cada grado concuerda con sus incumplimientos, no solo cómo se reparten los incumplimientos entre los grados; es la cuarta columna. Cada fila es toda la cartera. Las luces siguen la política del panel.',
         }}
       >
         <div className="ct-scroll" data-caos-flow="">
-          <table className="caos-table" data-table="default-profile">
+          <table className="caos-table ct-wrap-head" data-table="default-profile">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
                 <th>T</th>
                 <th>{pick({ en: 'p (Monte Carlo)', es: 'p (Monte Carlo)' }, lang)}</th>
+                <th>{pick({ en: 'Chi-square over grades, p', es: 'Chi-cuadrado sobre grados, p' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Standard error', es: 'Error estándar' }, lang)}</th>
                 <th className="ct-room-only">{pick({ en: 'p (chi-square)', es: 'p (chi-cuadrado)' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ m, row }) => (
+              {rows.map(({ m, row, grades }) => (
                 <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(m.short_title, lang)}</td>
+                  {/* the name on one line and its scope under it, so a row is two lines high and the box shows most rows at 1280 */}
+                  <td className="ct-text">
+                    <span style={{ whiteSpace: 'nowrap' }}>{pick(m.short_title, lang)}</span>
+                    <span className="ct-note" data-segment="" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(WHOLE, lang)}</span>
+                  </td>
                   <td>{formatNumber(row?.statistic, lang, { decimals: 2 })}</td>
                   <LightCell row={row} alphas={sel.alphas} />
+                  <LightCell row={grades} alphas={sel.alphas} />
                   <td className="ct-wide-only">{formatNumber(row?.extras?.mc_standard_error as number, lang, { digits: 2 })}</td>
                   <td className="ct-room-only">{formatNumber(row?.extras?.p_value_asymptotic as number, lang, { digits: 2 })}</td>
                 </tr>
@@ -348,7 +360,7 @@ export function GradeTestsView({ sel }: { sel: C05Sel | null }) {
             <tbody>
               {[...o.grades, 'portfolio'].map((g, i) => (
                 <tr key={g}>
-                  <td className="ct-text">{g === 'portfolio' ? pick({ en: 'Portfolio', es: 'Cartera' }, lang) : g}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{g === 'portfolio' ? pick({ en: 'Whole portfolio', es: 'Toda la cartera' }, lang) : g}</td>
                   <td>{pct(lang, g === 'portfolio' ? o.pd1 : o.default_rate1[i], 2)}</td>
                   {CASE1.map((id) => (
                     <LightCell key={id} row={row(id, g)} alphas={sel.alphas} />
