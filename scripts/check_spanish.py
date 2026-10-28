@@ -59,6 +59,9 @@ SUB = re.compile(r"<sub>([A-Za-zÀ-ÿ]+)</sub>")
 #: an English table or figure locator in a Spanish text ("Table 8"; ruling 6), with its Spanish
 LOCATOR = re.compile(r"(?<![A-Za-zÀ-ÿ])(Table|Figure)s?(?= +[0-9])")
 LOCATOR_ES = {"table": "Tabla", "figure": "Figura"}
+#: an English author pair in a Spanish text ("Christoffersen and Pelletier (2004"): the Spanish joins the authors with "y"
+#: (R5 ruling 5, c15 M1); a title's own words ("Theory and Practice") are not followed by a year and are kept
+AUTHORS = re.compile(r"(?<![A-Za-zÀ-ÿ])([A-Z][A-Za-zÀ-ÿ'-]+) and ([A-Z][A-Za-zÀ-ÿ'-]+)(?=,? \(?[0-9]{4})")
 
 
 def strip_accents(word: str) -> str:
@@ -178,6 +181,7 @@ def check_text(text: str, certain: bool, words: dict[str, str], english: dict[st
         out += joined_terms(text, subs)
     if spanish:
         out += [(m.group(0), LOCATOR_ES[m.group(1).lower()]) for m in LOCATOR.finditer(text)]
+        out += [(m.group(0), f"{m.group(1)} y {m.group(2)}") for m in AUTHORS.finditer(text)]
     for m in WORD.finditer(text):
         word = m.group(0)
         if any(ord(c) > 127 for c in word):

@@ -60,13 +60,7 @@ def test_with_reference_text_copies_the_rows_and_keeps_the_extras():
     assert "reference_text" not in row["extras"]
 
 
-#: the cases whose committed reference texts predate U16-F12g (R4 ruling 1: no "U9" in C12's research addendum; c10 m12: C08's "ajuste"); the
-#: integrator's re-bake writes them, then the strict mark fails and is removed
-REBAKE_F12G = {"C08", "C12"}
-
-
-@pytest.mark.parametrize("case", [pytest.param(c, marks=pytest.mark.xfail(strict=True, reason="committed before U16-F12g; re-baked by the integrator"))
-                                  if c in REBAKE_F12G else c for c in REFERENCE_CASES])
+@pytest.mark.parametrize("case", REFERENCE_CASES)
 def test_every_test_row_of_a_case_carries_its_reference_in_both_languages(case):
     rows = [(p.name, t) for p in variants(case) for t in load(p)["tests"]]
     assert rows, f"{case}: no test row"
