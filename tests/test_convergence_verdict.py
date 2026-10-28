@@ -579,3 +579,15 @@ def test_the_output_of_a_failing_script_is_stable_between_runs_even_when_it_prin
     time.sleep(1.1)
     world.run()
     assert world.out.read_bytes() == first and b"127.0.0.1:PORT" in first and b"<path>" in first
+
+
+def test_a_script_gate_named_by_several_rows_runs_once(tmp_path, monkeypatch):
+    """The verdict runs each script gate once and gives its result to every row that names it."""
+    cv = CV
+    calls = []
+    monkeypatch.setattr(cv, "_run_script", lambda repo, rel, timeout: calls.append(rel) or cv.Part("passed", f"{rel} exit 0"))
+    cv._SCRIPT_RESULTS.clear()
+    first = cv.run_script(tmp_path, "frontend/scripts/gate.mjs", 10)
+    second = cv.run_script(tmp_path, "frontend/scripts/gate.mjs", 10)
+    assert calls == ["frontend/scripts/gate.mjs"] and first == second
+    cv._SCRIPT_RESULTS.clear()

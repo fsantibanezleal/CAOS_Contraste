@@ -439,7 +439,7 @@ def test_the_adopted_scripts_are_the_template_scripts_byte_for_byte():
 def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel(tmp_path):
     # template 0.11.000: --check names its temp root (--tmp, else CAOS_TEMP_ROOT) and never falls back to the system temp
     done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check", "--tmp", str(tmp_path)], capture_output=True, text=True, check=False,
-                          cwd=ROOT, timeout=3000)
+                          cwd=ROOT, timeout=7200)  # 220 notebooks in fresh kernels: about an hour on a loaded machine
     assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
     assert "nothing written" in done.stdout
 
