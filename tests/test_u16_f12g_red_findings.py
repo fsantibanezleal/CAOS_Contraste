@@ -272,3 +272,14 @@ def test_the_governance_register_reads_the_generic_findings_through_the_engine_a
                 assert anchor is not None and anchor["test_id"] == f["evidence"][0].split("@")[0], (p.name, f["id"], why)
                 n += 1
     assert n > 0
+
+
+def test_a_model_is_named_by_its_own_document_before_the_generated_names() -> None:
+    from pipeline.core import red_findings as rf
+
+    renamed = {"id": "L4-hurdle", "short_title": {"en": "Two-stage model", "es": "Modelo en dos etapas"}}
+    assert rf.model_name("C08", renamed) == {"en": "Two-stage model", "es": "Modelo en dos etapas"}
+    coded = {"id": "m1", "short_title": {"en": "port-5000-k1.5", "es": "port-5000-k1.5"},
+             "title": {"en": "Portfolio of 5,000 loans", "es": "Cartera de 5.000 créditos"}}
+    assert rf.model_name("C99", coded) == {"en": "Portfolio of 5,000 loans", "es": "Cartera de 5.000 créditos"}
+    assert rf.model_name("C99", {"id": "x1", "short_title": {"en": "x1", "es": "x1"}}) is None
