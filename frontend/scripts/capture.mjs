@@ -294,6 +294,9 @@ export async function runCapture(opts) {
     const hrefs = await page.$$eval('header nav a[href]', (as) => as.map((a) => a.href));
     navRoutes = [...new Set(hrefs.map(routeOf).filter(Boolean))];
     await page.goto(urlFor(workbench), { waitUntil: 'load', timeout: 30000 });
+    // the App route is lazy-loaded (template 0.12.000): wait for its case control whatever --settle-ms says, so a short
+    // settle captures unsettled views instead of reading an App that has not rendered yet
+    await page.waitForSelector('[data-control="case"]', { timeout: 30000 }).catch(() => undefined);
     await settle(page);
     offeredCases = await page.evaluate(casesOnPage);
     await ctx.close();
@@ -445,6 +448,8 @@ export async function runCapture(opts) {
         errMark.c = rec.consoleErrors.length;
       };
 
+      // a workbench route draws its group tabs after its lazy chunk loads: list the views only once they exist, whatever --settle-ms
+      if (t.route === workbench) await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]', { timeout: 30000 }).catch(() => undefined);
       let settled = await settle(page);
       let emitted = 0;
 

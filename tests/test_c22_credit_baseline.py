@@ -66,7 +66,8 @@ def credit_view(doc: dict, credit_ids: frozenset[str] | None = None) -> dict:
         "specimen": o["specimen"],
         "tests": doc["tests"],
         "impact": {k: v for k, v in doc["impact"].items() if keep(k)},
-        "findings": [f for f in doc["findings"] if keep(f["id"])],
+        # the generic red-row findings (F-RED-NN) are the pipeline's layer over the tests, tested in tests/test_u16_f12g_red_findings.py
+        "findings": [f for f in doc["findings"] if keep(f["id"]) and not f["id"].startswith("F-RED-")],
     }
 
 
