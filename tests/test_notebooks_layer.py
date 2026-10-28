@@ -91,6 +91,8 @@ def copy_set(dest: Path) -> Path:
     (dest / "docs" / "design").mkdir(parents=True)
     shutil.copy(ROOT / "docs" / "design" / "SDD.md", dest / "docs" / "design" / "SDD.md")
     shutil.copy(ROOT / "README.md", dest / "README.md")
+    # the method declarations the notebook bar counts method cells by (template 0.12.000)
+    shutil.copy(ROOT / "product.json", dest / "product.json")
     for path in sorted((ROOT / "data-pipeline").glob("**/model/*.py")):
         target = dest / path.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -640,6 +642,9 @@ def test_adversarial_a_hand_edited_output_fails_the_release_gate(repo):
     # local-only: the execution gate needs the notebook environment, which CI does not install
     (repo / "scripts").mkdir()
     shutil.copy(SCRIPTS / "run_notebooks.py", repo / "scripts" / "run_notebooks.py")
+    # the runner checks the method packages through the guard beside it (template 0.12.000)
+    for name in ("check_notebooks.py", "notebook_bar.json"):
+        shutil.copy(SCRIPTS / name, repo / "scripts" / name)
     shutil.copytree(ROOT / "data-pipeline", repo / "data-pipeline", dirs_exist_ok=True)
     shutil.copy(ROOT / "VERSION", repo / "VERSION")
     if sys.platform == "win32":
