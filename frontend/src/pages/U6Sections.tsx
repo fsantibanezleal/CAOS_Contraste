@@ -64,6 +64,10 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
   // left-aligned under a right-aligned header beside right-aligned values)
   const isText = (c: Cell | undefined) => (typeof c === 'string' && c.length > LONG_CELL) || isValidElement(c);
   const textCol = head.map((_, j) => j < wide || rows.some((r) => isText(r[j])));
+  // a column with a reason or a sentence keeps a readable width inside the scroll box: laid out narrow at 390, the C12 wrong-way
+  // reason in the ORE column wrapped one word per line (R5 c30 m8)
+  const sentence = (c: Cell | undefined) => (typeof c === 'string' ? c.length > 2 * LONG_CELL : isValidElement(c));
+  const readable = head.map((_, j) => j >= wide && rows.some((r) => sentence(r[j])));
   return (
     <div data-table-box style={TABLE_BOX}>
     {/* rows several lines tall read from the top (R3 c23 M3: the C21 year pair sat 500 px down its centred row) */}
@@ -71,7 +75,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
       <thead>
         <tr>
           {head.map((h, i) => (
-            <th key={h} className={textCol[i] ? 'caos-col-text' : undefined}>
+            <th key={h} className={textCol[i] ? 'caos-col-text' : undefined} style={readable[i] ? { minWidth: '12rem' } : undefined}>
               {h}
             </th>
           ))}

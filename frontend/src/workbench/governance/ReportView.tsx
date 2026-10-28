@@ -49,7 +49,7 @@ function PolicyCell({ row }: { row: OutcomeRow }) {
       <span className="ct-note">
         {pick(SOURCE_NAME[p.source] ?? { en: p.source, es: p.source }, lang)}; {pick({ en: 'kind: ', es: 'tipo: ' }, lang)}
         {p.kind ? pick(KIND_NAME[p.kind], lang) : unknown}; {pick({ en: 'direction: ', es: 'sentido: ' }, lang)}
-        {p.direction ? pick(DIRECTION_NAME[p.direction], lang) : p.source === 'inline-battery' ? pick({ en: 'not available (no policy file, backlog BL-085)', es: 'no disponible (sin archivo de política, pendiente BL-085)' }, lang) : unknown}
+        {p.direction ? pick(DIRECTION_NAME[p.direction], lang) : p.source === 'inline-battery' ? pick({ en: 'not available (the battery runs inline, and no policy file states its direction)', es: 'no disponible (la batería corre en línea y ningún archivo de política declara su sentido)' }, lang) : unknown}
       </span>
     </>
   );
@@ -347,7 +347,7 @@ export function ReportsTabLoader() {
         es="Un informe de validación por entrada del inventario, en las doce secciones de la plantilla del dossier 06 I.3. Una sección se completa con insumos nombrados, o queda ausente con su razón, y lo que la plantilla pide y Contraste no tiene detrás se lista como no disponible. La sección 11 da la opinión en la escala de cuatro niveles del BCE como resultado de una regla declarada: no es una aprobación."
       />
       <P
-        en="Pick an entry to read its report. Each section names the inputs it was assembled from, in a fold under it: a committed document, an engine function or a stated convention. A section that is filled can still list elements of the template that Contraste holds nothing behind, such as a written soundness assessment or a monitoring pack; those are not invented, they are listed as not available with the reason. The report of an entry the bake has not written is shown as not available yet, with the file that is missing."
+        en="Pick an entry to read its report. Each section names the inputs it was assembled from, in a fold under it: a committed document, an engine function or a stated convention. A section that is filled can still list elements of the template that Contraste holds nothing behind, such as a written soundness assessment or a monitoring pack; those are not invented, they are listed as not available with the reason. The report of an entry that has not been written yet is shown as not available yet, with the file that is missing."
         es="Elija una entrada para leer su informe. Cada sección nombra los insumos con que se armó, en un pliegue bajo ella: un documento versionado, una función del motor o una convención declarada. Una sección completa puede igualmente listar elementos de la plantilla que Contraste no tiene detrás, como una evaluación escrita de solidez o un paquete de monitoreo; no se inventan, se listan como no disponibles con su razón. El informe de una entrada que la generación no ha escrito se muestra como aún no disponible, con el archivo que falta."
       />
       <ConventionNote />
