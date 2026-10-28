@@ -68,6 +68,7 @@ export const TARGETS = [
   // C04 drawings with no floor holder (c05 M1, M3) and the C02 transfer bars and split (c03 M1, M2)
   ['C01', 'holdout', 'model', 'penalised'],
   ['C01', 'german-twin', 'model', 'ladder'],
+  ['C01', 'german-twin', 'model', 'ebm-categories'],
   ['C02', 'h1', 'horizons', 'transfer'],
   ['C02', 'pooled', 'horizons', 'transfer'],
   ['C02', 'h1', 'context', null],
@@ -172,9 +173,11 @@ const measure = (BOXES) => {
     let rows = 0;
     if (below) {
       for (const tr of box.querySelectorAll('tbody > tr')) {
-        if (tr.closest('.sr-only') || tr.getBoundingClientRect().height <= 0) continue;
+        const box = tr.getBoundingClientRect();
+        // a row wholly above the band is read; a glyph drawn outside its row (a positioned hint of a cell) is not the row's text
+        if (tr.closest('.sr-only') || box.height <= 0 || box.bottom <= band.top) continue;
         const g = glyphs(tr);
-        const mid = (g.top + g.bottom) / 2;
+        const mid = (Math.max(g.top, box.top) + Math.min(g.bottom, box.bottom)) / 2;
         if (mid >= visibleBottom || opacity(mid - band.top, band.height, band.stop) >= 0.5) rows += 1;
       }
     }

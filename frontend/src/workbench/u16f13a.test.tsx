@@ -23,7 +23,7 @@ import { ScorecardView } from './ModelViews';
 import { C04FindingsView, findingsDrawing, findingsEvidence } from './c04/C04Common';
 import { makeSel } from './c04/selection';
 import { KIND_TEXT, rungLabel } from './c03/selection';
-import { DESIGN_LIMITS, modelName, segmentName } from './names';
+import { modelName, segmentName } from './names';
 // @ts-expect-error the generator is plain JavaScript (frontend/scripts/gen-names.mjs)
 import { VIEW_KIND_TEXT } from '../../scripts/gen-names.mjs';
 import { CUE_BAND, NOTE_KEEP, SCROLL_BOXES, bodyRoom, rowHidden, rowsBelow, sizerOf, toPx } from './layout';
@@ -82,6 +82,9 @@ describe('U16-F13a the boxes layout.ts marks (R5 c27 M1) and the floors of a plo
     expect(sizerOf(plot(false) as never)).toBe(body);
     expect(sizerOf(plot(true) as never)).toBe(holder);
     expect(sizerOf({ closest: () => null } as never)).toBeNull();
+    // a plot inside a box that scrolls in its card (a panel grid) grows its own drawing, which the box then scrolls
+    const host = { tag: 'host' };
+    expect(sizerOf({ parentElement: host, closest: (sel: string) => (sel.includes('ct-panels-fill') ? { tag: 'grid' } : sel.includes('caos-plot-body') ? body : null) } as never)).toBe(host);
   });
   it('c05 M1: a body grown in a card of a fixed height leaves the note its first lines; a card that flows takes what it needs', () => {
     const keep = toPx(NOTE_KEEP, REM);

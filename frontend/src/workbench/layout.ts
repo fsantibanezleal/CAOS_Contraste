@@ -86,7 +86,10 @@ function textLine(tr: Element): { top: number; bottom: number; height: number } 
       bottom = Math.max(bottom, g.bottom);
     }
   }
-  return top === Number.POSITIVE_INFINITY ? r : { top, bottom, height: bottom - top };
+  // a glyph drawn outside its row (a positioned hint of a cell) is not the row's text line
+  top = Math.max(top, r.top);
+  bottom = Math.min(bottom, r.bottom);
+  return top >= bottom ? r : { top, bottom, height: bottom - top };
 }
 
 /** The body rows of the visible tables inside a box that a reader cannot read above its cue (`rowHidden`, on the row's text line). */
@@ -136,8 +139,13 @@ export function plotNeed(plot: HTMLElement, remPx: number): number {
 
 /** The box that sizes a plot: its nearest floor holder or stack drawing box, else the body of its filling card (R5 c05 M1, M3: a
  * plot with no holder was never floored, and C04's long notes took its height); null for a plot outside a filling card. */
-export function sizerOf(plot: Pick<Element, 'closest'>): HTMLElement | null {
-  return plot.closest<HTMLElement>(SIZERS) ?? plot.closest<HTMLElement>('.caos-plot.fill > .caos-plot-body');
+export function sizerOf(plot: Pick<Element, 'closest' | 'parentElement'>): HTMLElement | null {
+  const own = plot.closest<HTMLElement>(SIZERS);
+  if (own) return own;
+  // a plot in a box that scrolls inside its card (C01's German EBM panels, 13 bar charts in a panel grid: plots of 105 px whose bars
+  // scrolled) grows its own drawing, and the box scrolls with its cue; a card body alone cannot give a panel of a grid its floor
+  if (plot.closest(SCROLL_BOXES)) return (plot.parentElement as HTMLElement | null) ?? null;
+  return plot.closest<HTMLElement>('.caos-plot.fill > .caos-plot-body');
 }
 
 /** The most a card body grown for a plot may take in a card of a fixed height: the card's inner height less its other parts and
