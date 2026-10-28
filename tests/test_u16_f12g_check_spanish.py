@@ -151,3 +151,13 @@ def test_a_sub_on_a_line_that_holds_both_languages_is_read_in_its_spanish_part(g
     assert code == 1, out
     assert f"{TSX}:1: red ->" in out
     assert "amber" not in out
+
+
+def test_an_english_author_pair_in_a_spanish_text_is_refused_and_a_title_keeps_its_words(guard) -> None:
+    """R5 c15 M1 (ruling 5): "Christoffersen and Pelletier (2004)" in a Spanish reference is English body text."""
+    cs, words = guard, {}
+    found = cs.check_text("Prueba de duración de Christoffersen and Pelletier (2004), sección 3", True, words)
+    assert ("Christoffersen and Pelletier", "Christoffersen y Pelletier") in found
+    assert ("Engle and Manganelli", "Engle y Manganelli") in cs.check_text("Según Engle and Manganelli, 2004, la regresión", True, words)
+    assert not [f for f in cs.check_text("El libro Theory and Practice of Risk de la sección", True, words) if " and " in f[0]]
+    assert not [f for f in cs.check_text("Christoffersen and Pelletier (2004)", False, words) if " and " in f[0]]

@@ -165,7 +165,7 @@ REFERENCE_ES: dict[str, str] = {
     f"{_D06}; {_API} (C.7 l.1009-1012, I.1 l.1189); SR 11-7 sensitivity analysis (historical reference text, superseded in the US by SR 26-2; dossier 06 A.1): unexpectedly large changes in outputs for small changes in inputs":
         f"{_D06_ES}; {_API_ES} (C.7 l.1009-1012, I.1 l.1189); análisis de sensibilidad de SR 11-7 (texto de referencia histórico, reemplazado en EE. UU. por SR 26-2; dossier 06 A.1): cambios inesperadamente grandes en los resultados ante cambios pequeños en las entradas",
     f"{_D06}; {_API} (C.7 l.1013-1015, I.1 l.1190); PiML resilience; SS1/23 operating boundaries; Monte Carlo test against development-only draws (Phipson and Smyth 2010, doi:10.2202/1544-6115.1585)":
-        f"{_D06_ES}; {_API_ES} (C.7 l.1013-1015, I.1 l.1190); resiliencia de PiML; límites de operación de SS1/23; prueba de Monte Carlo contra extracciones solo del desarrollo (Phipson and Smyth 2010, doi:10.2202/1544-6115.1585)",
+        f"{_D06_ES}; {_API_ES} (C.7 l.1013-1015, I.1 l.1190); resiliencia de PiML; límites de operación de SS1/23; prueba de Monte Carlo contra extracciones solo del desarrollo (Phipson y Smyth 2010, doi:10.2202/1544-6115.1585)",
     f"{_D06}; {_API} (C.7 l.1016-1018, I.1 l.1188); PiML WeakSpot": f"{_D06_ES}; {_API_ES} (C.7 l.1016-1018, I.1 l.1188); WeakSpot de PiML",
     f"{_D06}; {_API} (C.7 l.1019-1028, I.1 l.1194); Angelopoulos and Bates, arXiv 2107.07511; Vovk, Gammerman and Shafer (2022), doi:10.1007/978-3-031-06649-8":
         f"{_D06_ES}; {_API_ES} (C.7 l.1019-1028, I.1 l.1194); Angelopoulos and Bates, arXiv 2107.07511; Vovk, Gammerman and Shafer (2022), doi:10.1007/978-3-031-06649-8",
