@@ -15,6 +15,7 @@ from riskvalidation.validation import market as rv_val
 from pipeline.cases.c11 import bake as _case, documents as docs
 from pipeline.cases.c11.constants import WINDOWS
 from pipeline.cases.c11.forecast import SPEC_BY_ID, Hyper
+from pipeline.core import red_findings
 from pipeline.core.schemas import validate_document
 from producer_checks import GATES, c11_models_violations, c11_variant_violations
 
@@ -229,7 +230,10 @@ def test_the_findings_cite_tests_of_the_document(mini):
     root, _ = mini
     for doc in windows_of(root):
         ids = {t["test_id"] for t in doc["tests"]}
-        assert doc["findings"] and all(set(f["evidence"]) <= ids for f in doc["findings"])
+        # an evidence id is a test id or a full row id (test@model@segment): since R5 ruling 1 the generic red-row finding cites rows
+        assert doc["findings"] and all({e.split("@", 1)[0] for e in f["evidence"]} <= ids for f in doc["findings"])
+        rows = {red_findings.row_id(t) for t in doc["tests"]}
+        assert all(e in rows for f in doc["findings"] for e in f["evidence"] if "@" in e)
 
 
 def committed_files() -> list[Path]:

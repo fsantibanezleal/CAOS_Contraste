@@ -146,7 +146,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: p.rho, label: { en: 'Asset correlation', es: 'Correlación de activos' }, format: { percent: true, decimals: 1 } }}
-              y={{ label: LIKELIHOOD_TITLE, format: { decimals: 0 } }}
+              y={{ label: LIKELIHOOD_TITLE, format: { decimals: 2 } }}
               series={[{ label: { en: 'Profile log-likelihood', es: 'Log-verosimilitud perfilada' }, values: p.log_likelihood, color: '--color-accent', width: 2.4 }]}
               yMarks={[{ y: p.cutoff, label: { en: cutoffLabel(formatNumber(p.cutoff, 'en', { digits: 4 }), 'en'), es: cutoffLabel(formatNumber(p.cutoff, 'es', { digits: 4 }), 'es') }, tone: 'warn' }]}
               marks={marks}

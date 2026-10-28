@@ -100,7 +100,8 @@ describe('U16-F10c, C08 (R3 c09)', () => {
       const uncovered = t.rows.filter((r) => !r.covered);
       expect(uncovered.length).toBeGreaterThan(0);
       const labels = (p.marks ?? []).map((m) => (typeof m.label === 'string' ? m.label : m.label[lang]));
-      for (const r of uncovered) expect(labels.join(' | ')).toContain(formatNumber(r.shortfall, lang, { percent: true, decimals: 2 }));
+      // the shortfall in points, as the finding says it (R5 c11 n6 superseded the percent form this test first read)
+      for (const r of uncovered) expect(labels.join(' | ')).toContain(`${formatNumber(r.shortfall * 100, lang, { decimals: 2 })} ${lang === 'en' ? 'points' : 'puntos'}`);
       // covered and uncovered cohorts are two series in two tones, not one red series for both
       const pts = p.series.filter((s) => s.mode === 'points');
       expect(pts).toHaveLength(2);
