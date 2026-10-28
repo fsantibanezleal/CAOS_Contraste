@@ -15,6 +15,9 @@ import {
 } from './selection';
 import { ChartAbove, NOT_SCENARIO, SHARE, UnavailableCard, cell, survivalSentence } from './C16Common';
 
+/** A sentence that follows a colon starts in lower case ("not available: the horizon of 5 days ..."); an acronym keeps its capitals. */
+const lowerFirst = (s: string): string => (/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
+
 const NO_PATH: BiText = { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' };
 
 /** The NLP by day with the CBC and the cumulative net outflow, the survival day and the LiST medians marked where the ladder reaches them. */
@@ -74,7 +77,8 @@ export function LadderView({ sel }: { sel: C16Sel | null }) {
             <dd>{`${formatNumber(path.minimum_nlp.value / axis.div, lang, { digits: 4 })} ${pick({ en: 'on day', es: 'en el día' }, lang)} ${cell(path.minimum_nlp.day, lang)}`}</dd>
             <dt>{pick({ en: 'Cliff effect, (NLP(35) - NLP(30)) / total assets', es: 'Efecto acantilado, (NLP(35) - NLP(30)) / activos totales' }, lang)}</dt>
             <dd data-na={path.cliff ? undefined : 'true'}>
-              <MaybeNumber value={path.cliff?.value ?? null} reason={path.cliff_reason ? pick(path.cliff_reason, lang) : null} format={(v) => SHARE(v, lang)} />
+              {/* the reason in the value cell, after the dash, not a detached right-aligned line (R5 c21 n5) */}
+              {path.cliff ? SHARE(path.cliff.value, lang) : `${formatNumber(null, lang)}${path.cliff_reason ? `: ${lowerFirst(pick(path.cliff_reason, lang)).replace(/\.$/, '')}` : ''}`}
             </dd>
           </dl>
         </ChartOverTable>
@@ -272,12 +276,13 @@ export function RunSpeedsView({ sel }: { sel: C16Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'Deposit outflow shares of the nine rows of BCBS Table A.1, with the days each took. The fast run is calibrated on the rows dated before 2023 and scored on the 2023 rows; the other variants show the rows only as reference points. A row whose horizon is beyond the ladder has no modelled share, and says so. Amber bars are the rows scored on, blue bars the rows calibrated on, grey bars rows shown only as reference.',
-          es: 'Partes de salida de depósitos de las nueve filas de la Tabla A.1 del BCBS, con los días que tomó cada una. La corrida rápida se calibra con las filas anteriores a 2023 y se evalúa en las filas de 2023; las otras variantes muestran las filas solo como puntos de referencia. Una fila cuyo horizonte excede la escalera no tiene parte modelada, y lo dice. Las barras ámbar son las filas en que se evalúa, las azules las filas con que se calibra, las grises filas que solo se muestran como referencia.',
+          en: 'Deposit outflow shares of the nine rows of BCBS Table A.1, with the days each took. The fast run is calibrated on the rows dated before 2023 and scored on the 2023 rows; the other variants show the rows only as reference points. A row whose horizon is beyond the ladder has no modelled share, and says so. Amber bars are the rows scored on, blue bars the rows calibrated on, grey bars rows shown only as reference. A row with no daily rate shows none: only the calibration rows and the SVB anchor imply a daily rate.',
+          es: 'Partes de salida de depósitos de las nueve filas de la Tabla A.1 del BCBS, con los días que tomó cada una. La corrida rápida se calibra con las filas anteriores a 2023 y se evalúa en las filas de 2023; las otras variantes muestran las filas solo como puntos de referencia. Una fila cuyo horizonte excede la escalera no tiene parte modelada, y lo dice. Las barras ámbar son las filas en que se evalúa, las azules las filas con que se calibra, las grises filas que solo se muestran como referencia. Una fila sin tasa diaria no muestra ninguna: solo las filas de calibración y el ancla de SVB implican una tasa diaria.',
         }}
       >
         <ChartOverTable
-          chartMin="22rem"
+          // nine bars at 1.5rem and 3rem of axis: the table keeps its room at 1280 (R5 c21 n2; 22rem left it one row)
+          chartMin="16.5rem"
           chart={
             <BarChart
               title={{ en: 'Deposit outflow share of each Table A.1 row', es: 'Parte de salida de depósitos de cada fila de la Tabla A.1' }}
@@ -316,7 +321,7 @@ export function RunSpeedsView({ sel }: { sel: C16Sel | null }) {
                     <MaybeNumber value={r.modelled_share} reason={r.reason ? pick(r.reason, lang) : null} format={(v) => SHARE(v, lang)} />
                   </td>
                   <td className="ct-wide-only" data-na={implied.has(r.row_id) ? undefined : 'true'}>
-                    <MaybeNumber value={implied.has(r.row_id) ? implied.get(r.row_id) ?? null : null} reason={implied.has(r.row_id) ? null : pick({ en: 'only the calibration rows and the SVB anchor imply a daily rate', es: 'solo las filas de calibración y el ancla de SVB implican una tasa diaria' }, lang)} format={(v) => SHARE(v, lang)} />
+                    <MaybeNumber value={implied.has(r.row_id) ? implied.get(r.row_id) ?? null : null} reason={null} format={(v) => SHARE(v, lang)} />
                   </td>
                   <td className="ct-text">{pick(text(ROLE_TEXT, r.role), lang)}</td>
                 </tr>

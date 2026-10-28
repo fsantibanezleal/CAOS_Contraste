@@ -13,7 +13,10 @@ import { NOT_SWAP, TallTables, UnavailableCard, cell, years, DEFS_STYLE, Nw } fr
 import { BASIS_TEXT, CASE_ORDER, CASE_TEXT, VARIANT_TEXT, axisOf, gridOf, outputsOf, sensitivityOf, text, type C12Profile, type C12Sel } from './selection';
 
 /** The ORE platform in Spanish: the shared rule, with the package kind left out ("paquete wheel" kept the English word, R4 c15 B1). */
-const platformSpanish = (platform: string | null | undefined): string => platformText(platform, 'es').replace('paquete wheel', 'paquete');
+const platformSpanish = (platform: string | null | undefined): string =>
+  platformText(platform, 'es').replace('paquete wheel', 'paquete')
+    // the noun before the name, in Spanish order: "el paquete open-source-risk-engine 1.8.17.0", never "<name> paquete" (R5 c16 n6)
+    .replace(/^(\S+ \S+) paquete\b/, 'el paquete $1');
 
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
 

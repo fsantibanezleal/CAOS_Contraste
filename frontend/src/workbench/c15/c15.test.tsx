@@ -460,8 +460,9 @@ describe('the C15 rail', () => {
     const markup = html(<OffsetReadout sel={selOf(offsetV)} />);
     const on = amount(moneyDoc(v), worst(v.eve.rows, (r) => r.pair, 'on'));
     const off = amount(moneyDoc(v), worst(v.eve.rows, (r) => r.pair, 'off'));
-    expect(markup).toContain(formatNumber(on.value, 'en', on.format));
-    expect(markup).toContain(formatNumber(off.value, 'en', off.format));
+    // the rail prints the bars' two decimals (R5 c20 m-n1, U16-F13d)
+    expect(markup).toContain(formatNumber(on.value, 'en', { decimals: 2 }));
+    expect(markup).toContain(formatNumber(off.value, 'en', { decimals: 2 }));
     expect(markup).toContain(formatNumber(v.offset_rule.share, 'en', { percent: true, decimals: 0 }));
   });
 

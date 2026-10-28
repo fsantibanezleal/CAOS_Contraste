@@ -109,7 +109,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
           <IrrbbTestsTable
             variant={sel.data.variant}
             only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'}
-            lead={{ en: 'The test of the CMF golden values, which covers the delta NII. The delta EVE view lists every test of the document.', es: 'La prueba de los valores de referencia de la CMF, que cubre el delta NII. La vista del delta EVE lista todas las pruebas del documento.' }}
+            lead={{ en: 'This view shows the test of the CMF golden values, which covers the delta NII. The delta EVE view lists every test of the document.', es: 'Esta vista muestra la prueba de los valores de referencia de la CMF, que cubre el delta NII. La vista del delta EVE lista todas las pruebas del documento.' }}
           />
         </ChartOverTable>
       </PlotCard>

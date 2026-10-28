@@ -45,6 +45,28 @@ def quarter_of(vd: str) -> str:
     return f"{vd[:4]}-Q{(int(vd[5:7]) - 1) // 3 + 1}"
 
 
+def quarter_text(vd: str) -> dict[str, str]:
+    """The quarter of a date in each language: "2022-Q4" in English, "2022-T4" (trimestre) in Spanish (R5 c19 n3)."""
+    q = quarter_of(vd)
+    return {"en": q, "es": q.replace("-Q", "-T")}
+
+
+def variant_title(vd: str) -> dict[str, str]:
+    """The title of the variant of a valuation date, with the quarter in each language's form."""
+    q = quarter_text(vd)
+    return {"en": f"Valuation date {vd} ({q['en']})", "es": f"Fecha de valoración {vd} ({q['es']})"}
+
+
+#: the tests that read the wholesale fit of the date (``fits.nmd_model``; the models document names its category "wholesale")
+WHOLESALE_FIT_TESTS = ("irrbb.nmd_parameter_stability", "irrbb.behavioural_change_at_breach")
+
+
+def test_segments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The test rows with the segment of the two tests that read the wholesale fit, as C15 names its own (R5 c19 M1); the other
+    rows are on the whole balance sheet and keep no segment (the views say so in words, R5 ruling 2)."""
+    return [{**r, "segment": "wholesale"} if r["test_id"] in WHOLESALE_FIT_TESTS and r.get("segment") is None else r for r in rows]
+
+
 def variant_id(vd: str) -> str:
     return f"vd-{quarter_of(vd).lower()}"
 
@@ -276,7 +298,7 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
                                             np.array([breach_all[d] for d in dates], dtype=bool)),
         rv_val.nii_out_of_sample(projected, realised),
     ]
-    test_rows = [_plain(x.to_dict()) for x in tests]
+    test_rows = test_segments([_plain(x.to_dict()) for x in tests])
 
     outputs = {
         "kind": "valuation-date", "valuation_date": vd, "quarter": quarter, "currency": CURRENCY,
