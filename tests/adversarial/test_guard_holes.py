@@ -11,30 +11,15 @@ import json
 from pathlib import Path
 
 import pytest
-from planting import add_schema, edit, git_commit, guard, make_tree, set_cell
+from planting import edit, git_commit, guard, make_tree
 
-SDD_INPUTS = ("scripts/*.py", "docs/design", "tests", "data", "frontend/src/**/*.test.ts", "frontend/src/**/*.test.tsx", "frontend/scripts",
-              "requirements*.txt", "data-pipeline/requirements.txt", "content", "frontend/public/executive")
 TECH_INPUTS = ("scripts/check_tech_matrix.py", "docs/design/SDD.md", "requirements*.txt", "data-pipeline/requirements.txt",
                "notebooks/requirements.txt", "pyproject.toml", "frontend/package.json", "frontend/package-lock.json", "data-pipeline/requirements*.txt")
 VERSIONS_INPUTS = ("scripts/*.py", "docs/contracts")
 BUDGET_INPUTS = ("scripts/check_ci_budget.py", ".github", "requirements-precompute.txt")
 
 FEATURES = "docs/design/features"
-WORKBENCH = f"{FEATURES}/workbench/requirements.md"
-WORKBENCH_VALIDATION = f"{FEATURES}/workbench/validation.md"
 SDD = "docs/design/SDD.md"
-GHOST_PY = "tests/adversarial/test_ghosts.py"
-GHOST_TS = "frontend/src/ghost.test.ts"
-
-
-@pytest.fixture
-def sdd_repo(tmp_path: Path) -> Path:
-    return add_schema(make_tree(tmp_path / "repo", *SDD_INPUTS))
-
-
-def gate(repo: Path, cell: str, *, rid: str = "EX-001", rel: str = WORKBENCH) -> None:
-    set_cell(repo, rel, rid, 2, cell)
 
 
 def sdd(repo: Path):
@@ -46,48 +31,11 @@ def test_the_slim_tree_passes_the_guard_it_stands_for(sdd_repo: Path) -> None:
     assert r.returncode == 0, r.stdout
 
 
-# ---------------------------------------------------------------- check_sdd: a name that is not a test (F-S1)
-
-PY_GHOSTS = {
-    "S-1a a def inside a string": ('DOC = """\ndef test_ghost():\n    pass\n"""\n', "test_ghost"),
-    "S-1a a def in a comment": ("# def test_ghost():\n#     pass\n", "test_ghost"),
-    "S-1i a nested def": ("def helper():\n    def test_ghost():\n        pass\n", "test_ghost"),
-    "S-3a a skipped test": ("import pytest\n\n\n@pytest.mark.skip\ndef test_ghost():\n    assert False\n", "test_ghost"),
-    "S-3a skip with a reason": ('import pytest\n\n\n@pytest.mark.skip(reason="later")\ndef test_ghost():\n    assert False\n', "test_ghost"),
-    "S-3a skipif(True)": ('import pytest\n\n\n@pytest.mark.skipif(True, reason="never")\ndef test_ghost():\n    assert False\n', "test_ghost"),
-    "S-3a a skipped class": ("import pytest\n\n\n@pytest.mark.skip\nclass TestGhost:\n    def test_ghost(self):\n        assert False\n", "test_ghost"),
-    "S-3a pytestmark skip": ("import pytest\n\npytestmark = pytest.mark.skip\n\n\ndef test_ghost():\n    assert False\n", "test_ghost"),
-    "S-3a a module-level skip": ('import pytest\n\npytest.skip("x", allow_module_level=True)\n\n\ndef test_ghost():\n    assert False\n', "test_ghost"),
-}
-
-
-TS_GHOSTS = {
-    "S-1b a // comment": "// it('adversarial: ghost', () => {})\n",
-    "S-1c a block comment": "/* it('adversarial: ghost', () => {}) */\n",
-    "S-1c a string": "const DOC = \"test('adversarial: ghost', () => {})\";\n",
-    "S-1c a template string": "const DOC = `\nit('adversarial: ghost', () => {})\n`;\n",
-    "S-1f inside another body": "it('real one', () => { const s = \"it('adversarial: ghost'\"; expect(s).toBe(s) })\n",
-    "S-1f a test nested in a test": "it('real one', () => {\n  it('adversarial: ghost', () => {})\n})\n",
-    "S-3b it.skip": "it.skip('adversarial: ghost', () => {})\n",
-    "S-3b it.todo": "it.todo('adversarial: ghost')\n",
-    "S-3c a skip option": "it('adversarial: ghost', { skip: true }, () => {})\n",
-    "S-3c a describe block": "describe('adversarial: ghost', () => {})\n",
-}
-
-
 # ---------------------------------------------------------------- check_sdd: a path that is not a test (F-S2)
 
 # ---------------------------------------------------------------- check_sdd: validation rows (F-S7)
 
 # ---------------------------------------------------------------- check_sdd: rows that vanish (F-S3)
-
-def _requirements(repo: Path) -> str:
-    return (repo / WORKBENCH).read_bytes().decode("utf-8")
-
-
-def _row(repo: Path, rid: str) -> str:
-    return next(ln for ln in _requirements(repo).split("\n") if ln.startswith(f"| {rid} "))
-
 
 # ---------------------------------------------------------------- check_sdd: statuses and folders (F-S4)
 
@@ -185,30 +133,12 @@ def test_sdd_sres_placeholder_cells_and_one_row_for_four_stages(sdd_repo: Path) 
 
 # ---------------------------------------------------------------- check_contract_versions (F-C1, F-C2, F-C3)
 
-TRACE = "docs/contracts/schemas/trace.schema.json"
-CATALOG = "docs/contracts/catalog.md"
-LOCK = "docs/contracts/versions.lock.json"
 
 
 @pytest.fixture
 def versions_repo(tmp_path: Path) -> tuple[Path, str]:
     repo = make_tree(tmp_path / "repo", *VERSIONS_INPUTS)
     return repo, git_commit(repo)
-
-
-def _schema(repo: Path) -> dict:
-    return json.loads((repo / TRACE).read_text(encoding="utf-8"))
-
-
-def _write_schema(repo: Path, doc: dict) -> None:
-    (repo / TRACE).write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8", newline="\n")
-
-
-def _bump(repo: Path, new: str, kind: str) -> None:
-    edit(repo, CATALOG, "| trace | 1.0.0 |", f"| trace | {new} |")
-    anchor = "| surrogate-model | 1.0.0 | 2026-10-11 |"  # the History row after trace's own: the new row goes between
-    edit(repo, CATALOG, anchor, f"| trace | {new} | 2026-10-12 | planted | {kind} |\n{anchor}")
-    guard(repo, "check_contract_versions.py", "--update")  # writes the lock, then reports: exit 1 when the History kind is wrong
 
 
 def test_versions_the_base_is_the_branchs_own_unmodified_state(versions_repo) -> None:
@@ -253,7 +183,7 @@ def test_tech_t3_a_range_in_package_json_that_the_lock_does_not_record(tech_repo
 
 
 def test_tech_t3b_a_greater_than_range(tech_repo: Path) -> None:
-    edit(tech_repo, "frontend/package.json", '"vite": "^8.3.2"', '"vite": ">=8.0.0"')
+    edit(tech_repo, "frontend/package.json", '"vite": "8.3.5"', '"vite": ">=8.0.0"')
     r = _tech(tech_repo)
     assert r.returncode == 1 and "vite" in r.stdout, r.stdout
 
@@ -266,7 +196,7 @@ def test_tech_t3c_an_x_range_that_the_sdd_repeats(tech_repo: Path) -> None:
 
 
 def test_tech_t8_a_range_the_lock_does_not_satisfy(tech_repo: Path) -> None:
-    edit(tech_repo, "frontend/package.json", '"vite": "^8.3.2"', '"vite": "^9.0.0"')
+    edit(tech_repo, "frontend/package.json", '"vite": "8.3.5"', '"vite": "^9.0.0"')
     r = _tech(tech_repo)
     assert r.returncode == 1 and "vite" in r.stdout, r.stdout
 
@@ -276,9 +206,9 @@ def test_tech_a_lock_whose_version_does_not_satisfy_its_own_spec(tech_repo: Path
     doc = json.loads(lock.read_text(encoding="utf-8"))
     doc["packages"][""]["devDependencies"]["vite"] = "^9.0.0"
     lock.write_text(json.dumps(doc, indent=2), encoding="utf-8")
-    edit(tech_repo, "frontend/package.json", '"vite": "^8.3.2"', '"vite": "^9.0.0"')
+    edit(tech_repo, "frontend/package.json", '"vite": "8.3.5"', '"vite": "^9.0.0"')
     r = _tech(tech_repo)
-    assert r.returncode == 1 and "vite" in r.stdout and "8.3.2" in r.stdout, r.stdout
+    assert r.returncode == 1 and "vite" in r.stdout and "8.3.5" in r.stdout, r.stdout
 
 
 def test_tech_t4_a_dependency_in_optional_dependencies(tech_repo: Path) -> None:
