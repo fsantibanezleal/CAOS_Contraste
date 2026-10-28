@@ -36,7 +36,7 @@ def script_gate(repo: Path, script: str, *args: str) -> subprocess.CompletedProc
     """Run ``repo/scripts/<script>`` as CI does; proves it ran (the file exists, it returned a code and printed)."""
     path = repo / "scripts" / script
     assert path.is_file(), f"{script} is not in the copy"
-    r = _run(repo, [sys.executable, str(path), *args], timeout=120)
+    r = _run(repo, [sys.executable, str(path), *args], timeout=600)  # a guard over a full copy of the tree (check_data_classes: about 90 s under load)
     assert isinstance(r.returncode, int) and r.stdout.strip(), f"{script} printed nothing (exit {r.returncode}): {r.stderr[-900:]}"
     return r
 
