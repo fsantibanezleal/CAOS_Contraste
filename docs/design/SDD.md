@@ -477,7 +477,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.19.4 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.19.5 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04) | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |

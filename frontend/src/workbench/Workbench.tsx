@@ -342,6 +342,8 @@ export function Workbench() {
     <CaseWorkbench
       caseId={selected ?? ''}
       source={prov}
+      // C04's notes are data the reader needs whole: at 1280 px each takes the height it needs (shell 0.19.5, SHC-101; R5 c05 M1)
+      noteFit={selected === 'C04'}
       focus
       cases={{
         cases,

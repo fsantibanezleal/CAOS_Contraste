@@ -144,6 +144,9 @@ const SEGMENT_FIXED: Record<string, BiText> = {
   // the whole portfolio of a credit or market case (C06's rows); C12's counterparty book is the whole book (segmentName, R5 ruling 2)
   all: WHOLE_PORTFOLIO,
   annual: bi('the annual cohorts', 'las cohortes anuales'),
+  // C16's two run-off denominators, as its producer names them (`c16/document.py` SEGMENT_NAME): the generic red-row findings cite them
+  'board-stated-share': bi('board-stated share', 'proporción declarada por la Junta'),
+  'call-report-dep': bi('call-report deposits', 'depósitos del reporte'),
   semesters: bi('the semesters', 'los semestres'),
   holdout: bi('holdout', 'muestra reservada'),
   screen: bi('the leakage screen', 'el filtro de fuga'),

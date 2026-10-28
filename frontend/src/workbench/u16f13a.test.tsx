@@ -2,7 +2,7 @@
 // documents and in both languages. Each test names the row it closes and fails on its defect. What only a browser can measure (a
 // cue's count against the rows a reader sees, a plot's height at 1280 and 390, a card body's clip) is measured by layout-probe.mjs on
 // the built site; these tests hold the rules the cue and the floors rest on and the probe's own judgement of its measures.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import { COMMITTED } from '../lib/policy';
 import type { components } from '../lib/contract.gen';
@@ -34,7 +34,7 @@ const LANGS: Lang[] = ['en', 'es'];
 afterEach(() => setLang('en'));
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '');
 const css = strip(readFileSync(new URL('../styles/contraste.css', import.meta.url), 'utf8'));
-const notesCss = strip(readFileSync(new URL('./c04/c04-notes.css', import.meta.url), 'utf8'));
+const workbenchSrc = readFileSync(new URL('./Workbench.tsx', import.meta.url), 'utf8');
 const REM = 16;
 const BAND = toPx(CUE_BAND, REM);
 
@@ -94,9 +94,10 @@ describe('U16-F13a the boxes layout.ts marks (R5 c27 M1) and the floors of a plo
     expect(bodyRoom({ inner: 500, others: [40], note: null, flows: false }, REM)).toBe(460);
     expect(bodyRoom({ inner: 500, others: [40], note: 300, flows: true }, REM)).toBe(Number.POSITIVE_INFINITY);
   });
-  it('c05 M1: a C04 note gives way to the drawing\'s floor on a wide screen (it scrolls with the cue), never takes the plot\'s height', () => {
-    expect(notesCss).not.toMatch(/flex:\s*0 0 auto/);
-    expect(notesCss).toMatch(/@media \(min-width: 901px\)\s*\{[^}]*flex:\s*0 1 auto;[^}]*overflow-y:\s*auto/);
+  it('c05 M1: C04 asks the shell for whole notes (noteFit, 0.19.5 SHC-101: the note takes what it needs, the drawing keeps its floor) and restyles no shell note', () => {
+    expect(workbenchSrc).toMatch(/noteFit=\{selected === 'C04'\}/);
+    expect(existsSync(new URL('./c04/c04-notes.css', import.meta.url))).toBe(false);
+    expect(css).not.toMatch(/\.caos-plot-note\s*\{/);
   });
 });
 

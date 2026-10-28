@@ -199,7 +199,9 @@ describe('b11 m6 and m10: one label per rung, the best rung named', () => {
   }
   it('a rung reads its short title, not "beta Beta regression"', () => {
     const rungName = U6.rungName;
-    expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'en')).toBe('L3 Beta');
+    // the document's short title, the views' name since U16-F13c (R5 c11 B1: Beta regression, never L3 Beta or beta Beta regression)
+    expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'en')).toBe(c08v.model.find((m) => m.id === 'L3-beta')!.short_title.en);
+    expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'en')).not.toMatch(/^beta /);
     expect(rungName(c08v as VariantArtifact<unknown>, 'L3-beta', 'es')).toBe(c08v.model.find((m) => m.id === 'L3-beta')!.short_title.es);
   });
   it('a rung the document declares absent is named, not shown by its id', () => {
