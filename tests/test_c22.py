@@ -124,12 +124,18 @@ def test_published_reproductions_carried(variants):
 
 
 def test_findings_cite_rates(variants):
-    """CT-305: every C22 finding is evidenced by measured rates of its own artifact."""
+    """CT-305: every C22 finding of the case is evidenced by measured rates of its own artifact; a generic red-row finding
+    (F-RED-NN, `pipeline/core/red_findings.py`, R5 ruling 1) cites red test rows of its own artifact instead."""
+    from pipeline.core.red_findings import row_id
+
     for fam, v in variants.items():
         keys = {f"rate:{s['key']}" for s in v["outputs"]["simulations"]}
+        rows = {row_id(r) for r in v.get("tests", [])}
         assert v["findings"], fam
         for f in v["findings"]:
-            assert f["evidence"] and all(e in keys for e in f["evidence"]), (fam, f["id"])
+            cited = keys if not f["id"].startswith("F-RED-") else rows
+            assert f["evidence"] and all(e in cited for e in f["evidence"]), (fam, f["id"])
+        assert any(not f["id"].startswith("F-RED-") for f in v["findings"]), fam
 
 
 def test_lineage_and_determinism(manifest, variants):
