@@ -31,7 +31,7 @@ def test_u16_f7_the_variants_are_named_alike_in_the_manifest_and_the_views():
     manifest = load("data/derived/manifests/C12.json")
     es = {a["variant_id"]: a["title"]["es"] for a in manifest["artifacts"]}
     assert es["wrong-way-risk"] == "Riesgo de correlación adversa"
-    assert es["single-swap"] == "Un solo swap"
+    assert es["single-swap"] == "Una sola permuta"  # U16-F12d: "swap" is English in Spanish text
     assert es["csa-mpor-10d"] == "CSA, MPoR de 10 días" and es["csa-mpor-20d"] == "CSA, MPoR de 20 días"
     for name in DOCUMENTS:
         text = (FOLDER / name).read_text(encoding="utf-8")

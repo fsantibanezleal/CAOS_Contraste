@@ -167,8 +167,8 @@
  },
  "population": {
   "entries": 4,
-  "findings": 100,
-  "distinct_findings": 51,
+  "findings": 84,
+  "distinct_findings": 42,
   "tier1_entries": 2
  },
  "metrics": [
@@ -201,11 +201,11 @@
     "es": "Hallazgos abiertos de severidad alta (S1 y S2)"
    },
    "kind": "count",
-   "value": 11,
+   "value": 5,
    "unit": "count",
-   "numerator": 11,
-   "denominator": 51,
-   "register_rows": 22,
+   "numerator": 5,
+   "denominator": 42,
+   "register_rows": 9,
    "reason": null,
    "threshold": {
     "label": "convention",
@@ -223,11 +223,11 @@
     "es": "Remediacion vencida"
    },
    "kind": "count",
-   "value": 4,
+   "value": 3,
    "unit": "count",
-   "numerator": 4,
-   "denominator": 51,
-   "register_rows": 11,
+   "numerator": 3,
+   "denominator": 42,
+   "register_rows": 7,
    "reason": null,
    "threshold": {
     "label": "convention",
@@ -236,7 +236,7 @@
     "green_limit": 0,
     "amber_limit": 3
    },
-   "light": "red"
+   "light": "amber"
   },
   {
    "id": "entries-under-exception",

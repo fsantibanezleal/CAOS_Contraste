@@ -116,7 +116,9 @@ def main() -> None:
                 "code_version": doc["provenance"]["code_version"],
                 "riskvalidation_version": doc["provenance"]["riskvalidation_version"],
                 "sources": [i["source"] for i in doc["provenance"]["inputs"]],
-                "findings": doc["findings"],
+                # the case findings the U15 addendum reads (A21 to A26); the generic red-row findings of fix round 6 (F-RED-NN)
+                # are the governance bake's, not this contract fixture's, whose stated numbers they would move
+                "findings": [f for f in doc["findings"] if not f["id"].startswith("F-RED-")],
                 "tests": [{k: r[k] for k in keys} for r in doc["tests"]],
             })
         if case == "C07":   # the one PMA of the fixture entries (A26 of the addendum): the overlays of the default variant

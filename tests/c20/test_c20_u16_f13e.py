@@ -32,7 +32,9 @@ def test_b1_the_bake_step_gives_every_committed_row_its_reference_in_both_langua
     assert len(docs) == 6
     cs = _cs()
     for name, d in docs:
-        rows = bake.document_tests(d["tests"])
+        # the bake step's input: the committed rows without the reference text the re-bake gave them
+        given = [{**t, "extras": {k: v for k, v in (t.get("extras") or {}).items() if k != "reference_text"}} for t in d["tests"]]
+        rows = bake.document_tests(given)
         assert len(rows) == len(d["tests"]), name
         for r in rows:
             ref = r["extras"]["reference_text"]
@@ -40,7 +42,7 @@ def test_b1_the_bake_step_gives_every_committed_row_its_reference_in_both_langua
             assert "engine-ml-api" not in ref["en"] and "engine-ml-api" not in ref["es"], (name, r["test_id"], ref["en"])
             assert cs.errors("common/test-result", r) == [], (name, r["test_id"])
         # a copy: the rows the bake was given keep no reference text
-        assert all("reference_text" not in (t.get("extras") or {}) for t in d["tests"]), name
+        assert all("reference_text" not in t["extras"] for t in given), name
 
 
 def test_b1_the_bake_writes_the_rows_of_its_bake_step() -> None:

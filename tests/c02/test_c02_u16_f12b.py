@@ -12,6 +12,7 @@ from c02_support import ROOT  # noqa: F401  (puts the pipeline and the contract 
 
 import contract_schemas as cs
 from pipeline.cases.c02 import bake, conventions, findings
+from pipeline.cases.reference_text import reader_en
 
 DERIVED = Path(__file__).resolve().parents[2] / "data" / "derived" / "C02"
 FILES = ("h1", "h2", "h3", "h4", "h5", "pooled")
@@ -29,9 +30,10 @@ def test_m11_every_test_row_of_a_document_carries_its_bilingual_reference(name: 
     assert rows and all(isinstance(r["extras"].get("reference_text"), dict) for r in rows)
     for r in rows:
         ref = r["extras"]["reference_text"]
-        assert ref["en"] == r["reference"] and ref["es"], r["test_id"]
+        # the English is the reader's wording of the engine reference (U16-R4 ruling 1: no contract id in reader text)
+        assert ref["en"] == reader_en(r["reference"]) and ref["es"], r["test_id"]
     hl = next(r for r in rows if r["test_id"] == "pd.hosmer_lemeshow")["extras"]["reference_text"]["es"]
-    assert hl.startswith("Hosmer and Lemeshow (1980)")
+    assert hl.startswith("Hosmer y Lemeshow (1980)")  # R5 ruling 5: the Spanish joins the authors with y
 
 
 def _psi(model: str, light: str, psi: float) -> dict:
@@ -74,7 +76,7 @@ def test_contract_the_planted_bake_writes_a_bilingual_reference_on_every_row_and
         assert cs.errors("c02/variant-horizon", doc) == [], vid
         for r in doc["tests"]:
             ref = r["extras"]["reference_text"]
-            assert set(ref) == {"en", "es"} and ref["en"] == r["reference"], (vid, r["test_id"])
+            assert set(ref) == {"en", "es"} and ref["en"] == reader_en(r["reference"]), (vid, r["test_id"])
 
 
 def test_contract_the_schema_types_the_reference_text_and_keeps_the_committed_rows_valid() -> None:

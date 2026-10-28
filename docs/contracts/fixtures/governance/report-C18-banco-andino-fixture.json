@@ -1239,14 +1239,6 @@
        false
       ],
       [
-       "C18/baseline/F-RED-01",
-       "S2",
-       "F3",
-       "open",
-       "2026-12-26",
-       true
-      ],
-      [
        "C18/eba-2025-adverse/headline-simple-sum",
        "S4",
        "F1",
@@ -1301,14 +1293,6 @@
        "open",
        "2027-01-25",
        false
-      ],
-      [
-       "C18/eba-2025-adverse/F-RED-01",
-       "S2",
-       "F3",
-       "open",
-       "2026-12-26",
-       true
       ],
       [
        "C18/fed-2026-severely-adverse/headline-simple-sum",
@@ -1367,14 +1351,6 @@
        false
       ],
       [
-       "C18/fed-2026-severely-adverse/F-RED-01",
-       "S2",
-       "F3",
-       "open",
-       "2026-12-26",
-       true
-      ],
-      [
        "C18/ngfs-delayed-transition/headline-simple-sum",
        "S4",
        "F1",
@@ -1421,14 +1397,6 @@
        "open",
        "2027-01-25",
        false
-      ],
-      [
-       "C18/ngfs-delayed-transition/F-RED-01",
-       "S2",
-       "F3",
-       "open",
-       "2026-12-26",
-       true
       ],
       [
        "C18/reverse-stress/reverse-scenario",
@@ -1548,11 +1516,6 @@
       "rwea_share": null
      },
      {
-      "key": "C18/baseline/F-RED-01",
-      "severity": "S2",
-      "rwea_share": null
-     },
-     {
       "key": "C18/eba-2025-adverse/headline-simple-sum",
       "severity": "S4",
       "rwea_share": null
@@ -1585,11 +1548,6 @@
      {
       "key": "C18/eba-2025-adverse/non-credit-losses-at-expected-loss",
       "severity": "S3",
-      "rwea_share": null
-     },
-     {
-      "key": "C18/eba-2025-adverse/F-RED-01",
-      "severity": "S2",
       "rwea_share": null
      },
      {
@@ -1628,11 +1586,6 @@
       "rwea_share": null
      },
      {
-      "key": "C18/fed-2026-severely-adverse/F-RED-01",
-      "severity": "S2",
-      "rwea_share": null
-     },
-     {
       "key": "C18/ngfs-delayed-transition/headline-simple-sum",
       "severity": "S4",
       "rwea_share": null
@@ -1660,11 +1613,6 @@
      {
       "key": "C18/ngfs-delayed-transition/non-credit-losses-at-expected-loss",
       "severity": "S3",
-      "rwea_share": null
-     },
-     {
-      "key": "C18/ngfs-delayed-transition/F-RED-01",
-      "severity": "S2",
       "rwea_share": null
      },
      {

@@ -41,10 +41,12 @@ def test_the_committed_findings_cite_only_their_own_rows_and_state_the_limits() 
         for fid, (sev, ev) in want.items():
             f = by_id[fid]
             assert f["severity"] == sev and f["status"] == "open" and set(f["evidence"]) == ev, (name, fid)
-        assert {k for k in by_id if k not in LIMITS} == set(want), (name, sorted(by_id))
+        # the generic red-row findings (F-RED-NN, pipeline/core/red_findings.py) are tested on their own (tests/test_u16_f12g_red_findings.py)
+        assert {k for k in by_id if k not in LIMITS and not k.startswith("F-RED-")} == set(want), (name, sorted(by_id))
         for fid, (sev, status, ev) in LIMITS.items():
             assert (by_id[fid]["severity"], by_id[fid]["status"], by_id[fid]["evidence"]) == (sev, status, [ev]), (name, fid)
         for f in doc["findings"]:
-            assert all(e in rows or e.startswith("design:") for e in f["evidence"]), (name, f["id"])
+            # a generic red-row finding cites full row ids (test@model@segment); the red-findings tests check those
+            assert f["id"].startswith("F-RED-") or all(e in rows or e.startswith("design:") for e in f["evidence"]), (name, f["id"])
             blob = (f["title"]["en"] + f["title"]["es"]).lower()
             assert not any(w in blob for w in FORBIDDEN), (name, f["id"])
