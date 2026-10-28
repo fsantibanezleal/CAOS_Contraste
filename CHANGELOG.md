@@ -389,6 +389,102 @@ The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the
 - Implementation and Introduction (R4 c29): gender and preposition fixes in the Spanish pipeline texts, repository paths that
   break after a slash at 390, the Wilson caption's estimate drawn as math, a true minus sign, 10⁻⁹ in the gates figure, a text
   column of the comparison tables aligned as text in its header too.
+- Workbench layout (R5): the scroll cue counts the rows a reader cannot read, judged by each row's text line against the line where the
+  band's fade is half opaque, so a whole row in the band's clear top is no longer counted ("19 more rows below" under 7 of 26 rows, where
+  it said 20); the band reaches the box's real bottom, so no cut line shows under it; the C21 evidence card and a filling card's note are
+  boxes the cue marks (`frontend/src/workbench/layout.ts`, `contraste.css`).
+- Workbench layout (R5): a drawing with no floor holder keeps its floor through its card's body, and in a card that shares a column the
+  other part gives way; C04's long notes then keep their first lines and scroll with the cue instead of squashing the drawings to
+  50 to 110 px (`layout.ts`, `c04/c04-notes.css`).
+- `frontend/src/workbench/layout-probe.mjs` counts the unreadable rows on its own from the glyphs and the band as drawn, checks the band's
+  gap, finds a scrolling box of a card that the cue does not mark, walks every variant (`--walk true --variants all`) and visits the R5
+  views.
+- C01: every row of the battery, the PSI table and the DeLong table names its segment ("cartera" / "portfolio"); the Stability table's
+  conventional PSI band reads in Spanish ("cambio pequeño"); the Findings severity note states the red-row findings' severities; the
+  scorecard's reasons card keeps its four rows.
+- C02: the transfer bars scroll in their own box under the matrix with the cue, never past the card; the split's counts stay whole and the
+  line breaks between them ("1.773" was cut to "1.77"); the By horizon interval stays on one line.
+- C04: the generator families name test 3 "Against the reference matrix" in the Findings evidence as in the Size table; the evidence
+  charts count only the cited points; "N†" throughout the Papers views; "Year from the start" on the drift axis; "Computed beforehand
+  from" in the evidence of a computed block (also C18's).
+- Tests tables: a row whose document gives no segment says "whole portfolio" / "toda la cartera" in the U6 tests table (C03, C08, C09;
+  R5 ruling 2).
+- C05 (review U16-R5 c07 B1, B2, M2, M3, minors): the Spanish Context cites "Basilea CRE31" and "Basilea CRE99" (the citations carry a Spanish label), says "LGD F-IRB preferente no garantizada" and "el reglamento de la UE (CRR3)", "La prueba retrospectiva" and spaced percents; the constants are symbols with subscripts (c with PD, c with LR, RV in Spanish; alpha and beta as symbols) and the rail names them in words; the Default profile view shows the chi-square test over grades that the open findings cite, and every tests row names its segment ("whole portfolio" / "toda la cartera", "grade A" / "grado A"); the first equation is two displays, so a phone shows the second; each variants table carries its own data badge, the rail says "propia" and a grade name keeps one line.
+- C06 and C07 (c08, c09 and c10 M1, R5 ruling 2): every row of the shared tests card names its segment, a portfolio-level row "whole portfolio" / "toda la cartera"; the backtest row says "observed by Kaplan-Meier", the stage cell keeps one line, "Nonlinearity" is spelled one way, the SICR share reads "Participación", probation reads "período de prueba de cura", the C06 notice says "titular"; the C07 B-1 table captions are paragraphs as wide as their box, and the house price fall says B-1 moves only through the factor shift (text only; the integrator re-bakes C06 and C07).
+- C08 to C11 tests tables name the segment of every row (R5 ruling 2): a row whose document gives no segment says its scope in
+  words, "whole portfolio" / "toda la cartera" (the C08 LGD calibration over time rows, every C09 row, the C10 CreditRisk+ row);
+  the C10 tail back-test row adds its primary level ("toda la cartera, nivel de 99 %"), never "-"; the C11 back-test table names
+  each row's tail level under the test (R5 c11 M1, c12, c13 M1, c14 M1-R5, c15 Q1).
+- The C08 models carry one name each, the one every C08 view prints, in both languages: "Modelo en dos etapas", never the English
+  "L4 Hurdle" in a Spanish finding, and "Regresión lineal" in place of "L1 MCO" (R5 c11 B1, n1; the integrator re-bakes C08 and
+  regenerates the names).
+- C08: the Endpoints axis reads two decimals, the parity chart ticks whole percents while its readout keeps two decimals, the
+  downturn shortfall is in points ("0,14 puntos"), and the floors bar and table share one precision (R5 c11 n4 to n7).
+- C09: the Floor card's facility table gives its paragraph as the class cell's hint (the supervisory card lists it), so "Mean EAD
+  after" is no longer under the fade at 1280; the English findings write a percent with the shell's space (R5 c12 n1, the R4 c12 n7
+  class).
+- C10: a known correlation of the size-power rows is a percent ("correlación conocida 2,0 %"), a size or power row says the rejection
+  rate its light grades, the moments reference writes "E[L²]", and the profile likelihood reads two decimals (R5 c13 N3 to N5, c14 N2).
+- C11: the withheld realised loss reads "Pérdida realizada: no disponible.", a Spanish clause after a colon starts in lower case, and
+  the Acerbi-Szekely reference points of the Z2 note have two decimals, "-0,70 y -1,80" (R5 c15 n1, n3, n4).
+- C12, C14, C15 and C16 tests tables name the segment of every row (R5 ruling 2): a row whose document gives no segment says its
+  scope in words, "Whole book" / "Toda la cartera" for the C12 counterparty book and "Whole balance sheet" / "Todo el balance" for
+  the C14, C15 and C16 balance sheets; the C16 phone line under the test name carries it where the Against column is hidden (R5 c16,
+  c17, c19, c20 and c21 M1).
+- The C14 producer names the segment "wholesale" on the two tests that read the wholesale fit (NMD parameter stability, behavioural
+  change at breach), as C15 does; the view reads them so on the documents baked before (R5 c19 M1).
+- C14: the Spanish quarter is "2022-T4" in the variant titles, the chart marks and the Context; the retail-share threshold reads
+  "250,000 USD" / "250.000 USD" (R5 c19 n2, n3).
+- C12: a million is "mn" in the English Context, the swap-book note points up to its table, the comparison note names the grey bar,
+  the ORE package reads "en el paquete open-source-risk-engine", the QuantLib gate prints "10⁻⁶" and a zero amount on the rail is
+  plain USD (R5 c16 n1, n2, n3, n6; c17 m3, n2).
+- C15: the rail prints the bars' two decimals and the delta NII lead is a full sentence (R5 c20 m-n1, m-n2).
+- C16: the Table A.1 bars keep 16.5rem so the table has its room at 1280, the reason for a row with no implied daily rate is said
+  once in the note, and the cliff reason reads in its value cell (R5 c21 n2, n3, n5).
+- C17: every tests row names its scope; the benchmark-reproduction row, which has no method and no segment, says "the generator's
+  true loss distribution" (R5 ruling 2). The response chart's value axis starts at zero on a taller drawing, and the chart marks
+  the added loss its ILM test reads. The tail view puts its thresholds table above the infinite-mean callout. The Context's
+  definition lists cap their label column, so a value is not squeezed at 390.
+- C18: every tests row names its segment. A row of no segment names its scope, "whole balance sheet" / "todo el balance" (R5
+  ruling 2). The tests card is titled for what the variant runs, and the Spanish says "tensión inversa" throughout. The severity
+  chart says "deviation", as its table does, and its caption gives the crisis in quarters. The reverse note now sits under the
+  Variants box. The P2G block says "utilizables". The Context writes c<sub>P2</sub> and c<sub>d</sub>, gives the satellites
+  window in quarters and says what the reverse headline is. The shock window is said once, and the NGFS window label names the
+  delayed transition as the disorderly scenario (producer text).
+- C20: the bake gives every test row its reference in both languages (`with_reference_text`), so the English names the engine's
+  ML contract in words and the Spanish "Razón o nota" is filled (R4 ruling 1, R5 c26 B1). The small-groups limit states the
+  record range of the document's own shock rows: 27 to 90 when seen, 60 to 90 when held out. The fixed "30 to 90" was
+  contradicted by a row of 27 (R5 ruling 9). The Real drift note calls the Fed portfolios hypothetical. The English units of a
+  list of multiples are plural. The conformal chart uses its table's decimal. The reasons-kept bars and the fairness-battery
+  bars carry their rows' lights. The C20 case page states the record range.
+- C21: the Context names the state Delaware, never "DE" (R5 ruling 6), and the licence row is "Estado de la licencia". The
+  Findings evidence card is a measured scroll box with the cue, and its table keeps its height (R4 ruling 8). A count of
+  categories takes its plural, and a field code breaks only at its underscores. The F-UNCONDITIONAL-GAP title counts the parity
+  attributes and the attributes of the red pairwise rows apart (producer text).
+- C22: a generator model is titled by its scenario words, not its configuration key, so the generic findings name their dataset
+  in words (R5 ruling 8). The Spanish scenarios write Spanish numbers: "5.000 deudores", never "5,000", and a decimal comma.
+  Every Spanish percent of the producer takes its no-break space. Other wording: "all odds are"; a study's scenario does not
+  repeat its row label; no title nests a parenthesis; "G − 2" has a minus sign; the documented-excess finding of a run within
+  its bound does not call it "this excess". The views: a generator code breaks only at its separators, and the One report
+  writes its rung with no nested parenthesis. The Spanish attribution joins its authors with "y" and writes "n.º". A curve past
+  the seventh is drawn dash-dot, not dashed like an exact curve. The write-up uses the Spanish decimal comma in its formula and
+  gives DeLong's test its own citation.
+- Benchmark and Experiments (review U16-R5 c30 B1, B2, B3, M1 and minors): the C04 Experiments table writes the papers' locators in the page's language ("(versión de los autores), sección 4"); the C18 reverse stress gives its own reason for the CET1 columns ("the reverse stress solves for a scenario; it runs no capital path"), and its tail probability of 2.4e-15 reads "2.41 × 10⁻¹³ %" instead of "0.00 %"; the Engelmann table of the Benchmark sets the paper's names as symbols (Ŵ, W̃, W with the subscript "inicial" in Spanish and "init" in English, W with TTC); the long columns of the C04 Experiments table and the Engelmann check keep a readable width, so a row is no longer 1,900 px tall at 390; the C22 families table scrolls in its own box and each family's findings run under its row; the C04 and C05 Truth columns are text columns; the C05 Benchmark names its estimators and tests ("Independiente", "Jeffreys, grado A") instead of printing their keys; the Coverage row of C06 names public small-business loans, as its manifest does; Spanish percents carry their space ("80 % de potencia al 5 %", "VaR al 99 %"); a reason column of a comparison table and the robustness AUC headers keep a width at 390; the zoom buttons of the dependency map sit in a band above the level labels; the case facts say "computed", the C15 note "example inputs", and a report's inline battery gives its reason without a backlog id.
+- Implementation (c31 n1, n2, n3): `data-pipeline/`, `VERSION`, `main` and `build.json` are code in both languages, and the engines equation breaks at its comma so p(x) has a line of its own at 390.
+- Methodology (c32 n1 to n7, c33 B1, n1, n2): the regulation tab names "the regulatory calculators document" in words, never its contract id, in its closing note and its fixture note, and the note for a missing document gives no file name; "the browser implementations" replaces the developer words "the live ports", "the port of the interest rate class" and "C15 shows its fixtures"; the operational-risk benchmark states the 99.9 percent quantile once; the TabPFN weights keep "Prior Labs License v1.1" in Spanish; 10⁻⁹ and 10⁻¹²⁴ replace the ASCII exponents; the Spanish slips are fixed ("de la aproximación", "el logaritmo esperado", "muestras obtenidas por remuestreo", "según la Regulación B", "la distribución a priori de Jeffreys", "los depósitos a la vista", "de la referencia", "la implementación ... en el navegador").
+- Every red test ROW is cited by an open finding (R5 ruling 1): the generic step of `pipeline/core/red_findings.py` reads the
+  rows the open findings cite (`cited_rows`), so a finding that cites one row of a test no longer covers its other red rows; the
+  generic finding of a test cites its uncited red rows, and its title drops the developer clause.
+- The C01 Findings view matches its evidence by the full row id (test, model and segment; `test@-@segment` and a bare test too), so
+  a finding's evidence lines show the rows it cites and no other row of the same test.
+- The C10 grid ladder prints its simulated-grid inputs on the LHP rung only; every other rung says it does not run on the simulated
+  grid.
+- The Spanish test references join their authors with "y" (Christoffersen y Pelletier, Engle y Manganelli); English titles keep
+  their words.
+- The C15 case page's results block is regenerated from the re-baked documents (the variant labels).
+- Shell 0.19.5 adopted: C04's workbench asks for whole notes (`noteFit`, SHC-101): at 1280 px each card note takes the height it
+  needs and the drawing keeps its floor; the C04 override of the shell's note (`c04-notes.css`) is removed, so the web-baseline
+  guard passes (known shell defect 46).
 
 ## [0.15.000], 2026-10-21
 
