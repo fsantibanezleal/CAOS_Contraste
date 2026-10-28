@@ -408,28 +408,28 @@
   },
   "C08": {
    "L1-ols": {
-    "en": "L1 OLS",
-    "es": "L1 MCO"
+    "en": "Linear regression",
+    "es": "Regresión lineal"
    },
    "L2-fractional-logit": {
-    "en": "L2 Fractional logit",
-    "es": "L2 Logit fraccional"
+    "en": "Fractional logit",
+    "es": "Logit fraccional"
    },
    "L3-beta": {
-    "en": "L3 Beta",
-    "es": "L3 Beta"
+    "en": "Beta regression",
+    "es": "Regresión beta"
    },
    "L4-hurdle": {
-    "en": "L4 Hurdle",
-    "es": "L4 Hurdle"
+    "en": "Two-stage hurdle",
+    "es": "Modelo en dos etapas"
    },
    "L5-gradient-boosted": {
-    "en": "L5 Boosted trees",
-    "es": "L5 Árboles"
+    "en": "Gradient boosting",
+    "es": "Árboles potenciados por gradiente"
    },
    "L6-tobit": {
-    "en": "L6 Tobit",
-    "es": "L6 Tobit"
+    "en": "Tobit",
+    "es": "Tobit"
    }
   },
   "C09": {
@@ -3145,15 +3145,15 @@
   "C14": {
    "vd-2021-q4": {
     "en": "Valuation date 2021-12-31 (2021-Q4)",
-    "es": "Fecha de valoración 2021-12-31 (2021-Q4)"
+    "es": "Fecha de valoración 2021-12-31 (2021-T4)"
    },
    "vd-2022-q2": {
     "en": "Valuation date 2022-06-30 (2022-Q2)",
-    "es": "Fecha de valoración 2022-06-30 (2022-Q2)"
+    "es": "Fecha de valoración 2022-06-30 (2022-T2)"
    },
    "vd-2022-q4": {
     "en": "Valuation date 2022-12-31 (2022-Q4)",
-    "es": "Fecha de valoración 2022-12-31 (2022-Q4)"
+    "es": "Fecha de valoración 2022-12-31 (2022-T4)"
    }
   },
   "C15": {
