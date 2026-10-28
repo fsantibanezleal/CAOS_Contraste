@@ -136,4 +136,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # A pipe uses the process's locale encoding on Windows (often cp1252). Findings contain the offending
+    # character's repr, so force a UTF-8 diagnostic stream before emitting any content-standard message.
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     sys.exit(main())
