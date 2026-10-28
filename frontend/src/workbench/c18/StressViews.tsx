@@ -25,6 +25,8 @@ export function quarterText(date: string, lang: Lang): string {
   const [y, m] = date.split('-').map(Number);
   return `${y} ${lang === 'es' ? 'T' : 'Q'}${Math.ceil(m / 3)}`;
 }
+/** A text that ends as a sentence: one full stop. */
+const asSentenceEnd = (s: string): string => (/[.!?]$/.test(s) ? s : `${s}.`);
 // a rate under half the last shown decimal is 0, never "-0.000 %" (U16-R3 c19 m11)
 const RATE = (v: number | null | undefined, lang: Lang) => formatNumber(v !== null && v !== undefined && Math.abs(v) < 5e-6 ? 0 : v, lang, { percent: true, decimals: 3 });
 
@@ -45,6 +47,14 @@ const SIGN_TEXT: Record<string, Bi> = {
 };
 
 /** The scenario as published and as transposed onto the jump-off of Banco Andino, path by path. */
+/** The line of the policy-shock window: its span, then its label; a label that states the span itself is not prefixed by it again
+ * (U16-R5 c25 n1: "2031 to 2033: The policy shock acts in 2031 to 2033"). */
+export function windowLine(win: { start_year: number; end_year: number; label: BiText }, lang: Lang): string {
+  const label = pick(win.label, lang);
+  const span = lang === 'en' ? `${win.start_year} to ${win.end_year}` : `${win.start_year} a ${win.end_year}`;
+  return label.includes(span) ? label : `${span}: ${label}`;
+}
+
 export function PathsView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -87,7 +97,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
         >
           <p className="ct-note" data-adaptation={s.adaptation_label}>{pick(s.adaptation_statement, lang)}</p>
           {win ? (
-            <p className="ct-note" data-window={`${win.start_year}-${win.end_year}`}>{`${win.start_year} ${pick({ en: 'to', es: 'a' }, lang)} ${win.end_year}: ${pick(win.label, lang)}`}</p>
+            <p className="ct-note" data-window={`${win.start_year}-${win.end_year}`}>{windowLine(win, lang)}</p>
           ) : null}
           <table className="caos-table ct-wrap-head" data-table="c18-paths">
             <thead>
@@ -426,6 +436,9 @@ export function severityBars(o: C18Outputs) {
 }
 
 /** How severe each path is against the global financial crisis, and whether it reaches the case's minimum ratio. */
+/** The severity chart's title, which its summary and data table print: "deviation", as the table under it (U16-R5 c24 n3). */
+export const SEVERITY_TITLE: BiText = { en: 'Path peak deviation over the crisis peak deviation', es: 'Desviación máxima de la trayectoria sobre la de la crisis' };
+
 export function SeverityView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -443,15 +456,16 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${sv.reference_episode.start} to ${sv.reference_episode.end}) for the same variable. A stress path below the minimum ratio, a convention of the case, is not severe enough; a baseline path is not judged. ${pick(sv.reference_episode.source, 'en')}`,
-          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${sv.reference_episode.start} a ${sv.reference_episode.end}) para la misma variable. Una trayectoria de estrés bajo la razón mínima, una convención del caso, no es lo bastante severa; una trayectoria base no se juzga. ${pick(sv.reference_episode.source, 'es')}`,
+          // the crisis in quarters, as the definition below it, and the caption a sentence (U16-R5 c25 n2)
+          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${quarterText(sv.reference_episode.start, 'en')} to ${quarterText(sv.reference_episode.end, 'en')}) for the same variable. A stress path below the minimum ratio, a convention of the case, is not severe enough; a baseline path is not judged. ${asSentenceEnd(pick(sv.reference_episode.source, 'en'))}`,
+          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${quarterText(sv.reference_episode.start, 'es')} a ${quarterText(sv.reference_episode.end, 'es')}) para la misma variable. Una trayectoria de estrés bajo la razón mínima, una convención del caso, no es lo bastante severa; una trayectoria base no se juzga. ${asSentenceEnd(pick(sv.reference_episode.source, 'es'))}`,
         }}
       >
         <ChartOverTable
           chartMin={`${bars.length * 2.3 + 4}rem`}
           chart={
             <BarChart
-              title={{ en: 'Path peak over the crisis peak', es: 'Máximo de la trayectoria sobre el máximo de la crisis' }}
+              title={SEVERITY_TITLE}
               height="fill"
               orientation="horizontal"
               data={bars}

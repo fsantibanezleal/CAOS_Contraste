@@ -75,6 +75,16 @@ export const es = (s: string | null | undefined, lang: 'en' | 'es'): string => d
 /** The Spanish of a unit of a named parameter. */
 export const unitEs = (unit: string, lang: 'en' | 'es'): string => es(unit, lang);
 
+/** The English of a unit the documents write in the singular after a list of values or a value of 2 (U16-R5 c26 m1: "0.05, 0.1, 0.25,
+ * 0.5, 1 multiple of each feature's standard deviation"). */
+const UNIT_EN: Record<string, string> = {
+  "multiple of each feature's standard deviation": "multiples of each feature's standard deviation",
+  'multiple of the average test error': 'multiples of the average test error',
+};
+
+/** A unit of a named parameter in the language: the English plural where the value calls for it, the Spanish of its English. */
+export const paramUnit = (unit: string, lang: 'en' | 'es'): string => (lang === 'en' ? UNIT_EN[unit] ?? unit : unitEs(unit, lang));
+
 type Row = { notes?: string | null };
 /** The tests of a document with their notes in the language: the shared tests table prints `notes` as it finds it. */
 export function localTests<T extends Row>(tests: T[], lang: 'en' | 'es'): T[] {
@@ -83,5 +93,5 @@ export function localTests<T extends Row>(tests: T[], lang: 'en' | 'es'): T[] {
 
 /** The named parameters with their basis and unit in the language: the shared parameter table prints them as it finds them. */
 export function localParams<T extends { basis: string; unit: string }>(params: T[], lang: 'en' | 'es'): T[] {
-  return lang === 'en' ? params : params.map((p) => ({ ...p, basis: es(p.basis, lang), unit: es(p.unit, lang) }));
+  return lang === 'en' ? params.map((p) => ({ ...p, unit: paramUnit(p.unit, lang) })) : params.map((p) => ({ ...p, basis: es(p.basis, lang), unit: paramUnit(p.unit, lang) }));
 }

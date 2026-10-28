@@ -3,6 +3,7 @@
 // context states what the case rests on: a synthetic bank with a known truth, the BCBS 2008 targets labelled
 // derived-only with their source, and the infinite-mean flag of a tail index of 1 or more.
 import { BarChart, Callout, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import type { CSSProperties } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
@@ -14,6 +15,10 @@ import {
   type C17Outputs, type C17Sel,
 } from './selection';
 import { es } from './localise';
+
+/** The columns of a definition list of the Context: the label column fits its labels up to 38 % of the card, so at 390 a value is not
+ * squeezed to a word a line (U16-R5 c23 m10: the labels took about 65 % of the card). */
+const DEFS_STYLE: CSSProperties = { gridTemplateColumns: 'fit-content(min(14rem, 38%)) minmax(0, 1fr)' };
 
 const na = (lang: 'en' | 'es') => formatNumber(null, lang);
 const NA_BI = (): Bi => ({ en: formatNumber(null, 'en'), es: formatNumber(null, 'es') });
@@ -145,7 +150,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
         <p>
           <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
         </p>
-        <dl className="ct-defs" data-table="c17-truth" data-infinite-mean={String(o.infinite_mean)}>
+        <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-truth" data-infinite-mean={String(o.infinite_mean)}>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
           <dd>{pick({ en: 'Synthetic, with a known truth', es: 'Sintético, con verdad conocida' }, lang)}</dd>
           <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
@@ -175,7 +180,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
         {...card}
         note={{ en: 'The generator\'s scale is fitted to four published percentiles. They are derived statistics of a regulator\'s survey, labelled as such, and no table of the survey is reproduced.', es: 'La escala del generador se ajusta a cuatro percentiles publicados. Son estadísticas derivadas de una encuesta de un regulador, rotuladas como tales, y no se reproduce ninguna tabla de la encuesta.' }}
       >
-        <dl className="ct-defs" data-table="c17-calibration" data-label={tg.label}>
+        <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-calibration" data-label={tg.label}>
           <dt>{pick({ en: 'Licence class', es: 'Clase de licencia' }, lang)}</dt>
           <dd data-label={tg.label}>{pick({ en: 'Derived only', es: 'Solo derivado' }, lang)}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
@@ -215,7 +220,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <Callout variant="honest" title={pick({ en: 'Synthetic, not a real bank', es: 'Sintético, no un banco real' }, lang)}>
             {pick(bank.notice, lang)}
           </Callout>
-          <dl className="ct-defs" data-table="c17-bank">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-bank">
             <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
             <dd>{pick(bank.label, lang)}</dd>
             <dt>{pick({ en: 'Business indicator', es: 'Indicador de negocio' }, lang)}</dt>

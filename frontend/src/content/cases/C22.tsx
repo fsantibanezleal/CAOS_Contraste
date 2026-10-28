@@ -2,8 +2,8 @@
 // dossier 12 (read at the primary sources on 2026-10-05: Morris, White and Crowther 2019; BCBS WP14 pages 41 to 67;
 // Yurdakul and Naranjo 2020; Demler, Pencina and D'Agostino 2012; Brown, Cai and DasGupta 2001) and riskvalidation's
 // docs/generators/ and docs/tests/ pages. The Context view shows it under the sources.
-import { Cite, Equation } from '@fasl-work/caos-app-shell';
-import { L, P, useT } from '../bi';
+import { Cite } from '@fasl-work/caos-app-shell';
+import { Equation, L, P, useT } from '../bi';
 
 export function C22WriteUp() {
   const t = useT();
@@ -45,8 +45,8 @@ export function C22WriteUp() {
             es: <>Yurdakul y Naranjo midieron las reglas empíricas del PSI contra una referencia chi-cuadrado <Cite id="yurdakul2020" />: concuerdan 50 de sus 54 celdas con la semilla de este caso (53 con la del motor), con el arnés levemente sobre el artículo en promedio, un desfase que la vista Artículos declara. La regla 0,10 da una falsa alarma en la mayoría de las muestras de 100 cuando nada cambió, y las bandas fijas pierden potencia al crecer las muestras.</>,
           },
           {
-            en: <>Demler, Pencina and D'Agostino showed that DeLong's test on nested models fitted on the same data almost never rejects: 0.001 at the 5% level <Cite id="demler2012" /> <Cite id="delong1988" />. Their design rerun gives two rejections in 1,000 (one in the engine's suite); two non-nested scores on an independent sample hold the size.</>,
-            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel 5% <Cite id="demler2012" /> <Cite id="delong1988" />. Su diseño repetido da dos rechazos en 1.000 (uno en la batería del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
+            en: <>Demler, Pencina and D'Agostino showed that DeLong's test <Cite id="delong1988" /> on nested models fitted on the same data almost never rejects: 0.001 at the 5% level <Cite id="demler2012" />. Their design rerun gives two rejections in 1,000 (one in the engine's suite); two non-nested scores on an independent sample hold the size.</>,
+            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong <Cite id="delong1988" /> en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel de 5 % <Cite id="demler2012" />. Su diseño repetido da dos rechazos en 1.000 (uno en la batería del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
           },
         ]}
       />
@@ -54,8 +54,8 @@ export function C22WriteUp() {
       <L
         items={[
           {
-            en: <>The Hosmer-Lemeshow statistic of a model fitted on the same data has G - 2 degrees of freedom <Cite id="hosmer1980" />; a validator tests PDs set before the outcomes, where each group adds one, as WP14 states for the test over grades. With G - 2 on such samples the test rejects right PDs about one time in nine at the 5% level (11.0%, more than twice the level). riskvalidation now uses G by default, and C01 was re-baked.</>,
-            es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G - 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G - 2 en tales muestras la prueba rechaza PD correctas cerca de una vez en nueve al nivel de 5 % (11,0 %, más del doble del nivel). riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
+            en: <>The Hosmer-Lemeshow statistic of a model fitted on the same data has G − 2 degrees of freedom <Cite id="hosmer1980" />; a validator tests PDs set before the outcomes, where each group adds one, as WP14 states for the test over grades. With G − 2 on such samples the test rejects right PDs about one time in nine at the 5% level (11.0%, more than twice the level). riskvalidation now uses G by default, and C01 was re-baked.</>,
+            es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G − 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G − 2 en tales muestras la prueba rechaza PD correctas cerca de una vez en nueve al nivel de 5 % (11,0 %, más del doble del nivel). riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
           },
           {
             en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated, the test over-rejects: about one time in six at C01's slice sizes (a development sample under half the size of the current one), about one in nine at equal sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
@@ -63,7 +63,7 @@ export function C22WriteUp() {
           },
           {
             en: <>The ECB's concentration statistic is bounded: as the current coefficient of variation c grows it peaks and falls back, so with ten grades and an initial CV of 0.6 no current distribution is rejected at 5%.</>,
-            es: <>El estadístico de concentración del BCE es acotado: al crecer el coeficiente de variación actual c alcanza un máximo y vuelve a caer, así que con diez grados y un CV inicial de 0,6 ninguna distribución actual se rechaza al 5%.</>,
+            es: <>El estadístico de concentración del BCE es acotado: al crecer el coeficiente de variación actual c alcanza un máximo y vuelve a caer, así que con diez grados y un CV inicial de 0,6 ninguna distribución actual se rechaza al 5 %.</>,
           },
         ]}
       />
