@@ -79,7 +79,8 @@ const INTERVAL_NAME: Record<string, Both> = {
   wald: { en: 'Wald', es: 'Wald' },
   agresti_coull: { en: 'Agresti-Coull', es: 'Agresti-Coull' },
 };
-const N_DAGGER: Both = { en: 'N dagger', es: 'N daga' };
+// the paper's symbol in both languages, as the table's rows print it (R5 c06 q4: "N dagger" beside "N†" in one table)
+const N_DAGGER: Both = { en: 'N†', es: 'N†' };
 
 /** Table 5's correlations, in the order of its rows and of its N dagger. */
 const table5Rhos = (o: C04PublishedOutputs) => [...new Set(o.sr190.rows.map((r) => r.rho))];
@@ -391,12 +392,12 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
       source: 'schuermann-hanson-2004',
       title: { en: 'Schuermann and Hanson (2004), Table 5', es: 'Schuermann y Hanson (2004), Tabla 5' },
       computes: {
-        en: `Schuermann and Hanson's Wald and Agresti-Coull intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N dagger.`,
-        es: `Los intervalos de Wald y de Agresti-Coull de Schuermann y Hanson al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N daga.`,
+        en: `Schuermann and Hanson's Wald and Agresti-Coull intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N†.`,
+        es: `Los intervalos de Wald y de Agresti-Coull de Schuermann y Hanson al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N†.`,
       },
       here: {
-        en: `The ${o.sr190.rows.length * 2} bounds and ${o.sr190.rows.length} lengths at ${o.sr190.defaults} defaults of ${o.sr190.n}, the count the print implies, and the ${o.sr190.n_dagger.printed.length} values of N dagger; the Impact group recomputes them live.`,
-        es: `Las ${o.sr190.rows.length * 2} cotas y ${o.sr190.rows.length} largos con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el conteo que implica lo impreso, y los ${o.sr190.n_dagger.printed.length} valores de N daga; el grupo Impacto los recalcula en vivo.`,
+        en: `The ${o.sr190.rows.length * 2} bounds and ${o.sr190.rows.length} lengths at ${o.sr190.defaults} defaults of ${o.sr190.n}, the count the print implies, and the ${o.sr190.n_dagger.printed.length} values of N†; the Impact group recomputes them live.`,
+        es: `Las ${o.sr190.rows.length * 2} cotas y ${o.sr190.rows.length} largos con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el conteo que implica lo impreso, y los ${o.sr190.n_dagger.printed.length} valores de N†; el grupo Impacto los recalcula en vivo.`,
       },
       matrices: {
         en: "Table 5 holds the paper's own interval computations and no data; it has no matrix to show.",
@@ -573,8 +574,8 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N dagger; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
-          es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N daga; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+          en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N†; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N† from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+          es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N†; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N† de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
         }}
       >
         <UPlotChart

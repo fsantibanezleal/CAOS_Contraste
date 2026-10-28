@@ -234,28 +234,28 @@
   },
   "C03": {
    "P0-constant": {
-    "en": "P0 Constant",
-    "es": "P0 Constante"
+    "en": "Constant (base rate)",
+    "es": "Constante (tasa base)"
    },
    "P1-scorecard": {
-    "en": "P1 Scorecard",
-    "es": "P1 Tarjeta de puntuación"
+    "en": "WoE scorecard",
+    "es": "Tarjeta de puntuación WoE"
    },
    "P2a-l1": {
-    "en": "P2a L1",
-    "es": "P2a L1"
+    "en": "Penalised logit",
+    "es": "Logit penalizado"
    },
    "P2b-pltr": {
-    "en": "P2b PLTR",
-    "es": "P2b PLTR"
+    "en": "Logit with rule features",
+    "es": "Logit con reglas"
    },
    "P3-ebm": {
-    "en": "P3 EBM",
-    "es": "P3 EBM"
+    "en": "Explainable boosting machine",
+    "es": "Máquina de potenciación explicable"
    },
    "P4-lightgbm": {
-    "en": "P4 LightGBM",
-    "es": "P4 LightGBM"
+    "en": "Monotone gradient boosting",
+    "es": "Potenciación del gradiente monótona"
    }
   },
   "C04": {
