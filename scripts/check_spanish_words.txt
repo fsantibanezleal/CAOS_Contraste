@@ -546,3 +546,5 @@ _nominated designados
 _upper superior
 _lower inferior
 _only solo
+!hurdle en dos etapas (modelo)
+!senior preferente, no subordinado
