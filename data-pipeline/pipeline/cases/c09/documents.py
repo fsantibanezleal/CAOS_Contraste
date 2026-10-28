@@ -302,16 +302,16 @@ def findings(out: dict[str, Any], first_month: float) -> list[dict[str, Any]]:
     f.append({"id": "F-TREATMENT", "severity": "S3", "status": "open",
               "evidence": ["lgd_ead.ccf_estimator_bias@" + bias_id("fixed-horizon", "floor-cap", "mean")],
               "title": T(f"Flooring at 0 and capping at 1 moves the fixed-horizon mean CCF to {fc['estimate']['value']:.3f} "
-                         f"({fc['bias']:+.4f} against the known {truth:.3f}); {fx['share_above_one']:.1%} of the CCFs lie above 1 and "
-                         f"{fx['share_below_zero']:.1%} below 0",
+                         f"({fc['bias']:+.4f} against the known {truth:.3f}); {percent(fx['share_above_one'], 1, lang='en')} of the CCFs lie above 1 and "
+                         f"{percent(fx['share_below_zero'], 1, lang='en')} below 0",
                          f"Poner piso en 0 y tope en 1 lleva el CCF medio a horizonte fijo a {_n(fc['estimate']['value'], 3)} "
                          f"({_signed(fc['bias'], 4, 'es')} frente al conocido {_n(truth, 3)}); {percent(fx['share_above_one'], 1, lang='es')} de los CCF están sobre 1 y "
                          f"{percent(fx['share_below_zero'], 1, lang='es')} bajo 0")})
     f.append({"id": "F-UNDEFINED", "severity": "S3", "status": "accepted", "evidence": ["design:undrawn-not-positive-is-undefined"],
               # the cohort design leaves out a first-month default (no reference date before it) and a line with no undrawn amount at
               # the cohort start: `excluded` is both, `first_month` the first only (R2b c10 B2: 30.7 % was called the first-month share)
-              "title": T(f"{undefined:.1%} of the defaulters have no CCF at the fixed horizon (fully drawn or over their limit); in the cohort "
-                         f"design {excluded:.1%} have none, {first_month:.1%} because they defaulted in the first month of their cohort; all are "
+              "title": T(f"{percent(undefined, 1, lang='en')} of the defaulters have no CCF at the fixed horizon (fully drawn or over their limit); in the cohort "
+                         f"design {percent(excluded, 1, lang='en')} have none, {percent(first_month, 1, lang='en')} because they defaulted in the first month of their cohort; all are "
                          "left out of the estimates and counted",
                          f"{percent(undefined, 1, lang='es')} de los incumplidores no tiene CCF a horizonte fijo (línea totalmente usada o sobre su límite); "
                          f"en el diseño de cohorte {percent(excluded, 1, lang='es')} no lo tiene, {percent(first_month, 1, lang='es')} porque incumplió en "

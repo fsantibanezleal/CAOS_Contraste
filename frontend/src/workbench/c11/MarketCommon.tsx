@@ -7,6 +7,8 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { referenceText, type Bi } from '../c03/U6Shared';
 import { MaybeNumber } from '../c06/format';
 import { noteText } from '../c08/notes';
+import { WHOLE_PORTFOLIO } from '../c08/words';
+import { segmentName } from '../names';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
 
 /** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. A case whose
@@ -49,12 +51,20 @@ export function policyOf(rows: TestRow[], lang: 'en' | 'es'): string {
   return [...groups].map(([k, n]) => clause(k, n)).join('; ');
 }
 
+/** The segment of a back-test row in words, on every row (R5 ruling 2, c15 Q1): its tail level as the names module writes it ("1 % tail
+ * (99 % VaR)"), the whole portfolio for a row of no segment, the segment as written when no form names it. */
+export function marketSegment(t: Pick<TestRow, 'segment'>, caseId: string): Bi {
+  if (!t.segment) return WHOLE_PORTFOLIO;
+  return segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment };
+}
+
 /**
  * The back-test rows of one model and level: the test in words, its statistic and p-value (or "not available"), the light
  * under the committed policy and the note, which for a test that did not run is the reason. The p-value that lights a row
- * is the engine's; the policy alphas are in the row (`alpha_amber`, `alpha_red`) and printed in the header note.
+ * is the engine's; the policy alphas are in the row (`alpha_amber`, `alpha_red`) and printed in the header note. Each row names its
+ * segment under the test (R5 ruling 2).
  */
-export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: string }) {
+export function MarketTestsTable({ rows, table, caseId = 'C11' }: { rows: TestRow[]; table: string; caseId?: string }) {
   const lang = useShellLang();
   const policy = policyOf(rows, lang);
   return (
@@ -88,7 +98,10 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={referenceText(t, lang)}>{pick(testName(t.test_id), lang)}</td>
+                  <td className="ct-text" title={referenceText(t, lang)}>
+                    {pick(testName(t.test_id), lang)}
+                    <span className="ct-row-detail" data-segment={t.segment ?? undefined}>{pick(marketSegment(t, caseId), lang)}</span>
+                  </td>
                   <td>
                     <MaybeNumber value={ran ? t.statistic : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                   </td>

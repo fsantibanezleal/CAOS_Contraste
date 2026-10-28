@@ -12,6 +12,9 @@ import { YEAR_FORMAT, rangeText } from './words';
 export { YEAR_FORMAT };
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A difference of two LGDs in percentage points, as the downturn finding says it ("0.14 points"; R5 c11 n6: the mark and the table
+ * wrote "0.14 %"). */
+const points = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v === null || v === undefined ? null : v * 100, lang, { decimals: 2 });
 
 /** A cohort's name with its period kept whole: a phone breaks "Defaults 2009-10" before the period, never inside it (R4 c10 n1). */
 export function CohortName({ name }: { name: string }) {
@@ -61,7 +64,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
         // the period only ("2009-10"), so at 390 the label keeps its shortfall in the plot width (R4 c10 MJ1); the full name is the table's
         const name = cohortLabel(sel, r.cohort_id);
         const period = (t: string) => t.split(' ').at(-1) ?? t;
-        return { x: cohortYear(sel, r.cohort_id), label: { en: `${period(name.en)}: not covered, shortfall ${p2(r.shortfall, 'en')}`, es: `${period(name.es)}: no cubierta, faltante ${p2(r.shortfall, 'es')}` } };
+        return { x: cohortYear(sel, r.cohort_id), label: { en: `${period(name.en)}: not covered, shortfall ${points(r.shortfall, 'en')} points`, es: `${period(name.es)}: no cubierta, faltante ${points(r.shortfall, 'es')} puntos` } };
       }),
   ];
   return (
@@ -130,7 +133,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
                 <th>{pick({ en: 'Add-on', es: 'Ajuste' }, lang)}</th>
                 <th>{pick({ en: 'Realised in the crisis', es: 'Realizada en la crisis' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Covered', es: 'Cubierta' }, lang)}</th>
-                <th>{pick({ en: 'Shortfall', es: 'Faltante' }, lang)}</th>
+                <th>{pick({ en: 'Shortfall (points)', es: 'Faltante (puntos)' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +151,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
                     <Flagged value={r.crisis_realised_lgd.value} flag={r.crisis_realised_lgd.flag} />
                   </td>
                   <td className="ct-text">{r.covered ? yes : no}</td>
-                  <td>{p2(r.shortfall, lang)}</td>
+                  <td>{points(r.shortfall, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -187,7 +190,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={fb.rows.map((r) => ({ id: r.segment_id, label: segmentLabel(r.segment_id), value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
-              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 }, range: [0, 1] }}
+              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, decimals: 2 }, range: [0, 1] }}
             />
           }
         >

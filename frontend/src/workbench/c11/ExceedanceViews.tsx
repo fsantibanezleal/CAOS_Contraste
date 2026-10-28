@@ -69,7 +69,8 @@ export function TimelineView({ sel }: { sel: C11Sel | null }) {
             <ConventionLine />
             {loss === null ? (
               <p className="ct-note" data-state="unavailable">
-                {`${formatNumber(null, lang)} (${reasonText(grid.realised_loss.reason, lang)}) ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
+                {/* the subject before "not available", and the reason as the sentence it is (R5 c15 n1) */}
+                {`${pick({ en: 'Realised loss', es: 'Pérdida realizada' }, lang)}: ${formatNumber(null, lang)}. ${reasonText(grid.realised_loss.reason, lang)} ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
               </p>
             ) : null}
             {lv.es_status === 'not-forecast' ? (

@@ -149,7 +149,7 @@
         },
         "engine_function": "riskvalidation.portfolio.asrf_fit.fit_moments",
         "interval_method": "parametric-bootstrap",
-        "reference": "dossier 04 C.4 (E[L^2] = joint default probability)"
+        "reference": "dossier 04 C.4 (E[L²] = joint default probability)"
       }
     ],
     "ladder": [

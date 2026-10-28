@@ -501,7 +501,7 @@ def models_doc() -> dict:
              "reference": "Vasicek (2002); dossier 04 C.4"},
             {"id": "moments", "label": txt("Method of moments", "Metodo de momentos"),
              "engine_function": "riskvalidation.portfolio.asrf_fit.fit_moments", "interval_method": "parametric-bootstrap",
-             "reference": "dossier 04 C.4 (E[L^2] = joint default probability)"}],
+             "reference": "dossier 04 C.4 (E[L²] = joint default probability)"}],
         "ladder": ladder,
         "portfolio_spec": {"label": "illustrative", "notice": NOTICE_ILLUSTRATIVE, "currency": CUR, "groups": GROUPS, "lgd_mean": LGD,
                            "lgd_gamma": 0.25, "levels": [0.99, 0.999], "horizon_years": 1},
