@@ -415,7 +415,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <dd>{o.p2g_proxy.label === 'contraste-approximation' ? pick(P2G_LABEL, lang) : `${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
             <dt>{pick({ en: 'Peak depletion of the CET1 ratio', es: 'Máxima caída de la razón de CET1' }, lang)}</dt>
             <dd>{`${PCT(o.p2g_proxy.peak_depletion, lang, 3)} (${pick({ en: 'year', es: 'año' }, lang)} ${o.p2g_proxy.peak_year})`}</dd>
-            <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones usables y mitigación' }, lang)}</dt>
+            <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones utilizables y mitigación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.usable_buffers_and_mitigation, lang, 3)}</dd>
             <dt>{pick({ en: 'Proxy', es: 'Aproximación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.value, lang, 3)}</dd>

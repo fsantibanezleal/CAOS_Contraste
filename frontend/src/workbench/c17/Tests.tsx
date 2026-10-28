@@ -10,6 +10,10 @@ import { rowWhere, testText } from '../names';
 
 export type TestHost = 'exceedance' | 'tail' | 'method' | 'response' | 'scenario' | 'ladder';
 
+/** The scope of a row the document gives no method and no segment: the benchmark reproduction, which checks the numerical
+ * methods against the generator's true loss distribution (U16-R5 ruling 2: a row of no segment names its scope in words). */
+export const NO_SEGMENT_SCOPE = { en: "the generator's true loss distribution", es: 'la distribución verdadera de pérdidas del generador' } as const;
+
 /** The words of a test: the table above, or the part of its id after the family, in words. */
 const nameOf = (id: string) => TEST_TEXT[id] ?? testText(id);
 
@@ -99,14 +103,14 @@ export function C17TestsTable({ variant, host, cell }: { variant: VariantArtifac
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               const name = pick(nameOf(t.test_id), lang);
               // the method and the cell a row tests, so 24 capital rows of one test can be told apart (R2b c18 M-1)
-              const where = rowWhere('C17', t.model_id, t.segment === 'portfolio' ? null : t.segment, variant.model);
+              const where = rowWhere('C17', t.model_id, t.segment === 'portfolio' ? null : t.segment, variant.model) ?? NO_SEGMENT_SCOPE;
               const shown = shownStatistic(t);
               const detail = lightDetail(t, lang);
               return (
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text" title={name}>
                     {name}
-                    {where ? <span className="ct-row-detail" data-segment={t.segment ?? undefined}>{pick(where, lang)}</span> : null}
+                    <span className="ct-row-detail" data-segment={t.segment ?? undefined} data-scope={t.segment ?? t.model_id ?? 'true-loss-distribution'}>{pick(where, lang)}</span>
                     {detail ? <span className="ct-row-detail" data-detail="light">{detail}</span> : null}
                   </td>
                   <td data-na={ran && shown !== null ? undefined : 'true'}>{ran && shown !== null ? formatNumber(shown, lang, { digits: 4 }) : formatNumber(null, lang)}</td>

@@ -16,6 +16,7 @@ import pandas as pd
 from . import fits, ops, sgcd, shocks
 from .conv import REJECT_SHARE, impact_cutoff, parameters_block, sgcd_notice, t
 from . import data
+from ...core.text import number
 from .data import Frame
 
 GROUPS = {"seen": sgcd.SEEN_BATCHES, "held-out": sgcd.HELD_OUT_BATCHES}
@@ -214,5 +215,15 @@ def build(frame: Frame, rungs: dict[str, Any], ds: sgcd.Dataset, codebook: dict[
                                                  "Decisiones que cambian en el punto de corte indicado, la mayor entre los choques aplicados")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [fits.rung_id("P4-lightgbm", frame)],
             "limits": [("sgcd-not-for-scoring", SGCD_LIMIT),
-                       ("small-groups", t("Each shock row holds 30 to 90 records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
-                                         "Cada fila de choque tiene de 30 a 90 registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso"))]}
+                       ("small-groups", small_groups_limit(shipped["rows"], applied["rows"]))]}
+
+
+def small_groups_limit(shipped: list[dict[str, Any]], applied: list[dict[str, Any]]) -> dict[str, str]:
+    """The limit of the small shock rows, with the record range of the document's own rows (U16-R5 c26 B2, ruling 9: a fixed "30 to 90
+    records" sat beside a row of 27; m5 the held-out rows hold 60 and 90)."""
+    sizes = [int(r["n_records"]) for r in [*shipped, *applied]]
+    lo, hi = min(sizes), max(sizes)
+    span = {lang: (number(hi, lang=lang) if lo == hi else f"{number(lo, lang=lang)} {'to' if lang == 'en' else 'a'} {number(hi, lang=lang)}")
+            for lang in ("en", "es")}
+    return t(f"Each shock row holds {span['en']} records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
+             f"Cada fila de choque tiene {'' if lo == hi else 'de '}{span['es']} registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso")

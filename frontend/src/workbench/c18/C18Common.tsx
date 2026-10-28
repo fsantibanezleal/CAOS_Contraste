@@ -21,6 +21,8 @@ import {
   type C18AggOutputs, type C18Fit, type C18Outputs, type C18Reverse, type C18Sel,
 } from './selection';
 import { phraseEs, unitEs } from './localise';
+import { Symbols } from './CapitalViews';
+import { quarterText } from './StressViews';
 import { testText } from '../names';
 import { variantName } from '../names';
 
@@ -69,7 +71,7 @@ const asSentence = (s: string): string => `${s.charAt(0).toUpperCase()}${s.slice
 export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni prueba retrospectiva.' };
 export const NOT_AGGREGATION: BiText = { en: 'Not available: this document carries no aggregation block.', es: 'No disponible: este documento no trae un bloque de agregación.' };
 export const NOT_AGG_VARIANT: BiText = { en: 'Not available: this view reads the t-copula aggregation variant, which holds the stressed matrix, the copula sensitivity and the reference.', es: 'No disponible: esta vista lee la variante de agregación con cópula t, que trae la matriz bajo estrés, la sensibilidad a la cópula y la referencia.' };
-export const NOT_REVERSE: BiText = { en: 'Not available: this document is not the reverse-stress variant.', es: 'No disponible: este documento no es la variante de estrés inverso.' };
+export const NOT_REVERSE: BiText = { en: 'Not available: this document is not the reverse-stress variant.', es: 'No disponible: este documento no es la variante de tensión inversa.' };
 
 // --- the tests table -------------------------------------------------------------------------------------------------
 
@@ -79,6 +81,21 @@ function segmentName(segment: string, lang: Lang): string {
   const bi = LOAN_TEXT[segment] ?? REGRESSOR_TEXT[segment];
   return bi ? bi[lang] : segment;
 }
+
+/** The scope of a test row of no segment: the bank's whole balance sheet, which the aggregation of its four risks and the stress
+ * rules test (U16-R5 ruling 2, c24 M1 and c25 M1: a row of no segment names its scope in words, never a blank). */
+export const WHOLE_SCOPE: Bi = { en: 'whole balance sheet', es: 'todo el balance' };
+
+/** The scope of a test row in the language: its segment's name, or the whole balance sheet. */
+export const scopeOf = (t: Pick<TestRow, 'segment'>, lang: Lang): string => (t.segment ? segmentName(t.segment, lang) : pick(WHOLE_SCOPE, lang));
+
+/** The title of the tests card: what the variant runs (U16-R5 c25 n3: the reverse stress runs one test and the t-copula variant no
+ * stress). */
+const TESTS_TITLE: Record<string, BiText> = {
+  scenario: { en: 'The tests of the aggregation and the stress', es: 'Las pruebas de la agregación y del estrés' },
+  aggregation: { en: 'The tests of the aggregation', es: 'Las pruebas de la agregación' },
+  reverse: { en: 'The test of the reverse stress', es: 'La prueba de la tensión inversa' },
+};
 
 /** The notes the engine writes for a test that did not run, in the page's language. */
 function noteName(note: string, lang: Lang): string {
@@ -98,7 +115,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: 'The tests of the aggregation and the stress', es: 'Las pruebas de la agregación y del estrés' }}
+        title={TESTS_TITLE[(sel.data.variant.outputs as { kind?: string }).kind ?? 'scenario'] ?? TESTS_TITLE.scenario}
         {...card}
         note={{
           en: 'The statistic when the test ran, the light under the stated convention and its reference. The lights are conventions of the case, never regulatory thresholds; a test that did not run says why and shows no number.',
@@ -123,7 +140,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}${t.segment ? ` (${segmentName(t.segment, lang)})` : ''}`}</td>
+                      <td className="ct-text" title={t.test_id} data-scope={t.segment ?? 'whole-balance-sheet'}>{`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)} (${scopeOf(t, lang)})`}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
@@ -169,7 +186,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
       {...card}
       note={{
         en: 'The scenario variants run the same bank under the Federal Reserve, EBA and ESRB, and NGFS paths; the bars give the CET1 over RWA at the end of the third year under the stress without mitigation. The aggregation and reverse-stress variants have their own measures. Pick a variant to load it.',
-        es: 'Las variantes de escenario corren el mismo banco bajo las trayectorias de la Reserva Federal, de la EBA y la ESRB, y de NGFS; las barras dan el CET1 sobre APR al final del tercer año bajo el estrés sin mitigación. Las variantes de agregación y de estrés inverso tienen sus propias medidas. Elija una variante para cargarla.',
+        es: 'Las variantes de escenario corren el mismo banco bajo las trayectorias de la Reserva Federal, de la EBA y la ESRB, y de NGFS; las barras dan el CET1 sobre APR al final del tercer año bajo el estrés sin mitigación. Las variantes de agregación y de tensión inversa tienen sus propias medidas. Elija una variante para cargarla.',
       }}
     >
       <ChartOverTable
@@ -231,12 +248,13 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             ) : null}
           </tbody>
         </table>
-        {reverse ? (
-          <p className="ct-note">
-            {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En la tensión inversa la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
-          </p>
-        ) : null}
       </ChartOverTable>
+      {/* under the box, not its last line: inside it the note was cut at the card's edge under a cue that counted a row (U16-R5 c24 n4) */}
+      {reverse ? (
+        <p className="ct-note">
+          {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En la tensión inversa la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
+        </p>
+      ) : null}
     </PlotCard>
   );
 }
@@ -277,6 +295,7 @@ const PARAM_TEXT: Record<string, Bi> = {
   correlation_matrix_stress: { en: 'Inter-risk correlation, market-credit stress', es: 'Correlación entre riesgos, estrés mercado-crédito' },
   ppnr_fee_ratio: { en: 'PPNR: fee income over NII', es: 'PPNR: comisiones sobre MFN' },
   ppnr_cost_ratio: { en: 'PPNR: cost over income', es: 'PPNR: costos sobre ingresos' },
+  // the symbols are written as the stack writes them, c with its subscript (U16-R5 c24 n6, c25 n5)
   c_p2: { en: 'Pillar 2 of the bank (c_P2)', es: 'Pilar 2 del banco (c_P2)' },
   c_d: { en: 'Stress buffer of the OI (c_d)', es: 'Colchón de estrés del OI (c_d)' },
   operational_conversion_rate: { en: 'Conversion rate of the operational marginal', es: 'Tipo de cambio de la marginal operacional' },
@@ -310,7 +329,7 @@ function NamedRows({ fit }: { fit: C18Fit }) {
     <tbody>
       {rows.map((r) => (
         <tr key={r.id} data-param={r.id} data-status={r.label}>
-          <td className="ct-text" title={r.id}>{pick(PARAM_TEXT[r.id], lang)}</td>
+          <td className="ct-text" title={r.id}><Symbols text={pick(PARAM_TEXT[r.id], lang)} lang={lang} /></td>
           <td className="ct-text">{r.value}</td>
           <td className="ct-text">{pick(text(LABEL_TEXT, r.label), lang)}</td>
           <td className="ct-text ct-wide-only">{pick(r.basis, lang)}</td>
@@ -358,7 +377,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
                 <tr key={s.model_id} data-loan={s.fed_loan_type} data-fit-start={s.sample_window.start}>
                   <td className="ct-text">{pick(text(LOAN_TEXT, s.fed_loan_type), lang)}</td>
                   <td className="ct-text">{pick(text(LINK_TEXT, s.link), lang)}</td>
-                  <td className="ct-text">{`${s.sample_window.start} ${pick({ en: 'to', es: 'a' }, lang)} ${s.sample_window.end}`}</td>
+                  <td className="ct-text">{`${quarterText(s.sample_window.start, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${quarterText(s.sample_window.end, lang)}`}</td>
                   <td>{s.n_obs}</td>
                   <td className="ct-wide-only">{s.non_positive_quarters_in_window ?? formatNumber(null, lang)}</td>
                   <td>{digits(s.fit_statistics.r_squared, lang)}</td>
@@ -448,7 +467,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
   const agg = aggOf(sel);
   const fit = fitOf(sel);
   // a fact of the aggregation that the document has not: not available, with the reason (U16-R4 c23 m3: no reason was given)
-  const noAggregation = `${formatNumber(null, lang)}: ${pick(r ? { en: 'the reverse stress runs no aggregation', es: 'la tensión inversa no corre una agregación' } : { en: 'this document carries no aggregation', es: 'este documento no trae una agregación' }, lang)}`;
+  const noAggregation = `${formatNumber(null, lang)}: ${pick(r ? { en: 'the reverse stress runs no aggregation band; its headline capital is the simple sum of the four marginals', es: 'la tensión inversa no corre una agregación por bandas; su capital principal es la suma simple de las cuatro marginales' } : { en: 'this document carries no aggregation', es: 'este documento no trae una agregación' }, lang)}`;
   return (
     <div className="ct-context" data-case={m.case_id}>
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
