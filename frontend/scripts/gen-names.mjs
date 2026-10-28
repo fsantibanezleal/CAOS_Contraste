@@ -21,6 +21,21 @@ const isCode = (s, id) => s === id || /^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+$/.test
 const text = (t) => (t && typeof t === 'object' && typeof t.en === 'string' && typeof t.es === 'string' ? { en: t.en, es: t.es } : null);
 const sorted = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 
+/** The rung names a case's views give by the kind its models artifact names (`fit.ladder[].kind`), where the views name a rung by its
+ * kind and not by the document's short title: C03 (`c03/selection.ts` KIND_TEXT, which names.test.ts holds equal to this map; R5 c04 N1:
+ * the red-row findings named "P2a L1" where the views say "Penalised logit"). */
+export const VIEW_KIND_TEXT = {
+  C03: {
+    constant: { en: 'Constant (base rate)', es: 'Constante (tasa base)' },
+    'woe-scorecard': { en: 'WoE scorecard', es: 'Tarjeta de puntuación WoE' },
+    'penalised-logit': { en: 'Penalised logit', es: 'Logit penalizado' },
+    pltr: { en: 'Logit with rule features', es: 'Logit con reglas' },
+    ebm: { en: 'Explainable boosting machine', es: 'Máquina de potenciación explicable' },
+    'monotone-gbm': { en: 'Monotone gradient boosting', es: 'Potenciación del gradiente monótona' },
+    tabpfn: { en: 'TabPFN', es: 'TabPFN' },
+  },
+};
+
 /** { models, rates, variants, sources }: the first three { case: { id: { en, es } } }, sources { id: name }, from the committed
  * documents under `root`. */
 export function collectModelNames(root = join(repo, 'data', 'derived')) {
@@ -63,6 +78,16 @@ export function collectModelNames(root = join(repo, 'data', 'derived')) {
         const art = (manifest.artifacts ?? []).find((a) => a.role === 'variant' && a.variant_id === doc.variant_id);
         const name = text(art?.short_title);
         if (name && !names[code]) names[code] = name;
+      }
+    }
+    // a case whose views name a rung by its kind: the models artifact's ladder gives each rung's kind
+    if (VIEW_KIND_TEXT[c]) {
+      for (const f of readdirSync(join(root, c)).filter((x) => x.startsWith('models') && x.endsWith('.json')).sort()) {
+        const doc = JSON.parse(readFileSync(join(root, c, f), 'utf8'));
+        for (const r of doc?.fit?.ladder ?? []) {
+          const name = VIEW_KIND_TEXT[c][r.kind];
+          if (typeof r.rung_id === 'string' && name) names[r.rung_id] = name;
+        }
       }
     }
     if (Object.keys(names).length) out.models[c] = sorted(names);

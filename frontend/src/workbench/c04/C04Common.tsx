@@ -104,6 +104,9 @@ export function nonEmpty(series: ChartSeries[]): ChartSeries[] {
  * drawn inside the plot), and a series padded to it. */
 const numbered = (n: number) => [0.5, ...Array.from({ length: n }, (_, i) => i + 1), n + 0.5];
 const pad = (vals: ReadonlyArray<number | null>): Array<number | null> => [null, ...vals, null];
+/** The x of a numbered evidence chart, 1 to n with half a step of room each side as the axis range, not as padding points: a padding
+ * point entered the chart's summary and data table ("31 puntos ... de 1 a 30" over 29 cited tests, R5 c05 n2). */
+const cited = (n: number, label: BiText): UPlotChartProps['x'] => ({ values: Array.from({ length: n }, (_, i) => i + 1), range: [0.5, n + 0.5], label, format: { decimals: 0 } });
 /** The grade axis, padded: x = 1 (AAA) to 7 (CCC-C). */
 const gradeAxis = (): UPlotChartProps['x'] => ({ values: numbered(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } });
 const gradeMark = (g: number) => [{ x: g + 1, label: { en: GRADES[g], es: GRADES[g] } }];
@@ -252,8 +255,7 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
   const policyRow = rows.find((r) => r && r.alpha_amber !== null && r.alpha_red !== null);
   const amber = policyRow?.alpha_amber ?? COMMITTED.amber;
   const red = policyRow?.alpha_red ?? COMMITTED.red;
-  const xs = numbered(ps.length);
-  const where = (pred: (p: number) => boolean) => pad(ps.map((p) => (p !== null && pred(p) ? p : null)));
+  const where = (pred: (p: number) => boolean) => ps.map((p) => (p !== null && pred(p) ? p : null));
   const a = both((l) => formatNumber(amber, l, { digits: 2 }));
   const r = both((l) => formatNumber(red, l, { digits: 2 }));
   const fl = both((l) => formatNumber(P_FLOOR, l, { digits: 2 }));
@@ -265,7 +267,7 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
   ]);
   if (!drawn.length) return null;
   return {
-    x: { values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } },
+    x: cited(ps.length, { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }),
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
     series: [
       ...drawn,
@@ -292,8 +294,7 @@ const AT1 = 'p<0.01';
 export function rateChart(points: EvidencePoint[]): C04Chart | null {
   const sims = points.map((p) => (p.cited.kind === 'rate' ? p.cited.sim : null));
   if (!sims.some(Boolean)) return null;
-  const xs = numbered(sims.length);
-  const at = (key: string, f: 'rate' | 'wilson_low' | 'wilson_high') => pad(sims.map((s) => s?.rates[key]?.[f] ?? null));
+  const at = (key: string, f: 'rate' | 'wilson_low' | 'wilson_high') => sims.map((s) => s?.rates[key]?.[f] ?? null);
   const drawn = nonEmpty([
     { label: { en: 'Rate at 5%', es: 'Tasa al 5 %' }, values: at(AT5, 'rate'), color: '--color-accent', mode: 'points' },
     { label: { en: 'Wilson 95% of the 5% rate, low', es: 'Wilson 95 % de la tasa al 5 %, inferior' }, values: at(AT5, 'wilson_low'), color: '--color-fg-subtle', mode: 'points' },
@@ -302,7 +303,7 @@ export function rateChart(points: EvidencePoint[]): C04Chart | null {
   ]);
   if (!drawn.length) return null;
   return {
-    x: { values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } },
+    x: cited(sims.length, { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }),
     y: { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] },
     series: [
       ...drawn,
@@ -545,9 +546,16 @@ export function rungText(f: FamilyVariant, s: C04Simulation, lang: Lang): string
   return `${head}${formatNumber(s.rung, lang, { digits: 4 })}${empirical ? (lang === 'es' ? ' (la fuerza empírica)' : ' (the empirical strength)') : ''}`;
 }
 
+/** A test's name on a generator family, where the reference matrix is the true one and not a pooled agency matrix: the name its Size
+ * table gives (R5 c05 n4: the Markov Findings called test 3 "Cohort against the pooled matrix", its Size table "Against the reference
+ * matrix"). */
+const FAMILY_TEST_NAME: Record<string, BiText> = {
+  'rating.matrix_reference': { en: 'Against the reference matrix', es: 'Contra la matriz de referencia' },
+};
+
 function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang): string {
   const n = k ? `[${k}] ` : '';
-  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado previamente desde ' : 'Computed in the bake from '}${pick(designName(c.key), lang)}`;
+  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado previamente desde ' : 'Computed beforehand from '}${pick(designName(c.key), lang)}`;
   if (c.kind === 'missing') return `${ref} (${lang === 'es' ? 'no está en el artefacto' : 'not in the artifact'})`;
   if (c.kind === 'test') {
     const t = c.row;
@@ -557,7 +565,7 @@ function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang):
   const s = c.sim;
   const r5 = s.rates[AT5];
   const r1 = s.rates[AT1];
-  const head = `${n}${pick(testName(s.test_id), lang)}, ${rungText(c.family, s, lang)}`;
+  const head = `${n}${pick(FAMILY_TEST_NAME[s.test_id] ?? testName(s.test_id), lang)}, ${rungText(c.family, s, lang)}`;
   if (!r5) return head;
   return lang === 'es'
     ? `${head}: ${pctText('es', r5.rate)} al 5% (EE ${pctText('es', r5.se)}), Wilson 95% ${pctText('es', r5.wilson_low)} a ${pctText('es', r5.wilson_high)}; ${pctText('es', r1?.rate)} al 1%; ${formatNumber(s.n_rep, 'es')} repeticiones`

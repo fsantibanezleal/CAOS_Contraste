@@ -166,15 +166,21 @@
 @media (min-width: 901px) {
   .ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll { padding-bottom: 0.5rem; }
 }
-:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box])[data-more-y]::after {
+/* the C21 evidence card and a card's note are listed with no specificity of their own, so the rules that follow still apply */
+:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box], :where(.ct-stack[data-block="finding-evidence"], .caos-plot.fill > .caos-plot-note))[data-more-y]::after {
   content: attr(data-more-text); display: block; position: sticky; bottom: 0; left: 0; z-index: 2;
   box-sizing: border-box; height: 2.3rem; margin-top: -2.3rem; padding: 1.15rem 0.5rem 0.2rem;
   background: linear-gradient(to bottom, transparent, var(--color-surface) 55%);
   font-size: 0.74rem; line-height: 1; font-weight: 600; color: var(--color-fg-subtle); text-align: center; pointer-events: none;
 }
+/* a sticky band stops at its box's padding: in a box with a bottom gap it sat 0.5rem above the box's edge and the next line
+   showed under it, cut through its glyphs (R5 c27 n5); it reaches the edge, from where layout.ts counts the rows */
+@media (min-width: 901px) {
+  :is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll)[data-more-y]::after { bottom: -0.5rem; }
+}
 /* in a panel grid the band spans the grid */
 .ct-panels-fill[data-more-y]::after { grid-column: 1 / -1; }
-:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box])[data-more-x] {
+:is(.ct-stack-table, .ct-stack-rest, .ct-stack-fill, .ct-scroll, .ct-fade-scroll, .ct-panels-fill, .ct-c20-bars, [data-scroll-box], :where(.ct-stack[data-block="finding-evidence"], .caos-plot.fill > .caos-plot-note))[data-more-x] {
   mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
 }
 /* the C21 evidence card: two drawings of 21 rem (the plot of each keeps three ticks next to its title, key and readout) */

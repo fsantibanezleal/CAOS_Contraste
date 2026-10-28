@@ -253,8 +253,9 @@ describe('U16-F10a the names module (c01 B4, c03 Q1, c20 B6, c23 B8, M1, c11 n3,
     expect(segmentName('fy2008', { caseId: 'C03' })).toEqual({ en: 'the fiscal year 2008 vintage', es: 'la cosecha del año fiscal 2008' });
   });
   it('names the level and measure of a C10 Euler row (c11 n3)', () => {
-    expect(segmentName('var-0.99', { caseId: 'C10' })).toEqual({ en: 'VaR at 99%', es: 'VaR al 99 %' });
-    expect(segmentName('es-0.999', { caseId: 'C10' })).toEqual({ en: 'ES at 99.9%', es: 'ES al 99,9 %' });
+    // the percent joined by the shell's no-break space in both languages (R5 c13 N1 superseded the bare "99%")
+    expect(segmentName('var-0.99', { caseId: 'C10' })).toEqual({ en: 'VaR at 99 %', es: 'VaR al 99 %' });
+    expect(segmentName('es-0.999', { caseId: 'C10' })).toEqual({ en: 'ES at 99.9 %', es: 'ES al 99,9 %' });
   });
   it('names the C20 shifts of the flips view and puts the multiple first (c20 B1, M1)', () => {
     expect(windowName('fed-higher-risk-x0.25').en).toBe('0.25 times the Fed higher-risk drift');

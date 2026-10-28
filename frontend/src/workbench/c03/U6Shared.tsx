@@ -7,7 +7,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { pct } from '../c06/format';
-import { segmentName, testText } from '../names';
+import { WHOLE_PORTFOLIO, segmentName, testText } from '../names';
 
 export const LIVE: Lane = 'live';
 
@@ -117,11 +117,12 @@ const TEST_TEXT: Record<string, BiText> = {
 /**
  * The segment of each row of a tests table in words, on every row that has one: a vintage, a grade, a horizon, a cell, an input, and a
  * portfolio row says "portfolio" (the R4 ruling 3 on c04 M1: every tests table shows the segment on every row; labelling only the rows
- * that would otherwise read alike did not meet it). Null only for a row with no segment. A segment no form names is shown as written
- * (the names gate keeps that fallback unused).
+ * that would otherwise read alike did not meet it). A row with no segment takes `none`, the scope of the table in words (R5 ruling 2:
+ * "whole portfolio" for a credit portfolio), or null where the caller names none. A segment no form names is shown as written (the
+ * names gate keeps that fallback unused).
  */
-export function segmentLabels(rows: ReadonlyArray<Pick<TestRow, 'test_id' | 'model_id' | 'segment'>>, caseId: string): Array<Bi | null> {
-  return rows.map((t) => (t.segment ? segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment } : null));
+export function segmentLabels(rows: ReadonlyArray<Pick<TestRow, 'test_id' | 'model_id' | 'segment'>>, caseId: string, none: Bi | null = null): Array<Bi | null> {
+  return rows.map((t) => (t.segment ? segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment } : none));
 }
 
 /**
@@ -129,10 +130,19 @@ export function segmentLabels(rows: ReadonlyArray<Pick<TestRow, 'test_id' | 'mod
  * tests belong to (a table alone cannot fill a stage, ADR-0071 rule 8): a test that did not run shows its reason, not a
  * number. `only` keeps the tests of one view; each row names its segment where one is needed to tell it apart.
  */
+/** A statistic at four significant digits with its trailing zeros (R5 c11 n3: "0.12" beside "0.1234"): fixed decimals in the shell's
+ * notation between 1E-4 and 1,000, the shell's own form outside it (scientific below, every integer digit above). */
+export function statText(x: number, lang: 'en' | 'es'): string {
+  const a = Math.abs(x);
+  if (a === 0 || a < 1e-4 || a >= 1000 || !Number.isFinite(x)) return formatNumber(x, lang, { digits: 4 });
+  return formatNumber(x, lang, { decimals: Math.max(0, 3 - Math.floor(Math.log10(a))) });
+}
+
 export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantArtifact; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean }) {
   const lang = useShellLang();
   const rows: TestRow[] = only ? variant.tests.filter(only) : variant.tests;
-  const segments = segmentLabels(rows, variant.case_id);
+  // every case that draws this table is a credit portfolio: a row of no segment is the whole portfolio (R5 ruling 2)
+  const segments = segmentLabels(rows, variant.case_id, WHOLE_PORTFOLIO);
   return (
     <div data-block="tests">
       <p className="ct-note">
@@ -159,10 +169,10 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text" title={t.test_id}>
                     {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
-                    {segments[i] ? <span className="ct-row-detail" data-segment={t.segment}>{pick(segments[i]!, lang)}</span> : null}
+                    {segments[i] ? <span className="ct-row-detail" data-segment={t.segment ?? 'none'}>{pick(segments[i]!, lang)}</span> : null}
                   </td>
                   <td className="ct-text ct-wide-only">{t.model_id === null ? '-' : (modelLabel?.(t.model_id) ?? t.model_id)}</td>
-                  <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
+                  <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? statText(t.statistic, lang) : formatNumber(null, lang)}</td>
                   {/* a p-value that underflowed to 0 reads below the smallest double, never "0" (R4 c04, c10: a red row printed p 0) */}
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? (t.p_value === 0 ? '< 1E-300' : formatNumber(t.p_value, lang, { digits: 2 })) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
