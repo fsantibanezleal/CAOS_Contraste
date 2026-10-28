@@ -79,7 +79,7 @@ describe('U16-R3 c07 on the committed C06 documents', () => {
       const head = markup.match(/<table[^>]*data-table="lifetime-backtest"[\s\S]*?<\/thead>/)?.[0] ?? '';
       expect([...head.matchAll(/<th[\s>]/g)].length).toBe(6); // the estimator moved under the cohort: six columns, not seven
       expect(head).not.toMatch(/Estimator|Estimador/);
-      expect(markup).toMatch(/ct-row-detail">(?:Kaplan-Meier|Aalen-Johansen)/);
+      expect(markup).toMatch(/ct-row-detail">(?:observed by|observada por) (?:Kaplan-Meier|Aalen-Johansen)/);
     }
   });
 

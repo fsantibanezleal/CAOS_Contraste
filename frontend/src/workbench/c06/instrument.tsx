@@ -172,7 +172,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     [
       { id: 'term', label: { en: 'Term structures', es: 'Estructuras de plazo' }, content: <TermStructureView sel={sel} /> },
       { id: 'sicr', label: { en: 'SICR', es: 'SICR' }, content: <SicrView sel={sel} /> },
-      { id: 'nonlinearity', label: { en: 'Non-linearity', es: 'No linealidad' }, content: <NonLinearityView sel={sel} /> },
+      { id: 'nonlinearity', label: { en: 'Nonlinearity', es: 'No linealidad' }, content: <NonLinearityView sel={sel} /> },
       { id: 'ladder', label: { en: 'Ladder', es: 'Escalera' }, content: <LadderView sel={sel} /> },
     ],
     { en: 'Views of the lifetime PD model', es: 'Vistas del modelo de PD de vida' },
