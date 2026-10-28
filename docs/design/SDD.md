@@ -485,7 +485,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | web | katex | 0.16.47 | typeset equations on the Methodology pages | none recorded (0.19.0 is current and was not adopted) |
 | web | lucide-react | 1.52.0 | icons | none recorded |
 | web | uplot | 1.6.32 | the interactive curves | none recorded |
-| build | vite | 8.3.2 | bundler and dev server | none recorded |
+| build | vite | 8.3.5 | bundler and dev server; 8.3.5 carries the fixes of the Windows command-execution advisories (template 0.11.001) | none recorded |
 | build | @vitejs/plugin-react | 6.1.1 | the React transform for vite | none recorded |
 | build | typescript | 5.9.3 | type check of the web and the generated contract types | none recorded (7.0.2 is a major change and was not adopted) |
 | build | openapi-typescript | 7.13.0 | generates `contract.gen.ts` from the OpenAPI document built from the schema files | hand-written types, rejected: they drift (the generation step fails when they are not current) |

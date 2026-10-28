@@ -4,44 +4,21 @@
 Tests that need Node (the web build scripts) or numpy (the root test sandbox) skip when the tool or the installed
 packages are absent: CI's checks job installs neither, and the web job runs the same scripts on the real tree
 (`npm run build`); locally they run after `npm ci`."""
+
 from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
-from planting import ROOT, edit, guard
+from planting import NODE, NODE_MODULES, edit, guard, link_node_modules, unlink_node_modules
 
-NODE = shutil.which("node")
-NODE_MODULES = ROOT / "frontend" / "node_modules"
 needs_web = pytest.mark.skipif(NODE is None or not (NODE_MODULES / "@fasl-work").is_dir(),
                                reason="needs node and `npm ci` in frontend/")
 
-
-def link_node_modules(frontend: Path) -> None:
-    """Make the copy's frontend/node_modules the real one (a junction on Windows, a symlink elsewhere)."""
-    target = frontend / "node_modules"
-    if target.is_dir() and not target.is_symlink():
-        shutil.rmtree(target)  # the copy holds only the executive schema the SDD guard reads (conftest add_schema)
-    if os.name == "nt":
-        subprocess.run(["cmd", "/c", "mklink", "/J", str(target), str(NODE_MODULES)], check=True, capture_output=True)
-    else:
-        target.symlink_to(NODE_MODULES, target_is_directory=True)
-
-
-def unlink_node_modules(frontend: Path) -> None:
-    target = frontend / "node_modules"
-    if os.name == "nt":
-        os.rmdir(target)  # a junction: removes the link, never the real tree
-    elif target.is_symlink():
-        target.unlink()  # a symlink: os.rmdir raises NotADirectoryError on it (Linux CI)
-
-
-# ------------------------------------------------------------------ EX-003, EX-012, EX-013
 
 def test_a_test_that_writes_a_committed_artifact_fails_the_session(repo: Path) -> None:
     pytest.importorskip("numpy")
@@ -64,8 +41,6 @@ def test_a_version_stated_twice_and_disagreeing_fails_the_coherence_guard(repo: 
     r = guard(repo, "check_version_coherence.py")
     assert r.returncode == 1 and "9.9.9" in r.stdout and r.stdout != before, r.stdout
 
-
-# ------------------------------------------------------------------ EX-009, EX-010, EX-011, CT-005 (the web scripts)
 
 @needs_web
 def test_a_build_without_the_routes_or_the_theme_script_fails(repo: Path) -> None:
@@ -111,4 +86,3 @@ def test_the_gate_runner_fails_with_the_shell_gates_status_and_measures_the_prod
     r = subprocess.run([NODE, str(frontend / "scripts" / "gate.mjs")], capture_output=True, encoding="utf-8", errors="replace", cwd=frontend,
                        env={**env, "STUB_EXIT": "0"})
     assert r.returncode == 0
-
