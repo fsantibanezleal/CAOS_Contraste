@@ -54,12 +54,13 @@ SCENARIOS: tuple[dict[str, Any], ...] = (
      "shocks": [("house-prices", "percent", -15.0)],
      "label": {"en": "House price fall", "es": "Caída del precio de viviendas"},
      "description": {"en": "House prices 15 per cent down: real-estate collateral values fall, which moves recoveries and the Annex 9 "
-                           "uncovered amount; the B-1 group matrices use the appraisal at origination and do not move; the systematic "
-                           "factor shifts by -0.4. Magnitudes: assumption of the case (the Fed 2026 severely adverse path is about "
+                           "uncovered amount; the B-1 matrices place a loan by its appraisal at origination, so the fall moves no account "
+                           "across a loan-to-value band; B-1 moves only through the systematic factor, which shifts by -0.4. Magnitudes: assumption of the case (the Fed 2026 severely adverse path is about "
                            "-30 per cent, UNVERIFIED in dossier 08 D.1).",
                      "es": "Precios de viviendas 15 % a la baja: caen los valores de las garantías inmobiliarias, lo que mueve las "
-                           "recuperaciones y el monto no cubierto del Anejo 9; las matrices grupales de B-1 usan la tasación de origen y no "
-                           "se mueven; el factor sistemático se desplaza -0,4. Magnitudes: supuesto del caso."}},
+                           "recuperaciones y el monto no cubierto del Anejo 9; las matrices de B-1 ubican cada préstamo por su tasación de "
+                           "origen, así que la caída no mueve ninguna cuenta de tramo de relación préstamo-garantía; B-1 se mueve solo por "
+                           "el factor sistemático, que se desplaza -0,4. Magnitudes: supuesto del caso."}},
     {"id": "uf-inflation-spike", "z_shift": -0.3, "hpi": 0.0, "channels": {"mortgage": 0.010, "commercial-group": 0.005},
      "shocks": [("uf-inflation", "percentage points", 4.0)],
      "label": {"en": "UF inflation spike", "es": "Alza de inflación UF"},
