@@ -22,6 +22,8 @@ from . import params as P
 from .ladder import T, named
 
 SHAPED_ON = "yearly default fractions of a large homogeneous portfolio with one systematic factor (dossier 04 C.4)"
+#: the reference of the method of moments: the second moment as a superscript, never the caret notation in reader text (U16-R5 c13 N5)
+MOMENTS_REFERENCE = "dossier 04 C.4 (E[L²] = joint default probability)"
 
 
 
@@ -481,7 +483,7 @@ def models_document(table_columns: dict[str, str], example: dict[str, Any], run:
              "reference": "Vasicek (2002); dossier 04 C.4"},
             {"id": "moments", "label": T("Method of moments", "Método de momentos"),
              "engine_function": "riskvalidation.portfolio.asrf_fit.fit_moments", "interval_method": "parametric-bootstrap",
-             "reference": "dossier 04 C.4 (E[L^2] = joint default probability)"}],
+             "reference": MOMENTS_REFERENCE}],
         "ladder": ladder_rows,
         "portfolio_spec": {
             "label": "illustrative",

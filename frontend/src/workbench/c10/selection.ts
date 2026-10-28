@@ -237,7 +237,8 @@ export function defaultSel(data: CaseData | null): C10Sel | null {
  * models artifact): the citation as published, its locators and the remark in Spanish. A reference it does not know is shown as written.
  */
 const REFERENCE_ES: Record<string, string> = {
-  'dossier 04 C.4 (E[L^2] = joint default probability)': 'dossier 04 C.4 (E[L^2] = probabilidad conjunta de incumplimiento)',
+  // the second moment as a superscript (R5 c13 N5); a document baked before it writes the caret, which `referenceNote` reads the same
+  'dossier 04 C.4 (E[L²] = joint default probability)': 'dossier 04 C.4 (E[L²] = probabilidad conjunta de incumplimiento)',
   // the authors joined with "y" and the month in Spanish; the titles and the journals stay as published (R3 c11 n1)
   'Vasicek (2002), Risk, December 2002; dossier 04 C.4': 'Vasicek (2002), Risk, diciembre de 2002; dossier 04 C.4',
   'Frey and McNeil (2003); Demarta and McNeil (2005); dossier 04 H.3': 'Frey y McNeil (2003); Demarta y McNeil (2005); dossier 04 H.3',
@@ -253,4 +254,8 @@ const REFERENCE_ES: Record<string, string> = {
   'Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ecs. 15 y 16 (dossier 04 H.5)',
   'Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)': 'Gordy y Lutkebohmert (2013), ec. 15 y p. 46 (dossier 04 H.5)',
 };
-export const referenceNote = (reference: string, lang: 'en' | 'es'): string => (lang === 'es' ? REFERENCE_ES[reference] ?? reference : reference);
+export const referenceNote = (reference: string, lang: 'en' | 'es'): string => {
+  // a power written with a caret is the superscript in reader text ("E[L^2]" reads "E[L²]"; R5 c13 N5)
+  const ref = reference.replace(/\^2/g, '²');
+  return lang === 'es' ? REFERENCE_ES[ref] ?? ref : ref;
+};

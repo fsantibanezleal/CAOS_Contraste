@@ -2,12 +2,12 @@
 // bucket of predicted LGD, and the sensitivity of the beta regression to its endpoint shift. A model with no number in
 // this document says so with its reason; a realised LGD outside [0, 1] keeps its flag.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import { UPlotChart, parityRange, type ChartTick } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { cohortLabel, cohortYear, outputsOf, rungLabel, type C08Sel } from './selection';
-import { YEAR_FORMAT } from './words';
+import { YEAR_FORMAT, withPortfolioScope } from './words';
 import { CohortName } from './DownturnViews';
 
 export { YEAR_FORMAT };
@@ -16,6 +16,25 @@ export { YEAR_FORMAT };
 const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
 const d4 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 4 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+
+/** The steps a whole-percent axis may tick at, finest first. */
+const PERCENT_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5, 1];
+
+/**
+ * The x ticks of a parity chart at whole percents, at most six over the parity box: two-decimal tick labels ("50.00 % 60.00 % ...")
+ * nearly touched at 1280 (R5 c11 n5), while the readout keeps the axis format's two decimals (a named tick labels only an x that sits
+ * on it).
+ */
+export function wholePercentTicks(...arrays: ReadonlyArray<ReadonlyArray<number | null>>): ChartTick[] {
+  const [lo, hi] = parityRange(...arrays);
+  const step = PERCENT_STEPS.find((s) => (hi - lo) / s <= 6) ?? 1;
+  const ticks: ChartTick[] = [];
+  for (let k = Math.ceil(lo / step - 1e-9); k * step <= hi + 1e-9; k += 1) {
+    const v = Math.round(k * step * 1e6) / 1e6;
+    ticks.push({ value: v, label: { en: formatNumber(v, 'en', { percent: true, decimals: 0 }), es: formatNumber(v, 'es', { percent: true, decimals: 0 }) } });
+  }
+  return ticks;
+}
 
 /** A card that says why there is nothing to draw for the model in focus, in place of an empty chart. */
 function NoRows({ sel, title, why }: { sel: C08Sel; title: { en: string; es: string }; why: { en: string; es: string } }) {
@@ -90,7 +109,7 @@ export function RungsView({ sel }: { sel: C08Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(label(id), lang)} />
+          <U6TestsTable variant={withPortfolioScope(sel.data.variant, lang)} modelLabel={(id) => pick(label(id), lang)} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -210,7 +229,7 @@ export function CalibrationView({ sel }: { sel: C08Sel | null }) {
             <UPlotChart
               height="fill"
               parity
-              x={{ values: rows.map((r) => r.predicted.value), label: { en: 'Predicted mean LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 2 } }}
+              x={{ values: rows.map((r) => r.predicted.value), label: { en: 'Predicted mean LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 2 }, ticks: wholePercentTicks(rows.map((r) => r.predicted.value), rows.map((r) => r.realised.value)) }}
               y={{ label: { en: 'Realised mean LGD', es: 'LGD media realizada' }, format: { percent: true, decimals: 2 } }}
               series={[{ label: { en: 'Realised', es: 'Realizada' }, values: rows.map((r) => r.realised.value), color: '--color-accent', mode: 'points', size: 10 }]}
             />
@@ -268,7 +287,7 @@ export function EndpointsView({ sel }: { sel: C08Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: rows.map((r) => r.epsilon), label: { en: 'Endpoint shift epsilon', es: 'Desplazamiento de los extremos epsilon' }, log: true, format: { notation: 'scientific', digits: 2 } }}
-              y={{ label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 1 } }}
+              y={{ label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 2 } }}
               series={[
                 { label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, values: rows.map((r) => r.mean_predicted.value), color: '--color-accent', width: 2.4 },
               ]}

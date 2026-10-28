@@ -5,6 +5,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { ChartOverTable } from '../c06/format';
 import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { withPortfolioScope } from '../c08/words';
 import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT, modelLabel, outputsOf, text, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -137,7 +138,7 @@ export function EstimatorTestsView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <div className="ct-scroll" data-caos-flow="">
-            <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ccf_estimator_bias' && (!(t.model_id ?? '').startsWith('ccf-') || (t.model_id ?? '').startsWith(`ccf-${sel.design}-`))} />
+            <U6TestsTable variant={withPortfolioScope(sel.data.variant, lang)} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ccf_estimator_bias' && (!(t.model_id ?? '').startsWith('ccf-') || (t.model_id ?? '').startsWith(`ccf-${sel.design}-`))} />
         </div>
       </PlotCard>
     </ViewsRow>

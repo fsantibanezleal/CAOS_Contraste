@@ -9,7 +9,7 @@ import { ChartAbove } from '../c16/C16Common';
 import { U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { COVARIATE_TEXT, DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
-import { rangeText } from '../c08/words';
+import { rangeText, withPortfolioScope } from '../c08/words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -146,7 +146,7 @@ export function BacktestTestsView({ sel }: { sel: C09Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />
+          <U6TestsTable variant={withPortfolioScope(sel.data.variant, lang)} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />
         </div>
       </PlotCard>
     </ViewsRow>
@@ -258,19 +258,19 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
                 <th>{pick({ en: 'Binds', es: 'Se activa' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: `Mean EAD before (${f.currency})`, es: `EAD media antes (${f.currency})` }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: `Mean EAD after (${f.currency})`, es: `EAD media después (${f.currency})` }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Paragraph', es: 'Párrafo' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {f.rows.map((r) => (
                 <tr key={r.facility_class} data-class={r.facility_class}>
-                  <td className="ct-text">{pick(facilityLabel(r.facility_class), lang)}</td>
+                  {/* the paragraph is the class cell's hint: the supervisory card beside it lists each item's paragraph, and a seventh
+                      column pushed "Mean EAD after" under the right-edge fade at 1280 (R5 c12 n1) */}
+                  <td className="ct-text" title={rangeText(r.reference, lang)}>{pick(facilityLabel(r.facility_class), lang)}</td>
                   <td>{p2(r.sa_ccf, lang)}</td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>{p2(r.share_binding, lang)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_before, lang, f.currency)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_after, lang, f.currency)}</td>
-                  <td className="ct-text ct-wide-only" translate="no">{rangeText(r.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>
