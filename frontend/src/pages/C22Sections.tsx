@@ -65,22 +65,24 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
   const sizes = nul ? nul.outputs.simulations.filter((s) => s.key.endsWith('@null')) : [];
   return (
     <div data-state="ready">
-      {/* the rows read from the top: a centred row put the family name below the fold (R4 c28 m3) */}
+      {/* the rows read from the top: a centred row put the family name below the fold (R4 c28 m3); the table scrolls in its own box,
+          and each family's findings run under its row across the table: in a column of their own, 3,000 characters beside four short
+          cells left a blank band of 1,800 px at 390 (R5 c30 m1) */}
+      <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head ct-top" data-table="families">
         <thead>
           <tr>
             <th className="caos-col-text">{t('Family', 'Familia')}</th>
-            <th className="caos-col-text">{t('Generators', 'Generadores')}</th>
+            <th className="caos-col-text" style={{ minWidth: '12rem' }}>{t('Generators', 'Generadores')}</th>
             <th className="caos-col-text">{t('Severity ladder', 'Escala de severidad')}</th>
             <th>{t('Simulations', 'Simulaciones')}</th>
-            <th className="caos-col-text">{t('Findings', 'Hallazgos')}</th>
           </tr>
         </thead>
         <tbody>
           {families.map((v) => {
             const o = v.outputs;
             const names = [...new Set(Object.values(o.generators).map((g) => g.name))];
-            return (
+            return [
               <tr key={v.variant_id} data-family={v.variant_id}>
                 <td className="caos-col-text">{pick(titles[v.variant_id] ?? { en: v.variant_id, es: v.variant_id }, lang)}</td>
                 {/* the engine's generator references, as the C22 views print them: code, never translated (the raw-id ruling) */}
@@ -96,13 +98,18 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
                   {o.ladder ? `${pick(o.ladder.label, lang)}: ${o.ladder.values.map((x) => formatNumber(x, lang, { digits: 3 })).join('; ')}` : t('none: every test at its null', 'ninguna: cada prueba en su nula')}
                 </td>
                 <td>{formatNumber(o.simulations.length, lang)}</td>
+              </tr>,
+              <tr key={`${v.variant_id}-findings`} data-family-findings={v.variant_id}>
                 {/* each finding by its title, never its id (the raw-id scan of the pages: F-PROFILE-BLIND) */}
-                <td className="caos-col-text">{v.findings.map((f) => `${pick(f.title, lang)} (${f.severity})`).join('; ')}</td>
-              </tr>
-            );
+                <td className="caos-col-text" colSpan={4}>
+                  <strong>{t('Findings', 'Hallazgos')}:</strong> {v.findings.length ? v.findings.map((f) => `${pick(f.title, lang)} (${f.severity})`).join('; ') : t('none', 'ninguno')}
+                </td>
+              </tr>,
+            ];
           })}
         </tbody>
       </table>
+      </div>
       {nul && (
         <PlotCard title={{ en: 'C22, the size of every test with a p-value', es: 'C22, el tamaño de cada prueba con valor p' }} lane="replay" provenance="synthetic">
           <Verdict

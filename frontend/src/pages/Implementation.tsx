@@ -21,14 +21,17 @@ export const pathBreaks = (path: string) =>
     </span>
   ));
 
+/** A path, a file or a branch name in the prose: code, never translated (R5 c31 n3: "main" read as an English word in Spanish). */
+const C = ({ children }: { children: string }) => <code translate="no">{children}</code>;
+
 function Pipeline() {
   const t = useT();
   return (
     <>
       <DocSection area="architecture" title={{ en: 'The stages', es: 'Las etapas' }} noRefsReason={THIS_REPO}>
         <P
-          en="The offline pipeline (data-pipeline/, invoked by path, never installed) runs each case through named stages: ingest (a fetched source through contract 1), split (the leakage-safe partition), the fit of every rung, evaluate (the battery and the outputs the views draw) and export (contract 2). It is the only lane that writes artifacts, it runs on a workstation, and never in CI or in the browser. Every generator is seeded, so a second bake of the same release writes the same bytes."
-          es="La cadena de cálculo fuera de línea (data-pipeline/, invocada por ruta, nunca instalada) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
+          en={<>The offline pipeline (<C>data-pipeline/</C>, invoked by path, never installed) runs each case through named stages: ingest (a fetched source through contract 1), split (the leakage-safe partition), the fit of every rung, evaluate (the battery and the outputs the views draw) and export (contract 2). It is the only lane that writes artifacts, it runs on a workstation, and never in CI or in the browser. Every generator is seeded, so a second bake of the same release writes the same bytes.</>}
+          es={<>La cadena de cálculo fuera de línea (<C>data-pipeline/</C>, invocada por ruta, nunca instalada) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes.</>}
         />
         <Figure caption={t('Sources, the offline pipeline, the committed artifacts and the web.', 'Fuentes, la cadena de cálculo fuera de línea, los artefactos versionados y la web.')}>
           <OverviewFigure />
@@ -140,7 +143,8 @@ function Engines() {
         es="Un cálculo muestra el patrón: el tamaño y la potencia exactos de las pruebas que ven una cartera solo a través de su conteo de incumplimientos integran una cola binomial sobre el factor sistemático, con una regla de Gauss-Hermite de 256 nodos, en la cadena de cálculo y en el navegador por igual, y ambos concuerdan hasta los dígitos que conserva el artefacto."
       />
       <Equation
-        tex={String.raw`P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
+        // two lines, broken at the comma: on one line the p(x) half sat past the right edge of its box at 390 (R5 c31 n2)
+        tex={String.raw`\begin{gathered} P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \\ p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right) \end{gathered}`}
         caption={t('The one-factor mixture: n the number of obligors, k* the critical default count, π the true PD, ρ the true asset correlation, φ the standard normal density and Φ its distribution function.', 'La mezcla de un factor: n el número de deudores, k* el conteo crítico de incumplimientos, π la PD verdadera, ρ la correlación de activos verdadera, φ la densidad normal estándar y Φ su función de distribución.')}
       />
       <Callout variant="honest" title={<T en="What the engine does not do" es="Lo que el motor no hace" />}>
@@ -219,8 +223,8 @@ function Deploy() {
   return (
     <DocSection area="deployment" title={{ en: 'Versions and the deploy', es: 'Versiones y despliegue' }} noRefsReason={THIS_REPO}>
       <P
-        en="VERSION is the only place the version is written; the pipeline, the web and the changelog read it, and a guard fails when any of them disagrees. Contraste has one deploy place, decided first: GitHub Pages with its own domain, since the repository is public and every capability is static replay or client-side compute. The deploy runs only after CI passes on main and ends by checking the live site: every route answers, a missing file answers 404, the artifact index answers JSON, and build.json names the commit that was pushed."
-        es="VERSION es el único lugar donde se escribe la versión; la cadena de cálculo, la web y el registro de cambios la leen, y una guarda falla cuando alguno discrepa. Contraste tiene un único lugar de despliegue, decidido primero: GitHub Pages con su propio dominio, porque el repositorio es público y toda capacidad es reproducción estática o cálculo en el cliente. El despliegue corre solo después de que CI pasa en main y termina verificando el sitio en vivo: cada ruta responde, un archivo faltante responde 404, el índice de artefactos responde JSON, y build.json nombra la versión del repositorio que se publicó."
+        en={<><C>VERSION</C> is the only place the version is written; the pipeline, the web and the changelog read it, and a guard fails when any of them disagrees. Contraste has one deploy place, decided first: GitHub Pages with its own domain, since the repository is public and every capability is static replay or client-side compute. The deploy runs only after CI passes on <C>main</C> and ends by checking the live site: every route answers, a missing file answers 404, the artifact index answers JSON, and <C>build.json</C> names the commit that was pushed.</>}
+        es={<><C>VERSION</C> es el único lugar donde se escribe la versión; la cadena de cálculo, la web y el registro de cambios la leen, y una guarda falla cuando alguno discrepa. Contraste tiene un único lugar de despliegue, decidido primero: GitHub Pages con su propio dominio, porque el repositorio es público y toda capacidad es reproducción estática o cálculo en el cliente. El despliegue corre solo después de que CI pasa en <C>main</C> y termina verificando el sitio en vivo: cada ruta responde, un archivo faltante responde 404, el índice de artefactos responde JSON, y <C>build.json</C> nombra la versión del repositorio que se publicó.</>}
       />
     </DocSection>
   );

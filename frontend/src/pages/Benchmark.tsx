@@ -206,9 +206,10 @@ export function RobustnessTable({ rows }: { rows: Array<{ n: number; title: stri
         <tr>
           <th>{t('No.', 'N.º')}</th>
           <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-          <th>{t('AUC of the scorecard (P1)', 'AUC de la tarjeta de puntuación (P1)')}</th>
+          {/* the two AUC headers keep a width: at 390 they wrapped one word per line over their three-digit values (R5 c30 m8) */}
+          <th style={{ minWidth: '8rem' }}>{t('AUC of the scorecard (P1)', 'AUC de la tarjeta de puntuación (P1)')}</th>
           <th className="caos-col-text">{t('Best rung', 'Mejor peldaño')}</th>
-          <th>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
+          <th style={{ minWidth: '8rem' }}>{t('AUC of the best rung', 'AUC del mejor peldaño')}</th>
         </tr>
       </thead>
       <tbody>

@@ -1,7 +1,7 @@
 // C05's sections of the cross-case pages: Experiments (every variant, read from its artifact) and Benchmark (the
 // calibration approaches compared by the paper's own test on 2010 and 2011, and the low-default estimators compared on
 // known truth). Every number is read from the committed artifacts at load time.
-import { PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { PlotCard, Verdict, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
@@ -10,6 +10,29 @@ import { TRUTH_TEXT } from '../content/cases/C04Results';
 import { CASE1, isLdp, isSp, type LdpVariant, type SpVariant } from '../workbench/c05/selection';
 
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
+
+/** The low-default estimators of the known-truth study by their names, never their keys (the c30 reading of R5: "independent",
+ * "scaled_correlated" printed in the Spanish Benchmark). */
+export const C05_ESTIMATOR: Record<'independent' | 'correlated' | 'scaled' | 'scaled_correlated', BiText> = {
+  independent: { en: 'Independent', es: 'Independiente' },
+  correlated: { en: 'Correlated', es: 'Correlacionada' },
+  scaled: { en: 'Scaled', es: 'Escalada' },
+  scaled_correlated: { en: 'Scaled and correlated', es: 'Escalada y correlacionada' },
+};
+const C05_TEST: Record<string, BiText> = {
+  jeffreys: { en: 'Jeffreys', es: 'Jeffreys' },
+  binomial: { en: 'Binomial', es: 'Binomial' },
+  vasicek: { en: 'Vasicek-adjusted binomial', es: 'Binomial con corrección de Vasicek' },
+};
+/** A test of the known-truth study by its name and scope ("jeffreys_A" is the Jeffreys test on grade A, "binomial_portfolio" the
+ * binomial test on the portfolio); a key of another shape is printed as written. */
+export function c05TestName(key: string, lang: 'en' | 'es'): string {
+  const m = /^([a-z]+)_(portfolio|[A-Z])$/.exec(key);
+  const test = m ? C05_TEST[m[1]] : undefined;
+  if (!m || !test) return key;
+  const scope = m[2] === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : `${pick({ en: 'grade', es: 'grado' }, lang)} ${m[2]}`;
+  return `${pick(test, lang)}, ${scope}`;
+}
 
 function useVariants(manifest: CaseManifest) {
   return useArtifact<VariantArtifact[]>((s) => loadAllVariants(manifest, s), [manifest.case_id]);
@@ -27,7 +50,7 @@ export function C05ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
       <thead>
         <tr>
           <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-          <th>{t('Truth', 'Verdad')}</th>
+          <th className="caos-col-text">{t('Truth', 'Verdad')}</th>
           <th className="caos-col-text">{t('Observed', 'Observado')}</th>
           <th className="caos-col-text">{t('What the variant shows', 'Lo que muestra la variante')}</th>
         </tr>
@@ -50,7 +73,7 @@ export function C05ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
           return (
             <tr key={v.variant_id}>
               <td className="caos-col-text">{pick(entries[v.variant_id].title, lang)}</td>
-              <td>{pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, lang)}</td>
+              <td className="caos-col-text">{pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, lang)}</td>
               <td className="caos-col-text">{observed}</td>
               <td className="caos-col-text">{shows}</td>
             </tr>
@@ -142,7 +165,7 @@ export function C05BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                 const at = (g: number) => rows.find((r) => r.gamma === g);
                 return (
                   <tr key={m}>
-                    <td className="caos-col-text">{m.replace('_', ', ')}</td>
+                    <td className="caos-col-text">{pick(C05_ESTIMATOR[m], lang)}</td>
                     <td>{pct(lang, at(0.5)?.coverage, 1)}</td>
                     <td>{pct(lang, at(0.75)?.coverage, 1)}</td>
                     <td>{formatNumber(at(0.75)?.ratio_median, lang, { decimals: 2 })}</td>
@@ -162,7 +185,7 @@ export function C05BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             <tbody>
               {Object.keys(kt.tests.true).map((k) => (
                 <tr key={k}>
-                  <td className="caos-col-text">{k.replace('_', ', ')}</td>
+                  <td className="caos-col-text">{c05TestName(k, lang)}</td>
                   <td>{pct(lang, kt.tests.true[k].reject_5, 1)}</td>
                   <td>{pct(lang, kt.tests.expert[k].reject_5, 1)}</td>
                 </tr>
