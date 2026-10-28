@@ -20,10 +20,13 @@ export function C05WriteUp() {
       />
       {/* two displays, not one: on a phone the second half of one wide display sat past the box edge with its fade on the blank gap
           after the comma, so nothing showed it was there (R5 c07 S1) */}
-      <Equation tex={String.raw`\Pr[D \mid X = x] = \frac{p}{p + (1 - p)\,\lambda(x)},`} />
+      <Equation
+        tex={String.raw`\Pr[D \mid X = x] = \frac{p}{p + (1 - p)\,\lambda(x)},`}
+        caption={<T en={<>The PD of grade x from the unconditional PD p and the likelihood ratio λ(x) defined below (Tasche 2013, equation <Ref>3.8</Ref>).</>} es={<>La PD del grado x desde la PD incondicional p y la razón de verosimilitud λ(x) definida abajo (Tasche 2013, ecuación <Ref>3.8</Ref>).</>} />}
+      />
       <Equation
         tex={String.raw`\lambda(x) = \frac{\Pr[X = x \mid N]}{\Pr[X = x \mid D]}`}
-        caption={<T en={<>The PD curve from the unconditional PD p and the likelihood ratio λ of the survival profile over the default profile (Tasche 2013, equations <Ref>3.8</Ref> and <Ref>3.9a</Ref>); fixing the shape of λ while p moves is the scaled likelihood ratio approach.</>} es={<>La curva de PD desde la PD incondicional p y la razón de verosimilitud λ del perfil de supervivencia sobre el de incumplimiento (Tasche 2013, ecuaciones <Ref>3.8</Ref> y <Ref>3.9a</Ref>); fijar la forma de λ mientras p se mueve es el enfoque de razón de verosimilitud escalada.</>} />}
+        caption={<T en={<>The likelihood ratio λ of the survival profile over the default profile (Tasche 2013, equation <Ref>3.9a</Ref>); fixing the shape of λ while p moves is the scaled likelihood ratio approach.</>} es={<>La razón de verosimilitud λ del perfil de supervivencia sobre el de incumplimiento (Tasche 2013, ecuación <Ref>3.9a</Ref>); fijar la forma de λ mientras p se mueve es el enfoque de razón de verosimilitud escalada.</>} />}
       />
       <P
         en={<>The 2009 curve is smoothed by quasi moment matching: a robust logistic curve on the grades, its two parameters set so that its unconditional PD and its accuracy ratio equal the observed 3.99% and 82.7% <Cite id="tasche2009" />. Recomputed from the S&P counts it reproduces the paper's Table 5 to one unit of the third decimal.</>}
