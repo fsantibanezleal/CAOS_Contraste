@@ -36,9 +36,9 @@ ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split(".")
 ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
 # sha256 of the three adopted scripts at the template release 0.10 (git show of scripts/<name> at its tag)
-# the sha256 of the scripts at the template tag v0.11.000 (U16-W adopted them; 0.10.000 hashes before)
+# the sha256 of the scripts at the template tag v0.12.000 (check_notebooks.py with the notebook bar; the other two unchanged since v0.11.000)
 ADOPTED = {
-    "check_notebooks.py": "cafdc8b58957e045115c3c72feb985a7dd1d7bd65709f5e111d1e0969daba98c",
+    "check_notebooks.py": "8491463d02f384246d98a274fb7f15518141189c45ce8662f20ba56d1ccd1b69",
     "run_notebooks.py": "5e2cdb5f71a44cce5f1e4d7d1ef0e333cc0d3aa760dbce29ae40a3dc769aeba3",
     "check_readme_areas.py": "1eb76a810d13aeebf12809a69490e8e1cac4cdf6f51516e0568e9d2c717e96e2",
 }
