@@ -485,6 +485,136 @@ The first stable release (U16): every case re-baked on riskvalidation 1.0.1, the
 - Shell 0.19.5 adopted: C04's workbench asks for whole notes (`noteFit`, SHC-101): at 1280 px each card note takes the height it
   needs and the drawing keeps its floor; the C04 override of the shell's note (`c04-notes.css`) is removed, so the web-baseline
   guard passes (known shell defect 46).
+- Notebooks of topic 01-getting-started rewritten to the notebook bar (template 0.12.000, BL-099), in English and in Spanish:
+  each states its question in the first cell and answers it in Results with numbers its own outputs print, runs the engine
+  step by step on the committed documents and the two example samples, shows its results as figures and tables read in the
+  prose, and holds at most one reproduction check.
+- Notebook 01 now measures how much of the engine's 134-test catalogue the C01 holdout used, rebuilds the 187 committed rows as
+  `TestResult` objects and colours them again with the installed policy; notebook 02 adds the defaults a level test needs before
+  it objects and the noise of 25-card half-samples; notebook 03 adds the Basel traffic light as the case where a regulation sets
+  the zones; notebook 04 opens the PSI, Hosmer-Lemeshow and the chi-square over grades and no longer repeats the pipeline's own
+  check as a lesson.
+- Notebooks of topic 02-credit-scoring rewritten to the notebook bar of template 0.12.000, English and Spanish trees:
+  each is a worked lesson with a question in its first cell, the engine run step by step on the committed C01, C02, C03
+  and C22 data, figures read in the prose and an answer that quotes numbers its outputs print.
+- Notebook 06 pins scikit-learn 1.9.1 as the independent reference of the AUC and the Brier score, and runs the engine's
+  challenger protocol (paired Brier bootstrap, grade disagreement) beside it; notebook 07 measures the size and power of
+  the AUC against development and of the CSI on a planted leak by seeded simulation and against the exact truth of
+  the generator.
+- Spanish title of notebook 06 and its row in notebooks/es/README.md no longer use the English word "boosting".
+- Notebooks 01 to 06 of topic 03-ratings-and-calibration (English and Spanish) rewritten to the notebook bar of template 0.12.000 (BL-099):
+  each opens with its question, runs the engine one step per cell on the committed data (the cohort, pooled, duration, Aalen-Johansen and
+  EM estimators, the embedding diagnostics and repairs, the homogeneity, order and momentum tests, the PD-curve approaches of Tasche, the
+  most prudent estimate of Pluto and Tasche), shows each result as a figure read in the prose that follows it, and closes with an answer
+  that quotes a number an output prints. The reproduction checks that were the lesson are gone; the comparison with a paper's printed
+  tables stays as one step of notebooks 05 and 06.
+- The Spanish title and index row of notebook 04 say "inercia" where they said "momentum" (the Spanish ruling R3 to R5), and the Spanish
+  notebooks of the topic say "notebook" where they said "cuaderno" (conventions/product-notebooks.md section 2).
+- Notebooks 07 to 11 of the topic 03-ratings-and-calibration, in English and Spanish, rewritten to the notebook bar of the
+  template 0.12.000 (BL-099): each states its question in the first cell, runs the engine step by step on the committed data,
+  shows its results as figures read in the prose and answers with numbers that its own outputs print.
+- Notebook 09 now rebuilds the 2009 curve and the nine approaches of Tasche from the committed rates and profiles instead of
+  reading the baked curves; notebook 10 reruns the informative-withdrawal ladder and the exact interval coverage with the
+  engine; notebook 11 recomputes the printed tables of Pluto and Tasche, Tasche and Schuermann and Hanson, and checks the
+  Jeffreys and binomial p-values against two independent routes.
+- Notebooks of topic 04-provisions (the eight notebooks, English and Spanish) rewritten to the notebook bar of template 0.12.000
+  (BL-099): each opens with a question of the problem and closes with an answer that quotes numbers its own outputs print;
+  every method step is a short cell that calls the riskvalidation 1.0.1 engine on the committed C06 and C07 documents, and
+  every result is a figure or a short table read in the prose after it. The reproduction checks against committed artifacts
+  that carried the old notebooks are gone (they belong to the tests); titles, levels, file names, sources and the SDD claim
+  BS-5 covered by notebook 08 are unchanged.
+- Notebooks of topic 05-lgd-and-ead (LGD and EAD), English and Spanish, rewritten to the template 0.12.000 notebook bar (BL-099): each
+  states its question in the first cell and answers it in Results with numbers its outputs print; code cells are short, one
+  statement per line and within 120 characters; results are figures read in the prose that follows them.
+- 05/02 and 05/05 now draw the revolving-line generator of C09 in the notebook (case code under `data-pipeline/pipeline/cases/c09`) and
+  estimate the CCF designs, treatments and EAD models with the engine on it, instead of reading baked biases; 05/05 runs ten test
+  replications at six acceleration levels and draws the committed twenty-replication biases only as a dashed reference.
+- 05/06 fits the eight C09 EAD models on generated lines and back-tests them with `ead_backtest_by_band`, including the sensitivity of
+  the metric to the band edges; 05/07 runs the benchmark comparison on a known-truth sample (engine rungs and a pinned
+  scikit-learn gradient-boosted reference, `scikit-learn==1.9.1` added to the notebook's `caos.packages`) and on generated EAD lines at
+  three levels.
+- 05/01, 05/03 and 05/04 keep their lessons and gain figures (discount-rate curves, committed slopes and out-of-time scores, downturn
+  and floor effects); the reproduction checks other than one per notebook and the printed dumps of artifact text are gone.
+- The eight notebooks of topic 06-portfolio-capital, English and Spanish, are rewritten to the notebook bar of template 0.12.000: each opens with a
+  question of the portfolio-capital problem, runs the riskvalidation engine step by step on the committed C10 data, shows its results as figures read in
+  the prose, and answers with numbers its own outputs print.
+- The comparisons of a recomputed value with a committed one are removed from seven of the eight notebooks (the test suite holds them); notebook 08 keeps one,
+  the regeneration of the seeded Gaussian copula rung, as the evidence of its claim BS-6.
+- Notebooks 03, 04 and 07 now run their own simulations (100,000 scenarios) instead of reading the committed one-million-scenario runs, and notebook 07
+  repeats the copula comparison on the book of each of the five loan types.
+- The Spanish titles of notebooks 02 and 06 say "prueba retrospectiva" in place of the English word "backtest"; the Spanish index rows follow.
+- Notebooks 01 to 07 of topic 07-market-risk (English and Spanish) rewritten to the notebook bar of template 0.12.000 (BL-099):
+  each opens with its question, runs the engine one step per cell on the committed windows of case C11 and the synthetic desks of
+  case C13 (the VaR and ES estimators of the ladder, the Kupiec, Christoffersen, duration and dynamic quantile tests, the Basel
+  traffic light, the Acerbi-Szekely, Du-Escanciano and McNeil-Frey tests, FZ0, Diebold-Mariano and the model confidence set, the
+  PLA test and the desk back-test, the Wilson interval), shows each result as a figure read in the prose that follows it, and closes
+  with an answer that quotes a number an output prints. The reproduction checks that were the lesson are gone: no notebook of the
+  topic compares a recomputed value with a committed one.
+- Notebook 07 runs the state of the art under its own section: the model confidence set of the ladder with the four newest rungs, and the
+  engine's GARCH-t fit against the pinned `arch` reference, with the tolerances stated before the run.
+- The Spanish titles and index rows of notebooks 03 to 07 say "pruebas retrospectivas" where they said "backtests", and the Spanish
+  notebooks of the topic say "notebook" where they said "cuaderno" (the Spanish rulings R3 to R5 and
+  conventions/product-notebooks.md section 2).
+- Notebooks of topic 08 (counterparty and regulatory calculators) rewritten to the template 0.12.000 notebook bar, in English and in Spanish:
+  each of the eight states its question in the first cell and answers it in Results with numbers its own outputs print;
+  results are figures read in the prose (three or four per notebook) instead of long prints; the checks against committed
+  artifacts that carried the lessons are gone (the tests keep them) and one remains where a published value is the lesson
+  (the BIS-printed intermediates of the five SA-CCR netting sets); the state-of-the-art notebook (07) runs the engine against
+  ORE's committed profile under its own State of the art section, and the beyond notebook (08) puts its reconciliation, its
+  reported gaps and its golden values under Beyond the state of the art.
+- Notebooks of topic 09-irrbb (IRRBB) rewritten to the notebook bar of template 0.12.000, in English and Spanish: each starts
+  with a question of the bank's problem and ends with an answer that quotes a number its own outputs print.
+- The eight notebooks run the engine step by step (slotting, repricing and duration gaps, the six shocks and floors, the
+  behavioural layer, Hull-White and dynamic Nelson-Siegel, the seven validation tests, the Chilean Annex 1, the curve family and
+  deposit treatment comparisons, BS-7 and BS-8) and show each result as a figure read in the prose that follows it.
+- The checks of the committed documents against the engine (the "equal to the committed" lines) are gone from the notebooks;
+  they belong to the test suite. The validation-test notebook now breaks one input per test to show each light can change.
+- The eight notebooks of topic 10-liquidity, in English and in Spanish, are rewritten to the notebook bar of template 0.12.000 (BL-099):
+  each states one question in its first cell, runs the engine step by step on the committed documents of case C16, shows each result as
+  a figure read in the prose that follows it, and answers with numbers its own outputs print. The reproduction checks, the verdict
+  prints and the long lines are gone, a level 3 run of the LiST Baseline severity and of the survival periods against the ECB medians
+  sits under State of the art, and the Spanish tree writes "notebook" and prints its test lights in Spanish.
+- Notebooks of the operational-risk topic (11-operational-risk, eight in English and eight in Spanish) rewritten to the template 0.12.000 notebook bar
+  (BL-099): each states one question in its first cell and answers it in Results with numbers its own outputs print, runs the engine
+  (riskvalidation 1.0.1) and the case estimator step by step, shows each result as a figure read in the prose that follows it, keeps code lines
+  within 120 characters and one statement per line, and drops the stale engine-version statements of the old Results.
+- The level 3 notebook of the topic now runs the loss distribution approach and the standardised approach on fresh independent histories with the
+  engine's capital-stability test; the level 4 notebook adds a fresh-history run beside the committed evidence of BS-12.
+- Notebooks of topic 12-capital-and-stress (NB12, BL-099, template 0.12.000 notebook bar): the nine notebooks, in English and in Spanish,
+  rewritten as worked lessons that state their question in the first cell, run the engine step by step on the committed documents,
+  show each result as a figure read in the prose that follows and answer with numbers their own outputs print; the reproduction
+  checks are reduced to one per notebook at most and the code lines stay within 120 characters; the index rows say what each
+  notebook teaches.
+- Notebooks of topic 13 (ML and AI risk), English and Spanish, reworked to the notebook bar of template 0.12.000 (BL-099): each
+  states its question in the first cell and answers it in Results with numbers its own outputs print; each result is a figure or a
+  short table read in the prose that follows it, from two figures at levels 2 to 4 (three at levels 2 and 4 where the lesson
+  has three results); the committed documents are read once and the engine runs step by step on the plants and on their rows.
+- 01 to 05 and 07: the long print calls are split to lines of at most 120 characters, the combined last figure is split into one
+  figure per step, and the "same as committed" columns are printed beside the committed value instead of compared in the cell.
+- 06: the legal-frame cell now asks the engine's four-fifths result for its own status, so the notebook keeps two setup cells; the
+  odds-ratio and p-value figure shows why a p-value is not a size.
+- 08 (level 3): the MAPIE scan is split into the three reference rules, the four rules at the committed size and the 39,105-pair
+  grid; two figures added (the identities of the two-rate tests, the fairlearn comparison).
+- 09 (level 4, BS-10): every simulation shows one replication before its loop and runs the engine inline (no helper
+  function), so the cells are method cells; the size, the raw-drop and the false-alarm and power figures are separate.
+- Stale prose fixed: the Results and Summary cells said the rows were baked with riskvalidation 0.8.1; the documents were baked
+  with, and the notebooks run, riskvalidation 1.0.1.
+- Spanish tree: "notebook" instead of "cuaderno", and the ruled English words (pipeline, proxy, bootstrap, log-odds, scorecard,
+  backtesting) replaced by their Spanish forms; labels and printed strings of the code cells are in Spanish.
+- Notebooks of topic 14 (validating the validator), English and Spanish: the eight notebooks are rewritten to the template 0.12.000
+  notebook bar. Each states its question first, runs riskvalidation step by step on the committed C22 families (the generators, the
+  exact rejection probabilities, `simulate` and the published-study checks), shows each result as a figure read in the prose, and
+  answers with numbers its own outputs print.
+- Template adoption, CAOS_PRODUCT_TEMPLATE 0.11.000 to 0.12.000 (`.template-version`), every change that is not a notebook: the base guards' own updates
+  (`scripts/check_ci_budget.py`, `scripts/check_content_standards.py` with its UTF-8 diagnostics, `scripts/instantiate.py`), the base guards' tests
+  (`tests/test_guards.py` with the static example-bound guard, `tests/test_check_artifacts.py`, `tests/test_check_notebooks.py`,
+  `tests/test_check_readme_areas.py`, `tests/test_spec_guards.py`, the shared adversarial fixtures `adversarial_fixtures.py`, `planting.py` and
+  `notebook_bar_helpers.py`, the notebook bar's refutations), the CI steps of the tag (technology matrix, contract versions, contract catalog,
+  readiness, provider rows), Vite pinned at 8.3.5 (the Windows command-execution advisories), the five documentation routes and the workbench
+  lazy-loaded behind one Suspense, and React and KaTeX split into shared runtime chunks.
+- Kept as Contraste's own: katex stays at 0.16.47 (the SDD records that 0.19.0 was not adopted), the shell stays at 0.19.5, the example-bound
+  tests of the base guards stay out of `tests/` (the product has no example), and the planted-defect suite is not a CI step (it holds the
+  product's own plants, which need the pipeline; it runs locally, ADR-0074).
 
 ## [0.15.000], 2026-10-21
 
