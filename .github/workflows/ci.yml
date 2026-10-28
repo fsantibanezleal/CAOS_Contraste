@@ -64,6 +64,28 @@ jobs:
         run: python scripts/check_readme_areas.py
       - name: An animated SVG carries its reduced-motion block and plays ten seconds at most (shell 0.14.0, reuses the shell's analysis)
         run: python scripts/check_svg_animation.py
+      - name: The SDD technology table is the pinned dependencies (spec area)
+        run: python scripts/check_tech_matrix.py
+      - name: Contract versions follow their schemas, each with its History entry, against the base (spec area)
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base="$BEFORE"
+          if [ -z "${base//0/}" ]; then base=origin/develop; fi  # a new branch or a manual run has no before SHA
+          python scripts/check_contract_versions.py --base "$base"
+      - name: The contract catalog, every row complete and every path it names present (ADR-0080)
+        run: python scripts/check_contracts.py docs/contracts/catalog.md --repo-root .
+      - name: The readiness document is current with the catalog and the bake (ADR-0080)
+        run: python scripts/check_readiness.py
+      - name: Rows still served by a provider (listed while building; none on main)
+        run: |
+          set +e
+          python scripts/check_skeleton.py docs/contracts/catalog.md
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "::error::main is a release: every catalog row must be real"; exit 1; fi
+          [ "$code" -eq 0 ] || [ "$code" -eq 2 ]
 
   web:
     runs-on: ubuntu-latest
