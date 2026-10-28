@@ -740,7 +740,7 @@ function LgdKnob({ sel }: { sel: C04Sel }) {
       label={{ en: 'LGD', es: 'LGD' }}
       hint={{
         en: `Loss given default of every exposure; ${formatNumber(0.45, 'en', { percent: true, decimals: 0 })} is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).`,
-        es: `Pérdida dado el incumplimiento de toda exposición; ${formatNumber(0.45, 'es', { percent: true, decimals: 0 })} es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).`,
+        es: `Pérdida dado el incumplimiento de toda exposición; ${formatNumber(0.45, 'es', { percent: true, decimals: 0 })} es la LGD F-IRB preferente no garantizada de instituciones financieras (CRE32.6).`,
       }}
       value={sel.lgd}
       min={0.1}
