@@ -154,8 +154,8 @@ export function Coverage({ built }: { built: Set<string> | null }) {
   return (
     <DocSection area="datasets" title={{ en: 'Coverage and datasets', es: 'Cobertura y conjuntos de datos' }} noRefsReason={{ en: 'The plan of this product.', es: 'El plan de este producto.' }}>
       <P
-        en="Twenty-two cases in eleven categories, each with its data and licence class, the status of its truth, and the unit of the plan that builds it. A case is marked built only when its manifest exists; every other one is the plan, stated as such, and the site shows it as not available yet in every group, with the reason, never as an empty chart."
-        es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia, el estado de su verdad y la unidad del plan que lo construye. Un caso se marca construido solo cuando existe su manifiesto; cada uno de los demás es el plan, declarado como tal, y el sitio lo muestra como aún no disponible en cada grupo, con la razón, nunca como un gráfico vacío."
+        en="Twenty-two cases in eleven categories, each with its data and licence class and the status of its truth. A case is marked built only when its manifest exists; every other one is the plan, stated as such, and the site shows it as not available yet in every group, with the reason, never as an empty chart."
+        es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia y el estado de su verdad. Un caso se marca construido solo cuando existe su manifiesto; cada uno de los demás es el plan, declarado como tal, y el sitio lo muestra como aún no disponible en cada grupo, con la razón, nunca como un gráfico vacío."
       />
       <table className="caos-table" data-state={built ? 'ready' : 'loading'}>
         <thead>
