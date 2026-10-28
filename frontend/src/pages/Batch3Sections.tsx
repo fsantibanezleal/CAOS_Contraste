@@ -282,11 +282,28 @@ const bandName = (r: { method: string; nu: number | null }, lang: Lang): string 
 };
 const bandOf = (o: C18Outputs | C18Aggregation | C18Reverse): Schemas['c18BandRow'][] => ('aggregation' in o ? (o as C18Outputs).aggregation.band : []);
 
+const SUPERSCRIPT: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+/** A probability as a percent at two decimals, and in powers of ten below 0.005 %, which two decimals print as zero (R5 c30 m6: the
+ * reverse-stress tail probability 2.4e-15 read "0.00 %"): "2.41 × 10⁻¹³ %", the mantissa at three significant digits. */
+export function tailPct(p: number | null | undefined, lang: Lang): string {
+  if (p === null || p === undefined || !Number.isFinite(p) || p === 0 || Math.abs(p) >= 0.00005) return pct(p ?? null, lang, 2);
+  const x = p * 100;
+  const e = Math.floor(Math.log10(Math.abs(x)));
+  const mant = x / 10 ** e;
+  const exp = String(e).replace(/[-0-9]/g, (c) => SUPERSCRIPT[c]);
+  return `${num(mant, lang, 2)} × 10${exp}\u00a0%`;
+}
+
 function c18Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C18Outputs | C18Aggregation | C18Reverse;
   const isScenario = o.kind === 'scenario';
-  const noPath = na(lang, t('this variant runs the aggregation only', 'esta variante corre solo la agregación'));
+  // each kind gives its own reason: the reverse stress solves for a scenario and runs no capital path, it is no aggregation
+  // (R5 c30 B2: its row said "this variant runs the aggregation only", which its document and its next cell contradict)
+  const noPath =
+    o.kind === 'reverse'
+      ? na(lang, t('the reverse stress solves for a scenario; it runs no capital path', 'la tensión inversa resuelve un escenario; no corre una trayectoria de capital'))
+      : na(lang, t('this variant runs the aggregation only', 'esta variante corre solo la agregación'));
   const notReverse = na(lang, t('this variant is not a reverse stress', 'esta variante no es un estrés inverso'));
   const rows = isScenario ? (o as C18Outputs).headline_cet1.rows : [];
   const last = rows[rows.length - 1];
@@ -303,7 +320,7 @@ function c18Row(name: string, v: Variant, lang: Lang): Cell[] {
     'aggregation' in o ? clpM(o.aggregation.headline.capital_clp_m, lang) : na(lang, t('this variant does not aggregate capital', 'esta variante no agrega capital')),
     lo && hi ? `${clpM(lo.capital_clp_m, lang)} (${bandName(lo, lang)}) ${t('to', 'a')} ${clpM(hi.capital_clp_m, lang)} (${bandName(hi, lang)})` : na(lang, t('this variant has no dependence band', 'esta variante no tiene banda de dependencia')),
     rev ? num(rev.mahalanobis_distance, lang, 3) : notReverse,
-    rev ? pct(rev.plausibility.tail_probability, lang, 2) : notReverse,
+    rev ? tailPct(rev.plausibility.tail_probability, lang) : notReverse,
   ];
 }
 

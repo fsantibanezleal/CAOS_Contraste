@@ -11,7 +11,7 @@ export const CASES: PlannedCase[] = [
   {
     id: 'C06',
     category: 'provisions',
-    title: t('Mortgage lifetime PD, IFRS 9 staging and ECL', 'PD de vida de hipotecas, etapas y PCE de IFRS 9'),
+    title: t('Lifetime PD, IFRS 9 staging and ECL on public small-business loans', 'PD de por vida, etapas de IFRS 9 y pérdida esperada en préstamos públicos a pequeñas empresas'),
     data: t('SBA 7(a) public loans as the primary twin, Freddie Mac (derived-only) when available, and Fed scenario paths', 'Préstamos públicos SBA 7(a) como gemelo principal, Freddie Mac (solo derivados) cuando esté disponible, y trayectorias de escenarios de la Fed'),
     truth: t('real outcomes', 'resultados reales'),
     unit: 'U5',

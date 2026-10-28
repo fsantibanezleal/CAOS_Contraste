@@ -4,6 +4,7 @@
 // artifacts at load time and every verdict is computed from them, never typed in.
 import { PlotCard, Verdict, formatNumber, pick, useShellLang, type BiText, type Provenance } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
+import type { ReactNode } from 'react';
 import { useT } from '../content/bi';
 import {
   ATTRIBUTION_FALLBACK,
@@ -29,7 +30,7 @@ import {
 import type { C04MarkovRung, C04Simulation, C04ThinRung, CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { attributionIn } from '../workbench/c04/selection';
 import { provenanceOf } from '../workbench/model';
-import { agencyLraChart, nonEmpty, rungText } from '../workbench/c04/C04Common';
+import { agencyLraChart, nonEmpty, rungText, sourceTextIn } from '../workbench/c04/C04Common';
 import { SP_ENTITY } from '../workbench/c04/FamilyViews';
 import {
   ESMA_DEFINITIONS,
@@ -64,6 +65,31 @@ const ratioText = (lang: Lang, x: number | null | undefined) => formatNumber(x, 
 const share = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 1 });
 /** An exact probability (by enumeration, no Monte Carlo error) at the findings' two decimals: 0.33%, not 0.3%. */
 const exactShare = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 2 });
+/** The no-break space of a Spanish percent ("5 %", es-CL as the shell writes it; R5 c30 m7). */
+const NB = '\u00a0';
+
+/** Engelmann's portfolio names as symbols (R5 c30 B3): the paper's "W hat", "W tilde" and "W_init" are Ŵ, W̃ and W with a subscript,
+ * the subscript a word of the view's language ("inicial"); "W_init 2" keeps its number. An unknown name is printed as written. */
+export function engelmannSymbol(name: string, lang: Lang): ReactNode {
+  const m = /^W(?: (hat|tilde)|_(init|ttc))(?: (\d+))?$/.exec(name);
+  if (!m) return name;
+  const [, accent, sub, n] = m;
+  const tail = n ? ` ${n}` : '';
+  if (accent) return `${accent === 'hat' ? 'Ŵ' : 'W̃'}${tail}`;
+  return (
+    <>
+      W<sub>{sub === 'ttc' ? 'TTC' : lang === 'es' ? 'inicial' : 'init'}</sub>
+      {tail}
+    </>
+  );
+}
+
+/** A sentence of the papers' check with its symbols set as engelmannSymbol sets them (the W-hat note names W_ttc). */
+export function withEngelmannSymbols(text: string, lang: Lang): ReactNode {
+  const parts = text.split(/(W_(?:init|ttc)(?: \d+)?|W (?:hat|tilde)(?: \d+)?)/);
+  return parts.map((p, i) => (i % 2 ? <span key={i}>{engelmannSymbol(p, lang)}</span> : p));
+}
+
 const range = (lang: Lang, xs: number[], f: (l: Lang, x: number) => string) =>
   xs.length ? (Math.min(...xs) === Math.max(...xs) ? f(lang, xs[0]) : `${f(lang, Math.min(...xs))} ${lang === 'es' ? 'a' : 'to'} ${f(lang, Math.max(...xs))}`) : '-';
 
@@ -132,7 +158,8 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
     if (isAgency(v)) return [agencyData(v, lang), agencyShows(v, lang)];
     if (isFamily(v)) return [familyDesign(v, lang), familyShows(v, lang)];
     if (isPublished(v)) {
-      const papers = manifest.sources.filter((s) => manifest.source_details[s]?.class === 'derived-only').map((s) => manifest.source_details[s].name);
+      // the papers' names as the registry gives them, their locators in the view's language (R5 c30 B1: "section 4", "Table 5")
+      const papers = manifest.sources.filter((s) => manifest.source_details[s]?.class === 'derived-only').map((s) => sourceTextIn(manifest.source_details[s].name, lang));
       return [papers.join('; '), publishedShows(v, lang)];
     }
     return ['', ''];
@@ -144,9 +171,11 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
           <thead>
             <tr>
               <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-              <th>{t('Truth', 'Verdad')}</th>
-              <th className="caos-col-text">{t('Data', 'Datos')}</th>
-              <th className="caos-col-text">{t('What the variant shows', 'Lo que muestra la variante')}</th>
+              <th className="caos-col-text">{t('Truth', 'Verdad')}</th>
+              {/* the two long columns keep a readable width inside the scroll box: laid out narrow at 390, a family's findings ran
+                  1,900 px tall (R5 c30 M1) */}
+              <th className="caos-col-text" style={{ minWidth: '14rem' }}>{t('Data', 'Datos')}</th>
+              <th className="caos-col-text" style={{ minWidth: '22rem' }}>{t('What the variant shows', 'Lo que muestra la variante')}</th>
             </tr>
           </thead>
           <tbody>
@@ -155,7 +184,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
               return (
                 <tr key={v.variant_id} data-variant={v.variant_id}>
                   <td className="caos-col-text">{pick(titleOf(manifest, v.variant_id), lang)}</td>
-                  <td>{pick(TRUTH_TEXT[v.provenance.truth_status] ?? v.provenance.truth_status, lang)}</td>
+                  <td className="caos-col-text">{pick(TRUTH_TEXT[v.provenance.truth_status] ?? v.provenance.truth_status, lang)}</td>
                   <td className="caos-col-text">{data}</td>
                   <td className="caos-col-text">{shows}</td>
                 </tr>
@@ -554,11 +583,11 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
   const verdict = (l: Lang) => {
     const size = markov
       ? l === 'es'
-        ? `En la cadena de Markov (${formatNumber(sizes[0]?.n_rep ?? null, 'es')} repeticiones o más), ${sizes.length - failing.length} de ${sizes.length} formas de prueba mantienen su tamaño al 5% y al 1% (la tasa a lo más el nivel más 3,09 EE de Monte Carlo)${failing.length ? `; no: ${failing.map((s) => `${label(markov, s, 'es')} ${share('es', s.rates[AT5]?.rate)} al 5%`).join('; ')}` : ''}.`
+        ? `En la cadena de Markov (${formatNumber(sizes[0]?.n_rep ?? null, 'es')} repeticiones o más), ${sizes.length - failing.length} de ${sizes.length} formas de prueba mantienen su tamaño al 5${NB}% y al 1${NB}% (la tasa a lo más el nivel más 3,09 EE de Monte Carlo)${failing.length ? `; no: ${failing.map((s) => `${label(markov, s, 'es')} ${share('es', s.rates[AT5]?.rate)} al 5${NB}%`).join('; ')}` : ''}.`
         : `On the Markov chain (${formatNumber(sizes[0]?.n_rep ?? null, 'en')} repetitions or more), ${sizes.length - failing.length} of ${sizes.length} test forms hold their size at 5% and 1% (the rate at most the level plus 3.09 Monte Carlo SEs)${failing.length ? `; not: ${failing.map((s) => `${label(markov, s, 'en')} ${share('en', s.rates[AT5]?.rate)} at 5%`).join('; ')}` : ''}.`
       : '';
     const pw = defects
-      .map((f) => `${pick(shortOf(manifest, f.variant_id), l)}, ${l === 'es' ? `${Math.round(POWER * 100)}% de potencia al 5%` : `${Math.round(POWER * 100)}% power at 5%`}: ${power(f, l)}`)
+      .map((f) => `${pick(shortOf(manifest, f.variant_id), l)}, ${l === 'es' ? `${Math.round(POWER * 100)}${NB}% de potencia al 5${NB}%` : `${Math.round(POWER * 100)}% power at 5%`}: ${power(f, l)}`)
       .join('. ');
     return `${size} ${pw}.`;
   };
@@ -795,13 +824,16 @@ function PapersCard({ published }: { published: PublishedVariant }) {
               <th className="caos-col-text" style={{ minWidth: '9rem' }}>{t('Value', 'Valor')}</th>
               <th>{t('Printed', 'Impreso')}</th>
               <th>{t('Recomputed', 'Recalculado')}</th>
-              <th className="caos-col-text">{t('Check', 'Verificación')}</th>
+              {/* and so does the check: its rounding note wrapped one word per line and made the W-hat row 490 px tall (R5 c30 m3) */}
+              <th className="caos-col-text" style={{ minWidth: '14rem' }}>{t('Check', 'Verificación')}</th>
             </tr>
           </thead>
           <tbody>
             {o.engelmann.w_ttc.printed.map((x, i) => (
               <tr key={`w-${i}`}>
-                <td className="caos-col-text">{`W_ttc ${STATES[i] ?? i + 1}`}</td>
+                <td className="caos-col-text">
+                  {engelmannSymbol('W_ttc', lang)} {STATES[i] ?? i + 1}
+                </td>
                 <td>{formatNumber(x, lang, { decimals: o.engelmann.w_ttc.decimals[i] })}</td>
                 <td>{f6(o.engelmann.w_ttc.recomputed[i])}</td>
                 <td className="caos-col-text">{yes(atPrintedDigits(x, o.engelmann.w_ttc.recomputed[i], o.engelmann.w_ttc.decimals[i]))}</td>
@@ -815,22 +847,28 @@ function PapersCard({ published }: { published: PublishedVariant }) {
             </tr>
             {o.engelmann.portfolios.flatMap((q) => [
               <tr key={`${q.name}-pd0`}>
-                <td className="caos-col-text">{`${q.name}, ${t('PD of the first year', 'PD del primer año')}`}</td>
+                <td className="caos-col-text">
+                  {engelmannSymbol(q.name, lang)}, {t('PD of the first year', 'PD del primer año')}
+                </td>
                 <td>{pctText(lang, q.pd0.printed, 4)}</td>
                 <td>{pctText(lang, q.pd0.recomputed, 6)}</td>
                 <td className="caos-col-text">
                   {q.pd0.check === 'printed digits'
                     ? yes(atPrintedDigits(q.pd0.printed, q.pd0.recomputed, q.pd0.decimals))
-                    : t(
-                        `within the rounding of its printed entries${q.pd0.note ? ` (${q.pd0.note.en})` : ''}`,
-                        `dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`,
+                    : (
+                        <>
+                          {t('within the rounding of its printed entries', 'dentro del redondeo de sus entradas impresas')}
+                          {q.pd0.note ? <> ({withEngelmannSymbols(pick(q.pd0.note, lang), lang)})</> : null}
+                        </>
                       )}
                 </td>
               </tr>,
               ...(q.extreme
                 ? [
                     <tr key={`${q.name}-extreme`}>
-                      <td className="caos-col-text">{`${q.name}, ${q.extreme.kind === 'min' ? t('lowest projected PD', 'menor PD proyectada') : t('highest projected PD', 'mayor PD proyectada')}`}</td>
+                      <td className="caos-col-text">
+                        {engelmannSymbol(q.name, lang)}, {q.extreme.kind === 'min' ? t('lowest projected PD', 'menor PD proyectada') : t('highest projected PD', 'mayor PD proyectada')}
+                      </td>
                       <td>{pctText(lang, q.extreme.printed, 4)}</td>
                       <td>{pctText(lang, q.extreme.recomputed, 6)}</td>
                       <td className="caos-col-text">{yes(atPrintedDigits(q.extreme.printed, q.extreme.recomputed, q.extreme.decimals))}</td>

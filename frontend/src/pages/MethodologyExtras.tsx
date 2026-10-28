@@ -209,8 +209,8 @@ export function TransitionsExtra() {
       </Figure>
       <Limit
         title={{ en: 'A rejection is the usual outcome with many ratings', es: 'Un rechazo es el resultado habitual con muchas calificaciones' }}
-        en="With thousands of ratings the tests of the reference matrix reach p-values near 1e-124 and the time homogeneity test underflows to zero, so the size of the departure, not the p-value alone, is what a validator reads."
-        es="Con miles de calificaciones las pruebas de la matriz de referencia llegan a valores p cercanos a 1e-124 y la prueba de homogeneidad temporal se desborda a cero, de modo que lo que lee un validador es el tamaño de la desviación, no solo el valor p."
+        en="With thousands of ratings the tests of the reference matrix reach p-values near 10⁻¹²⁴ and the time homogeneity test underflows to zero, so the size of the departure, not the p-value alone, is what a validator reads."
+        es="Con miles de calificaciones las pruebas de la matriz de referencia llegan a valores p cercanos a 10⁻¹²⁴ y la prueba de homogeneidad temporal se desborda a cero, de modo que lo que lee un validador es el tamaño de la desviación, no solo el valor p."
       />
     </>
   );
