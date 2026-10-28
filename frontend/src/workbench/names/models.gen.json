@@ -866,696 +866,696 @@
     "es": "Exacta"
    },
    "binormal-150": {
-    "en": "binormal-150",
-    "es": "binormal-150"
+    "en": "150 defaulters, 4,850 survivors, AUC 0.80, development AUC known",
+    "es": "150 incumplidos, 4.850 sobrevivientes, AUC 0,80, AUC de desarrollo conocida"
    },
    "binormal-150-d0": {
-    "en": "binormal-150-d0",
-    "es": "binormal-150-d0"
+    "en": "development AUC 0.80 known, current 0.80",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,80"
    },
    "binormal-150-d0.01": {
-    "en": "binormal-150-d0.01",
-    "es": "binormal-150-d0.01"
+    "en": "development AUC 0.80 known, current 0.79",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,79"
    },
    "binormal-150-d0.02": {
-    "en": "binormal-150-d0.02",
-    "es": "binormal-150-d0.02"
+    "en": "development AUC 0.80 known, current 0.78",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,78"
    },
    "binormal-150-d0.03": {
-    "en": "binormal-150-d0.03",
-    "es": "binormal-150-d0.03"
+    "en": "development AUC 0.80 known, current 0.77",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,77"
    },
    "binormal-150-d0.05": {
-    "en": "binormal-150-d0.05",
-    "es": "binormal-150-d0.05"
+    "en": "development AUC 0.80 known, current 0.75",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,75"
    },
    "binormal-150-d0.08": {
-    "en": "binormal-150-d0.08",
-    "es": "binormal-150-d0.08"
+    "en": "development AUC 0.80 known, current 0.72",
+    "es": "AUC de desarrollo 0,80 conocida, actual 0,72"
    },
    "binormal-150-dev1": {
-    "en": "binormal-150-dev1",
-    "es": "binormal-150-dev1"
+    "en": "the development AUC estimated on an equal sample (ECB form)",
+    "es": "el AUC de desarrollo estimada en una muestra igual (forma BCE)"
    },
    "binormal-150-leak0": {
-    "en": "binormal-150-leak0",
-    "es": "binormal-150-leak0"
+    "en": "the leaked feature shifted by 0 for defaulters in development",
+    "es": "la variable filtrada desplazada 0 para incumplidos en desarrollo"
    },
    "binormal-150-leak0.25": {
-    "en": "binormal-150-leak0.25",
-    "es": "binormal-150-leak0.25"
+    "en": "the leaked feature shifted by 0.25 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,25 para incumplidos en desarrollo"
    },
    "binormal-150-leak0.5": {
-    "en": "binormal-150-leak0.5",
-    "es": "binormal-150-leak0.5"
+    "en": "the leaked feature shifted by 0.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 0,5 para incumplidos en desarrollo"
    },
    "binormal-150-leak1": {
-    "en": "binormal-150-leak1",
-    "es": "binormal-150-leak1"
+    "en": "the leaked feature shifted by 1 for defaulters in development",
+    "es": "la variable filtrada desplazada 1 para incumplidos en desarrollo"
    },
    "binormal-150-leak1.5": {
-    "en": "binormal-150-leak1.5",
-    "es": "binormal-150-leak1.5"
+    "en": "the leaked feature shifted by 1.5 for defaulters in development",
+    "es": "la variable filtrada desplazada 1,5 para incumplidos en desarrollo"
    },
    "binormal-150-leak2": {
-    "en": "binormal-150-leak2",
-    "es": "binormal-150-leak2"
+    "en": "the leaked feature shifted by 2 for defaulters in development",
+    "es": "la variable filtrada desplazada 2 para incumplidos en desarrollo"
    },
    "binormal-150-m0": {
-    "en": "binormal-150-m0",
-    "es": "binormal-150-m0"
+    "en": "no change; development AUC known",
+    "es": "sin cambio; AUC de desarrollo conocida"
    },
    "binormal-150-m0.467": {
-    "en": "binormal-150-m0.467",
-    "es": "binormal-150-m0.467"
+    "en": "no change; development AUC 0.467 times the current",
+    "es": "sin cambio; AUC de desarrollo 0,467 veces la actual"
    },
    "binormal-150-m1": {
-    "en": "binormal-150-m1",
-    "es": "binormal-150-m1"
+    "en": "no change; development AUC 1 times the current",
+    "es": "sin cambio; AUC de desarrollo 1 veces la actual"
    },
    "binormal-150-m16": {
-    "en": "binormal-150-m16",
-    "es": "binormal-150-m16"
+    "en": "no change; development AUC 16 times the current",
+    "es": "sin cambio; AUC de desarrollo 16 veces la actual"
    },
    "binormal-150-m4": {
-    "en": "binormal-150-m4",
-    "es": "binormal-150-m4"
+    "en": "no change; development AUC 4 times the current",
+    "es": "sin cambio; AUC de desarrollo 4 veces la actual"
    },
    "binormal-150-pair": {
-    "en": "binormal-150-pair",
-    "es": "binormal-150-pair"
+    "en": "two scores of equal AUC 0.80, correlation 0.5",
+    "es": "dos puntajes de igual AUC 0,80, correlación 0,5"
    },
    "binormal-150-pair-d0": {
-    "en": "binormal-150-pair-d0",
-    "es": "binormal-150-pair-d0"
+    "en": "champion AUC 0.80, challenger 0.80, same sample",
+    "es": "campeón AUC 0,80, retador 0,80, misma muestra"
    },
    "binormal-150-pair-d0.01": {
-    "en": "binormal-150-pair-d0.01",
-    "es": "binormal-150-pair-d0.01"
+    "en": "champion AUC 0.80, challenger 0.79, same sample",
+    "es": "campeón AUC 0,80, retador 0,79, misma muestra"
    },
    "binormal-150-pair-d0.02": {
-    "en": "binormal-150-pair-d0.02",
-    "es": "binormal-150-pair-d0.02"
+    "en": "champion AUC 0.80, challenger 0.78, same sample",
+    "es": "campeón AUC 0,80, retador 0,78, misma muestra"
    },
    "binormal-150-pair-d0.03": {
-    "en": "binormal-150-pair-d0.03",
-    "es": "binormal-150-pair-d0.03"
+    "en": "champion AUC 0.80, challenger 0.77, same sample",
+    "es": "campeón AUC 0,80, retador 0,77, misma muestra"
    },
    "binormal-150-pair-d0.05": {
-    "en": "binormal-150-pair-d0.05",
-    "es": "binormal-150-pair-d0.05"
+    "en": "champion AUC 0.80, challenger 0.75, same sample",
+    "es": "campeón AUC 0,80, retador 0,75, misma muestra"
    },
    "binormal-150-pair-d0.08": {
-    "en": "binormal-150-pair-d0.08",
-    "es": "binormal-150-pair-d0.08"
+    "en": "champion AUC 0.80, challenger 0.72, same sample",
+    "es": "campeón AUC 0,80, retador 0,72, misma muestra"
    },
    "binormal-621-pair": {
-    "en": "binormal-621-pair",
-    "es": "binormal-621-pair"
+    "en": "two non-nested scores of equal AUC on an independent sample",
+    "es": "dos puntajes no anidados de igual AUC en una muestra independiente"
    },
    "ccr.pfe_exceedance_backtest-alternative": {
-    "en": "ccr.pfe_exceedance_backtest-alternative",
-    "es": "ccr.pfe_exceedance_backtest-alternative"
+    "en": "PFE at 95%, 1,000 dates; the PFE forecast is 90% of the true 95% quantile (exceedance frequency 6.94%, not 5%)",
+    "es": "PFE al 95 %, 1.000 fechas; el pronóstico de PFE es 90 % del cuantil 95 % verdadero (frecuencia de excedencia 6,94 %, no 5 %)"
    },
    "ccr.pfe_exceedance_backtest-null": {
-    "en": "ccr.pfe_exceedance_backtest-null",
-    "es": "ccr.pfe_exceedance_backtest-null"
+    "en": "PFE at 95%, 1,000 dates; the test's null holds at its boundary",
+    "es": "PFE al 95 %, 1.000 fechas; la nula de la prueba se cumple en su frontera"
    },
    "fair.fisher_exact-alternative": {
-    "en": "fair.fisher_exact-alternative",
-    "es": "fair.fisher_exact-alternative"
+    "en": "2,000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en el logaritmo de la razón de probabilidades (una brecha de tasa de selección sobre 8 puntos)"
    },
    "fair.fisher_exact-null": {
-    "en": "fair.fisher_exact-null",
-    "es": "fair.fisher_exact-null"
+    "en": "2,000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
    },
    "fair.two_proportion_z-alternative": {
-    "en": "fair.two_proportion_z-alternative",
-    "es": "fair.two_proportion_z-alternative"
+    "en": "2,000 applicants, two groups; the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points)",
+    "es": "2.000 postulantes, dos grupos; el umbral de decisión del grupo protegido es 0,3 más bajo en el logaritmo de la razón de probabilidades (una brecha de tasa de selección sobre 8 puntos)"
    },
    "fair.two_proportion_z-null": {
-    "en": "fair.two_proportion_z-null",
-    "es": "fair.two_proportion_z-null"
+    "en": "2,000 applicants, two groups; no threshold gap",
+    "es": "2.000 postulantes, dos grupos; sin brecha de umbral"
    },
    "grades-10-5000": {
-    "en": "grades-10-5000",
-    "es": "grades-10-5000"
+    "en": "ten grades, 5,000 obligors, the initial distribution unchanged",
+    "es": "diez grados, 5.000 deudores, la distribución inicial sin cambio"
    },
    "grades-10-c0": {
-    "en": "grades-10-c0",
-    "es": "grades-10-c0"
+    "en": "0% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "0 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-10-c0.01": {
-    "en": "grades-10-c0.01",
-    "es": "grades-10-c0.01"
+    "en": "1% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "1 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-10-c0.02": {
-    "en": "grades-10-c0.02",
-    "es": "grades-10-c0.02"
+    "en": "2% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "2 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-10-c0.05": {
-    "en": "grades-10-c0.05",
-    "es": "grades-10-c0.05"
+    "en": "5% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "5 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-10-c0.1": {
-    "en": "grades-10-c0.1",
-    "es": "grades-10-c0.1"
+    "en": "10% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "10 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-10-c0.5": {
-    "en": "grades-10-c0.5",
-    "es": "grades-10-c0.5"
+    "en": "50% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
+    "es": "50 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "grades-7": {
-    "en": "grades-7",
-    "es": "grades-7"
+    "en": "seven grades, 5 to 32 expected defaults each",
+    "es": "siete grados, 5 a 32 incumplimientos esperados cada uno"
    },
    "grades-7-k1": {
-    "en": "grades-7-k1",
-    "es": "grades-7-k1"
+    "en": "seven grades, every true PD 1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1 veces la del grado"
    },
    "grades-7-k1.1": {
-    "en": "grades-7-k1.1",
-    "es": "grades-7-k1.1"
+    "en": "seven grades, every true PD 1.1 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,1 veces la del grado"
    },
    "grades-7-k1.25": {
-    "en": "grades-7-k1.25",
-    "es": "grades-7-k1.25"
+    "en": "seven grades, every true PD 1.25 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,25 veces la del grado"
    },
    "grades-7-k1.5": {
-    "en": "grades-7-k1.5",
-    "es": "grades-7-k1.5"
+    "en": "seven grades, every true PD 1.5 times its grade PD",
+    "es": "siete grados, cada PD verdadera 1,5 veces la del grado"
    },
    "grades-7-k2": {
-    "en": "grades-7-k2",
-    "es": "grades-7-k2"
+    "en": "seven grades, every true PD 2 times its grade PD",
+    "es": "siete grados, cada PD verdadera 2 veces la del grado"
    },
    "grades-7-k3": {
-    "en": "grades-7-k3",
-    "es": "grades-7-k3"
+    "en": "seven grades, every true PD 3 times its grade PD",
+    "es": "siete grados, cada PD verdadera 3 veces la del grado"
    },
    "grades-7-rho0": {
-    "en": "grades-7-rho0",
-    "es": "grades-7-rho0"
+    "en": "seven grades, one factor, correlation 0%",
+    "es": "siete grados, un factor, correlación 0 %"
    },
    "grades-7-rho0.02": {
-    "en": "grades-7-rho0.02",
-    "es": "grades-7-rho0.02"
+    "en": "seven grades, one factor, correlation 2%",
+    "es": "siete grados, un factor, correlación 2 %"
    },
    "grades-7-rho0.05": {
-    "en": "grades-7-rho0.05",
-    "es": "grades-7-rho0.05"
+    "en": "seven grades, one factor, correlation 5%",
+    "es": "siete grados, un factor, correlación 5 %"
    },
    "grades-7-rho0.1": {
-    "en": "grades-7-rho0.1",
-    "es": "grades-7-rho0.1"
+    "en": "seven grades, one factor, correlation 10%",
+    "es": "siete grados, un factor, correlación 10 %"
    },
    "grades-7-rho0.15": {
-    "en": "grades-7-rho0.15",
-    "es": "grades-7-rho0.15"
+    "en": "seven grades, one factor, correlation 15%",
+    "es": "siete grados, un factor, correlación 15 %"
    },
    "grades-7-rho0.2": {
-    "en": "grades-7-rho0.2",
-    "es": "grades-7-rho0.2"
+    "en": "seven grades, one factor, correlation 20%",
+    "es": "siete grados, un factor, correlación 20 %"
    },
    "grades-7-swap0": {
-    "en": "grades-7-swap0",
-    "es": "grades-7-swap0"
+    "en": "grades 3 and 4 true PDs moved 0 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0 del camino una sobre otra"
    },
    "grades-7-swap0.2": {
-    "en": "grades-7-swap0.2",
-    "es": "grades-7-swap0.2"
+    "en": "grades 3 and 4 true PDs moved 0.2 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,2 del camino una sobre otra"
    },
    "grades-7-swap0.4": {
-    "en": "grades-7-swap0.4",
-    "es": "grades-7-swap0.4"
+    "en": "grades 3 and 4 true PDs moved 0.4 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,4 del camino una sobre otra"
    },
    "grades-7-swap0.6": {
-    "en": "grades-7-swap0.6",
-    "es": "grades-7-swap0.6"
+    "en": "grades 3 and 4 true PDs moved 0.6 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,6 del camino una sobre otra"
    },
    "grades-7-swap0.8": {
-    "en": "grades-7-swap0.8",
-    "es": "grades-7-swap0.8"
+    "en": "grades 3 and 4 true PDs moved 0.8 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 0,8 del camino una sobre otra"
    },
    "grades-7-swap1": {
-    "en": "grades-7-swap1",
-    "es": "grades-7-swap1"
+    "en": "grades 3 and 4 true PDs moved 1 of the way past each other",
+    "es": "PD verdaderas de los grados 3 y 4 movidas 1 del camino una sobre otra"
    },
    "grades-7-thin": {
-    "en": "grades-7-thin",
-    "es": "grades-7-thin"
+    "en": "a best grade expecting 0.6 defaults",
+    "es": "un mejor grado que espera 0,6 incumplimientos"
    },
    "ifrs9.stage_migration_backtest-alternative": {
-    "en": "ifrs9.stage_migration_backtest-alternative",
-    "es": "ifrs9.stage_migration_backtest-alternative"
+    "en": "three stages, 4,000, 1,500 and 500 accounts; the stage 1 to stage 2 migration is 9.5%, not the predicted 8% (stage 1 staying 88.5%)",
+    "es": "tres etapas, 4.000, 1.500 y 500 cuentas; la migración de etapa 1 a etapa 2 es 9,5 %, no el 8 % predicho (la etapa 1 permanece 88,5 %)"
    },
    "ifrs9.stage_migration_backtest-null": {
-    "en": "ifrs9.stage_migration_backtest-null",
-    "es": "ifrs9.stage_migration_backtest-null"
+    "en": "three stages, 4,000, 1,500 and 500 accounts; the test's null holds at its boundary",
+    "es": "tres etapas, 4.000, 1.500 y 500 cuentas; la nula de la prueba se cumple en su frontera"
    },
    "lgd_ead.downturn_coverage-alternative": {
-    "en": "lgd_ead.downturn_coverage-alternative",
-    "es": "lgd_ead.downturn_coverage-alternative"
+    "en": "150 downturn workouts, estimate 0.45; the mean realised downturn LGD is 5 points above the 0.45 estimate",
+    "es": "150 recuperaciones de ciclo bajo, estimación 0,45; la LGD de ciclo bajo realizada es en promedio 5 puntos sobre la estimación de 0,45"
    },
    "lgd_ead.downturn_coverage-null": {
-    "en": "lgd_ead.downturn_coverage-null",
-    "es": "lgd_ead.downturn_coverage-null"
+    "en": "150 downturn workouts, estimate 0.45; the test's null holds at its boundary",
+    "es": "150 recuperaciones de ciclo bajo, estimación 0,45; la nula de la prueba se cumple en su frontera"
    },
    "lgd_ead.lgd_calibration_by_segment-alternative": {
-    "en": "lgd_ead.lgd_calibration_by_segment-alternative",
-    "es": "lgd_ead.lgd_calibration_by_segment-alternative"
+    "en": "one segment, 250 workouts; the realised LGD is 5 points above the predicted one on average",
+    "es": "un segmento, 250 recuperaciones; la LGD realizada es en promedio 5 puntos sobre la predicha"
    },
    "lgd_ead.lgd_calibration_by_segment-null": {
-    "en": "lgd_ead.lgd_calibration_by_segment-null",
-    "es": "lgd_ead.lgd_calibration_by_segment-null"
+    "en": "one segment, 250 workouts; the test's null holds at its boundary",
+    "es": "un segmento, 250 recuperaciones; la nula de la prueba se cumple en su frontera"
    },
    "lgd_ead.lgd_calibration_over_time-alternative": {
-    "en": "lgd_ead.lgd_calibration_over_time-alternative",
-    "es": "lgd_ead.lgd_calibration_over_time-alternative"
+    "en": "five default years, 60 workouts each; in the last of five years the realised LGD is 10 points above the predicted one",
+    "es": "cinco años de incumplimiento, 60 recuperaciones cada uno; en el último de cinco años la LGD realizada es 10 puntos sobre la predicha"
    },
    "lgd_ead.lgd_calibration_over_time-null": {
-    "en": "lgd_ead.lgd_calibration_over_time-null",
-    "es": "lgd_ead.lgd_calibration_over_time-null"
+    "en": "five default years, 60 workouts each; the test's null holds at its boundary",
+    "es": "cinco años de incumplimiento, 60 recuperaciones cada uno; la nula de la prueba se cumple en su frontera"
    },
    "logistic-5000": {
-    "en": "logistic-5000",
-    "es": "logistic-5000"
+    "en": "5,000 obligors, mean PD 5%, PDs given (G = 10)",
+    "es": "5.000 deudores, PD media 5 %, PD dadas (G = 10)"
    },
    "logistic-5000-k1": {
-    "en": "logistic-5000-k1",
-    "es": "logistic-5000-k1"
+    "en": "5,000 obligors, every model odds divided by 1",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1"
    },
    "logistic-5000-k1.1": {
-    "en": "logistic-5000-k1.1",
-    "es": "logistic-5000-k1.1"
+    "en": "5,000 obligors, every model odds divided by 1.1",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,1"
    },
    "logistic-5000-k1.25": {
-    "en": "logistic-5000-k1.25",
-    "es": "logistic-5000-k1.25"
+    "en": "5,000 obligors, every model odds divided by 1.25",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,25"
    },
    "logistic-5000-k1.5": {
-    "en": "logistic-5000-k1.5",
-    "es": "logistic-5000-k1.5"
+    "en": "5,000 obligors, every model odds divided by 1.5",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,5"
    },
    "logistic-5000-k2": {
-    "en": "logistic-5000-k2",
-    "es": "logistic-5000-k2"
+    "en": "5,000 obligors, every model odds divided by 2",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 2"
    },
    "logistic-5000-k3": {
-    "en": "logistic-5000-k3",
-    "es": "logistic-5000-k3"
+    "en": "5,000 obligors, every model odds divided by 3",
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 3"
    },
    "logistic-5000-rho0": {
-    "en": "logistic-5000-rho0",
-    "es": "logistic-5000-rho0"
+    "en": "5,000 obligors, one factor, correlation 0%",
+    "es": "5.000 deudores, un factor, correlación 0 %"
    },
    "logistic-5000-rho0.02": {
-    "en": "logistic-5000-rho0.02",
-    "es": "logistic-5000-rho0.02"
+    "en": "5,000 obligors, one factor, correlation 2%",
+    "es": "5.000 deudores, un factor, correlación 2 %"
    },
    "logistic-5000-rho0.05": {
-    "en": "logistic-5000-rho0.05",
-    "es": "logistic-5000-rho0.05"
+    "en": "5,000 obligors, one factor, correlation 5%",
+    "es": "5.000 deudores, un factor, correlación 5 %"
    },
    "logistic-5000-rho0.1": {
-    "en": "logistic-5000-rho0.1",
-    "es": "logistic-5000-rho0.1"
+    "en": "5,000 obligors, one factor, correlation 10%",
+    "es": "5.000 deudores, un factor, correlación 10 %"
    },
    "logistic-5000-rho0.15": {
-    "en": "logistic-5000-rho0.15",
-    "es": "logistic-5000-rho0.15"
+    "en": "5,000 obligors, one factor, correlation 15%",
+    "es": "5.000 deudores, un factor, correlación 15 %"
    },
    "logistic-5000-rho0.2": {
-    "en": "logistic-5000-rho0.2",
-    "es": "logistic-5000-rho0.2"
+    "en": "5,000 obligors, one factor, correlation 20%",
+    "es": "5.000 deudores, un factor, correlación 20 %"
    },
    "logistic-5000-s0": {
-    "en": "logistic-5000-s0",
-    "es": "logistic-5000-s0"
+    "en": "5,000 obligors, covariates shifted by 0 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0 DE, el modelo correcto"
    },
    "logistic-5000-s0.05": {
-    "en": "logistic-5000-s0.05",
-    "es": "logistic-5000-s0.05"
+    "en": "5,000 obligors, covariates shifted by 0.05 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
    },
    "logistic-5000-s0.1": {
-    "en": "logistic-5000-s0.1",
-    "es": "logistic-5000-s0.1"
+    "en": "5,000 obligors, covariates shifted by 0.1 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
    },
    "logistic-5000-s0.2": {
-    "en": "logistic-5000-s0.2",
-    "es": "logistic-5000-s0.2"
+    "en": "5,000 obligors, covariates shifted by 0.2 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
    },
    "logistic-5000-s0.3": {
-    "en": "logistic-5000-s0.3",
-    "es": "logistic-5000-s0.3"
+    "en": "5,000 obligors, covariates shifted by 0.3 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
    },
    "logistic-5000-s0.5": {
-    "en": "logistic-5000-s0.5",
-    "es": "logistic-5000-s0.5"
+    "en": "5,000 obligors, covariates shifted by 0.5 SD, the model right",
+    "es": "5.000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
    },
    "market.acerbi_szekely-alternative": {
-    "en": "market.acerbi_szekely-alternative",
-    "es": "market.acerbi_szekely-alternative"
+    "en": "250 days at 2.5%; the realised losses are 1.25 times as dispersed as the VaR and ES forecasts say",
+    "es": "250 días al 2,5 %; las pérdidas realizadas son 1,25 veces más dispersas de lo que dicen los pronósticos de VaR y ES"
    },
    "market.acerbi_szekely-null": {
-    "en": "market.acerbi_szekely-null",
-    "es": "market.acerbi_szekely-null"
+    "en": "250 days at 2.5%; normal losses with their true VaR and ES",
+    "es": "250 días al 2,5 %; pérdidas normales con su VaR y ES verdaderos"
    },
    "market.christoffersen_conditional_coverage-alternative": {
-    "en": "market.christoffersen_conditional_coverage-alternative",
-    "es": "market.christoffersen_conditional_coverage-alternative"
+    "en": "1,500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "1.500 días al 5 %; tras una excedencia sigue otra con probabilidad 15 %, no 5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.christoffersen_conditional_coverage-null": {
-    "en": "market.christoffersen_conditional_coverage-null",
-    "es": "market.christoffersen_conditional_coverage-null"
+    "en": "1,500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5 %; excedencias independientes al 5 %"
    },
    "market.christoffersen_independence-alternative": {
-    "en": "market.christoffersen_independence-alternative",
-    "es": "market.christoffersen_independence-alternative"
+    "en": "1,500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "1.500 días al 5 %; tras una excedencia sigue otra con probabilidad 15 %, no 5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.christoffersen_independence-null": {
-    "en": "market.christoffersen_independence-null",
-    "es": "market.christoffersen_independence-null"
+    "en": "1,500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5 %; excedencias independientes al 5 %"
    },
    "market.du_escanciano_conditional-alternative": {
-    "en": "market.du_escanciano_conditional-alternative",
-    "es": "market.du_escanciano_conditional-alternative"
+    "en": "2,000 days at 10%; the tail PITs (below 0.10) cluster: one follows another with probability 20%, not 10%",
+    "es": "2.000 días al 10 %; los PIT de cola (bajo 0,10) se agrupan: uno sigue a otro con probabilidad 20 %, no 10 %"
    },
    "market.du_escanciano_conditional-null": {
-    "en": "market.du_escanciano_conditional-null",
-    "es": "market.du_escanciano_conditional-null"
+    "en": "2,000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10 %; PIT uniformes"
    },
    "market.du_escanciano_unconditional-alternative": {
-    "en": "market.du_escanciano_unconditional-alternative",
-    "es": "market.du_escanciano_unconditional-alternative"
+    "en": "2,000 days at 10%; the lower tail has too much mass (u = r^1.05: 11.2% of the PITs below 0.10, not 10%)",
+    "es": "2.000 días al 10 %; la cola inferior tiene demasiada masa (u = r^1,05: 11,2 % de los PIT bajo 0,10, no 10 %)"
    },
    "market.du_escanciano_unconditional-null": {
-    "en": "market.du_escanciano_unconditional-null",
-    "es": "market.du_escanciano_unconditional-null"
+    "en": "2,000 days at 10%; uniform PITs",
+    "es": "2.000 días al 10 %; PIT uniformes"
    },
    "market.duration_test-alternative": {
-    "en": "market.duration_test-alternative",
-    "es": "market.duration_test-alternative"
+    "en": "400 days at 5%; a hit is followed by a hit with probability 40%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "400 días al 5 %; tras una excedencia sigue otra con probabilidad 40 %, no 5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.duration_test-null": {
-    "en": "market.duration_test-null",
-    "es": "market.duration_test-null"
+    "en": "400 days at 5%; independent hits at 5%",
+    "es": "400 días al 5 %; excedencias independientes al 5 %"
    },
    "market.dynamic_quantile_test#1-alternative": {
-    "en": "market.dynamic_quantile_test#1-alternative",
-    "es": "market.dynamic_quantile_test#1-alternative"
+    "en": "a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#1-null": {
-    "en": "market.dynamic_quantile_test#1-null",
-    "es": "market.dynamic_quantile_test#1-null"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#2-alternative": {
-    "en": "market.dynamic_quantile_test#2-alternative",
-    "es": "market.dynamic_quantile_test#2-alternative"
+    "en": "a hit is followed by a hit with probability 15%, not 2.5% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 15 %, no 2,5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#2-null": {
-    "en": "market.dynamic_quantile_test#2-null",
-    "es": "market.dynamic_quantile_test#2-null"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#3-alternative": {
-    "en": "market.dynamic_quantile_test#3-alternative",
-    "es": "market.dynamic_quantile_test#3-alternative"
+    "en": "a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#3-null": {
-    "en": "market.dynamic_quantile_test#3-null",
-    "es": "market.dynamic_quantile_test#3-null"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test-alternative": {
-    "en": "market.dynamic_quantile_test-alternative",
-    "es": "market.dynamic_quantile_test-alternative"
+    "en": "a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 15 %, no 5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test-null": {
-    "en": "market.dynamic_quantile_test-null",
-    "es": "market.dynamic_quantile_test-null"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.kupiec_pof-alternative": {
-    "en": "market.kupiec_pof-alternative",
-    "es": "market.kupiec_pof-alternative"
+    "en": "1,500 days at 5%; the VaR is exceeded 1.3 times too often (a hit rate of 6.5%, not 5%)",
+    "es": "1.500 días al 5 %; el VaR se excede 1,3 veces más de lo debido (una tasa de excedencia de 6,5 %, no 5 %)"
    },
    "market.kupiec_pof-null": {
-    "en": "market.kupiec_pof-null",
-    "es": "market.kupiec_pof-null"
+    "en": "1,500 days at 5%; independent hits at 5%",
+    "es": "1.500 días al 5 %; excedencias independientes al 5 %"
    },
    "market.mcneil_frey_residual_test-alternative": {
-    "en": "market.mcneil_frey_residual_test-alternative",
-    "es": "market.mcneil_frey_residual_test-alternative"
+    "en": "2,500 days at 5%, 125 exceedances expected; the ES forecast is 95% of the true 5% expected shortfall of a normal loss (mean residual 0.103)",
+    "es": "2.500 días al 5 %, 125 excedencias esperadas; el pronóstico de ES es 95 % del expected shortfall verdadero al 5 % de una pérdida normal (residuo medio 0,103)"
    },
    "market.mcneil_frey_residual_test-null": {
-    "en": "market.mcneil_frey_residual_test-null",
-    "es": "market.mcneil_frey_residual_test-null"
+    "en": "2,500 days at 5%, 125 exceedances expected; the test's null holds at its boundary",
+    "es": "2.500 días al 5 %, 125 excedencias esperadas; la nula de la prueba se cumple en su frontera"
    },
    "migrations-7-2000-r1": {
-    "en": "migrations-7-2000-r1",
-    "es": "migrations-7-2000-r1"
+    "en": "grade 4 to grade 2 at 1 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-2000-r1.25": {
-    "en": "migrations-7-2000-r1.25",
-    "es": "migrations-7-2000-r1.25"
+    "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1,25 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-2000-r1.5": {
-    "en": "migrations-7-2000-r1.5",
-    "es": "migrations-7-2000-r1.5"
+    "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 1,5 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-2000-r2": {
-    "en": "migrations-7-2000-r2",
-    "es": "migrations-7-2000-r2"
+    "en": "grade 4 to grade 2 at 2 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 2 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-2000-r3": {
-    "en": "migrations-7-2000-r3",
-    "es": "migrations-7-2000-r3"
+    "en": "grade 4 to grade 2 at 3 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 3 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-2000-r4": {
-    "en": "migrations-7-2000-r4",
-    "es": "migrations-7-2000-r4"
+    "en": "grade 4 to grade 2 at 4 times grade 4 to grade 3; 2,000 obligors per grade",
+    "es": "grado 4 a grado 2 a 4 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "migrations-7-500-boundary": {
-    "en": "migrations-7-500-boundary",
-    "es": "migrations-7-500-boundary"
+    "en": "seven grades, 500 obligors each, one cell at the boundary",
+    "es": "siete grados, 500 deudores cada uno, una celda en la frontera"
    },
    "migrations-7-500-r1": {
-    "en": "migrations-7-500-r1",
-    "es": "migrations-7-500-r1"
+    "en": "grade 4 to grade 2 at 1 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "migrations-7-500-r1.25": {
-    "en": "migrations-7-500-r1.25",
-    "es": "migrations-7-500-r1.25"
+    "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1,25 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "migrations-7-500-r1.5": {
-    "en": "migrations-7-500-r1.5",
-    "es": "migrations-7-500-r1.5"
+    "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 1,5 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "migrations-7-500-r2": {
-    "en": "migrations-7-500-r2",
-    "es": "migrations-7-500-r2"
+    "en": "grade 4 to grade 2 at 2 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 2 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "migrations-7-500-r3": {
-    "en": "migrations-7-500-r3",
-    "es": "migrations-7-500-r3"
+    "en": "grade 4 to grade 2 at 3 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 3 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "migrations-7-500-r4": {
-    "en": "migrations-7-500-r4",
-    "es": "migrations-7-500-r4"
+    "en": "grade 4 to grade 2 at 4 times grade 4 to grade 3; 500 obligors per grade",
+    "es": "grado 4 a grado 2 a 4 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "ml.conformal_coverage-alternative": {
-    "en": "ml.conformal_coverage-alternative",
-    "es": "ml.conformal_coverage-alternative"
+    "en": "2,000 test rows, 90% coverage; log-odds drift 0.5 between calibration and test",
+    "es": "2.000 filas de prueba, cobertura 90 %; deriva de 0,5 en el logaritmo de la razón de probabilidades entre calibración y prueba"
    },
    "ml.conformal_coverage-null": {
-    "en": "ml.conformal_coverage-null",
-    "es": "ml.conformal_coverage-null"
+    "en": "2,000 test rows, 90% coverage; drift 0",
+    "es": "2.000 filas de prueba, cobertura 90 %; deriva 0"
    },
    "ml.shift_resilience-alternative": {
-    "en": "ml.shift_resilience-alternative",
-    "es": "ml.shift_resilience-alternative"
+    "en": "2,000 development rows, a quarter worst-subsample share; a quarter of the rows shifted 3 sd on feature 0",
+    "es": "2.000 filas de desarrollo, un cuarto en el peor subconjunto; un cuarto de las filas desplazado 3 desviaciones estándar en la variable 0"
    },
    "ml.shift_resilience-null": {
-    "en": "ml.shift_resilience-null",
-    "es": "ml.shift_resilience-null"
+    "en": "2,000 development rows, a quarter worst-subsample share; shift 0",
+    "es": "2.000 filas de desarrollo, un cuarto en el peor subconjunto; desplazamiento 0"
    },
    "nested-lda-framingham": {
-    "en": "nested-lda-framingham",
-    "es": "nested-lda-framingham"
+    "en": "nested discriminants fitted and compared on the same sample (Demler et al.)",
+    "es": "discriminantes anidados ajustados y comparados en la misma muestra (Demler et al.)"
    },
    "paths-5x1000-5y": {
-    "en": "paths-5x1000-5y",
-    "es": "paths-5x1000-5y"
+    "en": "five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain",
+    "es": "cinco grados e incumplimiento, 1.000 deudores cada uno, cinco instantáneas anuales de una cadena de Markov"
    },
    "port-1000-1pct": {
-    "en": "port-1000-1pct",
-    "es": "port-1000-1pct"
+    "en": "1,000 obligors, PD 1%, independent",
+    "es": "1.000 deudores, PD 1 %, independientes"
    },
    "port-1000-1pct-rho12": {
-    "en": "port-1000-1pct-rho12",
-    "es": "port-1000-1pct-rho12"
+    "en": "1,000 obligors, PD 1%, correlation 12% assumed and true",
+    "es": "1.000 deudores, PD 1 %, correlación 12 % supuesta y verdadera"
    },
    "port-1000-rho0": {
-    "en": "port-1000-rho0",
-    "es": "port-1000-rho0"
+    "en": "1,000 obligors, PD 1% right, asset correlation 0%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 0 %"
    },
    "port-1000-rho0.02": {
-    "en": "port-1000-rho0.02",
-    "es": "port-1000-rho0.02"
+    "en": "1,000 obligors, PD 1% right, asset correlation 2%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 2 %"
    },
    "port-1000-rho0.05": {
-    "en": "port-1000-rho0.05",
-    "es": "port-1000-rho0.05"
+    "en": "1,000 obligors, PD 1% right, asset correlation 5%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 5 %"
    },
    "port-1000-rho0.1": {
-    "en": "port-1000-rho0.1",
-    "es": "port-1000-rho0.1"
+    "en": "1,000 obligors, PD 1% right, asset correlation 10%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 10 %"
    },
    "port-1000-rho0.15": {
-    "en": "port-1000-rho0.15",
-    "es": "port-1000-rho0.15"
+    "en": "1,000 obligors, PD 1% right, asset correlation 15%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 15 %"
    },
    "port-1000-rho0.2": {
-    "en": "port-1000-rho0.2",
-    "es": "port-1000-rho0.2"
+    "en": "1,000 obligors, PD 1% right, asset correlation 20%",
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 20 %"
    },
    "port-5000-k1": {
-    "en": "port-5000-k1",
-    "es": "port-5000-k1"
+    "en": "5,000 obligors, PD applied 2%, true 2%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2 %"
    },
    "port-5000-k1.1": {
-    "en": "port-5000-k1.1",
-    "es": "port-5000-k1.1"
+    "en": "5,000 obligors, PD applied 2%, true 2.2%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,2 %"
    },
    "port-5000-k1.25": {
-    "en": "port-5000-k1.25",
-    "es": "port-5000-k1.25"
+    "en": "5,000 obligors, PD applied 2%, true 2.5%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,5 %"
    },
    "port-5000-k1.5": {
-    "en": "port-5000-k1.5",
-    "es": "port-5000-k1.5"
+    "en": "5,000 obligors, PD applied 2%, true 3%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 3 %"
    },
    "port-5000-k2": {
-    "en": "port-5000-k2",
-    "es": "port-5000-k2"
+    "en": "5,000 obligors, PD applied 2%, true 4%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 4 %"
    },
    "port-5000-k3": {
-    "en": "port-5000-k3",
-    "es": "port-5000-k3"
+    "en": "5,000 obligors, PD applied 2%, true 6%",
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 6 %"
    },
    "portfolio.crp_recursion_vs_mc-alternative": {
-    "en": "portfolio.crp_recursion_vs_mc-alternative",
-    "es": "portfolio.crp_recursion_vs_mc-alternative"
+    "en": "2,000 scenarios, 400 obligors in five exposure bands; the sample has sector variance 0.6, the recursion's pmf 0.5 (loss variance 172 units against 150)",
+    "es": "2.000 escenarios, 400 deudores en cinco bandas de exposición; la muestra tiene varianza sectorial 0,6, la pmf de la recursión 0,5 (varianza de pérdida 172 unidades contra 150)"
    },
    "portfolio.crp_recursion_vs_mc-null": {
-    "en": "portfolio.crp_recursion_vs_mc-null",
-    "es": "portfolio.crp_recursion_vs_mc-null"
+    "en": "2,000 scenarios, 400 obligors in five exposure bands; the test's null holds at its boundary",
+    "es": "2.000 escenarios, 400 deudores en cinco bandas de exposición; la nula de la prueba se cumple en su frontera"
    },
    "portfolio.mc_convergence-alternative": {
-    "en": "portfolio.mc_convergence-alternative",
-    "es": "portfolio.mc_convergence-alternative"
+    "en": "20,000 scenarios, the 99% quantile of the LHP loss rate; the run simulates correlation 0.13, the anchor is the closed form at 0.12 (quantile 0.964 against 0.917)",
+    "es": "20.000 escenarios, el cuantil 99 % de la tasa de pérdida LHP; la corrida simula correlación 0,13, el ancla es la forma cerrada con 0,12 (cuantil 0,0964 contra 0,0917)"
    },
    "portfolio.mc_convergence-null": {
-    "en": "portfolio.mc_convergence-null",
-    "es": "portfolio.mc_convergence-null"
+    "en": "20,000 scenarios, the 99% quantile of the LHP loss rate; the test's null holds at its boundary",
+    "es": "20.000 escenarios, el cuantil 99 % de la tasa de pérdida LHP; la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest#1-alternative": {
-    "en": "portfolio.tail_backtest#1-alternative",
-    "es": "portfolio.tail_backtest#1-alternative"
+    "en": "the true asset correlation is 0.30, the fit says 0.12 (the 99% quantile is exceeded 4.29% of the years, not 1%)",
+    "es": "la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 99 % se excede en 4,29 % de los años, no 1 %)"
    },
    "portfolio.tail_backtest#1-null": {
-    "en": "portfolio.tail_backtest#1-null",
-    "es": "portfolio.tail_backtest#1-null"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest-alternative": {
-    "en": "portfolio.tail_backtest-alternative",
-    "es": "portfolio.tail_backtest-alternative"
+    "en": "the true asset correlation is 0.30, the fit says 0.12 (the 95% quantile is exceeded 9.12% of the years, not 5%)",
+    "es": "la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 95 % se excede en 9,12 % de los años, no 5 %)"
    },
    "portfolio.tail_backtest-null": {
-    "en": "portfolio.tail_backtest-null",
-    "es": "portfolio.tail_backtest-null"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "series-5y-3pct": {
-    "en": "series-5y-3pct",
-    "es": "series-5y-3pct"
+    "en": "five independent years of 1,000 obligors at PD 3%",
+    "es": "cinco años independientes de 1.000 deudores con PD 3 %"
    },
    "series-5y-k1": {
-    "en": "series-5y-k1",
-    "es": "series-5y-k1"
+    "en": "five years, PD applied 3%, true 3%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 3 %"
    },
    "series-5y-k1.1": {
-    "en": "series-5y-k1.1",
-    "es": "series-5y-k1.1"
+    "en": "five years, PD applied 3%, true 3.3%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,3 %"
    },
    "series-5y-k1.25": {
-    "en": "series-5y-k1.25",
-    "es": "series-5y-k1.25"
+    "en": "five years, PD applied 3%, true 3.75%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,75 %"
    },
    "series-5y-k1.5": {
-    "en": "series-5y-k1.5",
-    "es": "series-5y-k1.5"
+    "en": "five years, PD applied 3%, true 4.5%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 4,5 %"
    },
    "series-5y-k2": {
-    "en": "series-5y-k2",
-    "es": "series-5y-k2"
+    "en": "five years, PD applied 3%, true 6%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 6 %"
    },
    "series-5y-k3": {
-    "en": "series-5y-k3",
-    "es": "series-5y-k3"
+    "en": "five years, PD applied 3%, true 9%",
+    "es": "cinco años, PD aplicada 3 %, verdadera 9 %"
    },
    "series-5y-rho0": {
-    "en": "series-5y-rho0",
-    "es": "series-5y-rho0"
+    "en": "five years, correlation 0% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 0 % en el año, correlación del factor 0,2 entre años"
    },
    "series-5y-rho0.02": {
-    "en": "series-5y-rho0.02",
-    "es": "series-5y-rho0.02"
+    "en": "five years, correlation 2% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 2 % en el año, correlación del factor 0,2 entre años"
    },
    "series-5y-rho0.05": {
-    "en": "series-5y-rho0.05",
-    "es": "series-5y-rho0.05"
+    "en": "five years, correlation 5% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 5 % en el año, correlación del factor 0,2 entre años"
    },
    "series-5y-rho0.1": {
-    "en": "series-5y-rho0.1",
-    "es": "series-5y-rho0.1"
+    "en": "five years, correlation 10% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 10 % en el año, correlación del factor 0,2 entre años"
    },
    "series-5y-rho0.15": {
-    "en": "series-5y-rho0.15",
-    "es": "series-5y-rho0.15"
+    "en": "five years, correlation 15% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 15 % en el año, correlación del factor 0,2 entre años"
    },
    "series-5y-rho0.2": {
-    "en": "series-5y-rho0.2",
-    "es": "series-5y-rho0.2"
+    "en": "five years, correlation 20% within a year, factor correlation 0.2 across",
+    "es": "cinco años, correlación 20 % en el año, correlación del factor 0,2 entre años"
    },
    "two-sample-100": {
-    "en": "two-sample-100",
-    "es": "two-sample-100"
+    "en": "two samples of 100: the 0.10 and 0.25 rules of thumb",
+    "es": "dos muestras de 100: las reglas 0,10 y 0,25"
    },
    "two-sample-1000": {
-    "en": "two-sample-1000",
-    "es": "two-sample-1000"
+    "en": "two samples of 1,000, ten population deciles",
+    "es": "dos muestras de 1.000, diez deciles poblacionales"
    },
    "two-sample-1000-s0": {
-    "en": "two-sample-1000-s0",
-    "es": "two-sample-1000-s0"
+    "en": "two samples of 1,000, the current shifted by 0 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0 DE"
    },
    "two-sample-1000-s0.05": {
-    "en": "two-sample-1000-s0.05",
-    "es": "two-sample-1000-s0.05"
+    "en": "two samples of 1,000, the current shifted by 0.05 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0,05 DE"
    },
    "two-sample-1000-s0.1": {
-    "en": "two-sample-1000-s0.1",
-    "es": "two-sample-1000-s0.1"
+    "en": "two samples of 1,000, the current shifted by 0.1 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0,1 DE"
    },
    "two-sample-1000-s0.2": {
-    "en": "two-sample-1000-s0.2",
-    "es": "two-sample-1000-s0.2"
+    "en": "two samples of 1,000, the current shifted by 0.2 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0,2 DE"
    },
    "two-sample-1000-s0.3": {
-    "en": "two-sample-1000-s0.3",
-    "es": "two-sample-1000-s0.3"
+    "en": "two samples of 1,000, the current shifted by 0.3 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0,3 DE"
    },
    "two-sample-1000-s0.5": {
-    "en": "two-sample-1000-s0.5",
-    "es": "two-sample-1000-s0.5"
+    "en": "two samples of 1,000, the current shifted by 0.5 SD",
+    "es": "dos muestras de 1.000, la actual desplazada 0,5 DE"
    }
   }
  },
@@ -1850,52 +1850,52 @@
     "es": "400 días al 5 %; excedencias independientes al 5 %"
    },
    "market.dynamic_quantile_test#1@d0": {
-    "en": "250 days at 1%; independent hits",
-    "es": "250 días al 1 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#1@d1": {
-    "en": "250 days at 1%; a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
-    "es": "250 días al 1 %; tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
+    "en": "a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#1@null": {
-    "en": "250 days at 1%; independent hits",
-    "es": "250 días al 1 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#2@d0": {
-    "en": "250 days at 2.5%; independent hits",
-    "es": "250 días al 2,5 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#2@d1": {
-    "en": "250 days at 2.5%; a hit is followed by a hit with probability 15%, not 2.5% (clustered exceedances at the same hit rate)",
-    "es": "250 días al 2,5 %; tras una excedencia sigue otra con probabilidad 15 %, no 2,5 % (excedencias agrupadas con la misma tasa)"
+    "en": "a hit is followed by a hit with probability 15%, not 2.5% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 15 %, no 2,5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#2@null": {
-    "en": "250 days at 2.5%; independent hits",
-    "es": "250 días al 2,5 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#3@d0": {
-    "en": "750 days at 1%; independent hits",
-    "es": "750 días al 1 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test#3@d1": {
-    "en": "750 days at 1%; a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
-    "es": "750 días al 1 %; tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
+    "en": "a hit is followed by a hit with probability 10%, not 1% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 10 %, no 1 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test#3@null": {
-    "en": "750 days at 1%; independent hits",
-    "es": "750 días al 1 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test@d0": {
-    "en": "1,500 days at 5%; independent hits",
-    "es": "1.500 días al 5 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.dynamic_quantile_test@d1": {
-    "en": "1,500 days at 5%; a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
-    "es": "1.500 días al 5 %; tras una excedencia sigue otra con probabilidad 15 %, no 5 % (excedencias agrupadas con la misma tasa)"
+    "en": "a hit is followed by a hit with probability 15%, not 5% (clustered exceedances at the same hit rate)",
+    "es": "tras una excedencia sigue otra con probabilidad 15 %, no 5 % (excedencias agrupadas con la misma tasa)"
    },
    "market.dynamic_quantile_test@null": {
-    "en": "1,500 days at 5%; independent hits",
-    "es": "1.500 días al 5 %; excedencias independientes"
+    "en": "independent hits",
+    "es": "excedencias independientes"
    },
    "market.kupiec_pof@d0": {
     "en": "1,500 days at 5%; independent hits at 5%",
@@ -1947,107 +1947,107 @@
    },
    "pd.binomial@k1": {
     "en": "5,000 obligors, PD applied 2%, true 2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2 %"
    },
    "pd.binomial@k1.1": {
     "en": "5,000 obligors, PD applied 2%, true 2.2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,2 %"
    },
    "pd.binomial@k1.25": {
     "en": "5,000 obligors, PD applied 2%, true 2.5%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,5 %"
    },
    "pd.binomial@k1.5": {
     "en": "5,000 obligors, PD applied 2%, true 3%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 3 %"
    },
    "pd.binomial@k2": {
     "en": "5,000 obligors, PD applied 2%, true 4%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 4 %"
    },
    "pd.binomial@k3": {
     "en": "5,000 obligors, PD applied 2%, true 6%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 6 %"
    },
    "pd.binomial@null": {
     "en": "1,000 obligors, PD 1%, independent",
-    "es": "1.000 deudores, PD 1%, independientes"
+    "es": "1.000 deudores, PD 1 %, independientes"
    },
    "pd.binomial@rho0": {
     "en": "1,000 obligors, PD 1% right, asset correlation 0%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 0 %"
    },
    "pd.binomial@rho0.02": {
     "en": "1,000 obligors, PD 1% right, asset correlation 2%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 2 %"
    },
    "pd.binomial@rho0.05": {
     "en": "1,000 obligors, PD 1% right, asset correlation 5%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 5 %"
    },
    "pd.binomial@rho0.1": {
     "en": "1,000 obligors, PD 1% right, asset correlation 10%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 10 %"
    },
    "pd.binomial@rho0.15": {
     "en": "1,000 obligors, PD 1% right, asset correlation 15%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 15 %"
    },
    "pd.binomial@rho0.2": {
     "en": "1,000 obligors, PD 1% right, asset correlation 20%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 20 %"
    },
    "pd.binomial_vasicek@k1": {
     "en": "5,000 obligors, PD applied 2%, true 2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2 %"
    },
    "pd.binomial_vasicek@k1.1": {
     "en": "5,000 obligors, PD applied 2%, true 2.2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,2 %"
    },
    "pd.binomial_vasicek@k1.25": {
     "en": "5,000 obligors, PD applied 2%, true 2.5%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,5 %"
    },
    "pd.binomial_vasicek@k1.5": {
     "en": "5,000 obligors, PD applied 2%, true 3%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 3 %"
    },
    "pd.binomial_vasicek@k2": {
     "en": "5,000 obligors, PD applied 2%, true 4%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 4 %"
    },
    "pd.binomial_vasicek@k3": {
     "en": "5,000 obligors, PD applied 2%, true 6%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 6 %"
    },
    "pd.binomial_vasicek@null": {
     "en": "1,000 obligors, PD 1%, correlation 12% assumed and true",
-    "es": "1.000 deudores, PD 1%, correlación 12% supuesta y verdadera"
+    "es": "1.000 deudores, PD 1 %, correlación 12 % supuesta y verdadera"
    },
    "pd.binomial_vasicek@rho0": {
     "en": "1,000 obligors, PD 1% right, asset correlation 0%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 0 %"
    },
    "pd.binomial_vasicek@rho0.02": {
     "en": "1,000 obligors, PD 1% right, asset correlation 2%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 2 %"
    },
    "pd.binomial_vasicek@rho0.05": {
     "en": "1,000 obligors, PD 1% right, asset correlation 5%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 5 %"
    },
    "pd.binomial_vasicek@rho0.1": {
     "en": "1,000 obligors, PD 1% right, asset correlation 10%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 10 %"
    },
    "pd.binomial_vasicek@rho0.15": {
     "en": "1,000 obligors, PD 1% right, asset correlation 15%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 15 %"
    },
    "pd.binomial_vasicek@rho0.2": {
     "en": "1,000 obligors, PD 1% right, asset correlation 20%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 20 %"
    },
    "pd.chi2_grades@k1": {
     "en": "seven grades, every true PD 1 times its grade PD",
@@ -2079,27 +2079,27 @@
    },
    "pd.chi2_grades@rho0": {
     "en": "seven grades, one factor, correlation 0%",
-    "es": "siete grados, un factor, correlación 0%"
+    "es": "siete grados, un factor, correlación 0 %"
    },
    "pd.chi2_grades@rho0.02": {
     "en": "seven grades, one factor, correlation 2%",
-    "es": "siete grados, un factor, correlación 2%"
+    "es": "siete grados, un factor, correlación 2 %"
    },
    "pd.chi2_grades@rho0.05": {
     "en": "seven grades, one factor, correlation 5%",
-    "es": "siete grados, un factor, correlación 5%"
+    "es": "siete grados, un factor, correlación 5 %"
    },
    "pd.chi2_grades@rho0.1": {
     "en": "seven grades, one factor, correlation 10%",
-    "es": "siete grados, un factor, correlación 10%"
+    "es": "siete grados, un factor, correlación 10 %"
    },
    "pd.chi2_grades@rho0.15": {
     "en": "seven grades, one factor, correlation 15%",
-    "es": "siete grados, un factor, correlación 15%"
+    "es": "siete grados, un factor, correlación 15 %"
    },
    "pd.chi2_grades@rho0.2": {
     "en": "seven grades, one factor, correlation 20%",
-    "es": "siete grados, un factor, correlación 20%"
+    "es": "siete grados, un factor, correlación 20 %"
    },
    "pd.chi2_grades@swap0": {
     "en": "grades 3 and 4 true PDs moved 0 of the way past each other",
@@ -2182,288 +2182,288 @@
     "es": "PD verdaderas de los grados 3 y 4 movidas 1 del camino una sobre otra"
    },
    "pd.hosmer_lemeshow@fitted": {
-    "en": "the same, with G - 2 degrees of freedom (the model fitted on the same sample)",
-    "es": "lo mismo, con G - 2 grados de libertad (el modelo ajustado sobre la misma muestra)"
+    "en": "the same, with G − 2 degrees of freedom (the model fitted on the same sample)",
+    "es": "lo mismo, con G − 2 grados de libertad (el modelo ajustado sobre la misma muestra)"
    },
    "pd.hosmer_lemeshow@k1": {
     "en": "5,000 obligors, every model odds divided by 1",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1"
    },
    "pd.hosmer_lemeshow@k1.1": {
     "en": "5,000 obligors, every model odds divided by 1.1",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,1"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,1"
    },
    "pd.hosmer_lemeshow@k1.25": {
     "en": "5,000 obligors, every model odds divided by 1.25",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,25"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,25"
    },
    "pd.hosmer_lemeshow@k1.5": {
     "en": "5,000 obligors, every model odds divided by 1.5",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,5"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,5"
    },
    "pd.hosmer_lemeshow@k2": {
     "en": "5,000 obligors, every model odds divided by 2",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 2"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 2"
    },
    "pd.hosmer_lemeshow@k3": {
     "en": "5,000 obligors, every model odds divided by 3",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 3"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 3"
    },
    "pd.hosmer_lemeshow@null": {
     "en": "5,000 obligors, mean PD 5%, PDs given (G = 10)",
-    "es": "5.000 deudores, PD media 5%, PD dadas (G = 10)"
+    "es": "5.000 deudores, PD media 5 %, PD dadas (G = 10)"
    },
    "pd.hosmer_lemeshow@rho0": {
     "en": "5,000 obligors, one factor, correlation 0%",
-    "es": "5.000 deudores, un factor, correlación 0%"
+    "es": "5.000 deudores, un factor, correlación 0 %"
    },
    "pd.hosmer_lemeshow@rho0.02": {
     "en": "5,000 obligors, one factor, correlation 2%",
-    "es": "5.000 deudores, un factor, correlación 2%"
+    "es": "5.000 deudores, un factor, correlación 2 %"
    },
    "pd.hosmer_lemeshow@rho0.05": {
     "en": "5,000 obligors, one factor, correlation 5%",
-    "es": "5.000 deudores, un factor, correlación 5%"
+    "es": "5.000 deudores, un factor, correlación 5 %"
    },
    "pd.hosmer_lemeshow@rho0.1": {
     "en": "5,000 obligors, one factor, correlation 10%",
-    "es": "5.000 deudores, un factor, correlación 10%"
+    "es": "5.000 deudores, un factor, correlación 10 %"
    },
    "pd.hosmer_lemeshow@rho0.15": {
     "en": "5,000 obligors, one factor, correlation 15%",
-    "es": "5.000 deudores, un factor, correlación 15%"
+    "es": "5.000 deudores, un factor, correlación 15 %"
    },
    "pd.hosmer_lemeshow@rho0.2": {
     "en": "5,000 obligors, one factor, correlation 20%",
-    "es": "5.000 deudores, un factor, correlación 20%"
+    "es": "5.000 deudores, un factor, correlación 20 %"
    },
    "pd.hosmer_lemeshow@s0": {
     "en": "5,000 obligors, covariates shifted by 0 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0 DE, el modelo correcto"
    },
    "pd.hosmer_lemeshow@s0.05": {
     "en": "5,000 obligors, covariates shifted by 0.05 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
    },
    "pd.hosmer_lemeshow@s0.1": {
     "en": "5,000 obligors, covariates shifted by 0.1 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
    },
    "pd.hosmer_lemeshow@s0.2": {
     "en": "5,000 obligors, covariates shifted by 0.2 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
    },
    "pd.hosmer_lemeshow@s0.3": {
     "en": "5,000 obligors, covariates shifted by 0.3 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
    },
    "pd.hosmer_lemeshow@s0.5": {
     "en": "5,000 obligors, covariates shifted by 0.5 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
    },
    "pd.jeffreys@k1": {
     "en": "5,000 obligors, PD applied 2%, true 2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2 %"
    },
    "pd.jeffreys@k1.1": {
     "en": "5,000 obligors, PD applied 2%, true 2.2%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,2%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,2 %"
    },
    "pd.jeffreys@k1.25": {
     "en": "5,000 obligors, PD applied 2%, true 2.5%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 2,5%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 2,5 %"
    },
    "pd.jeffreys@k1.5": {
     "en": "5,000 obligors, PD applied 2%, true 3%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 3%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 3 %"
    },
    "pd.jeffreys@k2": {
     "en": "5,000 obligors, PD applied 2%, true 4%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 4%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 4 %"
    },
    "pd.jeffreys@k3": {
     "en": "5,000 obligors, PD applied 2%, true 6%",
-    "es": "5,000 deudores, PD aplicada 2%, verdadera 6%"
+    "es": "5.000 deudores, PD aplicada 2 %, verdadera 6 %"
    },
    "pd.jeffreys@null": {
     "en": "1,000 obligors, PD 1%, independent",
-    "es": "1.000 deudores, PD 1%, independientes"
+    "es": "1.000 deudores, PD 1 %, independientes"
    },
    "pd.jeffreys@rho0": {
     "en": "1,000 obligors, PD 1% right, asset correlation 0%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 0%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 0 %"
    },
    "pd.jeffreys@rho0.02": {
     "en": "1,000 obligors, PD 1% right, asset correlation 2%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 2%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 2 %"
    },
    "pd.jeffreys@rho0.05": {
     "en": "1,000 obligors, PD 1% right, asset correlation 5%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 5%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 5 %"
    },
    "pd.jeffreys@rho0.1": {
     "en": "1,000 obligors, PD 1% right, asset correlation 10%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 10%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 10 %"
    },
    "pd.jeffreys@rho0.15": {
     "en": "1,000 obligors, PD 1% right, asset correlation 15%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 15%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 15 %"
    },
    "pd.jeffreys@rho0.2": {
     "en": "1,000 obligors, PD 1% right, asset correlation 20%",
-    "es": "1.000 deudores, PD 1% correcta, correlación de activos 20%"
+    "es": "1.000 deudores, PD 1 % correcta, correlación de activos 20 %"
    },
    "pd.normal_multiperiod@k1": {
     "en": "five years, PD applied 3%, true 3%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3 %"
    },
    "pd.normal_multiperiod@k1.1": {
     "en": "five years, PD applied 3%, true 3.3%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3,3%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,3 %"
    },
    "pd.normal_multiperiod@k1.25": {
     "en": "five years, PD applied 3%, true 3.75%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3,75%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,75 %"
    },
    "pd.normal_multiperiod@k1.5": {
     "en": "five years, PD applied 3%, true 4.5%",
-    "es": "cinco años, PD aplicada 3%, verdadera 4,5%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 4,5 %"
    },
    "pd.normal_multiperiod@k2": {
     "en": "five years, PD applied 3%, true 6%",
-    "es": "cinco años, PD aplicada 3%, verdadera 6%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 6 %"
    },
    "pd.normal_multiperiod@k3": {
     "en": "five years, PD applied 3%, true 9%",
-    "es": "cinco años, PD aplicada 3%, verdadera 9%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 9 %"
    },
    "pd.normal_multiperiod@null": {
     "en": "five independent years of 1,000 obligors at PD 3%",
-    "es": "cinco años independientes de 1.000 deudores con PD 3%"
+    "es": "cinco años independientes de 1.000 deudores con PD 3 %"
    },
    "pd.normal_multiperiod@rho0": {
     "en": "five years, correlation 0% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 0% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 0 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.normal_multiperiod@rho0.02": {
     "en": "five years, correlation 2% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 2% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 2 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.normal_multiperiod@rho0.05": {
     "en": "five years, correlation 5% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 5% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 5 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.normal_multiperiod@rho0.1": {
     "en": "five years, correlation 10% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 10% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 10 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.normal_multiperiod@rho0.15": {
     "en": "five years, correlation 15% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 15% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 15 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.normal_multiperiod@rho0.2": {
     "en": "five years, correlation 20% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 20% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 20 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.spiegelhalter@k1": {
     "en": "5,000 obligors, every model odds divided by 1",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1"
    },
    "pd.spiegelhalter@k1.1": {
     "en": "5,000 obligors, every model odds divided by 1.1",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,1"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,1"
    },
    "pd.spiegelhalter@k1.25": {
     "en": "5,000 obligors, every model odds divided by 1.25",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,25"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,25"
    },
    "pd.spiegelhalter@k1.5": {
     "en": "5,000 obligors, every model odds divided by 1.5",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 1,5"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 1,5"
    },
    "pd.spiegelhalter@k2": {
     "en": "5,000 obligors, every model odds divided by 2",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 2"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 2"
    },
    "pd.spiegelhalter@k3": {
     "en": "5,000 obligors, every model odds divided by 3",
-    "es": "5,000 deudores, cada razón de chances del modelo dividida por 3"
+    "es": "5.000 deudores, cada razón de chances del modelo dividida por 3"
    },
    "pd.spiegelhalter@null": {
     "en": "5,000 obligors, mean PD 5%",
-    "es": "5.000 deudores, PD media 5%"
+    "es": "5.000 deudores, PD media 5 %"
    },
    "pd.spiegelhalter@rho0": {
     "en": "5,000 obligors, one factor, correlation 0%",
-    "es": "5.000 deudores, un factor, correlación 0%"
+    "es": "5.000 deudores, un factor, correlación 0 %"
    },
    "pd.spiegelhalter@rho0.02": {
     "en": "5,000 obligors, one factor, correlation 2%",
-    "es": "5.000 deudores, un factor, correlación 2%"
+    "es": "5.000 deudores, un factor, correlación 2 %"
    },
    "pd.spiegelhalter@rho0.05": {
     "en": "5,000 obligors, one factor, correlation 5%",
-    "es": "5.000 deudores, un factor, correlación 5%"
+    "es": "5.000 deudores, un factor, correlación 5 %"
    },
    "pd.spiegelhalter@rho0.1": {
     "en": "5,000 obligors, one factor, correlation 10%",
-    "es": "5.000 deudores, un factor, correlación 10%"
+    "es": "5.000 deudores, un factor, correlación 10 %"
    },
    "pd.spiegelhalter@rho0.15": {
     "en": "5,000 obligors, one factor, correlation 15%",
-    "es": "5.000 deudores, un factor, correlación 15%"
+    "es": "5.000 deudores, un factor, correlación 15 %"
    },
    "pd.spiegelhalter@rho0.2": {
     "en": "5,000 obligors, one factor, correlation 20%",
-    "es": "5.000 deudores, un factor, correlación 20%"
+    "es": "5.000 deudores, un factor, correlación 20 %"
    },
    "pd.spiegelhalter@s0": {
     "en": "5,000 obligors, covariates shifted by 0 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0 DE, el modelo correcto"
    },
    "pd.spiegelhalter@s0.05": {
     "en": "5,000 obligors, covariates shifted by 0.05 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,05 DE, el modelo correcto"
    },
    "pd.spiegelhalter@s0.1": {
     "en": "5,000 obligors, covariates shifted by 0.1 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,1 DE, el modelo correcto"
    },
    "pd.spiegelhalter@s0.2": {
     "en": "5,000 obligors, covariates shifted by 0.2 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,2 DE, el modelo correcto"
    },
    "pd.spiegelhalter@s0.3": {
     "en": "5,000 obligors, covariates shifted by 0.3 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,3 DE, el modelo correcto"
    },
    "pd.spiegelhalter@s0.5": {
     "en": "5,000 obligors, covariates shifted by 0.5 SD, the model right",
-    "es": "5,000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
+    "es": "5.000 deudores, covariables desplazadas 0,5 DE, el modelo correcto"
    },
    "pd.traffic_lights@k1": {
     "en": "five years, PD applied 3%, true 3%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3 %"
    },
    "pd.traffic_lights@k1.1": {
     "en": "five years, PD applied 3%, true 3.3%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3,3%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,3 %"
    },
    "pd.traffic_lights@k1.25": {
     "en": "five years, PD applied 3%, true 3.75%",
-    "es": "cinco años, PD aplicada 3%, verdadera 3,75%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 3,75 %"
    },
    "pd.traffic_lights@k1.5": {
     "en": "five years, PD applied 3%, true 4.5%",
-    "es": "cinco años, PD aplicada 3%, verdadera 4,5%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 4,5 %"
    },
    "pd.traffic_lights@k2": {
     "en": "five years, PD applied 3%, true 6%",
-    "es": "cinco años, PD aplicada 3%, verdadera 6%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 6 %"
    },
    "pd.traffic_lights@k3": {
     "en": "five years, PD applied 3%, true 9%",
-    "es": "cinco años, PD aplicada 3%, verdadera 9%"
+    "es": "cinco años, PD aplicada 3 %, verdadera 9 %"
    },
    "pd.traffic_lights@null": {
     "en": "five independent years, the printed tie rule",
@@ -2471,27 +2471,27 @@
    },
    "pd.traffic_lights@rho0": {
     "en": "five years, correlation 0% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 0% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 0 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@rho0.02": {
     "en": "five years, correlation 2% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 2% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 2 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@rho0.05": {
     "en": "five years, correlation 5% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 5% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 5 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@rho0.1": {
     "en": "five years, correlation 10% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 10% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 10 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@rho0.15": {
     "en": "five years, correlation 15% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 15% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 15 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@rho0.2": {
     "en": "five years, correlation 20% within a year, factor correlation 0.2 across",
-    "es": "cinco años, correlación 20% en el año, correlación del factor 0,2 entre años"
+    "es": "cinco años, correlación 20 % en el año, correlación del factor 0,2 entre años"
    },
    "pd.traffic_lights@upper": {
     "en": "the upper tie rule WP14's simulation used",
@@ -2522,52 +2522,52 @@
     "es": "20.000 escenarios, el cuantil 99 % de la tasa de pérdida LHP; la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest#1@d0": {
-    "en": "250 years at the 99% level; the test's null holds at its boundary",
-    "es": "250 años al nivel 99 %; la nula de la prueba se cumple en su frontera"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest#1@d1": {
-    "en": "250 years at the 99% level; the true asset correlation is 0.30, the fit says 0.12 (the 99% quantile is exceeded 4.29% of the years, not 1%)",
-    "es": "250 años al nivel 99 %; la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 99 % se excede en 4,29 % de los años, no 1 %)"
+    "en": "the true asset correlation is 0.30, the fit says 0.12 (the 99% quantile is exceeded 4.29% of the years, not 1%)",
+    "es": "la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 99 % se excede en 4,29 % de los años, no 1 %)"
    },
    "portfolio.tail_backtest#1@null": {
-    "en": "250 years at the 99% level; the test's null holds at its boundary",
-    "es": "250 años al nivel 99 %; la nula de la prueba se cumple en su frontera"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest@d0": {
-    "en": "60 years at the 95% level; the test's null holds at its boundary",
-    "es": "60 años al nivel 95 %; la nula de la prueba se cumple en su frontera"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "portfolio.tail_backtest@d1": {
-    "en": "60 years at the 95% level; the true asset correlation is 0.30, the fit says 0.12 (the 95% quantile is exceeded 9.12% of the years, not 5%)",
-    "es": "60 años al nivel 95 %; la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 95 % se excede en 9,12 % de los años, no 5 %)"
+    "en": "the true asset correlation is 0.30, the fit says 0.12 (the 95% quantile is exceeded 9.12% of the years, not 5%)",
+    "es": "la correlación de activos verdadera es 0,30, el ajuste dice 0,12 (el cuantil 95 % se excede en 9,12 % de los años, no 5 %)"
    },
    "portfolio.tail_backtest@null": {
-    "en": "60 years at the 95% level; the test's null holds at its boundary",
-    "es": "60 años al nivel 95 %; la nula de la prueba se cumple en su frontera"
+    "en": "the test's null holds at its boundary",
+    "es": "la nula de la prueba se cumple en su frontera"
    },
    "rating.hhi@c0": {
     "en": "0% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "0% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "0 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@c0.01": {
     "en": "1% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "1% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "1 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@c0.02": {
     "en": "2% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "2% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "2 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@c0.05": {
     "en": "5% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "5% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "5 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@c0.1": {
     "en": "10% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "10% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "10 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@c0.5": {
     "en": "50% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "50% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "50 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "rating.hhi@null": {
     "en": "ten grades, 5,000 obligors, the initial distribution unchanged",
@@ -2599,19 +2599,19 @@
    },
    "rating.migration_ztests@r1.25-n2000": {
     "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 2,000 obligors per grade",
-    "es": "grado 4 a grado 2 a 1.25 veces grado 4 a grado 3; 2.000 deudores por grado"
+    "es": "grado 4 a grado 2 a 1,25 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "rating.migration_ztests@r1.25-n500": {
     "en": "grade 4 to grade 2 at 1.25 times grade 4 to grade 3; 500 obligors per grade",
-    "es": "grado 4 a grado 2 a 1.25 veces grado 4 a grado 3; 500 deudores por grado"
+    "es": "grado 4 a grado 2 a 1,25 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "rating.migration_ztests@r1.5-n2000": {
     "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 2,000 obligors per grade",
-    "es": "grado 4 a grado 2 a 1.5 veces grado 4 a grado 3; 2.000 deudores por grado"
+    "es": "grado 4 a grado 2 a 1,5 veces grado 4 a grado 3; 2.000 deudores por grado"
    },
    "rating.migration_ztests@r1.5-n500": {
     "en": "grade 4 to grade 2 at 1.5 times grade 4 to grade 3; 500 obligors per grade",
-    "es": "grado 4 a grado 2 a 1.5 veces grado 4 a grado 3; 500 deudores por grado"
+    "es": "grado 4 a grado 2 a 1,5 veces grado 4 a grado 3; 500 deudores por grado"
    },
    "rating.migration_ztests@r2-n2000": {
     "en": "grade 4 to grade 2 at 2 times grade 4 to grade 3; 2,000 obligors per grade",
@@ -2647,27 +2647,27 @@
    },
    "stability.chi2@c0": {
     "en": "0% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "0% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "0 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@c0.01": {
     "en": "1% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "1% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "1 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@c0.02": {
     "en": "2% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "2% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "2 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@c0.05": {
     "en": "5% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "5% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "5 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@c0.1": {
     "en": "10% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "10% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "10 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@c0.5": {
     "en": "50% of every grade's mass moved into the modal grade; 5,000 obligors per sample",
-    "es": "50% de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
+    "es": "50 % de la masa de cada grado movida al grado modal; 5.000 deudores por muestra"
    },
    "stability.chi2@null": {
     "en": "two samples of 1,000, ten population deciles",
@@ -2675,27 +2675,27 @@
    },
    "stability.chi2@s0": {
     "en": "two samples of 1,000, the current shifted by 0 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0 DE"
    },
    "stability.chi2@s0.05": {
     "en": "two samples of 1,000, the current shifted by 0.05 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,05 DE"
    },
    "stability.chi2@s0.1": {
     "en": "two samples of 1,000, the current shifted by 0.1 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,1 DE"
    },
    "stability.chi2@s0.2": {
     "en": "two samples of 1,000, the current shifted by 0.2 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,2 DE"
    },
    "stability.chi2@s0.3": {
     "en": "two samples of 1,000, the current shifted by 0.3 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,3 DE"
    },
    "stability.chi2@s0.5": {
     "en": "two samples of 1,000, the current shifted by 0.5 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,5 DE"
    },
    "stability.csi@l0": {
     "en": "the leaked feature shifted by 0 for defaulters in development",
@@ -2731,27 +2731,27 @@
    },
    "stability.ks@s0": {
     "en": "two samples of 1,000, the current shifted by 0 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0 DE"
    },
    "stability.ks@s0.05": {
     "en": "two samples of 1,000, the current shifted by 0.05 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,05 DE"
    },
    "stability.ks@s0.1": {
     "en": "two samples of 1,000, the current shifted by 0.1 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,1 DE"
    },
    "stability.ks@s0.2": {
     "en": "two samples of 1,000, the current shifted by 0.2 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,2 DE"
    },
    "stability.ks@s0.3": {
     "en": "two samples of 1,000, the current shifted by 0.3 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,3 DE"
    },
    "stability.ks@s0.5": {
     "en": "two samples of 1,000, the current shifted by 0.5 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,5 DE"
    },
    "stability.psi@n100": {
     "en": "two samples of 100: the 0.10 and 0.25 rules of thumb",
@@ -2763,27 +2763,27 @@
    },
    "stability.psi@s0": {
     "en": "two samples of 1,000, the current shifted by 0 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0 DE"
    },
    "stability.psi@s0.05": {
     "en": "two samples of 1,000, the current shifted by 0.05 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,05 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,05 DE"
    },
    "stability.psi@s0.1": {
     "en": "two samples of 1,000, the current shifted by 0.1 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,1 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,1 DE"
    },
    "stability.psi@s0.2": {
     "en": "two samples of 1,000, the current shifted by 0.2 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,2 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,2 DE"
    },
    "stability.psi@s0.3": {
     "en": "two samples of 1,000, the current shifted by 0.3 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,3 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,3 DE"
    },
    "stability.psi@s0.5": {
     "en": "two samples of 1,000, the current shifted by 0.5 SD",
-    "es": "dos muestras de 1,000, la actual desplazada 0,5 DE"
+    "es": "dos muestras de 1.000, la actual desplazada 0,5 DE"
    }
   }
  },
