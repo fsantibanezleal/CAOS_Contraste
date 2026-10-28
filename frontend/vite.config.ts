@@ -51,6 +51,18 @@ export default defineConfig({
     __BUILD_ID__: JSON.stringify(SHA.slice(0, 7)),
   },
   resolve: { dedupe: ['react', 'react-dom', 'react-router'] },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'react-vendor', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 20, includeDependenciesRecursively: false },
+            { name: 'math-vendor', test: /node_modules[\\/]katex[\\/]/, priority: 10, includeDependenciesRecursively: false },
+          ],
+        },
+      },
+    },
+  },
   // component tests (.test.tsx) render views on the server from the committed artifacts
   // the instrument tests sweep every view over every selection in both languages: 2 to 4 s each alone, past vitest's
   // 5 s default when the files run in parallel on a loaded machine (C04, C05 and the App timed out, 2026-10-13)

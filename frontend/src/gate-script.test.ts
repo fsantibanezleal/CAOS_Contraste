@@ -1,7 +1,7 @@
 // The gate this build runs (scripts/gate.mjs) measures the App as what product.json says it is (a workbench by default, or a
 // surface) and fails an App without Focus mode: --require-focus is always in effect, whatever extra arguments a run passes, and
 // it is dropped only for a surface App that records why ADR-0070 does not apply, in product.json and on the SDD's ADR-0070 row
-// (WB-014, WB-015; shell 0.16.0, ADR-0070). The runner is executed here against a stub shell gate that records its arguments.
+// (WB-014, WB-015; shell 0.19.1, ADR-0070). The runner is executed here against a stub shell gate that records its arguments.
 import { spawnSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
