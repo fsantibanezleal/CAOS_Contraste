@@ -75,9 +75,24 @@ def model_names() -> dict[str, dict[str, dict[str, str]]]:
     return json.loads(MODELS_FILE.read_text(encoding="utf-8"))["models"]
 
 
+_CAMEL = re.compile(r"^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+$")
+_KEY = re.compile(r"^[a-z0-9]+(?:[-_.][a-z0-9]+)+$")
+
+
+def _own_name(model: Mapping[str, Any]) -> dict[str, str] | None:
+    """The name the names module gives this model (`frontend/scripts/gen-names.mjs`): its short title unless that is a code,
+    else its title. Read from the document being baked, so a re-bake that renames a model names it at once, not one bake late."""
+    short, title = model.get("short_title"), model.get("title")
+    en = short.get("en") if isinstance(short, Mapping) else None
+    if en and not (en == model["id"] or _CAMEL.match(en) or _KEY.match(en)):
+        return short
+    return title if isinstance(title, Mapping) else short
+
+
 def model_name(case_id: str, model: Mapping[str, Any]) -> dict[str, str] | None:
-    """A model by the web's name, else by the document's short title, when that is a name and not the id; None when neither."""
-    for name in (model_names().get(case_id, {}).get(model["id"]), model.get("short_title")):
+    """A model by its own name in the document (the names module's rule), else by the web's name in ``models.gen.json``,
+    when that is a name and not the id; None when neither."""
+    for name in (_own_name(model), model_names().get(case_id, {}).get(model["id"])):
         if name and name.get("en") and name.get("es") and model["id"] not in (name["en"], name["es"]):
             return name
     return None  # an id written as its own name (C22's configurations, C11's rungs in the model block) is not a name
