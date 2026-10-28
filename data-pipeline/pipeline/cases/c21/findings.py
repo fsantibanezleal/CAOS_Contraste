@@ -133,13 +133,18 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
         extra_es = (f" y {len(spread_lower)} contrastes repetidos del diferencial de tasa donde el grupo tiene un diferencial menor que su "
                     "grupo de referencia") if spread_lower else ""
         if red_pairwise:
-            extra_en = f", {len(red_pairwise)} red rows of the two-proportion z-test and the Fisher exact test" + extra_en
-            extra_es = f", {len(red_pairwise)} filas rojas de la prueba z de dos proporciones y de la prueba exacta de Fisher" + extra_es
+            # the attributes of the red rows, counted on their own (U16-R5 c27 n2: the parity count read narrower than these rows)
+            m = len({e.split("@")[2].split("|")[0] for e in red_pairwise})
+            extra_en = (f", {len(red_pairwise)} red rows of the two-proportion z-test and the Fisher exact test in {m} "
+                        f"{'attribute' if m == 1 else 'attributes'}") + extra_en
+            extra_es = (f", {len(red_pairwise)} filas rojas de la prueba z de dos proporciones y de la prueba exacta de Fisher en {m} "
+                        f"{'atributo' if m == 1 else 'atributos'}") + extra_es
         out.append(_finding(
             "F-UNCONDITIONAL-GAP", "S4", "open", evidence,
-            f"Unconditional approval-rate gaps in {len(gap)} of the {n_attributes} attributes{extra_en} are an indicator only: \"{quote}\" "
-            "(Interagency Fair Lending Examination Procedures)",
-            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los {n_attributes} atributos{extra_es} son solo un indicador: "
+            f"Unconditional approval-rate gaps, with parity indicators above their tolerance in {len(gap)} of the {n_attributes} attributes{extra_en}, "
+            f"are an indicator only: \"{quote}\" (Interagency Fair Lending Examination Procedures)",
+            f"Las brechas incondicionales de tasa de aprobación, con indicadores de paridad sobre su tolerancia en {len(gap)} de los {n_attributes} "
+            f"atributos{extra_es}, son solo un indicador: "
             f"«{legal.QUOTES_ES['procedures']}» (Procedimientos Interagenciales de Examen de Préstamos Justos; original en inglés: \"{quote}\")"))
     out.append(_finding(
         "F-LIMIT-CREDIT-SCORE", "S4", "accepted", ["design:credit-score-missing"],

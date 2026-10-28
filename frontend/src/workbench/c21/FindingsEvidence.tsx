@@ -101,7 +101,9 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
   };
   return (
     <PlotCard fill title={{ en: 'The evidence of each finding', es: 'La evidencia de cada hallazgo' }} {...card} note={note}>
-      <div className="ct-stack" data-caos-flow="" data-block="finding-evidence">
+      {/* a measured scroll box (layout.ts marks a [data-scroll-box] that has content below its edge with the cue): at 1280 the second
+          drawing and the whole evidence table lay below the card's edge with no cue (U16-R5 c27 M1, R4 ruling 8) */}
+      <div className="ct-stack" data-caos-flow="" data-block="finding-evidence" data-scroll-box="">
         {kinds.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'No finding of this variant cites a controlled or rate-spread row.', es: 'Ningún hallazgo de esta variante cita una fila controlada o de diferencial de tasa.' }, lang)}</p>
         ) : null}
@@ -113,7 +115,8 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
             </div>
           </div>
         ))}
-        <div className="ct-stack-table">
+        {/* the table keeps its height in the scrolling stack: shrunk to the room the two drawings leave it read as no table at all */}
+        <div className="ct-stack-table" style={{ flex: 'none' }}>
           {kinds.length > 0 ? (
             <table className="caos-table ct-wrap-head" data-table="finding-evidence">
               <thead>

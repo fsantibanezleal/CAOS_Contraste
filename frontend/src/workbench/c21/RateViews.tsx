@@ -82,7 +82,8 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
           </table>
           {a.excluded_groups.length > 0 ? (
             <p className="ct-note" data-excluded={a.excluded_groups.length}>
-              {pick({ en: `${n - a.groups.length} category(ies) kept out of the pairwise tests: `, es: `${n - a.groups.length} categoría(s) fuera de las pruebas por pares: ` }, lang)}
+              {/* the plural by count (U16-R5 c27 n1: "3 category(ies)") */}
+              {pick({ en: `${n - a.groups.length} ${n - a.groups.length === 1 ? 'category' : 'categories'} kept out of the pairwise tests: `, es: `${n - a.groups.length} ${n - a.groups.length === 1 ? 'categoría' : 'categorías'} fuera de las pruebas por pares: ` }, lang)}
               {a.excluded_groups.map((e) => `${pick(groupBi(e.group), lang)} (${int(e.n, lang)}; ${pick(e.reason, lang)})`).join('; ')}
             </p>
           ) : null}

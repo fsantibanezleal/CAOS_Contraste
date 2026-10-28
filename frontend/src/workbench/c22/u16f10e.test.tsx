@@ -30,7 +30,9 @@ describe('U16-F10e C22', () => {
       const value = o.ladder.values[o.specimen.severity];
       const en = textOf(render(<SpecimenView sel={sel} />, 'en'));
       expect(en, id).not.toMatch(/drawn at severity \d/);
-      expect(en, id).toContain(`drawn at ${new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(value)} (${o.ladder.label.en})`);
+      // a ladder label with its own parenthesis takes the rung after a comma (U16-R5 c28 m4 supersedes the bracketed form there)
+      const shown = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(value);
+      expect(en, id).toContain(o.ladder.label.en.includes('(') ? `drawn at ${shown}, on the ladder of ${o.ladder.label.en}` : `drawn at ${shown} (${o.ladder.label.en})`);
     }
     const nul = textOf(render(<SpecimenView sel={selOf('null')} />, 'en'));
     expect(nul).not.toMatch(/severity 0/);

@@ -12,6 +12,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { Marked } from './Marked';
+import { BreakingCode } from '../c22/codeBreaks';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, CONTROL_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
@@ -216,6 +217,11 @@ function Quoted({ quote, lang }: { quote: string; lang: 'en' | 'es' }) {
 const PLACEHOLDER: Record<string, { en: string; es: string }> = { activity_year: { en: 'activity year', es: 'año de actividad' }, row: { en: 'row number', es: 'fila' } };
 export const formulaWords = (rule: string, lang: 'en' | 'es'): string => rule.replace(/<([a-z_]+)>/g, (m, k: string) => (PLACEHOLDER[k] ? `<${PLACEHOLDER[k][lang]}>` : m));
 
+/** A state of the HMDA file by its name: the postal code the file writes is a raw id where the product names the state (U16-R5 c27
+ * B1, ruling 6: "DE" is Delaware, and "Estado DE" read as a preposition in Spanish). A code with no entry is shown as written. */
+const STATE_TEXT: Record<string, BiText> = { DE: { en: 'Delaware', es: 'Delaware' } };
+export const stateName = (code: string): BiText => STATE_TEXT[code] ?? { en: code, es: code };
+
 export function C21ContextView({ sel }: { sel: C21Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -237,7 +243,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Year pair', es: 'Par de años' }, lang)}</dt>
           <dd>{`${o.fit_year} - ${o.confirm_year}`}</dd>
           <dt>{pick({ en: 'State', es: 'Estado' }, lang)}</dt>
-          <dd>{o.scope.state}</dd>
+          <dd data-state-code={o.scope.state}>{pick(stateName(o.scope.state), lang)}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
           <dd>{o.scope.source === 'hmda' ? 'HMDA' : o.scope.source}</dd>
           <dt>{pick({ en: 'Rows', es: 'Filas' }, lang)}</dt>
@@ -270,7 +276,8 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
       </PlotCard>
       <PlotCard title={{ en: 'The licence of the data', es: 'La licencia de los datos' }} {...card}>
         <dl className="ct-defs" data-table="c21-licence" data-status={l.status}>
-          <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
+          {/* the licence status, not a second "Estado" beside the state's (U16-R5 c27 n3) */}
+          <dt>{pick({ en: 'Licence status', es: 'Estado de la licencia' }, lang)}</dt>
           {/* the note says the status itself ("is UNVERIFIED", "está SIN VERIFICAR"): it is not said twice (U16-R4 c25 n3) */}
           <dd>{/UNVERIFIED|SIN VERIFICAR/.test(pick(l.note, lang)) ? pick(l.note, lang) : `${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
@@ -294,7 +301,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
               {o.data_notes.map((n) => (
                 <tr key={n.field} data-field={n.field}>
                   {/* the field by its name, its code in the public file beside it (a data dictionary) */}
-                  <td className="ct-text">{DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field] ? <>{pick(DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field], lang)} <code translate="no">{n.field}</code></> : n.field}</td>
+                  <td className="ct-text">{DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field] ? <>{pick(DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field], lang)} <BreakingCode id={n.field} /></> : n.field}</td>
                   <td className="ct-text">{treatmentName(n.treatment, lang)}</td>
                   <td data-na={n.n_missing === null ? 'true' : undefined}>{n.n_missing === null ? formatNumber(null, lang) : int(n.n_missing, lang)}</td>
                   <td className="ct-text ct-wide-only"><Marked>{pick(n.reason, lang)}</Marked></td>

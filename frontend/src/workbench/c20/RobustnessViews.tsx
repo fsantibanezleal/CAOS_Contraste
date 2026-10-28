@@ -11,6 +11,8 @@ import { NotInVariant, SgcdNotice, rungTitle } from './C20Common';
 import { LabelledOverTable, ParamTable, U14TestsTable, barMin, f3, f4, int, pc1, testsOf, type NamedParam } from './U14Common';
 import { SCREEN_TEXT, asKind, type C20Sel } from './selection';
 import { inputName } from '../names';
+import { LIGHT_TONE } from '../../lib/policy';
+import type { TestRow } from '../../lib/contract.types';
 import { localParams, localTests } from './localise';
 
 /** The noise scales of the grid with the AUC at each, a line against the scale, and the preset scale where a degradation beyond the tolerance is a finding. */
@@ -104,6 +106,15 @@ export function PerturbationView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The dispersion of the AUC, of the grade assigned to each obligor and of the attribution ranks across retraining seeds, and the top-four reason overlap. */
+/** The reasons-kept bars, each in the tone of its rung's reason-code stability light (U16-R5 c26 m3: drawn in the good tone while
+ * both rungs were amber under an open finding). */
+export function reasonBars(rows: Array<{ rung: string; reason_code_overlap: { mean: number } }>, tests: ReadonlyArray<Pick<TestRow, 'test_id' | 'model_id' | 'light'>>, current: string | null) {
+  return rows.map((r) => {
+    const t = tests.find((x) => x.test_id === 'ml.reason_code_stability' && (x.model_id ?? '').startsWith(r.rung));
+    return { id: `${r.rung}-reasons`, rung: r.rung, value: r.reason_code_overlap.mean, tone: t ? LIGHT_TONE[t.light] : ('neutral' as const), highlight: r.rung === current };
+  });
+}
+
 export function SeedsView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -144,7 +155,7 @@ export function SeedsView({ sel }: { sel: C20Sel | null }) {
                   title={{ en: 'Top-four reason codes kept across refits, by rung', es: 'Cuatro códigos de razón principales que se mantienen entre reajustes, por peldaño' }}
                   height="fill"
                   orientation="horizontal"
-                  data={o.rows.map((r) => ({ id: `${r.rung}-reasons`, label: rungName(r.rung), value: r.reason_code_overlap.mean, tone: 'good' as const, highlight: r.rung === sel.rung }))}
+                  data={reasonBars(o.rows, sel.data.variant.tests, sel.rung).map((b) => ({ ...b, label: rungName(b.rung) }))}
                   axis={{ label: { en: 'Share of the reasons kept', es: 'Parte de las razones que se mantienen' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
                 />
               </div>

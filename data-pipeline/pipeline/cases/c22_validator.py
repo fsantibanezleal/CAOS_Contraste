@@ -10,6 +10,7 @@ rate is quoted from dossier 12.
 from __future__ import annotations
 
 import math
+import re
 import sys
 from decimal import ROUND_HALF_UP, Decimal
 import time
@@ -67,7 +68,37 @@ from ..io import papers
 from ..io.formats import write_json
 from ..stages.export import write_artifact
 from . import c22_studies as cs
-from .c01_ladder import _t, _v
+from .c01_ladder import _t as _bi, _v
+
+_ES_PERCENT = re.compile(r"(\d)%")
+
+
+def _t(en: str, es: str) -> dict[str, str]:
+    """A bilingual text of the case: a Spanish percent takes the shell's no-break space ("al 5 %", U16-R5 c28 m2), as the studies'
+    texts do (c22_studies ``_forms``); the English keeps its form."""
+    return _bi(en, _ES_PERCENT.sub("\\1\u00a0%", es))
+
+
+def _num(x: float, lang: str) -> str:
+    """A setting of a scenario as Python's ``g`` writes it, in the language's form (U16-R5 c28: a blanket replace of the point wrote
+    "5,000 deudores" in Spanish)."""
+    decimals = len(f"{x:g}".partition(".")[2])
+    return tx.number(x, decimals, lang=lang)
+
+
+def _with(value: str, label: str) -> str:
+    """A value with the label it belongs to, never a parenthesis inside another (U16-R5 c29 m13: "14 % (Dynamic quantile test (250
+    days at 1%))")."""
+    return f"{value}, {label}" if "(" in label else f"{value} ({label})"
+
+
+def generator_titles(rows: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """The title of each generator model: the scenario of its first simulation, in words (U16-R5 c28 B1, ruling 8: a model named by
+    its configuration key, "port-5000-k1.5", in a finding is a raw id). The key stays the model's id."""
+    out: dict[str, dict[str, str]] = {}
+    for r in rows:
+        out.setdefault(r["generator"], dict(r["scenario"]))
+    return out
 
 CASE_ID = "C22"
 SOURCES = ("bcbs-wp14", "yurdakul-naranjo-2020")
@@ -243,7 +274,7 @@ class Book:
             raise RuntimeError(f"{key}: the simulation ran with seed {sim.seed}, the case derives {seed}")
         row = {
             "key": key, "test_id": tid, "label": cs.row_label(tid, study, index, len(cs.load_studies()[tid])),
-            "scenario": _t(f"{texts['label']['en']}; {text['en']}", f"{texts['label']['es']}; {text['es']}"),
+            "scenario": cs.study_scenario(texts, text, len(cs.load_studies()[tid])),
             "panel": cs.PANEL_OF[tid], "severity": severity, "x": float(severity), "rates": rates, "exact": None,
             "agrees": None, "p_histogram": sim.p_histogram(20) if histogram else None, "seed": seed, "n_rep": sim.n_rep,
             "generator": ref,
@@ -381,7 +412,7 @@ def _null(book: Book) -> dict[str, Any]:
          _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin impulso (c = 0)"), None),
         # the settings the harness found to matter
         ("pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow", logit, "logistic-5000", None, {"fitted": True}, "settings",
-         _t("the same, with G - 2 degrees of freedom (the model fitted on the same sample)", "lo mismo, con G - 2 grados de libertad (el modelo ajustado sobre la misma muestra)"), None),
+         _t("the same, with G − 2 degrees of freedom (the model fitted on the same sample)", "lo mismo, con G − 2 grados de libertad (el modelo ajustado sobre la misma muestra)"), None),
         ("pd.traffic_lights@upper", "pd.traffic_lights", SERIES, "series-5y-3pct", feed_series(), {"ties": "upper"}, "settings",
          _t("the upper tie rule WP14's simulation used", "la regla de empates superior que usó la simulación de WP14"),
          _exact_traffic([1000] * 5, 0.03, 0.03, ties="upper")),
@@ -429,8 +460,8 @@ def _null(book: Book) -> dict[str, Any]:
         "tests_within_bound": _impact(within, "tests", f"Tests of the battery that hold their size at 5% and 1% (of {len(holds)})",
                                       f"Pruebas de la batería que mantienen su tamaño al 5% y 1% (de {len(holds)})"),
         "size_hl_fitted": _impact(book.rate("pd.hosmer_lemeshow@fitted"), "probability",
-                                  "Hosmer-Lemeshow with G - 2 on a validation sample: size at 5%",
-                                  "Hosmer-Lemeshow con G - 2 en una muestra de validación: tamaño al 5%"),
+                                  "Hosmer-Lemeshow with G − 2 on a validation sample: size at 5%",
+                                  "Hosmer-Lemeshow con G − 2 en una muestra de validación: tamaño al 5%"),
         "size_normal": _impact(book.rate("pd.normal_multiperiod@null"), "probability",
                                "Normal test over five years: size at 5%", "Prueba normal en cinco años: tamaño al 5%"),
         "psi010_false_alarm_n100": _impact(book.rate("stability.psi@n100", "metric>0.1"), "probability",
@@ -439,8 +470,8 @@ def _null(book: Book) -> dict[str, Any]:
     }
     findings = [
         _finding("F-HL-DOF", "S2", "closed", ["pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow@null"],
-                 "Hosmer-Lemeshow with G - 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
-                 "Hosmer-Lemeshow con G - 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"),
+                 "Hosmer-Lemeshow with G − 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
+                 "Hosmer-Lemeshow con G − 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"),
         _finding("F-NORMAL-SIZE", "S3", "accepted", ["pd.normal_multiperiod@null"],
                  "The normal test over five years rejects above its level, as WP14's own Table 7 shows; read it as an early warning",
                  "La prueba normal en cinco años rechaza sobre su nivel, como muestra la propia Tabla 7 de WP14; léase como alerta temprana"),
@@ -505,6 +536,19 @@ def _names(rows: list[dict[str, Any]], lang: str) -> str:
     return ", ".join(r["label"][lang] for r in rows)
 
 
+def mc_excess_title(ex: dict[str, Any]) -> tuple[str, str]:
+    """The title of the documented-excess finding: "this excess" only when this run is over its bound; a run within it says the
+    engine documents an excess of its own (U16-R5 c29 N3)."""
+    if ex["exceeds"]:
+        en_doc, es_doc = "the engine documents this excess on its page", "el motor documenta este exceso en su página"
+    else:
+        en_doc, es_doc = "the engine documents an excess of its own run on its page", "el motor documenta un exceso de su propia corrida en su página"
+    return (f"The Monte Carlo quantile convergence test measures {_pct(ex['measured'], 2)['en']} at 1% against a bound of {_pct(ex['bound'], 2)['en']} ("
+            f"{'above' if ex['exceeds'] else 'within'} it in this run); {en_doc} {ex['page']}: {ex['engine']['en']}",
+            f"La prueba de convergencia del cuantil Monte Carlo mide {_pct(ex['measured'], 2)['es']} al 1% contra una cota de {_pct(ex['bound'], 2)['es']} ("
+            f"{'sobre' if ex['exceeds'] else 'dentro de'} ella en esta corrida); {es_doc} {ex['page']}: {ex['engine']['es']}")
+
+
 def _null_other(book: Book) -> dict[str, Any]:
     """The 21 p-value tests of the other seven families at the boundary of their null: the engine's named studies, 4,000
     repetitions, both levels (CT-301, BL-091, BL-075)."""
@@ -544,11 +588,7 @@ def _null_other(book: Book) -> dict[str, Any]:
         _finding("F-OTHER-SIZE", sev, status, [r["key"] for r in over] or [top["key"]],
                  f"{len(kept)} of {len(by_test)} tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all {len(rows)} studies counted){tail_en}",
                  f"{len(kept)} de {len(by_test)} pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los {len(rows)} estudios){tail_es}"),
-        _finding("F-OTHER-MC-EXCESS", "S4", "accepted", [mc["key"]],
-                 f"The Monte Carlo quantile convergence test measures {_pct(ex['measured'], 2)['en']} at 1% against a bound of {_pct(ex['bound'], 2)['en']} ("
-                 f"{'above' if ex['exceeds'] else 'within'} it in this run); the engine documents this excess on its page {ex['page']}: {ex['engine']['en']}",
-                 f"La prueba de convergencia del cuantil Monte Carlo mide {_pct(ex['measured'], 2)['es']} al 1% contra una cota de {_pct(ex['bound'], 2)['es']} ("
-                 f"{'sobre' if ex['exceeds'] else 'dentro de'} ella en esta corrida); el motor documenta este exceso en su página {ex['page']}: {ex['engine']['es']}"),
+        _finding("F-OTHER-MC-EXCESS", "S4", "accepted", [mc["key"]], *mc_excess_title(ex)),
     ]
     if conservative:
         findings.append(_finding(
@@ -606,8 +646,8 @@ def _other_families(book: Book) -> dict[str, Any]:
 
     findings = [
         _finding("F-OTHER-POWER", "S3", "accepted", [lo[3]["key"], hi[3]["key"]],
-                 f"Against its stated alternative a test's power at 5% runs from {_pct(power(lo[3]), 0)['en']} ({lo[3]['label']['en']}) to {_pct(power(hi[3]), 0)['en']} ({hi[3]['label']['en']}); {len(above80)} of {len(pairs)} studies reach 80%. The alternatives are the engine's choices (one departure each), not the only defects a test faces",
-                 f"Contra su alternativa declarada la potencia de una prueba al 5% va de {_pct(power(lo[3]), 0)['es']} ({lo[3]['label']['es']}) a {_pct(power(hi[3]), 0)['es']} ({hi[3]['label']['es']}); {len(above80)} de {len(pairs)} estudios llegan a 80%. Las alternativas son elección del motor (una desviación cada una), no los únicos defectos que una prueba enfrenta"),
+                 f"Against its stated alternative a test's power at 5% runs from {_with(_pct(power(lo[3]), 0)['en'], lo[3]['label']['en'])} to {_with(_pct(power(hi[3]), 0)['en'], hi[3]['label']['en'])}; {len(above80)} of {len(pairs)} studies reach 80%. The alternatives are the engine's choices (one departure each), not the only defects a test faces",
+                 f"Contra su alternativa declarada la potencia de una prueba al 5% va de {_with(_pct(power(lo[3]), 0)['es'], lo[3]['label']['es'])} a {_with(_pct(power(hi[3]), 0)['es'], hi[3]['label']['es'])}; {len(above80)} de {len(pairs)} estudios llegan a 80%. Las alternativas son elección del motor (una desviación cada una), no los únicos defectos que una prueba enfrenta"),
     ]
     if below50:
         findings.append(_finding(
@@ -623,28 +663,45 @@ def _other_families(book: Book) -> dict[str, Any]:
 MISCAL = (1.0, 1.1, 1.25, 1.5, 2.0, 3.0)
 
 
+#: the label of the Hosmer-Lemeshow power at k 1.25 (U16-R5 c28 m6: "every odds is")
+HL_POWER_LABEL = _t("Hosmer-Lemeshow power at 5% when all odds are 1.25 times too low",
+                    "Potencia de Hosmer-Lemeshow al 5% cuando todas las razones de chances son 1,25 veces muy bajas")
+
+
+def miscalibration_scenarios(k: float) -> dict[str, dict[str, str]]:
+    """The scenarios of the miscalibration rung k, each number in its language's form."""
+    n = {lang: tx.number(5000, lang=lang) for lang in ("en", "es")}
+    return {
+        "portfolio": _t(f"{n['en']} obligors, PD applied 2%, true {_num(2 * k, 'en')}%", f"{n['es']} deudores, PD aplicada 2%, verdadera {_num(2 * k, 'es')}%"),
+        "grades": _t(f"seven grades, every true PD {_num(k, 'en')} times its grade PD", f"siete grados, cada PD verdadera {_num(k, 'es')} veces la del grado"),
+        "obligors": _t(f"{n['en']} obligors, every model odds divided by {_num(k, 'en')}", f"{n['es']} deudores, cada razón de chances del modelo dividida por {_num(k, 'es')}"),
+        "years": _t(f"five years, PD applied 3%, true {_num(3 * k, 'en')}%", f"cinco años, PD aplicada 3%, verdadera {_num(3 * k, 'es')}%"),
+    }
+
+
 def _miscalibration(book: Book) -> dict[str, Any]:
     """True PD = k times the PD applied, every grade and year (CT-302)."""
     for i, k in enumerate(MISCAL):
         port = DefaultCounts(5000, 0.02 * k, pd_forecast=0.02)
-        scen_p = _t(f"5,000 obligors, PD applied 2%, true {2 * k:g}%", f"5.000 deudores, PD aplicada 2%, verdadera {2 * k:g}%".replace(".", ","))
+        scen = miscalibration_scenarios(k)
+        scen_p = scen["portfolio"]
         for tid, kw in (("pd.binomial", {}), ("pd.jeffreys", {}), ("pd.binomial_vasicek", {"rho": 0.12})):
             book.run(f"{tid}@k{k:g}", tid, port, f"port-5000-k{k:g}", panel="portfolio", severity=i, x=k, scenario=scen_p,
                      n_rep=N_POWER, feed=feed_cell(), test_kwargs=kw,
                      exact=_exact_counts(tid, 5000, 0.02, pd_true=0.02 * k, rho_true=0.0, **kw))
         grades = DefaultCounts(GR_N, np.minimum(np.array(GR_PD) * k, 0.99), pd_forecast=GR_PD)
-        scen_g = _t(f"seven grades, every true PD {k:g} times its grade PD", f"siete grados, cada PD verdadera {k:g} veces la del grado".replace(".", ","))
+        scen_g = scen["grades"]
         book.run(f"pd.chi2_grades@k{k:g}", "pd.chi2_grades", grades, f"grades-7-k{k:g}", panel="grades", severity=i, x=k,
                  scenario=scen_g, n_rep=N_POWER, feed=feed_grades())
         book.run(f"pd.default_profile@k{k:g}", "pd.default_profile", grades, f"grades-7-k{k:g}", panel="grades",
                  severity=i, x=k, scenario=scen_g, n_rep=N_POWER, feed=feed_grades(), test_kwargs={"n_sim": 2000})
         logit = LogisticPortfolio(n=5000, calibration_intercept=-math.log(k))
-        scen_o = _t(f"5,000 obligors, every model odds divided by {k:g}", f"5.000 deudores, cada razón de chances del modelo dividida por {k:g}".replace(".", ","))
+        scen_o = scen["obligors"]
         for tid in ("pd.hosmer_lemeshow", "pd.spiegelhalter"):
             book.run(f"{tid}@k{k:g}", tid, logit, f"logistic-5000-k{k:g}", panel="obligors", severity=i, x=k, scenario=scen_o,
                      n_rep=N_POWER)
         series = DefaultCounts.over_years([1000] * 5, [0.03 * k] * 5, pd_forecast=[0.03] * 5)
-        scen_y = _t(f"five years, PD applied 3%, true {3 * k:g}%", f"cinco años, PD aplicada 3%, verdadera {3 * k:g}%".replace(".", ","))
+        scen_y = scen["years"]
         book.run(f"pd.normal_multiperiod@k{k:g}", "pd.normal_multiperiod", series, f"series-5y-k{k:g}", panel="years",
                  severity=i, x=k, scenario=scen_y, n_rep=N_POWER, feed=feed_series())
         book.run(f"pd.traffic_lights@k{k:g}", "pd.traffic_lights", series, f"series-5y-k{k:g}", panel="years", severity=i,
@@ -663,9 +720,7 @@ def _miscalibration(book: Book) -> dict[str, Any]:
     impact = {
         "jeffreys_k80": _impact(k80, "ratio", "True-to-applied PD the portfolio Jeffreys test detects with 80% power (5,000 obligors, PD 2%)",
                                 "PD verdadera sobre aplicada que la prueba de Jeffreys de cartera detecta con 80% de potencia (5.000 deudores, PD 2%)"),
-        "hl_power_k125": _impact(book.rate("pd.hosmer_lemeshow@k1.25"), "probability",
-                                 "Hosmer-Lemeshow power at 5% when every odds is 1.25 times too low",
-                                 "Potencia de Hosmer-Lemeshow al 5% cuando toda razón de chances es 1,25 veces muy baja"),
+        "hl_power_k125": _impact(book.rate("pd.hosmer_lemeshow@k1.25"), "probability", HL_POWER_LABEL["en"], HL_POWER_LABEL["es"]),
         "profile_power_k3": _impact(book.rate("pd.default_profile@k3"), "probability",
                                     "Default-profile test at 5% when every PD is 3 times too low (blind to the level)",
                                     "Prueba del perfil al 5% cuando cada PD es 3 veces muy baja (ciega al nivel)"),
@@ -814,18 +869,28 @@ def _yn_golden(book: Book, yn: dict[str, Any]) -> tuple[dict[str, Any], int]:
             "mean_z": mean_z}, agree
 
 
+def drift_scenarios(s: float) -> dict[str, dict[str, str]]:
+    """The scenarios of the drift rung s, each number in its language's form."""
+    return {
+        "two_sample": _t(f"two samples of {tx.number(1000, lang='en')}, the current shifted by {_num(s, 'en')} SD",
+                         f"dos muestras de {tx.number(1000, lang='es')}, la actual desplazada {_num(s, 'es')} DE"),
+        "calibration": _t(f"{tx.number(5000, lang='en')} obligors, covariates shifted by {_num(s, 'en')} SD, the model right",
+                          f"{tx.number(5000, lang='es')} deudores, covariables desplazadas {_num(s, 'es')} DE, el modelo correcto"),
+    }
+
+
 def _drift(book: Book, yn: dict[str, Any]) -> dict[str, Any]:
     """The current population shifted, the model still right (CT-302, CT-304)."""
     for i, s in enumerate(DRIFT):
         two = TwoSample(1000, 1000, shift=s)
-        scen = _t(f"two samples of 1,000, the current shifted by {s:g} SD", f"dos muestras de 1.000, la actual desplazada {s:g} DE".replace(".", ","))
+        scen = drift_scenarios(s)["two_sample"]
         book.run(f"stability.psi@s{s:g}", "stability.psi", two, f"two-sample-1000-s{s:g}", panel="stability", severity=i, x=s,
                  scenario=scen, n_rep=N_POWER, rules=_psi_rules())
         for tid in ("stability.chi2", "stability.ks"):
             book.run(f"{tid}@s{s:g}", tid, two, f"two-sample-1000-s{s:g}", panel="stability", severity=i, x=s, scenario=scen,
                      n_rep=N_POWER)
         logit = LogisticPortfolio(n=5000, shift=s)
-        scen_c = _t(f"5,000 obligors, covariates shifted by {s:g} SD, the model right", f"5.000 deudores, covariables desplazadas {s:g} DE, el modelo correcto".replace(".", ","))
+        scen_c = drift_scenarios(s)["calibration"]
         for tid in ("pd.hosmer_lemeshow", "pd.spiegelhalter"):
             book.run(f"{tid}@s{s:g}", tid, logit, f"logistic-5000-s{s:g}", panel="calibration", severity=i, x=s, scenario=scen_c,
                      n_rep=N_POWER)
@@ -992,6 +1057,12 @@ MONO = (1.0, 1.25, 1.5, 2.0, 3.0, 4.0)
 SWAP = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
 
+def migration_scenario(ratio: float, n: int) -> dict[str, str]:
+    """The scenario of a broken-monotonicity migration rung, each number in its language's form."""
+    return _t(f"grade 4 to grade 2 at {_num(ratio, 'en')} times grade 4 to grade 3; {tx.number(n, lang='en')} obligors per grade",
+              f"grado 4 a grado 2 a {_num(ratio, 'es')} veces grado 4 a grado 3; {tx.number(n, lang='es')} deudores por grado")
+
+
 def _monotonicity(book: Book) -> dict[str, Any]:
     """A migration cell farther from the diagonal above its neighbour; two grades' PDs moved past each other."""
     base = decaying_matrix(7)
@@ -1000,8 +1071,7 @@ def _monotonicity(book: Book) -> dict[str, Any]:
         for n in (500, 2000):
             book.run(f"rating.migration_ztests@r{ratio:g}-n{n}", "rating.migration_ztests", Migrations([n] * 7, m),
                      f"migrations-7-{n}-r{ratio:g}", panel=f"migration-{n}", severity=i, x=ratio,
-                     scenario=_t(f"grade 4 to grade 2 at {ratio:g} times grade 4 to grade 3; {n:,} obligors per grade",
-                                 f"grado 4 a grado 2 a {ratio:g} veces grado 4 a grado 3; {n:,} deudores por grado".replace(",", ".")),
+                     scenario=migration_scenario(ratio, n),
                      n_rep=N_POWER)
         _log(f"migration ratio={ratio:g}")
     for i, s in enumerate(SWAP):
@@ -1372,7 +1442,8 @@ class C22:
             gens = tuple(sorted({g["name"] for g in book.generators.values()}))
             lineage = lin.build(CASE_ID, sources=sources, truth_status="synthetic-known-truth", seed=seed, code_version=__version__,
                                 riskvalidation_version=rv, generators=gens)
-            model = [{"id": ref, "family": "generator", "rung": g["name"], "title": _t(ref, ref), "short_title": _t(ref, ref),
+            titles = generator_titles(book.rows)
+            model = [{"id": ref, "family": "generator", "rung": g["name"], "title": titles.get(ref, _t(ref, ref)), "short_title": titles.get(ref, _t(ref, ref)),
                       "engine": f"riskvalidation.generators ({g['name']})", "engine_version": rv, "licence": "MIT",
                       "checkpoint_sha256": None, "calibration": None, "parameters": {}} for ref, g in book.generators.items()]
             art = build_artifact(case_id=CASE_ID, variant_id=v["id"], model=model, outputs=outputs, tests=res["specimen"],

@@ -23,6 +23,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...core.schemas import validate_document
 from ...io import fetch as fetching
 from ...io import sources as registry
@@ -236,7 +237,7 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
                                          "parameters", "checkpoint_sha256")} for r in recs]
         used = {t_["model_id"] for t_ in tests if t_.get("model_id")}
         summaries = [s for s in summaries if s["id"] in used or s["id"] in ids]
-        doc = build_artifact(case_id=CASE_ID, variant_id=v, model=summaries, outputs=p["outputs"], tests=tests, impact=p["impact"],
+        doc = build_artifact(case_id=CASE_ID, variant_id=v, model=summaries, outputs=p["outputs"], tests=document_tests(tests), impact=p["impact"],
                              findings=findings, lineage=_lineage(root, src_of[v], TRUTH[v], seed, ev), lane=lane)
         docs[v] = doc
     fit_models = []
@@ -261,6 +262,13 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
     contract = {name: frames[name].contract for name in frames}
     contract = {data_source(n): c for n, c in contract.items()}
     return Built(mdoc, docs, values, raw_sources, contract, blocked, todo)
+
+
+def document_tests(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The test rows a document carries: each with its reference in both languages (``extras.reference_text``), whose English names
+    the engine's ML contract in words (U16-R4 ruling 1, R5 c26 B1: the C20 bake wrote the engine's string, "contract engine-ml-api
+    2.0.0", and no Spanish). A copy; the engine rows are not touched."""
+    return with_reference_text(tests)
 
 
 def data_source(frame_name: str) -> str:

@@ -7,6 +7,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, axisScale } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import type { VariantArtifact } from '../../lib/contract.types';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { DISCRETION_TEXT, capitalOf, cellLabel, cellOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
@@ -116,6 +117,19 @@ export function SmaView({ sel }: { sel: C17Sel | null }) {
 }
 
 /** What one large loss added to the latest year does to the ILM, the SMA capital and the LDA capital of one history. */
+/** The value axis of the response chart, from zero to the largest capital: from the data alone it spanned 140 to 915 mn EUR with one
+ * tick at 1280 (U16-R5 c23 n2). */
+export function responseYRange(rows: ReadonlyArray<{ orc_eur: number; lda_capital_eur: number }>, div: number): [number, number] {
+  return [0, Math.max(...rows.flatMap((x) => [x.orc_eur, x.lda_capital_eur])) / div];
+}
+
+/** The added loss the SMA ILM response test reads, marked on the chart (U16-R5 c23 n3: the judged point was not on the chart). */
+export function responseMarks(variant: Pick<VariantArtifact, 'tests'>): Array<{ x: number; label: { en: string; es: string } }> {
+  const t = variant.tests.find((r) => r.test_id === 'oprisk.sma_ilm_response');
+  const loss = (t?.extras as { added_loss?: unknown } | null | undefined)?.added_loss;
+  return typeof loss === 'number' ? [{ x: loss / 1e6, label: { en: 'ILM test point', es: 'Punto de la prueba del ILM' } }] : [];
+}
+
 export function ResponseView({ sel }: { sel: C17Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -150,12 +164,15 @@ export function ResponseView({ sel }: { sel: C17Sel | null }) {
           es: `Una historia (${where.es}, semilla ${r.seed}) a cuyo último año se le suma una pérdida única de tamaño creciente. El SMA lee la pérdida a través del componente de pérdidas, así que su multiplicador y su capital se mueven con ella. Desde ninguna pérdida sumada hasta la mayor, el capital SMA sube ${rises.sma.es} por ciento y el capital LDA sube ${rises.lda.es} por ciento en esta historia. El componente del indicador de negocio queda fijo.`,
         }}
       >
+        {/* a taller drawing than the default 15 rem: at 1280 its value axis kept one or two labelled ticks (U16-R5 c23 n2) */}
         <ChartOverTable
+          chartMin="20rem"
           chart={
             <UPlotChart
               height="fill"
               x={{ values: r.rows.map((x) => x.added_loss_eur / 1e6), label: { en: 'Added loss', es: 'Pérdida sumada' }, unit: { en: 'mn EUR', es: 'M EUR' }, format: { decimals: 0 } }}
-              y={{ label: { en: `Capital (${pick(scale.unit, 'en')})`, es: `Capital (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
+              y={{ label: { en: `Capital (${pick(scale.unit, 'en')})`, es: `Capital (${pick(scale.unit, 'es')})` }, format: { digits: 3 }, range: responseYRange(r.rows, scale.div) }}
+              marks={responseMarks(sel.data.variant)}
               series={[
                 { label: { en: 'SMA capital', es: 'Capital SMA' }, values: r.rows.map((x) => x.orc_eur / scale.div), color: '--color-accent', width: 2.6 },
                 { label: { en: 'LDA capital, 99.9%', es: 'Capital LDA, 99,9 %' }, values: r.rows.map((x) => x.lda_capital_eur / scale.div), color: '--color-magenta', width: 2.2, dash: [6, 3] },

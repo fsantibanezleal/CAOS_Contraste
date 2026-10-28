@@ -201,31 +201,6 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
         }}
       >
         <ChartOverTable chart={<UPlotChart height="fill" {...chart} />}>
-          <div data-infinite-mean={String(o.infinite_mean)}>
-            {o.infinite_mean ? (
-              <Callout variant="strong" title={pick({ en: 'Infinite mean', es: 'Media infinita' }, lang)}>
-                {pick(
-                  {
-                    en: `The true tail index is ${formatNumber(o.tail_index, 'en', { digits: 3 })}, which is 1 or more: the severity has an infinite mean, so the annual loss has no mean and no mean-based quantity is computed for this variant.`,
-                    es: `El índice de cola verdadero es ${formatNumber(o.tail_index, 'es', { digits: 3 })}, que es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media y no se calcula ninguna cantidad basada en la media en esta variante.`,
-                  },
-                  lang,
-                )}
-              </Callout>
-            ) : null}
-            <KeyTable
-              table="tail-truth"
-              rows={[
-                { id: 'tail-index', label: { en: 'True tail index', es: 'Índice de cola verdadero' }, value: formatNumber(o.tail_index, lang, { digits: 3 }), attrs: { 'data-tail-index': String(o.tail_index) } },
-                {
-                  id: 'mean',
-                  label: { en: 'True annual mean', es: 'Media anual verdadera' },
-                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${es(mean.reason, lang)})` : `${whole(mean.value_eur, lang)} EUR`,
-                  attrs: { 'data-mean': mean.value_eur === null ? 'not-available' : 'available' },
-                },
-              ]}
-            />
-          </div>
           <table className="caos-table ct-wrap-head" data-table="threshold-stability">
             <thead>
               <tr>
@@ -252,6 +227,32 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
               ))}
             </tbody>
           </table>
+          {/* under the thresholds table: above it the callout and the key rows left no data row in view at 1280 (U16-R5 c23 n4) */}
+          <div data-infinite-mean={String(o.infinite_mean)}>
+            {o.infinite_mean ? (
+              <Callout variant="strong" title={pick({ en: 'Infinite mean', es: 'Media infinita' }, lang)}>
+                {pick(
+                  {
+                    en: `The true tail index is ${formatNumber(o.tail_index, 'en', { digits: 3 })}, which is 1 or more: the severity has an infinite mean, so the annual loss has no mean and no mean-based quantity is computed for this variant.`,
+                    es: `El índice de cola verdadero es ${formatNumber(o.tail_index, 'es', { digits: 3 })}, que es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media y no se calcula ninguna cantidad basada en la media en esta variante.`,
+                  },
+                  lang,
+                )}
+              </Callout>
+            ) : null}
+            <KeyTable
+              table="tail-truth"
+              rows={[
+                { id: 'tail-index', label: { en: 'True tail index', es: 'Índice de cola verdadero' }, value: formatNumber(o.tail_index, lang, { digits: 3 }), attrs: { 'data-tail-index': String(o.tail_index) } },
+                {
+                  id: 'mean',
+                  label: { en: 'True annual mean', es: 'Media anual verdadera' },
+                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${es(mean.reason, lang)})` : `${whole(mean.value_eur, lang)} EUR`,
+                  attrs: { 'data-mean': mean.value_eur === null ? 'not-available' : 'available' },
+                },
+              ]}
+            />
+          </div>
           <C17TestsTable variant={sel.data.variant} host="tail" cell={cell.id} />
         </ChartOverTable>
       </PlotCard>
