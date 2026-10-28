@@ -210,7 +210,20 @@ def stable(line: str) -> str:
     return line
 
 
+#: one run of each script gate per verdict: a script that several requirement rows name (the shell gate names seven) is run once and
+#: its result is every row's, so the verdict does not run a 2,825-state gate seven times over (the rc8 release run: four of the
+#: repeated gate runs timed out on a page load while the single full gate of the same build passed)
+_SCRIPT_RESULTS: dict[tuple[str, str], "Part"] = {}
+
+
 def run_script(repo: Path, rel: str, timeout: int) -> Part:
+    key = (str(repo.resolve()), rel)
+    if key not in _SCRIPT_RESULTS:
+        _SCRIPT_RESULTS[key] = _run_script(repo, rel, timeout)
+    return _SCRIPT_RESULTS[key]
+
+
+def _run_script(repo: Path, rel: str, timeout: int) -> Part:
     path = repo / rel
     if not path.is_file():
         return Part("absent", f"{rel} does not exist")

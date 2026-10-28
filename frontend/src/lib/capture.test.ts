@@ -246,7 +246,7 @@ describe.skipIf(!runnable)('the capture tool on two cases at one capture', () =>
           expect(got, `${c} ${ids[i]}`).toEqual(expected);
         }
       }
-    }, 300_000);
+    }, 600_000);  // every variant of two cases at one capture, the App route lazy-loaded
 
     it('names an existing PNG per row at <capture>/app/<case>/<variant>/<view>.png, unique ids and files', () => {
       for (const r of vrows.filter((x) => x.captured)) {
