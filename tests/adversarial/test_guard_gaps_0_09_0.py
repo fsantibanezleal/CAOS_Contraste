@@ -5,19 +5,20 @@
 - the technology-matrix guard reads an npm alias `npm:<package>@<version>`;
 - no file a product takes verbatim names the owner. The personal name is refused; the GitHub handle `fsantibanezleal` is the
   repositories' owner identifier (it stands in source URLs, for example `scripts/check_contracts.py`) and stays allowed."""
+
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 from planting import ROOT, edit, git_commit, guard, make_tree, set_cell
 
 DASH = "\u2014"
-
-# ---------------------------------------------------------------- content standards: files with no suffix (WB-016)
 
 
 @pytest.fixture
@@ -54,20 +55,44 @@ def test_a_suffixless_file_that_is_not_text_is_not_read(standards: Path) -> None
     assert r.returncode == 0, r.stdout
 
 
+def test_emoji_diagnostic_survives_a_windows_ansi_pipe(standards: Path) -> None:
+    (standards / "README.md").write_text("emoji \U0001f600\n", encoding="utf-8")
+    track(standards)
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "cp1252"
+    script = standards / "scripts" / "check_content_standards.py"
+    result = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=standards,
+        env=env,
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=30,
+    )
+    assert result.returncode == 1
+    assert "README.md:1:7" in result.stdout
+    assert "emoji (U+1F600" in result.stdout
+
+
 def test_the_residue_allow_file_of_the_template_has_no_em_dash() -> None:
     assert DASH not in (ROOT / "scripts" / ".template_residue_allow").read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------- documents that are not JSON (WB-017)
 
+# Contraste's adaptation of the base `docs` fixture (adversarial_fixtures.py, taken as the tag has it): the sources and licences rows
+# of its catalog read the registries under data-pipeline/config, so the slim tree carries them too.
 DOC_INPUTS = ("scripts/check_documents.py", "scripts/check_contracts.py", "tests/contracts/contract_schemas.py", "docs/contracts", "data", "data-pipeline/config", "models")
-CATALOG = "docs/contracts/catalog.md"
-DOCUMENTS, PRODUCER, CONSUMER = 5, 6, 7  # the columns of the test-result row, whose documents cell is "-"
 
 
 @pytest.fixture
 def docs(tmp_path: Path) -> Path:
     return make_tree(tmp_path / "repo", *DOC_INPUTS)
+
+
+CATALOG = "docs/contracts/catalog.md"
+DOCUMENTS, PRODUCER, CONSUMER = 5, 6, 7  # the columns of the test-result row, whose documents cell is "-"
 
 
 def declare_binary(repo: Path, glob: str, rel: str, payload: bytes) -> None:
@@ -183,7 +208,7 @@ OWNER = re.compile(r"\b(?:Felipe|Santib[aá][nñ]ez)\b", re.I)
 
 
 VERBATIM = ("scripts/check_contracts.py", "scripts/check_documents.py", "scripts/check_base_integrity.py", "tests/adversarial/conftest.py",
-            "tests/adversarial/planting.py")
+            "tests/adversarial/planting.py", "tests/adversarial/adversarial_fixtures.py")
 
 
 def verbatim_files() -> list[str]:

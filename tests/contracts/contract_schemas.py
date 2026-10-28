@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import fnmatch
 import json
+import subprocess
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -294,3 +296,22 @@ def committed_documents() -> list[Path]:
     docs += [ROOT / "data-pipeline" / "config" / "sources.json", ROOT / "data-pipeline" / "config" / "licences.json",
              ROOT / "data" / "sources" / "manifest.json"]
     return docs
+
+
+def edit(path: Path, change) -> None:
+    """Load a committed JSON document, change it, write it back compact (the plant of the document-guard tests)."""
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    change(doc)
+    path.write_text(json.dumps(doc, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+
+
+NO_NUMPY = ("import sys, runpy; sys.modules['numpy'] = None; path = sys.argv[1]; sys.argv = sys.argv[1:]; "
+            "runpy.run_path(path, run_name='__main__')")
+
+
+def run_readiness_guard(root: Path | None = None, *, no_numpy: bool = False) -> subprocess.CompletedProcess:
+    """Run the readiness guard as CI does, on the repository or on a copy; ``no_numpy`` makes ``import numpy`` fail first."""
+    script = str(ROOT / "scripts" / "check_readiness.py")
+    args = [str(root)] if root else []
+    cmd = [sys.executable, "-c", NO_NUMPY, script, *args] if no_numpy else [sys.executable, script, *args]
+    return subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)

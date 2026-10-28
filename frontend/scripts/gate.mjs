@@ -4,7 +4,7 @@
 //   npm run gate -- --sizes 1280x800 --themes light   (a quick pass while working)
 //   npm run gate -- --url https://<domain>           (the deployed origin, after a deploy)
 //
-// The App is what product.json says it is (WB-014, WB-015; shell 0.16.0):
+// The App is what product.json says it is (WB-014, WB-015; shell 0.19.1):
 //   "app": "workbench" (the default)  the case workbench: the gate measures it as such.
 //   "app": "surface"                  a hub, an explorer or a console (SurfacePage): the gate is told with `--workbench ''` and measures
 //                                     the App route's views, G18 walking every view that offers the Focus control.

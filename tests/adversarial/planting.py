@@ -1,10 +1,12 @@
 """Helpers of the adversarial tests: run a guard as a subprocess and plant one defect in a copy."""
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_REL = "frontend/node_modules/@fasl-work/caos-app-shell/src/content/executive.schema.json"
@@ -100,3 +102,46 @@ def add_gate_module(dest: Path) -> Path:
     (dest / GATE_MODULE_REL).parent.mkdir(parents=True, exist_ok=True)
     (dest / GATE_MODULE_REL).write_bytes(src.read_bytes())
     return dest
+
+
+# ---- the web plants: the copy's frontend/node_modules is the real one, linked (shared by the kept and the template's own plants)
+NODE = shutil.which("node")
+NODE_MODULES = ROOT / "frontend" / "node_modules"
+
+
+def link_node_modules(frontend: Path) -> None:
+    """Make the copy's frontend/node_modules the real one (a junction on Windows, a symlink elsewhere)."""
+    target = frontend / "node_modules"
+    if target.is_dir() and not target.is_symlink():
+        shutil.rmtree(target)  # the copy holds only the executive schema the SDD guard reads (conftest add_schema)
+    if os.name == "nt":
+        subprocess.run(["cmd", "/c", "mklink", "/J", str(target), str(NODE_MODULES)], check=True, capture_output=True)
+    else:
+        target.symlink_to(NODE_MODULES, target_is_directory=True)
+
+
+def unlink_node_modules(frontend: Path) -> None:
+    target = frontend / "node_modules"
+    if os.name == "nt":
+        os.rmdir(target)  # a junction: removes the link, never the real tree
+    elif target.is_symlink():
+        target.unlink()  # a symlink: os.rmdir raises NotADirectoryError on it (Linux CI)
+
+
+SDD = "docs/design/SDD.md"
+
+
+def sdd(repo: Path):
+    """Run the spec guard (check_sdd.py) on a copy."""
+    return guard(repo, "check_sdd.py")
+
+
+def sdd_text(repo: Path) -> str:
+    return (repo / SDD).read_bytes().decode("utf-8")
+
+
+def section(text: str, name: str) -> tuple[int, int]:
+    """The span of the ``## name`` section of the SDD text."""
+    a = text.index(f"## {name}\n")
+    b = text.find("\n## ", a + 1)
+    return a, (len(text) if b == -1 else b + 1)
