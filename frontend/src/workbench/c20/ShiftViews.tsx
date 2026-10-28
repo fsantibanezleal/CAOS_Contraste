@@ -50,8 +50,9 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
         title={TITLE_REAL}
         {...card}
         note={{
-          en: 'The portfolios of typical, higher and lower risk are different real populations of loans, so the drift between them is a real shift. No model is scored here: the view compares the variables only. The grey bars are the legacy PSI rule of thumb, a convention and not a regulatory threshold.',
-          es: 'Las carteras de riesgo típico, mayor y menor son poblaciones reales distintas de créditos, así que la deriva entre ellas es un cambio real. Aquí no se puntúa ningún modelo: la vista compara solo las variables. Las barras grises son la regla empírica heredada del PSI, una convención y no un umbral regulatorio.',
+          // the Fed's portfolios are hypothetical, as the case page says (U16-R5 c26 M1: "different real populations of loans")
+          en: "The Federal Reserve's three hypothetical portfolios of typical, higher and lower risk are different populations, so the drift between them is a shift between populations, known by construction. No model is scored here: the view compares the variables only. The grey bars are the legacy PSI rule of thumb, a convention and not a regulatory threshold.",
+          es: 'Las tres carteras hipotéticas de la Reserva Federal, de riesgo típico, mayor y menor, son poblaciones distintas, así que la deriva entre ellas es un cambio entre poblaciones, conocido por construcción. Aquí no se puntúa ningún modelo: la vista compara solo las variables. Las barras grises son la regla empírica heredada del PSI, una convención y no un umbral regulatorio.',
         }}
       >
         <LabelledOverTable
@@ -202,6 +203,9 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The split conformal coverage by window against its target: a coverage that falls below it reads as an exchangeability violation. */
+/** The coverage of the conformal chart, with the decimal of its table (U16-R5 c26 m2: the chart said 89 % beside the table's 89.5 %). */
+export const CONFORMAL_FORMAT = { percent: true, decimals: 1 } as const;
+
 export function ConformalView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -234,7 +238,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={rows}
-              axis={{ label: { en: 'Coverage of the conformal sets', es: 'Cobertura de los conjuntos conformes' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+              axis={{ label: { en: 'Coverage of the conformal sets', es: 'Cobertura de los conjuntos conformes' }, format: CONFORMAL_FORMAT, range: [0, 1] }}
             />
           }
         >

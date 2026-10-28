@@ -80,8 +80,8 @@ SPANISH: dict[str, str] = {
         "La parte de mercado de la mezcla de APR del 20-F, como razón; el VaR y el ES de la cartera mixta de C11 se escalan a los APR de mercado que da, tomados como valor de la posición",
     "The path is a United States path transposed onto the last observed value of the United States history; the satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation.":
         "La trayectoria es una trayectoria de Estados Unidos trasladada al último valor observado de la historia de Estados Unidos; los satélites se ajustan con tasas de castigo de Estados Unidos y se aplican a Banco Andino: una adaptación calibrada en EE. UU.",
-    "The policy shock acts in 2031 to 2033: zero deviation through 2030 and the first deviation in 2031 (F8 of the research addendum). NGFS is the only Phase 5 scenario NGFS itself classes as disorderly.":
-        "El choque de política actúa de 2031 a 2033: desviación cero hasta 2030 y la primera desviación en 2031 (F8 de la adenda de investigación). NGFS es el único escenario de la Fase 5 que la propia NGFS clasifica como desordenado.",
+    "The policy shock acts in 2031 to 2033: zero deviation through 2030 and the first deviation in 2031 (F8 of the research addendum). The delayed transition is the only Phase 5 scenario that NGFS classes as disorderly.":
+        "El choque de política actúa de 2031 a 2033: desviación cero hasta 2030 y la primera desviación en 2031 (F8 de la adenda de investigación). La transición tardía es el único escenario de la Fase 5 que la NGFS clasifica como desordenado.",
     "The voluntary stress buffer, component d of the internal target (03 l.152-169)":
         "El colchón voluntario de estrés, componente d de la meta interna (03 l.152-169)",
     "The engine's Fourier aggregation on the C17 generator parameters, scaled by assets and converted at the observed rate":

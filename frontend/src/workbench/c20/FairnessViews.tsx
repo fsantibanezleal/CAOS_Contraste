@@ -4,7 +4,8 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { LIGHT_TEXT } from '../../lib/policy';
+import { LIGHT_TEXT, LIGHT_TONE } from '../../lib/policy';
+import type { Light } from '../../lib/contract.types';
 import { SgcdNotice } from './C20Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc1, type NamedParam } from './U14Common';
 import { TallBars, barBox } from './C20Common';
@@ -22,6 +23,12 @@ const GROUP_VALUE: Record<string, BiText> = {
   'fair.calibration_within_groups': { en: 'Groups (rows, expected calibration error)', es: 'Grupos (filas, error de calibración esperado)' },
   'fair.auc_by_group': { en: 'Groups (rows, AUC)', es: 'Grupos (filas, AUC)' },
 };
+
+/** The fairness-battery bars, each in the tone of its row's light, as the conformal chart draws its windows (U16-R5 c26 m4: red rows
+ * drawn grey). */
+export function batteryBars(rows: Array<{ attribute: string; value: number | null; light: string }>, current: string | null) {
+  return rows.map((r) => ({ id: r.attribute, label: text(ATTRIBUTE_TEXT, r.attribute), value: r.value, tone: LIGHT_TONE[r.light as Light] ?? ('neutral' as const), highlight: r.attribute === current }));
+}
 
 export function FairnessView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
@@ -63,7 +70,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
               title={{ en: 'Gap by protected attribute', es: 'Brecha por atributo protegido' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ id: r.attribute, label: text(ATTRIBUTE_TEXT, r.attribute), value: r.value, highlight: r.attribute === focus?.attribute }))}
+              data={batteryBars(rows, focus?.attribute ?? null)}
               axis={{ label: { en: 'Largest difference between groups', es: 'Mayor diferencia entre grupos' }, format: { decimals: 3 } }}
             />
           }

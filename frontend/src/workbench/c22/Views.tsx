@@ -4,7 +4,7 @@
 import { PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { WithQuotes } from '../../content/bi';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
-import { useMemo, type ReactNode } from 'react';
+import { useMemo } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C22WriteUp } from '../../content/cases/C22';
 import { TRUTH_TEXT } from '../../content/cases/C04Results';
@@ -17,6 +17,7 @@ import { REPLAY, provenanceOf } from '../model';
 import { evidenceText } from '../names';
 import { Pending } from '../Pending';
 import { COUNT_TESTS, curves, excessOf, isC22, rateOf, rowKeyOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
+import { CODE_BREAKS_STYLE, codeBreaks } from './codeBreaks';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -166,8 +167,8 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
                 <tr key={ref} data-generator={ref}>
                   {/* the engine's own reference and class of a generator: code, as its configuration keys (an engine-configuration
                       appendix; ruling of 2026-10-24) */}
-                  <td className="ct-text"><code translate="no">{codeBreaks(ref)}</code></td>
-                  <td className="ct-text"><code translate="no">{codeBreaks(g.name)}</code></td>
+                  <td className="ct-text"><code translate="no" style={CODE_BREAKS_STYLE}>{codeBreaks(ref)}</code></td>
+                  <td className="ct-text"><code translate="no" style={CODE_BREAKS_STYLE}>{codeBreaks(g.name)}</code></td>
                   <td className="ct-text"><RecordText items={config(g.config)} /></td>
                   <td className="ct-text ct-wide-only"><RecordText items={truth(g)} /></td>
                   <td className="ct-text ct-wide-only">{users(ref)}</td>
@@ -579,6 +580,15 @@ export function PaperView({ sel }: { sel: C22Sel | null }) {
 }
 
 /** What the tests say about one dataset of the family (the committed policy's lights, the rail's thresholds). */
+/** Where the One report's sample is drawn on its ladder; a ladder label that ends in its own parenthesis takes the rung after a comma,
+ * never a second parenthesis (U16-R5 c28 m4: "drawn at 0.2 (mean shift (standard deviations))"). */
+export function drawnAt(en: string, es: string, label: BiText | { en: string; es: string }): { en: string; es: string } {
+  const l = label as { en: string; es: string };
+  return /\(/.test(l.en)
+    ? { en: `drawn at ${en}, on the ladder of ${l.en}`, es: `generado en ${es}, en la escala de ${l.es}` }
+    : { en: `drawn at ${en} (${l.en})`, es: `generado en ${es} (${l.es})` };
+}
+
 export function SpecimenView({ sel }: { sel: C22Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -589,7 +599,7 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
   const ladder = v.outputs.ladder;
   const rung = ladder ? ladder.values[v.outputs.specimen.severity] : undefined;
   const drawn = ladder && rung !== undefined
-    ? { en: `drawn at ${formatNumber(rung, 'en', { digits: 4 })} (${ladder.label.en})`, es: `generado en ${formatNumber(rung, 'es', { digits: 4 })} (${ladder.label.es})` }
+    ? drawnAt(formatNumber(rung, 'en', { digits: 4 }), formatNumber(rung, 'es', { digits: 4 }), ladder.label)
     : { en: 'drawn under its null', es: 'generado bajo su nula' };
   return (
     <ViewsRow>
@@ -618,8 +628,9 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
               {v.tests.map((t, i) => (
                 <tr key={`${t.test_id}-${i}`}>
                   <td className="ct-text" title={t.test_id}>{pick(testName(t.test_id), lang)}</td>
-                  {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24) */}
-                  <td className="ct-text"><code translate="no">{t.model_id}</code></td>
+                  {/* the engine's configuration key, marked as code as the Generators appendix lists it (the ruling of 2026-10-24); the
+                      dataset of the row, so the One report's segment (R5 ruling 2) */}
+                  <td className="ct-text" data-segment={t.model_id ?? undefined}><code translate="no">{t.model_id}</code></td>
                   <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
                   {/* a test with no p-value (a descriptive metric) shows none there, not its metric a second time (U16-R3 c22 B3) */}
                   {t.p_value === null ? <td data-na="true" data-p="none">-</td> : <LightCell row={t} alphas={sel.alphas} />}
@@ -889,8 +900,16 @@ export function heatText(c: { rate: number | null; kind: 'power' | 'size' }, lan
 }
 
 /** A code identifier that breaks only after its separators (".", "_", "-"), never inside a word (U16-R4 c27 n5: "stage_tran / sitions"). */
-export function codeBreaks(id: string): ReactNode[] {
-  return id.split(/(?<=[._-])/).flatMap((part, i) => (i === 0 ? [part] : [<wbr key={i} />, part]));
+export { codeBreaks };
+
+/** A source's attribution in the page's language: the bibliographic reference keeps its published title, and the Spanish joins its
+ * authors with "y" and writes "n.º" for a number (U16-R5 c28 m8, ruling 5: an English author pair in a Spanish reference is English
+ * body text). */
+export function attributionText(attribution: string, lang: 'en' | 'es'): string {
+  if (lang === 'en') return attribution;
+  return attribution
+    .replace(/(\p{Lu}[\p{L}'-]+, (?:\p{Lu}\.\s?)+) and (?=\p{Lu}[\p{L}'-]+, \p{Lu}\.)/gu, '$1 y ')
+    .replace(/\bNo\. (?=\d)/g, 'n.º ');
 }
 
 /** The x axis of the cited-rates chart: the cited rates 1 to n only, with half a step of room on each side as the axis range, so no
@@ -1010,7 +1029,7 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
                     )}{' '}
                     ({pick(LICENCE_CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})
                   </td>
-                  <td className="caos-col-text">{s.attribution}</td>
+                  <td className="caos-col-text">{attributionText(s.attribution, lang)}</td>
                 </tr>
               );
             })}
@@ -1024,8 +1043,8 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5 % sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse to compute the case otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5 % sin desplazamiento) y si no, se niegan a calcular el caso. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}

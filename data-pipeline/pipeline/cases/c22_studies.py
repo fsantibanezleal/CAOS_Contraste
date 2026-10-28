@@ -384,6 +384,15 @@ def study_texts(study: Any, index: int) -> dict[str, dict[str, str]]:
     return {"label": _forms(study.label), "null": null, "alternative": _forms(study.alternative_text)}
 
 
+def study_scenario(texts: dict[str, dict[str, str]], text: dict[str, str], n_studies: int) -> dict[str, str]:
+    """A study row's scenario: its null or alternative text, after the study's label only when the row's label does not carry it
+    (a test of one study); a test of several studies names the study in its label (``row_label``), so the scenario does not repeat it
+    (U16-R5 c29 m13: "60 years at the 95% level, 60 years at the 95% level; ...")."""
+    if n_studies > 1:
+        return dict(text)
+    return _t(f"{texts['label']['en']}; {text['en']}", f"{texts['label']['es']}; {text['es']}")
+
+
 def row_label(test_id: str, study: Any, index: int, n_studies: int) -> dict[str, str]:
     """The row's label: the test's name, with the study's label when the test has several studies."""
     base = TEST_LABEL[test_id]

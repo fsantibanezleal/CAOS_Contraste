@@ -152,7 +152,7 @@ def ngfs_scenario(fed: FedInputs, variables: list[ngfs_reader.NgfsVariable]) -> 
         "paths": paths,
         "policy_shock_window": {"start_year": years[0], "end_year": years[-1],
                                 "label": T("The policy shock acts in 2031 to 2033: zero deviation through 2030 and the first deviation in 2031 (F8 of the "
-                                           "research addendum). NGFS is the only Phase 5 scenario NGFS itself classes as disorderly.")}}
+                                           "research addendum). The delayed transition is the only Phase 5 scenario that NGFS classes as disorderly.")}}
     return Scenario("ngfs", P.SCENARIOS["ngfs"], block, transposed)
 
 
