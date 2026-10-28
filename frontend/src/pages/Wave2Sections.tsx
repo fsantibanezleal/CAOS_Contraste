@@ -129,7 +129,7 @@ function c11Row(name: string, v: Variant, lang: Lang): Cell[] {
       if (!l) return na(lang, champ(a)?.reason);
       // a light the document could not evaluate says why, as every other missing value of the table does (R4 c29 m3)
       if (l.traffic_light?.final_zone === 'not_evaluated') return na(lang, l.traffic_light.reason);
-      return l.traffic_light ? bi(c11Text(ZONE_TEXT, l.traffic_light.final_zone), lang) : na(lang, lang === 'es' ? 'el semáforo de Basilea se define solo para el VaR al 99%' : 'the Basel traffic light is defined for the 99% VaR only');
+      return l.traffic_light ? bi(c11Text(ZONE_TEXT, l.traffic_light.final_zone), lang) : na(lang, lang === 'es' ? 'el semáforo de Basilea se define solo para el VaR al 99\u00a0%' : 'the Basel traffic light is defined for the 99% VaR only');
     }),
     per((a) => {
       const l = level(a);
@@ -306,7 +306,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       [t('Variant', 'Variante'), t('Largest delta EVE, offset applied', 'Mayor delta EVE, con compensación'), t('Largest delta EVE, no offset', 'Mayor delta EVE, sin compensación'), t('Outlier test, delta EVE', 'Prueba de valor atípico, delta EVE'), t('Delta NII with the indexation charge', 'Delta NII con el cargo por reajustabilidad'), t('Outlier test, delta NII', 'Prueba de valor atípico, delta NII')],
       c15Row,
       t(
-        'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows stay on the fixtures until the owner supplies the data.',
+        'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows show example inputs until the owner supplies the data.',
         'El mayor de los seis choques del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50 % aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
       ),
       6,

@@ -25,7 +25,11 @@ export const SEVERITY_RING: Record<Severity, { color: string; width: number }> =
 
 export const EDGE_COLOR = { document: 'var(--color-accent)', code: 'var(--color-magenta)' } as const;
 
-const TOP = 36;
+/** The band of the zoom buttons above the level labels: at 390 the buttons sat over "Level 1" (R5 c30 m10). */
+const BAND = 32;
+/** The baseline of the level labels, under the band. */
+const LABEL_Y = BAND + 14;
+const TOP = LABEL_Y + 22;
 const ROW = 30;
 const PAD = 22;
 const R = 11;
@@ -145,13 +149,13 @@ export function MapDrawing({ inv, width, height, current: shownKey, onCurrent, r
         ))}
       </defs>
       <g transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
-      <text x={engine.x} y={14} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
+      <text x={engine.x} y={LABEL_Y} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
         {header(inv.engine_node.key).lines[0]}
       </text>
       {ls.map((_, g) => {
         const label = header(`${pick({ en: 'Level', es: 'Nivel' }, lang)} ${g}`);
         return (
-          <text key={g} x={PAD + (g + 1.5) * colW} y={14} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
+          <text key={g} x={PAD + (g + 1.5) * colW} y={LABEL_Y} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
             {label.lines[0]}
           </text>
         );
