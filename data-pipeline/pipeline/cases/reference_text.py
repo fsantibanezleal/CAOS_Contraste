@@ -183,7 +183,7 @@ REFERENCE_ES: dict[str, str] = {
 
 #: an author list in a Spanish reference joins its last two names with "y" (R5 c15 B1: "Christoffersen and Pelletier" in a Spanish
 #: view is English body text, ruling 6); the match ends at the year, so a published title or journal ("Theory and Methods") keeps its words
-_AUTHORS_AND = re.compile(r"(?<![\w])((?:[A-Z][\w'À-ɏ.-]+, )*[A-Z][\w'À-ɏ.-]+) and ([A-Z][\w'À-ɏ.-]+(?: et al\.)? \(\d{4}[a-z]?\))")
+_AUTHORS_AND = re.compile(r"(?<![\w])((?:[A-Z][\w'À-ɏ.-]+, )*[A-Z][\w'À-ɏ.-]+) and ([A-Z][\w'À-ɏ.-]+(?: et al\.)?(?: \(\d{4}[a-z]?\)| \d{4}\b|(?=, (?:arXiv|doi))))")
 
 
 def _spanish_authors(text: str) -> str:

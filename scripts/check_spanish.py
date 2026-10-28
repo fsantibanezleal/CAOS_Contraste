@@ -61,7 +61,7 @@ LOCATOR = re.compile(r"(?<![A-Za-zÀ-ÿ])(Table|Figure)s?(?= +[0-9])")
 LOCATOR_ES = {"table": "Tabla", "figure": "Figura"}
 #: an English author pair in a Spanish text ("Christoffersen and Pelletier (2004"): the Spanish joins the authors with "y"
 #: (R5 ruling 5, c15 M1); a title's own words ("Theory and Practice") are not followed by a year and are kept
-AUTHORS = re.compile(r"(?<![A-Za-zÀ-ÿ])([A-Z][A-Za-zÀ-ÿ'-]+) and ([A-Z][A-Za-zÀ-ÿ'-]+)(?=,? \(?[0-9]{4})")
+AUTHORS = re.compile(r"(?<![A-Za-zÀ-ÿ])([A-Z][A-Za-zÀ-ÿ'-]+) and ([A-Z][A-Za-zÀ-ÿ'-]+)(?=,? \(?[0-9]{4}|, (?:arXiv|doi))")
 
 
 def strip_accents(word: str) -> str:
