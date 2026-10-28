@@ -5,7 +5,7 @@
    "fit_id": "german",
    "manifest": {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "5f4d7eef7e6fe2560a4a470327cbbce1f74ad58988f9fbf3ee00623fb9502ff9",
+    "sha256": "63762148d49dc6e14918df742a1023d9dadfde20f1869db5a183170d7c7221c1",
     "title": {
      "en": "Retail cards PD: champion vs challenger",
      "es": "PD de tarjetas: campeón vs retador"
@@ -118,7 +118,7 @@
     {
      "variant_id": "german-twin",
      "path": "data/derived/C01/german-twin.json",
-     "sha256": "1d0b9119aa92265d54ae11ad126f80ce0a9af0994e79a60015ddca5a2c41992e",
+     "sha256": "99ecbc9eb6c44b95a91c9538c5e7dd898fb5b16eb8020755a2ba29d03fa6e65d",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -165,6 +165,32 @@
       },
       {
        "id": "F-RED-01",
+       "severity": "S3",
+       "status": "open",
+       "evidence": [
+        "pd.chi2_grades@P3-ebm@portfolio",
+        "pd.chi2_grades@P5-tabpfn@portfolio"
+       ],
+       "title": {
+        "en": "Chi-square test over grades: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
+        "es": "Prueba chi-cuadrado sobre grados: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
+       }
+      },
+      {
+       "id": "F-RED-02",
+       "severity": "S3",
+       "status": "open",
+       "evidence": [
+        "pd.hosmer_lemeshow@P3-ebm@portfolio",
+        "pd.hosmer_lemeshow@P5-tabpfn@portfolio"
+       ],
+       "title": {
+        "en": "Hosmer-Lemeshow: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
+        "es": "Hosmer-Lemeshow: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
+       }
+      },
+      {
+       "id": "F-RED-03",
        "severity": "S2",
        "status": "open",
        "evidence": [
@@ -174,8 +200,21 @@
         "pd.jeffreys@P5-tabpfn@G01"
        ],
        "title": {
-        "en": "Jeffreys: red on 4 rows (P3 EBM; P4 LightGBM; P5 TabPFN) that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Jeffreys: en rojo en 4 filas (P3 EBM; P4 LightGBM; P5 TabPFN) que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Jeffreys: red on 4 rows (P3 EBM; P4 LightGBM; P5 TabPFN) that no other finding cites",
+        "es": "Jeffreys: en rojo en 4 filas (P3 EBM; P4 LightGBM; P5 TabPFN) que ningún otro hallazgo cita"
+       }
+      },
+      {
+       "id": "F-RED-04",
+       "severity": "S3",
+       "status": "open",
+       "evidence": [
+        "pd.spiegelhalter@P3-ebm@portfolio",
+        "pd.spiegelhalter@P5-tabpfn@portfolio"
+       ],
+       "title": {
+        "en": "Spiegelhalter test: red on 2 rows (P3 EBM; P5 TabPFN) that no other finding cites",
+        "es": "Prueba de Spiegelhalter: en rojo en 2 filas (P3 EBM; P5 TabPFN) que ningún otro hallazgo cita"
        }
       }
      ],
@@ -3456,7 +3495,7 @@
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "b40674ab12d4ab4b54799bb168f55ed1fe4f6d8616611a15c716448e944a8e34",
+    "sha256": "1e63726939417b12033837ca208e3683636a4c4e969248a7b8e35e6bc86acc50",
     "title": {
      "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
      "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anejo 9 del BdE"
@@ -4115,7 +4154,7 @@
     {
      "variant_id": "house-price-fall",
      "path": "data/derived/C07/house-price-fall.json",
-     "sha256": "b9c8309189f6f0ccf6d26fd8faf35d66b5f94bfc00184f03ad9d94a8149ade7c",
+     "sha256": "f2bf8cb6904e1a5bb51d17d64106890fc569e9eded4e6b8dc9d314c088d16ae6",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -4779,7 +4818,7 @@
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "f76802076ad7b65f367665f6dd177148a50c0d7835ce438f8eebbea25225ee45",
+    "sha256": "fa4466c5abfd0101866ee661e750f55b4c9566e9ee6efa158b5c997b6aa88edc",
     "title": {
      "en": "ICAAP and IAPE capital aggregation under macro scenarios",
      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
@@ -4845,7 +4884,7 @@
     {
      "variant_id": "baseline",
      "path": "data/derived/C18/baseline.json",
-     "sha256": "a36e5dd61f6a3e51c6ee5b4f3cef556398122b47da5634b0d19ee98e31178248",
+     "sha256": "dfe272b20797ea662089cc06ae7cb4b0cc42ae4e5fb6dbf79398fbe81f40a2e8",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -4914,6 +4953,22 @@
        "title": {
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
+       }
+      },
+      {
+       "id": "F-RED-01",
+       "severity": "S2",
+       "status": "open",
+       "evidence": [
+        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
+        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
+        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
+        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
+        "stress.satellite_backcast@c18-satellite-residential@residential"
+       ],
+       "title": {
+        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
+        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
        }
       }
      ],
@@ -5212,7 +5267,7 @@
     {
      "variant_id": "eba-2025-adverse",
      "path": "data/derived/C18/eba-2025-adverse.json",
-     "sha256": "dacaa09f616a35150f55e7fbf880c7125560df5023f114741e51705ae3984cec",
+     "sha256": "ef6427efdbfeca37212d006e19213bce73855124961a11c15ea465a6ef2ef462",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -5305,6 +5360,22 @@
        "title": {
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
+       }
+      },
+      {
+       "id": "F-RED-01",
+       "severity": "S2",
+       "status": "open",
+       "evidence": [
+        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
+        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
+        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
+        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
+        "stress.satellite_backcast@c18-satellite-residential@residential"
+       ],
+       "title": {
+        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
+        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
        }
       }
      ],
@@ -5467,7 +5538,7 @@
     {
      "variant_id": "fed-2026-severely-adverse",
      "path": "data/derived/C18/fed-2026-severely-adverse.json",
-     "sha256": "2a21fcfd8523e5ecd2262a12595e310f689b88d6413f87a6755a17957e174cb3",
+     "sha256": "913ffc14391768cf6af21c09ac870e168a66b447eac9f35d11328daeaf8c998c",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -5560,6 +5631,22 @@
        "title": {
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
+       }
+      },
+      {
+       "id": "F-RED-01",
+       "severity": "S2",
+       "status": "open",
+       "evidence": [
+        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
+        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
+        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
+        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
+        "stress.satellite_backcast@c18-satellite-residential@residential"
+       ],
+       "title": {
+        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
+        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
        }
       }
      ],
@@ -5722,7 +5809,7 @@
     {
      "variant_id": "ngfs-delayed-transition",
      "path": "data/derived/C18/ngfs-delayed-transition.json",
-     "sha256": "9f4152056b2b6185e266408d85a424810baa95565c9c23d280dc02187b786e22",
+     "sha256": "519d4e41ffc743e376ec835f8a8f422767a2730c0d63207b0425c56aeba79c09",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -5803,6 +5890,22 @@
        "title": {
         "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
         "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
+       }
+      },
+      {
+       "id": "F-RED-01",
+       "severity": "S2",
+       "status": "open",
+       "evidence": [
+        "stress.satellite_backcast@c18-satellite-commercial-industrial@commercial-industrial",
+        "stress.satellite_backcast@c18-satellite-commercial-real-estate@commercial-real-estate",
+        "stress.satellite_backcast@c18-satellite-credit-cards@credit-cards",
+        "stress.satellite_backcast@c18-satellite-other-consumer@other-consumer",
+        "stress.satellite_backcast@c18-satellite-residential@residential"
+       ],
+       "title": {
+        "en": "Back-cast of the satellites through 2020 to 2025: red on 5 rows that no other finding cites",
+        "es": "Prueba retrospectiva de los satélites entre 2020 y 2025: en rojo en 5 filas que ningún otro hallazgo cita"
        }
       }
      ],
@@ -6339,7 +6442,7 @@
    "fit_id": "generators",
    "manifest": {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "d52844ea66e86196ab9c1a47dfd6c4779d69045d2ede4c0d3b103ca6ba63a751",
+    "sha256": "f8143ea4bbea18b0612c6f916a365cab5f792384456be2073bf278618d329fff",
     "title": {
      "en": "Validating the validator: size and power of every test",
      "es": "Validar al validador: tamaño y potencia de cada prueba"
@@ -6592,7 +6695,7 @@
     {
      "variant_id": "broken-monotonicity",
      "path": "data/derived/C22/broken-monotonicity.json",
-     "sha256": "8080a0ec9b9f6354ce84e482b4f4d1a4beebd1c59fcc86179122258173cfabf7",
+     "sha256": "fcb7937b3de6b85ff83637494ef66073bc5b60b8726e5daf68234498b6f273b7",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -6618,8 +6721,8 @@
         "rating.migration_ztests@migrations-7-500-r2"
        ],
        "title": {
-        "en": "ECB migration z-tests: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Pruebas z de migración del BCE: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "ECB migration z-tests: red on 1 row (grade 4 to grade 2 at 2 times grade 4 to grade 3; 500 obligors per grade) that no other finding cites",
+        "es": "Pruebas z de migración del BCE: en rojo en 1 fila (grado 4 a grado 2 a 2 veces grado 4 a grado 3; 500 deudores por grado) que ningún otro hallazgo cita"
        }
       }
      ],
@@ -6647,7 +6750,7 @@
     {
      "variant_id": "clustering",
      "path": "data/derived/C22/clustering.json",
-     "sha256": "3e371fab1bf77afe0d78b4f38ed11f6212128643187c32b013fa9518d4d092f9",
+     "sha256": "fa6da36e9e985181cb12c6a6c481eb60a5b686a2acee0549933a84d6117bddd7",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -6706,7 +6809,7 @@
     {
      "variant_id": "concentration",
      "path": "data/derived/C22/concentration.json",
-     "sha256": "4e7dd3a797458992cbbbbe4b6b716026e6a97bea3e2f5973adaf3baf70e4dcba",
+     "sha256": "e4b24e12c946433d77ff09e9e92b2ab0fa789488bb90ad16e2eb12470a4e65b5",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -6721,7 +6824,7 @@
        ],
        "title": {
         "en": "The ECB concentration statistic is bounded: with ten grades and an initial CV of 0.6 it cannot reject at 5%; test concentration on the counts",
-        "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5%; pruébese la concentración en los conteos"
+        "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5 %; pruébese la concentración en los conteos"
        }
       }
      ],
@@ -6749,7 +6852,7 @@
     {
      "variant_id": "discrimination-decay",
      "path": "data/derived/C22/discrimination-decay.json",
-     "sha256": "68b3f5bc4e467e328e5d52a4d8229e39d277f62814cf99ecdfa3fe344afc8450",
+     "sha256": "400b273dfbc7241fba04facaea180d920e8cfb56aec64c26ecf2f94a47e8fa33",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -6805,7 +6908,7 @@
     {
      "variant_id": "drift",
      "path": "data/derived/C22/drift.json",
-     "sha256": "d6705a64976d3ecb28255f7b6cd6d1ddd9f0b2f002c9e53938ca224e13b0890a",
+     "sha256": "7a1da38de2b5c3362eb36d857c74c96832058fc94ae00108fbcc53edf1e8c0bd",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [
@@ -6846,8 +6949,8 @@
         "stability.ks@two-sample-1000-s0.2"
        ],
        "title": {
-        "en": "Two-sample Kolmogorov-Smirnov test: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Prueba de Kolmogorov-Smirnov de dos muestras: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Two-sample Kolmogorov-Smirnov test: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
+        "es": "Prueba de Kolmogorov-Smirnov de dos muestras: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
        }
       },
       {
@@ -6858,8 +6961,8 @@
         "stability.psi@two-sample-1000-s0.2"
        ],
        "title": {
-        "en": "PSI against the training slice: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "PSI contra el tramo de entrenamiento: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "PSI against the training slice: red on 1 row (two samples of 1,000, the current shifted by 0.2 SD) that no other finding cites",
+        "es": "PSI contra el tramo de entrenamiento: en rojo en 1 fila (dos muestras de 1.000, la actual desplazada 0,2 DE) que ningún otro hallazgo cita"
        }
       }
      ],
@@ -6887,7 +6990,7 @@
     {
      "variant_id": "leakage",
      "path": "data/derived/C22/leakage.json",
-     "sha256": "cad42e22c6d7e5cc0ce5f2966089b250bf318ef8927674b03611acf6e69179ba",
+     "sha256": "8f36f666ad722bc7da9c547431585455b4386945e67d7dbacb3448f34759c3a0",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -6926,8 +7029,8 @@
         "disc.auc_vs_initial@binormal-150-leak1"
        ],
        "title": {
-        "en": "AUC against the AUC at initial validation: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "AUC contra el AUC de la validación inicial: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "AUC against the AUC at initial validation: red on 1 row (the leaked feature shifted by 1 for defaulters in development) that no other finding cites",
+        "es": "AUC contra el AUC de la validación inicial: en rojo en 1 fila (la variable filtrada desplazada 1 para incumplidos en desarrollo) que ningún otro hallazgo cita"
        }
       }
      ],
@@ -6955,7 +7058,7 @@
     {
      "variant_id": "miscalibration",
      "path": "data/derived/C22/miscalibration.json",
-     "sha256": "31f1670d355f85d18c2b24e98187eddf0985b89ab1ecba77a7d06412a5fd622e",
+     "sha256": "a250cc3d62810245050baea50f83f47a13dd1f617c0d0e3eb35c83d01b99e408",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -6994,8 +7097,8 @@
         "pd.binomial@port-5000-k1.5"
        ],
        "title": {
-        "en": "Binomial: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Binomial: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Binomial: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
+        "es": "Binomial: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
        }
       },
       {
@@ -7006,8 +7109,8 @@
         "pd.hosmer_lemeshow@logistic-5000-k1.5"
        ],
        "title": {
-        "en": "Hosmer-Lemeshow: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Hosmer-Lemeshow: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Hosmer-Lemeshow: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
+        "es": "Hosmer-Lemeshow: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
        }
       },
       {
@@ -7018,8 +7121,8 @@
         "pd.jeffreys@port-5000-k1.5"
        ],
        "title": {
-        "en": "Jeffreys: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Jeffreys: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Jeffreys: red on 1 row (5,000 obligors, PD applied 2%, true 3%) that no other finding cites",
+        "es": "Jeffreys: en rojo en 1 fila (5.000 deudores, PD aplicada 2 %, verdadera 3 %) que ningún otro hallazgo cita"
        }
       },
       {
@@ -7030,8 +7133,8 @@
         "pd.spiegelhalter@logistic-5000-k1.5"
        ],
        "title": {
-        "en": "Spiegelhalter test: red on 1 row that no other finding cites; every red light is an open finding, and these rows are its evidence",
-        "es": "Prueba de Spiegelhalter: en rojo en 1 fila que ningún otro hallazgo cita; cada luz roja es un hallazgo abierto, y estas filas son su evidencia"
+        "en": "Spiegelhalter test: red on 1 row (5,000 obligors, every model odds divided by 1.5) that no other finding cites",
+        "es": "Prueba de Spiegelhalter: en rojo en 1 fila (5.000 deudores, cada razón de chances del modelo dividida por 1,5) que ningún otro hallazgo cita"
        }
       }
      ],
@@ -7077,7 +7180,7 @@
     {
      "variant_id": "null",
      "path": "data/derived/C22/null.json",
-     "sha256": "e8a68a4daa66b71b59658762a1cf22c59fd8b43ede71df243caa0ea0654419b0",
+     "sha256": "e24434b04aeaed9643893af5633a748c234502ce7f437259b441ab7d73b6cbf9",
      "code_version": "1.00.000",
      "riskvalidation_version": "1.0.1",
      "sources": [],
@@ -7091,8 +7194,8 @@
         "rate:pd.hosmer_lemeshow@null"
        ],
        "title": {
-        "en": "Hosmer-Lemeshow with G - 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
-        "es": "Hosmer-Lemeshow con G - 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"
+        "en": "Hosmer-Lemeshow with G − 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
+        "es": "Hosmer-Lemeshow con G − 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"
        }
       },
       {
@@ -7156,7 +7259,7 @@
        ],
        "title": {
         "en": "The Jeffreys test is Bayesian; on a discrete count its exact size moves with the number of obligors and can exceed the level (1.38% at 1% for 1,000 obligors at PD 1%)",
-        "es": "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38% al 1% para 1.000 deudores con PD 1%)"
+        "es": "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38 % al 1 % para 1.000 deudores con PD 1 %)"
        }
       },
       {
@@ -7184,7 +7287,7 @@
        ],
        "title": {
         "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.73 %, Markov order (grouped by direction) 6.05 %, Matrix against a reference 3.70 %, Downward momentum (hazard) 4.45 %); the order test, near its bound in 4,000 repetitions, rejects 5.05 % at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-        "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05 % al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+        "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5 %: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05 % al 5 % en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
        }
       },
       {
@@ -7197,7 +7300,7 @@
        ],
        "title": {
         "en": "19 of 21 tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all 25 studies counted); above their bound and not documented by the engine: Christoffersen independence, Christoffersen conditional coverage",
-        "es": "19 de 21 pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
+        "es": "19 de 21 pruebas de las otras siete familias mantienen su tamaño al 5 % y 1 % en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
        }
       },
       {
@@ -7208,8 +7311,8 @@
         "rate:portfolio.mc_convergence@null"
        ],
        "title": {
-        "en": "The Monte Carlo quantile convergence test measures 1.33 % at 1% against a bound of 1.49 % (within it in this run); the engine documents this excess on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
-        "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,33 % al 1% contra una cota de 1,49 % (dentro de ella en esta corrida); el motor documenta este exceso en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55% al 1% contra una cota de 1,49% (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1%; con el error estándar exacto su tamaño es 1,20%, dentro de ambas cotas."
+        "en": "The Monte Carlo quantile convergence test measures 1.33 % at 1% against a bound of 1.49 % (within it in this run); the engine documents an excess of its own run on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
+        "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,33 % al 1 % contra una cota de 1,49 % (dentro de ella en esta corrida); el motor documenta un exceso de su propia corrida en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55 % al 1 % contra una cota de 1,49 % (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1 %; con el error estándar exacto su tamaño es 1,20 %, dentro de ambas cotas."
        }
       },
       {
@@ -7228,7 +7331,7 @@
        ],
        "title": {
         "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile), 60 years at the 95% level, Tail back-test (LHP quantile), 250 years at the 99% level, CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1,500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
-        "es": "8 estudios son conservadores: su tasa al 5% queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP), 60 años al nivel 95 %, Prueba retrospectiva de cola (cuantil LHP), 250 años al nivel 99 %, Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5 %), Prueba de cuantil dinámico (250 días al 2,5 %), Prueba de cuantil dinámico (750 días al 1 %)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
+        "es": "8 estudios son conservadores: su tasa al 5 % queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP), 60 años al nivel 95 %, Prueba retrospectiva de cola (cuantil LHP), 250 años al nivel 99 %, Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5 %), Prueba de cuantil dinámico (250 días al 2,5 %), Prueba de cuantil dinámico (750 días al 1 %)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
        }
       }
      ],
@@ -7427,7 +7530,7 @@
       ],
       "title": {
        "en": "The ECB concentration statistic is bounded: with ten grades and an initial CV of 0.6 it cannot reject at 5%; test concentration on the counts",
-       "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5%; pruébese la concentración en los conteos"
+       "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5 %; pruébese la concentración en los conteos"
       }
      }
     ],
