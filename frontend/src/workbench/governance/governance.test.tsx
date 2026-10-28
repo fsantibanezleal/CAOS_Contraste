@@ -95,8 +95,9 @@ describe('Inventory and tiers', () => {
   it('rings a node by the worst open severity of its entry', () => {
     const m = html(<MapDrawing inv={inv} width={640} height={240} />);
     expect(m).toMatch(/data-node="C18\/banco-andino"[^>]*data-worst="S1"/);
-    // since U16-F12g the German twin's uncited red rows are an open S2 finding, its worst
-    expect(m).toMatch(/data-node="C01\/german"[^>]*data-worst="S2"/);
+    // the fixtures carry the case findings only (the generic red-row findings are the governance bake's): the German twin's worst
+    // open finding is S3
+    expect(m).toMatch(/data-node="C01\/german"[^>]*data-worst="S3"/);
   });
   it('draws the 4 by 4 matrix with counts that sum to the entries, each cell with the tier of the stated rule', () => {
     const m = html(<MatrixDrawing inv={inv} width={420} picked={null} />);
@@ -183,7 +184,7 @@ describe('Findings and appetite', () => {
       const h = html(<AppetiteTable appetite={appetite} />);
       expect(count(h, /data-metric="/g)).toBe(7);
       const open = appetite.metrics.find((m) => m.id === 'open-high-severity')!;
-      expect(open.register_rows).toBe(22); // the generic red-row findings in the register, which cite every uncited red row since R5 ruling 1
+      expect(open.register_rows).toBe(9); // the fixtures' case findings (the generic red-row findings stay out of the contract fixture)
       expect(h).toMatch(/data-metric="open-high-severity" data-light="red"/);
       expect(text(h)).toContain(lang === 'es' ? 'convención' : 'convention');
       expect(text(h)).toContain(lang === 'es' ? 'Filas del registro' : 'Register rows');
