@@ -343,16 +343,13 @@ def test_adversarial_a_spanish_decimal_comma_reads_as_the_english_decimal_and_a_
         assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
 
 
-# English labels the English notebooks print; a Spanish notebook prints none of them (conventions/product-notebooks.md:
+# English labels the English notebooks print (the set the notebook-bar rewrite of 0.12.000 still prints); a Spanish notebook prints none of them (conventions/product-notebooks.md:
 # each notebook is written in its tree's language: prose, comments, labels and printed text)
 ENGLISH_LABELS = (
-    "registered tests", "derived folder found", "default case", "held-out cards", "test rows", "keys of a test row",
-    "cards in the sample", "mean PD of the scorecard", "standard error", "95% interval", "pairs compared",
-    "equal to the engine", "p-value, SciPy", "expected defaults", "Brier score", "tests with a threshold", "worst light",
-    "tasks:", "tests compared", "all agree", "thresholds by kind", "same label", "same threshold", "obligors:",
-    "truth status", "same envelope", "installed riskvalidation", "ignored columns", "contract 1 counts", "first upper bounds",
-    "grades:", "defaults:", "no value", "amber below", "light:", "policy:", "50 cards", "9000 cards", "mean PD",
-    "module version", "worst:", "results:", "counts:", "expected by the PDs",
+    "registered tests", "default case", "held-out cards", "test rows", "mean PD of the scorecard", "standard error",
+    "95% interval", "expected defaults", "Brier score", "tests with a threshold", "worst light", "thresholds by kind",
+    "same label", "obligors:", "truth status", "installed riskvalidation", "ignored columns", "first upper bounds", "grades:",
+    "defaults:", "light:", "policy:", "50 cards", "9000 cards", "mean PD", "counts:", "expected by the PDs",
 )
 
 

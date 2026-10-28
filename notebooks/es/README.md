@@ -1,14 +1,14 @@
-# Cuadernos, español
+# Notebooks, español
 
 El índice del árbol en español. Los temas van de lo simple a lo complejo; dentro de un tema el orden de lectura es el número del
-cuaderno y el nivel nunca baja. La contraparte en inglés de cada cuaderno está en la misma ruta bajo [`../en/`](../en/README.md).
+notebook y el nivel nunca baja. La contraparte en inglés de cada notebook está en la misma ruta bajo [`../en/`](../en/README.md).
 Cómo instalarlos y correrlos está en [`../README.md`](../README.md).
 
 Niveles: 1 fundamentos, 2 el método en la práctica, 3 estado del arte, 4 más allá del estado del arte.
 
 ## Temas
 
-Un tema sin cuaderno de nivel 3 explica por qué en su fila; todos los temas del 02 al 14 tienen uno.
+Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del 02 al 14 tienen uno.
 
 | Tema | Requiere | Nivel 3 |
 |---|---|---|
@@ -27,9 +27,9 @@ Un tema sin cuaderno de nivel 3 explica por qué en su fila; todos los temas del
 | [13-ml-and-ai-risk](13-ml-and-ai-risk/) | tema 02 | Nivel 3: Estado del arte: herramientas de pruebas de resultados, bibliotecas conformes, explicadores y bibliotecas de equidad |
 | [14-validating-the-validator](14-validating-the-validator/) | temas 01 y 03 | Nivel 3: Estado del arte: lo que midió la literatura y lo que omiten las herramientas |
 
-## Cuadernos
+## Notebooks
 
-| Cuaderno | Nivel | Qué enseña |
+| Notebook | Nivel | Qué enseña |
 |---|---|---|
 | [01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb](01-getting-started/01-install-the-engine-and-open-an-artifact.ipynb) | 1 | instalar el motor, abrir los tres tipos de documento confirmado, contar cuánto de su catálogo de 134 pruebas usó un caso real, reconstruir las filas confirmadas como objetos `TestResult` y colorearlas de nuevo con la política instalada, nombrando la versión del motor que horneó cada documento |
 | [01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb](01-getting-started/02-a-first-testresult-on-a-real-slice.ipynb) | 1 | una prueba del motor sobre 50 tarjetas reales: el AUC, la prueba de Jeffreys y la puntuación de Brier, cuántos incumplimientos necesita una prueba de nivel para objetar, cuánto mueve un resultado un corte de 25 tarjetas, y las mismas pruebas sobre las 9.000 tarjetas confirmadas |
