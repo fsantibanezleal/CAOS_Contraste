@@ -183,7 +183,7 @@ describe('Findings and appetite', () => {
       const h = html(<AppetiteTable appetite={appetite} />);
       expect(count(h, /data-metric="/g)).toBe(7);
       const open = appetite.metrics.find((m) => m.id === 'open-high-severity')!;
-      expect(open.register_rows).toBe(18); // the generic red-row findings of U16-F12g in the register
+      expect(open.register_rows).toBe(22); // the generic red-row findings in the register, which cite every uncited red row since R5 ruling 1
       expect(h).toMatch(/data-metric="open-high-severity" data-light="red"/);
       expect(text(h)).toContain(lang === 'es' ? 'convención' : 'convention');
       expect(text(h)).toContain(lang === 'es' ? 'Filas del registro' : 'Register rows');

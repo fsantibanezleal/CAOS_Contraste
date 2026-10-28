@@ -344,6 +344,8 @@ const fedShift = (k: string): BiText => bi(`${num(k, 'en')} times the Fed higher
 export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
   if (seg === 'all' && ctx.caseId === 'C12') return WHOLE_BOOK;
   if (SEGMENT_FIXED[seg]) return SEGMENT_FIXED[seg];
+  // a C18 loan class (the segment of a satellite's back-cast row), as the C18 views name it; the generic red-row findings cite it
+  if (ctx.caseId === 'C18' && LOAN_TEXT[seg]) return LOAN_TEXT[seg];
   let m: RegExpExecArray | null;
   // the input of a CSI row by the name its codebook gives (C02: the UCI file's Attr27; a `_missing` column is its missing-value
   // indicator); a column no codebook names is said to be an input

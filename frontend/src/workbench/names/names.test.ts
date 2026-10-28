@@ -79,7 +79,8 @@ describe('the names gate: every id a reader can meet has a name', () => {
       for (const lang of ['en', 'es'] as const) {
         const t = l.text[lang];
         const leaks = [c.key, l.testId, l.modelId !== undefined && modelName(l.modelId, { caseId: c.caseId, models: c.models })?.[lang] !== l.modelId ? l.modelId : undefined]
-          .filter((s): s is string => typeof s === 'string' && s.length > 2 && t.includes(s));
+          // a raw id leaks as a word of its own, not inside a word ("scenario" in the Spanish "escenarios" is no leak)
+          .filter((s): s is string => typeof s === 'string' && s.length > 2 && new RegExp(`(^|[^\\p{L}\\p{N}])${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^\\p{L}\\p{N}])`, 'u').test(t));
         if (!t || RAW.test(t) || leaks.length) bad.add(`${c.caseId} ${c.key} (${lang}: ${t})`);
       }
     }
