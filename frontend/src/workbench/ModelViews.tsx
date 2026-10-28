@@ -358,8 +358,10 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
       <>
         {/* the column is split by measure, not by the reasons' height (R4 c01 M1, c02 M1: the reasons' two-line Spanish names left the
             distribution a plot of 10 px): the distribution's part keeps its plot's floor (data-plot-floor, measured by layout.ts) and
-            the reasons' card gives up the rest, its table scrolling with its cue */}
-        <div className="ct-part" style={{ flex: '0 1 auto' }}>
+            the reasons' card gives up the rest, its table scrolling with its cue. The four reasons are the card's point (adverse action):
+            the card keeps its own height and the distribution takes the rest above its floor (R5 c01 n4, c02 n1: both parts shrank, and
+            the reasons' card showed 1 of its 4 rows over a distribution of 330 px) */}
+        <div className="ct-part" style={{ flex: '0 0 auto' }}>
         <PlotCard
           fill
           title={live ? { en: 'The applicant in the rail: principal reasons', es: 'El solicitante del panel: razones principales' } : { en: 'The four strongest characteristics', es: 'Las cuatro características más fuertes' }}

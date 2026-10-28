@@ -66,7 +66,8 @@ describe('U16-R4 c03 on the committed C02 documents', () => {
     for (const lang of ['en', 'es'] as const) {
       setLang(lang);
       const ctx = html(<C02ContextView sel={selOf('h1')} />);
-      expect(ctx).toMatch(/<dl class="ct-defs" data-table="c02-split"><dt>[^<]*<\/dt><dd style="white-space:nowrap">/);
+      // each count whole, the line free to break between them (R5 c03 M1 superseded the whole-line nowrap, which clipped the value)
+      expect(ctx).toMatch(/<dl class="ct-defs" data-table="c02-split"><dt>[^<]*<\/dt><dd data-split=""><span style="white-space:nowrap">/);
       const roc = rowsOf(html(<RocCapView sel={selOf('h1')} />), 'discrimination').filter((r) => r.cells.length);
       expect(roc.length).toBeGreaterThan(0);
       for (const r of roc) expect(r.cells.find((c) => / (to|a) /.test(c.text))?.attrs, lang).toContain('white-space:nowrap');

@@ -134,9 +134,15 @@ function baseModelName(id: string, ctx: NameContext): BiText | null {
   return null;
 }
 
+/** The scope of a tests row of a credit or market portfolio whose document gives no segment (R5 ruling 2: never a blank or "-"). */
+export const WHOLE_PORTFOLIO: BiText = bi('whole portfolio', 'toda la cartera');
+/** The scope of a tests row of C12's counterparty book whose document gives no segment, or gives `all` (R5 ruling 2). */
+export const WHOLE_BOOK: BiText = bi('whole book', 'toda la cartera');
+
 const SEGMENT_FIXED: Record<string, BiText> = {
   portfolio: bi('portfolio', 'cartera'),
-  all: bi('whole book', 'toda la cartera'),
+  // the whole portfolio of a credit or market case (C06's rows); C12's counterparty book is the whole book (segmentName, R5 ruling 2)
+  all: WHOLE_PORTFOLIO,
   annual: bi('the annual cohorts', 'las cohortes anuales'),
   semesters: bi('the semesters', 'los semestres'),
   holdout: bi('holdout', 'muestra reservada'),
@@ -333,6 +339,7 @@ const fedShift = (k: string): BiText => bi(`${num(k, 'en')} times the Fed higher
 
 /** A segment of a test row or an evidence key in words; null when no form of the case matches (the gate fails on it). */
 export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
+  if (seg === 'all' && ctx.caseId === 'C12') return WHOLE_BOOK;
   if (SEGMENT_FIXED[seg]) return SEGMENT_FIXED[seg];
   let m: RegExpExecArray | null;
   // the input of a CSI row by the name its codebook gives (C02: the UCI file's Attr27; a `_missing` column is its missing-value
@@ -379,9 +386,9 @@ export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiTe
       if ((m = /^(var|es)-(0\.\d+)$/.exec(seg))) {
         const level = String(Math.round(Number(m[2]) * 1e6) / 1e4);
         const measure = m[1] === 'var' ? 'VaR' : 'ES';
-        return bi(`${measure} at ${level}%`, `${measure} al ${num(level, 'es')} %`);
+        return bi(`${measure} at ${level} %`, `${measure} al ${num(level, 'es')} %`);
       }
-      if ((m = /^lhp-like-([\d.]+)$/.exec(seg))) return bi(`the LHP anchor at ${num(m[1], 'en')}%`, `el ancla LHP al ${num(m[1], 'es')} %`);
+      if ((m = /^lhp-like-([\d.]+)$/.exec(seg))) return bi(`the LHP anchor at ${num(m[1], 'en')} %`, `el ancla LHP al ${num(m[1], 'es')} %`);
       if ((m = /^rho=([\d.]+)\/(maximum-likelihood|moments)$/.exec(seg))) {
         const e = C10_ESTIMATOR_TEXT[m[2]];
         return bi(`known correlation ${num(m[1], 'en')}, ${e.en.toLowerCase()}`, `correlación conocida ${num(m[1], 'es')}, ${e.es.toLowerCase()}`);
@@ -503,7 +510,7 @@ export function evidenceLabel(key: string, ctx: NameContext): EvidenceLabel | nu
   if (key.startsWith('design:')) {
     const id = key.slice(7);
     if (DESIGN_LIMITS[id]) return { kind: 'design', text: join([bi('Design limit', 'Límite de diseño'), DESIGN_LIMITS[id]], ': ') };
-    if (OUTPUT_BLOCKS[id]) return { kind: 'block', text: join([bi('Computed in the bake from', 'Calculado previamente desde'), OUTPUT_BLOCKS[id]], ' ') };
+    if (OUTPUT_BLOCKS[id]) return { kind: 'block', text: join([bi('Computed beforehand from', 'Calculado previamente desde'), OUTPUT_BLOCKS[id]], ' ') };
     return null;
   }
   if (key.startsWith('contract:')) {

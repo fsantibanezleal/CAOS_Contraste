@@ -79,7 +79,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               <th className="ct-wide-only">{pick({ en: 'Bankruptcies', es: 'Quiebras' }, lang)}</th>
               <th>{pick({ en: 'Rate', es: 'Tasa' }, lang)}</th>
               <th>{`AUC ${pick(name(rung), lang)}`}</th>
-              <th>{pick({ en: '95% interval', es: 'Intervalo 95 %' }, lang)}</th>
+              <th>{pick({ en: '95 % interval', es: 'Intervalo 95 %' }, lang)}</th>
               <th className="ct-wide-only">KS</th>
             </tr>
           </thead>
@@ -96,7 +96,8 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
                   <td className="ct-wide-only">{int(o.counts.events, lang)}</td>
                   <td>{pc(o.counts.event_rate, lang)}</td>
                   <td data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.auc, lang) : formatNumber(null, lang)}</td>
-                  <td data-na={r ? undefined : 'true'}>{r ? span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang) : formatNumber(null, lang)}</td>
+                  {/* the interval on one line, as the ROC and decile tables keep it (R5 c03 n8: at 390 it wrapped "0.8..." over "0.9...") */}
+                  <td data-na={r ? undefined : 'true'} style={{ whiteSpace: 'nowrap' }}>{r ? span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang) : formatNumber(null, lang)}</td>
                   <td className="ct-wide-only" data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.ks, lang) : formatNumber(null, lang)}</td>
                 </tr>
               );
@@ -161,9 +162,17 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
       </PlotCard>
       <PlotCard title={{ en: 'The protocol', es: 'El protocolo' }} {...card} note={{ en: 'The files carry no date and no firm identifier, so every reading is a holdout within a file and none is out of time.', es: 'Los archivos no traen fecha ni identificador de empresa, así que toda lectura es una muestra reservada dentro de un archivo y ninguna es fuera del tiempo.' }}>
         <dl className="ct-defs" data-table="c02-split">
-          {/* the slices named in the label, so the value column keeps the three numbers on one line (R3 c03 m10) */}
+          {/* the slices named in the label; each count stays whole and the line breaks only between them (R3 c03 m10: a count broke
+              inside; R5 c03 M1: the line kept on one by `nowrap` overflowed its column and the card cut "1.773" to "1.77") */}
           <dt>{pick({ en: 'Split (training / calibration / holdout)', es: 'Partición (entrenamiento / calibración / reservada)' }, lang)}</dt>
-          <dd style={{ whiteSpace: 'nowrap' }}>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)}`}</dd>
+          <dd data-split="">
+            {[o.split.train_rows, o.split.calibration_rows, o.split.holdout_rows].map((n, i) => (
+              <Fragment key={i}>
+                {i > 0 ? ' / ' : null}
+                <span style={{ whiteSpace: 'nowrap' }}>{int(n, lang)}</span>
+              </Fragment>
+            ))}
+          </dd>
           <dt>{pick({ en: 'Bankruptcies in the holdout', es: 'Quiebras en la muestra reservada' }, lang)}</dt>
           <dd>{int(o.split.holdout_events, lang)}</dd>
           <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Agrupación en tramos, imputación y selección ajustadas solo en el tramo de entrenamiento' }, lang)}</dt>

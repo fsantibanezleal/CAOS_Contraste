@@ -6,17 +6,18 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { Light, TestRow } from '../lib/contract.types';
 import { LIGHT_TEXT, relight, thresholdLabel, type PolicyAlphas } from '../lib/policy';
-import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
+import { CHAMPION, PORTFOLIO, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
-import { segmentName } from './names';
+import { WHOLE_PORTFOLIO, segmentName } from './names';
 
-/** The portfolio-level tests of the battery, in the order a validation report reads them. */
+/** The portfolio-level tests of the battery, in the order a validation report reads them; every row names its segment under the
+ * test (R5 c01 M3, R4 ruling 3: only the Jeffreys label said "portfolio", the other 14 rows named none). */
 const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'disc.auc', label: { en: 'AUC (descriptive)', es: 'AUC (descriptiva)' } },
   { id: 'disc.auc_vs_initial', label: { en: 'AUC against initial validation (ECB)', es: 'AUC contra la validación inicial (BCE)' } },
   { id: 'disc.delong', label: { en: 'DeLong against the champion (a difference in either direction)', es: 'DeLong contra el campeón (una diferencia en cualquier sentido)' } },
   { id: 'disc.ks', label: { en: 'Kolmogorov-Smirnov (descriptive)', es: 'Kolmogorov-Smirnov (descriptiva)' }, descriptive: true },
-  { id: 'pd.jeffreys', label: { en: 'Jeffreys, portfolio (ECB)', es: 'Jeffreys, cartera (BCE)' } },
+  { id: 'pd.jeffreys', label: { en: 'Jeffreys (ECB)', es: 'Jeffreys (BCE)' } },
   { id: 'pd.binomial', label: { en: 'Binomial (WP14)', es: 'Binomial (WP14)' } },
   { id: 'pd.binomial_vasicek', label: { en: 'Binomial with asset correlation 4 % (WP14, CRE31.15)', es: 'Binomial con correlación de activos 4 % (WP14, CRE31.15)' } },
   { id: 'pd.chi2_grades', label: { en: 'Chi-square over grades (WP14)', es: 'Chi-cuadrado sobre grados (WP14)' } },
@@ -27,6 +28,30 @@ const BATTERY: Array<{ id: string; label: BiText; descriptive?: boolean }> = [
   { id: 'stability.psi', label: { en: 'PSI against the training slice', es: 'PSI contra la partición de entrenamiento' } },
   { id: 'rating.hhi', label: { en: 'Grade concentration, Herfindahl (ECB)', es: 'Concentración en grados, Herfindahl (BCE)' } },
 ];
+
+/** The conventional PSI band the engine names (the 0.10 and 0.25 rule of thumb), in the reader's language: the Spanish Stability
+ * table printed the engine's English words ("little change"), U16-F13a's sweep of the R5 classes. */
+const PSI_BAND: Record<string, BiText> = {
+  'little change': { en: 'little change', es: 'cambio pequeño' },
+  'moderate change': { en: 'moderate change', es: 'cambio moderado' },
+  'significant change': { en: 'significant change', es: 'cambio significativo' },
+};
+export const bandText = (band: unknown, lang: 'en' | 'es'): string => {
+  if (typeof band !== 'string' || band === '') return '';
+  return PSI_BAND[band] ? pick(PSI_BAND[band], lang) : band;
+};
+
+/** A tests row's segment in words under its name: the segment the document gives ("portfolio" for a portfolio row), and for a
+ * row of no segment the whole portfolio (R5 ruling 2). */
+export function SegmentDetail({ segment }: { segment: string | null }) {
+  const lang = useShellLang();
+  const words = segment ? segmentName(segment, { caseId: 'C01' }) ?? { en: segment, es: segment } : WHOLE_PORTFOLIO;
+  return (
+    <span className="ct-row-detail" data-segment={segment ?? 'none'}>
+      {pick(words, lang)}
+    </span>
+  );
+}
 
 /** A test's value (its p-value when it has one) and its light under the rail's policy, as a word: never colour alone. */
 export function LightCell({ row, alphas, className, descriptive }: { row: TestRow | undefined; alphas: PolicyAlphas; className?: string; descriptive?: boolean }) {
@@ -93,6 +118,7 @@ export function BatteryView({ sel }: { sel: Selection | null }) {
               <tr key={b.id}>
                 <td className="caos-col-text" title={test(v, b.id, CHAMPION)?.reference ?? ''}>
                   {pick(b.label, lang)}
+                  <SegmentDetail segment={test(v, b.id, CHAMPION)?.segment ?? PORTFOLIO} />
                 </td>
                 {cols.map((m) => (
                   <LightCell key={m.id} row={test(v, b.id, m.id)} alphas={sel.alphas} className={room(m.id)} descriptive={b.descriptive} />
@@ -243,7 +269,10 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
           </thead>
           <tbody>
             <tr>
-              <td>{pick({ en: 'with the 95 % interval', es: 'con el intervalo 95 %' }, lang)}</td>
+              <td>
+                {pick({ en: 'with the 95 % interval', es: 'con el intervalo 95 %' }, lang)}
+                <SegmentDetail segment={dl?.segment ?? test(v, 'disc.auc', CHAMPION)?.segment ?? PORTFOLIO} />
+              </td>
               <td>
                 {formatNumber(value(test(v, 'disc.auc', CHAMPION)), lang, { decimals: 4 })}{' '}
                 {/* the interval on every width: at 390 it wraps under the value, the label says it is shown (R3 c01 M1) */}
@@ -333,10 +362,13 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
             <tbody>
               {psi.map(({ m, t }) => (
                 <tr key={m.id}>
-                  <td title={pick(m.title, lang)}>{pick(shortName(m, m.id), lang)}</td>
+                  <td title={pick(m.title, lang)}>
+                    {pick(shortName(m, m.id), lang)}
+                    <SegmentDetail segment={t?.segment ?? PORTFOLIO} />
+                  </td>
                   <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
                   <td className="ct-room-only">{formatNumber(extra(t, 'benchmark_05'), lang, { decimals: 4 })}</td>
-                  <td className="ct-room-only">{String(t?.extras?.band ?? '')}</td>
+                  <td className="ct-room-only">{bandText(t?.extras?.band, lang)}</td>
                   <LightCell row={t} alphas={sel.alphas} />
                 </tr>
               ))}
