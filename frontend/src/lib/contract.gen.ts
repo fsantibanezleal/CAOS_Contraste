@@ -1813,7 +1813,7 @@ export interface components {
         c06Rung: {
             rung_id: string;
             /** @enum {string} */
-            kind: "kaplan-meier" | "discrete-time-hazard" | "cox";
+            kind: "kaplan-meier" | "discrete-time-hazard" | "cox" | "piecewise-constant-hazard-network";
             covariates: string[];
             macro_covariates: string[];
             competing_prepayment: boolean;

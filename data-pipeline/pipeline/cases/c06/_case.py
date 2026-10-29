@@ -18,7 +18,7 @@ DEFAULT_VARIANT = "rd-2020-06"
 #: a quarter enters the implied systematic factor with at least this many loans at risk (the young book of the first years
 #: has almost no defaults, which is its age and not the cycle)
 MIN_QUARTER_AT_RISK = 50_000
-ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation"}
+ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "torch"}
 #: the money blocks are written exact: their identities close to 1e-6 of the gross amount, and rounding to nine significant
 #: digits would only add noise to them
 EXACT = frozenset({"reconciliation", "waterfall", "stage_summary", "ecl_by_scenario", "stage_flows", "overlays", "weight_grid",

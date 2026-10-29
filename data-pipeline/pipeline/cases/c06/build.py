@@ -36,8 +36,10 @@ RUNG_TEXT = {
     "L1-dth": (("Discrete-time hazard with macro covariates", "Riesgo en tiempo discreto con covariables macro"),
                ("L1 Hazard", "L1 Riesgo en tiempo discreto")),
     "L2-cox": (("Cox proportional hazards", "Riesgos proporcionales de Cox"), ("L2 Cox", "L2 Cox")),
+    "L3-pch": (("PC-Hazard neural discrete-time survival", "Supervivencia neuronal en tiempo discreto PC-Hazard"),
+               ("L3 PC-Hazard", "L3 PC-Hazard")),
 }
-RUNG_KIND = {"L0-km": "kaplan-meier", "L1-dth": "discrete-time-hazard", "L2-cox": "cox"}
+RUNG_KIND = {"L0-km": "kaplan-meier", "L1-dth": "discrete-time-hazard", "L2-cox": "cox", "L3-pch": "piecewise-constant-hazard-network"}
 NOTICE = {
     "en": ("Small-business loans, not mortgages: the SBA 7(a) loans are the public twin of the mortgage case. Freddie Mac's data is "
            "not used (the owner's account is missing). Default is a charge-off; the file has no delinquency history, no balance "
