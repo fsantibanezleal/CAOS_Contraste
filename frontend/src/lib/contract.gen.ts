@@ -2817,7 +2817,7 @@ export interface components {
         c08RungSpec: {
             rung_id: string;
             /** @enum {string} */
-            kind: "ols" | "fractional-logit" | "beta" | "hurdle" | "tobit" | "gradient-boosted" | "cure-decomposition";
+            kind: "ols" | "fractional-logit" | "beta" | "hurdle" | "tobit" | "gradient-boosted" | "random-forest" | "neural-network" | "cure-decomposition";
             covariates: string[];
             coefficients: components["schemas"]["c08Coefficient"][];
             /** @description The endpoint transformation of beta rungs; null elsewhere. */

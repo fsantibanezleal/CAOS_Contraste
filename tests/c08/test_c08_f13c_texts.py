@@ -16,6 +16,8 @@ VIEW_NAMES = {
     "L4-hurdle": ("Two-stage hurdle", "Modelo en dos etapas"),
     "L5-gradient-boosted": ("Gradient boosting", "Árboles potenciados por gradiente"),
     "L6-tobit": ("Tobit", "Tobit"),
+    "L7-random-forest": ("Random forest", "Bosque aleatorio"),
+    "L8-neural-network": ("Neural network", "Red neuronal"),
 }
 
 
