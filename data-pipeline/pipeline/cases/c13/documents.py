@@ -12,7 +12,7 @@ import numpy as np
 from riskvalidation.validation import market as val
 
 from ...core.text import number, percent
-from . import generator, params
+from . import complement, generator, params
 from . import measure as ms
 from .params import ALPHAS, IDS, WINDOW_DAYS
 
@@ -267,6 +267,8 @@ def findings(out: dict[str, Any]) -> list[dict[str, Any]]:
                          f"(limit {desk[0.025]['limit_exceptions']}) and {_pe(desk[0.01]['share_over_limit'])} at 99% (limit {desk[0.01]['limit_exceptions']})",
                          f"La mesa supera su límite de excepciones en {_p(desk[0.025]['share_over_limit'])} de las replicaciones al 97,5 % "
                          f"(límite {desk[0.025]['limit_exceptions']}) y {_p(desk[0.01]['share_over_limit'])} al 99 % (límite {desk[0.01]['limit_exceptions']})")})
+    if "pla_complement" in out:
+        f.append(complement.finding(did, out["pla_complement"]))
     return f
 
 

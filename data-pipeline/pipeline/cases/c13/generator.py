@@ -65,10 +65,16 @@ class Replication:
         return -self.hpl
 
 
-def replicate(did: str, index: int, case_seed: int = params.CASE_SEED) -> Replication:
-    """Replication ``index`` of deficiency ``did``: seed ``seed_base(did, case_seed) + index``."""
+def replicate(did: str, index: int, case_seed: int = params.CASE_SEED, *, vol_lag_days: float | None = None) -> Replication:
+    """Replication ``index`` of deficiency ``did``: seed ``seed_base(did, case_seed) + index``.
+
+    ``vol_lag_days`` replaces the planted lag of the ``stale-volatility`` variant (the lag ladder of the BS-13 evaluation); the
+    draws, and so the desk, are the same whatever the lag. Left out, the variant is the committed one; any other variant refuses it.
+    """
     if did not in params.IDS:
         raise ValueError(f"unknown deficiency {did!r}; known: {list(params.IDS)}")
+    if vol_lag_days is not None and did != "stale-volatility":
+        raise ValueError(f"a volatility lag applies to stale-volatility only, not {did!r}")
     seed = params.seed_of(did, index, case_seed)
     rng = np.random.default_rng(seed)
     n = BURN_DAYS + WINDOW_DAYS
@@ -78,7 +84,7 @@ def replicate(did: str, index: int, case_seed: int = params.CASE_SEED) -> Replic
     rho_m = RHO_TRUE + (params.value(did, "correlation_error") if did == "wrong-correlation" else 0.0)
     sigma_m = sigma
     if did == "stale-volatility":
-        lag = int(params.value(did, "vol_lag_days"))
+        lag = int(params.value(did, "vol_lag_days") if vol_lag_days is None else vol_lag_days)
         sigma_m = np.concatenate((np.full(lag, sigma[0]), sigma[:-lag]))
     x_true, x_model = w[:, :2] @ chol(RHO_TRUE).T, w[:, :2] @ chol(rho_m).T
     hpl = sigma * (x_true @ _L) + RESIDUAL_SHARE * np.sqrt(factor_variance()) * u
