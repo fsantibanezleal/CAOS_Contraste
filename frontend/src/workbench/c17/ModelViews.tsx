@@ -8,7 +8,7 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { KeyTable, keepDates } from './KeyTable';
 import { C17TestsTable } from './Tests';
-import { AGGREGATION_TEXT, DISCRETION_TEXT, SEVERITY_TEXT, STATUS_TEXT, capitalOf, cellLabel, cellOf, fitOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
+import { AGGREGATION_TEXT, DISCRETION_TEXT, SEVERITY_TEXT, STATUS_TEXT, capitalOf, isCaution, cellLabel, cellOf, fitOf, outputsOf, rungName, text, whole, type C17Sel } from './selection';
 import { es } from './localise';
 
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -40,7 +40,7 @@ export function LadderView({ sel }: { sel: C17Sel | null }) {
     id: r.rung_id,
     label: rungName(r.rung_id),
     value: capitalOf(cell, r.rung_id).summary?.share_underestimating ?? null,
-    tone: r.status === 'UNVERIFIED' ? ('warn' as const) : ('accent' as const),
+    tone: isCaution(r.status) ? ('warn' as const) : ('accent' as const),
     highlight: r.rung_id === sel.rung,
   }));
   const a = fit.aggregation;
@@ -52,8 +52,8 @@ export function LadderView({ sel }: { sel: C17Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: 'Rung 1 fits a lognormal and ignores that losses under the collection threshold are not recorded; rung 2 fits the truncated severity and rescales the frequency; rung 3 splices a lognormal body with a generalised Pareto tail; rung 4 is the closed-form single loss approximation, and rung 5 its mean-corrected form, UNVERIFIED; rung 6 combines scenario points with the losses. The bars give the share of histories whose capital falls below the true quantile.',
-          es: 'El peldaño 1 ajusta una lognormal e ignora que las pérdidas bajo el umbral de recolección no se registran; el 2 ajusta la severidad truncada y reescala la frecuencia; el 3 empalma un cuerpo lognormal con una cola de Pareto generalizada; el 4 es la aproximación de una pérdida en forma cerrada, y el 5 su forma corregida por la media, SIN VERIFICAR; el 6 combina puntos de escenario con las pérdidas. Las barras dan la proporción de historias cuyo capital cae bajo el cuantil verdadero.',
+          en: 'Rung 1 fits a lognormal and ignores that losses under the collection threshold are not recorded; rung 2 fits the truncated severity and rescales the frequency; rung 3 splices a lognormal body with a generalised Pareto tail; rung 4 is the closed-form single loss approximation, and rung 5 its mean-corrected form, UNVERIFIED; rung 6 combines scenario points with the losses; rungs 7 to 10 (S-3) apply the mean-adjusted single loss approximation to a generalised Pareto fitted by maximum likelihood, by minimum Cramer-von Mises distance and by the optimally bias-robust estimator, and to a lognormal fitted by Cramer-von Mises as the control. The bars give the share of histories whose capital falls below the true quantile.',
+          es: 'El peldaño 1 ajusta una lognormal e ignora que las pérdidas bajo el umbral de recolección no se registran; el 2 ajusta la severidad truncada y reescala la frecuencia; el 3 empalma un cuerpo lognormal con una cola de Pareto generalizada; el 4 es la aproximación de una pérdida en forma cerrada, y el 5 su forma corregida por la media, SIN VERIFICAR; el 6 combina puntos de escenario con las pérdidas; los peldaños 7 a 10 (S-3) aplican la aproximación de una pérdida con ajuste por media a una Pareto generalizada ajustada por máxima verosimilitud, por distancia mínima de Cramér-von Mises y por el estimador óptimamente robusto al sesgo, y a una lognormal ajustada por Cramér-von Mises como control. Las barras dan la proporción de historias cuyo capital cae bajo el cuantil verdadero.',
         }}
       >
         <ChartOverTable

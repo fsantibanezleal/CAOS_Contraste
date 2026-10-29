@@ -160,9 +160,10 @@ def bank_block() -> dict:
 
 GRID = [(5, 10000), (5, 20000), (10, 10000), (10, 20000)]
 RUNG_MEDIAN = {"lda_lognormal": 0.55, "lda_lognormal_truncated": 0.80, "lda_splice": 0.97, "sla": 0.90, "sla_mean_corrected": 0.99,
-               "scenario": 1.02}
+               "scenario": 1.02, "sla_mean_adjusted": 0.88, "sla_cvm": 0.84, "sla_obre": 0.86, "sla_cvm_lognormal": 0.55}
+S3 = ("sla_mean_adjusted", "sla_cvm", "sla_obre", "sla_cvm_lognormal")
 AGGREGATION = {"lda_lognormal": "monte-carlo", "lda_lognormal_truncated": "panjer", "lda_splice": "fft", "sla": "closed-form",
-               "sla_mean_corrected": "closed-form", "scenario": "panjer"}
+               "sla_mean_corrected": "closed-form", "scenario": "panjer", **{r: "closed-form" for r in S3}}
 
 
 def capital_summary(rung: str, xi: float, years: int, thr: int, q999: float, n_rep: int, n_fail: int) -> dict:
@@ -176,7 +177,7 @@ def capital_summary(rung: str, xi: float, years: int, thr: int, q999: float, n_r
     n_defined = n_rep - n_fail - (130 if rung == "sla_mean_corrected" else 0)
     return {
         "aggregation": AGGREGATION[rung],
-        "status": "UNVERIFIED" if rung == "sla_mean_corrected" else "verified",
+        "status": "UNVERIFIED" if rung == "sla_mean_corrected" else "SECONDARY_SOURCE" if rung in S3 else "verified",
         "n_defined": n_defined,
         "capital_eur": caps,
         "ratio_to_truth": {k: caps[k] / q999 for k in KEYS},
@@ -228,6 +229,8 @@ def cell_block(xi: float, vidx: int, k: int, years: int, thr: int, q999: float, 
                                                                  "mean correction lambda x E[X] does not exist"}
     else:
         cap["sla_mean_corrected"] = {"summary": capital_summary("sla_mean_corrected", xi, years, thr, q999, n_rep, n_fail), "reason": None}
+    for r in S3:  # fixture: every fit defined on the finite-mean variants, the mean-adjusted form undefined for most fits at an infinite mean
+        cap[r] = {"summary": capital_summary(r, xi, years, thr, q999, n_rep, n_fail), "reason": None}
     if with_scenario:
         cap["scenario"] = {"summary": capital_summary("scenario", xi, years, thr, q999, n_rep, n_fail), "reason": None}
     else:
@@ -344,6 +347,18 @@ def models_doc() -> dict:
          "gpd", True, "closed-form", "UNVERIFIED", "dossier 05 F.4: the form is not checked against Bocker and Sprittulla (2006) or Degen (2010)"),
         ("scenario", "Scenario combination by Bayesian credibility", "Combinacion de escenarios por credibilidad bayesiana", "gpd", True,
          "panjer", "verified", "dossier 05 F.5, Shevchenko and Wuthrich (2006)"),
+        ("sla-mean-adjusted", "Mean-adjusted single loss approximation, GPD by maximum likelihood",
+         "Aproximacion de una perdida con ajuste por media, GPD por maxima verosimilitud", "gpd", True, "closed-form", "SECONDARY_SOURCE",
+         "S-3 of the method tiers plan; riskvalidation.oprisk.robust.sla_var_mean_adjusted"),
+        ("sla-cvm", "Robust GPD by minimum Cramer-von Mises distance, mean-adjusted single loss approximation",
+         "GPD robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media", "gpd", True, "closed-form",
+         "SECONDARY_SOURCE", "S-3 of the method tiers plan; Opdyke and Cavallo (2012)"),
+        ("sla-obre", "Optimally bias-robust GPD at 95 percent efficiency, mean-adjusted single loss approximation",
+         "GPD optimamente robusta al sesgo con eficiencia de 95 por ciento, aproximacion de una perdida con ajuste por media", "gpd", True,
+         "closed-form", "SECONDARY_SOURCE", "S-3 of the method tiers plan; Hampel et al. (1986) section 4.2"),
+        ("sla-cvm-lognormal", "Robust lognormal by minimum Cramer-von Mises distance, mean-adjusted single loss approximation (control)",
+         "Lognormal robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media (control)",
+         "lognormal-truncated", True, "closed-form", "SECONDARY_SOURCE", "S-3 of the method tiers plan; the control"),
     ]
     fit = {
         "currency": "EUR",

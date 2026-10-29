@@ -285,6 +285,106 @@
             },
             "reason": null
           },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 52301059,
+                "p25": 99233992,
+                "median": 154880000,
+                "p75": 241729805,
+                "p95": 458648731
+              },
+              "ratio_to_truth": {
+                "p05": 0.2971651079545455,
+                "p25": 0.5638295,
+                "median": 0.88,
+                "p75": 1.3734648011363637,
+                "p95": 2.6059586988636365
+              },
+              "share_underestimating": 0.5768,
+              "iqr_over_truth": 0.8096353011363636,
+              "log_sd": 0.66
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 49923738,
+                "p25": 94723357,
+                "median": 147840000,
+                "p75": 230742090,
+                "p95": 437801056
+              },
+              "ratio_to_truth": {
+                "p05": 0.2836576022727273,
+                "p25": 0.5382008920454545,
+                "median": 0.84,
+                "p75": 1.3110346022727273,
+                "p95": 2.487506
+              },
+              "share_underestimating": 0.6042,
+              "iqr_over_truth": 0.7728337102272728,
+              "log_sd": 0.66
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 51112399,
+                "p25": 96978675,
+                "median": 151360000,
+                "p75": 236235947,
+                "p95": 448224902
+              },
+              "ratio_to_truth": {
+                "p05": 0.2904113579545455,
+                "p25": 0.5510151988636364,
+                "median": 0.86,
+                "p75": 1.3422496988636363,
+                "p95": 2.546732397727273
+              },
+              "share_underestimating": 0.5904,
+              "iqr_over_truth": 0.7912345,
+              "log_sd": 0.66
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 32688161,
+                "p25": 62021245,
+                "median": 96800000,
+                "p75": 151081133,
+                "p95": 286655459
+              },
+              "ratio_to_truth": {
+                "p05": 0.1857281875,
+                "p25": 0.3523934375,
+                "median": 0.55,
+                "p75": 0.8584155284090909,
+                "p95": 1.6287241988636363
+              },
+              "share_underestimating": 0.8175,
+              "iqr_over_truth": 0.5060220909090909,
+              "log_sd": 0.66
+            },
+            "reason": null
+          },
           "scenario": {
             "summary": null,
             "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
@@ -505,6 +605,106 @@
             },
             "reason": null
           },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 46920431,
+                "p25": 94913280,
+                "median": 154880000,
+                "p75": 252734011,
+                "p95": 511244536
+              },
+              "ratio_to_truth": {
+                "p05": 0.2665933579545455,
+                "p25": 0.53928,
+                "median": 0.88,
+                "p75": 1.4359886988636363,
+                "p95": 2.9047985
+              },
+              "share_underestimating": 0.5699,
+              "iqr_over_truth": 0.8967086988636364,
+              "log_sd": 0.726
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 44787684,
+                "p25": 90599040,
+                "median": 147840000,
+                "p75": 241246104,
+                "p95": 488006147
+              },
+              "ratio_to_truth": {
+                "p05": 0.2544754772727273,
+                "p25": 0.5147672727272727,
+                "median": 0.84,
+                "p75": 1.3707165,
+                "p95": 2.7727621988636364
+              },
+              "share_underestimating": 0.5949,
+              "iqr_over_truth": 0.8559492272727273,
+              "log_sd": 0.726
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 45854058,
+                "p25": 92756159,
+                "median": 151360000,
+                "p75": 246990058,
+                "p95": 499625350
+              },
+              "ratio_to_truth": {
+                "p05": 0.26053442045454545,
+                "p25": 0.5270236306818182,
+                "median": 0.86,
+                "p75": 1.4033526022727272,
+                "p95": 2.8387803977272728
+              },
+              "share_underestimating": 0.5823,
+              "iqr_over_truth": 0.8763289715909091,
+              "log_sd": 0.726
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 29325270,
+                "p25": 59320800,
+                "median": 96800000,
+                "p75": 157958761,
+                "p95": 319527842
+              },
+              "ratio_to_truth": {
+                "p05": 0.16662085227272727,
+                "p25": 0.33705,
+                "median": 0.55,
+                "p75": 0.8974929602272728,
+                "p95": 1.8154991022727274
+              },
+              "share_underestimating": 0.7949,
+              "iqr_over_truth": 0.5604429602272727,
+              "log_sd": 0.726
+            },
+            "reason": null
+          },
           "scenario": {
             "summary": null,
             "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
@@ -721,6 +921,106 @@
               },
               "share_underestimating": 0.5095,
               "iqr_over_truth": 0.5684469090909091,
+              "log_sd": 0.42
+            },
+            "reason": null
+          },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 77617477,
+                "p25": 116671305,
+                "median": 154880000,
+                "p75": 205601669,
+                "p95": 309051723
+              },
+              "ratio_to_truth": {
+                "p05": 0.44100839204545456,
+                "p25": 0.6629051420454546,
+                "median": 0.88,
+                "p75": 1.1681913011363636,
+                "p95": 1.7559756988636364
+              },
+              "share_underestimating": 0.6196,
+              "iqr_over_truth": 0.5052861590909091,
+              "log_sd": 0.42
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 74089411,
+                "p25": 111368064,
+                "median": 147840000,
+                "p75": 196256139,
+                "p95": 295003914
+              },
+              "ratio_to_truth": {
+                "p05": 0.4209625625,
+                "p25": 0.632773090909091,
+                "median": 0.84,
+                "p75": 1.1150916988636363,
+                "p95": 1.6761586022727273
+              },
+              "share_underestimating": 0.661,
+              "iqr_over_truth": 0.48231860795454545,
+              "log_sd": 0.42
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 75853444,
+                "p25": 114019685,
+                "median": 151360000,
+                "p75": 200928904,
+                "p95": 302027810
+              },
+              "ratio_to_truth": {
+                "p05": 0.4309854772727273,
+                "p25": 0.6478391193181818,
+                "median": 0.86,
+                "p75": 1.1416415,
+                "p95": 1.7160671022727272
+              },
+              "share_underestimating": 0.6402,
+              "iqr_over_truth": 0.4938023806818182,
+              "log_sd": 0.42
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 48510924,
+                "p25": 72919565,
+                "median": 96800000,
+                "p75": 128501039,
+                "p95": 193157325
+              },
+              "ratio_to_truth": {
+                "p05": 0.27563025,
+                "p25": 0.4143157102272727,
+                "median": 0.55,
+                "p75": 0.7301195397727273,
+                "p95": 1.0974848011363636
+              },
+              "share_underestimating": 0.9227,
+              "iqr_over_truth": 0.31580382954545455,
               "log_sd": 0.42
             },
             "reason": null
@@ -962,6 +1262,106 @@
               },
               "share_underestimating": 0.5087,
               "iqr_over_truth": 0.6270400397727273,
+              "log_sd": 0.462
+            },
+            "reason": null
+          },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 72436248,
+                "p25": 113412501,
+                "median": 154880000,
+                "p75": 211509443,
+                "p95": 331157605
+              },
+              "ratio_to_truth": {
+                "p05": 0.4115695909090909,
+                "p25": 0.6443892102272727,
+                "median": 0.88,
+                "p75": 1.2017581988636363,
+                "p95": 1.8815773011363637
+              },
+              "share_underestimating": 0.609,
+              "iqr_over_truth": 0.5573689886363636,
+              "log_sd": 0.462
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 69143691,
+                "p25": 108257387,
+                "median": 147840000,
+                "p75": 201895373,
+                "p95": 316104994
+              },
+              "ratio_to_truth": {
+                "p05": 0.39286188068181815,
+                "p25": 0.6150987897727273,
+                "median": 0.84,
+                "p75": 1.1471328011363637,
+                "p95": 1.7960511022727272
+              },
+              "share_underestimating": 0.6471,
+              "iqr_over_truth": 0.5320340113636364,
+              "log_sd": 0.462
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 70789968,
+                "p25": 110834944,
+                "median": 151360000,
+                "p75": 206702408,
+                "p95": 323631299
+              },
+              "ratio_to_truth": {
+                "p05": 0.40221572727272725,
+                "p25": 0.629744,
+                "median": 0.86,
+                "p75": 1.1744455,
+                "p95": 1.8388141988636364
+              },
+              "share_underestimating": 0.628,
+              "iqr_over_truth": 0.5447015,
+              "log_sd": 0.462
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 45272654,
+                "p25": 70882814,
+                "median": 96800000,
+                "p75": 132193399,
+                "p95": 206973501
+              },
+              "ratio_to_truth": {
+                "p05": 0.2572309886363636,
+                "p25": 0.40274326136363636,
+                "median": 0.55,
+                "p75": 0.7510988579545455,
+                "p95": 1.1759858011363635
+              },
+              "share_underestimating": 0.9022,
+              "iqr_over_truth": 0.3483555965909091,
               "log_sd": 0.462
             },
             "reason": null
@@ -1265,7 +1665,7 @@
           "influence": -0.03
         }
       ],
-      "reference": "Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26"
+      "reference": "Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"
     }
   },
   "tests": [

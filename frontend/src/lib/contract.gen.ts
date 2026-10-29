@@ -1652,7 +1652,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10209,7 +10209,7 @@ export interface components {
             /** @enum {string} */
             aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
             /** @enum {string} */
-            status: "verified" | "UNVERIFIED";
+            status: "verified" | "UNVERIFIED" | "SECONDARY_SOURCE";
             /** @description Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted). */
             n_defined: number;
             capital_eur: components["schemas"]["c17MoneyQuantiles"];
@@ -10220,7 +10220,7 @@ export interface components {
             /** @description Standard deviation across the replications of ln(capital / true quantile). */
             log_sd: number;
         };
-        /** @description The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination. */
+        /** @description The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination; rungs 7 to 10 (S-3 of the method tiers plan, status SECONDARY_SOURCE) the mean-adjusted single loss approximation on the GPD fitted by maximum likelihood, by minimum Cramer-von Mises distance and by the optimally bias-robust estimator, and on the lognormal fitted by Cramer-von Mises (the control). */
         c17CapitalByRung: {
             lda_lognormal: components["schemas"]["c17Capital"];
             lda_lognormal_truncated: components["schemas"]["c17Capital"];
@@ -10228,6 +10228,10 @@ export interface components {
             sla: components["schemas"]["c17Capital"];
             sla_mean_corrected: components["schemas"]["c17MeanCorrectedSla"];
             scenario: components["schemas"]["c17OptionalCapital"];
+            sla_mean_adjusted: components["schemas"]["c17OptionalCapital"];
+            sla_cvm: components["schemas"]["c17OptionalCapital"];
+            sla_obre: components["schemas"]["c17OptionalCapital"];
+            sla_cvm_lognormal: components["schemas"]["c17OptionalCapital"];
         };
         /** @description The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion. */
         c17CapitalUnverified: {
@@ -10291,13 +10295,13 @@ export interface components {
             };
             panjer: {
                 step_eur: number;
-                exceedance: (number | null)[];
+                exceedance: number[];
             };
             fft: {
                 n_points: number;
                 padding_factor: number;
                 tilt: number;
-                exceedance: (number | null)[];
+                exceedance: number[];
             };
             quantile_999_eur: {
                 monte_carlo: number;
@@ -10506,7 +10510,7 @@ export interface components {
         /** @description A rung of the operational risk ladder of dossier 05. */
         c17Rung: {
             /** @enum {string} */
-            rung_id: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "sla-mean-corrected" | "scenario";
+            rung_id: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "sla-mean-corrected" | "scenario" | "sla-mean-adjusted" | "sla-cvm" | "sla-obre" | "sla-cvm-lognormal";
             label: components["schemas"]["common-text"];
             /** @enum {string} */
             severity_law: "lognormal" | "lognormal-truncated" | "lognormal-gpd-splice" | "gpd" | "none";
@@ -10514,7 +10518,7 @@ export interface components {
             /** @enum {string} */
             aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
             /** @enum {string} */
-            status: "verified" | "UNVERIFIED";
+            status: "verified" | "UNVERIFIED" | "SECONDARY_SOURCE";
             reference: string;
         } & ({
             /** @enum {string} */
@@ -10526,6 +10530,11 @@ export interface components {
             rung_id?: "sla-mean-corrected";
             /** @constant */
             status?: "UNVERIFIED";
+        } | {
+            /** @enum {string} */
+            rung_id?: "sla-mean-adjusted" | "sla-cvm" | "sla-obre" | "sla-cvm-lognormal";
+            /** @constant */
+            status?: "SECONDARY_SOURCE";
         });
         c17Scenario: {
             scenario_id: string;

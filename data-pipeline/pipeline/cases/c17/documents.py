@@ -82,6 +82,36 @@ def _q(x: np.ndarray, method: str = "linear") -> dict[str, float]:
     return {k: float(v) for k, v in zip(KEYS, np.percentile(x, PCT, method=method))}
 
 
+#: the rungs of S-3 of the method tiers plan: the key of the replication arrays and the model id of the capital_stability row
+S3_RUNGS: tuple[tuple[str, str], ...] = (("sla_mean_adjusted", "sla-mean-adjusted"), ("sla_cvm", "sla-cvm"), ("sla_obre", "sla-obre"),
+                                         ("sla_cvm_lognormal", "sla-cvm-lognormal"))
+S3_NAME = {"sla-cvm": T("Cramer-von Mises GPD", "GPD de Cramér-von Mises"), "sla-obre": T("optimally bias-robust GPD", "GPD óptimamente robusta al sesgo")}
+
+
+def s3_counts(capitals: list[dict[str, Any]], rung_key: str) -> tuple[int, int, int]:
+    """``(cells, smaller spread, smaller bias)`` of a robust rung against the splice LDA over the cells where both have a capital: spread is the
+    interquartile range of capital over the truth, bias the absolute log of the median ratio to the truth (``params.S3_HYPOTHESIS``)."""
+    n = spread = bias = 0
+    for cap in capitals:
+        r, sp = cap[rung_key], cap["lda_splice"]
+        if r is None or sp is None:
+            continue
+        n += 1
+        spread += r["iqr_over_truth"] < sp["iqr_over_truth"]
+        bias += abs(math.log(r["ratio_to_truth"]["median"])) < abs(math.log(sp["ratio_to_truth"]["median"]))
+    return n, spread, bias
+
+
+def s3_verdict(n: int, spread: int, bias: int) -> str:
+    """``holds``, ``refuted`` or ``inconclusive`` by the shares of ``params.S3_HYPOTHESIS`` (no cell with both rungs: inconclusive)."""
+    if n == 0:
+        return "inconclusive"
+    h = P.S3_HYPOTHESIS
+    if min(spread, bias) / n < h["refuted_below_share"]:
+        return "refuted"
+    return "holds" if min(spread, bias) / n >= h["holds_at_share"] else "inconclusive"
+
+
 def _row(res: Any, segment: str | None = None) -> dict[str, Any]:
     d = res.to_dict()
     if segment is not None:
@@ -145,7 +175,8 @@ def model_summaries(rv: str) -> list[dict[str, Any]]:
     lvl = {"level": {"value": P.LEVEL, "unit": "probability"}}
     by_id = {r["rung_id"]: r for r in P.LADDER}
     out = []
-    for rid in ("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario"):
+    for rid in ("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario", "sla-mean-adjusted", "sla-cvm",
+                "sla-obre", "sla-cvm-lognormal"):
         extra = dict(lvl)
         if rid in ("lda-splice", "scenario"):
             extra["splice_threshold_eur"] = {"value": P.SPLICE_THRESHOLD_EUR, "unit": "EUR"}
@@ -193,6 +224,18 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
                            "it depends on the losses only through the 10-year average and the BIC.",
                            f"El capital por riesgo operacional del SMA es {es_num(orc_median / truth, '.1%')} del cuantil 99,9 por ciento verdadero con índice de cola "
                            f"{es_num(v.tail_index, 'g')}; depende de las pérdidas solo por el promedio de 10 años y el BIC.")})
+    caps = [{"lda_splice": c["lda_splice"], **{k: c[k]["summary"] for k, _ in S3_RUNGS}} for c in cells.values()]
+    es_word = {"holds": "se sostiene", "refuted": "se refuta", "inconclusive": "no es concluyente"}
+    lines_en, lines_es, refs = [], [], []
+    for key, mid in S3_RUNGS[1:3]:
+        n, sp, bi = s3_counts(caps, key)
+        verdict = s3_verdict(n, sp, bi)
+        lines_en.append(f"the {S3_NAME[mid]['en']} has the smaller spread in {sp} of {n} cells and the smaller bias in {bi} (hypothesis {verdict})")
+        lines_es.append(f"la {S3_NAME[mid]['es']} tiene el menor rango en {sp} de {n} celdas y el menor sesgo en {bi} (hipótesis: {es_word[verdict]})")
+        refs += ev(mid, "y10-h20000")
+    out.append({"id": "F-5", "severity": "S3", "status": "open", "evidence": refs + ev("lda-splice", "y10-h20000") or ["design:replications"],
+                "title": T(f"S-3, robust severity, tail index {v.tail_index:g}: against the splice LDA, " + "; ".join(lines_en) + ".",
+                           f"S-3, severidad robusta, índice de cola {es_num(v.tail_index, 'g')}: frente al LDA con empalme, " + "; ".join(lines_es) + ".")})
     if v.infinite_mean:
         out.append({"id": "F-4", "severity": "S2", "status": "open", "evidence": ["design:infinite-mean"],
                     "title": T("The severity has an infinite mean: no true mean, no expected shortfall and no mean-corrected single loss approximation exist.",
@@ -232,6 +275,13 @@ def variant_document(v: Variant, truth: Truth, bank: dict[str, Any], cells: list
                            else {"summary": None, "reason": "fewer than four histories gave a scenario combination (the prior or the fit was refused by the engine)"})
         if row is not None:
             tests.append(row)
+        for key, mid in S3_RUNGS:
+            s, row = capital_summary(a[key], tq, mid, cid, "closed-form", "SECONDARY_SOURCE")
+            cap[key] = ({"summary": s, "reason": None} if s is not None
+                        else {"summary": None, "reason": "fewer than four histories gave a capital: the fitted severity has no mean (a tail index of 1 or more) "
+                                                         "or the engine refused the fit"})
+            if row is not None:
+                tests.append(row)
         stab, stab_row = _stability(c)
         tests.append(stab_row)
         ok = np.isfinite(a["agree"])

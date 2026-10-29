@@ -832,7 +832,8 @@
           "type": "string",
           "enum": [
             "verified",
-            "UNVERIFIED"
+            "UNVERIFIED",
+            "SECONDARY_SOURCE"
           ]
         },
         "n_defined": {
@@ -1038,7 +1039,11 @@
         "lda_splice",
         "sla",
         "sla_mean_corrected",
-        "scenario"
+        "scenario",
+        "sla_mean_adjusted",
+        "sla_cvm",
+        "sla_obre",
+        "sla_cvm_lognormal"
       ],
       "properties": {
         "lda_lognormal": {
@@ -1058,9 +1063,21 @@
         },
         "scenario": {
           "$ref": "#/$defs/c17OptionalCapital"
+        },
+        "sla_mean_adjusted": {
+          "$ref": "#/$defs/c17OptionalCapital"
+        },
+        "sla_cvm": {
+          "$ref": "#/$defs/c17OptionalCapital"
+        },
+        "sla_obre": {
+          "$ref": "#/$defs/c17OptionalCapital"
+        },
+        "sla_cvm_lognormal": {
+          "$ref": "#/$defs/c17OptionalCapital"
         }
       },
-      "description": "The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination."
+      "description": "The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination; rungs 7 to 10 (S-3 of the method tiers plan, status SECONDARY_SOURCE) the mean-adjusted single loss approximation on the GPD fitted by maximum likelihood, by minimum Cramer-von Mises distance and by the optimally bias-robust estimator, and on the lognormal fitted by Cramer-von Mises (the control)."
     },
     "c17Replications": {
       "type": "object",
@@ -1396,13 +1413,10 @@
             "exceedance": {
               "type": "array",
               "items": {
-                "type": [
-                  "number",
-                  "null"
-                ],
+                "type": "number",
                 "minimum": 0,
                 "maximum": 1,
-                "description": "A share in [0, 1], or null past the last node of the Panjer recursion grid (the recursion computes no probability there; the nulls are a suffix of the axis)."
+                "description": "A share in [0, 1]."
               },
               "minItems": 3
             }
@@ -1433,13 +1447,10 @@
             "exceedance": {
               "type": "array",
               "items": {
-                "type": [
-                  "number",
-                  "null"
-                ],
+                "type": "number",
                 "minimum": 0,
                 "maximum": 1,
-                "description": "A share in [0, 1], or null past the last node of the FFT grid (the transform computes no probability there; the nulls are a suffix of the axis)."
+                "description": "A share in [0, 1]."
               },
               "minItems": 3
             }

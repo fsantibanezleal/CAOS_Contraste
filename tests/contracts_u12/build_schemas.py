@@ -343,7 +343,7 @@ def c17_defs() -> dict:
             "log_sd": N(minimum=0, description="Standard deviation across the replications of ln(capital / true quantile)."),
         }, "The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true "
            "quantile (bias), the share of histories that underestimate it and the dispersion.")
-    d["c17Capital"] = capital(E("verified", "UNVERIFIED"))
+    d["c17Capital"] = capital(E("verified", "UNVERIFIED", "SECONDARY_SOURCE"))
     d["c17CapitalUnverified"] = capital({"const": "UNVERIFIED"})
     d["c17MeanCorrectedSla"] = one_of(Ob({
         "summary": nullable(R("c17CapitalUnverified")),
@@ -363,10 +363,16 @@ def c17_defs() -> dict:
         "sla": R("c17Capital"),
         "sla_mean_corrected": R("c17MeanCorrectedSla"),
         "scenario": R("c17OptionalCapital"),
+        "sla_mean_adjusted": R("c17OptionalCapital"),
+        "sla_cvm": R("c17OptionalCapital"),
+        "sla_obre": R("c17OptionalCapital"),
+        "sla_cvm_lognormal": R("c17OptionalCapital"),
     }, "The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased "
        "baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, "
        "rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with "
-       "(UNVERIFIED) and without the mean correction, rung 6 the scenario combination.")
+       "(UNVERIFIED) and without the mean correction, rung 6 the scenario combination; rungs 7 to 10 (S-3 of the method tiers plan, "
+       "status SECONDARY_SOURCE) the mean-adjusted single loss approximation on the GPD fitted by maximum likelihood, by minimum "
+       "Cramer-von Mises distance and by the optimally bias-robust estimator, and on the lognormal fitted by Cramer-von Mises (the control).")
     d["c17Replications"] = Ob({
         "seed_first": Int(0, desc="Replication i uses the seed seed_first + i; the ranges are disjoint between cells and variants."),
         "n_replications": Int(2),
@@ -502,16 +508,18 @@ def c17_defs() -> dict:
         "seed_stride": Int(1, desc="Cell k of variant v uses seed_first = seed_base + (4 v + k) x seed_stride."),
     })
     d["c17Rung"] = one_of(Ob({
-        "rung_id": E("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario"),
+        "rung_id": E("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario", "sla-mean-adjusted", "sla-cvm",
+                     "sla-obre", "sla-cvm-lognormal"),
         "label": TXT,
         "severity_law": E("lognormal", "lognormal-truncated", "lognormal-gpd-splice", "gpd", "none"),
         "truncated": B,
         "aggregation": E("monte-carlo", "panjer", "fft", "closed-form"),
-        "status": E("verified", "UNVERIFIED"),
+        "status": E("verified", "UNVERIFIED", "SECONDARY_SOURCE"),
         "reference": S(minLength=1),
     }, "A rung of the operational risk ladder of dossier 05."),
         {"rung_id": E("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "scenario"), "status": {"const": "verified"}},
-        {"rung_id": {"const": "sla-mean-corrected"}, "status": {"const": "UNVERIFIED"}})
+        {"rung_id": {"const": "sla-mean-corrected"}, "status": {"const": "UNVERIFIED"}},
+        {"rung_id": E("sla-mean-adjusted", "sla-cvm", "sla-obre", "sla-cvm-lognormal"), "status": {"const": "SECONDARY_SOURCE"}})
     d["c17Aggregation"] = Ob({
         "level": LEVEL,
         "panjer_step_eur": POS, "panjer_points": Int(2),
@@ -555,7 +563,7 @@ def c17_defs() -> dict:
         "calibration": R("c17Ldce"),
         "variants": variants_array(),
         "grid": R("c17Grid"),
-        "ladder": A(R("c17Rung"), 6, 6),
+        "ladder": A(R("c17Rung"), 6, 10),
         "aggregation": R("c17Aggregation"),
         "sma": R("c17SmaSpec"),
         "scenarios": R("c17ScenarioSpec"),

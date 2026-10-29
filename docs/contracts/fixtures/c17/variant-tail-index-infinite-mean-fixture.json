@@ -264,6 +264,106 @@
             "summary": null,
             "reason": "the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist"
           },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 373775259,
+                "p25": 832334745,
+                "median": 1452000000,
+                "p75": 2533000140,
+                "p95": 5640566085
+              },
+              "ratio_to_truth": {
+                "p05": 0.22653046,
+                "p25": 0.5044453,
+                "median": 0.88,
+                "p75": 1.5351516,
+                "p95": 3.4185249
+              },
+              "share_underestimating": 0.5616,
+              "iqr_over_truth": 1.0307063,
+              "log_sd": 0.825
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 356785473,
+                "p25": 794501350,
+                "median": 1386000000,
+                "p75": 2417863800,
+                "p95": 5384176710
+              },
+              "ratio_to_truth": {
+                "p05": 0.21623362,
+                "p25": 0.4815159696969697,
+                "median": 0.84,
+                "p75": 1.465372,
+                "p95": 3.2631374
+              },
+              "share_underestimating": 0.5837,
+              "iqr_over_truth": 0.9838560303030303,
+              "log_sd": 0.825
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 365280366,
+                "p25": 813418040,
+                "median": 1419000000,
+                "p75": 2475431970,
+                "p95": 5512371315
+              },
+              "ratio_to_truth": {
+                "p05": 0.22138204,
+                "p25": 0.4929806303030303,
+                "median": 0.86,
+                "p75": 1.5002618,
+                "p95": 3.3408311
+              },
+              "share_underestimating": 0.5725,
+              "iqr_over_truth": 1.0072811696969697,
+              "log_sd": 0.825
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 992,
+              "capital_eur": {
+                "p05": 233609541,
+                "p25": 520209212,
+                "median": 907500000,
+                "p75": 1583125071,
+                "p95": 3525353700
+              },
+              "ratio_to_truth": {
+                "p05": 0.14158154,
+                "p25": 0.31527831030303033,
+                "median": 0.55,
+                "p75": 0.95946974,
+                "p95": 2.136578
+              },
+              "share_underestimating": 0.7657,
+              "iqr_over_truth": 0.6441914296969697,
+              "log_sd": 0.825
+            },
+            "reason": null
+          },
           "scenario": {
             "summary": null,
             "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
@@ -463,6 +563,106 @@
             "summary": null,
             "reason": "the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist"
           },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 326343484,
+                "p25": 787283524,
+                "median": 1452000000,
+                "p75": 2677947525,
+                "p95": 6460383435
+              },
+              "ratio_to_truth": {
+                "p05": 0.1977839296969697,
+                "p25": 0.4771415296969697,
+                "median": 0.88,
+                "p75": 1.6229985,
+                "p95": 3.9153839
+              },
+              "share_underestimating": 0.556,
+              "iqr_over_truth": 1.1458569703030304,
+              "log_sd": 0.9075
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 311509688,
+                "p25": 751497912,
+                "median": 1386000000,
+                "p75": 2556222735,
+                "p95": 6166729635
+              },
+              "ratio_to_truth": {
+                "p05": 0.1887937503030303,
+                "p25": 0.45545328,
+                "median": 0.84,
+                "p75": 1.5492259,
+                "p95": 3.7374119
+              },
+              "share_underestimating": 0.5762,
+              "iqr_over_truth": 1.09377262,
+              "log_sd": 0.9075
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 318926586,
+                "p25": 769390726,
+                "median": 1419000000,
+                "p75": 2617085130,
+                "p95": 6313556535
+              },
+              "ratio_to_truth": {
+                "p05": 0.19328884,
+                "p25": 0.4662974096969697,
+                "median": 0.86,
+                "p75": 1.5861122,
+                "p95": 3.8263979
+              },
+              "share_underestimating": 0.566,
+              "iqr_over_truth": 1.1198147903030302,
+              "log_sd": 0.9075
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 988,
+              "capital_eur": {
+                "p05": 203964668,
+                "p25": 492052209,
+                "median": 907500000,
+                "p75": 1673717265,
+                "p95": 4037739585
+              },
+              "ratio_to_truth": {
+                "p05": 0.1236149503030303,
+                "p25": 0.29821346,
+                "median": 0.55,
+                "p75": 1.0143741,
+                "p95": 2.4471149
+              },
+              "share_underestimating": 0.745,
+              "iqr_over_truth": 0.71616064,
+              "log_sd": 0.9075
+            },
+            "reason": null
+          },
           "scenario": {
             "summary": null,
             "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
@@ -661,6 +861,106 @@
           "sla_mean_corrected": {
             "summary": null,
             "reason": "the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist"
+          },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 612240206,
+                "p25": 1019007809,
+                "median": 1452000000,
+                "p75": 2068977240,
+                "p95": 3443589600
+              },
+              "ratio_to_truth": {
+                "p05": 0.3710546703030303,
+                "p25": 0.6175804903030303,
+                "median": 0.88,
+                "p75": 1.2539256,
+                "p95": 2.087024
+              },
+              "share_underestimating": 0.5962,
+              "iqr_over_truth": 0.6363451096969697,
+              "log_sd": 0.525
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 584411108,
+                "p25": 972689272,
+                "median": 1386000000,
+                "p75": 1974932850,
+                "p95": 3287062845
+              },
+              "ratio_to_truth": {
+                "p05": 0.3541885503030303,
+                "p25": 0.5895086496969697,
+                "median": 0.84,
+                "p75": 1.196929,
+                "p95": 1.9921593
+              },
+              "share_underestimating": 0.6301,
+              "iqr_over_truth": 0.6074203503030303,
+              "log_sd": 0.525
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 598325656,
+                "p25": 995848540,
+                "median": 1419000000,
+                "p75": 2021955045,
+                "p95": 3365326140
+              },
+              "ratio_to_truth": {
+                "p05": 0.3626216096969697,
+                "p25": 0.6035445696969697,
+                "median": 0.86,
+                "p75": 1.2254273,
+                "p95": 2.0395916
+              },
+              "share_underestimating": 0.6131,
+              "iqr_over_truth": 0.6218827303030303,
+              "log_sd": 0.525
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 382650130,
+                "p25": 636879886,
+                "median": 907500000,
+                "p75": 1293110792,
+                "p95": 2152243500
+              },
+              "ratio_to_truth": {
+                "p05": 0.2319091696969697,
+                "p25": 0.3859878096969697,
+                "median": 0.55,
+                "p75": 0.7837035103030303,
+                "p95": 1.30439
+              },
+              "share_underestimating": 0.8726,
+              "iqr_over_truth": 0.3977157006060606,
+              "log_sd": 0.525
+            },
+            "reason": null
           },
           "scenario": {
             "summary": {
@@ -881,6 +1181,106 @@
           "sla_mean_corrected": {
             "summary": null,
             "reason": "the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist"
+          },
+          "sla_mean_adjusted": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 561587416,
+                "p25": 983554886,
+                "median": 1452000000,
+                "p75": 2143554930,
+                "p95": 3754186755
+              },
+              "ratio_to_truth": {
+                "p05": 0.3403560096969697,
+                "p25": 0.5960938703030303,
+                "median": 0.88,
+                "p75": 1.2991242,
+                "p95": 2.2752647
+              },
+              "share_underestimating": 0.5876,
+              "iqr_over_truth": 0.7030303296969697,
+              "log_sd": 0.5775
+            },
+            "reason": null
+          },
+          "sla_cvm": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 536060712,
+                "p25": 938847855,
+                "median": 1386000000,
+                "p75": 2046120615,
+                "p95": 3583541775
+              },
+              "ratio_to_truth": {
+                "p05": 0.32488528,
+                "p25": 0.5689987,
+                "median": 0.84,
+                "p75": 1.2400731,
+                "p95": 2.1718435
+              },
+              "share_underestimating": 0.6186,
+              "iqr_over_truth": 0.6710744,
+              "log_sd": 0.5775
+            },
+            "reason": null
+          },
+          "sla_obre": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 548824072,
+                "p25": 961201362,
+                "median": 1419000000,
+                "p75": 2094837855,
+                "p95": 3668864265
+              },
+              "ratio_to_truth": {
+                "p05": 0.3326206496969697,
+                "p25": 0.58254628,
+                "median": 0.86,
+                "p75": 1.2695987,
+                "p95": 2.2235541
+              },
+              "share_underestimating": 0.603,
+              "iqr_over_truth": 0.68705242,
+              "log_sd": 0.5775
+            },
+            "reason": null
+          },
+          "sla_cvm_lognormal": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "SECONDARY_SOURCE",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 350992142,
+                "p25": 614721806,
+                "median": 907500000,
+                "p75": 1339721872,
+                "p95": 2346366660
+              },
+              "ratio_to_truth": {
+                "p05": 0.2127225103030303,
+                "p25": 0.3725586703030303,
+                "median": 0.55,
+                "p75": 0.8119526496969697,
+                "p95": 1.4220404
+              },
+              "share_underestimating": 0.8497,
+              "iqr_over_truth": 0.43939397939393937,
+              "log_sd": 0.5775
+            },
+            "reason": null
           },
           "scenario": {
             "summary": {
@@ -1181,7 +1581,7 @@
           "influence": -0.03
         }
       ],
-      "reference": "Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26"
+      "reference": "Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"
     }
   },
   "tests": [
