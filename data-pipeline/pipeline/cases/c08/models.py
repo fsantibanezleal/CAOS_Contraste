@@ -10,6 +10,7 @@ import importlib.metadata as md
 from typing import Any
 
 from . import build as bd
+from . import ml_benchmark as ml
 from .ladder import EPSILONS, LADDER_EPSILON, LICENCES, RUNG_KIND, RUNGS, Ladder, RungFit
 from .panel import CONTINUOUS, FEATURE_NAMES
 from .variant import VariantResult
@@ -24,7 +25,7 @@ def _engine_version() -> str:
 
 
 def _licence(rung: RungFit) -> str:
-    return LICENCES["catboost"] if rung.kind == "gradient-boosted" else LICENCES["engine"]
+    return LICENCES.get(rung.library, LICENCES["engine"])
 
 
 def ladder_block(res: VariantResult) -> list[dict[str, Any]]:
@@ -65,6 +66,16 @@ def model_records(res: VariantResult) -> list[dict[str, Any]]:
             from .ladder import BOOST
             details["settings"] = {k: v for k, v in BOOST.items() if k not in ("verbose", "allow_writing_files")}
             details["feature_importance"] = {n: float(v) for n, v in zip(FEATURE_NAMES, r.booster.get_feature_importance(), strict=True)}
+        if r.evaluated and kind == "random-forest":
+            details["settings"] = {k: v for k, v in ml.FOREST.items() if k != "n_jobs"}
+            details["feature_importance"] = {n: float(v) for n, v in zip(FEATURE_NAMES, r.booster.feature_importances_, strict=True)}
+            details["prediction_clipped_to"] = [0.0, 1.0]
+        if r.evaluated and kind == "neural-network":
+            details["settings"] = {k: (list(v) if isinstance(v, tuple) else v) for k, v in ml.NETWORK.items()}
+            details["n_iter"] = int(r.booster.n_iter_)
+            details["stopped_by"] = "max_iter" if int(r.booster.n_iter_) >= ml.NETWORK["max_iter"] else "early-stopping"
+            details["best_validation_score"] = float(r.booster.best_validation_score_)
+            details["prediction_clipped_to"] = [0.0, 1.0]
         recs.append({
             "id": rid, "family": "lgd-ead", "rung": kind, "title": bd.t(*title), "short_title": bd.t(*short),
             "engine": r.library, "engine_version": r.library_version, "licence": _licence(r), "calibration": None,

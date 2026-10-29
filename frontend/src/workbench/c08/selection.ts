@@ -39,6 +39,8 @@ export const KIND_TEXT: Record<string, Bi> = {
   hurdle: { en: 'Two-stage hurdle', es: 'Modelo en dos etapas' },
   tobit: { en: 'Tobit', es: 'Tobit' },
   'gradient-boosted': { en: 'Gradient boosting', es: 'Árboles potenciados por gradiente' },
+  'random-forest': { en: 'Random forest', es: 'Bosque aleatorio' },
+  'neural-network': { en: 'Neural network', es: 'Red neuronal' },
   'cure-decomposition': { en: 'Cure-rate decomposition', es: 'Descomposición por tasa de cura' },
 };
 
