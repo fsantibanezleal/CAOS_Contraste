@@ -4101,7 +4101,7 @@
       },
       "c04-variant-agency": {
         "title": "C04 agency variant",
-        "description": "Catalog row c04-agency 1.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).",
+        "description": "Catalog row c04-agency 1.1.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -4130,7 +4130,7 @@
       },
       "c04-variant-generator": {
         "title": "C04 family variant",
-        "description": "Catalog row c04-family 1.0.0: one simulation family of the transition estimators (outputs.kind generator).",
+        "description": "Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -4709,6 +4709,361 @@
           },
           "irb": {
             "$ref": "#/components/schemas/c04Irb"
+          },
+          "withdrawal_bounds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c04WithdrawalAnchorStudy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "c04AnchorGrade": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grade",
+          "cohorts",
+          "pooled",
+          "k_over_cohorts",
+          "stability",
+          "k_above_1",
+          "tipping"
+        ],
+        "properties": {
+          "grade": {
+            "type": "string"
+          },
+          "cohorts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c04AnchorRow"
+            }
+          },
+          "pooled": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c04AnchorRow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "k_over_cohorts": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "n",
+                  "median",
+                  "q25",
+                  "q75",
+                  "share_above_1"
+                ],
+                "properties": {
+                  "n": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "median": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "q25": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "q75": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "share_above_1": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stability": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "usable_cohorts",
+                  "cohorts_containing_pooled_k",
+                  "share_cohorts_containing_pooled_k",
+                  "stable"
+                ],
+                "properties": {
+                  "usable_cohorts": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "cohorts_containing_pooled_k": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "share_cohorts_containing_pooled_k": {
+                    "type": "number"
+                  },
+                  "stable": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "k_above_1": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pooled_k",
+                  "pooled_k_low",
+                  "holds",
+                  "holds_with_lower_bound"
+                ],
+                "properties": {
+                  "pooled_k": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "pooled_k_low": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "holds": {
+                    "type": "boolean"
+                  },
+                  "holds_with_lower_bound": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tipping": {
+            "anyOf": [
+              {
+                "description": "The k at which the grade's PD(k) reaches the master-scale boundary to the next grade (the geometric mean of their industry PDs).",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "threshold",
+                  "next_grade",
+                  "k",
+                  "infinite",
+                  "decision_industry",
+                  "status",
+                  "pd_manski_upper"
+                ],
+                "properties": {
+                  "threshold": {
+                    "type": "number"
+                  },
+                  "next_grade": {
+                    "type": "string"
+                  },
+                  "k": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "infinite": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "k"
+                      ]
+                    }
+                  },
+                  "decision_industry": {
+                    "type": "string",
+                    "enum": [
+                      "above",
+                      "below",
+                      "none"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "flips_up",
+                      "flips_down",
+                      "robust"
+                    ]
+                  },
+                  "pd_manski_upper": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "c04AnchorRow": {
+        "description": "One grade of one cohort (or of the pooled cohorts): the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "defaults",
+          "survivors",
+          "withdrawn",
+          "anchor_defaults",
+          "anchor_cohort",
+          "pd_industry",
+          "pd_anchor_rate",
+          "pd_anchored",
+          "pd_lower",
+          "pd_upper",
+          "defaults_implied",
+          "k",
+          "k_low",
+          "k_high",
+          "infinite",
+          "flag",
+          "reason"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "defaults": {
+            "type": "number"
+          },
+          "survivors": {
+            "type": "number"
+          },
+          "withdrawn": {
+            "type": "number"
+          },
+          "anchor_defaults": {
+            "type": "number"
+          },
+          "anchor_cohort": {
+            "type": "number"
+          },
+          "pd_industry": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_anchor_rate": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_anchored": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_lower": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_upper": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "defaults_implied": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k_low": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k_high": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "infinite": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "k",
+                "k_low",
+                "k_high"
+              ]
+            }
+          },
+          "flag": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "anchor_below_observed",
+              "anchor_above_identified",
+              "no_anchor"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "no_cohort",
+              "no_observed_defaults",
+              "no_withdrawals"
+            ]
           }
         }
       },
@@ -4737,6 +5092,265 @@
                 "number",
                 "null"
               ]
+            }
+          }
+        }
+      },
+      "c04BoundsDesign": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "reps",
+          "cohorts",
+          "cohort_scale",
+          "capture",
+          "seed_key",
+          "seed",
+          "treatments",
+          "anchored_k"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "first_year",
+              "pooled",
+              "capture70",
+              "first_year_x10"
+            ]
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "cohorts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cohort_scale": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capture": {
+            "type": "number"
+          },
+          "seed_key": {
+            "type": "string"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "treatments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c04BoundsTreatment"
+            }
+          },
+          "anchored_k": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "median",
+              "q05",
+              "q95",
+              "share_infinite"
+            ],
+            "properties": {
+              "median": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "q05": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "q95": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "share_infinite": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "c04BoundsTreatment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "coverage",
+          "mean_width",
+          "relative_bias"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "industry",
+              "unfollowed",
+              "followed",
+              "anchored",
+              "identified"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c04Rate"
+            }
+          },
+          "mean_width": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "relative_bias": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "c04BoundsVerdict": {
+        "description": "BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grade",
+          "reps",
+          "level",
+          "designs",
+          "rows",
+          "summary"
+        ],
+        "properties": {
+          "grade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "level": {
+            "type": "number"
+          },
+          "designs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "design",
+                "informative",
+                "treatment",
+                "value",
+                "mcse",
+                "threshold",
+                "comparison",
+                "holds"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "enum": [
+                    "anchored-coverage",
+                    "existing-coverage",
+                    "anchored-better"
+                  ]
+                },
+                "design": {
+                  "type": "string"
+                },
+                "informative": {
+                  "type": "number"
+                },
+                "treatment": {
+                  "type": "string",
+                  "enum": [
+                    "industry",
+                    "unfollowed",
+                    "followed",
+                    "anchored"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                },
+                "mcse": {
+                  "type": "number"
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "comparison": {
+                  "type": "string",
+                  "enum": [
+                    "at_least",
+                    "below",
+                    "above"
+                  ]
+                },
+                "holds": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "refuted",
+              "anchored_covers_90",
+              "existing_under_50"
+            ],
+            "properties": {
+              "refuted": {
+                "type": "boolean"
+              },
+              "anchored_covers_90": {
+                "type": "boolean"
+              },
+              "existing_under_50": {
+                "type": "boolean"
+              }
             }
           }
         }
@@ -5277,6 +5891,16 @@
             "items": {
               "$ref": "#/components/schemas/c04Simulation"
             }
+          },
+          "bounds_verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c04BoundsVerdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -6760,6 +7384,60 @@
           }
         }
       },
+      "c04WithdrawalAnchorStudy": {
+        "description": "BS-14: the default page (tab 2) as the anchor of the transition page's withdrawals (tab 4), per grade, annual cohorts and pooled; None where the transition page has no default category.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "stability_share",
+          "grades"
+        ],
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "stability_share": {
+            "type": "number"
+          },
+          "grades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c04AnchorGrade"
+            }
+          }
+        }
+      },
+      "c04WithdrawalBounds": {
+        "description": "BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the existing treatments of withdrawn ratings and of the anchored interval, over the rung's own draws, in four designs (first year, five cohorts pooled, a second source that counts 70% of the defaults, ten times the cohort).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "truth",
+          "designs"
+        ],
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "truth": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "designs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c04BoundsDesign"
+            }
+          }
+        }
+      },
       "c04WithdrawalsRung": {
         "type": "object",
         "additionalProperties": false,
@@ -6846,6 +7524,9 @@
           },
           "pd_latent": {
             "$ref": "#/components/schemas/c04Performance"
+          },
+          "bounds": {
+            "$ref": "#/components/schemas/c04WithdrawalBounds"
           }
         }
       },
@@ -7934,7 +8615,7 @@
       },
       "c06-models": {
         "title": "C06 models",
-        "description": "Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+        "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"

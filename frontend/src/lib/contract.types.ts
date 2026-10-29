@@ -1174,6 +1174,43 @@ export type C04Family = components['schemas']['c04FamilyOutputs']['family'];
 
 export type C04FamilyOutputs = components['schemas']['c04FamilyOutputs'];
 
+/** BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the treatments of
+ * withdrawn ratings and of the anchored interval, per rung, in four designs. */
+export type C04WithdrawalBounds = components['schemas']['c04WithdrawalBounds'];
+export type C04BoundsDesign = components['schemas']['c04BoundsDesign'];
+export type C04BoundsTreatment = components['schemas']['c04BoundsTreatment'];
+export type C04BoundsVerdict = components['schemas']['c04BoundsVerdict'];
+const C04_BOUNDS_DESIGN = {
+  object: {
+    id: 'string',
+    reps: 'integer',
+    cohorts: 'integer',
+    cohort_scale: 'integer',
+    capture: num,
+    seed_key: 'string',
+    seed: 'integer',
+    treatments: {
+      array: { object: { id: 'string', coverage: { array: C04_RATE }, mean_width: nNums, relative_bias: nNums } satisfies Record<keyof C04BoundsTreatment, Kind> },
+    },
+    anchored_k: { object: { median: nNums, q05: nNums, q95: nNums, share_infinite: nums } },
+  } satisfies Record<keyof C04BoundsDesign, Kind>,
+} as const;
+const C04_WITHDRAWAL_BOUNDS = {
+  object: { level: num, truth: nNums, designs: { array: C04_BOUNDS_DESIGN } } satisfies Record<keyof C04WithdrawalBounds, Kind>,
+} as const;
+const C04_BOUNDS_VERDICT = {
+  object: {
+    grade: 'integer',
+    reps: 'integer',
+    level: num,
+    designs: { array: 'string' },
+    rows: {
+      array: { object: { id: 'string', design: 'string', informative: num, treatment: 'string', value: num, mcse: num, threshold: num, comparison: 'string', holds: 'boolean' } },
+    },
+    summary: { object: { refuted: 'boolean', anchored_covers_90: 'boolean', existing_under_50: 'boolean' } },
+  } satisfies Record<keyof C04BoundsVerdict, Kind>,
+} as const;
+
 const C04_RATES = { array: C04_RATE } as const;
 const C04_THREE = (k: Kind) => ({ object: { wald: k, agresti_coull: k, jeffreys: k } }) as const;
 const C04_MARKOV_RUNG = {
@@ -1249,6 +1286,7 @@ const C04_WITHDRAWALS_RUNG = {
     pd_kept: C04_PERFORMANCE,
     pd_followed: C04_PERFORMANCE,
     pd_latent: C04_PERFORMANCE,
+    bounds: C04_WITHDRAWAL_BOUNDS,
   } satisfies Record<keyof C04WithdrawalsRung, Kind>,
 } as const;
 const C04_THIN_RUNG = {
@@ -1274,6 +1312,7 @@ export const C04_FAMILY_OUTPUTS = {
       object: { key: 'string', test_id: 'string', rung: nNum, rates: { map: C04_RATE }, seed: 'integer', n_rep: 'integer' } satisfies Record<keyof C04Simulation, Kind>,
     },
   },
+  bounds_verdict: { nullable: C04_BOUNDS_VERDICT },
 } satisfies Record<keyof C04FamilyOutputs, Kind>;
 
 /** A printed value beside its recomputation; the bake stops unless they agree (contract section 3). */

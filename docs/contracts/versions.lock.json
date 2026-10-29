@@ -35,14 +35,14 @@
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
   },
   "c04-agency": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c04/variant-agency.schema.json",
-    "sha256": "a512a765ff42381e54e146ecd9bc82f9b27b9451e716f0952c7a54223c926086"
+    "sha256": "04c255983d081b6118dc96b1873582e56401cab6152fc2038f65887a651b6657"
   },
   "c04-family": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c04/variant-generator.schema.json",
-    "sha256": "2a2eadd1c6be8382515d8f9f8bd70c28bb459e3457956983e81dd46ac225d819"
+    "sha256": "dc428e7ec132059404782284e570a3d18de69b75f3b46d8f47448580e4228cec"
   },
   "c04-published": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "28.0.0",
+    "version": "28.1.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "65d671348692b8bdee76f70f495ba395cb6d2aff3fee78335f025ed5d92b5472"
+    "sha256": "9291fa4e0caa6d469513855e67f3a1693b84d7b282b9885703c463e83c4a1c15"
   },
   "readiness": {
     "version": "1.0.1",

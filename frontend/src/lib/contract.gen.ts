@@ -911,7 +911,7 @@ export interface components {
         };
         /**
          * C04 agency variant
-         * @description Catalog row c04-agency 1.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
+         * @description Catalog row c04-agency 1.1.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
          */
         "c04-variant-agency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -920,7 +920,7 @@ export interface components {
         };
         /**
          * C04 family variant
-         * @description Catalog row c04-family 1.0.0: one simulation family of the transition estimators (outputs.kind generator).
+         * @description Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).
          */
         "c04-variant-generator": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -1008,11 +1008,120 @@ export interface components {
             lifetime: components["schemas"]["c04Lifetime"][];
             origination: number[];
             irb: components["schemas"]["c04Irb"];
+            withdrawal_bounds?: components["schemas"]["c04WithdrawalAnchorStudy"] | null;
+        };
+        c04AnchorGrade: {
+            grade: string;
+            cohorts: components["schemas"]["c04AnchorRow"][];
+            pooled: components["schemas"]["c04AnchorRow"] | null;
+            k_over_cohorts: {
+                n: number;
+                median: number | null;
+                q25: number | null;
+                q75: number | null;
+                share_above_1: number | null;
+            } | null;
+            stability: {
+                usable_cohorts: number;
+                cohorts_containing_pooled_k: number;
+                share_cohorts_containing_pooled_k: number;
+                stable: boolean;
+            } | null;
+            k_above_1: {
+                pooled_k: number | null;
+                pooled_k_low: number | null;
+                holds: boolean;
+                holds_with_lower_bound: boolean;
+            } | null;
+            tipping: {
+                threshold: number;
+                next_grade: string;
+                k: number | null;
+                infinite: "k"[];
+                /** @enum {string} */
+                decision_industry: "above" | "below" | "none";
+                /** @enum {string} */
+                status: "flips_up" | "flips_down" | "robust";
+                pd_manski_upper: number | null;
+            } | null;
+        };
+        /** @description One grade of one cohort (or of the pooled cohorts): the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval. */
+        c04AnchorRow: {
+            label?: string;
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
         };
         /** @description None for a grade without ratings, and for tab 3's events where they outnumber the cohort. */
         c04Bounds: {
             lower: (number | null)[];
             upper: (number | null)[];
+        };
+        c04BoundsDesign: {
+            /** @enum {string} */
+            id: "first_year" | "pooled" | "capture70" | "first_year_x10";
+            reps: number;
+            cohorts: number;
+            cohort_scale: number;
+            capture: number;
+            seed_key: string;
+            seed: number;
+            treatments: components["schemas"]["c04BoundsTreatment"][];
+            anchored_k: {
+                median: (number | null)[];
+                q05: (number | null)[];
+                q95: (number | null)[];
+                share_infinite: number[];
+            };
+        };
+        c04BoundsTreatment: {
+            /** @enum {string} */
+            id: "industry" | "unfollowed" | "followed" | "anchored" | "identified";
+            coverage: components["schemas"]["c04Rate"][];
+            mean_width: (number | null)[];
+            relative_bias: (number | null)[];
+        };
+        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9). */
+        c04BoundsVerdict: {
+            grade: number;
+            reps: number;
+            level: number;
+            designs: string[];
+            rows: {
+                /** @enum {string} */
+                id: "anchored-coverage" | "existing-coverage" | "anchored-better";
+                design: string;
+                informative: number;
+                /** @enum {string} */
+                treatment: "industry" | "unfollowed" | "followed" | "anchored";
+                value: number;
+                mcse: number;
+                threshold: number;
+                /** @enum {string} */
+                comparison: "at_least" | "below" | "above";
+                holds: boolean;
+            }[];
+            summary: {
+                refuted: boolean;
+                anchored_covers_90: boolean;
+                existing_under_50: boolean;
+            };
         };
         c04CapitalPoint: {
             /** @description Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160). */
@@ -1104,6 +1213,7 @@ export interface components {
             } | null;
             rungs: (components["schemas"]["c04MarkovRung"] | components["schemas"]["c04MomentumRung"] | components["schemas"]["c04CycleRung"] | components["schemas"]["c04WithdrawalsRung"] | components["schemas"]["c04ThinRung"])[];
             simulations: components["schemas"]["c04Simulation"][];
+            bounds_verdict?: components["schemas"]["c04BoundsVerdict"] | null;
         };
         c04Fit: {
             parity: {
@@ -1381,6 +1491,18 @@ export interface components {
             };
             overlap_jeffreys: number[];
         };
+        /** @description BS-14: the default page (tab 2) as the anchor of the transition page's withdrawals (tab 4), per grade, annual cohorts and pooled; None where the transition page has no default category. */
+        c04WithdrawalAnchorStudy: {
+            level: number;
+            stability_share: number;
+            grades: components["schemas"]["c04AnchorGrade"][];
+        };
+        /** @description BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the existing treatments of withdrawn ratings and of the anchored interval, over the rung's own draws, in four designs (first year, five cohorts pooled, a second source that counts 70% of the defaults, ten times the cohort). */
+        c04WithdrawalBounds: {
+            level: number;
+            truth: (number | null)[];
+            designs: components["schemas"]["c04BoundsDesign"][];
+        };
         c04WithdrawalsRung: {
             value: number;
             seed_key: string;
@@ -1398,6 +1520,7 @@ export interface components {
             pd_kept: components["schemas"]["c04Performance"];
             pd_followed: components["schemas"]["c04Performance"];
             pd_latent: components["schemas"]["c04Performance"];
+            bounds?: components["schemas"]["c04WithdrawalBounds"];
         };
         /**
          * C05 low-default models
@@ -1652,7 +1775,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */

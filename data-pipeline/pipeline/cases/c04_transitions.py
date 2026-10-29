@@ -484,6 +484,46 @@ def homog_title(name: str, th: dict[str, Any]) -> dict[str, str]:
               f"{name}: la matriz anual no es la misma cada año (chi-cuadrado {stat['es']} con {dof['es']} grados de libertad, {_p(th['p_value'])}); una matriz agrupada en los años promedia regímenes distintos")
 
 
+def _kword(rec: dict[str, Any], key: str) -> tuple[str, str]:
+    """An anchored k as the findings print it: a number, or unbounded where the engine returns infinity."""
+    if rec[key] is None:
+        return ("unbounded", "no acotado") if key in rec["infinite"] else ("undefined", "indefinido")
+    return _num(rec[key], 1)
+
+
+def anchor_finding(name: str, out: dict[str, Any]) -> dict[str, Any] | None:
+    """BS-14 on real cohorts: the anchored k of CCC to C and of B (the default page as the anchor of the transition
+    page's withdrawals), hypothesis (ii) and the stability of k across years against the criterion fixed before the
+    run; None where the agency has no grade with a pooled k."""
+    wb = out.get("withdrawal_bounds")
+    if not wb:
+        return None
+    grades = {g["grade"]: g for g in wb["grades"]}
+    ccc, b = grades["CCC-C"], grades["B"]
+    if ccc["pooled"] is None or b["pooled"] is None:
+        return None
+    share = wb["stability_share"]
+    stable = [g["grade"] for g in wb["grades"] if g["stability"] and g["stability"]["stable"]]
+    unstable = [g["grade"] for g in wb["grades"] if g["stability"] and g["stability"]["usable_cohorts"] and not g["stability"]["stable"]]
+    pct = lambda g: _pct(g["stability"]["share_cohorts_containing_pooled_k"], 0)  # noqa: E731
+    n = ccc["k_over_cohorts"]["n"]
+    above = ccc["k_above_1"]["holds"]
+    kc, klc, khc = (_kword(ccc["pooled"], x) for x in ("k", "k_low", "k_high"))
+    kb, klb, khb = (_kword(b["pooled"], x) for x in ("k", "k_low", "k_high"))
+    en = (f"{name}: with the default page as the anchor of the transition page's withdrawals, the pooled odds ratio k of withdrawal before default is {kc[0]} for CCC to C "
+          f"(band {klc[0]} to {khc[0]}, {n} annual cohorts), {'above' if above else 'not above'} 1, and {kb[0]} for B (band {klb[0]} to {khb[0]}); "
+          f"the cohorts' own bands contain the pooled k in {pct(ccc)[0]} of the years for CCC to C and {pct(b)[0]} for B, against the criterion of {100 * share:.0f}% fixed before the run: "
+          f"stable for {', '.join(stable) or 'no grade'}, not for {', '.join(unstable) or 'no grade'}. "
+          "The k absorbs the difference between the two pages' definitions of default, so it is an anchored k conditional on their equivalence, not an estimate of how informative the withdrawals are")
+    es = (f"{name}: con la página de incumplimientos como ancla de los retiros de la página de transiciones, la razón de odds k de retiro antes del incumplimiento agrupada es {kc[1]} para CCC a C "
+          f"(banda {klc[1]} a {khc[1]}, {n} cohortes anuales), {'sobre' if above else 'no sobre'} 1, y {kb[1]} para B (banda {klb[1]} a {khb[1]}); "
+          f"las bandas de las propias cohortes contienen la k agrupada en {pct(ccc)[1]} de los años para CCC a C y {pct(b)[1]} para B, contra el criterio de {100 * share:.0f} % fijado antes de la corrida: "
+          f"estable para {', '.join(stable) or 'ningún grado'}, no para {', '.join(unstable) or 'ningún grado'}. "
+          "La k absorbe la diferencia entre las definiciones de incumplimiento de las dos páginas, así que es una k anclada condicionada a su equivalencia, no una estimación de cuán informativos son los retiros")
+    return {"id": "F-WITHDRAW-ANCHOR", "severity": "S3", "status": "open", "evidence": ["design:withdrawal_bounds.grades"],
+            "title": _t(en, es)}
+
+
 def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     code, name = v["code"], v["short"]["en"]
     lra, f = out["lra"], []
@@ -586,6 +626,9 @@ def agency_findings(v: dict[str, Any], out: dict[str, Any], tests: list[dict[str
         f.append({"id": "F-LIFETIME", "severity": "S2", "status": "open", "evidence": ["design:lifetime"],
                   "title": _t(f"{name}: of the ratings in {life['grade']} at the start of {life['label']}, {_pct(life['lived'])[0]} defaulted within the five years (the default page's window); the window's own annual matrices chained give {_pct(life['chain'])[0]} and the pooled matrix to the fifth power {_pct(life['pooled'])[0]}, while the window's transition page shows {_pct(life['end'])[0]} in default at its end (defaulted ratings withdrawn): a lifetime PD chained from one-year matrices understates what the cohort lived",
                               f"{name}: de las calificaciones en {life['grade']} al inicio de {life['label'].replace('-', ' a ')}, {_pct(life['lived'])[1]} incumplieron dentro de los cinco años (la página de incumplimientos de la ventana); las matrices anuales de la propia ventana encadenadas dan {_pct(life['chain'])[1]} y la matriz agrupada a la quinta potencia {_pct(life['pooled'])[1]}, mientras la página de transiciones de la ventana muestra {_pct(life['end'])[1]} en incumplimiento al final (calificaciones incumplidas retiradas): una PD de vida encadenada desde matrices anuales subestima lo que vivió la cohorte")})
+    anchor = anchor_finding(name, out)
+    if anchor is not None:
+        f.append(anchor)
     # the drift a projection inherits from the matrix (Engelmann 2024); a matrix without a default column has none
     if not _has_default(out):
         return f
@@ -636,9 +679,71 @@ def family_impact(out: dict[str, Any]) -> dict[str, Any]:
         return {"th_power_k_1_5": {"value": _sim(out, "rating.time_homogeneity@k1.5"), "unit": "probability", "label": _t("Time homogeneity's rejection rate with downgrades times 1.5 for a year", "Tasa de rechazo de homogeneidad temporal con rebajas por 1,5 durante un año")}}
     if fid == "withdrawals":
         r = _rung(out, 9.0)
-        return {"removed_bias_b": {"value": r["pd_removed"]["bias"][5], "unit": "probability difference", "label": _t("Bias of the B PD with withdrawals removed, informative k 9", "Sesgo de la PD de B con retiros eliminados, informativo k 9")}}
+        cov = _bounds_row(out["bounds_verdict"], "anchored-coverage", "first_year", "anchored", 9.0)["value"]
+        return {"removed_bias_b": {"value": r["pd_removed"]["bias"][5], "unit": "probability difference", "label": _t("Bias of the B PD with withdrawals removed, informative k 9", "Sesgo de la PD de B con retiros eliminados, informativo k 9")},
+                "anchored_coverage_b": {"value": cov, "unit": "probability", "label": _t("Coverage of the true B PD by the anchored interval, informative k 9, first-year cohort (BS-14)", "Cobertura de la PD verdadera de B por el intervalo anclado, informativo k 9, cohorte del primer año (BS-14)")}}
     r = _rung(out, 50)
     return {"wald_coverage_aaa_50": {"value": r["coverage"]["wald"][0], "unit": "probability", "label": _t("Exact coverage of the 95% Wald interval for AAA with 50 obligors", "Cobertura exacta del intervalo de Wald al 95 % para AAA con 50 deudores")}}
+
+
+def _bounds_row(v: dict[str, Any], rid: str, design: str, treatment: str, k: float) -> dict[str, Any]:
+    return next(r for r in v["rows"] if r["id"] == rid and r["design"] == design and r["treatment"] == treatment
+                and r["informative"] == k)
+
+
+#: the study's designs in words, English and Spanish, as the finding names them
+BOUNDS_DESIGN_WORDS = {"first_year": ("first-year cohort", "cohorte del primer año"),
+                       "pooled": ("five cohorts pooled", "cinco cohortes agrupadas"),
+                       "first_year_x10": ("ten times the cohort", "diez veces la cohorte")}
+
+
+def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
+    """BS-14's result as a finding: the plan's hypothesis (i) with its measured coverages, whether each clause holds and
+    whether the plan's refutation is met; everything is read off ``bounds_verdict``, whatever the numbers say."""
+    v = out["bounds_verdict"]
+    reps, grade = v["reps"], GRADES[v["grade"]]
+    truth = out["rungs"][0]["bounds"]["truth"][v["grade"]]
+    designs = ("first_year", "pooled", "first_year_x10")
+
+    def row(rid: str, d: str, t: str, k: float) -> dict[str, Any]:
+        return _bounds_row(v, rid, d, t, k)
+
+    def where(treatments: tuple[str, ...]) -> tuple[str, str]:
+        """The designs in which every treatment named covers under 50% at k 9, in words."""
+        ds = [d for d in designs if all(row("existing-coverage", d, t, 9.0)["holds"] for t in treatments)]
+        return (", ".join(BOUNDS_DESIGN_WORDS[d][0] for d in ds) or "none of the designs",
+                ", ".join(BOUNDS_DESIGN_WORDS[d][1] for d in ds) or "ninguno de los diseños")
+
+    cov = {d: [_pct(row("anchored-coverage", d, "anchored", k)["value"], 1) for k in ANCHORED_AT_K]
+           for d in ("first_year", "pooled")}
+    ex = {d: [_pct(row("existing-coverage", d, t, 9.0)["value"], 1) for t in ("industry", "unfollowed", "followed")]
+          for d in designs}
+    holds = v["summary"]["anchored_covers_90"]
+    better = sum(1 for d in designs if row("anchored-better", d, "anchored", 9.0)["holds"])
+    ind, unf, fol, allthree = (where(("industry",)), where(("unfollowed",)), where(("followed",)),
+                               where(("industry", "unfollowed", "followed")))
+    refuted = v["summary"]["refuted"]
+    en = (f"BS-14, the anchored PD under informative withdrawals ({reps} repetitions, {grade} true one-year PD {_pct(truth)[0]}): "
+          f"the anchored interval covers the true PD in {', '.join(c[0] for c in cov['first_year'])} of repetitions at k 1, 3 and 9 in the first-year cohort "
+          f"and in {', '.join(c[0] for c in cov['pooled'])} pooling five cohorts, so the plan's 90% {'holds' if holds else 'does not hold'}. "
+          f"At k 9 the industry, unfollowed and followed treatments cover "
+          + "; ".join(f"{', '.join(x[0] for x in ex[d])} ({BOUNDS_DESIGN_WORDS[d][0]})" for d in designs)
+          + f"; each is under 50% in: industry {ind[0]}; unfollowed {unf[0]}; followed (the oracle: it needs the year end of the withdrawn, which no transition page has) {fol[0]}. "
+          f"The plan's clause that all three existing treatments cover under 50% holds in {allthree[0]}. "
+          f"The anchored interval covers more than every existing treatment at k 9 in {better} of 3 designs: the plan's refutation {'is met' if refuted else 'is not met'}")
+    es = (f"BS-14, la PD anclada con retiros informativos ({reps} repeticiones, PD anual verdadera de {grade} {_pct(truth)[1]}): "
+          f"el intervalo anclado cubre la PD verdadera en {', '.join(c[1] for c in cov['first_year'])} de las repeticiones con k 1, 3 y 9 en la cohorte del primer año "
+          f"y en {', '.join(c[1] for c in cov['pooled'])} agrupando cinco cohortes, así que el 90 % del plan {'se sostiene' if holds else 'no se sostiene'}. "
+          f"Con k 9 los tratamientos de industria, sin seguimiento y con seguimiento cubren "
+          + "; ".join(f"{', '.join(x[1] for x in ex[d])} ({BOUNDS_DESIGN_WORDS[d][1]})" for d in designs)
+          + f"; cada uno cubre menos del 50 % en: industria {ind[1]}; sin seguimiento {unf[1]}; con seguimiento (el oráculo: necesita el estado final de los retirados, que ninguna página de transiciones tiene) {fol[1]}. "
+          f"La cláusula del plan de que los tres tratamientos existentes cubren menos del 50 % se cumple en {allthree[1]}. "
+          f"El intervalo anclado cubre más que todos los tratamientos existentes con k 9 en {better} de 3 diseños: la refutación del plan {'se cumple' if refuted else 'no se cumple'}")
+    return {"id": "F-WITHDRAW-BOUNDS", "severity": "S3", "status": "open",
+            "evidence": ["design:bounds_verdict.rows", "design:rungs.bounds"], "title": _t(en, es)}
+
+
+ANCHORED_AT_K = (1.0, 3.0, 9.0)
 
 
 def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, Any]]:
@@ -752,6 +857,7 @@ def family_findings(f: dict[str, Any], out: dict[str, Any]) -> list[dict[str, An
         res.append({"id": "F-WITHDRAW", "severity": "S2", "status": "open", "evidence": ["design:rungs.pd_removed", "design:rungs.pd_followed"],
                     "title": _t(f"With informative withdrawals (k 9) the B PD with withdrawals removed is off by {100 * rem / truth:+.0f}% of the truth, followed (EBA paragraph 76) by {100 * fol / truth:+.0f}%; without informativeness by {100 * b0 / truth:+.0f}%{why}",
                                 f"Con retiros informativos (k 9) la PD de B con retiros eliminados se desvía {_signed_pct(rem / truth, 0)} de la verdad, seguida (párrafo 76 de la EBA) {_signed_pct(fol / truth, 0)}; sin información {_signed_pct(b0 / truth, 0)}{why_es}")})
+        res.append(bounds_finding(out))
     else:
         r50, r1000 = _rung(out, 50), _rung(out, 1000)
         res.append({"id": "F-THIN", "severity": "S2", "status": "open", "evidence": ["design:rungs.coverage"],
