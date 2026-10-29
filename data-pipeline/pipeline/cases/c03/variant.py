@@ -16,7 +16,7 @@ import numpy as np
 from ...core import text as tx
 from ..c01_ladder import SHORT_TITLES
 from ..c06.panel import months_between
-from . import evaluate, fit, models, panel, windows
+from . import evaluate, fit, models, panel, sequential, windows
 from .fit import MONTHS, RUNG_KINDS, WindowFit
 
 CURRENCY = "USD"
@@ -289,6 +289,8 @@ def bake_cohort(loans: panel.Loans, cohort: windows.Cohort, seed: int, *, observ
                                     "PSI de la distribución de PD del campeón en cada cosecha contra las filas de entrenamiento (diez tramos sobre "
                                     "los cuantiles de entrenamiento); 0,10 y 0,25 son convenciones, no límites. La PD observada a 5 años contra "
                                     "la media de entrenamiento es el contraste de la crisis.")},
+        # BS-15 (D15): the e-process of defaults against the predicted PD, read at every age of the vintages
+        "sequential": sequential.build(curves, tests, champion),
     }
     document = {"model": models.model_summaries(wf), "outputs": outputs, "tests": tests, "impact": impact,
                 "findings": _findings(tests, wf, cohort, crisis, champion)}

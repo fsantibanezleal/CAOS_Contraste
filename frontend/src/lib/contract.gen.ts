@@ -690,7 +690,7 @@ export interface components {
         };
         /**
          * C03 vintage-cohort variant
-         * @description Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
+         * @description Catalog row c03-outputs 4.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
          */
         "c03-variant-vintage-cohort": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -773,6 +773,7 @@ export interface components {
             calibration: components["schemas"]["c03Calibration"];
             rung_comparison: components["schemas"]["c03RungResult"][];
             stability: components["schemas"]["c03Stability"];
+            sequential: components["schemas"]["c03Sequential"];
         };
         /** @description A PD rung of the existing engine ladder (docs/design/features/c01-retail-pd/design.md rungs P0 to P5), fitted on a training window; training_cutoff is that of the latest cohort window, the earlier windows' cutoffs sit in cohort_windows. */
         c03Rung: {
@@ -792,6 +793,55 @@ export interface components {
             brier: number | null;
             calibration_gap_5y: number | null;
             reason: string | null;
+        };
+        /** @description The e-process of the cohort under one combination of its vintages. */
+        c03SeqPath: {
+            /** @description log E at each age (months), null where no loan of the cohort is observed at that age; the monitor rejects at log 20. */
+            log_e: (number | null)[];
+            /** @description The first age at which the process reached the threshold; null when it never did. */
+            rejection_month: number | null;
+            /** @description min(1, 1 / sup E): valid at any stopping time. */
+            anytime_p_value: number;
+            max_log_e: number;
+        };
+        /** @description One vintage as a grade of the cohort's e-process, set beside the fixed-window reading at the 5-year mark. */
+        c03SeqVintage: {
+            fiscal_year: number;
+            n: number;
+            /** @description Months of age observed for the vintage (a multiple of the age step). */
+            months_observed: number;
+            /** @description Charge-offs in the observed age intervals (whole loans). */
+            defaults: number;
+            /** @description The sum over the observed intervals of the vintage's loans times the predicted interval PD. */
+            predicted_defaults: number;
+            /** @description The first age at which this vintage's own e-process reached the threshold. */
+            rejection_month: number | null;
+            max_log_e: number | null;
+            log_e: (number | null)[];
+            /** @description The light of the champion's binomial row on this vintage at the 5-year mark; null when the mark is not observed. */
+            five_year_light: ("green" | "amber" | "red" | "not_evaluated" | "error") | null;
+            /** @description The months between the rejection and the last age; null when the vintage never rejected. */
+            months_before_the_mark: number | null;
+        };
+        /** @description BS-15 (unit D15): the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort instead of once at the 5-year mark. The vintages are the grades, the ages the steps; the average is valid whatever their dependence. */
+        c03Sequential: {
+            engine: string;
+            engine_version: string;
+            /** @description The size of the monitor. */
+            alpha_level: number;
+            /** @description 1 / alpha_level: the value the process must reach to reject. */
+            threshold: number;
+            /** @enum {string} */
+            direction: "upper" | "lower" | "two-sided";
+            /** @enum {string} */
+            headline: "average" | "product";
+            /** @description The ages at which the cohort is read. */
+            months: number[];
+            vintages: components["schemas"]["c03SeqVintage"][];
+            average: components["schemas"]["c03SeqPath"];
+            product: components["schemas"]["c03SeqPath"];
+            reading: components["schemas"]["common-text"];
+            limits: components["schemas"]["common-text"];
         };
         /** @description Population stability of each test vintage against the training window and its observed 5-year rate against the training mean (the crisis contrast). */
         c03Stability: {
@@ -1652,7 +1702,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -13408,7 +13458,7 @@ export interface components {
         };
         /**
          * C22 validator variant
-         * @description Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
+         * @description Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
          */
         "c22-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -13506,6 +13556,8 @@ export interface components {
             size_bounds: {
                 [key: string]: number;
             };
+            /** @description BS-15 (unit D15): the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families. */
+            sequential: components["schemas"]["c22Sequential"] | null;
         };
         /** @description A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
         c22Parity: {
@@ -13529,6 +13581,95 @@ export interface components {
             se: number;
             wilson_low: number;
             wilson_high: number;
+        };
+        /** @description How a monitor reads a scenario: the share of series ever rejected, rejected by the early step (day 250, year 3), and the median first-rejection step (null when more than half never reject) and the median among the rejected series. */
+        c22SeqDetection: {
+            ever: number;
+            by: number;
+            median_day: number | null;
+            median_day_among_detected: number | null;
+        };
+        c22SeqHitScenario: {
+            id: string;
+            /** @enum {string} */
+            kind: "null" | "rate" | "cluster";
+            factor: number | null;
+            cluster: number | null;
+            label: components["schemas"]["common-text"];
+            e_rate: components["schemas"]["c22SeqDetection"];
+            e_cluster: components["schemas"]["c22SeqDetection"];
+            e_battery: components["schemas"]["c22SeqDetection"];
+            kupiec_trailing: components["schemas"]["c22SeqDetection"];
+            kupiec_cumulative: components["schemas"]["c22SeqDetection"];
+            traffic_light: components["schemas"]["c22SeqDetection"];
+            independence_trailing: components["schemas"]["c22SeqDetection"];
+            kupiec_one_shot_power: number;
+        };
+        c22SeqHits: {
+            alpha: number;
+            horizon: number;
+            window: number;
+            by_day: number;
+            reps: number;
+            generator: string;
+            /** @description The smallest count of exceptions in the window that is outside the green zone. */
+            traffic_light_exceptions: number;
+            scenarios: components["schemas"]["c22SeqHitScenario"][];
+        };
+        c22SeqHypothesis: {
+            /** @enum {string} */
+            id: "H1" | "H2" | "H3";
+            holds: boolean;
+            rule: components["schemas"]["common-text"];
+            measured: components["schemas"]["common-text"];
+            values: {
+                id: string;
+                value: number | null;
+            }[];
+        };
+        c22SeqMethod: {
+            engine: string;
+            engine_version: string;
+            /** @description The size of the monitor. */
+            alpha_level: number;
+            /** @description The value the e-process must reach to reject: 1 / alpha_level. */
+            threshold: number;
+            monitors: string[];
+            label: components["schemas"]["common-text"];
+            description: components["schemas"]["common-text"];
+        };
+        c22SeqPd: {
+            pd: number[];
+            obligors_per_grade_year: number;
+            years: number;
+            by_year: number;
+            reps: number;
+            scenarios: components["schemas"]["c22SeqPdScenario"][];
+        };
+        c22SeqPdScenario: {
+            id: string;
+            factor: number;
+            label: components["schemas"]["common-text"];
+            e_product: components["schemas"]["c22SeqDetection"];
+            e_average: components["schemas"]["c22SeqDetection"];
+            chi2_one_shot_power: number;
+            chi2_every_year: components["schemas"]["c22SeqDetection"];
+        };
+        c22SeqVerdict: {
+            holds: boolean;
+            held: ("H1" | "H2" | "H3")[];
+            failed: ("H1" | "H2" | "H3")[];
+            text: components["schemas"]["common-text"];
+            scope: components["schemas"]["common-text"];
+        };
+        /** @description The sequential-monitor experiment: the method, the VaR-hit experiment, the PD-book experiment, the three hypotheses with their measured numbers and the verdict. */
+        c22Sequential: {
+            method: components["schemas"]["c22SeqMethod"];
+            seed: number;
+            hits: components["schemas"]["c22SeqHits"];
+            pd_grades: components["schemas"]["c22SeqPd"];
+            hypotheses: components["schemas"]["c22SeqHypothesis"][];
+            verdict: components["schemas"]["c22SeqVerdict"];
         };
         /** @description One simulation: a registered test on one generator at one severity, its rates per rule ("p<0.05", "p<0.01", and rules such as "metric>0.1"), the exact probability where one exists and whether the rate agrees with it. */
         c22Simulation: {

@@ -34,6 +34,14 @@ const DATA_STATUS: Kind = { object: {
   notice: 'text',
 } };
 
+// BS-15 (unit D15): the e-process of a cohort under one combination of its vintages
+const SEQ_PATH: Kind = { object: {
+  log_e: { array: { nullable: 'number' } },
+  rejection_month: { nullable: 'integer' },
+  anytime_p_value: 'number',
+  max_log_e: 'number',
+} };
+
 export const C03_OUTPUTS: Kind = { object: {
   kind: 'string',
   currency: 'string',
@@ -81,6 +89,31 @@ export const C03_OUTPUTS: Kind = { object: {
       psi: 'number',
       observed_5y_pd: { nullable: 'number' },
     } } },
+  } },
+  sequential: { object: {
+    engine: 'string',
+    engine_version: 'string',
+    alpha_level: 'number',
+    threshold: 'number',
+    direction: 'string',
+    headline: 'string',
+    months: { array: 'integer' },
+    vintages: { array: { object: {
+      fiscal_year: 'integer',
+      n: 'integer',
+      months_observed: 'integer',
+      defaults: 'integer',
+      predicted_defaults: 'number',
+      rejection_month: { nullable: 'integer' },
+      max_log_e: { nullable: 'number' },
+      log_e: { array: { nullable: 'number' } },
+      five_year_light: { nullable: 'string' },
+      months_before_the_mark: { nullable: 'integer' },
+    } } },
+    average: SEQ_PATH,
+    product: SEQ_PATH,
+    reading: 'text',
+    limits: 'text',
   } },
 } } satisfies { object: Record<keyof components['schemas']['c03Outputs'], Kind> };
 

@@ -348,6 +348,109 @@
           "observed_5y_pd": null
         }
       ]
+    },
+    "sequential": {
+      "engine": "riskvalidation.validation.sequential",
+      "engine_version": "1.1.0",
+      "alpha_level": 0.05,
+      "threshold": 20.0,
+      "direction": "upper",
+      "headline": "average",
+      "months": [
+        12,
+        24,
+        36,
+        48,
+        60
+      ],
+      "vintages": [
+        {
+          "fiscal_year": 2018,
+          "n": 24000,
+          "months_observed": 60,
+          "defaults": 2208,
+          "predicted_defaults": 2088.0,
+          "rejection_month": null,
+          "max_log_e": -15.059944,
+          "log_e": [
+            -15.49052,
+            -31.402648,
+            -35.364041,
+            -17.300215,
+            -15.059944
+          ],
+          "five_year_light": null,
+          "months_before_the_mark": null
+        },
+        {
+          "fiscal_year": 2019,
+          "n": 25000,
+          "months_observed": 48,
+          "defaults": 1650,
+          "predicted_defaults": 1700.0,
+          "rejection_month": null,
+          "max_log_e": -15.616559,
+          "log_e": [
+            -15.616559,
+            -27.347714,
+            -35.908006,
+            -38.801113,
+            null
+          ],
+          "five_year_light": null,
+          "months_before_the_mark": null
+        },
+        {
+          "fiscal_year": 2020,
+          "n": 21000,
+          "months_observed": 36,
+          "defaults": 693,
+          "predicted_defaults": 966.0,
+          "rejection_month": null,
+          "max_log_e": -20.511167,
+          "log_e": [
+            -20.511167,
+            -44.844727,
+            -66.200079,
+            null,
+            null
+          ],
+          "five_year_light": null,
+          "months_before_the_mark": null
+        }
+      ],
+      "average": {
+        "log_e": [
+          -15.953518,
+          -28.429139,
+          -36.004948,
+          -18.398828,
+          -16.158556
+        ],
+        "rejection_month": null,
+        "anytime_p_value": 1.0,
+        "max_log_e": -15.953518
+      },
+      "product": {
+        "log_e": [
+          -51.618246,
+          -103.595089,
+          -137.472126,
+          -122.301407,
+          -120.061136
+        ],
+        "rejection_month": null,
+        "anytime_p_value": 1.0,
+        "max_log_e": -51.618246
+      },
+      "reading": {
+        "en": "Read at every age, the e-process never reaches 20 for this cohort: the largest log value of the average is -16.0 (20 is log 3.0). Over the observed ages the cohort has 4,551 charge-offs against 4,754 predicted, so a monitor looking for under-prediction has little to say. 0 of 3 vintages reject on their own.",
+        "es": "Leído en cada edad, el proceso e nunca llega a 20 para esta cohorte: el mayor valor logarítmico del promedio es -16,0 (20 es log 3,0). En las edades observadas la cohorte tiene 4.551 castigos contra 4.754 predichos, así que un monitor que busca subestimación tiene poco que decir. 0 de 3 cosechas rechazan por sí solas."
+      },
+      "limits": {
+        "en": "The null is a binomial with no asset correlation, like the binomial row beside it, so a rejection can also reflect the correlation of the vintage's loans. The vintages of a cohort share the economy: the average is the valid combination, the product assumes they are independent. A cohort has two to three vintages: this is an illustration on the committed curves, not a measure of power. Loans observed for less than the age without a charge-off count as non-events, as in the curves.",
+        "es": "La nula es una binomial sin correlación de activos, como la fila binomial vecina, así que un rechazo puede reflejar también la correlación de los créditos de la cosecha. Las cosechas de una cohorte comparten la economía: el promedio es la combinación válida, el producto supone que son independientes. Una cohorte tiene de dos a tres cosechas: es una ilustración sobre las curvas versionadas, no una medida de potencia. Los créditos observados menos que la edad sin castigo cuentan como no eventos, igual que en las curvas."
+      }
     }
   },
   "tests": [
