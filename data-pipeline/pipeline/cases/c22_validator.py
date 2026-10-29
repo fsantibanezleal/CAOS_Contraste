@@ -67,6 +67,7 @@ from ..core.manifest import build_artifact, build_case_manifest, build_models_ar
 from ..io import papers
 from ..io.formats import write_json
 from ..stages.export import write_artifact
+from . import c22_sequential as seq
 from . import c22_studies as cs
 from .c01_ladder import _t as _bi, _v
 
@@ -1304,6 +1305,10 @@ EXPECT: dict[str, tuple[float, float]] = {
     "other_power_kupiec": (0.62, 0.76),             # 68.85% (the red light, 1,500 days)
     "other_power_fair_z": (0.97, 1.0),              # 99.03%
     "other_studies_above_size": (25.0, 25.0),
+    # BS-15 (D15), declared before the run: the engine page's own pilot gave 2.2 % for the e-process and 65.5 % for the trailing Kupiec; a size
+    # above the anytime bound (5 % plus three standard errors, 6.46 % at 2,000 series) or a repeated Kupiec inside it would refute the premise
+    "seq_e_process_size": (0.0, 0.0646),
+    "seq_kupiec_trailing_size": (0.30, 1.0),
 }
 
 
@@ -1426,6 +1431,14 @@ class C22:
             book.study_runs = runs
             args = (book, wp) if v["id"] == "clustering" else (book, yn) if v["id"] == "drift" else (book,)
             res = v["run"](*args)
+            sequential = None
+            if v["id"] == "other-families":
+                # BS-15 (unit D15): the engine's e-process monitors against the fixed-window tests read every day; the numbers the hypothesis
+                # is judged on join the variant's impact, its scalars the expected ranges
+                sequential = seq.build_block(seed, rv)
+                res["impact"].update(seq.impact_items(sequential))
+                res["values"].update(seq.values(sequential))
+                _log(f"sequential monitors: hypothesis holds = {sequential['verdict']['holds']}")
             values.update(res["values"])
             ladder = None if v["ladder"] is None else {"values": list(v["ladder"][0]), "label": v["ladder"][1]}
             outputs = {
@@ -1437,6 +1450,7 @@ class C22:
                 "exact_curves": res["exact_curves"], "estimators": res["estimators"],
                 "specimen": {"severity": 0 if v["id"] in ("null", "other-families") else SPECIMEN_SEVERITY},
                 "size_bounds": {f"p<{a:g}": size_bound(a, N_NULL if v["id"] == "null" else N_POWER) for a in LEVELS},
+                "sequential": sequential,
             }
             sources = ["bcbs-wp14"] if v["id"] == "clustering" else ["yurdakul-naranjo-2020"] if v["id"] == "drift" else []
             gens = tuple(sorted({g["name"] for g in book.generators.values()}))

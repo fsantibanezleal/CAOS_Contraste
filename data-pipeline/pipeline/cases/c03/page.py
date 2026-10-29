@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from pathlib import Path
 
@@ -74,7 +75,19 @@ def results_block(derived: Path) -> str:
             r = next(x for x in d["outputs"]["rung_comparison"] if x["rung_id"] == rid)
             cells.append("not fitted" if r["auc"] is None and r["reason"] else ("n/a" if r["auc"] is None else f"{r['auc']:.3f}"))
         rbody.append(f"| {rid} | " + " | ".join(cells) + " |")
-    return "\n".join([head, *body, "", "AUC of each rung on the pooled vintages of the cohort, at their 5-year marks:", "", rhead, *rbody]) + "\n"
+    seq = [d["outputs"]["sequential"] for d in docs]
+    shead = ("| Test cohort | Vintages that reject alone (first month) | Cohort by average (first month) | Cohort by product (first month) | "
+             "Largest log E of the average |\n|---|---|---|---|---|")
+    sbody = []
+    for d, q in zip(docs, seq):
+        alone = [f"FY{v['fiscal_year']} ({v['rejection_month']})" for v in q["vintages"] if v["rejection_month"] is not None]
+        first = [("never" if q[k]["rejection_month"] is None else str(q[k]["rejection_month"])) for k in ("average", "product")]
+        sbody.append(f"| {d['outputs']['cohort']['label']['en']} | {', '.join(alone) or 'none'} | {first[0]} | {first[1]} | "
+                     f"{q['average']['max_log_e']:.1f} |")
+    cap = (f"E-process of defaults against the predicted PD, read at every age (12 to 60 months; it rejects when log E reaches log "
+           f"{seq[0]['threshold']:g} = {math.log(seq[0]['threshold']):.1f}):")
+    return "\n".join([head, *body, "", "AUC of each rung on the pooled vintages of the cohort, at their 5-year marks:", "", rhead, *rbody,
+                      "", cap, "", shead, *sbody]) + "\n"
 
 
 def update(page: Path, derived: Path) -> None:

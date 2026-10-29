@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c22/variant.schema.json",
   "title": "C22 validator variant",
-  "description": "Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
+  "description": "Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
   "allOf": [
     {"$ref": "../common/variant-envelope.schema.json"},
     {
@@ -108,7 +108,8 @@
         "exact_curves",
         "estimators",
         "specimen",
-        "size_bounds"
+        "size_bounds",
+        "sequential"
       ],
       "properties": {
         "kind": {"const": "validator"},
@@ -239,6 +240,13 @@
         "size_bounds": {
           "type": "object",
           "additionalProperties": {"type": "number"}
+        },
+        "sequential": {
+          "description": "BS-15 (unit D15): the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families.",
+          "anyOf": [
+            {"$ref": "#/$defs/c22Sequential"},
+            {"type": "null"}
+          ]
         }
       }
     },
@@ -418,6 +426,135 @@
             {"type": "null"}
           ]
         }
+      }
+    },
+    "c22Sequential": {
+      "description": "The sequential-monitor experiment: the method, the VaR-hit experiment, the PD-book experiment, the three hypotheses with their measured numbers and the verdict.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method","seed","hits","pd_grades","hypotheses","verdict"],
+      "properties": {
+        "method": {"$ref": "#/$defs/c22SeqMethod"},
+        "seed": {"type": "integer"},
+        "hits": {"$ref": "#/$defs/c22SeqHits"},
+        "pd_grades": {"$ref": "#/$defs/c22SeqPd"},
+        "hypotheses": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/c22SeqHypothesis"}},
+        "verdict": {"$ref": "#/$defs/c22SeqVerdict"}
+      }
+    },
+    "c22SeqMethod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine","engine_version","alpha_level","threshold","monitors","label","description"],
+      "properties": {
+        "engine": {"type": "string"},
+        "engine_version": {"type": "string"},
+        "alpha_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "The size of the monitor."},
+        "threshold": {"type": "number", "exclusiveMinimum": 1, "description": "The value the e-process must reach to reject: 1 / alpha_level."},
+        "monitors": {"type": "array", "items": {"type": "string"}},
+        "label": {"$ref": "../common/text.schema.json"},
+        "description": {"$ref": "../common/text.schema.json"}
+      }
+    },
+    "c22SeqDetection": {
+      "description": "How a monitor reads a scenario: the share of series ever rejected, rejected by the early step (day 250, year 3), and the median first-rejection step (null when more than half never reject) and the median among the rejected series.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ever","by","median_day","median_day_among_detected"],
+      "properties": {
+        "ever": {"type": "number", "minimum": 0, "maximum": 1},
+        "by": {"type": "number", "minimum": 0, "maximum": 1},
+        "median_day": {"anyOf": [{"type": "number", "minimum": 1}, {"type": "null"}]},
+        "median_day_among_detected": {"anyOf": [{"type": "number", "minimum": 1}, {"type": "null"}]}
+      }
+    },
+    "c22SeqHits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alpha","horizon","window","by_day","reps","generator","traffic_light_exceptions","scenarios"],
+      "properties": {
+        "alpha": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "horizon": {"type": "integer", "minimum": 20},
+        "window": {"type": "integer", "minimum": 1},
+        "by_day": {"type": "integer", "minimum": 1},
+        "reps": {"type": "integer", "minimum": 1},
+        "generator": {"type": "string"},
+        "traffic_light_exceptions": {"type": "integer", "minimum": 1, "description": "The smallest count of exceptions in the window that is outside the green zone."},
+        "scenarios": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/c22SeqHitScenario"}}
+      }
+    },
+    "c22SeqHitScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","kind","factor","cluster","label","e_rate","e_cluster","e_battery","kupiec_trailing","kupiec_cumulative","traffic_light","independence_trailing","kupiec_one_shot_power"],
+      "properties": {
+        "id": {"type": "string"},
+        "kind": {"type": "string", "enum": ["null","rate","cluster"]},
+        "factor": {"anyOf": [{"type": "number", "exclusiveMinimum": 0}, {"type": "null"}]},
+        "cluster": {"anyOf": [{"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}, {"type": "null"}]},
+        "label": {"$ref": "../common/text.schema.json"},
+        "e_rate": {"$ref": "#/$defs/c22SeqDetection"},
+        "e_cluster": {"$ref": "#/$defs/c22SeqDetection"},
+        "e_battery": {"$ref": "#/$defs/c22SeqDetection"},
+        "kupiec_trailing": {"$ref": "#/$defs/c22SeqDetection"},
+        "kupiec_cumulative": {"$ref": "#/$defs/c22SeqDetection"},
+        "traffic_light": {"$ref": "#/$defs/c22SeqDetection"},
+        "independence_trailing": {"$ref": "#/$defs/c22SeqDetection"},
+        "kupiec_one_shot_power": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "c22SeqPd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pd","obligors_per_grade_year","years","by_year","reps","scenarios"],
+      "properties": {
+        "pd": {"type": "array", "minItems": 1, "items": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}},
+        "obligors_per_grade_year": {"type": "integer", "minimum": 1},
+        "years": {"type": "integer", "minimum": 1},
+        "by_year": {"type": "integer", "minimum": 1},
+        "reps": {"type": "integer", "minimum": 1},
+        "scenarios": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/c22SeqPdScenario"}}
+      }
+    },
+    "c22SeqPdScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","factor","label","e_product","e_average","chi2_one_shot_power","chi2_every_year"],
+      "properties": {
+        "id": {"type": "string"},
+        "factor": {"type": "number", "exclusiveMinimum": 0},
+        "label": {"$ref": "../common/text.schema.json"},
+        "e_product": {"$ref": "#/$defs/c22SeqDetection"},
+        "e_average": {"$ref": "#/$defs/c22SeqDetection"},
+        "chi2_one_shot_power": {"type": "number", "minimum": 0, "maximum": 1},
+        "chi2_every_year": {"$ref": "#/$defs/c22SeqDetection"}
+      }
+    },
+    "c22SeqHypothesis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","holds","rule","measured","values"],
+      "properties": {
+        "id": {"type": "string", "enum": ["H1","H2","H3"]},
+        "holds": {"type": "boolean"},
+        "rule": {"$ref": "../common/text.schema.json"},
+        "measured": {"$ref": "../common/text.schema.json"},
+        "values": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id","value"], "properties": {
+          "id": {"type": "string"},
+          "value": {"anyOf": [{"type": "number"}, {"type": "null"}]}
+        }}}
+      }
+    },
+    "c22SeqVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holds","held","failed","text","scope"],
+      "properties": {
+        "holds": {"type": "boolean"},
+        "held": {"type": "array", "items": {"type": "string", "enum": ["H1","H2","H3"]}},
+        "failed": {"type": "array", "items": {"type": "string", "enum": ["H1","H2","H3"]}},
+        "text": {"$ref": "../common/text.schema.json"},
+        "scope": {"$ref": "../common/text.schema.json"}
       }
     },
     "c22Excess": {

@@ -22,6 +22,7 @@ import {
   SizeView,
   SpecimenView,
 } from './Views';
+import { SequentialView } from './SequentialView';
 
 export interface C22Instrument {
   sel: C22Sel | null;
@@ -88,6 +89,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     <SubTabs key={key} ariaLabel={pick(aria, lang)} tabs={items.map((t) => ({ ...t, label: pick(t.label, lang) }))} />
   );
   const isNull = c22.outputs.ladder === null;
+  // BS-15 (D15): the other-families variant carries the e-process monitors against the tests read every day
+  const sequentialTab = c22.outputs.sequential ? [{ id: 'sequential', label: { en: 'Sequential', es: 'Secuencial' }, content: <SequentialView sel={sel} /> }] : [];
   const validation = isNull
     ? tabs(
         [
@@ -108,6 +111,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           ...(c22.outputs.golden.length ? [{ id: 'paper', label: { en: 'Papers', es: 'Artículos' }, content: <PaperView sel={sel} /> }] : []),
           // the other-families variant measures the engine's named studies, which draw no single dataset: no report to read
           ...(c22.tests.length ? [{ id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> }] : []),
+          ...sequentialTab,
         ],
         { en: 'Views of the measurements', es: 'Vistas de las mediciones' },
         `validation-${c22.variant_id}`,

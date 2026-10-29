@@ -298,6 +298,38 @@ def c03_defs() -> dict:
         "rows": A(R("c03StabilityRow"), 1),
     }, "Population stability of each test vintage against the training window and its observed 5-year rate against the "
        "training mean (the crisis contrast).")
+    d["c03SeqPath"] = Ob({
+        "log_e": A(nullable(N()), 1, "log E at each age (months), null where no loan of the cohort is observed at that age; the monitor rejects at log 20."),
+        "rejection_month": nullable(Int(1), "The first age at which the process reached the threshold; null when it never did."),
+        "anytime_p_value": N(minimum=0, maximum=1, description="min(1, 1 / sup E): valid at any stopping time."),
+        "max_log_e": N(),
+    }, "The e-process of the cohort under one combination of its vintages.")
+    d["c03SeqVintage"] = Ob({
+        "fiscal_year": Int(1991),
+        "n": Int(0),
+        "months_observed": Int(0, desc="Months of age observed for the vintage (a multiple of the age step)."),
+        "defaults": Int(0, desc="Charge-offs in the observed age intervals (whole loans)."),
+        "predicted_defaults": N(minimum=0, description="The sum over the observed intervals of the vintage's loans times the predicted interval PD."),
+        "rejection_month": nullable(Int(1), "The first age at which this vintage's own e-process reached the threshold."),
+        "max_log_e": nullable(N()),
+        "log_e": A(nullable(N()), 1),
+        "five_year_light": nullable(LIGHT, "The light of the champion's binomial row on this vintage at the 5-year mark; null when the mark is not observed."),
+        "months_before_the_mark": nullable(Int(0), "The months between the rejection and the last age; null when the vintage never rejected."),
+    }, "One vintage as a grade of the cohort's e-process, set beside the fixed-window reading at the 5-year mark.")
+    d["c03Sequential"] = Ob({
+        "engine": S(), "engine_version": S(),
+        "alpha_level": N(exclusiveMinimum=0, exclusiveMaximum=1, description="The size of the monitor."),
+        "threshold": N(exclusiveMinimum=1, description="1 / alpha_level: the value the process must reach to reject."),
+        "direction": E("upper", "lower", "two-sided"),
+        "headline": E("average", "product"),
+        "months": A(Int(1), 1, "The ages at which the cohort is read."),
+        "vintages": A(R("c03SeqVintage"), 1),
+        "average": R("c03SeqPath"),
+        "product": R("c03SeqPath"),
+        "reading": TXT,
+        "limits": TXT,
+    }, "BS-15 (unit D15): the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort "
+       "instead of once at the 5-year mark. The vintages are the grades, the ages the steps; the average is valid whatever their dependence.")
     d["c03Outputs"] = Ob({
         "kind": {"const": "vintage-cohort"},
         "currency": CUR,
@@ -310,6 +342,7 @@ def c03_defs() -> dict:
         "calibration": R("c03Calibration"),
         "rung_comparison": A(R("c03RungResult"), 1),
         "stability": R("c03Stability"),
+        "sequential": R("c03Sequential"),
     }, "C03 vintage-cohort outputs (outputs.kind vintage-cohort): one test cohort of approval fiscal years. PD open (0, 1) at "
        "estimate sites; the 5-year charge-off target is observed only at each vintage's 5-year mark; a value the bake may lack "
        "is nullable with its reason; money in `currency`.")
@@ -680,7 +713,7 @@ def c09_defs() -> dict:
 def main() -> None:
     d3, d8, d9 = c03_defs(), c08_defs(), c09_defs()
     variant_schema("C03", "variant-vintage-cohort", "vintage-cohort", "C03 vintage-cohort variant",
-                   "Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case "
+                   "Catalog row c03-outputs 4.0.0: one test cohort of approval fiscal years of the SME PD by vintage case "
                    "(outputs.kind vintage-cohort), on the SBA 7(a) data.", "c03Outputs", d3)
     models_schema("C03", "C03 models",
                   "Catalog row c03-models 1.0.0: the C03 models artifact (vintage definition, target, training window, test cohorts, PD rungs).",

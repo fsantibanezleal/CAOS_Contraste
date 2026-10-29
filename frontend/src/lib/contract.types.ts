@@ -850,6 +850,24 @@ export type C22Curve = components['schemas']['c22Curve'];
 
 export type C22Outputs = components['schemas']['c22Outputs'];
 
+/** BS-15 (unit D15): the e-process sequential monitors against the fixed-window tests, the other-families block of C22 (null on every other variant). */
+export type C22Sequential = components['schemas']['c22Sequential'];
+
+export type C22SeqDetection = components['schemas']['c22SeqDetection'];
+
+export type C22SeqHitScenario = components['schemas']['c22SeqHitScenario'];
+
+export type C22SeqPdScenario = components['schemas']['c22SeqPdScenario'];
+
+export type C22SeqHypothesis = components['schemas']['c22SeqHypothesis'];
+
+/** BS-15 (unit D15): the e-process of defaults against the predicted PD by age, per vintage and for the cohort (every C03 cohort document). */
+export type C03Sequential = components['schemas']['c03Sequential'];
+
+export type C03SeqVintage = components['schemas']['c03SeqVintage'];
+
+export type C03SeqPath = components['schemas']['c03SeqPath'];
+
 /** A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
 export type C22Parity = components['schemas']['c22Parity'];
 
@@ -891,6 +909,76 @@ const C22_STUDY = {
     },
   } satisfies Record<keyof C22Study, Kind>,
 } as const;
+
+const C22_SEQ_DETECTION = { ever: num, by: num, median_day: nNum, median_day_among_detected: nNum } satisfies Record<keyof C22SeqDetection, Kind>;
+
+const C22_SEQUENTIAL = {
+  method: {
+    object: { engine: 'string', engine_version: 'string', alpha_level: num, threshold: num, monitors: { array: 'string' }, label: 'text', description: 'text' },
+  },
+  seed: 'integer',
+  hits: {
+    object: {
+      alpha: num,
+      horizon: 'integer',
+      window: 'integer',
+      by_day: 'integer',
+      reps: 'integer',
+      generator: 'string',
+      traffic_light_exceptions: 'integer',
+      scenarios: {
+        array: {
+          object: {
+            id: 'string',
+            kind: 'string',
+            factor: nNum,
+            cluster: nNum,
+            label: 'text',
+            e_rate: { object: C22_SEQ_DETECTION },
+            e_cluster: { object: C22_SEQ_DETECTION },
+            e_battery: { object: C22_SEQ_DETECTION },
+            kupiec_trailing: { object: C22_SEQ_DETECTION },
+            kupiec_cumulative: { object: C22_SEQ_DETECTION },
+            traffic_light: { object: C22_SEQ_DETECTION },
+            independence_trailing: { object: C22_SEQ_DETECTION },
+            kupiec_one_shot_power: num,
+          } satisfies Record<keyof C22SeqHitScenario, Kind>,
+        },
+      },
+    },
+  },
+  pd_grades: {
+    object: {
+      pd: nums,
+      obligors_per_grade_year: 'integer',
+      years: 'integer',
+      by_year: 'integer',
+      reps: 'integer',
+      scenarios: {
+        array: {
+          object: {
+            id: 'string',
+            factor: num,
+            label: 'text',
+            e_product: { object: C22_SEQ_DETECTION },
+            e_average: { object: C22_SEQ_DETECTION },
+            chi2_one_shot_power: num,
+            chi2_every_year: { object: C22_SEQ_DETECTION },
+          } satisfies Record<keyof C22SeqPdScenario, Kind>,
+        },
+      },
+    },
+  },
+  hypotheses: {
+    array: {
+      object: { id: 'string', holds: 'boolean', rule: 'text', measured: 'text', values: { array: { object: { id: 'string', value: nNum } } } } satisfies Record<
+        keyof C22SeqHypothesis,
+        Kind
+      >,
+    },
+  },
+  verdict: { object: { holds: 'boolean', held: { array: 'string' }, failed: { array: 'string' }, text: 'text', scope: 'text' } },
+} satisfies Record<keyof C22Sequential, Kind>;
 
 export const C22_OUTPUTS = {
   kind: 'string',
@@ -956,6 +1044,7 @@ export const C22_OUTPUTS = {
   estimators: { nullable: { object: { auc: { map: num }, ece_when_right: { map: num } } } },
   specimen: { object: { severity: 'integer' } },
   size_bounds: { map: num },
+  sequential: { nullable: { object: C22_SEQUENTIAL } },
 } satisfies Record<keyof C22Outputs, Kind>;
 
 export const VARIANT_C22 = { ...VARIANT, outputs: { object: C22_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;

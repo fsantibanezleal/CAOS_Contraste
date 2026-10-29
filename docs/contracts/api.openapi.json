@@ -3096,7 +3096,7 @@
       },
       "c03-variant-vintage-cohort": {
         "title": "C03 vintage-cohort variant",
-        "description": "Catalog row c03-outputs 2.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.",
+        "description": "Catalog row c03-outputs 4.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -3426,7 +3426,8 @@
           "vintage_summary",
           "calibration",
           "rung_comparison",
-          "stability"
+          "stability",
+          "sequential"
         ],
         "properties": {
           "kind": {
@@ -3471,6 +3472,9 @@
           },
           "stability": {
             "$ref": "#/components/schemas/c03Stability"
+          },
+          "sequential": {
+            "$ref": "#/components/schemas/c03Sequential"
           }
         },
         "description": "C03 vintage-cohort outputs (outputs.kind vintage-cohort): one test cohort of approval fiscal years. PD open (0, 1) at estimate sites; the 5-year charge-off target is observed only at each vintage's 5-year mark; a value the bake may lack is nullable with its reason; money in `currency`."
@@ -3611,6 +3615,244 @@
             ]
           }
         }
+      },
+      "c03SeqPath": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "log_e",
+          "rejection_month",
+          "anytime_p_value",
+          "max_log_e"
+        ],
+        "properties": {
+          "log_e": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "minItems": 1,
+            "description": "log E at each age (months), null where no loan of the cohort is observed at that age; the monitor rejects at log 20."
+          },
+          "rejection_month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The first age at which the process reached the threshold; null when it never did."
+          },
+          "anytime_p_value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "min(1, 1 / sup E): valid at any stopping time."
+          },
+          "max_log_e": {
+            "type": "number"
+          }
+        },
+        "description": "The e-process of the cohort under one combination of its vintages."
+      },
+      "c03SeqVintage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fiscal_year",
+          "n",
+          "months_observed",
+          "defaults",
+          "predicted_defaults",
+          "rejection_month",
+          "max_log_e",
+          "log_e",
+          "five_year_light",
+          "months_before_the_mark"
+        ],
+        "properties": {
+          "fiscal_year": {
+            "type": "integer",
+            "minimum": 1991
+          },
+          "n": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "months_observed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Months of age observed for the vintage (a multiple of the age step)."
+          },
+          "defaults": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Charge-offs in the observed age intervals (whole loans)."
+          },
+          "predicted_defaults": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The sum over the observed intervals of the vintage's loans times the predicted interval PD."
+          },
+          "rejection_month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The first age at which this vintage's own e-process reached the threshold."
+          },
+          "max_log_e": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log_e": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "minItems": 1
+          },
+          "five_year_light": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "green",
+                  "amber",
+                  "red",
+                  "not_evaluated",
+                  "error"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The light of the champion's binomial row on this vintage at the 5-year mark; null when the mark is not observed."
+          },
+          "months_before_the_mark": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The months between the rejection and the last age; null when the vintage never rejected."
+          }
+        },
+        "description": "One vintage as a grade of the cohort's e-process, set beside the fixed-window reading at the 5-year mark."
+      },
+      "c03Sequential": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "engine",
+          "engine_version",
+          "alpha_level",
+          "threshold",
+          "direction",
+          "headline",
+          "months",
+          "vintages",
+          "average",
+          "product",
+          "reading",
+          "limits"
+        ],
+        "properties": {
+          "engine": {
+            "type": "string"
+          },
+          "engine_version": {
+            "type": "string"
+          },
+          "alpha_level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "The size of the monitor."
+          },
+          "threshold": {
+            "type": "number",
+            "exclusiveMinimum": 1,
+            "description": "1 / alpha_level: the value the process must reach to reject."
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "upper",
+              "lower",
+              "two-sided"
+            ]
+          },
+          "headline": {
+            "type": "string",
+            "enum": [
+              "average",
+              "product"
+            ]
+          },
+          "months": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 1,
+            "description": "The ages at which the cohort is read."
+          },
+          "vintages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c03SeqVintage"
+            },
+            "minItems": 1
+          },
+          "average": {
+            "$ref": "#/components/schemas/c03SeqPath"
+          },
+          "product": {
+            "$ref": "#/components/schemas/c03SeqPath"
+          },
+          "reading": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "BS-15 (unit D15): the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort instead of once at the 5-year mark. The vintages are the grades, the ages the steps; the average is valid whatever their dependence."
       },
       "c03Stability": {
         "type": "object",
@@ -7934,7 +8176,7 @@
       },
       "c06-models": {
         "title": "C06 models",
-        "description": "Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+        "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -57089,7 +57331,7 @@
       },
       "c22-variant": {
         "title": "C22 validator variant",
-        "description": "Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
+        "description": "Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -57360,7 +57602,8 @@
           "exact_curves",
           "estimators",
           "specimen",
-          "size_bounds"
+          "size_bounds",
+          "sequential"
         ],
         "properties": {
           "kind": {
@@ -57550,6 +57793,17 @@
             "additionalProperties": {
               "type": "number"
             }
+          },
+          "sequential": {
+            "description": "BS-15 (unit D15): the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families.",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c22Sequential"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -57649,6 +57903,454 @@
           },
           "wilson_high": {
             "type": "number"
+          }
+        }
+      },
+      "c22SeqDetection": {
+        "description": "How a monitor reads a scenario: the share of series ever rejected, rejected by the early step (day 250, year 3), and the median first-rejection step (null when more than half never reject) and the median among the rejected series.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ever",
+          "by",
+          "median_day",
+          "median_day_among_detected"
+        ],
+        "properties": {
+          "ever": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "by": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "median_day": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "median_day_among_detected": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "c22SeqHitScenario": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "factor",
+          "cluster",
+          "label",
+          "e_rate",
+          "e_cluster",
+          "e_battery",
+          "kupiec_trailing",
+          "kupiec_cumulative",
+          "traffic_light",
+          "independence_trailing",
+          "kupiec_one_shot_power"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "null",
+              "rate",
+              "cluster"
+            ]
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cluster": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "e_rate": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "e_cluster": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "e_battery": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "kupiec_trailing": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "kupiec_cumulative": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "traffic_light": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "independence_trailing": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "kupiec_one_shot_power": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "c22SeqHits": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "horizon",
+          "window",
+          "by_day",
+          "reps",
+          "generator",
+          "traffic_light_exceptions",
+          "scenarios"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "horizon": {
+            "type": "integer",
+            "minimum": 20
+          },
+          "window": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "by_day": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "generator": {
+            "type": "string"
+          },
+          "traffic_light_exceptions": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The smallest count of exceptions in the window that is outside the green zone."
+          },
+          "scenarios": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/c22SeqHitScenario"
+            }
+          }
+        }
+      },
+      "c22SeqHypothesis": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "holds",
+          "rule",
+          "measured",
+          "values"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "H1",
+              "H2",
+              "H3"
+            ]
+          },
+          "holds": {
+            "type": "boolean"
+          },
+          "rule": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "measured": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "value"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "c22SeqMethod": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "engine",
+          "engine_version",
+          "alpha_level",
+          "threshold",
+          "monitors",
+          "label",
+          "description"
+        ],
+        "properties": {
+          "engine": {
+            "type": "string"
+          },
+          "engine_version": {
+            "type": "string"
+          },
+          "alpha_level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "The size of the monitor."
+          },
+          "threshold": {
+            "type": "number",
+            "exclusiveMinimum": 1,
+            "description": "The value the e-process must reach to reject: 1 / alpha_level."
+          },
+          "monitors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "description": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
+      "c22SeqPd": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pd",
+          "obligors_per_grade_year",
+          "years",
+          "by_year",
+          "reps",
+          "scenarios"
+        ],
+        "properties": {
+          "pd": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            }
+          },
+          "obligors_per_grade_year": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "years": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "by_year": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "scenarios": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/c22SeqPdScenario"
+            }
+          }
+        }
+      },
+      "c22SeqPdScenario": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "factor",
+          "label",
+          "e_product",
+          "e_average",
+          "chi2_one_shot_power",
+          "chi2_every_year"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "factor": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "e_product": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "e_average": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          },
+          "chi2_one_shot_power": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "chi2_every_year": {
+            "$ref": "#/components/schemas/c22SeqDetection"
+          }
+        }
+      },
+      "c22SeqVerdict": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "holds",
+          "held",
+          "failed",
+          "text",
+          "scope"
+        ],
+        "properties": {
+          "holds": {
+            "type": "boolean"
+          },
+          "held": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "H1",
+                "H2",
+                "H3"
+              ]
+            }
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "H1",
+                "H2",
+                "H3"
+              ]
+            }
+          },
+          "text": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
+      "c22Sequential": {
+        "description": "The sequential-monitor experiment: the method, the VaR-hit experiment, the PD-book experiment, the three hypotheses with their measured numbers and the verdict.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "seed",
+          "hits",
+          "pd_grades",
+          "hypotheses",
+          "verdict"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/c22SeqMethod"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "hits": {
+            "$ref": "#/components/schemas/c22SeqHits"
+          },
+          "pd_grades": {
+            "$ref": "#/components/schemas/c22SeqPd"
+          },
+          "hypotheses": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/c22SeqHypothesis"
+            }
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/c22SeqVerdict"
           }
         }
       },
