@@ -192,13 +192,13 @@ def test_the_battery_rows_are_engine_test_results(variant):
             "alpha_red", "light", "n", "n_events", "inputs_hash", "reference", "notes", "extras"}
     assert all(set(t) == keys and t["reference"] and t["policy_version"].startswith("contraste-ifrs9-battery") for t in doc["tests"])
     life = [t for t in doc["tests"] if t["test_id"] == "ifrs9.lifetime_pd_backtest"]
-    assert {t["model_id"] for t in life} == {"L0-km", "L1-dth", "L2-cox"} and "all" in {t["segment"] for t in life}
+    assert {t["model_id"] for t in life} == {"L0-km", "L1-dth", "L2-cox", "L3-pch"} and "all" in {t["segment"] for t in life}
     rows = doc["outputs"]["lifetime_backtest"]["rows"]
     assert rows and all(r["estimator"] == "kaplan-meier" for r in rows)
     for r in rows:
         assert (r["observed_cumulative_pd"] is None) == (r["reason"] is not None), "an unobserved cell carries its reason"
     assert len(doc["outputs"]["decile_calibration"]["rows"]) == 30
-    assert [r["rung_id"] for r in doc["outputs"]["rung_comparison"]] == ["L0-km", "L1-dth", "L2-cox"]
+    assert [r["rung_id"] for r in doc["outputs"]["rung_comparison"]] == ["L0-km", "L1-dth", "L2-cox", "L3-pch"]
     assert doc["outputs"]["rung_comparison"][0]["c_index"] is None and doc["outputs"]["rung_comparison"][0]["reason"]
 
 

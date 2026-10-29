@@ -21,6 +21,7 @@ from riskvalidation.validation import ifrs9 as rv_ifrs9
 from riskvalidation.validation.discrimination import disc_auc
 
 from .ladder import Ladder
+from .neural import aalen_johansen
 from .panel import EXIT_DEFAULT, EXIT_PAID, Loans
 from .run import BACKTEST_Q, POLICY, RHO, DateRun
 
@@ -28,7 +29,17 @@ HORIZONS = (6, 12, 18, 24, 30, 36)
 DECILE_HORIZONS = (12, 24, 36)
 MIN_COHORT = 100
 DAYS_PER_MONTH = 30.4375
-RUNGS = ("L0-km", "L1-dth", "L2-cox")
+RUNGS = ("L0-km", "L1-dth", "L2-cox", "L3-pch")
+#: the S-4 hypothesis, written before the run (method tiers plan, section 3, S-4; the unit's operationalisation of "beside Cox")
+S4_HYPOTHESIS = {
+    "en": ("The PC-Hazard rung (L3) predicts better than Cox (L2) out of time: a lower integrated Brier score and a smaller mean absolute "
+           "decile gap against Aalen-Johansen (mean over 12, 24 and 36 months) at more than half of the reporting dates where both "
+           "are observed. Refuted when it holds at half of them or fewer. The c-index is reported beside, not part of the verdict."),
+    "es": ("El peldaño PC-Hazard (L3) predice mejor que Cox (L2) fuera de tiempo: un puntaje de Brier integrado menor y una brecha "
+           "absoluta media por decil menor frente a Aalen-Johansen (media a 12, 24 y 36 meses) en más de la mitad de las fechas de "
+           "reporte donde ambos se observan. Se refuta cuando se cumple en la mitad o menos. El índice c se informa al lado y no "
+           "entra en el veredicto."),
+}
 
 
 @dataclass(frozen=True)
@@ -38,6 +49,7 @@ class FollowUp:
     time: np.ndarray        # (A,) months from R to the last observed moment
     event: np.ndarray       # (A,) bool: charged off within the follow-up
     horizon: float          # months from R to the date the file is as of
+    cause: np.ndarray       # (A,) int: 0 still open or matured at the last moment, 1 charged off, 2 paid off (the competing exit)
 
 
 def follow_up(loans: Loans, run: DateRun) -> FollowUp:
@@ -49,8 +61,9 @@ def follow_up(loans: Loans, run: DateRun) -> FollowUp:
     t_mat = (loans.term[idx] - run.age_m).astype(float)
     is_default = kind == EXIT_DEFAULT
     event = is_default & (t_exit <= t_mat) & (t_exit <= horizon)
+    paid = (kind == EXIT_PAID) & (t_exit <= t_mat) & (t_exit <= horizon)
     time = np.minimum(np.minimum(np.where(np.isfinite(t_exit), t_exit, np.inf), t_mat), horizon)
-    return FollowUp(time=np.maximum(time, 0.0), event=event, horizon=horizon)
+    return FollowUp(time=np.maximum(time, 0.0), event=event, horizon=horizon, cause=np.where(event, 1, np.where(paid, 2, 0)))
 
 
 def km_observed(time: np.ndarray, event: np.ndarray, horizons: tuple[int, ...], follow: float) -> tuple[np.ndarray, np.ndarray]:
@@ -82,6 +95,8 @@ def _predicted(rung: str, run: DateRun, ladder: Ladder, mask: np.ndarray, horizo
     if rung == "L0-km":
         return ladder.km.cumulative(age, h)
     stratum = _stratum(run)[mask]
+    if rung == "L3-pch":
+        return ladder.pch.cumulative(stratum, age, h)
     return ladder.cox.cumulative(stratum, age, h)
 
 
@@ -127,7 +142,7 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
     tests: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     cmp_rows: list[dict[str, Any]] = []
-    status = {"L0-km": ladder.km.status, "L1-dth": ladder.dth.status, "L2-cox": ladder.cox.status}
+    status = {"L0-km": ladder.km.status, "L1-dth": ladder.dth.status, "L2-cox": ladder.cox.status, "L3-pch": ladder.pch.status}
     all_results: dict[str, Any] = {}
     for rung in RUNGS:
         if not status[rung].evaluated:
@@ -208,6 +223,98 @@ def lifetime_results(loans: Loans, run: DateRun, follow: FollowUp) -> LifetimeRe
                                 "predicted_cumulative_pd": pred, "observed_cumulative_pd": o, "reason": why})
     return LifetimeResults(tests=tests, rows=rows, rung_comparison=cmp_rows, deciles=deciles, eligible=int(elig.sum()),
                            left_out=int((~elig).sum()))
+
+
+def decile_calibration_rows(rung: str, run: DateRun, follow: FollowUp) -> list[dict[str, Any]]:
+    """Calibration of one rung at 12, 24 and 36 months per predicted-risk decile, on the accounts with a full 36-month life: the
+    mean predicted cumulative PD against the observed one by two estimators, Kaplan-Meier (prepayment censors, the estimand of a
+    cause-specific hazard) and Aalen-Johansen (prepayment competes, the cumulative incidence a book actually shows). A cell
+    beyond the follow-up or thinner than ``MIN_COHORT`` accounts is null with its reason, never filled."""
+    elig = run.horizon_q >= BACKTEST_Q
+    rows: list[dict[str, Any]] = []
+    if not elig.any():
+        return rows
+    sub_t, sub_e, sub_c = follow.time[elig], follow.event[elig], follow.cause[elig]
+    for k in DECILE_HORIZONS:
+        pk = _predicted(rung, run, run.ladder, elig, (k,))[:, 0]
+        parts = np.array_split(np.argsort(pk, kind="stable"), 10)
+        for d, part in enumerate(parts, start=1):
+            n = int(part.size)
+            pred = float(np.clip(pk[part].mean(), 1e-9, 1 - 1e-9)) if n else 1e-9
+            km = aj = None
+            reason = None
+            if k > follow.horizon + 1e-9:
+                reason = {"en": f"the {k}-month horizon is beyond the last date the file is as of (follow-up {follow.horizon:.1f} months)",
+                          "es": f"el horizonte de {k} meses supera la última fecha de corte del archivo (seguimiento de {follow.horizon:.1f} meses)"}
+            elif n < MIN_COHORT:
+                reason = {"en": f"{n} accounts in the decile, fewer than the {MIN_COHORT} a cohort test needs",
+                          "es": f"{n} cuentas en el decil, menos de las {MIN_COHORT} que necesita una prueba de cohorte"}
+            else:
+                km = float(km_observed(sub_t[part], sub_e[part], (k,), follow.horizon)[0][0])
+                aj = float(aalen_johansen(sub_t[part], sub_c[part], np.array([float(k)]), target=1)[0])
+            rows.append({"months": k, "decile": d, "n": n, "predicted_cumulative_pd": pred, "observed_kaplan_meier": km,
+                         "observed_aalen_johansen": aj, "gap_kaplan_meier": None if km is None else pred - km,
+                         "gap_aalen_johansen": None if aj is None else pred - aj, "reason": reason})
+    return rows
+
+
+def _mean_abs_gap(rows: list[dict[str, Any]], key: str) -> tuple[list[float | None], float | None]:
+    per = []
+    for k in DECILE_HORIZONS:
+        gaps = [abs(r[key]) for r in rows if r["months"] == k and r[key] is not None]
+        per.append(float(np.mean(gaps)) if gaps else None)
+    seen = [g for g in per if g is not None]
+    return per, (float(np.mean(seen)) if seen else None)
+
+
+@dataclass
+class S4Evaluation:
+    """The S-4 evaluation of one reporting date: the deciles of the Cox and PC-Hazard rungs and the PC-Hazard summary."""
+
+    deciles: dict[str, list[dict[str, Any]]]
+    summary: dict[str, Any]
+
+
+def s4_evaluation(run: DateRun, follow: FollowUp, life: LifetimeResults) -> S4Evaluation | None:
+    """PC-Hazard beside Cox on this date: c-index, integrated Brier and the decile gap against Aalen-Johansen, and each criterion
+    of ``S4_HYPOTHESIS`` as true, false or null (null: one side not observed). None when the PC-Hazard rung was not fitted."""
+    if not run.ladder.pch.status.evaluated:
+        return None
+    deciles = {r: decile_calibration_rows(r, run, follow) for r in ("L2-cox", "L3-pch")}
+    cmp = {r["rung_id"]: r for r in life.rung_comparison}
+    gaps = {}
+    for rung, tag in (("L3-pch", "pch"), ("L2-cox", "cox")):
+        gaps[tag], gaps[f"{tag}_mean"] = _mean_abs_gap(deciles[rung], "gap_aalen_johansen")
+    gaps_km = {}
+    for rung, tag in (("L3-pch", "pch"), ("L2-cox", "cox")):
+        gaps_km[tag], gaps_km[f"{tag}_mean"] = _mean_abs_gap(deciles[rung], "gap_kaplan_meier")
+
+    def lower(a: float | None, b: float | None) -> bool | None:
+        return None if a is None or b is None else bool(a < b)
+
+    ibs_p, ibs_c = cmp["L3-pch"]["integrated_brier"], cmp["L2-cox"]["integrated_brier"]
+    ci_p, ci_c = cmp["L3-pch"]["c_index"], cmp["L2-cox"]["c_index"]
+    crit = {"lower_integrated_brier": lower(ibs_p, ibs_c), "smaller_decile_gap": lower(gaps["pch_mean"], gaps["cox_mean"]),
+            "higher_c_index": lower(ci_c, ci_p)}
+    both = [crit["lower_integrated_brier"], crit["smaller_decile_gap"]]
+    holds = None if any(v is None for v in both) else bool(all(both))
+    summary = {"comparator": "L2-cox", "hypothesis": S4_HYPOTHESIS, "eligible_accounts": life.eligible, "left_out_accounts": life.left_out,
+               "defaults_followed": int(follow.event[run.horizon_q >= BACKTEST_Q].sum()), "follow_up_months": float(follow.horizon),
+               "c_index": {"pch": ci_p, "cox": ci_c}, "integrated_brier": {"pch": ibs_p, "cox": ibs_c},
+               "mean_abs_decile_gap_aalen_johansen": {"months": list(DECILE_HORIZONS), **gaps},
+               "mean_abs_decile_gap_kaplan_meier": {"months": list(DECILE_HORIZONS), **gaps_km},
+               "criteria": crit, "holds_at_date": holds}
+    return S4Evaluation(deciles=deciles, summary=summary)
+
+
+def s4_verdict(holds_by_date: list[bool | None]) -> dict[str, Any]:
+    """The verdict on ``S4_HYPOTHESIS`` over the reporting dates: it holds when both criteria hold at more than half of the dates
+    where both rungs are observed, and is refuted when it holds at half of them or fewer (a date with no observed horizon is
+    counted as not evaluable, never as a failure). ``verdict`` is None when no date is evaluable."""
+    evaluable = [h for h in holds_by_date if h is not None]
+    n, k = len(evaluable), sum(1 for h in evaluable if h)
+    return {"dates": len(holds_by_date), "evaluable": n, "holds_at": k,
+            "verdict": None if n == 0 else ("holds" if 2 * k > n else "refuted")}
 
 
 def _row(cohort: str, months: int, pred: float | None, obs: float | None, gap: float | None, brier: float | None,

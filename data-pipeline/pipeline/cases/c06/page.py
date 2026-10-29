@@ -11,6 +11,8 @@ from pathlib import Path
 
 MARK_START = "<!-- c06-results:start -->"
 MARK_END = "<!-- c06-results:end -->"
+PCH_START = "<!-- c06-pch:start -->"
+PCH_END = "<!-- c06-pch:end -->"
 NEGATION = re.compile(r"\b(not|no|never|without|twin|missing|absent|cannot|isn't|none)\b", re.IGNORECASE)
 
 
@@ -71,14 +73,61 @@ def results_block(derived: Path) -> str:
     return "\n".join([head, *body]) + "\n"
 
 
+def pch_rows(derived: Path) -> list[dict]:
+    """The S-4 evaluation of every reporting date, from the PC-Hazard record of each models document, in date order."""
+    manifest = json.loads((derived / "manifests" / "C06.json").read_text(encoding="utf-8"))
+    rows = []
+    for a in manifest["artifacts"]:
+        if a["role"] != "models":
+            continue
+        d = json.loads((derived / a["path"]).read_text(encoding="utf-8"))
+        rec = next(m for m in d["model"] if m["id"] == "L3-pch")
+        rows.append({"date": d["fit"]["ladder"][0]["training_cutoff"], "ev": rec["details"].get("evaluation")})
+    return rows
+
+
+def pch_block(derived: Path) -> str:
+    """The S-4 table: the PC-Hazard rung beside Cox at every date, and the verdict on the hypothesis written before the run."""
+    from pipeline.cases.c06.backtest import S4_HYPOTHESIS, s4_verdict
+
+    head = ("| Reporting date | c-index L3 | c-index L2 | Integrated Brier L3 | Integrated Brier L2 | Mean decile gap vs Aalen-Johansen L3 (points) | "
+            "Mean decile gap L2 (points) | Accounts | Defaults | Follow-up (months) | Hypothesis at the date |\n|---|---|---|---|---|---|---|---|---|---|---|")
+    body, holds = [], []
+    for r in pch_rows(derived):
+        ev = r["ev"]
+        if ev is None:
+            body.append(f"| {r['date']} | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | not fitted |")
+            holds.append(None)
+            continue
+        g = ev["mean_abs_decile_gap_aalen_johansen"]
+        h = ev["holds_at_date"]
+        holds.append(h)
+        words = "not evaluable" if h is None else ("holds" if h else "does not hold")
+        body.append(f"| {r['date']} | {_f(ev['c_index']['pch'], '.4f')} | {_f(ev['c_index']['cox'], '.4f')} | "
+                    f"{_f(ev['integrated_brier']['pch'], '.5f')} | {_f(ev['integrated_brier']['cox'], '.5f')} | "
+                    f"{_f(None if g['pch_mean'] is None else 100 * g['pch_mean'], '.2f')} | {_f(None if g['cox_mean'] is None else 100 * g['cox_mean'], '.2f')} | "
+                    f"{ev['eligible_accounts']:,} | {ev['defaults_followed']:,} | {ev['follow_up_months']:.1f} | {words} |")
+    v = s4_verdict(holds)
+    word = {"holds": "HOLDS", "refuted": "IS REFUTED", None: "CANNOT BE JUDGED"}[v["verdict"]]
+    tail = (f"\n**Verdict.** The hypothesis {word}: it holds at {v['holds_at']} of {v['evaluable']} evaluable reporting dates "
+            f"({v['dates']} dates in all).\n\n> {S4_HYPOTHESIS['en']}\n")
+    return "\n".join([head, *body]) + "\n" + tail
+
+
 def update(page: Path, derived: Path) -> None:
     text = page.read_text(encoding="utf-8")
     pre, rest = text.split(MARK_START, 1)
     _, post = rest.split(MARK_END, 1)
-    page.write_text(f"{pre}{MARK_START}\n{results_block(derived)}{MARK_END}{post}", encoding="utf-8", newline="\n")
+    text = f"{pre}{MARK_START}\n{results_block(derived)}{MARK_END}{post}"
+    pre, rest = text.split(PCH_START, 1)
+    _, post = rest.split(PCH_END, 1)
+    page.write_text(f"{pre}{PCH_START}\n{pch_block(derived)}{PCH_END}{post}", encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":
+    import sys
+
     root = Path(__file__).resolve().parents[4]
+    sys.path.insert(0, str(root / "data-pipeline"))
     update(root / "docs" / "cases" / "C06.md", root / "data" / "derived")
     print("updated", root / "docs" / "cases" / "C06.md")

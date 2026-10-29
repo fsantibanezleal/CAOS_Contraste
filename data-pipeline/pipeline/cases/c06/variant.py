@@ -83,6 +83,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
     rf = build_rollforward(loans, run0, run1, overlays, bd.CURRENCY)
     follow = bt.follow_up(loans, run1)
     life = bt.lifetime_results(loans, run1, follow)
+    s4 = bt.s4_evaluation(run1, follow, life)
 
     stage = run1.stage.astype(np.int64)
     ids = list(run1.scenario_ids)
@@ -150,5 +151,5 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
         f"pd12_mean@{iso}": float(run1.pd12.mean()), f"accounts@{iso}": float(run1.a),
     }
     return VariantResult(variant_id=bd.variant_id(rd), reporting_date=rd, document=document,
-                         models={"fit": fit, "model": md.model_records(run1, cleaning)}, values=values, contract=contract, run=run1)
+                         models={"fit": fit, "model": md.model_records(run1, cleaning, s4)}, values=values, contract=contract, run=run1)
 
