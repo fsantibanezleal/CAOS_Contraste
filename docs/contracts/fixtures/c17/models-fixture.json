@@ -217,7 +217,7 @@
         "truncated": true,
         "aggregation": "closed-form",
         "status": "UNVERIFIED",
-        "reference": "dossier 05 F.4: the form is not checked against Böcker and Sprittulla (2006) or Degen (2010)"
+        "reference": "dossier 05 F.4: the form is not checked against Bocker and Sprittulla (2006) or Degen (2010)"
       },
       {
         "rung_id": "scenario",
@@ -229,7 +229,55 @@
         "truncated": true,
         "aggregation": "panjer",
         "status": "verified",
-        "reference": "dossier 05 F.5, Shevchenko and Wüthrich (2006)"
+        "reference": "dossier 05 F.5, Shevchenko and Wuthrich (2006)"
+      },
+      {
+        "rung_id": "sla-mean-adjusted",
+        "label": {
+          "en": "Mean-adjusted single loss approximation, GPD by maximum likelihood",
+          "es": "Aproximacion de una perdida con ajuste por media, GPD por maxima verosimilitud"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "S-3 of the method tiers plan; riskvalidation.oprisk.robust.sla_var_mean_adjusted"
+      },
+      {
+        "rung_id": "sla-cvm",
+        "label": {
+          "en": "Robust GPD by minimum Cramer-von Mises distance, mean-adjusted single loss approximation",
+          "es": "GPD robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "S-3 of the method tiers plan; Opdyke and Cavallo (2012)"
+      },
+      {
+        "rung_id": "sla-obre",
+        "label": {
+          "en": "Optimally bias-robust GPD at 95 percent efficiency, mean-adjusted single loss approximation",
+          "es": "GPD optimamente robusta al sesgo con eficiencia de 95 por ciento, aproximacion de una perdida con ajuste por media"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "S-3 of the method tiers plan; Hampel et al. (1986) section 4.2"
+      },
+      {
+        "rung_id": "sla-cvm-lognormal",
+        "label": {
+          "en": "Robust lognormal by minimum Cramer-von Mises distance, mean-adjusted single loss approximation (control)",
+          "es": "Lognormal robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media (control)"
+        },
+        "severity_law": "lognormal-truncated",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "S-3 of the method tiers plan; the control"
       }
     ],
     "aggregation": {
@@ -311,7 +359,7 @@
         "interval_level": 0.9,
         "mapping": "GPD fitted to the scenario points by least squares on the log excess quantiles; alpha_s = 1 / xi_s is the prior mean and the parametric-bootstrap 90 percent interval of alpha_s the expert interval; the Gamma shape and rate solve the mean and the interval mass (decision D4)"
       },
-      "reference": "dossier 05 F.5; Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26"
+      "reference": "dossier 05 F.5; Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"
     }
   },
   "provenance": {
