@@ -1,0 +1,2 @@
+- Shell 0.19.6 adopted: the footer licence is marked translate=no (known shell defect 47).
+- Template 0.13.000 adopted: the method ladder in three tiers (classical, state of the art, beyond), the proposed methods BS-13 to BS-16, the manuscripts guard.
