@@ -14,6 +14,9 @@ lightgbm==4.7.0
 xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
+# the C11 R10 quantile network (S-1 of the method tiers): the gradient of the FZ0 loss only; BSD-3-Clause (data-pipeline/config/licences.json).
+# The CPU wheel (pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1) is enough; the bake is local, never in CI.
+torch==2.14.1
 pypdf==6.19.0
 # the engine: the validation tests, the regulatory calculators and the reference engines, at its PyPI release (during a batch, before
 # the release, a full commit of the engine's integration branch that the SDD names; tests/engine_pin.py); the `market` extra brings

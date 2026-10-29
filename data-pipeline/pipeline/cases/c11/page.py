@@ -57,6 +57,39 @@ def results_table(docs: dict[str, dict]) -> str:
     return "\n".join([head, *rows])
 
 
+def network_table(docs: dict[str, dict]) -> str:
+    """The R10 quantile network beside the ladder, per window: gates, average FZ0, its rank among the eligible models with an ES on every day,
+    the champion's FZ0 and the 90 percent model confidence set (S-1 of the method tiers: reported whether it wins or not)."""
+    head = ("| Window | Eligible | Failed gates | FZ0 99% (rank of eligible) | Champion FZ0 99% | In 90% set at 99% | FZ0 97.5% (rank of eligible) | "
+            "Champion FZ0 97.5% | In 90% set at 97.5% | Exceedances at 99% (expected) |"
+            "\n|---|---|---|---|---|---|---|---|---|---|")
+    rows, wins, inset_n = [], {0.01: 0, 0.025: 0}, {0.01: 0, 0.025: 0}
+    for w, d in docs.items():
+        o = d["outputs"]
+        m = next(x for x in o["models"] if x["model_id"] == "nn-fz")
+        cells = []
+        for a in (0.01, 0.025):
+            fz = {x["model_id"]: next(lv for lv in x["by_level"] if lv["alpha"] == a)["fz0_mean"] for x in o["models"]}
+            ok = sorted((v, k) for k, v in fz.items() if v is not None and next(y for y in o["models"] if y["model_id"] == k)["eligible"])
+            champ = next((c for c in o["comparison"]["champions"] if c["alpha"] == a), {})["model_id"]
+            wins[a] += champ == "nn-fz"
+            rank = "n/a" if not m["eligible"] else f"{[k for _, k in ok].index('nn-fz') + 1} of {len(ok)}"
+            mcs = next(s for s in o["comparison"]["mcs"] if s["alpha"] == a)
+            inset = next((x["in_set"] for x in mcs["members"] if x["model_id"] == "nn-fz"), None)
+            inset_n[a] += bool(inset)
+            cells += [f"{_fmt(fz['nn-fz'], '.4f')} ({rank})", "none" if champ is None else f"{champ} ({_fmt(fz[champ], '.4f')})",
+                      "n/a" if inset is None else ("yes" if inset else "no")]
+        lv = next(x for x in m["by_level"] if x["alpha"] == 0.01)
+        rows.append(f"| {w} | {'yes' if m['eligible'] else 'no'} | {', '.join(g.split('.')[-1] for g in m['failed_gates']) or 'none'} | "
+                    f"{cells[0]} | {cells[1]} | {cells[2]} | {cells[3]} | {cells[4]} | {cells[5]} | {lv['n_exceedances']} ({lv['expected_exceedances']:.1f}) |")
+    n = len(docs)
+    elig = sum(next(x for x in d["outputs"]["models"] if x["model_id"] == "nn-fz")["eligible"] for d in docs.values())
+    verdict = (f"Verdict (reported whether it wins or not): the network passes every eligibility gate in {elig} of {n} windows and is the champion in "
+               f"{wins[0.01]} of {n} windows at 99 percent and {wins[0.025]} of {n} at 97.5 percent; it is in the 90 percent model confidence set in "
+               f"{inset_n[0.01]} of {n} windows at 99 percent and {inset_n[0.025]} of {n} at 97.5 percent.")
+    return "\n".join([head, *rows, "", verdict])
+
+
 def exceedance_matrix(docs: dict[str, dict]) -> str:
     ids = [m["model_id"] for m in next(iter(docs.values()))["outputs"]["models"]]
     head = "| Model | " + " | ".join(docs) + " |\n|---|" + "---|" * len(docs)
@@ -79,6 +112,16 @@ def selection_table(evidence: Path) -> str:
         cands = ", ".join(f"{c['value']}: {c['score']:.4f}" for c in g["candidates"])
         rows.append(f"| `{name}` | {g['model']} | {cands} | {rec['selected'][name]} |")
     return "\n".join(rows)
+
+
+def network_selection_table(evidence: Path) -> str:
+    rec = json.loads((evidence / "network-selection.json").read_text(encoding="utf-8"))
+    rows = ["| Network hyperparameter | Candidates (summed average FZ0 of the network on the span, lower is better) | Selected |", "|---|---|---|"]
+    for name, g in rec["grid"].items():
+        cands = ", ".join(f"{c['value']}: {c['score']:.4f}" for c in g["candidates"])
+        rows.append(f"| `{name}` | {cands} | {rec['selected'][name]} |")
+    fixed = ", ".join(f"{k} {v}" for k, v in rec["base"].items() if k not in rec["grid"])
+    return "\n".join([*rows, "", f"Fixed by the compute budget and not tuned: {fixed}."])
 
 
 def inputs_table(evidence: Path) -> str:
@@ -109,7 +152,9 @@ def blocks(derived: Path, evidence: Path) -> str:
     return "\n\n".join([
         "### Results per window\n\n" + results_table(docs),
         "### Exceedances of the 99 percent VaR per model and window\n\n" + exceedance_matrix(docs),
+        "### The R10 quantile network trained on FZ0, beside the ladder\n\n" + network_table(docs),
         "### The hyperparameters, fixed on 1995-01-01 to 2003-12-31\n\n" + selection_table(evidence),
+        "### The network's hyperparameters, fixed on the same span\n\n" + network_selection_table(evidence),
         "### The raw files read\n\n" + inputs_table(evidence),
         "### The committed documents\n\n" + hash_table(derived)]) + "\n"
 

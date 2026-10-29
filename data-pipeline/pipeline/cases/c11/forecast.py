@@ -14,7 +14,7 @@ A fit that fails (not converged, or a recursion that leaves its domain) keeps th
 
 Refit frequency: GARCH family and filtered HS every ``garch_refit_every_days`` forecast days, CAViaR every
 ``caviar_refit_every_days``, GAS-FZ every ``gas_refit_every_days``; the conditional EVT and the ES step of CAViaR are
-refitted every day. Each window's forecasts are cached (``cache_dir``), keyed by a hash of the series, the hyperparameters
+refitted every day, and the R10 quantile network every ``quantile_net.NET.refit_every_days``. Each window's forecasts are cached (``cache_dir``), keyed by a hash of the series, the hyperparameters
 and the engine, so a re-run reuses them.
 """
 from __future__ import annotations
@@ -36,6 +36,7 @@ from riskvalidation.market import gas_fz as rv_gas
 from riskvalidation.market import historical as rv_hist
 from riskvalidation.market import parametric as rv_par
 
+from . import quantile_net as qn
 from .constants import LEVELS
 
 
@@ -63,7 +64,7 @@ class Hyper:
 class Spec:
     model_id: str
     rung: str
-    kind: str                       # hs, awhs, dn, cf, ewma, garch, fhs, evt, caviar, caviar-es, gas
+    kind: str                       # hs, awhs, dn, cf, ewma, garch, fhs, evt, caviar, caviar-es, gas, nn
     arg: str                        # the variant of the kind: 250, garch/gjr/egarch, sav/as, one-factor/two-factor/hybrid
     en: str
     es: str
@@ -73,7 +74,7 @@ class Spec:
     forecasts_es: bool
 
 
-#: the ladder of dossier 05 "Method ladders", rung 1 to 9; rung 10 is the challenger that is never trained here
+#: the ladder of dossier 05 "Method ladders": rungs 1 to 9 and, since S-1 of the method tiers, rung 10, the quantile network trained on FZ0
 LADDER: tuple[Spec, ...] = (
     Spec("hs-250", "R1", "hs", "250", "Historical simulation, 250 days", "Simulación histórica, 250 días",
          "historical simulation (textbook; Pritsker 2001)", "empirical", "tail mean of the sorted window", True),
@@ -111,8 +112,12 @@ LADDER: tuple[Spec, ...] = (
          "Patton, Ziegel and Chen 2019, J. Econometrics 211(2)", "none", "joint VaR and ES from two dynamic factors (FZ0 estimation)", True),
     Spec("gas-hybrid", "R9", "gas", "hybrid", "Hybrid GARCH-FZ", "GARCH-FZ híbrido",
          "Patton, Ziegel and Chen 2019, J. Econometrics 211(2), eq 27", "none", "one dynamic factor with a log absolute return term (FZ0 estimation)", True),
+    Spec("nn-fz", "R10", "nn", "", "Quantile network trained on FZ0", "Red de cuantiles entrenada con FZ0",
+         "Fissler and Ziegel 2016, Ann. Statist. 44(4); Patton, Ziegel and Chen 2019, J. Econometrics 211(2); a small network after the neural joint VaR and ES line, arXiv 2606.04576",
+         "none", "second network output: the gap of the ES below the VaR, trained jointly on FZ0", True),
 )
 SPEC_BY_ID = {s.model_id: s for s in LADDER}
+#: the declaration of R10 that a partial bake (a test that leaves the network out) carries instead of a fit; the full bake trains it
 CHALLENGER = {"model_id": "nn-fz", "rung": "R10", "en": "Quantile network trained on FZ0 (challenger)",
               "es": "Red de cuantiles entrenada con FZ0 (retador)", "source": "arXiv 2606.04576 (preprint; challenger only)",
               "reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the published run does not train it"}
@@ -125,7 +130,7 @@ PARAM_NAMES = {
     "two-factor": ("w_v", "w_e", "B_vv", "B_ee", "A_vv", "A_ve", "A_ev", "A_ee"),
 }
 MIN_OBS = {"hs": 250, "awhs": 250, "dn": 60, "cf": 60, "ewma": 60, "garch": 250, "fhs": 250, "evt": 250, "caviar": 500,
-           "caviar-es": 500, "gas": 500}
+           "caviar-es": 500, "gas": 500, "nn": 500}
 
 
 @dataclass
@@ -176,7 +181,8 @@ def _record(params: dict[str, list[float]], names: tuple[str, ...], values: np.n
         params.setdefault(n, []).append(float(v))
 
 
-def run_model(spec: Spec, y: np.ndarray, idx: np.ndarray, hp: Hyper, levels: tuple[float, ...] = LEVELS) -> ModelRun:
+def run_model(spec: Spec, y: np.ndarray, idx: np.ndarray, hp: Hyper, levels: tuple[float, ...] = LEVELS,
+              net: qn.NetHyper = qn.NET) -> ModelRun:
     """The one-step forecasts of ``spec`` for the days at positions ``idx`` of ``y``; each sees ``y[:i]`` only."""
     t0 = time.perf_counter()
     n = idx.size
@@ -189,7 +195,7 @@ def run_model(spec: Spec, y: np.ndarray, idx: np.ndarray, hp: Hyper, levels: tup
         try:
             ctx = _day_context(spec, win, k, hp, out, fits)
             for j, a in enumerate(levels):
-                last[a] = _ordered(_one_day(spec, win, a, k, hp, out, fits, ctx, j == 0), spec.model_id, float(win.std()))
+                last[a] = _ordered(_one_day(spec, win, a, k, hp, out, fits, ctx, j == 0, net), spec.model_id, float(win.std()))
         except (ValueError, RuntimeError, FloatingPointError, np.linalg.LinAlgError) as exc:
             if not last or k == 0:
                 raise RuntimeError(f"{spec.model_id}: no usable forecast on the first day: {exc}") from exc
@@ -242,7 +248,7 @@ def _day_context(spec: Spec, win: np.ndarray, k: int, hp: Hyper, out: ModelRun, 
 
 
 def _one_day(spec: Spec, win: np.ndarray, a: float, k: int, hp: Hyper, out: ModelRun, fits: dict, ctx: dict,
-             first_level: bool) -> tuple[float, float]:
+             first_level: bool, net: qn.NetHyper = qn.NET) -> tuple[float, float]:
     kind = spec.kind
     nan = float("nan")
     if kind == "hs":
@@ -300,6 +306,20 @@ def _one_day(spec: Spec, win: np.ndarray, a: float, k: int, hp: Hyper, out: Mode
             out.n_refits += 1
             out.n_failures += 1
             return rv_gas.gas_fz_forecast(fits[a], win)
+    if kind == "nn":
+        if _refit_due(k, net.refit_every_days, a in fits):
+            try:
+                fit = qn.fit_net(win, a, net, hp.seed + k)
+            except (ValueError, RuntimeError):
+                if a not in fits:
+                    raise
+                out.n_refits += 1
+                out.n_failures += 1                                  # keep the previous weights, counted
+            else:
+                fits[a] = fit
+                out.n_refits += 1
+                out.params.setdefault(f"train_fz0@{a:g}", []).append(fit.train_fz0)
+        return qn.predict(fits[a], win)
     raise ValueError(f"unknown model kind {kind!r}")
 
 
@@ -311,17 +331,18 @@ def _fit_gas(variant: str, win: np.ndarray, a: float, hp: Hyper):
 
 # ------------------------------------------------------------------------------------------------------------------- cache and pool
 
-def fingerprint(y: np.ndarray, idx: np.ndarray, hp: Hyper, spec: Spec, engine: str) -> str:
+def fingerprint(y: np.ndarray, idx: np.ndarray, hp: Hyper, spec: Spec, engine: str, net: qn.NetHyper = qn.NET) -> str:
     h = hashlib.sha256()
     h.update(np.ascontiguousarray(y, dtype=float).tobytes())
     h.update(np.ascontiguousarray(idx, dtype=np.int64).tobytes())
-    h.update(json.dumps([hp.to_json(), spec.model_id, engine], sort_keys=True).encode())
+    parts = [hp.to_json(), spec.model_id, engine] + ([net.to_json()] if spec.kind == "nn" else [])   # R1 to R9 keep their cache keys
+    h.update(json.dumps(parts, sort_keys=True).encode())
     return h.hexdigest()[:20]
 
 
 def _task(args: tuple) -> tuple[str, str, dict]:
-    window_id, model_id, y, idx, hp, path = args
-    run = run_model(SPEC_BY_ID[model_id], y, idx, hp)
+    window_id, model_id, y, idx, hp, path = args[:6]
+    run = run_model(SPEC_BY_ID[model_id], y, idx, hp, net=args[6] if len(args) > 6 else qn.NET)
     doc = run.to_json()
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     tmp = Path(str(path) + ".tmp")
@@ -337,18 +358,19 @@ def forecast_window(window_id: str, y: np.ndarray, idx: np.ndarray, hp: Hyper, c
 
 
 def forecast_windows(windows: dict[str, tuple[np.ndarray, np.ndarray]], hp: Hyper, cache_dir: Path, engine: str,
-                     model_ids: tuple[str, ...] | None = None, workers: int = 1, log=print) -> dict[str, dict[str, ModelRun]]:
+                     model_ids: tuple[str, ...] | None = None, workers: int = 1, log=print,
+                     net: qn.NetHyper = qn.NET) -> dict[str, dict[str, ModelRun]]:
     ids = model_ids or tuple(s.model_id for s in LADDER)
     out: dict[str, dict[str, ModelRun]] = {w: {} for w in windows}
     todo = []
     for wid, (y, idx) in windows.items():
         for mid in ids:
-            path = Path(cache_dir) / f"{wid}.{mid}.{fingerprint(y, idx, hp, SPEC_BY_ID[mid], engine)}.json"
+            path = Path(cache_dir) / f"{wid}.{mid}.{fingerprint(y, idx, hp, SPEC_BY_ID[mid], engine, net)}.json"
             if path.exists():
                 out[wid][mid] = ModelRun.from_json(json.loads(path.read_text(encoding="utf-8")))
             else:
-                todo.append((wid, mid, y, idx, hp, str(path)))
-    todo.sort(key=lambda t: -(t[3].size * (3 if SPEC_BY_ID[t[1]].kind in ("gas", "caviar", "caviar-es") else 1)))
+                todo.append((wid, mid, y, idx, hp, str(path), net))
+    todo.sort(key=lambda t: -(t[3].size * (3 if SPEC_BY_ID[t[1]].kind in ("gas", "caviar", "caviar-es", "nn") else 1)))
     log(f"forecast: {sum(len(v) for v in out.values())} cached, {len(todo)} to run with {workers} worker(s)")
     if workers <= 1:
         results = [_task(t) for t in todo]

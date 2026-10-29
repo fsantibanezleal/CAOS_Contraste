@@ -29,7 +29,7 @@ from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import documents as docs
 from . import forecast as fc
-from . import hyper, portfolio as pf, readers
+from . import hyper, portfolio as pf, quantile_net as qn, readers
 from ._case import C11, SOURCES
 from .constants import CASE_ID, SEED, WINDOWS
 from .forecast import Hyper
@@ -55,6 +55,7 @@ ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "arch"}
 RUN_MS = 3_600_000.0
 DEFAULT_VARIANT = "rates-2022"
 HYPER_FILE = "hyperparameter-selection.json"
+NET_FILE = "network-selection.json"
 INPUTS_FILE = "inputs.json"
 EVIDENCE = Path(__file__).resolve().parents[4] / "docs" / "design" / "features" / "c11"   # not data/derived: every json there is a contract document
 _T0 = time.perf_counter()
@@ -116,6 +117,20 @@ def fix_hyperparameters(series: dict[str, readers.Series], cache_dir: Path, work
     return hp, record
 
 
+def fix_net(series: dict[str, readers.Series], hp: Hyper, cache_dir: Path, workers: int, base: qn.NetHyper = qn.NET) -> tuple[qn.NetHyper, dict]:
+    """The network's hyperparameters fixed on the span, cached by a hash of the span's data, the grid, the base and the hyperparameters."""
+    key = hashlib.sha256(json.dumps([_series_fingerprint(hyper.cut(series)), asdict(hp), hyper.NET_GRID, base.to_json(), hyper.STRIDE, ENGINE_PIN],
+                                    sort_keys=True).encode()).hexdigest()[:20]
+    path = Path(cache_dir) / f"network-hyperparameters.{key}.json"
+    if path.exists():
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        return qn.NetHyper(**rec["net"]), rec["record"]
+    net, record = hyper.select_net(series, hp, base, workers, _log)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"net": net.to_json(), "record": record}), encoding="utf-8")
+    return net, record
+
+
 def _lineage(series: dict[str, readers.Series], seed: int) -> Lineage:
     src = {"french-daily": ("french-data-library", "derived-only"), "treasury-par": ("treasury-par-curve", "mirror-allowed"),
            "h10-fx": ("fred-public-domain", "mirror-allowed")}
@@ -141,10 +156,14 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
         hp, record = fix_hyperparameters(series, Path(cache_dir), workers)
         hp = Hyper(**{**asdict(hp), "seed": seed})
     _log(f"hyperparameters {asdict(hp)}")
+    net, net_record = qn.NET, None
+    if model_ids is None or "nn-fz" in model_ids:
+        net, net_record = fix_net(series, hp, Path(cache_dir), workers)
+        _log(f"network hyperparameters {net.to_json()}")
     windows = [w for w in WINDOWS if window_ids is None or w.window_id in window_ids]
     ports = {w.window_id: pf.build(w.window_id, series) for w in windows}
     jobs = {wid: (p.returns, pf.forecast_positions(p, limit)) for wid, p in ports.items()}
-    runs = fc.forecast_windows(jobs, hp, Path(cache_dir), ENGINE_PIN, model_ids, workers, _log)
+    runs = fc.forecast_windows(jobs, hp, Path(cache_dir), ENGINE_PIN, model_ids, workers, _log, net)
     lineage = _lineage(series, seed)
     root = Path(output_root)
     entries: list[dict[str, Any]] = []
@@ -154,7 +173,7 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
     all_runs = {wid: runs[wid] for wid in runs}
     # the models document needs every window; a partial bake (a test) passes the windows it has
     mdoc = docs.build_models({w.window_id: ports[w.window_id] for w in windows}, all_runs, hp, code_version=__version__,
-                             engine_version=ev, provenance=lineage.provenance(), model_ids=model_ids) if len(windows) == len(WINDOWS) else None
+                             engine_version=ev, provenance=lineage.provenance(), model_ids=model_ids, net=net) if len(windows) == len(WINDOWS) else None
     rel_m = f"{CASE_ID}/models-ladder.json"
     regime = _t("Rolling one-step forecasts on public daily series; hyperparameters fixed on 1995 to 2003 and never tuned on a test window.",
                 "Pronósticos móviles a un día sobre series diarias públicas; hiperparámetros fijados en 1995 a 2003 y nunca ajustados en una ventana de prueba.")
@@ -166,7 +185,7 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
                         "path": rel_m, "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
     for w in windows:
         d = docs.build_window(ports[w.window_id], runs[w.window_id], hp, code_version=__version__, engine_version=ev, model_ids=model_ids,
-                           mc_draws=mc_draws, z2_draws=z2_draws, limit=limit)
+                           mc_draws=mc_draws, z2_draws=z2_draws, limit=limit, net=net)
         art = build_artifact(case_id=CASE_ID, variant_id=w.window_id, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                              impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
         rel = f"{CASE_ID}/{w.window_id}.json"
@@ -186,6 +205,8 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
         write_json(Path(evidence_dir) / INPUTS_FILE, inputs_record(series))
         if record is not None:
             (Path(evidence_dir) / HYPER_FILE).write_text(hyper.dumps(record), encoding="utf-8")
+        if net_record is not None:
+            (Path(evidence_dir) / NET_FILE).write_text(hyper.dumps(net_record), encoding="utf-8")
     ranges = expectations.check(CASE_ID, expect if expect is not None else EXPECT, values)
     from ._case import CASE
 
@@ -203,7 +224,7 @@ EXPECT: dict[str, tuple[float, float]] = {}
 for _w, (_lo, _hi) in {"equity-2007-09": (495, 515), "equity-2020": (100, 115), "rates-2022": (245, 255), "fx-2008": (245, 255),
                        "mixed-2023": (60, 68), "calm-2004-06": (740, 760)}.items():
     EXPECT[f"n_forecast_days@{_w}"] = (_lo, _hi)
-    EXPECT[f"eligible_models@{_w}"] = (0, 17)
+    EXPECT[f"eligible_models@{_w}"] = (0, 18)
     EXPECT[f"mean_exceedance_rate_1pct@{_w}"] = (0.0, 0.2)
 
 def source_details() -> dict[str, dict[str, str]]:
