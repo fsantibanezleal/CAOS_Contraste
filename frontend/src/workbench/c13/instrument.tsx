@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { C13ContextView, C13FindingsView, C13VariantsView, LevelReadout, StatisticReadout } from './C13Common';
+import { ComplementView, LagLadderView } from './ComplementViews';
 import { DeskView } from './DeskViews';
 import { DetectionView, EcdfView, RanksView, ZonesView } from './PlaViews';
 import { STATISTIC_TEXT, defaultSel, levelLabel, levelShort, outputsOf, type C13Alpha, type C13Sel, type C13Statistic } from './selection';
@@ -87,6 +88,9 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         { id: 'ecdf', label: pick({ en: 'ECDFs', es: 'ECDF' }, lang), content: <EcdfView sel={sel} /> },
         { id: 'zones', label: pick({ en: 'Zones', es: 'Zonas' }, lang), content: <ZonesView sel={sel} /> },
         { id: 'detection', label: pick({ en: 'Detection', es: 'Detección' }, lang), content: <DetectionView sel={sel} /> },
+        // BS-13, beyond the state of the art: the complement beside the regulatory zone, and the lag ladder of the stale-volatility desk
+        { id: 'complement', label: pick({ en: 'Complement', es: 'Complemento' }, lang), content: <ComplementView sel={sel} /> },
+        { id: 'lag-ladder', label: pick({ en: 'Lag ladder', es: 'Escalera de rezagos' }, lang), content: <LagLadderView sel={sel} /> },
       ]}
     />
   );
