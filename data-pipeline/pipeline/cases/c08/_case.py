@@ -14,7 +14,7 @@ SEED = 42
 #: the variants are the six default cohorts of ``panel.COHORTS``, in order; the one a reader opens first
 DEFAULT_VARIANT = "dc-2009-10"
 RUN_MS = 600_000.0
-ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "catboost"}
+ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "catboost", "scikit-learn"}
 #: the contract-1 check reads every ``PANEL_EVERY``-th default that carries an initial rate
 PANEL_EVERY = 5
 #: money blocks are written exact: their sums are of the order of 1e10 USD and nine significant digits would round them

@@ -9,10 +9,20 @@ import json
 import re
 from pathlib import Path
 
+try:
+    from . import ml_benchmark as ml
+except ImportError:  # run as a script: ``python data-pipeline/pipeline/cases/c08/page.py``
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import ml_benchmark as ml  # type: ignore[no-redef]
+
 MARK_START = "<!-- c08-results:start -->"
 MARK_END = "<!-- c08-results:end -->"
 DOWN_START = "<!-- c08-downturn:start -->"
 DOWN_END = "<!-- c08-downturn:end -->"
+ML_START = "<!-- c08-ml:start -->"
+ML_END = "<!-- c08-ml:end -->"
 NEGATION = re.compile(r"\b(not|no|never|without|twin|missing|absent|cannot|isn't|none)\b", re.IGNORECASE)
 REFERENCE = "L2-fractional-logit"
 
@@ -68,7 +78,7 @@ def results_block(derived: Path) -> str:
         body.append(f"| {r['cohort']} | {r['cutoff']} | {r['train']:,} | {r['n']:,} | {r['mean']:.3f} | {r['median']:.3f} | "
                     f"{100 * r['one']:.1f}% | {100 * r['above']:.1f}% | {_f(r['pred'], '.3f')} | "
                     f"{_f(None if r['gap'] is None else 100 * r['gap'], '.1f')} | {r['cal_light']} | {_f(r['rho'], '.3f')} | "
-                    f"{r['best']} ({r['best_rmse']:.3f}) | {r['n_fitted']} of 6 |")
+                    f"{r['best']} ({r['best_rmse']:.3f}) | {r['n_fitted']} of 8 |")
     return "\n".join([head, *body]) + "\n"
 
 
@@ -83,6 +93,58 @@ def downturn_block(derived: Path) -> str:
     return "\n".join([head, *body]) + "\n"
 
 
+def bucket_gap(rows: list[dict], rung_id: str) -> float | None:
+    """The default-weighted mean absolute gap, in LGD points, between the predicted and the realised mean of the five calibration
+    buckets of one rung (the out-of-time calibration by bucket of the plan's S-5 criterion)."""
+    mine = [b for b in rows if b["rung_id"] == rung_id]
+    if not mine:
+        return None
+    n = sum(b["n"] for b in mine)
+    return 100.0 * sum(b["n"] * abs(b["realised"]["value"] - b["predicted"]["value"]) for b in mine) / n
+
+
+def ml_rows(derived: Path) -> list[dict]:
+    """One row per test cohort: the best of the six earlier rungs against the better of the two new ones, with their RMSE and the
+    bucket gaps; read from the committed variant documents."""
+    manifest = json.loads((derived / "manifests" / "C08.json").read_text(encoding="utf-8"))
+    out = []
+    for a in manifest["artifacts"]:
+        if a["role"] != "variant":
+            continue
+        o = json.loads((derived / a["path"]).read_text(encoding="utf-8"))["outputs"]
+        res = ml.cohort_result(o["rung_comparison"])
+        rmse = {r["rung_id"]: r["rmse"] for r in o["rung_comparison"]}
+        out.append({"cohort": o["cohort"]["id"], "train": o["training"]["n_defaults"], "n": o["lgd_distribution"]["n"], "res": res,
+                    "rmse": rmse, "gap": {rid: bucket_gap(o["calibration_by_bucket"], rid)
+                                          for rid in ("L5-gradient-boosted", *ml.ML_RUNGS)}})
+    return out
+
+
+def ml_verdict(derived: Path) -> dict:
+    rows = ml_rows(derived)
+    wins = sum(r["res"]["ml_wins"] for r in rows)
+    return {"wins": int(wins), "cohorts": len(rows), "verdict": ml.verdict(wins, len(rows)),
+            "train_min": min(r["train"] for r in rows), "train_max": max(r["train"] for r in rows),
+            "test_total": sum(r["n"] for r in rows)}
+
+
+def ml_block(derived: Path) -> str:
+    head = ("| Test cohort | Best of L1 to L6 (RMSE) | L5 gradient boosting | L7 random forest | L8 neural network | Gain of the better of L7 and L8 "
+            "(RMSE points) | L7 or L8 lower | Bucket gap L5 (points) | Bucket gap L7 | Bucket gap L8 |\n"
+            "|---|---|---|---|---|---|---|---|---|---|")
+    body = []
+    for r in ml_rows(derived):
+        c = r["res"]["classical"]
+        body.append(f"| {r['cohort']} | {c[0]} ({c[1]:.4f}) | {r['rmse']['L5-gradient-boosted']:.4f} | {r['rmse']['L7-random-forest']:.4f} | "
+                    f"{r['rmse']['L8-neural-network']:.4f} | {100 * r['res']['gain']:.3f} | {'yes' if r['res']['ml_wins'] else 'no'} | "
+                    f"{r['gap']['L5-gradient-boosted']:.2f} | {r['gap']['L7-random-forest']:.2f} | {r['gap']['L8-neural-network']:.2f} |")
+    v = ml_verdict(derived)
+    verdict = (f"**Measured:** the better of the random forest and the neural network has the lower RMSE in {v['wins']} of {v['cohorts']} test "
+               f"cohorts, trained on {v['train_min']:,} to {v['train_max']:,} defaults per cohort and tested on {v['test_total']:,} defaults "
+               f"in all (seed 42, one thread). **Verdict: {v['verdict']}.**")
+    return "\n".join([head, *body]) + "\n\n" + verdict + "\n"
+
+
 def _swap(text: str, start: str, end: str, block: str) -> str:
     pre, rest = text.split(start, 1)
     _, post = rest.split(end, 1)
@@ -93,6 +155,7 @@ def update(page: Path, derived: Path) -> None:
     text = page.read_text(encoding="utf-8")
     text = _swap(text, MARK_START, MARK_END, results_block(derived))
     text = _swap(text, DOWN_START, DOWN_END, downturn_block(derived))
+    text = _swap(text, ML_START, ML_END, ml_block(derived))
     page.write_text(text, encoding="utf-8", newline="\n")
 
 

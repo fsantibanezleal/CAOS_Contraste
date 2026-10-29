@@ -18,7 +18,8 @@ from pipeline.core.schemas import SchemaViolation, validate_document
 from pipeline.io import sba as readers
 
 DATA = Path(__file__).resolve().parent / "data"
-RUNG_IDS = ["L1-ols", "L2-fractional-logit", "L3-beta", "L4-hurdle", "L5-gradient-boosted", "L6-tobit"]
+RUNG_IDS = ["L1-ols", "L2-fractional-logit", "L3-beta", "L4-hurdle", "L5-gradient-boosted", "L6-tobit",
+            "L7-random-forest", "L8-neural-network"]
 
 
 def _committed_manifest():

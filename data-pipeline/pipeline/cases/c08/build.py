@@ -45,6 +45,10 @@ RUNG_TEXT = {
     "L4-hurdle": (("Two-stage hurdle (loss or not, then severity)", "Dos etapas (hay pérdida o no, luego severidad)"), ("Two-stage hurdle", "Modelo en dos etapas")),
     "L5-gradient-boosted": (("Gradient-boosted trees (catboost, cross-entropy)", "Árboles con gradiente (catboost, entropía cruzada)"), ("Gradient boosting", "Árboles potenciados por gradiente")),
     "L6-tobit": (("Two-limit Tobit", "Tobit de dos límites"), ("Tobit", "Tobit")),
+    "L7-random-forest": (("Random forest (scikit-learn, squared error)", "Bosque aleatorio (scikit-learn, error cuadrático)"),
+                         ("Random forest", "Bosque aleatorio")),
+    "L8-neural-network": (("Neural network (scikit-learn, two hidden layers)", "Red neuronal (scikit-learn, dos capas ocultas)"),
+                          ("Neural network", "Red neuronal")),
 }
 
 NOTICE = t(

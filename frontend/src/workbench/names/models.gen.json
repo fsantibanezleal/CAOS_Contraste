@@ -430,6 +430,14 @@
    "L6-tobit": {
     "en": "Tobit",
     "es": "Tobit"
+   },
+   "L7-random-forest": {
+    "en": "Random forest",
+    "es": "Bosque aleatorio"
+   },
+   "L8-neural-network": {
+    "en": "Neural network",
+    "es": "Red neuronal"
    }
   },
   "C09": {
