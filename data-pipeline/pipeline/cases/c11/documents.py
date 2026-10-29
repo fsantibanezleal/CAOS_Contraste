@@ -31,7 +31,7 @@ from . import portfolio as pf
 from .constants import (BASEL_DAYS, LEVELS, MC_DRAWS, MCS_BLOCK, MCS_BOOTSTRAP, MCS_CONFIDENCE, MCS_STATISTIC, SIGNIFICANCE, SPAN,
                         WINDOWS, Z2_DRAWS)
 from . import quantile_net as qn
-from .forecast import CHALLENGER, LADDER, Hyper, ModelRun, Spec, look_back
+from .forecast import CHALLENGER, LADDER, SPEC_BY_ID, Hyper, ModelRun, Spec, look_back
 
 GATES = ("market.kupiec_pof", "market.christoffersen_conditional_coverage", "market.acerbi_szekely")
 US_MULTIPLIER = (3.0, 3.0, 3.0, 3.0, 3.0, 3.4, 3.5, 3.65, 3.75, 3.85, 4.0)   # 12 CFR 217.204 Table 1 (dossier 05 B.4)
@@ -296,10 +296,12 @@ def provenance_block(p: pf.Portfolio, seed: int, code_version: str, engine_versi
 
 def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_version: str, engine_version: str,
                  model_ids: tuple[str, ...] | None = None, mc_draws: int = MC_DRAWS, z2_draws: int = Z2_DRAWS,
-                 limit: int | None = None, net: qn.NetHyper = qn.NET) -> dict:
+                 limit: int | None = None, net: qn.NetHyper = qn.NET, conformal: dict | None = None) -> dict:
     """The ``c11-outputs`` document of one window from its portfolio and the forecasts of every model.
 
-    ``mc_draws``, ``z2_draws`` and ``limit`` (the first days of the window) are for tests of a small size; the bake uses the defaults."""
+    ``mc_draws``, ``z2_draws`` and ``limit`` (the first days of the window) are for tests of a small size; the bake uses the defaults.
+    ``conformal`` is the window's wrapped runs by model id (``conformal.wrap_windows``, BS-16): its rows enter ``outputs.conformal`` and the
+    bake adds the verdict once every window has its rows; a partial bake passes none and the key is null."""
     w = p.window
     pos = pf.forecast_positions(p, limit)
     n = pos.size
@@ -357,6 +359,12 @@ def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_
         "hyperparameters": hyper_block(hp, mc_draws, z2_draws, any(s.kind == "nn" for s in specs), net), "models": models, "comparison": cmp,
         "es_backtests": sorted(nulls, key=lambda x: (x["model_id"], x["alpha"])),
     }
+    outputs["conformal"] = None
+    if conformal:
+        from . import conformal as cf
+
+        rows = [r for m in cf.WRAPPED for r in cf.build_rows(SPEC_BY_ID[m], loss, conformal[m], models, hp, z2_draws)]
+        outputs["conformal"] = cf.block(rows, None)
     return {"schema": "contraste.case/v1", "case_id": "C11", "variant_id": w.window_id,
             "model": [model_summary(s, hp, engine_version, net) for s in specs], "outputs": outputs, "tests": tests, "impact": impact,
             "findings": findings(models, tests), "provenance": provenance_block(p, hp.seed, code_version, engine_version),
