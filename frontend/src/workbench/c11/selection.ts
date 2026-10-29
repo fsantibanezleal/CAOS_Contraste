@@ -110,6 +110,9 @@ export const UNIT_TEXT: Record<string, Bi> = {
   draws: { en: 'draws', es: 'extracciones' },
   models: { en: 'models', es: 'modelos' },
   'fz0-loss': { en: 'FZ0 loss', es: 'pérdida FZ0' },
+  units: { en: 'units', es: 'unidades' },
+  epochs: { en: 'epochs', es: 'épocas' },
+  starts: { en: 'starts', es: 'inicios' },
 };
 const UNIT_ONE: Record<string, Bi> = {
   days: { en: 'day', es: 'día' },
@@ -128,6 +131,13 @@ export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
   evt_refit_every_days: { en: 'EVT refit every', es: 'Reajuste EVT cada' },
   z2_draws: { en: 'Z2 simulations', es: 'Simulaciones de Z2' },
   mc_draws: { en: 'Monte Carlo simulations', es: 'Simulaciones de Monte Carlo' },
+  // the R10 quantile network (S-1 of the method tiers)
+  nn_hidden_units: { en: 'Network hidden units', es: 'Unidades ocultas de la red' },
+  nn_epochs: { en: 'Network training epochs', es: 'Épocas de entrenamiento de la red' },
+  nn_learning_rate: { en: 'Network learning rate', es: 'Tasa de aprendizaje de la red' },
+  nn_weight_decay: { en: 'Network weight decay', es: 'Decaimiento de pesos de la red' },
+  nn_n_starts: { en: 'Network seeded starts', es: 'Inicios con semilla de la red' },
+  nn_refit_every_days: { en: 'Network refit every', es: 'Reajuste de la red cada' },
 };
 
 /** The reasons a document gives for a score it could not compute, in Spanish (the document writes them in English). */
@@ -281,6 +291,7 @@ const ES_METHOD: Array<[string, string]> = [
   ['joint VaR and ES from two dynamic factors (FZ0 estimation)', 'VaR y ES conjuntos de dos factores dinámicos (estimación FZ0)'],
   ['one dynamic factor with a log absolute return term (FZ0 estimation)', 'un factor dinámico con un término de log del retorno absoluto (estimación FZ0)'],
   ['network output', 'salida de la red'],
+  ['second network output: the gap of the ES below the VaR, trained jointly on FZ0', 'segunda salida de la red: la brecha de la ES bajo el VaR, entrenada junto con él sobre FZ0'],
 ];
 export const esMethodText = (method: string, lang: 'en' | 'es'): string => (lang === 'en' ? method : (ES_METHOD.find(([en]) => en === method)?.[1] ?? method));
 
@@ -291,6 +302,7 @@ export const rungSourceText = (source: string, lang: 'en' | 'es'): string =>
     : source
         .replace('historical simulation (textbook;', 'simulación histórica (libro de texto;')
         .replace('(preprint; challenger only)', '(preimpresión; solo retador)')
+        .replace('a small network after the neural joint VaR and ES line,', 'una red pequeña según la línea neuronal de VaR y ES conjuntos,')
         .replace('; two-step estimation declared in the engine', '; estimación en dos pasos declarada en el motor')
         // the authors joined with "y", the locators in Spanish; the titles and the journals stay (R3 c12 m11)
         // a name may carry a capital inside it, "McNeil and Frey 2000" (R4 c14 m11)

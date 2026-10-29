@@ -70,7 +70,8 @@ describe('U16-F10c, C11 (R3 c12)', () => {
     // the committed reason keeps its translation until the integrator re-bakes the ladder, and no plan-unit code reaches the Spanish page
     const ladder = committed<ModelsArtifact>('C11', 'models-ladder.json');
     const patched = structuredClone(ladder) as unknown as { fit: { ladder: Array<{ not_run_reason: string | null }> } };
-    for (const r of patched.fit.ladder) if (r.not_run_reason) r.not_run_reason = cases[0][0];
+    // the ladder now trains R10 (S-1), so no rung declares a reason; a declared rung is planted to read the translation through the view
+    patched.fit.ladder[patched.fit.ladder.length - 1].not_run_reason = cases[0][0];
     setLang('es');
     const ctx = view(<C11ContextView sel={defaultSel(fixtureData('C11', committed<VariantArtifact>('C11', 'rates-2022.json'), patched as unknown as ModelsArtifact, TITLE))} />);
     expect(ctx).toContain('la corrida publicada no lo entrena');
