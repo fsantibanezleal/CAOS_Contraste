@@ -10,6 +10,7 @@ import type { EbmExport, GbmDetails, ModelRecord, ScorecardDetails } from '../li
 import { liveScores } from './Workbench';
 import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
+import { RejectInferenceCard } from './RejectInference';
 import { engineText, ruleText, unitName, type Bi } from './c01Text';
 import { inputName, ruleNames, termName } from './names';
 
@@ -226,6 +227,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
           </div>
         </PlotCard>
         <TabPfnCard sel={sel} />
+        <RejectInferenceCard sel={sel} />
         <div className="ct-tall-only">
           <PlotCard
             fill

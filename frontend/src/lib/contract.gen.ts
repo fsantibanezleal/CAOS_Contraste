@@ -145,7 +145,7 @@ export interface components {
         };
         /**
          * C01 variant
-         * @description Catalog row c01-variant 2.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.
+         * @description Catalog row c01-variant 3.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind. 3.0.0 adds the reject_inference block (S-6), required and null on every variant but the German twin.
          */
         "c01-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -235,6 +235,86 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @description S-6: reject inference on a sample with a known rejected population (the German twin; null elsewhere). */
+        c01RejectInference: {
+            design: {
+                population: string;
+                learner: string;
+                n_rows: number;
+                n_dev: number;
+                n_test: number;
+                reps: number;
+                accept_share: number;
+                test_share: number;
+                weight_floor: number;
+                bands: number;
+                min_accepted: number;
+                prudence: number;
+                c_inverse_penalty: number;
+                bootstrap: number;
+                level: number;
+                h2_reduction: number;
+                h3_auc_gain: number;
+            };
+            rungs: {
+                id: string;
+                title: components["schemas"]["common-text"];
+                short_title: components["schemas"]["common-text"];
+                source: string;
+                what: components["schemas"]["common-text"];
+            }[];
+            regimes: {
+                id: string;
+                kappa: number;
+                title: components["schemas"]["common-text"];
+                short_title: components["schemas"]["common-text"];
+                what: components["schemas"]["common-text"];
+                default_rate: {
+                    population: number;
+                    accepted: number;
+                    rejected: number;
+                };
+                rungs: components["schemas"]["c01RejectRung"][];
+            }[];
+            hypotheses: {
+                id: string;
+                holds: boolean;
+                value: number;
+                lo: number;
+                hi: number;
+                rung: string;
+                statement: components["schemas"]["common-text"];
+                outcome: components["schemas"]["common-text"];
+            }[];
+        };
+        c01RejectRung: {
+            id: string;
+            /** @description Mean level bias (mean PD minus the observed default rate) on the accept-all population, over the repetitions, with the percentile bootstrap interval of that mean. */
+            bias: components["schemas"]["c01RejectStat"];
+            abs_bias: number;
+            /** @description 1 - |mean bias of the rung| / |mean bias of the accepted-only model|, with its paired bootstrap interval; 0 for the accepted-only model itself. */
+            reduction: {
+                value: number;
+                lo: number;
+                hi: number;
+            };
+            /** @description Share of repetitions in which the rung's absolute bias is below the accepted-only model's. */
+            beats_share: number;
+            auc: components["schemas"]["c01RejectStat"];
+            /** @description Paired difference of the AUC on the accept-all population against the accepted-only model. */
+            auc_vs_accepted_only: components["schemas"]["c01RejectStat"];
+            brier: components["schemas"]["c01RejectStat"];
+            /** @description The per-repetition level bias and AUC, six decimals, in repetition order. */
+            reps: {
+                bias: number[];
+                auc: number[];
+            };
+        };
+        c01RejectStat: {
+            mean: number;
+            lo: number;
+            hi: number;
+        };
         c01ReliabilityBin: {
             n: number;
             pd: number;
@@ -312,6 +392,8 @@ export interface components {
             };
             sample: components["schemas"]["c01ScoredSample"] | null;
             irb: components["schemas"]["c01Irb"];
+            /** @description S-6, reject inference on a simulated legacy policy: carried by the German twin, null on every other variant. */
+            reject_inference: components["schemas"]["c01RejectInference"] | null;
         };
         /**
          * C02 models
