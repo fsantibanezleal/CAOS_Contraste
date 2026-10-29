@@ -134,6 +134,13 @@ export type GroupStat = components['schemas']['c01GroupStat'];
 
 export type VariantOutputs = components['schemas']['c01VariantOutputs'];
 
+/** S-6, reject inference on a simulated legacy policy: the German twin's block of C01 (null on every other variant). */
+export type RejectInference = components['schemas']['c01RejectInference'];
+
+export type RejectRung = components['schemas']['c01RejectRung'];
+
+export type RejectStat = components['schemas']['c01RejectStat'];
+
 export type TestRow = components['schemas']['common-test-result'];
 
 export type ImpactItem = components['schemas']['common-impact-item'];
@@ -336,6 +343,66 @@ export const SAMPLE = {
   ebm_logit: nums,
 } satisfies Record<keyof ScoredSample, Kind>;
 
+const REJECT_STAT = { mean: num, lo: num, hi: num } satisfies Record<keyof RejectStat, Kind>;
+
+const REJECT_RUNG = {
+  id: 'string',
+  bias: { object: REJECT_STAT },
+  abs_bias: num,
+  reduction: { object: { value: num, lo: num, hi: num } },
+  beats_share: num,
+  auc: { object: REJECT_STAT },
+  auc_vs_accepted_only: { object: REJECT_STAT },
+  brier: { object: REJECT_STAT },
+  reps: { object: { bias: nums, auc: nums } },
+} satisfies Record<keyof RejectRung, Kind>;
+
+export const C01_REJECT = {
+  design: {
+    object: {
+      population: 'string',
+      learner: 'string',
+      n_rows: 'integer',
+      n_dev: 'integer',
+      n_test: 'integer',
+      reps: 'integer',
+      accept_share: num,
+      test_share: num,
+      weight_floor: num,
+      bands: 'integer',
+      min_accepted: 'integer',
+      prudence: num,
+      c_inverse_penalty: num,
+      bootstrap: 'integer',
+      level: num,
+      h2_reduction: num,
+      h3_auc_gain: num,
+    } satisfies Record<keyof RejectInference['design'], Kind>,
+  },
+  rungs: { array: { object: { id: 'string', title: 'text', short_title: 'text', source: 'string', what: 'text' } satisfies Record<keyof RejectInference['rungs'][number], Kind> } },
+  regimes: {
+    array: {
+      object: {
+        id: 'string',
+        kappa: num,
+        title: 'text',
+        short_title: 'text',
+        what: 'text',
+        default_rate: { object: { population: num, accepted: num, rejected: num } },
+        rungs: { array: { object: REJECT_RUNG } },
+      } satisfies Record<keyof RejectInference['regimes'][number], Kind>,
+    },
+  },
+  hypotheses: {
+    array: {
+      object: { id: 'string', holds: 'boolean', value: num, lo: num, hi: num, rung: 'string', statement: 'text', outcome: 'text' } satisfies Record<
+        keyof RejectInference['hypotheses'][number],
+        Kind
+      >,
+    },
+  },
+} satisfies Record<keyof RejectInference, Kind>;
+
 export const VARIANT_OUTPUTS = {
   rungs: { map: { object: RUNG_OUTPUTS } },
   n: 'integer',
@@ -345,6 +412,7 @@ export const VARIANT_OUTPUTS = {
   },
   sample: { nullable: { object: SAMPLE } },
   irb: { object: C01_IRB },
+  reject_inference: { nullable: { object: C01_REJECT } },
 } satisfies Record<keyof VariantOutputs, Kind>;
 
 export const TEST_ROW = {
