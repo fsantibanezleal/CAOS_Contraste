@@ -1,12 +1,13 @@
-"""The lifetime PD ladder of C06 (CT-506): three rungs fitted on the loans as known at a reporting date.
+"""The lifetime PD ladder of C06 (CT-506): four rungs fitted on the loans as known at a reporting date.
 
 L0 Kaplan-Meier, the non-parametric reference (``statsmodels.duration.survfunc.SurvfuncRight``): one pooled curve by loan
 age. L1 discrete-time hazard, a logit on loan-quarter cells with the loan covariates, the age profile and the macro
 covariates one quarter before each period (``statsmodels`` GLM, binomial family): the rung that conditions on a scenario.
 L2 Cox proportional hazards with the loan covariates and loan age as the time scale (``statsmodels`` PHReg, Breslow
-ties). lifelines is not used: 0.30.3 requires pandas below 3.0 and the pipeline pins pandas 3.0.6 (unit sizing U5,
-technology matrix). Prepayment is treated as censoring in every rung (``competing_prepayment`` false): the lifetime PD is
-the cause-specific default hazard, so the term structure carries no prepayment attrition, a stated limit.
+ties). L3 PC-Hazard, a neural piecewise-constant hazard on the same covariates and time scale (``neural``, the state-of-the-art
+rung of the method tiers plan, S-4). lifelines is not used: 0.30.3 requires pandas below 3.0 and the pipeline pins pandas 3.0.6
+(unit sizing U5, technology matrix). Prepayment is treated as censoring in every rung (``competing_prepayment`` false): the
+lifetime PD is the cause-specific default hazard, so the term structure carries no prepayment attrition, a stated limit.
 
 Every rung says how many loans and defaults it stands on; a rung with too few is ``not_evaluated`` with the reason
 (``MIN_LOANS``, ``MIN_EVENTS``) and is never fitted.
@@ -14,12 +15,16 @@ Every rung says how many loans and defaults it stands on; a rung with too few is
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
 from .macro import MACRO_VARS, History, Scaler, fit_scaler
 from .panel import (EXIT_DEFAULT, N_STRATA, SECTOR_NAMES, Loans, Observation, decode_stratum)
+
+if TYPE_CHECKING:
+    from .neural import PchModel
 
 MIN_LOANS = 200
 MIN_EVENTS = 30
@@ -328,12 +333,17 @@ class Ladder:
     dth: HazardModel
     cox: CoxModel
     cells: Cells | None
+    pch: PchModel
 
 
 def fit_ladder(loans: Loans, obs: Observation, history: History) -> Ladder:
-    """Fit the three rungs on what is known at ``obs.reporting_date``."""
+    """Fit the four rungs on what is known at ``obs.reporting_date``: L0 Kaplan-Meier, L1 discrete-time hazard, L2 Cox and
+    L3 PC-Hazard (``neural``, the S-4 rung of the method tiers plan)."""
+    from .neural import fit_pch
+
     cells = build_cells(loans, obs)
-    return Ladder(km=fit_km(loans, obs), dth=fit_hazard(cells, history, int(obs.selected.sum())), cox=fit_cox(loans, obs), cells=cells)
+    return Ladder(km=fit_km(loans, obs), dth=fit_hazard(cells, history, int(obs.selected.sum())), cox=fit_cox(loans, obs), cells=cells,
+                  pch=fit_pch(loans, obs, reporting_date=obs.reporting_date))
 
 
 __all__ = ["Cells", "CoxModel", "HazardModel", "KaplanMeier", "Ladder", "MIN_EVENTS", "MIN_LOANS", "Status",

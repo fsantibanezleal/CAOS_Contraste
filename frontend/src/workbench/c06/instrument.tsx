@@ -13,6 +13,7 @@ import { STAGE_TEXT, segmentLabel } from './format';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
+import { PchView } from './PchView';
 import { BacktestView, DecileView, LadderView, RungsView } from './ValidationViews';
 
 export interface C06Instrument {
@@ -183,6 +184,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'backtest', label: { en: 'Backtest', es: 'Retrospectiva' }, content: <BacktestView sel={sel} /> },
       { id: 'deciles', label: { en: 'Deciles', es: 'Deciles' }, content: <DecileView sel={sel} /> },
       { id: 'rungs', label: { en: 'Rungs', es: 'Peldaños' }, content: <RungsView sel={sel} /> },
+      { id: 'pch', label: { en: 'PC-Hazard', es: 'PC-Hazard' }, content: <PchView sel={sel} /> },
     ],
     { en: 'Views of the validation', es: 'Vistas de la validación' },
     'c06-validation',

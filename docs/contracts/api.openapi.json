@@ -8725,7 +8725,8 @@
             "enum": [
               "kaplan-meier",
               "discrete-time-hazard",
-              "cox"
+              "cox",
+              "piecewise-constant-hazard-network"
             ]
           },
           "covariates": {

@@ -8,9 +8,9 @@ from pipeline.cases.c06 import ladder, macro, panel
 from pipeline.cases.c06.run import RungNotEvaluated, run_date
 
 
-def test_the_three_rungs_fit_and_say_what_they_stand_on(variant):
+def test_the_four_rungs_fit_and_say_what_they_stand_on(variant):
     lad = variant.run.ladder
-    for status in (lad.km.status, lad.dth.status, lad.cox.status):
+    for status in (lad.km.status, lad.dth.status, lad.cox.status, lad.pch.status):
         assert status.evaluated and status.n_loans >= ladder.MIN_LOANS and status.n_events >= ladder.MIN_EVENTS
     ages = np.array([0.0, 12.0, 36.0])
     horizons = np.array([12.0, 36.0])
@@ -22,8 +22,8 @@ def test_the_three_rungs_fit_and_say_what_they_stand_on(variant):
     assert ((hz > 0) & (hz < 1)).all()
     assert lad.dth.converged and set(macro.MACRO_VARS) <= set(lad.dth.names)
     rungs = {m["id"]: m for m in variant.document["model"]}
-    assert set(rungs) == {"L0-km", "L1-dth", "L2-cox"}
-    assert all(m["engine"] == "statsmodels" for m in rungs.values())
+    assert set(rungs) == {"L0-km", "L1-dth", "L2-cox", "L3-pch"}
+    assert {k: m["engine"] for k, m in rungs.items()} == {"L0-km": "statsmodels", "L1-dth": "statsmodels", "L2-cox": "statsmodels", "L3-pch": "torch"}
 
 
 def test_a_thin_vintage_is_reported_with_its_count_and_not_fitted(tables):
@@ -34,7 +34,7 @@ def test_a_thin_vintage_is_reported_with_its_count_and_not_fitted(tables):
     lad = ladder.fit_ladder(loans, obs, hist)
     n = int(obs.selected.sum())
     assert n < ladder.MIN_LOANS
-    for status in (lad.km.status, lad.dth.status, lad.cox.status):
+    for status in (lad.km.status, lad.dth.status, lad.cox.status, lad.pch.status):
         assert not status.evaluated and status.n_loans == n
         assert f"{n} loans" in status.reason and f"{status.n_events} defaults" in status.reason
     assert lad.dth.params.size == 0 and lad.km.survival is None and lad.cox.cumulative_hazard is None
@@ -60,5 +60,5 @@ def test_adversarial_a_vintage_with_too_few_defaults_is_not_fitted(tables):
     obs = panel.observe(calm, r)
     lad = ladder.fit_ladder(calm, obs, macro.history_known(fed, r))
     assert int(obs.selected.sum()) > ladder.MIN_LOANS
-    for status in (lad.km.status, lad.dth.status, lad.cox.status):
+    for status in (lad.km.status, lad.dth.status, lad.cox.status, lad.pch.status):
         assert not status.evaluated and status.n_events == 0 and "0 defaults" in status.reason

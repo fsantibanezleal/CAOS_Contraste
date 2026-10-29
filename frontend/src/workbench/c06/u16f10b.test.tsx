@@ -35,14 +35,14 @@ describe('U16-R3 c07 on the committed C06 documents', () => {
     expect((sel('rd-2010-12').data.variant.outputs as unknown as { non_linearity: { index: number } }).non_linearity.index).toBeLessThan(0);
   });
 
-  it('B2: the ladder note says what each rung is and that prepayment is censored in all three, as the table shows', () => {
+  it('B2: the ladder note says what each rung is and that prepayment is censored in all four, as the table shows', () => {
     for (const v of variantIds('C06')) {
       const en = textOf(render(<LadderView sel={sel(v)} />, 'en'));
       const es = textOf(render(<LadderView sel={sel(v)} />, 'es'));
       expect(en).not.toContain('each rung adds a piece');
       expect(en).not.toContain('competing prepayment');
-      expect(en).toContain('prepayment is censored in all three');
-      expect(es).toContain('el prepago se censura en los tres');
+      expect(en).toContain('prepayment is censored in all four');
+      expect(es).toContain('el prepago se censura en los cuatro');
       expect(es).not.toContain('cada peldaño agrega una pieza');
     }
   });
