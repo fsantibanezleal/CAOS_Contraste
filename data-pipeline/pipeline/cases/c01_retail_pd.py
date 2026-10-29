@@ -21,13 +21,15 @@ from ..core import lineage as lin
 from ..core.calibration import GRADES, MASTER_SCALE_UPPER
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import readers
-from ..io.formats import write_json
+from ..io.formats import read_json, write_json
 from ..model.ebm import score_logit
 from ..stages import evaluate, split
 from ..stages.export import write_artifact
 from ..stages.ingest import ingest
+from ..core.schemas import validate_document
 from . import c01_capital as cap
 from . import c01_features as feat
+from . import c01_reject as reject
 from .c01_ladder import SHORT_TITLES, Rung, _t, _v, fit_ladder
 
 CASE_ID = "C01"
@@ -368,6 +370,10 @@ class C01:
                                     categorical=feat.TAIWAN_CATEGORICAL, monotone=feat.TAIWAN_MONOTONE, seed=seed,
                                     train_n=2000, base_split=base.sp, ead_col="BILL_AMT1")
         rv = _v("riskvalidation")
+        # S-6: reject inference on the German twin, a population whose every outcome is known (c01_reject); its own repetitions and
+        # seeds, so no number of the ladder moves
+        _log("reject inference on the German twin")
+        rejected = reject.run(de, feat.GERMAN_FEATURES, feat.GERMAN_CATEGORICAL, seed=seed, population="uci-german")
         entries: list[dict[str, Any]] = []
         values: dict[str, float] = {}
         for fit_id, fit in fits.items():
@@ -413,6 +419,8 @@ class C01:
             rows += evaluate.csi_rows(Xtr, X, list(fit.features), fit.categorical)
             outputs["n"] = int(len(y))
             outputs["defaults"] = int(y.sum())
+            # contract 2 has no optional keys: only the German twin, whose every outcome is known, carries the S-6 block
+            outputs["reject_inference"] = rejected if v["id"] == "german-twin" else None
             outputs["groups"] = _by_group(fit, pos, y, pds)
             # 50 scored applicants for the live parity test, on the two variants whose rows are not resampled
             outputs["sample"] = _sample(fit, pos[:50]) if v["id"] in ("holdout", "german-twin") else None
@@ -521,3 +529,41 @@ def _tabpfn_available() -> bool:
 
 
 CASE = C01()
+
+
+def attach_reject_inference(*, seed: int, root: Path, manifests: Path, data_root: Path) -> list[str]:
+    """Add S-6 (``outputs.reject_inference``) to the committed C01 variants without refitting the ladder.
+
+    The full bake of C01 fits the Taiwan ladder (PLTR alone takes minutes) and the reject-inference experiment draws its own repetitions
+    and seeds, so no number of the ladder depends on it; this step reads each committed variant, sets the German twin's block from
+    ``c01_reject.run`` on the raw German file (``None`` on the others), writes it back through the producer's own writer (schema
+    validated, lane gate re-measured) and carries the new size and gate to the manifest. ``bake`` writes the same block, which
+    tests/c01_reject/test_reject_document.py holds. Returns the variants rewritten.
+    """
+    de, _ = _load_german(data_root)
+    rejected = reject.run(de, feat.GERMAN_FEATURES, feat.GERMAN_CATEGORICAL, seed=seed, population="uci-german")
+    manifest = read_json(manifests / f"{CASE_ID}.json")
+    done: list[str] = []
+    for art in manifest["artifacts"]:
+        if art["role"] != "variant":
+            continue
+        doc = read_json(root / art["path"])
+        doc["outputs"]["reject_inference"] = rejected if art["variant_id"] == "german-twin" else None
+        entry = write_artifact(root, art["path"], doc, exact=frozenset({"sample", "parity"}), engines=ENGINES, run_ms=RUN_MS)
+        art.update({k: entry[k] for k in ("path", "bytes", "lane", "gate")})
+        done.append(art["variant_id"])
+    validate_document(f"data/derived/manifests/{CASE_ID}.json", manifest)
+    write_json(manifests / f"{CASE_ID}.json", manifest)
+    return done
+
+
+if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(prog="pipeline.cases.c01_retail_pd", description="C01 side steps that do not refit the ladder.")
+    ap.add_argument("step", choices=["attach-reject-inference"])
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--output", type=Path, required=True, help="the derived root (data/derived)")
+    ap.add_argument("--data-root", type=Path, required=True)
+    a = ap.parse_args()
+    print("rewritten:", ", ".join(attach_reject_inference(seed=a.seed, root=a.output, manifests=a.output / "manifests", data_root=a.data_root)))
