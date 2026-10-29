@@ -28,10 +28,10 @@ and the return after a skipped day is taken between the two observed days from t
 ## The rolling scheme and the ladder (CT-604, CT-607)
 
 For the forecast day at position `i`, every model sees `y[i - w:i]` and no more (`forecast.run_model`). The ladder is
-dossier 05's rungs 1 to 9 (R10 is a challenger that is not trained): historical simulation (250 and 500 days), age-weighted
+dossier 05's rungs 1 to 9 and the R10 quantile network trained on FZ0 (S-1 of the method tiers): historical simulation (250 and 500 days), age-weighted
 historical simulation, delta-normal and Cornish-Fisher on rolling moments, EWMA, GARCH(1,1), GJR and EGARCH with Student-t
 innovations, filtered historical simulation, conditional EVT, CAViaR (SAV, AS and the two-step ES extension) and the three
-GAS-FZ models. Refit frequency: the GARCH family, the filtered historical simulation, the conditional EVT and the ES step of CAViaR every
+GAS-FZ models and the network (one hidden layer of 8 tanh units, softplus outputs so that ES is at most VaR, Adam on the mean FZ0 of the standardised returns, 3 seeded starts, features from the previous five returns and two volatilities, all of the window's own days). Refit frequency: the GARCH family, the filtered historical simulation, the conditional EVT and the ES step of CAViaR every
 day; the CAViaR VaR fits (20 starts) every 5 forecast days; the GAS-FZ fits (20 starts) every 20. Between refits the
 parameters are kept and the filter runs over the current window. A fit that fails keeps the previous fit and is counted (the
 GARCH family uses the unconverged first fit when it has no other); a day without a usable forecast holds the previous day's

@@ -1,5 +1,5 @@
 """U16-F12c (R4 batch c14 NB1 and n5, C11): when no model fails an eligibility gate the finding says which gates did not run, with their
-counts by tail level, never that every model passed them (mixed-2023: conditional coverage not evaluated for 17 of 17 models at the 1 %
+counts by tail level, never that every model passed them (mixed-2023: conditional coverage not evaluated for 17 of 18 models at the 1 %
 tail); the Spanish rule names the coverage test, not "POF". Tested on the producer's functions, never by re-baking."""
 from __future__ import annotations
 
@@ -32,9 +32,9 @@ def test_the_committed_mixed_window_states_the_gates_that_did_not_run():
     assert "pass every eligibility gate" not in en
     assert "pasan todas las compuertas" not in es
     assert en == ("No model fails an eligibility gate, but not every gate ran: the conditional coverage test was not evaluated for "
-                  f"17 of 17 models at the 1{NBSP}% tail and 15 of 17 at the 2.5{NBSP}% tail, the ES test for 3 of 17 at each tail.")
+                  f"17 of 18 models at the 1{NBSP}% tail and 15 of 18 at the 2.5{NBSP}% tail, the ES test for 3 of 18 at each tail.")
     assert es == ("Ningún modelo falla una compuerta de elegibilidad, pero no todas corrieron: la prueba de cobertura condicional no se "
-                  f"evaluó para 17 de 17 modelos en la cola de 1{NBSP}% y para 15 de 17 en la de 2,5{NBSP}%; la prueba de ES, para 3 de 17 "
+                  f"evaluó para 17 de 18 modelos en la cola de 1{NBSP}% y para 15 de 18 en la de 2,5{NBSP}%; la prueba de ES, para 3 de 18 "
                   "en cada cola.")
     assert (f["severity"], f["status"]) == ("S4", "open")
 
