@@ -198,6 +198,19 @@
         "training_cutoff": "2008-12-31",
         "library": "catboost",
         "library_version": "fixture"
+      },
+      {
+        "rung_id": "L7-random-forest",
+        "kind": "random-forest",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [],
+        "epsilon": null,
+        "training_cutoff": "2008-12-31",
+        "library": "scikit-learn",
+        "library_version": "fixture"
       }
     ],
     "downturn": {

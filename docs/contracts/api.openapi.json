@@ -12680,6 +12680,8 @@
               "hurdle",
               "tobit",
               "gradient-boosted",
+              "random-forest",
+              "neural-network",
               "cure-decomposition"
             ]
           },

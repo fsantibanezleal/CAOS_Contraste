@@ -508,7 +508,7 @@ def c08_defs() -> dict:
     d["c08Coefficient"] = Ob({"name": S(), "estimate": N(), "std_error": nullable(N(minimum=0))})
     d["c08RungSpec"] = Ob({
         "rung_id": S(),
-        "kind": E("ols", "fractional-logit", "beta", "hurdle", "tobit", "gradient-boosted", "cure-decomposition"),
+        "kind": E("ols", "fractional-logit", "beta", "hurdle", "tobit", "gradient-boosted", "random-forest", "neural-network", "cure-decomposition"),
         "covariates": A(S()),
         "coefficients": A(R("c08Coefficient")),
         "epsilon": nullable(N(exclusiveMinimum=0, exclusiveMaximum=0.5), "The endpoint transformation of beta rungs; null elsewhere."),

@@ -19,6 +19,7 @@ from riskvalidation.validation import lgd_ead as rv_val
 
 from ...core.text import light, number
 from . import build as bd
+from . import ml_benchmark as ml
 from .cutoff import cutoff_for, open_workout_mask, training_mask
 from .downturn import DownturnPlan
 from .ladder import EPSILONS, RUNGS, Ladder, RungFit, fit_ladder
@@ -207,10 +208,25 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
         "downturn_add_on": {"value": float(down.downturn - down.long_run), "unit": "share",
                             "label": bd.t("Downturn add-on to the long-run LGD", "Ajuste de recesión sobre la LGD de largo plazo")},
     }
+    impact["ml_rmse_gain"] = _ml_impact(comparison)
     findings = _findings(cal_ref, ref.rung_id, seg, down, tests)
     values = {f"mean-proxy@{cohort_id}": float(y_test.mean())}
     return VariantResult(bd.variant_id(cohort_id), cohort_id, cutoff, ladder, outputs, tests, impact, findings, int(train.n),
                          n_open, values)
+
+
+def _ml_impact(comparison: list[dict[str, Any]]) -> dict[str, Any]:
+    """S-5: the lowest RMSE of the six rungs before the machine-learning rungs minus the lowest of the two new rungs (positive: the new
+    rungs win). Null with its reason in the label when a new rung was not fitted: a number is never stood in."""
+    ids = {c["rung_id"] for c in comparison}
+    if not all(rid in ids for rid in ml.ML_RUNGS):
+        return {"value": None, "unit": "share",
+                "label": bd.t("RMSE gain of the machine-learning rungs: not evaluated (a rung was not fitted)",
+                              "Mejora de RMSE de las etapas de aprendizaje automático: no evaluada (una etapa no se ajustó)")}
+    res = ml.cohort_result(comparison)
+    return {"value": float(res["gain"]), "unit": "share",
+            "label": bd.t("Lowest RMSE of the six earlier rungs minus the lowest of the random forest and the neural network (positive: they win)",
+                          "RMSE más bajo de las seis etapas anteriores menos el más bajo entre el bosque aleatorio y la red neuronal (positivo: ganan)")}
 
 
 def _p_text(p: float, lang: str) -> str:
