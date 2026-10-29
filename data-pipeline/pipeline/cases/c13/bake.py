@@ -22,7 +22,7 @@ from ...io.formats import write_json
 from ..reference_text import with_reference_text
 from ...stages.export import write_artifact
 from . import documents as docs
-from . import measure, params
+from . import complement, measure, params
 from .params import ALPHAS, GENERATOR, IDS, MAX_REPLICATIONS, N_REPLICATIONS
 
 CASE_ID = "C13"
@@ -78,14 +78,22 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
     n = pl["n_replications"]
     variants: dict[str, dict[str, Any]] = {}
     outs: dict[str, dict[str, Any]] = {}
+    meas = {did: measure.measure(did, seed, n) for did in IDS}
+    say("PLA complement: calibrating on the simulated null")
+    cal = complement.calibrate(n)
+    stats = {did: complement.measurement_statistics(meas[did]) for did in IDS}
+    held_flags = complement._flag_block(stats["none"], meas["none"].zone, cal)   # the exact-model variant shares no seed with the null
     for did in IDS:
-        m = measure.measure(did, seed, n)
+        m = meas[did]
         out, tests = docs.outputs_and_tests(did, m)
+        ladder = complement.lag_ladder(cal, n, seed) if did == "stale-volatility" else None
+        out["pla_complement"] = complement.block(did, m, stats[did], cal, stats["none"], held_flags, ladder)
         outs[did] = out
         variants[did] = build_artifact(
             case_id=CASE_ID, variant_id=did, model=[docs.model_summary(did, rv)], outputs=out, tests=with_reference_text(tests), impact=docs.impact(out),
             findings=docs.findings(out), lineage=_lineage(seed, rv), lane={"lane": "precompute", "reasons": []})
-        say(f"{did}: amber or red {out['detection']['share_amber_or_red']:.3f}, red {out['detection']['share_red']:.3f}")
+        say(f"{did}: amber or red {out['detection']['share_amber_or_red']:.3f}, red {out['detection']['share_red']:.3f}; "
+            f"complement {out['pla_complement']['flags']['family']['any']['rate']:.3f}")
     models = docs.models_document(pl, rv)
     models_doc = build_models_artifact(case_id=CASE_ID, fit_id=models["fit_id"], model=models["model"], fit=models["fit"],
                                        lineage=_lineage(seed, rv), lane={"lane": "precompute", "reasons": []})
