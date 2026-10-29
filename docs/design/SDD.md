@@ -543,41 +543,66 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 
 ## Method ladder
 
-A method is accepted only with its engine called for real, pinned dependency and licence, configuration with
-units, training or calibration where applicable, a checkpoint or parameter record, inference on every applicable
-case variant, its validation tests, documentation transcribed from the dossier, and an honest lane label
-(ADR-0069).
+Every method of Contraste is a row, with its tier (`classical`, `sota` or `beyond`; CAOS_MANAGE `conventions/method-tiers-and-manuscripts.md`,
+template 0.13.000). A method is accepted only with its engine called for real, pinned dependency and licence, configuration with
+units, training or calibration where applicable, a checkpoint or parameter record, inference on every applicable case variant, its
+validation tests, documentation transcribed from the dossier, and an honest lane label (ADR-0069). The beyond rows name what each is:
+BS-1 to BS-12 are the product's measurements, protocols, reconciliations and test constructions beyond common practice; BS-13 to BS-16
+are the methods Contraste proposes (the plan `plans/contraste/method-tiers-sdd-plan.md` in CAOS_MANAGE, validated 2026-10-28).
 
-| Method (owner) | Accepted when |
-|---|---|
-| WoE monotone scorecard (P) | optbinning bins fitted on train only reproduce monotone event rates; the points table recomputes every score exactly; AUC with DeLong CI, KS, Brier, calibration by grade and PSI out of sample are reported. |
-| Penalised LR and PLTR (P) | paired DeLong against the scorecard reported; rule set stable across 20 bootstraps (Jaccard reported). |
-| EBM/GA2M (P) | monotone shape functions where declared; per-term points table; post-calibration reliability; live additive scoring equals offline within 1e-9. |
-| Monotone GBM plus calibration (P) | monotonicity verified on PDP grids; isotonic or Platt map fitted on a separate slice; Brier and reliability before and after; reason-code stability (bootstrap top-4 overlap). |
-| TabPFN challenger (P) | runs only on small cases; the weights licence is shown on every view; same gates as GBM. |
-| Rating master scale and calibration (E) | Tasche (2013) Table 1 scaled PD and scaled LR columns reproduced; Pluto-Tasche tables 1, 2, 3, 4, 7 reproduced to 0.01 pp. |
-| TTC/PIT Z-factor (E) | implied Z reproduces the LHP relation; PIT PDs average back to TTC over the cycle on the generator. |
-| Transition estimators (E) | rows sum to 1; generator rows to 0; equality with the transitionMatrix cohort estimator on the same data; regularised generator distance reported. |
-| Lifetime PD rungs (P) | cumulative PD monotone; calibration at 12, 24, 36 months against Aalen-Johansen per decile; C-index and integrated Brier for Cox rungs. |
-| IFRS 9 ECL engine (E) | reconciliation identities close within 1e-6; weighted ECL >= average-scenario ECL in the convex regime (property test); the non-linearity example 2.68% vs 1.80% reproduced; overlays reported as separate lines. |
-| CMF B-1 (E) | PE = PI x PDI / 100 for every transcribed cell; the consumer matrix lookup reproduces the 16 cells; the 0.50% minimum enforced. |
-| BdE Annex 9 (E) | coverage tables reproduced as transcribed; the category-to-stage mapping exposed. |
-| LGD rungs (P) | predictions inside [0,1]; out-of-time calibration by bucket; endpoint sensitivity reported for beta rungs. |
-| CCF/EAD rungs (P) | known CCF recovered on the generator within the reported error; the CCF convention named on every view. |
-| IRB and LHP (E) | CRE99 Table 1 reproduced within 0.005 pp; Basel II mode carries 1.06 and 0.03%; Chile mode uses the RAN 21-6 correlations. |
-| Copula MC, CreditRisk+, GA, IS (E) | MC converges to LHP as n grows; Euler contributions sum to the total; the CreditRisk+ recursion matches MC; GA delta = 4.83; IS unbiased against plain MC. |
-| VaR/ES estimators (E and P) | each rung run over the full rolling schedule with no look-ahead; own GARCH-t (scipy) matches `arch` within 1e-4 on the log-likelihood; FZ0 losses computed for every rung. |
-| VaR/ES backtests (E) | MAR99 Table 2 reproduced to two decimals; Kupiec and Christoffersen match closed forms; Acerbi-Szekely critical values simulated per model. |
-| CCR and CVA (P) | own HW1F single-swap EE matches ORE within MC error at every grid point; EEPE and CVA recomputed from EE match ORE; path convergence reported. |
-| SA-CCR, BA-CVA, SMA, output floor, LCR/NSFR, FRTB cascade (E) | official worked examples reproduced (SA-CCR five netting sets, SMA 5.37bn, output floor 101.5 and 95); invariants for BA-CVA, SBM, LCR, NSFR where no official example exists. |
-| IRRBB/ALM (E) | SRP31.92 values reproduced (0.417, 41.7, +25.4, -1.6 bp); the 2016 and 2024 shock tables as fixtures; EVE sum-of-parts reconciles; the CMF Annex 1 worked example reproduced; CLP shocks labelled when not from the CMF. |
-| Liquidity (E) | LiST compounding 12.11% after 125 days reproduced; survival period monotone in run-off severity. |
-| Op risk (E) | Shevchenko benchmark mean 738.9056 and 99.9% quantile 5,849 to 5,850 across MC, Panjer and FFT. |
-| Aggregation (E) | Euler contributions sum to the total; the dependence band (sum, var-covar, Gaussian, t, worst case) always shown. |
-| Stress satellites (P) | back-cast through 2008-2009 and 2020 with satellites estimated on prior data; coefficient signs checked. |
-| Fed supervisory replication (P) | published hypothetical-portfolio loss rates reproduced within the tolerance stated in the case. |
-| Validation tests, all (E) | each reproduces a published worked example or an independent reference (scipy distributions) to a stated tolerance; every result carries `reference`, `h0` and a policy version. |
-| ML validation and fairness tests (E) | each test detects its planted defect on the generator with power reported at alpha 0.05 and holds its size under the null within Monte Carlo error. |
+| id | tier | method | acceptance criterion | gate |
+|---|---|---|---|---|
+| M-1 | classical | WoE monotone scorecard (P) | optbinning bins fitted on train only reproduce monotone event rates; the points table recomputes every score exactly; AUC with DeLong CI, KS, Brier, calibration by grade and PSI out of sample are reported. | `tests/test_c01.py` |
+| M-2 | classical | Penalised logistic regression (P) | paired DeLong against the scorecard reported | `tests/test_c01.py` |
+| M-3 | sota | Penalised logistic tree regression, PLTR (P) | rule set stable across 20 bootstraps (Jaccard reported) | `tests/test_c01.py` |
+| M-4 | sota | EBM/GA2M (P) | monotone shape functions where declared; per-term points table; post-calibration reliability; live additive scoring equals offline within 1e-9. | `tests/test_c01.py` |
+| M-5 | sota | Monotone GBM plus calibration (P) | monotonicity verified on PDP grids; isotonic or Platt map fitted on a separate slice; Brier and reliability before and after; reason-code stability (bootstrap top-4 overlap). | `tests/test_c01.py` |
+| M-6 | sota | TabPFN challenger (P) | runs only on small cases; the weights licence is shown on every view; same gates as GBM. | `tests/test_c01.py` |
+| M-7 | classical | Rating master scale and calibration (E) | Tasche (2013) Table 1 scaled PD and scaled LR columns reproduced; Pluto-Tasche tables 1, 2, 3, 4, 7 reproduced to 0.01 pp. | `tests/test_c05.py` |
+| M-8 | classical | TTC/PIT Z-factor (E) | implied Z reproduces the LHP relation; PIT PDs average back to TTC over the cycle on the generator. | `tests/test_c04.py` |
+| M-9 | sota | Transition estimators (E) | rows sum to 1; generator rows to 0; equality with the transitionMatrix cohort estimator on the same data; regularised generator distance reported. | `tests/test_c04.py` |
+| M-10 | sota | Lifetime PD rungs (P) | cumulative PD monotone; calibration at 12, 24, 36 months against Aalen-Johansen per decile; C-index and integrated Brier for Cox rungs. | `tests/c06/` |
+| M-11 | sota | IFRS 9 ECL engine (E) | reconciliation identities close within 1e-6; weighted ECL >= average-scenario ECL in the convex regime (property test); the non-linearity example 2.68% vs 1.80% reproduced; overlays reported as separate lines. | `tests/c06/` |
+| M-12 | classical | CMF B-1 (E) | PE = PI x PDI / 100 for every transcribed cell; the consumer matrix lookup reproduces the 16 cells; the 0.50% minimum enforced. | `tests/c07/` |
+| M-13 | classical | BdE Annex 9 (E) | coverage tables reproduced as transcribed; the category-to-stage mapping exposed. | `tests/c07/` |
+| M-14 | classical | LGD rungs (P) | predictions inside [0,1]; out-of-time calibration by bucket; endpoint sensitivity reported for beta rungs. | `tests/c08/` |
+| M-15 | classical | CCF/EAD rungs (P) | known CCF recovered on the generator within the reported error; the CCF convention named on every view. | `tests/c09/` |
+| M-16 | classical | IRB and LHP (E) | CRE99 Table 1 reproduced within 0.005 pp; Basel II mode carries 1.06 and 0.03%; Chile mode uses the RAN 21-6 correlations. | `tests/test_c01_capital.py` |
+| M-17 | sota | Copula MC, CreditRisk+, GA, IS (E) | MC converges to LHP as n grows; Euler contributions sum to the total; the CreditRisk+ recursion matches MC; GA delta = 4.83; IS unbiased against plain MC. | `tests/c10/` |
+| M-18 | sota | VaR/ES estimators (E and P) | each rung run over the full rolling schedule with no look-ahead; own GARCH-t (scipy) matches `arch` within 1e-4 on the log-likelihood; FZ0 losses computed for every rung. | `tests/c11/` |
+| M-19 | classical | VaR/ES backtests (E) | MAR99 Table 2 reproduced to two decimals; Kupiec and Christoffersen match closed forms; Acerbi-Szekely critical values simulated per model. | `tests/c11/` |
+| M-20 | sota | CCR and CVA (P) | own HW1F single-swap EE matches ORE within MC error at every grid point; EEPE and CVA recomputed from EE match ORE; path convergence reported. | `tests/c12/` |
+| M-21 | classical | SA-CCR, BA-CVA, SMA, output floor, LCR/NSFR, FRTB cascade (E) | official worked examples reproduced (SA-CCR five netting sets, SMA 5.37bn, output floor 101.5 and 95); invariants for BA-CVA, SBM, LCR, NSFR where no official example exists. | `tests/test_regulatory*.py` |
+| M-22 | sota | IRRBB/ALM (E) | SRP31.92 values reproduced (0.417, 41.7, +25.4, -1.6 bp); the 2016 and 2024 shock tables as fixtures; EVE sum-of-parts reconciles; the CMF Annex 1 worked example reproduced; CLP shocks labelled when not from the CMF. | `tests/c14/`, `tests/c15/` |
+| M-23 | sota | Liquidity (E) | LiST compounding 12.11% after 125 days reproduced; survival period monotone in run-off severity. | `tests/c16/` |
+| M-24 | sota | Op risk (E) | Shevchenko benchmark mean 738.9056 and 99.9% quantile 5,849 to 5,850 across MC, Panjer and FFT. | `tests/c17/` |
+| M-25 | sota | Aggregation (E) | Euler contributions sum to the total; the dependence band (sum, var-covar, Gaussian, t, worst case) always shown. | `tests/c18/` |
+| M-26 | classical | Stress satellites (P) | back-cast through 2008-2009 and 2020 with satellites estimated on prior data; coefficient signs checked. | `tests/c18/` |
+| M-27 | classical | Fed supervisory replication (P) | published hypothetical-portfolio loss rates reproduced within the tolerance stated in the case. | `tests/c18/` |
+| M-28 | classical | Validation tests, all (E) | each reproduces a published worked example or an independent reference (scipy distributions) to a stated tolerance; every result carries `reference`, `h0` and a policy version. | `tests/test_c22.py` |
+| M-29 | sota | ML validation and fairness tests (E) | each test detects its planted defect on the generator with power reported at alpha 0.05 and holds its size under the null within Monte Carlo error. | `tests/c20/`, `tests/c21/` |
+| M-30 | sota | Quantile network trained on the FZ0 loss, C11 R10 (P; plan S-1) | trained on each window's train span only, no look-ahead; its VaR and ES pass the same eligibility gates and FZ0 ranking as the other rungs; reported whether it wins or not | `tests/c11/` |
+| M-31 | sota | VAR conditional forecasts and growth-at-risk quantile satellites, C18 (E and P; plan S-2) | back-cast through 2008-09 and 2020 on prior data beside the OLS satellites, with the coefficient-sign checks | `tests/c18/` |
+| M-32 | sota | Robust severity estimators (optimally bias-robust, Cramer-von Mises) with the mean-adjusted SLA, C17 (E; plan S-3) | on the generators of known truth, the capital's bias and spread reported beside the MLE splice | `tests/c17/` |
+| M-33 | sota | Neural discrete-time survival, PC-Hazard, C06 (P; plan S-4) | calibration at 12, 24 and 36 months against Aalen-Johansen per decile, C-index and integrated Brier beside Cox, at the six reporting dates | `tests/c06/` |
+| M-34 | sota | Random forest and neural LGD rungs, C08 (P; plan S-5) | out-of-time calibration by bucket and the ladder's metrics on the same split as the other LGD rungs | `tests/c08/` |
+| M-35 | sota | Reject inference (parcelling and augmentation) on a sample with a known rejected population (P; plan S-6) | the accepted-only model's bias on the full population measured, and each reject-inference rung's reduction of it with its interval | `tests/test_c01.py`, `tests/c02/` |
+| BS-1 | beyond | Measurement: The measured size and power of the validation tests on planted defects | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-1 |
+| BS-2 | beyond | Reconciliation: The reconciliations against reference engines that exist today | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-2 |
+| BS-3 | beyond | Protocol: The leakage-safe protocol per case, with gates | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-3 |
+| BS-4 | beyond | Method-adjacent: estimator treatment: The default definition as part of the PD, informative withdrawals and thin grades | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-4 |
+| BS-5 | beyond | Protocol: Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-5 |
+| BS-6 | beyond | Engine coverage: Engines and test catalogues no open toolkit provides | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-6 |
+| BS-7 | beyond | Method-adjacent: currency treatment: The UF as its own currency in IRRBB | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-7 |
+| BS-8 | beyond | Test construction: A test that flags a behavioural assumption changed at a limit breach | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-8 |
+| BS-9 | beyond | Protocol: The dependence band shown with every aggregate | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-9 |
+| BS-10 | beyond | Test construction: The batch 3 test corrections, with the error rate each one removes measured on planted data | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-10 |
+| BS-11 | beyond | Method-adjacent: reverse stress rule: Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-11 |
+| BS-12 | beyond | Measurement: The instability of the operational-risk capital, measured on independent histories of known truth | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-12 |
+| BS-13 | beyond | Proposed method: a scale-and-level complement to the FRTB PLA test (C13) | at a size of at most 1 %, the stale-volatility model flagged in at least 30 % of replications; refuted below 10 % | `tests/c13/`; engine `market` tests |
+| BS-14 | beyond | Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04) | the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments under 50 %; refuted if not better or if the anchored k is unstable | `tests/test_c04.py`; engine `transitions` tests |
+| BS-15 | beyond | Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03) | size held at 5 % under optional stopping where the repeated Kupiec rule exceeds it, median delay below the 250-day window at severity 3 or more, power cost under 10 points; refuted if the delay is not lower | `tests/test_c22.py`, `tests/c11/`; engine `validation.sequential` tests |
+| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09 | `tests/c11/`; engine `market` tests |
 
 ## Cases
 
@@ -730,6 +755,11 @@ requirement of both repositories with its gate and the gate's result in the rele
 No oracle here is a model judging another model.
 
 ## Beyond the state of the art
+
+Two kinds of entry are listed here. **BS-1 to BS-12** are what Contraste does beyond common practice without proposing a new
+method: measurements, protocols, reconciliations, engine coverage and test constructions (the rule counts none of them, by itself,
+as a method beyond the state of the art; each says what it is in the Method ladder). **BS-13 to BS-16** are the methods Contraste
+proposes, each with its hypothesis, its method and the evaluation that confirms or refutes it; each is reported whatever its result.
 
 A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
 demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
@@ -941,6 +971,33 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   known truth over independent histories; that absence is UNVERIFIED beyond the dossier's search. The claim is about a synthetic
   bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
   internal gates; it says nothing about the capital of any real bank.
+
+
+- **BS-13** A scale-and-level complement to the FRTB P&L attribution test (C13).
+  Problem: the PLA's Spearman and Kolmogorov-Smirnov statistics miss a risk model that uses 20-day-old volatility (amber or red in 0.0 % of
+  1,000 replications, `data/derived/C13/stale-volatility.json`). Method: a Mincer-Zarnowitz regression of HPL on RTPL with a joint Wald test
+  of intercept 0 and slope 1, and the Spearman correlation of |HPL| and |RTPL| and of their 20-day rolling means, with thresholds set to the
+  PLA's own size. Hypothesis: at a size of at most 1 %, the stale-volatility model is flagged in at least 30 % of replications; refuted below
+  10 %. Evaluation: the six C13 variants from the committed generator, a lag ladder of 5, 10, 20 and 40 days, the size cross-checked on C22.
+  Beyond: the regulatory PLA (BCBS MAR32) has no statistic of scale or of volatility timing. Evidence: written with the result.
+- **BS-14** An anchored tipping-point PD under informative rating withdrawals (C04).
+  Problem: removing, keeping or following withdrawals understates the B-grade PD by 15 to 38 % when withdrawal is informative (`docs/cases/C04.md`).
+  Method: the PD by grade as a function of the odds k of withdrawal in the year of default (k = 1 the usual estimate, k large the Manski
+  bound, Manski 1989, https://doi.org/10.2307/145818), the tipping k at which a decision flips, k anchored where two sources count defaults
+  differently. Hypothesis: the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments
+  under 50 %; refuted if coverage is not better or the anchored k is unstable across years. Evidence: written with the result.
+- **BS-15** E-process sequential monitors for calibration and back-tests (C22, C11, C03).
+  Problem: the fixed-window tests are read once per window. Method: betting e-processes for VaR hits, for defaults against predicted PD by
+  grade and for a battery, rejecting when the process exceeds 20 (Ville's inequality: an anytime-valid size of 5 %; Ramdas et al.,
+  https://arxiv.org/abs/2210.01948). Hypothesis: the size holds at 5 % under optional stopping where the repeated Kupiec rule exceeds it, and
+  the median detection delay is below the 250-day window at severity 3 or more, at a power cost under 10 points; refuted if the delay is not
+  lower than the traffic light's. Evidence: written with the result.
+- **BS-16** Adaptive conformal recalibration of VaR against the 17-model ladder (C11).
+  Method: adaptive conformal inference on each model's level (Gibbs and Candes, https://arxiv.org/abs/2106.00170), wrapped against unwrapped
+  on Kupiec, conditional coverage, Acerbi-Szekely Z2 and FZ0 in the stress windows. Hypothesis: HS-250, GARCH-t and FHS wrapped pass in at
+  least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09. The French
+  equity series is derived-only: the recalibration runs on the device's data root and only its outputs are committed. Evidence: written
+  with the result.
 
 ## Deploy driver
 

@@ -236,6 +236,8 @@ def main() -> int:
         "year": a.year,
         # the dotted names (module.function or module.Class) that run this product's method: the notebooks' floors count nothing else
         "method_entrypoints": [],
+        # the product's Zenodo manuscripts: at least one technical report (guide 09); scripts/check_manuscripts.py fails an empty list
+        "manuscripts": [],
     }
     write("product.json", json.dumps(product, indent=2, ensure_ascii=False) + "\n")
     pkg_path = ROOT / "frontend" / "package.json"
