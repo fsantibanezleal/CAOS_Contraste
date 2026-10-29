@@ -1652,7 +1652,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -3961,7 +3961,7 @@ export interface components {
         };
         /**
          * C11 window variant
-         * @description Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
+         * @description Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
          */
         "c11-variant-window": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -4005,6 +4005,121 @@ export interface components {
             weight: number;
             /** @description How the series becomes a return of the portfolio (a log return, a duration times a yield change). */
             transform: string;
+        };
+        /** @description BS-16, the beyond tier: the engine's adaptive conformal wrapper around HS-250, GARCH-t and FHS, wrapped against unwrapped in this window. */
+        c11Conformal: {
+            method: components["schemas"]["c11ConformalMethod"];
+            rows: components["schemas"]["c11ConformalRow"][];
+            hypothesis: components["schemas"]["c11ConformalHypothesis"];
+        };
+        /** @description One model at one level over the three stress windows: windows passed without and with the wrapper, and the worst FZ0 change. */
+        c11ConformalCell: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            windows_passed_unwrapped: number;
+            windows_passed_wrapped: number;
+            extra_windows: number;
+            worst_fz0_change: number | null;
+            holds: boolean;
+        };
+        /** @description The plan's hypothesis of BS-16 with its measured cells and its verdict, the same in every window document. */
+        c11ConformalHypothesis: {
+            /** @constant */
+            id: "BS-16";
+            statement: components["schemas"]["common-text"];
+            refuted_if: components["schemas"]["common-text"];
+            pass_rule: components["schemas"]["common-text"];
+            run: {
+                gamma: number;
+                level_min: number;
+                level_max: number;
+                stress_windows: string[];
+                fz0_tolerance: number;
+                /** @description A probability in [0, 1]. */
+                pass_p: number;
+                n_stress_days: number;
+                n_runs: number;
+            };
+            cells: components["schemas"]["c11ConformalCell"][];
+            independence_2007_09: components["schemas"]["c11ConformalIndependence"][];
+            n_cells: number;
+            n_cells_hold: number;
+            refuted: boolean;
+            holds: boolean;
+            verdict: components["schemas"]["common-text"];
+        };
+        c11ConformalIndependence: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            independence_p: number | null;
+            fails: boolean;
+        };
+        c11ConformalMethod: {
+            /** @constant */
+            id: "BS-16";
+            /** @constant */
+            tier: "beyond";
+            title: components["schemas"]["common-text"];
+            source: string;
+            gamma: number;
+            level_min: number;
+            level_max: number;
+            /** @constant */
+            first_level: "alpha";
+            wrapped_models: string[];
+            description: components["schemas"]["common-text"];
+        };
+        /** @description One wrapped model at one tail level in this window, beside the same model unwrapped. */
+        c11ConformalRow: {
+            model_id: string;
+            rung: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            n_days: number;
+            unwrapped: components["schemas"]["c11ConformalScore"];
+            wrapped: components["schemas"]["c11ConformalScore"];
+            /** @description (wrapped FZ0 minus unwrapped FZ0) over the absolute unwrapped FZ0: positive is worse. */
+            fz0_change: number | null;
+            /** @description Days on which the update of the working level was cut by the band. */
+            n_clipped: number;
+            n_fallback_days: number;
+            working_level: {
+                min: number;
+                mean: number;
+                max: number;
+            };
+            series: components["schemas"]["c11ConformalSeries"];
+        };
+        /** @description The back-test and score reading of one VaR and ES sequence: the engine's coverage tests, the Acerbi-Szekely test against the ladder's null, FZ0 and Z2. */
+        c11ConformalScore: {
+            n_exceedances: number;
+            expected_exceedances: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            hit_rate: number;
+            kupiec_p: number | null;
+            independence_p: number | null;
+            conditional_coverage_p: number | null;
+            es_test_p: number | null;
+            /** @enum {string} */
+            es_test_light: "green" | "amber" | "red" | "not_evaluated";
+            /** @description Average FZ0 loss over the window; null when an ES is not finite. */
+            fz0_mean: number | null;
+            /** @description The engine's Z2 statistic, 1 minus the mean of loss over ES on the hit days, over alpha: 0 under a correct ES, negative when the ES is understated. */
+            z2: number | null;
+            eligible: boolean;
+            passes_coverage: boolean;
+            /** @description 1 plus the number of ladder models with a lower average FZ0 at the level. */
+            ladder_rank: number | null;
+        };
+        /** @description The wrapped model's path: its working level, its VaR and ES (positive losses) and the days the loss exceeded the VaR. */
+        c11ConformalSeries: {
+            /** @description The working tail level on each grid day. */
+            working_level: number[];
+            var: number[];
+            es: number[];
+            exceedance_days: number[];
         };
         c11DataStatus: {
             first_observation: string;
@@ -4243,6 +4358,8 @@ export interface components {
             models: components["schemas"]["c11ModelOutput"][];
             comparison: components["schemas"]["c11Comparison"];
             es_backtests: components["schemas"]["c11EsNull"][];
+            /** @description BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models. */
+            conformal: components["schemas"]["c11Conformal"] | null;
         } & unknown;
         /** @description A fitted parameter across the refits of a window: minimum, median and maximum. */
         c11Parameter: {

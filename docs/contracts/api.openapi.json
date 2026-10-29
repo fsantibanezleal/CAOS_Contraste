@@ -7934,7 +7934,7 @@
       },
       "c06-models": {
         "title": "C06 models",
-        "description": "Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+        "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -17360,7 +17360,7 @@
       },
       "c11-variant-window": {
         "title": "C11 window variant",
-        "description": "Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.",
+        "description": "Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -17588,6 +17588,571 @@
           }
         },
         "description": "A component of the window's stated portfolio and the licence class of its source (dossier 08 C.5, C.2, C.8)."
+      },
+      "c11Conformal": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "rows",
+          "hypothesis"
+        ],
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/c11ConformalMethod"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11ConformalRow"
+            },
+            "minItems": 1,
+            "maxItems": 6
+          },
+          "hypothesis": {
+            "$ref": "#/components/schemas/c11ConformalHypothesis"
+          }
+        },
+        "description": "BS-16, the beyond tier: the engine's adaptive conformal wrapper around HS-250, GARCH-t and FHS, wrapped against unwrapped in this window."
+      },
+      "c11ConformalCell": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "alpha",
+          "windows_passed_unwrapped",
+          "windows_passed_wrapped",
+          "extra_windows",
+          "worst_fz0_change",
+          "holds"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "windows_passed_unwrapped": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "windows_passed_wrapped": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "extra_windows": {
+            "type": "integer",
+            "minimum": -3,
+            "maximum": 3
+          },
+          "worst_fz0_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "holds": {
+            "type": "boolean"
+          }
+        },
+        "description": "One model at one level over the three stress windows: windows passed without and with the wrapper, and the worst FZ0 change."
+      },
+      "c11ConformalHypothesis": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "refuted_if",
+          "pass_rule",
+          "run",
+          "cells",
+          "independence_2007_09",
+          "n_cells",
+          "n_cells_hold",
+          "refuted",
+          "holds",
+          "verdict"
+        ],
+        "properties": {
+          "id": {
+            "const": "BS-16"
+          },
+          "statement": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "refuted_if": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "pass_rule": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "run": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "gamma",
+              "level_min",
+              "level_max",
+              "stress_windows",
+              "fz0_tolerance",
+              "pass_p",
+              "n_stress_days",
+              "n_runs"
+            ],
+            "properties": {
+              "gamma": {
+                "type": "number",
+                "minimum": 0
+              },
+              "level_min": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "level_max": {
+                "type": "number",
+                "exclusiveMaximum": 0.5
+              },
+              "stress_windows": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "fz0_tolerance": {
+                "type": "number",
+                "minimum": 0
+              },
+              "pass_p": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              "n_stress_days": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "n_runs": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11ConformalCell"
+            },
+            "minItems": 1,
+            "maxItems": 6
+          },
+          "independence_2007_09": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11ConformalIndependence"
+            },
+            "minItems": 1,
+            "maxItems": 6
+          },
+          "n_cells": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "n_cells_hold": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "refuted": {
+            "type": "boolean"
+          },
+          "holds": {
+            "type": "boolean"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The plan's hypothesis of BS-16 with its measured cells and its verdict, the same in every window document."
+      },
+      "c11ConformalIndependence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "alpha",
+          "independence_p",
+          "fails"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "independence_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fails": {
+            "type": "boolean"
+          }
+        }
+      },
+      "c11ConformalMethod": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "tier",
+          "title",
+          "source",
+          "gamma",
+          "level_min",
+          "level_max",
+          "first_level",
+          "wrapped_models",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "const": "BS-16"
+          },
+          "tier": {
+            "const": "beyond"
+          },
+          "title": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "source": {
+            "type": "string"
+          },
+          "gamma": {
+            "type": "number",
+            "minimum": 0
+          },
+          "level_min": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "level_max": {
+            "type": "number",
+            "exclusiveMaximum": 0.5
+          },
+          "first_level": {
+            "const": "alpha"
+          },
+          "wrapped_models": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "description": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
+      "c11ConformalRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "rung",
+          "alpha",
+          "n_days",
+          "unwrapped",
+          "wrapped",
+          "fz0_change",
+          "n_clipped",
+          "n_fallback_days",
+          "working_level",
+          "series"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "rung": {
+            "type": "string",
+            "pattern": "^R([1-9]|10)$"
+          },
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "n_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "unwrapped": {
+            "$ref": "#/components/schemas/c11ConformalScore"
+          },
+          "wrapped": {
+            "$ref": "#/components/schemas/c11ConformalScore"
+          },
+          "fz0_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "(wrapped FZ0 minus unwrapped FZ0) over the absolute unwrapped FZ0: positive is worse."
+          },
+          "n_clipped": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Days on which the update of the working level was cut by the band."
+          },
+          "n_fallback_days": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "working_level": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "min",
+              "mean",
+              "max"
+            ],
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "mean": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          },
+          "series": {
+            "$ref": "#/components/schemas/c11ConformalSeries"
+          }
+        },
+        "description": "One wrapped model at one tail level in this window, beside the same model unwrapped."
+      },
+      "c11ConformalScore": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_exceedances",
+          "expected_exceedances",
+          "hit_rate",
+          "kupiec_p",
+          "independence_p",
+          "conditional_coverage_p",
+          "es_test_p",
+          "es_test_light",
+          "fz0_mean",
+          "z2",
+          "eligible",
+          "passes_coverage",
+          "ladder_rank"
+        ],
+        "properties": {
+          "n_exceedances": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_exceedances": {
+            "type": "number",
+            "minimum": 0
+          },
+          "hit_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "kupiec_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "independence_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditional_coverage_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "es_test_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "es_test_light": {
+            "type": "string",
+            "enum": [
+              "green",
+              "amber",
+              "red",
+              "not_evaluated"
+            ]
+          },
+          "fz0_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Average FZ0 loss over the window; null when an ES is not finite."
+          },
+          "z2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The engine's Z2 statistic, 1 minus the mean of loss over ES on the hit days, over alpha: 0 under a correct ES, negative when the ES is understated."
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "passes_coverage": {
+            "type": "boolean"
+          },
+          "ladder_rank": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "1 plus the number of ladder models with a lower average FZ0 at the level."
+          }
+        },
+        "description": "The back-test and score reading of one VaR and ES sequence: the engine's coverage tests, the Acerbi-Szekely test against the ladder's null, FZ0 and Z2."
+      },
+      "c11ConformalSeries": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "working_level",
+          "var",
+          "es",
+          "exceedance_days"
+        ],
+        "properties": {
+          "working_level": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 0.5
+            },
+            "minItems": 1,
+            "description": "The working tail level on each grid day."
+          },
+          "var": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+            },
+            "minItems": 1
+          },
+          "es": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+            },
+            "minItems": 1
+          },
+          "exceedance_days": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "description": "The wrapped model's path: its working level, its VaR and ES (positive losses) and the days the loss exceeded the VaR."
       },
       "c11DataStatus": {
         "type": "object",
@@ -18591,7 +19156,8 @@
           "hyperparameters",
           "models",
           "comparison",
-          "es_backtests"
+          "es_backtests",
+          "conformal"
         ],
         "properties": {
           "kind": {
@@ -18637,6 +19203,17 @@
             "items": {
               "$ref": "#/components/schemas/c11EsNull"
             }
+          },
+          "conformal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c11Conformal"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models."
           }
         },
         "description": "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests.",
