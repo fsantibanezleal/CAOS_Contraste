@@ -659,9 +659,17 @@
     "en": "Capital engine on a static balance sheet",
     "es": "Motor de capital sobre balance estático"
    },
+   "c18-growth-at-risk": {
+    "en": "Growth-at-risk quantiles",
+    "es": "Cuantiles de crecimiento en riesgo"
+   },
    "c18-satellites-us-calibrated": {
     "en": "Macro satellites of the net charge-off rates",
     "es": "Satélites macro de las tasas de castigo netas"
+   },
+   "c18-var-conditional-forecast": {
+    "en": "VAR conditional forecast",
+    "es": "Pronóstico condicional VAR"
    }
   },
   "C20": {
