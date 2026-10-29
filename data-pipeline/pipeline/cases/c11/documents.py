@@ -30,6 +30,7 @@ from ...core.text import percent
 from . import portfolio as pf
 from .constants import (BASEL_DAYS, LEVELS, MC_DRAWS, MCS_BLOCK, MCS_BOOTSTRAP, MCS_CONFIDENCE, MCS_STATISTIC, SIGNIFICANCE, SPAN,
                         WINDOWS, Z2_DRAWS)
+from . import quantile_net as qn
 from .forecast import CHALLENGER, LADDER, Hyper, ModelRun, Spec, look_back
 
 GATES = ("market.kupiec_pof", "market.christoffersen_conditional_coverage", "market.acerbi_szekely")
@@ -56,7 +57,9 @@ def sign_convention() -> dict:
                             "documento guarda pérdidas positivas, como decimales del valor de la cartera.")}
 
 
-def refit_days(spec: Spec, hp: Hyper) -> int:
+def refit_days(spec: Spec, hp: Hyper, net: qn.NetHyper = qn.NET) -> int:
+    if spec.kind == "nn":
+        return net.refit_every_days
     name = REFIT_OF.get(spec.kind)
     return int(getattr(hp, name)) if name else 1
 
@@ -225,21 +228,33 @@ def comparison(specs: list[Spec], loss: np.ndarray, arrays: dict[str, dict[float
     return {"significance": SIGNIFICANCE, "hac_kernel": "bartlett", "hac_lags": 0, "champions": champions, "dm": dm_rows, "mcs": mcs}
 
 
-def model_summary(spec: Spec, hp: Hyper, engine_version: str) -> dict:
+def model_summary(spec: Spec, hp: Hyper, engine_version: str, net: qn.NetHyper = qn.NET) -> dict:
     params = {"window_days": {"value": float(look_back(spec, hp)), "unit": "days"},
-              "refit_every_days": {"value": float(refit_days(spec, hp)), "unit": "days"}}
+              "refit_every_days": {"value": float(refit_days(spec, hp, net)), "unit": "days"}}
     if spec.kind == "ewma":
         params["lambda"] = {"value": hp.ewma_lambda, "unit": "1"}
     if spec.kind == "awhs":
         params["lambda"] = {"value": hp.age_weight_lambda, "unit": "1"}
     if spec.kind == "evt":
         params["threshold_fraction"] = {"value": hp.evt_threshold_fraction, "unit": "1"}
+    if spec.kind == "nn":
+        params.update({"hidden_units": {"value": float(net.hidden_units), "unit": "units"},
+                       "epochs": {"value": float(net.epochs), "unit": "epochs"},
+                       "learning_rate": {"value": net.learning_rate, "unit": "1"},
+                       "weight_decay": {"value": net.weight_decay, "unit": "1"},
+                       "n_starts": {"value": float(net.n_starts), "unit": "starts"}})
     return {"id": spec.model_id, "family": "market-var-es", "rung": spec.rung, "title": t(spec.en, spec.es), "short_title": t(spec.model_id, spec.model_id),
             "engine": "riskvalidation", "engine_version": engine_version, "licence": "MIT", "calibration": None, "parameters": params,
             "checkpoint_sha256": None}
 
 
-def hyper_block(hp: Hyper, mc: int = MC_DRAWS, z2: int = Z2_DRAWS) -> dict:
+def hyper_block(hp: Hyper, mc: int = MC_DRAWS, z2: int = Z2_DRAWS, with_net: bool = True, net: qn.NetHyper = qn.NET) -> dict:
+    nn_rows = [{"name": "nn_hidden_units", "value": net.hidden_units, "unit": "units"},
+               {"name": "nn_epochs", "value": net.epochs, "unit": "epochs"},
+               {"name": "nn_learning_rate", "value": net.learning_rate, "unit": "1"},
+               {"name": "nn_weight_decay", "value": net.weight_decay, "unit": "1"},
+               {"name": "nn_n_starts", "value": net.n_starts, "unit": "starts"},
+               {"name": "nn_refit_every_days", "value": net.refit_every_days, "unit": "days"}] if with_net else []
     return {"fixed_on": {"start": SPAN[0], "end": SPAN[1]}, "tuned_on_test_window": False,
             "estimation_window_days": hp.estimation_window_days, "ewma_lambda": hp.ewma_lambda, "age_weight_lambda": hp.age_weight_lambda,
             "evt_threshold_fraction": hp.evt_threshold_fraction, "garch_refit_every_days": hp.garch_refit_every_days,
@@ -248,7 +263,7 @@ def hyper_block(hp: Hyper, mc: int = MC_DRAWS, z2: int = Z2_DRAWS) -> dict:
                        {"name": "gas_refit_every_days", "value": hp.gas_refit_every_days, "unit": "days"},
                        {"name": "hs_short_window", "value": 250, "unit": "days"}, {"name": "hs_long_window", "value": 500, "unit": "days"},
                        {"name": "evt_refit_every_days", "value": 1, "unit": "days"},
-                       {"name": "z2_draws", "value": z2, "unit": "draws"}, {"name": "mc_draws", "value": mc, "unit": "draws"}]}
+                       {"name": "z2_draws", "value": z2, "unit": "draws"}, {"name": "mc_draws", "value": mc, "unit": "draws"}] + nn_rows}
 
 
 def portfolio_block(p: pf.Portfolio) -> dict:
@@ -281,7 +296,7 @@ def provenance_block(p: pf.Portfolio, seed: int, code_version: str, engine_versi
 
 def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_version: str, engine_version: str,
                  model_ids: tuple[str, ...] | None = None, mc_draws: int = MC_DRAWS, z2_draws: int = Z2_DRAWS,
-                 limit: int | None = None) -> dict:
+                 limit: int | None = None, net: qn.NetHyper = qn.NET) -> dict:
     """The ``c11-outputs`` document of one window from its portfolio and the forecasts of every model.
 
     ``mc_draws``, ``z2_draws`` and ``limit`` (the first days of the window) are for tests of a small size; the bake uses the defaults."""
@@ -339,11 +354,11 @@ def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_
                         "missing_days": {"count": len(in_range), "dates": in_range, "treatment": "skipped-not-filled"}},
         "grid": {"scheme": "rolling", "estimation_window_days": lookback, "dates": [str(d) for d in dates],
                  "estimation_start": est_start, "estimation_end": est_end, "realised_loss": rl},
-        "hyperparameters": hyper_block(hp, mc_draws, z2_draws), "models": models, "comparison": cmp,
+        "hyperparameters": hyper_block(hp, mc_draws, z2_draws, any(s.kind == "nn" for s in specs), net), "models": models, "comparison": cmp,
         "es_backtests": sorted(nulls, key=lambda x: (x["model_id"], x["alpha"])),
     }
     return {"schema": "contraste.case/v1", "case_id": "C11", "variant_id": w.window_id,
-            "model": [model_summary(s, hp, engine_version) for s in specs], "outputs": outputs, "tests": tests, "impact": impact,
+            "model": [model_summary(s, hp, engine_version, net) for s in specs], "outputs": outputs, "tests": tests, "impact": impact,
             "findings": findings(models, tests), "provenance": provenance_block(p, hp.seed, code_version, engine_version),
             "lane": {"lane": "precompute", "reasons": []}}
 
@@ -426,7 +441,7 @@ def _summ(values: list[float]) -> dict:
 
 
 def build_models(portfolios: dict[str, pf.Portfolio], runs: dict[str, dict[str, ModelRun]], hp: Hyper, *, code_version: str,
-                 engine_version: str, provenance: dict, model_ids: tuple[str, ...] | None = None) -> dict:
+                 engine_version: str, provenance: dict, model_ids: tuple[str, ...] | None = None, net: qn.NetHyper = qn.NET) -> dict:
     specs = [s for s in LADDER if model_ids is None or s.model_id in model_ids]
     ladder = []
     for s in specs:
@@ -440,11 +455,13 @@ def build_models(portfolios: dict[str, pf.Portfolio], runs: dict[str, dict[str, 
                                                "median": float(r.n_fallback_days), "max": float(r.n_fallback_days)})
         ladder.append({"model_id": s.model_id, "rung": s.rung, "title": t(s.en, s.es), "family": "market-var-es", "source": s.source,
                        "status": "fitted", "not_run_reason": None, "innovation": s.innovation, "estimation_window_days": look_back(s, hp),
-                       "refit_every_days": refit_days(s, hp), "forecasts_es": s.forecasts_es, "es_method": s.es_method, "window_fits": fits})
+                       "refit_every_days": refit_days(s, hp, net), "forecasts_es": s.forecasts_es, "es_method": s.es_method, "window_fits": fits})
     c = CHALLENGER
-    ladder.append({"model_id": c["model_id"], "rung": c["rung"], "title": t(c["en"], c["es"]), "family": "market-var-es", "source": c["source"],
-                   "status": "challenger-not-run", "not_run_reason": c["reason"], "innovation": "none", "estimation_window_days": None,
-                   "refit_every_days": None, "forecasts_es": True, "es_method": "network output", "window_fits": []})
+    declared = not any(s.model_id == c["model_id"] for s in specs)       # a partial bake that leaves the network out declares it
+    if declared:
+        ladder.append({"model_id": c["model_id"], "rung": c["rung"], "title": t(c["en"], c["es"]), "family": "market-var-es", "source": c["source"],
+                       "status": "challenger-not-run", "not_run_reason": c["reason"], "innovation": "none", "estimation_window_days": None,
+                       "refit_every_days": None, "forecasts_es": True, "es_method": "network output", "window_fits": []})
     traffic = {"window_days": 250, "confidence": 0.99,
                "reference": "MAR32.9 Table 1 (dossier 01 D.4); 12 CFR 217.204 Table 1 (dossier 05 B.4)",
                "rows": [{"exceptions": k, "zone": rv_frtb.traffic_light_zone(k), "frtb_multiplier": rv_frtb.mar32_multiplier(k),
@@ -453,10 +470,10 @@ def build_models(portfolios: dict[str, pf.Portfolio], runs: dict[str, dict[str, 
                         for k in range(11)]}
     return {
         "schema": "contraste.models/v1", "case_id": "C11", "fit_id": "ladder",
-        "model": [{**model_summary(s, hp, engine_version), "details": {"source": s.source, "es_method": s.es_method}} for s in specs]
-                 + [{"id": c["model_id"], "family": "market-var-es", "rung": c["rung"], "title": t(c["en"], c["es"]),
+        "model": [{**model_summary(s, hp, engine_version, net), "details": {"source": s.source, "es_method": s.es_method}} for s in specs]
+                 + ([] if not declared else [{"id": c["model_id"], "family": "market-var-es", "rung": c["rung"], "title": t(c["en"], c["es"]),
                      "short_title": t(c["model_id"], c["model_id"]), "engine": "riskvalidation", "engine_version": engine_version,
-                     "licence": "MIT", "calibration": None, "parameters": {}, "checkpoint_sha256": None, "details": {"not_run": c["reason"]}}],
+                     "licence": "MIT", "calibration": None, "parameters": {}, "checkpoint_sha256": None, "details": {"not_run": c["reason"]}}]),
         "fit": {
             "sign_convention": sign_convention(), "levels": [{"alpha": a} for a in LEVELS],
             "windows": [{"window_id": w.window_id, "asset_class": w.asset_class, "start_date": w.start, "end_date": w.end,

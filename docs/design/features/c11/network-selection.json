@@ -1,0 +1,59 @@
+{
+ "base": {
+  "epochs": 200,
+  "hidden_units": 8,
+  "learning_rate": 0.02,
+  "n_starts": 3,
+  "refit_every_days": 20,
+  "weight_decay": 0.001
+ },
+ "grid": {
+  "hidden_units": {
+   "candidates": [
+    {
+     "score": -7.245452124399566,
+     "value": 4
+    },
+    {
+     "score": 0.6329851147530934,
+     "value": 8
+    },
+    {
+     "score": 19.351792782417903,
+     "value": 16
+    }
+   ],
+   "model": "nn-fz"
+  },
+  "weight_decay": {
+   "candidates": [
+    {
+     "score": 0.6329851147530934,
+     "value": 0.001
+    },
+    {
+     "score": -6.94954306320796,
+     "value": 0.01
+    },
+    {
+     "score": -14.92937240457301,
+     "value": 0.1
+    }
+   ],
+   "model": "nn-fz"
+  }
+ },
+ "selected": {
+  "hidden_units": 4,
+  "weight_decay": 0.1
+ },
+ "series": [
+  "equity",
+  "rates"
+ ],
+ "span": [
+  "1995-01-01",
+  "2003-12-31"
+ ],
+ "stride": 5
+}
