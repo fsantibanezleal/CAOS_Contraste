@@ -64,6 +64,7 @@ from riskvalidation.validation import rating_system
 from riskvalidation.validation import transitions as markov
 
 from ..io.cerep import AGENCIES, DEFAULT, GRADES as SCALE_GRADES, Cohort
+from .c04_bounds import real_bounds
 
 GRADES: list[str] = list(SCALE_GRADES)
 STATES: list[str] = [*GRADES, DEFAULT]
@@ -532,5 +533,7 @@ def agency_outputs(code: str, annual: list[Cohort], semesters: list[Cohort],
         "semesters_vs_year": _semesters_vs_year(years, halves),
         "definition_gap": _definition_gap(rates),
         "lifetime": _lifetime(spans, years, p, fit["generator"], has_default),
+        # BS-14: the default page as the anchor of the transition page's withdrawals (None without a default category)
+        "withdrawal_bounds": real_bounds(years, has_default_column=has_default),
     }
     return outputs, tests

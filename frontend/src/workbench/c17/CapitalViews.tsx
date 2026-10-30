@@ -9,7 +9,7 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
-import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
+import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, isCaution, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
 import { es, inSentence } from './localise';
 
 const ratio = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
@@ -76,7 +76,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
       id: r.id,
       label: rungName(r.id),
       value: r.summary ? r.summary.capital_eur.median / scale.div : null,
-      tone: r.summary?.status === UNVERIFIED || r.id === 'sla-mean-corrected' ? ('warn' as const) : ('accent' as const),
+      tone: isCaution(r.summary?.status) || r.id === 'sla-mean-corrected' ? ('warn' as const) : ('accent' as const),
       highlight: r.id === sel.rung,
     })),
   ];
@@ -88,8 +88,8 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
         title={{ en: `Capital by method: ${label.en}`, es: `Capital por método: ${label.es}` }}
         {...card}
         note={{
-          en: 'The 99.9 percent capital each method gives, as the median over the independent histories of the cell, beside the true quantile of the generator (grey). A method below the grey bar underestimates the capital. Amber is the mean-corrected approximation, kept UNVERIFIED until it is checked against its primary text. A method with no bar was not evaluated for this cell, and the table says why.',
-          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue SIN VERIFICAR hasta que se verifique contra su texto primario. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
+          en: 'The 99.9 percent capital each method gives, as the median over the independent histories of the cell, beside the true quantile of the generator (grey). A method below the grey bar underestimates the capital. Amber is the mean-corrected approximation, kept UNVERIFIED until it is checked against its primary text. The four mean-adjusted rungs of S-3 (robust and likelihood fits of the severity) are amber too: their form comes from a secondary source. A method with no bar was not evaluated for this cell, and the table says why.',
+          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue SIN VERIFICAR hasta que se verifique contra su texto primario. Los cuatro métodos con ajuste por media de S-3 (ajustes robustos y de verosimilitud de la severidad) también son ámbar: su forma viene de una fuente secundaria. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
         }}
       >
         <ChartOverTable
@@ -175,7 +175,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
       id: c.id,
       label: cellLabel(c.years, c.collection_threshold_eur),
       value: summary ? summary.capital_eur.median / scale.div : null,
-      tone: summary?.status === UNVERIFIED ? ('warn' as const) : ('accent' as const),
+      tone: isCaution(summary?.status) ? ('warn' as const) : ('accent' as const),
       highlight: c.years === sel.years && c.collection_threshold_eur === sel.threshold,
     })),
   ];

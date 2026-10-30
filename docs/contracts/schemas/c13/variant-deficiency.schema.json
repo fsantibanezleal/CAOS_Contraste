@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c13/variant-deficiency.schema.json",
   "title": "C13 deficiency variant",
-  "description": "Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
+  "description": "Catalog row c13-outputs 3.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
   "allOf": [
     {
       "$ref": "../common/variant-envelope.schema.json"
@@ -718,7 +718,8 @@
         "pla",
         "example",
         "desk_backtest",
-        "detection"
+        "detection",
+        "pla_complement"
       ],
       "properties": {
         "kind": {
@@ -779,6 +780,9 @@
         },
         "detection": {
           "$ref": "#/$defs/c13Detection"
+        },
+        "pla_complement": {
+          "$ref": "#/$defs/c13Complement"
         }
       },
       "description": "The C13 deficiency document: the PLA and desk back-test of a desk whose model has one known planted deficiency.",
@@ -825,6 +829,389 @@
           }
         }
       ]
+    },
+    "c13Rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "k",
+        "n",
+        "rate",
+        "ci_low",
+        "ci_high"
+      ],
+      "properties": {
+        "k": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ci_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ci_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "description": "A count of flagged replications out of n, its rate and its 95 percent Wilson interval."
+    },
+    "c13ComplementFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wald",
+        "spearman_abs",
+        "spearman_roll",
+        "any"
+      ],
+      "properties": {
+        "wald": {
+          "$ref": "#/$defs/c13Rate"
+        },
+        "spearman_abs": {
+          "$ref": "#/$defs/c13Rate"
+        },
+        "spearman_roll": {
+          "$ref": "#/$defs/c13Rate"
+        },
+        "any": {
+          "$ref": "#/$defs/c13Rate"
+        }
+      }
+    },
+    "c13ComplementThresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wald",
+        "spearman_abs",
+        "spearman_roll"
+      ],
+      "properties": {
+        "wald": {
+          "type": "number"
+        },
+        "spearman_abs": {
+          "type": "number"
+        },
+        "spearman_roll": {
+          "type": "number"
+        }
+      },
+      "description": "The critical values of the complement: the Wald statistic flags above its value, the two Spearman statistics below theirs."
+    },
+    "c13Complement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "plan_id",
+        "engine_function",
+        "window_days",
+        "size",
+        "correction",
+        "role",
+        "n_replications",
+        "calibration",
+        "flags",
+        "against_ks",
+        "by_size",
+        "lag_ladder",
+        "hypothesis"
+      ],
+      "properties": {
+        "tier": {
+          "const": "beyond"
+        },
+        "plan_id": {
+          "const": "BS-13"
+        },
+        "engine_function": {
+          "type": "string",
+          "minLength": 1
+        },
+        "window_days": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "size": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "correction": {
+          "enum": [
+            "bonferroni",
+            "none"
+          ]
+        },
+        "role": {
+          "enum": [
+            "size",
+            "power"
+          ]
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "null_case_seeds",
+            "n_per_block",
+            "n_null",
+            "thresholds_per_statistic",
+            "thresholds_family"
+          ],
+          "properties": {
+            "null_case_seeds": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1
+            },
+            "n_per_block": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "n_null": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "thresholds_per_statistic": {
+              "$ref": "#/$defs/c13ComplementThresholds"
+            },
+            "thresholds_family": {
+              "$ref": "#/$defs/c13ComplementThresholds"
+            }
+          }
+        },
+        "flags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "per_statistic",
+            "family",
+            "pla_amber_or_red",
+            "family_with_pla"
+          ],
+          "properties": {
+            "per_statistic": {
+              "$ref": "#/$defs/c13ComplementFlags"
+            },
+            "family": {
+              "$ref": "#/$defs/c13ComplementFlags"
+            },
+            "pla_amber_or_red": {
+              "$ref": "#/$defs/c13Rate"
+            },
+            "family_with_pla": {
+              "$ref": "#/$defs/c13Rate"
+            }
+          }
+        },
+        "against_ks": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "ks_flagged",
+                "wald_flagged",
+                "wald_at_least_ks"
+              ],
+              "properties": {
+                "ks_flagged": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wald_flagged": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wald_at_least_ks": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "by_size": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "size",
+              "wald",
+              "spearman_abs",
+              "spearman_roll",
+              "wald_held_out",
+              "spearman_abs_held_out",
+              "spearman_roll_held_out"
+            ],
+            "properties": {
+              "size": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "wald": {
+                "$ref": "#/$defs/c13Rate"
+              },
+              "spearman_abs": {
+                "$ref": "#/$defs/c13Rate"
+              },
+              "spearman_roll": {
+                "$ref": "#/$defs/c13Rate"
+              },
+              "wald_held_out": {
+                "$ref": "#/$defs/c13Rate"
+              },
+              "spearman_abs_held_out": {
+                "$ref": "#/$defs/c13Rate"
+              },
+              "spearman_roll_held_out": {
+                "$ref": "#/$defs/c13Rate"
+              }
+            }
+          }
+        },
+        "lag_ladder": {
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "lag_days",
+                  "per_statistic",
+                  "family_any",
+                  "pla_amber_or_red"
+                ],
+                "properties": {
+                  "lag_days": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "per_statistic": {
+                    "$ref": "#/$defs/c13ComplementFlags"
+                  },
+                  "family_any": {
+                    "$ref": "#/$defs/c13Rate"
+                  },
+                  "pla_amber_or_red": {
+                    "$ref": "#/$defs/c13Rate"
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hypothesis": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "plan_id",
+                "statement",
+                "statistic",
+                "size_basis",
+                "power_threshold",
+                "refuted_below",
+                "size_limit",
+                "measured_power",
+                "held_out_size",
+                "pla_power",
+                "n_null_desk_years",
+                "verdict",
+                "reading"
+              ],
+              "properties": {
+                "plan_id": {
+                  "const": "BS-13"
+                },
+                "statement": {
+                  "$ref": "../common/text.schema.json"
+                },
+                "statistic": {
+                  "const": "spearman_roll"
+                },
+                "size_basis": {
+                  "const": "family-1pct-bonferroni"
+                },
+                "power_threshold": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "refuted_below": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "size_limit": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "measured_power": {
+                  "$ref": "#/$defs/c13Rate"
+                },
+                "held_out_size": {
+                  "$ref": "#/$defs/c13Rate"
+                },
+                "pla_power": {
+                  "$ref": "#/$defs/c13Rate"
+                },
+                "n_null_desk_years": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "verdict": {
+                  "enum": [
+                    "holds",
+                    "refuted",
+                    "not-established"
+                  ]
+                },
+                "reading": {
+                  "$ref": "../common/text.schema.json"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "BS-13, beyond the state of the art: the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) and the lag ladder (stale-volatility only). Added to the regulatory zone, never substituted for it."
     }
   }
 }

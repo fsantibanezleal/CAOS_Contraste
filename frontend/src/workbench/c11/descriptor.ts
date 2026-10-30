@@ -1,5 +1,5 @@
 // The run-time descriptors of the C11 documents (outputs of a window variant, and the fit of the models artifact), one
-// key per key of the c11-outputs and c11-models 1.0.0 schemas; contract.test.ts reads every committed document and the
+// key per key of the c11-outputs 3.0.0 and c11-models 1.0.0 schemas; contract.test.ts reads every committed document and the
 // schema files against them in both directions. `satisfies` ties the keys to the generated types, so a key added to a
 // schema and not here fails `tsc`. Kept beside the instrument that reads them; contract.types.ts composes the variant
 // and models descriptors from these (`variantKind`, `modelsKind`), the integrator's lines for the case.
@@ -41,6 +41,84 @@ const ES_NULL: Kind = { object: {
   n_draws: 'integer',
   p_value: 'number',
   histogram: { object: { edges: { array: 'number' }, counts: { array: 'integer' } } },
+} };
+
+const nNum: Kind = { nullable: 'number' };
+
+// BS-16 (method tiers, c11-outputs 3.0.0): the adaptive conformal recalibration of HS-250, GARCH-t and FHS, wrapped against unwrapped.
+const CONFORMAL_SCORE: Kind = { object: {
+  n_exceedances: 'integer',
+  expected_exceedances: 'number',
+  hit_rate: 'number',
+  kupiec_p: nNum,
+  independence_p: nNum,
+  conditional_coverage_p: nNum,
+  es_test_p: nNum,
+  es_test_light: 'string',
+  fz0_mean: nNum,
+  z2: nNum,
+  eligible: 'boolean',
+  passes_coverage: 'boolean',
+  ladder_rank: { nullable: 'integer' },
+} };
+
+const CONFORMAL: Kind = { object: {
+  method: { object: {
+    id: 'string',
+    tier: 'string',
+    title: 'text',
+    source: 'string',
+    gamma: 'number',
+    level_min: 'number',
+    level_max: 'number',
+    first_level: 'string',
+    wrapped_models: { array: 'string' },
+    description: 'text',
+  } },
+  rows: { array: { object: {
+    model_id: 'string',
+    rung: 'string',
+    alpha: 'number',
+    n_days: 'integer',
+    unwrapped: CONFORMAL_SCORE,
+    wrapped: CONFORMAL_SCORE,
+    fz0_change: nNum,
+    n_clipped: 'integer',
+    n_fallback_days: 'integer',
+    working_level: { object: { min: 'number', mean: 'number', max: 'number' } },
+    series: { object: { working_level: { array: 'number' }, var: { array: 'number' }, es: { array: 'number' }, exceedance_days: { array: 'integer' } } },
+  } } },
+  hypothesis: { object: {
+    id: 'string',
+    statement: 'text',
+    refuted_if: 'text',
+    pass_rule: 'text',
+    run: { object: {
+      gamma: 'number',
+      level_min: 'number',
+      level_max: 'number',
+      stress_windows: { array: 'string' },
+      fz0_tolerance: 'number',
+      pass_p: 'number',
+      n_stress_days: 'integer',
+      n_runs: 'integer',
+    } },
+    cells: { array: { object: {
+      model_id: 'string',
+      alpha: 'number',
+      windows_passed_unwrapped: 'integer',
+      windows_passed_wrapped: 'integer',
+      extra_windows: 'integer',
+      worst_fz0_change: nNum,
+      holds: 'boolean',
+    } } },
+    independence_2007_09: { array: { object: { model_id: 'string', alpha: 'number', independence_p: nNum, fails: 'boolean' } } },
+    n_cells: 'integer',
+    n_cells_hold: 'integer',
+    refuted: 'boolean',
+    holds: 'boolean',
+    verdict: 'text',
+  } },
 } };
 
 export const C11_OUTPUTS: Kind = { object: {
@@ -104,6 +182,7 @@ export const C11_OUTPUTS: Kind = { object: {
     mcs: { array: MCS_SET },
   } },
   es_backtests: { array: ES_NULL },
+  conformal: { nullable: CONFORMAL },
 } } satisfies { object: Record<keyof components['schemas']['c11Outputs'], Kind> };
 
 export const C11_FIT: Kind = { object: {
