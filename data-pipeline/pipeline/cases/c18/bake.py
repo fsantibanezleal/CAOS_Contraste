@@ -43,6 +43,7 @@ from . import fed as fed_reader
 from . import fetch, fx, marginals as mg, models, ngfs as ngfs_reader, reverse as rev
 from . import params as P
 from . import satellites as sat
+from . import stress_rungs
 from . import scenarios as scn
 
 CASE_ID = P.CASE_ID
@@ -209,7 +210,9 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     if rv is not None:
         out[P.FILE_NAMES["reverse"]] = build_artifact(case_id=CASE_ID, variant_id=P.FILE_NAMES["reverse"], model=docs.envelope_models(core), outputs=rv["outputs"],
                                                       tests=rv["tests"], impact=rv["impact"], findings=rv["findings"], lineage=lineage, lane=lane)
-    models_doc = build_models_artifact(case_id=CASE_ID, fit_id=P.FIT_ID, model=recs, fit=fit, lineage=lineage, lane=lane)
+    # the state-of-the-art stress rungs sit beside the OLS satellites in the models document only: the variants' own model list is unchanged
+    rungs = stress_rungs.build(sats, fed.history)
+    models_doc = build_models_artifact(case_id=CASE_ID, fit_id=P.FIT_ID, model=[*recs, *stress_rungs.records(ev, rungs)], fit=fit, lineage=lineage, lane=lane)
     reg = registry.load()
     raw_sources = {"schema": "contraste.sources-manifest-rows/v1",
                    "note": "The rows of data/sources/manifest.json for the raw inputs of C18, in that file's format. The raw files stay in the device data root "

@@ -35,9 +35,9 @@
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
   },
   "c04-agency": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c04/variant-agency.schema.json",
-    "sha256": "04c255983d081b6118dc96b1873582e56401cab6152fc2038f65887a651b6657"
+    "sha256": "05681a6c1fdaa09a4936cbe64d8a62ec253233258a92d34143aaf055943628c5"
   },
   "c04-family": {
     "version": "1.1.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "28.1.0",
+    "version": "29.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "9291fa4e0caa6d469513855e67f3a1693b84d7b282b9885703c463e83c4a1c15"
+    "sha256": "862d52270b49118cd2b38103f4210de41201fbededd511484c464b39e7116679"
   },
   "readiness": {
     "version": "1.0.1",
@@ -255,9 +255,9 @@
     "sha256": "4aeb37448b9f0845d61361f1281aebfa149764e8d13753911a8bbfcee3d78bb0"
   },
   "c13-outputs": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "schema": "docs/contracts/schemas/c13/variant-deficiency.schema.json",
-    "sha256": "11a8f537a4ac25693583ceb50260870677fb933456574f72536b8e6174867222"
+    "sha256": "eb152ec1984f0acc4855e50d93f5652bedfcaeb8ba58cabfa4882f0a4bdef935"
   },
   "c13-models": {
     "version": "1.0.0",

@@ -911,7 +911,7 @@ export interface components {
         };
         /**
          * C04 agency variant
-         * @description Catalog row c04-agency 1.1.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
+         * @description Catalog row c04-agency 2.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
          */
         "c04-variant-agency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -5420,6 +5420,85 @@ export interface components {
         } & {
             tests?: unknown;
         };
+        /** @description BS-13, beyond the state of the art: the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) and the lag ladder (stale-volatility only). Added to the regulatory zone, never substituted for it. */
+        c13Complement: {
+            /** @constant */
+            tier: "beyond";
+            /** @constant */
+            plan_id: "BS-13";
+            engine_function: string;
+            window_days: number;
+            size: number;
+            /** @enum {unknown} */
+            correction: "bonferroni" | "none";
+            /** @enum {unknown} */
+            role: "size" | "power";
+            n_replications: number;
+            calibration: {
+                null_case_seeds: number[];
+                n_per_block: number;
+                n_null: number;
+                thresholds_per_statistic: components["schemas"]["c13ComplementThresholds"];
+                thresholds_family: components["schemas"]["c13ComplementThresholds"];
+            };
+            flags: {
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family: components["schemas"]["c13ComplementFlags"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+                family_with_pla: components["schemas"]["c13Rate"];
+            };
+            against_ks: {
+                ks_flagged: number;
+                wald_flagged: number;
+                wald_at_least_ks: boolean;
+            } | null;
+            by_size: {
+                size: number;
+                wald: components["schemas"]["c13Rate"];
+                spearman_abs: components["schemas"]["c13Rate"];
+                spearman_roll: components["schemas"]["c13Rate"];
+                wald_held_out: components["schemas"]["c13Rate"];
+                spearman_abs_held_out: components["schemas"]["c13Rate"];
+                spearman_roll_held_out: components["schemas"]["c13Rate"];
+            }[];
+            lag_ladder: {
+                lag_days: number;
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family_any: components["schemas"]["c13Rate"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+            }[] | null;
+            hypothesis: {
+                /** @constant */
+                plan_id: "BS-13";
+                statement: components["schemas"]["common-text"];
+                /** @constant */
+                statistic: "spearman_roll";
+                /** @constant */
+                size_basis: "family-1pct-bonferroni";
+                power_threshold: number;
+                refuted_below: number;
+                size_limit: number;
+                measured_power: components["schemas"]["c13Rate"];
+                held_out_size: components["schemas"]["c13Rate"];
+                pla_power: components["schemas"]["c13Rate"];
+                n_null_desk_years: number;
+                /** @enum {unknown} */
+                verdict: "holds" | "refuted" | "not-established";
+                reading: components["schemas"]["common-text"];
+            } | null;
+        };
+        c13ComplementFlags: {
+            wald: components["schemas"]["c13Rate"];
+            spearman_abs: components["schemas"]["c13Rate"];
+            spearman_roll: components["schemas"]["c13Rate"];
+            any: components["schemas"]["c13Rate"];
+        };
+        /** @description The critical values of the complement: the Wald statistic flags above its value, the two Spearman statistics below theirs. */
+        c13ComplementThresholds: {
+            wald: number;
+            spearman_abs: number;
+            spearman_roll: number;
+        };
         /** @description One planted deficiency and how the generator plants it. */
         c13DeficiencyPlan: {
             /** @enum {string} */
@@ -5619,6 +5698,7 @@ export interface components {
             example: components["schemas"]["c13Example"];
             desk_backtest: components["schemas"]["c13DeskLevel"][] & unknown;
             detection: components["schemas"]["c13Detection"];
+            pla_complement?: components["schemas"]["c13Complement"];
         } & unknown;
         c13Pla: {
             thresholds: components["schemas"]["c13PlaThresholds"];
@@ -5653,6 +5733,14 @@ export interface components {
             excess_kurtosis: number;
             min: number;
             max: number;
+        };
+        /** @description A count of flagged replications out of n, its rate and its 95 percent Wilson interval. */
+        c13Rate: {
+            k: number;
+            n: number;
+            rate: number;
+            ci_low: number;
+            ci_high: number;
         };
         c13ReplicationPlan: {
             n_replications: number;
