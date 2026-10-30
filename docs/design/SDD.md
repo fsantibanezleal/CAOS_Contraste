@@ -105,6 +105,10 @@ or address.
 | The explainable additive challenger is the EBM | Glass-box GA2M with monotone shape functions | https://arxiv.org/abs/1909.09223 |
 | The four UCI credit datasets are mirror-allowed (CC BY 4.0) and carry the credit-scoring cases | Taiwan cards with six months of history, German credit as the twin | https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients |
 | The executive view rests on the supervisory record, not on surveys | 77 investigations in 2025, about 16 findings each; no primary source found for fines or inventory sizes | https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html |
+| The P&L attribution test is complemented on scale and timing, never replaced | MAR32's PLA zone reads a Spearman correlation and a KS distance only; a model with an old volatility passes it | https://www.bis.org/bcbs/publ/d457.htm; https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/market/09_pla-complement.md |
+| Withdrawn ratings get a PD as a function of the odds of withdrawal before default, anchored on a second default count | No treatment of a withdrawal is right for every k; Manski's bound is the limit | https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/transitions/06_withdrawal-bounds.md |
+| Calibration and back-tests read every day are monitored by e-processes | Ville's inequality keeps the size at any stopping time; a repeated fixed-window test does not | https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/sequential/README.md |
+| The VaR level of a model is recalibrated day by day by adaptive conformal inference | Gibbs and Candes' update keeps long-run coverage under distribution shift | https://arxiv.org/abs/2106.00170; https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/market/08_conformal-recalibration.md |
 
 Choices with no source because they are engineering, measured in this document instead: the live lane runs TypeScript
 ports with parity tests (Pyodide is not used, and is admitted only by measurement, see `Lanes`), and the page and
