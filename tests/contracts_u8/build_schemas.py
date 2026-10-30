@@ -410,6 +410,50 @@ def build_c11() -> None:
         "p_value": PROB,
         "histogram": R("c11Histogram"),
     }, "The simulated null distribution of the Acerbi-Szekely Z2 for one model, with the realised statistic (dossier 05 B.5).")
+    # --- BS-16 (method tiers, c11-outputs 3.0.0): the adaptive conformal recalibration of HS-250, GARCH-t and FHS, a required nullable block
+    d["c11ConformalScore"] = Ob({
+        "n_exceedances": Int(0), "expected_exceedances": N(minimum=0), "hit_rate": UNIT,
+        "kupiec_p": nullable(PROB), "independence_p": nullable(PROB), "conditional_coverage_p": nullable(PROB),
+        "es_test_p": nullable(PROB), "es_test_light": E("green", "amber", "red", "not_evaluated"),
+        "fz0_mean": nullable(N(), "Average FZ0 loss over the window; null when an ES is not finite."),
+        "z2": nullable(N(), "The engine's Z2 statistic, 1 minus the mean of loss over ES on the hit days, over alpha: 0 under a correct ES, negative when the ES is understated."),
+        "eligible": B,
+        "passes_coverage": B,
+        "ladder_rank": nullable(Int(1), "1 plus the number of ladder models with a lower average FZ0 at the level."),
+    }, "The back-test and score reading of one VaR and ES sequence: the engine's coverage tests, the Acerbi-Szekely test against the ladder's null, FZ0 and Z2.")
+    d["c11ConformalSeries"] = Ob({
+        "working_level": A(N(exclusiveMinimum=0, exclusiveMaximum=0.5), 1, "The working tail level on each grid day."),
+        "var": A(LOSS_POS, 1), "es": A(LOSS_POS, 1), "exceedance_days": A(Int(0)),
+    }, "The wrapped model's path: its working level, its VaR and ES (positive losses) and the days the loss exceeded the VaR.")
+    d["c11ConformalRow"] = Ob({
+        "model_id": S(), "rung": S(pattern=r"^R([1-9]|10)$"), "alpha": ALPHA, "n_days": Int(1),
+        "unwrapped": R("c11ConformalScore"), "wrapped": R("c11ConformalScore"),
+        "fz0_change": nullable(N(), "(wrapped FZ0 minus unwrapped FZ0) over the absolute unwrapped FZ0: positive is worse."),
+        "n_clipped": Int(0, desc="Days on which the update of the working level was cut by the band."),
+        "n_fallback_days": Int(0),
+        "working_level": Ob({"min": N(), "mean": N(), "max": N()}),
+        "series": R("c11ConformalSeries"),
+    }, "One wrapped model at one tail level in this window, beside the same model unwrapped.")
+    d["c11ConformalCell"] = Ob({
+        "model_id": S(), "alpha": ALPHA, "windows_passed_unwrapped": Int(0, 3), "windows_passed_wrapped": Int(0, 3),
+        "extra_windows": Int(-3, 3), "worst_fz0_change": nullable(N()), "holds": B,
+    }, "One model at one level over the three stress windows: windows passed without and with the wrapper, and the worst FZ0 change.")
+    d["c11ConformalIndependence"] = Ob({"model_id": S(), "alpha": ALPHA, "independence_p": nullable(PROB), "fails": B})
+    d["c11ConformalHypothesis"] = Ob({
+        "id": C("BS-16"), "statement": TXT, "refuted_if": TXT, "pass_rule": TXT,
+        "run": Ob({"gamma": N(minimum=0), "level_min": N(exclusiveMinimum=0), "level_max": N(exclusiveMaximum=0.5),
+                   "stress_windows": A(S(), 1, maximum=3), "fz0_tolerance": N(minimum=0), "pass_p": PROB,
+                   "n_stress_days": Int(0), "n_runs": Int(1)}),
+        "cells": A(R("c11ConformalCell"), 1, maximum=6), "independence_2007_09": A(R("c11ConformalIndependence"), 1, maximum=6),
+        "n_cells": Int(1), "n_cells_hold": Int(0), "refuted": B, "holds": B, "verdict": TXT,
+    }, "The plan's hypothesis of BS-16 with its measured cells and its verdict, the same in every window document.")
+    d["c11ConformalMethod"] = Ob({
+        "id": C("BS-16"), "tier": C("beyond"), "title": TXT, "source": S(), "gamma": N(minimum=0), "level_min": N(exclusiveMinimum=0),
+        "level_max": N(exclusiveMaximum=0.5), "first_level": C("alpha"), "wrapped_models": A(S(), 1), "description": TXT,
+    })
+    d["c11Conformal"] = Ob({
+        "method": R("c11ConformalMethod"), "rows": A(R("c11ConformalRow"), 1, maximum=6), "hypothesis": R("c11ConformalHypothesis"),
+    }, "BS-16, the beyond tier: the engine's adaptive conformal wrapper around HS-250, GARCH-t and FHS, wrapped against unwrapped in this window.")
     d["c11Outputs"] = Ob({
         "kind": C("window"),
         "window": R("c11Window"),
@@ -422,6 +466,7 @@ def build_c11() -> None:
         "models": A(R("c11ModelOutput"), 1),
         "comparison": R("c11Comparison"),
         "es_backtests": A(R("c11EsNull")),
+        "conformal": nullable(R("c11Conformal"), "BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models."),
     }, "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests.")
 
     # --- models
@@ -503,7 +548,7 @@ def build_c11() -> None:
     }]
 
     variant_schema("C11", "variant-window", "window", "C11 window variant",
-                   "Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), "
+                   "Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), "
                    "strictly rolling, on public daily series.", "c11Outputs", d)
     models_schema("C11", "C11 models",
                   "Catalog row c11-models 1.0.0: the C11 models artifact (windows and spans, the ladder with its fitted "

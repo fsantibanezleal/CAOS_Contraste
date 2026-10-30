@@ -21,6 +21,7 @@ const UNIT: Record<string, string> = {
   year: 'año',
   years: 'años',
   lags: 'rezagos',
+  quarters: 'trimestres',
   'Abs. difference': 'diferencia absoluta',
   '% difference,  2017 PPP ; US$ Bn': '% de diferencia, PPA 2017; miles de millones de US$',
 };

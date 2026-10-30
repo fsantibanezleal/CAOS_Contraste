@@ -89,6 +89,7 @@ from riskvalidation.validation.transitions import rating_momentum
 
 from ..io.cerep import GRADES as CEREP_GRADES
 from .c01_ladder import _t
+from .c04_bounds import bounds_rung, seed_keys as bounds_keys, verdict as bounds_verdict
 
 FAMILIES = ("markov", "momentum", "cycle", "withdrawals", "thin")
 GRADES = list(CEREP_GRADES)
@@ -159,9 +160,10 @@ def _children(seed: int, reps: int) -> list[np.random.SeedSequence]:
     return np.random.SeedSequence(seed).spawn(reps)
 
 
-def _paths(q: np.ndarray, obligors: list[int], **defect: Any) -> RatingPaths:
-    """The rating-path generator over five years with annual snapshots, with an optional planted defect."""
-    return RatingPaths(q, tuple(obligors), horizon=float(YEARS), snapshots=SNAPSHOTS, **defect)
+def _paths(q: np.ndarray, obligors: list[int], years: int = YEARS, **defect: Any) -> RatingPaths:
+    """The rating-path generator over ``years`` (five) with annual snapshots, with an optional planted defect."""
+    return RatingPaths(q, tuple(obligors), horizon=float(years), snapshots=tuple(float(t) for t in range(years + 1)),
+                       **defect)
 
 
 def _pd(gen: RatingPaths, years: int = 1) -> np.ndarray:
@@ -509,6 +511,10 @@ def _withdrawals(q: np.ndarray, obligors: list[int], case_seed: int, reps: int) 
             "pd_followed": _performance(followed, pd1),
             # every obligor followed every year, withdrawn or not: the latent chain's own cohort PD
             "pd_latent": _performance(latent, pd1),
+            # BS-14: the anchored tipping-point PD against the three treatments, on draws of its own (c04_bounds)
+            "bounds": bounds_rung(_paths, q, obligors, seed=_seed(case_seed, bounds_keys(k)[0]),
+                                  scale_seed=_seed(case_seed, bounds_keys(k)[1]), reps=reps, informative=k,
+                                  withdrawal_rate=WITHDRAWAL_RATE, window=WINDOW),
         })
         sims += _simulations(gen, tests, seed=seed, reps=reps, rung=k, label=f"k{k:g}")
         _log(f"withdrawals informative {k:g}")
@@ -586,4 +592,6 @@ def family_outputs(family: str, q: np.ndarray, obligors: list[int], case_seed: i
         "rungs": rungs,
         "simulations": sims,
     }
+    # BS-14's verdict: the withdrawals family's; null elsewhere (the key is always written, as the web's descriptor reads it)
+    out["bounds_verdict"] = bounds_verdict(rungs) if family == "withdrawals" else None
     return jsonable(out)
