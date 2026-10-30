@@ -90,6 +90,36 @@ def network_table(docs: dict[str, dict]) -> str:
     return "\n".join([head, *rows, "", verdict])
 
 
+def conformal_table(docs: dict[str, dict]) -> str:
+    """BS-16 of the method tiers: HS-250, GARCH-t and FHS wrapped by adaptive conformal inference against the same models unwrapped, per
+    window and tail level (exceedances, Kupiec and conditional coverage p-values, average FZ0), then the hypothesis by cell as the plan
+    states it (reported whatever the result)."""
+    head = ("| Window | Model | Tail level | Exceedances unwrapped, wrapped (expected) | Kupiec p unwrapped, wrapped | "
+            "Conditional coverage p unwrapped, wrapped | Average FZ0 unwrapped, wrapped (change) | Days clipped to the band |"
+            "\n|---|---|---|---|---|---|---|---|")
+    rows = []
+    for w, d in docs.items():
+        for r in d["outputs"]["conformal"]["rows"]:
+            u, c = r["unwrapped"], r["wrapped"]
+            change = None if r["fz0_change"] is None else 100 * r["fz0_change"]
+            rows.append(f"| {w} | {r['model_id']} | {r['alpha']:.1%} | {u['n_exceedances']}, {c['n_exceedances']} ({u['expected_exceedances']:.1f}) | "
+                        f"{_fmt(u['kupiec_p'])}, {_fmt(c['kupiec_p'])} | "
+                        f"{_fmt(u['conditional_coverage_p'])}, {_fmt(c['conditional_coverage_p'])} | "
+                        f"{_fmt(u['fz0_mean'], '.4f')}, {_fmt(c['fz0_mean'], '.4f')} ({_fmt(change, '.1f')}%) | {r['n_clipped']} |")
+    h = next(iter(docs.values()))["outputs"]["conformal"]["hypothesis"]
+    cells = ["| Model | Tail level | Stress windows passed unwrapped | Passed wrapped | Worst FZ0 change in a stress window | Holds |",
+             "|---|---|---|---|---|---|"]
+    for c in h["cells"]:
+        cells.append(f"| {c['model_id']} | {c['alpha']:.1%} | {c['windows_passed_unwrapped']} | {c['windows_passed_wrapped']} | "
+                     f"{_fmt(100 * c['worst_fz0_change'], '.1f')}% | {'yes' if c['holds'] else 'no'} |")
+    ind = ", ".join(f"{x['model_id']} at {x['alpha']:.1%} p {_fmt(x['independence_p'])}" for x in h["independence_2007_09"])
+    run = h["run"]
+    tail = (f"Stress windows: {', '.join(run['stress_windows'])} ({run['n_stress_days']} forecast days); a window is passed when the Kupiec and the "
+            f"conditional coverage p-values are both at least {run['pass_p']:g}. Independence in equity-2007-09, wrapped: {ind}. "
+            f"Verdict: {h['verdict']['en']}")
+    return "\n".join([head, *rows, "", *cells, "", tail])
+
+
 def exceedance_matrix(docs: dict[str, dict]) -> str:
     ids = [m["model_id"] for m in next(iter(docs.values()))["outputs"]["models"]]
     head = "| Model | " + " | ".join(docs) + " |\n|---|" + "---|" * len(docs)
@@ -153,6 +183,7 @@ def blocks(derived: Path, evidence: Path) -> str:
         "### Results per window\n\n" + results_table(docs),
         "### Exceedances of the 99 percent VaR per model and window\n\n" + exceedance_matrix(docs),
         "### The R10 quantile network trained on FZ0, beside the ladder\n\n" + network_table(docs),
+        "### BS-16: adaptive conformal recalibration of the VaR, wrapped against unwrapped\n\n" + conformal_table(docs),
         "### The hyperparameters, fixed on 1995-01-01 to 2003-12-31\n\n" + selection_table(evidence),
         "### The network's hyperparameters, fixed on the same span\n\n" + network_selection_table(evidence),
         "### The raw files read\n\n" + inputs_table(evidence),

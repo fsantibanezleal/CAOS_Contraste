@@ -39,7 +39,7 @@ from riskvalidation.validation import market as rv_val
 
 from ...core.text import number, percent
 from . import forecast as fc
-from .constants import LEVELS, WINDOWS
+from .constants import LEVELS
 from .forecast import Hyper, Spec
 
 GAMMA = 0.005                       # the engine's default step, fixed before any run
