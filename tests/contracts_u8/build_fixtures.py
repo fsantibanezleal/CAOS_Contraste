@@ -325,6 +325,7 @@ def build_c11_variant() -> tuple[dict, dict]:
         "models": models_out,
         "comparison": {"significance": 0.05, "hac_kernel": "bartlett", "hac_lags": 0, "champions": champions, "dm": dm_rows, "mcs": mcs},
         "es_backtests": [zscore[k] for k in sorted(zscore)],
+        "conformal": build_c11_conformal(loss, sigma, n, results, eligible),
     }
     doc = {
         "schema": "contraste.case/v1", "case_id": "C11", "variant_id": "fixture-rates-2022",
@@ -339,6 +340,86 @@ def build_c11_variant() -> tuple[dict, dict]:
         **envelope_common("real-outcomes"),
     }
     return doc, {"results": results, "eligible": eligible, "champions": champions, "n": n}
+
+
+def build_c11_conformal(loss: list[float], sigma: list[float], n: int, results: dict, eligible: dict) -> dict:
+    """The BS-16 block of the fixture (outputs.conformal): the fixture's own hs-250 forecaster wrapped by the ACI recursion of
+    Gibbs and Candes 2021 (gamma 0.005, band 0.001 to 0.25) over the fixture window, scored beside the unwrapped one. The fixture has
+    one window, so its hypothesis counts that window alone; the numbers are the fixture's, not a result of the product."""
+    gamma, lmin, lmax = 0.005, 0.001, 0.25
+    lag, k, esm = 40, 0.80, 1.00
+    rows, cells, indep = [], [], []
+
+    def forecast(i: int, level: float) -> tuple[float, float]:
+        z = -mm.ND.inv_cdf(level)
+        v = r(k * sigma[max(0, i - lag)] * z)
+        ratio = mm.ND.pdf(mm.ND.inv_cdf(level)) / level / z
+        return v, r(max(v * (1.0 + 1e-6), v * ratio * esm))
+
+    def run(a: float, g: float) -> dict:
+        level, out = a, {"level": [], "var": [], "es": [], "hit": []}
+        for i in range(n):
+            v, e = forecast(i, level)
+            h = loss[i] > v
+            out["level"].append(r(level, 9)), out["var"].append(v), out["es"].append(e), out["hit"].append(h)
+            level = min(max(level + g * (a - float(h)), lmin), lmax)
+        return out
+
+    def score(a: float, o: dict) -> dict:
+        flags = [1 if h else 0 for h in o["hit"]]
+        x = sum(flags)
+        lr = mm.kupiec_lr(n, x, a)
+        kp = mm.chi2_sf(lr, 1)
+        try:
+            li = mm.christoffersen_ind_lr(flags)
+            ip, cp = mm.chi2_sf(li, 1), mm.chi2_sf(lr + li, 2)
+        except (ValueError, ZeroDivisionError):
+            ip = cp = None
+        fz = sum(mm.fz0_loss(loss[i], o["var"][i], o["es"][i], a) for i in range(n)) / n
+        z2 = 1.0 - sum(loss[i] / o["es"][i] for i in range(n) if flags[i]) / (n * a)
+        ok = kp >= 0.05 and cp is not None and cp >= 0.05
+        return {"n_exceedances": x, "expected_exceedances": r(a * n, 9), "hit_rate": r(x / n, 9), "kupiec_p": r(kp, 9),
+                "independence_p": None if ip is None else r(ip, 9), "conditional_coverage_p": None if cp is None else r(cp, 9),
+                "es_test_p": None, "es_test_light": "not_evaluated", "fz0_mean": r(fz, 9), "z2": r(z2, 9),
+                "eligible": kp >= 0.05 and (cp is None or cp >= 0.05), "passes_coverage": ok, "ladder_rank": 1}
+
+    for a in LEVELS:
+        wr, un = run(a, gamma), run(a, 0.0)
+        sw, su = score(a, wr), score(a, un)
+        change = (sw["fz0_mean"] - su["fz0_mean"]) / abs(su["fz0_mean"])
+        lv = wr["level"]
+        rows.append({"model_id": "hs-250", "rung": "R1", "alpha": a, "n_days": n, "unwrapped": su, "wrapped": sw, "fz0_change": r(change, 9),
+                     "n_clipped": sum(1 for x in lv if x <= lmin or x >= lmax), "n_fallback_days": 0,
+                     "working_level": {"min": min(lv), "mean": r(sum(lv) / n, 9), "max": max(lv)},
+                     "series": {"working_level": lv, "var": wr["var"], "es": wr["es"], "exceedance_days": [i for i, h in enumerate(wr["hit"]) if h]}})
+        extra = int(sw["passes_coverage"]) - int(su["passes_coverage"])
+        cells.append({"model_id": "hs-250", "alpha": a, "windows_passed_unwrapped": int(su["passes_coverage"]),
+                      "windows_passed_wrapped": int(sw["passes_coverage"]), "extra_windows": extra, "worst_fz0_change": r(change, 9),
+                      "holds": extra >= 1 and change <= 0.05})
+        indep.append({"model_id": "hs-250", "alpha": a, "independence_p": sw["independence_p"],
+                      "fails": sw["independence_p"] is not None and sw["independence_p"] < 0.05})
+    refuted = any(x["fails"] for x in indep)
+    n_hold = sum(1 for c in cells if c["holds"])
+    holds = n_hold == len(cells) and not refuted
+    verdict = txt(f"Fixture: the hypothesis holds in {n_hold} of {len(cells)} cells of the one fixture window.",
+                  f"Ejemplo: la hipotesis se cumple en {n_hold} de {len(cells)} celdas de la unica ventana del ejemplo.")
+    return {
+        "method": {"id": "BS-16", "tier": "beyond", "title": txt("Adaptive conformal recalibration of the VaR (fixture)", "Recalibracion conforme adaptativa del VaR (ejemplo)"),
+                   "source": "Gibbs and Candes 2021, NeurIPS 34, arXiv 2106.00170", "gamma": gamma, "level_min": lmin, "level_max": lmax,
+                   "first_level": "alpha", "wrapped_models": ["hs-250"],
+                   "description": txt("The working level starts at the target and moves by gamma times the target minus the hit (fixture).",
+                                      "El nivel de trabajo parte del objetivo y se mueve en gamma por el objetivo menos la excedencia (ejemplo).")},
+        "rows": rows,
+        "hypothesis": {
+            "id": "BS-16", "statement": txt("The wrapped model passes in at least one more window than the unwrapped one, without FZ0 worsening by more than 5 percent.",
+                                            "El modelo envuelto aprueba en al menos una ventana mas que sin envolver, sin que el FZ0 empeore mas de 5 por ciento."),
+            "refuted_if": txt("The wrapper fails the independence test in equity-2007-09.", "El envoltorio falla la prueba de independencia en equity-2007-09."),
+            "pass_rule": txt("A window is passed when the Kupiec and the conditional coverage p-values are both at least 0.05.",
+                             "Una ventana se aprueba cuando los valores p de Kupiec y de cobertura condicional son ambos de al menos 0,05."),
+            "run": {"gamma": gamma, "level_min": lmin, "level_max": lmax, "stress_windows": ["rates-2022"], "fz0_tolerance": 0.05,
+                    "pass_p": 0.05, "n_stress_days": n, "n_runs": len(cells)},
+            "cells": cells, "independence_2007_09": indep, "n_cells": len(cells), "n_cells_hold": n_hold, "refuted": refuted,
+            "holds": holds, "verdict": verdict}}
 
 
 def sign_convention() -> dict:

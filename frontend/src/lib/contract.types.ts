@@ -1163,6 +1163,57 @@ export type C04Definition = 'd2' | 'd3' | 'd4' | 'keep';
 
 export type C04AgencyOutputs = components['schemas']['c04AgencyOutputs'];
 
+/** BS-14 on the real cohorts (riskvalidation 1.1.0 transitions.withdrawals): per grade, the anchored k of each annual
+ * cohort and of the pooled cohorts (the default page as the anchor of the transition page), its stability and the
+ * tipping k of the master-scale boundary; null for an agency whose transition page has no default category. */
+export type C04AnchorGrade = components['schemas']['c04AnchorGrade'];
+export type C04AnchorRow = components['schemas']['c04AnchorRow'];
+export type C04AnchorCohortRow = components['schemas']['c04AnchorCohortRow'];
+const C04_ANCHOR_ROW = {
+  defaults: num,
+  survivors: num,
+  withdrawn: num,
+  anchor_defaults: num,
+  anchor_cohort: num,
+  pd_industry: nNum,
+  pd_anchor_rate: nNum,
+  pd_anchored: nNum,
+  pd_lower: nNum,
+  pd_upper: nNum,
+  defaults_implied: nNum,
+  k: nNum,
+  k_low: nNum,
+  k_high: nNum,
+  infinite: { array: 'string' },
+  flag: 'string',
+  reason: 'string',
+} satisfies Record<keyof C04AnchorRow, Kind>;
+const C04_ANCHOR_STUDY = {
+  object: {
+    level: num,
+    stability_share: num,
+    grades: {
+      array: {
+        object: {
+          grade: 'string',
+          cohorts: { array: { object: { label: 'string', ...C04_ANCHOR_ROW } satisfies Record<keyof C04AnchorCohortRow, Kind> } },
+          pooled: { nullable: { object: C04_ANCHOR_ROW } },
+          k_over_cohorts: { nullable: { object: { n: 'integer', median: nNum, q25: nNum, q75: nNum, share_above_1: nNum } } },
+          stability: {
+            nullable: { object: { usable_cohorts: 'integer', cohorts_containing_pooled_k: 'integer', share_cohorts_containing_pooled_k: num, stable: 'boolean' } },
+          },
+          k_above_1: { nullable: { object: { pooled_k: nNum, pooled_k_low: nNum, holds: 'boolean', holds_with_lower_bound: 'boolean' } } },
+          tipping: {
+            nullable: {
+              object: { threshold: num, next_grade: 'string', k: nNum, infinite: { array: 'string' }, decision_industry: 'string', status: 'string', pd_manski_upper: nNum },
+            },
+          },
+        } satisfies Record<keyof C04AnchorGrade, Kind>,
+      },
+    },
+  },
+} as const;
+
 const nNumGrid = { nullable: { array: nNums } } as const;
 export const C04_AGENCY_OUTPUTS = {
   kind: 'string',
@@ -1223,6 +1274,7 @@ export const C04_AGENCY_OUTPUTS = {
   irb: {
     object: { regime: 'string', asset_class: 'string', lgd: num, maturity: num, pd_floor: num, references: { map: 'string' } } satisfies Record<keyof C04Irb, Kind>,
   },
+  withdrawal_bounds: { nullable: C04_ANCHOR_STUDY },
 } satisfies Record<keyof C04AgencyOutputs, Kind>;
 
 /** A harness rate: rejections (or hits) over n repetitions with its Monte Carlo SE and Wilson interval. */
@@ -1262,6 +1314,43 @@ export type C04Simulation = components['schemas']['c04Simulation'];
 export type C04Family = components['schemas']['c04FamilyOutputs']['family'];
 
 export type C04FamilyOutputs = components['schemas']['c04FamilyOutputs'];
+
+/** BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the treatments of
+ * withdrawn ratings and of the anchored interval, per rung, in four designs. */
+export type C04WithdrawalBounds = components['schemas']['c04WithdrawalBounds'];
+export type C04BoundsDesign = components['schemas']['c04BoundsDesign'];
+export type C04BoundsTreatment = components['schemas']['c04BoundsTreatment'];
+export type C04BoundsVerdict = components['schemas']['c04BoundsVerdict'];
+const C04_BOUNDS_DESIGN = {
+  object: {
+    id: 'string',
+    reps: 'integer',
+    cohorts: 'integer',
+    cohort_scale: 'integer',
+    capture: num,
+    seed_key: 'string',
+    seed: 'integer',
+    treatments: {
+      array: { object: { id: 'string', coverage: { array: C04_RATE }, mean_width: nNums, relative_bias: nNums } satisfies Record<keyof C04BoundsTreatment, Kind> },
+    },
+    anchored_k: { object: { median: nNums, q05: nNums, q95: nNums, share_infinite: nums } },
+  } satisfies Record<keyof C04BoundsDesign, Kind>,
+} as const;
+const C04_WITHDRAWAL_BOUNDS = {
+  object: { level: num, truth: nNums, designs: { array: C04_BOUNDS_DESIGN } } satisfies Record<keyof C04WithdrawalBounds, Kind>,
+} as const;
+const C04_BOUNDS_VERDICT = {
+  object: {
+    grade: 'integer',
+    reps: 'integer',
+    level: num,
+    designs: { array: 'string' },
+    rows: {
+      array: { object: { id: 'string', design: 'string', informative: num, treatment: 'string', value: num, mcse: num, threshold: num, comparison: 'string', holds: 'boolean' } },
+    },
+    summary: { object: { refuted: 'boolean', anchored_covers_90: 'boolean', existing_under_50: 'boolean' } },
+  } satisfies Record<keyof C04BoundsVerdict, Kind>,
+} as const;
 
 const C04_RATES = { array: C04_RATE } as const;
 const C04_THREE = (k: Kind) => ({ object: { wald: k, agresti_coull: k, jeffreys: k } }) as const;
@@ -1338,6 +1427,7 @@ const C04_WITHDRAWALS_RUNG = {
     pd_kept: C04_PERFORMANCE,
     pd_followed: C04_PERFORMANCE,
     pd_latent: C04_PERFORMANCE,
+    bounds: C04_WITHDRAWAL_BOUNDS,
   } satisfies Record<keyof C04WithdrawalsRung, Kind>,
 } as const;
 const C04_THIN_RUNG = {
@@ -1363,6 +1453,7 @@ export const C04_FAMILY_OUTPUTS = {
       object: { key: 'string', test_id: 'string', rung: nNum, rates: { map: C04_RATE }, seed: 'integer', n_rep: 'integer' } satisfies Record<keyof C04Simulation, Kind>,
     },
   },
+  bounds_verdict: { nullable: C04_BOUNDS_VERDICT },
 } satisfies Record<keyof C04FamilyOutputs, Kind>;
 
 /** A printed value beside its recomputation; the bake stops unless they agree (contract section 3). */

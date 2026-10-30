@@ -3,7 +3,9 @@
 ``estimate`` draws the history of a seed, removes the losses below the collection threshold, and returns the 99.9 percent capital of
 each rung of the ladder (Poisson-lognormal LDA that ignores the threshold, the truncated lognormal LDA, the lognormal body and GPD
 tail splice, the single loss approximation with and without the UNVERIFIED mean correction, and the scenario combination by
-Bayesian credibility), the tail-index profile, and the standardised approach (loss component, ILM, ORC) with the business
+Bayesian credibility), the four rungs of S-3 of the method tiers plan (the GPD fitted by maximum likelihood, by minimum
+Cramer-von Mises distance and by the optimally bias-robust estimator, each through the mean-adjusted single loss approximation, and
+the lognormal fitted by Cramer-von Mises as the misspecified control), the tail-index profile, and the standardised approach (loss component, ILM, ORC) with the business
 indicator of the synthetic bank. Every number is returned by ``riskvalidation``; a rung the engine refuses (a ValueError, a fit
 that did not converge) is NaN with the reason counted, never a placeholder number.
 """
@@ -15,6 +17,7 @@ from typing import Any
 import numpy as np
 from riskvalidation.oprisk import aggregate as agg
 from riskvalidation.oprisk import distributions as dist
+from riskvalidation.oprisk import robust
 from riskvalidation.oprisk import scenarios as scen
 from riskvalidation.oprisk import sla, sma
 
@@ -23,7 +26,8 @@ from . import params as P
 from .generator import Recorded, Variant, draw_history, expected_count_above
 
 NAN = float("nan")
-RUNGS = ("lda_lognormal", "lda_lognormal_truncated", "lda_splice", "sla", "sla_mean_corrected", "scenario")
+RUNGS = ("lda_lognormal", "lda_lognormal_truncated", "lda_splice", "sla", "sla_mean_corrected", "scenario",
+         "sla_mean_adjusted", "sla_cvm", "sla_obre", "sla_cvm_lognormal")
 MIN_LOSSES = 20  # fewer recorded losses than this and no rung is fitted: the replication is counted as failed
 EXPECTED = (ValueError, FloatingPointError, OverflowError, ZeroDivisionError, np.linalg.LinAlgError)
 
@@ -89,6 +93,31 @@ def _lognormal_truncated(rec: Recorded, lam: float) -> tuple[Any, float]:
     if not fit.converged:
         raise ValueError("the truncated lognormal fit did not converge")
     return fit, guard_rescale(lam, dist.rescale_frequency(lam, "lognormal", fit.params, rec.threshold_eur))
+
+
+def mean_adjusted_capital(lam: float, law: str, params: tuple[float, ...]) -> float:
+    """Rungs 7 to 10: the mean-adjusted single loss approximation of the engine at the case's level (an infinite mean is refused)."""
+    return _finite(robust.sla_var_mean_adjusted(lam, law, params, P.LEVEL).var)
+
+
+def robust_gpd_capital(rec: Recorded, lam: float, method: str) -> float:
+    """The GPD above the collection threshold fitted by the engine's minimum Cramer-von Mises distance (``cvm``) or optimally bias-robust
+    (``obre``, at ``P.OBRE_EFFICIENCY``) estimator on the recorded losses, then its mean-adjusted single loss approximation."""
+    fit = (robust.fit_severity_cvm("gpd", rec.amounts, rec.threshold_eur) if method == "cvm"
+           else robust.fit_severity_obre("gpd", rec.amounts, rec.threshold_eur, P.OBRE_EFFICIENCY))
+    if not fit.converged:
+        raise ValueError(f"the {method} fit did not converge")
+    return mean_adjusted_capital(lam, "gpd", (fit.params[0], fit.params[1], rec.threshold_eur))
+
+
+def robust_lognormal_capital(rec: Recorded, lam: float) -> float:
+    """The control that does not match the generator: the lognormal fitted by minimum Cramer-von Mises distance above the threshold, the
+    frequency rescaled by the engine, then the mean-adjusted single loss approximation."""
+    fit = robust.fit_severity_cvm("lognormal", rec.amounts, rec.threshold_eur)
+    if not fit.converged:
+        raise ValueError("the lognormal Cramer-von Mises fit did not converge")
+    lam_full = guard_rescale(lam, dist.rescale_frequency(lam, "lognormal", fit.params, rec.threshold_eur))
+    return mean_adjusted_capital(lam_full, "lognormal", fit.params)
 
 
 def scenario_capital(rec: Recorded, lam: float, splice: dist.SpliceFit, prior: scen.GammaPrior) -> float:
@@ -175,6 +204,13 @@ def estimate(v: Variant, seed: int, years: int, threshold: float, bi: float, pri
         if not v.infinite_mean:  # a tail index of 1 or more: no mean correction is attempted (CT-1711)
             q = run("sla_mean_corrected", lambda: _finite(sla.sla_var_mean_corrected(lam, "gpd", par, P.LEVEL).var))
             out["sla_mean_corrected"] = NAN if q is None else q
+        q = run("sla_mean_adjusted", lambda: mean_adjusted_capital(lam, "gpd", par))
+        out["sla_mean_adjusted"] = NAN if q is None else q
+    for name, method in (("sla_cvm", "cvm"), ("sla_obre", "obre")):
+        q = run(name, lambda m=method: robust_gpd_capital(rec, lam, m))
+        out[name] = NAN if q is None else q
+    q = run("sla_cvm_lognormal", lambda: robust_lognormal_capital(rec, lam))
+    out["sla_cvm_lognormal"] = NAN if q is None else q
     prof = run("tail_profile", lambda: dist.tail_index_profile(amounts, threshold * np.array(P.STABILITY_MULTIPLES), min_exceedances=10))
     if prof is not None:
         out["xi"], out["n_exceed"] = np.where(prof.converged, prof.xi, NAN), prof.n_exceedances.astype(float)

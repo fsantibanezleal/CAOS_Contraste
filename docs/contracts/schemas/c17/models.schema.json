@@ -424,7 +424,11 @@
             "lda-splice",
             "sla",
             "sla-mean-corrected",
-            "scenario"
+            "scenario",
+            "sla-mean-adjusted",
+            "sla-cvm",
+            "sla-obre",
+            "sla-cvm-lognormal"
           ]
         },
         "label": {
@@ -456,7 +460,8 @@
           "type": "string",
           "enum": [
             "verified",
-            "UNVERIFIED"
+            "UNVERIFIED",
+            "SECONDARY_SOURCE"
           ]
         },
         "reference": {
@@ -490,6 +495,22 @@
             },
             "status": {
               "const": "UNVERIFIED"
+            }
+          }
+        },
+        {
+          "properties": {
+            "rung_id": {
+              "type": "string",
+              "enum": [
+                "sla-mean-adjusted",
+                "sla-cvm",
+                "sla-obre",
+                "sla-cvm-lognormal"
+              ]
+            },
+            "status": {
+              "const": "SECONDARY_SOURCE"
             }
           }
         }
@@ -870,7 +891,7 @@
             "$ref": "#/$defs/c17Rung"
           },
           "minItems": 6,
-          "maxItems": 6
+          "maxItems": 10
         },
         "aggregation": {
           "$ref": "#/$defs/c17Aggregation"

@@ -12,7 +12,7 @@ import { conform, type ModelsArtifact, type VariantArtifact } from '../../lib/co
 import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, setLang } from '../c03/u6-testkit';
 import { C17_FIT, C17_OUTPUTS } from './descriptor';
 import { useC17Instrument } from './instrument';
-import { defaultSel, outputsOf, type C17Sel } from './selection';
+import { RUNG_ORDER, defaultSel, outputsOf, type C17Sel } from './selection';
 import { C17ContextView, C17FindingsView, C17VariantsTable, RungReadout, ScenarioReadout, ThresholdReadout, YearsReadout } from './C17Common';
 import { ByMethodView, ByYearsView, ScenarioView } from './CapitalViews';
 import { ExceedanceView, TailIndexView, exceedanceChart, stabilityChart } from './LossViews';
@@ -320,7 +320,7 @@ describe('the C17 rail', () => {
     expect(railHtml(1)).toMatch(/data-control="c17-threshold"[^>]*><span[^>]*>Collection threshold<\/span><div class="caos-chip-row"/);
     expect(railHtml(2)).toMatch(/data-control="c17-rung"[^>]*><label[^>]*>Method<\/label><select/);
     expect(railHtml(3)).toMatch(/data-control="c17-scenario"[^>]*><label[^>]*>Scenario<\/label><select/);
-    expect(railHtml(2).match(/<option/g)?.length).toBe(6);
+    expect(railHtml(2).match(/<option/g)?.length).toBe(RUNG_ORDER.length); // the six rungs and the four S-3 rungs
     expect(railHtml(3).match(/<option/g)?.length).toBe(o.scenario_influence.scenarios.length);
     expect(railHtml(2)).not.toContain('>lda-splice<');
     expect(railHtml(3)).not.toContain('>S1<');

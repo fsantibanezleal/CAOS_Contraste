@@ -1,6 +1,6 @@
 """The result tables of ``docs/cases/C17.md``, generated from the committed documents (CT-1715), and the claims check.
 
-``python data-pipeline/pipeline/cases/c17/page.py`` rewrites the block between the two markers of the case page from
+``python -m pipeline.cases.c17.page`` (run from ``data-pipeline``) rewrites the block between the two markers of the case page from
 ``data/derived/C17``; the test compares the page's block with ``results_block`` so the page cannot drift from the documents.
 """
 from __future__ import annotations
@@ -8,6 +8,9 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+
+from . import params as P
+from .documents import S3_NAME, S3_RUNGS, s3_counts, s3_verdict
 
 MARK_START = "<!-- c17-results:start -->"
 MARK_END = "<!-- c17-results:end -->"
@@ -43,6 +46,40 @@ def _m(x: float) -> str:
     return f"{x / 1e6:,.1f}"
 
 
+def _s3_block(derived: Path) -> str:
+    """S-3 of the method tiers plan: the robust rungs beside the splice LDA, and the verdict on the hypothesis written before the bake."""
+    head = ("| Tail index | Years | Threshold (EUR) | Splice LDA | Mean-adjusted SLA, GPD by likelihood | Cramer-von Mises GPD | "
+            "Optimally bias-robust GPD | Cramer-von Mises lognormal (control) |")
+    rows = [head, "|" + "---|" * 8]
+
+    def cell(s: dict | None, n: int) -> str:
+        if s is None:
+            return "none"
+        r = s["ratio_to_truth"]
+        defined = "" if s["n_defined"] == n else f", n={s['n_defined']}"
+        return f"{r['median']:.2f} ({s['iqr_over_truth']:.2f}{defined})"
+
+    caps = []
+    for doc in _docs(derived):
+        o = doc["outputs"]
+        for c in o["cells"]:
+            cap = c["capital"]
+            n = c["replications"]["n_replications"]
+            caps.append({"lda_splice": cap["lda_splice"], **{k: cap[k]["summary"] for k, _ in S3_RUNGS}})
+            rows.append(f"| {o['tail_index']:g} | {c['years']} | {c['collection_threshold_eur']:,} | {cell(cap['lda_splice'], n)} | "
+                        + " | ".join(cell(cap[k]["summary"], n) for k, _ in S3_RUNGS) + " |")
+    lines = []
+    for key, mid in S3_RUNGS[1:3]:
+        n, sp, bi = s3_counts(caps, key)
+        lines.append(f"- {S3_NAME[mid]['en']}: smaller spread than the splice LDA in {sp} of {n} cells, smaller bias in {bi} of {n}: "
+                     f"hypothesis **{s3_verdict(n, sp, bi)}**.")
+    h = P.S3_HYPOTHESIS
+    return ("### S-3, the robust severity rungs\n\n" + "\n".join(rows) + "\n\n"
+            "Each cell is the median ratio of the 99.9 percent capital to the true quantile and, in brackets, the interquartile range of that ratio; "
+            "n is the number of histories with a capital when it is below the number of histories.\n\n"
+            f"Hypothesis, written before the bake: {h['statement']['en']}\n\n" + "\n".join(lines) + "\n")
+
+
 def results_block(derived: Path) -> str:
     models = _models(derived)
     head1 = "| Tail index | Frequency (losses a year from EUR 10,000) | Scale (EUR) | True 99.9 percent quantile (EUR m) | True mean (EUR m) | LDCE fit, largest log error |"
@@ -73,11 +110,12 @@ def results_block(derived: Path) -> str:
             rows2.append(f"| {o['tail_index']:g} | {c['years']} | {c['collection_threshold_eur']:,} | {cell(cap['lda_lognormal_truncated'], n)} | "
                          f"{cell(cap['lda_splice'], n)} | {cell(cap['lda_lognormal'], n)} | {cell(cap['sla'], n)} | {cell(cap['scenario']['summary'], n)} | "
                          f"{sma['median']:.2f} ({sma['p25']:.2f} to {sma['p75']:.2f}) |")
+    s3 = _s3_block(derived)
     n = models["fit"]["grid"]["n_replications_per_cell"]
     note = (f"Each cell is the median of the 99.9 percent capital over {n} independent histories as a multiple of the true quantile, "
             "with the first and third quartiles in brackets; n is the number of histories on which the engine returned the capital when it is "
             "below the number of histories.")
-    return "\n".join(rows1) + "\n\n" + "\n".join(rows2) + "\n\n" + note + "\n"
+    return "\n".join(rows1) + "\n\n" + "\n".join(rows2) + "\n\n" + note + "\n\n" + s3
 
 
 def write(page_path: Path, derived: Path) -> None:

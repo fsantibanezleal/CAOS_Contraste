@@ -70,7 +70,8 @@ RUNG_KEYS = {
     "cycle": {"value", "seed_key", "seed", "stressed_period", "pd_true_base", "pd_true_stressed", "pd_true_average",
               "pd_stressed_year", "pd_lra", "pd_pooled"},
     "withdrawals": {"value", "seed_key", "seed", "withdrawal_rate", "window", "truncation_verified",
-                    "withdrawn_obligors_mean", "withdrawn_share", "pd_removed", "pd_kept", "pd_followed", "pd_latent"},
+                    "withdrawn_obligors_mean", "withdrawn_share", "pd_removed", "pd_kept", "pd_followed", "pd_latent",
+                    "bounds"},
     "thin": {"value", "level", "expected_defaults", "coverage", "length", "overlap_jeffreys"},
 }
 TH, ORDER, REF, MOM = "rating.time_homogeneity", "rating.markov_order", "rating.matrix_reference", "rating.momentum"
@@ -137,7 +138,9 @@ def test_contract_keys_of_every_family(outputs):
     rungs, the per-rung quantities by grade (the fitted momentum coefficient a scalar), and C22-style simulation rows
     seeded by the rung's key."""
     for f, out in outputs.items():
-        assert set(out) == {"kind", "family", "generator", "design", "ladder", "rungs", "simulations"}, f
+        assert set(out) == {"kind", "family", "generator", "design", "ladder", "rungs", "simulations",
+                            "bounds_verdict"}, f
+        assert (out["bounds_verdict"] is not None) == (f == "withdrawals"), f
         assert out["kind"] == "generator" and out["family"] == f
         g = out["generator"]
         assert set(g) == {"q", "pd_1y", "pd_5y", "obligors", "source"} and g["obligors"] == OBLIGORS

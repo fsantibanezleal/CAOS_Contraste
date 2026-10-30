@@ -45,6 +45,7 @@ REPLICATION_GRID_POINTS = 4096  # Panjer/FFT points of one replication; the step
 FFT_PADDING = 2
 SPLICE_THRESHOLD_EUR = 100_000.0  # the splice threshold of rung 3 and the tail threshold of the scenario rung (a policy parameter of the caller)
 STABILITY_MULTIPLES: tuple[float, ...] = (1.0, 2.0, 4.0, 8.0)  # the tail-index profile thresholds, as multiples of the collection threshold
+OBRE_EFFICIENCY = 0.95  # the asymptotic efficiency of the optimally bias-robust fit (the usual choice; S-3 of the method tiers plan)
 N_BOOTSTRAP = 100  # the scenario prior's parametric bootstrap (the engine default is 1000)
 PRIOR_SEEDS = 100  # the bootstrap seed is the first of 0 .. PRIOR_SEEDS - 1 whose refits all lie inside the search bounds of the engine
 SCENARIO_CELL = "y10-h20000"
@@ -151,7 +152,39 @@ LADDER: list[dict[str, Any]] = [{'rung_id': 'lda-lognormal',
   'truncated': True,
   'aggregation': 'panjer',
   'status': 'verified',
-  'reference': 'dossier 05 F.5, Shevchenko and Wüthrich (2006)'}]
+  'reference': 'dossier 05 F.5, Shevchenko and Wüthrich (2006)'},
+ {'rung_id': 'sla-mean-adjusted',
+  'label': {'en': 'Mean-adjusted single loss approximation, GPD by maximum likelihood',
+            'es': 'Aproximación de una pérdida con ajuste por media, GPD por máxima verosimilitud'},
+  'severity_law': 'gpd',
+  'truncated': True,
+  'aggregation': 'closed-form',
+  'status': 'SECONDARY_SOURCE',
+  'reference': 'S-3 of the method tiers plan; riskvalidation.oprisk.robust.sla_var_mean_adjusted, the form of arXiv 1607.02319 (Degen 2010); the primary text of Opdyke and Cavallo (2012) was not read'},
+ {'rung_id': 'sla-cvm',
+  'label': {'en': 'Robust GPD by minimum Cramer-von Mises distance, mean-adjusted single loss approximation',
+            'es': 'GPD robusta por distancia mínima de Cramér-von Mises, aproximación de una pérdida con ajuste por media'},
+  'severity_law': 'gpd',
+  'truncated': True,
+  'aggregation': 'closed-form',
+  'status': 'SECONDARY_SOURCE',
+  'reference': 'S-3 of the method tiers plan; Opdyke and Cavallo (2012), J. Operational Risk 7(3), as implemented in riskvalidation.oprisk.robust.fit_severity_cvm'},
+ {'rung_id': 'sla-obre',
+  'label': {'en': 'Optimally bias-robust GPD at 95 percent efficiency, mean-adjusted single loss approximation',
+            'es': 'GPD óptimamente robusta al sesgo con eficiencia de 95 por ciento, aproximación de una pérdida con ajuste por media'},
+  'severity_law': 'gpd',
+  'truncated': True,
+  'aggregation': 'closed-form',
+  'status': 'SECONDARY_SOURCE',
+  'reference': 'S-3 of the method tiers plan; Hampel, Ronchetti, Rousseeuw and Stahel (1986) section 4.2, as used by Opdyke and Cavallo (2012), riskvalidation.oprisk.robust.fit_severity_obre'},
+ {'rung_id': 'sla-cvm-lognormal',
+  'label': {'en': 'Robust lognormal by minimum Cramer-von Mises distance, mean-adjusted single loss approximation (control)',
+            'es': 'Lognormal robusta por distancia mínima de Cramér-von Mises, aproximación de una pérdida con ajuste por media (control)'},
+  'severity_law': 'lognormal-truncated',
+  'truncated': True,
+  'aggregation': 'closed-form',
+  'status': 'SECONDARY_SOURCE',
+  'reference': 'S-3 of the method tiers plan; the severity family the generator does not draw from, as the control of the robust GPD rungs'}]
 
 SMA_SPEC: dict[str, Any] = {'currency': 'EUR',
  'buckets': [{'bucket': 1, 'upper_eur': 1000000000.0, 'coefficient': 0.12},
@@ -190,3 +223,23 @@ SCENARIO_SPEC: dict[str, Any] = {'methods': ['pseudo-observations', 'body-tail',
                       'the history (decision D6); the bootstrap seed is the first of 0 to 99 whose 100 refits all lie inside the search '
                       'bounds of the engine'},
  'reference': 'dossier 05 F.5; Shevchenko and Wüthrich (2006), J. Operational Risk 1(3):3-26'}
+
+#: S-3 of the method tiers plan, written before the bake. A robust rung is better than the splice LDA in a cell on SPREAD when its interquartile
+#: range of capital over the true quantile is smaller, and on BIAS when the absolute log of its median ratio to the truth is smaller. Over the 16
+#: cells (4 tail indices x 4 cells) the hypothesis holds for a rung when both counts reach ``holds_at_share`` of the cells where both rungs have a
+#: capital, is refuted when either falls below ``refuted_below_share``, and is inconclusive between the two. The thresholds are the case's choice;
+#: the plan states none. Reported whichever way it falls.
+S3_HYPOTHESIS: dict[str, Any] = {
+    "rungs": ["sla-cvm", "sla-obre"],
+    "against": "lda-splice",
+    "holds_at_share": 0.75,
+    "refuted_below_share": 0.5,
+    "statement": {
+        "en": "The Cramer-von Mises and the optimally bias-robust fits of the GPD, through the mean-adjusted single loss approximation, have a smaller "
+              "interquartile range of capital over the true quantile and a median ratio nearer to 1 than the splice LDA in at least 75 percent of the "
+              "cells; the hypothesis is refuted when either count is under 50 percent.",
+        "es": "Los ajustes de Cramér-von Mises y óptimamente robusto al sesgo de la GPD, con la aproximación de una pérdida con ajuste por media, tienen un "
+              "rango intercuartil del capital sobre el cuantil verdadero menor y una razón mediana más cercana a 1 que el LDA con empalme en al menos 75 por "
+              "ciento de las celdas; la hipótesis se refuta cuando cualquiera de los dos conteos queda bajo 50 por ciento.",
+    },
+}

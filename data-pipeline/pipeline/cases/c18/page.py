@@ -27,6 +27,53 @@ def _case(o: dict[str, Any], name: str) -> dict[str, Any]:
     return next(c for c in o["capital_plan"]["cases"] if c["case"] == name)
 
 
+def _record(models: dict[str, Any], mid: str) -> dict[str, Any] | None:
+    return next((r for r in models.get("model", []) if r["id"] == mid), None)
+
+
+def rungs_lines(models: dict[str, Any]) -> list[str]:
+    """The section of the two state-of-the-art stress rungs (plan S-2): every figure is read from the details of their model records."""
+    var, gar = _record(models, "c18-var-conditional-forecast"), _record(models, "c18-growth-at-risk")
+    if var is None or gar is None:
+        return []
+    d, g, acc = var["details"], gar["details"]["growth_at_risk"], var["details"]["acceptance"]
+    out = ["### The state-of-the-art stress rungs beside the OLS satellites: VAR conditional forecast and growth-at-risk", ""]
+    out.append(f"Two windows are back-cast on data that ends before each episode: the global financial crisis (fit to 2007 Q4, 2008 Q1 to 2009 Q4) and the pandemic window "
+               f"(fit to 2019 Q4, 2020 Q1 to 2025 Q4). The OLS satellite is refitted on the same span and back-cast over the same quarters. {d['statement']['en']} "
+               f"The acceptance criterion of the plan (back-cast through both episodes on prior data, beside the OLS satellites, with the coefficient-sign checks) is "
+               f"{'met' if acc['met'] else 'not met'}: the fits are leak-free ({acc['leak_free']}) and complete ({acc['complete']}).")
+    out.append("")
+    out.append("The VAR (real GDP growth, unemployment, linked charge-off rate; one lag) is given the realised GDP growth path alone; unemployment and the rate respond through "
+               "the system. Given both macro paths its conditional forecast is the OLS satellite's own regression (the largest gap in the run is "
+               f"{max(r['full_conditioning_gap_to_ols'] for w in d['var']['windows'] for r in w['per_loan_type']):.1e}), so that form adds no model.")
+    out.append("")
+    out.append("| Window | Fed loan type | RMSE OLS | RMSE VAR | VAR over OLS | Closer | Peak realised (quarter) | Peak OLS | Peak VAR | Wrong VAR signs |")
+    out.append("|---|---|---:|---:|---:|---|---|---:|---:|---:|")
+    for w in d["var"]["windows"]:
+        for r in w["per_loan_type"]:
+            m = r["metrics"]
+            out.append(f"| {w['window_id']} | {r['fed_loan_type']} | {pct(m['ols']['rmse'], 3)} | {pct(m['var']['rmse'], 3)} | {m['rmse_ratio_var_over_ols']:.2f} | {r['closer']} | "
+                       f"{pct(m['var']['peak_realised'], 2)} ({m['var']['peak_realised_quarter']}) | {pct(m['ols']['peak_predicted'], 2)} | {pct(m['var']['peak_predicted'], 2)} | "
+                       f"{r['sign_check']['wrong_signs']} of {len(r['coefficients'])} |")
+    out.append("")
+    out.append(f"Sign checks: {acc['var_wrong_signs']} of {acc['var_sign_checks']} VAR fits and {acc['gar_wrong_signs']} of {acc['gar_sign_checks']} growth-at-risk quantile fits carry a "
+               "coefficient of the wrong sign; the expected signs were declared before the fits.")
+    out.append("")
+    out.append("Growth-at-risk: quantile regressions of the average real GDP growth over the next four quarters on the current growth and the term spread (10-year Treasury yield "
+               "less the prime rate, standing in for the Chicago Fed financial conditions index, which is not one of the case's agency series), scored on rolling origins "
+               "beside the unconditional quantiles of the same fit span.")
+    out.append("")
+    out.append("| Window | Origins | Mean pinball loss over the unconditional | Below the 5 percent quantile | Below the median | Below the 95 percent quantile | First origin: 5 percent quantile | Realised | Below it |")
+    out.append("|---|---:|---:|---:|---:|---:|---:|---:|---|")
+    for w in g["windows"]:
+        cv = {c["tau"]: c for c in w["coverage"]}
+        fo = w["first_origin"]
+        out.append(f"| {w['window_id']} | {len(w['origins'])} | {w['mean_pinball_ratio']:.2f} | {cv[0.05]['hits']} of {cv[0.05]['n']} | {cv[0.5]['hits']} of {cv[0.5]['n']} | "
+                   f"{cv[0.95]['hits']} of {cv[0.95]['n']} | {fo['growth_at_risk_5']:.2f} | {fo['realised']:.2f} | {'yes' if fo['below_growth_at_risk'] else 'no'} |")
+    out.append("")
+    return out
+
+
 def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -> str:
     lines: list[str] = []
     w = lines.append
@@ -105,6 +152,8 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
           f"{pct(b['rmse'], 3)} | {pct(b['peak_predicted'], 2)} ({b['peak_predicted_quarter']}) | {pct(b['peak_realised'], 2)} ({b['peak_realised_quarter']}) | "
           f"{b['peak_timing_error_quarters']} |")
     w("")
+    for line in rungs_lines(models):
+        w(line)
     w("### Reverse stress")
     w("")
     if "reverse-stress" in variants:

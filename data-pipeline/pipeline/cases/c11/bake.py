@@ -29,7 +29,7 @@ from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import documents as docs
 from . import forecast as fc
-from . import hyper, portfolio as pf, quantile_net as qn, readers
+from . import conformal as cf, hyper, portfolio as pf, quantile_net as qn, readers
 from ._case import C11, SOURCES
 from .constants import CASE_ID, SEED, WINDOWS
 from .forecast import Hyper
@@ -164,6 +164,11 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
     ports = {w.window_id: pf.build(w.window_id, series) for w in windows}
     jobs = {wid: (p.returns, pf.forecast_positions(p, limit)) for wid, p in ports.items()}
     runs = fc.forecast_windows(jobs, hp, Path(cache_dir), ENGINE_PIN, model_ids, workers, _log, net)
+    # BS-16: the three wrapped models in every window, when the bake has the whole ladder to compare with (a partial bake leaves the key out)
+    wrapped = None
+    if len(windows) == len(WINDOWS) and (model_ids is None or all(m in model_ids for m in cf.WRAPPED)):
+        wrapped = cf.wrap_windows({wid: (ports[wid].returns, pf.forecast_positions(ports[wid], limit)) for wid in ports}, hp, Path(cache_dir),
+                                  ENGINE_PIN, cf.WRAPPED, workers, _log)
     lineage = _lineage(series, seed)
     root = Path(output_root)
     entries: list[dict[str, Any]] = []
@@ -183,9 +188,17 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
         entries.append({"role": "models", "variant_id": "models-ladder", "truth_status": "real-outcomes",
                         "title": _t("Fitted ladder", "Escalera ajustada"), "short_title": _t("Models", "Modelos"), "regime": regime,
                         "path": rel_m, "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
+    built = {w.window_id: docs.build_window(ports[w.window_id], runs[w.window_id], hp, code_version=__version__, engine_version=ev, model_ids=model_ids,
+                                            mc_draws=mc_draws, z2_draws=z2_draws, limit=limit, net=net,
+                                            conformal=None if wrapped is None else wrapped[w.window_id]) for w in windows}
+    if wrapped is not None:
+        verdict = cf.hypothesis({wid: built[wid]["outputs"]["conformal"]["rows"] for wid in cf.STRESS_WINDOWS},
+                                {wid: built[wid]["outputs"]["window"]["n_forecast_days"] for wid in cf.STRESS_WINDOWS})
+        for d in built.values():
+            d["outputs"]["conformal"]["hypothesis"] = verdict
+        _log(f"BS-16: {verdict['verdict']['en']}")
     for w in windows:
-        d = docs.build_window(ports[w.window_id], runs[w.window_id], hp, code_version=__version__, engine_version=ev, model_ids=model_ids,
-                           mc_draws=mc_draws, z2_draws=z2_draws, limit=limit, net=net)
+        d = built[w.window_id]
         art = build_artifact(case_id=CASE_ID, variant_id=w.window_id, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                              impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
         rel = f"{CASE_ID}/{w.window_id}.json"

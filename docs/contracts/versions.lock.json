@@ -35,14 +35,14 @@
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
   },
   "c04-agency": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c04/variant-agency.schema.json",
-    "sha256": "a512a765ff42381e54e146ecd9bc82f9b27b9451e716f0952c7a54223c926086"
+    "sha256": "05681a6c1fdaa09a4936cbe64d8a62ec253233258a92d34143aaf055943628c5"
   },
   "c04-family": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c04/variant-generator.schema.json",
-    "sha256": "2a2eadd1c6be8382515d8f9f8bd70c28bb459e3457956983e81dd46ac225d819"
+    "sha256": "dc428e7ec132059404782284e570a3d18de69b75f3b46d8f47448580e4228cec"
   },
   "c04-published": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "29.0.0",
+    "version": "33.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "4f47b774749ad3a2c1ec88ad7dca24ad61980936662e8b3771a28b338897fbfe"
+    "sha256": "aa3521d5c55dd85825ef457a4c1e3b85c07e0ae797fce9ea13e843daf8fe8053"
   },
   "readiness": {
     "version": "1.0.1",
@@ -210,14 +210,14 @@
     "sha256": "60e36cb79dcc1c24ffd6a8ba355276af7c91581ea0697dd4fd7fc85e2e5e6e26"
   },
   "c17-outputs": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/schemas/c17/variant-tail-index.schema.json",
-    "sha256": "38b4d4fc6d7a9f47b011f2ec3c985fdb49e48a257cfd793b9ffda39e4b3f368d"
+    "sha256": "94187508bf4fc8fdc1e7f1060f0fbfc73600ff690a8e2ba0798dd1947bb93f12"
   },
   "c17-models": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c17/models.schema.json",
-    "sha256": "44d7b9377413eaa4c2afdce97b6027860f3f61ff4bb6dffbf479d0cade495d27"
+    "sha256": "61dfb7e83b22d061340cd740f791da08595c43676a26bb5d813687b112730d48"
   },
   "engine-oprisk-api": {
     "version": "1.0.0",
@@ -245,9 +245,9 @@
     "sha256": "573446ba124f06b12747a12efc64e53861d3dfde024aaf3b56449b526f9f138a"
   },
   "c11-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c11/variant-window.schema.json",
-    "sha256": "267de553b529efd730a2d2ee6b92b22aab2e5d3edd505d75381fac2cec75854d"
+    "sha256": "bda897c763daee085dda9f25444fed8fd2316d401f14c6ca35591212ccf8c3f8"
   },
   "c11-models": {
     "version": "1.0.0",
@@ -255,9 +255,9 @@
     "sha256": "4aeb37448b9f0845d61361f1281aebfa149764e8d13753911a8bbfcee3d78bb0"
   },
   "c13-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c13/variant-deficiency.schema.json",
-    "sha256": "11a8f537a4ac25693583ceb50260870677fb933456574f72536b8e6174867222"
+    "sha256": "cf7cf042f75c14a0b930cc23e5f50c3cfa5e472fe9d1c483cb3426a7adc79769"
   },
   "c13-models": {
     "version": "1.0.0",
