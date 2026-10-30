@@ -11,6 +11,8 @@ from pathlib import Path
 
 MARK_START = "<!-- c13-results:start -->"
 MARK_END = "<!-- c13-results:end -->"
+COMPLEMENT_START = "<!-- c13-complement:start -->"
+COMPLEMENT_END = "<!-- c13-complement:end -->"
 NEGATION = re.compile(r"\b(not|no|never|without|hypothetical|synthetic|neither|nor)\b", re.IGNORECASE)
 REAL = re.compile(r"\breal\b.*\b(desks?|books?|banks?|portfolios?|traders?)\b|\b(desks?|books?|banks?|portfolios?)\b.*\breal\b", re.IGNORECASE)
 
@@ -51,11 +53,49 @@ def results_block(derived: Path) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _r(r: dict) -> str:
+    return f"{r['rate']:.1%} ({r['k']}/{r['n']})"
+
+
+def complement_block(derived: Path) -> str:
+    """The BS-13 tables of the page (the complement per variant, the lag ladder, the power by size) and the plan's verdict, all from the documents."""
+    docs = _docs(derived)
+    head = ("| Variant | Regulatory PLA, amber or red | Wald, 1% | Abs. Spearman, 1% | Rolling Spearman, 1% | Any of the three, 1% each | "
+            "Any, 1% for the union | Union or PLA | Wald against KS alone |")
+    lines = [head, "|" + "---|" * 9]
+    for doc in docs:
+        o = doc["outputs"]
+        c = o["pla_complement"]
+        f = c["flags"]
+        ks = c["against_ks"]
+        lines.append(f"| {o['known_deficiency']['deficiency_id']} | {_r(f['pla_amber_or_red'])} | {_r(f['per_statistic']['wald'])} | "
+                     f"{_r(f['per_statistic']['spearman_abs'])} | {_r(f['per_statistic']['spearman_roll'])} | {_r(f['per_statistic']['any'])} | "
+                     f"{_r(f['family']['any'])} | {_r(f['family_with_pla'])} | "
+                     f"{'n/a' if ks is None else str(ks['wald_flagged']) + ' against ' + str(ks['ks_flagged'])} |")
+    stale = next(d for d in docs if d["outputs"]["known_deficiency"]["deficiency_id"] == "stale-volatility")["outputs"]["pla_complement"]
+    lines += ["", "| Lag (days) | Regulatory PLA | Wald, 1% | Abs. Spearman, 1% | Rolling Spearman, 1% | Any, 1% for the union |", "|" + "---|" * 6]
+    for r in stale["lag_ladder"]:
+        ps = r["per_statistic"]
+        lines.append(f"| {r['lag_days']} | {_r(r['pla_amber_or_red'])} | {_r(ps['wald'])} | {_r(ps['spearman_abs'])} | {_r(ps['spearman_roll'])} | "
+                     f"{_r(r['family_any'])} |")
+    lines += ["", "| Size per statistic | Rolling Spearman power | Rolling Spearman false alarms | Wald power | Wald false alarms |", "|" + "---|" * 5]
+    for r in stale["by_size"]:
+        lines.append(f"| {r['size']:.1%} | {r['spearman_roll']['rate']:.1%} | {r['spearman_roll_held_out']['rate']:.1%} | "
+                     f"{r['wald']['rate']:.1%} | {r['wald_held_out']['rate']:.1%} |")
+    h = stale["hypothesis"]
+    lines += ["", f"Verdict of the plan's hypothesis (`{h['verdict']}`): {h['reading']['en']}"]
+    return "\n".join(lines) + "\n"
+
+
 def write(page_path: Path, derived: Path) -> None:
     text = page_path.read_text(encoding="utf-8")
     head, rest = text.split(MARK_START, 1)
-    tail = rest.split(MARK_END, 1)[1]
-    page_path.write_text(f"{head}{MARK_START}\n{results_block(derived)}{MARK_END}{tail}", encoding="utf-8", newline="\n")
+    _, rest = rest.split(MARK_END, 1)
+    between, rest = rest.split(COMPLEMENT_START, 1)
+    tail = rest.split(COMPLEMENT_END, 1)[1]
+    page_path.write_text(
+        f"{head}{MARK_START}\n{results_block(derived)}{MARK_END}{between}{COMPLEMENT_START}\n{complement_block(derived)}{COMPLEMENT_END}{tail}",
+        encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":
