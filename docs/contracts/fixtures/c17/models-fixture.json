@@ -241,7 +241,7 @@
         "truncated": true,
         "aggregation": "closed-form",
         "status": "SECONDARY_SOURCE",
-        "reference": "S-3 of the method tiers plan; riskvalidation.oprisk.robust.sla_var_mean_adjusted"
+        "reference": "riskvalidation.oprisk.robust.sla_var_mean_adjusted"
       },
       {
         "rung_id": "sla-cvm",
@@ -253,7 +253,7 @@
         "truncated": true,
         "aggregation": "closed-form",
         "status": "SECONDARY_SOURCE",
-        "reference": "S-3 of the method tiers plan; Opdyke and Cavallo (2012)"
+        "reference": "Opdyke and Cavallo (2012)"
       },
       {
         "rung_id": "sla-obre",
@@ -265,7 +265,7 @@
         "truncated": true,
         "aggregation": "closed-form",
         "status": "SECONDARY_SOURCE",
-        "reference": "S-3 of the method tiers plan; Hampel et al. (1986) section 4.2"
+        "reference": "Hampel et al. (1986) section 4.2"
       },
       {
         "rung_id": "sla-cvm-lognormal",
@@ -277,7 +277,7 @@
         "truncated": true,
         "aggregation": "closed-form",
         "status": "SECONDARY_SOURCE",
-        "reference": "S-3 of the method tiers plan; the control"
+        "reference": "the control"
       }
     ],
     "aggregation": {

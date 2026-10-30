@@ -723,7 +723,7 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
     ind, unf, fol, allthree = (where(("industry",)), where(("unfollowed",)), where(("followed",)),
                                where(("industry", "unfollowed", "followed")))
     refuted = v["summary"]["refuted"]
-    en = (f"BS-14, the anchored PD under informative withdrawals ({reps} repetitions, {grade} true one-year PD {_pct(truth)[0]}): "
+    en = (f"The anchored PD under informative withdrawals ({reps} repetitions, {grade} true one-year PD {_pct(truth)[0]}): "
           f"the anchored interval covers the true PD in {', '.join(c[0] for c in cov['first_year'])} of repetitions at k 1, 3 and 9 in the first-year cohort "
           f"and in {', '.join(c[0] for c in cov['pooled'])} pooling five cohorts, so the plan's 90% {'holds' if holds else 'does not hold'}. "
           f"At k 9 the industry, unfollowed and followed treatments cover "
@@ -731,7 +731,7 @@ def bounds_finding(out: dict[str, Any]) -> dict[str, Any]:
           + f"; each is under 50% in: industry {ind[0]}; unfollowed {unf[0]}; followed (the oracle: it needs the year end of the withdrawn, which no transition page has) {fol[0]}. "
           f"The plan's clause that all three existing treatments cover under 50% holds in {allthree[0]}. "
           f"The anchored interval covers more than every existing treatment at k 9 in {better} of 3 designs: the plan's refutation {'is met' if refuted else 'is not met'}")
-    es = (f"BS-14, la PD anclada con retiros informativos ({reps} repeticiones, PD anual verdadera de {grade} {_pct(truth)[1]}): "
+    es = (f"La PD anclada con retiros informativos ({reps} repeticiones, PD anual verdadera de {grade} {_pct(truth)[1]}): "
           f"el intervalo anclado cubre la PD verdadera en {', '.join(c[1] for c in cov['first_year'])} de las repeticiones con k 1, 3 y 9 en la cohorte del primer año "
           f"y en {', '.join(c[1] for c in cov['pooled'])} agrupando cinco cohortes, así que el 90 % del plan {'se sostiene' if holds else 'no se sostiene'}. "
           f"Con k 9 los tratamientos de industria, sin seguimiento y con seguimiento cubren "

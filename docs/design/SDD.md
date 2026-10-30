@@ -776,7 +776,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
   https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
   an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
-  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
   and its Spanish counterpart.
   Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
   `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
@@ -816,8 +816,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   `data/derived/C12/wrong-way-risk.json`.
   Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
   QuantLib as reference engines whose numbers Contraste must not claim as validated beyond the reconciliations actually run.
-  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and
-  `notebooks/en/08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb`, with their
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb` and
+  `notebooks/en/08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb`, with their
   Spanish counterparts.
 
 - **BS-3** The leakage-safe protocol per case, with gates.
@@ -830,8 +830,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Evidence: `docs/design/features/c01-retail-pd/requirements.md` (CT-101 to CT-103), `tests/test_leakage.py` (3 passed when the claim
   was assembled), `data/derived/C01/models-taiwan.json`, `data/derived/C02/h1.json` to `h5.json` and `pooled.json`,
   `data/derived/C03/fy2015-17.json`, `data/derived/C03/fy2018-20.json`, `data/derived/C22/leakage.json`. Demonstrated by
-  `notebooks/en/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
-  `notebooks/es/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
+  `notebooks/en/02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
+  `notebooks/es/02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
   Beyond: the research dossier 04 states the leakage rules, and dossier 07 names the single-split evaluation of an open toolkit as the
   counter-example; neither gives a protocol declared per case with a gate that fails when it is broken. Not claimed: a calibration
   before the test window (the drafted text names it for a later case) and any leak by time beyond what the gate CT-103 perturbs.
@@ -846,7 +846,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   `docs/design/features/c04-transitions/requirements.md`.
   Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
   default event, and cohort and duration estimators take the agencies' tables as given.
-  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb` and
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-the-default-definition-withdrawals-and-thin-grades.ipynb` and
   its Spanish counterpart.
 
 - **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
@@ -856,8 +856,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   weighted mean factor in the convex regime and able to fall below it outside; and one synthetic bank is provisioned under CMF B-1,
   IFRS 9 and Bank of Spain Annex 9 with a gap bridge that reconciles in six scenarios.
   Evidence: `data/derived/C06/rd-2008-12.json`, `data/derived/C07/base.json`, `docs/design/features/c06/requirements.md`,
-  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`
-  (Spanish: `notebooks/es/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
+  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb`
+  (Spanish: `notebooks/es/04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
   Beyond: IFRS 9 does not prescribe detailed methods; the research (dossiers 02 and 03) found no public comparison of the three
   regimes on one portfolio, which is UNVERIFIED beyond the searches those dossiers record. The C07 bank is synthetic and labelled so.
   Not claimed: that any regime is right or any engine figure compliant; that the weighted ECL is above the mean-path ECL on every
@@ -872,7 +872,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   are demonstrated by the units of their own topics.
   Evidence: `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C01/holdout.json`, `data/derived/C10/grid-22.json`,
   `data/derived/C10/grid-40.json`, `data/derived/C10/commercial-industrial.json`, `data/derived/C10/credit-cards.json`,
-  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb`.
+  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb`.
   Beyond: the research dossiers 04, 05 and 06 record no maintained permissive implementation of these families. Scope of the
   record: for the portfolio engines, dossier 04 section H.8 records a search of 2026-10-04 on CRAN and GitHub (archived CRAN
   packages, a GPL-2 CRAN package, a GPL-2.0 repository and small educational repositories), and the search of GitHub and PyPI is
@@ -883,12 +883,12 @@ no claim is stated before its demonstration exists. Each claim is stated only as
 
 - **BS-7** The UF as its own currency in IRRBB.
   What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency (the UR) with its own curve, its own shock sizes (200/250/150 bp for the EVE and 300 bp for the NII, against 300/400/200 bp and 300 bp for the peso), its own floor (-2 percent, against 0 for the peso), the indexation charge (2.5% of the absolute net UF position) and the 50% offset of the gain leg against the loss leg. On the committed Banco Andino variants the charge is 55.9% of the delta NII of the short-UF variant, and a single-currency treatment of the same flows (peso curve, peso sizes, zero floor, no charge) gives a delta NII 6.8 to 8.8 times smaller and a delta EVE 10 to 27% smaller in the three variants whose net UF position is 30% of Tier 1.
-  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the BCBS standard (https://www.bis.org/basel_framework/chapter/SRP/31.htm, with the 2016 calibration https://www.bis.org/bcbs/publ/d368.htm and the 2024 recalibration https://www.bis.org/publications/202407-standards-recalibration-shocks-interest-rate-risk-banking-book.pdf) has 21 currencies in its shock table, neither the peso nor a UF-like unit; the Chilean treatment is the Annex 1 of chapter 21-13 of the CMF (https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf). The claim is regional: no public implementation of Annex 1 was found, which is UNVERIFIED beyond the dossier's search. Limits: the floors are implemented and tested but none binds on the committed curves (the closest post-shock rate is 20.48 bp from its floor in every variant), so their effect on a number is not demonstrated; there is no second implementation to reconcile with; the bank is synthetic.
 
 - **BS-8** A test that flags a behavioural assumption changed at a limit breach.
   What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
-  Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
 
 - **BS-9** The dependence band shown with every aggregate.

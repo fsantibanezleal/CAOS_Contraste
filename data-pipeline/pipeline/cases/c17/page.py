@@ -74,7 +74,7 @@ def _s3_block(derived: Path) -> str:
         lines.append(f"- {S3_NAME[mid]['en']}: smaller spread than the splice LDA in {sp} of {n} cells, smaller bias in {bi} of {n}: "
                      f"hypothesis **{s3_verdict(n, sp, bi)}**.")
     h = P.S3_HYPOTHESIS
-    return ("### S-3, the robust severity rungs\n\n" + "\n".join(rows) + "\n\n"
+    return ("### The robust severity rungs\n\n" + "\n".join(rows) + "\n\n"
             "Each cell is the median ratio of the 99.9 percent capital to the true quantile and, in brackets, the interquartile range of that ratio; "
             "n is the number of histories with a capital when it is below the number of histories.\n\n"
             f"Hypothesis, written before the bake: {h['statement']['en']}\n\n" + "\n".join(lines) + "\n")

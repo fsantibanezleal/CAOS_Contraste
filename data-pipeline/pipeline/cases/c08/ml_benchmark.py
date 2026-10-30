@@ -41,9 +41,9 @@ NETWORK: dict[str, Any] = {"hidden_layer_sizes": (32, 16), "activation": "relu",
 
 #: the hypothesis, stated before the run (plan section 3, S-5; Bellotti et al. 2021)
 HYPOTHESIS = {
-    "en": "Hypothesis S-5: on the same out-of-time split as the six rungs before them, the better of the random forest and the "
+    "en": "Hypothesis: on the same out-of-time split as the six rungs before them, the better of the random forest and the "
           "neural network has a lower RMSE than every one of those six rungs in at least two thirds of the test cohorts.",
-    "es": "Hipótesis S-5: en la misma partición fuera de tiempo que las seis etapas anteriores, el mejor entre el bosque aleatorio "
+    "es": "Hipótesis: en la misma partición fuera de tiempo que las seis etapas anteriores, el mejor entre el bosque aleatorio "
           "y la red neuronal tiene un RMSE menor que cada una de esas seis etapas en al menos dos tercios de las cohortes de prueba."}
 REFUTED_IF = {
     "en": "Refuted if it does so in at most one third of the test cohorts; in between the verdict is mixed. The result is reported "

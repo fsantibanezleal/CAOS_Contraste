@@ -234,8 +234,8 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
         lines_es.append(f"la {S3_NAME[mid]['es']} tiene el menor rango en {sp} de {n} celdas y el menor sesgo en {bi} (hipótesis: {es_word[verdict]})")
         refs += ev(mid, "y10-h20000")
     out.append({"id": "F-5", "severity": "S3", "status": "open", "evidence": refs + ev("lda-splice", "y10-h20000") or ["design:replications"],
-                "title": T(f"S-3, robust severity, tail index {v.tail_index:g}: against the splice LDA, " + "; ".join(lines_en) + ".",
-                           f"S-3, severidad robusta, índice de cola {es_num(v.tail_index, 'g')}: frente al LDA con empalme, " + "; ".join(lines_es) + ".")})
+                "title": T(f"Robust severity, tail index {v.tail_index:g}: against the splice LDA, " + "; ".join(lines_en) + ".",
+                           f"Severidad robusta, índice de cola {es_num(v.tail_index, 'g')}: frente al LDA con empalme, " + "; ".join(lines_es) + ".")})
     if v.infinite_mean:
         out.append({"id": "F-4", "severity": "S2", "status": "open", "evidence": ["design:infinite-mean"],
                     "title": T("The severity has an infinite mean: no true mean, no expected shortfall and no mean-corrected single loss approximation exist.",

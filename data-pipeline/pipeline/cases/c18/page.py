@@ -37,7 +37,7 @@ def rungs_lines(models: dict[str, Any]) -> list[str]:
     if var is None or gar is None:
         return []
     d, g, acc = var["details"], gar["details"]["growth_at_risk"], var["details"]["acceptance"]
-    out = ["### The state-of-the-art stress rungs beside the OLS satellites: VAR conditional forecast and growth-at-risk", ""]
+    out = ["### The VAR conditional forecast and growth-at-risk beside the OLS satellites", ""]
     out.append(f"Two windows are back-cast on data that ends before each episode: the global financial crisis (fit to 2007 Q4, 2008 Q1 to 2009 Q4) and the pandemic window "
                f"(fit to 2019 Q4, 2020 Q1 to 2025 Q4). The OLS satellite is refitted on the same span and back-cast over the same quarters. {d['statement']['en']} "
                f"The acceptance criterion of the plan (back-cast through both episodes on prior data, beside the OLS satellites, with the coefficient-sign checks) is "
