@@ -1,4 +1,4 @@
-e611baa926c51e2bb1757898f0bb32a27aa2ef28425b4afe4fabc4ffa760e83d  C18/models-banco-andino.json
+f844d4904f352e1b273a9a44213d48d8f631fca38a489b353f190b8f2c476585  C18/models-banco-andino.json
 dfe272b20797ea662089cc06ae7cb4b0cc42ae4e5fb6dbf79398fbe81f40a2e8  C18/baseline.json
 ef6427efdbfeca37212d006e19213bce73855124961a11c15ea465a6ef2ef462  C18/eba-2025-adverse.json
 913ffc14391768cf6af21c09ac870e168a66b447eac9f35d11328daeaf8c998c  C18/fed-2026-severely-adverse.json

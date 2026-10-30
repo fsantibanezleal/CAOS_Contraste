@@ -911,7 +911,7 @@ export interface components {
         };
         /**
          * C04 agency variant
-         * @description Catalog row c04-agency 1.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
+         * @description Catalog row c04-agency 2.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
          */
         "c04-variant-agency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -920,7 +920,7 @@ export interface components {
         };
         /**
          * C04 family variant
-         * @description Catalog row c04-family 1.0.0: one simulation family of the transition estimators (outputs.kind generator).
+         * @description Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).
          */
         "c04-variant-generator": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -1008,11 +1008,142 @@ export interface components {
             lifetime: components["schemas"]["c04Lifetime"][];
             origination: number[];
             irb: components["schemas"]["c04Irb"];
+            withdrawal_bounds?: components["schemas"]["c04WithdrawalAnchorStudy"] | null;
+        };
+        /** @description One grade of one annual cohort: the fields of c04AnchorRow and the cohort's label. */
+        c04AnchorCohortRow: {
+            label: string;
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
+        };
+        c04AnchorGrade: {
+            grade: string;
+            cohorts: components["schemas"]["c04AnchorCohortRow"][];
+            pooled: components["schemas"]["c04AnchorRow"] | null;
+            k_over_cohorts: {
+                n: number;
+                median: number | null;
+                q25: number | null;
+                q75: number | null;
+                share_above_1: number | null;
+            } | null;
+            stability: {
+                usable_cohorts: number;
+                cohorts_containing_pooled_k: number;
+                share_cohorts_containing_pooled_k: number;
+                stable: boolean;
+            } | null;
+            k_above_1: {
+                pooled_k: number | null;
+                pooled_k_low: number | null;
+                holds: boolean;
+                holds_with_lower_bound: boolean;
+            } | null;
+            tipping: {
+                threshold: number;
+                next_grade: string;
+                k: number | null;
+                infinite: "k"[];
+                /** @enum {string} */
+                decision_industry: "above" | "below" | "none";
+                /** @enum {string} */
+                status: "flips_up" | "flips_down" | "robust";
+                pd_manski_upper: number | null;
+            } | null;
+        };
+        /** @description One grade of the pooled cohorts: the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval. */
+        c04AnchorRow: {
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
         };
         /** @description None for a grade without ratings, and for tab 3's events where they outnumber the cohort. */
         c04Bounds: {
             lower: (number | null)[];
             upper: (number | null)[];
+        };
+        c04BoundsDesign: {
+            /** @enum {string} */
+            id: "first_year" | "pooled" | "capture70" | "first_year_x10";
+            reps: number;
+            cohorts: number;
+            cohort_scale: number;
+            capture: number;
+            seed_key: string;
+            seed: number;
+            treatments: components["schemas"]["c04BoundsTreatment"][];
+            anchored_k: {
+                median: (number | null)[];
+                q05: (number | null)[];
+                q95: (number | null)[];
+                share_infinite: number[];
+            };
+        };
+        c04BoundsTreatment: {
+            /** @enum {string} */
+            id: "industry" | "unfollowed" | "followed" | "anchored" | "identified";
+            coverage: components["schemas"]["c04Rate"][];
+            mean_width: (number | null)[];
+            relative_bias: (number | null)[];
+        };
+        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9). */
+        c04BoundsVerdict: {
+            grade: number;
+            reps: number;
+            level: number;
+            designs: string[];
+            rows: {
+                /** @enum {string} */
+                id: "anchored-coverage" | "existing-coverage" | "anchored-better";
+                design: string;
+                informative: number;
+                /** @enum {string} */
+                treatment: "industry" | "unfollowed" | "followed" | "anchored";
+                value: number;
+                mcse: number;
+                threshold: number;
+                /** @enum {string} */
+                comparison: "at_least" | "below" | "above";
+                holds: boolean;
+            }[];
+            summary: {
+                refuted: boolean;
+                anchored_covers_90: boolean;
+                existing_under_50: boolean;
+            };
         };
         c04CapitalPoint: {
             /** @description Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160). */
@@ -1104,6 +1235,7 @@ export interface components {
             } | null;
             rungs: (components["schemas"]["c04MarkovRung"] | components["schemas"]["c04MomentumRung"] | components["schemas"]["c04CycleRung"] | components["schemas"]["c04WithdrawalsRung"] | components["schemas"]["c04ThinRung"])[];
             simulations: components["schemas"]["c04Simulation"][];
+            bounds_verdict?: components["schemas"]["c04BoundsVerdict"] | null;
         };
         c04Fit: {
             parity: {
@@ -1381,6 +1513,18 @@ export interface components {
             };
             overlap_jeffreys: number[];
         };
+        /** @description BS-14: the default page (tab 2) as the anchor of the transition page's withdrawals (tab 4), per grade, annual cohorts and pooled; None where the transition page has no default category. */
+        c04WithdrawalAnchorStudy: {
+            level: number;
+            stability_share: number;
+            grades: components["schemas"]["c04AnchorGrade"][];
+        };
+        /** @description BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the existing treatments of withdrawn ratings and of the anchored interval, over the rung's own draws, in four designs (first year, five cohorts pooled, a second source that counts 70% of the defaults, ten times the cohort). */
+        c04WithdrawalBounds: {
+            level: number;
+            truth: (number | null)[];
+            designs: components["schemas"]["c04BoundsDesign"][];
+        };
         c04WithdrawalsRung: {
             value: number;
             seed_key: string;
@@ -1398,6 +1542,7 @@ export interface components {
             pd_kept: components["schemas"]["c04Performance"];
             pd_followed: components["schemas"]["c04Performance"];
             pd_latent: components["schemas"]["c04Performance"];
+            bounds?: components["schemas"]["c04WithdrawalBounds"];
         };
         /**
          * C05 low-default models
@@ -3961,7 +4106,7 @@ export interface components {
         };
         /**
          * C11 window variant
-         * @description Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
+         * @description Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
          */
         "c11-variant-window": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -4005,6 +4150,121 @@ export interface components {
             weight: number;
             /** @description How the series becomes a return of the portfolio (a log return, a duration times a yield change). */
             transform: string;
+        };
+        /** @description BS-16, the beyond tier: the engine's adaptive conformal wrapper around HS-250, GARCH-t and FHS, wrapped against unwrapped in this window. */
+        c11Conformal: {
+            method: components["schemas"]["c11ConformalMethod"];
+            rows: components["schemas"]["c11ConformalRow"][];
+            hypothesis: components["schemas"]["c11ConformalHypothesis"];
+        };
+        /** @description One model at one level over the three stress windows: windows passed without and with the wrapper, and the worst FZ0 change. */
+        c11ConformalCell: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            windows_passed_unwrapped: number;
+            windows_passed_wrapped: number;
+            extra_windows: number;
+            worst_fz0_change: number | null;
+            holds: boolean;
+        };
+        /** @description The plan's hypothesis of BS-16 with its measured cells and its verdict, the same in every window document. */
+        c11ConformalHypothesis: {
+            /** @constant */
+            id: "BS-16";
+            statement: components["schemas"]["common-text"];
+            refuted_if: components["schemas"]["common-text"];
+            pass_rule: components["schemas"]["common-text"];
+            run: {
+                gamma: number;
+                level_min: number;
+                level_max: number;
+                stress_windows: string[];
+                fz0_tolerance: number;
+                /** @description A probability in [0, 1]. */
+                pass_p: number;
+                n_stress_days: number;
+                n_runs: number;
+            };
+            cells: components["schemas"]["c11ConformalCell"][];
+            independence_2007_09: components["schemas"]["c11ConformalIndependence"][];
+            n_cells: number;
+            n_cells_hold: number;
+            refuted: boolean;
+            holds: boolean;
+            verdict: components["schemas"]["common-text"];
+        };
+        c11ConformalIndependence: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            independence_p: number | null;
+            fails: boolean;
+        };
+        c11ConformalMethod: {
+            /** @constant */
+            id: "BS-16";
+            /** @constant */
+            tier: "beyond";
+            title: components["schemas"]["common-text"];
+            source: string;
+            gamma: number;
+            level_min: number;
+            level_max: number;
+            /** @constant */
+            first_level: "alpha";
+            wrapped_models: string[];
+            description: components["schemas"]["common-text"];
+        };
+        /** @description One wrapped model at one tail level in this window, beside the same model unwrapped. */
+        c11ConformalRow: {
+            model_id: string;
+            rung: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            n_days: number;
+            unwrapped: components["schemas"]["c11ConformalScore"];
+            wrapped: components["schemas"]["c11ConformalScore"];
+            /** @description (wrapped FZ0 minus unwrapped FZ0) over the absolute unwrapped FZ0: positive is worse. */
+            fz0_change: number | null;
+            /** @description Days on which the update of the working level was cut by the band. */
+            n_clipped: number;
+            n_fallback_days: number;
+            working_level: {
+                min: number;
+                mean: number;
+                max: number;
+            };
+            series: components["schemas"]["c11ConformalSeries"];
+        };
+        /** @description The back-test and score reading of one VaR and ES sequence: the engine's coverage tests, the Acerbi-Szekely test against the ladder's null, FZ0 and Z2. */
+        c11ConformalScore: {
+            n_exceedances: number;
+            expected_exceedances: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            hit_rate: number;
+            kupiec_p: number | null;
+            independence_p: number | null;
+            conditional_coverage_p: number | null;
+            es_test_p: number | null;
+            /** @enum {string} */
+            es_test_light: "green" | "amber" | "red" | "not_evaluated";
+            /** @description Average FZ0 loss over the window; null when an ES is not finite. */
+            fz0_mean: number | null;
+            /** @description The engine's Z2 statistic, 1 minus the mean of loss over ES on the hit days, over alpha: 0 under a correct ES, negative when the ES is understated. */
+            z2: number | null;
+            eligible: boolean;
+            passes_coverage: boolean;
+            /** @description 1 plus the number of ladder models with a lower average FZ0 at the level. */
+            ladder_rank: number | null;
+        };
+        /** @description The wrapped model's path: its working level, its VaR and ES (positive losses) and the days the loss exceeded the VaR. */
+        c11ConformalSeries: {
+            /** @description The working tail level on each grid day. */
+            working_level: number[];
+            var: number[];
+            es: number[];
+            exceedance_days: number[];
         };
         c11DataStatus: {
             first_observation: string;
@@ -4243,6 +4503,8 @@ export interface components {
             models: components["schemas"]["c11ModelOutput"][];
             comparison: components["schemas"]["c11Comparison"];
             es_backtests: components["schemas"]["c11EsNull"][];
+            /** @description BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models. */
+            conformal: components["schemas"]["c11Conformal"] | null;
         } & unknown;
         /** @description A fitted parameter across the refits of a window: minimum, median and maximum. */
         c11Parameter: {
@@ -5275,6 +5537,85 @@ export interface components {
         } & {
             tests?: unknown;
         };
+        /** @description BS-13, beyond the state of the art: the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) and the lag ladder (stale-volatility only). Added to the regulatory zone, never substituted for it. */
+        c13Complement: {
+            /** @constant */
+            tier: "beyond";
+            /** @constant */
+            plan_id: "BS-13";
+            engine_function: string;
+            window_days: number;
+            size: number;
+            /** @enum {unknown} */
+            correction: "bonferroni" | "none";
+            /** @enum {unknown} */
+            role: "size" | "power";
+            n_replications: number;
+            calibration: {
+                null_case_seeds: number[];
+                n_per_block: number;
+                n_null: number;
+                thresholds_per_statistic: components["schemas"]["c13ComplementThresholds"];
+                thresholds_family: components["schemas"]["c13ComplementThresholds"];
+            };
+            flags: {
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family: components["schemas"]["c13ComplementFlags"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+                family_with_pla: components["schemas"]["c13Rate"];
+            };
+            against_ks: {
+                ks_flagged: number;
+                wald_flagged: number;
+                wald_at_least_ks: boolean;
+            } | null;
+            by_size: {
+                size: number;
+                wald: components["schemas"]["c13Rate"];
+                spearman_abs: components["schemas"]["c13Rate"];
+                spearman_roll: components["schemas"]["c13Rate"];
+                wald_held_out: components["schemas"]["c13Rate"];
+                spearman_abs_held_out: components["schemas"]["c13Rate"];
+                spearman_roll_held_out: components["schemas"]["c13Rate"];
+            }[];
+            lag_ladder: {
+                lag_days: number;
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family_any: components["schemas"]["c13Rate"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+            }[] | null;
+            hypothesis: {
+                /** @constant */
+                plan_id: "BS-13";
+                statement: components["schemas"]["common-text"];
+                /** @constant */
+                statistic: "spearman_roll";
+                /** @constant */
+                size_basis: "family-1pct-bonferroni";
+                power_threshold: number;
+                refuted_below: number;
+                size_limit: number;
+                measured_power: components["schemas"]["c13Rate"];
+                held_out_size: components["schemas"]["c13Rate"];
+                pla_power: components["schemas"]["c13Rate"];
+                n_null_desk_years: number;
+                /** @enum {unknown} */
+                verdict: "holds" | "refuted" | "not-established";
+                reading: components["schemas"]["common-text"];
+            } | null;
+        };
+        c13ComplementFlags: {
+            wald: components["schemas"]["c13Rate"];
+            spearman_abs: components["schemas"]["c13Rate"];
+            spearman_roll: components["schemas"]["c13Rate"];
+            any: components["schemas"]["c13Rate"];
+        };
+        /** @description The critical values of the complement: the Wald statistic flags above its value, the two Spearman statistics below theirs. */
+        c13ComplementThresholds: {
+            wald: number;
+            spearman_abs: number;
+            spearman_roll: number;
+        };
         /** @description One planted deficiency and how the generator plants it. */
         c13DeficiencyPlan: {
             /** @enum {string} */
@@ -5474,6 +5815,7 @@ export interface components {
             example: components["schemas"]["c13Example"];
             desk_backtest: components["schemas"]["c13DeskLevel"][] & unknown;
             detection: components["schemas"]["c13Detection"];
+            pla_complement?: components["schemas"]["c13Complement"];
         } & unknown;
         c13Pla: {
             thresholds: components["schemas"]["c13PlaThresholds"];
@@ -5508,6 +5850,14 @@ export interface components {
             excess_kurtosis: number;
             min: number;
             max: number;
+        };
+        /** @description A count of flagged replications out of n, its rate and its 95 percent Wilson interval. */
+        c13Rate: {
+            k: number;
+            n: number;
+            rate: number;
+            ci_low: number;
+            ci_high: number;
         };
         c13ReplicationPlan: {
             n_replications: number;

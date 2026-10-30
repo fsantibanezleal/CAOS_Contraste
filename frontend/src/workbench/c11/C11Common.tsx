@@ -251,6 +251,24 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
                   </tr>
                 );
               })}
+              {/* the beyond tier (BS-16): the conformal wrapper of three rungs, one row after the ladder, named in both languages */}
+              {o.conformal ? (
+                <tr data-rung="BS-16" data-tier="beyond">
+                  <td className="ct-text">{pick(o.conformal.method.title, lang)}</td>
+                  <td className="ct-wide-only">{o.conformal.method.id}</td>
+                  <td className="ct-text ct-wide-only">{o.conformal.method.source}</td>
+                  <td className="ct-text">
+                    {pick(
+                      {
+                        en: `Wraps ${o.conformal.method.wrapped_models.map((m) => pick(modelLabel(sel, m), 'en')).join(', ')}: the model's own VaR and ES at a working tail level that moves after each day.`,
+                        es: `Envuelve ${o.conformal.method.wrapped_models.map((m) => pick(modelLabel(sel, m), 'es')).join(', ')}: el VaR y la ES propios del modelo en un nivel de cola de trabajo que se mueve después de cada día.`,
+                      },
+                      lang,
+                    )}
+                  </td>
+                  <td data-na="true">{NONE(lang)}</td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </PlotCard>
