@@ -16,7 +16,9 @@ import type {
   C04Performance,
   C04Rate,
   C04Simulation,
+  C04BoundsVerdict,
   C04ThinRung,
+  C04WithdrawalBounds,
   C04WithdrawalsRung,
   VariantArtifact,
 } from '../../lib/contract.types';
@@ -1711,6 +1713,138 @@ export function WithdrawalsTestsView({ sel }: { sel: C04Sel | null }) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// withdrawals, BS-14: the coverage of the true PD by the existing treatments and by the anchored interval
+// (riskvalidation 1.1.0 transitions.withdrawals; the study's draws are its own, the family's numbers do not move)
+
+type BoundsTreatment = 'industry' | 'unfollowed' | 'followed' | 'anchored' | 'identified';
+const BOUNDS_TREATMENTS: BoundsTreatment[] = ['industry', 'unfollowed', 'followed', 'anchored', 'identified'];
+const BOUNDS_LABEL: Record<BoundsTreatment, BiText> = {
+  industry: t('Removed (k 1)', 'Eliminados (k 1)'),
+  unfollowed: t('Kept in the denominator (k 0)', 'Mantenidos en el denominador (k 0)'),
+  followed: t('Followed to the year end', 'Seguidos al fin del año'),
+  anchored: t('Anchored on the default page (BS-14)', 'Anclada en la página de incumplimientos (BS-14)'),
+  identified: t('Identified band (Manski)', 'Banda identificada (Manski)'),
+};
+const BOUNDS_COLOR: Record<BoundsTreatment, ShellColorToken> = {
+  industry: DEFINITION_COLOR.d4,
+  unfollowed: DEFINITION_COLOR.keep,
+  followed: '--color-accent',
+  anchored: '--color-good',
+  identified: '--color-fg-subtle',
+};
+const BOUNDS_DESIGN_LABEL: Record<string, BiText> = {
+  first_year: t('First-year cohort', 'Cohorte del primer año'),
+  pooled: t('Five cohorts pooled', 'Cinco cohortes agrupadas'),
+  capture70: t('Second source counts 70 %', 'La segunda fuente cuenta el 70 %'),
+  first_year_x10: t('First-year cohort, ten times larger', 'Cohorte del primer año, diez veces mayor'),
+};
+const BOUNDS_CRITERION_LABEL: Record<string, BiText> = {
+  'anchored-coverage': t('Anchored covers at least', 'La anclada cubre al menos'),
+  'existing-coverage': t('Existing treatment covers under', 'El tratamiento existente cubre menos de'),
+  'anchored-better': t('Anchored covers more than the best existing', 'La anclada cubre más que el mejor existente'),
+};
+const boundsOf = (r: C04WithdrawalsRung) => (r as C04WithdrawalsRung & { bounds?: C04WithdrawalBounds | null }).bounds ?? null;
+
+/** Coverage of the true one-year PD of the selected grade along k, one line per treatment, in one design. */
+export function withdrawalBoundsCharts(v: FamilyVariant, sel: C04Sel): ChartSpec[] {
+  const rungs = rungsOf<C04WithdrawalsRung>(v, 'withdrawals');
+  if (!rungs || rungs.some((r) => !boundsOf(r))) return [];
+  const g = sel.grade;
+  const xs = rungValues(v);
+  const x = { values: xs, label: LADDER_AXIS.withdrawals.label, format: LADDER_AXIS.withdrawals.format };
+  const coverage = (design: string, tr: BoundsTreatment) =>
+    rungs.map((r) => boundsOf(r)?.designs.find((d) => d.id === design)?.treatments.find((x) => x.id === tr)?.coverage[g]?.rate ?? null);
+  return ['first_year', 'pooled'].map((design) => ({
+    key: `bounds-${design}`,
+    x,
+    y: { label: t('Coverage of the true PD (%)', 'Cobertura de la PD verdadera (%)'), range: [0, 1] as [number, number], format: { percent: true, digits: 3 } },
+    series: [
+      ...BOUNDS_TREATMENTS.map((tr) => ({ label: BOUNDS_LABEL[tr], values: coverage(design, tr), color: BOUNDS_COLOR[tr], width: tr === 'anchored' ? 2.6 : 1.8, ...(tr === 'identified' ? { dash: [6, 3] } : {}) })),
+      { label: bi((l) => `${L(l, "The plan's floor", 'El piso del plan')} ${pct0(l, 0.9)}`), values: flat(xs, 0.9), color: '--color-fg' as ShellColorToken, width: 1, dash: [2, 4] },
+    ],
+  }));
+}
+
+export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
+  const lang = useShellLang();
+  const v = familyOf(sel);
+  const charts = useMemo(() => (v && sel ? withdrawalBoundsCharts(v, sel) : []), [v, sel]);
+  if (!sel) return <Pending />;
+  const rungs = v ? rungsOf<C04WithdrawalsRung>(v, 'withdrawals') : null;
+  const verdict = v ? ((v.outputs as { bounds_verdict?: C04BoundsVerdict | null }).bounds_verdict ?? null) : null;
+  if (!v || !rungs || !verdict || charts.length < 2) return <NotThisFamily />;
+  const grade = GRADES[sel.grade];
+  const reps = verdict.reps;
+  const truth = boundsOf(rungs[0])?.truth[sel.grade] ?? null;
+  const common = {
+    en: `Share of ${num('en', reps)} repetitions whose 95 % interval covers the true one-year PD of ${grade} (${pctText('en', truth)}): removed and kept are the two CEREP pages' treatments (Jeffreys intervals), followed reads the year end of every withdrawn rating (the default page's count), anchored is the interval of riskvalidation's transitions.withdrawals with k read off the default page, the identified band runs from k 0 to Manski's bound. Dotted, the plan's 90 % floor.`,
+    es: `Fracción de ${num('es', reps)} repeticiones cuyo intervalo al 95 % cubre la PD anual verdadera de ${grade} (${pctText('es', truth)}): eliminados y mantenidos son los tratamientos de las dos páginas de CEREP (intervalos de Jeffreys), seguidos lee el fin del año de toda calificación retirada (el conteo de la página de incumplimientos), la anclada es el intervalo de transitions.withdrawals de riskvalidation con k leído de la página de incumplimientos, la banda identificada va de k 0 a la cota de Manski. Punteado, el piso del 90 % del plan.`,
+  };
+  const s = verdict.summary;
+  const outcome = L(
+    lang,
+    `Verdict on ${GRADES[verdict.grade]}: the anchored interval ${s.anchored_covers_90 ? 'covers at least 90 % in every design and k' : 'falls under 90 % somewhere'}; the existing treatments ${s.existing_under_50 ? 'all fall under 50 % at k 9' : 'do not all fall under 50 % at k 9 (the first-year cohort keeps them above it)'}; the hypothesis is ${s.refuted ? 'refuted' : 'not refuted'}.`,
+    `Veredicto sobre ${GRADES[verdict.grade]}: el intervalo anclado ${s.anchored_covers_90 ? 'cubre al menos el 90 % en todo diseño y k' : 'cae bajo el 90 % en algún caso'}; los tratamientos existentes ${s.existing_under_50 ? 'caen todos bajo el 50 % con k 9' : 'no caen todos bajo el 50 % con k 9 (la cohorte del primer año los deja sobre él)'}; la hipótesis ${s.refuted ? 'queda refutada' : 'no queda refutada'}.`,
+  );
+  const yes = L(lang, 'Yes', 'Sí');
+  const no = L(lang, 'No', 'No');
+  return (
+    <ViewRow
+      left={
+        <ChartCard
+          v={v}
+          spec={charts[0]}
+          title={bi((l) => `${grade}: ${L(l, 'coverage of the true PD, first-year cohort', 'cobertura de la PD verdadera, cohorte del primer año')}`)}
+          note={`${pick(common, lang)} ${L(lang, "The first-year cohort is the model's exact setting: nobody was withdrawn earlier.", 'La cohorte del primer año es el escenario exacto del modelo: nadie fue retirado antes.')} ${truthNote(lang, sel)}`}
+        />
+      }
+      top={
+        <ChartCard
+          v={v}
+          spec={charts[1]}
+          title={bi((l) => `${grade}: ${L(l, 'five cohorts pooled', 'cinco cohortes agrupadas')}`)}
+          note={L(
+            lang,
+            "The same coverage when Contraste's five annual cohorts are pooled: a rating withdrawn in an earlier year is missing from a later cohort, a selection the one-period model does not see.",
+            'La misma cobertura al agrupar las cinco cohortes anuales de Contraste: una calificación retirada en un año anterior falta en una cohorte posterior, una selección que el modelo de un período no ve.',
+          )}
+        />
+      }
+      bottom={
+        <TableCard v={v} title={t("BS-14: the plan's criteria", 'BS-14: los criterios del plan')} note={outcome}>
+          <table className="caos-table ct-wrap-head" data-table="withdrawals-bounds-verdict">
+            <thead>
+              <tr>
+                <th className="ct-text">{L(lang, 'Criterion', 'Criterio')}</th>
+                <th className="ct-text">{L(lang, 'Design', 'Diseño')}</th>
+                <th>k</th>
+                <th className="ct-text ct-wide-only">{L(lang, 'Treatment', 'Tratamiento')}</th>
+                <th>{L(lang, 'Coverage, %', 'Cobertura, %')}</th>
+                <th>{L(lang, 'Threshold, %', 'Umbral, %')}</th>
+                <th className="ct-text">{L(lang, 'Holds', 'Se cumple')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {verdict.rows.map((r, i) => (
+                <tr key={i} data-criterion={r.id}>
+                  <td className="ct-text">{pick(BOUNDS_CRITERION_LABEL[r.id] ?? t('Criterion', 'Criterio'), lang)}</td>
+                  <td className="ct-text">{pick(BOUNDS_DESIGN_LABEL[r.design] ?? t('Design', 'Diseño'), lang)}</td>
+                  <td>{num(lang, r.informative)}</td>
+                  <td className="ct-text ct-wide-only">{pick(BOUNDS_LABEL[r.treatment as BoundsTreatment] ?? t('Treatment', 'Tratamiento'), lang)}</td>
+                  <td>{rateSe(lang, { rate: r.value, se: r.mcse } as C04Rate)}</td>
+                  <td>{num(lang, r.threshold * 100, { decimals: 1 })}</td>
+                  <td className="ct-text">{r.holds ? yes : no}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableCard>
+      }
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // thin: exact coverage and length by cohort size; adjacent grades' overlap
 
 /** The cohort sizes as a categorical axis (1 to 5), its title naming each size. */
@@ -1955,6 +2089,7 @@ export const FAMILY_VIEWS: Record<C04Family, FamilyViewDef[]> = {
   withdrawals: [
     { id: 'bias', label: t('Bias', 'Sesgo'), View: WithdrawalsBiasView, charts: withdrawalBiasCharts },
     { id: 'tests', label: t('Tests', 'Pruebas'), View: WithdrawalsTestsView, charts: (v) => withdrawalTestCharts(v) },
+    { id: 'bounds', label: t('Anchored bounds', 'Cotas ancladas'), View: WithdrawalsBoundsView, charts: withdrawalBoundsCharts },
   ],
   thin: [
     { id: 'coverage', label: t('Coverage', 'Cobertura'), View: ThinCoverageView, charts: thinCoverageCharts },

@@ -1010,9 +1010,32 @@ export interface components {
             irb: components["schemas"]["c04Irb"];
             withdrawal_bounds?: components["schemas"]["c04WithdrawalAnchorStudy"] | null;
         };
+        /** @description One grade of one annual cohort: the fields of c04AnchorRow and the cohort's label. */
+        c04AnchorCohortRow: {
+            label: string;
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
+        };
         c04AnchorGrade: {
             grade: string;
-            cohorts: components["schemas"]["c04AnchorRow"][];
+            cohorts: components["schemas"]["c04AnchorCohortRow"][];
             pooled: components["schemas"]["c04AnchorRow"] | null;
             k_over_cohorts: {
                 n: number;
@@ -1045,9 +1068,8 @@ export interface components {
                 pd_manski_upper: number | null;
             } | null;
         };
-        /** @description One grade of one cohort (or of the pooled cohorts): the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval. */
+        /** @description One grade of the pooled cohorts: the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval. */
         c04AnchorRow: {
-            label?: string;
             defaults: number;
             survivors: number;
             withdrawn: number;

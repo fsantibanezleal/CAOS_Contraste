@@ -4722,6 +4722,134 @@
           }
         }
       },
+      "c04AnchorCohortRow": {
+        "description": "One grade of one annual cohort: the fields of c04AnchorRow and the cohort's label.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "defaults",
+          "survivors",
+          "withdrawn",
+          "anchor_defaults",
+          "anchor_cohort",
+          "pd_industry",
+          "pd_anchor_rate",
+          "pd_anchored",
+          "pd_lower",
+          "pd_upper",
+          "defaults_implied",
+          "k",
+          "k_low",
+          "k_high",
+          "infinite",
+          "flag",
+          "reason"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "defaults": {
+            "type": "number"
+          },
+          "survivors": {
+            "type": "number"
+          },
+          "withdrawn": {
+            "type": "number"
+          },
+          "anchor_defaults": {
+            "type": "number"
+          },
+          "anchor_cohort": {
+            "type": "number"
+          },
+          "pd_industry": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_anchor_rate": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_anchored": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_lower": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pd_upper": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "defaults_implied": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k_low": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "k_high": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "infinite": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "k",
+                "k_low",
+                "k_high"
+              ]
+            }
+          },
+          "flag": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "anchor_below_observed",
+              "anchor_above_identified",
+              "no_anchor"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "no_cohort",
+              "no_observed_defaults",
+              "no_withdrawals"
+            ]
+          }
+        }
+      },
       "c04AnchorGrade": {
         "type": "object",
         "additionalProperties": false,
@@ -4741,7 +4869,7 @@
           "cohorts": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/c04AnchorRow"
+              "$ref": "#/components/schemas/c04AnchorCohortRow"
             }
           },
           "pooled": {
@@ -4941,7 +5069,7 @@
         }
       },
       "c04AnchorRow": {
-        "description": "One grade of one cohort (or of the pooled cohorts): the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval.",
+        "description": "One grade of the pooled cohorts: the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -4964,9 +5092,6 @@
           "reason"
         ],
         "properties": {
-          "label": {
-            "type": "string"
-          },
           "defaults": {
             "type": "number"
           },
