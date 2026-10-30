@@ -253,7 +253,7 @@ export function C11ContextView({ sel }: { sel: C11Sel | null }) {
               })}
               {/* the beyond tier (BS-16): the conformal wrapper of three rungs, one row after the ladder, named in both languages */}
               {o.conformal ? (
-                <tr data-rung="BS-16" data-tier="beyond">
+                <tr data-rung="aci" data-kind="conformal">
                   <td className="ct-text">{pick(o.conformal.method.title, lang)}</td>
                   <td className="ct-wide-only">{o.conformal.method.id}</td>
                   <td className="ct-text ct-wide-only">{o.conformal.method.source}</td>

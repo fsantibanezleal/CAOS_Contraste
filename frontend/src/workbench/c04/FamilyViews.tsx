@@ -1722,7 +1722,7 @@ const BOUNDS_LABEL: Record<BoundsTreatment, BiText> = {
   industry: t('Removed (k 1)', 'Eliminados (k 1)'),
   unfollowed: t('Kept in the denominator (k 0)', 'Mantenidos en el denominador (k 0)'),
   followed: t('Followed to the year end', 'Seguidos al fin del año'),
-  anchored: t('Anchored on the default page (BS-14)', 'Anclada en la página de incumplimientos (BS-14)'),
+  anchored: t('Anchored on the default page', 'Anclada en la página de incumplimientos'),
   identified: t('Identified band (Manski)', 'Banda identificada (Manski)'),
 };
 const BOUNDS_COLOR: Record<BoundsTreatment, ShellColorToken> = {
@@ -1760,7 +1760,7 @@ export function withdrawalBoundsCharts(v: FamilyVariant, sel: C04Sel): ChartSpec
     y: { label: t('Coverage of the true PD (%)', 'Cobertura de la PD verdadera (%)'), range: [0, 1] as [number, number], format: { percent: true, digits: 3 } },
     series: [
       ...BOUNDS_TREATMENTS.map((tr) => ({ label: BOUNDS_LABEL[tr], values: coverage(design, tr), color: BOUNDS_COLOR[tr], width: tr === 'anchored' ? 2.6 : 1.8, ...(tr === 'identified' ? { dash: [6, 3] } : {}) })),
-      { label: bi((l) => `${L(l, "The plan's floor", 'El piso del plan')} ${pct0(l, 0.9)}`), values: flat(xs, 0.9), color: '--color-fg' as ShellColorToken, width: 1, dash: [2, 4] },
+      { label: bi((l) => `${L(l, 'The floor fixed before the study', 'El piso fijado antes del estudio')} ${pct0(l, 0.9)}`), values: flat(xs, 0.9), color: '--color-fg' as ShellColorToken, width: 1, dash: [2, 4] },
     ],
   }));
 }
@@ -1777,8 +1777,8 @@ export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
   const reps = verdict.reps;
   const truth = boundsOf(rungs[0])?.truth[sel.grade] ?? null;
   const common = {
-    en: `Share of ${num('en', reps)} repetitions whose 95 % interval covers the true one-year PD of ${grade} (${pctText('en', truth)}): removed and kept are the two CEREP pages' treatments (Jeffreys intervals), followed reads the year end of every withdrawn rating (the default page's count), anchored is the interval of riskvalidation's transitions.withdrawals with k read off the default page, the identified band runs from k 0 to Manski's bound. Dotted, the plan's 90 % floor.`,
-    es: `Fracción de ${num('es', reps)} repeticiones cuyo intervalo al 95 % cubre la PD anual verdadera de ${grade} (${pctText('es', truth)}): eliminados y mantenidos son los tratamientos de las dos páginas de CEREP (intervalos de Jeffreys), seguidos lee el fin del año de toda calificación retirada (el conteo de la página de incumplimientos), la anclada es el intervalo de transitions.withdrawals de riskvalidation con k leído de la página de incumplimientos, la banda identificada va de k 0 a la cota de Manski. Punteado, el piso del 90 % del plan.`,
+    en: `Share of ${num('en', reps)} repetitions whose 95 % interval covers the true one-year PD of ${grade} (${pctText('en', truth)}): removed and kept are the two CEREP pages' treatments (Jeffreys intervals), followed reads the year end of every withdrawn rating (the default page's count), anchored is the interval of riskvalidation's transitions.withdrawals with k read off the default page, the identified band runs from k 0 to Manski's bound. Dotted, the 90 % floor fixed before the study.`,
+    es: `Fracción de ${num('es', reps)} repeticiones cuyo intervalo al 95 % cubre la PD anual verdadera de ${grade} (${pctText('es', truth)}): eliminados y mantenidos son los tratamientos de las dos páginas de CEREP (intervalos de Jeffreys), seguidos lee el fin del año de toda calificación retirada (el conteo de la página de incumplimientos), la anclada es el intervalo de transitions.withdrawals de riskvalidation con k leído de la página de incumplimientos, la banda identificada va de k 0 a la cota de Manski. Punteado, el piso del 90 % fijado antes del estudio.`,
   };
   const s = verdict.summary;
   const outcome = L(
@@ -1811,7 +1811,7 @@ export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
         />
       }
       bottom={
-        <TableCard v={v} title={t("BS-14: the plan's criteria", 'BS-14: los criterios del plan')} note={outcome}>
+        <TableCard v={v} title={t('The criteria fixed before the study', 'Los criterios fijados antes del estudio')} note={outcome}>
           <table className="caos-table ct-wrap-head" data-table="withdrawals-bounds-verdict">
             <thead>
               <tr>

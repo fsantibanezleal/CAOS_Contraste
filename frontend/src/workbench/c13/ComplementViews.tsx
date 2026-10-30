@@ -84,8 +84,8 @@ export function ComplementView({ sel }: { sel: C13Sel | null }) {
         title={{ en: `The scale-and-level complement beside the PLA, ${name.en}`, es: `El complemento de escala y nivel junto al PLA, ${name.es}` }}
         {...card}
         note={{
-          en: `${power ? 'Power' : 'Size'}: the replications flagged out of ${count(n, 'en')}${power ? '' : ', all with an exact model, so the rate is the false-alarm rate'}. Beyond the state of the art and added to the regulatory zone, never in place of it; it has no regulatory standing. The critical values come from ${count(c.calibration.n_null, 'en')} simulated null desk-years.`,
-          es: `${power ? 'Potencia' : 'Tamaño'}: las replicaciones marcadas de ${count(n, 'es')}${power ? '' : ', todas con un modelo exacto, así que la tasa es la de falsas alarmas'}. Más allá del estado del arte y agregado a la zona regulatoria, nunca en su lugar; no tiene valor regulatorio. Los valores críticos vienen de ${count(c.calibration.n_null, 'es')} años de mesa nulos simulados.`,
+          en: `${power ? 'Power' : 'Size'}: the replications flagged out of ${count(n, 'en')}${power ? '' : ', all with an exact model, so the rate is the false-alarm rate'}. Added to the regulatory zone, never in place of it; it has no regulatory standing. The critical values come from ${count(c.calibration.n_null, 'en')} simulated null desk-years.`,
+          es: `${power ? 'Potencia' : 'Tamaño'}: las replicaciones marcadas de ${count(n, 'es')}${power ? '' : ', todas con un modelo exacto, así que la tasa es la de falsas alarmas'}. Agregado a la zona regulatoria, nunca en su lugar; no tiene valor regulatorio. Los valores críticos vienen de ${count(c.calibration.n_null, 'es')} años de mesa nulos simulados.`,
         }}
       >
         <ChartOverTable
@@ -157,7 +157,7 @@ export function ComplementView({ sel }: { sel: C13Sel | null }) {
             ) : null}
             {h ? (
               <>
-                <dt>{pick({ en: 'Hypothesis of the plan', es: 'Hipótesis del plan' }, lang)}</dt>
+                <dt>{pick({ en: 'Hypothesis fixed before the run', es: 'Hipótesis fijada antes de la corrida' }, lang)}</dt>
                 <dd>{pick(h.statement, lang)}</dd>
                 <dt>{pick({ en: 'Verdict', es: 'Veredicto' }, lang)}</dt>
                 <dd data-verdict={h.verdict}>

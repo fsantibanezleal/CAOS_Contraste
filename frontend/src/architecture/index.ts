@@ -48,9 +48,9 @@ export const architecture: ArchitectureConfig = {
       es: 'La validación',
       svg: validation,
       body_en:
-        'The ladder runs from anchors to the state of the art; the battery reads discrimination, the level and the fit of the calibration, and stability, as the ECB 2019 instructions and BCBS WP14 define them; findings follow a stated severity policy and cite their evidence; the impact compares the champion and the challenger at the same approval rate.',
+        'The ladder runs from anchors to the most recent published methods; the battery reads discrimination, the level and the fit of the calibration, and stability, as the ECB 2019 instructions and BCBS WP14 define them; findings follow a stated severity policy and cite their evidence; the impact compares the champion and the challenger at the same approval rate.',
       body_es:
-        'La escalera va de los anclajes al estado del arte; la batería lee la discriminación, el nivel y el ajuste de la calibración, y la estabilidad, como las definen las instrucciones del BCE de 2019 y el WP14 del BCBS; los hallazgos siguen una política de severidad declarada y citan su evidencia; el impacto compara al campeón y al retador con la misma tasa de aprobación.',
+        'La escalera va de los anclajes a los métodos publicados más recientes; la batería lee la discriminación, el nivel y el ajuste de la calibración, y la estabilidad, como las definen las instrucciones del BCE de 2019 y el WP14 del BCBS; los hallazgos siguen una política de severidad declarada y citan su evidencia; el impacto compara al campeón y al retador con la misma tasa de aprobación.',
     },
     {
       id: 'contracts',

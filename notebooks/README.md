@@ -1,14 +1,14 @@
 # Notebooks / Cuadernos
 
 The didactic layer of Contraste: notebooks that teach, step by step and on the product's own committed data, how the validation
-tests of the engine [`riskvalidation`](https://github.com/fsantibanezleal/CAOS_RiskValidation) work, where each method stands
-against the state of the art and what Contraste adds beyond it. They import the engine and the pipeline's readers and never
+tests of the engine [`riskvalidation`](https://github.com/fsantibanezleal/CAOS_RiskValidation) work, how each method compares
+with the published methods and what Contraste proposes of its own. They import the engine and the pipeline's readers and never
 re-implement a method. The rule is CAOS_MANAGE `conventions/product-notebooks.md`, carried by the product template from release
 0.10.000.
 
 La capa didáctica de Contraste: cuadernos que enseñan, paso a paso y con los datos versionados del propio producto, cómo
-funcionan las pruebas de validación del motor `riskvalidation`, dónde queda cada método frente al estado del arte y qué agrega
-Contraste más allá. Importan el motor y los lectores del pipeline y nunca reimplementan un método.
+funcionan las pruebas de validación del motor `riskvalidation`, cómo se compara cada método con los métodos publicados y qué
+propone Contraste. Importan el motor y los lectores del pipeline y nunca reimplementan un método.
 
 ## The two trees / Los dos árboles
 
@@ -22,9 +22,9 @@ notebook is written wholly in its tree's language (prose, comments, labels and p
 structure and the same numbers. What the engine and the documents carry as identifiers or as their own texts (a `test_id`, a key, a
 light, a null hypothesis, a reference) is printed as it is written there, in English, in both trees; the bilingual fields of the
 documents are read in the tree's language. Topics run from simple to complex,
-and notebooks inside a topic by level: 1 fundamentals, 2 the method in practice, 3 state of the art, 4 beyond the state of the art.
+and notebooks inside a topic by level: 1 fundamentals, 2 the method in practice, 3 comparison with published methods, 4 proposed methods.
 Every notebook opens with its title, level, prerequisites and reading time, and follows the same sections: Objectives, Setup, Data,
-Method, Results, Summary and References (the state of the art at level 3 and 4, and what goes beyond it at level 4).
+Method, Results, Summary and References (Comparison at levels 3 and 4, and Evidence at level 4).
 
 Los dos árboles tienen los mismos cuadernos en las mismas rutas relativas (los nombres están en inglés, así que el espejo se puede
 comprobar); cada cuaderno está escrito entero en el idioma de su árbol (prosa, comentarios, etiquetas y texto impreso), con las mismas celdas, la
@@ -53,12 +53,12 @@ writes nothing into the repository.
 The map has 14 topics; each lands with its own unit, and an index lists a topic's folder as soon as it exists. Today topic 01 is
 here: [en/01-getting-started/](en/01-getting-started/) and [es/01-getting-started/](es/01-getting-started/).
 
-## Beyond the state of the art / Más allá del estado del arte
+## What the product claims / Lo que afirma el producto
 
-No claim is stated yet. The SDD's section `## Beyond the state of the art` says "None claimed." until a topic unit lands a claim: each
-claim enters the SDD together with the level 4 notebook, in each language, that demonstrates it, and from then on the static check
-holds the claim to that notebook.
+Each claim of the SDD has a level 4 notebook in each language that demonstrates it; the index of each tree lists the claims with
+their notebooks ([en/README.md](en/README.md), [es/README.md](es/README.md)), and the static check holds every claim to them.
 
-Todavía no se afirma ninguna. La sección `## Beyond the state of the art` del SDD dice "None claimed." hasta que la unidad de un
-tema aporta una afirmación: cada afirmación entra al SDD junto con el cuaderno de nivel 4, en cada idioma, que la demuestra, y desde
-entonces la comprobación estática la sostiene con ese cuaderno.
+Cada afirmación del SDD tiene un notebook de nivel 4 en cada idioma que la demuestra; el índice de cada árbol lista las afirmaciones
+con sus notebooks ([en/README.md](en/README.md), [es/README.md](es/README.md)), y la comprobación estática sostiene cada afirmación
+con ellos.
+

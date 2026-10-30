@@ -123,7 +123,7 @@ describe('BS-16, the committed windows', () => {
 
   it('the ladder card of the Context view carries the beyond-tier row, named in both languages', () => {
     const sel = selOf('rates-2022');
-    expect(html(<C11ContextView sel={sel} />)).toContain('data-rung="BS-16"');
+    expect(html(<C11ContextView sel={sel} />)).toContain('data-rung="aci"');
     expect(html(<C11ContextView sel={sel} />)).toContain('Adaptive conformal recalibration of the VaR');
     setLang('es');
     expect(html(<C11ContextView sel={selOf('rates-2022')} />)).toContain('Recalibración conforme adaptativa del VaR');

@@ -183,7 +183,7 @@ def blocks(derived: Path, evidence: Path) -> str:
         "### Results per window\n\n" + results_table(docs),
         "### Exceedances of the 99 percent VaR per model and window\n\n" + exceedance_matrix(docs),
         "### The R10 quantile network trained on FZ0, beside the ladder\n\n" + network_table(docs),
-        "### BS-16: adaptive conformal recalibration of the VaR, wrapped against unwrapped\n\n" + conformal_table(docs),
+        "### Adaptive conformal recalibration of the VaR, wrapped against unwrapped\n\n" + conformal_table(docs),
         "### The hyperparameters, fixed on 1995-01-01 to 2003-12-31\n\n" + selection_table(evidence),
         "### The network's hyperparameters, fixed on the same span\n\n" + network_selection_table(evidence),
         "### The raw files read\n\n" + inputs_table(evidence),

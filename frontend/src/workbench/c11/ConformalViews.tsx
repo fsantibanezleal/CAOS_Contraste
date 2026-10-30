@@ -88,8 +88,8 @@ export function ConformalView({ sel }: { sel: C11Sel | null }) {
         title={{ en: `Conformal recalibration at the ${tail(sel.alpha, 'en')} tail: ${name.en}`, es: `Recalibración conforme en la cola de ${tail(sel.alpha, 'es')}: ${name.es}` }}
         {...card}
         note={{
-          en: `Beyond the ladder (BS-16). The working tail level starts at the target and moves by ${formatNumber(m.gamma, 'en', { digits: 3 })} times the target minus the hit; the model is asked for its VaR at that level. The step and the band (${formatNumber(m.level_min, 'en', { digits: 3 })} to ${formatNumber(m.level_max, 'en', { digits: 3 })}) were fixed before any run.`,
-          es: `Más allá de la escalera (BS-16). El nivel de cola de trabajo parte del objetivo y se mueve en ${formatNumber(m.gamma, 'es', { digits: 3 })} por el objetivo menos la excedencia; al modelo se le pide su VaR en ese nivel. El paso y la banda (${formatNumber(m.level_min, 'es', { digits: 3 })} a ${formatNumber(m.level_max, 'es', { digits: 3 })}) se fijaron antes de cualquier corrida.`,
+          en: `Beyond the ladder. The working tail level starts at the target and moves by ${formatNumber(m.gamma, 'en', { digits: 3 })} times the target minus the hit; the model is asked for its VaR at that level. The step and the band (${formatNumber(m.level_min, 'en', { digits: 3 })} to ${formatNumber(m.level_max, 'en', { digits: 3 })}) were fixed before any run.`,
+          es: `Más allá de la escalera. El nivel de cola de trabajo parte del objetivo y se mueve en ${formatNumber(m.gamma, 'es', { digits: 3 })} por el objetivo menos la excedencia; al modelo se le pide su VaR en ese nivel. El paso y la banda (${formatNumber(m.level_min, 'es', { digits: 3 })} a ${formatNumber(m.level_max, 'es', { digits: 3 })}) se fijaron antes de cualquier corrida.`,
         }}
       >
         <ChartOverTable
@@ -161,7 +161,7 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
   if (!h) {
     return (
       <ViewsRow>
-        <PlotCard title={{ en: 'The hypothesis of BS-16', es: 'La hipótesis de BS-16' }} {...card}>
+        <PlotCard title={{ en: 'The hypothesis fixed before the run', es: 'La hipótesis fijada antes de la corrida' }} {...card}>
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This window carries no conformal recalibration.', es: 'Esta ventana no trae recalibración conforme.' }, lang)}</p>
         </PlotCard>
       </ViewsRow>
@@ -171,7 +171,7 @@ export function ConformalVerdictView({ sel }: { sel: C11Sel | null }) {
   return (
     <ViewsRow>
       <PlotCard
-        title={{ en: 'The hypothesis of BS-16 and its verdict', es: 'La hipótesis de BS-16 y su veredicto' }}
+        title={{ en: 'The hypothesis fixed before the run and its verdict', es: 'La hipótesis fijada antes de la corrida y su veredicto' }}
         {...card}
         note={{ en: 'Written before the first run and reported whatever the result: the cells are measured, not tuned.', es: 'Escrita antes de la primera corrida e informada sea cual sea el resultado: las celdas se miden, no se ajustan.' }}
       >

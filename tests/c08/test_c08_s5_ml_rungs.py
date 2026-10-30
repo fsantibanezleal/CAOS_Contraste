@@ -165,4 +165,4 @@ def test_the_case_page_states_the_s5_block_the_verdict_and_the_hypothesis_from_t
     v = page.ml_verdict(root / "data" / "derived")
     assert v["cohorts"] == 6 and 0 <= v["wins"] <= 6 and v["verdict"] == ml.verdict(v["wins"], 6)
     assert f"**Verdict: {v['verdict']}.**" in block and f"in {v['wins']} of 6" in block
-    assert ml.HYPOTHESIS["en"].split("Hypothesis S-5: ")[1][:40] in text.replace("\n", " ") or "Hypothesis, stated before the run" in text
+    assert ml.HYPOTHESIS["en"].split("Hypothesis: ")[1][:40] in text.replace("\n", " ") or "Hypothesis, stated before the run" in text
