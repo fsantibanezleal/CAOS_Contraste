@@ -22,3 +22,10 @@ mapie==1.5.0
 fairlearn==0.15.0
 # scikit-learn: the estimator interface mapie and fairlearn need, imported by notebook 08 of topic 13 (the pin of data-pipeline/requirements.txt)
 scikit-learn==1.9.1
+# statsmodels: the quantile regressions of growth-at-risk that the engine's stress.scenario_models calls (the `stress` extra), run by
+# notebook 08 of topic 12 (M-31; the pin of data-pipeline/requirements.txt)
+statsmodels==0.15.0
+# torch: the CPU runtime of the two neural rungs the pipeline trains, PC-Hazard (notebook 07 of topic 04, M-33) and the FZ0 quantile
+# network (notebook 07 of topic 07, M-30); the pin of data-pipeline/requirements.txt, CPU wheel:
+# pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
+torch==2.14.1
