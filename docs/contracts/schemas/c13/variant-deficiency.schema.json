@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c13/variant-deficiency.schema.json",
   "title": "C13 deficiency variant",
-  "description": "Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
+  "description": "Catalog row c13-outputs 3.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
   "allOf": [
     {
       "$ref": "../common/variant-envelope.schema.json"
@@ -718,7 +718,8 @@
         "pla",
         "example",
         "desk_backtest",
-        "detection"
+        "detection",
+        "pla_complement"
       ],
       "properties": {
         "kind": {

@@ -5526,7 +5526,7 @@ export interface components {
         };
         /**
          * C13 deficiency variant
-         * @description Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.
+         * @description Catalog row c13-outputs 3.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.
          */
         "c13-variant-deficiency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -5815,7 +5815,7 @@ export interface components {
             example: components["schemas"]["c13Example"];
             desk_backtest: components["schemas"]["c13DeskLevel"][] & unknown;
             detection: components["schemas"]["c13Detection"];
-            pla_complement?: components["schemas"]["c13Complement"];
+            pla_complement: components["schemas"]["c13Complement"];
         } & unknown;
         c13Pla: {
             thresholds: components["schemas"]["c13PlaThresholds"];
