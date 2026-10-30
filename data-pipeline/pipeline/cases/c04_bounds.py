@@ -303,7 +303,7 @@ def real_bounds(cohorts: list[Cohort], *, has_default_column: bool) -> dict[str,
             out_grades.append({"grade": GRADES[g], "cohorts": [], "pooled": None, "k_over_cohorts": None,
                                "stability": None, "k_above_1": None, "tipping": tip})
             continue
-        pooled = _one(*sums)
+        pooled = _one(*(float(x) for x in sums))
         kp = pooled["_k"]["k"]
         usable = [r for r in recs if r["reason"] == "ok" and math.isfinite(r["_k"]["k_low"])
                   and not math.isnan(r["_k"]["k_high"])]

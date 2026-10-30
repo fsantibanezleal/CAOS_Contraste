@@ -77,7 +77,8 @@ H2_2012 = [[41, 3, 1, 0, 0, 0, 0, 0, 0],
 
 # contract.md section 1, key by key
 TOP = {"kind", "agency", "attribution", "grades", "states", "cohorts", "semesters", "pd", "lra", "pooled", "embedding",
-       "generators", "mobility", "ecb", "homogeneity", "semesters_vs_year", "definition_gap", "lifetime"}
+       "generators", "mobility", "ecb", "homogeneity", "semesters_vs_year", "definition_gap", "lifetime",
+       "withdrawal_bounds"}
 COHORT_KEYS = {"label", "begin", "end", "size", "counts", "withdrawn", "defaulted", "events", "defaulted_cohort",
                "tab2_gap"}
 LRA_ENTRY = {"rate", "cohorts", "defaults", "n", "pooled_rate", "wald", "agresti_coull", "jeffreys", "last5"}

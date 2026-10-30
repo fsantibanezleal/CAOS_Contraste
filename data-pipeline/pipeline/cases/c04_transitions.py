@@ -515,7 +515,7 @@ def anchor_finding(name: str, out: dict[str, Any]) -> dict[str, Any] | None:
           f"the cohorts' own bands contain the pooled k in {pct(ccc)[0]} of the years for CCC to C and {pct(b)[0]} for B, against the criterion of {100 * share:.0f}% fixed before the run: "
           f"stable for {', '.join(stable) or 'no grade'}, not for {', '.join(unstable) or 'no grade'}. "
           "The k absorbs the difference between the two pages' definitions of default, so it is an anchored k conditional on their equivalence, not an estimate of how informative the withdrawals are")
-    es = (f"{name}: con la página de incumplimientos como ancla de los retiros de la página de transiciones, la razón de odds k de retiro antes del incumplimiento agrupada es {kc[1]} para CCC a C "
+    es = (f"{name}: con la página de incumplimientos como ancla de los retiros de la página de transiciones, la razón de probabilidades k de retiro antes del incumplimiento agrupada es {kc[1]} para CCC a C "
           f"(banda {klc[1]} a {khc[1]}, {n} cohortes anuales), {'sobre' if above else 'no sobre'} 1, y {kb[1]} para B (banda {klb[1]} a {khb[1]}); "
           f"las bandas de las propias cohortes contienen la k agrupada en {pct(ccc)[1]} de los años para CCC a C y {pct(b)[1]} para B, contra el criterio de {100 * share:.0f} % fijado antes de la corrida: "
           f"estable para {', '.join(stable) or 'ningún grado'}, no para {', '.join(unstable) or 'ningún grado'}. "

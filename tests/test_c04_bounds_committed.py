@@ -51,7 +51,8 @@ def test_the_truth_is_the_generators_and_the_rungs_agree_on_it(withdrawals):
     out = withdrawals["outputs"]
     truths = {tuple(r["bounds"]["truth"]) for r in out["rungs"]}
     assert len(truths) == 1
-    assert list(truths.pop()) == pytest.approx(out["generator"]["pd_1y"], rel=1e-9)
+    # the document writer rounds the study's vectors to nine significant digits; the generator's own row is exact
+    assert list(truths.pop()) == pytest.approx(out["generator"]["pd_1y"], rel=1e-8)
 
 
 def test_the_finding_states_the_hypothesis_the_numbers_and_the_verdict(withdrawals):
@@ -85,7 +86,7 @@ def test_the_agency_documents_carry_the_anchor(agency):
             assert rec["defaults_implied"] == pytest.approx(x, abs=1e-6)
             if rec["k"] is not None and rec["reason"] == "ok":
                 assert rec["k"] == pytest.approx(x * rec["survivors"] / (rec["defaults"] * (rec["withdrawn"] - x)),
-                                                 rel=1e-9) or rec["flag"] != "ok"
+                                                 rel=1e-8) or rec["flag"] != "ok"
 
 
 def test_the_pooled_counts_are_the_sums_of_the_cohorts():
