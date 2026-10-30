@@ -15,6 +15,7 @@ import {
   C18ContextView, C18FindingsView, C18TestsView, C18VariantsView, CapitalReadout, FactorReadout, LoanReadout, MatrixReadout, PathReadout, RiskReadout, RowReadout, StartReadout,
 } from './C18Common';
 import { Annex3View, FanView, StackView } from './CapitalViews';
+import { GarRungView, VarRungView } from './RungViews';
 import { BackcastView, LossesView, PathsView, SatellitesView, SeverityView } from './StressViews';
 import { BandView, EulerView, MarginalsView, SensitivityView } from './AggregationViews';
 import { ReverseSearchView, ReverseSolutionView } from './ReverseViews';
@@ -280,6 +281,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             { id: 'paths', label: { en: 'Scenario path', es: 'Trayectoria' }, content: <PathsView sel={sel} /> },
             { id: 'satellites', label: { en: 'Satellites', es: 'Satélites' }, content: <SatellitesView sel={sel} /> },
             { id: 'backcast', label: { en: 'Back-cast', es: 'Retrospectiva' }, content: <BackcastView sel={sel} /> },
+            { id: 'var', label: { en: 'VAR forecast', es: 'Pronóstico VAR' }, content: <VarRungView sel={sel} /> },
+            { id: 'gar', label: { en: 'Growth-at-risk', es: 'Crecimiento en riesgo' }, content: <GarRungView sel={sel} /> },
             { id: 'severity', label: { en: 'Severity', es: 'Severidad' }, content: <SeverityView sel={sel} /> },
             { id: 'losses', label: { en: 'Losses', es: 'Pérdidas' }, content: <LossesView sel={sel} /> },
           ],

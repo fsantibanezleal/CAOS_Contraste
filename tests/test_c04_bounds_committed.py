@@ -117,3 +117,13 @@ def test_existing_numbers_of_the_withdrawals_rungs_are_the_ones_the_page_quotes(
     assert -0.45 < r9["pd_removed"]["bias"][5] / truth < -0.25
     assert -0.25 < r9["pd_followed"]["bias"][5] / truth < -0.05
     assert math.isfinite(truth)
+
+
+def test_the_case_page_block_is_the_documents():
+    """docs/cases/C04.md's BS-14 tables are generated from the committed documents (pipeline.cases.c04_page)."""
+    from pipeline.cases import c04_page
+
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "docs" / "cases" / "C04.md").read_text(encoding="utf-8")
+    a, b = text.index(c04_page.MARK_START) + len(c04_page.MARK_START), text.index(c04_page.MARK_END)
+    assert text[a:b] == "\n" + c04_page.bounds_block(root / "data" / "derived")
