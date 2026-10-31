@@ -144,6 +144,7 @@ Un tema sin notebook de nivel 3 explica por qué en su fila; todos los temas del
 | [14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb](14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb) | 2 | Decaimiento de la discriminación, fuga, monotonicidad rota y concentración |
 | [14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb](14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb) | 3 | Lo que midió la literatura y lo que omiten las herramientas |
 | [14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb](14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb) | 4 | El tamaño y la potencia de cada prueba, medidos sobre defectos plantados |
+| [14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb](14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb) | 4 | Monitores secuenciales que mantienen su tamaño leídos cada día: procesos e frente a las pruebas repetidas, en verdades conocidas y en C11 y C03 |
 
 ## Lo que afirma el producto
 
@@ -164,3 +165,4 @@ Cada afirmación del SDD, con los notebooks de nivel 4 que la demuestran en este
 - **Un complemento de escala y nivel para la prueba de atribución de P&L del FRTB.** Demostrada por: [07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb](07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb).
 - **Una PD anclada con punto de inflexión bajo retiros de calificación informativos.** Demostrada por: [03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb](03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb).
 - **Recalibración conforme adaptativa del VaR frente a la escalera de modelos.** Demostrada por: [07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb](07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb).
+- **Monitores secuenciales de procesos e para calibración y backtests.** Demostrada por: [14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb](14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb).
