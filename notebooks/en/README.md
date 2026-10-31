@@ -144,6 +144,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb](14-validating-the-validator/06-discrimination-decay-leakage-broken-monotonicity-and-concentration.ipynb) | 2 | Discrimination decay, leakage, broken monotonicity and concentration |
 | [14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb](14-validating-the-validator/07-what-the-literature-measured-and-what-the-toolkits-leave-out.ipynb) | 3 | What the literature measured, and what the toolkits leave out |
 | [14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb](14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb) | 4 | The size and power of every test, measured on planted defects |
+| [14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb](14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb) | 4 | Sequential monitors that keep their size when read every day: e-processes against the repeated tests, on known truths and on C11 and C03 |
 
 ## What the product claims
 
@@ -164,3 +165,4 @@ Each claim of the SDD, with the level 4 notebooks that demonstrate it in this la
 - **A scale-and-level complement to the FRTB P&L attribution test.** Demonstrated by: [07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb](07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb).
 - **An anchored tipping-point PD under informative rating withdrawals.** Demonstrated by: [03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb](03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb).
 - **Adaptive conformal recalibration of the VaR against the model ladder.** Demonstrated by: [07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb](07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb).
+- **E-process sequential monitors for calibration and back-tests.** Demonstrated by: [14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb](14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb).
