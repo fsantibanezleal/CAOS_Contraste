@@ -23,6 +23,14 @@ const R: ReadonlyArray<Rule> = [
   [/^Shevchenko and W[uü]thrich \((\d{4})\), (.*)$/, (g) => `Shevchenko y Wüthrich (${g[1]}), ${g[2]}`],
   [/^dossier 01 section F \(OPE25, in force (\S+), published (\S+)\)$/, (g) => `dossier 01 sección F (OPE25, vigente desde ${g[1]}, publicado el ${g[2]})`],
   [/^OPE25\.7 footnote 2$/, () => 'OPE25.7 nota 2'],
+  // the robust severity rungs (riskvalidation 1.1.0, the re-bake of 2026-11-01)
+  [/^(riskvalidation\.\S+), the form of arXiv (\S+) \(Degen (\d{4})\); the primary text of Opdyke and Cavallo \((\d{4})\) was not read$/,
+    (g) => `${g[1]}, la forma de arXiv ${g[2]} (Degen ${g[3]}); el texto primario de Opdyke y Cavallo (${g[4]}) no se leyó`],
+  [/^Opdyke and Cavallo \((\d{4})\), (.*), as implemented in (riskvalidation\.\S+)$/, (g) => `Opdyke y Cavallo (${g[1]}), ${g[2]}, tal como lo implementa ${g[3]}`],
+  [/^Hampel, Ronchetti, Rousseeuw and Stahel \((\d{4})\) section (\S+), as used by Opdyke and Cavallo \((\d{4})\), (riskvalidation\.\S+)$/,
+    (g) => `Hampel, Ronchetti, Rousseeuw y Stahel (${g[1]}) sección ${g[2]}, como la usan Opdyke y Cavallo (${g[3]}), ${g[4]}`],
+  [/^the severity family the generator does not draw from, as the control of the robust GPD rungs$/,
+    () => 'la familia de severidad de la que el generador no extrae, como control de los peldaños de GPD robusta'],
 ];
 
 /** A name inside a sentence: its first letter lower case unless the first word is a proper name or an acronym ("Bayesian

@@ -570,8 +570,8 @@
     "es": "Simulación histórica, 500 días"
    },
    "nn-fz": {
-    "en": "Quantile network trained on FZ0 (challenger)",
-    "es": "Red de cuantiles entrenada con FZ0 (retador)"
+    "en": "Quantile network trained on FZ0",
+    "es": "Red de cuantiles entrenada con FZ0"
    }
   },
   "C12": {
@@ -653,9 +653,25 @@
     "en": "Single loss approximation",
     "es": "Aproximación de una pérdida"
    },
+   "sla-cvm": {
+    "en": "Robust GPD by minimum Cramer-von Mises distance, mean-adjusted single loss approximation",
+    "es": "GPD robusta por distancia mínima de Cramér-von Mises, aproximación de una pérdida con ajuste por media"
+   },
+   "sla-cvm-lognormal": {
+    "en": "Robust lognormal by minimum Cramer-von Mises distance, mean-adjusted single loss approximation (control)",
+    "es": "Lognormal robusta por distancia mínima de Cramér-von Mises, aproximación de una pérdida con ajuste por media (control)"
+   },
+   "sla-mean-adjusted": {
+    "en": "Mean-adjusted single loss approximation, GPD by maximum likelihood",
+    "es": "Aproximación de una pérdida con ajuste por media, GPD por máxima verosimilitud"
+   },
    "sla-mean-corrected": {
     "en": "Single loss approximation with the mean correction",
     "es": "Aproximación de una pérdida con corrección por media"
+   },
+   "sla-obre": {
+    "en": "Optimally bias-robust GPD at 95 percent efficiency, mean-adjusted single loss approximation",
+    "es": "GPD óptimamente robusta al sesgo con eficiencia de 95 por ciento, aproximación de una pérdida con ajuste por media"
    },
    "sma": {
     "en": "Standardised approach of OPE25 (BIC x ILM)",

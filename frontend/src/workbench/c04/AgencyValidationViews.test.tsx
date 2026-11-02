@@ -18,8 +18,10 @@ import type { C04AgencyOutputs, CaseManifest, ModelsArtifact, VariantArtifact } 
 import {
   ByYearView,
   DefinitionsView,
+  AnchoredKView,
   LifetimeView,
   PdByGradeView,
+  anchoredKChart,
   averageOfYears,
   cohortGaps,
   emptyDefaultYears,
@@ -640,5 +642,53 @@ describe('the text of these views', () => {
       const o: C04AgencyOutputs = (c.data.variant as unknown as AgencyVariant).outputs;
       for (const key of ['pd', 'lra', 'cohorts', 'definition_gap', 'lifetime', 'agency', 'attribution'] as const) expect(o[key], `${c.id} ${key}`).toBeDefined();
     }
+  });
+});
+
+describe('Anchored k: the default page as the anchor of the withdrawals (withdrawal_bounds)', () => {
+  const CCC = GRADES.length - 1;
+  it("draws the chosen grade's k cohort by cohort on a log axis, with the pooled k and k 1 as reference lines", () => {
+    for (const id of ['sp', 'fitch']) {
+      const o = agencyOf(id).outputs;
+      const grade = o.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[CCC])!;
+      for (const lang of LANGS) {
+        captured.length = 0;
+        const markup = html(<AnchoredKView sel={makeSel(dataOf(id), { grade: CCC })} />, lang);
+        const [chart, table] = figures(markup);
+        expect(chart.lane).toBe('replay');
+        expect(chart.note).toContain(formatNumber(nn(grade.pooled?.k), lang, { decimals: 1 }));
+        expect(table.title).toContain(lang === 'en' ? 'the anchored k by grade' : 'la k anclada por grado');
+        const p = captured[0];
+        expect(p.y.log).toBe(true);
+        expect(p.x.values).toEqual(grade.cohorts.map((c) => Number(c.label)));
+        expect(p.yMarks?.map((m) => m.y)).toEqual([1, nn(grade.pooled?.k)]);
+        const ks = p.series.find((s) => s.id === 'k')!.values;
+        grade.cohorts.forEach((c, i) => expect(ks[i]).toBe(c.k !== null && c.k > 0 ? c.k : null));
+        for (const g of o.withdrawal_bounds!.grades) {
+          const r = row(markup, 'anchored-k', 'data-grade', g.grade);
+          expect(r.cells[1]).toBe(g.pooled?.k == null ? '-' : formatNumber(g.pooled.k, lang, { decimals: 1 }));
+          if (g.stability) expect(r.cells[4]).toBe(`${int(g.stability.cohorts_containing_pooled_k, lang)} / ${int(g.stability.usable_cohorts, lang)}`);
+          expect(r.className).toBe(g.grade === GRADES[CCC] ? 'ct-current' : '');
+        }
+        for (const bad of DASHES) expect(text(markup).includes(bad), `${id} ${lang}: ${bad}`).toBe(false);
+      }
+    }
+  });
+
+  it("matches the finding's stability verdicts: S&P's CCC to C not stable, Fitch's stable", () => {
+    expect(agencyOf('sp').outputs.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[CCC])!.stability!.stable).toBe(false);
+    expect(agencyOf('fitch').outputs.withdrawal_bounds!.grades.find((g) => g.grade === GRADES[CCC])!.stability!.stable).toBe(true);
+    for (const id of ['sp', 'fitch']) {
+      const markup = html(<AnchoredKView sel={makeSel(dataOf(id), { grade: CCC })} />);
+      expect(row(markup, 'anchored-k', 'data-grade', GRADES[CCC]).cells[5]).toBe(id === 'sp' ? 'no' : 'yes');
+    }
+  });
+
+  it("says so where the agency's page has no default category to anchor on (Moody's)", () => {
+    expect(agencyOf('moodys').outputs.withdrawal_bounds ?? null).toBeNull();
+    expect(anchoredKChart(agencyOf('moodys').outputs, CCC)).toBeNull();
+    const [card] = figures(html(<AnchoredKView sel={makeSel(dataOf('moodys'))} />));
+    expect(text(card.body)).toContain('gives no default category to anchor its withdrawals on');
+    expect(captured).toHaveLength(0);
   });
 });

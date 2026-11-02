@@ -14,7 +14,7 @@ import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useStageSize, use
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
-import type { C04AgencyOutputs, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
+import type { C04AgencyOutputs, C04AnchorGrade, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
 import { useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
@@ -1462,6 +1462,186 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
           </PlotCard>
         </div>
       </>
+    </ViewsRow>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Anchored k: the default page as the anchor of the transition page's withdrawals (riskvalidation's
+// transitions.withdrawals on the agency's own CEREP pages; the bake's withdrawal_bounds block)
+
+const kText = (l: Lang, x: unknown): string => (num(x) === null ? '-' : formatNumber(num(x) as number, l, { decimals: 1 }));
+/** A k the log axis can draw: positive and finite; 0 and an infinite end are left out and counted in the note. */
+const onLog = (x: unknown): number | null => (num(x) !== null && (num(x) as number) > 0 ? (num(x) as number) : null);
+
+export interface AnchoredKChart {
+  grade: C04AnchorGrade;
+  years: number[];
+  k: (number | null)[];
+  low: (number | null)[];
+  high: (number | null)[];
+  /** cohorts with a k the axis cannot draw (0, or no k), and cohorts whose band has no upper end */
+  undrawn: number;
+  open: number;
+  series: ChartSeries[];
+}
+
+/** The chosen grade's anchored k cohort by cohort, with its band, as the bake gives it; null where the agency has no
+ * withdrawal_bounds block (Moody's) or no row for the grade. */
+export function anchoredKChart(o: C04AgencyOutputs, g: number): AnchoredKChart | null {
+  const grade = o.withdrawal_bounds?.grades.find((r) => r.grade === GRADES[g]) ?? null;
+  if (!grade) return null;
+  const cohorts = grade.cohorts;
+  const years = cohorts.map((c) => Number(c.label));
+  const k = cohorts.map((c) => onLog(c.k));
+  const low = cohorts.map((c) => onLog(c.k_low));
+  const high = cohorts.map((c) => onLog(c.k_high));
+  const series: ChartSeries[] = [
+    { id: 'k', label: { en: "The cohort's k", es: 'La k de la cohorte' }, values: k, color: '--color-fg' as const, mode: 'points' as const },
+    { id: 'low', label: { en: 'Lower end of its band', es: 'Extremo inferior de su banda' }, values: low, color: DEFINITION_COLOR.keep, width: 1.6, dash: [5, 3], dots: true },
+    { id: 'high', label: { en: 'Upper end of its band', es: 'Extremo superior de su banda' }, values: high, color: DEFINITION_COLOR.keep, width: 1.6, dash: [2, 3], dots: true },
+  ];
+  return {
+    grade,
+    years,
+    k,
+    low,
+    high,
+    undrawn: k.filter((x) => x === null).length,
+    open: cohorts.filter((c) => c.infinite.includes('k_high')).length,
+    series: series.filter((s) => s.values.some((x) => x !== null)),
+  };
+}
+
+/** The anchored k of the transition page's withdrawals, by grade and cohort year: how much likelier a rating about to
+ * default is withdrawn than one that survives, read off the agency's own default page, and whether the pooled k holds
+ * year by year against the share fixed before the run. */
+export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
+  const lang = useShellLang();
+  const stateKey = useWorkbenchState()?.stateKey;
+  const v = agencyOf(sel);
+  const g = sel?.grade ?? N_GRADES - 1;
+  const data = useMemo(() => (v ? anchoredKChart(v.outputs, g) : null), [v, g]);
+  if (!sel) return <Pending />;
+  if (!v) return <NotAgency sel={sel} />;
+  const o = v.outputs;
+  const study = o.withdrawal_bounds ?? null;
+  const prov = provenanceOf(v.provenance.truth_status);
+  const name = agencyName(sel, v);
+  const grade = GRADES[g];
+  if (!study || !data) {
+    return (
+      <ViewsRow>
+        <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the anchored k`, `${pick(name, l)}: la k anclada`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={bi((l) => sourceText(o, l))}>
+          <p className="ct-note">
+            {t(
+              lang,
+              `No anchored k for ${grade}: the transition page of ${pick(name, lang)} gives no default category to anchor its withdrawals on.`,
+              `No hay k anclada para ${grade}: la página de transiciones de ${pick(name, lang)} no da una categoría de incumplimiento en la que anclar sus retiros.`,
+            )}
+          </p>
+        </PlotCard>
+      </ViewsRow>
+    );
+  }
+  const pooled = data.grade.pooled;
+  const stab = data.grade.stability;
+  const share = study.stability_share;
+  const level = study.level;
+  const yMarks = [
+    { y: 1, label: { en: 'k 1: withdrawal says nothing', es: 'k 1: el retiro no dice nada' }, tone: 'neutral' as const },
+    ...(onLog(pooled?.k) !== null ? [{ y: pooled!.k as number, label: bi((l) => t(l, `Pooled k ${kText(l, pooled!.k)}`, `k agrupada ${kText(l, pooled!.k)}`)), tone: 'good' as const }] : []),
+  ];
+  const drawn = [...data.k, ...data.low, ...data.high, ...yMarks.map((m) => m.y)].filter((x): x is number => x !== null);
+  const chartNote = bi((l) => {
+    const pooledText = pooled
+      ? t(
+          l,
+          ` Pooled over the cohorts, k is ${kText(l, pooled.k)} (band ${kText(l, pooled.k_low)} to ${kText(l, pooled.k_high)}), the line.`,
+          ` Agrupada sobre las cohortes, k es ${kText(l, pooled.k)} (banda ${kText(l, pooled.k_low)} a ${kText(l, pooled.k_high)}), la línea.`,
+        )
+      : '';
+    const stabText = stab
+      ? t(
+          l,
+          ` ${count(l, stab.cohorts_containing_pooled_k)} of ${count(l, stab.usable_cohorts)} cohorts' bands contain the pooled k (${pcs(l, stab.share_cohorts_containing_pooled_k)}), against ${pcs(l, share)} fixed before the run: ${stab.stable ? 'stable' : 'not stable'}.`,
+          ` Las bandas de ${count(l, stab.cohorts_containing_pooled_k)} de ${count(l, stab.usable_cohorts)} cohortes contienen la k agrupada (${pcs(l, stab.share_cohorts_containing_pooled_k)}), contra el ${pcs(l, share)} fijado antes de la corrida: ${stab.stable ? 'estable' : 'no estable'}.`,
+        )
+      : '';
+    const left =
+      data.undrawn || data.open
+        ? t(
+            l,
+            ` Not on the log axis: ${count(l, data.undrawn)} cohorts with k 0 or none, ${count(l, data.open)} bands with no upper end (the table lists every grade).`,
+            ` Fuera del eje logarítmico: ${count(l, data.undrawn)} cohortes con k 0 o sin k, ${count(l, data.open)} bandas sin extremo superior (la tabla lista cada grado).`,
+          )
+        : '';
+    return (
+      t(
+        l,
+        `${grade}, cohort by cohort: k, the odds ratio of withdrawal before default, with the default page as the anchor of the transition page's withdrawals, and its ${pcs(l, level)} band. Above 1, a rating about to default is withdrawn more often than one that survives; the k absorbs any difference between the two pages' definitions of default.`,
+        `${grade}, cohorte por cohorte: k, la razón de chances de retiro antes del incumplimiento, con la página de incumplimientos como ancla de los retiros de la página de transiciones, y su banda al ${pcs(l, level)}. Sobre 1, una calificación por incumplir se retira más que una que sobrevive; la k absorbe cualquier diferencia entre las definiciones de incumplimiento de las dos páginas.`,
+      ) +
+      pooledText +
+      stabText +
+      left +
+      ` ${sourceText(o, l)}`
+    );
+  });
+  const tableNote = bi(
+    (l) =>
+      t(
+        l,
+        `Every grade: the pooled k and its ${pcs(l, level)} band, the median k over the annual cohorts, the cohorts whose band contains the pooled k against the ${pcs(l, share)} criterion, and whether k is above 1 at the band's lower end.`,
+        `Cada grado: la k agrupada y su banda al ${pcs(l, level)}, la mediana de k sobre las cohortes anuales, las cohortes cuya banda contiene la k agrupada contra el criterio del ${pcs(l, share)}, y si k está sobre 1 en el extremo inferior de la banda.`,
+      ) + ` ${sourceText(o, l)}`,
+  );
+  const yes = (b: boolean | undefined): string => (b === undefined ? '-' : b ? t(lang, 'yes', 'sí') : t(lang, 'no', 'no'));
+  return (
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard fill title={bi((l) => t(l, `${pick(name, l)} ${grade}: the anchored k, cohort by cohort`, `${pick(name, l)} ${grade}: la k anclada, cohorte por cohorte`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={chartNote}>
+        {data.series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: data.years, label: { en: 'Cohort year', es: 'Año de la cohorte' }, format: { decimals: 0, grouping: false } }}
+            y={{ label: { en: 'k, odds ratio (log)', es: 'k, razón de chances (log)' }, format: { digits: 2 }, log: true, range: [Math.min(...drawn) / 1.3, Math.max(...drawn) * 1.3] }}
+            series={data.series}
+            yMarks={yMarks}
+          />
+        ) : (
+          <p className="ct-note">{t(lang, `No cohort of ${grade} has a k above 0: the table beside lists every grade.`, `Ninguna cohorte de ${grade} tiene una k sobre 0: la tabla al lado lista cada grado.`)}</p>
+        )}
+      </PlotCard>
+      <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the anchored k by grade`, `${pick(name, l)}: la k anclada por grado`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
+        <div className="ct-scroll" data-caos-flow="">
+          <table className="caos-table ct-wrap-head" data-table="anchored-k">
+            <thead>
+              <tr>
+                <th className="ct-text">{t(lang, 'Grade', 'Grado')}</th>
+                <th>{t(lang, 'Pooled k', 'k agrupada')}</th>
+                <th>{t(lang, 'Band', 'Banda')}</th>
+                <th>{t(lang, 'Median over cohorts', 'Mediana en cohortes')}</th>
+                <th>{t(lang, 'Bands holding it', 'Bandas que la contienen')}</th>
+                <th>{t(lang, 'Stable', 'Estable')}</th>
+                <th>{t(lang, 'Above 1', 'Sobre 1')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {study.grades.map((r) => (
+                <tr key={r.grade} data-grade={r.grade} className={r.grade === grade ? 'ct-current' : undefined}>
+                  <td className="ct-text">{r.grade}</td>
+                  <td>{kText(lang, r.pooled?.k)}</td>
+                  <td>{r.pooled ? `${kText(lang, r.pooled.k_low)} ${t(lang, 'to', 'a')} ${r.pooled.infinite.includes('k_high') ? '∞' : kText(lang, r.pooled.k_high)}` : '-'}</td>
+                  <td>{kText(lang, r.k_over_cohorts?.median)}</td>
+                  <td>{r.stability ? `${count(lang, r.stability.cohorts_containing_pooled_k)} / ${count(lang, r.stability.usable_cohorts)}` : '-'}</td>
+                  <td>{yes(r.stability?.stable)}</td>
+                  <td>{yes(r.k_above_1?.holds_with_lower_bound)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
     </ViewsRow>
   );
 }
