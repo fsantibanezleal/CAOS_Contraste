@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "33.0.0",
+    "version": "34.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "aa3521d5c55dd85825ef457a4c1e3b85c07e0ae797fce9ea13e843daf8fe8053"
+    "sha256": "d4aaa9fcef01cd7f7b38f215a59215cde8b8314c73b7c9fb0c431550657af38a"
   },
   "readiness": {
     "version": "1.0.1",
@@ -210,9 +210,9 @@
     "sha256": "60e36cb79dcc1c24ffd6a8ba355276af7c91581ea0697dd4fd7fc85e2e5e6e26"
   },
   "c17-outputs": {
-    "version": "4.0.0",
+    "version": "5.0.0",
     "schema": "docs/contracts/schemas/c17/variant-tail-index.schema.json",
-    "sha256": "94187508bf4fc8fdc1e7f1060f0fbfc73600ff690a8e2ba0798dd1947bb93f12"
+    "sha256": "1db01d7afcee47bba79281f2d2d3c634d88967e5d18264d7c68e3bce7a0091d7"
   },
   "c17-models": {
     "version": "1.1.0",

@@ -10695,13 +10695,13 @@ export interface components {
             };
             panjer: {
                 step_eur: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             fft: {
                 n_points: number;
                 padding_factor: number;
                 tilt: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             quantile_999_eur: {
                 monte_carlo: number;

@@ -86,6 +86,13 @@ def E(*values: str) -> dict:
 B = {"type": "boolean"}
 CUR = {"const": "EUR", "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."}
 UNIT = N("A share in [0, 1].", minimum=0, maximum=1)
+
+
+def UNIT_PAST_GRID(grid: str, what: str) -> dict:
+    """A share in [0, 1], or null past the last node of a grid (c17-outputs 2.0.0 and 3.0.0: the engine computes no probability there)."""
+    return {"type": ["number", "null"], "minimum": 0, "maximum": 1,
+            "description": f"A share in [0, 1], or null past the last node of the {grid} grid ({what} computes no probability there; the "
+                           "nulls are a suffix of the axis)."}
 POS = N(exclusiveMinimum=0)
 MONEY = N("Money in EUR (the `currency` of the enclosing block).", minimum=0)
 XI = {"enum": [0.6, 0.8, 0.96, 1.1], "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."}
@@ -429,8 +436,9 @@ def c17_defs() -> dict:
         "currency": CUR,
         "grid_eur": A(POS, 3, desc="Loss grid, strictly increasing, log-spaced."),
         "monte_carlo": Ob({"n_years": Int(1), "seed": Int(0), "exceedance": A(UNIT, 3)}),
-        "panjer": Ob({"step_eur": POS, "exceedance": A(UNIT, 3)}),
-        "fft": Ob({"n_points": Int(2), "padding_factor": Int(1), "tilt": N(minimum=0), "exceedance": A(UNIT, 3)}),
+        "panjer": Ob({"step_eur": POS, "exceedance": A(UNIT_PAST_GRID("Panjer recursion", "the recursion"), 3)}),
+        "fft": Ob({"n_points": Int(2), "padding_factor": Int(1), "tilt": N(minimum=0),
+                   "exceedance": A(UNIT_PAST_GRID("FFT", "the transform"), 3)}),
         "quantile_999_eur": Ob({"monte_carlo": POS, "panjer": POS, "fft": POS, "sla": POS}),
     }, "P(annual loss > x) of the true distribution on one grid by Monte Carlo, Panjer and FFT, with the 99.9 percent quantile "
        "of each and of the single loss approximation (the marker).")
