@@ -1,0 +1,60 @@
+\documentclass[11pt,openany]{report}
+
+% The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
+\newcommand{\doctype}{Technical report}
+\newcommand{\docversion}{v1.00.000}
+\newcommand{\docdate}{2 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.0}
+\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
+
+\input{../_shared/preamble}
+
+\title{TITLE}
+\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\
+\small CAOS open-research programme, Santiago, Chile\
+\small \texttt{fsantibanez@gmail.com}}
+\date{\docdate}
+
+\begin{document}
+\maketitle
+\headerblock
+
+\begin{abstract}
+% ABSTRACT (TR-13)
+\end{abstract}
+
+\tableofcontents
+
+\input{chapters/01-introduction}
+\input{chapters/02-problem}
+\input{chapters/03-notation}
+\input{chapters/04-data}
+\input{chapters/05-architecture}
+\input{chapters/06-credit-scoring}
+\input{chapters/07-ratings}
+\input{chapters/08-provisions}
+\input{chapters/09-lgd-ead}
+\input{chapters/10-credit-capital}
+\input{chapters/11-market}
+\input{chapters/12-ccr}
+\input{chapters/13-alm}
+\input{chapters/14-oprisk}
+\input{chapters/15-aggregation-stress}
+\input{chapters/16-validation-tests}
+\input{chapters/17-proposed}
+\input{chapters/18-protocol}
+\input{chapters/19-results}
+\input{chapters/20-validation}
+\input{chapters/21-discussion}
+\input{chapters/22-limitations}
+\input{chapters/23-reproducibility}
+\input{chapters/24-conclusions}
+
+\appendix
+\input{chapters/25-contracts}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
