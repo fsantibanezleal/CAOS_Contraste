@@ -21,14 +21,15 @@ What it does, in order:
      tests of the base guards that need the example), with the feature rows whose gate is one of those tests;
   7. writes a README for the product (its name, taglines, badges, the `## Areas` section that scripts/check_readme_areas.py
      holds, how to run it);
-  8. unless --no-run: bakes the cases, runs the tests, builds the web once, and reports what of the example remains
-     (scripts/check_template_residue.py), which is the list of what the product replaces next.
+  8. unless --no-run: invokes the guarded external initializer. Example replacement, explicit external generation,
+     validation and promotion remain product-owner integration work; instantiation never bakes inside the checkout.
 Stdlib only.
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import importlib.util
 import json
 import re
 import shutil
@@ -37,6 +38,16 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def portable_slug(value: str) -> bool:
+    if not re.fullmatch(r"[a-z][a-z0-9-]*", value):
+        return False
+    spec = importlib.util.spec_from_file_location(
+        "local_runtime_policy", Path(__file__).resolve().parent / "local/workflow.py")
+    policy = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(policy)
+    return policy.safe_environment_component(value)
 OWNER = "fsantibanezleal"
 HOLDER = "Felipe Santibáñez-Leal"
 
@@ -69,6 +80,38 @@ def write(rel: str, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8", newline="\n")
     print(f"  wrote   {rel}")
+
+
+def product_ci(text: str) -> str:
+    """Remove one explicitly delimited template-only job, never a fragment of a pytest command."""
+    start = "  # BEGIN TEMPLATE-ONLY PLANTS\n"
+    end = "  # END TEMPLATE-ONLY PLANTS\n"
+    lines = text.splitlines(keepends=True)
+    if (text.count(start.strip()) != 1 or text.count(end.strip()) != 1
+            or lines.count(start) != 1 or lines.count(end) != 1):
+        raise ValueError("CI needs exactly one template-only job marker pair")
+    a, b = text.index(start), text.index(end)
+    if b <= a:
+        raise ValueError("CI template-only job markers are out of order")
+    block = text[a + len(start):b]
+    # Admit the whole known job boundary, not just headers recognized by a partial YAML regex.
+    # Any other same-level line (quoted/explicit/inline/unknown job keys included) must refuse.
+    body = block.splitlines()
+    if (not body or body[0] != "  template-plants:"
+            or any(line.strip() and (not line.startswith("    ") or "\t" in re.match(r"[ \t]*", line)[0])
+                   for line in body[1:])):
+        raise ValueError("CI template-only block must contain only the indented template-plants job")
+    command = "        run: pip install pytest==9.1.1 && python -m pytest tests/template/adversarial -q\n"
+    if block.count(command) != 1 or block.count("tests/template/adversarial") != 1:
+        raise ValueError("CI template-only block must contain exactly the standalone template-plants job")
+    following = next((line for line in text[b + len(end):].splitlines()
+                      if line.strip() and not line.lstrip().startswith("#")), None)
+    if following is not None and re.match(r"^  [^ \t]", following) is None:
+        raise ValueError("CI template-only end marker must be followed by a same-level job or end of file")
+    result = text[:a] + text[b + len(end):]
+    if "tests/template/adversarial" in result:
+        raise ValueError("CI contains an unmarked template-only test command")
+    return result
 
 
 def drop_template_test_rows() -> None:
@@ -165,11 +208,20 @@ def readme(a: argparse.Namespace) -> str:
         "## Run it",
         "",
         "```bash",
-        "./scripts/setup.sh                     # the pipeline environment (.venv-pipeline); setup.ps1 on Windows",
-        "./scripts/precompute.sh                # the canonical bake into data/derived (a release operation)",
-        ".venv-pipeline/bin/python -m pytest    # the pipeline tests, sandboxed",
-        "./scripts/setup.sh --notebooks         # the notebook environment (.venv-notebooks); setup.ps1 -Notebooks on Windows",
-        "python scripts/run_notebooks.py --check # every notebook runs top to bottom (a local release gate, never CI)",
+        ': "${CAOS_VENVS_ROOT:?Export the absolute external runtime role root}"',
+        ': "${CAOS_TEMP_ROOT:?Export the absolute external scratch role root}"',
+        "bash scripts/local/00_install-prereqs.sh",
+        "bash scripts/local/01_init.sh          # external declared runtimes and locked frontend dependencies",
+        "bash scripts/local/02_generate-data.sh # only when generation is needed; writes a fresh external stage",
+        "# Inspect the stage, then explicitly use --release --from-stage '<stage>' for local artifact promotion.",
+        "bash scripts/local/03_dev.sh           # validated local artifacts and owned frontend/API processes",
+        f'pipeline_python="$CAOS_VENVS_ROOT/{a.slug}/.venv-pipeline/bin/python"',
+        f'[ -f "$pipeline_python" ] || pipeline_python="$CAOS_VENVS_ROOT/{a.slug}/.venv-pipeline/Scripts/python.exe"',
+        f'"$pipeline_python" -m pytest --basetemp "$CAOS_TEMP_ROOT/{a.slug}-tests"',
+        "bash scripts/setup.sh --notebooks     # optional external teaching runtime; setup.ps1 -Notebooks on Windows",
+        f'notebook_python="$CAOS_VENVS_ROOT/{a.slug}/.venv-notebooks/bin/python"',
+        f'[ -f "$notebook_python" ] || notebook_python="$CAOS_VENVS_ROOT/{a.slug}/.venv-notebooks/Scripts/python.exe"',
+        '"$notebook_python" scripts/run_notebooks.py --check --tmp "$CAOS_TEMP_ROOT"',
         "cd frontend && npm ci && npm run build && npm test && npm run gate",
         "```",
         "",
@@ -178,7 +230,7 @@ def readme(a: argparse.Namespace) -> str:
         "- [docs/design/SDD.md](docs/design/SDD.md): the design, every requirement with its gate.",
         "- [docs/](docs/README.md): architecture, guides, cases and frameworks.",
         "",
-        f"Licensed under the MIT License (see [LICENSE](LICENSE)). Deployed to {a.deploy}"
+        f"Licensed under the MIT License (see [LICENSE](LICENSE)). Configured deployment target: {a.deploy}"
         + (f" at {site}" if site else "")
         + ".",
         "",
@@ -206,20 +258,27 @@ def main() -> int:
     p.add_argument("--tagline-es", required=True)
     p.add_argument("--holder", default=HOLDER)
     p.add_argument("--year", type=int, default=dt.date.today().year)
-    p.add_argument("--no-run", action="store_true", help="skip the bake, tests and build")
+    p.add_argument("--no-run", action="store_true", help="write identity only; skip guarded external initialization")
     a = p.parse_args()
 
     if not (ROOT / ".template-source").exists():
         print("instantiate: this tree is not the template (no .template-source); it was instantiated already")
         return 2
-    if not re.fullmatch(r"[a-z][a-z0-9-]*", a.slug):
-        print("instantiate: --slug is lower-case letters, digits and hyphens")
+    if not portable_slug(a.slug):
+        print("instantiate: --slug uses lower-case letters, digits and hyphens, excluding portable reserved names")
         return 2
     if a.name.strip() in {"", "CAOS Product"} or not a.tagline_en.strip() or not a.tagline_es.strip():
         print("instantiate: --name, --tagline-en and --tagline-es must be the product's own")
         return 2
     if a.deploy == "vps" and not a.domain:
         print("instantiate: a VPS deploy needs --domain")
+        return 2
+
+    # Validate before any identity write/removal: malformed CI must not leave a half-instantiated product.
+    try:
+        product_workflow = product_ci((ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        print(f"instantiate: {exc}")
         return 2
 
     template_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
@@ -240,6 +299,9 @@ def main() -> int:
         "manuscripts": [],
     }
     write("product.json", json.dumps(product, indent=2, ensure_ascii=False) + "\n")
+    workflow = json.loads((ROOT / "scripts/local/workflow.json").read_text(encoding="utf-8"))
+    workflow.update(external_environments_required=True, environment_namespace=a.slug)
+    write("scripts/local/workflow.json", json.dumps(workflow, indent=2) + "\n")
     pkg_path = ROOT / "frontend" / "package.json"
     pkg = json.loads(pkg_path.read_text(encoding="utf-8"))
     pkg.update({"name": f"{a.slug}-frontend", "version": "0.1.0", "license": "MIT"})
@@ -296,9 +358,7 @@ def main() -> int:
     # the base's own tests that plant into or read the example: the guards a product takes verbatim are tested in the
     # template, a product tests its own guards and features under tests/adversarial/ (BD-3)
     remove("tests/template")
-    ci = ROOT / ".github" / "workflows" / "ci.yml"
-    if ci.exists():  # the template's CI also runs those plants; the product's runs only its own tests/adversarial
-        write(".github/workflows/ci.yml", ci.read_text(encoding="utf-8").replace(" tests/template/adversarial", ""))
+    write(".github/workflows/ci.yml", product_workflow)
     drop_template_test_rows()
     guides = ROOT / "docs" / "guides.md"
     if guides.exists():
@@ -309,18 +369,9 @@ def main() -> int:
     if a.no_run:
         print("instantiate: done (--no-run). Next: replace the example; scripts/check_template_residue.py lists it.")
         return 0
-    venv = next((c for c in (ROOT / ".venv-pipeline" / "Scripts" / "python.exe", ROOT / ".venv-pipeline" / "bin" / "python") if c.exists()), None)
-    py = str(venv) if venv else sys.executable
-    ok = run([py, "data-pipeline/run.py"], ROOT) and run([py, "-m", "pytest", "-q"], ROOT)
-    npm = shutil.which("npm")
-    if npm:
-        front = ROOT / "frontend"
-        ok = run([npm, "ci"], front) and run([npm, "run", "build"], front) and run([npm, "test"], front) and ok
-    else:
-        print("  npm not found: build the web with `cd frontend && npm ci && npm run build`")
-    run([py, "scripts/check_template_residue.py"], ROOT)
-    print("instantiate: done. The residue list above is what this product replaces next (the example model, cases,")
-    print("pages and diagrams); the guards fail until it is gone.")
+    ok = run([sys.executable, "scripts/local/workflow.py", "init"], ROOT)
+    print("instantiate: identity written. Replace the example, then use scripts/local/02_generate-data for external")
+    print("generation and explicit validated promotion. Run the product tests and frontend build before delivery.")
     return 0 if ok else 1
 
 

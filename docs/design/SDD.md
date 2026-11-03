@@ -493,6 +493,8 @@ the ones the dossiers and `docs/frameworks/` record.
 | build | @vitejs/plugin-react | 6.1.1 | the React transform for vite | none recorded |
 | build | typescript | 5.9.3 | type check of the web and the generated contract types | none recorded (7.0.2 is a major change and was not adopted) |
 | build | openapi-typescript | 7.13.0 | generates `contract.gen.ts` from the OpenAPI document built from the schema files | hand-written types, rejected: they drift (the generation step fails when they are not current) |
+| build | @redocly/openapi-core | 1.34.22 | the private Redocly 1.x modules openapi-typescript 7.13.0 consumes, pinned by an npm override so the codegeneration bridge's version and byte hash hold (`frontend/scripts/codegen-compatibility.mjs`, template 0.14.002) | Redocly 2.x override rejected: it breaks the private `lib/ref-utils.js` import the generator uses |
+| build | minimatch | 11.0.1 | scoped patched glob dependency of the contract generator (GHSA-g3hv-75wg-m249); the guarded adapter preserves its legacy consumer | minimatch 5.x, rejected: the pattern-amplification advisory |
 | build | @redocly/ajv | 8.11.2 | the strict validator of the contract generator, pinned exactly | none recorded |
 | build | @types/node | 24.19.1 | types of the build scripts | none recorded |
 | build | @types/react | 19.3.0 | types of React | none recorded |

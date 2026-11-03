@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 import pytest
-from planting import edit, git_commit, guard, make_tree
+from planting import edit, git_commit, guard, make_tree, section
 
 TECH_INPUTS = ("scripts/check_tech_matrix.py", "docs/design/SDD.md", "requirements*.txt", "data-pipeline/requirements.txt",
                "notebooks/requirements.txt", "pyproject.toml", "frontend/package.json", "frontend/package-lock.json", "data-pipeline/requirements*.txt")
@@ -316,3 +316,79 @@ RUNNING_GATE = "`tests/adversarial/test_guard_holes.py::test_the_slim_tree_passe
 
 
 # ---- check_ci_budget: what YAML reads is what is judged (M10a-d)
+
+
+# ---------------------------------------------------------------- template 0.14.001 to 0.14.005
+
+def test_ci_budget_a_pytest_install_on_its_own_line_is_not_a_test_run(budget_repo: Path) -> None:
+    _step(budget_repo, "run: |\n          pip install pytest==9.1.1\n          python -m pytest tests/adversarial -q")
+    r = guard(budget_repo, "check_ci_budget.py", ok_marker="ci budget: OK")
+    assert r.returncode == 0, r.stdout
+
+
+@pytest.mark.parametrize("plant,command", [
+    ("B-1 the whole suite after the allowed path", "run: pip install pytest==9.1.1 && python -m pytest tests/adversarial tests/ -q"),
+    ("B-2 a path that climbs out", "run: pip install pytest==9.1.1 && python -m pytest tests/adversarial/.. -q"),
+    ("B-3 a second pytest on the line", "run: python -m pytest tests/adversarial -q; python -m pytest -q"),
+    ("B-4 an extra test file", "run: python -m pytest tests/adversarial tests/test_pipeline_smoke.py -q"),
+    ("B-7 a line continuation", "run: |\n          pip install pytest==9.1.1 && python -m pytest tests/adversarial \\\n          tests/"),
+    ("B-8 config overrides and an extra file", "run: pip install pytest==9.1.1 && python -m pytest tests/adversarial -q --rootdir=. "
+                                              "--override-ini=testpaths=tests -c pyproject.toml tests/test_pipeline_smoke.py"),
+    ("B-9 pyargs", "run: python -m pytest tests/adversarial --pyargs pipeline"),
+    ("B-9 a plugin", "run: python -m pytest tests/adversarial -p no:cacheprovider"),
+    ("B-9 an and-chain", "run: python -m pytest tests/adversarial && python -m pytest tests"),
+])
+@pytest.mark.parametrize("suite", ["tests/adversarial", "tests/template/adversarial"])
+def test_ci_budget_an_allowance_that_is_broader_than_the_adversarial_suite(budget_repo: Path, plant: str, command: str, suite: str) -> None:
+    command = command.replace("tests/adversarial", suite)
+    _step(budget_repo, command)
+    r = guard(budget_repo, "check_ci_budget.py")
+    assert r.returncode == 1 and "tests run locally" in r.stdout, r.stdout
+
+
+@pytest.mark.parametrize("plant,command", [
+    ("M10a a plain scalar continued on the next line", "run: python -m pytest tests/adversarial\n          tests/"),
+    ("M10b a folded block", "run: >\n          python -m pytest tests/adversarial\n          tests/"),
+    ("M10c a literal block indented by nine spaces", "run: |\n         pip install pytest==9.1.1\n         python -m pytest -q"),
+    ("M10d PYTEST_ADDOPTS on the step", "env:\n          PYTEST_ADDOPTS: \"tests --override-ini=addopts=\"\n        run: " + ALLOWED),
+    ("M10d PYTEST_ADDOPTS exported in the command", "run: export PYTEST_ADDOPTS=tests && python -m pytest tests/adversarial"),
+])
+@pytest.mark.parametrize("suite", ["tests/adversarial", "tests/template/adversarial"])
+def test_ci_budget_rereview_an_allowance_broader_than_the_yaml_shows(budget_repo: Path, plant: str, command: str, suite: str) -> None:
+    command = command.replace("tests/adversarial", suite)
+    _step(budget_repo, command)
+    r = guard(budget_repo, "check_ci_budget.py")
+    assert r.returncode == 1 and ("tests run locally" in r.stdout or "PYTEST_" in r.stdout), r.stdout
+
+
+def test_ci_budget_rereview_m10f_the_allowance_as_a_folded_block_passes(budget_repo: Path) -> None:
+    _step(budget_repo, "run: >\n          pip install pytest==9.1.1 &&\n          python -m pytest tests/adversarial -q")
+    r = guard(budget_repo, "check_ci_budget.py", ok_marker="ci budget: OK")
+    assert r.returncode == 0, r.stdout
+
+
+def test_ci_budget_rereview_pytest_addopts_at_the_top_of_the_workflow(budget_repo: Path) -> None:
+    edit(budget_repo, ".github/workflows/ci.yml", "\nconcurrency:\n", "\nenv:\n  PYTEST_ADDOPTS: tests\nconcurrency:\n")
+    r = guard(budget_repo, "check_ci_budget.py")
+    assert r.returncode == 1 and "PYTEST_ADDOPTS" in r.stdout, r.stdout
+
+
+def test_sdd_rereview_the_data_line_inside_a_code_block_is_not_the_data_line(sdd_repo: Path) -> None:
+    _replace_line(sdd_repo, SDD, "Data file: `content/executive.json`", "```\nData file: `content/executive.json`\n```")
+    r = sdd(sdd_repo)
+    assert r.returncode == 1 and "Data file: content/executive.json" in r.stdout, r.stdout
+
+
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+def test_section_plant_preserves_offsets_and_ignores_fenced_or_commented_headings(newline: str) -> None:
+    before = "<!--\n## Executive brief\n-->\n~~~\n```\n## Executive brief\n```\n~~~\n"
+    body = "## 2. Executive brief\n\nData file: content/executive.json\n\n"
+    text = (before + body + "## 3. Research basis\nreal body\n").replace("\n", newline)
+    a, b = section(text, "Executive brief")
+    assert text[a:b] == body.replace("\n", newline)
+
+
+@pytest.mark.parametrize("text,count", [("## Other\nbody\n", 0), ("## Executive brief\nbody\n## 2. Executive brief\nbody\n", 2)])
+def test_section_plant_rejects_missing_or_ambiguous_structure(text: str, count: int) -> None:
+    with pytest.raises(AssertionError, match=f"found {count}"):
+        section(text, "Executive brief")

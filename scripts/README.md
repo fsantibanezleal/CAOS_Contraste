@@ -1,5 +1,8 @@
 # scripts/
 
+Start with the [numbered local workflow](local/README.md): check prerequisites, initialize, optionally generate
+into an external sandbox, then start the declared local frontend/API. Flat setup/dev/precompute forward to the same guarded helper; precompute stages externally unless explicit release promotion is requested.
+
 Environment and pipeline scripts in both `*.sh` and `*.ps1`, and the guards CI runs (each runs locally too, with the
 standard library only).
 
@@ -7,9 +10,9 @@ standard library only).
 
 | Script | What it does |
 |---|---|
-| `setup.sh` / `setup.ps1` | creates `.venv-pipeline` and installs the pinned pipeline requirements; `--notebooks` (`-Notebooks`) builds `.venv-notebooks` from `notebooks/requirements.txt` instead |
+| `setup.sh` / `setup.ps1` | forwards to numbered initialization: external declared runtimes and locked frontend dependencies; optional `--notebooks` (`-Notebooks`) adds the teaching runtime |
 | `run_notebooks.py` | executes the notebooks top to bottom in a fresh kernel and writes the outputs in place; `--check` runs copies and writes nothing; `--only <path>` runs one (a local release gate, never CI) |
-| `precompute.sh` / `precompute.ps1` | the canonical bake: `python data-pipeline/run.py` (a release operation, never CI) |
+| `precompute.sh` / `precompute.ps1` | forwards to external generation; `--release` (`-Release`) explicitly promotes the validated staged set, never CI |
 | `dev.sh` / `dev.ps1`, `smoke.sh` / `smoke.ps1` | local development and a sandboxed smoke run |
 | `instantiate.py` | makes a product from the template (identity, licence, version, deploy place) |
 
@@ -26,7 +29,7 @@ standard library only).
 | `check_doc_paths.py` | every repository path a document names exists |
 | `check_web_baseline.py` | the web's tokens, classes, numbers, images and animation loops |
 | `check_svg_animation.py` | an animated SVG carries its reduced-motion block and plays ten seconds at most (the shell's own analysis; needs `npm ci`) |
-| `check_deploy_place.py` | one deploy place, and only its files |
+| `check_deploy_place.py` | one deploy place, and only its files; plain `pages`/`vps` targets and structured static-plus-service VPS records are supported |
 | `check_live.py` | after a deploy, the live site is this build (run by the deploy workflow) |
 | `check_base_integrity.py` | no real `.env`, venv, native or heavy binary, raw data or machine path is tracked; a model file (`.pt`, `.pth`, `.onnx`) passes only when a catalog row's `documents` names it, at most 5 MB each and 50 MB together |
 | `check_content_standards.py` | no em-dash and no emoji in tracked content (ADR-0067); a pinned third-party notice listed with its digest in `.content_standards_allow` is skipped while the digest matches |

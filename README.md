@@ -51,17 +51,26 @@ portfolio (C22). Every live computation is a TypeScript port held to the engine 
 
 ## Run it
 
+The [numbered local workflow](scripts/local/README.md), PowerShell or Bash, from any directory:
+
 ```bash
-./scripts/setup.sh                     # the pipeline environment (.venv-pipeline); setup.ps1 on Windows
-.venv-pipeline/bin/python data-pipeline/fetch.py --all          # the sources, into $CONTRASTE_DATA
-.venv-pipeline/bin/python data-pipeline/run.py C01 --output <dir>   # a sandbox bake; no --output: the release bake
-.venv-pipeline/bin/python -m pytest    # the pipeline tests, sandboxed
-cd frontend && npm ci && npm run dev   # the web on http://localhost:5173; npm test, npm run build, npm run gate
+bash scripts/local/00_install-prereqs.sh   # checks Python 3.12+, Node and git; installs nothing unless --install
+bash scripts/local/01_init.sh              # the declared environments under $CAOS_VENVS_ROOT/contraste, the locked frontend
+bash scripts/local/02_generate-data.sh     # a full bake into a fresh stage under $CAOS_TEMP_ROOT; promote with --release --from-stage <stage>
+bash scripts/local/03_dev.sh               # the web on http://127.0.0.1:5173 (the API is dormant)
 ```
 
-Set `CONTRASTE_DATA` and `CONTRASTE_MODELS` (`.env.example`) to directories outside the repository. The full path,
-from fetching to the measured gate, is [guide 01](docs/guides/01_fetch-and-bake.md).
+Set `CAOS_VENVS_ROOT`, `CAOS_DATA_ROOT`, `CAOS_TEMP_ROOT`, `CONTRASTE_DATA` and `CONTRASTE_MODELS` (`.env.example`) to
+directories outside the repository. One case at a time, and the tests:
 
+```bash
+<pipeline python> data-pipeline/fetch.py --all              # the sources, into $CONTRASTE_DATA
+<pipeline python> data-pipeline/run.py C01 --output <dir>   # a sandbox bake; no --output: the release bake
+<pipeline python> -m pytest                                 # the pipeline tests, sandboxed
+cd frontend && npm test && npm run build && npm run gate    # the web tests, the build and the measured gate
+```
+
+The full path, from fetching to the measured gate, is [guide 01](docs/guides/01_fetch-and-bake.md).
 ## Validate your own model
 
 ```bash

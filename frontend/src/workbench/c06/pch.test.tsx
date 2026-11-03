@@ -2,6 +2,7 @@
 // rung is named by its short title, never its id; the numbers on screen are the ones the models document holds; a date whose
 // follow-up has not reached a horizon says so; the Spanish view carries no English sentence of the tab.
 import { afterEach, describe, expect, it } from 'vitest';
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import { committedData, render, textOf, variantIds } from '../c03/u16f2-kit';
 import { setLang } from '../c03/u6-testkit';
 import { PchView, pchRecords } from './PchView';
@@ -34,7 +35,7 @@ describe('S-4 PC-Hazard view on the committed C06 documents', () => {
         expect(markup, `${id} ${lang}`).toContain('data-table="pch-summary"');
         expect(markup, `${id} ${lang}`).toContain(`data-verdict="${String(ev.holds_at_date)}"`);
         // the integrated Brier of both rungs is printed (five digits), whatever the language's decimal mark
-        const fmt = (v: number | null) => (v === null ? null : v.toFixed(5).replace('.', lang === 'es' ? ',' : '.'));
+        const fmt = (v: number | null) => (v === null ? null : formatNumber(v, lang, { decimals: 5 }));
         if (ev.integrated_brier.pch !== null) expect(text, `${id} ${lang}`).toContain(fmt(ev.integrated_brier.pch));
         if (ev.integrated_brier.cox !== null) expect(text, `${id} ${lang}`).toContain(fmt(ev.integrated_brier.cox));
       }

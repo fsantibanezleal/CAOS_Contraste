@@ -67,7 +67,7 @@ def test_the_finding_states_the_hypothesis_the_numbers_and_the_verdict(withdrawa
     assert ("is met" if v["summary"]["refuted"] else "is not met") in en
     assert "200 repetitions" in en and "200 repeticiones" in es
     for text in (en, es):
-        assert "—" not in text and "→" not in text
+        assert "\u2014" not in text and "\u2192" not in text
 
 
 @pytest.mark.parametrize("agency", ["sp", "moodys", "fitch"])
@@ -106,7 +106,7 @@ def test_the_anchor_finding_is_in_both_languages_with_the_pooled_k():
     assert f"{k:.1f}" in f["title"]["en"]
     assert re.search(r"\d+,\d", f["title"]["es"])  # the Spanish decimal comma
     assert ("above" if ccc["k_above_1"]["holds"] else "not above") in f["title"]["en"]
-    assert "—" not in f["title"]["en"] + f["title"]["es"]
+    assert "\u2014" not in f["title"]["en"] + f["title"]["es"]
     assert not any(x["id"] == "F-WITHDRAW-ANCHOR" for x in _doc("moodys")["findings"])
 
 

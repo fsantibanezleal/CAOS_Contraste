@@ -1,0 +1,118 @@
+{
+  "external_environments_required": true,
+  "environment_namespace": "contraste",
+  "readiness_excludes": [
+    "readiness"
+  ],
+  "stage_inputs": [],
+  "readiness_exceptions": {
+    "case-manifest": "partial",
+    "api": "missing"
+  },
+  "readiness_check": "scripts/check_readiness.py",
+  "primary_environment": ".venv-pipeline",
+  "generation_environments": [
+    ".venv-pipeline"
+  ],
+  "environments": [
+    {
+      "path": ".venv-pipeline",
+      "requirements": [
+        "requirements-precompute.txt",
+        "requirements-dev.txt"
+      ]
+    },
+    {
+      "path": ".venv",
+      "when": "api",
+      "requirements": [
+        "requirements-api.txt"
+      ]
+    },
+    {
+      "path": ".venv-notebooks",
+      "when": "notebooks",
+      "requirements": [
+        "notebooks/requirements.txt"
+      ]
+    }
+  ],
+  "node_stamp": ".contraste-package-lock.sha256",
+  "required": [
+    "data/derived/manifests/index.json",
+    "data/derived/readiness.json"
+  ],
+  "promote": [
+    "data/derived"
+  ],
+  "api": {
+    "environment": ".venv",
+    "active": false,
+    "port": 8000,
+    "health": "/health",
+    "command": [
+      "{python}",
+      "-m",
+      "uvicorn",
+      "app.main:app",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "{port}"
+    ]
+  },
+  "web_port": 5173,
+  "frontend_prepare": [
+    [
+      "{npm}",
+      "run",
+      "predev"
+    ]
+  ],
+  "frontend_command": [
+    "node",
+    "node_modules/vite/bin/vite.js",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "{web_port}",
+    "--strictPort"
+  ],
+  "generation": [
+    {
+      "script": "data-pipeline/run.py",
+      "args": [
+        "all",
+        "--output",
+        "{derived}"
+      ]
+    }
+  ],
+  "validators": [
+    {
+      "script": "scripts/local/producer_bridge.py",
+      "args": [
+        "template-validate",
+        "{stage}"
+      ]
+    },
+    {
+      "script": "scripts/check_artifacts.py",
+      "args": [
+        "{stage}"
+      ]
+    },
+    {
+      "script": "scripts/check_documents.py",
+      "args": [
+        "{stage}"
+      ]
+    }
+  ],
+  "generation_modules": [
+    "numpy",
+    "scipy",
+    "riskvalidation"
+  ],
+  "needs_sources": true
+}

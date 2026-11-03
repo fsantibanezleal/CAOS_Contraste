@@ -210,4 +210,4 @@ def test_the_text_of_the_block_has_no_dash_or_arrow_and_both_languages():
     walk(s)
     assert texts
     for t in texts:
-        assert "—" not in t and "→" not in t and t.strip()
+        assert "\u2014" not in t and "\u2192" not in t and t.strip()
