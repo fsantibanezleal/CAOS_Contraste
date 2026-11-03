@@ -1,4 +1,4 @@
-\documentclass[11pt,openany]{report}
+\documentclass[11pt]{article}
 
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Technical report}
@@ -26,33 +26,34 @@
 
 \tableofcontents
 
-\input{chapters/01-introduction}
-\input{chapters/02-problem}
-\input{chapters/03-notation}
-\input{chapters/04-data}
-\input{chapters/05-architecture}
-\input{chapters/06-credit-scoring}
-\input{chapters/07-ratings}
-\input{chapters/08-provisions}
-\input{chapters/09-lgd-ead}
-\input{chapters/10-credit-capital}
-\input{chapters/11-market}
-\input{chapters/12-ccr}
-\input{chapters/13-alm}
-\input{chapters/14-oprisk}
-\input{chapters/15-aggregation-stress}
-\input{chapters/16-validation-tests}
-\input{chapters/17-proposed}
-\input{chapters/18-protocol}
-\input{chapters/19-results}
-\input{chapters/20-validation}
-\input{chapters/21-discussion}
-\input{chapters/22-limitations}
-\input{chapters/23-reproducibility}
-\input{chapters/24-conclusions}
+\input{sections/01-introduction}
+\input{sections/02-problem}
+\input{sections/03-notation}
+\input{sections/04-data}
+\input{sections/05-architecture}
+\input{sections/06-credit-scoring}
+\input{sections/07-ratings}
+\input{sections/08-provisions}
+\input{sections/09-lgd-ead}
+\input{sections/10-credit-capital}
+\input{sections/11-market}
+\input{sections/12-ccr}
+\input{sections/13-alm}
+\input{sections/14-oprisk}
+\input{sections/15-aggregation-stress}
+\input{sections/16-validation-tests}
+\input{sections/17-proposed}
+\input{sections/18-protocol}
+\input{sections/19-results}
+\input{sections/20-validation}
+\input{sections/21-discussion}
+\input{sections/22-limitations}
+\input{sections/23-reproducibility}
+\input{sections/24-conclusions}
 
 \appendix
-\input{chapters/25-contracts}
+\input{sections/25-contracts}
+\input{sections/contracts-generated}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

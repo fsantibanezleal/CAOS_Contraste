@@ -1,4 +1,4 @@
-"""Generate the data-contracts chapter of the technical report from ``docs/contracts/catalog.md`` and the schema files:
+"""Generate the data-contracts appendix of the technical report from ``docs/contracts/catalog.md`` and the schema files:
 one subsection per catalog row, labelled ``sec:contract-<id>`` (the label ``coverage.json`` maps the row to), with its
 purpose, version, producer, consumers, tests and missing-data behaviour stated from the row, and a table of the fields of
 its schema (name, JSON type, constraint, description). Nothing is typed by hand: a new catalog row or a changed schema
@@ -20,7 +20,7 @@ import figkit  # noqa: E402
 ROOT = figkit.ROOT
 CATALOG = ROOT / "docs" / "contracts" / "catalog.md"
 SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
-OUT = HERE.parent / "chapters" / "contracts-generated.tex"
+OUT = HERE.parent / "sections" / "contracts-generated.tex"
 COLUMNS = ("id", "version", "owner", "schema file", "example", "documents", "producer test", "consumer test",
            "missing-data behavior", "provider", "model io", "swap test", "status")
 
@@ -177,7 +177,7 @@ def subsection(row: dict[str, str]) -> str:
     schema = load_schema(row["schema file"]) if row["schema file"].endswith(".schema.json") else None
     title = schema.get("title") if schema else None
     desc = schema.get("description", "") if schema else ""
-    lines = [f"\\subsection{{\\texttt{{{figkit.tex_escape(cid)}}}" + (f": {figkit.tex_escape(title)}" if title else "") + "}",
+    lines = [f"\\subsubsection{{\\texttt{{{figkit.tex_escape(cid)}}}" + (f": {figkit.tex_escape(title)}" if title else "") + "}",
              f"\\label{{sec:contract-{cid}}}", ""]
     para = []
     if desc:
@@ -229,7 +229,7 @@ def main() -> None:
         if g not in by_group:
             continue
         head = names.get(g, f"Case {g.upper()}")
-        out += [f"\\section{{{head}}}", f"\\label{{sec:contracts-{g}}}", ""]
+        out += [f"\\subsection{{{head}}}", f"\\label{{sec:contracts-{g}}}", ""]
         out += [subsection(r) for r in by_group[g]]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(out), encoding="utf-8", newline="\n")
