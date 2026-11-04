@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Risk weight $12.5K$ in percent (columns Basel III, EU CRR3, Basel II and the Chilean RAN 21-6; the last column is Basel II over Basel III) for each loan type's IRB class at its fitted default probability, loss given default 0.45 and, for the non-retail classes, a maturity of 2.5 years, under the four regimes of the engine. Basel II carries the 1.06 scaling factor and a lower default probability floor; a dash marks a combination the engine refuses because the Chilean regime fixes the loss given default of the consumer portfolio at 61.3\%.}
+\label{tab:cc-regimes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedleft\arraybackslash}p{1.45cm}>{\raggedleft\arraybackslash}p{1.45cm}>{\raggedleft\arraybackslash}p{1.45cm}>{\raggedleft\arraybackslash}p{1.45cm}>{\raggedleft\arraybackslash}p{1.45cm}}
+\toprule
+Loan type & IRB class & Basel III & CRR3 & Basel II & Chile 21-6 & II / III \\
+\midrule
+Commercial and industrial & corporate & 89.2 & 89.2 & 94.6 & 89.2 & 1.060 \\
+Commercial real estate & hvcre & 83.5 & 83.5 & 88.5 & 83.5 & 1.060 \\
+Residential real estate & residential mortgage & 13.8 & 13.8 & 14.6 & 13.8 & 1.060 \\
+Credit cards & qrre & 49.0 & 49.0 & 51.9 & -- & 1.060 \\
+Other consumer & other retail & 45.3 & 45.3 & 48.0 & 45.3 & 1.060 \\
+\bottomrule
+\end{tabular}
+\end{table}

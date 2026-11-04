@@ -456,7 +456,7 @@ The contract is at version 34.0.0 and its status in the catalog is \emph{real}. 
 \subsubsection{\texttt{c01-variant}: C01 variant}
 \label{sec:contract-c01-variant}
 
-Catalog row c01-variant 3.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind. 3.0.0 adds the reject\_inference block (S-6), required and null on every variant but the German twin. The contract is at version 3.0.0 and its status in the catalog is \emph{real}. Its producer is \texttt{data-pipeline/pipeline/cases/c01\_retail\_pd.py}, and its schema file is \texttt{docs/contracts/schemas/c01/variant.schema.json}; the committed documents it governs are data/derived/C01/*.json, !data/derived/C01/models-*.json. The producer side is tested by \texttt{tests/contracts/test\_documents.py::test\_variants\_validate}, and the consumer side, the web application that reads the document, by \texttt{frontend/src/lib/contract.test.ts}. When the data is missing or out of date the behaviour is fixed in advance: partial: an artifact a manifest names is absent; copy-data stops the site build, and at run time getJSON throws ArtifactError (an HTTP status or a non-JSON answer); a view shows its Pending state (data-state loading) while the data is not there, and the C04 result sections show a LoadError alert (data-state error), never an empty chart. The other variants and cases keep working. Its provider, the document served before and besides the real one, is fixture:data/derived/C01/holdout.json. The test that every document matches exactly one schema is \texttt{tests/contracts/test\_documents.py::test\_every\_document\_matches\_exactly\_one\_schema\_and\_validates}.
+Catalog row c01-variant 3.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind. 3.0.0 adds the reject\_inference block, required and null on every variant but the German twin. The contract is at version 3.0.0 and its status in the catalog is \emph{real}. Its producer is \texttt{data-pipeline/pipeline/cases/c01\_retail\_pd.py}, and its schema file is \texttt{docs/contracts/schemas/c01/variant.schema.json}; the committed documents it governs are data/derived/C01/*.json, !data/derived/C01/models-*.json. The producer side is tested by \texttt{tests/contracts/test\_documents.py::test\_variants\_validate}, and the consumer side, the web application that reads the document, by \texttt{frontend/src/lib/contract.test.ts}. When the data is missing or out of date the behaviour is fixed in advance: partial: an artifact a manifest names is absent; copy-data stops the site build, and at run time getJSON throws ArtifactError (an HTTP status or a non-JSON answer); a view shows its Pending state (data-state loading) while the data is not there, and the C04 result sections show a LoadError alert (data-state error), never an empty chart. The other variants and cases keep working. Its provider, the document served before and besides the real one, is fixture:data/derived/C01/holdout.json. The test that every document matches exactly one schema is \texttt{tests/contracts/test\_documents.py::test\_every\_document\_matches\_exactly\_one\_schema\_and\_validates}.
 
 {\small
 \begin{longtable}{p{0.22\textwidth}p{0.17\textwidth}p{0.15\textwidth}p{0.36\textwidth}}
@@ -474,7 +474,7 @@ Catalog row c01-variant 3.0.0: one C01 (retail PD) variant artifact. The default
 \texttt{outputs.groups} & object & - & - \\
 \texttt{outputs.sample} & one of 2 & - & - \\
 \texttt{outputs.irb} & object (c01Irb) & - & What C01's capital view states (CT-212, CT-214). \\
-\texttt{outputs.reject\_inference} & one of 2 & - & S-6, reject inference on a simulated legacy policy: carried by the German twin, null on every other variant. \\
+\texttt{outputs.reject\_inference} & one of 2 & - & reject inference on a simulated legacy policy: carried by the German twin, null on every other variant. \\
 \texttt{tests} & array of test-result.schema.json & - & - \\
 \texttt{impact} & object & - & - \\
 \texttt{findings} & array of finding.schema.json & - & - \\
@@ -618,7 +618,7 @@ Catalog row c03-outputs 4.0.0: one test cohort of approval fiscal years of the S
 \texttt{outputs.calibration} & object (c03Calibration) & - & - \\
 \texttt{outputs.rung\_comparison} & array of c03RungResult & at least 1 items & - \\
 \texttt{outputs.stability} & object (c03Stability) & - & Population stability of each test vintage against the training window and its observed 5-year rate against the training mean (the crisis contrast). \\
-\texttt{outputs.sequential} & object (c03Sequential) & - & BS-15 (unit D15): the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort instead of once at the 5-year mark. The vintages are the grades, the ages the steps;  ... \\
+\texttt{outputs.sequential} & object (c03Sequential) & - & : the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort instead of once at the 5-year mark. The vintages are the grades, the ages the steps;... \\
 \texttt{tests} & array of item & - & - \\
 \texttt{impact} & object & - & - \\
 \texttt{findings} & array of finding.schema.json & - & - \\
@@ -1284,7 +1284,7 @@ Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing 
 \texttt{outputs.models} & array of c11ModelOutput & at least 1 items & - \\
 \texttt{outputs.comparison} & object (c11Comparison) & - & Eligibility first, then the comparative back-test of Nolde and Ziegel: DM against the champion and the MCS. \\
 \texttt{outputs.es\_backtests} & array of c11EsNull & - & - \\
-\texttt{outputs.conformal} & one of 2 & - & BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models. \\
+\texttt{outputs.conformal} & one of 2 & - & null in a partial bake that leaves the ladder without the three wrapped models. \\
 \texttt{tests} & array of item & - & - \\
 \texttt{impact} & object & - & - \\
 \texttt{findings} & array of finding.schema.json & - & - \\
@@ -1411,7 +1411,7 @@ Catalog row c13-outputs 3.0.0: one planted model deficiency of the FRTB desk eli
 \texttt{outputs.example} & object (c13Example) & - & One replication kept whole, for the rank scatter and the two ECDFs with the KS gap. \\
 \texttt{outputs.desk\_backtest} & array of c13DeskLevel & at least 2 items & - \\
 \texttt{outputs.detection} & object (c13Detection) & - & The rate at which the PLA catches the planted deficiency: its power; with no deficiency planted it is the false-alarm rate, the size. \\
-\texttt{outputs.pla\_complement} & object (c13Complement) & - & BS-13, beyond the state of the art: the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) an ... \\
+\texttt{outputs.pla\_complement} & object (c13Complement) & - & the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) an... \\
 \texttt{tests} & array of item & - & - \\
 \texttt{impact} & object & - & - \\
 \texttt{findings} & array of finding.schema.json & - & - \\
@@ -2163,7 +2163,7 @@ Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validato
 \texttt{outputs.estimators} & one of 2 & - & - \\
 \texttt{outputs.specimen} & object & - & - \\
 \texttt{outputs.size\_bounds} & object & - & - \\
-\texttt{outputs.sequential} & one of 2 & - & BS-15 (unit D15): the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families. \\
+\texttt{outputs.sequential} & one of 2 & - & : the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families. \\
 \texttt{tests} & array of test-result.schema.json & - & - \\
 \texttt{impact} & object & - & - \\
 \texttt{findings} & array of finding.schema.json & - & - \\

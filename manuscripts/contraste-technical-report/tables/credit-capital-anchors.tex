@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Analytic anchors of the portfolio engine recomputed by the table script: the engine value, an independent closed form or numerical integral computed with scipy (or the value printed in the cited paper), and the absolute difference. The first three rows use a default probability of 0.02, a correlation of 0.15 and, for the loss quantities, unit exposure and unit loss; the last four rows use the small portfolios stated in the row.}
+\label{tab:cc-anchors}
+\begin{tabular}{>{\raggedright\arraybackslash}p{7.5cm}>{\raggedleft\arraybackslash}p{1.9cm}>{\raggedleft\arraybackslash}p{2.1cm}>{\raggedleft\arraybackslash}p{2.3cm}}
+\toprule
+Quantity & Engine & Independent value & Absolute difference \\
+\midrule
+\relax LHP value at risk, 99.9\% & 0.176329 & 0.176329 & \ensuremath{0} \\
+\relax LHP expected shortfall, 99.9\% (Simpson, 4,000 steps) & 0.209404 & 0.209404 & \ensuremath{1.8\times10^{-12}} \\
+\relax IRB capital K (mortgage class) against LGD $\times$ (LHP VaR $-$ PD) & 0.070348 & 0.070348 & \ensuremath{1.4\times10^{-17}} \\
+\relax CreditRisk+ recursion, one obligor, negative binomial (max over 4 terms) & 0.826446 & 0.826446 & \ensuremath{2.2\times10^{-16}} \\
+\relax CreditRisk+ recursion, three obligors without sector, against the convolution of Poisson laws (max over 8 terms) & 0.548812 & 0.548812 & \ensuremath{6.9\times10^{-18}} \\
+\relax Granularity multiplier $\delta$ at $\xi=0.25$, 99.9\% against the value printed by Gordy and L\"utkebohmert & 4.8336 & 4.83 & 0.0036 \\
+\relax Exponential twist of a default probability 0.1 at $\theta=\ln 2$ & 0.181818 & 0.181818 & \ensuremath{5.6\times10^{-17}} \\
+\bottomrule
+\end{tabular}
+\end{table}

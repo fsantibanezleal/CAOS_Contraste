@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Out-of-sample tail back-test: the number of evaluation years 2007 to 2012 whose loss rate exceeds the 95\%, 99\% and 99.9\% quantile of the distribution fitted on 1985 to 2006, the fitted 99\% quantile in percent, the upper binomial tail probability of the observed count at 99\% and 99.9\%, and the traffic light at the 99\% level (green above 0.05, amber above 0.01, red below). The expected counts are 0.3, 0.06 and 0.006.}
+\label{tab:cc-tail}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{1.4cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.5cm}>{\raggedleft\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.0cm}}
+\toprule
+Loan type & Fitted 99\% quantile (\%) & Years above 95\% & Years above 99\% & Years above 99.9\% & $p$ (99\%) & $p$ (99.9\%) & Light (99\%) \\
+\midrule
+Commercial and industrial & 3.34 & 1 of 6 & 0 of 6 & 0 of 6 & 1.000 & 1.000 & green \\
+Commercial real estate & 4.42 & 2 of 6 & 0 of 6 & 0 of 6 & 1.000 & 1.000 & green \\
+Residential real estate & 0.30 & 6 of 6 & 5 of 6 & 5 of 6 & \ensuremath{6.0\times10^{-10}} & \ensuremath{6.0\times10^{-15}} & red \\
+Credit cards & 7.06 & 2 of 6 & 2 of 6 & 2 of 6 & 0.001 & \ensuremath{1.5\times10^{-5}} & red \\
+Other consumer & 1.77 & 4 of 6 & 3 of 6 & 2 of 6 & \ensuremath{2.0\times10^{-5}} & \ensuremath{1.5\times10^{-5}} & red \\
+\bottomrule
+\end{tabular}
+\end{table}

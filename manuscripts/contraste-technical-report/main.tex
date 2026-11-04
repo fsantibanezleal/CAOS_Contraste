@@ -9,6 +9,11 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
+% A section includes a generated table as \input{../tables/<name>}: TeX finds it through sections/ below, and the content
+% check, which resolves an include from the including file's folder, finds the same file.
+\makeatletter
+\def\input@path{{sections/}}
+\makeatother
 
 \title{TITLE}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\

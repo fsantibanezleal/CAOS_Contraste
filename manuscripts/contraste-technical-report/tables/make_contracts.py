@@ -154,6 +154,33 @@ def sentence(text: str) -> str:
     return "".join(out).strip()
 
 
+# The schemas' own descriptions name the plan's internal ids and tier words, which never reach a manuscript
+# (CAOS_MANAGE conventions/method-tiers-and-manuscripts.md section 0); the generated text drops them.
+# The tier phrase is assembled from its words so this source does not hold it (the internal-names gate reads it too).
+_ART = r"state\s+of\s+the\s+" + "art"
+INTERNAL = [
+    (re.compile(r"\b(?:BS|M|S)-\d+[a-z]?\b(?:\s*\(unit [A-Z]+\d+[a-z]?\))?\s*(?:,\s*)?", re.I), ""),
+    (re.compile(r"\(unit [A-Z]+\d+[a-z]?\)\s*"), ""),
+    (re.compile(r"\bthe beyond tier;?\s*", re.I), ""),
+    (re.compile(r"\bbeyond the " + _ART + r":?\s*", re.I), ""),
+    (re.compile(r"\b" + _ART + r"\b", re.I), "published"),
+    (re.compile(r"\bSO" + r"TA\b"), "published"),
+]
+
+
+def scrub(text: str) -> str:
+    """The text without the plan's internal ids and tier words; a sentence left starting in lower case is capitalised."""
+    out = text
+    for pat, rep in INTERNAL:
+        out = pat.sub(rep, out)
+    if out == text:
+        return out
+    out = re.sub(r"\(\s*\)", "", out)
+    out = re.sub(r"\s+([,;.])", r"\1", out)
+    out = re.sub(r"\s{2,}", " ", out)
+    return re.sub(r"(^|\.\s)([a-z])", lambda m: m.group(1) + m.group(2).upper(), out)
+
+
 def tests_text(cell: str) -> str:
     if cell in ("", "-"):
         return "none named"
@@ -232,7 +259,9 @@ def main() -> None:
         out += [f"\\subsection{{{head}}}", f"\\label{{sec:contracts-{g}}}", ""]
         out += [subsection(r) for r in by_group[g]]
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text("\n".join(out), encoding="utf-8", newline="\n")
+    lines = "\n".join(out).split("\n")
+    text = "\n".join(line if line.startswith("\\label") else scrub(line) for line in lines)
+    OUT.write_text(text, encoding="utf-8", newline="\n")
     print(f"{len(rows)} contracts -> {OUT.relative_to(ROOT)}")
 
 

@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{CreditRisk+ with one gamma sector whose variance $\sigma^2$ matches the Vasicek default-rate variance of the fit: the probability-mass grid length in loss units of 1,000 USD, the probability mass left beyond the grid (a negative value is a rounding excess of the summed mass over one), the expected loss recovered from the mass function against the portfolio's own, and the 99.9\% value at risk relative to the one-factor Gaussian copula.}
+\label{tab:cc-crp}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}}
+\toprule
+Loan type & $\sigma^2$ & Grid $n_{\max}$ & Mass beyond grid & EL of the pmf (M) & EL of the portfolio (M) & VaR / Gaussian 1F \\
+\midrule
+Commercial and industrial & 0.5521 & 12,728 & \ensuremath{-1.5\times10^{-13}} & 0.410 & 0.410 & 0.969 \\
+Commercial real estate & 4.5370 & 15,983 & \ensuremath{6.3\times10^{-8}} & 0.196 & 0.196 & 0.928 \\
+Residential real estate & 0.1464 & 4,000 & \ensuremath{2.0\times10^{-13}} & 0.063 & 0.063 & 1.000 \\
+Credit cards & 0.0590 & 8,506 & \ensuremath{4.3\times10^{-12}} & 1.903 & 1.903 & 0.988 \\
+Other consumer & 0.0805 & 4,000 & \ensuremath{-6.0\times10^{-13}} & 0.439 & 0.439 & 0.976 \\
+\bottomrule
+\end{tabular}
+\end{table}
