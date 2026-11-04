@@ -1,22 +1,329 @@
 % Chapter written by unit TR-8 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
+% Every number that comes from an artifact is a macro of tables/alm-numbers.tex, written by tables/make_alm.py.
+\input{../tables/alm-numbers}
 \section{Methods: interest rate risk in the banking book and liquidity}
 \label{sec:alm}
 
-% INTRODUCTION OF THE CHAPTER
+Two risks of the balance sheet of a bank are measured from the same raw material, the schedule on which every asset and every liability pays or reprices, and they fail in different ways. Interest rate risk in the banking book is the exposure of the economic value of equity and of the net interest income to a change in market rates, on positions that the bank holds for its own account and does not trade. Liquidity risk is the exposure of the bank to losing its funding faster than it can turn assets into cash. The first erodes value gradually and visibly in the accounts; the second can end an institution in days. In March 2023 the two acted together. The review of the Federal Reserve into Silicon Valley Bank states that the bank had breached its long-term interest rate risk limits on and off since 2017, that in April 2022 it made counterintuitive assumptions about the duration of its deposits to address a breach instead of managing the risk, and that deposit outflows were over 40 billion US dollars on 9 March, with management expecting 100 billion more on the next day \citep{alm:fed2023}. Marking the assets of US banks to market for the rise in rates between the first quarter of 2022 and the first quarter of 2023, Jiang and co-authors find an average decline of 10 per cent, about 2 trillion dollars in aggregate \citep{alm:jiang2024}. Exposure to social media before the run predicts the losses of banks during it \citep{alm:cookson2026}, and the Basel Committee tabulates the outflow of 85 per cent of deposits in two days at the same bank as the largest of the nine runs it lists \citep{alm:bcbs2023}.
 
-% M-22: IRRBB/ALM (E)
-\subsection{TITLE}
+The regulation that governs the first risk is the interest rate risk standard of the Basel Committee of 2016 \citep{alm:bcbs2016}, now chapter SRP31 of the Basel Framework \citep{alm:srp31}. It prescribes six shock scenarios, a slotting of repricing cash flows into 19 time buckets, a supervisory treatment of non-maturity deposits and prepayments, and an outlier test that compares the largest loss of economic value with 15 per cent of Tier 1 capital. The sizes of the shocks were recalibrated in 2024 for application from 2026 \citep{alm:bcbs2024}, and the European Union transposes the framework with a post-shock floor that rises from minus 1.5 per cent at immediate maturity to zero at 50 years \citep{alm:eu2024856}. The Comisi\'on para el Mercado Financiero of Chile applies a standard measure of its own in Annex 1 of chapter 21-13, which treats the flows indexed to the unidad de fomento (UF), a one-month-lagged accrual of consumer price inflation, as a currency of its own called UR \citep{alm:cmf2025,alm:bcchuf}. For the second risk, the liquidity coverage ratio and the net stable funding ratio set minimum levels \citep{alm:lcr,alm:nsf}, the principles for sound liquidity risk management ask for stress tests of institution-specific and market-wide scenarios, individually and in combination \citep{alm:bcbs2008}, and the sensitivity analysis of liquidity risk of the European Central Bank published the run-off rates and the definition of the survival period that the chapter reuses \citep{alm:ecb2019note,alm:ecb2019annex}.
+
+Three cases exercise the methods. Case C14 applies the six standardised shocks to the US dollar balance sheet of Silicon Valley Bank at three valuation dates, 2021-Q4, 2022-Q2 and 2022-Q4, built from the real call-report aggregates of the bank with synthetic behavioural assumptions. It asks how large the loss of economic value is under the 2024 and the 2016 size tables, how much of it depends on the assumption made for non-maturity deposits, whether the outlier test is breached, and whether the behavioural parameters that feed the measure are stable. Case C15 applies the Chilean standard to Banco Andino, a synthetic bank calibrated to the aggregates of the Chilean banking system, in six variants of its UF position, and asks what the standard measures are, how much the 50 per cent offset of the two currency legs and the indexation charge contribute, and which variants a supervisor would prioritise. Case C16 stresses the liquidity of Silicon Valley Bank at 31 December 2022 under the formula of the liquidity coverage ratio, the Adverse and Extreme scenarios of the European Central Bank, a fast-run scenario calibrated on runs observed before 2023, and a variant that takes the held-to-maturity book at fair value; it asks on which day the net liquidity position turns negative, whether the run-off assumptions would have anticipated the run of March 2023, and how much faster the run-off must be for the survival period to fall to 30 days.
+
+All three cases are real in the aggregate and synthetic in behaviour: the call-report and system aggregates are public figures, and every behavioural assumption (the share of deposits that are stable, their maturity, prepayment, redemption, the mapping of deposits to run-off classes) is stated as an assumption in the artifact that carries it. The engine computes; it makes no claim about the compliance of any bank with a regulatory limit, and the acceptance thresholds quoted below are internal criteria of the product, not regulatory values. A positive change in economic value or in net interest income is a loss throughout, rates are decimals compounded continuously, shocks are in basis points, and money is shown in billions of the currency of the case (US dollars for C14 and C16, Chilean pesos for C15). The next two subsections give the theory, the equations, the parameters and the implementation of the two methods, and the last subsection reads the results on the three cases.
+
+\subsection{Interest rate risk in the banking book: standardised shocks, economic value, net interest income and the Chilean Annex 1}
 \label{sec:m22}
 
-% TEXT
+\paragraph{Cash flows and the economic value of equity.}
+The economic value of equity is the present value of the net repricing cash flows of the banking book. The standard places the notional repricing cash flows of each item in the 19 buckets of SRP31.96, whose midpoints $t_k$ run from $0.0028$ years for the overnight bucket through $1.25$, $4.5$ and $12.5$ years to $25$ years for the bucket beyond 20 years. For a currency $c$ the net flow of bucket $k$ is
+\begin{equation}
+CF_c(k)=\sum_{i\in c}\;\sum_{\tau:\,b(\tau)=k} s_i\,a_i(\tau),
+\label{eq:alm-slot}
+\end{equation}
+where $a_i(\tau)$ is the notional repricing flow of item $i$ at time $\tau$ in years, $s_i=+1$ for an asset and $s_i=-1$ for a liability, and $b(\tau)$ is the bucket whose interval, open below and closed above, contains $\tau$. Slotting is additive, so the total of the flows is preserved. With a zero rate $R_{i,c}(t_k)$ for scenario $i$ ($i=0$ the base) the discount factor is continuously compounded, and the economic value, its change and the risk measure follow the standard \citep{alm:srp31,alm:bcbs2016}:
+\begin{align}
+DF_{i,c}(t_k)&=e^{-R_{i,c}(t_k)\,t_k},\qquad EVE_{i,c}=\sum_{k=1}^{19}CF_{i,c}(k)\,DF_{i,c}(t_k),\label{eq:alm-eve}\\
+\Delta EVE_{i,c}&=EVE_{0,c}-EVE_{i,c}+KAO_{i,c},\label{eq:alm-deve}\\
+M&=\max_{i\in\{1,\dots,6\}}\Big\{\max\Big(0,\sum_{c:\,\Delta EVE_{i,c}>0}\Delta EVE_{i,c}\Big)\Big\},\label{eq:alm-measure}
+\end{align}
+where $KAO_{i,c}$ is the add-on for automatic interest rate options (the sum of the changes in fair value of the options sold less those bought), and $M$ adds only the losses across currencies, so a gain in one currency never offsets a loss in another. Equation~\ref{eq:alm-eve} is linear in the flows, which is why the economic value of a balance sheet equals the sum of the economic values of its items, the identity that a validation test checks. A first-order companion measure is the duration gap $DGAP=D_A-(L/A)\,D_L$, with $A$ and $L$ the present values of assets and liabilities and $D_A$, $D_L$ their value-weighted durations: differentiating $A$ and $L$ with respect to a parallel shift $\Delta y$ gives $\Delta A=-D_A A\,\Delta y$ and $\Delta L=-D_L L\,\Delta y$, hence $\Delta E=\Delta A-\Delta L\approx-DGAP\cdot A\,\Delta y$, a textbook approximation that ignores convexity and optionality.
 
-% M-23: Liquidity (E)
-\subsection{TITLE}
+\paragraph{The six shocks and their sizes.}
+With $x=4$ years, the short and long scalars of SRP31.91 are $\alpha_{short}(t_k)=e^{-t_k/x}$ and $\alpha_{long}(t_k)=1-e^{-t_k/x}$, and the six shifts of the zero curve, in basis points, are
+\begin{align}
+\Delta S_{par}&=\pm\bar S_{par},\qquad \Delta S_{short}=\pm\bar S_{short}\,\alpha_{short}(t_k),\qquad |\Delta S_{long}|=\bar S_{long}\,\alpha_{long}(t_k),\label{eq:alm-shapes}\\
+\Delta S_{steep}&=-0.65\,|\Delta S_{short}|+0.9\,|\Delta S_{long}|,\qquad \Delta S_{flat}=+0.8\,|\Delta S_{short}|-0.6\,|\Delta S_{long}|,\label{eq:alm-rotations}
+\end{align}
+where $\bar S_{par}$, $\bar S_{short}$ and $\bar S_{long}$ are the sizes of the parallel, short-rate and long-rate shocks of the currency. The long-rate shock enters only inside the two rotations. The standard prints a worked example: at $t_k=3.5$ years, $\alpha_{short}=0.417$, and for sizes of 100 basis points the short-up shock is $+41.7$, the steepener $+25.4$ and the flattener $-1.6$ basis points. The engine returns \almSrpAlpha{}, \almSrpShortUp{}, \almSrpSteepener{} and \almSrpFlattener{}, a largest deviation from the printed values of \almSrpDevMax{} basis points against the printed precision of \almSrpTolBp{}. The size tables are the 2024 table of SRP31.90, with data from January 2000 to December 2023, the 99.9th percentile of local rolling six-month absolute changes and rounding to 25 basis points, and the 2016 table of the original standard, with the 99th percentile of global factors and rounding to 50 basis points \citep{alm:bcbs2024,alm:bcbs2016}; for the US dollar they are $200/300/225$ and $200/300/150$ basis points for $(\bar S_{par},\bar S_{short},\bar S_{long})$. The peso is in neither table, so a size is never invented: the Chilean case reads the sizes of Annex 1, \almDSizesClp{} basis points for the peso and \almDSizesUr{} for the UR in the economic value measure, and \almDNiiShock{} basis points for both in the net interest income measure \citep{alm:cmf2025}. A floor on the post-shock rate follows SRP31.93 and Annex 1,
+\begin{equation}
+r_i(t_k)=\max\big(r_0(t_k)+\Delta S/10^{4},\ \min(f,\,r_0(t_k))\big),
+\label{eq:alm-floor}
+\end{equation}
+with $f$ the floor, $0$ for the US dollar and the peso and $-0.02$ for the UR, and a floor never lifts a rate above its pre-shock value.
+
+\paragraph{Non-maturity deposits and prepayments.}
+A deposit without contractual maturity is split into a non-core part, slotted in the overnight bucket, and a core part, slotted in the two buckets that bracket its core maturity $m$ so that the weighted average maturity of the core is $m$. With $B$ the balance, $s$ the core share and $t_{lo}\le m<t_{hi}$ the midpoints of the two buckets,
+\begin{align}
+CF(1)&=(1-s)\,B,\qquad CF(k_{lo})=w_{lo}\,s\,B,\qquad CF(k_{hi})=w_{hi}\,s\,B,\label{eq:alm-nmd}\\
+w_{lo}&=\frac{t_{hi}-m}{t_{hi}-t_{lo}},\qquad w_{hi}=1-w_{lo}.\label{eq:alm-weights}
+\end{align}
+SRP31 caps the core share and the core maturity by category: $0.9$ and $5.0$ years for retail transactional deposits, $0.7$ and $4.5$ years for retail non-transactional deposits, $0.5$ and $4.0$ years for wholesale deposits \citep{alm:srp31}. The engine applies the cap, reports the request, the cap and the value used, and flags that a cap was applied; a request above a cap is never passed through silently. In C14 the requests are $0.95$ and $6.0$ years for retail transactional, $0.75$ and $5.0$ for retail non-transactional and $0.60$ and $5.0$ for wholesale deposits, all above the caps on purpose so that the standardised treatment is exercised. Prepayment scales a base rate by a factor that depends on the shock, $CPR_i=\min(1,\gamma_i\,CPR_0)$ with $\gamma_i=0.8,1.2,0.8,1.2,0.8,1.2$ for the six shocks in the order of the standard, and early redemption of term deposits $TDRR_i=\min(1,u_i\,TDRR_0)$ with $u_i=1.2,0.8,0.8,1.2,1.2,0.8$ \citep{alm:srp31}. The single monthly mortality and the conditional prepayment rate relate by
+\begin{equation}
+SMM=1-(1-CPR)^{1/12},\qquad CPR=1-(1-SMM)^{12},
+\label{eq:alm-smm}
+\end{equation}
+which follows from requiring that a fraction $SMM$ of the balance prepay independently each month, so that the fraction surviving after twelve months is $(1-SMM)^{12}=1-CPR$ \citep{alm:fuster2022}. The engine also carries the Public Securities Association benchmark $CPR_m=(x/100)\min(0.002\,m,0.06)$ for $x$ per cent of the benchmark at month $m$, used when a fitted prepayment model does not converge.
+
+\paragraph{Net interest income and the outlier test.}
+The earnings-gap approximation slots rate-sensitive assets and liabilities by next repricing date, $G_k=RSA_k-RSL_k$, and measures the loss under a shift $\Delta r$ over one year on a constant balance sheet as $-\sum_{t_k<1}G_k\,\Delta r\,(1-t_k)$. The measure of Annex 1 generalises it to the term structure of a shock,
+\begin{equation}
+\Delta NII_{i,c}=\sum_{k:\,t_k<1}CF_c(k)\,\big(r_{0,c}(t_k)-r_{i,c}(t_k)\big)\,(1-t_k),
+\label{eq:alm-nii}
+\end{equation}
+over the first six buckets and the two parallel shocks. Because the gap ignores basis risk, optionality and new business, a dynamic projection prices every item month by month,
+\begin{equation}
+NII_m=\frac{1}{12}\sum_{i}s_i\,B_i\,(1+g)^{m/12}\,r_{i,m},\qquad r_{i,m}=\text{spread}_i+\beta_i\,r_{\lfloor m/q_i\rfloor q_i},
+\label{eq:alm-dynamic}
+\end{equation}
+where $B_i$ is the balance, $g$ the annual growth of the balance sheet ($g=0$ for the constant balance sheet), $\beta_i$ the pass-through of the market rate $r$ to the rate of the item and $q_i$ the number of months between its resets. The outlier test of SRP31.82 to SRP31.83 compares the measure with Tier 1 capital,
+\begin{equation}
+\text{breach}\iff \frac{M}{\text{Tier 1}}>0.15,
+\label{eq:alm-outlier}
+\end{equation}
+a strict inequality that a non-positive measure never satisfies.
+
+\paragraph{The Chilean standard.}
+Annex 1 measures the exposure by currency that exceeds 5 per cent of the assets or liabilities of the banking book, treats all flows indexed to the UF as one currency, UR, and combines the loss-positive deltas of the peso and UR legs with an offset of one half of the gain leg:
+\begin{equation}
+\Delta_{CLP+UR}=\begin{cases}
+\max\{\Delta_{CLP},0\}+\max\{\Delta_{UR},0\} & \text{same sign, a zero leg, or no offset,}\\
+\max\{0.5\,\Delta_{CLP}+\Delta_{UR},\,0\} & \text{opposite signs and }\Delta_{CLP}\le 0,\\
+\max\{\Delta_{CLP}+0.5\,\Delta_{UR},\,0\} & \text{opposite signs and }\Delta_{CLP}>0.
+\end{cases}
+\label{eq:alm-pair}
+\end{equation}
+The standard measures of the bank are
+\begin{align}
+\Delta NII&=\max_{i\in\{1,2\}}\Delta NII_{i,(CLP+UR)}+0.025\,|PN_{UR}|,\label{eq:alm-annex-nii}\\
+\Delta EVE&=\max_{i\in\{1,\dots,6\}}\Delta EVE_{i,(CLP+UR)},\label{eq:alm-annex-eve}
+\end{align}
+with $PN_{UR}$ the net UF position expressed in pesos at the UF value of the date; the term $0.025\,|PN_{UR}|$ is the indexation charge, an implied surprise of 2.5 per cent in inflation that depends on the size of the position and not on the rate shock \citep{alm:cmf2025}. A bank is prioritised for review if $\Delta NII$ exceeds 5 per cent of Tier 1, if $\Delta EVE$ exceeds 15 per cent of Tier 1, or if $\Delta NII$ exceeds 18 per cent of the cumulative net interest and indexation margin of twelve months. The charge is not the loss of an inflation scenario, which the case document carries separately as $-PN_{UR}\,s/100$ for a surprise of $s$ percentage points.
+
+\paragraph{Behavioural models and curves.}
+Four behavioural models feed the cash flows. A static replicating portfolio chooses weights $w_j\ge 0$, $\sum_j w_j=1$, on rolling tranches of maturity $m_j$ so that the margin between the replicating yield and the client rate has minimal variance, the technique that the Basel text describes for core deposits \citep{alm:bcbs2016}; expanding the variance of the margin gives the quadratic programme
+\begin{equation}
+\min_{w}\ \operatorname{Var}\Big(\sum_j w_j\bar y_{j,t}-i_t\Big)=w^{\top}C\,w-2\,w^{\top}c+\operatorname{Var}(i_t)\quad\text{subject to }w\ge 0,\ \mathbf 1^{\top}w=1,
+\label{eq:alm-replicating}
+\end{equation}
+where $\bar y_{j,t}$ is the yield of tranche $j$, $i_t$ the client rate, $C$ the sample covariance matrix of the tranche yields and $c$ the vector of their covariances with the client rate. The implied weighted average maturity is $\sum_j w_j m_j/2$, because a tranche of maturity $m$ reinvested evenly over its life has uniformly distributed times to maturity on $[0,m]$ and mean $m/2$. A dynamic version is due to Kalkbrener and Willing, who model the short rate, the deposit rate and the deposit volume as correlated stochastic factors \citep{alm:kalkbrener2004}, and the value of a deposit franchise can be written as an expectation under the risk-neutral measure \citep{alm:jarrow1998}; Frauendorfer and Sch\"urle optimise the reinvestment by multistage stochastic programming \citep{alm:frauendorfer2003}. Contraste implements the static form and not the stochastic ones. The deposit beta passes a market move to the client rate, $i_{new}=i+\beta\,\Delta r$ with $\beta=\beta_{up}$ for $\Delta r\ge 0$ and $\beta_{down}$ otherwise; low betas make deposits behave as long-duration liabilities, and the pass-through of the 2022 hiking cycle is the subject of \citet{alm:drechsler2021}, with an earlier measurement of rents and rate risk of retail deposits by \citet{alm:hutchison1996}. Prepayment is a reduced-form logit of the monthly mortality on the refinancing incentive and the seasoning, $SMM=\{1+\exp[-(b_0+b_1\,\text{incentive}+b_2\,\text{seasoning})]\}^{-1}$, fitted by Newton's method with step halving on the standardised regressors, with standard errors from the inverse observed information $(X^{\top}WX)^{-1}$, $W=\operatorname{diag}(p(1-p))$, in the family of rational option-exercise, proportional-hazards and competing-risks models of mortgage termination \citep{alm:stanton1995,alm:schwartz1989,alm:deng2000}.
+
+Zero curves come from three constructions. A bootstrap from par yields reads a tenor at or below half a year as a simple-interest rate, $R(t)=\ln(1+yt)/t$, and later pillars from the par condition $1=\sum_{j=1}^{n}(y_n/f)\,DF(t_j)+DF(t_n)$ with $f=2$ coupons a year and linear interpolation of the par yield; the interpolation choice moves forward curves materially \citep{alm:hagan2006}. The Nelson-Siegel curve is
+\begin{equation}
+y(m)=\beta_0+\beta_1\,\frac{1-e^{-m/\tau}}{m/\tau}+\beta_2\Big(\frac{1-e^{-m/\tau}}{m/\tau}-e^{-m/\tau}\Big),
+\label{eq:alm-ns}
+\end{equation}
+with level $\beta_0$, slope $\beta_1$, curvature $\beta_2$ and decay $\tau$ \citep{alm:nelson1987}; Svensson adds a second curvature term \citep{alm:svensson1994}, and the dynamic Nelson-Siegel form fixes the decay at $\lambda=0.0609$ per month and lets the three factors follow autoregressive processes \citep{alm:diebold2006}. For scenario generation the engine uses the one-factor Hull-White model, which fits the initial curve through its drift \citep{alm:hull1990}:
+\begin{align}
+dr&=(\theta(t)-a\,r)\,dt+\sigma\,dW,\qquad \theta(t)=\frac{\partial f(0,t)}{\partial t}+a\,f(0,t)+\frac{\sigma^{2}}{2a}\big(1-e^{-2at}\big),\label{eq:alm-hw}\\
+r(t)&=x(t)+\alpha(t),\qquad dx=-a\,x\,dt+\sigma\,dW,\qquad \alpha(t)=f(0,t)+\frac{\sigma^{2}}{2a^{2}}\big(1-e^{-at}\big)^{2},\label{eq:alm-alpha}
+\end{align}
+where $a$ is the mean reversion, $\sigma$ the volatility and $f(0,t)$ the instantaneous forward rate of the initial curve; the drift $\theta$ fits today's curve and the decomposition satisfies $\alpha'+a\alpha=\theta$. The process $x$ is simulated exactly on the monthly grid, $x_{k+1}=x_k e^{-a\Delta t}+\sigma\sqrt{(1-e^{-2a\Delta t})/(2a)}\,z_k$ with $z_k$ standard normal, and the paths are antithetic. The Vasicek model of \citet{alm:vasicek1977} has the same Gaussian dynamics with a constant drift and cannot fit today's curve. Earnings at risk and economic value at risk at level $\ell$ are
+\begin{equation}
+EaR=NII_0-Q_{1-\ell}(NII),\qquad EVaR=EVE_0-Q_{1-\ell}(EVE),\qquad SE=\frac{\operatorname{sd}(Q_1,\dots,Q_B)}{\sqrt B},
+\label{eq:alm-ear}
+\end{equation}
+with $NII_0$ and $EVE_0$ the base values, $Q$ the linearly interpolated empirical quantile of the simulated outcomes, and $SE$ the batch-means standard error of the quantile: the paths are cut into $B$ contiguous batches (whole antithetic pairs are kept together), $Q_b$ is the quantile in batch $b$, and $\operatorname{sd}$ is the sample standard deviation.
+
+\paragraph{Assumptions.}
+The slotting spreads each band of the call report uniformly over the buckets that it overlaps, mortgage items amortise linearly and bullet items sit at their maturity; the call report carries no customer type, so the deposits of accounts of 250,000 US dollars or less stand for retail customers and the rest for wholesale ones; the behavioural parameters that the report cannot supply are stated as synthetic assumptions. The constant balance sheet replaces maturing and repricing flows with identical new ones. The explicit form of $\alpha$ is the standard textbook decomposition of the model, and the edition and page of its source were not verified. The Hull-White parameters are inputs and are not calibrated to swaption volatilities, and the factor innovations of the dynamic Nelson-Siegel model are independent across factors. The duration gap is first order. The Chilean variants hold the UF position, the floating share of UF loans, the share of peso fixed assets at the long end and the maturity of peso funding as named parameters and fix the rest at stated values.
+
+\paragraph{Parameters in Contraste.}
+Table~\ref{tab:alm-c14-params} gives the parameters of C14 at each date. The core share and core maturity are balance-weighted averages of the values used after the caps, \almCCoreShareB{} and \almCCoreMatB{} years at 2022-Q2, because the deposits are \almCWholesaleShare{} per cent wholesale (USD \almCWholesaleBn{} billion) and the wholesale caps of \almCCapWholesaleShare{} and \almCCapWholesaleMat{} years bind against requests of \almCRequestWholesaleShare{} and \almCRequestWholesaleMat{} years. The prepayment rate of \almCPrepay{} per year and the redemption rate of \almCTdrr{} are stated assumptions because the call report has no loan-level history; the logit fit is validated in the engine on simulated data with known coefficients and is available for data that carry the history. The deposit beta is fitted on the quarterly cost of deposits against the three-month Treasury par yield over the last 16 quarters up to the date, through the origin, separately for quarters with a rising market rate and quarters with a falling one: the upward beta is \almCBetaA{}, \almCBetaB{} and \almCBetaC{} at the three dates and the downward beta \almCBetaDown{}. The replicating portfolios use seven tranches of $0.25$, $1$, $2$, $3$, $5$, $7$ and $10$ years on the same window, with three estimation windows spaced one year apart for the stability test. The Hull-White mean reversion is $a=\almCHwA{}$ per year, the volatility is the annualised standard deviation of the daily changes of the three-month yield over the three years up to the date (\almCSigmaA{}, \almCSigmaB{} and \almCSigmaC{}), and the simulation uses \almCPaths{} antithetic paths, seed \almCSeed{} and \almCBatches{} batches. Table~\ref{tab:alm-c15-curves} gives the Nelson-Siegel fits of the two Chilean curves, whose root mean squared errors are \almDRmseClp{} and \almDRmseUr{} basis points. In C15 the core share and maturity are \almDCoreShare{} and \almDCoreMat{} years after the caps, the deposit beta is a stated pass-through of \almDBeta{}, the prepayment rate is \almDPrepay{} per year, the offset share is one half and the indexation rate is \almDChargeRate{} per cent; the UF value of the valuation date is \almDUfValue{} pesos. The parameters were chosen to be the regulatory ones where a standard names them, fitted on data available before the valuation date where the data can support a fit, and stated, with a label, where neither holds.
+
+\input{../tables/alm-c14-params}
+\input{../tables/alm-c15-curves}
+\paragraph{Algorithm.}
+Algorithm~\ref{alg:alm-eve} states the procedure that computes the standardised measures of one balance sheet.
+\begin{algorithm}[htbp]
+\caption{Standardised economic value and net interest income of one balance sheet under the six shocks.}
+\label{alg:alm-eve}
+\begin{algorithmic}[1]
+\Require items $i$ with amounts, sides and repricing profiles; base zero curve per currency; size table; floor $f$; core-share requests; $CPR_0$, $TDRR_0$; Tier 1
+\State split every non-maturity item with Equation~\ref{eq:alm-nmd}, cutting the request to the cap of its category and recording \texttt{cap\_applied}
+\For{each shock $i\in\{\text{parallel up},\dots,\text{short down}\}$}
+  \State compute $\Delta S(t_k)$ by Equations~\ref{eq:alm-shapes} and~\ref{eq:alm-rotations}, then $r_i(t_k)$ by Equation~\ref{eq:alm-floor}
+  \State scale prepayments and redemptions with $\gamma_i$ and $u_i$, slot all flows by Equation~\ref{eq:alm-slot}, and compute $CF_{i,c}(k)$
+  \State compute $EVE_{i,c}$ and $\Delta EVE_{i,c}$ by Equations~\ref{eq:alm-eve} and~\ref{eq:alm-deve}
+\EndFor
+\State compute $\Delta NII_{i,c}$ by Equation~\ref{eq:alm-nii} for the two parallel shocks
+\State combine the legs with Equation~\ref{eq:alm-pair} and take $M$, $\Delta EVE$ and $\Delta NII$ by Equations~\ref{eq:alm-measure}, \ref{eq:alm-annex-eve} and~\ref{eq:alm-annex-nii}
+\State test $M/\text{Tier 1}$ against $0.15$; check $\sum_{\text{items}}EVE=EVE_{\text{whole}}$
+\State \Return the rows of $\Delta EVE$ and $\Delta NII$ by shock and currency, the measure, the worst shock and the lights
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity, implementation and acceptance.}
+{\sloppy For $n$ items, $K=19$ buckets, six shocks and $C$ currencies the work of Algorithm~\ref{alg:alm-eve} is $O(n\,K+6\,C\,K)$, linear in the number of items and in the number of buckets. The replicating portfolio of $J$ tranches searches the $2^{J}-1$ supports, each an equality-constrained quadratic programme of cost $O(J^{3})$, so for the seven tranches used here it is exact and costs $O(2^{J}J^{3})$; building $C$ and $c$ from $T$ quarters costs $O(TJ^{2})$. The Hull-White simulation costs $O(PM)$ for $P$ paths and $M$ months, and a quantile and its batch-means error cost $O(P\log P)$ and $O(P)$. The implementation is the engine \texttt{riskvalidation} 1.1.0, modules \texttt{irrbb.curves}, \texttt{irrbb.shocks}, \texttt{irrbb.slotting}, \texttt{irrbb.eve\_nii}, \texttt{irrbb.behavioural} and \texttt{irrbb.simulation} (contract \texttt{engine-irrbb-api} 1.1.0), validated by \texttt{validation.irrbb}; the pipeline modules \texttt{pipeline/cases/c14} (slotting of the call-report bands, fits of the deposit beta and of the replicating portfolio, the bake of each valuation date) and \texttt{pipeline/cases/c15} (the synthetic book, the curve fits and the variants) assemble the inputs and call the engine for every formula above. The method is compared against two baselines run on the same balance sheets: the contractual treatment that slots every non-maturity deposit overnight, and the 2016 size table beside the 2024 one. Its acceptance criterion in the specification is that the printed values of the standard (a short-rate scalar of $0.417$ at 3.5 years, and $41.7$, $+25.4$ and $-1.6$ basis points) are reproduced, that the 2016 and 2024 tables enter as fixtures, that the economic value reconciles as a sum of parts, that the worked example of Annex 1 is reproduced, and that a peso size not taken from the Chilean table is labelled; Table~\ref{tab:alm-accept} reports the computed values.\par}
+
+\subsection{Liquidity risk: run-off, counterbalancing capacity, survival period, reverse stress and the liquidity coverage ratio}
 \label{sec:m23}
 
-% TEXT
+\paragraph{The net liquidity position.}
+A bank is liquid on a day if the cash it can raise from its unencumbered assets, after haircuts, covers the stressed outflows net of the stressed inflows accumulated since the reference date. With $CBC(t)$ the counterbalancing capacity, the funds obtainable from unencumbered liquid assets, $O(s)$ and $I(s)$ the stressed outflows and inflows on day $s$, and $TA$ total assets, the definitions of the European Central Bank are \citep{alm:ecb2019note,alm:ecb2019annex}
+\begin{align}
+NLP(t)&=CBC(t)-\sum_{s\le t}\big(O(s)-I(s)\big),\label{eq:alm-nlp}\\
+SP&=\min\{t:\ NLP(t)<0\},\qquad \text{cliff}=\frac{NLP(35)-NLP(30)}{TA}.\label{eq:alm-sp}
+\end{align}
+The survival period is the first day on which the position is negative; a position that never turns negative within the horizon is reported as surviving the horizon and never as a number, and a zero position is not negative. The cliff effect is a diagnostic of optimisation against the 30-day window of the liquidity coverage ratio, negative when the position falls between day 30 and day 35. The theoretical reason why a survival period is the relevant statistic is the model of \citet{alm:diamond1983}: a deposit contract that pays early claims in full has a second equilibrium in which all depositors claim their money at once and the bank liquidates, so the question of a stress test is how long the bank can meet the outflows of the run equilibrium. The model is a conceptual explanation here, not a calibrated one.
+
+\paragraph{Run-off by constant daily compounding.}
+The open-maturity deposits of the sensitivity analysis lose a constant share $q$ of the stock of the day before on every relevant day, so that after $n$ days the cumulative outflow is $F(n)=1-(1-q)^{n}$, because the stock surviving each day is multiplied by $1-q$. Inverting gives the daily rate that an observed outflow implies, and a rate that moves with the stress state gives the path form,
+\begin{equation}
+F(n)=1-(1-q)^{n},\qquad q=1-(1-F)^{1/n},\qquad O_{j,d}=A_j\prod_{s<d}(1-q_{j,s})\,q_{j,d},
+\label{eq:alm-runoff}
+\end{equation}
+where $A_j$ is the opening balance of segment $j$ and $O_{j,d}$ its outflow on day $d$. The published example is the stable retail sight deposit under the Adverse scenario, $q=0.00103258$ per relevant day and $n=125$ relevant days of a six-month horizon, which gives $F=12.11$ per cent \citep{alm:ecb2019note}; the engine returns \almLGoldenMetric{}. Contractual deposits roll off at a rate applied to each flow when it matures, and sight deposits of financial customers leave in full on the first day. The Adverse and Extreme rates are those of the sensitivity analysis, transcribed from its Tables 3.2 and 3.3, and the two-day run of the bank that failed implies a daily rate of \almLSvbImpliedRate{} for an outflow of \almLSvbObserved{} per cent.
+
+\paragraph{The counterbalancing capacity.}
+The liquidity value of an asset with market value $MV$, encumbered amount $E$ and haircut $h$ is $LV=(MV-E)(1-h)$, and the amount usable on day $d$ follows a step schedule $s(d)$ of cumulative shares of the monetisation capacity,
+\begin{align}
+LV&=(MV-E)(1-h),\qquad \text{usable}_d=LV\cdot s(d),\label{eq:alm-cbc}\\
+CBC^{0}&=(C-E)(1-h),\qquad CBC^{1}=(V-E)(1-h),\label{eq:alm-htm}
+\end{align}
+where $C$ and $V$ are the carrying value and the fair value of a held-to-maturity book and $CBC^{0}-CBC^{1}$ is the capacity removed by its unrealised loss when $V<C$. The haircut follows the order of the methodological note: cash, reserves and committed facilities at nominal value; central-bank-eligible assets at the haircut of the central bank, here one minus the margin of the discount window of the Federal Reserve in force on 10 March 2023 \citep{alm:frbmargins}; equities by issuer rating at 20, 35 and 50 per cent; other marketable assets at 30 per cent if high-quality and 50 per cent otherwise \citep{alm:ecb2019note}. The same securities at the terms of the Bank Term Funding Program, announced on 12 March 2023, count at par and form a labelled counterfactual \citep{alm:frbbtfp}. The monetisation schedule is a convention, \almLMonetDayOne{} per cent of the liquidity value on day 1, \almLMonetDayTwo{} per cent by day 2 and all of it by day 3.
+
+\paragraph{Scenarios, the fast run and reverse stress.}
+The principles of the Basel Committee ask for short-term and protracted stress scenarios, institution-specific and market-wide, individually and in combination \citep{alm:bcbs2008}. A scenario is a family (idiosyncratic, market-wide, combined), a phase (acute for one to five days, protracted for up to a year) and a parameter set, and the sensitivity analysis of the European Central Bank is idiosyncratic only. The fast-run parameter set calibrates the daily rate of the concentrated uninsured segment from observed runs, $\hat q=\max_i\{1-(1-F_i)^{1/n_i}\}$ over the rows of the tabulation of the 2023 turmoil dated before 2023 \citep{alm:bcbs2023}; the 2023 rows are refused in a calibration and score the result. The reverse stress asks how much faster the run-off must be for the survival period to fall to a target $T$ (30 days). The multiplier $m$ scales every daily rate and is capped so that no rate exceeds one:
+\begin{align}
+q_{j,d}(m)&=\min\big(m\,q_{j,d},\,1\big),\qquad m_{\max}=\frac{1}{\max\{q_{j,d}:\ q_{j,d}<1\}},\label{eq:alm-reverse}\\
+m^{*}&=\min\{m\in[1,m_{\max}]:\ SP(m)\le T\}.\label{eq:alm-mstar}
+\end{align}
+Because $SP(m)\le T$ holds exactly when the minimum of $NLP(t)$ over $t\le T$ is negative, a continuous and non-increasing function of $m$, the root is bracketed between 1 and the cap and found with Brent's method, rounded up to six decimals and checked at the neighbouring decimal. A target that is not bracketed (not below the horizon, at or above the base survival period, or not reached by any multiplier up to the cap) is refused with its reason and returns no number. The sensitivity grids re-split the call-report deposits at each uninsured share keeping the total, and scale the unrealised loss on the held-to-maturity book by a multiple.
+
+\paragraph{The depositor generator.}
+A generator with known truth checks that a run-off assumption recovers the mechanism that produced the data, in the style of simulation studies in statistics \citep{alm:morris2019}. A systemic two-state Markov chain over days, calm on day 1, moves to stress with probability $p_{enter}$ and back with $p_{exit}$; a depositor still holding a deposit on day $d$ leaves with hazard $h_{calm}$ or $h_{stress}$ by the state of the day. With transition matrix $P$ and survival weights $u_d$ over the states,
+\begin{align}
+P&=\begin{pmatrix}1-p_{enter}&p_{enter}\\ p_{exit}&1-p_{exit}\end{pmatrix},\qquad u_1=(1-h_{calm},\,0),\label{eq:alm-generator}\\
+u_{d+1}&=(u_dP)\odot(1-h_{calm},\,1-h_{stress}),\qquad \text{truth}(n)=1-\textstyle\sum u_n.\label{eq:alm-truth}
+\end{align}
+The law of the stress state is a convention of the product with no source in the literature cited here, and the generator describes a mechanism with known parameters, not the behaviour of any bank.
+
+\paragraph{The liquidity coverage ratio and the stable funding ratio.}
+The Basel liquidity coverage ratio compares the stock of high-quality liquid assets with the net cash outflows of 30 days \citep{alm:lcr}:
+\begin{align}
+LCR&=\frac{HQLA}{NCO_{30d}}\ge 100\%,\qquad NCO=O-\min(I,0.75\,O),\label{eq:alm-lcr}\\
+HQLA&=L1+L2A+L2B-Adj_{15}-Adj_{40}.\label{eq:alm-hqla}
+\end{align}
+with $Adj_{15}=\max(aL2B-\tfrac{15}{85}(aL1+aL2A),\,aL2B-\tfrac{15}{60}aL1,\,0)$ and $Adj_{40}=\max(aL2A+aL2B-Adj_{15}-\tfrac{2}{3}aL1,\,0)$, where $L1$, $L2A$, $L2B$ are the assets after haircuts, $aL$ the adjusted amounts after unwinding short-term secured transactions, $O$ and $I$ the outflows and inflows by category at the standard rates, and inflows are capped at 75 per cent of outflows. The net stable funding ratio is the ratio of available to required stable funding, $NSFR=ASF/RSF\ge 100\%$ with $ASF=\sum_j f^{ASF}_jL_j$ and $RSF=\sum_i f^{RSF}_iA_i+\sum_k f^{RSF}_kOBS_k+r\,D$, where $D$ is the gross derivative liability and $r$ a rate between 5 and 20 per cent that the caller must supply, never a default \citep{alm:nsf}. The ratio computed here is a formula on aggregates with stated assumptions and is never the reported or regulatory ratio; a ratio below 100 per cent under a stress scenario is not a breach.
+
+\paragraph{Assumptions.}
+The sensitivity analysis defines its rates on the relevant days of the 2019 TARGET2 calendar, 125 in six months; the ladder of the case runs on US business days from the day after the valuation date, a stated convention. The call report carries no customer type, so the insured deposits are mapped to the class of other retail deposits and the uninsured ones to the non-operational deposits of non-financial corporates, with a sensitivity band that reads the uninsured balance as operational deposits or as the deposits of other legal entities. The deposits of foreign offices are mapped to financial customers and leave on the first day, an assumption. The securities book is split by type at the carrying values reported, pledged securities leave the capacity pro rata, and the held-to-maturity loss is applied to the whole book. Collateral calls have no numeric parameter in the sensitivity analysis and are not modelled. The shocks of the European Central Bank are idiosyncratic, a market-wide or combined label is a label of the caller's parameter set, and the observed runs anchor and score a result and are never a forecast.
+
+\paragraph{Parameters in Contraste.}
+Table~\ref{tab:alm-c16-params} gives the run-off parameters: the insured deposits (USD \almLRetailBalance{} billion) run at \almLRetailRateAdv{} and \almLRetailRateExt{} per day under the Adverse and Extreme scenarios, the uninsured deposits (USD \almLCorpBalance{} billion) at \almLCorpRateAdv{} and \almLCorpRateExt{}, and the deposits of financial customers (USD \almLFinBalance{} billion) leave on day 1; after the \almLHorizonDays{} relevant days of the horizon the uninsured balance has lost \almLCorpAdv{} and \almLCorpExt{} per cent. Table~\ref{tab:alm-c16-cbc} gives the capacity by asset class: the Federal Reserve margins fix the haircuts of the Treasury, mortgage-backed, agency and municipal securities, the fallback of 50 per cent applies to the remaining debt, \almLPledged{} per cent of the securities book is pledged, and the capacity is USD \almLCbcAll{} billion, \almLCbcMbsShare{} per cent of it in mortgage-backed securities. The cliff effect compares day \almLCliffNear{} with day \almLCliffFar{}, the survival target of the reverse stress is \almLReverseTarget{} days, the uninsured share grid runs from \almLShareLow{} to \almLShareHigh{} per cent, and the lights of the validation tests are conventions of the product: the run-off adequacy test is green from a ratio of modelled to realised outflow of \almLAdequacyGreen{}, and the comparison of an estimator with the generator is green within \almLGenGreen{} Monte Carlo standard errors. Parameters transcribed from the sensitivity analysis and from the tabulation of runs are not tuned; the monetisation schedule, the calendar, the mapping and the calibration rule of the fast run are conventions, labelled as such in every artifact.
+
+\input{../tables/alm-c16-params}
+\input{../tables/alm-c16-cbc}
+\paragraph{Algorithms.}
+Algorithm~\ref{alg:alm-ladder} computes the ladder and the survival period, and Algorithm~\ref{alg:alm-reverse} the multiplier of the reverse stress.
+\begin{algorithm}[htbp]
+\caption{Net liquidity position, survival period and cliff effect of one balance sheet under one scenario.}
+\label{alg:alm-ladder}
+\begin{algorithmic}[1]
+\Require segments $j$ with opening balance $A_j$ and daily rate path $q_{j,d}$; other outflows and inflows by day; asset classes with $(MV,E,h)$; schedule $s(d)$; horizon $H$; total assets $TA$
+\For{each asset class}
+  \State $LV\gets(MV-E)(1-h)$ and $\text{usable}_d\gets LV\,s(d)$ for $d=1,\dots,H$; add to $CBC(d)$
+\EndFor
+\For{each segment $j$ and day $d=1,\dots,H$}
+  \State $O_{j,d}\gets A_j\prod_{s<d}(1-q_{j,s})\,q_{j,d}$ by Equation~\ref{eq:alm-runoff}
+\EndFor
+\State $O(d)\gets\sum_jO_{j,d}+$ other outflows; $I(d)\gets$ inflows; $NLP(d)\gets CBC(d)-\sum_{s\le d}(O(s)-I(s))$ by Equation~\ref{eq:alm-nlp}
+\State $SP\gets$ the first $d$ with $NLP(d)<0$, or ``survives the horizon'' with $H$ if there is none
+\State $\text{cliff}\gets(NLP(35)-NLP(30))/TA$ if $H\ge35$, otherwise not evaluated
+\State check $NLP(d)=CBC(d)-\sum_{s\le d}(O(s)-I(s))$ against an independent loop; \Return $NLP$, $SP$, $\min NLP$ and its day, the cliff
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[htbp]
+\caption{Reverse stress: the smallest run-off multiplier at which the survival period reaches the target.}
+\label{alg:alm-reverse}
+\begin{algorithmic}[1]
+\Require base scenario with rates $q_{j,d}$; capacity $CBC(d)$; target $T$; horizon $H$
+\State $m_{\max}\gets 1/\max\{q_{j,d}:q_{j,d}<1\}$ ($\infty$ if no rate lies in $(0,1)$)
+\If{$T\ge H$ \textbf{or} $SP(1)\le T$ \textbf{or} $SP(m_{\max})>T$}
+  \State \Return refused, with the reason and no number
+\EndIf
+\State bracket $[1,m_{\max}]$ and solve $\min_{t\le T}NLP_m(t)=0$ for $m$ with Brent's method, where $NLP_m$ uses the rates $\min(mq,1)$
+\State round $m$ up to six decimals and move to the neighbouring decimal while $SP(m)\le T$ still holds one step below
+\State \Return $m^{*}$, $SP(m^{*})$ and $SP$ just below $m^{*}$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity, implementation and acceptance.}
+{\sloppy For $S$ segments and $H$ days Algorithm~\ref{alg:alm-ladder} costs $O(SH)$ and the capacity $O(CH)$ for $C$ asset classes; one survival period at a multiplier costs the same, so Algorithm~\ref{alg:alm-reverse} costs $O(SH\log(1/\epsilon))$ for a bracket tolerance $\epsilon$. The liquidity coverage ratio is a closed form in the number of categories. The generator truth costs $O(H)$ in the two states and a draw $O(nH)$ for $n$ depositors. The implementation is \texttt{riskvalidation} 1.1.0, modules \texttt{liquidity.runoff}, \texttt{liquidity.cbc}, \texttt{liquidity.ladder}, \texttt{liquidity.scenarios}, \texttt{liquidity.reverse} and \texttt{liquidity.deposits} (contract \texttt{engine-liquidity-api} 1.2.0), \texttt{regulatory.lcr\_nsfr} for the two ratios and \texttt{validation.liquidity} for the battery; the pipeline modules \texttt{pipeline/cases/c16} (the readers of the call reports and of the Federal Reserve H.8 tables, the balance sheet, the scenarios, the reverse stress and the document) assemble the inputs. The method is compared against the observed runs of the tabulation of the 2023 turmoil and, within the product, the Adverse scenario against the Extreme one and the formula of the ratio against the ladders. Its acceptance criterion in the specification is that the compounding example of $12.11$ per cent after 125 days is reproduced and that the survival period is monotone in the severity of the run-off; the computed values are in Table~\ref{tab:alm-accept}.\par}
 
 \subsection{Results}
 \label{sec:results-alm}
 
-% RESULTS
+\paragraph{Reconciliation with the printed values.}
+Table~\ref{tab:alm-accept} collects the acceptance checks of the two methods on the committed documents. The four values of the worked example of the standardised shocks are reproduced to within the printed precision, with a largest deviation of \almSrpDevMax{} basis points against a tolerance of \almSrpTolBp{}; the economic value of every balance sheet equals the sum of the economic values of its items to a relative residual of at most \almCSumPartsC{}; all \almDAnnexCases{} worked cases of the Chilean standard are reproduced (\almDAnnexFailed{} fail); the compounding example gives \almLGoldenMetric{} with a deviation of \almLGoldenStat{} against a tolerance of \almLGoldenTol{}; and the survival period shortens from \almAcceptSurvivalAdv{} days under the Adverse scenario to \almAcceptSurvivalExt{} days under the Extreme one. The table shows that the engine implements the published formulas and the arithmetic of the ladder correctly; it does not show that the behavioural assumptions are right, which no printed example can test.
+\input{../tables/alm-accept}
+
+\paragraph{Case C14: the six shocks on a US dollar balance sheet.}
+Figure~\ref{fig:alm-shapes} shows the shapes that the 2024 table gives for the US dollar at 2022-Q2 as the artifact holds them: the parallel shift is flat at 200 basis points, the short-rate shock decays with the term, and the steepener and the flattener cross zero between three and five years.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{alm-shapes.pdf}
+\caption{Shift of the zero rate, in basis points, at the 19 bucket midpoints under five of the six standardised shocks for the US dollar with the 2024 sizes of 200, 300 and 225 basis points, as held in the artifact of the 30 June 2022 valuation of Silicon Valley Bank; the sixth shock, parallel down, is the mirror of the first.}
+\label{fig:alm-shapes}
+\end{figure}
+Table~\ref{tab:alm-c14-eve} gives the change in economic value under the capped behavioural treatment. The largest loss is the steepener at all three dates, USD \almCMeasBehA{}, \almCMeasBehB{} and \almCMeasBehC{} billion, which is \almCShareBehA{}, \almCShareBehB{} and \almCShareBehC{} per cent of Tier 1 (USD \almCTierA{}, \almCTierB{} and \almCTierC{} billion), so the outlier test of 15 per cent is breached at every date even with the capped core split; the parallel-up shock follows closely at \almCShareUpA{}, \almCShareUpB{} and \almCShareUpC{} per cent, and the parallel-down and flattener shocks are gains of the same order, \almCShareDownB{} and \almCShareFlatB{} per cent of Tier 1 at 2022-Q2. The short-up shock barely moves the value (\almCShareShortUpB{} per cent of Tier 1 at 2022-Q2), because its size decays with the term (Equation~\ref{eq:alm-shapes}) and acts on the first buckets only.
+\input{../tables/alm-c14-eve}
+Figure~\ref{fig:alm-c14-eve} compares the two treatments of non-maturity deposits on the same bars.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{alm-c14-eve.pdf}
+\caption{Change in economic value of equity as a share of \tierone{} capital for the six standardised shocks at three valuation dates of Silicon Valley Bank, with the capped behavioural core split of non-maturity deposits (panel a) and with every non-maturity deposit slotted in the overnight bucket (panel b); the dashed line is the 15 per cent outlier threshold and a positive bar is a loss.}
+\label{fig:alm-c14-eve}
+\end{figure}
+Table~\ref{tab:alm-c14-compare} gives the measures under both treatments and both size tables. With every non-maturity deposit overnight the measure is USD \almCMeasConA{}, \almCMeasConB{} and \almCMeasConC{} billion, \almCShareConA{}, \almCShareConB{} and \almCShareConC{} per cent of Tier 1, and the worst shock is the parallel rise, because deposits that reprice immediately turn the whole asset duration into value risk. The difference between the two treatments, \almCHiddenA{}, \almCHiddenB{} and \almCHiddenC{} percentage points of Tier 1, is the size of the assumption that the core of non-maturity deposits is stable, and it is large enough for the test of the two measures to be red at every date: the standardised answer depends on a behavioural assumption that the call report cannot verify. The 2016 table, with a long-rate size of 150 instead of 225 basis points, lowers the steepener and moves the worst behavioural shock to the parallel rise at all three dates; the behavioural measure changes from \almCShareBehA{}, \almCShareBehB{} and \almCShareBehC{} to \almCShareBehSixteenA{}, \almCShareBehSixteenB{} and \almCShareBehSixteenC{} per cent, a change of at most two points of Tier 1, and the contractual one does not change because its worst shock is the parallel rise. The choice of table therefore does not move the conclusion; the treatment of deposits does.
+\input{../tables/alm-c14-compare}
+Figure~\ref{fig:alm-c14-gap} shows where the difference comes from: in the behavioural treatment the overnight bucket holds the non-core part of the deposits only, and the remaining deposits move to the buckets at three and a half and four and a half years, the neighbours of the wholesale core maturity of four years, so that the gap in the first bucket is smaller and those two buckets turn negative.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{alm-c14-gap.pdf}
+\caption{Repricing gap by bucket of the banking book of Silicon Valley Bank at 30 June 2022 in billions of US dollars, assets less liabilities slotted by next repricing date, with the capped behavioural core split of non-maturity deposits and with every non-maturity deposit in the overnight bucket; bucket 1 is overnight and bucket 19 is beyond 20 years.}
+\label{fig:alm-c14-gap}
+\end{figure}
+Table~\ref{tab:alm-c14-nii} reads the earnings side. The dynamic projection for a parallel rise of 200 basis points changes net interest income by USD \almCDynUpA{}, \almCDynUpB{} and \almCDynUpC{} billion at the three dates in the loss-positive convention, so a negative figure is a gain, while the same shock lowers the economic value: the bank gains earnings and loses value when rates rise, which is consistent with long fixed-rate assets funded by deposits whose rates follow the market only in part. The duration gap is \almCDurationGapA{}, \almCDurationGapB{} and \almCDurationGapC{} years. For the realised year the projection of 2021-Q4 can be checked: the projected rise in net interest income for the parallel-up shock is USD \almCOosProjected{} billion against a realised rise of USD \almCOosRealised{} billion in 2022, a relative error of \almCOosError{} per cent, which the test classes as amber; a shock of 200 basis points is not the realised path, and the later dates have no realised year because the bank failed on 10 March 2023.
+\input{../tables/alm-c14-nii}
+Table~\ref{tab:alm-c14-ear} gives the distribution view. At the 99 per cent level the economic value at risk is USD \almCEvarA{}, \almCEvarB{} and \almCEvarC{} billion with a Monte Carlo standard error of USD \almCEvarSeA{}, \almCEvarSeB{} and \almCEvarSeC{} billion, small against the value, while the earnings at risk is USD \almCEarA{}, \almCEarB{} and \almCEarC{} billion with standard errors of USD \almCEarSeA{}, \almCEarSeB{} and \almCEarSeC{} billion; a negative figure means that the first percentile of simulated net interest income lies above the base, which follows from the asset sensitivity. The volatility of the simulation comes from three years of daily changes of the three-month yield, so the scenarios are those of a short rate moving by its historical amplitude, a far smaller move than the 200 to 300 basis points of the standardised shocks, and the two views should not be compared in size.
+\input{../tables/alm-c14-ear}
+Table~\ref{tab:alm-c14-battery} gives the battery of tests. The replicating portfolio is unstable: the largest change of the weights between estimation windows is \almCStabA{}, \almCStabB{} and \almCStabC{} at the three dates, with the weighted average maturity moving by up to \almCStabWamA{} years at 2021-Q4 and 2022-Q4 and \almCStabWamB{} years at 2022-Q2, so the deposit duration that the data support is not a stable quantity, and the fitted weighted average maturity of wholesale deposits is \almCWamA{}, \almCWamB{} and \almCWamC{} years at the three dates. The test of a behavioural change at a limit breach is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with \almCBreachesB{} change and red at 2022-Q4 with \almCBreachesC{}; the red rows show that the test operates on the parameters that are re-estimated at each date, not that the bank altered its parameters in these numbers, which are synthetic in behaviour.
+\input{../tables/alm-c14-battery}
+The floor of zero on the post-shock rate binds in the parallel-down shock in \almCFloorBoundFirstDate{} buckets at 2021-Q4, \almCFloorBoundBuckets{} at 2022-Q2 and \almCFloorBoundLastDate{} at 2022-Q4, so the downward shocks are truncated where rates are near zero and the gain from falling rates is bounded by the floor.
+
+\paragraph{Case C15: the Chilean standard on Banco Andino.}
+Table~\ref{tab:alm-c15-variants} gives the standard measures of the six variants. The long UF book has a change in economic value of CLP \almDEveLong{} billion, \almDEveShareLong{} per cent of Tier 1 (CLP \almDTier{} billion), with its worst shock the \almDEveWorstLong{}, and a change in net interest income with the indexation charge of CLP \almDNiiLong{} billion, \almDNiiShareLong{} per cent of Tier 1 against a threshold of 5 per cent. The indexation charge is CLP \almDChargeLong{} billion, \almDChargeShareLong{} per cent of the change in net interest income of the long book and \almDChargeShareShort{} per cent of the short book, on a net UF position of CLP \almDPnLong{} billion: it depends on the size of the position, not on the rate shock, and no hedge is modelled. When the net UF position falls to 5 per cent of Tier 1 (CLP \almDPnSteep{} billion) the charge falls to CLP \almDChargeSteep{} billion, \almDChargeShareSteep{} per cent of the measure. Only one variant is prioritised: the CLP steepener, which moves \almDSteepLongShare{} per cent of its fixed loans and securities to the long end, has a change in economic value of CLP \almDEveSteep{} billion, \almDEveShareSteep{} per cent of Tier 1, above the 15 per cent threshold, while its change in net interest income is \almDNiiShareSteep{} per cent of Tier 1. The margin test never binds: the largest ratio of the change in net interest income to the twelve-month margin is \almDMarginLong{} per cent against 18.
+\input{../tables/alm-c15-variants}
+Figure~\ref{fig:alm-c15-annex1} shows the three prioritisation ratios against their thresholds.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{alm-c15-annex1.pdf}
+\caption{The three prioritisation ratios of RAN 21-13 Annex 1 for the six variants of the synthetic bank Banco Andino: the change in economic value over \tierone{} (threshold 15 per cent), the change in net interest income with the indexation charge over \tierone{} (threshold 5 per cent) and the same change over the twelve-month net interest and indexation margin (threshold 18 per cent); dark bars exceed the threshold, shown as a dashed line.}
+\label{fig:alm-c15-annex1}
+\end{figure}
+Table~\ref{tab:alm-c15-offset} isolates the two legs. In the long UF variant the offset reduces the economic value measure only from CLP \almDOffsetOffLong{} to \almDOffsetOnLong{} billion, because the peso leg is nearly flat under the parallel rise; in the variant whose peso funding has twice the maturity the two legs move in opposite directions and the 50 per cent offset reduces the measure from CLP \almDOffsetOffOffset{} to \almDOffsetOnOffset{} billion, a cut of \almDOffsetCut{} per cent. The offset is therefore material only when the legs are of opposite sign and of comparable size. The CPI surprise of \almDCpiPp{} percentage points on the long UF position changes value by CLP \almDCpiEffect{} billion in the loss-positive convention, a gain because the bank is long in UF; its magnitude equals the indexation charge, since the charge is 2.5 per cent of the absolute position. None of the \almDFloorChecks{} floor checks binds: the closest post-shock rate is \almDFloorClosest{} basis points from its floor, so the effect of the floors on any number is not demonstrated by these curves.
+\input{../tables/alm-c15-offset}
+Table~\ref{tab:alm-c15-ear} gives earnings at risk and economic value at risk at the 99 per cent level for each leg. The economic value at risk of the UF leg in the long UF variant is CLP \almDEvarUr{} billion with a standard error of CLP \almDEvarSeUr{} billion, and that of the peso leg is CLP \almDEvarClp{} billion with a standard error of CLP \almDEvarSeClp{} billion; the legs are simulated separately, so the table gives no joint distribution and the two figures cannot be added. The fits of Table~\ref{tab:alm-c15-curves} have root mean squared errors below one basis point, but the peso curve has four observed points for four parameters, so the fit shows only that the family can follow the published points.
+\input{../tables/alm-c15-ear}
+
+\paragraph{Case C16: liquidity stress and the run of March 2023.}
+Table~\ref{tab:alm-c16-scenarios} gives the five variants. Under the Adverse scenario the net liquidity position turns negative on day \almLAdvSurvival{} of \almLAdvHorizon{} with a minimum of USD \almLAdvMinNlp{} billion at the end of the horizon, a capacity of USD \almLAdvCbc{} billion and a cumulative net outflow of USD \almLAdvOut{} billion; under the Extreme scenario the survival period is \almLExtSurvival{} days and the minimum USD \almLExtMinNlp{} billion, as Figure~\ref{fig:alm-c16-nlp} shows. The survival period is monotone in the severity of the run-off, as the acceptance criterion requires. The cliff effect is $-$\almLAdvCliff{} and $-$\almLExtCliff{} per cent of total assets (USD \almLTotalAssets{} billion), amber at both severities and close to the red threshold of 3 per cent under the Extreme scenario: the position falls from USD \almLCliffNlpNear{} billion on day \almLCliffNear{} to USD \almLCliffNlpFar{} billion on day \almLCliffFar{} under the Adverse scenario, so a bank that optimises its position for a 30-day window leaves it exposed just after.
+\input{../tables/alm-c16-scenarios}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{alm-c16-nlp.pdf}
+\caption{Net liquidity position of Silicon Valley Bank in billions of US dollars against the relevant day after 31 December 2022 under the Adverse and Extreme run-off rates of the European Central Bank and under the Adverse rates with the held-to-maturity book valued at fair value in the counterbalancing capacity; each marker shows the first day on which the position is negative.}
+\label{fig:alm-c16-nlp}
+\end{figure}
+Taking the held-to-maturity book at fair value removes USD \almLCbcRemoved{} billion of capacity, \almLCbcRemovedShare{} per cent of the USD \almLCbcWithout{} billion without the loss, and the survival period under the Adverse rates falls from \almLAdvSurvival{} to \almLHtmSurvival{} days (Table~\ref{tab:alm-c16-scenarios}). The reported unrealised loss on the book is USD \almLHtmReported{} billion on an amortised cost of USD \almLHtmAmortised{} billion; the counterfactual of the Bank Term Funding Program would have added USD \almLBtfpUplift{} billion at par. A revaluation of the book through the engine's curves gives USD \almLReval{} billion against a reported fair value of USD \almLHtmFair{} billion, a difference of USD \almLRevalDiffBn{} billion, \almLRevalDiff{} per cent of the reported loss, which the test classes as red: the profile of a par bond per maturity band is a coarse model of the book. Table~\ref{tab:alm-c16-htm} extends the sensitivity under the Extreme rates: the survival period falls from \almLExtHtmZero{} days with no loss to \almLExtHtmOne{} days with the reported loss and \almLExtHtmTwo{} days with twice the reported loss.
+\input{../tables/alm-c16-htm}
+Table~\ref{tab:alm-c16-uninsured} gives the sensitivity to the uninsured share of domestic deposits. Moving the share from \almLShareLow{} to \almLShareHigh{} per cent shortens the survival period from \almLSensAdvLow{} to \almLSensAdvHigh{} days under the Adverse rates, from \almLSensExtLow{} to \almLSensExtHigh{} days under the Extreme rates and from \almLSensHtmLow{} to \almLSensHtmHigh{} days with the held-to-maturity loss, a monotone but gentle dependence: the reported uninsured share is already \almLUnaDom{} per cent of domestic-office deposits (\almLUnaDep{} per cent of total deposits, whose totals are USD \almLDepDom{} and \almLDep{} billion), so the grid moves within a range that the actual balance sheet has already left.
+\input{../tables/alm-c16-uninsured}
+Table~\ref{tab:alm-c16-lcr} gives the liquidity coverage ratio of the call-report aggregates: \almLLcr{}, from a stock of USD \almLHqla{} billion of high-quality liquid assets, after a cap adjustment of USD \almLAdjCap{} billion because Level 2 assets exceed 40 per cent of the stock, against net outflows of USD \almLNetOut{} billion. The ratio is \almLLcrOperational{} if the uninsured balance is read as operational deposits and \almLLcrLegal{} if it is read as the deposits of other legal entities, so the mapping assumption moves the ratio by a factor of more than three; the ratio is an illustration of the formula on aggregates, not the reported ratio of the bank, and below 100 per cent under a stress scenario it is not a breach.
+\input{../tables/alm-c16-lcr}
+The scoring against the observed run is the weakest point. The modelled cumulative outflow after the two days of the event is \almLAdvTwoDay{} per cent of the modelled deposit base under the Adverse rates and \almLExtTwoDay{} per cent under the Extreme ones, against the 85 per cent of the board review: ratios of \almLAdvRatio{} and \almLExtRatio{}, red in both. The fast-run scenario calibrates the daily rate of the uninsured segment on the pre-2023 rows at \almLFastRate{} per day, the fastest implied rate, which gives \almLFastTwoDaySegment{} per cent of the segment in two days and \almLFastTwoDay{} per cent of the base including the financial customers, a ratio of \almLFastRatio{}, also red (Table~\ref{tab:alm-c16-scoring}). The run of the bank implies \almLSvbImpliedRate{} per day, \almLSvbRateRatio{} times the calibrated rate. The result is a negative one: neither the run-off rate calibrated on the runs observed before 2023 nor the Adverse and Extreme rates of the sensitivity analysis anticipates a run of 85 per cent in two days, and the survival periods above are therefore not forecasts of the bank. The test of the estimator against the known truth of the generator is green, with a largest deviation of \almLGenZ{} standard errors over \almLGenN{} checks, so the run-off estimator recovers a mechanism that was put into it; the scoring against the real run shows that the mechanism of 2023 was not in the calibration data.
+\input{../tables/alm-c16-scoring}
+Table~\ref{tab:alm-c16-reverse} and Figure~\ref{fig:alm-c16-reverse} give the reverse stress. The multiplier on the daily run-off rates at which the survival period first falls to \almLRevTarget{} days is \almLRevAdv{} on the Adverse base (cap \almLRevAdvCap{}) and \almLRevExt{} on the Extreme base (cap \almLRevExtCap{}), and the fast-run base, whose horizon is \almLFastHorizon{} days, is refused because a target of \almLRevTarget{} days is not below the horizon and no number can be returned. The two solved multipliers say that the Adverse run-off must be a little more than doubled, and the Extreme run-off increased by about two fifths, for the position to fail within a month; they are distances to a stated target in a stated scenario, not probabilities.
+\input{../tables/alm-c16-reverse}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{alm-c16-reverse.pdf}
+\caption{Survival period of Silicon Valley Bank, in days on a logarithmic scale and with the horizon shown where the position never turns negative, against the multiplier applied to every daily run-off rate on a logarithmic scale, for the Adverse, Extreme and fast-run base scenarios; the stars mark the threshold multipliers that reach the 30-day target shown as a dashed line.}
+\label{fig:alm-c16-reverse}
+\end{figure}
+Table~\ref{tab:alm-c16-battery} gives the lights of the battery. The compounding, haircut and identity tests are green on every ladder; the cliff diagnostic is amber on three variants and not evaluated for the five-day fast run; the run-off adequacy test is red on the four path variants and amber on the formula variant, whose 30-day outflow of \almLLcrOutflowShare{} per cent of the base is compared at its own horizon, because the formula defines one aggregate and no daily path. The lights are conventions of the product and no statement of compliance.
+\input{../tables/alm-c16-battery}
+\paragraph{Limits of the results.}
+The three cases carry real aggregates and synthetic behaviour, so the numbers describe the methods on those parameters and not the position of any bank. The standardised measures of C14 depend on the synthetic requests for non-maturity deposits; the Chilean bank is synthetic and its UF position is a design parameter; the liquidity results depend on conventions (calendar, mapping, monetisation schedule, calibration rule) that are labelled in each artifact, and the observed runs are scored, never forecast.
