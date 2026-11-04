@@ -1,0 +1,21 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Back-test in currency of the eight exposure-at-default models on the independent test replications of level 3: predicted and realised exposure at default in millions of US dollars over all seven utilisation bands, the relative gap of the total, the band with the largest relative gap and the light of the band back-test.}
+\label{tab:lgd-ead-backtest}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrcrl}
+\toprule
+Model & Predicted (USD m) & Realised (USD m) & Total gap & Worst band & Gap in it & Light \\
+\midrule
+Fixed-horizon CCF, untreated & 202.5 & 203.0 & $-0.002$ & u1 & $0.023$ & green \\
+Fixed-horizon CCF, censored & 197.1 & 203.0 & $-0.029$ & u1 & $-0.048$ & green \\
+Fixed-horizon CCF, floor and cap & 201.2 & 203.0 & $-0.009$ & u3 & $-0.019$ & green \\
+Fixed-horizon CCF, bounded-scale logit & 201.2 & 203.0 & $-0.009$ & u7 & $-0.016$ & green \\
+Cohort CCF, floor and cap & 184.5 & 185.5 & $-0.005$ & u1 & $0.203$ & amber \\
+Variable-horizon CCF, floor and cap & 806.6 & 812.0 & $-0.007$ & u2 & $0.031$ & green \\
+Direct EAD & 168.3 & 203.0 & $-0.171$ & u7 & $-0.572$ & red \\
+Utilisation change & 203.4 & 203.0 & $0.002$ & u5 & $0.219$ & amber \\
+\bottomrule
+\end{tabular}}
+\end{table*}

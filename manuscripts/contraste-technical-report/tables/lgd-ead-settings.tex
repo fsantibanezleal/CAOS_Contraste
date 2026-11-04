@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The eight rungs of the loss-given-default ladder with the library that fits each and its fixed settings, read from the pipeline source of case C08; every rung is fitted on the same training span and the same standardised covariates.}
+\label{tab:lgd-ead-settings}
+\begin{tabular}{llp{8.2cm}}
+\toprule
+Rung & Library & Specification and settings \\
+\midrule
+OLS & riskvalidation & \raggedright\arraybackslash fit\_ols; prediction clipped to [0, 1] \\
+Fractional logit & riskvalidation & \raggedright\arraybackslash fit\_fractional\_logit; Newton iterations with step halving from a zero start \\
+Beta regression & riskvalidation & \raggedright\arraybackslash fit\_beta; endpoint epsilon in {0.0001, 0.001, 0.01}, the ladder keeps 0.001 \\
+Hurdle & riskvalidation & \raggedright\arraybackslash fit\_hurdle; logit of a positive loss, then fractional logit of the severity \\
+Gradient boosting & catboost & \raggedright\arraybackslash iterations=200, depth=6, learning\_rate=0.1, l2\_leaf\_reg=3.0, loss\_function=CrossEntropy \\
+Tobit & riskvalidation & \raggedright\arraybackslash fit\_tobit; two-limit censored normal at 0 and 1 \\
+Random forest & scikit-learn & \raggedright\arraybackslash n\_estimators=100, min\_samples\_leaf=30, max\_features=0.34, max\_samples=0.5, bootstrap=True, criterion=squared\_error \\
+Neural network & scikit-learn & \raggedright\arraybackslash hidden\_layer\_sizes=(32, 16), activation=relu, solver=adam, alpha=0.0001, batch\_size=512, learning\_rate\_init=0.001, max\_iter=100, early\_stopping=True, validation\_fraction=0.1, n\_iter\_no\_change=10 \\
+\bottomrule
+\end{tabular}
+\end{table}

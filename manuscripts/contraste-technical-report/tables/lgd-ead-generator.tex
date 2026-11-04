@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Fixed parameters of the revolving-line generator, read from the pipeline source of case C09: the origin column separates the values the case assumes from those that come from a rule of the engine or a source file; the marginals of limit, utilisation, score and rate come from the Federal Reserve 2025 card portfolios.}
+\label{tab:lgd-ead-generator}
+\begin{tabular}{p{6.6cm}lp{4.6cm}}
+\toprule
+Parameter & Value & Origin \\
+\midrule
+Risk-group shares (low, typical, high) & 0.4, 0.35, 0.25 & case assumption \\
+Twelve-month default probability by risk group & 0.008, 0.03, 0.1 & case assumption \\
+Known CCF of level 0 & 0.6 & case assumption \\
+Gamma shape of the line frailty & 2 & case assumption \\
+Drawing-rate multiplier by risk group & 0.85, 1, 1.15 & case assumption \\
+Noise on the CCF (standard deviation) & 0.15 & case assumption \\
+Capitalised interest and fees, scale & 0.02 & case assumption \\
+Month-to-month balance noise, share of the limit & 0.01 & case assumption \\
+Cap on utilisation over the limit & 3 & truncation of the Federal Reserve files \\
+Small-undrawn threshold (USD) & 50 & the switch of Qi (2009) \\
+\bottomrule
+\end{tabular}
+\end{table}

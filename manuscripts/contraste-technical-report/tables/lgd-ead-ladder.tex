@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The ladder on the 2009--10 default cohort (50,281 defaults): error, rank correlation and the calibration gap, the mean realised minus the mean predicted loss given default, with its 95\% interval and the light of the paired t-test of calibration by segment.}
+\label{tab:lgd-ead-ladder}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrcl}
+\toprule
+Rung & RMSE & MAE & $R^2$ & Spearman $\rho$ & Gap & 95\% interval of the gap & Light \\
+\midrule
+OLS & 0.314 & 0.175 & 0.116 & 0.519 & $0.045$ & $[0.043,\ 0.048]$ & red \\
+Fractional logit & 0.311 & 0.170 & 0.136 & 0.531 & $0.033$ & $[0.030,\ 0.035]$ & red \\
+Beta regression & 0.314 & 0.178 & 0.117 & 0.530 & $0.047$ & $[0.044,\ 0.050]$ & red \\
+Hurdle & 0.311 & 0.170 & 0.136 & 0.532 & $0.033$ & $[0.030,\ 0.035]$ & red \\
+Gradient boosting & 0.303 & 0.156 & 0.179 & 0.577 & $0.034$ & $[0.031,\ 0.037]$ & red \\
+Tobit & 0.316 & 0.181 & 0.108 & 0.526 & $0.057$ & $[0.055,\ 0.060]$ & red \\
+Random forest & 0.303 & 0.157 & 0.177 & 0.581 & $0.037$ & $[0.034,\ 0.039]$ & red \\
+Neural network & 0.304 & 0.157 & 0.174 & 0.570 & $0.033$ & $[0.030,\ 0.036]$ & red \\
+\bottomrule
+\end{tabular}}
+\end{table}
