@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Paired AUC difference of each learned method against the scorecard on the Polish bankruptcy holdouts (positive favours the learned method; a star marks a DeLong $p$ below 0.05) and the number of the seven fitted methods whose train-minus-holdout AUC gap exceeds the 0.05 tolerance.}
+\label{tab:cs-c02-diff}
+\begin{tabular}{lrrrrrr}
+\toprule
+Horizon & L1 & PLTR & EBM & LightGBM & XGBoost & Overfit flags \\
+\midrule
+\relax 1 year & \relax +0.001 & \relax +0.024$^{*}$ & \relax +0.043$^{*}$ & \relax +0.041$^{*}$ & \relax +0.031$^{*}$ & \relax 1 of 7 \\
+\relax 2 years & \relax +0.025$^{*}$ & \relax +0.094$^{*}$ & \relax +0.112$^{*}$ & \relax +0.113$^{*}$ & \relax +0.102$^{*}$ & \relax 4 of 7 \\
+\relax 3 years & \relax +0.028$^{*}$ & \relax +0.051$^{*}$ & \relax +0.059$^{*}$ & \relax +0.086$^{*}$ & \relax +0.062$^{*}$ & \relax 4 of 7 \\
+\relax 4 years & \relax +0.020$^{*}$ & \relax +0.105$^{*}$ & \relax +0.109$^{*}$ & \relax +0.120$^{*}$ & \relax +0.097$^{*}$ & \relax 6 of 7 \\
+\relax 5 years & \relax +0.030$^{*}$ & \relax +0.175$^{*}$ & \relax +0.204$^{*}$ & \relax +0.215$^{*}$ & \relax +0.199$^{*}$ & \relax 6 of 7 \\
+\relax Pooled & \relax +0.018$^{*}$ & \relax +0.052$^{*}$ & \relax +0.080$^{*}$ & \relax +0.106$^{*}$ & \relax +0.099$^{*}$ & \relax 0 of 7 \\
+\bottomrule
+\end{tabular}
+\end{table}
