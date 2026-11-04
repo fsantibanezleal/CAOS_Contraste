@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The wrong-way risk sweep of case C12 on the netting set: CVA of the Hull and White hazard model against the dependence parameter b, with its Monte Carlo standard error, the ratio to the independent value and the largest distance between the average simulated survival and its target.}
+\label{tab:ccr-wwr}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrc}
+\toprule
+$b$ (per USD million) & CVA (USD) & Ratio to $b=0$ & Largest calibration error of $a(t)$ & Independent of exposure \\
+\midrule
+$-$2 & $4{,}755.9\pm18.7$ & 0.502 & $1.0\times10^{-14}$ & no \\
+0 & $9{,}477.8\pm51.1$ & 1.000 & $5.2\times10^{-13}$ & yes \\
+1 & $12{,}439.6\pm83.2$ & 1.312 & $6.8\times10^{-15}$ & no \\
+2 & $15{,}594.6\pm132.8$ & 1.645 & $1.0\times10^{-14}$ & no \\
+4 & $21{,}706.8\pm276.0$ & 2.290 & $8.8\times10^{-15}$ & no \\
+\bottomrule
+\end{tabular}}
+\end{table}
