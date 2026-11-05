@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The benchmark of the aggregate loss of \citet{oprisk:shevchenko2010}: a Poisson count with rate 100 and a lognormal severity with $\mu=0$, $\sigma=2$. Published values against the engine's moments, the Panjer recursion and the FFT on the grid of 6,000 points of step 1, and a Monte Carlo of one million years; the interval is one standard error.}
+\label{tab:op-benchmark}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrl}
+\toprule
+Quantity & Published & Engine & Second computation \\
+\midrule
+\relax Mean $\E[Z]$ & 738.9056 & 738.9056 & \relax 740.07 $\pm$ 0.55 (Monte Carlo) \\
+\relax Variance $\Var[Z]$ & 298095.7987 & 298095.7987 & -- \\
+Skewness & 40.3428 & 40.3429 & -- \\
+$H_{5849}$ (Panjer, step 1) & 0.999000217 & 0.999000217 & 0.999000217 (FFT) \\
+\relax 99.9\% quantile, Panjer & 5849 & 5849 & -- \\
+\relax 99.9\% quantile, FFT & 5849 & 5849 & -- \\
+\relax 99.9\% quantile, Monte Carlo & 5853.1 & \relax 5853.8 $\pm$ 68.1 & continuous quantile, not the discretised one \\
+\bottomrule
+\end{tabular}}
+\end{table}

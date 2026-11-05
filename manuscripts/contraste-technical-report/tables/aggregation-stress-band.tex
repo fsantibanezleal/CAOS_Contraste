@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The dependence band of case C18 over the same four marginals of Banco Andino at one year and 99.9 percent: economic capital of each row in CLP billion, the Monte Carlo standard error of the simulated rows, the diversification factor against the simple sum, and the capital of each row when the market-credit correlation is raised from 0.5 to 0.8. The bounds are the ends of rearrangement ranges and carry no sampling error.}
+\label{tab:aggregation-stress-band}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrrrr}
+\toprule
+Row & $\nu$ & Capital & MC s.e. & Factor & Stressed capital & MC s.e. \\
+\midrule
+Lower bound (best VaR less EL) & -- & 118.5 & -- & 0.180 & 118.5 & -- \\
+Simple sum (headline) & -- & 658.0 & -- & 1.000 & 658.0 & -- \\
+Variance-covariance & -- & 528.1 & -- & 0.803 & 568.5 & -- \\
+Gaussian copula & -- & 492.0 & 2.5 & 0.748 & 551.6 & 3.2 \\
+Student t copula & 4 & 552.4 & 3.4 & 0.839 & 587.5 & 3.7 \\
+Student t copula & 8 & 528.3 & 2.8 & 0.803 & 577.1 & 2.9 \\
+Student t copula & 30 & 499.1 & 3.3 & 0.759 & 557.2 & 3.2 \\
+Worst case (rearrangement) & -- & 823.3 & -- & 1.251 & 823.3 & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

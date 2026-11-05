@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The true 99.9 percent annual loss quantile of each variant by three aggregations of the generator's compound Poisson loss (Fourier transform, Panjer recursion, Monte Carlo of ten million years with its standard error) and by the single loss approximation; the last two columns give the approximation's relative difference to the Fourier value and the Monte Carlo deviation in standard errors.}
+\label{tab:op-aggregation}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{rrrrrrr}
+\toprule
+$\xi$ & FFT (EUR m) & Panjer (EUR m) & Monte Carlo (EUR m) & SLA (EUR m) & SLA over FFT & MC minus FFT ($\mathrm{se}$) \\
+\midrule
+0.6 & 33.9 & 33.9 & \relax 33.8 $\pm$ 0.2 & 29.6 & \relax -12.6\% & -0.5 \\
+0.8 & 163.5 & 163.5 & \relax 162.8 $\pm$ 1.2 & 157.7 & \relax -3.5\% & -0.6 \\
+0.96 & 634.9 & 634.9 & \relax 629.5 $\pm$ 5.9 & 626.2 & \relax -1.4\% & -0.9 \\
+1.1 & 2,148.6 & 2,147.6 & \relax 2,119.4 $\pm$ 21.3 & 2,134.4 & \relax -0.7\% & -1.4 \\
+\bottomrule
+\end{tabular}}
+\end{table}

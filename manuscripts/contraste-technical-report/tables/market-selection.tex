@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\caption{The hyperparameters fixed once on 1995 to 2003, before the earliest test window: for each candidate value the sum of the average FZ0 loss of the model that uses it over the two selection series and the two tail levels, on every fifth forecast day of the span, and the value chosen. The last two rows are the quantile network.}
+\label{tab:market-selection}
+\begin{tabular}{llp{6.0cm}r}
+\toprule
+Hyperparameter & Model scored & Candidate: summed average FZ0 (lower is better) & Selected \\
+\midrule
+\texttt{age\_weight\_lambda} & Age-weighted HS & 0.98: -14.36, 0.99: -14.56 & 0.99 \\
+\texttt{estimation\_window\_days} & GARCH-t & 500: -15.10, 750: -15.17, 1000: -15.18 & 1000 \\
+\texttt{evt\_threshold\_fraction} & Cond. EVT & 0.05: -16.12, 0.1: -16.11, 0.15: -16.11 & 0.05 \\
+\texttt{ewma\_lambda} & EWMA & 0.94: -14.80, 0.97: -14.81, 0.99: -14.53 & 0.97 \\
+\texttt{hidden\_units} & Quantile network & 4: -7.25, 8: 0.63, 16: 19.35 & 4 \\
+\texttt{weight\_decay} & Quantile network & 0.001: 0.63, 0.01: -6.95, 0.1: -14.93 & 0.1 \\
+\bottomrule
+\end{tabular}
+\end{table}

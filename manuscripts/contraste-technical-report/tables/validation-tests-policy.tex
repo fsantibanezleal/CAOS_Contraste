@@ -1,0 +1,35 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{The policy rows that turn the statistic of each machine-learning and fairness test into a light, read from the engine's packaged policy: a p-value rule colours a test amber below its first cut and red below its second; an upper-bad rule colours it at or above the cut (strictly above where the engine stores the next float); a lower-bad rule colours it at or below the cut. A cut shown as never is a sentinel outside the range of the metric.}
+\label{tab:vt-policy}
+\begin{tabular}{llrr}
+\toprule
+Test & Rule & Amber cut & Red cut \\
+\midrule
+\nolinkurl{ml.robustness} & upper bad & 0.02 & 0.04 \\
+\nolinkurl{ml.shift_resilience} & p value & 0.05 & 0.01 \\
+\nolinkurl{ml.seed_stability} & upper bad & 0.01 & 0.02 \\
+\nolinkurl{ml.reason_code_stability} & lower bad & 0.8 & 0.6 \\
+\nolinkurl{ml.effect_agreement} & lower bad & 0.7 & 0.4 \\
+\nolinkurl{ml.additivity} & upper bad & $1.0\times10^{-9}$ & $1.0\times10^{-9}$ \\
+\nolinkurl{ml.overfit} & upper bad & 0.05 & 0.05 \\
+\nolinkurl{ml.weak_spot} & upper bad & never & never \\
+\nolinkurl{ml.conformal_coverage} & p value & 0.05 & 0.01 \\
+\nolinkurl{ml.leakage_screen.single_feature_auc} & upper bad & 0.95 & 0.95 \\
+\nolinkurl{ml.leakage_screen.resemblance_auc} & upper bad & 0.7 & 0.7 \\
+\nolinkurl{ml.leakage_screen.temporal_order} & upper bad & 1 & 1 \\
+\nolinkurl{ml.leakage_screen.entity_overlap} & upper bad & 1 & 1 \\
+\nolinkurl{ml.data_quality} & upper bad & 0.01 & 0.05 \\
+\nolinkurl{fair.demographic_parity} & upper bad & 0.05 & never \\
+\nolinkurl{fair.two_proportion_z} & p value & 0.05 & 0.01 \\
+\nolinkurl{fair.fisher_exact} & p value & 0.05 & 0.01 \\
+\nolinkurl{fair.equalized_odds} & upper bad & 0.05 & 0.1 \\
+\nolinkurl{fair.equal_opportunity} & upper bad & 0.05 & 0.1 \\
+\nolinkurl{fair.calibration_within_groups} & upper bad & 0.05 & 0.1 \\
+\nolinkurl{fair.auc_by_group} & upper bad & 0.05 & 0.1 \\
+\nolinkurl{fair.situation_testing} & upper bad & 0.2 & never \\
+\bottomrule
+\end{tabular}
+\end{table}

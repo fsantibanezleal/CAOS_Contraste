@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.0pt}
+\caption{Case C13, the P\&L attribution test on 1,000 replications of each variant: the mean and standard deviation of the Spearman correlation and of the Kolmogorov-Smirnov distance, the number of replications in each joint zone, and the share that is amber or red with its Wilson 95 percent interval in brackets.}
+\label{tab:market-pla}
+\begin{tabular}{lrrrrrr}
+\toprule
+Variant & Spearman, mean (sd) & KS, mean (sd) & Green & Amber & Red & Amber or red (\%) \\
+\midrule
+None (size) & 0.992 (0.004) & 0.033 (0.006) & 1000 & 0 & 0 & 0.0 [0.0, 0.4] \\
+Missing basis & 0.705 (0.073) & 0.120 (0.028) & 40 & 385 & 575 & 96.0 [94.6, 97.0] \\
+Stale volatility & 0.979 (0.005) & 0.041 (0.008) & 1000 & 0 & 0 & 0.0 [0.0, 0.4] \\
+Wrong correlation & 0.986 (0.004) & 0.141 (0.014) & 0 & 87 & 913 & 100.0 [99.6, 100.0] \\
+Omitted factor & 0.772 (0.031) & 0.089 (0.016) & 99 & 858 & 43 & 90.1 [88.1, 91.8] \\
+Time misalignment & -0.004 (0.069) & 0.033 (0.006) & 0 & 0 & 1000 & 100.0 [99.6, 100.0] \\
+\bottomrule
+\end{tabular}
+\end{table}

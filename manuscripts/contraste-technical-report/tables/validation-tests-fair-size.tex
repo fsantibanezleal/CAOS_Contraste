@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{The size and power of the fairness tests of the engine on its planted-bias generators, from 4,000 repetitions per condition, as the engine's own measured table states them: the rejection rate under no bias with its standard error and the plant, the bias planted, and the rate at which the test is not green against it.}
+\label{tab:vt-fair-size}
+\begin{tabular}{p{3.4cm}p{4.8cm}p{3.6cm}p{1.8cm}}
+\toprule
+Test & Size and its null & Planted bias & Power \\
+\midrule
+\nolinkurl{fair.two_proportion_z} & 0.054 (se 0.004), threshold plant gap 0, n 2,000 & threshold gap 0.3 (true rate gap 0.091) & 0.990 \\
+\nolinkurl{fair.fisher_exact} & 0.046 (se 0.003), same & same & 0.992 \\
+\nolinkurl{fair.demographic_parity} & 0.015 (se 0.002), same & threshold gap 0.5 (true rate gap 0.156) & 1.000 \\
+\nolinkurl{fair.adverse_impact} & 0.000, same & threshold gap 0.8 (true rate gap 0.255, ratio 0.64) & 1.000 \\
+\nolinkurl{fair.equalized_odds} & 0.013 (se 0.002), label-noise plant noise 0, n 8,000 & label noise 0.25; threshold gap 0.5 & 1.000; 1.000 \\
+\nolinkurl{fair.equal_opportunity} & 0.000, same; 0.000 on the threshold plant at gap 0 & threshold gap 0.5; label noise 0.25 & 1.000; 0.516 \\
+\nolinkurl{fair.calibration_within_groups} & 0.000, same & label noise 0.25 & 1.000 \\
+\nolinkurl{fair.auc_by_group} & 0.000, same & label noise 0.25 & 1.000 \\
+\nolinkurl{fair.conditional_disparity} & 0.048 (se 0.003), proxy plant strength 0, n 3,000; 0.052 with the proxy controlled at strength 0.7 & proxy strength 0.7, proxy not controlled & 1.000 \\
+\nolinkurl{fair.rate_spread_disparity} & 0.052 (se 0.004), proxy plant strength 0 & proxy strength 0.7 & 1.000 \\
+\nolinkurl{fair.replication} & false alarm 0.000 on a stable effect (strength 0.7) & the second year recoded in reverse & 1.000 \\
+\nolinkurl{fair.situation_testing} & 0.0395 (se 0.0031) at the amber cut 0.20 (4,000 repetitions, n 400, k 30, no bias); at the former cut 0.10 0.194 (U14-E2), 0.191 for a share strictly above 0.10 and 0.088 above 0.15 (this round) & negative-decision bias 0.4 & 1.000 at every cut \\
+\bottomrule
+\end{tabular}
+\end{table}

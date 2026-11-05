@@ -1,0 +1,32 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The tests the engine applies to the aggregation and the stress chain of case C18 on the Federal Reserve severely adverse document and on the aggregation document: the test, the loan type or variable it was applied to, its statistic and metric as the engine returns them, and the light the Contraste internal rule assigns. The thresholds are internal acceptance criteria, not regulatory values.}
+\label{tab:aggregation-stress-battery}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrl}
+\toprule
+Test & Segment & Statistic & Metric & Light \\
+\midrule
+Aggregate against the simple sum and the variance-covariance formula & -- & 0.932 & 0.748 & green \\
+Copula choice: largest relative gap of the t copula to the Gaussian & -- & 0.123 & 0.123 & amber \\
+Rows inside the bounds (width of the bracket, CLP bn) & -- & 704.8 & 1.071 & green \\
+Correlation stress: stressed over base Gaussian capital & -- & 0.121 & 0.121 & amber \\
+Sign of every diversification benefit & -- & 0.839 & 0.252 & green \\
+One horizon and one level across the marginals & -- & 0 & -- & green \\
+Euler contributions add to the total (total ES, CLP bn) & -- & 709.4 & $1.6\times10^{-16}$ & green \\
+Monte Carlo against the variance-covariance formula, elliptical case & -- & $-$0.89 & $-$0.0027 & green \\
+Additive overestimate against the published range (reference) & -- & 0.338 & 0.338 & green \\
+Coefficients with the wrong sign & -- & 6 & -- & red \\
+Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Commercial and industrial & 0.55 & 0 & red \\
+Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Commercial real estate & 0.79 & $-$14 & red \\
+Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Residential & 0.68 & $-$12 & red \\
+Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Credit cards & 3.71 & $-$17 & red \\
+Back-cast of 2020 to 2025 (RMSE, points; peak timing, quarters) & Other consumer & 0.51 & $-$21 & red \\
+Static balance sheet rules violated & -- & 0 & -- & green \\
+Scenario severity: path peak over the 2008 to 2009 peak & Unemployment rate & 1.078 & -- & green \\
+Scenario severity: path peak over the 2008 to 2009 peak & Real GDP growth & 0.582 & -- & amber \\
+Scenario severity: path peak over the 2008 to 2009 peak & Prime rate & 0.929 & -- & green \\
+\bottomrule
+\end{tabular}}
+\end{table*}

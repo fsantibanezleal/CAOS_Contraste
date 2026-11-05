@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{Five choices of definition that change the size of a test, each measured on one generator: the degrees of freedom of the Hosmer-Lemeshow statistic, the tie rule of the traffic-lights colours, the expected defaults of the thinnest grade, the treatment of the development AUC, and the variance used when it is estimated. Rates at the 5 percent level, in percent, with their standard error.}
+\label{tab:vt-settings}
+\begin{tabular}{p{2.8cm}p{2.4cm}rp{2.8cm}r}
+\toprule
+Test & Setting A & Size A (\%) & Setting B & Size B (\%) \\
+\midrule
+Hosmer-Lemeshow & $G$ degrees of freedom & $4.60\pm0.33$ & $G-2$ degrees of freedom & $10.97\pm0.49$ \\
+Traffic lights & printed tie rule & $3.65\pm0.30$ & tie rule of the WP14 simulation & $6.35\pm0.39$ \\
+Chi-square over grades & five or more expected defaults per grade & $5.30\pm0.35$ & best grade expecting 0.6 defaults & $5.67\pm0.37$ \\
+AUC against development & development AUC known & $3.40\pm0.29$ & development AUC estimated on an equal sample & $11.58\pm0.51$ \\
+AUC against development (estimated reference) & ECB variance & $11.58\pm0.51$ & variance of both AUCs & $5.30\pm0.35$ \\
+\bottomrule
+\end{tabular}
+\end{table}
