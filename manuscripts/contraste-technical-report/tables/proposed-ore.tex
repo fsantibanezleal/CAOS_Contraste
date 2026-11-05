@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Agreement of the engine's exposure profile with the Open Source Risk Engine on case C12: the number of the 33 report dates at which the expected exposure lies within two combined Monte Carlo standard errors, and the largest gap of the profile, of the effective expected positive exposure and of the credit valuation adjustment, each in combined standard errors.}
+\label{tab:proposed-ore}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Variant & Dates within 2 SE & Largest EE gap (SE) & EEPE gap (SE) & CVA gap (SE) \\
+\midrule
+Single swap & 33 of 33 & 0.8 & 0.30 & 0.37 \\
+Four-swap netting set & 33 of 33 & 0.7 & 0.31 & 0.40 \\
+CSA, 10 days & 17 of 33 & 9.9 & 1.55 & 15.89 \\
+CSA, 20 days & 21 of 33 & 7.1 & 2.20 & 9.88 \\
+CSA with initial margin & 32 of 33 & 11.7 & 0.71 & 1.40 \\
+\bottomrule
+\end{tabular}}
+\end{table}

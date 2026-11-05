@@ -1,106 +1,877 @@
 % Chapter written by unit TR-12 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
+% Every number of this section is a macro of tables/proposed-numbers.tex, written by tables/make_proposed.py from data/derived
+% (and, for the sequential monitor on the C11 windows, from the installed engine applied to the committed exceedance days).
+\input{../tables/proposed-numbers}
+\providecommand{\pxfn}[1]{\nolinkurl{#1}}
+
 \section{Methods: the product's own contributions}
 \label{sec:proposed}
 
-% INTRODUCTION OF THE CHAPTER
+A bank answers for its models to a supervisor and to its own management, and the discipline that produces the answer, independent
+validation, has three weak points that this section addresses. The first is that the statistical tests a validator runs are used
+without a measured error rate: the euro-area reporting instructions fix the tests and the p-values of the back-testing of the
+probability of default and set no pass or fail threshold \citep{proposed:ecb2019}, and the Basel Committee working paper that
+introduced most of them concludes that no really powerful tests of adequate calibration are available \citep{proposed:bcbswp14}. The second
+is that a calculation is rarely held to an independent implementation: the guidelines on the estimation of default probabilities
+ask for a review of the estimates with predefined metrics and thresholds \citep{proposed:eba2018}, and the market-risk framework
+fixes the back-testing zones and the attribution test of a trading desk without stating how often either flags a model that is wrong
+\citep{proposed:bcbsmar32}. The third is that supervisory findings that describe a practice, such as the change of a behavioural
+assumption at the moment a limit was breached in the review of Silicon Valley Bank \citep{proposed:fedsvb2023}, are not turned into
+tests that a validator can run.
 
-% BS-1: Measurement: The measured size and power of the validation tests on planted defects
-\subsection{TITLE}
+The section collects what Contraste adds to the practice named above. Twelve of the contributions are measurements, protocols,
+reconciliations, engine coverage and test constructions: the measured size and power of the validation tests on planted defects, the
+reconciliations with reference engines, the leakage-safe protocol of each case, the treatment of the default definition, of
+informative rating exits and of thin grades, the reconciliation identities of the provisions engine, the engines and test catalogues
+that no open toolkit provides, the Chilean indexation unit in the interest-rate risk of the banking book, the test of a behavioural
+assumption changed at a limit breach, the dependence band shown with every aggregate, the corrections of three tests with the error
+rate each removes, the reverse liquidity stress with a refusal rule, and the measured instability of the operational-risk capital.
+Four are methods that Contraste proposes: a scale-and-level complement to the attribution test of the fundamental review of the
+trading book, an anchored tipping-point default probability under informative rating exits, e-process sequential monitors for
+calibration and back-tests, and adaptive conformal recalibration of the value at risk. Each of the sixteen is stated with the theory
+it rests on, its equations, its assumptions, its parameters, its cost, its implementation in the engine release 1.1.0 of
+\texttt{riskvalidation} or in the pipeline of the product, what it is compared against and the criterion by which it is accepted
+or refuted; the criterion of each proposed method was fixed before its evaluation, and each is reported whatever its result.
+
+Five cases carry the evaluation of the proposed methods. Case C01 asks whether a champion scorecard and its challengers rank and
+calibrate retail credit-card defaults on a locked holdout, and its protocol is the one of the leakage-safe design. Case C04 asks what the
+through-the-cycle default probability of each rating grade is when the agencies' transition tables are the only data and some ratings
+leave the cohort before they default. Case C11 asks whether value-at-risk and expected-shortfall forecasts of an eighteen-model ladder
+pass their back-tests in the stress windows of 2007 to 2009, 2020 and 2022, with strictly rolling estimation. Case C13 asks whether a
+desk-level risk model with a known planted deficiency is caught by the profit-and-loss attribution test and by the desk back-test.
+Case C22 asks how often each validation test rejects a correct model and a defective one, on generators whose truth is known. The
+other measurements of the section read the committed documents of the cases that carry them (C12 for the exposure engine, C15 and C14
+for interest-rate risk, C16 for liquidity, C17 for operational risk, C18 for aggregation, C06 and C07 for provisions, C10 for portfolio
+capital and C20 and C21 for the machine-learning and fairness batteries); the case is named where it is used.
+
+The results of every method on the committed documents are collected in Section~\ref{sec:results-proposed}. The notation is the one of
+the notation section of the report; the symbols that a method adds are defined where it first uses them.
+
+% proposed method 1: Measurement: The measured size and power of the validation tests on planted defects
+\subsection{Measured size and power of the validation tests on planted defects}
 \label{sec:bs1}
 
-% TEXT
+A validation test is a decision rule, and a decision rule is characterised by two probabilities: the probability that it rejects a
+model that satisfies its null hypothesis, its size, and the probability that it rejects a model that has a defect of a known
+severity, its power. The regulatory texts that prescribe the tests state neither \citep{proposed:ecb2019,proposed:bcbswp14}, and the
+population stability index is applied with bands whose type~I and type~II errors were first derived only recently
+\citep{proposed:yurdakul2020}. Contraste measures both for every test of its catalogue that returns a p-value. The design follows the
+structure that \citet{proposed:morris2019} recommend for a simulation study: aims, data-generating mechanisms, estimands, methods and
+performance measures. The aims are the size of each test at the boundary of its null and its power against each planted defect. The
+mechanisms are \pxOneGens{} generators, each a frozen configuration whose truth is known exactly. The estimand is the true rejection
+probability of a test at a level. The methods are the registered tests, called as a validator calls them. The performance measure is the
+rejection rate with its Monte Carlo error.
 
-% BS-2: Reconciliation: The reconciliations against reference engines that exist today
-\subsection{TITLE}
+With $R$ independent repetitions of which $K$ reject, the rejection rate $\hat r=K/R$ estimates the true rejection probability $r$,
+and its Monte Carlo standard error and its Wilson interval at the normal quantile $z$ are
+\begin{equation}
+\widehat{\mathrm{SE}}(\hat r)=\sqrt{\frac{\hat r\,(1-\hat r)}{R}},\qquad
+\left[\frac{\hat r+\frac{z^{2}}{2R}\pm z\sqrt{\frac{\hat r(1-\hat r)}{R}+\frac{z^{2}}{4R^{2}}}}{1+\frac{z^{2}}{R}}\right].
+\label{eq:bs1-se-wilson}
+\end{equation}
+The first expression is the one tabulated for the rejection rate by \citet{proposed:morris2019}; the interval is the one that
+\citet{proposed:brown2001} recommend for small samples and for rates near zero, where a size of 0.1\,\% sits \citep{proposed:wilson1927}.
+Every one of the \pxOneRates{} rates of the measurement carries both.
+
+A test holds its size when its rate does not exceed the nominal level by more than the Monte Carlo error allows. Under the null at its
+boundary the true rejection rate of an exact test with a continuous statistic is the level $\alpha$, and that of a conservative or discrete
+test is at most $\alpha$, so the judgement is one-sided:
+\begin{equation}
+\hat r\le \alpha+z_{0.999}\sqrt{\frac{\alpha(1-\alpha)}{R}}.
+\label{eq:bs1-size-bound}
+\end{equation}
+At $\alpha=5\,\%$ and $R=\pxOneNullReps{}$ the bound is \pxOneBound{}\,\%. For the tests whose p-value falls as a single default count $D$
+grows, the binomial, the binomial corrected for asset correlation and the Jeffreys test of the default probability, the rejection
+probability is known exactly and needs no simulation: with $k^{*}$ the smallest count whose p-value is below $\alpha$, a true default
+probability $\pi$ and an asset correlation $\rho$, it is $\mathbb P(D\ge k^{*})=\int \bar F_{\mathrm{Bin}(n,p(x))}(k^{*}-1)\,\varphi(x)\,\mathrm dx$ with
+$p(x)=\Phi\big((\Phi^{-1}(\pi)-\sqrt\rho\,x)/\sqrt{1-\rho}\big)$, evaluated on 256 Gauss--Hermite nodes. The measurement places this exact value beside
+\pxOneExact{} of its rows, and a simulated rate is judged against it by $|\hat r-p|\le 3.29\sqrt{p(1-p)/R}$.
+
+The assumptions are that the repetitions are independent, which the harness secures by spawning one random stream per repetition from a single
+seed (so that repetition $i$ reruns alone to the same data), that the generator reproduces the null or the defect it states, and that the
+severity ladder is a design choice: power against it is not the probability of detecting a real problem of a real bank. The parameters are
+\pxOneNullReps{} repetitions for a size and \pxOneLeakReps{} for a power curve, chosen so that the standard error of a rate near 5\,\% is about 0.3
+percentage points; the cost of a cell is $O(R\,c)$ with $c$ the cost of one test call, and the \pxOneSims{} simulations of the
+\pxOneFamilies{} families (the null family and seven defect families: miscalibration, default clustering, drift, discrimination decay, leakage,
+broken monotonicity and concentration) total \pxOneReps{} seeded repetitions. The implementation is the module \texttt{riskvalidation.harness}
+(functions for the rates, the exact probabilities and the run) of engine release 1.1.0, driven by the pipeline module
+\pxfn{data-pipeline/pipeline/cases/c22_validator.py}.
+
+The comparison is against the exact probabilities where they exist and against the published size and power studies that the engine reruns, and
+the acceptance criterion is that every rate is reported with its standard error and that a test is declared to hold its size only inside
+equation~\eqref{eq:bs1-size-bound}. Of the \pxOneTests{} tests with a p-value, \pxOneOver{} lies above the bound on the null generator:
+\pxOneOverName{} rejects a correct model in \pxOneOverRate{}\,\% of the repetitions. Power is measured on planted defects of severity 1
+to 5; the leakage plant illustrates why it matters, since the comparison of the area under the curve with its value at development rejects in
+\pxOneLeakAucOne{}\,\% of the repetitions at severity 1 and \pxOneLeakAucTwo{}\,\% at severity 2, while the characteristic stability index of the leaked
+feature rejects in \pxOneLeakCsiOne{}\,\% and \pxOneLeakCsiFive{}\,\% at severities 1 and 5. The transition tests (time homogeneity, Markov order,
+matrix against a reference and downward momentum) have a size and no power in the measurement. Figure~\ref{fig:proposed-size} shows the sizes.
+
+% proposed method 2: Reconciliation: The reconciliations against reference engines that exist today
+\subsection{Reconciliation against reference engines and printed answers}
 \label{sec:bs2}
 
-% TEXT
+A validation engine that has never been compared with an independent implementation has verified only its own consistency. Contraste
+holds its estimators and tests to three kinds of independent reference and reports the gap in each case: the digits printed in the papers
+it reproduces, an independent recomputation that calls none of the engine's own functions, and a reference engine. The first kind covers
+\pxTwoPrinted{} printed numbers of five papers in the rating and calibration cases, of which \pxTwoReproduced{} are reproduced to the printed
+digit and every other is listed with its cell and the explanation of the difference, among them the Pluto and Tasche tables and the scaled
+probabilities of \citet{proposed:tasche2013}. The second kind recomputes the p-values of the Jeffreys test of the default probability
+\citep{proposed:jeffreys1946} and of the binomial test by a quadrature of the Beta density and by an exact rational sum of the binomial terms,
+and requires agreement within $10^{-9}$ on a grid of \pxTwoGridCases{} cases. The third kind compares the engine's Hull--White exposure
+engine with the Open Source Risk Engine, release \pxTwoOreVersion{}, and with the closed forms of QuantLib 1.44 to a relative $10^{-6}$.
 
-% BS-3: Protocol: The leakage-safe protocol per case, with gates
-\subsection{TITLE}
+The exposure reconciliation is the one with a statistical criterion. With $V_i(t)$ the netting-set value on path $i$, $N(t)$ the numeraire
+and $P$ the number of paths, the expected exposure and its standard error are
+\begin{equation}
+\mathrm{EE}(t)=\mathbb E\!\left[\frac{\max(V(t),0)}{N(t)}\right],\qquad
+\widehat{\mathrm{se}}(t)=\frac{1}{\sqrt{P}}\,\mathrm{sd}_i\!\left(\frac{\max(V_i(t),0)}{N_i(t)}\right),
+\label{eq:bs2-ee}
+\end{equation}
+and the engine and the reference agree at the report date $t$ when
+\begin{equation}
+\big|\mathrm{EE}_{\mathrm{eng}}(t)-\mathrm{EE}_{\mathrm{ORE}}(t)\big|\le 2\sqrt{\widehat{\mathrm{se}}_{\mathrm{eng}}(t)^{2}+\widehat{\mathrm{se}}_{\mathrm{ORE}}(t)^{2}}.
+\label{eq:bs2-agree}
+\end{equation}
+The same criterion applies to the effective expected positive exposure, which is the time integral of the running maximum of the expected
+exposure over the first year, and to the credit valuation adjustment computed from the profile. Both engines simulate \pxTwoOreSamples{} antithetic
+samples under one Hull--White one-factor model whose curve and parameters are the committed calibration, so that the two profiles estimate the same
+quantity and differ only by sampling error and implementation.
+
+The assumptions are that the two engines are given the same trades, curve, calibration and time grid, and that the Monte Carlo errors are
+independent, which holds because the engines draw their own random numbers. The parameters are the \pxTwoSingleDates{} report dates, the \pxTwoOreSamples{} samples,
+the factor 2 of the criterion (a convention that corresponds to about a 5\,\% two-sided error for a Gaussian gap) and the one-year horizon of the
+effective profile. The cost is $O(P\,K)$ per variant for $K$ grid dates; the implementation is the exposure and collateral modules of \texttt{riskvalidation.ccr}
+(engine release 1.1.0) and the reconciliation block of the C12 documents.
+
+The acceptance criterion is that the single swap and the four-swap netting set agree at every date, and that the gaps of the variants that
+do not agree are reported as gaps and not claimed. Table~\ref{tab:proposed-ore} gives the result. The single swap and the netting set agree
+at every date (largest gaps \pxTwoSingleMax{} and \pxTwoNettingMax{} combined standard errors). The collateralised variants do not: with a
+10-day margin period the engine and the reference are outside two combined errors at \pxTwoCsaTenOut{} of 33 dates, with the largest gap
+at \pxTwoCsaTenMax{} errors and a gap of the credit valuation adjustment of \pxTwoCsaTenCva{} errors; with 20 days the figures are
+\pxTwoCsaTwentyOut{} dates, \pxTwoCsaTwentyMax{} and \pxTwoCsaTwentyCva{}; with initial margin one date is outside, at \pxTwoImMax{} errors.
+The wrong-way variant has no reference run because the example of the reference engine is a correlated credit model, a different model from the
+hazard-rate dependence of \citet{proposed:hullwhite2012}, whose printed values the calibration is held to instead. The reading of the table is
+therefore narrow: the uncollateralised exposure, the effective exposure and the adjustment are reproduced by an independent engine, and the
+collateral logic is not. For the variant with initial margin the dynamic initial margin of the reference engine is, on average, 0.88 of the engine's, and the difference is reported as a gap and not as agreement; its cause is not established.
+
+Two further limits belong to the reading. The reconciliation says nothing about the equality of the engine's transition estimator with the cohort estimator of the transition-matrix
+package, which the engine's own tests check where the optional extra is installed and which no notebook of the product reruns, and the printed numbers that do not reproduce are a statement about
+the papers' arithmetic or conventions as much as about the engine: each is listed with its cell so that a reader can decide which. The value of the reconciliation is
+that the claim made for each number is the claim that was tested, and a validator who needs the collateralised exposure must obtain it elsewhere.
+
+% proposed method 3: Protocol: The leakage-safe protocol per case, with gates
+\subsection{Leakage-safe evaluation protocol of each case}
 \label{sec:bs3}
 
-% TEXT
+The held-out performance of a credit model is trustworthy only as far as the split that produced it. Contraste states the split of each case
+before the model is fitted and enforces it with tests that fail when the split is broken; it is the enforcement of known rules and not a new
+method, and its value is that a reader can see which claims each case can support. The protocol has three parts, and the cases differ in
+which of them applies. Case C01 holds out a stratified 30\,\% of the rows as a locked test slice and runs a repeated stratified five-fold
+cross-validation inside the training slice, because the card data are a single snapshot with no out-of-time validation, which the case states.
+The sibling retail case on a second dataset makes no out-of-time claim. The small-business loan case reads vintages that are old enough for
+the five-year outcome to exist, so its cohorts are out-of-time and are read at the five-year mark. Each case's artifacts record its split and its limits.
 
-% BS-4: Method-adjacent: estimator treatment: The default definition as part of the PD, informative withdrawals and thin grades
-\subsection{TITLE}
+Formally, let $D$ be the labelled sample and $y$ its binary outcome. The split is a partition $D=D_{\mathrm{tr}}\cup D_{\mathrm{cal}}\cup D_{\mathrm{te}}$ with
+the stratification and the disjointness
+\begin{equation}
+\frac{|D_{\mathrm{te}}|}{|D|}=0.30,\qquad \frac{\overline{y}_{\mathrm{te}}}{\overline{y}_{D}}=1,\qquad D_{\mathrm{cal}}\cap D_{\mathrm{te}}=\varnothing,
+\label{eq:bs3-split}
+\end{equation}
+where $\overline{y}$ is the default rate of a slice (equal in the test slice and in the sample up to the rounding of a stratified draw). Every transform
+$T$ that learns from data, a binning, a scaler or a selection of features, is fitted on $D_{\mathrm{tr}}$ only, and a calibration map is fitted on $D_{\mathrm{cal}}$,
+a slice that does not overlap $D_{\mathrm{te}}$. The enforcement is a perturbation test: if $\hat\theta(D_{\mathrm{tr}};E)$ is a fitted parameter that may depend on a
+set $E$ of values outside the training information set, the protocol requires
+\begin{equation}
+\hat\theta(D_{\mathrm{tr}};E)=\hat\theta(D_{\mathrm{tr}};E+\delta)\quad\text{for every perturbation }\delta,
+\label{eq:bs3-invariance}
+\end{equation}
+that is, every fitted parameter is unchanged, to the last bit, when a value in the test slice is perturbed. A transform that read the test slice would move
+under the perturbation, and the test would fail.
+
+The assumptions are that the rows are exchangeable inside the single snapshot of C01 (so that a random stratified split estimates the held-out
+performance of the model on the same population) and that, for the vintages of the loan case, the five-year outcome is complete at the mark. The
+parameters are the holdout fraction 0.30, the five folds of the inner cross-validation, and the five-year mark, chosen as conventions of the design
+before any model was fitted. The perturbation test costs two fits of the transform being examined, so the added cost is a constant factor on
+the training cost. The implementation is in the pipeline modules of the cases (the retail ladder, the preparation of the sibling retail case
+and the vintage readers) and in the tests \pxfn{tests/test_leakage.py}, which assert equation~\eqref{eq:bs3-split}'s disjointness and
+equation~\eqref{eq:bs3-invariance} for the binning, the scaler and the calibration map.
+
+The protocol is compared with the single-split evaluation of an open toolkit, which fits and scores on one split with no stated rule for what a
+fitted transform may read, and the acceptance criterion is that the tests pass on the committed pipeline and fail on a deliberately broken one.
+The planted leak of case C22 shows what the validation tests of the engine see of a leak. At severity 1 the comparison of the discrimination out of
+time with its value at development rejects in \pxOneLeakAucOne{}\,\% of \pxOneLeakReps{} repetitions and at severity 2 in \pxOneLeakAucTwo{}\,\%; the characteristic
+stability index of the leaked feature rejects in \pxOneLeakCsiOne{}\,\% at severity 1 and \pxOneLeakCsiFive{}\,\% at severity 5. A leak is therefore seen
+as a drop of discrimination out of time, and hardly at all as a drift of the leaked feature, which is why the protocol enforces the split instead of relying
+on a monitor to find the leak afterwards. What the protocol does not claim is a calibration before the test window, which a later case names, and any
+leak by time beyond what the perturbation test moves.
+
+% proposed method 4: Method-adjacent: estimator treatment: The default definition as part of the PD, informative withdrawals and thin grades
+\subsection{The default definition, informative rating exits and thin grades in the estimation of transition probabilities}
 \label{sec:bs4}
 
-% TEXT
+A default probability by rating grade is a ratio of counts, and three choices that the formula does not show decide the numbers: what counts as
+a default, what happens to a rating that leaves the cohort before the end of the year, and how many obligors a grade has. Case C04 measures the
+effect of each on the transition tables of one agency and on rating paths whose truth is known. The agency's own publication gives two long-run
+default rates for the lowest grade that differ because the two pages count differently: the default page counts every distinct rating that defaulted
+during the period, whether or not it later left the cohort, and the transition page counts the ratings in a default category at the end of it \citep{proposed:esmacerep}.
+The ratio of the defaults of the transition page to those of the default page ranges from \pxFourGapMin{}\,\% to \pxFourGapMax{}\,\% over the grades that have
+a default, and the long-run default rate of the lowest grade is \pxOneRegCerepLong{}\,\% on the default page and \pxOneRegTransLong{}\,\% on the transition page. The
+risk weight of the cohort mix under the internal-ratings formula moves from \pxFourRwBefore{}\,\% to \pxFourRwAfter{}\,\% with the definition. In the
+one-factor model of \citet{proposed:vasicek2002} and \citet{proposed:gordy2003}, the capital requirement per unit of exposure at default is
+\begin{equation}
+K=\mathrm{LGD}\cdot\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD})+\sqrt{R}\,\Phi^{-1}(0.999)}{\sqrt{1-R}}\right)-\mathrm{PD}\cdot\mathrm{LGD},
+\label{eq:bs4-irb}
+\end{equation}
+with $R$ the asset correlation and $\Phi$ the standard normal distribution function, so that a definition that moves the default probability moves the
+capital through a concave, increasing function.
 
-% BS-5: Protocol: Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio
-\subsection{TITLE}
+The second choice is measured on rating paths of known truth. A rating that exits the cohort is removed from the denominator by the industry treatment,
+kept in the denominator without following it by the second, and followed to its end state, as the European guidelines ask, by the third
+\citep{proposed:eba2018}. If the exit is informative, more likely in the year before a default, every treatment understates the default probability, and no
+test of the matrix sees it. With a relative bias of the estimator $\hat\pi$ of the true one-year probability $\pi$ defined by
+\begin{equation}
+b=\frac{\mathbb E[\hat\pi]-\pi}{\pi},
+\label{eq:bs4-bias}
+\end{equation}
+the generator with exits ten times as likely in the year before default ($k=9$ in the odds form of Section~\ref{sec:bs14}) gives for the B grade, whose true
+probability is \pxFourTruthB{}\,\%, a bias of $\pxFourRemovedB\,\%$ when the exits are removed, $\pxFourKeptB\,\%$ when they are kept unfollowed and
+$\pxFourFollowedB\,\%$ when they are followed; without informativeness the removal bias is $\pxFourRemovedZero\,\%$. The third choice is the width of the interval
+at a thin grade. With \pxFourThinN{} obligors per grade, the Wald interval of the first grade contains its true probability in \pxFourWaldAaa{}\,\% of the samples,
+because the interval collapses to a point when no default is observed, while the Jeffreys interval \citep{proposed:jeffreys1946,proposed:brown2001} contains it in
+\pxFourJeffAaa{}\,\%.
+
+The assumptions are that the generator reproduces the agency's pooled annual counts (it is the continuous-time Markov chain fitted by expectation
+maximisation to the pooled counts), that exits depend on the path only through the year before default, and that the two pages of the publication cover
+the same rated population. The parameters are the exit rate of 6\,\% a year and the informativeness $k\in\{0,1,3,9\}$, and 200 repetitions per rung with the Monte Carlo error of each bias. The computation is a count and a division per grade, so it is
+$O(M)$ for $M$ rated paths. The implementation is the pipeline modules \pxfn{c04_agency.py} and \pxfn{c04_families.py}, which call the rating-path generator
+of \texttt{riskvalidation.generators.paths} and the estimators of \texttt{riskvalidation.transitions} (engine release 1.1.0). The comparison is between the three
+treatments and the latent truth, the acceptance criterion is that each bias is reported with its Monte Carlo error beside the truth, and the finding is
+an open one: the default definition is a modelling choice that the validator must see before it reads a back-test.
+
+Three limits bound the reading. The agency's publication sets no deterministic definition of a default event, so the two pages cannot be reconciled by a rule and the ratio of their counts is a measurement of the
+gap and not a correction. The informative-exit result belongs to the generator: the contrast between the treatments is what a simulation with a stated exit mechanism shows, and the real withdrawal behaviour of an agency is
+not observed in the transition page, which is the reason the anchored method of Section~\ref{sec:bs14} uses a second source. The thin-grade result is a property of the interval and not of the data: the Wald interval has zero length
+when no default is observed, a fact that any user of the formula can verify, and the measurement quantifies how often that failure occurs at the size of grade that a bank portfolio has.
+
+% proposed method 5: Protocol: Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio
+\subsection{Reconciliation identities, overlays apart and three provisioning regimes on one portfolio}
 \label{sec:bs5}
 
-% TEXT
+The disclosure of the movements of an expected-credit-loss allowance is an accounting identity, and an engine that computes the allowance
+can be held to it. For each stage $s$, the closing allowance equals the opening allowance plus the sum of the movement lines (originations, transfers,
+remeasurement, update of the macroeconomic scenarios, write-offs and derecognitions), so the residual
+\begin{equation}
+r_{s}=A^{\mathrm{close}}_{s}-\Big(A^{\mathrm{open}}_{s}+\sum_{\ell} m_{s,\ell}\Big)
+\label{eq:bs5-rollforward}
+\end{equation}
+must vanish within a tolerance expressed relative to the gross carrying amount of the book, here $\pxFiveTolerance$. The same identity holds for the gross
+carrying amount. On the case of 2008 the largest residual over the three stages is $\pxFiveMaxResidual$ in currency units, below a tolerance that is
+one millionth of the book. The relative basis is a choice that the engine states: an absolute tolerance in units of money would be meaningless for a book that
+changes by orders of magnitude between cases. Overlays, the management adjustments that sit outside the model, are separate lines that move only the
+total allowance and never the stage flows, so that the model's own result stays visible.
 
-% BS-6: Engine coverage: Engines and test catalogues no open toolkit provides
-\subsection{TITLE}
+The second element is the non-linearity of the weighted loss. The default probability conditional on a systematic factor $z$ in the one-factor
+model, with through-the-cycle probability $\mathrm{PD}_{\mathrm{ttc}}$ and asset correlation $\rho$, is
+\begin{equation}
+\mathrm{PD}(z)=\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD}_{\mathrm{ttc}})-\sqrt{\rho}\,z}{\sqrt{1-\rho}}\right),
+\qquad
+\sum_{j} w_j\,\mathrm{PD}(z_j)\;\ge\;\mathrm{PD}\Big(\sum_j w_j z_j\Big)\ \text{where }\mathrm{PD}(\cdot)\text{ is convex},
+\label{eq:bs5-jensen}
+\end{equation}
+with $w_j$ the scenario weights. The weighted probability is at least the probability at the weighted mean factor in the convex regime and can fall below it
+outside, which is why the property is tested and not assumed. On the committed 2008 reporting date with $\rho=\pxFiveRho$ the weighted probability is
+\pxFivePdWeighted{}\,\% against \pxFivePdMean{}\,\% at the mean factor, and the expected loss is \pxFiveEclWeighted{} against \pxFiveEclMean{} million currency units on
+the mean path, an index of \pxFiveIndex{}\,\%. The engine reproduces the published illustration of the effect, \pxFiveWeighted{}\,\% against
+\pxFiveAverage{}\,\%. The index is not positive at every date: at the committed reporting date of December 2010 it is below zero, and the claim is the
+identity and the property, not a sign.
+
+The third element places one synthetic bank under three regimes: the Chilean standard model of the supervisor for loans, the international
+standard on expected losses, and the Spanish supervisor's coverage tables. The allowance is \pxFiveCmf{} billion Chilean pesos under the
+first (a coverage of \pxFiveCmfCov{}\,\%), \pxFiveIfrs{} billion under the second (\pxFiveIfrsCov{}\,\%) and \pxFiveBde{} billion under the third (\pxFiveBdeCov{}\,\%), and a bridge
+from the first to the second reconciles the difference in steps: the measurement basis ($\pxFiveBridgeBasis$ billion), the lifetime horizon on the second stage
+($\pxFiveBridgeLife$), the weighting of the scenarios ($\pxFiveBridgeForward$), the discounting at the original effective rate ($\pxFiveBridgeDisc$) and the overlays
+($\pxFiveBridgeOverlay$). The assumptions are the synthetic bank and the stated scenarios, \pxFiveScenarios{} of which are committed; the
+parameters are the tolerance, the scenario weights and the correlation. The cost of the identity is linear in the number of movement lines. The
+implementation is the engine's provisions modules for the expected-credit-loss engine and the local regimes and the pipeline of cases C06 and C07
+(engine release 1.1.0). The comparison is the three regimes with one another and the criterion is that every identity closes; the allowance is not claimed
+to be right under any regime, and no engine figure is claimed to be compliant.
+
+The totals hide the structure of the gap, which changes sign by segment: for the mortgage segment with a low loan-to-value ratio the international standard gives a larger allowance than the Chilean standard model, and for the consumer instalment
+segment the Chilean standard model gives the larger one; the first step of the bridge names the difference of basis, the bank's own probabilities, loss rates and recoveries against the fixed matrices of the standard model, with twelve-month, central and undiscounted measurement. The bridge reconciles the total of the two regimes in steps so that the first step, the measurement basis, is not mistaken for a conclusion about either regime. The
+bank is synthetic and labelled so, and the claim is the structure of the comparison on one portfolio: that the weighted allowance is above the allowance on the mean path at every date is not claimed, since the committed index of December 2010 is below
+zero, and a tolerance of one millionth is a relative basis and not a tolerance in units of money.
+
+% proposed method 6: Engine coverage: Engines and test catalogues no open toolkit provides
+\subsection{Engines and test catalogues that no maintained open toolkit provides}
 \label{sec:bs6}
 
-% TEXT
+Three families of calculation that a bank validator needs had, on the date of the search that supports this subsection, no maintained permissively
+licensed open implementation that the research of the product could find: the validation-reporting tests of the euro-area supervisor as the reporting
+instructions specify them \citep{proposed:ecb2019}, a copula and CreditRisk+ portfolio engine, and an engine for the interest-rate risk of the banking book
+that follows the Basel standard and the Chilean annex \citep{proposed:bcbssrp31,proposed:cmf2025}. The claim is one of absence and is bounded by its search: a
+search of the public code hosts and the Python package index for validation toolkits, and a search of the R archive network and a code host for the portfolio
+engines, both on 4 October 2026; an engine that exists elsewhere, or that appeared later, is not excluded. Contraste therefore implements the three
+families in its engine, with golden values reproduced from the primary sources, and states for each what the reproduction does and does not show.
 
-% BS-7: Method-adjacent: currency treatment: The UF as its own currency in IRRBB
-\subsection{TITLE}
+The portfolio engine is the one that this section examines numerically. In the multi-factor Gaussian copula, name $i$ with default probability $\mathrm{PD}_i$ and
+factor loadings $\beta_i$ on the systematic factors $Z\sim N(0,\Sigma)$ defaults when its asset value falls below the threshold,
+\begin{equation}
+A_i=\beta_i^{\top}Z+\sqrt{1-\beta_i^{\top}\Sigma\beta_i}\;e_i,\qquad \text{name } i\text{ defaults iff } A_i<\Phi^{-1}(\mathrm{PD}_i),
+\label{eq:bs6-copula}
+\end{equation}
+with $e_i$ independent standard normal; the Student~$t$ variant divides by a common $\sqrt{W}$ and uses the $t_\nu$ quantile. The CreditRisk+ model
+yields the probability mass function of the number of defaults by a stable recursion on the coefficients of a probability generating function
+$G(z)$, with $p_0=e^{a_0}$ and
+\begin{equation}
+n\,p_n=\sum_{j=1}^{n} j\,a_j\,p_{n-j},
+\label{eq:bs6-recursion}
+\end{equation}
+the form of the recursion of \citet{proposed:panjer1981} applied to the series of the logarithm of $G$. The large homogeneous portfolio limit of the first model is the
+distribution of \citet{proposed:vasicek2002} in the formulation of \citet{proposed:gordy2003}, and the engine holds its Monte Carlo rung to that limit as the number
+of names grows and to the closed forms of the published test vector. The Monte Carlo error of every simulated measure is the standard deviation of the batch
+estimates divided by the square root of the number of batches.
+
+The engine's estimator of the asset correlation is measured against a simulator with a known truth. In the committed grid of case C10, yearly default fractions of a large
+homogeneous portfolio with default probability \pxSixPd{} are drawn over \pxSixYears{} years with a known correlation, and two estimators recover it in \pxSixReps{}
+repetitions per cell: the maximum-likelihood estimator and the method of moments, which equates $\mathbb E[L^{2}]$ to the probability that two obligors default,
+$\Phi_2(\Phi^{-1}(\mathrm{PD}),\Phi^{-1}(\mathrm{PD});\rho)$. At the true correlation \pxSixRhoKnown{} the maximum-likelihood estimator has a bias of \pxSixMlBias{}, a root mean
+square error of \pxSixMlRmse{} and an interval coverage of \pxSixMlCov{}\,\%, and the method of moments an error of \pxSixMomRmse{} and a coverage of \pxSixMomCov{}\,\%.
+
+The assumptions are those of the one-factor model: homogeneous obligors, a single systematic factor, a large number of names, and default probabilities that are an
+input. The parameters are the correlation grid, the series length and the number of repetitions of the committed cells, fixed with the generator. The cost of the copula
+Monte Carlo is $O(n_{\mathrm{sim}}\,m)$ for $m$ names, in chunks that bound the memory, that of the CreditRisk+ recursion is $O(n^{2})$ in the largest loss count considered,
+and that of the estimators is linear in the number of years. The implementation is the \texttt{riskvalidation.portfolio}, \texttt{riskvalidation.irrbb} and validation
+modules of engine release 1.1.0, called by the pipeline of cases C10 and C14. The acceptance criterion is the reproduction of the golden values and the closed
+forms; the anchors are necessary conditions and not a proof of freedom from defects, no reference engine exists to reconcile with, and the Student~$t$ importance
+sampler is recorded as a rung that did not run.
+
+The tests of the first family are those that the reporting instructions specify: a Jeffreys test of the default probability by grade, the comparison of the area under the receiver operating characteristic curve with its value
+at development, the stability of the migration matrix and the concentration of the exposure in rating grades. They are implemented as the instructions specify them, with the statistic, the null hypothesis, the p-value and
+the reference that each carries, and with no pass or fail threshold, because the instructions fix none. The published worked examples and the independent recomputations of Section~\ref{sec:bs2} are the evidence that the
+implementation is the specified one. The measured size and power of the same tests, Section~\ref{sec:bs1}, is the evidence of what the tests do when they are applied. The absence claim and the reproduction are separate
+statements: the first says that a user would have had to write the tests, the second that the written tests reproduce the sources.
+
+% proposed method 7: Method-adjacent: currency treatment: The UF as its own currency in IRRBB
+\subsection{The Chilean indexation unit as a currency of its own in the interest-rate risk of the banking book}
 \label{sec:bs7}
 
-% TEXT
+The Basel standard for the interest-rate risk of the banking book defines six shocks and a floor and tabulates their sizes for 21 currencies, none of which is the
+Chilean peso or an indexed unit \citep{proposed:bcbssrp31,proposed:bcbsd368}. The Chilean supervisor's annex treats the flows in the inflation-indexed unit, the
+UF, as a single currency of its own, the UR, with its own curve, its own shock sizes, its own floor and an indexation charge \citep{proposed:cmf2025}. Contraste implements the annex
+and shows what the single-currency treatment of the same flows would have reported. For a shock $i$, the deltas of the peso leg and of the indexed leg, loss positive in
+the reporting currency, are combined with an offset of 50\,\% of the gain leg:
+\begin{equation}
+\Delta_{i,(\mathrm{CLP}+\mathrm{CLF})}=\begin{cases}\max\{\Delta_{\mathrm{CLP}};0\}+\max\{\Delta_{\mathrm{CLF}};0\} & \text{same sign, a zero leg, or no offset}\\
+\max\{0.5\,\Delta_{\mathrm{CLP}}+\Delta_{\mathrm{CLF}};0\} & \text{opposite signs, }\Delta_{\mathrm{CLP}}\le 0\\
+\max\{\Delta_{\mathrm{CLP}}+0.5\,\Delta_{\mathrm{CLF}};0\} & \text{opposite signs, }\Delta_{\mathrm{CLP}}>0,\end{cases}
+\label{eq:bs7-pair}
+\end{equation}
+and the change in net interest income and in economic value of equity of the bank are
+\begin{equation}
+\Delta\mathrm{NII}=\max_{i\in\{1,2\}}\Big\{\sum_{c\notin\{\mathrm{CLF},\mathrm{CLP}\}}\max\{\Delta\mathrm{NII}_{i,c};0\}+\Delta\mathrm{NII}_{i,(\mathrm{CLP}+\mathrm{CLF})}\Big\}+2.5\,\%\cdot|\mathrm{PN}_{\mathrm{UR}}|,
+\label{eq:bs7-nii}
+\end{equation}
+with $\mathrm{PN}_{\mathrm{UR}}$ the net position in the indexed unit converted at the value of the unit on the date, and the economic-value measure the same maximum over six
+shocks with no charge. The shock sizes of the indexed unit are 200, 250 and 150 basis points for the economic value and 300 for the net interest income, against 300,
+400 and 200 and 300 for the peso; the post-shock floor is $-2\,\%$ for the indexed unit and $0$ for the peso. The charge is a standardised indexation risk, the implied
+effect of an inflation surprise of 2.5\,\% on the net indexed position, and it is added once, after the maximum.
 
-% BS-8: Test construction: A test that flags a behavioural assumption changed at a limit breach
-\subsection{TITLE}
+The assumptions are that the indexed unit is one-month-lagged consumer-price accrual, so that its curve is a real curve, that a currency is significant when it exceeds 5\,\% of
+the banking-book assets or liabilities, and that the annex's tables were read correctly from the page images of the circular. The parameters are those of the annex, taken from it
+without tuning; the Chilean peso shocks that the annex does not fix are labelled as such where they are used. The cost is linear in the number of cash-flow buckets and shocks. The
+implementation is \texttt{riskvalidation.irrbb.eve\_nii} (the pair, the annex measures, the indexation charge and the test of a prioritised bank) in engine release 1.1.0,
+called by the pipeline of case C15 on the three variants of the synthetic bank Banco Andino.
+
+The comparison is the annex against a single-currency treatment of the same flows, with the peso curve, the peso shock sizes, a zero floor and no charge. On the committed variants
+the indexation charge is \pxSevenCharge{} currency units, \pxSevenShare{}\,\% of the change in net interest income of the short-indexed variant, and a single-currency treatment gives
+a change in net interest income \pxSevenSingleLow{} to \pxSevenSingleHigh{} times smaller and a change in economic value \pxSevenEveLow{} to \pxSevenEveHigh{}\,\% smaller in the three
+variants whose net indexed position is 30\,\% of Tier~1. The acceptance criterion is the reproduction of the annex's worked example and of the eight pair values of its formula,
+and the result is regional: no public implementation of the annex was found, a statement bounded by the search of the research. The limits are explicit. The floors are implemented and
+tested, and none binds on the committed curves, since the closest post-shock rate is \pxSevenFloorBp{} basis points from its floor, so their effect on a number is not demonstrated;
+there is no second implementation to reconcile with; and the bank is synthetic.
+
+The annex also defines the test by which a bank is prioritised for review: a bank is prioritised if the change in net interest income exceeds 5\,\% of Tier~1, if the change in economic value exceeds 15\,\% of Tier~1, or if the change in net interest income exceeds
+18\,\% of the cumulative net interest and indexation margin of twelve months, and the engine returns the three tests, each with its measure, base, ratio, threshold and a strict breach flag. The limits that a bank sets for itself, as percentages of the margin and of
+Tier~1, are inputs of the engine and not constants. The annex's treatment of options, with a relative increase of the implied volatility, is not implemented, and the engine states no compliance claim about the position of a bank. The reason for treating the indexed unit
+as its own currency is the structure of the Chilean balance sheet, in which the interest margin and the indexation margin together form the net interest income and the unit is a one-month-lagged accrual of consumer prices; a single-currency treatment of the same flows removes
+the term that the annex adds for exactly that exposure.
+
+% proposed method 8: Test construction: A test that flags a behavioural assumption changed at a limit breach
+\subsection{A test of a behavioural assumption changed at a limit breach}
 \label{sec:bs8}
 
-% TEXT
+The supervisory review of the failure of Silicon Valley Bank states, as a finding about practice, that behavioural assumptions were changed at the moment a
+limit was breached \citep{proposed:fedsvb2023}. A finding is not a test, and Contraste turns this one into a function that a validator
+can run. A behavioural model in the banking book fixes how the contractual cash flows of non-maturity deposits and of prepayable loans are treated. The static replicating
+portfolio chooses non-negative weights $w_j$, $\sum_j w_j=1$, on rolling tranches of maturities $m_j$ to minimise the variance of the margin between the replicating yield and the
+client rate, and the implied duration is its weighted average maturity:
+\begin{equation}
+\min_{w\ge 0,\ \mathbf 1^{\top}w=1}\ w^{\top}C\,w-2\,w^{\top}c+\operatorname{Var}(i_t),\qquad
+\mathrm{WAM}=\frac12\sum_{j}w_j\,m_j,
+\label{eq:bs8-replicating}
+\end{equation}
+with $C$ the covariance of the tranche yields, $c$ the covariance of each tranche yield with the client rate $i_t$, and the factor one half the weighted average maturity of a tranche
+that is reinvested evenly over its life. The deposit rate responds to a change $\Delta r$ of the market rate with the asymmetric pass-through
+$i_{\mathrm{new}}=i+\beta\,\Delta r$, with $\beta=\beta_{\mathrm{up}}$ for a rise and $\beta_{\mathrm{down}}$ for a fall, the behaviour that makes low-beta deposits act like long
+liabilities \citep{proposed:drechsler2021}; stochastic models of the deposit exist \citep{proposed:jarrow1998,proposed:kalkbrener2004}, and the committed bank uses the
+replicating portfolio.
 
-% BS-9: Protocol: The dependence band shown with every aggregate
-\subsection{TITLE}
+The test counts the dates at which a behavioural parameter changed while a limit was breached. If $\theta_t$ is a behavioural parameter at date $t=1,\dots,T$ and $b_t\in\{0,1\}$ the breach flag of a limit at that date,
+\begin{equation}
+c=\sum_{t=2}^{T}\mathbf 1\{\theta_t\neq\theta_{t-1}\}\,\mathbf 1\{b_t=1\},\qquad
+\text{light}=\begin{cases}\text{not evaluated}&T<2\\ \text{red}&c\ge 1\\ \text{green}&c=0.\end{cases}
+\label{eq:bs8-count}
+\end{equation}
+The assumptions are that the parameter is estimated afresh at each date from the data, so that a change is a re-estimation and not a modelling decision, which is why the red result is a
+prompt for a human review and not a finding of intent, and that the breach flag is defined by the limit framework that the bank states. The parameters are the dates, the parameter series
+and the flags; the test has no threshold to tune, and its cost is $O(T)$. The implementation is \texttt{irrbb.behavioural\_change\_at\_breach} of the validation modules of
+engine release 1.1.0, applied by the pipeline of case C14 to the weighted average maturity of the replicating portfolio fitted at each of the three committed quarters.
+
+The comparison is against a validator without the test, who would read each date's measures in isolation, and the acceptance criterion is the behaviour on constructed histories:
+green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach, as well as the committed series with its breach flags set to false.
+On the committed balance sheet the test is not evaluated at the first quarter, which is a single date, and is red at \pxEightRedDates{} of the later dates, with one change coinciding with a breach at the
+second and two at the third. The parameter that is flagged is the weighted average maturity of the fitted portfolio; the core share and the core maturity that the case fixes are not flagged.
+The reading is limited by the case: the bank is real in aggregate and synthetic in behaviour, its outlier test is breached at all three dates so that the breach flag does not vary, and the flagged parameter is
+a fitted one. The red rows show that the test operates on those parameters, not that the bank did what the supervisor found in these numbers.
+
+The test sits among related tests of the behavioural treatment that the engine also implements. The stability of the replicating portfolio is the largest change of its weights between consecutive windows,
+$\max_{a}\max_{j}|w_{a+1,j}-w_{a,j}|$, with an amber and a red limit on the largest change of the weighted average maturity. The comparison of the economic value with and without the behavioural treatment is the difference of the
+two measures over Tier~1, and it is red whatever its size when the behavioural measure passes the outlier test of the standard and the contractual one breaches it, the case in which a behavioural assumption hides a breach. The
+change-at-breach test differs from both: it looks at the history of one parameter against the history of the breach flag, and it has no threshold, since a single coincidence is the event of interest. Its output is a prompt for a human review, never a
+finding of intent.
+
+% proposed method 9: Protocol: The dependence band shown with every aggregate
+\subsection{The dependence band shown with every aggregate capital figure}
 \label{sec:bs9}
 
-% TEXT
+An aggregate capital figure combines the capital of several risk types, credit, market, operational and interest-rate risk, and its size depends on a dependence structure that
+no data identifies. Studies of integrated risk management find that the aggregate is sensitive to the choice of copula and that adding the stand-alone capitals overstates the
+integrated figure by a large and uncertain amount \citep{proposed:rosenberg2006}; the sharp bounds on the value at risk of a sum with given marginals and unknown dependence are
+known \citep{proposed:embrechts2013}; and the supervisors' joint review found aggregation models a work in progress on which supervisors generally do not rely
+\citep{proposed:jointforum2010}. Contraste composes these results into a protocol: no aggregate is shown as a single diversified number. Every aggregate of the stress case is
+shown with a band of methods over the same marginals, one horizon and one confidence level, in a fixed order: the lower bound, the simple sum (the only row labelled headline
+capital), the square-root rule, the Gaussian copula, one Student~$t$ copula for each degree of freedom of a named set, and the sharp worst case by the rearrangement algorithm. Every
+row but the headline is labelled information and not capital.
 
-% BS-10: Test construction: The batch 3 test corrections, with the error rate each one removes measured on planted data
-\subsection{TITLE}
+The capital of a row and its diversification factor are
+\begin{equation}
+\text{capital}_{\mathrm{row}}=\mathrm{VaR}_{\mathrm{row}}-\sum_{k}\mathrm{EL}_{k},\qquad
+\mathrm{DF}_{\mathrm{row}}=\frac{\text{capital}_{\mathrm{row}}}{\sum_{k}\mathrm{EC}_{k}},
+\label{eq:bs9-band}
+\end{equation}
+where $\mathrm{VaR}_{\mathrm{row}}$ is the value at risk of the total under the dependence of the row, $\mathrm{EL}_{k}$ the expected loss of marginal $k$ and
+$\mathrm{EC}_{k}$ its economic capital. The square-root rule and the allocation of the aggregate expected shortfall to the marginals are
+\begin{equation}
+\text{capital}_{\sqrt{\cdot}}=\sqrt{\mathrm{EC}^{\top}R\,\mathrm{EC}},\qquad
+\mathrm{ES}(S)=\sum_{k}\mathbb E\big[X_k\mid S\ge \mathrm{VaR}_{\alpha}(S)\big],\quad S=\sum_{k}X_k,
+\label{eq:bs9-euler}
+\end{equation}
+with $R$ the correlation matrix of the risk types, so that the Euler contributions of the second expression add up to the aggregate expected shortfall. A row above the headline is a true
+result, because the value at risk is not subadditive, and the band reports it.
+
+The assumptions are that the marginals are the ones that the pipeline simulates (their quantile functions are committed on a named grid, and the simulated samples are not), that the
+correlation matrix is the stated one, and that the horizon and the level apply to every row; the engine refuses a marginal whose capital is inconsistent with its quantile function. The
+parameters are the horizon of one year, the confidence level 99.9\,\%, the degrees of freedom of the $t$ copulas (4, 8 and 30 in the committed band), the number of copula draws and the size of the
+rearrangement grid; the simulated rows carry the Monte Carlo error of their value at risk, and all use the same seed so that the band reproduces. The cost is that of the copula simulation,
+$O(n_{\mathrm{draws}}\,d)$ for $d$ marginals, and of the rearrangement. The implementation is \texttt{riskvalidation.aggregation.band.dependence\_band}, which returns the whole band
+and never a scalar, in engine release 1.1.0, called by the pipeline of the stress case C18.
+
+The comparison is among the \pxNineRows{} rows, and the acceptance criterion is structural: the band has its rows in order with their labels, the Euler allocation adds up, and the closed-form rows
+recompute. On the committed baseline the simple sum is \pxNineSum{} million Chilean pesos, the square-root rule \pxNineVc{}, the Gaussian copula \pxNineGauss{} (\pxNineGaussRatio{}
+of the sum), the $t$ copula with four degrees of freedom \pxNineTfour{}, the lower bound \pxNineLower{} and the worst case \pxNineWorst{}, \pxNineWorstRatio{} times the simple sum. The same marginals therefore support a capital between
+a lower bound that is a small fraction of the headline and a worst case above it, and a reader who sees only the Gaussian row would not see that range. Figure~\ref{fig:proposed-band} shows it. The
+claim is about what the case does and not about the novelty of its ingredients; that no maintained toolkit ships the band beside every aggregate is bounded by the search of the research, and the band rests on
+simulated marginals of a synthetic bank.
+
+Two conventions of the band deserve a statement. The lower-bound row is a signed capital: the best value at risk over all dependence structures, less the sum of the expected losses, can be negative, as in the published example of the rearrangement
+algorithm in dimension 56, where the best value at risk is 45.82 against an expected loss of 56, and the engine reports the figure as computed with its diversification factor. A row above the headline is likewise a true result and is flagged, not repaired. The band is information for
+the validator and states no compliance claim and no capital except the headline of the simple sum; the worst and lower rows are rearrangement ranges, approximations with the limits of the algorithm, and the copula rows carry Monte Carlo error.
+
+% proposed method 10: Test construction: The batch 3 test corrections, with the error rate each one removes measured on planted data
+\subsection{Corrections of three tests, with the error rate each removes measured on planted data}
 \label{sec:bs10}
 
-% TEXT
+Three tests of the machine-learning and fairness batteries, as first specified from the literature, have an error rate that depends on the size of the sample they are built on, and
+Contraste corrects each and measures the rate the correction removes. The first is the coverage test of a split conformal predictor. A prediction set with nominal coverage $1-\alpha$ built
+on $n_{\mathrm{cal}}$ calibration points has, given the calibration, a random coverage; under exchangeability it is distributed as Beta$(k,\,n_{\mathrm{cal}}+1-k)$ with
+$k=\lceil (n_{\mathrm{cal}}+1)(1-\alpha)\rceil$ \citep{proposed:angelopoulos2021,proposed:vovk2022}. The number $c$ of covered points among $m$ test points is therefore Beta-Binomial, not binomial,
+\begin{equation}
+c\sim \mathrm{BetaBin}\big(m,\,k,\,n_{\mathrm{cal}}+1-k\big),\qquad
+\text{size of the binomial test}\approx 2\Big(1-\Phi\Big(\tfrac{1.96}{\sqrt{1+m/n_{\mathrm{cal}}}}\Big)\Big),
+\label{eq:bs10-betabin}
+\end{equation}
+where the second expression is the normal approximation to the rate at which the binomial test, which ignores the randomness of the calibration quantile, rejects exchangeable data. At test-to-calibration
+ratios of 1 and 4 the binomial test rejects \pxTenBinomLow{} and \pxTenBinomHigh{} of exchangeable replications against about \pxTenBetaBin{} for the Beta-Binomial test, which keeps the binomial p-value
+beside its own. The second correction is the light of the shift-resilience test. A fixed drop of the area under the curve declares a shift whatever the sample size; the corrected light reads the
+drop against an exact permutation reference built from the development rows, with
+\begin{equation}
+p=\frac{1+\#\{b:\ T^{(b)}\ge T_{\mathrm{obs}}\}}{1+B},\qquad B=199,
+\label{eq:bs10-permutation}
+\end{equation}
+where $T$ is the drop statistic and $T^{(b)}$ its value on the $b$-th permutation of the development rows. A fixed drop of 0.05 or 0.10 fires on \pxTenFixedFive{} and \pxTenFixedTen{} of replications
+with no shift against \pxTenPerm{} for the permutation reference, which pays in power in that small design. The third is the amber cut of the situation test of fairness, set at 0.20 on a measured size
+and power: the cut 0.10 fires on \pxTenCutTenth{} of null replications against \pxTenCutFifth{} for 0.20.
 
-% BS-11: Method-adjacent: reverse stress rule: Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run
-\subsection{TITLE}
+The assumptions are exchangeability of the calibration and test points, a calibration that is fixed given the test (the split conformal setting) and, for the permutation reference, that the
+development rows are exchangeable under the null. The parameters are $B=199$ draws and the cut 0.20, the latter chosen from a measured size and power and not from a convention. The cost of the
+Beta-Binomial p-value is a sum over $m+1$ counts, that of the permutation reference $B$ evaluations of the statistic. The implementation is the \texttt{ml.conformal} and fairness modules of engine release 1.1.0
+(the coverage result carries both p-values with the calibration size and the rank), called by the pipeline of cases C20 and C21. The comparison is each corrected test against the version it replaces, run by the notebooks
+with the engine's own functions on seeded plants with the standard error of every rate; the acceptance criterion is that the corrected test's size is closer to its level. The rates quoted come from simulations of
+1,500, 60 and 200 replications and show the direction and order of magnitude of the correction, not the larger sizes measured in the engine's own review.
+
+The derivation of the first correction is short. Given $n_{\mathrm{cal}}$ exchangeable scores, the coverage of the set built on the $k$-th smallest score is the probability under the data distribution of a score at most that order statistic. That
+probability is the $k$-th order statistic of $n_{\mathrm{cal}}$ uniform variables, whose distribution is Beta$(k,n_{\mathrm{cal}}+1-k)$, and a binomial count with a random success probability of that law is Beta-Binomial. When $k>n_{\mathrm{cal}}$ the set is the whole label
+space, the coverage is 1 by construction, and the test is not evaluated with that reason. The rank $k$ is computed on the exact decimal value of $\alpha$, because the float product $(n+1)(1-\alpha)$ misrounds for some pairs: of the levels 0.01 to 0.99 and the calibration sizes 1 to 2,999,
+the float rank differs from the exact decimal rank in 1,738 pairs, the first being $n=149$ and $\alpha=0.18$, where $150\times 0.82=123$ exactly and the float product rounds up to 124. A coverage loss is read as a violation of exchangeability, a drift, and never as a proof.
+
+The third correction concerns the situation test of fairness on the public lending data of case C21. The test compares each complainant, an applicant of the protected group who was refused, with the $k=30$ nearest applicants of the comparator group
+under a ceteris-paribus distance normalised by range, and counts the complainants whose neighbours were treated differently at a significance of 5\,\% with a one-sided Wald interval for the difference of refusal rates. Its light uses an amber cut, and a cut chosen without a measured
+size fires on null data at a rate that the validator never sees. The cut of 0.20 was set on the measured size and power of the test on seeded plants, with the standard error of every rate, and not by convention, and the same discipline applies to the
+other two corrections: the rate that the correction changes is measured on data whose truth is known before the correction is adopted.
+
+% proposed method 11: Method-adjacent: reverse stress rule: Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run
+\subsection{Reverse liquidity stress as a run-off multiplier with a refusal rule}
 \label{sec:bs11}
 
-% TEXT
+A liquidity stress test fixes scenarios and reports the survival period they produce; a reverse stress asks the converse question, how severe the run-off must be for the survival period to reach a target. Contraste
+answers it with a single multiplier on the daily run-off rates of every segment of the deposit base. If $q_{j,d}$ is the base rate of segment $j$ on day $d$, the stressed rate and the largest admissible multiplier are
+\begin{equation}
+q_{j,d}(m)=\min\big(m\,q_{j,d},\,1\big),\qquad m\le m_{\max}=\frac{1}{\max\{q_{j,d}:\ q_{j,d}<1\}},
+\label{eq:bs11-rate}
+\end{equation}
+so that no share leaves faster than all of it. With $\mathrm{SP}(m)$ the first day on which the net liquidity position of the scaled scenario is negative, a non-increasing function of $m$ (surviving the horizon counts as longer than
+any day), the reverse stress is the threshold multiplier
+\begin{equation}
+m^{*}=\min\{m\in[1,m_{\max}]:\ \mathrm{SP}(m)\le T\},\qquad T=\pxElevenTarget{}\ \text{days},
+\label{eq:bs11-threshold}
+\end{equation}
+found by bracketing the root of the minimum of the net position over the first $T$ days, which is continuous and non-increasing in $m$, with Brent's method and rounding up to six decimals. The assumption is the monotone dependence
+of the survival period on the multiplier, which holds by construction of the cap; the parameters are the target of \pxElevenTarget{} days and the cap. The cost is $O(\log(1/\varepsilon))$ evaluations of the scenario.
 
-% BS-12: Measurement: The instability of the operational-risk capital, measured on independent histories of known truth
-\subsection{TITLE}
+The rule that makes the method usable is the refusal. A target that cannot be bracketed, one not below the horizon, one at or above the base survival period, or one that no multiplier up to the cap reaches, is refused with its
+reason and returns no number. On the committed bases, the multiplier at which the survival period first falls to \pxElevenTarget{} days is \pxElevenAdverse{} on the adverse base (whose own survival period is
+\pxElevenAdverseDay{} days) and \pxElevenExtreme{} on the extreme base (\pxElevenExtremeDay{} days); the fast-run base, calibrated on the dated rows of the published table before 2023 only, has a horizon of
+\pxElevenFastDay{} days, below the target, and is \pxElevenFast{}. The engine refuses a row of 2023 in a scored call, and the 2023 rows score the fast-run base against the 85\,\% of deposits that left in two days as a labelled anchor
+and never as a forecast: the modelled loss in those two days is \pxElevenSvb{} against 0.85. The implementation is \texttt{riskvalidation.liquidity.reverse} (the multiplier, the refusal and the round trip that tests
+the threshold property $\mathrm{SP}(m^{*})\le T<\mathrm{SP}(m^{*}-10^{-6})$) in engine release 1.1.0, called by the pipeline of case C16.
+
+The comparison is the multiplier with the survival period of the smooth scenarios of the supervisor's stress tool, which fixes the scenarios first and reports what they give, and the acceptance criterion is the
+round trip and the refusal. The reading is a distance to a stated target in a stated scenario and not a probability or a forecast, and the committed bank is real in aggregate and synthetic in behaviour, so the multipliers show the
+method on those parameters and say nothing about the headroom of the bank. The survival period is an integer day, so a capacity that grows over time can step the survival period past the target, and then the threshold
+multiplier is reported with the survival reached there.
+
+The engine's golden values show how the solver behaves. For one segment with an opening stock of 1000, a daily rate of 0.01 and a constant counterbalancing capacity of 100 over a horizon of 125 days, the survival period at $m=1$ is 11 days, and the threshold multiplier for a target of 5 days is
+2.085164, the closed form $\big(1-(1-c/A)^{1/T}\big)/q$ with $c$ the capacity, $A$ the stock and $q$ the rate, evaluated for $T=5$ and increased to the next six-decimal value, with a survival of 5 days at the multiplier and of 6 days just below it. A target of 125 days equals the horizon and is refused; a target of 100 days is refused because the base survival
+period of 11 days already lies below it. The multiplier is applied to every segment and a rate already at 1 stays there; the target, the six-decimal precision and the round-trip tolerance are conventions that the engine names. The cap is a modelling bound, since a share cannot leave faster than all
+of it, and beyond it a point is refused and not clipped silently.
+
+% proposed method 12: Measurement: The instability of the operational-risk capital, measured on independent histories of known truth
+\subsection{The instability of the operational-risk capital measured on independent histories of known truth}
 \label{sec:bs12}
 
-% TEXT
+The loss-distribution approach to operational-risk capital fits a frequency law and a severity law to a short history of losses and reads the 99.9\,\% quantile of the annual loss $Z=\sum_{i=1}^{N}X_i$. Reasons given for
+removing the advanced approach are its complexity and the lack of comparability between banks \citep{proposed:bcbsd355}; what is not found in the sources of the research is the measured dispersion of the capital against a known truth
+over independent histories. Contraste measures it. For each cell of a grid, 1,000 independent simulated histories are drawn on disjoint seed ranges from a severity law with a known tail index, history lengths of 5 and 10 years and
+collection thresholds of 10,000 and 20,000 euro, with the loss counts truncated at the threshold by
+\begin{equation}
+\lambda_{\mathrm{full}}=\frac{\lambda_{\mathrm{obs}}}{1-F(H)},\qquad F_{H}(x)=\frac{F(x)-F(H)}{1-F(H)}\quad(x\ge H),
+\label{eq:bs12-truncation}
+\end{equation}
+where $H$ is the collection threshold, $F$ the severity distribution and $\lambda$ the annual frequency. The tail indices are 0.6, 0.8, 0.96 and 1.1, so that the mean of the severity is finite below 1 and infinite at or above it. For each rung of a
+six-rung estimation ladder and for the standardised approach, the measurement records the capital against the true annual-loss quantile of the generator as the median and the interquartile range over the truth,
+\begin{equation}
+\rho_{h}=\frac{\widehat{\mathrm{Cap}}_{h}}{\mathrm{Cap}^{\mathrm{true}}},\qquad
+\mathrm{IQR}/\mathrm{truth}=\operatorname{Q}_{0.75}(\rho_{h})-\operatorname{Q}_{0.25}(\rho_{h}),
+\label{eq:bs12-iqr}
+\end{equation}
+for history $h$, together with the share of histories that underestimate, the number on which the rung is defined, and the share whose fitted tail index reaches 1 and that would therefore conclude an infinite mean.
 
-% BS-13: Proposed method: a scale-and-level complement to the FRTB PLA test (C13)
-\subsection{TITLE}
+The assumptions are that the severity of the synthetic bank is drawn from the family that the tail estimators assume, which favours them, and that the lights use Contraste's internal limits, so the measurement
+says nothing about the capital of any real bank. The parameters are the grid of the four tail indices, two lengths and two thresholds, the 1,000 histories per cell and the 99.9\,\% level, chosen to span a finite and an infinite-mean
+regime on histories of the length that banks hold. The aggregate loss is evaluated by Monte Carlo, by the Panjer recursion \citep{proposed:panjer1981} or by the fast Fourier transform, whose agreement is checked in each cell; the cost is
+$O(G\log G)$ for a grid of $G$ loss steps with the transform. The implementation is the \texttt{riskvalidation.oprisk} modules and the operational-risk stability test of the validation modules of engine release 1.1.0, called by the pipeline of case C17.
+
+On the committed grid of \pxTwelveCells{} cells, \pxTwelveHistories{} histories in all, the interquartile range of the splice rung is \pxTwelveIqrMin{} to \pxTwelveIqrMax{} times the truth, all \pxTwelveRedRows{} rows of the stability test are
+red against the stated internal limits, \pxTwelveInfLow{} to \pxTwelveInfHigh{}\,\% of the histories of the variant with tail index 0.96 conclude an infinite mean that does not exist, and \pxTwelveFiniteLow{} to \pxTwelveFiniteHigh{}\,\% of
+those of the variant with tail index 1.1 conclude a finite one. The comparison is the six rungs with one another and with the standardised approach, whose instability and insensitivity to risk are argued by \citet{proposed:peters2016}; the acceptance criterion
+is that every rung is reported with its dispersion and its share of underestimates. Figure~\ref{fig:proposed-oprisk} shows the splice rung across the cells.
+
+Three properties of the estimation ladder explain the figures. The plain lognormal rung is stable and wrong: it underestimates the capital in every history of the first cell of the tail index 0.96, with an interquartile range that is a fraction of a per cent of the truth.
+The truncated lognormal rung underestimates in a large majority of the histories. The splice rung, a body with a generalised Pareto tail above a threshold, has the dispersion quoted and is defined on fewer than all histories of the cell, so the number of
+histories on which a rung is defined is reported beside its dispersion. When the fitted tail index reaches 1 the mean of the fitted severity is infinite, which is the conclusion of an infinite mean that does not exist in the generator at 0.96. The reference
+benchmark of the aggregation engines, with a mean of 738.9056 and a 99.9\,\% quantile of 5,849 to 5,850 across the Monte Carlo, the Panjer recursion and the fast Fourier transform, is reproduced before any of these cells is read, so that the instability is a property of the estimation and not of the aggregation.
+
+% proposed method 13: Proposed method: a scale-and-level complement to the FRTB PLA test (C13)
+\subsection{A scale-and-level complement to the profit-and-loss attribution test}
 \label{sec:bs13}
 
-% TEXT
+The market-risk framework admits a trading desk to the internal models approach only if the risk-theoretical profit and loss (RTPL) of the desk's risk model tracks its hypothetical profit and loss
+(HPL) on the last 250 days. The attribution test reads two statistics of the pair: the Spearman correlation of the levels, green at \pxThirteenSpGreen{} or more and red below \pxThirteenSpRed{}, and the
+Kolmogorov--Smirnov distance between the two distributions, green below \pxThirteenKsGreen{} and red at \pxThirteenKsRed{} or more \citep{proposed:bcbsmar32}. Neither statistic reads the scale of the profit and loss. A risk model that has the right
+correlation structure and the right marginal distribution over a year, and that moves its scale late, passes both. On the desk generator of case C13, a two-factor spread model with log-AR(1) volatility known at the start of the day and a risk model that
+is known exactly, a risk model that scales the shocks of the day with a volatility that is \pxThirteenVolLag{} days old is flagged amber or red by the regulatory test in \pxThirteenPla{}\,\% of \pxThirteenN{} replications, and the
+Kolmogorov--Smirnov statistic alone flags \pxThirteenKsFlag{} of them. The proposed method adds three statistics that read the scale and the level, and a calibrated decision, to the regulatory zone; it has no regulatory standing and never replaces the zone.
 
-% BS-14: Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04)
-\subsection{TITLE}
+All three statistics are computed on the 250-day pair, with HPL and RTPL in the same unit (a decimal of the desk notional). The first regresses HPL on RTPL and tests that the intercept is 0 and the slope 1 jointly with a Wald statistic whose covariance is the HC3
+estimator, because the volatility of the profit and loss varies in time \citep{proposed:mackinnon1985}:
+\begin{equation}
+\mathrm{HPL}_t=a+b\,\mathrm{RTPL}_t+e_t,\qquad W=(\hat\beta-(0,1))^{\top}\hat V_{\mathrm{HC3}}^{-1}(\hat\beta-(0,1)),\quad \hat\beta=(\hat a,\hat b).
+\label{eq:bs13-wald}
+\end{equation}
+The second is the Spearman correlation $\rho_{|\cdot|}$ of $|\mathrm{HPL}_t|$ and $|\mathrm{RTPL}_t|$, which sees a model that misreads the size of the day's move. The third is the Spearman correlation $\rho_{\mathrm{roll}}$ of the rolling means of the absolute values over a window of $\ell$ days,
+\begin{equation}
+\rho_{\mathrm{roll}}=\rho_{S}\Big(\overline{|\mathrm{HPL}|}_{t}^{(\ell)},\ \overline{|\mathrm{RTPL}|}_{t}^{(\ell)}\Big),\qquad \overline{|x|}_{t}^{(\ell)}=\frac1\ell\sum_{s=t-\ell+1}^{t}|x_s|.
+\label{eq:bs13-roll}
+\end{equation}
+The daily shock is shared by HPL and RTPL, so the rolling mean removes it and leaves the two scales; a model fed a volatility $L$ days old moves its scale $L$ days late, and the statistic falls as $L$ grows toward $\ell$.
+
+The decision is calibrated to the size of the regulatory test. The thresholds come from $N$ desk-years of a model with nothing planted, simulated from the caller's own generator: with $p$ the size allowed to a statistic and $k=\lfloor pN\rfloor$, the critical value is the $(k+1)$-th largest null value of $W$ (or the $(k+1)$-th smallest of a Spearman statistic), so that at most $k\le pN$ null desk-years are flagged by each statistic. With a Bonferroni correction $p=\text{size}/3$, and the union of the three flags has a size of at most the family size. Algorithm~\ref{alg:bs13} states the procedure.
+
+\begin{algorithm}[htbp]
+\caption{Calibration and decision of the scale-and-level complement.}
+\label{alg:bs13}
+\begin{algorithmic}[1]
+\Require null desk-years $\{(\mathrm{HPL}^{(n)},\mathrm{RTPL}^{(n)})\}_{n=1}^{N}$, family size $\alpha$, window $\ell$, a desk-year $(\mathrm{HPL},\mathrm{RTPL})$ to decide
+\State $p\gets\alpha/3$; \quad $k\gets\lfloor pN\rfloor$; \quad \textbf{if} $N<1/p$ \textbf{then} refuse
+\For{$n=1,\dots,N$}
+  \State $(W^{(n)},\rho_{|\cdot|}^{(n)},\rho_{\mathrm{roll}}^{(n)})\gets$ the three statistics of equations~\eqref{eq:bs13-wald} and \eqref{eq:bs13-roll}
+\EndFor
+\State $c_{W}\gets(k{+}1)$-th largest of $W^{(n)}$; \quad $c_{|\cdot|}\gets(k{+}1)$-th smallest of $\rho_{|\cdot|}^{(n)}$; \quad $c_{\mathrm{roll}}\gets(k{+}1)$-th smallest of $\rho_{\mathrm{roll}}^{(n)}$
+\State compute the three statistics of the desk-year to decide; \textbf{flag} if $W>c_W$ or $\rho_{|\cdot|}<c_{|\cdot|}$ or $\rho_{\mathrm{roll}}<c_{\mathrm{roll}}$
+\State \Return the flag, the three statistics and the regulatory zone, unchanged
+\end{algorithmic}
+\end{algorithm}
+
+The assumptions are that the null generator reproduces the volatility process of the desk (the thresholds are specific to it and a desk with a different process needs its own null) and that the 250-day pair is complete and has spread; missing or degenerate input raises an error and nothing draws random numbers. The parameters were fixed before the run and not tuned: a window of $\ell=\pxThirteenWindow{}$ days, a family size of \pxThirteenSize{}\,\%, and thresholds calibrated on \pxThirteenNull{} null desk-years (the null variant under \pxThirteenNullSeeds{} case seeds of \pxThirteenNullBlock{} replications each, disjoint from the committed ones), giving the critical values $c_W=\pxThirteenWaldCut$, $c_{|\cdot|}=\pxThirteenAbsCut$ and $c_{\mathrm{roll}}=\pxThirteenRollCut$ at the family size and $\pxThirteenWaldCutOne$, $\pxThirteenAbsCutOne$ and $\pxThirteenRollCutOne$ at \pxThirteenSize{}\,\% per statistic. The cost is $O(N\,T\log T)$ for $N$ null desk-years of $T=\pxThirteenPlaDays{}$ days, dominated by the ranks, and $O(T\log T)$ per decision. The implementation is the module \texttt{riskvalidation.market.pla\_complement} added in engine release 1.1.0 (functions \texttt{pla\_mz\_wald}, \texttt{pla\_abs\_spearman}, \texttt{pla\_rolling\_abs\_spearman}, \texttt{pla\_complement\_calibrate}, \texttt{pla\_complement\_decide}, \texttt{pla\_complement}), applied by the pipeline of case C13 to its six variants.
+
+The complement is compared with the regulatory zone and with the Kolmogorov--Smirnov statistic alone on the six variants, a lag ladder of 5, 10, 20 and 40 days, and a held-out null. The acceptance criterion is that, at a size of at most \pxThirteenSize{}\,\%, the stale-volatility model is flagged in at least \pxThirteenThresholdPower{}\,\% of the replications; the method is refuted below \pxThirteenRefuted{}\,\%. The measured power is \pxThirteenPower{}\,\% (Wilson interval), with a held-out size of \pxThirteenHeld{}\,\% (\pxThirteenHeldCi{}\,\%), and the criterion holds. The secondary expectation that the Wald statistic would see the missing-basis variant is not supported: it flags \pxThirteenMissingWald{}\,\% of those replications, against \pxThirteenMissingPla{}\,\% for the regulatory zone, because the basis noise sits in HPL and is independent of RTPL, so the regression keeps the intercept at 0 and the slope at 1; the absolute-value statistic is the one that sees it (\pxThirteenMissingAbs{}\,\%). The complement is weak where the regulatory zone is strong: it flags \pxThirteenMisalignRoll{}\,\% of the one-day time misalignment replications with the rolling statistic, where the zone flags \pxThirteenMisalignPla{}\,\%, and \pxThirteenWrongRoll{}\,\% of the wrong-correlation replications where the zone flags \pxThirteenWrongPla{}\,\%. It is therefore a supplement to the zone, and Section~\ref{sec:results-proposed} reports the table.
+
+% proposed method 14: Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04)
+\subsection{An anchored tipping-point default probability under informative rating withdrawals}
 \label{sec:bs14}
 
-% TEXT
+A rating whose withdrawal is recorded during the year leaves the cohort, and a rating that exited and would have defaulted is not seen to default. The usual treatments each fix one answer to what the exiting ratings would have done: remove them and
+renormalise, which is the industry treatment and the one of the publication of the agencies \citep{proposed:esmacerep}; keep them in the denominator without following them; or follow them, as the guidelines of the European Banking Authority ask \citep{proposed:eba2018}. When withdrawal is informative, more likely in the
+year before default, every one of them understates the default probability, and no test of the transition matrix sees it. The proposed method does not choose an answer. It states the default probability as a function of how informative the withdrawal is, bounds it, finds the informativeness at which a decision flips, and, where a second source counts the defaults of the
+same grade differently, reads the informativeness off that source. The family is the delta-adjusted tipping-point analysis of clinical trials with missing outcomes \citep{proposed:cro2020}, with the odds ratio as the sensitivity parameter, and the upper end is the bound of \citet{proposed:manski1989} for an outcome missing not at random; the application to rating withdrawals was not found in the literature searched.
 
-% BS-15: Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03)
-\subsection{TITLE}
+For one grade and one period, let $D$ ratings be in default at the end, $S$ still rated and not in default, $W$ exited by withdrawal, and $N=D+S+W$ at the start. Of the $W$ exits, let $X$ be the number that would have defaulted within the period. Let $k$ be the odds of withdrawal among the ratings that would default relative to the odds among those that would not. Then
+\begin{equation}
+k=\frac{X/D}{(W-X)/S},\qquad X(k)=W\,\frac{kD}{kD+S},\qquad \mathrm{PD}(k)=\frac{D+X(k)}{N},
+\label{eq:bs14-family}
+\end{equation}
+where $k=0$ is the unfollowed treatment $D/N$, $k=1$ (withdrawal independent of default) the industry treatment $D/(D+S)$, and $k\to\infty$ every withdrawal a default in waiting, $(D+W)/N$, the Manski bound. The function $\mathrm{PD}(k)$ increases in $k$. The tipping $k$ of a decision, such as a master-scale boundary $t$, is the $k$ at which $\mathrm{PD}(k)=t$: with $X^{*}=tN-D\in[0,W]$,
+\begin{equation}
+k^{*}=\frac{X^{*}S}{D\,(W-X^{*})},\qquad \mathrm{PD}(k_{A})=\frac{A}{N_{a}},
+\label{eq:bs14-tipping}
+\end{equation}
+and the second expression is the anchor: where a second source gives $A$ defaults over $N_{a}$ ratings for the same grade (the default page of the agency's publication against its transition page), setting $A/N_a=\mathrm{PD}(k)$ gives the anchored $k_A$, the Jeffreys interval \citep{proposed:jeffreys1946,proposed:brown2001} of $A/N_a$ gives its band, and the anchored interval of the probability runs from the Jeffreys lower bound at the low end of the band to the Jeffreys upper bound at the high end.
+
+\begin{algorithm}[htbp]
+\caption{The anchored default probability of one grade.}
+\label{alg:bs14}
+\begin{algorithmic}[1]
+\Require counts $D,S,W$ of the transition page; anchor counts $A,N_a$ of the default page; threshold $t$ (optional); level $1-\gamma$
+\State $N\gets D+S+W$; \quad $\mathrm{PD}(k)\gets (D+X(k))/N$ with $X(k)$ of equation~\eqref{eq:bs14-family}
+\State \textbf{if} $D=0$ \textbf{then} \Return the Manski bound $W/N$ and the anchor rate $A/N_a$, with the reason
+\State $[\ell_a,u_a]\gets$ Jeffreys interval of $A/N_a$ at level $1-\gamma$
+\State $k_A,\ k_{\mathrm{low}},\ k_{\mathrm{high}}\gets$ the solutions of $\mathrm{PD}(k)=A/N_a,\ \ell_a,\ u_a$
+\State \textbf{if} $t$ given \textbf{then} $k^{*}\gets X^{*}S/(D(W-X^{*}))$ with $X^{*}=tN-D$; status $\gets$ flips up, flips down or robust
+\State \Return $k_A$ with its band, the anchored $\mathrm{PD}$ with interval $[\mathrm{PD}(k_{\mathrm{low}})\text{ lower},\ \mathrm{PD}(k_{\mathrm{high}})\text{ upper}]$, and $k^{*}$
+\end{algorithmic}
+\end{algorithm}
+
+The assumptions are one period (a rating that exited in an earlier year is missing from a later cohort, and pooled cohorts inherit that selection), that the two sources define default in the same way (ESMA sets no common definition, and a mismatch moves the anchored point), and that the grade has observed defaults; a grade with none has only the Manski bound, and the result states which case applies.
+The parameters are the grid of informativeness $k\in\{0,1,3,9\}$ of the evaluation, the exit rate of \pxFourteenExitRate{}\,\% a year, \pxFourteenYears{} years and the level 95\,\%. The method is closed form and draws no random numbers; its cost is $O(1)$ per grade. The implementation is the module \texttt{riskvalidation.transitions.withdrawals}
+(functions \texttt{withdrawal\_bounds}, \texttt{withdrawal\_pd}, \texttt{odds\_multiplier} and \texttt{tipping\_k}) of engine release 1.1.0, called by the pipeline module \pxfn{c04_bounds.py} of case C04.
+
+The method is compared with the three usual treatments on the rating-path generator of known truth, where the true one-year probability of the B grade is \pxFourteenBTruth{}\,\%, and on the 26 annual cohorts of the agency. The acceptance criterion, written before the run, is that the anchored interval covers the true probability in at least \pxFourteenCoverTarget{}\,\% of \pxFourteenReps{} repetitions at $k=9$ while the existing treatments cover it in under \pxFourteenExistingTarget{}\,\%, and the method is refuted if the anchored interval does not cover more than the existing treatments or if the anchored $k$ is unstable across years. The anchored interval covers the truth in \pxFourteenAnchoredOne{}, \pxFourteenAnchoredThree{} and \pxFourteenAnchoredNine{}\,\% of the repetitions at $k=1$, 3 and 9 in the first-year cohort, so the first clause holds. The second clause holds only partly: at $k=9$ the industry treatment covers \pxFourteenIndustryNine{}\,\% in the first-year cohort (the understatement is smaller than the sampling interval at the size of the case) and \pxFourteenIndustryPooled{}\,\% pooling five cohorts, the unfollowed treatment \pxFourteenUnfollowedPooled{}\,\% pooled and \pxFourteenUnfollowedTen{}\,\% at ten times the cohort, while the followed treatment, which is an oracle that needs the end state of the exiting ratings, covers \pxFourteenFollowedPooled{}\,\% pooled. On the agency's cohorts the pooled anchored $k$ of the lowest grade is \pxFourteenCccK{}, with a band of \pxFourteenCccLow{} to \pxFourteenCccHigh{}, far above 1, but only \pxFourteenCccShare{}\,\% of the annual bands contain it against the stability criterion of \pxFourteenStability{}\,\%, and the B grade gives \pxFourteenBK{} and \pxFourteenBShare{}\,\%. The refutation clause on stability therefore fires for these grades. A $k$ of this size is not a measure of informative withdrawal alone, because the two pages count defaults differently and the anchor absorbs the definition gap into $k$; the result is an anchored $k$ conditional on the equivalence of the two definitions.
+
+% proposed method 15: Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03)
+\subsection{E-process sequential monitors for calibration and back-tests}
 \label{sec:bs15}
 
-% TEXT
+A fixed-window test is valid when it is read once on a window fixed in advance. The Kupiec test of the exceedance rate \citep{proposed:kupiec1995}, the test of the independence of the exceedances \citep{proposed:christoffersen1998}, the Hosmer--Lemeshow and chi-square tests of calibration and the traffic light of the back-testing framework \citep{proposed:bcbsmar32} are all used in
+that way on paper and read every day by a desk in practice, and a test read every day on a growing or a sliding window rejects a correct model far more often than its level. The proposed method replaces the repeated reading by a monitor that keeps its size however often it is read and whenever the analyst stops.
+An e-process $E_t$ is a non-negative process with $E_0=1$ whose expected value under the null is at most 1 at every stopping time; by Ville's inequality $\mathbb P(\sup_t E_t\ge 1/a)\le a$, so a monitor that rejects the first time $E_t\ge 1/a$ has size at most $a$ at any time, and $\min(1,1/\sup_t E_t)$ is a p-value valid at any stopping time
+\citep{proposed:ramdas2023}; e-values for back-testing were studied by \citet{proposed:wang2022}. Each monitor is a bet against the null: at every step it stakes on an alternative, the likelihood ratio of the alternative to the null is a non-negative martingale with mean 1 under the null, and a fixed mixture of such bets over a set of alternatives is again an e-process.
 
-% BS-16: Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11)
-\subsection{TITLE}
+For the exceedances $h_s\in\{0,1\}$ of a value at risk at level $\alpha$, the alternatives are hit rates $m\alpha$ for multipliers $m$ in a fixed set $\mathcal M$ with weights $w_m$, and
+\begin{equation}
+E_t=\sum_{m\in\mathcal M}w_m\prod_{s=1}^{t}\frac{(m\alpha)^{h_s}(1-m\alpha)^{1-h_s}}{\alpha^{h_s}(1-\alpha)^{1-h_s}},\qquad \text{reject at }\tau=\min\{t:\ E_t\ge 1/a\}.
+\label{eq:bs15-eprocess}
+\end{equation}
+For the defaults of a grade $g$ against its predicted default probability $p_{g}$, with $D_{g,s}$ defaults among $n_{g,s}$ obligors at step $s$ and the multiplicative alternative $m p_g$ on a grid $\mathcal G$ of multipliers with weights $v_m$, the factor of a step is the binomial likelihood ratio and the grades are combined by a product (independent grades) or an average (valid under any dependence):
+\begin{equation}
+E^{(g)}_t=\sum_{m\in\mathcal G}v_m\prod_{s\le t}\frac{(m p_g)^{D_{g,s}}(1-m p_g)^{n_{g,s}-D_{g,s}}}{p_g^{D_{g,s}}(1-p_g)^{n_{g,s}-D_{g,s}}},\qquad
+E^{\mathrm{prod}}_t=\prod_{g}E^{(g)}_t,\quad E^{\mathrm{avg}}_t=\frac1G\sum_{g}E^{(g)}_t.
+\label{eq:bs15-grades}
+\end{equation}
+A third monitor tests clustering with first-order Markov alternatives $\mathbb P(\text{hit}\mid\text{hit})=m\alpha$, and a battery combines monitors of the same steps by average or product.
+
+\begin{algorithm}[htbp]
+\caption{Anytime-valid monitor of the exceedances of a value at risk.}
+\label{alg:bs15}
+\begin{algorithmic}[1]
+\Require level $\alpha$, size $a$, multipliers $\mathcal M$ with weights $w_m$, a stream of exceedances $h_1,h_2,\dots$
+\State $\ell_m\gets 0$ for every $m\in\mathcal M$; \quad $\tau\gets\infty$; \quad $\theta\gets\log(1/a)$
+\For{$t=1,2,\dots$}
+  \For{$m\in\mathcal M$}
+    \State $\ell_m\gets \ell_m+h_t\log\frac{m\alpha}{\alpha}+(1-h_t)\log\frac{1-m\alpha}{1-\alpha}$
+  \EndFor
+  \State $\log E_t\gets \operatorname{logsumexp}_m(\log w_m+\ell_m)$
+  \If{$\log E_t\ge\theta$ \textbf{and} $\tau=\infty$} \State $\tau\gets t$ \EndIf
+\EndFor
+\State \Return $\tau$, $\log E_t$ for every $t$, and the anytime-valid p-value $\min(1,\exp(-\max_t\log E_t))$
+\end{algorithmic}
+\end{algorithm}
+
+The assumptions are that the hits are independent Bernoulli($\alpha$) under the null, that the defaults of a grade are binomial given the past (the monitors do not model the asset correlation inside a grade, which is the reason correlation-corrected tests exist, and a correlated portfolio would be over-rejected by this null), and that the weights are fixed before any outcome, which keeps the process an e-process. The parameters are the threshold $1/a=\pxFifteenThreshold{}$ for $a=\pxFifteenAlpha{}\,\%$; for the hits the multipliers $\mathcal M=\{0.25,0.5,1.5,2,3,4,6,10\}$ with equal weights, for the clustering monitor $\{3,6,12,25,50\}$, and for the grades a 16-point logarithmic grid in $[1/4,4]$ with Jeffreys-type weights \citep{proposed:jeffreys1946}; they were fixed before any run. The cost is $O(T\,|\mathcal M|)$ for a series of $T$ steps in log space. The implementation is the module \texttt{riskvalidation.validation.sequential} of engine release 1.1.0 (\texttt{var\_hit\_eprocess}, \texttt{var\_hit\_clustering\_eprocess}, \texttt{pd\_grade\_eprocess}, \texttt{eprocess\_battery}), driven by the pipeline modules \pxfn{cases/c22_sequential.py} and \pxfn{cases/c03/sequential.py}; on case C11 the same functions are applied here to the committed exceedance days of every model.
+
+The comparison is with the Kupiec test on the trailing 250 days and on all days so far, both read every day, with the traffic light, and with the chi-square test across grades. The acceptance criteria, fixed before the run, are a size of at most $5\,\%$ plus three standard errors ($\pxFifteenBound\,\%$) where the repeated Kupiec rule exceeds it, a median detection day below the 250-day window and below the traffic light's at a hit rate three and four times too high, and a power cost under 10 points against one Kupiec reading at day 250; the method is refuted if the delay is not lower than the traffic light's. On series of \pxFifteenHorizon{} days read every day, the e-process rejects a correct model at some day in \pxFifteenENull{}\,\% of \pxFifteenReps{} series where Kupiec on the trailing window rejects in \pxFifteenKupTrail{}\,\% and on the growing window in \pxFifteenKupCum{}\,\%, and the traffic light leaves the green zone in \pxFifteenLightNull{}\,\%; the size criterion holds. At a hit rate three times too high the median detection day is \pxFifteenXThreeDay{} and at four times \pxFifteenXFourDay{}, against \pxFifteenLightDay{} for the traffic light, whose first possible day is 250; the delay criterion holds. The power criterion fails at the hit rate three times too high: one Kupiec reading has \pxFifteenCostThree{} points more power at day 250 than the e-process (\pxFifteenCostFour{} points at four times), so the hypothesis does not hold as stated, and the monitors are not retuned. For the defaults of five grades over \pxFifteenPdYears{} years, a relative error of 10\,\% in every probability is detected by the product combination in \pxFifteenPdTenProduct{}\,\% of the histories and by the average in \pxFifteenPdTenAverage{}\,\%, against a size of \pxFifteenPdNullChi{}\,\% for the chi-square test read every year, and at 5\,\% the average detects \pxFifteenPdFiveAverage{}\,\% against \pxFifteenPdFiveChi{}\,\% for the chi-square test at year 10: the cost of the guarantee is large for a small miscalibration.
+On the real windows of C11, the e-process flags \pxFifteenCeSevenFlag{} of \pxFifteenCeSevenModels{} models on the 2007 to 2009 window (the traffic light \pxFifteenCeSevenLight{}) with a median day of \pxFifteenCeSevenDay{}, and \pxFifteenCeFxFlag{} against \pxFifteenCeFxLight{} on the 2008 foreign-exchange window; the comparison favours the monitor structurally, because the traffic light cannot speak before day 250.
+
+% proposed method 16: Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11)
+\subsection{Adaptive conformal recalibration of the value at risk}
 \label{sec:bs16}
 
-% TEXT
+A value-at-risk model that was calibrated on a calm past under-covers in a crisis, and the back-tests that detect it report the failure after the fact. Adaptive conformal inference \citep{proposed:gibbs2021} adjusts the working tail level of a forecaster after every day by the coverage error it just made, and makes no assumption about the data other than that the long-run frequency of misses is what is targeted. Conformal layers on value-at-risk forecasts exist in working papers; what Contraste adds is the wrapper as a tested, model-agnostic function and its comparison, wrapped against unwrapped, on the engine's own back-tests and scores on a ladder of models. A model is any function that returns the value at risk and the expected shortfall of day $t$ at a level $a$ from the returns before day $t$ only. With $\alpha$ the target level and $\gamma$ a step size, the wrapper keeps a working level $a_t$, starting at $\alpha$, asks the model for its forecast at $a_t$, and moves the level after the day by
+\begin{equation}
+a_{t+1}=\operatorname{clip}\Big(a_t+\gamma\,(\alpha-\mathrm{err}_t),\ a_{\min},a_{\max}\Big),\qquad \mathrm{err}_t=\mathbf 1\{y_t<\mathrm{VaR}_t(a_t)\},
+\label{eq:bs16-update}
+\end{equation}
+where $y_t$ is the return of the day. A miss lowers the level by $\gamma(1-\alpha)$, which deepens the next forecast, and a quiet day raises it by $\gamma\alpha$. The wrapped expected shortfall is the model's own tail mean at $a_t$. For the unclipped recursion and any order of the data,
+\begin{equation}
+\Big|\tfrac1T\textstyle\sum_{t=1}^{T}\mathrm{err}_t-\alpha\Big|\le\frac{\max(a_1,1-a_1)+\gamma}{\gamma\,T},
+\label{eq:bs16-bound}
+\end{equation}
+a guarantee on the long-run frequency of misses \citep{proposed:gibbs2021}, with nothing said about their independence or about the expected shortfall, for which no conformal guarantee is claimed.
+
+\begin{algorithm}[htbp]
+\caption{Adaptive conformal wrapper of a value-at-risk forecaster.}
+\label{alg:bs16}
+\begin{algorithmic}[1]
+\Require returns $y_1,\dots,y_T$, forecaster $f(t,a)\to(\mathrm{VaR},\mathrm{ES})$ using only $y_{<t}$, target $\alpha$, step $\gamma$, band $[a_{\min},a_{\max}]$, first forecast day $t_0$
+\State $a\gets\alpha$; \quad $n_{\mathrm{clip}}\gets 0$
+\For{$t=t_0,\dots,T$}
+  \State $(v_t,e_t)\gets f(t,a)$; \quad record $(a,v_t,e_t)$
+  \State $\mathrm{err}\gets\mathbf 1\{y_t<v_t\}$; \quad $a'\gets a+\gamma(\alpha-\mathrm{err})$; \quad $a\gets\operatorname{clip}(a',a_{\min},a_{\max})$
+  \State \textbf{if} $a\neq a'$ \textbf{then} $n_{\mathrm{clip}}\gets n_{\mathrm{clip}}+1$
+\EndFor
+\State \Return the wrapped forecasts $(v_t,e_t)_{t}$, the levels $(a_t)$ and $n_{\mathrm{clip}}$
+\end{algorithmic}
+\end{algorithm}
+
+The assumptions are that the forecaster does not read day $t$ or later (the wrapper cannot check this), that the long-run frequency is the target, and that the guarantee applies only while the level stays inside the band, which is why the clips are counted. The parameters were fixed before any run and not tuned: the step $\gamma=\pxSixteenGamma{}$, the Gibbs and Cand\`es default, and the band $[\pxSixteenBandLow{},\pxSixteenBandHigh{}]$. The cost is one forecast per day, so a wrapped forecast costs the same as the model's. The implementation is \texttt{riskvalidation.market.conformal} (\texttt{aci\_update}, \texttt{aci\_var\_es}, \texttt{historical\_forecaster}, \texttt{forecast\_scores} and \texttt{aci\_compare}) of engine release 1.1.0, applied by the pipeline module \pxfn{c11/conformal.py} to three models of the ladder, the rolling historical simulation over 250 days, the GARCH-$t$ model and filtered historical simulation (FHS), at the 1\,\% and 2.5\,\% levels in each of the six windows. The equity series of the 2007 to 2009 and 2020 windows is a derived-only source, so the recalibration runs on the device that holds it and only its outputs are committed. Each pair is scored by the Kupiec and conditional-coverage p-values, the Acerbi and Sz\'ekely statistic $Z_2=1-\sum_t y_t\mathbf 1\{\text{hit}_t\}/(\mathrm{ES}_t\,T\alpha)$ \citep{proposed:acerbiszekely2014}, and the mean FZ0 loss \citep{proposed:fissler2016} with the relative change
+\begin{equation}
+\Delta_{\mathrm{FZ}}=\frac{\overline{\mathrm{FZ0}}_{\mathrm{wrapped}}-\overline{\mathrm{FZ0}}_{\mathrm{unwrapped}}}{|\overline{\mathrm{FZ0}}_{\mathrm{unwrapped}}|},
+\label{eq:bs16-fz}
+\end{equation}
+positive being worse.
+
+The acceptance criterion, fixed before the run, is that the historical simulation, GARCH-$t$ and FHS wrapped pass the Kupiec and conditional-coverage tests (both $p\ge 0.05$) in at least one more of the three stress windows than unwrapped, without the mean FZ0 loss worsening by more than \pxSixteenFzTol{}\,\%; the method is refuted if the wrapper fails the independence test in the 2007 to 2009 window. The criterion holds in \pxSixteenCellsHold{} of \pxSixteenCells{} cells (a cell is a model at a tail level), the wrapped models gain \pxSixteenExtra{} stress-window passes in all over \pxSixteenStressDays{} stress days in \pxSixteenRuns{} runs, and the worst change of the FZ0 loss in any stress window is $+\pxSixteenWorstFz\,\%$. The refutation does not occur: the smallest independence p-value of the wrapped models in the 2007 to 2009 window is \pxSixteenIndMin{}. The wrapper repairs coverage and not model failure: the wrapped historical simulation at the 1\,\% level in that window has a hit rate of \pxSixteenHsHitWr{} against \pxSixteenHsHitUn{} unwrapped and a Kupiec p-value of \pxSixteenHsKupWr{} against \pxSixteenHsKupUn{}, and still fails; in the 2020 window it still fails ($\Delta_{\mathrm{FZ}}=\pxSixteenTwentyHsFz\,\%$ for the historical simulation at 1\,\%, a large improvement because the unwrapped model forecasts a value at risk near the calm past on a sudden fall); and the level reached its lower edge on \pxSixteenHsClipped{} days in the first window. The results rest on one realised path per window, windows of 64 to 750 days with few hits at the 1\,\% level, and asymptotic p-values.
 
 \subsection{Results}
 \label{sec:results-proposed}
 
-% RESULTS
+Table~\ref{tab:proposed-summary} gives the headline quantity of each measurement, protocol and reconciliation of this section, read from the committed document of the case that carries it. It shows one number per
+method and no uncertainty, and the sections above give each with its Monte Carlo error; what follows from it is the order of magnitude of what the measurements find. The validation tests of the null family hold their size
+on all but one of \pxOneTests{} counts, the exposure engine agrees with the reference engine at every date for the uncollateralised profiles and not for the collateralised ones, informative exits understate the default probability of the B grade by about a third, the
+indexation charge is more than half of the change in net interest income of the short-indexed variant, the worst case of the dependence band is a quarter above the simple sum, the reverse liquidity stress is solved or refused by rule, and the
+interquartile range of the operational-risk capital is a multiple of the truth.
+
+\input{../tables/proposed-summary}
+
+Figure~\ref{fig:proposed-size} shows the sizes behind the first row: each of the \pxOneTests{} tests of the null family rejects a correct model at a rate close to its 5\,\% level, with a half-width of about 0.7 percentage points, and one point lies above the bound.
+It does not show power, which depends on the planted defect and its severity and is reported in the sections of the defect families; and it shows that a test that holds its size under one null can leave it under another, which is why each rate is tied to its generator.
+Table~\ref{tab:proposed-ore} reads the exposure reconciliation: the single swap and the netting set are within two combined standard errors at all dates, and the three collateralised variants are not, with the credit valuation adjustment of the 10-day variant
+\pxTwoCsaTenCva{} combined errors apart. What follows is that the collateral logic of the engine is not validated by the reference engine on these variants, whatever the quality of its uncollateralised exposure.
+Figure~\ref{fig:proposed-band} and Figure~\ref{fig:proposed-oprisk} show the band and the instability: the band spans the lower bound to the worst case around a headline that is neither, and the interquartile range of the splice rung is above 1 in every cell, so a single capital number of that rung is not a stable estimate on histories of this length.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{proposed-size}
+\caption{Rejection rate at the 5\,\% level of each of the \pxOneTests{} validation tests of the null family on generated data that satisfy the null of the test, with a 95\,\% Monte Carlo half-width over \pxOneNullReps{} repetitions; the dashed line is the nominal level and the dotted line the one-sided size bound.}
+\label{fig:proposed-size}
+\end{figure}
+
+\input{../tables/proposed-ore}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{proposed-band}
+\caption{Capital of every row of the dependence band of the stress case baseline, in thousand million Chilean pesos at one year and 99.9\,\%: the simple sum is the only row labelled headline capital (dark bar), and every other row is information, not capital.}
+\label{fig:proposed-band}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{proposed-oprisk}
+\caption{Interquartile range of the 99.9\,\% operational-risk capital of the splice rung over its truth, across the four cells of history length and collection threshold, for the four tail indices of the generator; each point is \pxTwelveHistories{} histories divided over the cells.}
+\label{fig:proposed-oprisk}
+\end{figure}
+
+For the proposed methods, Table~\ref{tab:proposed-pla} and Figure~\ref{fig:proposed-pla} give the scale-and-level complement on the six variants of case C13. The regulatory zone flags none of the replications of the stale-volatility variant, and the rolling statistic and the union of the three statistics
+flag nearly all of them at a family size of \pxThirteenSize{}\,\% with a null union of \pxThirteenNullUnion{}\,\%. The tables also show what the complement does not do: for the wrong-correlation and time-misalignment variants the rolling statistic flags few, and the zone flags all, so the two readings are complementary and the zone is not
+to be replaced. Table~\ref{tab:proposed-lag} and Figure~\ref{fig:proposed-lag} give the lag ladder: the rolling statistic flags \pxThirteenLagFive{}\,\% at a lag of 5 days and \pxThirteenLagTen{}\,\% at 10, against a regulatory zone that reaches \pxThirteenLagPlaForty{}\,\% only at 40 days; what follows is that the complement sees a late scale from a delay of a week, and that it
+does so at a size set by the null generator, so the thresholds must be recalibrated for a desk whose volatility process differs.
+
+\input{../tables/proposed-pla}
+\input{../tables/proposed-lag}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{proposed-pla}
+\caption{Share of the \pxThirteenN{} replications of each C13 variant flagged by the regulatory attribution test, by the three statistics of the complement at \pxThirteenSize{}\,\% per statistic, and by their union at a family size of \pxThirteenSize{}\,\%.}
+\label{fig:proposed-pla}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{proposed-lag}
+\caption{Share of replications flagged as a function of the age of the volatility used by the risk model, for the rolling and absolute Spearman statistics, the Wald statistic and the regulatory zone, with Wilson intervals over \pxThirteenN{} replications.}
+\label{fig:proposed-lag}
+\end{figure}
+
+Table~\ref{tab:proposed-anchored} and Figure~\ref{fig:proposed-anchored} give the anchored default probability. At informativeness 9 the anchored interval covers the true B-grade probability in \pxFourteenAnchoredNine{}\,\% of \pxFourteenReps{} repetitions in the first-year cohort, and the industry and unfollowed treatments fall to the lowest coverage when the cohort is
+pooled or ten times larger. The table does not show the width of the interval, which is conservative, and the half-widths printed are Monte Carlo errors of the coverage and not interval widths. Table~\ref{tab:proposed-realk} reads the anchored odds multiplier on the real cohorts: a large multiplier for the lowest grades, unstable across years for the B grade and the lowest grade, so that its size
+is a statement about the equivalence of the two default counts as much as about withdrawal.
+
+\input{../tables/proposed-anchored}
+\input{../tables/proposed-realk}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{proposed-anchored}
+\caption{Coverage of the true one-year default probability of the B grade at informativeness 9 by the interval of each treatment of rating withdrawals, in the first-year cohort, pooling five cohorts and with ten times the first-year cohort, with 95\,\% Monte Carlo half-widths; the dashed line is 95\,\% and the dotted line 50\,\%.}
+\label{fig:proposed-anchored}
+\end{figure}
+
+Table~\ref{tab:proposed-sequential} and Figure~\ref{fig:proposed-sequential} give the e-process monitors on the hit streams of case C22. The e-process rejects a correct model in \pxFifteenENull{}\,\% of the series, against two thirds for the Kupiec test on the trailing window, and it detects a hit rate four times too high in \pxFifteenXFourDay{} days; the table also shows that the
+repeated Kupiec test on all days so far is faster (\pxFifteenXFourKupDay{} days at four times and \pxFifteenXThreeKupDay{} at three) at a size that the e-process does not pay, which is the price of the guarantee and the origin of the failed power criterion. Table~\ref{tab:proposed-pdgrades} reads the monitors on the defaults of five grades, where the
+average combination detects a 10\,\% error more often than the product. Table~\ref{tab:proposed-c11e} reads the monitor on the exceedance days of the C11 ladder: the e-process flags every model in the 2007 to 2009 window at a median day far below 250, and it flags none in the 64-day window; it does not show power, since the real windows have no known truth, and in the calm window
+it flags fewer models than the light.
+
+\input{../tables/proposed-sequential}
+\input{../tables/proposed-pdgrades}
+\input{../tables/proposed-c11e}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{proposed-sequential}
+\caption{Left, the share of simulated series in which each reading of the 99\,\% VaR back-test rejects a correct model at some day of \pxFifteenHorizon{}, with the 5\,\% level dashed; right, the median first day of rejection for a hit rate two, three and four times the nominal rate, with day 250 dotted.}
+\label{fig:proposed-sequential}
+\end{figure}
+
+Table~\ref{tab:proposed-conformal}, Table~\ref{tab:proposed-conformal-cells} and Figure~\ref{fig:proposed-conformal} give the conformal recalibration. The wrapper moves the hit rates of the three models toward the target in the three stress windows and the criterion holds in all \pxSixteenCells{} cells, with a worst loss change of $+\pxSixteenWorstFz\,\%$. The tables do not show that the wrapped models are right: the wrapped historical simulation at the 1\,\% level still fails in two of the three
+windows, one path per window supports every row, and the independence test is not evaluated where no hit occurs.
+
+\input{../tables/proposed-conformal}
+\input{../tables/proposed-conformal-cells}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{proposed-conformal}
+\caption{Hit rate over the target level of each of three models at the 1\,\% and 2.5\,\% levels in the three stress windows of case C11, without and with the adaptive conformal wrapper; a value of 1 (dashed) is the target.}
+\label{fig:proposed-conformal}
+\end{figure}
