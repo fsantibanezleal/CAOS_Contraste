@@ -22,6 +22,7 @@ import {
   SizeView,
   SpecimenView,
 } from './Views';
+import { SequentialView } from './SequentialView';
 
 export interface C22Instrument {
   sel: C22Sel | null;
@@ -54,10 +55,10 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       <>
         <div className="ct-pair">
           <Knob id="c22-n" label={{ en: 'Obligors', es: 'Deudores' }} hint={{ en: 'Obligors in the grade or portfolio tested.', es: 'Deudores del grado o la cartera probada.' }} value={portfolio.n} min={100} max={10000} step={100} format={{ decimals: 0 }} onChange={set('n')} />
-          <Knob id="c22-pd" label={{ en: 'PD applied', es: 'PD aplicada' }} hint={{ en: "The model's PD for the grade.", es: 'La PD del modelo para el grado.' }} value={portfolio.pd} min={0.001} max={0.2} step={0.001} format={{ percent: true, decimals: 1 }} onChange={set('pd')} />
+          <Knob id="c22-pd" label={{ en: 'PD', es: 'PD' }} hint={{ en: "The PD applied: the model's PD for the grade.", es: 'La PD aplicada: la PD del modelo para el grado.' }} value={portfolio.pd} min={0.001} max={0.2} step={0.001} format={{ percent: true, decimals: 1 }} onChange={set('pd')} />
         </div>
         <div className="ct-pair">
-          <Knob id="c22-ratio" label={{ en: 'PD ratio', es: 'Razón de PD' }} hint={{ en: 'The true PD over the PD applied: 1 gives the size, above 1 the power against an underestimation.', es: 'La PD verdadera sobre la aplicada: 1 da el tamaño, sobre 1 la potencia contra una subestimación.' }} value={portfolio.ratio} min={1} max={3} step={0.05} format={{ decimals: 2 }} onChange={set('ratio')} />
+          <Knob id="c22-ratio" label={{ en: 'PD ratio', es: 'Razón PD' }} hint={{ en: 'The true PD over the PD applied: 1 gives the size, above 1 the power against an underestimation.', es: 'La PD verdadera sobre la aplicada: 1 da el tamaño, sobre 1 la potencia contra una subestimación.' }} value={portfolio.ratio} min={1} max={3} step={0.05} format={{ decimals: 2 }} onChange={set('ratio')} />
           <Knob id="c22-rho" label={{ en: 'Correlation', es: 'Correlación' }} hint={{ en: 'The asset correlation the defaults really have (one systematic factor).', es: 'La correlación de activos que realmente tienen los incumplimientos (un factor sistemático).' }} value={portfolio.rhoTrue} min={0} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoTrue')} />
         </div>
         <PortfolioReadout sel={sel} />
@@ -73,13 +74,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           id="c22-level"
           label={{ en: 'Level', es: 'Nivel' }}
           options={[
-            { id: '0.05', label: { en: '5%', es: '5%' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política comprometida); cada vista reproducida lee este nivel.' } },
-            { id: '0.01', label: { en: '1%', es: '1%' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política comprometida); cada vista reproducida lee este nivel.' } },
+            { id: '0.05', label: { en: '5%', es: '5 %' }, hint: { en: 'Reject when p < 0.05 (amber or red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,05 (ámbar o rojo con la política versionada); cada vista reproducida lee este nivel.' } },
+            { id: '0.01', label: { en: '1%', es: '1 %' }, hint: { en: 'Reject when p < 0.01 (red under the committed policy); every replayed view reads this level.', es: 'Rechazar cuando p < 0,01 (rojo con la política versionada); cada vista reproducida lee este nivel.' } },
           ]}
           value={String(level)}
           onChange={(id) => setLevel(Number(id))}
         />
-        <Knob id="c22-rho-assumed" label={{ en: "Vasicek's assumed correlation", es: 'Correlación de Vasicek' }} hint={{ en: 'The correlation the Vasicek-corrected test assumes: a modelling assumption to document; the IRB corporate correlations run from 12% to 24%.', es: 'La correlación que supone la prueba corregida de Vasicek: un supuesto de modelación a documentar; las correlaciones corporativas IRB van de 12% a 24%.' }} value={portfolio.rhoAssumed} min={0.01} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoAssumed')} />
+        <Knob id="c22-rho-assumed" label={{ en: "Vasicek's assumed correlation", es: 'Correlación de Vasicek' }} hint={{ en: 'The correlation the Vasicek-corrected test assumes: a modelling assumption to document; the IRB corporate correlations run from 12% to 24%.', es: 'La correlación que supone la prueba corregida de Vasicek: un supuesto de modelación a documentar; las correlaciones corporativas IRB van de 12 % a 24 %.' }} value={portfolio.rhoAssumed} min={0.01} max={0.3} step={0.01} format={{ percent: true, decimals: 0 }} onChange={set('rhoAssumed')} />
         <PortfolioReadout sel={sel} />
       </>
     ),
@@ -88,6 +89,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     <SubTabs key={key} ariaLabel={pick(aria, lang)} tabs={items.map((t) => ({ ...t, label: pick(t.label, lang) }))} />
   );
   const isNull = c22.outputs.ladder === null;
+  // BS-15 (D15): the other-families variant carries the e-process monitors against the tests read every day
+  const sequentialTab = c22.outputs.sequential ? [{ id: 'sequential', label: { en: 'Sequential', es: 'Secuencial' }, content: <SequentialView sel={sel} /> }] : [];
   const validation = isNull
     ? tabs(
         [
@@ -106,7 +109,9 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             : { id: 'power', label: { en: 'Power', es: 'Potencia' }, content: <PowerView sel={sel} /> },
           { id: 'rates', label: { en: 'Rates', es: 'Tasas' }, content: <RatesTableView sel={sel} /> },
           ...(c22.outputs.golden.length ? [{ id: 'paper', label: { en: 'Papers', es: 'Artículos' }, content: <PaperView sel={sel} /> }] : []),
-          { id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> },
+          // the other-families variant measures the engine's named studies, which draw no single dataset: no report to read
+          ...(c22.tests.length ? [{ id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> }] : []),
+          ...sequentialTab,
         ],
         { en: 'Views of the measurements', es: 'Vistas de las mediciones' },
         `validation-${c22.variant_id}`,

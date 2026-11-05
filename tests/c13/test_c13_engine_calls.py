@@ -10,6 +10,7 @@ from importlib.metadata import distribution
 
 import numpy as np
 import pytest
+from engine_pin import PYPI_PIN
 from pipeline.cases.c13 import generator, measure
 from riskvalidation.market import frtb
 from riskvalidation.validation import market as val
@@ -19,7 +20,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 def test_the_pin_carries_the_market_extra() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    if re.search(r"^riskvalidation\[market\]==\d+\.\d+\.\d+$", req, re.MULTILINE):  # the PyPI release, with its market extra
+    # the PyPI release, with its market extra among the extras (market,ml,stress since the engine 1.0.1; tests/engine_pin.py reads the pin)
+    if PYPI_PIN.search(req) and re.search(r"^riskvalidation\[(?:[a-z]+,)*market(?:,[a-z]+)*\]==", req, re.MULTILINE):
         return
     m = re.search(r"^riskvalidation\[market\] @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@([0-9a-f]{40}|v\d+\.\d+\.\d+)$",
                   req, re.MULTILINE)

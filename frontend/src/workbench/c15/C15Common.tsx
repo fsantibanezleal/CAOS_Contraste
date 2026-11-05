@@ -15,6 +15,8 @@ import {
   LEG_TEXT, ORIGIN_TEXT, SHOCK_TEXT, BASKET_TEXT, OFFSET_TEXT, amount, axisOf, eveRowOf, fitOf, legOf, moneyDoc, outputsOf, pairTotal, scaleUnit, text, worst,
   type C15Outputs, type C15Sel,
 } from './selection';
+import { localise } from '../c14/localise';
+import { C15_SOURCE_RULES } from './localise';
 
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
@@ -43,8 +45,8 @@ export function C15VariantsTable({ variants, onPick, current }: { variants: Arra
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
       note={{
-        en: 'Each variant is one document of the SDD: a long or short UF book, a CPI surprise, a CLP steepener, the offset on and off, and floors that bind. The bars are the delta NII with the indexation charge; the table keeps the rate result and the charge apart. Pick a variant to load it.',
-        es: 'Cada variante es un documento del SDD: un libro largo o corto en UF, una sorpresa de IPC, un empinamiento en CLP, la compensación activa e inactiva, y pisos que rigen. Las barras son el delta NII con el cargo por reajustabilidad; la tabla mantiene aparte el resultado de tasa y el cargo. Elija una variante para cargarla.',
+        en: 'Each variant is one document of the SDD: a long or short UF book, a CPI surprise, a CLP steepener, the offset on and off, and the book most exposed to the UR floor (no floor binds on the curves of the valuation date). The bars are the delta NII with the indexation charge; the table keeps the rate result and the charge apart. Pick a variant to load it.',
+        es: 'Cada variante es un documento del SDD: un libro largo o corto en UF, una sorpresa de IPC, un empinamiento en CLP, la compensación activa e inactiva, y el libro más expuesto al piso de la UR (ningún piso actúa sobre las curvas de la fecha de valoración). Las barras son el delta NII con el cargo por reajustabilidad; la tabla mantiene aparte el resultado de tasa y el cargo. Elija una variante para cargarla.',
       }}
     >
       <ChartOverTable
@@ -54,7 +56,7 @@ export function C15VariantsTable({ variants, onPick, current }: { variants: Arra
             height="fill"
             orientation="vertical"
             data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.nii.delta_nii / axis.div, tone: 'accent' as const, highlight: id === current }))}
-            axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+            axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
           />
         }
       >
@@ -112,6 +114,10 @@ const ASSUMPTION_TEXT: Record<string, Bi> = {
 const PARAMETER_TEXT: Record<string, Bi> = {
   net_uf_position: { en: 'Net UF position', es: 'Posición neta en UF' },
   surprise_pp: { en: 'CPI surprise', es: 'Sorpresa de IPC' },
+  net_uf_share_tier1: { en: 'Net UF position, share of Tier 1', es: 'Posición neta en UF, parte del capital de nivel 1' },
+  ur_floating_share: { en: 'Floating share of the UF commercial loans', es: 'Parte flotante de los préstamos comerciales en UF' },
+  clp_long_asset_share: { en: 'Long share of the CLP fixed commercial loans and securities', es: 'Parte larga de los préstamos comerciales fijos en CLP y los valores' },
+  clp_bond_years_scale: { en: 'Scale of the CLP bond maturities', es: 'Escala de los plazos de los bonos en CLP' },
 };
 const CATEGORY_TEXT: Record<string, Bi> = {
   'retail-operational': { en: 'Retail operational', es: 'Minorista operacional' },
@@ -121,7 +127,18 @@ const CATEGORY_TEXT: Record<string, Bi> = {
 
 /** A unit of the documents in words in the page language: "millions CLF" is "millones de CLF". */
 export function unitText(unit: string, lang: 'en' | 'es'): string {
-  if (lang === 'es') return unit.replace(/^millions /, 'millones de ').replace('percentage points', 'puntos porcentuales').replace(/^per year$/, 'por año').replace(/^years$/, 'años');
+  if (lang === 'es') {
+    const words: Record<string, string> = {
+      'share of Tier 1': 'parte del capital de nivel 1',
+      'share of the UF commercial loans': 'parte de los préstamos comerciales en UF',
+      'share of the CLP fixed commercial loans and securities': 'parte de los préstamos comerciales fijos en CLP y los valores',
+      'factor on the maturity': 'factor sobre el plazo',
+      'share of the term deposit': 'parte del depósito a plazo',
+      'per square-root year': 'por raíz cuadrada del año',
+      'share of |PN_UR|': 'parte de |PN_UR|',
+    };
+    return words[unit] ?? unit.replace(/^millions /, 'millones de ').replace('percentage points', 'puntos porcentuales').replace(/^per year$/, 'por año').replace(/^years$/, 'años');
+  }
   return unit;
 }
 
@@ -149,7 +166,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(o.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'Calibration source and seed', es: 'Fuente de la calibración y semilla' }, lang)}</dt>
-          <dd>{`${o.bank.calibration_source} (${o.bank.seed})`}</dd>
+          <dd>{`${localise(o.bank.calibration_source, lang, C15_SOURCE_RULES)} (${o.bank.seed})`}</dd>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd data-variant-id={o.variant.id}>{`${pick(o.variant.label, lang)}. ${pick(o.variant.description, lang)}`}</dd>
           {o.variant.parameters.map((p) => (
@@ -172,7 +189,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
           <dt>{pick({ en: 'UF date', es: 'Fecha de la UF' }, lang)}</dt>
           <dd>{o.ur_currency.uf_date}</dd>
           <dt>{pick({ en: 'UF source', es: 'Fuente de la UF' }, lang)}</dt>
-          <dd>{o.ur_currency.uf_source}</dd>
+          <dd>{localise(o.ur_currency.uf_source, lang, C15_SOURCE_RULES)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The curves', es: 'Las curvas' }} {...card} note={{ en: 'The sovereign yields are the Banco Central de Chile\'s; the fitted zero curve is an adaptation by Contraste, under the BCCh terms of use.', es: 'Los rendimientos soberanos son del Banco Central de Chile; la curva cero ajustada es una adaptación de Contraste, bajo los términos de uso del BCCh.' }}>
@@ -183,7 +200,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The Annex 1 shock sizes', es: 'Los tamaños de choque del Anexo 1' }} {...card} note={{ en: 'A tabled size is exactly the table\'s. A size that is a Contraste estimate carries its label and its method and is never shown as a regulatory parameter.', es: 'Un tamaño tabulado es exactamente el de la tabla. Un tamaño que es una estimación de Contraste lleva su etiqueta y su método y nunca se muestra como parámetro regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c15-sizes">
             <thead>
               <tr>
@@ -243,7 +260,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The behavioural assumptions', es: 'Los supuestos conductuales' }} {...card} note={{ en: 'Each assumption names where it comes from: a regulatory cap, a fit, or a synthetic value stated here. A request above its cap is capped and shows both the request and the value used.', es: 'Cada supuesto dice de dónde viene: un tope regulatorio, un ajuste, o un valor sintético declarado aquí. Una petición sobre su tope queda con tope y muestra la petición y el valor usado.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c15-assumptions">
             <thead>
               <tr>
@@ -261,7 +278,7 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
                     <td className="ct-text">{pick(text(ASSUMPTION_TEXT, k), lang)}</td>
                     <td>{assumptionValue(a.value, a.unit, lang)}</td>
                     <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, a.source_kind), lang)}</td>
-                    <td className="ct-text ct-wide-only">{a.source}</td>
+                    <td className="ct-text ct-wide-only">{localise(a.source, lang, C15_SOURCE_RULES)}</td>
                   </tr>
                 );
               })}
@@ -272,9 +289,9 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Deposit category', es: 'Categoría de depósitos' }, lang)}</th>
                 <th>{pick({ en: 'Core share requested', es: 'Parte estable pedida' }, lang)}</th>
-                <th>{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th>{pick({ en: 'Share cap', es: 'Tope de la parte' }, lang)}</th>
                 <th>{pick({ en: 'Used', es: 'Usada' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Cap applied', es: 'Tope aplicado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -295,12 +312,26 @@ export function C15ContextView({ sel }: { sel: C15Sel | null }) {
   );
 }
 
+/** A variant parameter as a value with its unit: a share as a percent of its base, a factor as times the maturity (R4 c18 m12:
+ * "0.3 share of Tier 1", "1 factor on the maturity"). */
+export function paramValue(value: number, unit: string, lang: 'en' | 'es'): string {
+  if (unit.startsWith('share of ')) {
+    const base = lang === 'es' ? unitText(unit, 'es').replace(/^parte de(l)? /, (_m, l: string | undefined) => (l ? 'del ' : 'de ')) : unit.slice('share '.length);
+    return `${formatNumber(value, lang, { percent: true, decimals: 0 })} ${base}`;
+  }
+  if (unit === 'factor on the maturity') {
+    const n = formatNumber(value, lang, { digits: 4 });
+    return lang === 'es' ? `${n} ${value === 1 ? 'vez' : 'veces'} el plazo` : `${n} times the maturity`;
+  }
+  return `${formatNumber(value, lang, { digits: 4 })} ${unitText(unit, lang)}`;
+}
+
 function ParamRow({ name, value, unit }: { name: string; value: number; unit: string }) {
   const lang = useShellLang();
   return (
     <>
       <dt>{pick(text(PARAMETER_TEXT, name), lang)}</dt>
-      <dd data-parameter={name}>{`${formatNumber(value, lang, { digits: 4 })} ${unitText(unit, lang)}`}</dd>
+      <dd data-parameter={name}>{paramValue(value, unit, lang)}</dd>
     </>
   );
 }
@@ -313,7 +344,7 @@ function CurveRows({ curve }: { curve: C15Outputs['curves']['clp'] }) {
       <dt>{pick({ en: `${name} curve`, es: `Curva ${name}` }, lang)}</dt>
       <dd data-curve={curve.curve}>{`${curve.month} (${curve.date}); ${curve.fit.model === 'svensson' ? 'Svensson' : 'Nelson-Siegel'}, ${pick({ en: 'fit error', es: 'error del ajuste' }, lang)} ${formatNumber(curve.fit.rmse_bp, lang, { digits: 4 })} ${pick({ en: 'bp', es: 'pb' }, lang)}`}</dd>
       <dt>{pick({ en: `${name} source`, es: `Fuente ${name}` }, lang)}</dt>
-      <dd>{curve.attribution}</dd>
+      <dd>{localise(curve.attribution, lang, C15_SOURCE_RULES)}</dd>
     </>
   );
 }
@@ -321,6 +352,8 @@ function CurveRows({ curve }: { curve: C15Outputs['curves']['clp'] }) {
 // --- the read-outs of the rail ---------------------------------------------------------------------------------------
 
 /** A read-out title carrying the unit of its money rows once: in the narrow rail a unit on every row wrapped the rows to two lines (ADR-0071 rule 6). */
+/** The rail's amounts at the bars' two decimals, so one value reads the same on both ("140.65", not "140.6"; R5 c20 m-n1). */
+const BAR_FORMAT = { decimals: 2 } as const;
 const withUnit = (title: BiText, unit: BiText): BiText => ({ en: `${pick(title, 'en')} (${pick(unit, 'en')})`, es: `${pick(title, 'es')} (${pick(unit, 'es')})` });
 
 /** The live read-out of the Shock section: the two legs apart and the pair without and with the offset. */
@@ -331,7 +364,7 @@ export function ShockReadout({ sel }: { sel: C15Sel | null }) {
   const money = (v: number | null | undefined) => (doc ? amount(doc, v ?? null) : { value: null, unit: NA, format: { digits: 4 } });
   const item = (label: BiText, v: number | null | undefined, hint: BiText) => {
     const a = money(v);
-    return { label, value: a.value, unitless: true as const, format: a.format, hint };
+    return { label, value: a.value, unitless: true as const, format: BAR_FORMAT, hint };
   };
   const shockTitle = sel ? text(SHOCK_TEXT, sel.shock) : { en: 'The shock', es: 'El choque' };
   return (
@@ -361,8 +394,8 @@ export function OffsetReadout({ sel }: { sel: C15Sel | null }) {
       variant={sel?.data.variant}
       title={doc ? withUnit({ en: 'Offset', es: 'Compensación' }, on.unit) : sel ? text(OFFSET_TEXT, sel.offset) : { en: 'The offset', es: 'La compensación' }}
       items={[
-        { label: { en: 'Offset on', es: 'Con comp.' }, value: on.value, unitless: true, format: on.format, hint: { en: 'The largest pair total over the six shocks with the offset applied.', es: 'El mayor total del par entre los seis choques con la compensación aplicada.' } },
-        { label: { en: 'Offset off', es: 'Sin comp.' }, value: off.value, unitless: true, format: off.format, hint: { en: 'The largest pair total over the six shocks with no offset.', es: 'El mayor total del par entre los seis choques sin compensación.' } },
+        { label: { en: 'Offset on', es: 'Con comp.' }, value: on.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The largest pair total over the six shocks with the offset applied.', es: 'El mayor total del par entre los seis choques con la compensación aplicada.' } },
+        { label: { en: 'Offset off', es: 'Sin comp.' }, value: off.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The largest pair total over the six shocks with no offset.', es: 'El mayor total del par entre los seis choques sin compensación.' } },
         { label: { en: 'Share offset', es: 'Parte compensada' }, value: o?.offset_rule.share ?? null, unitless: true, format: { percent: true, decimals: 0 }, hint: { en: 'The share of one leg that the rule offsets against the other.', es: 'La parte de un tramo que la regla compensa contra el otro.' } },
         { label: { en: 'The document applies', es: 'El documento aplica' }, text: state, hint: { en: 'The state of the offset in the document\'s own measure.', es: 'El estado de la compensación en la medida propia del documento.' } },
       ]}
@@ -386,9 +419,9 @@ export function LegReadout({ sel }: { sel: C15Sel | null }) {
       variant={sel?.data.variant}
       title={doc && leg ? withUnit(sel ? text(LEG_TEXT, sel.leg) : { en: 'The leg', es: 'El tramo' }, a.unit) : sel ? text(LEG_TEXT, sel.leg) : { en: 'The leg', es: 'El tramo' }}
       items={[
-        { label: { en: 'Assets', es: 'Activos' }, value: a.value, unitless: true, format: a.format, hint: { en: 'The assets of the leg in its own currency (CLF for the UF leg).', es: 'Los activos del tramo en su propia moneda (CLF para el tramo UF).' } },
-        { label: { en: 'Liabilities', es: 'Pasivos' }, value: l.value, unitless: true, format: l.format, hint: { en: 'The liabilities of the leg in its own currency.', es: 'Los pasivos del tramo en su propia moneda.' } },
-        { label: { en: 'Net position', es: 'Posición neta' }, value: n.value, unitless: true, format: n.format, hint: { en: 'Assets minus liabilities; the net UF position drives the indexation charge.', es: 'Activos menos pasivos; la posición neta en UF determina el cargo por reajustabilidad.' } },
+        { label: { en: 'Assets', es: 'Activos' }, value: a.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The assets of the leg in its own currency (CLF for the UF leg).', es: 'Los activos del tramo en su propia moneda (CLF para el tramo UF).' } },
+        { label: { en: 'Liabilities', es: 'Pasivos' }, value: l.value, unitless: true, format: BAR_FORMAT, hint: { en: 'The liabilities of the leg in its own currency.', es: 'Los pasivos del tramo en su propia moneda.' } },
+        { label: { en: 'Net position', es: 'Posición neta' }, value: n.value, unitless: true, format: BAR_FORMAT, hint: { en: 'Assets minus liabilities; the net UF position drives the indexation charge.', es: 'Activos menos pasivos; la posición neta en UF determina el cargo por reajustabilidad.' } },
         { label: { en: 'Floored buckets', es: 'Tramos con piso' }, value: floored, unitless: true, format: { decimals: 0 }, hint: { en: 'How many of the 19 buckets have the post-shock floor binding for this leg under the shock chosen.', es: 'En cuántos de los 19 tramos el piso posterior al choque rige para este tramo bajo el choque elegido.' } },
       ]}
     />

@@ -16,7 +16,7 @@ import type { CaseData } from '../../api/artifacts';
 import type { C04AgencyOutputs, CaseManifest, ModelsArtifact, TestRow, VariantArtifact } from '../../lib/contract.types';
 import { COMMITTED } from '../../lib/policy';
 import { FMT, LOG_FLOOR, MobilityView, SemestersView, TestsView, YEAR0, YEAR_FORMAT } from './AgencyTestsViews';
-import { DEFINITION_LABEL, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
+import { DEFINITION_LABEL, attributionIn, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
 
 /** A value the artifact must hold: a null fails the test instead of reaching a comparison as 0. */
 const nn = (x: number | null | undefined): number => {
@@ -223,17 +223,19 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
             const { markup, drawn } = render(<View sel={makeSel(a.data, { grade })} />, lang);
             const where = `${a.id} ${name} ${GRADES[grade]} ${lang}`;
             expect(markup, `${where}: a Pending`).not.toContain('data-state="loading"');
-            expect(markup.startsWith('<div class="caos-views-row" data-views="2">'), `${where}: not a row of cards`).toBe(true);
+            // the Semesters view gives the years compared a card of their own when both of its drawings are drawn (U16-R4 c05)
+            const want = name === 'Semesters' && drawn.length === 2 ? 3 : n;
+            expect(markup.startsWith(`<div class="caos-views-row" data-views="${want}">`), `${where}: not a row of cards`).toBe(true);
             expect(drawn.length, `${where}: the charts drawn`).toBe(hostCharts(markup).length);
             expect(drawn.length, `${where}: no chart`).toBeGreaterThan(0);
             for (const p of drawn) expectDrawable(p, `${where}, ${pick(p.y.label, 'en')}`, lang);
             const found = cards(markup);
-            expect(found.length, `${where}: cards`).toBe(n);
+            expect(found.length, `${where}: cards`).toBe(want);
             for (const c of found) {
               expect(c.lane, `${where} ${c.title}`).toBe('replay');
               expect(c.provenance, `${where} ${c.title}`).toBe('real');
               expect(c.note, `${where} ${c.title}: the entity`).toContain(a.o.agency.name);
-              expect(c.note, `${where} ${c.title}: the attribution`).toContain(a.o.attribution);
+              expect(c.note, `${where} ${c.title}: the attribution`).toContain(attributionIn(a.o.attribution, lang));
             }
             for (const ch of hostCharts(markup)) {
               expect(ch.series, `${where}: a chart without series`).toBeGreaterThan(0);
@@ -242,7 +244,7 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
             }
             // no em-dash, en-dash or arrow anywhere; Spanish without English left in it (the attribution is verbatim)
             expect(markup).not.toMatch(DASHES);
-            if (lang === 'es') expect(text(markup).replace(a.o.attribution, ''), `${where}: English in the Spanish view`).not.toMatch(/\b(the|and|of)\b/);
+            if (lang === 'es') expect(text(markup).replace(attributionIn(a.o.attribution, lang), ''), `${where}: English in the Spanish view`).not.toMatch(/\b(the|and|of)\b/);
             if (lang === 'en') expect(text(markup), `${where}: Spanish in the English view`).not.toMatch(/\b(el|los|las|del|año)\b/);
           }
         }
@@ -418,8 +420,8 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
         expect((p.marks ?? []).map((m) => [m.x, pick(m.label, 'en')])).toEqual(stress);
         const note = card(markup, lang === 'en' ? "Mobility of each year's matrix and the default rate" : 'Movilidad de la matriz de cada año y la tasa de incumplimiento').note;
         const named = [2001, 2008, 2009, 2020].filter((y) => years.includes(y));
-        expect(note).toContain(lang === 'en' ? `Dashed: the stress years ${listOf(named, 'en')}.` : `Segmentadas: los años de tensión ${listOf(named, 'es')}.`);
-        expect(note).toContain(lang === 'en' ? 'on the same axis (0.10 is 10%)' : 'en el mismo eje (0,10 es 10%)');
+        expect(note).toContain(lang === 'en' ? `Dashed: the stress years ${listOf(named, 'en')}.` : `Discontinuas: los años de tensión ${listOf(named, 'es')}.`);
+        expect(note).toContain(lang === 'en' ? 'on the same axis (0.10 is 10%)' : 'en el mismo eje (0,10 es 10 %)');
         // the table: the chart's numbers and each cohort's ratings at the start
         o.mobility.labels.forEach((label, i) => {
           const cells = cellsOf(rowOf(markup, 'mobility', 'data-year', label));

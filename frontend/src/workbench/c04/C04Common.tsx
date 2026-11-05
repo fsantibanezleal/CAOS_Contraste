@@ -74,8 +74,10 @@ import {
   type FamilyVariant,
   type PublishedVariant,
   P_FLOOR,
+  attributionIn,
 } from './selection';
 import { esDecimals } from './esDecimals';
+import { OUTPUT_BLOCKS } from '../names';
 
 const LIVE = 'live' as const;
 /** Both languages of a string built here, readable field by field (a BiText may be a plain string). */
@@ -101,6 +103,9 @@ export function nonEmpty(series: ChartSeries[]): ChartSeries[] {
  * drawn inside the plot), and a series padded to it. */
 const numbered = (n: number) => [0.5, ...Array.from({ length: n }, (_, i) => i + 1), n + 0.5];
 const pad = (vals: ReadonlyArray<number | null>): Array<number | null> => [null, ...vals, null];
+/** The x of a numbered evidence chart, 1 to n with half a step of room each side as the axis range, not as padding points: a padding
+ * point entered the chart's summary and data table ("31 puntos ... de 1 a 30" over 29 cited tests, R5 c05 n2). */
+const cited = (n: number, label: BiText): UPlotChartProps['x'] => ({ values: Array.from({ length: n }, (_, i) => i + 1), range: [0.5, n + 0.5], label, format: { decimals: 0 } });
 /** The grade axis, padded: x = 1 (AAA) to 7 (CCC-C). */
 const gradeAxis = (): UPlotChartProps['x'] => ({ values: numbered(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } });
 const gradeMark = (g: number) => [{ x: g + 1, label: { en: GRADES[g], es: GRADES[g] } }];
@@ -123,6 +128,19 @@ export type Cited =
   | { kind: 'rate'; sim: C04Simulation; family: FamilyVariant }
   | { kind: 'design'; key: string }
   | { kind: 'missing' };
+
+/** A source registry's name or publisher in the language of the view: the title and the names as published, the locators and the
+ * joining word in Spanish ("(versión de los autores), sección 4", "Tabla 5", "J. S. Rosenthal y J. Z. Wei"; ruling 6 of 2026-10-27,
+ * U16-R4 c05 m11: English table locators in a Spanish view). */
+export function sourceTextIn(text: string, lang: Lang): string {
+  if (lang === 'en') return text;
+  return text
+    .replace(/\(authors' version\)/g, '(versión de los autores)')
+    .replace(/, section (\d+)/g, ', sección $1')
+    .replace(/, Table (\d+)/g, ', Tabla $1')
+    // "and" between two authors' names only (a journal title keeps its own: "Journal of Banking and Finance")
+    .replace(/(\b[A-Z][\w'-]+) and ([A-Z]\. )/g, '$1 y $2');
+}
 
 /** What a finding's evidence names: a test row ("test@model@segment"), a measured rate ("rate:<key>") or the block of
  * the outputs the bake computed the finding from ("design:<block>"). */
@@ -236,8 +254,7 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
   const policyRow = rows.find((r) => r && r.alpha_amber !== null && r.alpha_red !== null);
   const amber = policyRow?.alpha_amber ?? COMMITTED.amber;
   const red = policyRow?.alpha_red ?? COMMITTED.red;
-  const xs = numbered(ps.length);
-  const where = (pred: (p: number) => boolean) => pad(ps.map((p) => (p !== null && pred(p) ? p : null)));
+  const where = (pred: (p: number) => boolean) => ps.map((p) => (p !== null && pred(p) ? p : null));
   const a = both((l) => formatNumber(amber, l, { digits: 2 }));
   const r = both((l) => formatNumber(red, l, { digits: 2 }));
   const fl = both((l) => formatNumber(P_FLOOR, l, { digits: 2 }));
@@ -249,14 +266,14 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
   ]);
   if (!drawn.length) return null;
   return {
-    x: { values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } },
+    x: cited(ps.length, { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }),
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
     series: [
       ...drawn,
     ],
     yMarks: [
-      { y: amber, label: { en: `Amber threshold ${a.en}`, es: `Umbral ámbar ${a.es}` }, tone: 'warn' },
-      { y: red, label: { en: `Red threshold ${r.en}`, es: `Umbral rojo ${r.es}` }, tone: 'bad' },
+      { y: amber, label: { en: `Amber ${a.en}`, es: `Ámbar ${a.es}` }, tone: 'warn' },
+      { y: red, label: { en: `Red ${r.en}`, es: `Rojo ${r.es}` }, tone: 'bad' },
     ],
     marks: runMarks(namedYears(rows)),
     floor: P_FLOOR,
@@ -276,24 +293,23 @@ const AT1 = 'p<0.01';
 export function rateChart(points: EvidencePoint[]): C04Chart | null {
   const sims = points.map((p) => (p.cited.kind === 'rate' ? p.cited.sim : null));
   if (!sims.some(Boolean)) return null;
-  const xs = numbered(sims.length);
-  const at = (key: string, f: 'rate' | 'wilson_low' | 'wilson_high') => pad(sims.map((s) => s?.rates[key]?.[f] ?? null));
+  const at = (key: string, f: 'rate' | 'wilson_low' | 'wilson_high') => sims.map((s) => s?.rates[key]?.[f] ?? null);
   const drawn = nonEmpty([
-    { label: { en: 'Rate at 5%', es: 'Tasa al 5%' }, values: at(AT5, 'rate'), color: '--color-accent', mode: 'points' },
-    { label: { en: 'Wilson 95% of the 5% rate, low', es: 'Wilson 95% de la tasa al 5%, inferior' }, values: at(AT5, 'wilson_low'), color: '--color-fg-subtle', mode: 'points' },
-    { label: { en: 'Wilson 95% of the 5% rate, high', es: 'Wilson 95% de la tasa al 5%, superior' }, values: at(AT5, 'wilson_high'), color: '--color-fg-subtle', mode: 'points' },
-    { label: { en: 'Rate at 1%', es: 'Tasa al 1%' }, values: at(AT1, 'rate'), color: '--color-magenta', mode: 'points' },
+    { label: { en: 'Rate at 5%', es: 'Tasa al 5 %' }, values: at(AT5, 'rate'), color: '--color-accent', mode: 'points' },
+    { label: { en: 'Wilson 95% of the 5% rate, low', es: 'Wilson 95 % de la tasa al 5 %, inferior' }, values: at(AT5, 'wilson_low'), color: '--color-fg-subtle', mode: 'points' },
+    { label: { en: 'Wilson 95% of the 5% rate, high', es: 'Wilson 95 % de la tasa al 5 %, superior' }, values: at(AT5, 'wilson_high'), color: '--color-fg-subtle', mode: 'points' },
+    { label: { en: 'Rate at 1%', es: 'Tasa al 1 %' }, values: at(AT1, 'rate'), color: '--color-magenta', mode: 'points' },
   ]);
   if (!drawn.length) return null;
   return {
-    x: { values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } },
+    x: cited(sims.length, { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }),
     y: { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] },
     series: [
       ...drawn,
     ],
     yMarks: [
-      { y: 0.05, label: { en: 'Nominal 5%', es: 'Nominal 5%' }, tone: 'warn' },
-      { y: 0.01, label: { en: 'Nominal 1%', es: 'Nominal 1%' }, tone: 'bad' },
+      { y: 0.05, label: { en: 'Nominal 5%', es: 'Nominal 5 %' }, tone: 'warn' },
+      { y: 0.01, label: { en: 'Nominal 1%', es: 'Nominal 1 %' }, tone: 'bad' },
     ],
     marks: sims.flatMap((s, i) =>
       s && s.key.includes('@alpha') && s.rung !== null && Math.abs(s.rung - EMPIRICAL_ALPHA) < 1e-12
@@ -366,7 +382,7 @@ export function withdrawalsChart(f: FamilyVariant, points: EvidencePoint[], grad
     marks: gradeMark(grade),
     note: {
       en: `The mean one-year PD over ${reps.en} repetitions minus the true PD, as a share of it, by grade: withdrawals removed from the denominator (CEREP's transition page) and each withdrawn obligor followed to the year end (EBA/GL/2017/16 paragraphs 73 and 76), at the strongest informative withdrawal (k ${kTop.en}: the withdrawal rate times 1 + k in the year before a default) and, dashed, removed with withdrawals not informative (k ${kBase.en}). The top grades' few defaults make their shares noisy; their Monte Carlo errors are in the Validation group. Marked: the rail's grade.`,
-      es: `La PD anual media en ${reps.es} repeticiones menos la PD verdadera, como fracción de ella, por grado: retiros eliminados del denominador (la página de transiciones de CEREP) y cada deudor retirado seguido hasta el fin del año (párrafos 73 y 76 de EBA/GL/2017/16), con el retiro informativo más fuerte (k ${kTop.es}: la tasa de retiro por 1 + k en el año previo a un incumplimiento) y, segmentada, eliminados con retiros no informativos (k ${kBase.es}). Los pocos incumplimientos de los mejores grados hacen ruidosas sus fracciones; sus errores de Monte Carlo están en el grupo Validación. Marcado: el grado del panel.`,
+      es: `La PD anual media en ${reps.es} repeticiones menos la PD verdadera, como fracción de ella, por grado: retiros eliminados del denominador (la página de transiciones de CEREP) y cada deudor retirado seguido hasta el fin del año (párrafos 73 y 76 de EBA/GL/2017/16), con el retiro informativo más fuerte (k ${kTop.es}: la tasa de retiro por 1 + k en el año previo a un incumplimiento) y, discontinua, eliminados con retiros no informativos (k ${kBase.es}). Los pocos incumplimientos de los mejores grados hacen ruidosas sus fracciones; sus errores de Monte Carlo están en el grupo Validación. Marcado: el grado del panel.`,
     },
   };
 }
@@ -483,7 +499,7 @@ export function papersChart(p: PublishedVariant, points: EvidencePoint[]): Desig
     yMarks: [{ y: 0, label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, tone: 'neutral' }],
     note: {
       en: `Every printed value of the three papers (each paper's own inputs recomputed by riskvalidation), as the recomputation over the print, minus one, in percent: 0 is exact. ${agree} of ${checks.length} agree at the printed digits; red, the ${differ} that do not; amber, Engelmann's W hat, judged within the rounding of its printed entries.${zeros.length ? ` ${zeros.length} printed zeros${exact ? ' are recomputed as exactly 0 and' : ''} have no ratio to draw.` : ''}`,
-      es: `Cada valor impreso de los tres artículos (los insumos de cada artículo recalculados por riskvalidation), como el recálculo sobre lo impreso, menos uno, en porcentaje: 0 es exacto. ${agree} de ${checks.length} concuerdan a los dígitos impresos; en rojo, los ${differ} que no; en ámbar, el W hat de Engelmann, juzgado dentro del redondeo de sus entradas impresas.${zeros.length ? ` ${zeros.length} ceros impresos${exact ? ' se recalculan como exactamente 0 y' : ''} no tienen razón que dibujar.` : ''}`,
+      es: `Cada valor impreso de los tres artículos (los insumos de cada artículo recalculados por riskvalidation), como el recálculo sobre lo impreso, menos uno, en porcentaje: 0 es exacto. ${agree} de ${checks.length} concuerdan a los dígitos impresos; en rojo, los ${differ} que no; en ámbar, la Ŵ de Engelmann, juzgada dentro del redondeo de sus entradas impresas.${zeros.length ? ` ${zeros.length} ceros impresos${exact ? ' se recalculan como exactamente 0 y' : ''} no tienen razón que dibujar.` : ''}`,
     },
   };
 }
@@ -497,30 +513,8 @@ export function designChart(v: VariantArtifact<unknown>, points: EvidencePoint[]
   return null;
 }
 
-/** The outputs block a "design:" evidence names, and the group that draws it. */
-const DESIGN_NAME: Record<string, BiText> = {
-  definition_gap: { en: 'the definition gaps, pooled D4/D2 and D3/D2 by grade (Validation group)', es: 'las brechas de definición, D4/D2 y D3/D2 agrupadas por grado (grupo Validación)' },
-  'cohorts.defaulted_cohort': { en: "the default-rate page's own cohort against the transition page's, year by year (Validation group)", es: 'la cohorte propia de la página de tasas de incumplimiento contra la de la página de transiciones, año a año (grupo Validación)' },
-  'cohorts.counts': { en: "the transition page's counts by year, its default column (Validation group)", es: 'los conteos de la página de transiciones por año, su columna de incumplimiento (grupo Validación)' },
-  embedding: { en: "the embedding diagnostics: Israel et al.'s Theorem 3 and stochastic monotonicity (Model group)", es: 'los diagnósticos de inclusión: el Teorema 3 de Israel et al. y la monotonía estocástica (grupo Modelo)' },
-  generators: { en: "the generators' L1 distances to the pooled matrix (Model group)", es: 'las distancias L1 de los generadores a la matriz agrupada (grupo Modelo)' },
-  lra: { en: 'the long-run averages and their Jeffreys intervals (Validation group)', es: 'los promedios de largo plazo y sus intervalos de Jeffreys (grupo Validación)' },
-  pd: { en: 'the one-year PDs by cohort and grade (Validation group)', es: 'las PD anuales por cohorte y grado (grupo Validación)' },
-  lifetime: { en: 'the five-year windows: observed against the chained one-year matrices (Validation group)', es: 'las ventanas de cinco años: lo observado contra las matrices anuales encadenadas (grupo Validación)' },
-  ttc: { en: "the pooled matrix's TTC portfolio and the drift towards it (Impact group)", es: 'la cartera TTC de la matriz agrupada y la deriva hacia ella (grupo Impacto)' },
-  'rungs.estimators': { en: "the estimators' bias and RMSE by grade (Validation group)", es: 'el sesgo y el RMSE de los estimadores por grado (grupo Validación)' },
-  'rungs.estimators.zero': { en: 'the share of exactly zero PDs by estimator and grade (Validation group)', es: 'la proporción de PD exactamente cero por estimador y grado (grupo Validación)' },
-  'rungs.coverage': { en: "the intervals' coverage by grade (Validation group)", es: 'la cobertura de los intervalos por grado (grupo Validación)' },
-  'rungs.error_cohort_power': { en: "the Markov projections' errors against the five-year default frequency (Validation group)", es: 'los errores de las proyecciones de Markov contra la frecuencia de incumplimiento a cinco años (grupo Validación)' },
-  'rungs.pd_stressed_year': { en: "the stressed year's PD against the truth (Validation group)", es: 'la PD del año estresado contra la verdad (grupo Validación)' },
-  'rungs.pd_removed': { en: 'the PD with withdrawals removed against the truth (Validation group)', es: 'la PD con los retiros eliminados contra la verdad (grupo Validación)' },
-  'rungs.pd_followed': { en: 'the PD with withdrawals followed (EBA paragraph 76) against the truth (Validation group)', es: 'la PD con los retiros seguidos (párrafo 76 de la EBA) contra la verdad (grupo Validación)' },
-  'rungs.overlap_jeffreys': { en: "adjacent grades' Jeffreys overlap by cohort size (Validation group)", es: 'el traslape de Jeffreys de grados adyacentes por tamaño de cohorte (grupo Validación)' },
-  irw: { en: "Israel et al.'s nine distances, printed against recomputed (Validation group)", es: 'las nueve distancias de Israel et al., impresas contra recalculadas (grupo Validación)' },
-  sr190: { en: "Schuermann and Hanson's Table 5, printed against recomputed (Validation group)", es: 'la Tabla 5 de Schuermann y Hanson, impresa contra recalculada (grupo Validación)' },
-  engelmann: { en: "Engelmann's TTC portfolio and projections, printed against recomputed (Validation group)", es: 'la cartera TTC y las proyecciones de Engelmann, impresas contra recalculadas (grupo Validación)' },
-};
-const designName = (key: string): BiText => DESIGN_NAME[key] ?? { en: `the outputs block ${key}`, es: `el bloque de salidas ${key}` };
+/** The outputs block a "design:" evidence names, and the group that draws it (the product's one map, names/design.ts). */
+const designName = (key: string): BiText => OUTPUT_BLOCKS[key] ?? { en: `the outputs block ${key}`, es: `el bloque de salidas ${key}` };
 
 function segmentText(segment: string | null, lang: Lang): string {
   if (segment === null || segment === 'portfolio') return '';
@@ -551,9 +545,16 @@ export function rungText(f: FamilyVariant, s: C04Simulation, lang: Lang): string
   return `${head}${formatNumber(s.rung, lang, { digits: 4 })}${empirical ? (lang === 'es' ? ' (la fuerza empírica)' : ' (the empirical strength)') : ''}`;
 }
 
+/** A test's name on a generator family, where the reference matrix is the true one and not a pooled agency matrix: the name its Size
+ * table gives (R5 c05 n4: the Markov Findings called test 3 "Cohort against the pooled matrix", its Size table "Against the reference
+ * matrix"). */
+const FAMILY_TEST_NAME: Record<string, BiText> = {
+  'rating.matrix_reference': { en: 'Against the reference matrix', es: 'Contra la matriz de referencia' },
+};
+
 function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang): string {
   const n = k ? `[${k}] ` : '';
-  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado en el horneado desde ' : 'Computed in the bake from '}${pick(designName(c.key), lang)}`;
+  if (c.kind === 'design') return `${n}${lang === 'es' ? 'Calculado previamente desde ' : 'Computed beforehand from '}${pick(designName(c.key), lang)}`;
   if (c.kind === 'missing') return `${ref} (${lang === 'es' ? 'no está en el artefacto' : 'not in the artifact'})`;
   if (c.kind === 'test') {
     const t = c.row;
@@ -563,7 +564,7 @@ function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang):
   const s = c.sim;
   const r5 = s.rates[AT5];
   const r1 = s.rates[AT1];
-  const head = `${n}${pick(testName(s.test_id), lang)}, ${rungText(c.family, s, lang)}`;
+  const head = `${n}${pick(FAMILY_TEST_NAME[s.test_id] ?? testName(s.test_id), lang)}, ${rungText(c.family, s, lang)}`;
   if (!r5) return head;
   return lang === 'es'
     ? `${head}: ${pctText('es', r5.rate)} al 5% (EE ${pctText('es', r5.se)}), Wilson 95% ${pctText('es', r5.wilson_low)} a ${pctText('es', r5.wilson_high)}; ${pctText('es', r1?.rate)} al 1%; ${formatNumber(s.n_rep, 'es')} repeticiones`
@@ -576,7 +577,7 @@ function sourceOf(v: VariantArtifact<unknown>): Bi {
   if (isFamily(v)) {
     return {
       en: `Known truth: rating paths drawn from ${GENERATOR_TEXT.en}. ${ATTRIBUTION_FALLBACK}.`,
-      es: `Verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es}. ${ATTRIBUTION_FALLBACK}.`,
+      es: `Verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es}. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`,
     };
   }
   return { en: "The papers' printed values against their recomputation.", es: 'Los valores impresos de los artículos contra su recálculo.' };
@@ -606,7 +607,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: pc,
       note: {
         en: `The p-value of each cited test, numbered as in the table, on a log scale against the committed policy's thresholds (${pc.policy}: amber below ${formatNumber(pc.amber, 'en', { digits: 2 })}, red below ${formatNumber(pc.red, 'en', { digits: 2 })}; a policy, not a regulation). Red points are the cohorts and periods the test rejects.${pc.marks.length ? ' Marked: the years the finding names, where the year\'s migrations depart most from the pooled matrix (the likelihood ratio per degree of freedom).' : ''}${below.en} ${src.en}`,
-        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política comprometida (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
+        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política versionada (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
       },
     };
   }
@@ -618,7 +619,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       chart: rc,
       note: {
         en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power.${rc.marks?.length ? ' Marked: the rates at the empirical momentum strength (alpha 0.125).' : ''} ${src.en}`,
-        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (segmentada 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
+        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5 % con su intervalo de Wilson al 95 %, y al 1 %, contra los niveles nominales (discontinua 5 %, punteada 1 %). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del impulso (alfa 0,125).' : ''} ${src.es}`,
       },
     };
   }
@@ -634,7 +635,9 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
 export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
-  const shares = useFindingsShares();
+  // the drawing's note is long: from a third to two fifths of the row, or its note leaves the plot under its floor at 1280 (U16-R4 C04
+  // notes); from 2000 px wide the shared split stands
+  const shares: [number, number] = useFindingsShares()[0] === 2 ? [3, 2] : [1, 2];
   // a short table stacks over its drawing only where the screen has the height for both: at 1280 x 800 the papers'
   // three findings left the drawing under them no plot at all
   const tall = useMedia('(min-height: 1100px)', true);
@@ -702,10 +705,10 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
       dataKey={stateKey}
       note={{
         en: `Each finding cites the test rows behind it (their p-value and light under the committed policy), the measured rates (with their Monte Carlo SE and Wilson interval) or the block of the outputs the bake computed it from. ${where.en}${src.en}`,
-        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política comprometida), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que el horneado lo calculó. ${where.es}${src.es}`,
+        es: `Cada hallazgo cita las filas de prueba que lo respaldan (su valor p y su luz con la política versionada), las tasas medidas (con su EE de Monte Carlo e intervalo de Wilson) o el bloque de salidas desde el que se calculó. ${where.es}${src.es}`,
       }}
     >
-      <div className={fill ? 'ct-stack' : 'ct-stack-natural'}>
+      <div className={fill ? 'ct-stack' : 'ct-stack-natural'} data-caos-flow="">
         <Verdict
           compact
           title={{ en: 'Most severe open finding', es: 'Hallazgo abierto más severo' }}
@@ -719,7 +722,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
               : { en: `No open finding (${ev.findings.length} in all)`, es: `Ningún hallazgo abierto (${ev.findings.length} en total)` }
           }
         />
-        {fill ? <div className="ct-scroll">{rows}</div> : rows}
+        {fill ? <div className="ct-scroll" data-caos-flow="">{rows}</div> : rows}
       </div>
     </PlotCard>
   );
@@ -841,7 +844,7 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
       .map((a) => ` La página de transiciones de ${name(a, 'es')} no tiene categoría de incumplimiento: no hay D4 ni tasa TTC.`)
       .join('')}${empty
       .map(({ a, e }) => ` La columna de incumplimiento de ${name(a, 'es')} está vacía en los años ${yearRanges(e.years, 'es')}, mientras su página de incumplimientos cuenta ${formatNumber(e.defaulted, 'es')} calificaciones incumplidas en esos años.`)
-      .join('')} ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}. Elija una fila para cargar la agencia.`,
+      .join('')} ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attributionIn(attribution, 'es')}. Elija una fila para cargar la agencia.`,
   };
 }
 
@@ -939,10 +942,10 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
       dataKey={stateKey}
       note={{
         en: `Each family's headline measurements as its artifact states them, against a known truth: rating paths drawn from ${GENERATOR_TEXT.en} (${attribution}). The design is on each name. Pick a row to load the family.`,
-        es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attribution}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
+        es: `Las mediciones principales de cada familia como las declara su artefacto, contra una verdad conocida: trayectorias de calificación generadas desde ${GENERATOR_TEXT.es} (${attributionIn(attribution, 'es')}). El diseño está en cada nombre. Elija una fila para cargar la familia.`,
       }}
     >
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="variants-families">
           <thead>
             <tr>
@@ -975,7 +978,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
       dataKey={stateKey}
       note={{
         en: `The mean of the yearly one-year PDs over the cohorts where the grade has ratings (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition, dash the agency (${dashes('en')}); a zero average has no point. Grey: each agency's TTC default rate. Marked: the rail's grade. ${pick(ESMA_DEFINITIONS, 'en')} ${entities('en')}. ${attribution}.`,
-        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}.`,
+        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attributionIn(attribution, 'es')}.`,
       }}
     >
       <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
@@ -1071,28 +1074,28 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                 <tr key={id} data-licence-class={s.class} data-source={id}>
                   <td className="caos-col-text">
                     <a href={s.landing} target="_blank" rel="noreferrer">
-                      {s.name}
+                      {sourceTextIn(s.name, lang)}
                     </a>
-                    {` (${s.publisher})`}
+                    {` (${sourceTextIn(s.publisher, lang)})`}
                   </td>
                   <td className="caos-col-text">
-                    {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
+                    {lang === 'es' && LICENCE_ES[s.licence] ? LICENCE_ES[s.licence] : s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
                   <td className="caos-col-text">
-                    <span translate="no">{s.attribution}</span>
+                    <span translate="no">{attributionIn(s.attribution, lang)}</span>
                   </td>
                 </tr>
               );
             })}
             <tr data-licence-class="generator">
-              <td className="caos-col-text">{pick({ en: "riskvalidation's RatingPaths generator (Contraste's own)", es: 'Generador RatingPaths de riskvalidation (de Contraste)' }, lang)}</td>
+              <td className="caos-col-text">{pick({ en: "riskvalidation's rating-path generator (Contraste's own)", es: 'Generador de trayectorias de calificación de riskvalidation (de Contraste)' }, lang)}</td>
               <td className="caos-col-text">{pick({ en: 'MIT; its generator is derived from mirror-allowed CEREP counts', es: 'MIT; su generador se deriva de conteos de CEREP con espejo permitido' }, lang)}</td>
               <td className="caos-col-text">
                 {gen
                   ? lang === 'es'
-                    ? `Trayectorias generadas desde ${GENERATOR_TEXT.es}; cohortes de ${gen.obligors.map((n) => formatNumber(n, 'es')).join('; ')} deudores por grado. ${ATTRIBUTION_FALLBACK}.`
+                    ? `Trayectorias generadas desde ${GENERATOR_TEXT.es}; cohortes de ${gen.obligors.map((n) => formatNumber(n, 'es')).join('; ')} deudores por grado. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`
                     : `Paths drawn from ${GENERATOR_TEXT.en}; cohorts of ${gen.obligors.map((n) => formatNumber(n, 'en')).join(', ')} obligors by grade. ${ATTRIBUTION_FALLBACK}.`
-                  : ATTRIBUTION_FALLBACK}
+                  : attributionIn(ATTRIBUTION_FALLBACK, lang)}
               </td>
             </tr>
           </tbody>
@@ -1120,8 +1123,8 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el horneado. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The CEREP reader checks each page against the others (the grades' rows against the cohort, the three pages' cohorts year by year) and the paper readers check what they read against the print, refusing the bake otherwise. Pipeline ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. El lector de CEREP verifica cada página contra las demás (las filas de los grados contra la cohorte, las cohortes de las tres páginas año a año) y los lectores de artículos verifican lo leído contra la impresión, y si no, rechazan el cálculo previo. Cadena de cálculo ${m.engine.pipeline}, riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
@@ -1136,6 +1139,19 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
     </div>
   );
 }
+
+/** The Spanish of each licence statement of C04's sources (R2b c05 B3): a gloss, with the publisher's own sentence kept in quotation
+ * marks; a statement not listed prints as declared. */
+const LICENCE_ES: Record<string, string> = {
+  'Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged':
+    'Se autoriza la reproducción de toda la información del sitio, salvo indicación contraria, siempre que se cite la fuente ("Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged")',
+  "authors' version on J. S. Rosenthal's website, no licence statement found (UNVERIFIED); its three one-year matrices are S&P's and Moody's data reprinted in the paper":
+    'versión de los autores en el sitio de J. S. Rosenthal, sin declaración de licencia (SIN VERIFICAR); sus tres matrices anuales son datos de S&P y Moody\'s reproducidos en el artículo',
+  'arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); the matrix (11) is reprinted from Trueck and Rachev (2009)':
+    'licencia perpetua y no exclusiva de arXiv.org para distribuir (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); la matriz (11) se reproduce de Trueck y Rachev (2009)',
+  "Federal Reserve Bank of New York staff report, reuse terms not read (UNVERIFIED); Table 5 holds the paper's own interval computations, no data":
+    'informe del personal del Banco de la Reserva Federal de Nueva York, términos de reutilización no leídos (SIN VERIFICAR); la Tabla 5 contiene los cálculos de intervalos del propio artículo, sin datos',
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // The rail's read-outs: each title one line of the rail and each item one line (label and value), at most three items
@@ -1229,12 +1245,12 @@ export function agencyReading(sel: C04Sel, v: AgencyVariant): Reading {
         },
       },
       {
-        label: { en: 'Jeffreys 95%', es: 'Jeffreys 95%' },
+        label: { en: 'Jeffreys 95%', es: 'Jeffreys 95 %' },
         ...(interval ? { text: interval } : { value: null }),
         unitless: true,
         hint: {
           en: `The 95% Jeffreys interval of the pooled rate, ${pooledText.en}: the defaults over the ratings pooled across the cohorts.`,
-          es: `El intervalo de Jeffreys al 95% de la tasa agrupada, ${pooledText.es}: los incumplimientos sobre las calificaciones agrupadas de las cohortes.`,
+          es: `El intervalo de Jeffreys al 95 % de la tasa agrupada, ${pooledText.es}: los incumplimientos sobre las calificaciones agrupadas de las cohortes.`,
         },
       },
     ],
@@ -1293,7 +1309,7 @@ export function familyReading(sel: C04Sel, v: FamilyVariant): Reading {
         truthItem(),
         ppItem({ en: 'Cohort PD bias', es: 'Sesgo de cohortes' }, pp(r?.pd_1y_cohort.bias[g]), {
           en: `The one-year cohort PD over ${reps.en} repetitions minus the plain chain's, in percentage points (Monte Carlo SE ${se.en}): momentum raises the defaults of recently downgraded obligors.`,
-          es: `La PD anual de cohortes en ${reps.es} repeticiones menos la de la cadena simple, en puntos porcentuales (EE de Monte Carlo ${se.es}): el momentum eleva los incumplimientos de los deudores recién rebajados.`,
+          es: `La PD anual de cohortes en ${reps.es} repeticiones menos la de la cadena simple, en puntos porcentuales (EE de Monte Carlo ${se.es}): el impulso eleva los incumplimientos de los deudores recién rebajados.`,
         }),
       ],
     };
@@ -1350,8 +1366,8 @@ export function familyReading(sel: C04Sel, v: FamilyVariant): Reading {
     provenance,
     items: [
       truthItem({ en: `${expected.en} defaults expected in a year among ${n.en} obligors.`, es: `${expected.es} incumplimientos esperados en un año entre ${n.es} deudores.` }),
-      { label: { en: 'Wald coverage', es: 'Cobertura de Wald' }, value: r?.coverage.wald[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95%.' } },
-      { label: { en: 'Jeffreys coverage', es: 'Cobertura de Jeffreys' }, value: r?.coverage.jeffreys[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95%.' } },
+      { label: { en: 'Wald coverage', es: 'Cobertura de Wald' }, value: r?.coverage.wald[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95 %.' } },
+      { label: { en: 'Jeffreys coverage', es: 'Cobertura de Jeffreys' }, value: r?.coverage.jeffreys[g] ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'Exact, by enumeration of the defaults, at 95%.', es: 'Exacta, por enumeración de los incumplimientos, al 95 %.' } },
     ],
   };
 }

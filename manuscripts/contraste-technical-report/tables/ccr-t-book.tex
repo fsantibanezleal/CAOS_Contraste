@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The synthetic book of case C12 on the Treasury par curve of 2025-09-30: four interest rate swaps on one floating curve, each fixed rate equal to the par yield of the swap's maturity rounded to 10 basis points; the single swap is the first trade.}
+\label{tab:ccr-book}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrrrcc}
+\toprule
+Trade & Side & Notional (USD) & Maturity (years) & Fixed rate & Fixed payments per year & In single swap & In netting set \\
+\midrule
+SW-1 & payer & 10,000,000 & 10.0 & $4.20\,\%$ & 2 & yes & yes \\
+SW-2 & receiver & 6,000,000 & 5.0 & $3.70\,\%$ & 2 & no & yes \\
+SW-3 & payer & 4,000,000 & 3.0 & $3.60\,\%$ & 2 & no & yes \\
+SW-4 & receiver & 2,000,000 & 0.5 & $3.80\,\%$ & 2 & no & yes \\
+\bottomrule
+\end{tabular}}
+\end{table}

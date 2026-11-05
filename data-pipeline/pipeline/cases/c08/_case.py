@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from ..reference_text import with_reference_text
 
 SOURCES = ("sba-foia",)
 CASE_ID = "C08"
@@ -13,7 +14,7 @@ SEED = 42
 #: the variants are the six default cohorts of ``panel.COHORTS``, in order; the one a reader opens first
 DEFAULT_VARIANT = "dc-2009-10"
 RUN_MS = 600_000.0
-ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "catboost"}
+ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "catboost", "scikit-learn"}
 #: the contract-1 check reads every ``PANEL_EVERY``-th default that carries an initial rate
 PANEL_EVERY = 5
 #: money blocks are written exact: their sums are of the order of 1e10 USD and nine significant digits would round them
@@ -37,6 +38,14 @@ def _t(en: str, es: str) -> dict:
     return {"en": en, "es": es}
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c06.panel": {"en": "Uses the C06 panel helpers: the sector groups and the sector index of an industry code.",
+        "es": "Usa los auxiliares del panel de C06: los grupos de sectores y el índice de sector de un código de industria."},
+}
+
+
 class C08:
     id = CASE_ID
     slug = "lgd-downturn"
@@ -47,6 +56,12 @@ class C08:
         "How does loss given default move across default cohorts, and what does a downturn LGD add?",
         "¿Cómo se mueve la pérdida dado el incumplimiento entre cohortes de incumplimiento, y qué agrega una LGD de recesión?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path) -> dict[str, Any]:
         from ... import __version__
@@ -95,7 +110,7 @@ class C08:
                 f"Models trained on the SBA 7(a) defaults charged off before {res.cutoff}; tested on the defaults of {lo} to {hi} "
                 "(and the later cohorts). The LGD is a proxy: charge-off over the approved amount.",
                 f"Modelos entrenados con los incumplimientos SBA 7(a) castigados antes de {res.cutoff}; probados con los de {lo} a "
-                f"{hi} (y las cohortes posteriores). La LGD es un proxy: castigo sobre el monto aprobado.")
+                f"{hi} (y las cohortes posteriores). La LGD es una aproximación: castigo sobre el monto aprobado.")
             models_doc = build_models_artifact(case_id=CASE_ID, fit_id=vid, model=md_.model_records(res),
                                                fit=md_.fit_block(res, freddie_reason, down), lineage=lineage, lane=lane)
             rel_m = f"{CASE_ID}/models-{vid}.json"
@@ -105,7 +120,7 @@ class C08:
                             "short_title": _t(f"Models {cid}", f"Modelos {cid}"), "regime": regime, "path": rel_m,
                             "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
             art = build_artifact(case_id=CASE_ID, variant_id=vid, model=md_.model_summaries(res), outputs=res.outputs,
-                                 tests=res.tests, impact=res.impact, findings=res.findings, lineage=lineage, lane=lane)
+                                 tests=with_reference_text(res.tests), impact=res.impact, findings=res.findings, lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{vid}.json"
             e_v = write_artifact(paths.root, rel, art, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)
             entries.append({"role": "variant", "variant_id": vid, "title": title, "short_title": short, "regime": regime,
@@ -116,6 +131,7 @@ class C08:
             del res
         ranges = expectations.check(CASE_ID, bd.EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "LGD and EAD", "es": "LGD y EAD"}, question=self.question,
             sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))

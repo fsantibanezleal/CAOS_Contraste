@@ -1,0 +1,23 @@
+\begin{table*}[htbp]
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Mean and standard deviation, in percent, of each detector's flag rate over five further independent bakes of 1,000 replications per variant (case seeds 23, 33, 43, 53 and 63), with the thresholds of the calibration null unchanged. The no-deficiency column is the false-alarm rate on five fresh null bakes.}
+\label{tab:repeats}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{4.1cm}cccccc}
+\toprule
+Detector & No deficiency & Missing basis & Stale volatility (20 days) & Wrong correlation & Omitted factor & Time misalignment \\
+\midrule
+Regulatory zone, amber or red & $0.0\pm0.0$ & $94.9\pm0.5$ & $0.0\pm0.0$ & $100.0\pm0.0$ & $90.1\pm0.8$ & $100.0\pm0.0$ \\
+\relax Spearman of levels, threshold recalibrated at 1\% & $0.9\pm0.3$ & $100.0\pm0.0$ & $56.8\pm0.8$ & $7.8\pm0.8$ & $100.0\pm0.0$ & $100.0\pm0.0$ \\
+Desk back-test over its limit & $0.0\pm0.0$ & $58.4\pm1.9$ & $0.6\pm0.2$ & $96.0\pm0.5$ & $6.3\pm1.0$ & $0.0\pm0.0$ \\
+\relax Christoffersen conditional coverage, 97.5\% & $0.8\pm0.4$ & $91.2\pm1.3$ & $12.4\pm0.4$ & $100.0\pm0.1$ & $61.5\pm1.6$ & $1.0\pm0.1$ \\
+MZ Wald, OLS covariance & $0.8\pm0.4$ & $1.2\pm0.4$ & $38.7\pm1.5$ & $100.0\pm0.0$ & $1.9\pm0.6$ & $100.0\pm0.0$ \\
+Ljung--Box on the squared residual & $0.9\pm0.2$ & $0.9\pm0.1$ & $71.8\pm0.9$ & $45.0\pm0.8$ & $50.7\pm1.7$ & $84.4\pm1.1$ \\
+MZ Wald, HC3 (proposed) & $0.8\pm0.3$ & $1.1\pm0.3$ & $13.6\pm0.9$ & $100.0\pm0.0$ & $0.9\pm0.4$ & $100.0\pm0.0$ \\
+Spearman of absolute values (proposed) & $1.0\pm0.2$ & $100.0\pm0.0$ & $75.3\pm0.7$ & $8.8\pm0.8$ & $100.0\pm0.0$ & $100.0\pm0.0$ \\
+Spearman of 20-day rolling means (proposed) & $0.8\pm0.3$ & $99.9\pm0.1$ & $100.0\pm0.0$ & $4.8\pm0.5$ & $98.5\pm0.3$ & $42.9\pm0.2$ \\
+\relax Union of the three proposed, family 1\% & $1.0\pm0.3$ & $100.0\pm0.0$ & $99.9\pm0.2$ & $100.0\pm0.0$ & $100.0\pm0.0$ & $100.0\pm0.0$ \\
+\bottomrule
+\end{tabular}}
+\end{table*}

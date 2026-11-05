@@ -4,10 +4,12 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { LIGHT_TEXT } from '../../lib/policy';
-import { ChartOverTable, MaybeNumber, axisScale, money } from '../c06/format';
-import { U6TestsTable, humanize, p2, useCard } from '../c03/U6Shared';
+import { MaybeNumber, axisScale, money } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
+import { U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { COVARIATE_TEXT, DESIGN_TEXT, TREATMENT_TEXT, bandLabel, bandsOf, facilityLabel, fitOf, kindText, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { rangeText, withPortfolioScope } from '../c08/words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -23,9 +25,9 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
   if (rows.length === 0) {
     return (
       <ViewsRow>
-        <PlotCard fill title={{ en: 'EAD back-test by utilisation band', es: 'Backtest de EAD por tramo de utilización' }} {...card}>
+        <PlotCard fill title={{ en: 'EAD back-test by utilisation band', es: 'Prueba retrospectiva de la EAD por tramo de utilización' }} {...card}>
           <p className="caos-pending" data-state="unavailable">
-            {pick({ en: 'Not available: this document has no back-test row for the EAD model in focus.', es: 'No disponible: este documento no trae filas de backtest para el modelo de EAD en foco.' }, lang)}
+            {pick({ en: 'Not available: this document has no back-test row for the EAD model in focus.', es: 'No disponible: este documento no trae filas de prueba retrospectiva para el modelo de EAD en foco.' }, lang)}
           </p>
         </PlotCard>
       </ViewsRow>
@@ -34,22 +36,25 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
   const scale = axisScale(Math.max(...rows.flatMap((r) => [r.predicted_ead, r.realised_ead])), b.currency);
   const ccy = b.currency;
   return (
+    // split, not scrolled (ADR-0071 rule 6; R3 c10 M2): the bands under a drawing of fixed height, the tests a sub-view of their own
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `EAD back-test by utilisation band: ${label.en}`, es: `Backtest de EAD por tramo de utilización: ${label.es}` }}
+        title={{ en: `EAD back-test by utilisation band: ${label.en}`, es: `Prueba retrospectiva de la EAD por tramo de utilización: ${label.es}` }}
         {...card}
         note={{
           en: 'Each band groups the facilities by their utilisation at the reference date. The model predicts an exposure at default; the realised exposure is what the defaults drew. The gap is predicted minus realised, in currency, and the light is the engine\'s.',
           es: 'Cada tramo agrupa las líneas por su utilización en la fecha de referencia. El modelo predice una exposición al incumplimiento; la exposición realizada es lo que usaron los incumplimientos. La brecha es predicha menos realizada, en moneda, y la luz es la del motor.',
         }}
       >
-        <ChartOverTable
+        <ChartAbove
+          // 16 rem, so the plot keeps several ticks on its value axis under its title, key and readout (R4 c11 m7: one tick at 13 rem)
+          chartHeight="16rem"
           chart={
             <UPlotChart
               height="fill"
               x={{ values: rows.map((r) => r.utilisation_lower), label: { en: 'Utilisation at the reference date (lower edge of the band)', es: 'Utilización en la fecha de referencia (borde inferior del tramo)' }, format: { percent: true, decimals: 0 } }}
-              y={{ label: { en: `Exposure at default (${pick(scale.unit, 'en')})`, es: `Exposición al incumplimiento (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `Total EAD of the band (${pick(scale.unit, 'en')})`, es: `EAD total del tramo (${pick(scale.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 { label: { en: 'Realised EAD', es: 'EAD realizada' }, values: rows.map((r) => r.realised_ead / scale.div), color: '--color-accent', width: 2.6 },
                 { label: { en: 'Predicted EAD', es: 'EAD predicha' }, values: rows.map((r) => (r.prediction_flag === 'in-range' ? r.predicted_ead / scale.div : null)), color: '--color-magenta', width: 2, dash: [6, 3] },
@@ -88,8 +93,61 @@ export function BacktestView({ sel }: { sel: C09Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U6TestsTable variant={sel.data.variant} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id.includes('ead')} />
-        </ChartOverTable>
+        </ChartAbove>
+      </PlotCard>
+    </ViewsRow>
+  );
+}
+
+/** The EAD back-test of every band, a sub-view of its own (R3 c10 M2). */
+export function BacktestTestsView({ sel }: { sel: C09Sel | null }) {
+  const lang = useShellLang();
+  const card = useCard(sel?.data.variant);
+  const o = outputsOf(sel);
+  if (!sel || !o) return <Pending />;
+  const rows = sel.data.variant.tests.filter((t) => t.test_id === 'lgd_ead.ead_backtest_by_band');
+  const th = (rows[0]?.extras as { thresholds?: { gap_amber: number; gap_red: number } } | undefined)?.thresholds;
+  const pct0 = (v: number, l: 'en' | 'es') => formatNumber(v, l, { percent: true, decimals: 0 });
+  return (
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'The back-test of every band', es: 'La prueba retrospectiva de cada tramo' }}
+        {...card}
+        // the light follows the largest band gap, which the tests table does not show: the rule and that gap are stated here, so a
+        // small total gap in amber can be traced (R4 c11 m3)
+        note={
+          th
+            ? {
+                en: `The statistic is the relative gap of the total EAD; the light follows the largest relative gap of a band: green up to ${pct0(th.gap_amber, 'en')}, amber up to ${pct0(th.gap_red, 'en')}, red above. This test has no p-value.`,
+                es: `El estadístico es la brecha relativa de la EAD total; la luz sigue la mayor brecha relativa de un tramo: verde hasta ${pct0(th.gap_amber, 'es')}, ámbar hasta ${pct0(th.gap_red, 'es')}, rojo sobre eso. Esta prueba no tiene valor p.`,
+              }
+            : undefined
+        }
+      >
+        <div className="ct-scroll" data-caos-flow="">
+          <table className="caos-table ct-wrap-head" data-table="ead-band-gap">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
+                <th>{pick({ en: 'Largest band gap', es: 'Mayor brecha de un tramo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((t) => (
+                <tr key={t.model_id ?? 'none'} data-model={t.model_id ?? undefined} data-light={t.light}>
+                  <td className="ct-text">{pick(modelLabel(o, t.model_id ?? ''), lang)}</td>
+                  <td>{t.metric === null ? formatNumber(null, lang) : p2(t.metric, lang)}</td>
+                  <td className={`ct-text ct-light ct-light-${t.light}`}>
+                    <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <U6TestsTable variant={withPortfolioScope(sel.data.variant, lang)} modelLabel={(id) => pick(modelLabel(o, id), lang)} only={(t) => t.test_id === 'lgd_ead.ead_backtest_by_band'} />
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -103,6 +161,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
   if (!sel || !o) return <Pending />;
   const bandCount = bandsOf(o).length;
   const none = pick({ en: 'none', es: 'ninguna' }, lang);
+  const notApplicable = pick({ en: 'not applicable', es: 'no aplica' }, lang);
   return (
     <ViewsRow>
       <PlotCard
@@ -114,7 +173,7 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
           es: 'Un modelo de CCF estima la parte del monto no utilizado que se usa al incumplir; un modelo directo estima la exposición misma. Solo un modelo directo de EAD recorta observaciones para su ajuste, y dice cuántas.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="ead-models" data-bands={bandCount}>
             <thead>
               <tr>
@@ -130,14 +189,16 @@ export function ModelsView({ sel }: { sel: C09Sel | null }) {
               {o.ead_models.map((m) => (
                 <tr key={m.model_id} data-model={m.model_id} data-kind={m.kind} className={m.model_id === sel.model ? 'ct-current' : undefined}>
                   <td className="ct-text" title={pick(kindText(m.kind), lang)}>{pick(modelLabel(o, m.model_id), lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.design ? pick(text(DESIGN_TEXT, m.design), lang) : formatNumber(null, lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.treatment ? pick(text(TREATMENT_TEXT, m.treatment), lang) : formatNumber(null, lang)}</td>
-                  <td className="ct-text ct-wide-only">{m.covariates.length ? m.covariates.join(', ') : none}</td>
-                  <td>
-                    <MaybeNumber value={m.n_clipped_below} reason={pick({ en: 'only a direct EAD model clips', es: 'solo un modelo directo de EAD recorta' }, lang)} format={(v) => count(v, lang)} />
+                  <td className="ct-text ct-wide-only">{m.design ? pick(text(DESIGN_TEXT, m.design), lang) : notApplicable}</td>
+                  <td className="ct-text ct-wide-only">{m.treatment ? pick(text(TREATMENT_TEXT, m.treatment), lang) : notApplicable}</td>
+                  <td className="ct-text ct-wide-only">{m.covariates.length ? m.covariates.map((c) => pick(text(COVARIATE_TEXT, c), lang)).join(', ') : none}</td>
+                  {/* only a direct EAD model clips for its fit: a CCF model has nothing to clip, which is "not applicable", not a value
+                      that is missing (R3 c10 m3) */}
+                  <td data-na={m.kind === 'direct-ead' ? undefined : 'true'}>
+                    {m.kind === 'direct-ead' ? <MaybeNumber value={m.n_clipped_below} reason={null} format={(v) => count(v, lang)} /> : notApplicable}
                   </td>
-                  <td>
-                    <MaybeNumber value={m.n_clipped_above} reason={null} format={(v) => count(v, lang)} />
+                  <td data-na={m.kind === 'direct-ead' ? undefined : 'true'}>
+                    {m.kind === 'direct-ead' ? <MaybeNumber value={m.n_clipped_above} reason={null} format={(v) => count(v, lang)} /> : notApplicable}
                   </td>
                 </tr>
               ))}
@@ -161,7 +222,8 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
   const yes = pick({ en: 'yes', es: 'sí' }, lang);
   const no = pick({ en: 'no', es: 'no' }, lang);
   return (
-    <ViewsRow shares={[3, 2]}>
+    // even shares: the supervisory CCF card holds its five rows at 1280 (R4 c11 m6: 3 to 4 of 5 under the fade at 3 to 2)
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{ en: 'The EAD floor and where it binds', es: 'El piso de EAD y dónde se activa' }}
@@ -171,18 +233,22 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
           es: 'Una estimación interna de EAD no puede quedar bajo el monto en balance más una parte de la exposición fuera de balance al CCF estandarizado. La barra es la proporción de líneas de cada clase donde el piso se activa.',
         }}
       >
-        <ChartOverTable
+        <ChartAbove
+          chartHeight="9rem"
           chart={
             <BarChart
               title={{ en: 'Share of facilities where the floor binds', es: 'Proporción de líneas donde el piso se activa' }}
               height="fill"
               orientation="horizontal"
-              data={f.rows.map((r) => ({ id: r.facility_class, label: { en: humanize(r.facility_class), es: humanize(r.facility_class) }, value: r.share_binding, tone: 'accent' as const }))}
+              data={f.rows.map((r) => ({ id: r.facility_class, label: facilityLabel(r.facility_class), value: r.share_binding, tone: 'accent' as const }))}
               axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 } }}
             />
           }
         >
-          <p className="ct-note" data-floor-rule="true" translate="no">{f.rule}</p>
+          <p className="ct-note" data-floor-rule="true">{pick(f.rule, lang)}</p>
+          {f.rows.every((r) => r.share_binding === 0) ? (
+            <p className="ct-note" data-floor-binds="none">{pick({ en: 'At this level the floor binds for no facility: every bar is 0 %.', es: 'En este nivel el piso no se activa en ninguna línea: cada barra es 0 %.' }, lang)}</p>
+          ) : null}
           <table className="caos-table ct-wrap-head" data-table="ead-floor">
             <thead>
               <tr>
@@ -190,42 +256,42 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
                 <th>{pick({ en: 'Standardised CCF', es: 'CCF estandarizado' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Facilities', es: 'Líneas' }, lang)}</th>
                 <th>{pick({ en: 'Binds', es: 'Se activa' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: `Mean EAD before (${f.currency})`, es: `EAD medio antes (${f.currency})` }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: `Mean EAD after (${f.currency})`, es: `EAD medio después (${f.currency})` }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Paragraph', es: 'Párrafo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `Mean EAD before (${f.currency})`, es: `EAD media antes (${f.currency})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `Mean EAD after (${f.currency})`, es: `EAD media después (${f.currency})` }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {f.rows.map((r) => (
                 <tr key={r.facility_class} data-class={r.facility_class}>
-                  <td className="ct-text">{humanize(r.facility_class)}</td>
+                  {/* the paragraph is the class cell's hint: the supervisory card beside it lists each item's paragraph, and a seventh
+                      column pushed "Mean EAD after" under the right-edge fade at 1280 (R5 c12 n1) */}
+                  <td className="ct-text" title={rangeText(r.reference, lang)}>{pick(facilityLabel(r.facility_class), lang)}</td>
                   <td>{p2(r.sa_ccf, lang)}</td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>{p2(r.share_binding, lang)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_before, lang, f.currency)}</td>
                   <td className="ct-wide-only">{money(r.mean_ead_after, lang, f.currency)}</td>
-                  <td className="ct-text ct-wide-only" translate="no">{r.reference}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </ChartOverTable>
+        </ChartAbove>
       </PlotCard>
       <PlotCard fill title={{ en: 'Supervisory CCFs and the small-undrawn rule', es: 'CCF supervisores y la regla de saldo no utilizado pequeño' }} {...card}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" data-table="small-undrawn" data-applied={String(s.applied)}>
             <dt>{pick({ en: 'Threshold', es: 'Umbral' }, lang)}</dt>
-            <dd>{money(s.threshold, lang, s.currency)}</dd>
+            <dd>{`${money(s.threshold, lang, s.currency)} ${s.currency}`}</dd>
             <dt>{pick({ en: 'Applied', es: 'Aplicada' }, lang)}</dt>
             <dd>{s.applied ? yes : no}</dd>
-            <dt>{pick({ en: 'Facilities switched', es: 'Líneas cambiadas' }, lang)}</dt>
+            <dt>{pick(s.applied ? { en: 'Facilities switched', es: 'Líneas cambiadas' } : { en: 'Lines the rule would switch (not applied)', es: 'Líneas que la regla cambiaría (no aplicada)' }, lang)}</dt>
             <dd>{count(s.n_switched, lang)}</dd>
             <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
             <dd translate="no">{s.reference}</dd>
           </dl>
           {fit ? (
             <table className="caos-table ct-wrap-head" data-table="supervisory-ccfs">
-              <caption className="ct-note">{pick({ en: `Standardised CCFs of the framework, as the bake transcribed them (off-balance share ${p2(fit.floors.off_balance_share, 'en')})`, es: `CCF estandarizados del marco, como los transcribió la corrida (parte fuera de balance ${p2(fit.floors.off_balance_share, 'es')})` }, lang)}</caption>
+              <caption className="ct-note">{pick({ en: `Standardised CCFs of the framework, as the run recorded them (off-balance share ${p2(fit.floors.off_balance_share, 'en')})`, es: `CCF estandarizados del marco, como los registró la corrida (parte fuera de balance ${p2(fit.floors.off_balance_share, 'es')})` }, lang)}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Item', es: 'Partida' }, lang)}</th>
@@ -236,9 +302,9 @@ export function FloorsView({ sel }: { sel: C09Sel | null }) {
               <tbody>
                 {fit.floors.supervisory_ccfs.map((c) => (
                   <tr key={c.item} data-item={c.item}>
-                    <td className="ct-text">{humanize(c.item)}</td>
+                    <td className="ct-text">{pick(facilityLabel(c.item), lang)}</td>
                     <td>{p2(c.ccf, lang)}</td>
-                    <td className="ct-text ct-wide-only" translate="no">{c.reference}</td>
+                    <td className="ct-text ct-wide-only" translate="no">{rangeText(c.reference, lang)}</td>
                   </tr>
                 ))}
               </tbody>

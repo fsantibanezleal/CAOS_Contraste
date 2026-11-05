@@ -3,7 +3,7 @@
 Every figure is read from a CMF primary publication fetched on 2026-10-12 into the device data root
 (``raw/cmf-public/``, never the repository); each target carries its value, unit, URL, publication, month and the SHA-256
 of the file it was read from. The CMF Bancos API key is an owner prerequisite still missing (owner-prerequisites item 5),
-so the figures come from the CMF public web publication "Informe del Desempeno del Sistema Bancario y Cooperativas"
+so the figures come from the CMF public web publication "Informe del Desempeño del Sistema Bancario y Cooperativas"
 (reuse clause: "autoriza la reproduccion total o parcial de la informacion contenida en este Website, siempre y cuando se
 mencione la fuente", dossier 08 A.8). A target not found on a primary source would be recorded UNVERIFIED; the one such
 input of this case (the split of the commercial book between group and individual assessment) is an assumption of the
@@ -23,7 +23,8 @@ PUBLICATIONS: dict[str, dict[str, Any]] = {
     "cmf-informe-2026-08": {
         "file": "cmf-informe-desempeno-2026-08.pdf",
         "url": "https://www.cmfchile.cl/portal/estadisticas/617/articles-113863_recurso_1.pdf",
-        "title": "CMF, Informe del Desempeno del Sistema Bancario y Cooperativas, agosto 2026 (published 2026-09-29)",
+        "title": "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, agosto 2026 (published 2026-09-29)",
+        "title_es": "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, agosto 2026 (publicado el 2026-09-29)",
         "month": "2026-08",
         "bytes": 309015,
         "sha256": "5116240cb2ed92d37048defe70ab4c5dd6b6680ef0ecb2b6b2c7912fed71329e",
@@ -32,7 +33,8 @@ PUBLICATIONS: dict[str, dict[str, Any]] = {
     "cmf-informe-listing": {
         "file": "listing-informe-desempeno.html",
         "url": "https://www.cmfchile.cl/portal/estadisticas/617/w3-propertyvalue-30207.html",
-        "title": "CMF, Informe del Desempeno del Sistema Bancario y Cooperativas, listing of monthly reports",
+        "title": "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, listing of monthly reports",
+        "title_es": "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, listado de los informes mensuales",
         "month": "2026-10",
         "bytes": 395471,
         "sha256": "f32465799f71f6db05f4ed9a513d6de97e249f6c4275b98435a1b68f487fc7f5",
@@ -52,33 +54,45 @@ PUBLICATIONS: dict[str, dict[str, Any]] = {
 _P = "cmf-informe-2026-08"
 
 
-def _t(metric: str, unit: str, value: float, where: str, group: str | None = None) -> dict[str, Any]:
+def _w(en: str, es: str) -> dict[str, str]:
+    """A locator in the report, in both languages."""
+    return {"en": en, "es": es}
+
+
+def _s(section: str, quote: str, note_en: str = "", note_es: str = "") -> dict[str, str]:
+    """A locator of a section of the report: the report's own Spanish words quoted in both languages, with a note of Contraste."""
+    return _w(f"section {section}: {quote}{note_en}", f"sección {section}: {quote}{note_es}")
+
+
+def _t(metric: str, unit: str, value: float, where: dict[str, str], group: str | None = None) -> dict[str, Any]:
     return {"metric": metric, "unit": unit, "value": value, "publication": _P, "where": where, "as_of": AS_OF,
             "group": group, "status": "CMF primary"}
 
 
-#: the calibration targets (system level, banks, amortised-cost loans, 2026-08-31)
+#: the calibration targets (system level, banks, amortised-cost loans, 2026-08-31); each locator in both languages, the report's
+#: Spanish quoted with its accents (U16-R3 c08 B1)
 TARGETS: tuple[dict[str, Any], ...] = (
-    # Cuadro N 1 (MMUSD, Bancos column): commercial 163,602; consumer 34,491; mortgage 104,610
+    # Cuadro N° 1 (MMUSD, Bancos column): commercial 163,602; consumer 34,491; mortgage 104,610
     _t("loan mix: commercial", "share of the three portfolios", 163602 / (163602 + 34491 + 104610),
-       "Cuadro N 1, column Bancos: Comercial 163.602 of Comercial + Consumo + Vivienda 302.703 MMUSD", "commercial"),
+       _w("Cuadro N° 1, column Bancos: Comercial 163.602 of Comercial + Consumo + Vivienda 302.703 MMUSD",
+          "Cuadro N° 1, columna Bancos: Comercial 163.602 de Comercial + Consumo + Vivienda 302.703 MMUSD"), "commercial"),
     _t("loan mix: consumer", "share of the three portfolios", 34491 / (163602 + 34491 + 104610),
-       "Cuadro N 1, column Bancos: Consumo 34.491 MMUSD", "consumer"),
+       _w("Cuadro N° 1, column Bancos: Consumo 34.491 MMUSD", "Cuadro N° 1, columna Bancos: Consumo 34.491 MMUSD"), "consumer"),
     _t("loan mix: mortgage", "share of the three portfolios", 104610 / (163602 + 34491 + 104610),
-       "Cuadro N 1, column Bancos: Vivienda 104.610 MMUSD", "mortgage"),
+       _w("Cuadro N° 1, column Bancos: Vivienda 104.610 MMUSD", "Cuadro N° 1, columna Bancos: Vivienda 104.610 MMUSD"), "mortgage"),
     # section 2.2 (Sistema Bancario)
-    _t("provision index: commercial", "share of loans", 0.0256, "section 2.2: indicador de provisiones comercial 2,56 %", "commercial"),
-    _t("provision index: consumer", "share of loans", 0.0821, "section 2.2: indicador de provisiones consumo 8,21 %", "consumer"),
-    _t("provision index: mortgage", "share of loans", 0.0062, "section 2.2: indice de provisiones vivienda 0,62 %", "mortgage"),
+    _t("provision index: commercial", "share of loans", 0.0256, _s("2.2", "indicador de provisiones comercial 2,56 %"), "commercial"),
+    _t("provision index: consumer", "share of loans", 0.0821, _s("2.2", "indicador de provisiones consumo 8,21 %"), "consumer"),
+    _t("provision index: mortgage", "share of loans", 0.0062, _s("2.2", "índice de provisiones vivienda 0,62 %"), "mortgage"),
     _t("provision index: total", "share of loans", 0.0251,
-       "section 2.2: indicador de provisiones del Sistema Bancario 2,51 % (includes loans to banks)", "total"),
-    _t("90-day delinquency: commercial", "share of loans", 0.0217, "section 2.2: morosidad de 90 dias o mas comercial 2,17 %", "commercial"),
-    _t("90-day delinquency: consumer", "share of loans", 0.0257, "section 2.2: morosidad de 90 dias o mas consumo 2,57 %", "consumer"),
-    _t("90-day delinquency: mortgage", "share of loans", 0.0257, "section 2.2: morosidad de 90 dias o mas vivienda 2,57 %", "mortgage"),
+       _s("2.2", "indicador de provisiones del Sistema Bancario 2,51 %", " (includes loans to banks)", " (incluye créditos a bancos)"), "total"),
+    _t("90-day delinquency: commercial", "share of loans", 0.0217, _s("2.2", "morosidad de 90 días o más comercial 2,17 %"), "commercial"),
+    _t("90-day delinquency: consumer", "share of loans", 0.0257, _s("2.2", "morosidad de 90 días o más consumo 2,57 %"), "consumer"),
+    _t("90-day delinquency: mortgage", "share of loans", 0.0257, _s("2.2", "morosidad de 90 días o más vivienda 2,57 %"), "mortgage"),
     _t("90-day delinquency: total", "share of loans", 0.0234,
-       "section 2.2: morosidad de 90 dias o mas del Sistema Bancario 2,34 %", "total"),
+       _s("2.2", "morosidad de 90 días o más del Sistema Bancario 2,34 %"), "total"),
     _t("consumer product split: instalment loans", "share of consumer loans", 0.5338,
-       "section 2.1: creditos en cuotas, producto con la mayor participacion en consumo (53,38 %)", "consumer"),
+       _s("2.1", "créditos en cuotas, producto con la mayor participación en consumo (53,38 %)"), "consumer"),
 )
 
 #: relative tolerance of an achieved aggregate against its target (tested at the test size and at the bake size)
@@ -106,10 +120,11 @@ def validate_targets(targets: tuple[dict[str, Any], ...] = TARGETS) -> None:
             raise TargetError(f"calibration target {t['metric']!r} names no fetched publication")
 
 
-def source_text(t: dict[str, Any]) -> str:
-    """The source string of a target in the models document: publication, locator, URL, file hash."""
+def source_text(t: dict[str, Any]) -> dict[str, str]:
+    """The source of a target in the models document, a bilingual text (U16-R3 c08 B1): publication, locator, URL, file hash."""
     pub = PUBLICATIONS[t["publication"]]
-    return f"{pub['title']}; {t['where']}; {pub['url']}; sha256 {pub['sha256']}"
+    return {lang: f"{pub.get('title_' + lang, pub['title']) if lang == 'es' else pub['title']}; {t['where'][lang]}; {pub['url']}; sha256 {pub['sha256']}"
+            for lang in ("en", "es")}
 
 
 def target(metric: str) -> float:

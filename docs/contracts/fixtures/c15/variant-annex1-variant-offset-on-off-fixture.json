@@ -1165,7 +1165,10 @@
       "pn_ur": 1131000.0,
       "abs_pn_ur": 1131000.0,
       "charge": 28275.0,
-      "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+      "formula": {
+        "en": "charge = 0.025 × |PN_UR|, where PN_UR is the net UF position times the UF value",
+        "es": "cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF"
+      },
       "note": {
         "en": "The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise.",
         "es": "El cargo estandar por reajustabilidad, equivalente a una sorpresa de inflacion de 2,5 por ciento."
@@ -1969,7 +1972,10 @@
         }
       ],
       "prioritised": false,
-      "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"
+      "reference": {
+        "en": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)",
+        "es": "RAN 21-13 Anexo 1 (banco priorizado, dossier 03 F.2)"
+      }
     }
   },
   "tests": [

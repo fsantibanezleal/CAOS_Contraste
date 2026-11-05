@@ -14,11 +14,14 @@ const X1 = 456;
 const Y0 = 206;
 const Y1 = 24;
 
-function Frame({ label, children }: { label: string; children: ReactNode }) {
+/** A figure of the page: `top` crops an empty band above the drawing (the protocol starts at y 60). */
+function Frame({ label, children, top = 0 }: { label: string; children: ReactNode; top?: number }) {
   return (
-    <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
-      {children}
-    </svg>
+    <div className="ct-docfig-box">
+      <svg className="ct-docfig" viewBox={`0 ${top} ${W} ${H - top}`} role="img" aria-label={label}>
+        {children}
+      </svg>
+    </div>
   );
 }
 
@@ -153,11 +156,11 @@ export function ShapeFigure() {
   const scale = (Y0 - Y1) / 2.2;
   const d = steps.map((s, i) => `${i ? 'L' : 'M'}${r1(X0 + i * slot)} ${r1(mid - s * scale)} L${r1(X0 + (i + 1) * slot)} ${r1(mid - s * scale)}`).join(' ');
   return (
-    <Frame label={t('An illustrative shape function of an explainable boosting machine', 'Una función de forma ilustrativa de una explainable boosting machine')}>
+    <Frame label={t('An illustrative shape function of an explainable boosting machine', 'Una función de forma ilustrativa de una máquina de potenciación explicable')}>
       <line className="dg-axis" x1={X0} y1={Y0} x2={X0} y2={Y1} />
       <line className="dg-grid" x1={X0} y1={mid} x2={X1} y2={mid} />
       <text className="dg-axis-label" x={(X0 + X1) / 2} y={Y0 + 32} textAnchor="middle">{t('Value of one variable (64 bins in the case)', 'Valor de una variable (64 tramos en el caso)')}</text>
-      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución a las log-odds')}</text>
+      <text className="dg-axis-label" x={14} y={mid} textAnchor="middle" transform={`rotate(-90 14 ${mid})`}>{t('Contribution to the log-odds', 'Contribución al logit')}</text>
       <path className="dg-curve" d={d} />
       <Note>{t('Illustrative: one step per bin', 'Ilustrativo: un escalón por tramo')}</Note>
     </Frame>
@@ -168,15 +171,16 @@ export function ShapeFigure() {
 export function LadderFigure() {
   const t = useT();
   const rungs = [
-    [t('P1 Scorecard', 'P1 Scorecard'), t('WoE and logistic', 'WoE y logística')],
+    // a sub-label fits its 96-unit box at 390 (R4 c30 m11: "WoE and logistic" ran past the box)
+    [t('P1 Scorecard', 'P1 Tarjeta'), t('WoE, logistic', 'puntuación WoE')],
     [t('P3 EBM', 'P3 EBM'), t('additive, pairs', 'aditivo, pares')],
-    [t('P4 Boosting', 'P4 Boosting'), t('monotone trees', 'árboles monótonos')],
+    [t('P4 Boosting', 'P4 Potenciación'), t('monotone trees', 'árboles monótonos')],
     [t('P5 TabPFN', 'P5 TabPFN'), t('in-context', 'en contexto')],
   ];
   const w = 96;
   const gap = 18;
   return (
-    <Frame label={t('The model ladder, from the scorecard to the foundation model', 'La escalera de modelos, de la scorecard al modelo fundacional')}>
+    <Frame label={t('The model ladder, from the scorecard to the foundation model', 'La escalera de modelos, de la tarjeta de puntuación al modelo fundacional')}>
       {rungs.map(([name, sub], i) => (
         <g key={name}>
           <rect className={i === 0 ? 'dg-box accent' : 'dg-box'} x={X0 - 30 + i * (w + gap)} y={150 - i * 28} width={w} height={54} rx={4} />
@@ -215,7 +219,7 @@ export function ChainFigure() {
           <text className="dg-node-label" x={xs[i]} y={y + 4} textAnchor="middle">{n}</text>
         </g>
       ))}
-      <text className="dg-edge-label" x={(xs[0] + xs[1]) / 2} y={y - 58} textAnchor="middle">p_ij</text>
+      <text className="dg-edge-label" x={(xs[0] + xs[1]) / 2} y={y - 58} textAnchor="middle">p<sub>ij</sub></text>
       <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('Grades move among themselves; default (D) never leaves', 'Los grados se mueven entre sí; el incumplimiento (D) nunca sale')}</text>
       <Note>{t('Illustrative chain', 'Cadena ilustrativa')}</Note>
     </Frame>
@@ -229,7 +233,7 @@ export function HomogeneityFigure() {
   const est = [0.34, 0.4, 0.36, 0.52, 0.66, 0.48, 0.38, 0.35, 0.41];
   return (
     <Frame label={t('Illustrative yearly estimates of one transition probability and the pooled estimate', 'Estimaciones anuales ilustrativas de una probabilidad de transición y la estimación agrupada')}>
-      <Axes x={t('Year of the cohort', 'Año de la cohorte')} y={t('Estimate of one p_ij', 'Estimación de un p_ij')} />
+      <Axes x={t('Year of the cohort', 'Año de la cohorte')} y={t('Estimate of one pᵢⱼ', 'Estimación de un pᵢⱼ')} />
       <path className="dg-asymptote" fill="none" d={path([[0, 0.43], [1, 0.43]])} />
       <path className="dg-curve" d={path(years.map((u, i): [number, number] => [u, est[i]]))} />
       {years.map((u, i) => (
@@ -250,7 +254,7 @@ export function ProtocolFigure() {
     { x: 364, w: 108, cls: 'dg-box good', title: t('Locked holdout', 'Reservada'), sub: t('tests, once', 'pruebas, una vez') },
   ];
   return (
-    <Frame label={t('The leakage-safe protocol: training, calibration and a locked holdout, and the forbidden path', 'El protocolo sin fugas: entrenamiento, calibración y una muestra reservada bloqueada, y el camino prohibido')}>
+    <Frame top={48} label={t('The leakage-safe protocol: training, calibration and a locked holdout, and the forbidden path', 'El protocolo sin fugas: entrenamiento, calibración y una muestra reservada bloqueada, y el camino prohibido')}>
       {parts.map((p) => (
         <g key={p.title}>
           <rect className={p.cls} x={p.x} y={60} width={p.w} height={64} rx={4} />
@@ -259,8 +263,8 @@ export function ProtocolFigure() {
         </g>
       ))}
       <path className="dg-asymptote" fill="none" d={`M418 130 C 418 190, 126 190, 126 130`} />
-      <text className="dg-axis-label" x={W / 2} y={178} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
-      <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30% de muestra reservada; 20% del resto para calibración')}</text>
+      <text className="dg-axis-label" x={W / 2} y={196} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
+      <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30 % de muestra reservada; 20 % del resto para calibración')}</text>
     </Frame>
   );
 }

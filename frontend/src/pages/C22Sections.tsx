@@ -30,6 +30,31 @@ function holds(v: C22Variant, s: C22Simulation, rule: string, level: number) {
   return r.exact !== null ? r.exact <= level + 1e-12 : (r.rate ?? 1) <= v.outputs.size_bounds[rule];
 }
 
+/** The words of the papers' cell labels in Spanish: "Table 8", "traffic", "shift 0.25 SD", "chi-square" (R4 c28 B7). */
+const CELL_WORDS_ES: Array<[RegExp, string]> = [
+  [/\bTables? (\d+)/g, 'tabla $1'],
+  [/\bsection (\d)/g, 'sección $1'],
+  [/\btraffic\b/g, 'semáforo'],
+  [/\bnested\b/g, 'anidados'],
+  [/\bshift\b/g, 'desplazamiento'],
+  [/\bSD\b/g, 'DE'],
+  [/\bchi-square\b/g, 'chi-cuadrado'],
+];
+
+/**
+ * The cell of a published table as the paper labels it (table, scenario or row, column). The English page keeps the paper's own
+ * label; the Spanish page writes it in Spanish with its decimals in the Spanish form, and keeps the paper's scenario codes
+ * (DV_LV, I_SC), which are the paper's names for them.
+ */
+export function goldenCellLabel(c: { table: string; row: string; column: string }, lang: 'en' | 'es'): string {
+  const label = `${c.table}, ${c.row}, ${c.column}`;
+  if (lang === 'en') return label;
+  const words = (x: string) => CELL_WORDS_ES.reduce((acc, [re, to]) => acc.replace(re, to), x);
+  // a decimal of the paper ("0.001", "0.25") in the Spanish form; the locator's section number ("section 2.3") is no decimal
+  const decimals = (x: string) => x.replace(/(?<![\w.])(\d+)\.(\d+)(?![\w.])/g, (_, a: string, b: string) => `${a},${b}`);
+  return [words(c.table), decimals(words(c.row)), decimals(words(c.column))].join(', ');
+}
+
 export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
   const t = useT();
@@ -40,34 +65,51 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
   const sizes = nul ? nul.outputs.simulations.filter((s) => s.key.endsWith('@null')) : [];
   return (
     <div data-state="ready">
-      <table className="caos-table ct-wrap-head" data-table="families">
+      {/* the rows read from the top: a centred row put the family name below the fold (R4 c28 m3); the table scrolls in its own box,
+          and each family's findings run under its row across the table: in a column of their own, 3,000 characters beside four short
+          cells left a blank band of 1,800 px at 390 (R5 c30 m1) */}
+      <div className="ct-scroll" data-caos-flow="">
+      <table className="caos-table ct-wrap-head ct-top" data-table="families">
         <thead>
           <tr>
             <th className="caos-col-text">{t('Family', 'Familia')}</th>
-            <th className="caos-col-text">{t('Generators', 'Generadores')}</th>
+            <th className="caos-col-text" style={{ minWidth: '12rem' }}>{t('Generators', 'Generadores')}</th>
             <th className="caos-col-text">{t('Severity ladder', 'Escala de severidad')}</th>
             <th>{t('Simulations', 'Simulaciones')}</th>
-            <th className="caos-col-text">{t('Findings', 'Hallazgos')}</th>
           </tr>
         </thead>
         <tbody>
           {families.map((v) => {
             const o = v.outputs;
             const names = [...new Set(Object.values(o.generators).map((g) => g.name))];
-            return (
+            return [
               <tr key={v.variant_id} data-family={v.variant_id}>
                 <td className="caos-col-text">{pick(titles[v.variant_id] ?? { en: v.variant_id, es: v.variant_id }, lang)}</td>
-                <td className="caos-col-text">{names.join(', ')}</td>
+                {/* the engine's generator references, as the C22 views print them: code, never translated (the raw-id ruling) */}
+                <td className="caos-col-text">
+                  {names.map((n, i) => (
+                    <span key={n}>
+                      {i ? ', ' : ''}
+                      <code translate="no">{n}</code>
+                    </span>
+                  ))}
+                </td>
                 <td className="caos-col-text">
                   {o.ladder ? `${pick(o.ladder.label, lang)}: ${o.ladder.values.map((x) => formatNumber(x, lang, { digits: 3 })).join('; ')}` : t('none: every test at its null', 'ninguna: cada prueba en su nula')}
                 </td>
                 <td>{formatNumber(o.simulations.length, lang)}</td>
-                <td className="caos-col-text">{v.findings.map((f) => `${f.id} (${f.severity})`).join(', ')}</td>
-              </tr>
-            );
+              </tr>,
+              <tr key={`${v.variant_id}-findings`} data-family-findings={v.variant_id}>
+                {/* each finding by its title, never its id (the raw-id scan of the pages: F-PROFILE-BLIND) */}
+                <td className="caos-col-text" colSpan={4}>
+                  <strong>{t('Findings', 'Hallazgos')}:</strong> {v.findings.length ? v.findings.map((f) => `${pick(f.title, lang)} (${f.severity})`).join('; ') : t('none', 'ninguno')}
+                </td>
+              </tr>,
+            ];
           })}
         </tbody>
       </table>
+      </div>
       {nul && (
         <PlotCard title={{ en: 'C22, the size of every test with a p-value', es: 'C22, el tamaño de cada prueba con valor p' }} lane="replay" provenance="synthetic">
           <Verdict
@@ -79,7 +121,10 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
               const size = (s: C22Simulation, rule: string) => rateOf(s, rule).exact ?? rateOf(s, rule).rate;
               const names = (l: 'en' | 'es') => {
                 const at = l === 'es' ? 'al' : 'at';
-                return bad.map((s) => `${pick(s.label, l)} (${pct(l, size(s, AT5), 2)} ${at} 5%, ${pct(l, size(s, AT1), 2)} ${at} 1%)`).join('; ');
+                const stated = l === 'es' ? ', documentado por el motor' : ', documented by the engine';
+                // an exact size (enumerated) is said to be exact, so the sentence's repetitions are not read as its basis (the R2b page review)
+                const kind = (s: C22Simulation) => (rateOf(s, AT5).exact != null ? (l === 'es' ? 'tamaño exacto ' : 'exact size ') : '');
+                return bad.map((s) => `${pick(s.label, l)} (${kind(s)}${pct(l, size(s, AT5), 2)} ${at} ${pct(l, 0.05, 0)}, ${pct(l, size(s, AT1), 2)} ${at} ${pct(l, 0.01, 0)}${s.study?.excess ? stated : ''})`).join('; ');
               };
               return {
                 en: `${sizes.length - bad.length} of the ${sizes.length} tests hold their size at both levels on ${formatNumber(sizes[0]?.n_rep, 'en')} repetitions of data where their null holds at its boundary. ${bad.length ? `Not: ${names('en')}.` : ''}`,
@@ -87,15 +132,15 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
               };
             })()}
           />
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="sizes">
               <thead>
                 <tr>
                   <th className="caos-col-text">{t('Test', 'Prueba')}</th>
                   <th className="caos-col-text">{t('Where its null holds', 'Dónde se cumple su nula')}</th>
-                  <th>{t('Rate at 5% (SE)', 'Tasa al 5% (EE)')}</th>
-                  <th>{t('Rate at 1% (SE)', 'Tasa al 1% (EE)')}</th>
-                  <th>{t('Exact at 5%', 'Exacta al 5%')}</th>
+                  <th>{t('Rate at 5% (SE)', 'Tasa al 5 % (EE)')}</th>
+                  <th>{t('Rate at 1% (SE)', 'Tasa al 1 % (EE)')}</th>
+                  <th>{t('Exact at 5%', 'Exacta al 5 %')}</th>
                   <th>{t('Size', 'Tamaño')}</th>
                 </tr>
               </thead>
@@ -109,7 +154,10 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
                       <td>{rateCell(s, AT5, lang)}</td>
                       <td>{rateCell(s, AT1, lang)}</td>
                       <td>{rateOf(s, AT5).exact === null ? '-' : pct(lang, rateOf(s, AT5).exact, 2)}</td>
-                      <td>{ok ? t('holds', 'se mantiene') : t('exceeds', 'excede')}</td>
+                      <td data-documented={s.study?.excess ? 'yes' : undefined}>
+                        {ok ? t('holds', 'se mantiene') : t('exceeds', 'excede')}
+                        {s.study?.excess && !ok ? t(' (documented by the engine)', ' (documentado por el motor)') : ''}
+                      </td>
                     </tr>
                   );
                 })}
@@ -228,10 +276,10 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
           tone="accent"
           verdict={{
             en: `Of ${rows.length} curves of a test against a planted defect it should see, ${reach.length} reach ${pct('en', POWER, 0)} power at 5% within the family's ladder. ${blind.length} stay below 20% at the highest severity: ${list(blind, 'en')}. The ladders are Contraste's design choices; power on them is not the probability of finding a real bank's problem.`,
-            es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5% dentro de la escala de la familia. ${blind.length} quedan bajo 20% en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
+            es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5 % dentro de la escala de la familia. ${blind.length} quedan bajo 20 % en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
           }}
         />
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="detections">
             <thead>
               <tr>
@@ -239,7 +287,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                 <th className="caos-col-text">{t('Test', 'Prueba')}</th>
                 <th className="caos-col-text">{t('Setting', 'Ajuste')}</th>
                 <th>{t('Rate without the defect', 'Tasa sin el defecto')}</th>
-                <th>{t('80% power from', '80% de potencia desde')}</th>
+                <th>{t('80% power from', '80 % de potencia desde')}</th>
                 <th>{t('Rate at the highest severity', 'Tasa en la mayor severidad')}</th>
               </tr>
             </thead>
@@ -268,7 +316,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             es: `El modelo es correcto en cada fila de abajo; solo falla un supuesto. ${exceeds.length} de ${alarms.length} curvas exceden la cota de tamaño (el nivel más 3,09 EE de Monte Carlo) en la mayor severidad: ${exceeds.map((a) => `${pick(a.test, 'es')} (${pick(a.familyTitle, 'es')}, ${pct('es', a.top)})`).join('; ')}.`,
           }}
         />
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="false-alarms">
             <thead>
               <tr>
@@ -319,7 +367,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                         .map((c, k) => (
                           <span key={`${c.table}-${c.row}-${c.column}`}>
                             {k > 0 ? '; ' : ''}
-                            <span translate="no" lang="en">{`${c.table}, ${c.row}, ${c.column}`}</span>
+                            {lang === 'en' ? <span translate="no" lang="en">{goldenCellLabel(c, lang)}</span> : <span>{goldenCellLabel(c, lang)}</span>}
                             {`: ${formatNumber(c.published, lang, { digits: 3 })} / ${formatNumber(c.measured, lang, { digits: 3 })}`}
                           </span>
                         ))
@@ -331,7 +379,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
         </table>
         {golden.map((g) => (
           <p key={g.study} className="ct-note">
-            <WithQuotes text={pick(g.note, lang)} />
+            <WithQuotes text={pick(g.note, lang)} pageLang={lang} />
           </p>
         ))}
       </PlotCard>

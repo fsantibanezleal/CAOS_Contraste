@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{For each method, the share of histories whose capital falls below the true quantile and, after the slash, the number of the 1,000 histories on which the method returns a finite capital, for ten years of data and a threshold of EUR 20,000. A fit that fails or returns a tail index of one or more leaves no capital.}
+\label{tab:op-defined}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Method & $\xi=0.6$ & $\xi=0.8$ & $\xi=0.96$ & $\xi=1.1$ \\
+\midrule
+Lognormal, threshold ignored & 100\% / 1000 & 100\% / 1000 & 100\% / 1000 & 100\% / 1000 \\
+Truncated lognormal & 98\% / 1000 & 94\% / 990 & 95\% / 723 & 100\% / 205 \\
+Lognormal and GPD splice & 57\% / 859 & 53\% / 727 & 53\% / 572 & 57\% / 409 \\
+Single loss approximation & 63\% / 1000 & 52\% / 1000 & 51\% / 1000 & 50\% / 1000 \\
+SLA with mean correction & 55\% / 1000 & 51\% / 988 & 72\% / 683 & -- \\
+Scenario credibility & 18\% / 862 & 34\% / 730 & 38\% / 577 & 52\% / 419 \\
+GPD by likelihood, mean-adjusted SLA & 55\% / 1000 & 51\% / 988 & 72\% / 683 & 100\% / 164 \\
+\relax GPD by Cram\'er-von Mises & 52\% / 1000 & 52\% / 950 & 80\% / 620 & 100\% / 217 \\
+GPD optimally bias-robust & 54\% / 1000 & 51\% / 985 & 74\% / 653 & 100\% / 176 \\
+\relax Lognormal by Cram\'er-von Mises (control) & 99\% / 1000 & 95\% / 989 & 92\% / 682 & 99\% / 156 \\
+\bottomrule
+\end{tabular}}
+\end{table}

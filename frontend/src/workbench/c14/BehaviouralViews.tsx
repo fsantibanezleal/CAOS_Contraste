@@ -6,14 +6,21 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { IrrbbTestsTable, UnavailableCard, assumptionValue } from './C14Common';
+import { IrrbbTestsTable, NoBreakDates, UnavailableCard, assumptionValue } from './C14Common';
 import {
   CALIBRATION_SHORT, CATEGORY_TEXT, SHOCK_TEXT, SOURCE_KIND_TEXT, axisOf, cell, fitOf, nmdModelOf, outputsOf, scaleUnit, text, type C14Sel,
 } from './selection';
+import { IRRBB_SOURCE_RULES, localise } from './localise';
 
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
 /** The delta EVE of every shock under the behavioural and the contractual deposit assumption, for both calibrations, and the difference. */
+/** The kind of a source and the source, without saying the kind twice when the source already opens with it (R3 c15 n4: "ajustado:
+ * Ajustado por fecha ..."). */
+export function kindAndSource(kind: string, source: string): string {
+  return source.toLowerCase().startsWith(kind.toLowerCase()) ? source : `${kind}: ${source}`;
+}
+
 export function WithWithoutView({ sel }: { sel: C14Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -130,7 +137,7 @@ export function ReplicatingView({ sel }: { sel: C14Sel | null }) {
               </tr>
               {m.stability.map((w) => (
                 <tr key={w.window_start} data-window={w.window_start}>
-                  <td className="ct-text">{`${w.window_start} ${pick({ en: 'to', es: 'a' }, lang)} ${w.window_end}`}</td>
+                  <td className="ct-text"><NoBreakDates text={`${w.window_start} ${pick({ en: 'to', es: 'a' }, lang)} ${w.window_end}`} /></td>
                   {w.weights.map((x, i) => (
                     <td key={i}>{SHARE(x, lang)}</td>
                   ))}
@@ -151,7 +158,7 @@ export function ReplicatingView({ sel }: { sel: C14Sel | null }) {
             <dt>{pick({ en: 'Deposit beta, down', es: 'Beta de depósitos, a la baja' }, lang)}</dt>
             <dd>{SHARE(m.deposit_beta.down, lang)}</dd>
             <dt>{pick({ en: 'Where the beta comes from', es: 'De dónde viene el beta' }, lang)}</dt>
-            <dd>{`${pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang)}: ${m.deposit_beta.source}`}</dd>
+            <dd>{kindAndSource(pick(text(SOURCE_KIND_TEXT, m.deposit_beta.source_kind), lang), localise(m.deposit_beta.source, lang, IRRBB_SOURCE_RULES))}</dd>
           </dl>
           <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.nmd_parameter_stability'} />
         </ChartOverTable>
@@ -204,12 +211,12 @@ export function CapsView({ sel }: { sel: C14Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: `Balance (${unit})`, es: `Saldo (${unit})` }, lang)}</th>
                 <th>{pick({ en: 'Core share requested', es: 'Parte estable pedida' }, lang)}</th>
-                <th>{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th>{pick({ en: 'Share cap', es: 'Tope de la parte' }, lang)}</th>
                 <th>{pick({ en: 'Used', es: 'Usada' }, lang)}</th>
                 <th>{pick({ en: 'Maturity requested (years)', es: 'Plazo pedido (años)' }, lang)}</th>
                 <th>{pick({ en: 'Cap (years)', es: 'Tope (años)' }, lang)}</th>
                 <th>{pick({ en: 'Used (years)', es: 'Usado (años)' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Cap applied', es: 'Tope aplicado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -239,6 +246,12 @@ function parameterLabel(parameter: string, category: string): BiText {
   const c = text(CATEGORY_TEXT, category);
   if (parameter.startsWith('core share')) return { en: `Core share, ${c.en.toLowerCase()}`, es: `Parte estable, ${c.es.toLowerCase()}` };
   if (parameter.startsWith('core maturity')) return { en: `Core maturity, ${c.en.toLowerCase()}`, es: `Plazo estable, ${c.es.toLowerCase()}` };
+  // the contract's own phrases: "requested core share, wholesale", "replicating-portfolio weighted average maturity, wholesale"
+  if (parameter.startsWith('requested core share')) return { en: `Requested core share, ${c.en.toLowerCase()}`, es: `Parte estable solicitada, ${c.es.toLowerCase()}` };
+  if (parameter.startsWith('requested core maturity')) return { en: `Requested core maturity, ${c.en.toLowerCase()}`, es: `Plazo estable solicitado, ${c.es.toLowerCase()}` };
+  if (parameter.startsWith('replicating-portfolio weighted average maturity')) {
+    return { en: `Weighted average maturity of the replicating portfolio, ${c.en.toLowerCase()}`, es: `Plazo medio ponderado de la cartera replicante, ${c.es.toLowerCase()}` };
+  }
   return { en: parameter, es: parameter };
 }
 
@@ -249,7 +262,9 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
   const o = outputsOf(sel);
   const fit = sel ? fitOf(sel) : null;
   if (!sel || !o) return <Pending />;
-  const changes = fit?.nmd_parameter_changes ?? [];
+  // only the changes up to the selected valuation date: the models document holds every date, and a reader at an earlier date
+  // must not see changes its own test row never counted (R4 c17 M1, ruling 5 of 2026-10-27)
+  const changes = (fit?.nmd_parameter_changes ?? []).filter((c) => c.to_date <= o.valuation_date);
   if (!fit) {
     return <UnavailableCard sel={sel} title={{ en: 'Parameter changes', es: 'Cambios de parámetros' }} reason={{ en: 'Not available: the models artifact carries no parameter changes.', es: 'No disponible: el artefacto de modelos no trae cambios de parámetros.' }} />;
   }
@@ -264,13 +279,11 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
           es: 'Un parámetro conductual que cambió entre dos fechas de valoración queda marcado cuando la ventana contiene además un exceso de límite: un supuesto más favorable adoptado mientras un límite estaba excedido es el patrón que halló la revisión de 2023 de Silicon Valley Bank. La marca es la pregunta del validador, no un veredicto.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="parameter-changes">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'From', es: 'Desde' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'To', es: 'Hasta' }, lang)}</th>
                 <th>{pick({ en: 'Before', es: 'Antes' }, lang)}</th>
                 <th>{pick({ en: 'After', es: 'Después' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Limit breach in the window', es: 'Exceso de límite en la ventana' }, lang)}</th>
@@ -281,14 +294,15 @@ export function ChangesView({ sel }: { sel: C14Sel | null }) {
             <tbody>
               {changes.map((c, i) => (
                 <tr key={i} data-flagged={c.flagged} data-breach={c.limit_breach_in_window}>
-                  <td className="ct-text">{pick(parameterLabel(c.parameter, c.category), lang)}</td>
-                  <td className="ct-wide-only">{c.from_date}</td>
-                  <td className="ct-wide-only">{c.to_date}</td>
+                  <td className="ct-text">
+                    {pick(parameterLabel(c.parameter, c.category), lang)}
+                    <span className="ct-note" style={{ display: 'block' }} data-window={`${c.from_date} ${c.to_date}`}><NoBreakDates text={`${c.from_date} ${pick({ en: 'to', es: 'a' }, lang)} ${c.to_date}`} /></span>
+                  </td>
                   <td>{assumptionValue(c.from_value, c.unit, lang)}</td>
                   <td>{assumptionValue(c.to_value, c.unit, lang)}</td>
                   <td className="ct-text">{pick(c.limit_breach_in_window ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang)}</td>
                   <td className="ct-text">{pick(c.flagged ? { en: 'flagged', es: 'marcado' } : { en: 'not flagged', es: 'sin marca' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{pick(c.note, lang)}</td>
+                  <td className="ct-text ct-wide-only"><NoBreakDates text={pick(c.note, lang)} /></td>
                 </tr>
               ))}
             </tbody>

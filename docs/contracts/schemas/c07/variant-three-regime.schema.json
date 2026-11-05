@@ -25,6 +25,23 @@
         "case_id",
         "outputs"
       ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "properties": {
+              "extras": {
+                "properties": {
+                  "reference_text": {
+                    "$ref": "../common/text.schema.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,
@@ -619,7 +636,7 @@
               "internal_reason": {
                 "anyOf": [
                   {
-                    "type": "string"
+                    "$ref": "../common/text.schema.json"
                   },
                   {
                     "type": "null"
@@ -642,7 +659,7 @@
                 "then": {
                   "properties": {
                     "internal_reason": {
-                      "type": "string"
+                      "$ref": "../common/text.schema.json"
                     },
                     "method": {
                       "const": "standard"

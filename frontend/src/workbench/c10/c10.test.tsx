@@ -332,7 +332,8 @@ describe('the C10 instrument', () => {
       for (const e of c.estimators) {
         expect(markup).toContain(pct(e.mean_estimate, 1));
         expect(markup).toContain(pct(e.coverage, 1));
-        expect(markup).toContain(formatNumber(e.rmse, 'en', { digits: 3 }));
+        // the RMSE in percent, as the bias beside it (R3 c11 m-U)
+        expect(markup).toContain(formatNumber(e.rmse, 'en', { percent: true, decimals: 2 }));
       }
       expect(markup).toContain(formatNumber(c.n_failed, 'en', { decimals: 0 }));
     }
@@ -445,13 +446,14 @@ describe('the C10 rail', () => {
     for (const at of [0, 1, 2, 3]) for (const lang of ['en', 'es'] as const) expect(railHtml(at, lang), `section ${at} ${lang}`).not.toMatch(RAW_AMOUNT);
   });
 
-  it('the rung read-out gives EL, VaR and ES of the rung in a compact unit, with the Monte Carlo error', () => {
+  it('the rung read-out gives EL, VaR and ES of the rung in a compact unit (the Monte Carlo error is on the loss chart since 736d4d6)', () => {
     const base = defaultSel(data) as C10Sel;
     const markup = html(<RungReadout sel={{ ...base, rung: 'c2-gaussian-1f' }} />);
     expect(markup).toContain('USD');
     expect(markup).not.toMatch(RAW_AMOUNT);
     expect(markup).toMatch(/0\.8738/);
-    expect(markup).toContain('m USD');
+    // a million is "mn" in English, never "m" (R3 c13 m8; U16-F10a)
+    expect(markup).toContain('mn USD');
     expect(html(<RungReadout sel={{ ...base, rung: 'c6-is-student-t' }} />)).toContain(NA);
   });
 

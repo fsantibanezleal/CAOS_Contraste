@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Value at risk at the 99.9\% level of the illustrative portfolio of 100 million USD for each loan type, by model, in millions of USD: the expected loss (EL), the large homogeneous portfolio (LHP), the one-factor (G-1F) and two-sector (G-2F) Gaussian copulas, the Student-t copula with 5 degrees of freedom, CreditRisk+ (CR+), the large-portfolio quantile plus the granularity adjustment (LHP+GA), and importance sampling of the Gaussian copula (IS). All models share the fitted default probability and correlation.}
+\label{tab:cc-var}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedleft\arraybackslash}p{1.0cm}>{\raggedleft\arraybackslash}p{1.15cm}>{\raggedleft\arraybackslash}p{1.15cm}>{\raggedleft\arraybackslash}p{1.15cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.15cm}>{\raggedleft\arraybackslash}p{1.5cm}>{\raggedleft\arraybackslash}p{1.15cm}}
+\toprule
+Loan type & EL & LHP & G-1F & G-2F & Stud. $t$ & CR+ & LHP+GA & IS \\
+\midrule
+Commercial and industrial & 0.41 & 2.30 & 3.18 & 3.03 & 13.10 & 3.08 & 3.28 & 3.20 \\
+Commercial real estate & 0.20 & 4.54 & 5.47 & 4.91 & 14.38 & 5.08 & 6.52 & 5.47 \\
+Residential real estate & 0.06 & 0.18 & 0.41 & 0.41 & 5.98 & 0.41 & 0.33 & 0.41 \\
+Credit cards & 1.90 & 3.74 & 3.87 & 3.61 & 15.60 & 3.83 & 3.83 & 3.87 \\
+Other consumer & 0.44 & 0.97 & 1.12 & 1.04 & 11.20 & 1.10 & 1.05 & 1.12 \\
+\bottomrule
+\end{tabular}
+\end{table}

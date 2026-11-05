@@ -402,7 +402,7 @@ export function MatrixView({ sel }: { sel: C04Sel | null }) {
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard fill title={title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={note}>
-        <div className="ct-stack">
+        <div className="ct-stack" data-caos-flow="">
           {controls}
           <MatrixMap {...mapProps(sel, m, mapLabel)} />
         </div>
@@ -417,7 +417,7 @@ export function MatrixView({ sel }: { sel: C04Sel | null }) {
       >
         {/* the row first, what the card is for; the sentences that read it after it (at 1280 x 800 the sentences
             above it pushed B, CCC-C, D and W below the card's fold, measured 2026-10-07) */}
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c04-matrix-row" data-grade={grade} data-cohort={m.label ?? 'pooled'}>
             <thead>
               <tr>
@@ -856,7 +856,7 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
             es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: ni la matriz agrupada ni sus generadores dan una PD, y no se dibuja ninguna serie de PD. La tabla da la distancia de cada generador a la matriz agrupada: ${methods.es}. ${l1Note.es} Luego los diagnósticos de P de Israel, Rosenthal y Wei, cada uno con su teorema. ${esma.es} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             {verdictLine}
             <DistanceTable v={v} grade={g} />
             {emText}
@@ -903,7 +903,7 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
             and EM's fit above pushed all four diagnostics below the card's fold (measured, 2026-10-07); the verdict
             names the closest and the farthest generator, so the distances' headline stays in view. Fitch's empty
             default columns are said under the distances, whose PDs they lower */}
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           {verdictLine}
           <EmbeddingList o={o} />
           <DistanceTable v={v} grade={g} />

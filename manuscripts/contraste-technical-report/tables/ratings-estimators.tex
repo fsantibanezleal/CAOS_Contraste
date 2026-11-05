@@ -1,0 +1,20 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Bias with its Monte Carlo standard error and root mean squared error, in basis points, of the one-year PD of four grades under six estimators of the migration matrix, over repeated panels of five annual snapshots drawn from a Markov chain whose generator is the EM generator of the pooled S\&P counts; the last row is the chain's true one-year PD.}
+\label{tab:ratings-estimators}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Estimator & AAA bias & AAA RMSE & AA bias & AA RMSE & B bias & B RMSE & CCC-C bias & CCC-C RMSE \\
+\midrule
+Cohort & $-0.3\pm0.3$ & 3.7 & $-0.0\pm0.1$ & 1.1 & $+0.1\pm0.9$ & 13.4 & $+11.1\pm5.5$ & 79.0 \\
+Duration & $-0.0\pm0.1$ & 0.8 & $+0.0\pm0.1$ & 0.9 & $+0.3\pm0.8$ & 11.7 & $+9.2\pm4.8$ & 68.3 \\
+EM & $+0.3\pm0.3$ & 3.7 & $+0.1\pm0.1$ & 1.0 & $+0.1\pm0.9$ & 13.4 & $+10.8\pm5.5$ & 79.0 \\
+Diagonal repair & $+0.4\pm0.3$ & 3.8 & $+0.1\pm0.1$ & 1.0 & $+0.1\pm0.9$ & 13.4 & $+10.6\pm5.5$ & 78.9 \\
+Weighted repair & $+0.4\pm0.3$ & 3.7 & $+0.1\pm0.1$ & 1.0 & $-0.1\pm0.9$ & 13.3 & $+9.3\pm5.5$ & 78.7 \\
+Jarrow, Lando, Turnbull & $+0.4\pm0.3$ & 3.8 & $+0.2\pm0.1$ & 1.1 & $+29.7\pm1.0$ & 32.8 & $+25.9\pm5.6$ & 82.5 \\
+True one-year PD & 0.66 &  & 0.49 &  & 117.31 &  & 806.18 &  \\
+\bottomrule
+\end{tabular}}
+\end{table*}

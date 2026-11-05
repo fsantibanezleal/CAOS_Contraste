@@ -28,7 +28,7 @@
   <text class="sub l-es" x="62" y="100">constante, una variable</text>
   <text class="it" x="34" y="126">P1</text>
   <text class="sub l-en" x="62" y="126">WoE scorecard (champion)</text>
-  <text class="sub l-es" x="62" y="126">scorecard WoE (campeón)</text>
+  <text class="sub l-es" x="62" y="126">tarjeta de puntuación WoE (campeón)</text>
   <text class="it" x="34" y="152">P2</text>
   <text class="sub l-en" x="62" y="152">L1 logistic, PLTR</text>
   <text class="sub l-es" x="62" y="152">logística L1, PLTR</text>
@@ -119,6 +119,6 @@
   <text class="sub l-es" x="694" y="358">pérdida esperada y realizada,</text>
   <text class="sub l-en" x="694" y="374">the swap sets; capital under</text>
   <text class="sub l-es" x="694" y="374">los intercambios; capital IRB</text>
-  <text class="sub l-en" x="694" y="390">the IRB formula with U2</text>
-  <text class="sub l-es" x="694" y="390">con la unidad U2</text>
+  <text class="sub l-en" x="694" y="390">the IRB capital formula</text>
+  <text class="sub l-es" x="694" y="390">con la fórmula IRB del capital</text>
 </svg>

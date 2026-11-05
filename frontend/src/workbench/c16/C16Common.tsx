@@ -4,25 +4,27 @@
 // bank's reported or regulatory ratio; the aggregates are real, the behaviour and the deposits are synthetic; the realised
 // run has two denominators; every named parameter is a convention; a survival period is a day or "survives the horizon".
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
+import { bankName, es, nameOf } from './localise';
 import {
-  BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, FAMILY_TEXT, HAIRCUT_RULE_TEXT, PHASE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
-  amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text,
+  BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, HAIRCUT_RULE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
+  amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text, scenarioPhrase,
   type C16Fit, type C16Outputs, type C16Reverse, type C16Sel, type C16Survival,
 } from './selection';
+import { testText } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
 export const SHARE = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { percent: true, decimals: 2 });
-export const cell = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { decimals: 0 });
+/** A whole amount; a value that rounds to zero is 0, never "-0" (U16-R2 b08 m3). */
+export const cell = (v: number | null | undefined, lang: Lang) => formatNumber(v === null || v === undefined ? v : Math.round(v) + 0, lang, { decimals: 0 });
 export const digits = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { digits: 4 });
 
 /**
@@ -32,9 +34,9 @@ export const digits = (v: number | null | undefined, lang: Lang) => formatNumber
  */
 export function ChartAbove({ chart, children, chartHeight = '15rem' }: { chart: ReactNode; children?: ReactNode; chartHeight?: string }) {
   return (
-    <div className="ct-stack">
-      <div style={{ flex: `0 0 ${chartHeight}`, minHeight: chartHeight, display: 'flex', flexDirection: 'column' }}>{chart}</div>
-      {children ? <div style={{ flex: '1 1 0', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+    <div className="ct-stack" data-caos-flow="">
+      <div className="ct-stack-fixed" style={{ minHeight: chartHeight, '--ct-chart-min': chartHeight } as CSSProperties}>{chart}</div>
+      {children ? <div className="ct-stack-rest">{children}</div> : null}
     </div>
   );
 }
@@ -74,7 +76,7 @@ export function SurvivalCell({ s, className }: { s: C16Survival | null | undefin
 const TEST_TEXT: Record<string, BiText> = {
   'liq.list_compounding_golden': { en: 'The LiST compounding example reproduced', es: 'Ejemplo de composición de LiST reproducido' },
   'liq.cbc_haircut_rules': { en: 'CBC haircut rules applied as specified', es: 'Reglas de recorte del CBC aplicadas como se especifican' },
-  'liq.runoff_adequacy_back_test': { en: 'The back-test of the run-off against the realised run', es: 'El backtest de la salida de depósitos contra la corrida realizada' },
+  'liq.runoff_adequacy_back_test': { en: 'The back-test of the run-off against the realised run', es: 'La prueba retrospectiva de la salida de depósitos contra la corrida realizada' },
   'liq.nlp_identity': { en: 'NLP identity on the ladder', es: 'Identidad de la NLP en la escalera' },
   'liq.cliff_effect_diagnostic': { en: 'Cliff-effect diagnostic', es: 'Diagnóstico del efecto acantilado' },
   'liq.runoff_vs_generator_truth': { en: 'Run-off against the generator truth', es: 'Salida de depósitos contra la verdad del generador' },
@@ -85,6 +87,11 @@ const TEST_TEXT: Record<string, BiText> = {
   'liq.reverse_stress_round_trip': { en: 'Reverse stress: the solved multiplier returns the target', es: 'Estrés inverso: el multiplicador resuelto devuelve el objetivo' },
 };
 const SEGMENT_NAMES: Record<string, Bi> = { ...DENOMINATOR_SHORT, ...BASE_TEXT };
+
+/** A row whose document gives no segment tests the whole balance sheet against no comparator, and says so at every width: the phone
+ * hides the Against column, so the line under the name carries it (R5 ruling 2; R5 c21 M1: 5 of 7 rows showed none at 390). */
+const BALANCE_SCOPE: Bi = { en: 'Whole balance sheet, no comparator', es: 'Todo el balance, sin comparador' };
+const against = (segment: string | null): Bi => (segment === null ? BALANCE_SCOPE : text(SEGMENT_NAMES, segment));
 
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
 export function C16TestsView({ sel }: { sel: C16Sel | null }) {
@@ -106,12 +113,12 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
         {rows.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="tests">
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Against', es: 'Contra' }, lang)}</th>
+                  <th className="ct-text ct-wide-only ct-repeated">{pick({ en: 'Against', es: 'Contra' }, lang)}</th>
                   <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Reason or note', es: 'Razón o nota' }, lang)}</th>
@@ -122,13 +129,16 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
-                      <td className="ct-text ct-wide-only">{t.segment === null ? formatNumber(null, lang) : pick(text(SEGMENT_NAMES, t.segment), lang)}</td>
+                      <td className="ct-text" title={t.test_id}>
+                        {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                        <span className="ct-narrow-only" data-segment={t.segment ?? 'whole-balance-sheet'}>{pick(against(t.segment), lang)}</span>
+                      </td>
+                      <td className="ct-text ct-wide-only ct-repeated">{pick(against(t.segment), lang)}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{es(t.notes ? t.notes : t.reference, lang)}</td>
                     </tr>
                   );
                 })}
@@ -159,7 +169,7 @@ export interface MedianRef {
 }
 
 /** The survival period of each variant that has a daily path, with the LiST medians as reference bars, and the variants in a table. */
-export function C16VariantsTable({ variants, onPick, current, medians, reverse }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>; onPick: (id: string) => void; current: string; medians?: MedianRef | null; reverse?: VariantArtifact<C16Reverse> | null }) {
+export function C16VariantsTable({ variants, onPick, current, medians }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C16Outputs> }>; onPick: (id: string) => void; current: string; medians?: MedianRef | null }) {
   const lang = useShellLang();
   const first = variants[0]?.v;
   const card = useCard(first as unknown as VariantArtifact | undefined);
@@ -184,8 +194,10 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
         es: 'Las cinco variantes del SDD en el último reporte de llamada antes de la corrida. Las barras dan el periodo de supervivencia de cada variante con trayectoria diaria que lo alcanza; una variante que sobrevive su horizonte está en la tabla con su horizonte y no tiene barra, y el LCR da una razón y no una trayectoria diaria. Elija una variante para cargarla.',
       }}
     >
-      <ChartOverTable
-        chartMin="17rem"
+      {/* the drawing at its size (seven bars) and the table in the height it leaves, not the shared 42 % box: at 1280 the box ended on
+          a row boundary and hid two variant rows, the reverse stress and the note with no cue (R4 c19 and c20 M1) */}
+      <ChartAbove
+        chartHeight={`${Math.max(bars.length + refs.length, 2) * 1.5 + 3}rem`}
         chart={
           <BarChart
             title={{ en: 'Survival period by variant, in days', es: 'Periodo de supervivencia por variante, en días' }}
@@ -216,7 +228,7 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
-                  <td className="ct-text ct-wide-only">{`${pick(text(FAMILY_TEXT, o.variant.scenario_family), lang)}, ${pick(text(PHASE_TEXT, o.variant.phase), lang)}`}</td>
+                  <td className="ct-text ct-wide-only">{scenarioPhrase(o.variant.scenario_family, o.variant.phase, lang)}</td>
                   <td>{o.variant.horizon_days}</td>
                   {o.path ? <SurvivalCell s={o.path.survival} className="ct-text" /> : <td className="ct-text" data-na="true">{formatNumber(null, lang)}</td>}
                   <td data-na={o.lcr ? undefined : 'true'}>{o.lcr ? SHARE(o.lcr.ratio, lang) : formatNumber(null, lang)}</td>
@@ -226,7 +238,6 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
             })}
           </tbody>
         </table>
-        {reverse ? <C16ReverseTable reverse={reverse} current={current} onPick={onPick} /> : null}
         {survivors.length > 0 ? (
           <p className="ct-note" data-state="survives">
             {pick(
@@ -238,12 +249,32 @@ export function C16VariantsTable({ variants, onPick, current, medians, reverse }
             )}
           </p>
         ) : null}
-      </ChartOverTable>
+      </ChartAbove>
     </PlotCard>
   );
 }
 
-/** The reverse-stress document as a table under the variants: the multiplier at which each base scenario first falls to the target. */
+/** The reverse stress beside the variants, a card of its own: the multiplier at which each base first falls to the target. */
+export function C16ReverseCard({ reverse, current, onPick }: { reverse: VariantArtifact<C16Reverse>; current: string; onPick: (id: string) => void }) {
+  const card = useCard(reverse as unknown as VariantArtifact);
+  return (
+    <PlotCard
+      fill
+      title={{ en: 'The reverse stress', es: 'La prueba de estrés inversa' }}
+      {...card}
+      note={{
+        en: 'The multiplier of the daily run-off rates at which each base scenario first falls to the target survival period; a base whose ladder is shorter than the target is refused. Pick the reverse stress to load it.',
+        es: 'El multiplicador de las tasas diarias de salida con el que cada escenario base cae por primera vez al periodo de supervivencia objetivo; una base cuya escalera es más corta que el objetivo se rechaza. Elija la prueba de estrés inversa para cargarla.',
+      }}
+    >
+      <div className="ct-scroll" data-caos-flow="">
+        <C16ReverseTable reverse={reverse} current={current} onPick={onPick} />
+      </div>
+    </PlotCard>
+  );
+}
+
+/** The reverse-stress document as a table beside the variants: the multiplier at which each base scenario first falls to the target. */
 function C16ReverseTable({ reverse, current, onPick }: { reverse: VariantArtifact<C16Reverse>; current: string; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const r = reverse.outputs;
@@ -284,8 +315,9 @@ export function C16VariantsView({ sel, onPick }: { sel: C16Sel | null; onPick: (
   const annex = fitOf(sel)?.list_parameters.results_annex;
   const medians = annex ? { adverse: annex.median_survival_days.adverse, extreme: annex.median_survival_days.extreme, nBanks: annex.n_banks } : null;
   return (
-    <ViewsRow>
-      <C16VariantsTable variants={scenarios} onPick={onPick} current={sel.data.variant.variant_id} medians={medians} reverse={reverse ?? null} />
+    <ViewsRow shares={reverse ? [2, 1] : undefined}>
+      <C16VariantsTable variants={scenarios} onPick={onPick} current={sel.data.variant.variant_id} medians={medians} />
+      {reverse ? <C16ReverseCard reverse={reverse} current={sel.data.variant.variant_id} onPick={onPick} /> : null}
     </ViewsRow>
   );
 }
@@ -326,7 +358,7 @@ export const conventionsOf = (sel: C16Sel | null): Conventions | null => outputs
 
 const unitWord = (unit: string, lang: Lang): string => {
   const words: Record<string, Bi> = { days: { en: 'days', es: 'días' }, ratio: { en: 'ratio', es: 'razón' } };
-  return words[unit] ? pick(words[unit], lang) : unit;
+  return words[unit] ? pick(words[unit], lang) : es(unit, lang);
 };
 
 function ConventionRows({ c }: { c: Conventions }) {
@@ -340,12 +372,12 @@ function ConventionRows({ c }: { c: Conventions }) {
     }),
     ...GRID_KEYS.map((k) => ({ id: k, label: CONVENTION_TEXT[k], value: `${values(c[k])} ${unitWord(c[k].unit, lang)}`, basis: c[k].basis, status: c[k].status })),
     { id: 'deposit_category_mapping', label: { en: 'Deposit mapping to the LCR categories', es: 'Mapeo de depósitos a las categorías del LCR' }, value: c.deposit_category_mapping.rows.map((r) => pick(r.label, lang)).join('; '), basis: c.deposit_category_mapping.basis, status: c.deposit_category_mapping.status },
-    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${r.variant}: ${pick(text(FAMILY_TEXT, r.scenario_family), lang)}, ${pick(text(PHASE_TEXT, r.phase), lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
+    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${nameOf(r.variant, lang)}: ${scenarioPhrase(r.scenario_family, r.phase, lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
     { id: 'day_calendar', label: { en: 'Day calendar of the ladder', es: 'Calendario de días de la escalera' }, value: `${pick({ en: 'US business days from', es: 'días hábiles de EE. UU. desde' }, lang)} ${c.day_calendar.first_day}`, basis: c.day_calendar.basis, status: c.day_calendar.status },
     { id: 'cbc_securities_mapping', label: { en: 'Securities classes and haircuts of the CBC', es: 'Clases de valores y recortes del CBC' }, value: c.cbc_securities_mapping.rows.map((r) => `${pick(text(CLASS_TEXT, r.class_id), lang)} ${SHARE(r.haircut, lang)}`).join('; '), basis: c.cbc_securities_mapping.basis, status: c.cbc_securities_mapping.status },
     { id: 'monetisation_schedule', label: { en: 'Monetisation schedule of the CBC', es: 'Calendario de monetización del CBC' }, value: c.monetisation_schedule.points.map((p) => `${pick({ en: 'day', es: 'día' }, lang)} ${p.day}: ${SHARE(p.cumulative_share, lang)}`).join('; '), basis: c.monetisation_schedule.basis, status: c.monetisation_schedule.status },
-    { id: 'fast_run_calibration_rule', label: { en: 'Rule of the fast-run calibration', es: 'Regla de la calibración de la corrida rápida' }, value: c.fast_run_calibration_rule.rule, basis: c.fast_run_calibration_rule.basis, status: c.fast_run_calibration_rule.status },
-    { id: 'cliff_days', label: { en: 'Days of the cliff diagnostic', es: 'Días del diagnóstico del acantilado' }, value: `${c.cliff_days.near} / ${c.cliff_days.far}, ${c.cliff_days.day_basis}`, basis: c.cliff_days.basis, status: c.cliff_days.status },
+    { id: 'fast_run_calibration_rule', label: { en: 'Rule of the fast-run calibration', es: 'Regla de la calibración de la corrida rápida' }, value: nameOf(c.fast_run_calibration_rule.rule, lang), basis: c.fast_run_calibration_rule.basis, status: c.fast_run_calibration_rule.status },
+    { id: 'cliff_days', label: { en: 'Days of the cliff diagnostic', es: 'Días del diagnóstico del acantilado' }, value: `${c.cliff_days.near} / ${c.cliff_days.far}, ${nameOf(c.cliff_days.day_basis, lang)}`, basis: c.cliff_days.basis, status: c.cliff_days.status },
   ];
   return (
     <tbody>
@@ -376,7 +408,7 @@ function DepositsBlock({ d }: { d: C16Outputs['balance_sheet']['deposits'] }) {
       <dt>{pick({ en: 'Uninsured share of DEPDOM', es: 'Parte no asegurada de DEPDOM' }, lang)}</dt>
       <dd data-denominator="DEPDOM">{SHARE(d.uninsured_share_of_depdom, lang)}</dd>
       <dt>{pick({ en: 'Size fields, DEPSMAMT and DEPLGAMT', es: 'Campos por tamaño, DEPSMAMT y DEPLGAMT' }, lang)}</dt>
-      <dd>{`${cell(d.depsmamt, lang)} / ${cell(d.deplgamt, lang)}; ${pick({ en: 'threshold', es: 'umbral' }, lang)} ${formatNumber(d.size_threshold.value, lang, { decimals: 0 })} ${d.size_threshold.unit}`}</dd>
+      <dd>{`${cell(d.depsmamt, lang)} / ${cell(d.deplgamt, lang)}; ${pick({ en: 'threshold', es: 'umbral' }, lang)} ${formatNumber(d.size_threshold.value, lang, { decimals: 0 })} ${es(d.size_threshold.unit, lang)}`}</dd>
     </dl>
   );
 }
@@ -394,7 +426,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
   return (
     <>
       <PlotCard title={{ en: 'The run-off parameter sets', es: 'Los conjuntos de parámetros de salida' }} {...card} note={{ en: 'Each set names where it comes from: a transcribed table, a calibration on rows dated before 2023, or a stated value. The LiST rates are the note\'s own, on its 2019 TARGET2 relevant-day calendar.', es: 'Cada conjunto dice de dónde viene: una tabla transcrita, una calibración con filas anteriores a 2023, o un valor declarado. Las tasas LiST son las de la nota, en su calendario de días relevantes TARGET2 de 2019.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-parameter-sets">
             <thead>
               <tr>
@@ -406,9 +438,9 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.parameter_sets.map((p) => (
                 <tr key={p.set_id} data-parameter-set={p.set_id} data-source-kind={p.source_kind}>
-                  <td className="ct-text">{p.set_id}</td>
+                  <td className="ct-text">{nameOf(p.set_id, lang)}</td>
                   <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, p.source_kind), lang)}</td>
-                  <td className="ct-text ct-wide-only">{p.source}</td>
+                  <td className="ct-text ct-wide-only">{es(p.source, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -425,7 +457,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {lp.open_maturity_daily.map((r) => (
                 <tr key={r.item}>
-                  <td className="ct-text">{r.item}</td>
+                  <td className="ct-text">{nameOf(r.item, lang)}</td>
                   <td>{formatNumber(r.baseline, lang, { percent: true, digits: 4 })}</td>
                   <td>{formatNumber(r.adverse, lang, { percent: true, digits: 4 })}</td>
                   <td>{formatNumber(r.extreme, lang, { percent: true, digits: 4 })}</td>
@@ -438,7 +470,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The calibration and the generator', es: 'La calibración y el generador' }} {...card} note={{ en: 'The fast run is calibrated on rows dated before 2023 and scored on the 2023 rows; the SVB observation is an anchor, not a forecast. The depositor generator has a known truth, so the model\'s run-off can be checked against it.', es: 'La corrida rápida se calibra con filas anteriores a 2023 y se evalúa en las filas de 2023; la observación de SVB es un ancla, no un pronóstico. El generador de depositantes tiene una verdad conocida, así que la salida del modelo se puede contrastar con ella.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" data-table="c16-calibration">
             <dt>{pick({ en: 'Calibration', es: 'Calibración' }, lang)}</dt>
             <dd>{pick(fit.calibration.statement, lang)}</dd>
@@ -477,7 +509,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The sources and their licence class', es: 'Las fuentes y su clase de licencia' }} {...card} note={{ en: 'The class is a reading of each publisher\'s notice, not legal advice; a source whose notice was not read says so.', es: 'La clase es una lectura del aviso de cada editor, no asesoría legal; una fuente cuyo aviso no se leyó lo dice.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-sources">
             <thead>
               <tr>
@@ -490,7 +522,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.sources.map((s) => (
                 <tr key={s.source_id} data-source={s.source_id} data-unverified={s.licence_basis === 'unverified' ? 'true' : undefined}>
-                  <td className="ct-text" title={s.publisher}>{s.source_id}</td>
+                  <td className="ct-text" title={s.publisher}>{nameOf(s.source_id, lang)}</td>
                   <td className="ct-text">{pick(text(LICENCE_TEXT, s.licence_class), lang)}</td>
                   <td className="ct-text">{s.licence_basis === 'unverified' ? pick({ en: 'unverified', es: 'no verificada' }, lang) : pick({ en: 'notice read', es: 'aviso leído' }, lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(s.statement, lang)}</td>
@@ -516,7 +548,6 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
   const v = sel.data.variant;
   const fit = fitOf(sel);
   const conv = base.conventions;
-  const word = (map: Record<string, Bi>, k: string) => pick(text(map, k), lang);
   return (
     <div className="ct-context" data-case={m.case_id}>
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
@@ -526,9 +557,9 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
         </p>
         <dl className="ct-defs" data-table="c16-bank" data-bank-aggregates={base.bank.aggregates} data-bank-behaviour={base.bank.behaviour} data-bank-deposits={base.bank.deposits}>
           <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
-          <dd>{base.bank.name}</dd>
+          <dd>{bankName(base.bank.name, lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
-          <dd>{pick({ en: 'The balance-sheet aggregates are real, from the FDIC call reports; the behaviour of the depositors and the deposits are synthetic, from a generator with a known truth.', es: 'Los agregados del balance son reales, de los reportes de condición de la FDIC; el comportamiento de los depositantes y los depósitos son sintéticos, de un generador con verdad conocida.' }, lang)}</dd>
+          <dd>{pick({ en: 'The balance-sheet aggregates are real, from the FDIC call reports; the behaviour of the depositors and the deposits are synthetic, from a generator with a known truth.', es: 'Los agregados del balance son reales, de los reportes de llamada de la FDIC; el comportamiento de los depositantes y los depósitos son sintéticos, de un generador con verdad conocida.' }, lang)}</dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(base.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'The LCR', es: 'El LCR' }, lang)}</dt>
@@ -540,9 +571,9 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
               <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
               <dd data-variant-id={o.variant.id}>{`${pick(o.variant.label, lang)}. ${pick(o.variant.description, lang)}`}</dd>
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
-              <dd>{`${word(FAMILY_TEXT, o.variant.scenario_family)}, ${word(PHASE_TEXT, o.variant.phase)}, ${o.variant.horizon_days} ${pick({ en: 'days', es: 'días' }, lang)}`}</dd>
-              <dt>{pick({ en: 'Call reports read', es: 'Reportes de condición leídos' }, lang)}</dt>
-              <dd>{`${o.data.call_reports.map((c) => c.report_date).join(', ')}; ${pick({ en: 'data cut-off', es: 'corte de datos' }, lang)} ${o.data.data_cutoff}`}</dd>
+              <dd>{`${scenarioPhrase(o.variant.scenario_family, o.variant.phase, lang)}, ${o.variant.horizon_days} ${pick({ en: 'days', es: 'días' }, lang)}`}</dd>
+              <dt>{pick({ en: 'Call reports read', es: 'Reportes de llamada leídos' }, lang)}</dt>
+              <dd>{`${o.data.call_reports.map((c) => c.report_date).sort().join(', ')}; ${pick({ en: 'data cut-off', es: 'corte de datos' }, lang)} ${o.data.data_cutoff}`}</dd>
               <dt>{pick({ en: 'Dating rule', es: 'Regla de fechas' }, lang)}</dt>
               <dd>{pick(o.data.rule, lang)}</dd>
             </>
@@ -551,7 +582,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
       </PlotCard>
       {o ? (
         <PlotCard title={{ en: 'The balance sheet and the deposits', es: 'El balance y los depósitos' }} {...card} note={{ en: 'DEPUNA and DEPINS cover the domestic offices and their denominator is DEPDOM; DEP includes the foreign offices. Both denominators are stated wherever the uninsured share appears.', es: 'DEPUNA y DEPINS cubren las oficinas domésticas y su denominador es DEPDOM; DEP incluye las oficinas en el exterior. Ambos denominadores se declaran donde aparece la parte no asegurada.' }}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <DepositsBlock d={o.balance_sheet.deposits} />
             <table className="caos-table ct-wrap-head" data-table="c16-items">
               <thead>
@@ -568,7 +599,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
                     <td className="ct-text">{pick(i.label, lang)}</td>
                     <td className="ct-text ct-wide-only">{i.source_field}</td>
                     <td>{cell(i.amount, lang)}</td>
-                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : i.assumption}</td>
+                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : es(i.assumption, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -582,7 +613,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every grid, tolerance, threshold, mapping and calendar of the case is a convention, labelled as one with the basis of its proposed value; none is a regulatory threshold.', es: 'Cada grilla, tolerancia, umbral, mapeo y calendario del caso es una convención, rotulada como tal con la base de su valor propuesto; ninguno es un umbral regulatorio.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-conventions">
             <thead>
               <tr>

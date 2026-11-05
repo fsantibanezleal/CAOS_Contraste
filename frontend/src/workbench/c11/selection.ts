@@ -3,11 +3,14 @@
 // The helpers find, name and map; the one count made here is the rolling 250-day exceedance count, a tally of the
 // exceedance days the document lists, which the tests check against the document's own maximum and final count.
 // Every VaR and ES the document holds is a positive loss, a decimal of the portfolio value (dossier 05 A.0).
+import { noteText } from '../c08/notes';
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { TestRow } from '../../lib/contract.types';
 import type { Bi } from '../c03/U6Shared';
+import { testText } from '../names';
+import { daySeconds } from '../../lib/days';
 
 export type C11Outputs = components['schemas']['c11Outputs'];
 export type C11Fit = components['schemas']['c11Fit'];
@@ -67,10 +70,10 @@ export const TEST_TEXT: Record<string, Bi> = {
   'market.mcneil_frey_residual_test': { en: 'McNeil-Frey exceedance residuals', es: 'Residuos de excedencia de McNeil-Frey' },
   'market.dynamic_quantile_test': { en: 'Dynamic quantile test', es: 'Prueba de cuantil dinámico' },
   'market.basel_traffic_light': { en: 'Basel traffic light', es: 'Semáforo de Basilea' },
-  'market.desk_backtest': { en: 'Desk back-test', es: 'Backtest de mesa' },
+  'market.desk_backtest': { en: 'Desk back-test', es: 'Prueba retrospectiva de la mesa' },
   'market.pla_test': { en: 'P&L attribution test', es: 'Prueba de atribución de P&L' },
 };
-export const testName = (id: string): Bi => TEST_TEXT[id] ?? { en: id, es: id };
+export const testName = (id: string): Bi => TEST_TEXT[id] ?? testText(id);
 
 export const ZONE_TEXT: Record<string, Bi> = {
   green: { en: 'Green', es: 'Verde' },
@@ -81,7 +84,8 @@ export const ZONE_TEXT: Record<string, Bi> = {
 
 export const LOSS_TEXT: Record<string, Bi> = {
   fz0: { en: 'FZ0 score', es: 'Puntaje FZ0' },
-  tick: { en: 'Tick loss', es: 'Pérdida tick' },
+  // the quantile (tick) loss is "pérdida cuantílica" in Spanish, as the Methodology writes it (R4 c14 NB2)
+  tick: { en: 'Tick loss', es: 'Pérdida cuantílica' },
 };
 
 export const DIRECTION_TEXT: Record<string, Bi> = {
@@ -99,6 +103,82 @@ export const WINDOW_TEXT: Record<string, Bi> = {
   'mixed-2023': { en: 'Mixed 2023', es: 'Mixta 2023' },
   'calm-2004-06': { en: 'Calm 2004 to 2006', es: 'Calma 2004 a 2006' },
 };
+
+/** The units a document names ("5 days", "draws"), in words. */
+export const UNIT_TEXT: Record<string, Bi> = {
+  days: { en: 'days', es: 'días' },
+  draws: { en: 'draws', es: 'extracciones' },
+  models: { en: 'models', es: 'modelos' },
+  'fz0-loss': { en: 'FZ0 loss', es: 'pérdida FZ0' },
+  units: { en: 'units', es: 'unidades' },
+  epochs: { en: 'epochs', es: 'épocas' },
+  starts: { en: 'starts', es: 'inicios' },
+};
+const UNIT_ONE: Record<string, Bi> = {
+  days: { en: 'day', es: 'día' },
+  draws: { en: 'draw', es: 'extracción' },
+  models: { en: 'model', es: 'modelo' },
+};
+/** A unit in words, in the singular for a value of one ("1 day", never "1 days"; U16-R2 b05 m4). */
+export const unitFor = (unit: string, value: number): Bi => (value === 1 && UNIT_ONE[unit] ? UNIT_ONE[unit] : text(UNIT_TEXT, unit));
+/** The hyperparameters a window lists beyond the named ones, in words. */
+export const HYPERPARAMETER_TEXT: Record<string, Bi> = {
+  caviar_refit_every_days: { en: 'CAViaR refit every', es: 'Reajuste CAViaR cada' },
+  hs_short_window: { en: 'Short historical-simulation window', es: 'Ventana corta de simulación histórica' },
+  // every key the documents list (R2b c12 B2: five printed as ids, in the Spanish view too)
+  hs_long_window: { en: 'Long historical-simulation window', es: 'Ventana larga de simulación histórica' },
+  gas_refit_every_days: { en: 'GAS refit every', es: 'Reajuste GAS cada' },
+  evt_refit_every_days: { en: 'EVT refit every', es: 'Reajuste EVT cada' },
+  z2_draws: { en: 'Z2 simulations', es: 'Simulaciones de Z2' },
+  mc_draws: { en: 'Monte Carlo simulations', es: 'Simulaciones de Monte Carlo' },
+  // the R10 quantile network (S-1 of the method tiers)
+  nn_hidden_units: { en: 'Network hidden units', es: 'Unidades ocultas de la red' },
+  nn_epochs: { en: 'Network training epochs', es: 'Épocas de entrenamiento de la red' },
+  nn_learning_rate: { en: 'Network learning rate', es: 'Tasa de aprendizaje de la red' },
+  nn_weight_decay: { en: 'Network weight decay', es: 'Decaimiento de pesos de la red' },
+  nn_n_starts: { en: 'Network seeded starts', es: 'Inicios con semilla de la red' },
+  nn_refit_every_days: { en: 'Network refit every', es: 'Reajuste de la red cada' },
+};
+
+/** The reasons a document gives for a score it could not compute, in Spanish (the document writes them in English). */
+export const REASON_ES: Record<string, string> = {
+  // the gender of the tables' translation (c08/notes.ts: "definido"), so the rail and the tables say the same (R3 c12 m16, R4 c14 m16)
+  'the model forecasts no ES: FZ0 is not defined': 'el modelo no pronostica ES: FZ0 no está definido',
+};
+
+/**
+ * The reasons the C11 producer writes since U16-F10c, without a plan-unit code or a decision id (R3 c12 B2, the 2026-10-27 ruling on raw
+ * ids), in Spanish; any other reason is read by the shared notes (c08/notes.ts), and English is never changed.
+ */
+const C11_REASONS: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es') => string]> = [
+  [/^challenger only: it must enter the (\d+) percent MCS on FZ0 out of sample, and the published run does not train it$/, (m, lang) => `solo retador: debe entrar al conjunto de confianza de modelos al ${formatNumber(Number(m[1]), lang, { decimals: 0 })} por ciento sobre FZ0 fuera de muestra, y la corrida publicada no lo entrena`],
+  [/^fewer than (\d+) forecast days \((\d+)\): the Basel traffic light of MAR(\d+\.\d+) is defined on (\d+) observations and the window has no lead-in$/, (m, lang) => `menos de ${formatNumber(Number(m[1]), lang, { decimals: 0 })} días de pronóstico (${formatNumber(Number(m[2]), lang, { decimals: 0 })}): el semáforo de Basilea de MAR${m[3]} se define sobre ${formatNumber(Number(m[4]), lang, { decimals: 0 })} observaciones y la ventana no tiene período previo`],
+  [/^no model is eligible: every model fails at least one gate$/, () => 'ningún modelo es elegible: cada modelo falla al menos una compuerta'],
+];
+
+/** A reason or note of a C11 document in the page's language. */
+export function reasonText(note: string | null | undefined, lang: 'en' | 'es'): string {
+  if (!note) return '';
+  if (lang === 'en') return note;
+  for (const [re, make] of C11_REASONS) {
+    const m = note.match(re);
+    if (m) return make(m, lang);
+  }
+  return noteText(note, lang);
+}
+
+/** The reference of a table of the framework in the language: "MAR32.9 Table 1" is "Tabla 1 de MAR32.9" (R3 c12 m11), each of the
+ * references a document joins with "; " and with its dossier locator after it (R4 c14 m11: "12 CFR 217.204 Table 1 (dossier 05 B.4)"). */
+export const tableRefText = (reference: string, lang: 'en' | 'es'): string =>
+  lang === 'en'
+    ? reference
+    : reference
+        .split('; ')
+        .map((part) => {
+          const m = /^(.+?) Table (\d+)( \(.*\))?$/.exec(part);
+          return m ? `Tabla ${m[2]} de ${m[1]}${m[3] ?? ''}` : part;
+        })
+        .join('; ');
 
 export const CLASS_TEXT: Record<string, Bi> = {
   equity: { en: 'Equity', es: 'Acciones' },
@@ -143,13 +223,13 @@ export function rungOf(sel: Pick<C11Sel, 'data'> | null, id: string): string {
 /** A loss as a percent of the portfolio value, two decimals: 0.84%. */
 export const lossPct = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
 
-/** A date of the document (an ISO day) as epoch seconds, for the time axis of a chart. */
-export const seconds = (day: string): number => Date.parse(`${day}T00:00:00Z`) / 1000;
+/** A date of the document (an ISO day) as epoch seconds at the reader's local midnight, for the time axis of a chart. */
+export const seconds = daySeconds;
 
 /** The one-line convention every view states (the full definition is in the Context and the models document). */
 export const CONVENTION_LINE: Bi = {
   en: 'VaR and ES are positive losses, decimals of the portfolio value: a VaR of 1% means a loss of 1% of its value.',
-  es: 'El VaR y la ES son pérdidas positivas, decimales del valor de la cartera: un VaR de 1% significa una pérdida de 1% de su valor.',
+  es: 'El VaR y la ES son pérdidas positivas, decimales del valor de la cartera: un VaR de 1 % significa una pérdida de 1 % de su valor.',
 };
 
 /** The sentence that says where the hyperparameters were fixed, before any test window (decision D1). */
@@ -194,3 +274,39 @@ export function defaultSel(data: CaseData | null): C11Sel | null {
   const test = levelOf(o, model, alpha)?.test_ids[0] ?? '';
   return { data, alpha, model, test };
 }
+
+/** How each rung of the ladder forms its expected shortfall (the document gives it in English only). */
+const ES_METHOD: Array<[string, string]> = [
+  ['tail mean of the sorted window', 'media de la cola de la ventana ordenada'],
+  ['tail integral of the interpolated weighted quantile function', 'integral de la cola de la función de cuantiles ponderada e interpolada'],
+  ['normal ES from the window mean and volatility', 'ES normal con la media y la volatilidad de la ventana'],
+  ['none: the Cornish-Fisher expansion gives the VaR only', 'ninguno: la expansión de Cornish-Fisher da solo el VaR'],
+  ['normal ES from the EWMA volatility', 'ES normal con la volatilidad EWMA'],
+  ['Student-t tail mean of the unit-variance innovation', 'media de la cola t de Student de la innovación de varianza unitaria'],
+  ['tail mean of the GARCH-filtered standardised residuals', 'media de la cola de los residuos estandarizados filtrados por GARCH'],
+  ['GPD tail ES, undefined for xi at or above 1', 'ES de la cola GPD, indefinido para xi igual o mayor que 1'],
+  ['none: CAViaR forecasts the VaR only', 'ninguno: CAViaR pronostica solo el VaR'],
+  ['autoregressive gap below the CAViaR VaR, fitted by the asymmetric Laplace likelihood', 'brecha autorregresiva bajo el VaR de CAViaR, ajustada con la verosimilitud de Laplace asimétrica'],
+  ['joint VaR and ES from one dynamic factor (FZ0 estimation)', 'VaR y ES conjuntos de un factor dinámico (estimación FZ0)'],
+  ['joint VaR and ES from two dynamic factors (FZ0 estimation)', 'VaR y ES conjuntos de dos factores dinámicos (estimación FZ0)'],
+  ['one dynamic factor with a log absolute return term (FZ0 estimation)', 'un factor dinámico con un término de log del retorno absoluto (estimación FZ0)'],
+  ['network output', 'salida de la red'],
+  ['second network output: the gap of the ES below the VaR, trained jointly on FZ0', 'segunda salida de la red: la brecha de la ES bajo el VaR, entrenada junto con él sobre FZ0'],
+];
+export const esMethodText = (method: string, lang: 'en' | 'es'): string => (lang === 'en' ? method : (ES_METHOD.find(([en]) => en === method)?.[1] ?? method));
+
+/** The source of a rung ("historical simulation (textbook; Pritsker 2001)"): the citation stays, its English remarks are translated. */
+export const rungSourceText = (source: string, lang: 'en' | 'es'): string =>
+  lang === 'en'
+    ? source
+    : source
+        .replace('historical simulation (textbook;', 'simulación histórica (libro de texto;')
+        .replace('(preprint; challenger only)', '(preimpresión; solo retador)')
+        .replace('a small network after the neural joint VaR and ES line,', 'una red pequeña según la línea neuronal de VaR y ES conjuntos,')
+        .replace('; two-step estimation declared in the engine', '; estimación en dos pasos declarada en el motor')
+        // the authors joined with "y", the locators in Spanish; the titles and the journals stay (R3 c12 m11)
+        // a name may carry a capital inside it, "McNeil and Frey 2000" (R4 c14 m11)
+        .replace(/, ([A-Z][A-Za-z'-]+) and ([A-Z][A-Za-z'-]+) (\d{4})/g, ', $1 y $2 $3')
+        .replace(/^([A-Z][A-Za-z'-]+) and ([A-Z][A-Za-z'-]+) (\d{4})/, '$1 y $2 $3')
+        .replace(/\beq (\d+)/g, 'ec. $1')
+        .replace(/\bsection (\d)/g, 'sección $1');

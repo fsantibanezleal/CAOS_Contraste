@@ -17,7 +17,9 @@ from riskvalidation.lgd_ead import floors as rv_floors
 from riskvalidation.lgd_ead import workout as rv_work
 from riskvalidation.validation import lgd_ead as rv_val
 
+from ...core.text import light, number
 from . import build as bd
+from . import ml_benchmark as ml
 from .cutoff import cutoff_for, open_workout_mask, training_mask
 from .downturn import DownturnPlan
 from .ladder import EPSILONS, RUNGS, Ladder, RungFit, fit_ladder
@@ -175,10 +177,10 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
     floors_bite = {
         "regime": bd.REGIME, "rows": floor_rows,
         "note": bd.t(
-            f"Floors of dossier 01 A.5 applied to the {ref.rung_id} predictions of the cohort, by segment; the SBA file has no "
+            f"Floors of dossier 01 A.5 applied to the {bd.RUNG_TEXT[ref.rung_id][1][0]} predictions of the cohort, by segment; the SBA file has no "
             "collateral field, so the collateral is inferred from the term and the revolving status (lines of credit and loans up to "
             "7 years as unsecured, 7 to 20 years as other physical, 20 years or more as real estate). The bite is the mean uplift.",
-            f"Pisos del dossier 01 A.5 aplicados a las predicciones de {ref.rung_id} de la cohorte, por segmento; el archivo SBA no "
+            f"Pisos del dossier 01 A.5 aplicados a las predicciones de {bd.RUNG_TEXT[ref.rung_id][1][1]} de la cohorte, por segmento; el archivo SBA no "
             "tiene campo de garantía, de modo que la garantía se infiere del plazo y de si es línea rotativa (líneas y préstamos de "
             "hasta 7 años como sin garantía, de 7 a 20 años como otra física, de 20 años o más como inmobiliaria). El efecto es el "
             "alza media."),
@@ -199,33 +201,88 @@ def bake_variant(defaults: Defaults, cohort_id: str, seed: int, down: DownturnPl
     cal_ref = next(t for t in tests if t["test_id"] == "lgd_ead.lgd_calibration_by_segment" and t["model_id"] == ref.rung_id
                    and t["segment"] == seg)
     impact = {
-        "mean_lgd_proxy": {"value": float(y_test.mean()), "unit": "share", "label": bd.t("Mean LGD proxy of the cohort", "LGD proxy media de la cohorte")},
+        "mean_lgd_proxy": {"value": float(y_test.mean()), "unit": "share", "label": bd.t("Mean LGD proxy of the cohort", "LGD aproximada media de la cohorte")},
         "calibration_gap_reference": {"value": comparison[[c["rung_id"] for c in comparison].index(ref.rung_id)]["calibration_gap"],
-                                      "unit": "share", "label": bd.t(f"Mean realised minus mean predicted LGD, {ref.rung_id}",
-                                                                      f"LGD realizada media menos predicha media, {ref.rung_id}")},
+                                      "unit": "share", "label": bd.t(f"Mean realised minus mean predicted LGD, {bd.RUNG_TEXT[ref.rung_id][1][0]}",
+                                                                      f"LGD realizada media menos predicha media, {bd.RUNG_TEXT[ref.rung_id][1][1]}")},
         "downturn_add_on": {"value": float(down.downturn - down.long_run), "unit": "share",
                             "label": bd.t("Downturn add-on to the long-run LGD", "Ajuste de recesión sobre la LGD de largo plazo")},
     }
-    findings = _findings(cal_ref, ref.rung_id, seg, down)
+    impact["ml_rmse_gain"] = _ml_impact(comparison)
+    findings = _findings(cal_ref, ref.rung_id, seg, down, tests)
     values = {f"mean-proxy@{cohort_id}": float(y_test.mean())}
     return VariantResult(bd.variant_id(cohort_id), cohort_id, cutoff, ladder, outputs, tests, impact, findings, int(train.n),
                          n_open, values)
 
 
-def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -> list[dict[str, Any]]:
+def _ml_impact(comparison: list[dict[str, Any]]) -> dict[str, Any]:
+    """S-5: the lowest RMSE of the six rungs before the machine-learning rungs minus the lowest of the two new rungs (positive: the new
+    rungs win). Null with its reason in the label when a new rung was not fitted: a number is never stood in."""
+    ids = {c["rung_id"] for c in comparison}
+    if not all(rid in ids for rid in ml.ML_RUNGS):
+        return {"value": None, "unit": "share",
+                "label": bd.t("RMSE gain of the machine-learning rungs: not evaluated (a rung was not fitted)",
+                              "Mejora de RMSE de las etapas de aprendizaje automático: no evaluada (una etapa no se ajustó)")}
+    res = ml.cohort_result(comparison)
+    return {"value": float(res["gain"]), "unit": "share",
+            "label": bd.t("Lowest RMSE of the six earlier rungs minus the lowest of the random forest and the neural network (positive: they win)",
+                          "RMSE más bajo de las seis etapas anteriores menos el más bajo entre el bosque aleatorio y la red neuronal (positivo: ganan)")}
+
+
+def _p_text(p: float, lang: str) -> str:
+    """A p-value of a finding title: two decimals, more for a small one, no trailing zero ("0.17", "0.2", "0.004")."""
+    if p < 1e-4:
+        return "< " + number(1e-4, 4, lang=lang)
+    decimals = max(2, -int(np.floor(np.log10(p))))
+    text = number(p, decimals, lang=lang)
+    sep = "." if lang == "en" else ","
+    return text.rstrip("0").rstrip(sep) if sep in text else text
+
+
+def _coverage_text(row: dict[str, Any], test: dict[str, Any] | None, lang: str, *, alone: bool) -> str:
+    """The shortfall of an uncovered cohort and the verdict of its coverage test (R4 c10 n3: the open finding cited a test that passed)."""
+    pts = number(100.0 * row["shortfall"], 2, lang=lang)
+    by = {"en": f"by {pts} points", "es": f"por {pts} puntos"}[lang]
+    if test is None or test["p_value"] is None:
+        return by
+    p = f"p {_p_text(test['p_value'], lang)}, {light(test['light'], lang)}"
+    if not alone:
+        return f"{by} ({p})"
+    if test["light"] == "green":
+        return {"en": f"{by}, within the noise of its coverage test ({p})", "es": f"{by}, dentro del ruido de su prueba de cobertura ({p})"}[lang]
+    return {"en": f"{by}, and its coverage test rejects the coverage ({p})", "es": f"{by}, y su prueba de cobertura rechaza la cobertura ({p})"}[lang]
+
+
+def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan, tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     if cal["light"] in ("amber", "red") and cal["metric"] is not None:
         sign_en, sign_es = ("under-predicts", "subestima") if cal["metric"] > 0 else ("over-predicts", "sobreestima")
         out.append({"id": f"F-cal-{rung_id}", "severity": "S2" if cal["light"] == "red" else "S3", "status": "open",
                     "evidence": [f"lgd_ead.lgd_calibration_by_segment@{rung_id}@{seg}"],
-                    "title": bd.t(f"{rung_id} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
-                                  f"{rung_id} {sign_es} la LGD proxy realizada de la cohorte en {abs(cal['metric']) * 100:.1f} puntos")})
+                    "title": bd.t(f"{bd.RUNG_TEXT[rung_id][1][0]} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
+                                  f"{bd.RUNG_TEXT[rung_id][1][1]} {sign_es} la LGD aproximada realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
     uncovered = [r for r in down.rows if not r["covered"]]
     if uncovered:
-        ids = ", ".join(r["cohort_id"] for r in uncovered)
+        cov = {t["segment"]: t for t in tests if t["test_id"] == "lgd_ead.downturn_coverage"}
+
+        def test_of(r: dict[str, Any]) -> dict[str, Any] | None:
+            return cov.get(f"cohort-{r['cohort_id']}")
+
+        ids = [r["cohort_id"] for r in uncovered]
+        # one cohort is "the cohort", several "the cohorts ... and ..." (R3 c09 m6); each with its shortfall and the light of its
+        # coverage test, so a shortfall within the test's noise is not read as a failed test (R4 c10 n3)
+        if len(ids) == 1:
+            r = uncovered[0]
+            en = f"of the cohort {ids[0]} {_coverage_text(r, test_of(r), 'en', alone=True)}"
+            es = f"de la cohorte {ids[0]} {_coverage_text(r, test_of(r), 'es', alone=True)}"
+        else:
+            each_en = ", ".join(f"{r['cohort_id']} {_coverage_text(r, test_of(r), 'en', alone=False)}" for r in uncovered)
+            each_es = ", ".join(f"{r['cohort_id']} {_coverage_text(r, test_of(r), 'es', alone=False)}" for r in uncovered)
+            en = f"of the cohorts {', '.join(ids[:-1])} and {ids[-1]}: {each_en}"
+            es = f"de las cohortes {', '.join(ids[:-1])} y {ids[-1]}: {each_es}"
         out.append({"id": "F-downturn-coverage", "severity": "S3", "status": "open", "evidence": ["lgd_ead.downturn_coverage"],
-                    "title": bd.t(f"The downturn LGD does not cover the realised loss of the cohorts {ids}",
-                                  f"La LGD de recesión no cubre la pérdida realizada de las cohortes {ids}")})
+                    "title": bd.t(f"The downturn LGD falls short of the realised loss {en}",
+                                  f"La LGD de recesión queda bajo la pérdida realizada {es}")})
     return out
 
 

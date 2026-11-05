@@ -2,12 +2,13 @@
 // selected account, the SICR scatter with the multiplier, floor and threefold lines, and the non-linearity panel.
 // Each draws what the c06-outputs document carries; the lines of the SICR rule are drawn from the document's own
 // `settings.sicr`, never from constants of this file.
-import { PlotCard, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { provenanceOf, REPLAY } from '../model';
 import { Pending } from '../Pending';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber, segmentLabel } from './format';
 import { outputsOf, type C06Outputs, type C06Sel } from './selection';
+import { PCT_AXIS } from './ValidationViews';
 
 const WEIGHTED: BiText = { en: 'Probability-weighted', es: 'Ponderada por probabilidad' };
 const SCENARIO_COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good'];
@@ -16,7 +17,7 @@ const TRIGGER_TEXT: Record<string, BiText> = {
   none: { en: 'none', es: 'ninguno' },
   'relative-absolute': { en: 'multiplier and floor', es: 'multiplicador y piso' },
   threefold: { en: 'threefold', es: 'triple' },
-  'dpd-backstop': { en: '30 dpd backstop', es: 'respaldo de 30 dpd' },
+  'dpd-backstop': { en: '30 days past due backstop', es: 'respaldo de 30 días de mora' },
   forbearance: { en: 'forbearance', es: 'refinanciación' },
   'watch-list': { en: 'watch list', es: 'lista de vigilancia' },
   default: { en: 'default', es: 'incumplimiento' },
@@ -71,15 +72,15 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
         dataKey={stateKey}
         note={{
           en: 'h(t) is the conditional PD of a period given survival, q(t) = S(t-1) h(t) its unconditional (marginal) PD and F(t) the sum of q: the document names both. The weighted curve is the probability-weighted PD; the dashed pair is the selected account, its origination curve against the current one over the same remaining window.',
-          es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par segmentado es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
+          es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par discontinuo es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
         }}
       >
-        <ChartOverTable
+        <ChartOverTable chartMin="18rem"
           chart={
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'Months after the reporting date', es: 'Meses desde la fecha de reporte' }, format: { decimals: 0 } }}
-          y={{ label: m.label, format: { percent: true, digits: 2 } }}
+          y={{ label: m.label, format: PCT_AXIS }}
           series={series}
         />
           }
@@ -118,6 +119,29 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
   );
 }
 
+/**
+ * The note of the non-linearity panel, each comparison stated as the committed numbers give it (R3 c07 B1: at Dec 2010 the index is
+ * -0.07 % and the note said averaging first would understate the loss). The PD comparison reads the two PDs; the loss conclusion
+ * reads the sign of the ECL index (ECL weighted over ECL at the mean path, minus 1).
+ */
+export function nonLinearityNote(n: C06Outputs['non_linearity']): BiText {
+  const mz = (lang: 'en' | 'es') => formatNumber(n.mean_z, lang, { decimals: 2 });
+  const pdSide: BiText = n.pd_weighted >= n.pd_at_mean_z
+    ? { en: 'The weighted PD sits above the PD at the weighted-average factor', es: 'La PD ponderada queda sobre la PD en el factor promedio ponderado' }
+    : { en: 'The weighted PD sits below the PD at the weighted-average factor', es: 'La PD ponderada queda bajo la PD en el factor promedio ponderado' };
+  const idx = (lang: 'en' | 'es') => pct(n.index, lang, 2);
+  const loss: BiText = n.index >= 0
+    ? { en: `The ECL index is ${idx('en')}: averaging the scenarios first would understate the loss.`, es: `El índice de la PCE es ${idx('es')}: promediar primero los escenarios subestimaría la pérdida.` }
+    : {
+        en: `The ECL index is ${idx('en')}: the weighted ECL is below the ECL at the mean path, because the loss of a path is not its PD alone, so here averaging the scenarios first would overstate the loss.`,
+        es: `El índice de la PCE es ${idx('es')}: la PCE ponderada queda bajo la PCE en la trayectoria media, porque la pérdida de una trayectoria no es solo su PD, así que aquí promediar primero los escenarios sobrestimaría la pérdida.`,
+      };
+  return {
+    en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. ${pdSide.en} (mean z = ${mz('en')}). ${loss.en}`,
+    es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. ${pdSide.es} (z medio = ${mz('es')}). ${loss.es}`,
+  };
+}
+
 /** The log-spaced x grid of the SICR lines, with the schedule boundaries on it. */
 function sicrGrid(o: C06Outputs): number[] {
   const xs = o.sicr_points.flatMap((p) => [p.pd_origination_annualised, p.pd_current_annualised]);
@@ -145,11 +169,14 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
   const grid = sicrGrid(o);
   const stages = ['stage1', 'stage2', 'stage3', 'poci'] as const;
   const used = stages.filter((st) => o.sicr_points.some((p) => p.stage === st));
+  // a PD above 100% cannot be reached: a line of the rule is drawn only where it can be crossed, so the axis does not run to 1,000%
+  const reachable = (v: number): number | null => (v > 1 ? null : v);
   const series = [
     { label: { en: 'No change (current = origination)', es: 'Sin cambio (actual = originación)' }, values: grid.map((x) => x), color: '--color-fg-faint' as ShellColorToken, width: 1, dash: [2, 4] },
-    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => multiplierAt(o, x) * x), color: '--color-warn' as ShellColorToken, width: 1.8 },
-    { label: { en: 'Absolute floor', es: 'Piso absoluto' }, values: grid.map((x) => x + s.absolute_floor), color: '--color-magenta' as ShellColorToken, width: 1.4, dash: [6, 3] },
-    { label: { en: `Threefold backstop (x${s.threefold_ratio})`, es: `Respaldo del triple (x${s.threefold_ratio})` }, values: grid.map((x) => s.threefold_ratio * x), color: '--color-bad' as ShellColorToken, width: 1.8, dash: [8, 3] },
+    // the schedule in the subtle ink, apart from the Stage 2 points (warn; R3 c07 m2)
+    { label: { en: 'Multiplier schedule', es: 'Tabla de multiplicadores' }, values: grid.map((x) => reachable(multiplierAt(o, x) * x)), color: '--color-fg-subtle' as ShellColorToken, width: 1.8 },
+    { label: { en: 'Absolute floor', es: 'Piso absoluto' }, values: grid.map((x) => reachable(x + s.absolute_floor)), color: '--color-magenta' as ShellColorToken, width: 1.4, dash: [6, 3] },
+    { label: { en: `Threefold backstop (x${s.threefold_ratio})`, es: `Respaldo del triple (x${s.threefold_ratio})` }, values: grid.map((x) => reachable(s.threefold_ratio * x)), color: '--color-bad' as ShellColorToken, width: 1.8, dash: [8, 3] },
     ...used.map((st) => ({
       label: STAGE_TEXT[st],
       values: grid.map((x) => {
@@ -161,8 +188,17 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
       size: 11,
     })),
   ];
+  // the sampled accounts (400) are drawn; the table counts them by stage and trigger, so the card reads whole at 1280 and a phone page
+  // is not 22,500 px of rows (R2b c07, the ruling of 2026-10-24 on long tables); one account is read on the chart or in the rail
+  const groups = [...new Set(o.sicr_points.map((p) => `${p.stage}|${p.trigger}`))]
+    .map((k) => {
+      const [stage, trigger] = k.split('|');
+      return { stage, trigger, n: o.sicr_points.filter((p) => p.stage === stage && p.trigger === trigger).length };
+    })
+    .sort((a, b) => stages.indexOf(a.stage as (typeof stages)[number]) - stages.indexOf(b.stage as (typeof stages)[number]) || b.n - a.n);
+  const total = o.sicr_points.length;
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={{ en: 'SICR: annualised PD at origination against now', es: 'SICR: PD anualizada en la originación contra hoy' }}
@@ -170,60 +206,87 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Log axes. An account above a line has had its risk rise past that test. Only the 30 dpd and 90 dpd presumptions are IFRS 9; the multiplier schedule and the absolute floor are Contraste policy, and the threefold ratio is an EBA supervisory expectation, not law.',
-          es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones de 30 y 90 dpd son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
+          en: 'Log axes. An account above a line has had its risk rise past that test. Only the presumptions at 30 and 90 days past due are IFRS 9; the multiplier schedule and the absolute floor are Contraste policy, and the threefold ratio is an EBA supervisory expectation, not law.',
+          es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones a 30 y 90 días de mora son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
         }}
       >
-        <ChartOverTable
-          chart={
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'PD at origination (annualised)', es: 'PD en la originación (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           y={{ label: { en: 'PD now (annualised)', es: 'PD hoy (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           series={series}
         />
-          }
-        >
-        <div>
-          <ul className="ct-evidence" data-table="sicr-rule">
-            {s.multiplier_schedule.map((m) => (
-              <li key={m.pd_origination_upper} data-multiplier={m.multiplier}>
-                {pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}: the PD must reach ${m.multiplier} times`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}: la PD debe llegar a ${m.multiplier} veces` }, lang)}
-              </li>
-            ))}
-            <li data-floor={s.absolute_floor}>{pick({ en: `and rise by at least ${pct(s.absolute_floor, 'en', 2)} in absolute terms`, es: `y subir al menos ${pct(s.absolute_floor, 'es', 2)} en términos absolutos` }, lang)}</li>
-            <li data-threefold={s.threefold_ratio}>{pick({ en: `or reach ${s.threefold_ratio} times the origination PD (backstop)`, es: `o llegar a ${s.threefold_ratio} veces la PD de originación (respaldo)` }, lang)}</li>
-            <li data-dpd={s.dpd_backstop}>{pick({ en: `${s.dpd_backstop} days past due (presumption) and ${s.default_dpd} (default)`, es: `${s.dpd_backstop} días de mora (presunción) y ${s.default_dpd} (incumplimiento)` }, lang)}</li>
-            <li data-lcr={String(s.low_credit_risk_pd)}>
-              {s.low_credit_risk_pd === null
-                ? pick({ en: 'No low-credit-risk exemption is used.', es: 'No se usa la exención de bajo riesgo de crédito.' }, lang)
-                : pick({ en: `Low-credit-risk exemption at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less.`, es: `Exención de bajo riesgo de crédito con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos.` }, lang)}
-            </li>
-          </ul>
-          <table className="caos-table" data-table="sicr-points">
+      </PlotCard>
+      <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <div className="ct-scroll" data-caos-flow="">
+          {/* the rule as a table of test and condition: with the counts below, the card's tables span it, so the gate counts
+              the card as drawn at 1280 (a list above one small table drew on 23% of its stage, G6) */}
+          <table className="caos-table ct-wrap-head" data-table="sicr-rule">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Account', es: 'Cuenta' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
-                <th>{pick({ en: 'Origination', es: 'Originación' }, lang)}</th>
-                <th>{pick({ en: 'Now', es: 'Hoy' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Condition', es: 'Condición' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
-              {o.sicr_points.map((p) => (
-                <tr key={p.account_id} data-account={p.account_id} data-trigger={p.trigger}>
-                  <td className="ct-text">{p.account_id}</td>
-                  <td className="ct-text">{pick(STAGE_TEXT[p.stage], lang)}</td>
-                  <td>{pct(p.pd_origination_annualised, lang, 2)}</td>
-                  <td>{pct(p.pd_current_annualised, lang, 2)}</td>
-                  <td className="ct-text">{pick(TRIGGER_TEXT[p.trigger] ?? { en: p.trigger, es: p.trigger }, lang)}</td>
+              {s.multiplier_schedule.map((m) => (
+                <tr key={m.pd_origination_upper} data-multiplier={m.multiplier}>
+                  <td className="ct-text">{pick({ en: `Origination PD up to ${pct(m.pd_origination_upper, 'en', 2)}`, es: `PD de originación hasta ${pct(m.pd_origination_upper, 'es', 2)}` }, lang)}</td>
+                  <td className="ct-text">{pick({ en: `the PD must reach ${formatNumber(m.multiplier, 'en', { decimals: 1 })} times`, es: `la PD debe llegar a ${formatNumber(m.multiplier, 'es', { decimals: 1 })} veces` }, lang)}</td>
+                </tr>
+              ))}
+              <tr data-floor={s.absolute_floor}>
+                <td className="ct-text">{pick({ en: 'Absolute floor', es: 'Piso absoluto' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `and rise by at least ${pct(s.absolute_floor, 'en', 2)} in absolute terms`, es: `y subir al menos ${pct(s.absolute_floor, 'es', 2)} en términos absolutos` }, lang)}</td>
+              </tr>
+              <tr data-threefold={s.threefold_ratio}>
+                <td className="ct-text">{pick({ en: 'Threefold backstop', es: 'Respaldo del triple' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `or reach ${formatNumber(s.threefold_ratio, 'en', { decimals: 1 })} times the origination PD`, es: `o llegar a ${formatNumber(s.threefold_ratio, 'es', { decimals: 1 })} veces la PD de originación` }, lang)}</td>
+              </tr>
+              <tr data-dpd={s.dpd_backstop}>
+                <td className="ct-text">{pick({ en: 'Days past due', es: 'Días de mora' }, lang)}</td>
+                <td className="ct-text">{pick({ en: `${s.dpd_backstop} (presumption) and ${s.default_dpd} (default)`, es: `${s.dpd_backstop} (presunción) y ${s.default_dpd} (incumplimiento)` }, lang)}</td>
+              </tr>
+              <tr data-lcr={String(s.low_credit_risk_pd)}>
+                <td className="ct-text">{pick({ en: 'Low-credit-risk exemption', es: 'Exención de bajo riesgo de crédito' }, lang)}</td>
+                <td className="ct-text">
+                  {s.low_credit_risk_pd === null
+                    ? pick({ en: 'not used', es: 'no se usa' }, lang)
+                    : pick({ en: `at an annualised PD of ${pct(s.low_credit_risk_pd, 'en', 2)} or less`, es: `con PD anualizada de ${pct(s.low_credit_risk_pd, 'es', 2)} o menos` }, lang)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="ct-note" data-accounts={total}>
+            {pick(
+              {
+                en: `${formatNumber(total, 'en', { decimals: 0 })} sampled accounts are drawn; the table counts them by stage and trigger. Point at an account on the chart to read it, or pick one in the rail's Account section.`,
+                es: `Se dibujan ${formatNumber(total, 'es', { decimals: 0 })} cuentas muestreadas; la tabla las cuenta por etapa y gatillo. Apunte a una cuenta en el gráfico para leerla, o elija una en la sección Cuenta del panel.`,
+              },
+              lang,
+            )}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="sicr-summary">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Trigger', es: 'Gatillo' }, lang)}</th>
+                <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Participación' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map((g) => (
+                <tr key={`${g.stage}-${g.trigger}`} data-stage={g.stage} data-trigger={g.trigger}>
+                  <td className="ct-text">{pick(STAGE_TEXT[g.stage] ?? { en: g.stage, es: g.stage }, lang)}</td>
+                  <td className="ct-text">{pick(TRIGGER_TEXT[g.trigger] ?? { en: g.trigger, es: g.trigger }, lang)}</td>
+                  <td>{formatNumber(g.n, lang, { decimals: 0 })}</td>
+                  <td>{pct(g.n / total, lang, 1)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );
@@ -252,27 +315,24 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
   const rows: Array<{ id: string; label: BiText; value: number; format: (v: number) => string }> = [
     { id: 'pd-weighted', label: { en: 'Weighted PD, E[PD(z)]', es: 'PD ponderada, E[PD(z)]' }, value: n.pd_weighted, format: (v) => pct(v, lang, 3) },
     { id: 'pd-at-mean', label: { en: 'PD at the weighted-average factor', es: 'PD en el factor promedio ponderado' }, value: n.pd_at_mean_z, format: (v) => pct(v, lang, 3) },
-    { id: 'ecl-weighted', label: { en: 'ECL, weighted scenarios', es: 'PCE, escenarios ponderados' }, value: n.ecl_weighted, format: (v) => money(v, lang, n.currency) },
-    { id: 'ecl-mean', label: { en: 'ECL at the mean path', es: 'PCE en la trayectoria media' }, value: n.ecl_at_mean_path, format: (v) => money(v, lang, n.currency) },
-    { id: 'index', label: { en: 'Non-linearity index, ECL weighted / ECL at the mean path - 1', es: 'Índice de no linealidad, PCE ponderada / PCE en la trayectoria media - 1' }, value: n.index, format: (v) => pct(v, lang, 2) },
+    { id: 'ecl-weighted', label: { en: `ECL, weighted scenarios (${n.currency})`, es: `PCE, escenarios ponderados (${n.currency})` }, value: n.ecl_weighted, format: (v) => money(v, lang, n.currency) },
+    { id: 'ecl-mean', label: { en: `ECL at the mean path (${n.currency})`, es: `PCE en la trayectoria media (${n.currency})` }, value: n.ecl_at_mean_path, format: (v) => money(v, lang, n.currency) },
+    { id: 'index', label: { en: 'Nonlinearity index, ECL weighted / ECL at the mean path - 1', es: 'Índice de no linealidad, PCE ponderada / PCE en la trayectoria media - 1' }, value: n.index, format: (v) => pct(v, lang, 2) },
   ];
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
-        title={{ en: 'Non-linearity: the PD is convex in the systematic factor', es: 'No linealidad: la PD es convexa en el factor sistemático' }}
+        title={{ en: 'Nonlinearity: the PD is convex in the systematic factor', es: 'No linealidad: la PD es convexa en el factor sistemático' }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{
-          en: `One-factor model with PD through the cycle ${pct(n.parameters.pd_ttc, 'en', 2)} and correlation ${pct(n.parameters.rho, 'en', 0)}. The weighted PD sits above the PD at the weighted-average factor (mean z = ${n.mean_z}): averaging the scenarios first would understate the loss.`,
-          es: `Modelo de un factor con PD a través del ciclo ${pct(n.parameters.pd_ttc, 'es', 2)} y correlación ${pct(n.parameters.rho, 'es', 0)}. La PD ponderada queda sobre la PD en el factor promedio ponderado (z medio = ${String(n.mean_z).replace('.', ',')}): promediar primero los escenarios subestimaría la pérdida.`,
-        }}
+        note={nonLinearityNote(n)}
       >
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'Systematic factor z (negative is adverse)', es: 'Factor sistemático z (negativo es adverso)' }, format: { decimals: 1 } }}
-          y={{ label: { en: 'Conditional PD', es: 'PD condicional' }, format: { percent: true, digits: 2 } }}
+          y={{ label: { en: 'Conditional PD', es: 'PD condicional' }, format: PCT_AXIS }}
           yMarks={[
             { y: n.pd_weighted, label: { en: 'Weighted PD', es: 'PD ponderada' }, tone: 'warn' },
             { y: n.pd_at_mean_z, label: { en: 'PD at the mean factor', es: 'PD en el factor medio' }, tone: 'neutral' },
@@ -281,7 +341,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The panel in numbers', es: 'El panel en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="non-linearity">
             <tbody>
               {rows.map((r) => (
@@ -305,7 +365,7 @@ export function NonLinearityView({ sel }: { sel: C06Sel | null }) {
               {n.scenario_points.map((p) => (
                 <tr key={p.scenario_id} data-scenario={p.scenario_id}>
                   <td className="ct-text">{pick(o.scenarios.find((s) => s.id === p.scenario_id)?.label ?? { en: p.scenario_id, es: p.scenario_id }, lang)}</td>
-                  <td>{pick({ en: String(p.z), es: String(p.z).replace('.', ',') }, lang)}</td>
+                  <td>{formatNumber(p.z, lang, { decimals: 2 })}</td>
                   <td>{pct(p.weight, lang, 0)}</td>
                   <td>{pct(p.pd_pit, lang, 3)}</td>
                 </tr>

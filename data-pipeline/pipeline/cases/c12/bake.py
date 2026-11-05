@@ -27,6 +27,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...core.schemas import validate_document
 from ...io import contract as c1
 from ...io import sources as registry
@@ -261,7 +262,7 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
             "cva": {"value": out["cva_dva"]["cva"]["amount"], "unit": "USD", "label": vt.text("CVA", "CVA")},
             "eepe": {"value": out["exposure"]["eepe"]["amount"], "unit": "USD", "label": vt.text("Effective EPE", "EPE efectivo")}}
         docs[sp.variant] = build_artifact(case_id=CASE_ID, variant_id=sp.variant, model=_model_summaries(ev, fit.a, fit.sigma), outputs=out,
-                                          tests=rows, impact=impact, findings=vt.findings_of(rows), lineage=lineage, lane=lane)
+                                          tests=with_reference_text(rows), impact=impact, findings=vt.findings_of(rows), lineage=lineage, lane=lane)
         values[f"sa_ccr_ead_{sp.variant.replace('-', '_')}_usd"] = out["sa_ccr"]["ead"]["amount"]
         values[f"eepe_{sp.variant.replace('-', '_')}_usd"] = out["exposure"]["eepe"]["amount"]
         values[f"cva_{sp.variant.replace('-', '_')}_usd"] = out["cva_dva"]["cva"]["amount"]
@@ -316,21 +317,25 @@ def _sum(root: Path, rel: str) -> str:
 
 
 TITLES = {
-    "single-swap": ("Single swap", "Un swap", "One 10 year payer swap of 10M USD, uncollateralised.", "Un swap pagador a 10 años de 10M USD, sin colateral."),
-    "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro swaps bajo un acuerdo de neteo, sin colateral."),
-    "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR 10 días", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 días hábiles."),
-    "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR 20 días", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 días hábiles."),
-    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (un proxy de regresión, no SIMM)."),
-    "wrong-way-risk": ("Wrong-way risk", "Riesgo de dirección equivocada", "The netting set with a counterparty hazard that rises with the portfolio value.", "El conjunto de neteo con un hazard de la contraparte que sube con el valor del portafolio."),
+    "single-swap": ("Single swap", "Una sola permuta", "One 10 year payer swap of 10M USD, uncollateralised.", "Una permuta pagadora a 10 años de 10M USD, sin colateral."),
+    "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro permutas bajo un acuerdo de neteo, sin colateral."),
+    "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR de 10 días", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 días hábiles."),
+    "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR de 20 días", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 días hábiles."),
+    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (una aproximación por regresión, no SIMM)."),
+    "wrong-way-risk": ("Wrong-way risk", "Riesgo de correlación adversa", "The netting set with a counterparty hazard that rises with the portfolio value.", "El conjunto de neteo con una tasa de riesgo de la contraparte que sube con el valor del portafolio."),
 }
+
+
+#: the regime of every C12 document in the manifest (R4 c15 B1: "permutas" in Spanish, ruling 6 of 2026-10-27)
+REGIME = vt.text("US Treasury curves read up to the date, a synthetic USD swap book, ORE and QuantLib as references.",
+                 "Curvas del Tesoro de EE. UU. leídas hasta la fecha, un libro sintético de permutas en USD, ORE y QuantLib como referencias.")
 
 
 def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_dir: Path | None = None, **kw: Any) -> dict[str, Any]:
     built = build(seed, data_root, ore_inputs_dir=INPUT_DIR_DEFAULT if ore_inputs_dir is None else ore_inputs_dir, **kw)
     root = Path(paths.root)
     entries, sums = [], []
-    regime = vt.text("US Treasury curves read up to the date, a synthetic USD swap book, ORE and QuantLib as references.",
-                     "Curvas del Tesoro de EE. UU. leídas hasta la fecha, un libro sintético de swaps en USD, ORE y QuantLib como referencias.")
+    regime = REGIME
     e = _check_and_write(root, MODELS_REL, built.models, "models")
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",
@@ -356,6 +361,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_di
     from ...registry import category as registry_category
 
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=dict(CASE.title), category=dict(registry_category(CASE.category_id)),
         question=dict(CASE.question), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT,
         contract=built.contract, expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))

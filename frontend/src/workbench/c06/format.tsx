@@ -1,7 +1,7 @@
 // What the provisions instruments (C06 and C07) share: the number formats, the "not available, with its reason" cell,
 // the text of the four stages and the colour of each stage as a shell token. Nothing here computes a statistic.
 import { formatNumber, pick, useShellLang, type BiText, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 /** The stages of the contracts, with the words a reader uses. */
 export type StageId = 'stage1' | 'stage2' | 'stage3' | 'poci';
@@ -50,12 +50,14 @@ export function MaybeNumber({ value, reason, format }: { value: number | null; r
 
 /**
  * An amount for a place that is narrow (the rail's read-outs, an axis): the value scaled to billions or millions with
- * the unit that says so ("19.6 bn USD", "19,6 mil M USD"), never an eleven-digit amount. The table beside a drawing
+ * the unit that says so ("19.6 bn USD", "19,6 mil M USD", "3.2 mn USD"), never an eleven-digit amount. The table beside a drawing
  * keeps the whole amount; a null stays null so the read-out says "not available" in the same unit.
  */
 export function compactMoney(v: number | null | undefined, currency: string): { value: number | null; unit: BiText; format: FormatOptions } {
   const a = v === null || v === undefined || !Number.isFinite(v) ? 0 : Math.abs(v);
-  const [div, en, es] = a >= 1e9 || a === 0 ? [1e9, 'bn', 'mil M'] : a >= 1e6 ? [1e6, 'm', 'M'] : [1, '', ''];
+  // a million is "mn" in English, never "m", which reads as milli (R3 c13 m8); zero keeps the billion unit, so a read-out of several
+  // amounts keeps one unit (the C15 rail names it once, in its title)
+  const [div, en, es] = a >= 1e9 || a === 0 ? [1e9, 'bn', 'mil M'] : a >= 1e6 ? [1e6, 'mn', 'M'] : [1, '', ''];
   const unit: BiText = div === 1 ? { en: currency, es: currency } : { en: `${en} ${currency}`, es: `${es} ${currency}` };
   return { value: v === null || v === undefined || !Number.isFinite(v) ? null : v / div, unit, format: { digits: 4 } };
 }
@@ -106,11 +108,11 @@ export function alignTo(xs: readonly number[], ys: readonly number[], grid: read
  * drawing (ADR-0071 rule 8), not a short table beside it.
  */
 export function ChartOverTable({ chart, children, chartMin = '15rem' }: { chart: ReactNode; children?: ReactNode; chartMin?: string }) {
-  // `chartMin`: a horizontal bar chart needs about 1.5rem a row, or its rows scroll inside the drawing
+  // `chartMin`: a horizontal bar chart needs about 1.5rem a row (the axis aside), or its rows scroll inside the drawing
   return (
-    <div className="ct-stack">
-      <div style={{ flex: '1 1 0', minHeight: chartMin, display: 'flex', flexDirection: 'column' }}>{chart}</div>
-      {children ? <div style={{ flex: '0 1 auto', maxHeight: '42%', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+    <div className="ct-stack" data-caos-flow="">
+      <div className="ct-stack-chart" style={{ minHeight: chartMin, '--ct-chart-min': chartMin } as CSSProperties}>{chart}</div>
+      {children ? <div className="ct-stack-table">{children}</div> : null}
     </div>
   );
 }

@@ -10,9 +10,11 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { shortName } from '../model';
 import { LiveReadout, useCard } from '../c03/U6Shared';
-import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
-import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
+import { ParamTable, f3, int, pc } from '../c20/U14Common';
+import { HORIZON_TEXT, bareModel, challengerFor, fitOf, ladderLabel, outputsOf, noNegZero, paramsIn, rungFor, rungName, span, textIn, type C02Outputs, type C02Sel } from './selection';
+import { REPLAY } from '../model';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
   if (!sel) return <Pending />;
@@ -35,8 +37,15 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
   const files = variants.filter((e) => e.v.outputs.years !== null).sort((a, b) => (a.v.outputs.years as number) - (b.v.outputs.years as number));
   const pooled = variants.filter((e) => e.v.outputs.years === null);
   const ordered = [...files, ...pooled];
-  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => r.rung)))];
-  const auc = (e: Entry, code: string) => e.v.outputs.rungs.find((r) => r.rung === code)?.discrimination.auc ?? null;
+  // keyed on the model: the rung code P4 names LightGBM and XGBoost, and a find on the code returns the first of them
+  // the models are joined across the files by their id without the file's prefix (h1-, pooled-)
+  const codes = [...new Set(files.flatMap((e) => e.v.outputs.rungs.map((r) => bareModel(r.model_id))))];
+  const auc = (e: Entry, id: string) => e.v.outputs.rungs.find((r) => bareModel(r.model_id) === id)?.discrimination.auc ?? null;
+  const name = (id: string): BiText => {
+    const m = first?.model.find((x) => bareModel(x.id) === bareModel(id));
+    const t = shortName(m, id);
+    return typeof t === 'string' ? { en: t, es: t } : t;
+  };
   const years = files.map((e) => e.v.outputs.years as number);
   return (
     <PlotCard
@@ -57,7 +66,7 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               height="fill"
               x={{ values: years, label: { en: 'Horizon of the file', es: 'Horizonte del archivo' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
               y={{ label: { en: 'AUC on the holdout', es: 'AUC en la muestra reservada' }, format: { decimals: 2 } }}
-              series={codes.map((code, i) => ({ label: { en: code, es: code }, values: files.map((e) => auc(e, code)), color: COLORS[i % COLORS.length], width: code === rung ? 3 : 1.6, mode: 'line' as const }))}
+              series={codes.map((code, i) => ({ label: name(code), values: files.map((e) => auc(e, code)), color: COLORS[i % COLORS.length], dash: i >= COLORS.length ? [6, 3] : undefined, width: code === rung ? 3 : 1.6, mode: 'line' as const }))}
             />
           )
         }
@@ -69,15 +78,15 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
               <th className="ct-wide-only">{pick({ en: 'Firms', es: 'Empresas' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Bankruptcies', es: 'Quiebras' }, lang)}</th>
               <th>{pick({ en: 'Rate', es: 'Tasa' }, lang)}</th>
-              <th>{`AUC ${rung}`}</th>
-              <th>{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+              <th>{`AUC ${pick(name(rung), lang)}`}</th>
+              <th>{pick({ en: '95 % interval', es: 'Intervalo 95 %' }, lang)}</th>
               <th className="ct-wide-only">KS</th>
             </tr>
           </thead>
           <tbody>
             {ordered.map((e) => {
               const o = e.v.outputs;
-              const r = o.rungs.find((x) => x.rung === rung) ?? null;
+              const r = o.rungs.find((x) => bareModel(x.model_id) === bareModel(rung)) ?? null;
               return (
                 <tr key={e.id} data-variant={e.id} data-years={o.years ?? 'pooled'} className={e.id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
@@ -87,7 +96,8 @@ export function C02VariantsTable({ variants, onPick, current, rung }: { variants
                   <td className="ct-wide-only">{int(o.counts.events, lang)}</td>
                   <td>{pc(o.counts.event_rate, lang)}</td>
                   <td data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.auc, lang) : formatNumber(null, lang)}</td>
-                  <td data-na={r ? undefined : 'true'}>{r ? `${f3(r.discrimination.auc_ci.lo, lang)} - ${f3(r.discrimination.auc_ci.hi, lang)}` : formatNumber(null, lang)}</td>
+                  {/* the interval on one line, as the ROC and decile tables keep it (R5 c03 n8: at 390 it wrapped "0.8..." over "0.9...") */}
+                  <td data-na={r ? undefined : 'true'} style={{ whiteSpace: 'nowrap' }}>{r ? span(f3(r.discrimination.auc_ci.lo, lang), f3(r.discrimination.auc_ci.hi, lang), lang) : formatNumber(null, lang)}</td>
                   <td className="ct-wide-only" data-na={r ? undefined : 'true'}>{r ? f3(r.discrimination.ks, lang) : formatNumber(null, lang)}</td>
                 </tr>
               );
@@ -107,7 +117,7 @@ export function C02VariantsView({ sel, onPick }: { sel: C02Sel | null; onPick: (
   const variants = (all.data as unknown as Array<VariantArtifact<C02Outputs>>)
     .filter((v) => v.outputs.kind === 'horizon')
     .map((v) => ({ id: v.variant_id, title: entries.find((e) => e.variant_id === v.variant_id)?.short_title ?? { en: v.variant_id, es: v.variant_id }, v }));
-  const code = rungFor(sel)?.rung ?? '';
+  const code = rungFor(sel)?.model_id ?? '';
   return (
     <ViewsRow>
       <C02VariantsTable variants={variants} onPick={onPick} current={sel.data.variant.variant_id} rung={code} />
@@ -138,7 +148,8 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
           <dt>{pick({ en: 'Firms and bankruptcies', es: 'Empresas y quiebras' }, lang)}</dt>
           <dd>{`${int(o.counts.rows, lang)} / ${int(o.counts.events, lang)} (${pc(o.counts.event_rate, lang)})`}</dd>
           <dt>{pick({ en: 'Ratios', es: 'Razones' }, lang)}</dt>
-          <dd>{int(o.counts.features, lang)}</dd>
+          {/* the pooled file's inputs are the 64 ratios and the horizon indicator (U16-R4 c03 n1: "Ratios 65") */}
+          <dd>{o.pooled ? `${int(o.counts.features - 1, lang)} ${pick({ en: 'and the horizon indicator', es: 'y el indicador de horizonte' }, lang)}` : int(o.counts.features, lang)}</dd>
           <dt>{pick({ en: 'Event', es: 'Evento' }, lang)}</dt>
           <dd>{pick(o.counts.event_definition, lang)}</dd>
           {o.firm_overlap_caveat ? (
@@ -151,11 +162,20 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
       </PlotCard>
       <PlotCard title={{ en: 'The protocol', es: 'El protocolo' }} {...card} note={{ en: 'The files carry no date and no firm identifier, so every reading is a holdout within a file and none is out of time.', es: 'Los archivos no traen fecha ni identificador de empresa, así que toda lectura es una muestra reservada dentro de un archivo y ninguna es fuera del tiempo.' }}>
         <dl className="ct-defs" data-table="c02-split">
-          <dt>{pick({ en: 'Split', es: 'Partición' }, lang)}</dt>
-          <dd>{`${int(o.split.train_rows, lang)} / ${int(o.split.calibration_rows, lang)} / ${int(o.split.holdout_rows, lang)} (${pick({ en: 'training / calibration / holdout', es: 'entrenamiento / calibración / reservada' }, lang)})`}</dd>
+          {/* the slices named in the label; each count stays whole and the line breaks only between them (R3 c03 m10: a count broke
+              inside; R5 c03 M1: the line kept on one by `nowrap` overflowed its column and the card cut "1.773" to "1.77") */}
+          <dt>{pick({ en: 'Split (training / calibration / holdout)', es: 'Partición (entrenamiento / calibración / reservada)' }, lang)}</dt>
+          <dd data-split="">
+            {[o.split.train_rows, o.split.calibration_rows, o.split.holdout_rows].map((n, i) => (
+              <Fragment key={i}>
+                {i > 0 ? ' / ' : null}
+                <span style={{ whiteSpace: 'nowrap' }}>{int(n, lang)}</span>
+              </Fragment>
+            ))}
+          </dd>
           <dt>{pick({ en: 'Bankruptcies in the holdout', es: 'Quiebras en la muestra reservada' }, lang)}</dt>
           <dd>{int(o.split.holdout_events, lang)}</dd>
-          <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Binning, imputación y selección ajustados solo en el tramo de entrenamiento' }, lang)}</dt>
+          <dt>{pick({ en: 'Binning, imputation and selection fitted on the training slice only', es: 'Agrupación en tramos, imputación y selección ajustadas solo en el tramo de entrenamiento' }, lang)}</dt>
           <dd>{yes(o.split.fit_on_training_slice_only)}</dd>
           <dt>{pick({ en: 'Calibration map on a separate slice', es: 'Mapa de calibración en un tramo aparte' }, lang)}</dt>
           <dd>{yes(o.split.calibration_map_on_separate_slice)}</dd>
@@ -166,8 +186,15 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
         </dl>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The five files and the ladder', es: 'Los cinco archivos y la escalera' }} {...card}>
-          <div className="ct-scroll">
+        <PlotCard
+          title={{ en: 'The five files and the ladder', es: 'Los cinco archivos y la escalera' }}
+          {...card}
+          note={{
+            en: 'The constant PD is fitted and recorded, but it has no risk groups, so the test battery (Hosmer-Lemeshow among it) is undefined for it and no view shows a row for it.',
+            es: 'La PD constante se ajusta y se registra, pero no tiene grupos de riesgo, así que la batería de pruebas (Hosmer-Lemeshow entre ellas) no está definida para ella y ninguna vista muestra una fila suya.',
+          }}
+        >
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c02-files">
               <thead>
                 <tr>
@@ -196,10 +223,10 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
               </thead>
               <tbody>
                 {fit.ladder.map((l) => (
-                  <tr key={l.rung} data-ladder={l.rung}>
+                  <tr key={`${l.rung}-${l.label.en}`} data-ladder={l.rung}>
                     <td className="ct-text">{l.rung}</td>
-                    <td className="ct-text">{pick(l.label, lang)}</td>
-                    <td className="ct-text ct-wide-only">{l.engine}</td>
+                    <td className="ct-text">{pick(ladderLabel(sel, l.label), lang)}</td>
+                    <td className="ct-text ct-wide-only">{textIn(l.engine as unknown as string | { en: string; es: string }, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -208,8 +235,8 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
-        <div className="ct-scroll">
-          <ParamTable params={o.parameters as unknown as NamedParam[]} />
+        <div className="ct-scroll" data-caos-flow="">
+          <ParamTable params={paramsIn(o.parameters, lang)} />
         </div>
       </PlotCard>
     </div>
@@ -218,35 +245,38 @@ export function C02ContextView({ sel }: { sel: C02Sel | null }) {
 
 // --- the read-outs of the rail ---------------------------------------------------------------------------------------
 
-/** The live read-out of the Rung section: the discrimination and the overfit gap of the rung in focus. */
+/** The read-out of the Rung section: the discrimination and the overfit gap of the rung in focus, looked up in the bake (a replay,
+ * not a live computation; R3 c03 m9). */
 export function RungReadout({ sel }: { sel: C02Sel | null }) {
   const r = rungFor(sel);
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={sel && r ? rungName(sel, r.model_id) : { en: 'The rung', es: 'El peldaño' }}
       items={[
         { label: { en: 'AUC', es: 'AUC' }, value: r?.discrimination.auc ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Area under the ROC curve on the holdout of the file.', es: 'Área bajo la curva ROC en la muestra reservada del archivo.' } },
         { label: { en: 'Gini', es: 'Gini' }, value: r?.discrimination.gini ?? null, unitless: true, format: { decimals: 3 }, hint: { en: '2 AUC - 1.', es: '2 AUC - 1.' } },
         { label: { en: 'KS', es: 'KS' }, value: r?.discrimination.ks ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The largest gap between the score distributions of the bankrupt and the others.', es: 'La mayor brecha entre las distribuciones del puntaje de las empresas en quiebra y las demás.' } },
-        { label: { en: 'Overfit gap', es: 'Brecha de sobreajuste' }, value: r?.overfit.gap ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Training AUC minus holdout AUC; the tolerance is a convention.', es: 'AUC de entrenamiento menos AUC reservada; la tolerancia es una convención.' } },
+        { label: { en: 'Overfit gap', es: 'Brecha de sobreajuste' }, value: r ? noNegZero(r.overfit.gap) : null, unitless: true, format: { decimals: 3 }, hint: { en: 'Training AUC minus holdout AUC; the tolerance is a convention.', es: 'AUC de entrenamiento menos AUC reservada; la tolerancia es una convención.' } },
       ]}
     />
   );
 }
 
-/** The live read-out of the Challenger section: the AUC difference with the champion and what its interval and p-value say. */
+/** The read-out of the Challenger section: the AUC difference with the champion and what its interval and p-value say (a replay). */
 export function ChallengerReadout({ sel }: { sel: C02Sel | null }) {
   const c = challengerFor(sel);
   return (
     <LiveReadout
+      lane={REPLAY}
       variant={sel?.data.variant}
       title={sel && c ? { en: `${rungName(sel, c.challenger).en} against ${rungName(sel, c.champion).en}`, es: `${rungName(sel, c.challenger).es} contra ${rungName(sel, c.champion).es}` } : { en: 'The challenger', es: 'El retador' }}
       items={[
         { label: { en: 'AUC difference', es: 'Diferencia de AUC' }, value: c?.auc_diff ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Challenger minus champion, on the same holdout.', es: 'Retador menos campeón, en la misma muestra reservada.' } },
-        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: c?.auc_diff_ci.lo ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The lower end of the 95% DeLong interval; an interval holding zero is no evidence of a gain.', es: 'El extremo inferior del intervalo DeLong de 95%; un intervalo que contiene el cero no es evidencia de una ganancia.' } },
+        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: c?.auc_diff_ci.lo ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'The lower end of the 95% DeLong interval; an interval holding zero is no evidence of a gain.', es: 'El extremo inferior del intervalo DeLong de 95 %; un intervalo que contiene el cero no es evidencia de una ganancia.' } },
         { label: { en: 'p (DeLong)', es: 'p (DeLong)' }, value: c?.delong_p_value ?? null, unitless: true, format: { digits: 2 }, hint: { en: 'The DeLong test of equal AUCs.', es: 'La prueba DeLong de AUC iguales.' } },
-        { label: { en: 'Grades moved', es: 'Grados movidos' }, value: c?.grade_disagreement_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The share of firms whose grade differs by two notches or more.', es: 'La parte de empresas cuyo grado difiere en dos escalones o más.' } },
+        { label: { en: 'Grades moved', es: 'Grados movidos' }, value: c?.grade_disagreement_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The share of firms whose grade differs by two grades or more.', es: 'La parte de empresas cuyo grado difiere en dos grados o más.' } },
       ]}
     />
   );

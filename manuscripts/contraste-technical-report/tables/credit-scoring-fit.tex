@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Fitted configuration of each method on the training slice of the Taiwan card-default sample (C01): the parameters chosen on training data only, the number of retained terms and the size of the slices.}
+\label{tab:cs-fit}
+\begin{tabular}{lp{11cm}}
+\toprule
+Method & Fitted configuration on the card-default training slice \\
+\midrule
+\relax WoE scorecard & \relax 13 of 20 inputs kept (information value at least 0.02, sign check); 95 points-table cells; PDO 20, reference 600 points at odds 50 \\
+\relax L1 logistic & \relax penalty $1/C$ with $C=1$ (grid 0.003 to 1, five-fold cross-validated log loss); 13 non-zero coefficients \\
+\relax PLTR & \relax $C=0.1$; 449 candidate rules; 101 selected; mean Jaccard 0.411 over 20 resamples \\
+\relax EBM & \relax 25 terms (5 pairwise); at most 64 bins per main term and 16 per pair; 8 outer bags; isotonic map with 58 knots \\
+\relax LightGBM & \relax 94 trees by early stopping; 15 leaves; learning rate 0.05; isotonic map with 56 knots \\
+\relax XGBoost & \relax 127 trees by early stopping; depth 4; learning rate 0.05 \\
+\relax Training slice & \relax 16,800 rows (3,716 defaults); calibration slice 4,200; locked holdout 9,000 \\
+\bottomrule
+\end{tabular}
+\end{table}

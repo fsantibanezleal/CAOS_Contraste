@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\caption{The six variants of the desk generator of case C13: the planted parameter, the statistic the deficiency is meant to break, the population Pearson correlation of the two P\&L series in closed form from the generator parameters, and the mean Spearman correlation measured over 1,000 replications.}
+\label{tab:market-truth}
+\begin{tabular}{lp{4.0cm}lrr}
+\toprule
+Variant & Planted parameter & Statistic meant to fail & Population Pearson & Mean Spearman \\
+\midrule
+None (size) & -- & none & 0.995 & 0.992 \\
+Missing basis & basis sd share 0.65 & spearman & 0.756 & 0.705 \\
+Stale volatility & vol lag days 20 & ks & 0.955 & 0.979 \\
+Wrong correlation & correlation error 0.3 & either & 0.990 & 0.986 \\
+Omitted factor & omitted loading share 0.6 & spearman & 0.796 & 0.772 \\
+Time misalignment & lag days 1 & spearman & 0.000 & -0.004 \\
+\bottomrule
+\end{tabular}
+\end{table}

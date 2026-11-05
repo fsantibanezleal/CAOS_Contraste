@@ -17,6 +17,7 @@ import {
   conform,
 } from '../../lib/contract.types';
 import { groupCases, topRow } from '../../pages/Experiments';
+import { entryText } from '../names';
 import { DESIGN_GROUP_LABEL, governanceTabs } from '../../pages/experiments/governanceTabs';
 import { collectSections } from '../../pages/methodologyRegistry';
 import * as governanceSection from '../../pages/methodology/governance';
@@ -27,6 +28,7 @@ import { FindingsWithOpinion, OpinionBlock, OpinionBlockView, OpinionCard, Repor
 import { AppetiteTable, FindingsTab, RegisterTable, SeverityStatusBars } from './RegisterView';
 import { ReportDocument, ReportReader } from './ReportView';
 import { MatrixDrawing } from './TierMatrix';
+import { readerWords } from './readerText';
 import {
   ECB_F_OF,
   GOVERNANCE_FILES,
@@ -93,6 +95,8 @@ describe('Inventory and tiers', () => {
   it('rings a node by the worst open severity of its entry', () => {
     const m = html(<MapDrawing inv={inv} width={640} height={240} />);
     expect(m).toMatch(/data-node="C18\/banco-andino"[^>]*data-worst="S1"/);
+    // the fixtures carry the case findings only (the generic red-row findings are the governance bake's): the German twin's worst
+    // open finding is S3
     expect(m).toMatch(/data-node="C01\/german"[^>]*data-worst="S3"/);
   });
   it('draws the 4 by 4 matrix with counts that sum to the entries, each cell with the tier of the stated rule', () => {
@@ -119,7 +123,8 @@ describe('Inventory and tiers', () => {
   });
   it('lists the entries, the left-out cases with their reason and the findings of the inventory with their ECB F', () => {
     const t = text(html(<InventoryTab inv={inv} />));
-    for (const e of inv.entries) expect(t).toContain(e.key);
+    // each entry by its name, never its key (the R2b page review)
+    for (const e of inv.entries) expect(t).toContain(entryText(e.key).en);
     for (const x of inv.excluded) expect(t).toContain(x.reason.en);
     for (const f of inv.governance_findings) {
       expect(t).toContain(f.severity);
@@ -149,7 +154,8 @@ describe('Findings and appetite', () => {
   it('gives an anchor or its absence with the reason', () => {
     const h = html(<RegisterTable rows={findings.rows} />);
     expect(count(h, /data-anchor="unavailable"/g)).toBe(findings.rows.filter((r) => r.anchor === null).length);
-    expect(text(h)).toContain(findings.rows.find((r) => r.anchor === null)!.anchor_reason!.en);
+    // in reader words (R3 c23 B3, the ruling of 2026-10-27: an engine key in reader text is a raw id)
+    expect(text(h)).toContain(readerWords(findings.rows.find((r) => r.anchor === null)!.anchor_reason!.en, 'en'));
   });
   it('sorts by a column and keeps the document order on ties', () => {
     const by = sortRows(findings.rows, 'severity', 'asc');
@@ -178,7 +184,7 @@ describe('Findings and appetite', () => {
       const h = html(<AppetiteTable appetite={appetite} />);
       expect(count(h, /data-metric="/g)).toBe(7);
       const open = appetite.metrics.find((m) => m.id === 'open-high-severity')!;
-      expect(open.register_rows).toBe(8);
+      expect(open.register_rows).toBe(9); // the fixtures' case findings (the generic red-row findings stay out of the contract fixture)
       expect(h).toMatch(/data-metric="open-high-severity" data-light="red"/);
       expect(text(h)).toContain(lang === 'es' ? 'convención' : 'convention');
       expect(text(h)).toContain(lang === 'es' ? 'Filas del registro' : 'Register rows');
@@ -193,8 +199,10 @@ describe('Reports', () => {
     expect(count(h, /data-status="absent"/g)).toBe(c18.sections.filter((s) => s.status === 'absent').length);
     expect(c18.sections.filter((s) => s.status === 'absent').length).toBeGreaterThan(0);
     const absent = c18.sections.find((s) => s.status === 'absent')!;
-    expect(text(h)).toContain(absent.absent_reason!.en);
-    expect(text(h)).toContain(c18.sections[0].missing[0]?.reason.en ?? '');
+    // a reason after "Not available:" starts with a capital (U16-R2 b12 m6)
+    const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+    expect(text(h)).toContain(cap(absent.absent_reason!.en));
+    expect(text(h)).toContain(cap(c18.sections[0].missing[0]?.reason.en ?? ''));
   });
   it('shows section 11 with the opinion level, the rule and the labelled recommendation', () => {
     for (const lang of LANGS) {
@@ -206,7 +214,9 @@ describe('Reports', () => {
         const op = (r.sections[10] as { opinion: { label: { en: string; es: string } } }).opinion;
         expect(text(h)).toContain(op.label[lang]);
         expect(op.label.en).toBe(RULE_OUTPUT_LABEL.en);
-        expect(text(h)).toContain('W15-7');
+        // the rule by what it is and in reader words, never by its decision id (R3 c23 B5, the ruling of 2026-10-27)
+        expect(text(h)).not.toContain('W15-7');
+        expect(text(h)).toContain(readerWords((r.sections[10] as { opinion: { rule: { text: { en: string; es: string } } } }).opinion.rule.text[lang], lang));
       }
     }
   });

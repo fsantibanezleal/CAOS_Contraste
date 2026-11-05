@@ -6,8 +6,9 @@ import { PlotCard, Verdict, formatNumber, pick, useShellLang, useWorkbenchState,
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { RungOutputs } from '../lib/contract.types';
-import { CHAMPION, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
+import { CHAMPION, defaultChallenger, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
+import { currencyName } from './c01Text';
 
 /** Money in millions, as in the decision view. */
 const MILLION = 1e6;
@@ -48,7 +49,10 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
   const champ = v.outputs.rungs[CHAMPION].cutoff;
   const chall = v.outputs.rungs[sel.challenger].cutoff;
   const names = [shortName(rung(v, CHAMPION), CHAMPION), shortName(rung(v, sel.challenger), sel.challenger)];
-  const currency = v.impact.el_champion?.unit ?? '';
+  // the exact sentence is the pipeline's: the champion against the pipeline's own challenger (R2b c02 B2)
+  const pipelineChallenger = defaultChallenger(v);
+  const pipelineName = shortName(rung(v, pipelineChallenger), pipelineChallenger);
+  const cname = currencyName(v.impact.el_champion?.unit ?? '');
   const money = (x: number | null) => formatNumber(x === null ? null : x / MILLION, lang, { digits: 3 });
   const [eadA] = interp(champ.approval_rate, champ.ead, [sel.approval]);
   const [eadB] = interp(chall.approval_rate, chall.ead, [sel.approval]);
@@ -77,8 +81,8 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
     payers === null || effects.every((e) => e === null)
       ? ''
       : l === 'en'
-        ? ` The ${formatNumber(payers, 'en')} six-month full payers as transactors (PD floor 0.05% instead of 0.1%): ${names[0].en} ${effectText(effects[0], 'en')}, ${names[1].en} ${effectText(effects[1], 'en')}.`
-        : ` Los ${formatNumber(payers, 'es')} que pagaron todo los seis meses como transaccionales (piso de PD 0,05% en vez de 0,1%): ${names[0].es} ${effectText(effects[0], 'es')}, ${names[1].es} ${effectText(effects[1], 'es')}.`;
+        ? ` The ${formatNumber(payers, 'en')} six-month full payers as transactors (PD floor 0.05 % instead of 0.1 %): ${names[0].en} ${effectText(effects[0], 'en')}, ${names[1].en} ${effectText(effects[1], 'en')}.`
+        : ` Los ${formatNumber(payers, 'es')} que pagaron todo en los seis meses, como transaccionales (piso de PD de 0,05 % en vez de 0,1 %): ${names[0].es} ${effectText(effects[0], 'es')}, ${names[1].es} ${effectText(effects[1], 'es')}.`;
   // the pipeline's books at exactly the committed approval rate, applicant by applicant (ties broken by the raw score)
   const exactA = v.impact.capital_champion?.value ?? null;
   const exactB = v.impact.capital_challenger?.value ?? null;
@@ -95,8 +99,8 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8% of the RWA, in million ${currency} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
-          es: `${pick(klass, 'es')}; EAD ${irb.ead.es}; el capital es el 8% de los APR, en millones de ${currency} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
+          en: `${pick(klass, 'en')}; EAD ${irb.ead.en}; capital is 8 % of the RWA, in million ${cname.en} (share of EAD).${irb.revolvers_only ? ' Every card is a revolver: a Basel III transactor needs twelve months of repayment history (BCBS d424, paragraphs 56 and 25), and the data hold six.' : ''}`,
+          es: `${pick(klass, 'es')}; EAD: ${irb.ead.es}; el capital es el 8 % de los APR, en millones de ${cname.es} (fracción de la EAD).${irb.revolvers_only ? ' Toda tarjeta es renovable: una transaccional de Basilea III requiere doce meses de historia de pagos (BCBS d424, párrafos 56 y 25), y los datos tienen seis.' : ''}`,
         }}
       >
         <div className="ct-row">
@@ -134,8 +138,8 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
               <p className="ct-note" data-exact="pipeline">
                 {pick(
                   {
-                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50%): ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
-                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50%): ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
+                    en: `Exactly ${formatNumber(exactAt, 'en', { percent: true, decimals: 0 })} approved, applicant by applicant (LGD 50 %), ${names[0].en} and ${pipelineName.en}${sel.challenger === pipelineChallenger ? '' : ' (the pipeline\'s challenger)'}: ${money(exactA)} and ${money(exactB)}, ${formatNumber(Math.abs(exactB / exactA - 1), 'en', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'more' : 'less'}; the live figures interpolate the cut-off curve.`,
+                    es: `Exactamente ${formatNumber(exactAt, 'es', { percent: true, decimals: 0 })} aprobado, solicitante a solicitante (LGD 50 %), ${names[0].es} y ${pipelineName.es}${sel.challenger === pipelineChallenger ? '' : ' (el retador del cálculo previo)'}: ${money(exactA)} y ${money(exactB)}, un ${formatNumber(Math.abs(exactB / exactA - 1), 'es', { percent: true, decimals: 1 })} ${exactB >= exactA ? 'más' : 'menos'}; las cifras en vivo interpolan la curva de corte.`,
                   },
                   lang,
                 )}
@@ -162,14 +166,14 @@ export function CapitalView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `At the rail's LGD, in million ${currency}.${sensitivity('en')}`,
-          es: `A la LGD del panel, en millones de ${currency}.${sensitivity('es')}`,
+          en: `At the rail's LGD, in million ${cname.en}.${sensitivity('en')}`,
+          es: `A la LGD del panel, en millones de ${cname.es}.${sensitivity('es')}`,
         }}
       >
         <UPlotChart
           height="fill"
           x={{ values: chart.x, label: { en: 'Approval rate', es: 'Tasa de aprobación' }, format: { percent: true, decimals: 0 } }}
-          y={{ label: { en: `Capital (million ${currency})`, es: `Capital (millones de ${currency})` }, format: { digits: 3 } }}
+          y={{ label: { en: `Capital (million ${cname.en})`, es: `Capital (millones de ${cname.es})` }, format: { digits: 3 } }}
           series={[
             { label: names[0], values: chart.champion, color: '--color-accent', width: 2 },
             { label: names[1], values: chart.challenger, color: '--color-magenta', width: 2, dash: [6, 4] },

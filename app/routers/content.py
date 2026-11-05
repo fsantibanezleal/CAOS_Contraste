@@ -12,7 +12,7 @@ from ..services import content
 
 router = APIRouter(prefix="/api")
 
-NOT_BAKED = {"en": "The pipeline has not baked this build.", "es": "El pipeline no ha generado esta versión."}
+NOT_BAKED = {"en": "The pipeline has not baked this build.", "es": "La cadena de cálculo no ha generado esta versión."}
 NO_READINESS = {"en": "The readiness document is not in this build.",
                 "es": "El documento de disponibilidad no está en esta versión."}
 

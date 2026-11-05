@@ -12,7 +12,7 @@ import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, readIrrbbFixture, set
 import { C14_FIT, C14_OUTPUTS } from './descriptor';
 import { useC14Instrument } from './instrument';
 import { amount, cell, defaultSel, nmdModelOf, outputsOf, scenarioOf, type C14Sel } from './selection';
-import { C14ContextView, C14FindingsView, C14VariantsTable, CalibrationReadout, NmdReadout, SegmentReadout, ShockReadout } from './C14Common';
+import { C14ContextView, C14FindingsView, C14VariantsTable, CalibrationReadout, NmdReadout, SegmentReadout, ShockReadout, docText } from './C14Common';
 import { EveByShockView, OutlierView, ShapesView, outlierChart } from './ShockViews';
 import { CapsView, ChangesView, ReplicatingView, WithWithoutView } from './BehaviouralViews';
 import { DynamicNiiView, EarEvarView, GapView } from './NiiViews';
@@ -149,10 +149,10 @@ describe('the C14 instrument', () => {
       expect(markup).toContain(`data-shock="${r.shock}"`);
       expect(markup).toContain(`data-floored="${r.floor_bound_buckets.length}"`);
     }
-    const shape = (models as unknown as { fit: { shock_shape: { short_form: string; long_form: string; reference: string } } }).fit.shock_shape;
+    const shape = (models as unknown as { fit: { shock_shape: { short_form: string; long_form: string; reference: string | { en: string; es: string } } } }).fit.shock_shape;
     expect(markup).toContain(escapeHtml(shape.short_form));
     expect(markup).toContain(escapeHtml(shape.long_form));
-    expect(markup).toContain(escapeHtml(shape.reference));
+    expect(markup).toContain(escapeHtml(docText(shape.reference, 'en')));
     expect(markup).toContain(pct(-0.65));
   });
 
@@ -230,8 +230,12 @@ describe('the C14 instrument', () => {
   });
 
   it('a behavioural parameter that changed in a window with a limit breach is flagged', () => {
-    const markup = html(<ChangesView sel={sel} />);
-    const flagged = (models as unknown as { fit: { nmd_parameter_changes: Array<{ parameter: string; flagged: boolean; note: { en: string } }> } }).fit.nmd_parameter_changes;
+    // the 2022-Q4 variant: the view keeps the changes up to the valuation date (R4 c17 M1), and every change of the models
+    // document ends by 2022-12-31
+    const markup = html(<ChangesView sel={withVariant(variant22)} />);
+    const flagged = (models as unknown as { fit: { nmd_parameter_changes: Array<{ parameter: string; flagged: boolean; to_date: string; note: { en: string } }> } }).fit.nmd_parameter_changes
+      .filter((c) => c.to_date <= variant22.outputs.valuation_date);
+    expect(flagged.length).toBeGreaterThan(0);
     for (const c of flagged) {
       expect(markup).toContain(`data-flagged="${c.flagged}"`);
       expect(markup).toContain(escapeHtml(c.note.en));
@@ -326,7 +330,8 @@ describe('the C14 instrument', () => {
     Object.assign(odd.outputs.balance_sheet.items[0], { reported_amount: null, reason_missing: { en: 'The call report has no such line.', es: 'El reporte no trae esa línea.' } });
     const markup = html(<C14ContextView sel={withVariant(odd)} />);
     expect(markup).toContain('The call report has no such line.');
-    expect(markup).toContain(escapeHtml(odd.outputs.balance_sheet.items[0].slotting_assumption));
+    // c14-outputs 2.0.0 (U16-F10d): the slotting assumption is bilingual, the English view prints its English
+    expect(markup).toContain(escapeHtml(docText(odd.outputs.balance_sheet.items[0].slotting_assumption, 'en')));
     expect(markup).toContain(NA);
   });
 

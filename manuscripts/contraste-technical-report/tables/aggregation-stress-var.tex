@@ -1,0 +1,23 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The two episodes back-cast by the ordinary least squares satellite and by the vector autoregression conditioned on the realised GDP growth, both fitted on data that end before the episode: observations of the fit, root mean squared error of each in percentage points of the quarterly net charge-off rate, their ratio, the ratio of predicted to realised peak, the timing error of the peak in quarters, the model closer to the realised rates, and the VAR coefficients with a wrong sign.}
+\label{tab:aggregation-stress-var}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrrrrrrrlr}
+\toprule
+Window & Loan type & $n$ & RMSE OLS & RMSE VAR & Ratio & Peak OLS & Peak VAR & $\Delta_{\mathrm{OLS}}$ & $\Delta_{\mathrm{VAR}}$ & Closer & Wrong signs \\
+\midrule
+2008--2009 & Commercial and industrial & 91 & 0.57 & 0.59 & 1.03 & 0.67 & 0.61 & $-$1 & 0 & OLS & 1 \\
+2008--2009 & Commercial real estate & 67 & 0.97 & 1.51 & 1.56 & 0.48 & 0.17 & 0 & $-$2 & OLS & 1 \\
+2008--2009 & Residential & 67 & 1.68 & 1.71 & 1.02 & 0.13 & 0.13 & $-$7 & $-$7 & OLS & 0 \\
+2008--2009 & Credit cards & 91 & 1.45 & 2.73 & 1.89 & 0.79 & 0.57 & $-$2 & $-$2 & OLS & 1 \\
+2008--2009 & Other consumer & 91 & 1.17 & 1.10 & 0.94 & 0.55 & 0.56 & $-$1 & $-$1 & VAR & 1 \\
+2020--2025 & Commercial and industrial & 139 & 0.55 & 0.50 & 0.90 & 4.55 & 2.34 & 0 & 1 & VAR & 1 \\
+2020--2025 & Commercial real estate & 115 & 0.79 & 0.31 & 0.39 & 13.14 & 3.42 & $-$14 & $-$14 & VAR & 1 \\
+2020--2025 & Residential & 115 & 0.68 & 0.45 & 0.67 & 252.13 & 68.83 & $-$12 & 10 & VAR & 1 \\
+2020--2025 & Credit cards & 139 & 3.71 & 1.47 & 0.40 & 4.30 & 1.29 & $-$17 & $-$17 & VAR & 1 \\
+2020--2025 & Other consumer & 139 & 0.51 & 0.48 & 0.94 & 2.09 & 1.44 & $-$21 & $-$20 & VAR & 1 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

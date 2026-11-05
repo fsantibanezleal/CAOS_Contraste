@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The five official worked examples of the standardised approach to counterparty credit risk (CRE99) recomputed by the engine from their trades, in USD thousands: replacement cost, aggregate add-on, multiplier, the unrounded exposure at default and the published integer value.}
+\label{tab:ccr-cre99}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrcc}
+\toprule
+Netting set (USD thousands) & RC & Aggregate add-on & Multiplier & EAD computed & EAD published & Rounds to published & Relative tolerance \\
+\midrule
+Set 1: interest rate swaps and a swaption, unmargined & 60 & 346.764 & 1.000000 & 569.4701 & 569 & yes & $1.0\times10^{-9}$ \\
+Set 2: credit derivatives, unmargined & 0 & 282.129 & 0.965208 & 381.2383 & 381 & yes & $1.0\times10^{-9}$ \\
+Set 3: commodity forwards and swaps & 20 & 3,841.154 & 1.000000 & 5,405.6160 & 5,406 & yes & $1.0\times10^{-9}$ \\
+Set 4: netting sets 1 and 2 combined & 40 & 628.893 & 1.000000 & 936.4505 & 936 & yes & $1.0\times10^{-9}$ \\
+Set 5: margined interest rate and commodity & 0 & 1,400.962 & 0.958123 & 1,879.2126 & 1,879 & yes & $1.0\times10^{-9}$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

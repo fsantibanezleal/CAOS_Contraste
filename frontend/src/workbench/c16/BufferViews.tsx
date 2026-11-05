@@ -8,6 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { es } from './localise';
 import { CLASS_TEXT, HAIRCUT_RULE_TEXT, LCR_CATEGORY_TEXT, axisOf, outputsOf, text, type C16Sel } from './selection';
 import { ChartAbove, MONEY_UNIT, NOT_SCENARIO, SHARE, SurvivalCell, UnavailableCard, cell } from './C16Common';
 
@@ -38,7 +39,7 @@ export function CbcView({ sel }: { sel: C16Sel | null }) {
         }}
       >
         <ChartAbove
-          chartHeight="17rem"
+          chartHeight="12rem"
           chart={
             <BarChart
               title={{ en: 'Liquidity value of the CBC by class', es: 'Valor de liquidez del CBC por clase' }}
@@ -202,7 +203,7 @@ export function HtmView({ sel }: { sel: C16Sel | null }) {
               {rv.difference === null ? formatNumber(null, lang) : `${cell(rv.difference, lang)} (${SHARE(rv.relative_difference, lang)})`}
             </dd>
             <dt>{pick({ en: 'Curve', es: 'Curva' }, lang)}</dt>
-            <dd>{rv.curve_source}</dd>
+            <dd>{es(rv.curve_source, lang)}</dd>
           </dl>
         </ChartAbove>
       </PlotCard>
@@ -224,7 +225,8 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
   }
   const axis = axisOf([l.hqla.hqla, l.total_outflows, l.total_inflows, l.inflows_counted, l.net_outflows]);
   return (
-    <ViewsRow>
+    // the tables take the wider card, so their rows are not three lines tall (R4 c19 M1)
+    <ViewsRow shares={[2, 3]}>
       <PlotCard
         fill
         title={title}
@@ -254,7 +256,6 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
         >
           <Callout variant="honest" title={pick({ en: 'A formula on aggregates, not the bank\'s LCR', es: 'Una fórmula sobre agregados, no el LCR del banco' }, lang)}>
             <span data-reported-or-regulatory={String(l.reported_or_regulatory)}>
-              <strong>{pick({ en: 'A Basel formula on call-report aggregates, not the bank\'s reported LCR.', es: 'Una fórmula de Basilea sobre agregados del reporte de llamada, no el LCR reportado del banco.' }, lang)}</strong>{' '}
               {pick(l.statement, lang)}
             </span>
           </Callout>
@@ -272,6 +273,19 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
               ? pick(l.hqla.shares_reason ?? { en: 'Not available: the HQLA stock is empty.', es: 'No disponible: el stock de HQLA está vacío.' }, lang)
               : `${SHARE(l.hqla.l2_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2_cap, lang)}), ${SHARE(l.hqla.l2b_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2b_cap, lang)})`}</dd>
           </dl>
+        </ChartAbove>
+      </PlotCard>
+      {/* the flows and the mapping in a card of their own: at 1280 one card hid both tables and the note with no cue (R4 c19 M1) */}
+      <PlotCard
+        fill
+        title={{ en: 'The flows of the LCR and the mapping of the uninsured balance', es: 'Los flujos del LCR y el mapeo del saldo no asegurado' }}
+        {...card}
+        note={{
+          en: 'Each outflow and inflow category with its balance, Basel rate and amount, and the ratio under each plausible class of the uninsured balance; the chosen mapping is highlighted.',
+          es: 'Cada categoría de salida y de entrada con su saldo, su tasa de Basilea y su monto, y la razón bajo cada clase plausible del saldo no asegurado; el mapeo elegido se destaca.',
+        }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c16-lcr-flows">
             <thead>
               <tr>
@@ -289,7 +303,7 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
                   <td>{cell(r.balance, lang)}</td>
                   <td>{SHARE(r.rate, lang)}</td>
                   <td>{cell(r.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
                 </tr>
               ))}
               {l.inflows.map((r) => (
@@ -298,7 +312,7 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
                   <td>{cell(r.balance, lang)}</td>
                   <td>{SHARE(r.rate, lang)}</td>
                   <td>{cell(r.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.reference}</td>
+                  <td className="ct-text ct-wide-only">{es(r.reference, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -324,10 +338,16 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{pick(l.below_100_note, lang)}</p>
-        </ChartAbove>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
+}
+
+/** The unrealised HTM loss of a variant with no HTM block: the fair value less the amortised cost of the held-to-maturity line of its own balance sheet (U16-R2 b08 m2). */
+export function htmLossOfBalanceSheet(items: ReadonlyArray<{ item_id: string; amount?: number | null; fair_value?: number | null }>): number | null {
+  const htm = items.find((i) => i.item_id === 'securities-htm');
+  return htm && typeof htm.amount === 'number' && typeof htm.fair_value === 'number' ? htm.fair_value - htm.amount : null;
 }
 
 /** The call-report dates before the run: deposits, the HTM loss, the CBC on both bases, the survival period and the LCR as the losses grew. */
@@ -341,7 +361,7 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
   const block = o.time_block;
   const t0 = Date.parse(`${block[0].as_of}T00:00:00Z`);
   const day = (d: string) => Math.round((Date.parse(`${d}T00:00:00Z`) - t0) / 86400000);
-  const own = { as_of: o.valuation_date, basis: o.cbc.htm_valuation_basis, cbc: o.cbc.total_liquidity_value, loss: o.htm?.reported.htm_unrealised ?? null };
+  const own = { as_of: o.valuation_date, basis: o.cbc.htm_valuation_basis, cbc: o.cbc.total_liquidity_value, loss: o.htm?.reported.htm_unrealised ?? htmLossOfBalanceSheet(o.balance_sheet.items) };
   const dates = [...block.map((t) => t.as_of), own.as_of];
   const axis = axisOf([...block.flatMap((t) => [t.cbc_amortised_basis, t.cbc_fair_value_basis, t.htm_unrealised_loss]), own.cbc]);
   const dep = o.balance_sheet.deposits;
@@ -353,17 +373,17 @@ export function TimeBlockView({ sel }: { sel: C16Sel | null }) {
         {...card}
         note={{
           en: 'Two earlier call-report dates, 2021-12-31 and 2022-06-30, beside the valuation date of the document: the CBC on the amortised-cost and the fair-value basis, the unrealised loss on the held-to-maturity book, the survival period and the LCR. The last date shows the basis the document itself uses; the other basis is not available for it.',
-          es: 'Dos fechas anteriores de los reportes de condición, 2021-12-31 y 2022-06-30, junto a la fecha de valoración del documento: el CBC en la base de costo amortizado y en la de valor razonable, la pérdida no realizada de la cartera mantenida al vencimiento, el periodo de supervivencia y el LCR. La última fecha muestra la base que usa el propio documento; la otra base no está disponible para ella.',
+          es: 'Dos fechas anteriores de los reportes de llamada, 2021-12-31 y 2022-06-30, junto a la fecha de valoración del documento: el CBC en la base de costo amortizado y en la de valor razonable, la pérdida no realizada de la cartera mantenida al vencimiento, el periodo de supervivencia y el LCR. La última fecha muestra la base que usa el propio documento; la otra base no está disponible para ella.',
         }}
       >
         <ChartAbove
-          chartHeight="14rem"
+          chartHeight="18rem"
           chart={
             <UPlotChart
               height="fill"
               x={{ values: dates.map(day), label: { en: `Days after ${block[0].as_of}`, es: `Días después del ${block[0].as_of}` }, format: { decimals: 0 } }}
               marks={dates.map((d) => ({ x: day(d), label: { en: d, es: d } }))}
-              y={{ label: { en: `CBC and HTM loss (${pick(axis.unit, 'en')})`, es: `CBC y pérdida HTM (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `CBC, HTM loss (${pick(axis.unit, 'en')})`, es: `CBC, pérdida HTM (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 { label: { en: 'CBC, amortised-cost basis', es: 'CBC, base de costo amortizado' }, values: [...block.map((t) => t.cbc_amortised_basis / axis.div), own.basis === 'amortised-cost' ? own.cbc / axis.div : null], color: '--color-good', width: 2.6 },
                 { label: { en: 'CBC, fair-value basis', es: 'CBC, base de valor razonable' }, values: [...block.map((t) => t.cbc_fair_value_basis / axis.div), own.basis === 'fair-value' ? own.cbc / axis.div : null], color: '--color-accent', width: 2.6 },

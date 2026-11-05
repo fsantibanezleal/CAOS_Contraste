@@ -14,7 +14,7 @@ import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useStageSize, use
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
-import type { C04AgencyOutputs, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
+import type { C04AgencyOutputs, C04AnchorGrade, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
 import { useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
@@ -346,8 +346,8 @@ export function intervalsChart(rows: PdRow[]): IntervalsChart {
     { label: { en: 'Long-run average', es: 'Promedio de largo plazo' }, values: rows.map((r) => r.rate), color: '--color-good', width: 2 },
     { label: { en: 'Pooled, defaults / n', es: 'Agrupada, incumplimientos / n' }, values: rows.map((r) => r.pooled), color: '--color-fg', mode: 'points' },
     ...METHODS.flatMap((m): ChartSeries[] => [
-      { label: { en: `${m.name} 95%, upper`, es: `${m.name} 95%, superior` }, values: rows.map((r) => r[m.key].upper), color: m.color, width: 2 },
-      { label: { en: `${m.name} 95%, lower`, es: `${m.name} 95%, inferior` }, values: rows.map((r) => r[m.key].lower), color: m.color, width: 1.4, dash: [5, 4] },
+      { label: { en: `${m.name} 95%, upper`, es: `${m.name} 95 %, superior` }, values: rows.map((r) => r[m.key].upper), color: m.color, width: 2 },
+      { label: { en: `${m.name} 95%, lower`, es: `${m.name} 95 %, inferior` }, values: rows.map((r) => r[m.key].lower), color: m.color, width: 1.4, dash: [5, 4] },
     ]),
   ];
   const zeroGrades = new Set<number>();
@@ -427,9 +427,9 @@ function PdTableHead({ show }: { show: (c: PdOptional) => boolean }) {
         <th>{pick({ en: 'Average, %', es: 'Promedio, %' }, lang)}</th>
         <th>{pick({ en: 'Defaults / n', es: 'Incumpl. / n' }, lang)}</th>
         {show('pooled') && <th className="ct-wide-only">{pick({ en: 'Pooled, %', es: 'Agrupada, %' }, lang)}</th>}
-        <th>{pick({ en: 'Jeffreys 95%, %', es: 'Jeffreys 95%, %' }, lang)}</th>
-        {show('wald') && <th className="ct-wide-only">{pick({ en: 'Wald 95%, %', es: 'Wald 95%, %' }, lang)}</th>}
-        {show('agresti-coull') && <th className="ct-wide-only">{pick({ en: 'Agresti-Coull 95%, %', es: 'Agresti-Coull 95%, %' }, lang)}</th>}
+        <th>{pick({ en: 'Jeffreys 95%, %', es: 'Jeffreys 95 %, %' }, lang)}</th>
+        {show('wald') && <th className="ct-wide-only">{pick({ en: 'Wald 95%, %', es: 'Wald 95 %, %' }, lang)}</th>}
+        {show('agresti-coull') && <th className="ct-wide-only">{pick({ en: 'Agresti-Coull 95%, %', es: 'Agresti-Coull 95 %, %' }, lang)}</th>}
         {show('cohorts') && <th className="ct-wide-only">{pick({ en: 'Cohorts', es: 'Cohortes' }, lang)}</th>}
         {show('last5') && <th className="ct-wide-only">{pick({ en: 'Last five, %', es: 'Últimas cinco, %' }, lang)}</th>}
       </tr>
@@ -475,8 +475,9 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
       const defsText = list(l, grp.defs.map((x) => pick(CODE[x], l)));
       parts.push(t(l, `the long-run average of ${list(l, grp.grades)} under ${defsText}`, `el promedio de largo plazo de ${list(l, grp.grades)} bajo ${defsText}`));
     }
-    if (chart.zeroLast5) parts.push(t(l, `${chart.zeroLast5} means of the last five cohorts`, `${chart.zeroLast5} medias de las últimas cinco cohortes`));
-    if (chart.zeroLower) parts.push(t(l, `${chart.zeroLower} lower bounds of a grade without a default`, `${chart.zeroLower} cotas inferiores de un grado sin incumplimientos`));
+    if (chart.zeroLast5) parts.push(chart.zeroLast5 === 1 ? t(l, 'a mean of the last five cohorts', 'una media de las últimas cinco cohortes') : t(l, `${chart.zeroLast5} means of the last five cohorts`, `${chart.zeroLast5} medias de las últimas cinco cohortes`));
+    // one bound in the singular (U16-R4 c06 n7: "1 lower bounds")
+    if (chart.zeroLower) parts.push(chart.zeroLower === 1 ? t(l, 'a lower bound of a grade without a default', 'una cota inferior de un grado sin incumplimientos') : t(l, `${chart.zeroLower} lower bounds of a grade without a default`, `${chart.zeroLower} cotas inferiores de un grado sin incumplimientos`));
     return parts.length
       ? t(l, ` A 0 cannot sit on a log axis and is left out (the table prints it): ${list(l, parts)}.`, ` Un 0 no cabe en un eje logarítmico y se omite (la tabla lo imprime): ${list(l, parts)}.`)
       : '';
@@ -486,7 +487,7 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
       t(
         l,
         `Log scale, shares of the cohort. Lines: the long-run average under each definition (EBA/GL/2017/16 paragraph 84, the mean of the yearly rates over the cohorts where the grade has ratings), the rail's (${pick(CODE[d], l)}) thicker. For ${pick(CODE[d], l)} only: its pooled rate (points, defaults over n) inside its Jeffreys 95% interval (dashed), which bounds the pooled rate and not the average, and the mean of its last five cohorts (grey points, paragraph 86). Marked: the rail's grade.${hasKeep ? " Keep's average and its last five cohorts' mean, which the artifact does not bake, are the means of its yearly rates, computed in your browser, and so are its pooled counts and interval." : ''}`,
-        `Escala logarítmica, fracciones de la cohorte. Líneas: el promedio de largo plazo bajo cada definición (EBA/GL/2017/16 párrafo 84, la media de las tasas anuales sobre las cohortes donde el grado tiene calificaciones), la del panel (${pick(CODE[d], l)}) más gruesa. Solo para ${pick(CODE[d], l)}: su tasa agrupada (puntos, incumplimientos sobre n) dentro de su intervalo de Jeffreys al 95% (segmentado), que acota la tasa agrupada y no el promedio, y la media de sus últimas cinco cohortes (puntos grises, párrafo 86). Marcado: el grado del panel.${hasKeep ? ' El promedio de Con retiros y la media de sus últimas cinco cohortes, que el artefacto no trae, son medias de sus tasas anuales calculadas en su navegador, y también lo son sus conteos agrupados y su intervalo.' : ''}`,
+        `Escala logarítmica, fracciones de la cohorte. Líneas: el promedio de largo plazo bajo cada definición (EBA/GL/2017/16 párrafo 84, la media de las tasas anuales sobre las cohortes donde el grado tiene calificaciones), la del panel (${pick(CODE[d], l)}) más gruesa. Solo para ${pick(CODE[d], l)}: su tasa agrupada (puntos, incumplimientos sobre n) dentro de su intervalo de Jeffreys al 95% (discontinuo), que acota la tasa agrupada y no el promedio, y la media de sus últimas cinco cohortes (puntos grises, párrafo 86). Marcado: el grado del panel.${hasKeep ? ' El promedio de Con retiros y la media de sus últimas cinco cohortes, que el artefacto no trae, son medias de sus tasas anuales calculadas en su navegador, y también lo son sus conteos agrupados y su intervalo.' : ''}`,
       ) +
       zeros(l) +
       pdSource(o, l),
@@ -504,7 +505,7 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
       ? t(
           l,
           " Keep has no long-run average block in the artifact (the bake has D2, D3 and D4): its average is the mean of its yearly rates, its pooled counts are the transition page's defaults over the whole cohorts, and its intervals are computed in your browser by the ports held to riskvalidation.",
-          ' Con retiros no tiene bloque de promedio de largo plazo en el artefacto (el horneado trae D2, D3 y D4): su promedio es la media de sus tasas anuales, sus conteos agrupados son los incumplimientos de la página de transiciones sobre las cohortes completas, y sus intervalos se calculan en su navegador con los puertos contrastados con riskvalidation.',
+          ' Con retiros no tiene bloque de promedio de largo plazo en el artefacto (el cálculo previo trae D2, D3 y D4): su promedio es la media de sus tasas anuales, sus conteos agrupados son los incumplimientos de la página de transiciones sobre las cohortes completas, y sus intervalos se calculan en su navegador con los puertos contrastados con riskvalidation.',
         )
       : '';
   const tableNote = bi((l) => {
@@ -540,7 +541,7 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
       t(
         l,
         `${pick(DEFINITION_LABEL[d], l)} by grade, in shares of the pooled cohort on a log scale: the pooled rate (points, defaults over n) inside its three 95% intervals (Schuermann and Hanson 2004), Wald, Agresti-Coull and Jeffreys, upper bound solid and lower dashed; the line is the long-run average of the yearly rates, which the intervals do not bound. Marked: the rail's grade.`,
-        `${pick(DEFINITION_LABEL[d], l)} por grado, en fracciones de la cohorte agrupada en escala logarítmica: la tasa agrupada (puntos, incumplimientos sobre n) dentro de sus tres intervalos al 95% (Schuermann y Hanson 2004), Wald, Agresti-Coull y Jeffreys, cota superior continua e inferior segmentada; la línea es el promedio de largo plazo de las tasas anuales, que los intervalos no acotan. Marcado: el grado del panel.`,
+        `${pick(DEFINITION_LABEL[d], l)} por grado, en fracciones de la cohorte agrupada en escala logarítmica: la tasa agrupada (puntos, incumplimientos sobre n) dentro de sus tres intervalos al 95% (Schuermann y Hanson 2004), Wald, Agresti-Coull y Jeffreys, cota superior continua e inferior discontinua; la línea es el promedio de largo plazo de las tasas anuales, que los intervalos no acotan. Marcado: el grado del panel.`,
       ) +
       zeroText +
       outsideText(l) +
@@ -579,7 +580,7 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
           dataKey={stateKey}
           note={tableNote}
         >
-          <div className="ct-scroll" ref={fit.ref}>
+          <div className="ct-scroll" data-caos-flow="" ref={fit.ref}>
             <table className="caos-table ct-wrap-head" data-table="lra" data-definition={d}>
               <PdTableHead show={show} />
               <tbody>
@@ -775,12 +776,12 @@ export function ByYearView({ sel }: { sel: C04Sel | null }) {
       t(
         l,
         `The ratings in ${grade} at each cohort's start (tab 4's row) and each definition's one-year rate in percent of the cohort; where the card has room, tab 2's own cohort (D2's denominator), its rated defaulters and the withdrawals${hasD4 ? ' (D4 removes them from its denominator)' : ''}.${data.widest.length ? ' Highlighted: the years marked on the chart.' : ''}`,
-        `Las calificaciones en ${grade} al inicio de cada cohorte (la fila de la pestaña 4) y la tasa anual de cada definición en porcentaje de la cohorte; donde la tarjeta tiene espacio, la cohorte propia de la pestaña 2 (el denominador de D2), sus calificaciones incumplidas y los retiros${hasD4 ? ' (D4 los quita de su denominador)' : ''}.${data.widest.length ? ' Destacados: los años marcados en el gráfico.' : ''}`,
+        `Las calificaciones en ${grade} al inicio de cada cohorte (la fila de la tabla 4) y la tasa anual de cada definición en porcentaje de la cohorte; donde la tarjeta tiene espacio, la cohorte propia de la tabla 2 (el denominador de D2), sus calificaciones incumplidas y los retiros${hasD4 ? ' (D4 los quita de su denominador)' : ''}.${data.widest.length ? ' Destacados: los años marcados en el gráfico.' : ''}`,
       ) + pdSource(o, l),
   );
   const xLabel: BiText = { en: 'Cohort year', es: 'Año de la cohorte' };
   const yearTable = (
-    <div className="ct-scroll" ref={fit.ref}>
+    <div className="ct-scroll" data-caos-flow="" ref={fit.ref}>
       <table className="caos-table ct-wrap-head" data-table="by-year" data-grade={grade}>
         <thead>
           <tr>
@@ -789,7 +790,7 @@ export function ByYearView({ sel }: { sel: C04Sel | null }) {
             {data.defs.map((x) => (
               <th key={x}>{`${pick(CODE[x], lang)}, %`}</th>
             ))}
-            {show('tab2-cohort') && <th className="ct-wide-only">{pick({ en: 'Tab 2 cohort', es: 'Cohorte pestaña 2' }, lang)}</th>}
+            {show('tab2-cohort') && <th className="ct-wide-only">{pick({ en: 'Cohort, CEREP table 2', es: 'Cohorte, tabla 2 de CEREP' }, lang)}</th>}
             {show('defaulted') && <th className="ct-wide-only">{pick({ en: 'Rated defaulters', es: 'Calif. incumplidas' }, lang)}</th>}
             {show('withdrawn') && <th className="ct-wide-only">{pick({ en: 'Withdrawn', es: 'Retiradas' }, lang)}</th>}
           </tr>
@@ -962,7 +963,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       ? t(
           l,
           ` Tab 3's default events equal tab 2's rated defaulters in every cohort, so D3 over D2 is tab 2's pooled cohort over tab 4's: above 1 where the default-rate page counts more ratings (${tall ? 'the cohorts beside' : "the By year view gives each cohort's two counts"}).`,
-          ` Los eventos de incumplimiento de la pestaña 3 igualan a las calificaciones incumplidas de la pestaña 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la pestaña 2 sobre la de la pestaña 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (${tall ? 'las cohortes al lado' : 'la vista Por año da los dos conteos de cada cohorte'}).`,
+          ` Los eventos de incumplimiento de la tabla 3 igualan a las calificaciones incumplidas de la tabla 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la tabla 2 sobre la de la tabla 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (${tall ? 'las cohortes al lado' : 'la vista Por año da los dos conteos de cada cohorte'}).`,
         )
       : t(l, ' D3 counts every default event, which can exceed the rated defaulters.', ' D3 cuenta cada evento de incumplimiento, que puede superar a las calificaciones incumplidas.');
     const d4Text = !d4
@@ -1002,12 +1003,12 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
         ? t(
             l,
             `${gaps.length} of ${o.cohorts.length} annual cohorts: tab 2's cohort, D2's denominator, is larger than tab 4's rows in some grade${upTo}.`,
-            `${gaps.length} de ${o.cohorts.length} cohortes anuales: la cohorte de la pestaña 2, el denominador de D2, es mayor que las filas de la pestaña 4 en algún grado${upTo}.`,
+            `${gaps.length} de ${o.cohorts.length} cohortes anuales: la cohorte de la tabla 2, el denominador de D2, es mayor que las filas de la tabla 4 en algún grado${upTo}.`,
           )
         : t(
             l,
             `${gaps.length} of ${o.cohorts.length} annual cohorts: tab 2's cohort, D2's denominator, differs from tab 4's rows in some grade, tab 2's the larger in ${larger} of the ${cells.length} cells.`,
-            `${gaps.length} de ${o.cohorts.length} cohortes anuales: la cohorte de la pestaña 2, el denominador de D2, difiere de las filas de la pestaña 4 en algún grado, la de la pestaña 2 mayor en ${larger} de las ${cells.length} celdas.`,
+            `${gaps.length} de ${o.cohorts.length} cohortes anuales: la cohorte de la tabla 2, el denominador de D2, difiere de las filas de la tabla 4 en algún grado, la de la tabla 2 mayor en ${larger} de las ${cells.length} celdas.`,
           )
       : t(l, 'In every annual cohort the two pages count the same ratings in every grade.', 'En cada cohorte anual las dos páginas cuentan las mismas calificaciones en cada grado.');
     const highlight = atGrade
@@ -1020,7 +1021,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       t(
         l,
         ' Extra ratings: tab 2\'s less tab 4\'s, over the grades. Last column: the relative gap of the CEREP label (a category such as CC within CCC-C) that differs most. ESMA states no reason.',
-        ' Calificaciones de más: las de la pestaña 2 menos las de la pestaña 4, sobre los grados. Última columna: la diferencia relativa de la etiqueta de CEREP (una categoría como CC dentro de CCC-C) que más difiere. ESMA no da la razón.',
+        ' Calificaciones de más: las de la tabla 2 menos las de la tabla 4, sobre los grados. Última columna: la diferencia relativa de la etiqueta de CEREP (una categoría como CC dentro de CCC-C) que más difiere. ESMA no da la razón.',
       ) +
       highlight +
       ` ${sourceText(o, l)}`
@@ -1052,7 +1053,9 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
             y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
             series={series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
-            yMarks={[{ y: 1, label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, tone: 'neutral' }]}
+            // the line at 1 is drawn without a label: the label covered the D3/D2 line at CCC-C, the view's point (R2b c05 M1); the
+            // note says what the dotted line is
+            yMarks={[{ y: 1, tone: 'neutral' }]}
             marks={[{ x: g + 1, label: grade }]}
           />
         ) : (
@@ -1061,7 +1064,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       </PlotCard>
       <>
         <PlotCard fill title={{ en: 'What each definition counts', es: 'Qué cuenta cada definición' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={definitionsNote}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <p className="ct-note" data-esma="definitions">{pick(ESMA_DEFINITIONS, lang)}</p>
             <table className="caos-table ct-wrap-head" data-table="definitions">
               <thead>
@@ -1099,18 +1102,18 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
         {tall && (
           <PlotCard
             fill
-            title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la pestaña 2 difiere de la pestaña 4' }}
+            title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la tabla 2 difiere de la tabla 4' }}
             lane={REPLAY}
             provenance={prov}
             dataKey={stateKey}
             note={gapNote}
           >
-            <div className="ct-scroll">
+            <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
                 <thead>
                   <tr>
                     <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                    <th className="ct-text">{pick({ en: 'Grades: tab 2 against tab 4', es: 'Grados: pestaña 2 contra pestaña 4' }, lang)}</th>
+                    <th className="ct-text">{pick({ en: 'Grades: CEREP table 2 against table 4', es: 'Grados: tabla 2 de CEREP contra tabla 4' }, lang)}</th>
                     <th className="ct-wide-only">{pick({ en: 'Extra ratings', es: 'Calif. de más' }, lang)}</th>
                     <th>{pick({ en: 'Largest label gap, %', es: 'Mayor brecha de etiqueta, %' }, lang)}</th>
                   </tr>
@@ -1170,8 +1173,8 @@ interface LifetimeSpec {
 function lifetimeSpecs(years: number | null): LifetimeSpec[] {
   const steps = years ?? 5;
   return [
-    { key: 'cumulative_d2', observed: true, label: { en: 'Lived: defaulted (tab 2)', es: 'Vivido: incumplidas (pestaña 2)' }, short: { en: 'Lived, tab 2', es: 'Vivido, pestaña 2' }, color: '--color-fg' },
-    { key: 'default_end', observed: true, label: { en: 'Lived: in default at the end (tab 4)', es: 'Vivido: en incumplimiento al final (pestaña 4)' }, short: { en: 'Lived, tab 4 at the end', es: 'Vivido, pestaña 4 al final' }, color: '--color-fg-subtle' },
+    { key: 'cumulative_d2', observed: true, label: { en: 'Lived: defaulted (tab 2)', es: 'Vivido: incumplidas (tabla 2)' }, short: { en: 'Lived, tab 2', es: 'Vivido, tabla 2' }, color: '--color-fg' },
+    { key: 'default_end', observed: true, label: { en: 'Lived: in default at the end (tab 4)', es: 'Vivido: en incumplimiento al final (tabla 4)' }, short: { en: 'Lived, tab 4 at the end', es: 'Vivido, tabla 4 al final' }, color: '--color-fg-subtle' },
     { key: 'chain_state', observed: false, label: { en: 'Chained, withdrawals a state', es: 'Encadenado, retiros como estado' }, short: { en: 'Chained, state', es: 'Encadenado, estado' }, color: DEFINITION_COLOR.keep, width: 2.4 },
     { key: 'chain_exclude', observed: false, label: { en: 'Chained, withdrawals removed', es: 'Encadenado, sin retiros' }, short: { en: 'Chained, removed', es: 'Encadenado, sin retiros' }, color: DEFINITION_COLOR.d4, width: 2, dash: [7, 4] },
     { key: 'pooled_power', observed: false, label: { en: `Pooled matrix, ${steps} steps`, es: `Matriz agrupada, ${steps} pasos` }, short: { en: 'Pooled matrix', es: 'Matriz agrupada' }, color: '--color-accent-2', width: 1.6 },
@@ -1295,7 +1298,9 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
   const hasDefault = o.pd.d4 !== null;
   const emptyYears = emptyDefaultYears(o).map((y) => y.year);
   const steps = data.years ?? 5;
-  const xLabel = bi((l) => `${t(l, 'Five-year window', 'Ventana de cinco años')} (${data.windows.map((w, i) => `${i + 1} ${w.label}`).join(', ')})`);
+  // the axis names the number only (a title listing every window ran past the card at 390 px and was clipped); the windows are listed in the table's note
+  const windowList = data.windows.map((w, i) => `${i + 1} ${w.label}`).join(', ');
+  const xLabel = bi((l) => t(l, 'Five-year window (number)', 'Ventana de cinco años (número)'));
   const markText = (l: Lang): string => {
     if (data.marked === null) return '';
     const w = data.windows[data.marked];
@@ -1304,7 +1309,7 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
     return t(
       l,
       ` Marked: ${w.label}, the widest gap (${lv} lived against ${ch} chained). The chain's default column cannot hold a default withdrawn or re-rated within the year it happened (that year's tab 4 already misses it), so what it targets lies between tab 4's share at the window's end and tab 2's: part of any gap to tab 2 is the definitions', not the chain's.`,
-      ` Marcada: ${w.label}, la mayor brecha (${lv} vivido contra ${ch} encadenado). La columna de incumplimiento de la cadena no puede retener un incumplimiento retirado o recalificado dentro del año en que ocurrió (la pestaña 4 de ese año ya no lo tiene), así que lo que mide queda entre la fracción de la pestaña 4 al final de la ventana y la de la pestaña 2: parte de cualquier brecha con la pestaña 2 es de las definiciones, no de la cadena.`,
+      ` Marcada: ${w.label}, la mayor brecha (${lv} vivido contra ${ch} encadenado). La columna de incumplimiento de la cadena no puede retener un incumplimiento retirado o recalificado dentro del año en que ocurrió (la tabla 4 de ese año ya no lo tiene), así que lo que mide queda entre la fracción de la tabla 4 al final de la ventana y la de la tabla 2: parte de cualquier brecha con la tabla 2 es de las definiciones, no de la cadena.`,
     );
   };
   // the windows every year of which has an empty default column on its transition page (Fitch's 2010 to 2014): their
@@ -1319,12 +1324,12 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
         ? t(
             l,
             `Each window's ${grade} cohort followed to its end, in shares of the cohort. Points, lived: defaulted within the window (tab 2) and in default at its end (tab 4). Lines, projected: the window's annual matrices chained (withdrawals a state, or removed), the pooled matrix and the EM generator over ${steps} years (the same in every window). The chained default column counts ratings in default at some year-end; tab 4, only those still in default at the window's end: a rating that defaulted and was then withdrawn leaves it.`,
-            `La cohorte ${grade} de cada ventana seguida hasta su final, en fracciones de la cohorte. Puntos, lo vivido: incumplidas en la ventana (pestaña 2) y en incumplimiento a su final (pestaña 4). Líneas, lo proyectado: las matrices anuales de la ventana encadenadas (retiros como estado, o quitados), la matriz agrupada y el generador EM en ${steps} años (iguales en cada ventana). La columna de incumplimiento encadenada cuenta las calificaciones en incumplimiento al cierre de algún año; la pestaña 4, solo las que siguen en incumplimiento al final: una que incumplió y luego fue retirada sale de ella.`,
+            `La cohorte ${grade} de cada ventana seguida hasta su final, en fracciones de la cohorte. Puntos, lo vivido: incumplidas en la ventana (tabla 2) y en incumplimiento a su final (tabla 4). Líneas, lo proyectado: las matrices anuales de la ventana encadenadas (retiros como estado, o quitados), la matriz agrupada y el generador EM en ${steps} años (iguales en cada ventana). La columna de incumplimiento encadenada cuenta las calificaciones en incumplimiento al cierre de algún año; la tabla 4, solo las que siguen en incumplimiento al final: una que incumplió y luego fue retirada sale de ella.`,
           ) + markText(l)
         : t(
             l,
             `Each window's cohort of ${grade} ratings followed to its end: the share that defaulted within the window (tab 2, D2's page). The transition page of ${pick(name, l)} has no default category, so there is no share in default at a window's end and no projection of one; the table sets the withdrawn shares, lived and chained, side by side.`,
-            `La cohorte de calificaciones ${grade} de cada ventana seguida hasta su final: la fracción que incumplió dentro de la ventana (pestaña 2, la página de D2). La página de transiciones de ${pick(name, l)} no tiene categoría de incumplimiento, así que no hay fracción en incumplimiento al final de una ventana ni su proyección; la tabla pone lado a lado las fracciones retiradas, vividas y encadenadas.`,
+            `La cohorte de calificaciones ${grade} de cada ventana seguida hasta su final: la fracción que incumplió dentro de la ventana (tabla 2, la página de D2). La página de transiciones de ${pick(name, l)} no tiene categoría de incumplimiento, así que no hay fracción en incumplimiento al final de una ventana ni su proyección; la tabla pone lado a lado las fracciones retiradas, vividas y encadenadas.`,
           )) +
       (affected.length
         ? t(
@@ -1337,7 +1342,7 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
   );
   const title = projected
     ? bi((l) => t(l, `${pick(name, l)} ${grade}: five years lived against the chained one-year matrices`, `${pick(name, l)} ${grade}: cinco años vividos contra las matrices anuales encadenadas`))
-    : bi((l) => t(l, `${pick(name, l)} ${grade}: rated defaulters within each five-year window (tab 2)`, `${pick(name, l)} ${grade}: calificaciones incumplidas en cada ventana de cinco años (pestaña 2)`));
+    : bi((l) => t(l, `${pick(name, l)} ${grade}: rated defaulters within each five-year window (tab 2)`, `${pick(name, l)} ${grade}: calificaciones incumplidas en cada ventana de cinco años (tabla 2)`));
   // the chart's shares in its order, named short, then the withdrawn shares; a row the pages give nowhere is left out
   const shares: Array<{ key: string; label: BiText; values: (number | null)[] }> = [
     ...lifetimeSpecs(data.years).map((s) => ({ key: s.key, label: s.short, values: data.values[s.key] })),
@@ -1354,8 +1359,8 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
     (l) =>
       t(
         l,
-        `Shares of each window's ${grade} cohort in percent, the chart's in its order; the first row counts the cohort at the window's start (tab 4), the last two the share withdrawn by the window's end, lived and chained (withdrawals an absorbing state).${omitted ? ` ${omitted} rows the pages give for no window are left out.` : ''}${data.marked !== null ? ` The chart marks ${data.windows[data.marked].label}.` : ''}`,
-        `Fracciones de la cohorte ${grade} de cada ventana en porcentaje, las del gráfico en su orden; la primera fila cuenta la cohorte al inicio de la ventana (pestaña 4), las dos últimas la fracción retirada al final de la ventana, vivida y encadenada (los retiros como estado absorbente).${omitted ? ` Se omiten ${omitted} filas que las páginas no dan para ninguna ventana.` : ''}${data.marked !== null ? ` El gráfico marca ${data.windows[data.marked].label}.` : ''}`,
+        `Windows: ${windowList}. Shares of each window's ${grade} cohort in percent, the chart's in its order; the first row counts the cohort at the window's start (tab 4), the last two the share withdrawn by the window's end, lived and chained (withdrawals an absorbing state).${omitted ? ` ${omitted} rows the pages give for no window are left out.` : ''}${data.marked !== null ? ` The chart marks ${data.windows[data.marked].label}.` : ''}`,
+        `Ventanas: ${windowList}. Fracciones de la cohorte ${grade} de cada ventana en porcentaje, las del gráfico en su orden; la primera fila cuenta la cohorte al inicio de la ventana (tabla 4), las dos últimas la fracción retirada al final de la ventana, vivida y encadenada (los retiros como estado absorbente).${omitted ? ` Se omiten ${omitted} filas que las páginas no dan para ninguna ventana.` : ''}${data.marked !== null ? ` El gráfico marca ${data.windows[data.marked].label}.` : ''}`,
       ) + pdSource(o, l),
   );
   const withdrawnNote = bi((l) => {
@@ -1409,7 +1414,7 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
       </PlotCard>
       <>
         <PlotCard fill title={bi((l) => t(l, `${grade}, window by window`, `${grade}, ventana por ventana`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="lifetime" data-grade={grade}>
               <thead>
                 <tr>
@@ -1457,6 +1462,186 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
           </PlotCard>
         </div>
       </>
+    </ViewsRow>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Anchored k: the default page as the anchor of the transition page's withdrawals (riskvalidation's
+// transitions.withdrawals on the agency's own CEREP pages; the bake's withdrawal_bounds block)
+
+const kText = (l: Lang, x: unknown): string => (num(x) === null ? '-' : formatNumber(num(x) as number, l, { decimals: 1 }));
+/** A k the log axis can draw: positive and finite; 0 and an infinite end are left out and counted in the note. */
+const onLog = (x: unknown): number | null => (num(x) !== null && (num(x) as number) > 0 ? (num(x) as number) : null);
+
+export interface AnchoredKChart {
+  grade: C04AnchorGrade;
+  years: number[];
+  k: (number | null)[];
+  low: (number | null)[];
+  high: (number | null)[];
+  /** cohorts with a k the axis cannot draw (0, or no k), and cohorts whose band has no upper end */
+  undrawn: number;
+  open: number;
+  series: ChartSeries[];
+}
+
+/** The chosen grade's anchored k cohort by cohort, with its band, as the bake gives it; null where the agency has no
+ * withdrawal_bounds block (Moody's) or no row for the grade. */
+export function anchoredKChart(o: C04AgencyOutputs, g: number): AnchoredKChart | null {
+  const grade = o.withdrawal_bounds?.grades.find((r) => r.grade === GRADES[g]) ?? null;
+  if (!grade) return null;
+  const cohorts = grade.cohorts;
+  const years = cohorts.map((c) => Number(c.label));
+  const k = cohorts.map((c) => onLog(c.k));
+  const low = cohorts.map((c) => onLog(c.k_low));
+  const high = cohorts.map((c) => onLog(c.k_high));
+  const series: ChartSeries[] = [
+    { id: 'k', label: { en: "The cohort's k", es: 'La k de la cohorte' }, values: k, color: '--color-fg' as const, mode: 'points' as const },
+    { id: 'low', label: { en: 'Lower end of its band', es: 'Extremo inferior de su banda' }, values: low, color: DEFINITION_COLOR.keep, width: 1.6, dash: [5, 3], dots: true },
+    { id: 'high', label: { en: 'Upper end of its band', es: 'Extremo superior de su banda' }, values: high, color: DEFINITION_COLOR.keep, width: 1.6, dash: [2, 3], dots: true },
+  ];
+  return {
+    grade,
+    years,
+    k,
+    low,
+    high,
+    undrawn: k.filter((x) => x === null).length,
+    open: cohorts.filter((c) => c.infinite.includes('k_high')).length,
+    series: series.filter((s) => s.values.some((x) => x !== null)),
+  };
+}
+
+/** The anchored k of the transition page's withdrawals, by grade and cohort year: how much likelier a rating about to
+ * default is withdrawn than one that survives, read off the agency's own default page, and whether the pooled k holds
+ * year by year against the share fixed before the run. */
+export function AnchoredKView({ sel }: { sel: C04Sel | null }) {
+  const lang = useShellLang();
+  const stateKey = useWorkbenchState()?.stateKey;
+  const v = agencyOf(sel);
+  const g = sel?.grade ?? N_GRADES - 1;
+  const data = useMemo(() => (v ? anchoredKChart(v.outputs, g) : null), [v, g]);
+  if (!sel) return <Pending />;
+  if (!v) return <NotAgency sel={sel} />;
+  const o = v.outputs;
+  const study = o.withdrawal_bounds ?? null;
+  const prov = provenanceOf(v.provenance.truth_status);
+  const name = agencyName(sel, v);
+  const grade = GRADES[g];
+  if (!study || !data) {
+    return (
+      <ViewsRow>
+        <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the anchored k`, `${pick(name, l)}: la k anclada`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={bi((l) => sourceText(o, l))}>
+          <p className="ct-note">
+            {t(
+              lang,
+              `No anchored k for ${grade}: the transition page of ${pick(name, lang)} gives no default category to anchor its withdrawals on.`,
+              `No hay k anclada para ${grade}: la página de transiciones de ${pick(name, lang)} no da una categoría de incumplimiento en la que anclar sus retiros.`,
+            )}
+          </p>
+        </PlotCard>
+      </ViewsRow>
+    );
+  }
+  const pooled = data.grade.pooled;
+  const stab = data.grade.stability;
+  const share = study.stability_share;
+  const level = study.level;
+  const yMarks = [
+    { y: 1, label: { en: 'k 1: withdrawal says nothing', es: 'k 1: el retiro no dice nada' }, tone: 'neutral' as const },
+    ...(onLog(pooled?.k) !== null ? [{ y: pooled!.k as number, label: bi((l) => t(l, `Pooled k ${kText(l, pooled!.k)}`, `k agrupada ${kText(l, pooled!.k)}`)), tone: 'good' as const }] : []),
+  ];
+  const drawn = [...data.k, ...data.low, ...data.high, ...yMarks.map((m) => m.y)].filter((x): x is number => x !== null);
+  const chartNote = bi((l) => {
+    const pooledText = pooled
+      ? t(
+          l,
+          ` Pooled over the cohorts, k is ${kText(l, pooled.k)} (band ${kText(l, pooled.k_low)} to ${kText(l, pooled.k_high)}), the line.`,
+          ` Agrupada sobre las cohortes, k es ${kText(l, pooled.k)} (banda ${kText(l, pooled.k_low)} a ${kText(l, pooled.k_high)}), la línea.`,
+        )
+      : '';
+    const stabText = stab
+      ? t(
+          l,
+          ` ${count(l, stab.cohorts_containing_pooled_k)} of ${count(l, stab.usable_cohorts)} cohorts' bands contain the pooled k (${pcs(l, stab.share_cohorts_containing_pooled_k)}), against ${pcs(l, share)} fixed before the run: ${stab.stable ? 'stable' : 'not stable'}.`,
+          ` Las bandas de ${count(l, stab.cohorts_containing_pooled_k)} de ${count(l, stab.usable_cohorts)} cohortes contienen la k agrupada (${pcs(l, stab.share_cohorts_containing_pooled_k)}), contra el ${pcs(l, share)} fijado antes de la corrida: ${stab.stable ? 'estable' : 'no estable'}.`,
+        )
+      : '';
+    const left =
+      data.undrawn || data.open
+        ? t(
+            l,
+            ` Not on the log axis: ${count(l, data.undrawn)} cohorts with k 0 or none, ${count(l, data.open)} bands with no upper end (the table lists every grade).`,
+            ` Fuera del eje logarítmico: ${count(l, data.undrawn)} cohortes con k 0 o sin k, ${count(l, data.open)} bandas sin extremo superior (la tabla lista cada grado).`,
+          )
+        : '';
+    return (
+      t(
+        l,
+        `${grade}, cohort by cohort: k, the odds ratio of withdrawal before default, with the default page as the anchor of the transition page's withdrawals, and its ${pcs(l, level)} band. Above 1, a rating about to default is withdrawn more often than one that survives; the k absorbs any difference between the two pages' definitions of default.`,
+        `${grade}, cohorte por cohorte: k, la razón de chances de retiro antes del incumplimiento, con la página de incumplimientos como ancla de los retiros de la página de transiciones, y su banda al ${pcs(l, level)}. Sobre 1, una calificación por incumplir se retira más que una que sobrevive; la k absorbe cualquier diferencia entre las definiciones de incumplimiento de las dos páginas.`,
+      ) +
+      pooledText +
+      stabText +
+      left +
+      ` ${sourceText(o, l)}`
+    );
+  });
+  const tableNote = bi(
+    (l) =>
+      t(
+        l,
+        `Every grade: the pooled k and its ${pcs(l, level)} band, the median k over the annual cohorts, the cohorts whose band contains the pooled k against the ${pcs(l, share)} criterion, and whether k is above 1 at the band's lower end.`,
+        `Cada grado: la k agrupada y su banda al ${pcs(l, level)}, la mediana de k sobre las cohortes anuales, las cohortes cuya banda contiene la k agrupada contra el criterio del ${pcs(l, share)}, y si k está sobre 1 en el extremo inferior de la banda.`,
+      ) + ` ${sourceText(o, l)}`,
+  );
+  const yes = (b: boolean | undefined): string => (b === undefined ? '-' : b ? t(lang, 'yes', 'sí') : t(lang, 'no', 'no'));
+  return (
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard fill title={bi((l) => t(l, `${pick(name, l)} ${grade}: the anchored k, cohort by cohort`, `${pick(name, l)} ${grade}: la k anclada, cohorte por cohorte`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={chartNote}>
+        {data.series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: data.years, label: { en: 'Cohort year', es: 'Año de la cohorte' }, format: { decimals: 0, grouping: false } }}
+            y={{ label: { en: 'k, odds ratio (log)', es: 'k, razón de chances (log)' }, format: { digits: 2 }, log: true, range: [Math.min(...drawn) / 1.3, Math.max(...drawn) * 1.3] }}
+            series={data.series}
+            yMarks={yMarks}
+          />
+        ) : (
+          <p className="ct-note">{t(lang, `No cohort of ${grade} has a k above 0: the table beside lists every grade.`, `Ninguna cohorte de ${grade} tiene una k sobre 0: la tabla al lado lista cada grado.`)}</p>
+        )}
+      </PlotCard>
+      <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the anchored k by grade`, `${pick(name, l)}: la k anclada por grado`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
+        <div className="ct-scroll" data-caos-flow="">
+          <table className="caos-table ct-wrap-head" data-table="anchored-k">
+            <thead>
+              <tr>
+                <th className="ct-text">{t(lang, 'Grade', 'Grado')}</th>
+                <th>{t(lang, 'Pooled k', 'k agrupada')}</th>
+                <th>{t(lang, 'Band', 'Banda')}</th>
+                <th>{t(lang, 'Median over cohorts', 'Mediana en cohortes')}</th>
+                <th>{t(lang, 'Bands holding it', 'Bandas que la contienen')}</th>
+                <th>{t(lang, 'Stable', 'Estable')}</th>
+                <th>{t(lang, 'Above 1', 'Sobre 1')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {study.grades.map((r) => (
+                <tr key={r.grade} data-grade={r.grade} className={r.grade === grade ? 'ct-current' : undefined}>
+                  <td className="ct-text">{r.grade}</td>
+                  <td>{kText(lang, r.pooled?.k)}</td>
+                  <td>{r.pooled ? `${kText(lang, r.pooled.k_low)} ${t(lang, 'to', 'a')} ${r.pooled.infinite.includes('k_high') ? '∞' : kText(lang, r.pooled.k_high)}` : '-'}</td>
+                  <td>{kText(lang, r.k_over_cohorts?.median)}</td>
+                  <td>{r.stability ? `${count(lang, r.stability.cohorts_containing_pooled_k)} / ${count(lang, r.stability.usable_cohorts)}` : '-'}</td>
+                  <td>{yes(r.stability?.stable)}</td>
+                  <td>{yes(r.k_above_1?.holds_with_lower_bound)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
     </ViewsRow>
   );
 }

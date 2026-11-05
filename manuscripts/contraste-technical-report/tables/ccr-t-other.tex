@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The other regulatory calculators called in the pinned engine against the value their paragraph or the engine documentation prints: standardised operational risk capital, the output floor, BA-CVA, the FRTB aggregation and liquidity cascade, the liquidity coverage ratio and the net stable funding ratio.}
+\label{tab:ccr-other}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrr}
+\toprule
+Calculator (paragraph) & Quantity & Engine & Reference & Relative difference \\
+\midrule
+SMA (OPE25.7 footnote 2) & BIC at BI of 35 bn EUR (bn) & 5.37 & 5.37 & $0$ \\
+SMA (OPE25.8) & RWA, BI 35 bn and ten annual losses of 358 m (bn) & 67.125 & 67.125 & $0$ \\
+SMA (OPE25.8) & internal loss multiplier at LC equal to BIC & 1 & 1 & $0$ \\
+Output floor (RBC20.13) & floored RWA, 76 and 140 at 0.725 & 101.5 & 101.5 & $0$ \\
+Output floor (RBC90.2) & floored RWA with the 25 percent cap & 95 & 95 & $0$ \\
+BA-CVA (MAR50.14) & reduced capital base at rho of 1, SCVA 10 and 20 & 30 & 30 & $0$ \\
+BA-CVA (MAR50.20) & full capital base with no hedges, K reduced 30 & 7.5 & 7.5 & $0$ \\
+FRTB (MAR21.4) & cross-bucket charge with the fallback, medium scenario & 10.9545 & 10.9545 & $4.5\times10^{-6}$ \\
+FRTB (MAR33.4) & liquidity-horizon cascade ES, 10 and 6 & 11.6619 & 11.6619 & $1.8\times10^{-8}$ \\
+FRTB (MAR21.44) & GIRR charge, one 10-year sensitivity of 80 million (USD) & 622254 & 622254 & $4.1\times10^{-9}$ \\
+LCR (LCR30.39) & HQLA, Level 1 100, Level 2A 20, Level 2B 30 & 141.176 & 141.176 & $2.9\times10^{-9}$ \\
+LCR (LCR30.39) & HQLA, Level 1 100, Level 2A 80 & 166.667 & 166.667 & $2.0\times10^{-9}$ \\
+LCR (LCR40.1) & ratio, HQLA 100 over net outflows 50 & 2 & 2 & $0$ \\
+NSFR (NSF20.2) & available stable funding, capital 10 and stable retail deposits 100 & 105 & 105 & $0$ \\
+NSFR (NSF20.2) & ratio, ASF 105 over RSF 50 & 2.1 & 2.1 & $0$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

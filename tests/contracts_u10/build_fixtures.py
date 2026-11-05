@@ -246,7 +246,8 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
             "item_id": item_id, "label": txt(en, es), "side": side, "category": category, "behavioural_class": bclass,
             "repricing_type": rtype, "source_field": f"fixture:{fld}",
             "reported_amount": r(amount) if reported else None, "reason_missing": reason,
-            "slotting_assumption": slotting, "amount": r(amount), "cash_flows": {"behavioural": cf, "contractual": cf},
+            # c14-outputs 2.0.0: the slotting assumption is bilingual (U16-F10d)
+            "slotting_assumption": txt(slotting, f"fixture: {slotting}"), "amount": r(amount), "cash_flows": {"behavioural": cf, "contractual": cf},
         })
 
     add("A1", "Cash and balances", "Efectivo y saldos", "asset", "cash", "none", "floating", "cash-and-balances", 8e6 * s, [fl(1, 8e6 * s)])
@@ -414,7 +415,8 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
         "bank": {"name": "Silicon Valley Bank (fixture values)", "cert": 24735, "aggregates": "real", "behaviour": "synthetic",
                  "notice": txt("Fixture, not a result. Round numbers for the contract; the bake reads the FDIC financials.",
                                "Ejemplo, no es un resultado. Numeros redondos para el contrato; el proceso lee los estados de la FDIC.")},
-        "data": {"call_reports": [{"report_date": d, "source": "fixture: FDIC BankFind financials (not read)",
+        "data": {"call_reports": [{"report_date": d, "source": txt("fixture: FDIC BankFind financials (not read)",
+                                                                   "fixture: estados financieros de FDIC BankFind (no leídos)"),
                                    "fields": ["fixture:total-assets", "fixture:deposits"]} for d in sp["reports"]],
                  "data_cutoff": sp["reports"][-1], "read_up_to_valuation_date": True,
                  "rule": txt("Call reports are read only up to the valuation date; later reports are never read.",
@@ -507,7 +509,8 @@ def c14_models() -> dict:
             "buckets": buckets(), "shock_tables": tables,
             "applied_sizes": [shock_size("USD", T2024, "srp31-table-2024"), shock_size("USD", T2016, "srp31-table-2016")],
             "shock_shape": {"x": 4, "steepener_short": -0.65, "steepener_long": 0.9, "flattener_short": 0.8, "flattener_long": -0.6,
-                            "short_form": "exp(-t_k / x)", "long_form": "1 - exp(-t_k / x)", "reference": "SRP31.91 to SRP31.92"},
+                            "short_form": "exp(-t_k / x)", "long_form": "1 - exp(-t_k / x)",
+                            "reference": txt("SRP31.91 to SRP31.92", "SRP31.91 a SRP31.92")},
             "nmd_caps": [{"category": c, "core_share_cap": a, "core_maturity_cap_years": b, "reference": "SRP31 Table 4 (SRP31.107 to SRP31.112)"}
                          for c, (a, b) in (("retail-transactional", (0.9, 5.0)), ("retail-non-transactional", (0.7, 4.5)),
                                            ("wholesale", (0.5, 4.0)))],
@@ -718,7 +721,10 @@ def c15_outputs(vid: str) -> dict:
         assert any(abs(x["pair"]["with_offset"] - x["pair"]["without_offset"]) > 1e-6 for x in eve_rows + nii_rows)
     cpi = None
     if sp["cpi"] is not None:
-        cpi = {"surprise_pp": sp["cpi"], "effect": r(-pn * sp["cpi"] / 100), "formula": "effect = -pn_ur x surprise_pp / 100 (loss-positive)"}
+        cpi = {"surprise_pp": sp["cpi"], "effect": r(-pn * sp["cpi"] / 100), "formula": txt(
+            "effect = −PN_UR × s / 100, positive is a loss, where PN_UR is the net UF position in CLP and s the CPI surprise in percentage points",
+            "efecto = −PN_UR × s / 100, positivo es una pérdida, donde PN_UR es la posición neta en UF en CLP y s la sorpresa de IPC en puntos "
+            "porcentuales")}
     dyn_legs = []
     for leg_name, leg in (("CLP", legs[0]), ("UR", legs[1])):
         conv = UF_VALUE if leg_name == "UR" else 1.0
@@ -774,7 +780,8 @@ def c15_outputs(vid: str) -> dict:
                                     "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al reves), con piso en cero."),
                         "reference": "RAN 21-13 Annex 1 Hojas 10 to 12 (dossier 03 F.2)"},
         "indexation_charge": {"rate": 0.025, "net_position_uf_units": r(pn_uf, 6), "pn_ur": r(pn), "abs_pn_ur": r(abs(pn)),
-                              "charge": r(charge), "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+                              "charge": r(charge), "formula": txt("charge = 0.025 × |PN_UR|, where PN_UR is the net UF position times the UF value",
+                                             "cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF"),
                               "note": txt("The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise.",
                                           "El cargo estandar por reajustabilidad, equivalente a una sorpresa de inflacion de 2,5 por ciento.")},
         "cpi_scenario": cpi,
@@ -784,7 +791,8 @@ def c15_outputs(vid: str) -> dict:
                 "worst_shock": ["parallel-up", "parallel-down"][pairs.index(max(pairs))] if max(pairs) > 0 else None,
                 "delta_nii_share_tier1": r(delta_nii / tier1, 9)},
         "thresholds": {"tier1": r(tier1), "net_interest_and_indexation_margin_12m": r(margin), "tests": tests,
-                       "prioritised": any(t["breached"] for t in tests), "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"},
+                       "prioritised": any(t["breached"] for t in tests), "reference": txt("RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)",
+                                                                                         "RAN 21-13 Anexo 1 (banco priorizado, dossier 03 F.2)")},
     }
     return {
         "schema": "contraste.case/v1", "case_id": "C15", "variant_id": f"fixture-{vid}",

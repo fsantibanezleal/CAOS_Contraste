@@ -1,6 +1,7 @@
 // CT-309: the C22 instrument, rendered on the server from the committed artifacts. Every view of every family carries
 // its lane; the groups are the six questions in order; the Context names the papers, their licence classes, the
 // generators and each family's truth status; the rail's read-out changes with every control of both sections.
+import { TRUTH_TEXT } from '../content/cases/C04Results';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
@@ -81,8 +82,8 @@ function Groups({ data }: { data: CaseData }) {
 }
 
 describe('the C22 instrument', () => {
-  it('has the eight families of the design, the null first', () => {
-    expect(cases.map((c) => c.id)).toEqual(['null', 'miscalibration', 'clustering', 'drift', 'discrimination-decay', 'leakage', 'broken-monotonicity', 'concentration']);
+  it('has the eight families of the design and the other-families variant of U16-P2, the null first', () => {
+    expect(cases.map((c) => c.id)).toEqual(['null', 'miscalibration', 'clustering', 'drift', 'discrimination-decay', 'leakage', 'broken-monotonicity', 'concentration', 'other-families']);
   });
 
   it('the groups are the six questions, in order, and the rail has two sections', () => {
@@ -127,7 +128,7 @@ describe('the C22 instrument', () => {
         expect(markup).toContain(`data-licence-class="${manifest.source_details[id].class}"`);
       }
       expect(markup).toContain('data-licence-class="generator"');
-      expect(markup).toContain(c.data.variant.provenance.truth_status);
+      expect(markup).toContain((TRUTH_TEXT[c.data.variant.provenance.truth_status] as { en: string }).en); // in words, never the raw id (U16-R2 b10 m11)
     }
   });
 
@@ -163,5 +164,24 @@ describe('the C22 instrument', () => {
     const s0 = base(cases[0].data);
     expect(html(<PortfolioReadout sel={s0} />)).toMatch(/Size \(exact\)/);
     expect(html(<PortfolioReadout sel={{ ...s0, portfolio: { ...s0.portfolio, ratio: 2 } }} />)).toMatch(/Power \(exact\)/);
+  });
+});
+
+describe('b10 m16: a rejection panel of more than three series carries the solo key', () => {
+  it('every panel with four series or more renders the key as toggle buttons; a panel of three or fewer does not need it', () => {
+    let many = 0;
+    for (const c of cases) {
+      const v = variantOf(c.data);
+      if (v.outputs.ladder === null) continue;
+      const markup = html(<PowerView sel={base(c.data)} />);
+      for (const panel of markup.split('data-panel="').slice(1)) {
+        const series = (panel.match(/<li class="caos-chart-key"/g) ?? []).length;
+        if (series > 3) {
+          many += 1;
+          expect(panel, `${c.id} panel ${panel.slice(0, 40)}`).toMatch(/aria-pressed/);
+        }
+      }
+    }
+    expect(many).toBeGreaterThan(0);
   });
 });

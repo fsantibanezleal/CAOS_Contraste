@@ -5,17 +5,36 @@
 // document; the running sums that stack a layer are layout.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import { Fragment } from 'react';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { Marked } from '../c21/Marked';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
-import { HWaterfall, stackRows } from './Waterfall';
+import { stackBars } from './Waterfall';
 import {
-  ANNEX3_EN, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
+  ANNEX3_EN, ANNEX3_ES, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
   type C18Cell, type C18Sel,
 } from './selection';
+import { phraseEs } from './localise';
 
+/**
+ * A formula or a sentence with the layer symbols written as symbols: c_DSIB as c with the subscript DSIB, ">=" as the sign, a
+ * Spanish percent with its no-break space (U16-R4 c22 B3: the document's keys c_DSIB, c_P2, c_d were printed as text). The layer
+ * table beside the formula names each symbol.
+ */
+export function Symbols({ text: s, lang }: { text: string; lang: 'en' | 'es' }) {
+  const signed = s.replace(/>=/g, '≥');
+  const spaced = lang === 'es' ? signed.replace(/(\d)%/g, '$1\u00a0%') : signed;
+  const parts = spaced.split(/\bc_([A-Za-z0-9]+)\b/);
+  return <>{parts.map((p, i) => (i % 2 === 1 ? <Fragment key={i}>c<sub>{p}</sub></Fragment> : <Fragment key={i}>{p}</Fragment>))}</>;
+}
+
+/** A reason after a colon starts in lower case (U16-R4 c22 m12: "not available: No mitigation ..."), an acronym kept as written. */
+const lowerFirst = (s: string): string => (/^[A-Z][a-z]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+
+/** The requirement keeps the two decimals of every other cell of the table, and a third only where the legal figure needs it (9.125 %). */
+export const requirementDecimals = (v: number): 2 | 3 => (Math.abs(v * 1e4 - Math.round(v * 1e4)) < 1e-6 ? 2 : 3);
 const PLAN_COLOR = { base: '--color-accent', 'stress-without-mitigation': '--color-bad', 'stress-with-mitigation': '--color-good' } as const;
 
 /** The CET1 over RWA of the three plans from the jump-off to year 3, against the layers of the OI, with the plan in numbers beneath. */
@@ -33,7 +52,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
   const layers: Array<{ y: number; label: BiText; tone: 'neutral' | 'warn' }> = [];
   let run = 0;
   for (const [size, label, tone] of [
-    [t.min_pe, { en: 'OI: minimum 8%', es: 'OI: mínimo 8%' }, 'neutral'],
+    [t.min_pe, { en: 'OI: minimum 8%', es: 'OI: mínimo 8 %' }, 'neutral'],
     [t.c_dsib, { en: 'OI: + D-SIB', es: 'OI: + D-SIB' }, 'neutral'],
     [t.c_p2.value, { en: 'OI: + Pillar 2', es: 'OI: + Pilar 2' }, 'neutral'],
     [t.c_ccob, { en: 'OI: + conservation', es: 'OI: + conservación' }, 'neutral'],
@@ -45,6 +64,8 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
   }
   const m = o.capital_plan.mitigation;
   const rowsOfPlan = plan.flatMap((c) => c.years.map((y) => ({ c, y })));
+  const baseCase = plan.find((c) => c.case === 'base');
+  const ppnrIsBase = !!baseCase && ppnr.rows.every((r) => Math.abs((baseCase.years.find((y) => y.year === r.year)?.cet1.pct_of_rwa ?? Number.NaN) - r.cet1_ratio_with_ppnr) < 1e-9);
   return (
     <ViewsRow>
       <PlotCard
@@ -65,13 +86,17 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
               y={{ label: { en: 'CET1 over RWA', es: 'CET1 sobre APR' }, format: { percent: true, decimals: 1 } }}
               series={[
                 ...plan.map((c) => ({
-                  label: text(PLAN_TEXT, c.case),
+                  // with no mitigation to apply, the red and green lines are the same line: the key says so (U16-R2 b09 m2)
+                  label: c.case === 'stress-with-mitigation' && !m.applies ? { en: 'Stress, with mitigation (identical: no mitigation applies)', es: 'Estrés con mitigación (idéntico: no se aplica mitigación)' } : text(PLAN_TEXT, c.case),
                   values: [start, ...[1, 2, 3].map((yr) => c.years.find((y) => y.year === yr)?.cet1.pct_of_rwa ?? null)],
                   color: PLAN_COLOR[c.case],
                   width: c.case === 'stress-without-mitigation' ? 3 : 2.2,
                 })),
                 {
-                  label: { en: 'Stress with the PPNR row (labelled row)', es: 'Estrés con la fila de PPNR (fila rotulada)' },
+                  // in the baseline variant the PPNR path is the Base line itself, drawn under it: the key says so (U16-R3 c19 m13)
+                  label: ppnrIsBase
+                    ? { en: 'Stress with the PPNR row (labelled row; identical to Base in this variant)', es: 'Estrés con la fila de PPNR (fila rotulada; idéntica a Base en esta variante)' }
+                    : { en: 'Stress with the PPNR row (labelled row)', es: 'Estrés con la fila de PPNR (fila rotulada)' },
                   values: [start, ...[1, 2, 3].map((yr) => ppnr.rows.find((r) => r.year === yr)?.cet1_ratio_with_ppnr ?? null)],
                   color: '--color-warn',
                   width: 1.8,
@@ -120,7 +145,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
                   <td>{y.year}</td>
                   <td>{PCT(y.cet1.pct_of_rwa, lang)}</td>
                   <td>{PCT(y.pe.pct_of_rwa, lang)}</td>
-                  <td className="ct-text ct-wide-only">{`${pick(text(REQUIREMENT_TEXT, y.requirement.basis), lang)} ${PCT(y.requirement.pct_of_rwa, lang, 3)}`}</td>
+                  <td className="ct-text ct-wide-only">{`${pick(text(REQUIREMENT_TEXT, y.requirement.basis), lang)} ${PCT(y.requirement.pct_of_rwa, lang, requirementDecimals(y.requirement.pct_of_rwa))}`}</td>
                   <td>{PCT(y.headroom_pct_of_rwa, lang)}</td>
                   <td className="ct-wide-only">{cell(y.deficit_clp_m, lang)}</td>
                 </tr>
@@ -133,9 +158,10 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                <th>{pick({ en: `CET1 at the jump-off (${pick(MONEY_UNIT, 'en')})`, es: `CET1 en el punto de partida (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
-                <th>{pick({ en: 'Cumulative loss', es: 'Pérdida acumulada' }, lang)}</th>
-                <th>{pick({ en: 'CET1', es: 'CET1' }, lang)}</th>
+                <th>{pick({ en: `CET1 at the start of the year (${pick(MONEY_UNIT, 'en')})`, es: `CET1 al inicio del año (${pick(MONEY_UNIT, 'es')})` }, lang)}</th>
+                <th>{pick({ en: 'Loss in the year', es: 'Pérdida del año' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Cumulative loss', es: 'Pérdida acumulada' }, lang)}</th>
+                <th>{pick({ en: 'CET1 at the end of the year', es: 'CET1 al final del año' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'RWA', es: 'APR' }, lang)}</th>
                 <th>{pick({ en: 'CET1 / RWA', es: 'CET1 / APR' }, lang)}</th>
               </tr>
@@ -145,7 +171,9 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
                 <tr key={r.year} data-year={r.year}>
                   <td>{r.year}</td>
                   <td>{cell(r.cet1_start_clp_m, lang)}</td>
-                  <td>{cell(r.cumulative_loss_clp_m, lang)}</td>
+                  {/* the year's own loss, so start less loss is the end of the row (U16-R3 c19 B1: the column read "at the jump-off" and printed the start of the year beside the cumulative loss) */}
+                  <td>{cell(o.losses.scenario_losses.find((x) => x.year === r.year)?.total ?? null, lang)}</td>
+                  <td className="ct-wide-only">{cell(r.cumulative_loss_clp_m, lang)}</td>
                   <td>{cell(r.cet1_clp_m, lang)}</td>
                   <td className="ct-wide-only">{cell(r.rwa_clp_m, lang)}</td>
                   <td>{PCT(r.cet1_ratio, lang)}</td>
@@ -202,7 +230,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
               </tbody>
             </table>
           ) : (
-            <p className="ct-note" data-mitigation="none" data-na="true">{formatNumber(null, lang)}: <Marked>{m.reason ? pick(m.reason, lang) : ''}</Marked></p>
+            <p className="ct-note" data-mitigation="none" data-na="true">{formatNumber(null, lang)}: <Marked>{m.reason ? lowerFirst(pick(m.reason, lang)) : ''}</Marked></p>
           )}
           {o.capital_plan.alternative_sources.length > 0 ? (
             <p className="ct-note">
@@ -223,12 +251,14 @@ const LAYER_TEXT: Record<string, BiText> = {
   c_ccyb: { en: 'Countercyclical buffer', es: 'Colchón contracíclico' },
   c_d: { en: 'Stress buffer d', es: 'Colchón de estrés d' },
 };
+/** The subscript of each layer's symbol in the formula of the document (c_DSIB, c_P2, c_CCoB, c_CCyB, c_d). */
+const LAYER_SYMBOL: Record<string, string> = { dsib: 'DSIB', p2: 'P2', ccob: 'CCoB', ccyb: 'CCyB', d: 'd' };
 const LEGAL_TEXT: Record<string, BiText> = {
   cet1_min: { en: 'CET1 minimum', es: 'Mínimo CET1' },
   c_ccob: { en: 'Conservation buffer', es: 'Colchón de conservación' },
   c_ccyb: { en: 'Countercyclical buffer', es: 'Colchón contracíclico' },
   c_dsib: { en: 'D-SIB buffer', es: 'Colchón D-SIB' },
-  p2r: { en: 'Pillar 2 requirement', es: 'Requerimiento de Pilar 2' },
+  p2r: { en: 'CET1 share of Pillar 2', es: 'Parte CET1 del Pilar 2' },
 };
 const REGULATORY: BiText = { en: 'regulatory', es: 'regulatorio' };
 
@@ -242,7 +272,6 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const t = o.internal_capital_target;
   const fit = fitOf(sel);
-  const pctNo = (v: number) => PCT(v, lang, 2);
   const layerDefs: Array<{ id: keyof typeof LAYER_TEXT; size: number; label: string | null }> = [
     { id: 'min_pe', size: t.min_pe, label: null },
     { id: 'c_dsib', size: t.c_dsib, label: null },
@@ -251,9 +280,9 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     { id: 'c_ccyb', size: t.c_ccyb, label: null },
     { id: 'c_d', size: t.c_d.value, label: t.c_d.label },
   ];
-  const oiRows = stackRows(
-    layerDefs.map((l) => ({ id: l.id, label: LAYER_TEXT[l.id], size: l.size, tone: l.label ? ('--color-warn' as const) : ('--color-accent' as const), value: pctNo(l.size) })),
-    { id: 'oi', label: { en: 'Internal target OI', es: 'Objetivo interno OI' }, value: pctNo(t.oi), tone: '--color-fg' },
+  const oiBars = stackBars(
+    layerDefs.map((l) => ({ id: l.id, label: LAYER_TEXT[l.id], size: l.size, tone: l.label ? ('warn' as const) : ('accent' as const), ...(l.label ? { hint: text(LABEL_TEXT, l.label) } : {}) })),
+    { id: 'oi', label: { en: 'Internal target OI', es: 'Objetivo interno OI' }, value: t.oi, tone: 'neutral' },
   );
   const stressNo = planOf(o, 'stress-without-mitigation');
   const stressWith = planOf(o, 'stress-with-mitigation');
@@ -264,17 +293,22 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
     { id: 'pe-with', label: { en: 'PE, year 3, with mitigation', es: 'PE, año 3, con mitigación' }, v: y3(stressWith)?.pe.pct_of_rwa ?? null },
     { id: 'legal', label: { en: 'Legal minimum PE', es: 'PE mínimo legal' }, v: stressNo?.years.find((y) => y.requirement.basis === 'legal-minimum')?.requirement.pct_of_rwa ?? null },
   ];
-  const refRows = refs.flatMap((r) => (r.v === null ? [] : [{ id: r.id, label: r.label, from: 0, to: r.v, tone: '--color-good' as const, value: pctNo(r.v) }]));
+  const refBars = refs.flatMap((r) => (r.v === null ? [] : [{ id: r.id, label: r.label, value: r.v, span: [0, r.v] as [number, number], tone: 'good' as const }]));
   const legal = fit?.bank_anchors.chilean_stack ?? null;
-  const legalRows = legal
-    ? stackRows(
-        (['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legal[k], tone: '--color-magenta' as const, value: PCT(legal[k], lang, k === 'p2r' ? 3 : 2) })),
-      )
+  // the CET1 legal stack carries the CET1 share of Pillar 2 (reverse_p2_cet1), as the failure-point finding does; the whole P2R is the PE stack's
+  const legalShare = (k: 'cet1_min' | 'c_ccob' | 'c_ccyb' | 'c_dsib' | 'p2r'): number => (legal ? (k === 'p2r' ? (fit?.named_parameters.reverse_p2_cet1.value ?? legal.p2r) : legal[k]) : 0);
+  const legalBars = legal
+    ? stackBars((['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legalShare(k), tone: 'accent' as const })))
     : null;
-  const rowsAll = oiRows.length + refRows.length;
-  const axisFmt = (v: number) => formatNumber(v, lang, { percent: true, decimals: 1 });
+  const rowsAll = oiBars.length + refBars.length;
+  // a share keeps two decimals, and a third only where a figure needs it (9.125 %), as the table does
+  // each bar states its share with the decimals the figure needs (2, or 3 such as P2R 9.125 %), as the table does (shell 0.19.0
+  // BarDatum.format); the axis ticks keep one decimal
+  const ownDecimals = <T extends { value: number | null | undefined }>(bars: T[]): T[] =>
+    bars.map((b) => ({ ...b, format: { percent: true, decimals: requirementDecimals(b.value ?? 0) } }));
+  const tickFormat = { percent: true, decimals: 1 };
   return (
-    <ViewsRow>
+    <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
         title={title}
@@ -284,31 +318,36 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
           es: 'El objetivo interno OI es la suma de sus capas, como parte de los APR; las barras bajo él son el patrimonio efectivo en el punto de partida y al final del estrés, y el mínimo legal. El segundo dibujo es el mínimo legal apilado de CET1 en Chile. Solo se dibuja el capital apilado chileno: los documentos no traen cifras de la UE ni del SSM, así que no se hace comparación con ellas.',
         }}
       >
-        <ChartOverTable
-          chartMin={`${(rowsAll + (legalRows?.length ?? 0)) * 1.3 + 4}rem`}
-          chart={
-            <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0 }}>
-              <div style={{ flex: `${rowsAll} 1 0`, minHeight: 0 }}>
-                <HWaterfall
-                  rows={[...oiRows, ...refRows]}
-                  axisLabel={{ en: 'Share of RWA', es: 'Parte de los APR' }}
-                  tickFormat={axisFmt}
-                  ariaLabel={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
+        {/* the two drawings take the whole card, each its share of the height by its bars, so neither is cut nor scrolls inside
+            itself (R2b c19 M-new-1: under the tables the upper drawing lost its axis and the legal minimum bar) */}
+            {/* the two floors together can be taller than the card: the drawings then scroll in their own box with the fade cue (ADR-0071) */}
+            <div className="ct-c18-stack-charts ct-fade-scroll" data-caos-flow="">
+              {/* the upper drawing keeps a floor for its bars, its ticks, its axis title and the read-out hint too (U16-R4 c23 M1: the
+                  lower floor alone took the upper drawing its axis title); `data-plot-floor` is a plain rem length, which layout.ts reads
+                  to grow the box under its plot (a calc() is read as no floor) */}
+              <div data-box="oi-stack" data-plot-floor={`${Math.round((rowsAll * 1.4 + 6) * 100) / 100}rem`} style={{ flex: `${rowsAll + 2} 1 0`, minHeight: `${Math.round((rowsAll * 1.4 + 6) * 100) / 100}rem` }}>
+                <BarChart
+                  title={{ en: 'The layers of the internal target and the effective equity against it', es: 'Las capas del objetivo interno y el patrimonio efectivo frente a él' }}
+                  data={ownDecimals([...oiBars, ...refBars])}
+                  axis={{ label: { en: 'Share of RWA', es: 'Parte de los APR' }, format: tickFormat }}
+                  height="fill"
                 />
               </div>
-              {legalRows ? (
-                <div style={{ flex: `${legalRows.length + 2} 1 0`, minHeight: 0 }}>
-                  <HWaterfall
-                    rows={legalRows}
-                    axisLabel={{ en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }}
-                    tickFormat={axisFmt}
-                    ariaLabel={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
+              {legalBars ? (
+                // the lower drawing keeps a floor for its ticks, its axis title and the read-out hint (U16-R3 c19 M1: the hint hid the title)
+                <div data-box="legal-stack" style={{ flex: `${legalBars.length + 3} 1 0`, minHeight: `calc(${legalBars.length} * 1.4rem + 6rem)` }}>
+                  <BarChart
+                    title={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
+                    data={ownDecimals(legalBars)}
+                    axis={{ label: { en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }, format: tickFormat }}
+                    height="fill"
                   />
                 </div>
               ) : null}
             </div>
-          }
-        >
+      </PlotCard>
+      <PlotCard fill title={{ en: 'The stack in numbers', es: 'El capital apilado en números' }} {...card}>
+        <div className="ct-scroll" data-caos-flow="" data-block="numbers">
           <table className="caos-table ct-wrap-head" data-table="c18-stack">
             <thead>
               <tr>
@@ -320,7 +359,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <tbody>
               {layerDefs.map((l) => (
                 <tr key={l.id} data-layer={l.id} data-label={l.label ?? 'regulatory'}>
-                  <td className="ct-text">{pick(LAYER_TEXT[l.id], lang)}</td>
+                  <td className="ct-text">{pick(LAYER_TEXT[l.id], lang)}{l.id === 'min_pe' ? null : <> (<Symbols text={l.id.replace(/^c_(.+)$/, (_, k: string) => `c_${LAYER_SYMBOL[k] ?? k}`)} lang={lang} />)</>}</td>
                   <td>{PCT(l.size, lang, 3)}</td>
                   <td className="ct-text">{l.label ? pick(text(LABEL_TEXT, l.label), lang) : pick(REGULATORY, lang)}</td>
                 </tr>
@@ -332,7 +371,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <p className="ct-note">{t.formula}</p>
+          <p className="ct-note" data-formula="oi"><Symbols text={phraseEs(t.formula, lang)} lang={lang} /></p>
           <table className="caos-table ct-wrap-head" data-table="c18-stack-refs">
             <thead>
               <tr>
@@ -361,7 +400,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 {(['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => (
                   <tr key={k} data-legal-layer={k}>
                     <td className="ct-text">{pick(LEGAL_TEXT[k], lang)}</td>
-                    <td>{PCT(legal[k], lang, k === 'p2r' ? 3 : 2)}</td>
+                    <td>{PCT(legalShare(k), lang, k === 'p2r' ? 3 : 2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -369,20 +408,21 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
           ) : (
             <p className="ct-note" data-na="true">{`${formatNumber(null, lang)}: ${pick({ en: 'the models artifact carries no legal stack', es: 'el artefacto de modelos no trae el capital apilado legal' }, lang)}`}</p>
           )}
-          <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'El proxy de P2G' }, lang)}</h3>
+          <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'La aproximación de P2G' }, lang)}</h3>
           <Defs data-table="c18-p2g" data-p2g={o.p2g_proxy.label}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
-            <dd>{`${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
+            {/* the status sentence starts with the label itself: the label is not repeated before it (U16-R4 c23 m13) */}
+            <dd>{o.p2g_proxy.label === 'contraste-approximation' ? pick(P2G_LABEL, lang) : `${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
             <dt>{pick({ en: 'Peak depletion of the CET1 ratio', es: 'Máxima caída de la razón de CET1' }, lang)}</dt>
             <dd>{`${PCT(o.p2g_proxy.peak_depletion, lang, 3)} (${pick({ en: 'year', es: 'año' }, lang)} ${o.p2g_proxy.peak_year})`}</dd>
-            <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones usables y mitigación' }, lang)}</dt>
+            <dt>{pick({ en: 'Usable buffers and mitigation', es: 'Colchones utilizables y mitigación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.usable_buffers_and_mitigation, lang, 3)}</dd>
-            <dt>{pick({ en: 'Proxy', es: 'Proxy' }, lang)}</dt>
+            <dt>{pick({ en: 'Proxy', es: 'Aproximación' }, lang)}</dt>
             <dd>{PCT(o.p2g_proxy.value, lang, 3)}</dd>
             <dt>{pick({ en: 'Statement', es: 'Declaración' }, lang)}</dt>
-            <dd>{pick(o.p2g_proxy.statement, lang)}</dd>
+            <dd><Symbols text={pick(o.p2g_proxy.statement, lang)} lang={lang} /></dd>
           </Defs>
-        </ChartOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -398,6 +438,30 @@ function CellText({ c, kind, lang }: { c: C18Cell; kind: 'pct' | 'money'; lang: 
   return <span data-na="true" data-cell-status={c.status}>{pick(text(CELL_TEXT, c.status), lang)}</span>;
 }
 
+/**
+ * The bars of the Annex 3 card: the capital needed by each risk row, from its legal requirement (C) or else its internal measure
+ * (D), for a cell with a value only. A bar carries no note: its cell's status is always "value", which says nothing to a reader
+ * (U16-R4 c22 B1: the raw status "value" was printed as each bar's note, in both languages).
+ */
+export function annex3Bars(a: { rows: Array<{ row_id: string; label_cmf: string; c: C18Cell; d: C18Cell }> }) {
+  const get = (id: string) => a.rows.find((r) => r.row_id === id);
+  const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
+    const r = get(id);
+    if (!r) return [];
+    const col = (['c', 'd'] as const).find((k) => r[k].status === 'value');
+    if (!col) return [];
+    return [{ r, col }];
+  });
+  const scale = axisOf(bars.flatMap(({ r, col }) => (r[col].status === 'value' ? [r[col].value] : [])));
+  const data = bars.map(({ r, col }) => ({
+    id: `${r.row_id}-${col}`,
+    label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${ANNEX3_ES[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
+    value: r[col].status === 'value' && r[col].value !== null ? r[col].value / scale.div : null,
+    tone: col === 'c' ? ('accent' as const) : ('warn' as const),
+  }));
+  return { bars, scale, data };
+}
+
 /** The summary table of Annex 3 of the IAPE as the CMF defines it: 34 rows, four columns, each cell a value or the reason it has none. */
 export function Annex3View({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
@@ -408,16 +472,9 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const a = o.annex3;
   const rows = a.rows;
-  const label = (r: (typeof rows)[number]) => (lang === 'es' ? r.label_cmf : ANNEX3_EN[r.row_id] ?? r.label_cmf);
+  const label = (r: (typeof rows)[number]) => (lang === 'es' ? ANNEX3_ES[r.row_id] ?? r.label_cmf : ANNEX3_EN[r.row_id] ?? r.label_cmf);
   const get = (id: string) => rows.find((r) => r.row_id === id);
-  const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
-    const r = get(id);
-    if (!r) return [];
-    const col = (['c', 'd'] as const).find((k) => r[k].status === 'value');
-    if (!col) return [];
-    return [{ r, col }];
-  });
-  const scale = axisOf(bars.flatMap(({ r, col }) => (r[col].status === 'value' ? [r[col].value] : [])));
+  const { bars, scale, data } = annex3Bars(a);
   return (
     <ViewsRow>
       <PlotCard
@@ -425,7 +482,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${a.entity}, ${a.report_date}, consolidation ${a.consolidation === 'local' ? 'local' : 'global consolidated'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value; the cells without one are in the table with their reason.`,
+          en: `${a.entity}, ${a.report_date}, ${a.consolidation === 'local' ? 'local (solo) consolidation' : 'global consolidation'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value; the cells without one are in the table with their reason.`,
           es: `${a.entity}, ${a.report_date}, consolidación ${a.consolidation === 'local' ? 'local' : 'global consolidada'}. La columna A es una parte de los APR al inicio, B el monto en ${pick(MONEY_UNIT, 'es')}, C la exigencia legal de cada riesgo y D la medición interna; RI marca un riesgo que el banco trata como inmaterial y no cuantifica. Las barras muestran el capital necesario por riesgo donde una celda tiene valor; las celdas sin él están en la tabla con su razón.`,
         }}
       >
@@ -436,13 +493,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
               title={{ en: 'Capital needed by risk, legal requirement and internal measure', es: 'Capital necesario por riesgo, exigencia legal y medición interna' }}
               height="fill"
               orientation="horizontal"
-              data={bars.map(({ r, col }) => ({
-                id: `${r.row_id}-${col}`,
-                label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
-                value: r[col].status === 'value' && r[col].value !== null ? r[col].value / scale.div : null,
-                tone: col === 'c' ? ('accent' as const) : ('warn' as const),
-                hint: text(CELL_TEXT, r[col].status),
-              }))}
+              data={data}
               axis={{ label: { en: 'Capital needed by risk', es: 'Capital necesario por riesgo' }, unit: scale.unit, format: { digits: 4 } }}
             />
           }

@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{The eighteen forecasting models of case C11 as the committed models document records them: the estimation window in days, the number of forecast days between two refits, the hyperparameters fixed on the span 1995 to 2003 (or by the compute limit for the network) and the rule that turns the fitted model into an expected shortfall.}
+\label{tab:market-ladder}
+\begin{tabular}{p{3.6cm}rrp{2.6cm}p{5.4cm}}
+\toprule
+Model & Window (days) & Refit (days) & Setting & Expected shortfall rule \\
+\midrule
+Historical simulation, 250 days & 250 & 1 & -- & Tail mean of the sorted window \\
+Historical simulation, 500 days & 500 & 1 & -- & Tail mean of the sorted window \\
+Age-weighted historical simulation & 250 & 1 & $\lambda$ 0.99 & Tail integral of the interpolated weighted quantile function \\
+Delta-normal & 1000 & 1 & -- & Normal ES from the window mean and volatility \\
+Cornish-Fisher & 1000 & 1 & -- & None: the Cornish-Fisher expansion gives the VaR only \\
+EWMA & 1000 & 1 & $\lambda$ 0.97 & Normal ES from the EWMA volatility \\
+GARCH(1,1)-t & 1000 & 1 & -- & Student-t tail mean of the unit-variance innovation \\
+GJR-GARCH-t & 1000 & 1 & -- & Student-t tail mean of the unit-variance innovation \\
+EGARCH-t & 1000 & 1 & -- & Student-t tail mean of the unit-variance innovation \\
+Filtered historical simulation & 1000 & 1 & -- & Tail mean of the GARCH-filtered standardised residuals \\
+Conditional EVT & 1000 & 1 & tail share 0.05 & GPD tail ES, undefined for xi at or above 1 \\
+CAViaR, absolute value & 1000 & 5 & -- & None: CAViaR forecasts the VaR only \\
+CAViaR, asymmetric slope & 1000 & 5 & -- & None: CAViaR forecasts the VaR only \\
+ES-CAViaR (two-step) & 1000 & 5 & -- & Autoregressive gap below the CAViaR VaR, fitted by the asymmetric Laplace likelihood \\
+GAS-FZ, one factor & 1000 & 20 & -- & Joint VaR and ES from one dynamic factor (FZ0 estimation) \\
+GAS-FZ, two factors & 1000 & 20 & -- & Joint VaR and ES from two dynamic factors (FZ0 estimation) \\
+Hybrid GARCH-FZ & 1000 & 20 & -- & One dynamic factor with a log absolute return term (FZ0 estimation) \\
+Quantile network (FZ0) & 1000 & 20 & hidden units 4; epochs 200; learning rate 0.02; weight decay 0.1; starts 3 & Second network output: the gap of the ES below the VaR, trained jointly on FZ0 \\
+\bottomrule
+\end{tabular}
+\end{table}

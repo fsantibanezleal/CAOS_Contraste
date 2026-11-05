@@ -8,12 +8,12 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
 import { CASES, CATEGORY_TITLES } from '../content/coverage';
 import { P, T, useT } from '../content/bi';
+import { sourceText } from '../content/sources';
 import { ProtocolFigure } from './DocFigures';
 import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
-import { NoTranslateRefs } from './NoTranslateRefs';
 import { DESIGN_GROUP_LABEL, governanceTabs } from './experiments/governanceTabs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
@@ -47,12 +47,12 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
           <tr>
             <th>#</th>
             <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-            <th>{t('Records', 'Registros')}</th>
+            <th>{t('Holdout records', 'Registros reservados')}</th>
             <th>{t('Default rate', 'Tasa de incumplimiento')}</th>
-            <th>{t('AUC, scorecard', 'AUC, scorecard')}</th>
+            <th>{t('AUC, scorecard', 'AUC, tarjeta de puntuación')}</th>
             <th>{t('Best rung by AUC', 'Mejor peldaño por AUC')}</th>
-            <th>{t('Jeffreys, scorecard', 'Jeffreys, scorecard')}</th>
-            <th>{t('PSI, scorecard', 'PSI, scorecard')}</th>
+            <th>{t('Jeffreys, scorecard', 'Jeffreys, tarjeta de puntuación')}</th>
+            <th>{t('PSI, scorecard', 'PSI, tarjeta de puntuación')}</th>
           </tr>
         </thead>
         <tbody>
@@ -64,7 +64,7 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
               <td>{formatNumber(r.v.outputs.defaults / r.v.outputs.n, lang, { percent: true, decimals: 1 })}</td>
               <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
               <td>
-                {r.best.id} ({formatNumber(r.best.auc, lang, { decimals: 4 })})
+                {pick(r.v.model.find((m) => m.id === r.best.id)?.short_title ?? { en: r.best.id, es: r.best.id }, lang)} ({formatNumber(r.best.auc, lang, { decimals: 4 })})
               </td>
               <td>{r.jef ? `p ${formatNumber(r.jef.p_value, lang, { digits: 3 })}, ${pick(LIGHT_TEXT[relight(r.jef, COMMITTED)], lang)}` : '-'}</td>
               <td>{r.psi ? `${formatNumber(value(r.psi), lang, { decimals: 4 })}, ${pick(LIGHT_TEXT[relight(r.psi, COMMITTED)], lang)}` : '-'}</td>
@@ -72,13 +72,13 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
           ))}
         </tbody>
       </table>
-      <PlotCard title={{ en: 'Discrimination of the scorecard and of the best rung, variant by variant', es: 'Discriminación de la scorecard y del mejor peldaño, variante por variante' }} lane="replay" provenance="real">
+      <PlotCard title={{ en: 'Discrimination of the scorecard and of the best rung, variant by variant', es: 'Discriminación de la tarjeta de puntuación y del mejor peldaño, variante por variante' }} lane="replay" provenance="real">
         <UPlotChart
           height={260}
           x={{ values: x, label: { en: 'Variant (the number in the table)', es: 'Variante (el número de la tabla)' }, format: { decimals: 0 } }}
           y={{ label: { en: 'AUC', es: 'AUC' }, format: { decimals: 3 } }}
           series={[
-            { label: { en: 'Scorecard (P1)', es: 'Scorecard (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
+            { label: { en: 'Scorecard (P1)', es: 'Tarjeta de puntuación (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
             { label: { en: 'Best rung', es: 'Mejor peldaño' }, values: rows.map((r) => r.best.auc), color: '--color-magenta', mode: 'points' },
           ]}
         />
@@ -87,19 +87,25 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
+/** The programs of a manifest's `engine` map in words: its key `pipeline` is this product's pipeline, named, never printed as the key
+ * (R4 c28 B2); a package (riskvalidation) is named by its package name, which is a citation. */
+const ENGINE_NAME: Record<string, BiText> = { pipeline: { en: 'the Contraste pipeline', es: 'la cadena de cálculo de Contraste' } };
+export const engineText = (engine: Record<string, string> | undefined, lang: 'en' | 'es'): string =>
+  Object.entries(engine ?? {})
+    .map(([k, v]) => `${ENGINE_NAME[k] ? pick(ENGINE_NAME[k], lang) : k} ${v}`)
+    .join(', ');
+
 /** What a case declares and what its bake wrote, read from its manifest: the second paragraph of its question. */
-function CaseFacts({ m }: { m: CaseManifest }) {
+export function CaseFacts({ m }: { m: CaseManifest }) {
   const lang = useShellLang();
   const variants = m.artifacts.filter((a) => a.role === 'variant');
   const titles = variants.map((a) => pick(a.short_title, lang)).join(', ');
   const expected = Object.keys(m.expect ?? {}).length;
-  const engine = Object.entries(m.engine ?? {})
-    .map(([k, v]) => `${k} ${v}`)
-    .join(', ');
+  const engine = engineText(m.engine as Record<string, string> | undefined, lang);
   return (
     <P
-      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
-      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos comprometidos cuando se abre la página, y ninguno está escrito en esta página.`}
+      en={`The case was computed with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.map((s) => sourceText(s, m.source_details[s]?.name ?? s, 'en')).join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before it was computed all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'la cadena de cálculo'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.map((s) => sourceText(s, m.source_details[s]?.name ?? s, 'es')).join('; ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
     />
   );
 }
@@ -122,11 +128,11 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     <DocSection
       area="question"
       title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
-      noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído de los artefactos comprometidos; los métodos se citan en Metodología.' }}
+      noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído de los artefactos versionados; los métodos se citan en Metodología.' }}
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
-      {kind !== 'scorecard' && kind !== 'c04' && kind !== 'c05' && kind !== 'c22' ? (
+      {kind !== 'scorecard' ? (
         <P
           en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."
           es="Cada variante de este caso es la misma pregunta hecha a datos distintos, y la tabla de abajo lee una fila de resultados por variante desde su artefacto, en las medidas que declara este caso; un número que el artefacto omite se dice no disponible, con su razón, en la App."
@@ -134,7 +140,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
       ) : (
       <P
         en="Each variant of a case is the same question asked of different data, and the tables and charts below are read from its artifacts: the number of records, the default rate, the discrimination of the champion and of the best challenger, and the policy light of its calibration and stability tests under the committed thresholds. A variant that perturbs the data has a known effect, and a sound test must detect it or must not, as the case declares."
-        es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
+        es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales versionados. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
       />
       )}
       {kind === 'c04' ? <C04Experiments manifest={m} /> : kind === 'c05' ? <C05ExperimentsSection manifest={m} /> : kind === 'c22' ? <C22ExperimentsSection manifest={m} /> : kind === 'u6' ? <U6ExperimentsSection manifest={m} /> : kind === 'wave2' ? <W2ExperimentsSection manifest={m} /> : kind === 'batch3' ? <B3ExperimentsSection manifest={m} /> : kind === 'scorecard' ? <CaseVariants manifest={m} /> : <ImpactSection manifest={m} />}
@@ -142,35 +148,37 @@ function CaseTopic({ m }: { m: CaseManifest }) {
   );
 }
 
-function Coverage({ built }: { built: Set<string> | null }) {
+export function Coverage({ built }: { built: Set<string> | null }) {
   const lang = useShellLang();
   const t = useT();
   return (
     <DocSection area="datasets" title={{ en: 'Coverage and datasets', es: 'Cobertura y conjuntos de datos' }} noRefsReason={{ en: 'The plan of this product.', es: 'El plan de este producto.' }}>
       <P
-        en="Twenty-two cases in eleven categories, each with its data and licence class, the status of its truth, and the unit of the plan that builds it. A case is marked built only when its manifest exists; every other one is the plan, stated as such, and the site shows it as not available yet in every group, with the reason, never as an empty chart."
-        es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia, el estado de su verdad y la unidad del plan que lo construye. Un caso se marca construido solo cuando existe su manifiesto; cada uno de los demás es el plan, declarado como tal, y el sitio lo muestra como aún no disponible en cada grupo, con la razón, nunca como un gráfico vacío."
+        en="Twenty-two cases in eleven categories, each with its data and licence class and the status of its truth. A case is marked built only when its manifest exists; every other one is the plan, stated as such, and the site shows it as not available yet in every group, with the reason, never as an empty chart."
+        es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia y el estado de su verdad. Un caso se marca construido solo cuando existe su manifiesto; cada uno de los demás es el plan, declarado como tal, y el sitio lo muestra como aún no disponible en cada grupo, con la razón, nunca como un gráfico vacío."
       />
       <table className="caos-table" data-state={built ? 'ready' : 'loading'}>
         <thead>
           <tr>
             <th>{t('Case', 'Caso')}</th>
-            <th>{t('Category', 'Categoría')}</th>
+            {/* the text columns read from the left (R4 c28 m7) */}
+            <th className="caos-col-text">{t('Category', 'Categoría')}</th>
             <th className="caos-col-text">{t('Question', 'Pregunta')}</th>
             <th className="caos-col-text">{t('Data', 'Datos')}</th>
-            <th>{t('Truth', 'Verdad')}</th>
-            <th>{t('Status', 'Estado')}</th>
+            <th className="caos-col-text">{t('Truth', 'Verdad')}</th>
+            <th className="caos-col-text">{t('Status', 'Estado')}</th>
           </tr>
         </thead>
         <tbody>
           {CASES.map((c) => (
             <tr key={c.id} data-built={built?.has(c.id) ? 'true' : 'false'}>
               <td>{c.id}</td>
-              <td>{pick(CATEGORY_TITLES[c.category], lang)}</td>
+              <td className="caos-col-text">{pick(CATEGORY_TITLES[c.category], lang)}</td>
               <td className="caos-col-text">{pick(c.title, lang)}</td>
               <td className="caos-col-text">{pick(c.data, lang)}</td>
-              <td>{pick(c.truth, lang)}</td>
-              <td>{built?.has(c.id) ? t('built', 'construido') : `${t('planned', 'planificado')} (${c.unit})`}</td>
+              <td className="caos-col-text">{pick(c.truth, lang)}</td>
+              {/* the status alone: a plan-unit code is not reader text (R3 c23 B5) */}
+              <td className="caos-col-text">{built?.has(c.id) ? t('built', 'construido') : t('planned', 'planificado')}</td>
             </tr>
           ))}
         </tbody>
@@ -185,7 +193,7 @@ function Protocol() {
     <DocSection area="protocol" title={{ en: 'The held-out protocol', es: 'El protocolo con muestra reservada' }} noRefsReason={{ en: 'Describes this product\'s own protocol.', es: 'Describe el protocolo propio de este producto.' }}>
       <P
         en="Every experiment follows one protocol. A stratified holdout of 30% is locked before anything is fitted; of the rest, 20% is kept as a calibration slice; the training slice is where every binning, weight of evidence, rule, hyperparameter and fit is learned, with repeated stratified five-fold cross-validation inside it for every choice a rung makes. The tests then run on the holdout, once, and their results are what the pages show."
-        es="Todo experimento sigue un protocolo. Una muestra reservada estratificada de 30% se bloquea antes de ajustar nada; del resto, 20% se guarda como tajada de calibración; la tajada de entrenamiento es donde se aprende cada tramado, peso de evidencia, regla, hiperparámetro y ajuste, con validación cruzada estratificada repetida de cinco pliegues dentro de ella para cada elección de un peldaño. Las pruebas corren luego sobre la muestra reservada, una vez, y sus resultados son lo que muestran las páginas."
+        es="Todo experimento sigue un protocolo. Una muestra reservada estratificada de 30 % se bloquea antes de ajustar nada; del resto, 20 % se guarda como tajada de calibración; la tajada de entrenamiento es donde se aprende cada tramado, peso de evidencia, regla, hiperparámetro y ajuste, con validación cruzada estratificada repetida de cinco pliegues dentro de ella para cada elección de un peldaño. Las pruebas corren luego sobre la muestra reservada, una vez, y sus resultados son lo que muestran las páginas."
       />
       <Figure caption={t('The leakage-safe protocol: what each part of the data may be used for, and the forbidden path that uses the locked holdout to choose or to fit.', 'El protocolo sin fugas: para qué puede usarse cada parte de los datos, y el camino prohibido que usa la muestra reservada bloqueada para elegir o ajustar.')}>
         <ProtocolFigure />
@@ -203,15 +211,15 @@ function Metrics() {
       />
       <Equation
         tex="\mathrm{AUC} = \frac{1}{|A|\,|B|}\sum_{a\in A}\sum_{b\in B} u_{a,b}"
-        caption={<T en={<>The area under the ROC curve: A the defaulters, B the non-defaulters, u_ab = 1 when a is ranked riskier than b, 1/2 on a tie and 0 otherwise (ECB 2019).</>} es={<>El área bajo la curva ROC: A los incumplidores, B los no incumplidores, u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate y 0 en otro caso (BCE 2019).</>} />}
+        caption={<T en={<>The area under the ROC curve: A the defaulters, B the non-defaulters, u<sub>ab</sub> = 1 when a is ranked riskier than b, 1/2 on a tie and 0 otherwise (ECB 2019).</>} es={<>El área bajo la curva ROC: A los incumplidores, B los no incumplidores, u<sub>ab</sub> = 1 cuando a queda como más riesgoso que b, 1/2 en un empate y 0 en otro caso (BCE 2019).</>} />}
       />
       <Equation
         tex="\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}"
-        caption={<T en={<>The population stability index of a score: B the number of bins, a_i the share of the current population in bin i and e_i the share expected from development (Yurdakul and Naranjo 2020).</>} es={<>El índice de estabilidad poblacional de un puntaje: B el número de tramos, a_i la fracción de la población actual en el tramo i y e_i la fracción esperada desde el desarrollo (Yurdakul y Naranjo 2020).</>} />}
+        caption={<T en={<>The population stability index of a score: B the number of bins, a<sub>i</sub> the share of the current population in bin i and e<sub>i</sub> the share expected from development (Yurdakul and Naranjo 2020).</>} es={<>El índice de estabilidad poblacional de un puntaje: B el número de tramos, a<sub>i</sub> la fracción de la población actual en el tramo i y e<sub>i</sub> la fracción esperada desde el desarrollo (Yurdakul y Naranjo 2020).</>} />}
       />
       <Equation
         tex="p = F_{\mathrm{Beta}\left(D+\frac12,\; N-D+\frac12\right)}(\mathrm{PD})"
-        caption={<T en={<>The Jeffreys p-value of the level of a PD: D the defaults among N obligors, F the distribution function of the Beta posterior with the Jeffreys prior, evaluated at the PD applied (ECB 2019).</>} es={<>El valor p de Jeffreys del nivel de una PD: D los incumplimientos entre N deudores, F la función de distribución del posterior Beta con el prior de Jeffreys, evaluada en la PD aplicada (BCE 2019).</>} />}
+        caption={<T en={<>The Jeffreys p-value of the level of a PD: D the defaults among N obligors, F the distribution function of the Beta posterior with the Jeffreys prior, evaluated at the PD applied (ECB 2019).</>} es={<>El valor p de Jeffreys del nivel de una PD: D los incumplimientos entre N deudores, F la función de distribución del posterior Beta con la distribución a priori de Jeffreys, evaluada en la PD aplicada (BCE 2019).</>} />}
       />
     </DocSection>
   );
@@ -219,8 +227,8 @@ function Metrics() {
 
 /** The question families the case tabs are grouped by (ADR-0071 rule 5: at most six peer tabs, then group by the question), keyed by the category of the coverage registry; a category without a family keeps its own title. */
 const FAMILY: Record<string, { id: string; label: BiText }> = {
-  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
-  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
+  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
+  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Calificación crediticia y PD' } },
   provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'portfolio-capital': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
@@ -303,10 +311,9 @@ export function Experiments() {
       title={{ en: 'Experiments', es: 'Experimentos' }}
       lede={t(
         'The coverage of the 22 cases, the held-out protocol every experiment follows, the metrics it reads, and every built case variant by variant, all read from the committed artifacts: no number on this page is typed in, and a case that is planned says so.',
-        'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos comprometidos: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
+        'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos versionados: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
       )}
     >
-      <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de los experimentos' : 'Parts of the experiments'}
         groups={

@@ -189,7 +189,7 @@ export function methodText(r: { method: string; nu: number | null }): Bi {
 }
 /** The short form for a select or a chart row. */
 export function methodShort(r: { method: string; nu: number | null }): Bi {
-  if (r.method === 't-copula') return { en: `t copula, nu ${r.nu}`, es: `Cópula t, nu ${r.nu}` };
+  if (r.method === 't-copula') return { en: `t copula, ν ${r.nu}`, es: `Cópula t, ν ${r.nu}` };
   const map: Record<string, Bi> = {
     'lower-bound': { en: 'Lower bound', es: 'Cota inferior' },
     'simple-sum': { en: 'Simple sum (headline)', es: 'Suma simple (principal)' },
@@ -225,6 +225,22 @@ export function axisOf(values: ReadonlyArray<number | null | undefined>, currenc
   const s = axisScale(max, currency);
   return { div: s.div / 1e6, unit: s.unit };
 }
+
+/** The Spanish names of the rows of the summary table of Annex 3, with their accents (the CMF's own labels are written without them). */
+export const ANNEX3_ES: Record<string, string> = {
+  '1': 'Ratios de capital', '1.1': 'PE / APR', '1.2': 'T1 / APR', '1.3': 'CET1 / APR', '2': 'Patrimonio efectivo', '2.T2': 'T2', '2.AT1': 'AT1', '2.CET1': 'CET1',
+  '3': 'APR', '4': 'Cuantificación del capital necesario', '4.1': 'Riesgo de crédito', '4.1.1': 'Método estándar', '4.1.2': 'Modelo interno',
+  '4.2': 'Riesgo de mercado (ME)', '4.3': 'Riesgo operacional (ME)', '4.4': 'Riesgo de concentración', '4.4.1': 'Individual', '4.4.2': 'Sectorial',
+  '4.4.3': 'Otro tipo', '4.5': 'RMLB', '4.6': 'Riesgo estratégico', '4.7': 'Riesgo reputacional', '4.8': 'Otros riesgos materiales', '5': 'OI',
+  '6': 'Cuantificación del capital necesario por riesgos no cubiertos en el pilar 1 (4.4+4.5+4.6+4.7+4.8)',
+  '7': 'Exigencia mínima de PE, en período de planificación (8%+7.1+7.2)',
+  '7.1': 'Exigencia adicional de PE por art. 66 quater (banco sistémico)', '7.2': 'Exigencia adicional de PE por art. 66 quinquies',
+  '8': 'Cuantificación del capital necesario por riesgos no cubiertos en el pilar 1 y no exigidos por el art. 66 quinquies (6-7.2)',
+  '9': 'Colchones de conservación y contracíclico, en período de planificación (art. 66 bis y 66 ter)',
+  '10.1': 'Impacto en el índice de capital básico de las pruebas de tensión severas, sin mitigación',
+  '10.2': 'Impacto en el índice de capital básico de las pruebas de tensión severas, con mitigación',
+  '11': 'Componente d) del OI', '12': 'Holgura del índice de patrimonio efectivo respecto del OI (1.1 - 5)',
+};
 
 /** The English names of the 34 rows of the summary table of Annex 3; the Spanish is the CMF's own label as the document carries it. */
 export const ANNEX3_EN: Record<string, string> = {
@@ -274,9 +290,21 @@ export const TEST_TEXT: Record<string, Bi> = {
   'aggregation.elliptical_mc_agreement': { en: 'Monte Carlo against the variance-covariance anchor', es: 'Monte Carlo frente al ancla de varianza-covarianza' },
   'aggregation.rosenberg_schuermann_reference': { en: 'Rosenberg and Schuermann reference (not a gate)', es: 'Referencia de Rosenberg y Schuermann (no es un umbral)' },
   'portfolio.euler_additivity': { en: 'The Euler contributions add up to the total', es: 'Las contribuciones de Euler suman el total' },
-  'stress.satellite_backcast': { en: 'Back-cast of the satellites through 2020 to 2025', es: 'Back-cast de los satélites entre 2020 y 2025' },
+  'stress.satellite_backcast': { en: 'Back-cast of the satellites through 2020 to 2025', es: 'Prueba retrospectiva de los satélites entre 2020 y 2025' },
   'stress.sensitivity_monotonicity': { en: 'Sign and monotonicity of every sensitivity', es: 'Signo y monotonía de cada sensibilidad' },
   'stress.static_balance_sheet_rules': { en: 'The static balance sheet rules applied', es: 'Las reglas de balance estático aplicadas' },
   'stress.scenario_severity': { en: 'Severity of each path against history', es: 'Severidad de cada trayectoria frente a la historia' },
   'stress.reverse_solution_check': { en: 'Reverse stress: the loss at the solution equals the threshold', es: 'Estrés inverso: la pérdida en la solución iguala el umbral' },
 };
+
+/** The unit of the level a path draws: the published unit when the path is published as a level, the unit of the regressor otherwise (a
+ * deviation added to a baseline is drawn as the level it builds; U16-R3 c19 M2: the NGFS line was titled "Abs. difference"). The four
+ * regressors a scenario maps to are rates or growth in percent. */
+export function plottedUnit(p: { unit: string; level_rule: { kind: string } }): Bi {
+  if (p.level_rule.kind === 'level') return { en: p.unit, es: UNIT_ES[p.unit] ?? p.unit };
+  return { en: 'percent', es: 'por ciento' };
+}
+const UNIT_ES: Record<string, string> = { percent: 'por ciento', 'percent, annualised': 'por ciento, anualizado' };
+
+/** A name inside a sentence: its first letter lower case, an acronym kept (U16-R3 c19 m8: "real gdp growth"). */
+export const inSentence = (name: string): string => name.charAt(0).toLowerCase() + name.slice(1);

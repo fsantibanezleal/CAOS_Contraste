@@ -1,0 +1,230 @@
+% Chapter written by unit TR-4 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
+% The numbers quoted in the text are macros read as \LE{key}; tables/make_lgd-ead.py writes them (and the tables) from data/derived,
+% figures/make_lgd-ead.py writes the figures.
+\input{../tables/lgd-ead-numbers}
+\newcommand{\LE}[1]{\ifcsname lgdead:#1\endcsname\csname lgdead:#1\endcsname\else\textbf{??#1}\fi}
+\emergencystretch=4em
+
+\section{Methods: loss given default and exposure at default}
+\label{sec:lgd-ead}
+
+Loss given default and exposure at default are, with the probability of default, the parameters of an internal-ratings credit-risk model, and expected loss is their product when the loss given default does not depend on the default event. The Basel framework treats both as estimates the bank must supply under the advanced approach and fixes supervisory values and floors for the foundation approach and for the estimates of banks that model them \citep{lgd-ead:cre32}. The consolidated framework sets, as transcribed for the engine, supervisory loss-given-default values for the foundation approach, loss-given-default floors by portfolio and collateral for the advanced approach, an exposure floor equal to the on-balance amount plus half of the off-balance exposure at the standardised conversion factor, and supervisory conversion factors that equal the standardised ones \citep{lgd-ead:cre32,lgd-ead:cre20}; the treatment of defaulted exposures is in the minimum requirements \citep{lgd-ead:cre36}. In the European Union the estimation of both parameters is further governed by the guidelines on probability of default and loss given default estimation and on the treatment of defaulted exposures \citep{lgd-ead:eba2017}, completed by the guidelines on a loss given default appropriate for an economic downturn \citep{lgd-ead:eba2019}. The engine reproduces the transcribed floors and supervisory values and makes no compliance claim: the discount rate, the downturn period and every threshold are policy parameters that the caller supplies.
+
+A model validator does not re-estimate these parameters; the validator asks whether the estimate holds on data the model has not seen, whether its calibration survives a change of default cohort, and whether the estimator recovers a quantity when the answer is known. The section answers that question for the two cases of the family. Case C08 asks how loss given default moves across six default cohorts, from 2003--06 to 2020--23, and what a downturn estimate adds (the add-on of the case is the cohort-based difference between the default-weighted mean proxy of the downturn cohorts, identified from the charge-off rate of the book in \LE{down-first}--\LE{down-last}, and the long-run mean, which is \LE{down-addon} in the 2009--10 document; it is an illustration and not the mixture-distribution estimation of \citealt{lgd-ead:calabrese2014}); it runs on the charge-offs of the SBA 7(a) loan programme \citep{lgd-ead:sbafoia}, a public file in which the loss is a proxy because no recovery cash flow follows the charge-off, so every claim of the case is a statement about a proxy and says so. Case C09 asks whether the exposure at default and the credit conversion factor of revolving lines can be recovered when drawing accelerates before default; it runs on a seeded generator of credit-line histories whose conversion factor is a closed form of its parameters, with marginals taken from the hypothetical card portfolios of the Federal Reserve supervisory stress test \citep{lgd-ead:fedstress2025,lgd-ead:fedmethod2025}, so that every estimate is scored against the truth it should recover.
+
+Three methods carry the answer. The ladder of loss-given-default regressions (Section~\ref{sec:m14}) fits seven specifications on the defaults whose workout closed before a cutoff and tests them on later cohorts. The conversion-factor and exposure estimators (Section~\ref{sec:m15}) place a reference date before default in three ways, treat values outside the unit interval in four ways, aggregate in two ways and add two models of the exposure itself. The random forest and the neural network (Section~\ref{sec:m34}) enter the ladder on the same split and are tested against a stated adoption rule. Each subsection gives the theory with its source, the governing equations, the assumptions, the parameters with their values, the cost, the implementation in \texttt{riskvalidation} 1.1.0 and in the pipeline, and what the method is compared against. The last subsection (Section~\ref{sec:results-lgd-ead}) reads every method on every case, with the interval each artifact carries. All amounts are in US dollars and every ratio is dimensionless.
+
+% the loss-given-default ladder
+\subsection{The loss-given-default ladder}
+\label{sec:m14}
+
+\paragraph{Target and proxy.} For a defaulted exposure $i$ with exposure at default $\EAD_i$, recoveries $R_{i,t}$, costs $C_{i,t}$ and further drawings $A_{i,t}$ at times $t>0$ (years since default) and a discount rate $r_i$, the realised workout loss given default is
+\begin{equation}
+\LGD_i \;=\; 1-\frac{\sum_{t}\bigl(R_{i,t}-C_{i,t}-A_{i,t}\bigr)(1+r_i)^{-t}}{\EAD_i},
+\label{eq:lgd-ead-workout}
+\end{equation}
+returned by the engine function \texttt{workout\_lgd} as it comes, not clipped: costs above recoveries give a value above one, recoveries above the exposure a negative value. It is not monotone in the discount rate, because a higher rate lowers the present value of the net flows and so raises the loss when the net flows are positive and lowers it when costs exceed recoveries. The SBA 7(a) file records no flows after the charge-off, so case C08 cannot evaluate Equation~\eqref{eq:lgd-ead-workout}. It uses the proxy
+\begin{equation}
+y_i \;=\; \frac{\mathrm{GCO}_i}{\mathrm{GA}_i},
+\label{eq:lgd-ead-proxy}
+\end{equation}
+where $\mathrm{GCO}_i$ is the gross charge-off amount and $\mathrm{GA}_i$ the gross approved amount, the only exposure field the file carries. The approved amount overstates the exposure at default of an amortising loan, which biases $y_i$ downward; ignoring recoveries and costs pushes the other way, and capitalised interest and fees charged off can lift $y_i$ above one. A value outside $[0,1]$ is kept and flagged, never clipped; a ratio above \LE{max-ratio} is a unit error of the approved amount and is excluded and counted. The loss given default is bounded in $[0,1]$ up to fees and costs and is typically bimodal, with a mass near zero for cures and near one for no recovery \citep{lgd-ead:tong2013}; \cref{fig:lgd-ead-distribution} shows that the proxy of the \LE{ntest-2009-10} defaults of the 2009--10 cohort is instead concentrated near the upper end, with a mean of \LE{mean-2009-10}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{figures/lgd-ead-distribution.pdf}
+\caption{Distribution of the loss-given-default proxy (gross charge-off over gross approval) of the \LE{ntest-2009-10} SBA 7(a) defaults of the 2009--10 cohort in ten equal bins; the bars give the share of defaults and the note gives the mass at exactly one and the share of proxies above one, which the engine keeps and flags.}
+\label{fig:lgd-ead-distribution}
+\end{figure}
+
+\paragraph{The rungs.} Let $x_i\in\R^{p}$ be the covariates known at the charge-off, with an intercept, and $G(z)=1/(1+e^{-z})$. The ladder holds the specifications of the engine module \texttt{riskvalidation.lgd\_ead.lgd\_models}, each a deterministic function of the training data: least squares of $y$ on $x$ with the prediction clipped to $[0,1]$ (the benchmark of the comparison studies \citep{lgd-ead:loterman2012,lgd-ead:qizhao2011}); the fractional logit; the beta regression; the two-stage hurdle model; and the two-limit Tobit model. The fractional logit maximises the Bernoulli quasi-likelihood
+\begin{equation}
+\ell(\beta)\;=\;\sum_{i}\Bigl[y_i\log G(x_i^{\top}\beta)+(1-y_i)\log\bigl(1-G(x_i^{\top}\beta)\bigr)\Bigr],\qquad \mathbb{E}[y\mid x]=G(x^{\top}\beta),
+\label{eq:lgd-ead-fracl}
+\end{equation}
+which is consistent for the conditional mean when the mean is correctly specified, including observations at the endpoints \citep{lgd-ead:papke1996}. The score equation $X^{\top}(y-\mu)=0$, with $\mu_i=G(x_i^{\top}\beta)$, is solved by Newton iterations on Equation~\eqref{eq:lgd-ead-fracl}, $\beta\leftarrow\beta+(X^{\top}WX)^{-1}X^{\top}(y-\mu)$ with $W=\operatorname{diag}\bigl(\mu_i(1-\mu_i)\bigr)$, from a zero start, with step halving; near the optimum the step is taken whole when the gain it predicts falls below the rounding of the log-likelihood summed over every row, the repair that removed a stall of the first engine release on samples of 50,000 to 70,000 rows. The beta regression assumes $y\sim\mathrm{Beta}(\mu\phi,(1-\mu)\phi)$ with a logit mean link and a log precision link \citep{lgd-ead:ferrari2004}; the density exists only on $(0,1)$, so the response is first transformed by
+\begin{equation}
+y^{\epsilon}_i=\min\bigl(\max(y_i,\epsilon),\,1-\epsilon\bigr),\qquad \epsilon\in(0,\tfrac12),
+\label{eq:lgd-ead-endpoint}
+\end{equation}
+and the adjustment of Equation~\eqref{eq:lgd-ead-endpoint} makes the fit depend on $\epsilon$ in a way the comparison literature calls very sensitive \citep{lgd-ead:qizhao2011}. The case therefore fits the beta rung at $\epsilon\in\{\LE{eps-list}\}$, reports all three, and lets the ladder keep $\epsilon=\LE{eps-ladder}$. The hurdle model multiplies a logit for the probability of a positive loss by a fractional logit for the severity among positive losses, $\mathbb{E}[y\mid x]=p_{+}(x)\,m(x)$ \citep{lgd-ead:leow2012,lgd-ead:tong2013}. The Tobit model assumes a latent $y^{*}=x^{\top}\beta+\varepsilon$ with $\varepsilon\sim N(0,\sigma^{2})$ and $y=\min(1,\max(0,y^{*}))$ \citep{lgd-ead:tobin1958}; its prediction is the mean of the censored variable, $m\bigl[\Phi(b)-\Phi(a)\bigr]+\sigma\bigl[\varphi(a)-\varphi(b)\bigr]+1-\Phi(b)$ with $m=x^{\top}\beta$, $a=-m/\sigma$ and $b=(1-m)/\sigma$, which lies in $[0,1]$ by construction. Zero-or-one inflated beta models \citep{lgd-ead:ospina2012}, the zero-adjusted gamma model \citep{lgd-ead:tong2013} and macro-conditioned regressions \citep{lgd-ead:bellotticrook2012} are published alternatives that the ladder does not contain.
+
+\paragraph{Cutoff, covariates and assumptions.} The model for a test cohort starting in year $Y$ is trained only on the defaults whose charge-off closed strictly before 31 December of year $Y-1$, by the engine rule \texttt{closed\_before}; a default charged off on the cutoff date is not in the training set, and the test perturbs every later default and requires bit-identical coefficients. Because the file has no default date earlier than the charge-off, the charge-off date is also the closing date of the workout, and the workouts open at the cutoff are counted by their stand-in, the charge-offs of the \LE{workout-window} months that follow it (for the 2009--10 cohort, \LE{nopen-2009-10} defaults, against \LE{ntrain-2009-10} in training). The covariates are the logarithm of the approved amount, the logarithm of the term, the guaranteed share of the approval, the seasoning (months from approval to charge-off over the term, capped at \LE{seasoning-cap}), a revolving-line flag and eleven sector dummies, sixteen covariates and an intercept; the four continuous ones are standardised with the moments of the training span, so a fit never sees a moment of the test cohort. The engine fits take a response in $[0,1]$, so a training default whose proxy lies outside it is left out by a counted exclusion (for the 2009--10 cutoff \LE{nout-2009-10} of \LE{ntrain-2009-10}, leaving \LE{nfit-2009-10}). Default and recovery rates move together with the cycle \citep{lgd-ead:altman2005}, which is why a cohort-by-cohort test is the natural design. The assumptions are those of the quasi-likelihood for the mean (a correctly specified conditional mean for the logit link), independence of defaults given the covariates, and stationarity of the covariate-to-loss map between the training span and the test cohort, the last of which the out-of-time design exists to test. \Cref{tab:lgd-ead-settings} lists the library and the fixed settings of each rung; nothing is tuned on a test cohort.
+
+\input{../tables/lgd-ead-settings}
+
+\paragraph{Metrics and acceptance criteria.} For a test cohort of $N$ defaults with realised proxies $y_i$ and predictions $\hat y_i$ the case reports the root mean squared error, the mean absolute error, $R^{2}=1-\sum(y_i-\hat y_i)^2/\sum(y_i-\bar y)^2$, the Spearman rank correlation, and the calibration gap
+\begin{equation}
+\bar d=\frac1N\sum_{i=1}^{N}(y_i-\hat y_i),\qquad t=\frac{\bar d}{s_d/\sqrt N},\qquad \bar d\pm t_{0.975,\,N-1}\,\frac{s_d}{\sqrt N},
+\label{eq:lgd-ead-gap}
+\end{equation}
+with $s_d$ the sample standard deviation of $d_i=y_i-\hat y_i$ (the paired $t$-test of calibration by segment, whose two-sided $p$-value sets the light: green from $0.05$, amber from $0.01$, red below, an internal acceptance criterion of the case and not a regulatory threshold). A positive gap means the model under-predicts. Calibration, not $R^{2}$ alone, is the criterion because the explained variance of loss-given-default models is low in every comparison study, between 4\,\% and 43\,\% in one benchmark of 24 techniques \citep{lgd-ead:loterman2012}. The rungs are compared with one another, with least squares as the baseline, on the same training span and the same test cohorts. The acceptance criteria are those of the specification: predictions inside $[0,1]$, out-of-time calibration by bucket of predicted loss (five buckets of equal size), and the sensitivity to the endpoint adjustment reported for the beta rung.
+
+\paragraph{Complexity and implementation.} With $N$ training defaults and $p=17$ columns, least squares costs $O(Np^{2})$; each Newton iteration of the fractional logit costs $O(Np^{2}+p^{3})$ and the solver stops after at most 200 iterations; the hurdle model runs two such fits; the beta regression and the Tobit model use a quasi-Newton optimiser on $p+1$ parameters with an analytic gradient, $O(Np)$ per gradient. The largest training span has \LE{ntrain-2020-23} defaults. The implementation is \texttt{riskvalidation.lgd\_ead.lgd\_models} (functions \texttt{fit\_ols}, \texttt{fit\_fractional\_logit}, \texttt{fit\_beta}, \texttt{fit\_hurdle}, \texttt{fit\_tobit}, \texttt{predict\_lgd}) and \texttt{riskvalidation.validation.lgd\_ead} (\texttt{lgd\_calibration\_by\_segment}, \texttt{lgd\_calibration\_over\_time}, \texttt{lgd\_discrimination}) in \texttt{riskvalidation} 1.1.0, driven by the pipeline modules \texttt{pipeline.cases.c08.ladder}, \texttt{cutoff} and \texttt{variant}; \cref{alg:lgd-ead-ladder} is the procedure for one cohort.
+
+\begin{algorithm}[htbp]
+\caption{The ladder for one default cohort $[Y_0,Y_1]$ of case C08.}
+\label{alg:lgd-ead-ladder}
+\begin{algorithmic}[1]
+\Require charge-offs with covariates $x_i$, proxy $y_i$ and charge-off date $\tau_i$; cohort years $[Y_0,Y_1]$; seed $s$
+\State $c\gets$ 31 December of $Y_0-1$; $\mathcal T\gets\{i:\tau_i<c\}$ (strictly before)
+\State $\mathcal T\gets\{i\in\mathcal T:0\le y_i\le 1\}$, count the exclusions; stop if $|\mathcal T|<$ the minimum of defaults
+\State standardise the continuous covariates with the mean and standard deviation of $\mathcal T$
+\ForAll{rung $\in$ \{OLS, fractional logit, beta at three $\epsilon$, hurdle, gradient boosting, Tobit, forest, network\}}
+  \State fit on $\mathcal T$; if the fit refuses or does not converge, record the rung as not evaluated with its reason (no number)
+\EndFor
+\State test set $\gets$ defaults with charge-off year in $[Y_0,Y_1]$; later cohorts are scored as further out-of-time tests
+\ForAll{evaluated rung}
+  \State predict the test set; compute RMSE, MAE, $R^{2}$, Spearman $\rho$, the gap and interval of Equation~\eqref{eq:lgd-ead-gap}
+  \State sort the test set by prediction; split into five buckets; record predicted and realised mean per bucket
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+% the conversion factor and exposure estimators
+\subsection{Credit conversion factor and exposure at default estimators}
+\label{sec:m15}
+
+\paragraph{Definition and convention.} For a facility with limit $L(t)$ and drawn amount $E(t)$ at the reference date $t_r$ before the default date $t_d$, the credit conversion factor of the engine is the share of the undrawn amount drawn by the time of default,
+\begin{equation}
+\mathrm{CCF}\;=\;\frac{\EAD-E(t_r)}{L(t_r)-E(t_r)},\qquad \EAD\;=\;E(t_r)+\mathrm{CCF}\,\bigl(L(t_r)-E(t_r)\bigr).
+\label{eq:lgd-ead-ccf}
+\end{equation}
+This is the European convention (\texttt{eu-undrawn}); the same ratio is the loan equivalent in the United States terminology of the card literature, where ``CCF'' names exposure over the outstanding balance and ``EADF'' exposure over the credit line \citep{lgd-ead:qi2009}. The engine function \texttt{to\_us\_terms} returns the three ratios so that a view can show both and never mix them, and every view of the case names the convention. The ratio is undefined when the undrawn amount is not positive (a fully drawn or overdrawn line), and the engine returns a missing value there, never zero or one; it is negative after repayments or limit cuts and above one after overlimit drawings, capitalised interest and fees or limit increases, and those values are returned as they come. The supervisory conversion factors of the standardised and foundation approaches are 1.0, 0.5, 0.4, 0.2 and 0.1 by item \citep{lgd-ead:cre20,lgd-ead:cre32}.
+
+\paragraph{Reference-date designs, treatments and aggregators.} The three designs of the literature \citep{lgd-ead:moral2006} differ in where $t_r$ sits: the fixed horizon reads $t_r=t_d-h$; the cohort design reads the start of the calendar cohort that contains $t_d$; the variable horizon reads several dates $t_d-h+k\,\Delta$, $k=0,\dots,K-1$. In case C09 $h=\LE{ccf-horizon}$ months, the cohort is the calendar year, and the variable horizon uses four dates three months apart. Four treatments of a value outside $[0,1]$ are implemented in \texttt{treat\_ccf}: keep every value; censor (drop the observations outside the interval); floor and cap (clip to $[0,1]$, which biases the exposure); and bounded scale, where the estimate is the predicted mean of a fractional logit of the clipped factor on the utilisation at the reference date, the logarithm of the limit and the credit score, not a clip-and-average. Two aggregators turn the $K$ observations into an estimate: the unweighted mean of the finite values, $\hat\theta_{\mathrm{mean}}=K^{-1}\sum_k\mathrm{CCF}_k$, and the pooled ratio of sums
+\begin{equation}
+\hat\theta_{\mathrm{pooled}}\;=\;\frac{\sum_k u_k\,\mathrm{CCF}_k}{\sum_k u_k}\;=\;\frac{\sum_k\bigl(\EAD_k-E_k\bigr)}{\sum_k\bigl(L_k-E_k\bigr)},\qquad u_k=L_k-E_k,
+\label{eq:lgd-ead-pooled}
+\end{equation}
+the undrawn-weighted mean, which is the estimate that is right in currency. Because a conversion factor is fitted on defaulted facilities only, the sample is small and the reference-date design is a material model choice; Qi switches from the factor to exposure over the limit where the undrawn amount is below \LE{ccf-small} dollars \citep{lgd-ead:qi2009}, a switch that the engine computes (\texttt{small\_undrawn\_rule}) and that case C09 counts (\LE{small-switched} lines) but does not apply, because the noise of the generator is on the factor scale.
+
+\paragraph{Models of the exposure itself.} Two models avoid the ratio. The direct model is a fractional logit (Equation~\eqref{eq:lgd-ead-fracl}) of the exposure over the limit, $\mathrm{EADF}=\EAD/L$, on a design with an intercept; an EADF outside $[0,1]$ is clipped for the fit and counted (\LE{direct-clipped-above} development lines above the limit, \LE{direct-clipped-below} below zero), so the model cannot predict an exposure above the limit. The utilisation-change model fits by least squares the change $\delta=(E(t_d)-E(t_r))/L(t_r)$ and predicts $E(t_r)+L(t_r)\hat\delta$ without clipping. Direct models with a zero-adjusted gamma mixture were proposed for card exposure \citep{lgd-ead:tong2016} and balance models with a repeated-events survival component for the UK card book \citep{lgd-ead:leowcrook2013}; neither is in the engine release, and determinants of the factor, the loan equivalent and the EADF for defaulted corporate revolvers are studied by \citet{lgd-ead:jacobs2010}. A CCF-based prediction inverts Equation~\eqref{eq:lgd-ead-ccf} and applies the factor to the undrawn amount of a line floored at zero, $\widehat{\EAD}=E+\hat c\,(\max(L,E)-E)$, so a line at or over its limit is predicted at its balance.
+
+\paragraph{The generator and its known truth.} The generator draws a facility, its risk group $t\in\{\text{low},\text{typical},\text{high}\}$, a default, a limit, a state twelve months before default (interior utilisation from a Beta marginal, a fully drawn line, or a line over its limit) and a drawing history. An interior line draws down its undrawn amount geometrically, $U_m=U_0\exp\bigl(-r\rho_t\nu\,S_m\bigr)$, with $S_m=\sum_{j\le m}w_j$ the cumulative monthly weight, $\rho_t$ the risk-group multiplier, $r$ the base rate and $\nu$ a mean-one gamma frailty with shape $\phi$; the weight is $1$ outside the acceleration window and the level's factor inside it. The factor at horizon $h$ is $1-\exp(-r\rho_t\nu S_h)$ plus a normal noise, and the Laplace transform of the gamma frailty, $\mathbb{E}[e^{-s\nu}]=(1+s/\phi)^{-\phi}$, gives the mean over lines in closed form:
+\begin{equation}
+\mathrm{CCF}^{\star}(\ell,h)\;=\;\sum_{t}\omega_t\Bigl[1-\Bigl(1+\frac{r\,\rho_t\,S_h(\ell)}{\phi}\Bigr)^{-\phi}\Bigr],\qquad \mathrm{CCF}^{\star}(0,\LE{ccf-horizon})=\LE{ccf-anchor},
+\label{eq:lgd-ead-truth}
+\end{equation}
+where $\omega_t$ is the share of risk group $t$ among the defaulters whose factor is defined and $S_h(\ell)$ the sum of the last $h$ weights of acceleration level $\ell$. The base rate $r$ is solved once by root finding so that level $0$ has the anchor, and the other five levels keep it and change only their weights, so the known factor of each level (\cref{tab:lgd-ead-levels-def}) is fixed by the parameters and never estimated. The truth is the mean over defaulters, so it is the target of the mean aggregator; the pooled aggregator targets a different, undrawn-weighted quantity and its distance from the truth mixes estimator error with a difference of estimand. \Cref{tab:lgd-ead-generator} gives the parameters, separating the values the case assumes from those that come from the Federal Reserve files.
+
+\input{../tables/lgd-ead-levels-def}
+\input{../tables/lgd-ead-generator}
+
+\paragraph{Design of the experiment, metrics and acceptance criteria.} Each level uses \LE{ccf-nrep} development replications and \LE{ccf-nrep} test replications of \LE{ccf-nfac} facilities with disjoint seeds, the six levels of one seed sharing their facilities (common random numbers), so a difference between levels is the drawing profile and not sampling noise. The exposure models are fitted on the pooled development replications and predicted on the test replications; the fractional-logit solver is retried on every $k$-th observation, $k\in\{\LE{ccf-thinning}\}$, if it does not converge, a guard that the repaired engine does not need. With $\hat\theta_r$ the estimate of test replication $r=1,\dots,R$, the bias, its interval and the error are
+\begin{equation}
+\hat b=\frac1R\sum_{r=1}^{R}\bigl(\hat\theta_r-\mathrm{CCF}^{\star}\bigr),\qquad \hat b\pm t_{0.975,R-1}\frac{s_e}{\sqrt R},\qquad \mathrm{RMSE}=\Bigl(\frac1R\sum_{r}\bigl(\hat\theta_r-\mathrm{CCF}^{\star}\bigr)^{2}\Bigr)^{1/2},
+\label{eq:lgd-ead-bias}
+\end{equation}
+with $s_e$ the standard deviation of the errors over replications. The acceptance criterion of the specification is that the known factor is recovered within the reported error: the case states a tolerance of \LE{ccf-tol} on the factor scale (an assumption of the case), and the light is green when $|\hat b|$ is within the tolerance, amber within twice it and red above. The exposure models are back-tested in currency by utilisation band, with the relative gap $g_b=\bigl(\sum_{i\in b}\widehat{\EAD}_i-\sum_{i\in b}\EAD_i\bigr)/\sum_{i\in b}\EAD_i$ and the largest absolute gap as the metric of the light (green up to $0.10$, amber up to $0.25$, red above).
+
+\paragraph{Complexity and implementation.} Placing reference dates costs $O(DK)$ for $D$ defaulters and $K$ dates per defaulter; the aggregators are linear in the observations; the bounded-scale and direct fits are fractional logits on four columns (an intercept and three covariates), $O(Mp^{2})$ per Newton iteration for $M$ observations. The implementation is \texttt{riskvalidation.lgd\_ead.ccf} (\texttt{reference\_indices}, \texttt{ccf\_observations}, \texttt{treat\_ccf}, \texttt{aggregate\_ccf}, \texttt{fit\_direct\_ead}, \texttt{fit\_utilisation\_change}, \texttt{predict\_ead}, \texttt{ead\_from\_ccf}, \texttt{ccf\_bias}) and \texttt{riskvalidation.validation.lgd\_ead} (\texttt{ccf\_estimator\_bias}, \texttt{ead\_backtest\_by\_band}) in \texttt{riskvalidation} 1.1.0, driven by \texttt{pipeline.cases.c09.generator}, \texttt{params}, \texttt{estimators}, \texttt{models} and \texttt{documents}; the product selects, subsets and counts and computes no factor, treatment or aggregate itself. \Cref{alg:lgd-ead-ccf} is the procedure for one level.
+
+\begin{algorithm}[htbp]
+\caption{Estimating the conversion factor and the exposure for one acceleration level $\ell$ of case C09.}
+\label{alg:lgd-ead-ccf}
+\begin{algorithmic}[1]
+\Require level $\ell$; development seeds $\mathcal S_{\mathrm{dev}}$ and test seeds $\mathcal S_{\mathrm{test}}$; tolerance $\tau$
+\State $\mathrm{CCF}^{\star}\gets$ Equation~\eqref{eq:lgd-ead-truth} at $h=12$
+\ForAll{seed $s\in\mathcal S_{\mathrm{dev}}$}
+  \State draw the defaulters of $s$ at level $\ell$; read their reference-date observations under each design
+\EndFor
+\State fit the constants, the bounded-scale logit, the direct model and the utilisation-change model on the pooled development observations
+\ForAll{seed $s\in\mathcal S_{\mathrm{test}}$}
+  \State draw the defaulters of $s$ at level $\ell$
+  \ForAll{design, treatment and aggregator}
+    \State observe, treat and aggregate to $\hat\theta_s$
+  \EndFor
+\EndFor
+\ForAll{design, treatment and aggregator}
+  \State bias, interval and RMSE of Equation~\eqref{eq:lgd-ead-bias} over the test seeds; light from $|\hat b|$ against $\tau$
+\EndFor
+\ForAll{exposure model}
+  \State predict the pooled test observations; relative gap per utilisation band and the light of the largest
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+% the random forest and neural-network rungs
+\subsection{Random forest and neural-network rungs of the loss-given-default ladder}
+\label{sec:m34}
+
+\paragraph{Motivation and source.} A benchmark of twenty techniques on record-level loss data finds the random forest and the neural network among the best \citep{lgd-ead:bellotti2021}, and the earlier comparison studies find non-parametric methods ahead of parametric ones when over-fitting is controlled \citep{lgd-ead:qizhao2011,lgd-ead:loterman2012}. The ladder of Section~\ref{sec:m14} already holds one non-parametric rung, gradient boosting with the cross-entropy loss of the CatBoost library \citep{lgd-ead:catboost2017}, whose target in $[0,1]$ is passed through the logistic link. Two rungs are added beside the earlier six, on the same covariates, the same training span and the same test cohorts: a random forest and a neural network, both from scikit-learn \citep{lgd-ead:sklearn2011}.
+
+\paragraph{The random forest.} The random forest \citep{lgd-ead:breiman2001} is a forest of $B$ regression trees $T_b$, each grown on a random half of the training defaults and split on squared error, whose prediction is the average
+\begin{equation}
+\hat f_{\mathrm{RF}}(x)\;=\;\frac1B\sum_{b=1}^{B}T_b(x),\qquad \operatorname{Var}\bigl[\hat f_{\mathrm{RF}}(x)\bigr]\;=\;\sigma^{2}\Bigl[\varrho+\frac{1-\varrho}{B}\Bigr],
+\label{eq:lgd-ead-forest}
+\end{equation}
+The variance follows from the average of $B$ identically distributed trees of variance $\sigma^{2}$ and pairwise correlation $\varrho$: $\operatorname{Var}=B^{-2}\bigl[B\sigma^{2}+B(B-1)\varrho\sigma^{2}\bigr]$. Averaging removes the part of the variance that is not shared between trees, the term in $1/B$, and the correlation $\varrho$ is what the random half-samples and the random subset of covariates at each split reduce. The leaf value that minimises squared error is the mean of the training proxies in the leaf, so each tree is a piecewise-constant regression and the forest needs no link function; its prediction is clipped to $[0,1]$ as the least-squares rung is, because neither has a link that keeps it inside. The settings are \LE{forest-trees} trees, leaves of at least \LE{forest-leaf} defaults, a fraction \LE{forest-features} of the covariates at every split and half of the training defaults per tree (\LE{forest-samples} of the sample, drawn with replacement), fixed once.
+
+\paragraph{The neural network.} The network is a multilayer perceptron with two hidden layers of \LE{net-layers} units and rectified linear activations $\phi(z)=\max(0,z)$,
+\begin{equation}
+\hat f_{\mathrm{NN}}(x)=w_3^{\top}\phi\bigl(W_2\,\phi(W_1x+b_1)+b_2\bigr)+b_3,\qquad \mathcal L=\frac1{2N}\sum_{i}\bigl(y_i-\hat f_{\mathrm{NN}}(x_i)\bigr)^{2}+\alpha\,\Omega(W),
+\label{eq:lgd-ead-network}
+\end{equation}
+trained by the Adam optimiser \citep{lgd-ead:kingma2015} on mini-batches of \LE{net-batch} defaults with an initial learning rate of \LE{net-lr}, at most \LE{net-epochs} epochs, a penalty weight $\alpha=\LE{net-alpha}$ on the weights through the regulariser $\Omega$, and early stopping on a tenth (\LE{net-valfrac}) of the training defaults set aside by the fit itself, never a test default, when the score has not improved for \LE{net-patience} epochs. Its output is clipped to $[0,1]$. Both models are a pure function of the training data and the seed, with one thread and a fixed random state.
+
+\paragraph{Assumptions, parameters and how they were chosen.} The settings above were fixed once, before any run, and are not tuned on a test cohort: a result that does not improve on the earlier rungs is reported as it is. The assumptions are those of the ladder (the covariates known at the charge-off, the same cutoff, standardisation with training moments only) plus the exchangeability of the training defaults that the bootstrap and the early-stopping split require. The estimator has no standard error, so uncertainty is read from the paired test of calibration (Equation~\eqref{eq:lgd-ead-gap}) and from the spread across the six cohorts. The prediction of an unfitted rung is never replaced: a failure of the fit is a recorded absence with its reason.
+
+\paragraph{Hypothesis, comparison and adoption rule.} The comparison is a statement stated before the run: on the same out-of-time split, the better of the forest and the network has a lower root mean squared error than every one of the six earlier rungs in at least two thirds of the test cohorts. For cohort $c$ let $\mathcal E$ be the six earlier rungs and $\mathcal M$ the two new ones; then
+\begin{align}
+\Delta_c&=\min_{r\in\mathcal E}\mathrm{RMSE}_{r,c}-\min_{m\in\mathcal M}\mathrm{RMSE}_{m,c},\qquad W=\sum_{c=1}^{C}\mathbf 1[\Delta_c>0],\label{eq:lgd-ead-adoption}\\
+\text{outcome}&=\begin{cases}\text{holds}&W/C\ge 2/3\\ \text{refuted}&W/C\le 1/3\\ \text{mixed}&\text{otherwise,}\end{cases}\notag
+\end{align}
+where $C$ is the number of test cohorts (\LE{n-cohorts}). The rule leaves a mixed region between one third and two thirds of the cohorts, and the outcome is computed from the committed documents, never typed. The acceptance criterion of the specification adds that the new rungs are scored by out-of-time calibration by bucket and by the same metrics, on the same split, as the other rungs.
+
+\paragraph{Complexity and implementation.} A tree on $n_b$ samples costs of the order of $m_{\mathrm{try}}\,n_b\log n_b$ per level for $m_{\mathrm{try}}$ covariates tried per split, so the forest costs $B$ times that and its prediction costs $B$ times the depth; the network costs $O\bigl(N(p\,h_1+h_1h_2+h_2)\bigr)$ per epoch with $h_1$ and $h_2$ the widths of the hidden layers and $p$ the number of covariates. The pipeline source states that the half-sample keeps the forest on the largest training span (\LE{ntrain-2020-23} defaults) to about a minute on one thread. The implementation is \texttt{pipeline.cases.c08.ml\_benchmark} (functions \texttt{fit\_forest}, \texttt{fit\_network}, \texttt{predict} and \texttt{cohort\_result}, with the adoption rule of Equation~\eqref{eq:lgd-ead-adoption}) with the ladder in \texttt{pipeline.cases.c08.ladder}, calling scikit-learn \texttt{RandomForestRegressor} and \texttt{MLPRegressor}, and the metrics of \texttt{riskvalidation} 1.1.0 (Section~\ref{sec:m14}).
+
+\subsection{Results}
+\label{sec:results-lgd-ead}
+
+\paragraph{The proxy and the ladder.} \Cref{tab:lgd-ead-rmse} reads the error of the eight rungs in each of the six test cohorts and \cref{fig:lgd-ead-rmse} plots each rung against the fractional logit. The spread between rungs is small compared with the spread between cohorts: the RMSE of gradient boosting moves from \LE{rmse-L5-gradient-boosted-2014-19} in the 2014--19 cohort to \LE{rmse-L5-gradient-boosted-2011-13} in the 2011--13 cohort, while within the 2009--10 cohort the eight rungs lie between \LE{rmse-L5-gradient-boosted-2009-10} and \LE{rmse-L6-tobit-2009-10}. Gradient boosting has the lowest error in \LE{bestcount-L5-gradient-boosted} of the six cohorts, the random forest in \LE{bestcount-L7-random-forest} and the neural network in \LE{bestcount-L8-neural-network}; none of the linear, fractional, beta, hurdle or Tobit rungs is best in any cohort. The explained variance is low throughout, from \LE{r2-min} to \LE{r2-max} over all rungs and cohorts, inside the range of 4\,\% to 43\,\% that one benchmark of loss-given-default techniques reports \citep{lgd-ead:loterman2012}. The tables do not show whether the differences between rungs are larger than the sampling noise of a cohort: the artifacts carry an interval for the calibration gap and not for the RMSE.
+
+\input{../tables/lgd-ead-rmse}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/lgd-ead-rmse.pdf}
+\caption{Difference between the RMSE of each rung and the RMSE of the fractional logit in each of the six test cohorts of case C08; values below zero mean a rung is more accurate than the fractional logit, and the eight rungs are drawn with distinct markers and dashes so that they separate in grayscale.}
+\label{fig:lgd-ead-rmse}
+\end{figure}
+
+\paragraph{Calibration.} \Cref{tab:lgd-ead-ladder} gives the full set of metrics for the 2009--10 cohort. Every rung under-predicts the realised proxy there, with gaps between \LE{gap-L2-fractional-logit-2009-10} (fractional logit) and \LE{gap-L6-tobit-2009-10} (Tobit), and every interval excludes zero, so the light is red for all eight rungs. The pattern is general: \LE{cal-red} of the \LE{cal-total} cohort-by-rung tests of calibration by segment end red, \LE{cal-positive} of the \LE{cal-total} gaps are positive (under-prediction), and the only green results (\LE{cal-green} of them) are two rungs in the \LE{cal-green-cohort} cohort; the calibration-over-time test is red for \LE{time-red} of \LE{time-total} rung-and-cohort pairs. The rank correlation is more benign: all \LE{disc-green} of \LE{disc-total} discrimination tests are green, so the rungs order defaults acceptably while placing them too low. A model that ranks well and under-predicts is the case in which a bank's provision is wrong by a level and not by an order, and it is the reason calibration is the criterion. \Cref{fig:lgd-ead-reliability} shows the bucket view: in the 2009--10 cohort the lowest bucket of the fractional logit is predicted at \LE{bucket-lo-pred-L2-fractional-logit-2009-10} and realised at \LE{bucket-lo-real-L2-fractional-logit-2009-10}, the highest predicted at \LE{bucket-hi-pred-L2-fractional-logit-2009-10} and realised at \LE{bucket-hi-real-L2-fractional-logit-2009-10}; in the 2014--19 cohort the same bucket values are \LE{bucket-lo-pred-L2-fractional-logit-2014-19} against \LE{bucket-lo-real-L2-fractional-logit-2014-19} and \LE{bucket-hi-pred-L2-fractional-logit-2014-19} against \LE{bucket-hi-real-L2-fractional-logit-2014-19}. The proxy of Equation~\eqref{eq:lgd-ead-proxy} is itself biased by the approved amount, so these gaps measure the models against the proxy and not against a workout loss.
+
+\input{../tables/lgd-ead-ladder}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/lgd-ead-reliability.pdf}
+\caption{Calibration by bucket in two test cohorts of case C08: mean realised against mean predicted loss given default in five equal-size buckets of the predicted value, for four rungs; points on the diagonal are calibrated, and points above it are buckets where the model under-predicts the realised proxy.}
+\label{fig:lgd-ead-reliability}
+\end{figure}
+
+\paragraph{The endpoint adjustment and the machine-learning hypothesis.} \Cref{tab:lgd-ead-endpoint} varies the endpoint adjustment of the beta rung. In the 2009--10 cohort the mean predicted loss moves by \LE{eps-spread-mean} across the three values and the RMSE by \LE{eps-spread-rmse}, so the beta rung inherits a sensitivity of the level that the fractional logit, which needs no adjustment, does not have; the table does not tell which value is right, because no workout loss exists to decide. \Cref{tab:lgd-ead-ml} tests the adoption rule of Equation~\eqref{eq:lgd-ead-adoption}: the forest of Equation~\eqref{eq:lgd-ead-forest} or the network of Equation~\eqref{eq:lgd-ead-network} beats the best of the six earlier rungs in \LE{ml-wins} of \LE{n-cohorts} cohorts, so the outcome is \LE{ml-outcome}. The gains are between \LE{ml-gain-min} and \LE{ml-gain-max} in RMSE, in both directions and at least an order of magnitude below the differences between cohorts, so the table shows no advantage of either rung over gradient boosting and does not show that they are worse; the interval of the difference is not in the artifact.
+
+\input{../tables/lgd-ead-endpoint}
+\input{../tables/lgd-ead-ml}
+
+\paragraph{Conversion factor: the reference date decides.} \Cref{tab:lgd-ead-designs} reads level 3, with a known factor of \LE{truth-3}. The fixed-horizon design with the mean aggregator and no treatment recovers it, with a bias of \LE{bias-fixed-horizon-none-mean-3} (half-width \LE{half-fixed-horizon-none-mean-3}) over \LE{ccf-nrep} test replications; the cohort and variable-horizon designs read the factor nearer the default, where less of the undrawn amount remains to be drawn, and are biased low, by \LE{bias-cohort-none-pooled-3} and \LE{bias-variable-horizon-none-pooled-3} respectively with the pooled aggregator of Equation~\eqref{eq:lgd-ead-pooled}; the truth of Equation~\eqref{eq:lgd-ead-truth} is the mean over defaulters, so the mean aggregator is the one that targets it. Censoring is the worst treatment even at the fixed horizon (\LE{bias-fixed-horizon-censor-mean-3}), because it drops the observations outside the unit interval, \LE{ccf-above1} above one and \LE{ccf-below0} below zero among the \LE{ccf-dist-n} defined factors at this level, and so truncates the upper tail. The mean aggregator without treatment is unstable for the nearer designs: its half-width at level 3 is \LE{half-cohort-none-mean-3} for the cohort design, consistent with the instability of a ratio whose denominator, the undrawn amount at the reference date, can be small \citep{lgd-ead:qi2009}. \Cref{tab:lgd-ead-levels} and \cref{fig:lgd-ead-ccf-bias} follow the estimators across the six levels: the untreated fixed-horizon mean stays within \LE{ccf-tol} of the truth at every level, and \LE{ccf-undefined-share} of the defaulters, those fully drawn or over their limit at the reference date, have no defined factor and are excluded from every estimate. The bounded-scale estimate has a half-width of zero at the precision shown because its logit is fitted once on the development replications, so its interval measures only test sampling; its bias grows with the level from \LE{bias-fixed-horizon-bounded-scale-mean-0} to \LE{bias-fixed-horizon-bounded-scale-mean-5} and leaves the tolerance at level 5. The tables do not show how the estimators behave when the true acceleration profile differs from the geometric curve of the generator, which the case assumes.
+
+\input{../tables/lgd-ead-designs}
+\input{../tables/lgd-ead-levels}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/lgd-ead-ccf-bias.pdf}
+\caption{Bias of five conversion-factor estimators against the known factor at each acceleration level of case C09, with the 95\,\% interval over the test replications as error bars; the shaded band is the tolerance, and the known factor of each level is given under its number.}
+\label{fig:lgd-ead-ccf-bias}
+\end{figure}
+
+\paragraph{Exposure at default in currency.} \Cref{tab:lgd-ead-backtest} and \cref{fig:lgd-ead-ead-bands} back-test the eight exposure models at level 3. The untreated fixed-horizon constant and the utilisation-change model reproduce the total (total gaps of \LE{ead-total-gap-ccf-fixed-horizon-none} and \LE{ead-total-gap-utilisation-change}), but the utilisation-change model has a worst band gap of \LE{ead-metric-utilisation-change} and an amber light, so a correct total hides compensating errors between bands. The direct model is red: its total gap is \LE{ead-total-gap-direct-ead} and the gap in its worst band, \LE{ead-worst-band-direct-ead}, is \LE{ead-worst-direct-ead}, because it clips the \LE{direct-clipped-above} development lines whose exposure exceeds the limit and cannot predict above the limit, a gap that is the same \LE{ead-direct-worst-0} at level 0 and at every other level, because the lines over their limit do not draw. The variable-horizon total is over a pooled sample with four observations per defaulter and so is not comparable in amount with the others. The back-test does not show losses: it compares exposure, and a model that passes it can still misstate loss through the loss-given-default side of Section~\ref{sec:m14}.
+
+\input{../tables/lgd-ead-backtest}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/lgd-ead-ead-bands.pdf}
+\caption{Relative gap of the predicted against the realised exposure at default in each of the \LE{ead-bands} utilisation bands at level 3 of case C09, for four exposure models; the dashed and dotted lines are the amber and red thresholds of the back-test on both sides of zero.}
+\label{fig:lgd-ead-ead-bands}
+\end{figure}

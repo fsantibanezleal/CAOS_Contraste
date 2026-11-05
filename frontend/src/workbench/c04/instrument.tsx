@@ -10,7 +10,7 @@ import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { GeneratorsView, MatrixView } from './AgencyModelViews';
 import { MobilityView, SemestersView, TestsView } from './AgencyTestsViews';
-import { ByYearView, DefinitionsView, LifetimeView, PdByGradeView } from './AgencyValidationViews';
+import { AnchoredKView, ByYearView, DefinitionsView, LifetimeView, PdByGradeView } from './AgencyValidationViews';
 import { C04ContextView, C04FindingsView, C04VariantsView, GradeReadout, IntervalReadout, ProjectionReadout } from './C04Common';
 import { FamilyValidationView, GeneratorView } from './FamilyViews';
 import { ImpactView } from './LiveViews';
@@ -219,7 +219,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <ChipGroup
           id="c04-level"
           label={{ en: 'Level', es: 'Nivel' }}
-          options={LEVELS.map((l) => ({ id: String(l), label: { en: `${Math.round(l * 100)}%`, es: `${Math.round(l * 100)}%` } }))}
+          options={LEVELS.map((l) => ({ id: String(l), label: { en: `${Math.round(l * 100)}%`, es: `${Math.round(l * 100)} %` } }))}
           value={String(level)}
           onChange={(id) => setLevel(Number(id))}
         />
@@ -251,6 +251,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         { id: 'by-year', label: { en: 'By year', es: 'Por año' }, content: <ByYearView sel={sel} /> },
         { id: 'definitions', label: { en: 'Definitions', es: 'Definiciones' }, content: <DefinitionsView sel={sel} /> },
         { id: 'lifetime', label: { en: 'Lifetime', es: 'Vida' }, content: <LifetimeView sel={sel} /> },
+        ...(agency.outputs.withdrawal_bounds ? [{ id: 'anchored-k', label: { en: 'Anchored k', es: 'k anclada' }, content: <AnchoredKView sel={sel} /> }] : []),
         { id: 'tests', label: { en: 'Markov tests', es: 'Pruebas de Markov' }, content: <TestsView sel={sel} /> },
         { id: 'semesters', label: { en: 'Semesters', es: 'Semestres' }, content: <SemestersView sel={sel} /> },
       ],

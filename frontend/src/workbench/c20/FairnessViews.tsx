@@ -2,15 +2,34 @@
 // by group) and its Impact view, the share of decisions that flip at a stated cut-off under each shift (decision Q10).
 // The battery is labelled evidence on one model with outcomes, never a compliance statement; the cut-off is a convention.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
-import { useCard } from '../c03/U6Shared';
+import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { LIGHT_TEXT } from '../../lib/policy';
+import { LIGHT_TEXT, LIGHT_TONE } from '../../lib/policy';
+import type { Light } from '../../lib/contract.types';
 import { SgcdNotice } from './C20Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc1, type NamedParam } from './U14Common';
-import { ATTRIBUTE_TEXT, FAIR_TESTS, outputsOf, text, type C20Sel } from './selection';
+import { TallBars, barBox } from './C20Common';
+import { ATTRIBUTE_TEXT, FAIR_TESTS, SHOCK_TEXT, outputsOf, text, type C20Sel } from './selection';
+import { windowName } from '../names';
 import { testName } from './U14Common';
+import { es } from './localise';
 
 /** The battery rows of the document: the gap per test and protected attribute, and the value of each group behind it. */
+/** What the group value of each fairness test is (U16-R3 c20 m9: the equalized-odds column showed one rate without saying which; its gap is
+ * the larger of the gaps of the false and the true positive rates, the true one is under equal opportunity). */
+const GROUP_VALUE: Record<string, BiText> = {
+  'fair.equalized_odds': { en: 'Groups (rows, false positive rate)', es: 'Grupos (filas, tasa de falsos positivos)' },
+  'fair.equal_opportunity': { en: 'Groups (rows, true positive rate)', es: 'Grupos (filas, tasa de verdaderos positivos)' },
+  'fair.calibration_within_groups': { en: 'Groups (rows, expected calibration error)', es: 'Grupos (filas, error de calibración esperado)' },
+  'fair.auc_by_group': { en: 'Groups (rows, AUC)', es: 'Grupos (filas, AUC)' },
+};
+
+/** The fairness-battery bars, each in the tone of its row's light, as the conformal chart draws its windows (U16-R5 c26 m4: red rows
+ * drawn grey). */
+export function batteryBars(rows: Array<{ attribute: string; value: number | null; light: string }>, current: string | null) {
+  return rows.map((r) => ({ id: r.attribute, label: text(ATTRIBUTE_TEXT, r.attribute), value: r.value, tone: LIGHT_TONE[r.light as Light] ?? ('neutral' as const), highlight: r.attribute === current }));
+}
+
 export function FairnessView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -51,7 +70,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
               title={{ en: 'Gap by protected attribute', es: 'Brecha por atributo protegido' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ id: r.attribute, label: text(ATTRIBUTE_TEXT, r.attribute), value: r.value, highlight: r.attribute === focus?.attribute }))}
+              data={batteryBars(rows, focus?.attribute ?? null)}
               axis={{ label: { en: 'Largest difference between groups', es: 'Mayor diferencia entre grupos' }, format: { decimals: 3 } }}
             />
           }
@@ -62,7 +81,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Attribute', es: 'Atributo' }, lang)}</th>
                 <th>{pick({ en: 'Gap', es: 'Brecha' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Groups (rows, value)', es: 'Grupos (filas, valor)' }, lang)}</th>
+                <th className="ct-text">{pick(GROUP_VALUE[test] ?? { en: 'Groups (rows, value)', es: 'Grupos (filas, valor)' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -71,7 +90,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text">{pick(text(ATTRIBUTE_TEXT, r.attribute), lang)}</td>
                   <td data-na={r.value === null ? 'true' : undefined}>{r.value === null ? formatNumber(null, lang) : f3(r.value, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${r.light}`}><span className="ct-light-word">{pick(LIGHT_TEXT[r.light], lang)}</span></td>
-                  <td className="ct-text">{r.groups.map((g) => `${g.group} (${int(g.n, lang)}, ${g.value === null ? formatNumber(null, lang) : f3(g.value, lang)})`).join('; ')}</td>
+                  <td className="ct-text">{r.groups.map((g) => `${es(g.group, lang)} (${int(g.n, lang)}, ${g.value === null ? formatNumber(null, lang) : f3(g.value, lang)})`).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
@@ -84,6 +103,34 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The Impact view: the share of decisions that flip at the stated cut-off under each shift. */
+/** The name of a shift of the decision-flip view: the shipped shocks of the German data and Contraste's own application of each family. */
+export function shiftName(id: string): Bi {
+  // the shifts of the other variants by their words (U16-R3 c20 B1: the flips printed fed-higher-risk-x0.25, noise-0.05, seed-42 and
+  // decision-time-leak-unavailable)
+  let n = /^noise-([\d.]+)$/.exec(id);
+  if (n) return Number(n[1]) === 1 ? { en: 'noise at 1 standard deviation', es: 'ruido de 1 desviación estándar' } : { en: `noise at ${n[1]} standard deviations`, es: `ruido de ${n[1].replace('.', ',')} desviaciones estándar` };
+  if ((n = /^seed-(\d+)$/.exec(id))) return { en: `retraining seed ${n[1]}`, es: `semilla de reentrenamiento ${n[1]}` };
+  if (id === 'decision-time-leak-unavailable') return { en: 'at decision time, without the leak', es: 'en el momento de la decisión, sin la fuga' };
+  if (/^fed-higher-risk-x[\d.]+$/.test(id)) return windowName(id);
+  const m = /^(shipped|applied)-(F\d|numeric-noise)$/.exec(id);
+  if (!m) return windowName(id);
+  // a family of shocks without a code is named by its words (the raw-id scan: applied-numeric-noise)
+  if (m[2] === 'numeric-noise') return m[1] === 'shipped' ? { en: 'Shipped, numeric noise', es: 'Provisto, ruido numérico' } : { en: 'Applied by Contraste, numeric noise', es: 'Aplicado por Contraste, ruido numérico' };
+  // a shock by its code and its words, as every other view names it (U16-R3 c20 B2: "Aplicado por Contraste, F1")
+  const shock = text(SHOCK_TEXT, m[2]);
+  return m[1] === 'shipped' ? { en: `Shipped, ${shock.en}`, es: `Provisto, ${shock.es}` } : { en: `Applied by Contraste, ${shock.en}`, es: `Aplicado por Contraste, ${shock.es}` };
+}
+
+/**
+ * The bars of the decision flips, largest first, so a box that scrolls opens on the extreme (U16-R4 c24 n9), each with the one decimal
+ * of the table and the rail (n10: the chart said 1.11 % where the table says 1.1 %).
+ */
+export function flipBars(rows: Array<{ shift_id: string; flip_share: number }>) {
+  return [...rows]
+    .sort((a, b) => b.flip_share - a.flip_share)
+    .map((r) => ({ id: r.shift_id, label: shiftName(r.shift_id) as BiText, value: r.flip_share, tone: 'warn' as const, format: { percent: true, decimals: 1 } }));
+}
+
 export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -105,18 +152,20 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
       >
         <LabelledOverTable
           head={<Labelled label={d.label} reason={{ en: 'The decision-rate effect at a stated cut-off.', es: 'El efecto en la tasa de decisiones en un corte declarado.' }} />}
-          chartMin={barMin(d.rows.length)}
+          chartMin={barBox(d.rows.length)}
           chart={
             d.rows.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the document carries no shift row.', es: 'No disponible: el documento no trae ninguna fila de cambio.' }, lang)}</p>
             ) : (
+              <TallBars rows={d.rows.length}>
               <BarChart
                 title={{ en: 'Share of decisions that flip', es: 'Parte de las decisiones que cambian' }}
                 height="fill"
                 orientation="horizontal"
-                data={d.rows.map((r) => ({ id: r.shift_id, label: { en: r.shift_id, es: r.shift_id } as BiText, value: r.flip_share, tone: 'warn' as const }))}
+                data={flipBars(d.rows)}
                 axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 1 } }}
               />
+              </TallBars>
             )
           }
         >
@@ -131,7 +180,7 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {d.rows.map((r) => (
                 <tr key={r.shift_id} data-shift={r.shift_id}>
-                  <td className="ct-text">{r.shift_id}</td>
+                  <td className="ct-text">{pick(shiftName(r.shift_id), lang)}</td>
                   <td>{int(r.n_decisions, lang)}</td>
                   <td>{pc1(r.flip_share, lang)}</td>
                 </tr>
@@ -140,7 +189,7 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
           </table>
           <p className="ct-note" data-cutoff={d.cutoff.rule} data-status={d.cutoff.label}>
             {pick({ en: `Cut-off rule (convention): decline ${pc1(d.cutoff.reject_share, 'en')} of the baseline decisions.`, es: `Regla del corte (convención): rechazar ${pc1(d.cutoff.reject_share, 'es')} de las decisiones base.` }, lang)}
-            {param ? ` ${param.basis}` : ''}
+            {param ? ` ${es(param.basis, lang)}` : ''}
           </p>
           <SgcdNotice sel={sel} />
         </LabelledOverTable>

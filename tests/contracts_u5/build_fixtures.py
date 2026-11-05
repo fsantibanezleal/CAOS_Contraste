@@ -246,7 +246,8 @@ def build_c06() -> tuple[dict, dict]:
         },
         "data_status": {
             "primary_source": "sba-7a", "freddie_mac_available": False,
-            "freddie_mac_reason": "fixture: no Freddie Mac registration, the SBA 7(a) public twin carries this variant",
+            "freddie_mac_reason": txt("fixture: no Freddie Mac registration, the SBA 7(a) public twin carries this variant",
+                                      "ejemplo: sin registro de Freddie Mac, el gemelo público de la SBA 7(a) lleva esta variante"),
             "notice": txt("Fixture, not a result. Round numbers for three accounts.",
                           "Ejemplo, no es un resultado. Numeros redondos para tres cuentas."),
         },
@@ -301,7 +302,7 @@ def build_c06() -> tuple[dict, dict]:
         "decile_calibration": {"rung_id": "L1-dth", "rows": decile_rows(cur1)},
         "rung_comparison": [
             {"rung_id": "L0-km", "c_index": None, "integrated_brier": 0.02, "calibration_gap_12m": 0.001,
-             "reason": "fixture: Kaplan-Meier has no covariates, no c-index"},
+             "reason": txt("fixture: Kaplan-Meier has no covariates, no c-index", "ejemplo: Kaplan-Meier no tiene covariables, no hay índice c")},
             {"rung_id": "L1-dth", "c_index": 0.7, "integrated_brier": 0.018, "calibration_gap_12m": 0.0005,
              "reason": None},
             {"rung_id": "L2-cox", "c_index": 0.72, "integrated_brier": 0.017, "calibration_gap_12m": -0.0003,
@@ -412,12 +413,13 @@ def b1_tables() -> list[dict]:
     ccols = ["mortgage-no-arrears", "mortgage-arrears", "no-mortgage-no-arrears", "no-mortgage-arrears"]
     ccells = [{"row": row, "column": c, "pi": pct(v), "pdi": None, "pe": None}
               for row, vals in cons.items() for c, v in zip(ccols, vals)]
-    src = "CMF CNCB Chapter B-1, dossier 03 section "
+    def src(tail: str) -> dict:
+        return txt("CMF CNCB Chapter B-1, dossier 03 section " + tail, "CMF CNCB Capítulo B-1, dossier 03 sección " + tail)
     return [
-        {"table_id": "mortgage-pe", "portfolio": "residential-mortgage", "source": src + "D.5 (3.1.1)", "cells": mcells},
-        {"table_id": "individual-categories", "portfolio": "commercial-individual", "source": src + "D.3 (2.1)",
+        {"table_id": "mortgage-pe", "portfolio": "residential-mortgage", "source": src("D.5 (3.1.1)"), "cells": mcells},
+        {"table_id": "individual-categories", "portfolio": "commercial-individual", "source": src("D.3 (2.1)"),
          "cells": icells},
-        {"table_id": "consumer-pi", "portfolio": "consumer", "source": src + "D.5 (3.1.3)", "cells": ccells},
+        {"table_id": "consumer-pi", "portfolio": "consumer", "source": src("D.5 (3.1.3)"), "cells": ccells},
     ]
 
 
@@ -471,7 +473,7 @@ def build_c07() -> tuple[dict, dict]:
         regime("ifrs9", ("IFRS 9", "IFRS 9"), ifrs, [
             ("stage1", ("Stage 1", "Etapa 1"), 105e9, 800e6), ("stage2", ("Stage 2", "Etapa 2"), 12e9, 1.2e9),
             ("stage3", ("Stage 3", "Etapa 3"), 3e9, 1.0e9)]),
-        regime("bde-annex9", ("BdE Annex 9", "BdE Anexo 9"), bde, [
+        regime("bde-annex9", ("BdE Annex 9", "BdE Anejo 9"), bde, [
             ("normal", ("Normal risk", "Riesgo normal"), 108e9, 900e6),
             ("normal-special-watch", ("Normal, special watch", "Normal en vigilancia especial"), 9e9, 1.17e9),
             ("doubtful", ("Doubtful", "Dudoso"), 3e9, 900e6)]),
@@ -544,7 +546,7 @@ def build_c07() -> tuple[dict, dict]:
         "tests": [test_row("ifrs9.reconciliation_identities", "R3-trilogy")],
         "impact": {"provision_cmf_b1": {"value": tot["cmf-b1"], "unit": "CLP", "label": txt("CMF B-1", "CMF B-1")},
                    "provision_ifrs9": {"value": tot["ifrs9"], "unit": "CLP", "label": txt("IFRS 9", "IFRS 9")},
-                   "provision_bde": {"value": tot["bde-annex9"], "unit": "CLP", "label": txt("BdE Annex 9", "BdE Anexo 9")}},
+                   "provision_bde": {"value": tot["bde-annex9"], "unit": "CLP", "label": txt("BdE Annex 9", "BdE Anejo 9")}},
         "findings": [],
         **envelope_common("synthetic-calibrated"),
     }

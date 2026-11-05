@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Root mean squared error of each rung on the defaults of its own test cohort (SBA 7(a) charge-offs, loss given default proxy); every rung is trained only on the defaults whose charge-off closed before the cohort starts, and the lowest value of each column is in bold.}
+\label{tab:lgd-ead-rmse}
+\begin{tabular}{lrrrrrr}
+\toprule
+Rung & 2003--06 & 2007--08 & 2009--10 & 2011--13 & 2014--19 & 2020--23 \\
+\midrule
+OLS & 0.297 & 0.291 & 0.314 & 0.328 & 0.283 & 0.321 \\
+Fractional logit & 0.297 & 0.290 & 0.311 & 0.328 & 0.285 & 0.318 \\
+Beta regression & 0.300 & 0.294 & 0.314 & 0.330 & 0.285 & 0.321 \\
+Hurdle & 0.297 & 0.290 & 0.311 & 0.328 & 0.285 & 0.318 \\
+Gradient boosting & 0.290 & \textbf{0.283} & \textbf{0.303} & \textbf{0.318} & 0.275 & \textbf{0.311} \\
+Tobit & 0.299 & 0.295 & 0.316 & 0.329 & 0.283 & 0.322 \\
+Random forest & 0.293 & 0.284 & 0.303 & 0.319 & \textbf{0.275} & 0.311 \\
+Neural network & \textbf{0.290} & 0.283 & 0.304 & 0.319 & 0.279 & 0.312 \\
+Test defaults & 21,919 & 25,299 & 50,281 & 33,673 & 36,481 & 13,930 \\
+\bottomrule
+\end{tabular}
+\end{table}

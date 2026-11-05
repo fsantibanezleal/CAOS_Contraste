@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Percent of 1,000 replications flagged as the age of the volatility input of the risk model grows from 2 to 80 days (stale-volatility variant, committed seeds; the 20-day row is the committed variant). Zone is the regulatory zone, Desk the desk back-test limit, CC the Christoffersen conditional coverage, MZ the Mincer--Zarnowitz Wald test with the OLS or HC3 covariance, LB the Ljung--Box test and Sp. the Spearman statistic.}
+\label{tab:lag-ladder}
+\begin{tabular}{rrrrrrrrrr}
+\toprule
+Lag (days) & Zone & Desk & CC 97.5 & MZ OLS & LB sq. & MZ HC3 & Abs. Sp. & Roll Sp. & Union \\
+\midrule
+2 & 0.0 & 0.0 & 1.8 & 5.5 & 9.0 & 0.7 & 1.4 & 5.7 & 2.9 \\
+5 & 0.0 & 0.0 & 2.8 & 15.1 & 26.1 & 2.4 & 4.5 & 57.6 & 37.3 \\
+10 & 0.0 & 0.0 & 5.4 & 25.6 & 49.2 & 6.0 & 25.6 & 97.5 & 94.0 \\
+20 & 0.0 & 0.5 & 12.7 & 41.0 & 71.9 & 14.2 & 76.7 & 99.9 & 99.9 \\
+40 & 0.2 & 3.9 & 27.1 & 54.6 & 82.6 & 28.7 & 94.1 & 100.0 & 100.0 \\
+80 & 5.1 & 13.5 & 40.0 & 67.6 & 86.8 & 45.2 & 96.2 & 100.0 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table}

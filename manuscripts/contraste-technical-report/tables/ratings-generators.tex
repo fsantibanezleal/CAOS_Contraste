@@ -1,0 +1,16 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Embedding diagnostics of the pooled annual matrix of each agency and the L1 distance between the matrix and the exponential of each generator: the convergence number $S$ of the logarithm series, the zero cells whose state is reachable through other states, and the distance for the EM generator and the diagonal, weighted and Jarrow--Lando--Turnbull (JLT) repairs.}
+\label{tab:ratings-generators}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Agency & $S$ & Unreachable zero cells & EM & Diagonal & Weighted & JLT & EM iterations \\
+\midrule
+S\&P & 0.121 & 6 & 0.0106 & 0.0100 & 0.0098 & 0.0989 & 116 \\
+Moody's & 0.073 & 6 & 0.0020 & 0.0014 & 0.0013 & 0.0758 & 115 \\
+Fitch & 0.103 & 15 & 0.0024 & 0.0018 & 0.0018 & 0.0768 & 115 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

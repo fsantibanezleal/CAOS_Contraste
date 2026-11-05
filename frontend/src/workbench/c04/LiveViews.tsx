@@ -19,7 +19,6 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { useMedia } from '../../lib/useMedia';
-import { Ref } from '../../content/bi';
 import { yearRanges } from '../../content/cases/C04Results';
 import { emptyDefaultYears } from './AgencyValidationViews';
 import { PublishedImpactView, RHO_GRID } from './PublishedViews';
@@ -50,6 +49,8 @@ import {
   type Estimator,
   type GradeIntervals,
   type StartPortfolio,
+  attributionIn,
+  CORRELATION_PICKED,
 } from './selection';
 
 const LIVE = 'live' as const;
@@ -102,7 +103,7 @@ export function sourceNote(sel: C04Sel, pd = false): Both {
   const att = sel.data.manifest.source_details?.['esma-cerep']?.attribution;
   return {
     en: `Known truth: the EM generator of S&P's pooled CEREP counts${att ? ` (${att})` : ''}.`,
-    es: `Verdad conocida: el generador EM de los conteos agrupados de S&P en CEREP${att ? ` (atribución: "${att}")` : ''}.`,
+    es: `Verdad conocida: el generador EM de los conteos agrupados de S&P en CEREP${att ? ` (atribución: "${attributionIn(att, 'es')}")` : ''}.`,
   };
 }
 
@@ -128,7 +129,7 @@ export function emptyColumnNote(sel: C04Sel): Both {
 function ReasonTable({ reason }: { reason: BiText }) {
   const lang = useShellLang();
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table" data-table="reason">
         <tbody>
           <tr>
@@ -345,7 +346,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
           dataKey={stateKey}
           note={{
             en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); ${marked.en}.${empty.en} ${src.en}`,
-            es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
+            es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Discontinua: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
           }}
         >
           <UPlotChart
@@ -387,7 +388,7 @@ function CompositionCard({ sel, projection, note }: { sel: C04Sel; projection: P
     >
       <UPlotChart
         height="fill"
-        x={{ values: steps, label: { en: 'Years from the start', es: 'Años desde el inicio' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
+        x={{ values: steps, label: { en: 'Year from the start', es: 'Año desde el inicio' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
         y={{ label: { en: 'Share of the balance', es: 'Fracción del saldo' }, format: { percent: true, decimals: 0 } }}
         series={drawable(series)}
       />
@@ -513,7 +514,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
       <ViewsRow>
         <PlotCard fill title={title} lane={LIVE} provenance={prov} dataKey={stateKey} note={note}>
           {agency && defs.length ? (
-            <div className="ct-scroll">
+            <div className="ct-scroll" data-caos-flow="">
               <table className="caos-table" data-table="counts-by-definition">
                 <thead>
                   <tr>
@@ -612,7 +613,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
             es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par; los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="intervals">
               <thead>
                 <tr>
@@ -620,7 +621,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                   <th>D</th>
                   <th>N</th>
                   <th>
-                    N† <Ref>(3.4)</Ref>
+                    {pick({ en: 'Effective N (N†)', es: 'N efectivo (N†)' }, lang)}
                   </th>
                   <th>{pick({ en: 'Wald width', es: 'Ancho Wald' }, lang)}</th>
                   <th>{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
@@ -668,7 +669,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                 x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
                 y={{ label: { en: 'Interval width (log scale)', es: 'Ancho del intervalo (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
                 series={widths}
-                marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
+                marks={[{ x: sel.rho, label: CORRELATION_PICKED }]}
               />
             ) : (
               <ReasonTable reason={{ en: `${G} has no counts under this definition.`, es: `${G} no tiene conteos con esta definición.` }} />
@@ -702,6 +703,12 @@ const AXIS_NAME: Record<string, Both> = {
 };
 const isGenerator = (key: string) => key in ESTIMATOR_COLOR && !(key in DEFINITION_COLOR);
 
+/** A capital row's entry in the key: its number and axis name, then its label where the label says more ("1 D2 rated defaulters",
+ * "9 Truth: The true generator"), never the name twice ("5 EM: EM"; U16-R4 c05 n5, c06 n3). */
+export function keyLabel(n: number, short: string, label: string): string {
+  return label.toLowerCase().startsWith(short.toLowerCase()) ? `${n} ${label}` : `${n} ${short}: ${label}`;
+}
+
 /** The colour of a capital row: its definition's or its generator's, the truth's on a family. Some definitions and
  * generators share a colour (D2 and EM, D3 and the diagonal adjustment); their points are numbered and their lines
  * dashed apart. */
@@ -733,7 +740,7 @@ function LgdKnob({ sel }: { sel: C04Sel }) {
       label={{ en: 'LGD', es: 'LGD' }}
       hint={{
         en: `Loss given default of every exposure; ${formatNumber(0.45, 'en', { percent: true, decimals: 0 })} is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).`,
-        es: `Pérdida dado el incumplimiento de toda exposición; ${formatNumber(0.45, 'es', { percent: true, decimals: 0 })} es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).`,
+        es: `Pérdida dado el incumplimiento de toda exposición; ${formatNumber(0.45, 'es', { percent: true, decimals: 0 })} es la LGD F-IRB preferente no garantizada de instituciones financieras (CRE32.6).`,
       }}
       value={sel.lgd}
       min={0.1}
@@ -776,7 +783,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const x = padded(drawnRows.length);
   // one point per drawn row at its position, numbered as on the axis (two pairs of rows share a colour)
   const series: ChartSeries[] = drawnRows.map((r, i) => ({
-    label: { en: `${i + 1} ${axisName(r, 'en')}: ${pick(r.label, 'en')}`, es: `${i + 1} ${axisName(r, 'es')}: ${pick(r.label, 'es')}` },
+    label: { en: keyLabel(i + 1, axisName(r, 'en'), pick(r.label, 'en')), es: keyLabel(i + 1, axisName(r, 'es'), pick(r.label, 'es')) },
     values: drawnRows.map((_, j) => (j === i ? r.result?.average ?? null : null)),
     color: rowColor(r.key),
     mode: 'points',
@@ -784,8 +791,10 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   series.push({
     label: { en: `${GRADES[g]}'s own risk weight`, es: `Ponderador propio de ${GRADES[g]}` },
     values: drawnRows.map((r) => onLog(r.result?.riskWeights[g])),
-    color: '--color-fg',
+    // not the colour of the 'weighted' generator (--color-fg): one colour never carries two meanings in a chart (U16-R2 b02 m8)
+    color: '--color-fg-faint',
     mode: 'points',
+    size: 13,
   });
   const chartSeries = drawable(series).map(pad);
   // the tall screen's second drawing: every drawn row's risk weight grade by grade (generators dashed), and the chosen
@@ -859,7 +868,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             es: `Fracción de la EAD con LGD ${lgd.es}: la PD y el ponderador del grado elegido con cada definición (su promedio de largo plazo, párrafo 84 de EBA/GL/2017/16) y generador, junto al promedio de la cartera; ${floor.es}.${missingText('es')} ${peakText.es} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <CapitalTable rows={rows} grade={g} />
           </div>
         </PlotCard>
@@ -872,7 +881,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             dataKey={stateKey}
             note={{
               en: `Each definition's and generator's (dashed) risk weight grade by grade at LGD ${lgd.en}, log scale: where the lines part, the definition decides the capital.${spread ? ` ${GRADES[g]} runs from ${pctd('en', spread.lo.value)} (${pick(spread.lo.label, 'en')}) to ${pctd('en', spread.hi.value)} (${pick(spread.hi.label, 'en')}).` : ''} Marked: the chosen grade. ${src.en}`,
-              es: `El ponderador de cada definición y generador (segmentados) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido. ${src.es}`,
+              es: `El ponderador de cada definición y generador (discontinuos) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido. ${src.es}`,
             }}
           >
             {byGrade.length ? (
@@ -973,7 +982,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
         actions={<LgdKnob sel={sel} />}
         note={{
           en: `The IRB risk weight (Basel III final, corporate, CRE31.5; maturity 2.5 years, CRE32.44) per unit of EAD at the knob's LGD, of each grade at the generator's true one-year PD, the only PD a known truth has; dashed, the average over the design's obligors. Log scale; marked: the chosen grade. ${src.en}`,
-          es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; segmentada, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
+          es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; discontinua, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
         }}
       >
         {series.length ? (
@@ -1000,7 +1009,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
             es: `Fracción de la EAD con LGD ${lgd.es}; los deudores del diseño (${counts('es', obligors)}, de AAA a CCC-C) ponderan el promedio; ${floor.es}. ${peakText.es} ${src.es}`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="capital">
               <thead>
                 <tr>

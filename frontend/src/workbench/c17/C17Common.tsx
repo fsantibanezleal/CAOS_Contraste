@@ -3,6 +3,7 @@
 // context states what the case rests on: a synthetic bank with a known truth, the BCBS 2008 targets labelled
 // derived-only with their source, and the infinite-mean flag of a tail index of 1 or more.
 import { BarChart, Callout, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import type { CSSProperties } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
@@ -13,6 +14,11 @@ import {
   AGGREGATION_TEXT, STATUS_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, fitOf, outputsOf, rungName, scenarioOf, stabilityAt, text, whole,
   type C17Outputs, type C17Sel,
 } from './selection';
+import { es } from './localise';
+
+/** The columns of a definition list of the Context: the label column fits its labels up to 38 % of the card, so at 390 a value is not
+ * squeezed to a word a line (U16-R5 c23 m10: the labels took about 65 % of the card). */
+const DEFS_STYLE: CSSProperties = { gridTemplateColumns: 'fit-content(min(14rem, 38%)) minmax(0, 1fr)' };
 
 const na = (lang: 'en' | 'es') => formatNumber(null, lang);
 const NA_BI = (): Bi => ({ en: formatNumber(null, 'en'), es: formatNumber(null, 'es') });
@@ -76,6 +82,8 @@ export function C17VariantsTable({ variants, sel, onPick, current }: { variants:
               <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
               <th>{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
+              {/* how many of the histories give a capital at all: the median and spread are over these (R2b c18 M-2, V17-3) */}
+              <th>{pick({ en: 'Histories with a capital', es: 'Historias con capital' }, lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -90,6 +98,7 @@ export function C17VariantsTable({ variants, sel, onPick, current }: { variants:
                 <td>{r.summary ? formatNumber(r.summary.ratio_to_truth.median, lang, { digits: 3 }) : na(lang)}</td>
                 <td>{r.summary ? formatNumber(r.summary.iqr_over_truth, lang, { percent: true, decimals: 2 }) : na(lang)}</td>
                 <td className="ct-wide-only">{r.summary ? formatNumber(r.summary.share_underestimating, lang, { percent: true, decimals: 2 }) : na(lang)}</td>
+                <td data-n-defined={r.summary?.n_defined}>{r.summary ? formatNumber(r.summary.n_defined, lang, { decimals: 0 }) : na(lang)}</td>
               </tr>
             ))}
           </tbody>
@@ -141,20 +150,20 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
         <p>
           <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
         </p>
-        <dl className="ct-defs" data-table="c17-truth" data-infinite-mean={String(o.infinite_mean)}>
+        <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-truth" data-infinite-mean={String(o.infinite_mean)}>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
           <dd>{pick({ en: 'Synthetic, with a known truth', es: 'Sintético, con verdad conocida' }, lang)}</dd>
           <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-          <dd>{pick({ en: 'the BCBS 2008 Loss Data Collection Exercise', es: 'el Ejercicio de Recolección de Datos de Pérdida 2008 del BCBS' }, lang)}</dd>
+          <dd>{pick({ en: 'the BCBS 2008 Loss Data Collection Exercise', es: 'el Ejercicio de Recolección de Datos de Pérdidas 2008 del BCBS' }, lang)}</dd>
           <dt>{pick({ en: 'Frequency', es: 'Frecuencia' }, lang)}</dt>
           <dd>{pick({ en: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'en', { digits: 4 })} losses per year of ${whole(t.frequency.counted_above_eur, 'en')} EUR or more`, es: `Poisson, ${formatNumber(t.frequency.lambda_per_year, 'es', { digits: 4 })} pérdidas por año de ${whole(t.frequency.counted_above_eur, 'es')} EUR o más` }, lang)}</dd>
           <dt>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</dt>
           <dd>{pick({ en: `generalised Pareto from ${whole(t.severity.location_eur, 'en')} EUR, scale ${whole(t.severity.scale_eur, 'en')} EUR, tail index ${formatNumber(t.severity.tail_index, 'en', { digits: 3 })}`, es: `Pareto generalizada desde ${whole(t.severity.location_eur, 'es')} EUR, escala ${whole(t.severity.scale_eur, 'es')} EUR, índice de cola ${formatNumber(t.severity.tail_index, 'es', { digits: 3 })}` }, lang)}</dd>
-          <dt>{pick({ en: 'True 99.9% quantile of the annual loss', es: 'Cuantil verdadero 99,9% de la pérdida anual' }, lang)}</dt>
+          <dt>{pick({ en: 'True 99.9% quantile of the annual loss', es: 'Cuantil verdadero 99,9 % de la pérdida anual' }, lang)}</dt>
           <dd data-quantile={q.value_eur}>{pick({ en: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).en}, checked by ${whole(q.mc_check.n_years, 'en')} simulated years)`, es: `${eur(q.value_eur)} (${text(AGGREGATION_TEXT, q.method).es}, verificado con ${whole(q.mc_check.n_years, 'es')} años simulados)` }, lang)}</dd>
           <dt>{pick({ en: 'True annual mean', es: 'Media anual verdadera' }, lang)}</dt>
           <dd data-mean={t.annual_loss_mean.value_eur === null ? 'not-available' : 'available'}>
-            {t.annual_loss_mean.value_eur === null ? `${na(lang)} (${t.annual_loss_mean.reason ?? ''})` : eur(t.annual_loss_mean.value_eur)}
+            {t.annual_loss_mean.value_eur === null ? `${na(lang)} (${es(t.annual_loss_mean.reason, lang)})` : eur(t.annual_loss_mean.value_eur)}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(t.notice, lang)}</dd>
@@ -171,12 +180,12 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
         {...card}
         note={{ en: 'The generator\'s scale is fitted to four published percentiles. They are derived statistics of a regulator\'s survey, labelled as such, and no table of the survey is reproduced.', es: 'La escala del generador se ajusta a cuatro percentiles publicados. Son estadísticas derivadas de una encuesta de un regulador, rotuladas como tales, y no se reproduce ninguna tabla de la encuesta.' }}
       >
-        <dl className="ct-defs" data-table="c17-calibration" data-label={tg.label}>
+        <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-calibration" data-label={tg.label}>
           <dt>{pick({ en: 'Licence class', es: 'Clase de licencia' }, lang)}</dt>
           <dd data-label={tg.label}>{pick({ en: 'Derived only', es: 'Solo derivado' }, lang)}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
           <dd>
-            <a href={tg.source.url} target="_blank" rel="noreferrer">{tg.source.title}</a>
+            <a href={tg.source.url} target="_blank" rel="noreferrer">{es(tg.source.title, lang)}</a>
             {` (${tg.source.date}, ${pick({ en: 'table', es: 'tabla' }, lang)} ${tg.source.table})`}
           </dd>
           <dt>{pick({ en: 'Losses counted from', es: 'Pérdidas contadas desde' }, lang)}</dt>
@@ -211,7 +220,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
           <Callout variant="honest" title={pick({ en: 'Synthetic, not a real bank', es: 'Sintético, no un banco real' }, lang)}>
             {pick(bank.notice, lang)}
           </Callout>
-          <dl className="ct-defs" data-table="c17-bank">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c17-bank">
             <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
             <dd>{pick(bank.label, lang)}</dd>
             <dt>{pick({ en: 'Business indicator', es: 'Indicador de negocio' }, lang)}</dt>
@@ -229,6 +238,7 @@ export function C17ContextView({ sel }: { sel: C17Sel | null }) {
 export function YearsReadout({ sel }: { sel: C17Sel | null }) {
   const o = outputsOf(sel);
   const cell = o && sel ? cellOf(o, sel.years, sel.threshold) : null;
+  const defined = cell && sel ? capitalOf(cell, sel.rung).summary?.n_defined ?? null : null;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -236,6 +246,8 @@ export function YearsReadout({ sel }: { sel: C17Sel | null }) {
       items={[
         { label: { en: 'Histories', es: 'Historias' }, value: cell?.replications.n_replications ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Independent simulated loss histories in the cell, each with its own seed.', es: 'Historias de pérdidas simuladas e independientes en la celda, cada una con su semilla.' } },
         { label: { en: 'Failed fits', es: 'Ajustes fallidos' }, value: cell?.replications.n_failed ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Histories whose fit did not converge: counted, never dropped silently.', es: 'Historias cuyo ajuste no convergió: se cuentan, no se descartan en silencio.' } },
+        // the histories with a capital for the rung in focus: the count the median is taken over (R2b c18 M-2, the rail)
+        { label: { en: 'With a capital', es: 'Con capital' }, value: defined, unitless: true, format: { decimals: 0 }, hint: { en: 'Histories whose fit gives a capital for the rung in focus: the median and the percentiles are taken over them.', es: 'Historias cuyo ajuste da un capital para el peldaño en foco: la mediana y los percentiles se toman sobre ellas.' } },
         { label: { en: 'Losses per history', es: 'Pérdidas por historia' }, value: cell?.replications.n_losses_median ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Median number of recorded losses in a history.', es: 'Número mediano de pérdidas registradas en una historia.' } },
       ]}
     />
@@ -274,7 +286,8 @@ export function RungReadout({ sel }: { sel: C17Sel | null }) {
       title={{ en: 'This method in this cell', es: 'Este método en esta celda' }}
       items={[
         { label: { en: 'Aggregation', es: 'Agregación' }, text: summary ? text(AGGREGATION_TEXT, summary.aggregation) : NA_BI(), hint: { en: 'How the annual loss distribution of the method is computed.', es: 'Cómo se calcula la distribución de pérdida anual del método.' } },
-        { label: { en: 'Status', es: 'Estado' }, text: status ? text(STATUS_TEXT, status) : NA_BI(), hint: { en: 'UNVERIFIED marks a form not yet checked against its primary text.', es: 'UNVERIFIED marca una forma que aún no se verificó contra su texto primario.' } },
+        { label: { en: 'Status', es: 'Estado' }, text: status ? text(STATUS_TEXT, status) : NA_BI(), hint: { en: 'UNVERIFIED marks a form not yet checked against its primary text; secondary source marks one taken from a text that cites it, the primary text unread.', es: 'SIN VERIFICAR marca una forma que aún no se verificó contra su texto primario; fuente secundaria marca una tomada de un texto que la cita, con el texto primario sin leer.' } },
+        { label: { en: 'Histories defined', es: 'Historias definidas' }, value: summary?.n_defined ?? null, unitless: true, format: { decimals: 0 }, hint: summary ? { en: 'The histories the median rests on: the method is undefined for the others (a failed fit, or a threshold without enough losses).', es: 'Las historias en que se apoya la mediana: el método no está definido para las demás (un ajuste fallido, o un umbral sin pérdidas suficientes).' } : hintNa },
         { label: { en: 'Median capital', es: 'Capital mediano' }, ...amount, hint: summary ? { en: 'The 99.9 percent capital, median over the histories.', es: 'El capital al 99,9 por ciento, mediana sobre las historias.' } : hintNa },
         { label: { en: 'Median over the truth', es: 'Mediana sobre la verdad' }, value: summary?.ratio_to_truth.median ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'The capital divided by the true quantile: 1 is exact.', es: 'El capital dividido por el cuantil verdadero: 1 es exacto.' } },
         { label: { en: 'Histories below the truth', es: 'Historias bajo la verdad' }, value: summary?.share_underestimating ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Share of the histories whose capital is under the true quantile.', es: 'Proporción de las historias cuyo capital está bajo el cuantil verdadero.' } },

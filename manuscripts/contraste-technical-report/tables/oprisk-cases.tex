@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The four variants of case C17: the tail index of the severity, the Poisson rate of losses at or above the generator floor of EUR 10,000, the fitted GPD scale above the floor, the true 99.9 percent annual loss quantile and mean of the compound loss of the generator, and the largest absolute error of the log excess quantiles against the four loss-collection percentiles. The mean does not exist at $\xi=1.1$.}
+\label{tab:op-cases}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{rrrrrr}
+\toprule
+Tail index $\xi$ & $\lambda$ (per year) & Scale $\beta$ (EUR) & True $q_{0.999}$ (EUR m) & True mean (EUR m) & Calibration error \\
+\midrule
+0.6 & 59.2 & 24,382 & 33.9 & 4.2 & 0.447 \\
+0.8 & 65.3 & 17,744 & 163.5 & 6.4 & 0.215 \\
+0.96 & 73.4 & 12,824 & 634.9 & 24.3 & 0.038 \\
+1.1 & 85.7 & 8,797 & 2,148.6 & none & 0.160 \\
+\bottomrule
+\end{tabular}}
+\end{table}

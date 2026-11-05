@@ -59,6 +59,13 @@ EXPECT: dict[str, tuple[float, float]] = {
 _T0 = time.perf_counter()
 
 
+
+def report_source(fd: dict) -> dict[str, str]:
+    """The provenance of the FDIC financials file a call report is read from, in both languages (R3 c15 B2: the Spanish Context
+    printed "file" and "retrieved"); the URL, the file name, the hash and the date are the same in both."""
+    url, name, sha, day = fd["url"], fd["name"], fd["sha256"][:12], fd["retrieved"]
+    return {"en": f"{url} (file {name}, sha256 {sha}, retrieved {day})", "es": f"{url} (archivo {name}, sha256 {sha}, obtenido el {day})"}
+
 def _log(msg: str) -> None:
     print(f"[C14 {time.perf_counter() - _T0:7.1f}s] {msg}", file=sys.stderr, flush=True)
 
@@ -145,7 +152,7 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
         reports = fdic.up_to(reports, drop_after)
         curves = {d: c for d, c in curves.items() if d <= drop_after}
     fd = prov[fetch.FDIC_DIR][0]
-    raw_urls = {"fdic": f"{fd['url']} (file {fd['name']}, sha256 {fd['sha256'][:12]}, retrieved {fd['retrieved']})"}
+    raw_urls = {"fdic": report_source(fd)}
     manifest_in = {"sources": {
         "fdic-bankfind": {"files": [{"name": r["name"], "sha256": r["sha256"]} for r in prov[fetch.FDIC_DIR]]},
         "treasury-par-curve": {"files": [{"name": r["name"], "sha256": r["sha256"]} for r in prov[fetch.TREASURY_DIR]]}}}
@@ -239,16 +246,19 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_paths: int 
         rel = f"{CASE_ID}/{vid}.json"
         e = _check_and_write(root, rel, doc)
         sums.append(_sum(root, rel))
-        q = doc["outputs"]["quarter"]
+        q = vt.quarter_text(doc["outputs"]["valuation_date"])
         entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated",
-                        "title": t(f"Valuation date {doc['outputs']['valuation_date']} ({q})", f"Fecha de valoración {doc['outputs']['valuation_date']} ({q})"),
-                        "short_title": t(q, q), "regime": regime, "models_ref": MODELS_REL, **e})
+                        "title": vt.variant_title(doc["outputs"]["valuation_date"]),
+                        "short_title": t(q["en"], q["es"]), "regime": regime, "models_ref": MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
     write_json(root / RAW_REL, built.raw_sources)
     sums.append(_sum(root, RAW_REL))
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category={"en": "Balance sheet: IRRBB and liquidity", "es": "Balance: IRRBB y liquidez"},
         question=_question(), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT,
         contract=built.contract[DEFAULT_VARIANT], expect=ranges, riskvalidation_version=engine_version(),

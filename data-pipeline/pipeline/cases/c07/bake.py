@@ -16,6 +16,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import documents as docs
@@ -78,7 +79,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         lineage = lin.build(CASE_ID, sources=[], truth_status="synthetic-calibrated", seed=seed, code_version=__version__,
                             riskvalidation_version=rv, generators=(docs.GENERATOR,))
         variants[sid] = build_artifact(
-            case_id=CASE_ID, variant_id=sid, model=docs.model_summaries(out, rv, scen), outputs=out, tests=rows, impact=docs.impact(out),
+            case_id=CASE_ID, variant_id=sid, model=docs.model_summaries(out, rv, scen), outputs=out, tests=with_reference_text(rows), impact=docs.impact(out),
             findings=docs.findings(out, rows, {"ifrs9": "IFRS9-ecl"}), lineage=lineage, lane={"lane": "precompute", "reasons": []})
     models_doc = _models_artifact(models, seed, rv)
     values = _values(models, outs, rows_by)
@@ -115,11 +116,11 @@ def _values(models: dict[str, Any], outs: dict[str, dict[str, Any]], rows_by: di
 
 _REGIME_TEXT = {
     "base": ("Base: the three regimes on the reporting-date state of the book", "Base: los tres regímenes sobre el estado de la cartera a la fecha de reporte"),
-    "recession": ("Recession: factor -1.0, house prices -5%", "Recesión: factor -1,0, precios de viviendas -5 %"),
-    "consumer-arrears-shock": ("Consumer arrears shock: 3% of consumer accounts in default", "Shock de mora de consumo: 3 % de las cuentas de consumo en incumplimiento"),
-    "house-price-fall": ("House price fall of 15%: collateral values", "Caída de 15 % de los precios de viviendas: valores de garantías"),
+    "recession": ("Recession: factor -1.0, house prices -5%", "Recesión: factor -1,0, precios de viviendas -5 %"),
+    "consumer-arrears-shock": ("Consumer arrears shock: 3% of consumer accounts in default", "Choque de mora de consumo: 3 % de las cuentas de consumo en incumplimiento"),
+    "house-price-fall": ("House price fall of 15%: collateral values", "Caída de 15 % de los precios de viviendas: valores de garantías"),
     "uf-inflation-spike": ("UF inflation 4 points above base", "Inflación UF 4 puntos sobre el base"),
-    "combined-severe": ("Combined severe: factor -2.0, house prices -25%", "Severo combinado: factor -2,0, precios de viviendas -25 %"),
+    "combined-severe": ("Combined severe: factor -2.0, house prices -25%", "Severo combinado: factor -2,0, precios de viviendas -25 %"),
 }
 
 
@@ -150,7 +151,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | None, scale: float, title
                         "regime": docs.T(en, es_), "truth_status": "synthetic-calibrated", "models_ref": MODELS_REL, **e})
     (Path(paths.root) / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built["values"])
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=title, category={"en": "Provisions", "es": "Provisiones"}, question=question, sources=[], seed=seed,
         variants=entries, default_variant="base", contract={}, expect=ranges, riskvalidation_version=docs.rv_version(), source_details={})
     write_json(paths.manifests / f"{CASE_ID}.json", manifest)

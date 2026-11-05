@@ -2,16 +2,36 @@
 // they carry no firm identifier and no date and the overlap of firms across them is unknown (UNVERIFIED, 08 l.855-856),
 // so the cross-file transfer, the term structure read from the five event rates and the ECL effect of the horizon PDs are
 // each labelled exploratory, with the reason, wherever they are drawn. A null field says "not available" with its reason.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import type { CSSProperties } from 'react';
+import { loadAllVariants, useArtifact } from '../../api/artifacts';
+import type { VariantArtifact } from '../../lib/contract.types';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc } from '../c20/U14Common';
-import { outputsOf, rungFor, rungName, type C02Sel } from './selection';
+import { bareModel, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
+
+/** The transfer drawing's least height: its bars scroll in their box under the matrix. */
+const TRANSFER_MIN = '12rem';
 
 /** The display band of a transfer AUC (a shade, not a threshold): below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above. */
 const band = (auc: number): 1 | 2 | 3 | 4 => (auc < 0.6 ? 1 : auc < 0.7 ? 2 : auc < 0.8 ? 3 : 4);
+
+const yearsText = (n: number): { en: string; es: string } => ({ en: n === 1 ? '1 year' : `${n} years`, es: n === 1 ? '1 año' : `${n} años` });
+
+/** The bars of the transfer cells of one model, in fitted then scored order whatever file is loaded (R3 c03 m13), named in years in
+ * both languages (m14: "Ajustado en 1a" read as "primera"). */
+export function transferBars(cells: C02Outputs['transfer']['cells']): Array<{ id: string; label: { en: string; es: string }; value: number }> {
+  return [...cells]
+    .sort((a, b) => a.fitted_on_years - b.fitted_on_years || a.scored_on_years - b.scored_on_years)
+    .map((c) => {
+      const fit = yearsText(c.fitted_on_years);
+      const scored = yearsText(c.scored_on_years);
+      return { id: `${c.fitted_on_years}-${c.scored_on_years}`, label: { en: `Fitted on ${fit.en}, scored on ${scored.en}`, es: `Ajustado en ${fit.es}, puntuado en ${scored.es}` }, value: c.auc };
+    });
+}
 
 /** The exploratory transfer heat map: a rung fitted on one horizon file and scored on the holdout of another. */
 export function TransferView({ sel }: { sel: C02Sel | null }) {
@@ -19,8 +39,20 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
   const focus = rungFor(sel);
+  // each horizon document carries only the row of the file it was fitted on (the other four rows are in the other four documents),
+  // so the matrix reads the five files; until they load it shows the row of the loaded one
+  const manifest = sel?.data.manifest;
+  const all = useArtifact<VariantArtifact[]>((s) => (manifest ? loadAllVariants(manifest, s) : new Promise(() => undefined)), [manifest?.case_id]);
   if (!sel || !o || !focus) return <Pending />;
-  const cells = o.transfer.cells.filter((c) => c.rung === focus.rung);
+  const others = all.state === 'ready' ? (all.data as unknown as Array<VariantArtifact<C02Outputs>>).flatMap((v) => (v.outputs.kind === 'horizon' ? v.outputs.transfer.cells : [])) : [];
+  const seen = new Set<string>();
+  // the cell of a model, not of a rung code: the code P4 names both LightGBM and XGBoost
+  const cells = [...o.transfer.cells, ...others].filter((c) => {
+    const key = `${bareModel(c.model_id)}|${c.fitted_on_years}|${c.scored_on_years}`;
+    if (bareModel(c.model_id) !== bareModel(focus.model_id) || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   if (cells.length === 0) {
     return (
       <UnavailableCard
@@ -43,51 +75,58 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
         title={{ en: `Transfer between horizons: ${rungName(sel, focus.model_id).en}`, es: `Transferencia entre horizontes: ${rungName(sel, focus.model_id).es}` }}
         {...card}
         note={{
-          en: 'AUC of the rung fitted on the file of the row and scored on the holdout of the file of the column. The shade is a display band (below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above), not a threshold. A cell the document does not carry stays empty.',
-          es: 'AUC del peldaño ajustado en el archivo de la fila y puntuado en la muestra reservada del archivo de la columna. El tono es una banda de visualización (bajo 0,6, de 0,6 a 0,7, de 0,7 a 0,8, de 0,8 y más), no un umbral. Una celda que el documento no trae queda vacía.',
+          en: 'AUC of the rung fitted on the file of the row and scored on the holdout of the file of the column. The shade is a display band (below 0.6, 0.6 to 0.7, 0.7 to 0.8, 0.8 and above), not a threshold. A cell no document carries stays empty. The row of each file comes from the document fitted on it.',
+          es: 'AUC del peldaño ajustado en el archivo de la fila y puntuado en la muestra reservada del archivo de la columna. El tono es una banda de visualización (bajo 0,6, de 0,6 a 0,7, de 0,7 a 0,8, de 0,8 y más), no un umbral. Una celda que ningún documento trae queda vacía. La fila de cada archivo viene del documento ajustado en él.',
         }}
       >
-        <LabelledOverTable
-          head={<Labelled label="exploratory" reason={o.transfer.reason} />}
-          chartMin={barMin(cells.length)}
-          chart={
-            <BarChart
-              title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
-              height="fill"
-              orientation="horizontal"
-              data={cells.map((c) => ({ id: `${c.fitted_on_years}-${c.scored_on_years}`, label: { en: `Fitted on ${c.fitted_on_years}y, scored on ${c.scored_on_years}y`, es: `Ajustado en ${c.fitted_on_years}a, puntuado en ${c.scored_on_years}a` } as BiText, value: c.auc }))}
-              axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 2 }, range: [0, 1] }}
-            />
-          }
-        >
-          <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Fitted on, scored on', es: 'Ajustado en, puntuado en' }, lang)}</th>
-                {years.map((y) => (
-                  <th key={y}>{pick({ en: `${y}-year file`, es: y === 1 ? 'archivo de 1 año' : `archivo de ${y} años` }, lang)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {years.map((fit) => (
-                <tr key={fit}>
-                  <td className="ct-text">{pick({ en: `${fit}-year file`, es: fit === 1 ? 'archivo de 1 año' : `archivo de ${fit} años` }, lang)}</td>
-                  {years.map((scored) => {
-                    const c = at(fit, scored);
-                    return c ? (
-                      <td key={scored} className="ct-heat" data-heat={band(c.auc)} data-fitted={c.fitted_on_years} data-scored={c.scored_on_years} data-n={c.n} data-events={c.events} title={pick({ en: `AUC on ${int(c.n, 'en')} firms, ${int(c.events, 'en')} bankruptcies`, es: `AUC sobre ${int(c.n, 'es')} empresas, ${int(c.events, 'es')} quiebras` }, lang)}>
-                        {f3(c.auc, lang)}
-                      </td>
-                    ) : (
-                      <td key={scored} data-na="true">{na}</td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </LabelledOverTable>
+        {/* the 5 x 5 matrix first and the 25 bars under it in a box of bounded height, where the bars scroll with the cue (R3 c03 M1: at
+            1280 the bars' least height of 49 rem pushed the matrix, 10 bars and the axis below the card's clip; R5 c03 M2: the drawing
+            grown to its bars' height in the stack overflowed the card body, which clipped 14 bars and the axis with no cue) */}
+        <div className="ct-stack" data-caos-flow="">
+              <Labelled label="exploratory" reason={o.transfer.reason} />
+              <div data-block="transfer-matrix">
+              <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
+                <thead>
+                  <tr>
+                    <th className="ct-text">{pick({ en: 'Fitted on, scored on', es: 'Ajustado en, puntuado en' }, lang)}</th>
+                    {years.map((y) => (
+                      <th key={y}>{pick({ en: `${y}-year file`, es: y === 1 ? 'archivo de 1 año' : `archivo de ${y} años` }, lang)}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {years.map((fit) => (
+                    <tr key={fit}>
+                      <td className="ct-text">{pick({ en: `${fit}-year file`, es: fit === 1 ? 'archivo de 1 año' : `archivo de ${fit} años` }, lang)}</td>
+                      {years.map((scored) => {
+                        const c = at(fit, scored);
+                        return c ? (
+                          <td key={scored} className="ct-heat" data-heat={band(c.auc)} data-fitted={c.fitted_on_years} data-scored={c.scored_on_years} data-n={c.n} data-events={c.events} title={pick({ en: `AUC on ${int(c.n, 'en')} firms, ${int(c.events, 'en')} bankruptcies`, es: `AUC sobre ${int(c.n, 'es')} empresas, ${int(c.events, 'es')} quiebras` }, lang)}>
+                            {f3(c.auc, lang)}
+                          </td>
+                        ) : (
+                          <td key={scored} data-na="true">{na}</td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+          {/* the drawing box takes the bars' height (layout.ts) inside a box that scrolls under the matrix: a flex column, so the
+              drawing's height is definite and the bars fill it */}
+          <div className="ct-stack-rest" data-caos-flow="" data-block="transfer-bars" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="ct-stack-chart" style={{ minHeight: TRANSFER_MIN, '--ct-chart-min': TRANSFER_MIN } as CSSProperties}>
+              <BarChart
+                title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
+                height="fill"
+                orientation="horizontal"
+                data={transferBars(cells)}
+                axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 3 }, range: [0, 1] }}
+              />
+            </div>
+          </div>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -163,7 +202,7 @@ export function TermStructureView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: 'Source: the engine provisions API, from_cumulative and the lifetime PD back-test (dossier 04, E.2).', es: 'Fuente: la API de provisiones del motor, from_cumulative y el backtest de la PD de toda la vida (dossier 04, E.2).' }, lang)}</p>
+          <p className="ct-note">{pick({ en: 'Source: the engine provisions API, the cumulative PD read as a term structure and the lifetime PD back-test (dossier 04, E.2).', es: 'Fuente: la API de provisiones del motor, la PD acumulada leída como estructura de plazos y la prueba retrospectiva de la PD de toda la vida (dossier 04, E.2).' }, lang)}</p>
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -179,6 +218,7 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
   const d = o.impact_detail;
   const missing = d.ecl_12m_effect === null || d.ecl_lifetime_effect === null;
   const na = formatNumber(null, lang);
+  const unit = pick(d.unit, lang);
   const value = (v: number | null) => (v === null ? na : formatNumber(v, lang, { digits: 4 }));
   return (
     <ViewsRow>
@@ -187,8 +227,8 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
         title={{ en: 'ECL effect of the horizon PDs (exploratory)', es: 'Efecto en la PCE de las PD por horizonte (exploratorio)' }}
         {...card}
         note={{
-          en: `The effect on the 12-month and the lifetime expected credit loss when the horizon PDs of the rung replace the ones in use, through the engine provisions API, in ${d.unit}. The LGD is an assumption of Contraste, not an estimate.`,
-          es: `El efecto en la pérdida crediticia esperada a 12 meses y de toda la vida cuando las PD por horizonte del peldaño reemplazan a las en uso, a través de la API de provisiones del motor, en ${d.unit}. La LGD es un supuesto de Contraste, no una estimación.`,
+          en: `The effect on the 12-month and the lifetime expected credit loss when the horizon PDs of the term-structure block (the five file event rates, not the rung's) replace the ones in use, through the engine provisions API, in ${d.unit.en}. The LGD is an assumption of Contraste, not an estimate.`,
+          es: `El efecto en la pérdida crediticia esperada a 12 meses y de toda la vida cuando las PD por horizonte del bloque de estructura temporal (las cinco tasas de evento de los archivos, no las del peldaño) reemplazan a las en uso, a través de la API de provisiones del motor, en ${d.unit.es}. La LGD es un supuesto de Contraste, no una estimación.`,
         }}
       >
         <LabelledOverTable
@@ -198,7 +238,7 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
               {missing ? (
                 <p className="caos-pending" data-state="unavailable">
                   {pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}
-                  {d.reason_if_null ?? pick({ en: 'the document gives no reason', es: 'el documento no da una razón' }, lang)}
+                  {d.reason_if_null ? pick(d.reason_if_null, lang) : pick({ en: 'the document gives no reason', es: 'el documento no da una razón' }, lang)}
                 </p>
               ) : null}
             </>
@@ -214,7 +254,7 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
                   { id: 'ecl-12m', label: { en: '12-month ECL', es: 'PCE a 12 meses' }, value: d.ecl_12m_effect },
                   { id: 'ecl-lifetime', label: { en: 'Lifetime ECL', es: 'PCE de toda la vida' }, value: d.ecl_lifetime_effect, tone: 'warn' },
                 ]}
-                axis={{ label: { en: 'Effect of the horizon PDs', es: 'Efecto de las PD por horizonte' }, unit: { en: d.unit, es: d.unit }, format: { digits: 4 } }}
+                axis={{ label: { en: 'Effect of the horizon PDs', es: 'Efecto de las PD por horizonte' }, unit: d.unit, format: { digits: 4 } }}
               />
             )
           }
@@ -228,11 +268,11 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
               <dt>{pick({ en: 'Lifetime ECL effect', es: 'Efecto en la PCE de toda la vida' }, lang)}</dt>
               <dd data-measure="ecl-lifetime" data-na={d.ecl_lifetime_effect === null ? 'true' : undefined}>{value(d.ecl_lifetime_effect)}</dd>
               <dt>{pick({ en: 'Unit', es: 'Unidad' }, lang)}</dt>
-              <dd>{d.unit}</dd>
+              <dd>{unit}</dd>
               <dt>{pick({ en: 'LGD (an assumption)', es: 'LGD (un supuesto)' }, lang)}</dt>
               <dd data-lgd={d.lgd.label}>{pc(d.lgd.value, lang)}</dd>
               <dt>{pick({ en: 'PD basis', es: 'Base de las PD' }, lang)}</dt>
-              <dd>{d.pd_basis}</dd>
+              <dd>{pick(d.pd_basis, lang)}</dd>
             </dl>
           ) : (
             <table className="caos-table ct-wrap-head" data-table="ecl-impact">
@@ -247,7 +287,7 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
                 </tr>
                 <tr>
                   <td className="ct-text">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</td>
-                  <td>{d.unit}</td>
+                  <td className="ct-text">{unit}</td>
                 </tr>
                 <tr data-lgd={d.lgd.label}>
                   <td className="ct-text">{pick({ en: 'LGD (an assumption)', es: 'LGD (un supuesto)' }, lang)}</td>
@@ -255,7 +295,7 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
                 </tr>
                 <tr>
                   <td className="ct-text">{pick({ en: 'PD basis', es: 'Base de las PD' }, lang)}</td>
-                  <td className="ct-text">{d.pd_basis}</td>
+                  <td className="ct-text">{pick(d.pd_basis, lang)}</td>
                 </tr>
               </tbody>
             </table>

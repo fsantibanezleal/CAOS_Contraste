@@ -1,0 +1,35 @@
+\section{Introduction}
+\label{sec:introduction}
+
+A bank that wants to measure the market risk of a trading desk with its own internal model, instead of the standardised formula, has to show under the revised Basel market risk standard that the model describes the desk it is meant to describe.
+The standard \citep{bcbs2019}, first published in January 2016 \citep{bcbs2016} and revised in January 2019, asks for two tests at the level of the desk.
+The first is a back-test of the desk's value-at-risk against its realised profit and loss.
+The second is the profit and loss attribution test, which compares, over the most recent 250 trading days, the hypothetical profit and loss of the desk (HPL, the revaluation of the positions held at the close of the previous day by the front-office pricing models) with the risk-theoretical profit and loss (RTPL, the revaluation of the same positions by the risk model, with the same market moves).
+A desk whose risk model reproduces the pricing model closely is eligible for the internal model; a desk in the red zone is not, and a desk in the amber zone carries a capital surcharge.
+The comparison is made with two numbers: the Spearman correlation of the daily levels of HPL and RTPL \citep{spearman1904} and the two-sample Kolmogorov--Smirnov distance between their empirical distributions \citep{smirnov1948}.
+
+Both numbers are blind to the timing of the scale of the profit and loss.
+A rank correlation of levels is dominated by the sign and the order of the daily moves, which the two series share whenever the risk model has the right factors and the right sensitivities; a Kolmogorov--Smirnov distance compares two distributions accumulated over a year, in which a volatility that moves late and a volatility that moves on time have the same marginal law.
+A risk model that feeds yesterday's positions and today's factor moves into a volatility estimate that is several weeks old therefore passes both statistics while it understates the risk in every rising-volatility episode and overstates it in every falling one.
+We make this concrete on a generator of desk profit and loss whose true risk model is known (the C13 case of the validation product described in Section~\ref{sec:experimental-design}): with a volatility input twenty days old, none of 1,000 replications leaves the green zone, whereas the planted deficiency changes the correlation of the 20-day rolling means of the absolute profit and loss of the two series from 0.99 to 0.69 on average.
+
+The gap this paper addresses is therefore not the construction of a new regulatory test but the absence, beside the regulatory one, of a statistic of the scale of the profit and loss and of its timing, with a false-alarm rate that is stated rather than inherited from thresholds written for other purposes.
+The published literature has the ingredients separately: the regression of realisations on forecasts with a joint test of intercept zero and slope one \citep{mincer1969}, the evaluation of volatility forecasts through proxies \citep{patton2011,patton2009}, the heteroskedasticity-consistent covariance \citep{white1980,mackinnon1985}, and critical values read from simulated draws of the null \citep{dufour2006}.
+None of the works we found combines them into a complement to the attribution test of the market risk standard, and none of them measures what such a complement flags on desks with a known planted deficiency.
+
+We propose the complement in Section~\ref{sec:proposed-method}.
+It is made of three statistics computed on the same 250-day pair as the regulatory test: the Wald statistic of the joint hypothesis that the regression of HPL on RTPL has intercept zero and slope one, under an HC3 covariance; the Spearman correlation of the absolute values of HPL and RTPL; and the Spearman correlation of their 20-day rolling means.
+Each statistic is compared with a critical value read from the empirical distribution of the same statistic on simulated desk-years of a model with nothing planted, so that the decision has a stated false-alarm rate, and the three decisions are combined with a Bonferroni split so that their union has a stated rate as well.
+The complement is added beside the regulatory zone and returns it unchanged; it has no regulatory standing.
+
+The contributions are the following.
+\begin{enumerate}
+\item The complement itself, specified in full with its calibration rule, its algorithm and its implementation in the open-source engine \texttt{riskvalidation} 1.1.0.
+\item Four propositions with proofs: the exact out-of-sample false-alarm rate of a critical value read from $N$ simulated null values; the population slope of the regression of HPL on RTPL when the volatility input of the risk model is $L$ days old, which explains why a Wald test is weak against that deficiency; a closed form for the correlation of the rolling means of the absolute series, which explains why the rolling-mean statistic is strong; and the invariance of the rank statistics under rescaling, which assigns a different defect to each component.
+\item An evaluation on 6,000 committed desk-years, on 30,000 further desk-years from five independent bakes, on a ladder of volatility lags from 2 to 80 days, on six desks whose generator differs from the calibration null and on six constant mis-scales and level errors, in which nine published or regulatory detectors are run on the same series as the proposed ones.
+\item An ablation of every component, of the rolling window, of the covariance and of the multiplicity correction.
+\item Negative results: the Wald component does not see a missing basis (0.9\%) or a stale volatility (14.2\%); the rolling statistic does not see a wrong correlation (4.5\%) and is weak against a one-day misalignment (42.3\%); and the stated size does not transfer to desks whose volatility law differs from the calibration null.
+\end{enumerate}
+
+The main result is that, at a family size of 1\%, the complement flags the stale-volatility desk in 99.9\% of 1,000 replications against 0.0\% for the regulatory zone, with a held-out false-alarm rate of 0.9\%, and that a Spearman correlation of the levels whose threshold is merely recalibrated to the same 1\% size flags the same desk in 55.2\% of replications, which locates much of the regulatory blind spot in the thresholds of the zone and the rest in the choice of statistic.
+Section~\ref{sec:related-work} places the work among the published methods, Section~\ref{sec:problem} states the problem, Section~\ref{sec:proposed-method} the method, Section~\ref{sec:theory} the theory, Section~\ref{sec:experimental-design} the design of the experiments, Sections~\ref{sec:results} and~\ref{sec:ablation} the results and the ablation, and Sections~\ref{sec:discussion} to~\ref{sec:conclusions} the discussion, the limits, the reproduction and the conclusions.

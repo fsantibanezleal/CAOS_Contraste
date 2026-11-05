@@ -58,6 +58,9 @@ STABILITY_WINDOWS = 3
 TRANCHES = (("3 Mo", 0.25), ("1 Yr", 1.0), ("2 Yr", 2.0), ("3 Yr", 3.0), ("5 Yr", 5.0), ("7 Yr", 7.0), ("10 Yr", 10.0))
 SIGMA_YEARS = 3
 
+#: the deposit-account size up to which an account stands for a retail customer (the FDIC DEPSMAMT threshold, USD)
+RETAIL_ACCOUNT_LIMIT_USD = 250_000
+
 REGISTRY: dict[str, Assumption] = {
     "nmd_core_share": Assumption(None, "share", "regulatory-cap",
         "Requested by Contraste (synthetic) above each SRP31 Table 4 cap; the standardised treatment uses the cap (nmd_split with "
@@ -90,7 +93,7 @@ REGISTRY: dict[str, Assumption] = {
         "Annualised standard deviation of the daily changes of the 3-month Treasury par yield over the three years up to the "
         "valuation date."),
     "retail_share": Assumption(None, "share of the non-time deposits", "synthetic-stated",
-        "The deposit accounts of 250 000 USD or less (FDIC DEPSMAMT less the time deposits of that size) stand for retail customers "
+        "The deposit accounts of 250,000 USD or less (FDIC DEPSMAMT less the time deposits of that size) stand for retail customers "
         "and the rest for wholesale: a synthetic mapping, because the call report has no customer-type split."),
     "reprice_months": Assumption(REPRICE_MONTHS, "months", "synthetic-stated",
         "Months between resets of the dynamic NII items (synthetic): 2 for the band of 3 months or less, 8 for 3 to 12 months, "

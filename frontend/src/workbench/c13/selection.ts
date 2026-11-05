@@ -5,6 +5,7 @@
 // picture of MAR32.36 to MAR32.41). The tests recompute the document's own Spearman and KS from them.
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { Bi } from '../c03/U6Shared';
 
 export type C13Outputs = components['schemas']['c13Outputs'];
@@ -61,12 +62,15 @@ export const ZONE_TEXT: Record<string, Bi> = {
 
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
 
-/** A desk level in words: "1% tail (99% VaR)". */
-export function levelLabel(alpha: number, lang: 'en' | 'es'): string {
+/** A desk level in words: "1% tail (99% VaR)"; `midSentence` keeps the Spanish noun in lower case inside a title. */
+export function levelLabel(alpha: number, lang: 'en' | 'es', midSentence = false): string {
   const f = (v: number) => (v === 0.025 ? (lang === 'es' ? '2,5' : '2.5') : String(Math.round(v * 100)));
   const g = (v: number) => (v === 0.025 ? (lang === 'es' ? '97,5' : '97.5') : String(Math.round((1 - v) * 100)));
-  return lang === 'es' ? `Cola de ${f(alpha)} % (VaR al ${g(alpha)} %)` : `${f(alpha)}% tail (${g(alpha)}% VaR)`;
+  return lang === 'es' ? `${midSentence ? 'cola' : 'Cola'} de ${f(alpha)} % (VaR al ${g(alpha)} %)` : `${f(alpha)}% tail (${g(alpha)}% VaR)`;
 }
+
+/** A seed is an identifier, not an amount: written whole, never grouped ("14000", not "14,000"). */
+export const seedText = (v: number, lang: 'en' | 'es'): string => formatNumber(v, lang, { decimals: 0, grouping: false });
 
 /** A desk level in a few words, for a chip of the narrow rail: "2.5% tail". */
 export function levelShort(alpha: number, lang: 'en' | 'es'): string {
@@ -155,4 +159,41 @@ export function defaultSel(data: CaseData | null): C13Sel | null {
   const o = outputsOf({ data });
   if (!o) return null;
   return { data, alpha: (o.desk_backtest[0]?.alpha ?? 0.025) as C13Alpha, statistic: 'overall' };
+}
+
+/** The parameters of the generator and of a planted deficiency, and their units, in words (the document gives them as snake_case ids). */
+export const PARAMETER_TEXT: Record<string, Bi> = {
+  // the unit says what the share is of ("0.65 of the HPL deviation"), so the name does not (R3 c14 m9)
+  basis_sd_share: { en: 'basis share', es: 'parte de base' },
+  burn_days: { en: 'burn-in days', es: 'días de calentamiento' },
+  correlation_error: { en: 'correlation error', es: 'error de correlación' },
+  factor_correlation: { en: 'factor correlation', es: 'correlación entre factores' },
+  lag_days: { en: 'lag', es: 'rezago' },
+  loading_1: { en: 'loading of factor 1', es: 'carga del factor 1' },
+  loading_2: { en: 'loading of factor 2', es: 'carga del factor 2' },
+  omitted_loading_share: { en: 'omitted loading share', es: 'parte de la carga omitida' },
+  residual_sd_share: { en: 'residual share', es: 'parte residual' },
+  vol_lag_days: { en: 'volatility lag', es: 'rezago de la volatilidad' },
+  vol_log_sd: { en: 'volatility log deviation', es: 'desviación logarítmica de la volatilidad' },
+  vol_persistence: { en: 'volatility persistence', es: 'persistencia de la volatilidad' },
+};
+export const UNIT_TEXT: Record<string, Bi> = {
+  'share-of-hpl-sd': { en: 'of the HPL deviation', es: 'de la desviación del HPL' },
+  'share-of-factor-pnl-sd': { en: 'of the factor P&L deviation', es: 'de la desviación del P&L de factores' },
+  days: { en: 'days', es: 'días' },
+  'correlation-points': { en: 'points', es: 'puntos' },
+  correlation: { en: 'correlation', es: 'correlación' },
+  'decimal-per-sd': { en: 'decimal per deviation', es: 'decimal por desviación' },
+  'log-points': { en: 'log points', es: 'puntos logarítmicos' },
+  'per-day': { en: 'per day', es: 'por día' },
+};
+export const GENERATOR_TEXT: Record<string, Bi> = {
+  'desk-pnl-generator': { en: 'Desk P&L generator', es: 'Generador de P&L de la mesa' },
+};
+
+/** A named parameter with its value and unit in the language. */
+export function parameterText(p: { name: string; value: number; unit: string }, lang: 'en' | 'es', digits: number): string {
+  // a correlation is dimensionless and its name already says it ("factor correlation 0.6", R5 c18 m9)
+  const unit = p.unit === 'correlation' ? '' : UNIT_TEXT[p.unit]?.[lang] ?? p.unit;
+  return `${(PARAMETER_TEXT[p.name] ?? { en: p.name, es: p.name })[lang]} ${formatNumber(p.value, lang, { digits })} ${p.unit === 'days' && p.value === 1 ? (lang === 'es' ? 'día' : 'day') : unit}`.trim();
 }

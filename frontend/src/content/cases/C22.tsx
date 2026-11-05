@@ -2,8 +2,8 @@
 // dossier 12 (read at the primary sources on 2026-10-05: Morris, White and Crowther 2019; BCBS WP14 pages 41 to 67;
 // Yurdakul and Naranjo 2020; Demler, Pencina and D'Agostino 2012; Brown, Cai and DasGupta 2001) and riskvalidation's
 // docs/generators/ and docs/tests/ pages. The Context view shows it under the sources.
-import { Cite, Equation } from '@fasl-work/caos-app-shell';
-import { L, P, useT } from '../bi';
+import { Cite } from '@fasl-work/caos-app-shell';
+import { Equation, L, P, useT } from '../bi';
 
 export function C22WriteUp() {
   const t = useT();
@@ -11,15 +11,15 @@ export function C22WriteUp() {
     <>
       <h3>{t('The question', 'La pregunta')}</h3>
       <P
-        en={<>A validator reads p-values every day, and each one is evidence only as far as two numbers are known: how often the test rejects a model that is right (its size), and how often it catches a model that is wrong in a given way (its power). With real outcomes neither can be measured, because the truth is unknown. On generators whose truth is known both can, and the measurement is itself an experiment with an error that must be reported <Cite id="morris2019" />. The case measures every test with a p-value that Contraste has built so far, against eight families of data: the null, and seven planted defects.</>}
-        es={<>Un validador lee valores p todos los días, y cada uno es evidencia solo en la medida en que se conocen dos números: con qué frecuencia la prueba rechaza un modelo correcto (su tamaño), y con qué frecuencia detecta un modelo equivocado de cierta forma (su potencia). Con resultados reales ninguno se puede medir, porque la verdad es desconocida. En generadores cuya verdad se conoce ambos se pueden medir, y la medición es en sí un experimento con un error que debe reportarse <Cite id="morris2019" />. El caso mide cada prueba con valor p que Contraste ha construido hasta ahora, contra ocho familias de datos: la nula, y siete defectos plantados.</>}
+        en={<>A validator reads p-values every day, and each one is evidence only as far as two numbers are known: how often the test rejects a model that is right (its size), and how often it catches a model that is wrong in a given way (its power). With real outcomes neither can be measured, because the truth is unknown. On generators whose truth is known both can, and the measurement is itself an experiment with an error that must be reported <Cite id="morris2019" />. The case measures every test with a p-value that Contraste has built so far, against nine families of data: the null, seven planted defects, and the stated alternatives of the 21 tests of the other seven families (counterparty credit risk, IFRS 9, LGD and EAD, market, portfolio, fairness and machine learning).</>}
+        es={<>Un validador lee valores p todos los días, y cada uno es evidencia solo en la medida en que se conocen dos números: con qué frecuencia la prueba rechaza un modelo correcto (su tamaño), y con qué frecuencia detecta un modelo equivocado de cierta forma (su potencia). Con resultados reales ninguno se puede medir, porque la verdad es desconocida. En generadores cuya verdad se conoce ambos se pueden medir, y la medición es en sí un experimento con un error que debe reportarse <Cite id="morris2019" />. El caso mide cada prueba con valor p que Contraste ha construido hasta ahora, contra nueve familias de datos: la nula, siete defectos plantados, y las alternativas declaradas de las 21 pruebas de las otras siete familias (riesgo de contraparte, NIIF 9, LGD y EAD, mercado, cartera, equidad y aprendizaje automático).</>}
       />
       <h3>{t('A rate and its error', 'Una tasa y su error')}</h3>
       <Equation
         tex={String.raw`\hat r = \frac{1}{n_{sim}}\sum_{i=1}^{n_{sim}} \mathbb 1(p_i < \alpha), \qquad \widehat{\mathrm{SE}}(\hat r) = \sqrt{\frac{\hat r\,(1-\hat r)}{n_{sim}}}`}
         caption={t(
-          'The rejection rate over n_sim repetitions and its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6); each repetition draws its data from its own random stream, so it re-runs alone to the same result. The interval shown with every rate is Wilson\'s.',
-          'La tasa de rechazo en n_sim repeticiones y su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6); cada repetición toma sus datos de su propio flujo aleatorio, así que se repite sola con el mismo resultado. El intervalo de cada tasa es el de Wilson.',
+          'The rejection rate over nₛᵢₘ repetitions and its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6); each repetition draws its data from its own random stream, so it re-runs alone to the same result. The interval shown with every rate is Wilson\'s.',
+          'La tasa de rechazo en nₛᵢₘ repeticiones y su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6); cada repetición toma sus datos de su propio flujo aleatorio, así que se repite sola con el mismo resultado. El intervalo de cada tasa es el de Wilson.',
         )}
       />
       <P
@@ -45,8 +45,8 @@ export function C22WriteUp() {
             es: <>Yurdakul y Naranjo midieron las reglas empíricas del PSI contra una referencia chi-cuadrado <Cite id="yurdakul2020" />: concuerdan 50 de sus 54 celdas con la semilla de este caso (53 con la del motor), con el arnés levemente sobre el artículo en promedio, un desfase que la vista Artículos declara. La regla 0,10 da una falsa alarma en la mayoría de las muestras de 100 cuando nada cambió, y las bandas fijas pierden potencia al crecer las muestras.</>,
           },
           {
-            en: <>Demler, Pencina and D'Agostino showed that DeLong's test on nested models fitted on the same data almost never rejects: 0.001 at the 5% level <Cite id="demler2012" /> <Cite id="delong1988" />. Their design rerun gives two rejections in 1,000 (one in the engine's suite); two non-nested scores on an independent sample hold the size.</>,
-            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel 5% <Cite id="demler2012" /> <Cite id="delong1988" />. Su diseño repetido da dos rechazos en 1.000 (uno en la suite del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
+            en: <>Demler, Pencina and D'Agostino showed that DeLong's test <Cite id="delong1988" /> on nested models fitted on the same data almost never rejects: 0.001 at the 5% level <Cite id="demler2012" />. Their design rerun gives two rejections in 1,000 (one in the engine's suite); two non-nested scores on an independent sample hold the size.</>,
+            es: <>Demler, Pencina y D'Agostino mostraron que la prueba de DeLong <Cite id="delong1988" /> en modelos anidados ajustados en los mismos datos casi nunca rechaza: 0,001 al nivel de 5 % <Cite id="demler2012" />. Su diseño repetido da dos rechazos en 1.000 (uno en la batería del motor); dos puntajes no anidados en una muestra independiente mantienen el tamaño.</>,
           },
         ]}
       />
@@ -54,16 +54,16 @@ export function C22WriteUp() {
       <L
         items={[
           {
-            en: <>The Hosmer-Lemeshow statistic of a model fitted on the same data has G - 2 degrees of freedom <Cite id="hosmer1980" />; a validator tests PDs set before the outcomes, where each group adds one, as WP14 states for the test over grades. With G - 2 on such samples the test rejects right PDs more than one time in nine at the 5% level. riskvalidation now uses G by default, and C01 was re-baked.</>,
-            es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G - 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G - 2 en tales muestras la prueba rechaza PD correctas más de una vez en nueve al nivel 5%. riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
+            en: <>The Hosmer-Lemeshow statistic of a model fitted on the same data has G − 2 degrees of freedom <Cite id="hosmer1980" />; a validator tests PDs set before the outcomes, where each group adds one, as WP14 states for the test over grades. With G − 2 on such samples the test rejects right PDs about one time in nine at the 5% level (11.0%, more than twice the level). riskvalidation now uses G by default, and C01 was re-baked.</>,
+            es: <>El estadístico de Hosmer-Lemeshow de un modelo ajustado en los mismos datos tiene G − 2 grados de libertad <Cite id="hosmer1980" />; un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para la prueba por grados. Con G − 2 en tales muestras la prueba rechaza PD correctas cerca de una vez en nueve al nivel de 5 % (11,0 %, más del doble del nivel). riskvalidation ahora usa G por omisión, y C01 se recalculó.</>,
           },
           {
-            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated on a sample of similar size the test over-rejects: about one time in six at C01's slice sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
-            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó en una muestra de tamaño parecido la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
+            en: <>The ECB's test of the AUC against the development AUC treats the latter as known <Cite id="ecb2019" />. When it was estimated, the test over-rejects: about one time in six at C01's slice sizes (a development sample under half the size of the current one), about one in nine at equal sizes. C01 now adds the development estimate's variance, an extension the results state.</>,
+            es: <>La prueba del BCE del AUC contra el AUC de desarrollo trata a esta como conocida <Cite id="ecb2019" />. Cuando se estimó, la prueba sobrerrechaza: cerca de una vez en seis con los tamaños de tramo de C01 (una muestra de desarrollo de menos de la mitad del tamaño de la actual), cerca de una en nueve con tamaños iguales. C01 ahora suma la varianza de la estimación de desarrollo, una extensión que los resultados declaran.</>,
           },
           {
             en: <>The ECB's concentration statistic is bounded: as the current coefficient of variation c grows it peaks and falls back, so with ten grades and an initial CV of 0.6 no current distribution is rejected at 5%.</>,
-            es: <>El estadístico de concentración del BCE es acotado: al crecer el coeficiente de variación actual c alcanza un máximo y vuelve a caer, así que con diez grados y un CV inicial de 0,6 ninguna distribución actual se rechaza al 5%.</>,
+            es: <>El estadístico de concentración del BCE es acotado: al crecer el coeficiente de variación actual c alcanza un máximo y vuelve a caer, así que con diez grados y un CV inicial de 0,6 ninguna distribución actual se rechaza al 5 %.</>,
           },
         ]}
       />
@@ -71,7 +71,7 @@ export function C22WriteUp() {
         tex={String.raw`S(c) = \frac{\sqrt{K-1}\,(c - CV_{init})}{c\,\sqrt{0.5 + c^2}} \;\longrightarrow\; 0 \quad (c \to \infty)`}
         caption={t(
           'The ECB concentration statistic as a function of the current CV (ECB 2019, section 2.5.5.3, as transcribed in dossier 06): the variance term treats the K grade frequencies as the sample, so the number of obligors never enters. A chi-square test of homogeneity on the counts catches a 5% concentration shift almost always.',
-          'El estadístico de concentración del BCE en función del CV actual (BCE 2019, sección 2.5.5.3, transcrito en el dossier 06): el término de varianza trata las K frecuencias por grado como la muestra, así que el número de deudores nunca entra. Una prueba chi-cuadrado de homogeneidad en los conteos detecta casi siempre un desplazamiento de concentración del 5%.',
+          'El estadístico de concentración del BCE en función del CV actual (BCE 2019, sección 2.5.5.3, transcrito en el dossier 06): el término de varianza trata las K frecuencias por grado como la muestra, así que el número de deudores nunca entra. Una prueba chi-cuadrado de homogeneidad en los conteos detecta casi siempre un desplazamiento de concentración del 5 %.',
         )}
       />
       <h3>{t('What not to read into it', 'Lo que no debe leerse')}</h3>

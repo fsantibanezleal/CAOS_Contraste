@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+
+% The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
+\newcommand{\doctype}{Preprint}
+\newcommand{\docversion}{v1.00.000}
+\newcommand{\docdate}{4 November 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.0}
+\newcommand{\conceptdoi}{10.5281/zenodo.0}
+\newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
+
+\input{../_shared/preamble}
+\setlength{\emergencystretch}{3em}
+
+\newcommand{\HPL}{\mathrm{HPL}}
+\newcommand{\RTPL}{\mathrm{RTPL}}
+\newcommand{\sgn}{\operatorname{sgn}}
+
+\title{A scale-and-level complement to the FRTB profit and loss attribution test}
+\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
+\small CAOS open-research programme, Santiago, Chile\\
+\small \texttt{fsantibanez@gmail.com}}
+\date{\docdate}
+
+\begin{document}
+\maketitle
+\headerblock
+
+\begin{abstract}
+The profit and loss attribution test of the Basel market risk standard compares the hypothetical and the risk-theoretical profit and loss of a trading desk through a Spearman correlation of the levels and a Kolmogorov--Smirnov distance, and its zones sit at thresholds that a desk with a faulty model can pass.
+On a generator of desk profit and loss with a known true risk model, a model fed a volatility twenty days old is flagged by neither statistic in any of 1,000 replications.
+We propose a complement added beside the regulatory zone: a Mincer--Zarnowitz regression of the hypothetical on the risk-theoretical profit and loss with a joint Wald test of intercept zero and slope one under an HC3 covariance, the Spearman correlation of the absolute values, and the Spearman correlation of their 20-day rolling means, each with a critical value read from a simulated null so that the false-alarm rate is stated.
+At a family size of 1\% the complement flags the stale-volatility model in 99.9\% of 1,000 replications (95\% Wilson interval 99.4 to 100.0\%) with a held-out false-alarm rate of 0.9\% (0.5 to 1.7\%), where the regulatory zone flags 0.0\%.
+Against published comparators run on the same desk-years, the rolling-mean statistic has the largest area under the ROC curve at lags of 5, 10 and 20 days.
+The stated size does not transfer to desks whose volatility is more persistent or more dispersed (4.0\% and 6.2\%) or whose pricing noise is larger (99.0\%), so the thresholds have to be calibrated on each desk's own null.
+The complement does not replace the regulatory zone: it is weak against a one-day misalignment and against a wrong correlation.
+\end{abstract}
+
+\input{s01-introduction}
+\input{s02-related-work}
+\input{s03-problem}
+\input{s04-proposed-method}
+\input{s05-theory}
+\input{s06-experimental-design}
+\input{s07-results}
+\input{s08-ablation}
+\input{s09-discussion}
+\input{s10-limitations}
+\input{s11-reproducibility}
+\input{s12-conclusions}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

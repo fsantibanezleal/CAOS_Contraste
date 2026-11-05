@@ -17,6 +17,7 @@ from riskvalidation.provisions import term_structure as rv_ts
 from riskvalidation.provisions.overlays import Overlay
 from riskvalidation.provisions.staging import allocate_stages
 
+from ...core import text as tx
 from . import backtest as bt
 from .panel import SEGMENT_IDS
 from .rollforward import RollForward
@@ -32,17 +33,19 @@ SEGMENT_LABELS = {
 }
 RUNG_TEXT = {
     "L0-km": (("Kaplan-Meier lifetime PD", "PD de vida completa de Kaplan-Meier"), ("L0 Kaplan-Meier", "L0 Kaplan-Meier")),
-    "L1-dth": (("Discrete-time hazard with macro covariates", "Hazard en tiempo discreto con covariables macro"),
-               ("L1 Hazard", "L1 Hazard")),
+    "L1-dth": (("Discrete-time hazard with macro covariates", "Riesgo en tiempo discreto con covariables macro"),
+               ("L1 Hazard", "L1 Riesgo en tiempo discreto")),
     "L2-cox": (("Cox proportional hazards", "Riesgos proporcionales de Cox"), ("L2 Cox", "L2 Cox")),
+    "L3-pch": (("PC-Hazard neural discrete-time survival", "Supervivencia neuronal en tiempo discreto PC-Hazard"),
+               ("L3 PC-Hazard", "L3 PC-Hazard")),
 }
-RUNG_KIND = {"L0-km": "kaplan-meier", "L1-dth": "discrete-time-hazard", "L2-cox": "cox"}
+RUNG_KIND = {"L0-km": "kaplan-meier", "L1-dth": "discrete-time-hazard", "L2-cox": "cox", "L3-pch": "piecewise-constant-hazard-network"}
 NOTICE = {
     "en": ("Small-business loans, not mortgages: the SBA 7(a) loans are the public twin of the mortgage case. Freddie Mac's data is "
            "not used (the owner's account is missing). Default is a charge-off; the file has no delinquency history, no balance "
            "and no recovery after charge-off."),
     "es": ("Préstamos a pequeñas empresas, no hipotecas: los préstamos SBA 7(a) son el gemelo público del caso hipotecario. No se "
-           "usan los datos de Freddie Mac (falta la cuenta del propietario). El incumplimiento es un castigo; el archivo no tiene "
+           "usan los datos de Freddie Mac (falta la cuenta del titular). El incumplimiento es un castigo; el archivo no tiene "
            "historia de mora, saldo ni recuperaciones tras el castigo."),
 }
 
@@ -213,6 +216,18 @@ def implied_multiplier(run: DateRun) -> float:
 # the findings
 
 
+def _g3(x: float) -> str:
+    """``x`` to three significant digits with the Spanish decimal comma (the English side writes ``{x:.3g}``)."""
+    return f"{x:.3g}".replace(".", ",")
+
+
+def _g4(x: float) -> tuple[str, str]:
+    """``x`` to four significant digits in both languages: a ratio of 1.9951 under an amber light reads 1.995, never the green
+    bar's 2 (U16-R4 c07 N-m2)."""
+    en = f"{x:.4g}"
+    return en, en.replace(".", ",")
+
+
 def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.ndarray, stage_summary: dict[str, Any],
              lifetime_left_out: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
@@ -232,26 +247,60 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     for tr in tests:
         by.setdefault(tr["test_id"], []).append(tr)
     lb = [r for r in by.get("ifrs9.lifetime_pd_backtest", []) if r["model_id"] == "L1-dth" and r["segment"] == "all"]
+    # the red cohort rows of the same rung are part of the same gap, so the finding cites them too (ruling 4 of 2026-10-27: every
+    # red test row is cited by an open finding; U16-R4 c08 N2: the 2018 cohort missed by more than the pooled figure, uncited)
+    red_cohorts = [r for r in by.get("ifrs9.lifetime_pd_backtest", []) if r["model_id"] == "L1-dth" and r["segment"] != "all" and r["light"] == "red"]
     if lb and lb[0]["light"] in ("amber", "red") and lb[0]["metric"] is not None:
-        add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
-            f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points ({lb[0]['light']})",
-            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {100 * lb[0]['metric']:.1f} puntos ({lb[0]['light']})")
+        add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0]), *(key(r) for r in red_cohorts)],
+            f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points over all loans pooled ({lb[0]['light']})",
+            f"La PD de vida completa del peldaño de riesgo en tiempo discreto se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
+    # the figure each title quotes, named by what it measures (R2b c07: "(metric 2)" and "(p 0)" said nothing of the quantity)
+    metric_words = {
+        "ifrs9.sicr_effectiveness": (lambda x: f"Stage 2 default rate {x} times the Stage 1 one", lambda x: f"tasa de incumplimiento de la Etapa 2 de {x} veces la de la Etapa 1"),
+        "ifrs9.ecl_backtest": (lambda x: f"realised losses {x} times the ECL", lambda x: f"pérdidas realizadas de {x} veces la PCE"),
+    }
     for tid, fid, en, es in (
-        ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag separates defaults from performing loans", "La marca de Etapa 2 separa los incumplimientos de los préstamos sanos"),
+        ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag against defaults and performing loans", "La marca de Etapa 2 frente a los incumplimientos y los préstamos sanos"),
         ("ifrs9.ecl_backtest", "F-ECL-BACKTEST", "The 12-month ECL against the losses realised after the date", "La PCE a 12 meses frente a las pérdidas realizadas después de la fecha"),
         ("ifrs9.stage_migration_backtest", "F-MIGRATION", "The predicted stage migration against the observed one", "La migración de etapas prevista frente a la observada"),
     ):
         r = by.get(tid, [None])[0]
         if r is not None and r["light"] in ("amber", "red", "not_evaluated"):
             sev = "S2" if r["light"] == "red" else "S3"
-            val = "not evaluated" if r["light"] == "not_evaluated" else f"metric {r['metric']:.3g}" if r["metric"] is not None else f"p {r['p_value']:.3g}"
-            val_es = "no evaluada" if r["light"] == "not_evaluated" else val.replace("metric", "métrica")
-            add(f"{fid}-{r['light']}", sev if r["light"] != "not_evaluated" else "S4", "open", [key(r)],
-                f"{en}: {r['light']} ({val})", f"{es}: {r['light']} ({val_es})")
+            if r["light"] == "not_evaluated":
+                add(f"{fid}-{r['light']}", "S4", "open", [key(r)], f"{en}: not evaluated", f"{es}: no evaluada")
+                continue
+            if r["metric"] is not None:
+                words_en, words_es = metric_words.get(tid, (lambda x: f"metric {x}", lambda x: f"métrica {x}"))
+                m_en, m_es = _g4(r["metric"])
+                val, val_es = words_en(m_en), words_es(m_es)
+            elif r["p_value"] < 1e-4:
+                # a p-value the engine returns as 0.0 (a chi-square far in its tail) is below the smallest one written
+                val, val_es = "p below 0.0001", "p menor que 0,0001"
+            else:
+                val, val_es = f"p {r['p_value']:.3g}", f"p {_g3(r['p_value'])}"
+            add(f"{fid}-{r['light']}", sev, "open", [key(r)], f"{en}: {r['light']} ({val})", f"{es}: {tx.light(r['light'], 'es')} ({val_es})")
+    # the SICR threshold against worsening conditions: the engine counts the reporting periods in which the threshold loosened while
+    # the condition index rose (U16-R4 c07 N-M1, c08 N1: a red row of Jun 2020 that no finding cited)
+    st = by.get("ifrs9.sicr_threshold_stability", [None])[0]
+    if st is not None and st["light"] in ("amber", "red", "not_evaluated"):
+        en, es = "The SICR threshold against worsening conditions", "El umbral de SICR frente al empeoramiento de las condiciones"
+        if st["light"] == "not_evaluated" or st["metric"] is None:
+            add("F-SICR-STABILITY-not_evaluated", "S4", "open", [key(st)], f"{en}: not evaluated", f"{es}: no evaluada")
+        else:
+            n, periods = int(st["metric"]), int(st.get("extras", {}).get("periods", st.get("n") or 0))
+            add(f"F-SICR-STABILITY-{st['light']}", "S2" if st["light"] == "red" else "S3", "open", [key(st)],
+                f"{en}: {st['light']} (the threshold loosened while conditions worsened in {n:,} of the {periods:,} reporting periods)",
+                f"{es}: {tx.light(st['light'], 'es')} (el umbral se relajó mientras las condiciones empeoraban en {tx.number(n, 0, lang='es')} "
+                f"de los {tx.number(periods, 0, lang='es')} períodos de reporte)")
     if ecl_by_scen_total[-1] < ecl_by_scen_total[0]:
         add("F-SCENARIO-ORDER", "S2", "open", ["ifrs9.scenario_sensitivity@L1-dth"],
-            "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date",
-            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del hazard tienen el signo equivocado en esta fecha")
+            "The severely adverse scenario gives a lower ECL than the baseline: the hazard's macro sensitivities have the wrong sign at this date. "
+            "The scenario-sensitivity test it cites reads the non-linearity of the ECL in the scenarios, not the order of the scenarios, so its light does not "
+            "carry this finding",
+            "El escenario severamente adverso da una PCE menor que el base: las sensibilidades macro del peldaño de riesgo en tiempo discreto tienen el signo equivocado en esta fecha. "
+            "La prueba de sensibilidad a los escenarios que cita lee la no linealidad de la PCE en los escenarios, no el orden de los escenarios, así que su "
+            "luz no sostiene este hallazgo")
     rec = by.get("ifrs9.reconciliation_identities", [None])[0]
     if rec is not None and rec["light"] != "green":
         add("F-RECONCILIATION", "S1", "open", [key(rec)], "A reconciliation identity does not close", "Una identidad de la conciliación no cierra")
@@ -260,17 +309,17 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
         "El archivo SBA no tiene historia de mora, refinanciación ni lista de vigilancia: solo la prueba cuantitativa de SICR puede pasar un préstamo a Etapa 2, y la Etapa 3 no tiene saldo en una fecha")
     add("F-LGD-PROXY", "S4", "accepted", ["design:sba-chargeoff-lgd-proxy"],
         "LGD is a charge-off severity proxy with an upward bias (the file has no recovery after the charge-off) and the ECL is before the SBA guarantee",
-        "La PDI es un proxy de severidad del castigo con sesgo al alza (el archivo no tiene recuperaciones tras el castigo) y la PCE es antes de la garantía SBA")
+        "La LGD es una aproximación de la severidad del castigo con sesgo al alza (el archivo no tiene recuperaciones tras el castigo) y la PCE es antes de la garantía SBA")
     add("F-EAD-MODEL", "S4", "accepted", ["design:sba-modelled-balance"],
         "The balance is modelled (a level-payment annuity at the EIR; revolving lines at their approval): the file has no balance",
         "El saldo es modelado (una anualidad de cuota nivelada a la TIE; líneas rotativas a su monto aprobado): el archivo no tiene saldo")
     add("F-PREPAYMENT", "S4", "accepted", ["design:prepayment-as-censoring"],
         "Prepayment is treated as censoring: the lifetime PD is the cause-specific default hazard and carries no prepayment attrition",
-        "El prepago se trata como censura: la PD de vida completa es el hazard de incumplimiento por causa y no incluye atrición por prepago")
+        "El prepago se trata como censura: la PD de vida completa es el riesgo de incumplimiento por causa y no incluye atrición por prepago")
     if lifetime_left_out:
         add("F-SHORT-LIFE", "S4", "accepted", ["design:backtest-population"],
             f"{lifetime_left_out:,} accounts with less than 33 months of contractual life left are outside the lifetime backtest",
-            f"{lifetime_left_out:,} cuentas con menos de 33 meses de vida contractual quedan fuera del backtest de vida completa")
+            f"{tx.number(lifetime_left_out, 0, lang='es')} cuentas con menos de 33 meses de vida contractual quedan fuera de la prueba retrospectiva de vida completa")
     return out
 
 

@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{AUC with its 95\% interval of each method on the five approval cohorts of the SBA 7(a) loans, each scored against the 5-year charge-off outcome with a model fitted only on approval years whose 5-year mark closed before the cohort began.}
+\label{tab:cs-c03-auc}
+\begin{tabular}{lrrrrrr}
+\toprule
+Test cohort & \shortstack{Training\\charge-offs} & Scorecard & L1 & PLTR & EBM & LightGBM \\
+\midrule
+\relax FY2006--07 & \relax 23,320 & \relax $0.825\pm0.002$ & \relax $0.826\pm0.002$ & \relax $0.770\pm0.003$ & \relax $0.734\pm0.003$ & \relax $0.797\pm0.002$ \\
+\relax FY2008--10 & \relax 28,393 & \relax $0.815\pm0.003$ & \relax $0.814\pm0.003$ & \relax $0.775\pm0.004$ & \relax $0.777\pm0.003$ & \relax $0.832\pm0.003$ \\
+\relax FY2011--14 & \relax 50,614 & \relax $0.817\pm0.006$ & \relax $0.835\pm0.005$ & \relax $0.814\pm0.006$ & \relax $0.828\pm0.005$ & \relax $0.873\pm0.004$ \\
+\relax FY2015--17 & \relax 110,349 & \relax $0.793\pm0.005$ & \relax $0.806\pm0.005$ & \relax $0.849\pm0.004$ & \relax $0.795\pm0.005$ & \relax $0.837\pm0.004$ \\
+\relax FY2018--20 & \relax 115,237 & \relax $0.826\pm0.004$ & \relax $0.834\pm0.004$ & \relax $0.739\pm0.007$ & \relax $0.746\pm0.006$ & \relax $0.830\pm0.004$ \\
+\bottomrule
+\end{tabular}
+\end{table}

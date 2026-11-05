@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{The size and power at the 5 percent level, in percent with the Monte Carlo standard error, of the four machine-learning and fairness tests that case C22 measures as named studies of the engine: the setting, the null, the departure planted in the alternative and the rate at which the test rejects it.}
+\label{tab:vt-other}
+\begin{tabular}{lp{2.8cm}rp{4.4cm}r}
+\toprule
+Test & Setting & Size (\%) & Planted departure & Power (\%) \\
+\midrule
+ML shift resilience & 2,000 development rows, a quarter worst-subsample share & $4.60\pm0.47$ & a quarter of the rows shifted 3 sd on feature 0 & $96.95\pm0.38$ \\
+ML conformal coverage & 2,000 test rows, 90\% coverage & $5.25\pm0.50$ & log-odds drift 0.5 between calibration and test & $100.00\pm0.00$ \\
+Two-proportion z & 2,000 applicants, two groups & $4.55\pm0.47$ & the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points) & $99.00\pm0.22$ \\
+Fisher exact & 2,000 applicants, two groups & $5.25\pm0.50$ & the protected group's decision threshold is lower by 0.3 in log-odds (a selection-rate gap above 8 points) & $98.60\pm0.26$ \\
+\bottomrule
+\end{tabular}
+\end{table}

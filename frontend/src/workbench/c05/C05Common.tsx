@@ -7,8 +7,9 @@ import { C05WriteUp } from '../../content/cases/C05';
 import type { Finding, TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT, LIGHT_TONE, relight } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
+import { evidenceText } from '../names';
 import { Pending } from '../Pending';
-import { CASE1, approachShort, averageRiskWeight, isLdp, isSp, useLiveBounds, useLiveCurve, type C05Sel, type LdpVariant, type SpVariant } from './selection';
+import { CASE1, approachShort, averageRiskWeight, isLdp, isSp, sourceText, truthStatusText, useLiveBounds, useLiveCurve, type C05Sel, type LdpVariant, type SpVariant } from './selection';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 3) => formatNumber(v, lang, { percent: true, decimals });
@@ -30,6 +31,13 @@ function findRow(v: VariantArtifact<unknown>, e: string): TestRow | undefined {
   return v.tests.find((t) => t.test_id === testId && t.model_id === model && (segment ? t.segment === segment : t.segment === null || t.segment === 'portfolio'));
 }
 
+/** The reason the calibration engine gives for an improper joint distribution (English only, written by src/engine/credit.ts), in Spanish. */
+const IMPROPER_ES: Record<string, string> = {
+  'a scaled PD exceeds one (section 4.2.3)': 'una PD escalada supera uno (sección 4.2.3)',
+  'condition (4.6a) fails': 'la condición (4.6a) no se cumple',
+};
+const improperText = (reason: string): string => IMPROPER_ES[reason] ?? reason;
+
 export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -47,13 +55,13 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'Each finding cites the tests behind it (their light under the rail\'s policy) or a stated design limit.', es: 'Cada hallazgo cita las pruebas que lo respaldan (su luz con la política del panel) o un límite de diseño declarado.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="findings">
             <thead>
               <tr>
                 <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+                <th>{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -64,17 +72,18 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
                     {pick(f.title, lang)}
                     <ul className="ct-evidence">
                       {f.evidence.map((e) => {
-                        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{e.slice(7)}</li>;
+                        const words = evidenceText(e, { caseId: 'C05', models: v.model }, lang);
+                        if (e.startsWith('design:')) return <li key={e}>{words}</li>;
                         const row = findRow(v, e);
                         return (
                           <li key={e}>
-                            {e}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
+                            {words}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
                           </li>
                         );
                       })}
                     </ul>
                   </td>
-                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
+                  <td>{pick(STATUS_TEXT[f.status], lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -98,15 +107,19 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
   // the chip's short label names the row, as it does in the rail; the full title is the button's tooltip
   const short = (id: string) => entries.find((e) => e.variant_id === id)?.short_title ?? title(id);
   const prov = provenanceOf((sel.data.variant as VariantArtifact<unknown>).provenance.truth_status);
+  // each table carries the badge of the variants it lists, not of the variant loaded (R3 c06 m1: the published S&P table read
+  // "Synthetic data" while a generated low-default variant was loaded)
+  const spProv = sp.length ? provenanceOf(sp[0].provenance.truth_status) : prov;
+  const ldpProv = ldp.length ? provenanceOf(ldp[0].provenance.truth_status) : prov;
   const dp = (v: (typeof sp)[number], id: string) => v.tests.find((t) => t.test_id === 'pd.default_profile' && t.model_id === id);
   const chart = isSp(sel.data.variant as VariantArtifact<unknown>) ? spCompare(sp, sel, dp) : ldpCompare(ldp, short);
   return (
     <>
       <div className="ct-row">
       <div className="ct-share-3">
-        <PlotCard title={{ en: 'The calibration variants', es: 'Las variantes de calibración' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
-          note={{ en: 'The default-profile p-value of each case 1 approach, and the least squares forecast of the PD (case 3) against the observed one. Pick a variant to load it.', es: 'El valor p del perfil de cada enfoque del caso 1, y el pronóstico de la PD por mínimos cuadrados (caso 3) contra la observada. Elija una variante para cargarla.' }}>
-          <div className="ct-scroll">
+        <PlotCard title={{ en: 'The calibration variants', es: 'Las variantes de calibración' }} lane={REPLAY} provenance={spProv} dataKey={stateKey}
+          note={{ en: 'The default-profile p-value of each case 1 approach, over the whole portfolio, and the least squares forecast of the PD (case 3) against the observed one. Pick a variant to load it.', es: 'El valor p del perfil de cada enfoque del caso 1, sobre toda la cartera, y el pronóstico de la PD por mínimos cuadrados (caso 3) contra la observada. Elija una variante para cargarla.' }}>
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="variants-sp">
               <thead>
                 <tr>
@@ -137,15 +150,15 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
         </PlotCard>
       </div>
       <div className="ct-share-2">
-        <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}
-          note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75%, grados A, B, C.' }}>
-          <div className="ct-scroll">
+        <PlotCard title={{ en: 'The low-default variants', es: 'Las variantes de bajo incumplimiento' }} lane={REPLAY} provenance={ldpProv} dataKey={stateKey}
+          note={{ en: 'The defaults observed and the independent bounds at 75%, grades A, B, C.', es: 'Los incumplimientos observados y las cotas independientes al 75 %, grados A, B, C.' }}>
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="variants-ldp">
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Variant', es: 'Variante' }, lang)}</th>
                   <th>{pick({ en: 'Defaults', es: 'Incumpl.' }, lang)}</th>
-                  <th>{pick({ en: 'Bounds at 75%', es: 'Cotas al 75%' }, lang)}</th>
+                  <th>{pick({ en: 'Bounds at 75%', es: 'Cotas al 75 %' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -191,7 +204,7 @@ function spCompare(sp: SpVariant[], sel: C05Sel, dp: (v: SpVariant, id: string) 
     title: { en: 'The default-profile test of every approach, year by year', es: 'La prueba del perfil de incumplimiento de cada enfoque, año a año' },
     note: {
       en: `One point per approach: ${numbered('en')}. Dashed, the rail's thresholds. The test sees the shape of the curve, not its level: the case 3 approaches (6 to 9) forecast ${times('en')} times the observed PD in these years, and that does not show here.`,
-      es: `Un punto por enfoque: ${numbered('es')}. Segmentadas, los umbrales del panel. La prueba ve la forma de la curva, no su nivel: los enfoques del caso 3 (6 a 9) pronostican ${times('es')} veces la PD observada en estos años, y eso no se ve aquí.`,
+      es: `Un punto por enfoque: ${numbered('es')}. Discontinuas, los umbrales del panel. La prueba ve la forma de la curva, no su nivel: los enfoques del caso 3 (6 a 9) pronostican ${times('es')} veces la PD observada en estos años, y eso no se ve aquí.`,
     },
     x: { values: x, label: { en: 'Approach (numbered in the note)', es: 'Enfoque (numerado en la nota)' }, format: { decimals: 0 } },
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
@@ -212,13 +225,13 @@ const LDP_COLOR: ShellColorToken[] = ['--color-accent', '--color-accent-2', '--c
 function ldpCompare(ldp: LdpVariant[], short: (id: string) => BiText): Compare {
   const truth = ldp.find((v) => v.outputs.true_pd)?.outputs.true_pd;
   return {
-    title: { en: 'What each observed year implies: the bounds at 75%', es: 'Lo que implica cada año observado: las cotas al 75%' },
+    title: { en: 'What each observed year implies: the bounds at 75%', es: 'Lo que implica cada año observado: las cotas al 75 %' },
     note: {
       en: 'The independent most prudent bound of each grade at 75%, one line per observation, against the expert PDs under test (dotted) and the true PDs of the generator (dashed). Every bound lies above the truth; the fewer the defaults, the closer it comes.',
-      es: 'La cota más prudente independiente de cada grado al 75%, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (segmentada). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
+      es: 'La cota más prudente independiente de cada grado al 75 %, una línea por observación, contra las PD expertas en prueba (punteada) y las PD verdaderas del generador (discontinua). Toda cota queda sobre la verdad; mientras menos incumplimientos, más se acerca.',
     },
     x: { values: [1, 2, 3], label: { en: 'Grade (1 A, 2 B, 3 C)', es: 'Grado (1 A, 2 B, 3 C)' }, format: { decimals: 0 } },
-    y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75% (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
+    y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75 % (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
     series: [
       ...ldp.map((v, i) => ({ label: short(v.variant_id), values: v.outputs.bounds.independent[v.outputs.gammas.indexOf(0.75)], color: LDP_COLOR[i % LDP_COLOR.length], width: 2 })),
       ...(ldp[0] ? [{ label: { en: 'Expert PDs', es: 'PD expertas' }, values: ldp[0].outputs.expert_pd, color: '--color-warn' as ShellColorToken, width: 1.2, dash: [2, 4] }] : []),
@@ -258,27 +271,27 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
               return (
                 <tr key={id} data-licence-class={s.class}>
                   <td className="caos-col-text">
-                    <a href={s.landing} target="_blank" rel="noreferrer">{s.name}</a>
+                    <a href={s.landing} target="_blank" rel="noreferrer">{sourceText(id, 'name', s.name, lang)}</a>
                   </td>
                   <td className="caos-col-text">
-                    {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
+                    {sourceText(id, 'licence', s.licence, lang)} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
-                  <td className="caos-col-text">{s.attribution}</td>
+                  <td className="caos-col-text">{sourceText(id, 'attribution', s.attribution, lang)}</td>
                 </tr>
               );
             })}
             <tr data-licence-class="generator">
               <td className="caos-col-text">{pick({ en: 'Vasicek generator (Contraste\'s own)', es: 'Generador de Vasicek (de Contraste)' }, lang)}</td>
               <td className="caos-col-text">{pick({ en: 'MIT, no third-party data', es: 'MIT, sin datos de terceros' }, lang)}</td>
-              <td className="caos-col-text">{pick({ en: 'True PDs 0.05%, 0.10%, 0.20%; correlation 12%; 20,000 seeded years', es: 'PD verdaderas 0,05%, 0,10%, 0,20%; correlación 12%; 20.000 años con semilla' }, lang)}</td>
+              <td className="caos-col-text">{pick({ en: 'True PDs 0.05%, 0.10%, 0.20%; correlation 12%; 20,000 seeded years', es: 'PD verdaderas 0,05 %, 0,10 %, 0,20 %; correlación 12 %; 20.000 años con semilla' }, lang)}</td>
             </tr>
           </tbody>
         </table>
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The readers check each paper against its own print (Table 2's grades add up to its All row; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${truthStatusText(v.provenance.truth_status).en}. The data readers check each paper against its own print (Table 2's grades add up to its "All" row, the total; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores de datos verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila «All» (el total); cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el cálculo previo. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
@@ -300,7 +313,16 @@ export function CalibrationReadout({ sel }: { sel: C05Sel | null }) {
   const live = useLiveCurve(sel);
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   const sp = v && isSp(v) ? v : null;
-  const label: BiText = sel?.approach === 'A3-spd' ? { en: 'c_PD', es: 'c_PD' } : sel?.approach === 'A4-slr' ? { en: 'c_LR', es: 'c_LR' } : sel?.approach === 'A1-idp' ? { en: 'Forecast AR', es: 'AR pronosticada' } : { en: 'AR kept', es: 'AR conservada' };
+  // the constant by its name, never a code token (R5 ruling 4: `c_LR` and `c_PD` in prose are raw ids); the Spanish names the
+  // accuracy ratio in words, as the tables beside it do
+  const label: BiText =
+    sel?.approach === 'A3-spd'
+      ? { en: 'Scaled PD constant', es: 'Constante de las PD escaladas' }
+      : sel?.approach === 'A4-slr'
+        ? { en: 'Scaled LR constant', es: 'Constante de la RV escalada' }
+        : sel?.approach === 'A1-idp'
+          ? { en: 'Forecast AR', es: 'Razón de precisión pronosticada' }
+          : { en: 'AR kept', es: 'Razón de precisión conservada' };
   const constant = sel?.approach === 'A2-iar' ? sp?.outputs.ar0 ?? null : live?.constant ?? null;
   return (
     <Readout
@@ -312,11 +334,11 @@ export function CalibrationReadout({ sel }: { sel: C05Sel | null }) {
         { label, value: constant, unitless: true, format: sel?.approach === 'A1-idp' || sel?.approach === 'A2-iar' ? { percent: true, decimals: 1 } : { decimals: 4 } },
         { label: { en: 'PD of CCC-C', es: 'PD de CCC-C' }, value: live?.curve.length ? live.curve[16] : null, unitless: true, format: { percent: true, decimals: 2 } },
         {
-          label: { en: 'Model', es: 'Modelo' },
-          text: live?.improper ? { en: 'improper', es: 'impropio' } : { en: 'proper', es: 'propio' },
+          label: { en: 'Joint distribution', es: 'Distribución conjunta' },
+          text: live?.improper ? { en: 'improper', es: 'impropia' } : { en: 'proper', es: 'propia' },
           tone: live?.improper ? 'bad' : 'good',
           unitless: true,
-          hint: { en: live?.improper ?? 'A proper joint distribution of grade and state.', es: live?.improper ?? 'Una distribución conjunta propia de grado y estado.' },
+          hint: { en: live?.improper ?? 'A proper joint distribution of grade and state.', es: live?.improper ? improperText(live.improper) : 'Una distribución conjunta propia de grado y estado.' },
         },
       ]}
     />

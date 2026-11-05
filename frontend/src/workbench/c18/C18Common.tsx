@@ -17,9 +17,14 @@ import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
 import {
   CLASS_TEXT, LABEL_TEXT, LINK_TEXT, LOAN_TEXT, MONEY_UNIT, PLAN_ORDER, PLAN_TEXT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_TEXT, TEST_TEXT, US_ADAPTATION,
-  aggDocOf, aggOf, amount, backcastOf, fitOf, marginalOf, outputsOf, planOf, reverseOf, text, yearOf, methodShort, methodText,
+  aggDocOf, aggOf, amount, backcastOf, fitOf, marginalOf, outputsOf, planOf, plottedUnit, reverseOf, text, yearOf, methodShort, methodText,
   type C18AggOutputs, type C18Fit, type C18Outputs, type C18Reverse, type C18Sel,
 } from './selection';
+import { phraseEs, unitEs } from './localise';
+import { Symbols } from './CapitalViews';
+import { quarterText } from './StressViews';
+import { testText } from '../names';
+import { variantName } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -42,29 +47,65 @@ export function Defs({ children, ...rest }: { children: ReactNode; [key: `data-$
 }
 
 /**
- * The rule that maps a draw through a marginal, which the document writes as one English string. The call and the formula stay as
- * written (code, the gate skips code), the words around them are read in the page's language; a rule in another shape is shown
+ * The rule that maps a draw through a marginal, which the document writes as one English string. It is said in words in the
+ * page's language, never by the name of the code function that runs it (U16-R4 c22 B4, c23 B2: "np.interp" in reader prose is a
+ * raw id): linear interpolation on the Hazen positions, the formula with the page's decimal mark. The committed documents still
+ * write "np.interp" until the re-bake, which writes "linear interpolation"; both read the same. A rule in another shape is shown
  * as the document writes it.
  */
 export function InterpolationRule({ rule, lang }: { rule: string; lang: Lang }) {
-  const m = lang === 'es' ? rule.match(/^(np\.interp) on the Hazen positions (.+?) of the sorted sample, clamped at the ends$/) : null;
+  const m = rule.match(/^(?:np\.interp|linear interpolation) on the Hazen positions (.+?) of the sorted sample, clamped at the ends$/);
   if (!m) return <>{rule}</>;
-  return (
-    <>
-      <code>{m[1]}</code> sobre las posiciones de Hazen <code>{m[2]}</code> de la muestra ordenada, acotada en los extremos
-    </>
+  const formula = lang === 'es' ? m[1].replace(/(\d)\.(\d)/g, '$1,$2') : m[1];
+  return lang === 'es' ? (
+    <>interpolación lineal sobre las posiciones de Hazen {formula} de la muestra ordenada, acotada en los extremos</>
+  ) : (
+    <>linear interpolation on the Hazen positions {formula} of the sorted sample, clamped at the ends</>
   );
 }
 
 /** The words an absent block says when the view is given a document of another kind. */
-export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni back-cast.' };
+/** A label as the start of a sentence: capital first letter, one full stop (U16-R3 c19 m6: "EE. UU.. Adaptación"). */
+const asSentence = (s: string): string => `${s.charAt(0).toUpperCase()}${s.slice(1)}${s.endsWith('.') ? '' : '.'}`;
+
+export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni prueba retrospectiva.' };
 export const NOT_AGGREGATION: BiText = { en: 'Not available: this document carries no aggregation block.', es: 'No disponible: este documento no trae un bloque de agregación.' };
 export const NOT_AGG_VARIANT: BiText = { en: 'Not available: this view reads the t-copula aggregation variant, which holds the stressed matrix, the copula sensitivity and the reference.', es: 'No disponible: esta vista lee la variante de agregación con cópula t, que trae la matriz bajo estrés, la sensibilidad a la cópula y la referencia.' };
-export const NOT_REVERSE: BiText = { en: 'Not available: this document is not the reverse-stress variant.', es: 'No disponible: este documento no es la variante de estrés inverso.' };
+export const NOT_REVERSE: BiText = { en: 'Not available: this document is not the reverse-stress variant.', es: 'No disponible: este documento no es la variante de tensión inversa.' };
 
 // --- the tests table -------------------------------------------------------------------------------------------------
 
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
+/** The name of the segment of a test row: a loan type or a regressor of the satellites, else the id. */
+function segmentName(segment: string, lang: Lang): string {
+  const bi = LOAN_TEXT[segment] ?? REGRESSOR_TEXT[segment];
+  return bi ? bi[lang] : segment;
+}
+
+/** The scope of a test row of no segment: the bank's whole balance sheet, which the aggregation of its four risks and the stress
+ * rules test (U16-R5 ruling 2, c24 M1 and c25 M1: a row of no segment names its scope in words, never a blank). */
+export const WHOLE_SCOPE: Bi = { en: 'whole balance sheet', es: 'todo el balance' };
+
+/** The scope of a test row in the language: its segment's name, or the whole balance sheet. */
+export const scopeOf = (t: Pick<TestRow, 'segment'>, lang: Lang): string => (t.segment ? segmentName(t.segment, lang) : pick(WHOLE_SCOPE, lang));
+
+/** The title of the tests card: what the variant runs (U16-R5 c25 n3: the reverse stress runs one test and the t-copula variant no
+ * stress). */
+const TESTS_TITLE: Record<string, BiText> = {
+  scenario: { en: 'The tests of the aggregation and the stress', es: 'Las pruebas de la agregación y del estrés' },
+  aggregation: { en: 'The tests of the aggregation', es: 'Las pruebas de la agregación' },
+  reverse: { en: 'The test of the reverse stress', es: 'La prueba de la tensión inversa' },
+};
+
+/** The notes the engine writes for a test that did not run, in the page's language. */
+function noteName(note: string, lang: Lang): string {
+  if (lang === 'en') return note;
+  if (note === 'not evaluated: not a stress path') return 'no evaluada: no es una trayectoria de estrés';
+  const m = /^the additive overestimate ([\d.]+) lies inside the published range \[([\d.]+), ([\d.]+)\]$/.exec(note);
+  const c = (x: string) => x.replace('.', ',');
+  return m ? `la sobreestimación aditiva ${c(m[1])} está dentro del rango publicado [${c(m[2])}; ${c(m[3])}]` : note;
+}
+
 export function C18TestsView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -74,7 +115,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: 'The tests of the aggregation and the stress', es: 'Las pruebas de la agregación y del estrés' }}
+        title={TESTS_TITLE[(sel.data.variant.outputs as { kind?: string }).kind ?? 'scenario'] ?? TESTS_TITLE.scenario}
         {...card}
         note={{
           en: 'The statistic when the test ran, the light under the stated convention and its reference. The lights are conventions of the case, never regulatory thresholds; a test that did not run says why and shows no number.',
@@ -84,7 +125,7 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
         {rows.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="tests">
               <thead>
                 <tr>
@@ -99,12 +140,12 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                      <td className="ct-text" title={t.test_id} data-scope={t.segment ?? 'whole-balance-sheet'}>{`${pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)} (${scopeOf(t, lang)})`}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{t.notes ? noteName(t.notes, lang) : phraseEs(t.reference, lang)}</td>
                     </tr>
                   );
                 })}
@@ -145,7 +186,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
       {...card}
       note={{
         en: 'The scenario variants run the same bank under the Federal Reserve, EBA and ESRB, and NGFS paths; the bars give the CET1 over RWA at the end of the third year under the stress without mitigation. The aggregation and reverse-stress variants have their own measures. Pick a variant to load it.',
-        es: 'Las variantes de escenario corren el mismo banco bajo las trayectorias de la Reserva Federal, de la EBA y la ESRB, y de NGFS; las barras dan el CET1 sobre APR al final del tercer año bajo el estrés sin mitigación. Las variantes de agregación y de estrés inverso tienen sus propias medidas. Elija una variante para cargarla.',
+        es: 'Las variantes de escenario corren el mismo banco bajo las trayectorias de la Reserva Federal, de la EBA y la ESRB, y de NGFS; las barras dan el CET1 sobre APR al final del tercer año bajo el estrés sin mitigación. Las variantes de agregación y de tensión inversa tienen sus propias medidas. Elija una variante para cargarla.',
       }}
     >
       <ChartOverTable
@@ -167,7 +208,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
               <th>{pick({ en: 'Headline capital (CLP millions)', es: 'Capital principal (millones de CLP)' }, lang)}</th>
               <th>{pick({ en: 'CET1, end of stress', es: 'CET1, fin del estrés' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Smallest headroom over the OI', es: 'Holgura mínima sobre el OI' }, lang)}</th>
-              <th className="ct-wide-only">{pick({ en: 'P2G proxy (Contraste approximation)', es: 'Proxy de P2G (aproximación de Contraste)' }, lang)}</th>
+              <th className="ct-wide-only">{pick({ en: 'P2G proxy (Contraste approximation)', es: 'Aproximación de P2G (de Contraste)' }, lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -185,7 +226,7 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             {aggregation ? (
               <tr data-variant={aggregation.variant_id} className={aggregation.variant_id === current ? 'ct-current' : undefined}>
                 <td className="ct-text">
-                  <button type="button" className="ct-linkbutton" onClick={() => onPick(aggregation.variant_id)}>{pick({ en: 'Student t copula aggregation', es: 'Agregación con cópula t de Student' }, lang)}</button>
+                  <button type="button" className="ct-linkbutton" onClick={() => onPick(aggregation.variant_id)}>{pick(variantName('C18', aggregation.variant_id) ?? { en: 'Student t copula aggregation', es: 'Agregación con cópula t de Student' }, lang)}</button>
                 </td>
                 <td>{cell(aggregation.outputs.aggregation.headline.capital_clp_m, lang)}</td>
                 <td data-na="true">{maybe(null, (x) => PCT(x, lang), nope)}</td>
@@ -196,9 +237,10 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             {reverse ? (
               <tr data-variant={reverse.variant_id} className={reverse.variant_id === current ? 'ct-current' : undefined}>
                 <td className="ct-text">
-                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick({ en: 'Reverse stress', es: 'Estrés inverso' }, lang)}</button>
+                  <button type="button" className="ct-linkbutton" onClick={() => onPick(reverse.variant_id)}>{pick(variantName('C18', reverse.variant_id) ?? { en: 'Reverse stress', es: 'Tensión inversa' }, lang)}</button>
                 </td>
-                <td data-na="true">{maybe(null, (x) => cell(x, lang), nope)}</td>
+                {/* the reverse document carries the headline capital of the case, the simple sum (U16-R4 c22 M2: called not computed) */}
+                <td>{maybe(reverse.impact.capital_simple_sum.value, (x) => cell(x, lang), nope)}</td>
                 <td>{PCT(reverse.outputs.failure_point.stack.total, lang, 3)}</td>
                 <td className="ct-wide-only" data-na="true">{maybe(null, (x) => PCT(x, lang), null)}</td>
                 <td className="ct-wide-only" data-na="true">{maybe(null, (x) => PCT(x, lang), null)}</td>
@@ -206,12 +248,13 @@ export function C18VariantsTable({ variants, aggregation, reverse, onPick, curre
             ) : null}
           </tbody>
         </table>
-        {reverse ? (
-          <p className="ct-note">
-            {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En el estrés inverso la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
-          </p>
-        ) : null}
       </ChartOverTable>
+      {/* under the box, not its last line: inside it the note was cut at the card's edge under a cue that counted a row (U16-R5 c24 n4) */}
+      {reverse ? (
+        <p className="ct-note">
+          {pick({ en: 'For the reverse stress the CET1 column is the failure point: the legal minimum stack that the solved scenario takes the CET1 to.', es: 'En la tensión inversa la columna CET1 es el punto de falla: el mínimo legal apilado al que el escenario resuelto lleva el CET1.' }, lang)}
+        </p>
+      ) : null}
     </PlotCard>
   );
 }
@@ -252,6 +295,7 @@ const PARAM_TEXT: Record<string, Bi> = {
   correlation_matrix_stress: { en: 'Inter-risk correlation, market-credit stress', es: 'Correlación entre riesgos, estrés mercado-crédito' },
   ppnr_fee_ratio: { en: 'PPNR: fee income over NII', es: 'PPNR: comisiones sobre MFN' },
   ppnr_cost_ratio: { en: 'PPNR: cost over income', es: 'PPNR: costos sobre ingresos' },
+  // the symbols are written as the stack writes them, c with its subscript (U16-R5 c24 n6, c25 n5)
   c_p2: { en: 'Pillar 2 of the bank (c_P2)', es: 'Pilar 2 del banco (c_P2)' },
   c_d: { en: 'Stress buffer of the OI (c_d)', es: 'Colchón de estrés del OI (c_d)' },
   operational_conversion_rate: { en: 'Conversion rate of the operational marginal', es: 'Tipo de cambio de la marginal operacional' },
@@ -275,7 +319,7 @@ function NamedRows({ fit }: { fit: C18Fit }) {
     { id: 'ppnr_cost_ratio', value: PCT(p.ppnr_cost_ratio.value, lang), label: p.ppnr_cost_ratio.label, basis: p.ppnr_cost_ratio.basis },
     { id: 'c_p2', value: PCT(p.c_p2.value, lang), label: p.c_p2.label, basis: p.c_p2.basis },
     { id: 'c_d', value: PCT(p.c_d.value, lang), label: p.c_d.label, basis: p.c_d.basis },
-    { id: 'operational_conversion_rate', value: `${formatNumber(p.operational_conversion_rate.value, lang, { digits: 5 })} ${p.operational_conversion_rate.unit}`, label: p.operational_conversion_rate.label, basis: p.operational_conversion_rate.basis },
+    { id: 'operational_conversion_rate', value: `${formatNumber(p.operational_conversion_rate.value, lang, { digits: 5 })} ${unitEs(p.operational_conversion_rate.unit, lang)}`, label: p.operational_conversion_rate.label, basis: p.operational_conversion_rate.basis },
     { id: 'asset_scaling', value: formatNumber(p.asset_scaling.value, lang, { digits: 4 }), label: p.asset_scaling.label, basis: p.asset_scaling.basis },
     { id: 'market_rwa_share', value: PCT(p.market_rwa_share.value, lang), label: p.market_rwa_share.label, basis: p.market_rwa_share.basis },
     { id: 'market_horizon_scaling', value: formatNumber(p.market_horizon_scaling.value, lang, { digits: 5 }), label: p.market_horizon_scaling.label, basis: p.market_horizon_scaling.basis },
@@ -285,7 +329,7 @@ function NamedRows({ fit }: { fit: C18Fit }) {
     <tbody>
       {rows.map((r) => (
         <tr key={r.id} data-param={r.id} data-status={r.label}>
-          <td className="ct-text" title={r.id}>{pick(PARAM_TEXT[r.id], lang)}</td>
+          <td className="ct-text" title={r.id}><Symbols text={pick(PARAM_TEXT[r.id], lang)} lang={lang} /></td>
           <td className="ct-text">{r.value}</td>
           <td className="ct-text">{pick(text(LABEL_TEXT, r.label), lang)}</td>
           <td className="ct-text ct-wide-only">{pick(r.basis, lang)}</td>
@@ -301,7 +345,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
   return (
     <>
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every parameter of the case is a convention or a case assumption, labelled as one with the basis of its proposed value; none is a regulatory figure. The value is the document\'s, not a calibration to Banco Andino.', es: 'Cada parámetro del caso es una convención o un supuesto del caso, rotulado como tal con la base de su valor propuesto; ninguno es una cifra regulatoria. El valor es el del documento, no una calibración a Banco Andino.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c18-parameters">
             <thead>
               <tr>
@@ -316,7 +360,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The satellites fitted before 2020', es: 'Los satélites ajustados antes de 2020' }} {...card} note={{ en: 'One regression per Federal Reserve loan type on the charge-off rate, fitted on data that ends before the episode it is back-cast through. They are a US-calibrated adaptation, not Chilean satellites.', es: 'Una regresión por tipo de préstamo de la Reserva Federal sobre la tasa de castigo, ajustada con datos que terminan antes del episodio que se retro-proyecta. Son una adaptación calibrada en EE. UU., no satélites chilenos.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c18-satellites-fit">
             <thead>
               <tr>
@@ -333,7 +377,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
                 <tr key={s.model_id} data-loan={s.fed_loan_type} data-fit-start={s.sample_window.start}>
                   <td className="ct-text">{pick(text(LOAN_TEXT, s.fed_loan_type), lang)}</td>
                   <td className="ct-text">{pick(text(LINK_TEXT, s.link), lang)}</td>
-                  <td className="ct-text">{`${s.sample_window.start} ${pick({ en: 'to', es: 'a' }, lang)} ${s.sample_window.end}`}</td>
+                  <td className="ct-text">{`${quarterText(s.sample_window.start, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${quarterText(s.sample_window.end, lang)}`}</td>
                   <td>{s.n_obs}</td>
                   <td className="ct-wide-only">{s.non_positive_quarters_in_window ?? formatNumber(null, lang)}</td>
                   <td>{digits(s.fit_statistics.r_squared, lang)}</td>
@@ -344,10 +388,10 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The bank anchors and the scenario sources', es: 'Los anclajes del banco y las fuentes de escenarios' }} {...card} note={{ en: 'Only ratios computed from the Banco Santander-Chile Form 20-F 2025 enter the documents, with the filing cited; the amounts of Banco Andino are scaled from them.', es: 'Solo entran a los documentos razones calculadas del Formulario 20-F 2025 de Banco Santander-Chile, con la presentación citada; los montos de Banco Andino se escalan desde ellas.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <Defs data-table="c18-anchors">
             <dt>{pick({ en: 'Anchor of the RWA', es: 'Anclaje de los APR' }, lang)}</dt>
-            <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Proxy de Tier 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>
+            <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Aproximación del capital de nivel 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>
             <dt>{pick({ en: 'Mix of the RWA', es: 'Mezcla de los APR' }, lang)}</dt>
             <dd>{`${pick(RISK_TEXT.credit, lang)} ${PCT(a.rwa_mix.credit, lang)}; ${pick(RISK_TEXT.market, lang)} ${PCT(a.rwa_mix.market, lang)}; ${pick(RISK_TEXT.operational, lang)} ${PCT(a.rwa_mix.operational, lang)}`}</dd>
             <dt>{pick({ en: 'Chilean capital stack', es: 'Capital apilado chileno' }, lang)}</dt>
@@ -370,11 +414,12 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.scenario_sources.map((s) => (
                 <tr key={s.scenario_id} data-scenario={s.scenario_id}>
-                  <td className="ct-text">{s.scenario_id}</td>
+                  {/* the scenario by its variant's title, never its id (the raw-id scan: eba-2025-adverse) */}
+                  <td className="ct-text">{pick(variantName('C18', s.scenario_id) ?? { en: s.scenario_id, es: s.scenario_id }, lang)}</td>
                   <td className="ct-text">{pick(text(PROVIDER_TEXT, s.provider), lang)}</td>
                   <td className="ct-text">{s.vintage_date}</td>
                   <td className="ct-text">{s.licence_class === 'derived-only' ? pick({ en: 'derived only', es: 'solo derivado' }, lang) : pick({ en: 'mirror allowed', es: 'espejo permitido' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{s.document}</td>
+                  <td className="ct-text ct-wide-only">{phraseEs(s.document, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -421,6 +466,8 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
   const m = sel.data.manifest;
   const agg = aggOf(sel);
   const fit = fitOf(sel);
+  // a fact of the aggregation that the document has not: not available, with the reason (U16-R4 c23 m3: no reason was given)
+  const noAggregation = `${formatNumber(null, lang)}: ${pick(r ? { en: 'the reverse stress runs no aggregation band; its headline capital is the simple sum of the four marginals', es: 'la tensión inversa no corre una agregación por bandas; su capital principal es la suma simple de las cuatro marginales' } : { en: 'this document carries no aggregation', es: 'este documento no trae una agregación' }, lang)}`;
   return (
     <div className="ct-context" data-case={m.case_id}>
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
@@ -438,11 +485,11 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
           <dt>{pick({ en: 'The capital of this case', es: 'El capital de este caso' }, lang)}</dt>
           <dd data-headline="simple-sum">{pick({ en: 'The headline capital is the simple sum of the capital of the four risks, as the IAPE adds them. Every diversified or bound figure is information for the validator, never capital.', es: 'El capital principal es la suma simple del capital de los cuatro riesgos, como los suma el IAPE. Toda cifra diversificada o acotada es información para el validador, nunca capital.' }, lang)}</dd>
           <dt>{pick({ en: 'Capital basis of a risk', es: 'Base del capital de un riesgo' }, lang)}</dt>
-          <dd data-capital-basis={agg?.capital_basis}>{agg ? pick(text(CAPITAL_BASIS_TEXT, agg.capital_basis), lang) : formatNumber(null, lang)}</dd>
+          <dd data-capital-basis={agg?.capital_basis}>{agg ? pick(text(CAPITAL_BASIS_TEXT, agg.capital_basis), lang) : noAggregation}</dd>
           <dt>{pick({ en: 'Horizon and confidence level', es: 'Horizonte y nivel de confianza' }, lang)}</dt>
-          <dd>{agg ? `${agg.horizon_years} ${pick({ en: 'year', es: 'año' }, lang)}; ${PCT(agg.confidence_level, lang, 1)}` : formatNumber(null, lang)}</dd>
+          <dd>{agg ? `${agg.horizon_years} ${pick({ en: 'year', es: 'año' }, lang)}; ${PCT(agg.confidence_level, lang, 1)}` : noAggregation}</dd>
           <dt>{pick({ en: 'Money', es: 'Dinero' }, lang)}</dt>
-          <dd>{`${pick(MONEY_UNIT, lang)}; ${base.units.ratio}`}</dd>
+          <dd>{`${pick(MONEY_UNIT, lang)}; ${base.units.ratio === 'decimal' ? pick({ en: 'ratios as decimals', es: 'razones como decimales' }, lang) : base.units.ratio}`}</dd>
           <dt>{pick({ en: 'Date of the bank', es: 'Fecha del banco' }, lang)}</dt>
           <dd>{base.bank.as_of}</dd>
           {o ? (
@@ -450,9 +497,9 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
               <dt>{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</dt>
               <dd data-scenario={o.scenario.scenario_id}>{`${pick(o.scenario.title, lang)}; ${pick(text(PROVIDER_TEXT, o.scenario.provider), lang)}; ${o.scenario.vintage_date}`}</dd>
               <dt>{pick({ en: 'Adaptation', es: 'Adaptación' }, lang)}</dt>
-              <dd data-adaptation={o.scenario.adaptation_label}>{`${pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang)}. ${pick(US_ADAPTATION, lang)}`}</dd>
+              <dd data-adaptation={o.scenario.adaptation_label}>{o.scenario.adaptation_label === 'us-calibrated-adaptation' ? pick(US_ADAPTATION, lang) : `${asSentence(pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang))} ${pick(US_ADAPTATION, lang)}`}</dd>
               <dt>{pick({ en: 'Source of the path', es: 'Fuente de la trayectoria' }, lang)}</dt>
-              <dd>{`${o.scenario.source_document} (${o.scenario.source_url})`}</dd>
+              <dd>{`${phraseEs(o.scenario.source_document, lang)} (${o.scenario.source_url})`}</dd>
               <dt>{pick({ en: 'Capital at the jump-off', es: 'Capital en el punto de partida' }, lang)}</dt>
               <dd>{`CET1 ${PCT(o.capital_start.cet1_ratio, lang)}; PE ${PCT(o.capital_start.pe_ratio, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(o.capital_start.rwa_clp_m, lang)}. ${pick(o.capital_start.basis, lang)}`}</dd>
             </>
@@ -491,7 +538,8 @@ export function PathReadout({ sel }: { sel: C18Sel | null }) {
   const o = outputsOf(sel);
   const p = o?.scenario.paths[sel?.path ?? 0] ?? null;
   const s = p ? o?.severity.rows.find((r) => r.maps_to_regressor === p.maps_to_regressor) ?? null : null;
-  const unit: BiText | undefined = p ? { en: p.unit, es: p.unit } : undefined;
+  // the level a path draws carries the unit of the level (U16-R3 c19 M2)
+  const unit: BiText | undefined = p ? plottedUnit(p) : undefined;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -590,7 +638,7 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
   const f = r?.factor_space.factors[i] ?? null;
   const g = r?.loss_model.gradient_clp_m_per_unit?.[i] ?? null;
   const gm = amount(g);
-  const unit: BiText | undefined = f ? { en: f.unit, es: f.unit } : undefined;
+  const unit: BiText | undefined = f ? { en: f.unit, es: unitEs(f.unit, 'es') } : undefined;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -598,7 +646,8 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
       items={[
         { label: { en: 'Shock', es: 'Choque' }, value: r?.solution.x_star[i] ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The deviation from the baseline in the minimum-distance scenario that breaks the bank.', es: 'La desviación desde la línea base en el escenario de mínima distancia que quiebra al banco.' } },
         { label: { en: 'Standardised', es: 'Estandarizado' }, value: r?.solution.z_star[i] ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The same shock in standard deviations of the factor.', es: 'El mismo choque en desviaciones estándar del factor.' } },
-        { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, unit: gm.unit, format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },
+        // no unit after "not available" (U16-R3 c19 m4)
+        { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, ...(gm.value === null ? { unitless: true as const } : { unit: gm.unit }), format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },
       ]}
     />
   );

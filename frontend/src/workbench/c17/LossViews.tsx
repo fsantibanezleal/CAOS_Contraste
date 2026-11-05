@@ -10,11 +10,12 @@ import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { AGGREGATION_TEXT, cellLabel, cellOf, outputsOf, text, whole, type C17Outputs, type C17Sel } from './selection';
+import { es } from './localise';
 
 type Chart = Pick<UPlotChartProps, 'x' | 'y' | 'series' | 'marks' | 'yMarks'>;
 
 /** A probability on a log axis: a zero has no place there, so it is left out (a gap), never drawn as a number. */
-const positive = (v: number): number | null => (v > 0 ? v : null);
+const positive = (v: number | null): number | null => (v !== null && v > 0 ? v : null);
 
 /**
  * The exceedance chart of the true annual loss: P(annual loss > x) on log-log axes with the three aggregations
@@ -27,7 +28,7 @@ export function exceedanceChart(e: C17Outputs['exceedance'], truth?: C17Outputs[
     x: {
       values: e.grid_eur.map((v) => v / 1e6),
       label: { en: 'Annual loss', es: 'Pérdida anual' },
-      unit: { en: 'm EUR', es: 'M EUR' },
+      unit: { en: 'mn EUR', es: 'M EUR' },
       log: true,
       format: { digits: 3 },
     },
@@ -43,11 +44,11 @@ export function exceedanceChart(e: C17Outputs['exceedance'], truth?: C17Outputs[
     ],
     marks: truth
       ? [
-          { x: truth.annual_loss_quantile.value_eur / 1e6, label: { en: 'True 99.9% quantile', es: 'Cuantil verdadero 99,9%' } },
+          { x: truth.annual_loss_quantile.value_eur / 1e6, label: { en: 'True 99.9% quantile', es: 'Cuantil verdadero 99,9 %' } },
           { x: e.quantile_999_eur.sla / 1e6, label: { en: 'SLA', es: 'SLA' } },
         ]
       : [{ x: e.quantile_999_eur.sla / 1e6, label: { en: 'SLA', es: 'SLA' } }],
-    yMarks: [{ y: 1 - level, label: { en: '99.9% level', es: 'Nivel 99,9%' }, tone: 'neutral' }],
+    yMarks: [{ y: 1 - level, label: { en: '99.9% level', es: 'Nivel 99,9 %' }, tone: 'neutral' }],
   };
 }
 
@@ -61,6 +62,14 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
   const t = o.truth;
   const q = t.annual_loss_quantile;
   const chart = exceedanceChart(e, t);
+  // the Panjer recursion computes the probabilities up to the end of its grid only: the points after it are absent in the document.
+  // The sentence names the last point of the axis inside the grid, never the end of the grid itself, which lies between that point
+  // and the next one (U16-R4 c21 B1: the step times the point count puts the end up to 1.6 times later)
+  const lastPanjer = e.panjer.exceedance.map((v) => v !== null).lastIndexOf(true);
+  const panjerEnd = lastPanjer >= 0 && lastPanjer < e.grid_eur.length - 1 ? e.grid_eur[lastPanjer] : null;
+  // the FFT too stops where its grid ends (U16-R3 c18 B2: past it the bake held the last value flat; the re-bake writes nulls)
+  const lastFft = (e.fft.exceedance as Array<number | null>).map((v) => v !== null).lastIndexOf(true);
+  const fftEnd = lastFft >= 0 && lastFft < e.grid_eur.length - 1 ? e.grid_eur[lastFft] : null;
   const rows: Array<{ id: string; label: BiText; value: number; how: BiText }> = [
     {
       id: 'true',
@@ -72,8 +81,8 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
       },
     },
     { id: 'monte-carlo', label: { en: 'Monte Carlo', es: 'Monte Carlo' }, value: e.quantile_999_eur.monte_carlo, how: { en: `${whole(e.monte_carlo.n_years, 'en')} simulated years, seed ${e.monte_carlo.seed}`, es: `${whole(e.monte_carlo.n_years, 'es')} años simulados, semilla ${e.monte_carlo.seed}` } },
-    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR` } },
-    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}` } },
+    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR${panjerEnd === null ? '' : `; its last point inside the grid is ${whole(panjerEnd, 'en')} EUR and the curve stops there`}`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR${panjerEnd === null ? '' : `; su último punto dentro de la grilla es ${whole(panjerEnd, 'es')} EUR y la curva se detiene ahí`}` } },
+    { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}${fftEnd === null ? '' : `; its last point inside the grid is ${whole(fftEnd, 'en')} EUR and the curve stops there`}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}${fftEnd === null ? '' : `; su último punto dentro de la grilla es ${whole(fftEnd, 'es')} EUR y la curva se detiene ahí`}` } },
     { id: 'sla', label: { en: 'Single loss approximation', es: 'Aproximación de una pérdida' }, value: e.quantile_999_eur.sla, how: { en: 'closed form, from the true severity and frequency', es: 'forma cerrada, desde la severidad y la frecuencia verdaderas' } },
   ];
   return (
@@ -83,8 +92,8 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
         title={{ en: 'Exceedance curve of the annual loss', es: 'Curva de excedencia de la pérdida anual' }}
         {...card}
         note={{
-          en: 'The probability that the annual loss of the generator exceeds each value, on log axes. Monte Carlo, Panjer recursion and FFT are three computations of the same distribution; the true 99.9 percent quantile and the single loss approximation are marked. Where the curve crosses the level 0.1 percent is the capital.',
-          es: 'La probabilidad de que la pérdida anual del generador supere cada valor, en ejes logarítmicos. Monte Carlo, recursión de Panjer y FFT son tres cálculos de la misma distribución; se marcan el cuantil verdadero al 99,9 por ciento y la aproximación de una pérdida. Donde la curva cruza el nivel de 0,1 por ciento está el capital.',
+          en: 'The probability that the annual loss of the generator exceeds each value, on log axes. Monte Carlo, Panjer recursion and FFT are three computations of the same distribution; the true 99.9 percent quantile and the single loss approximation are marked. Where the curve crosses the level 0.1 percent is the capital. The Panjer cross-check runs on a coarser grid (its step is in the table), so at the smallest losses its curve can sit below the other two.',
+          es: 'La probabilidad de que la pérdida anual del generador supere cada valor, en ejes logarítmicos. Monte Carlo, recursión de Panjer y FFT son tres cálculos de la misma distribución; se marcan el cuantil verdadero al 99,9 por ciento y la aproximación de una pérdida. Donde la curva cruza el nivel de 0,1 por ciento está el capital. La verificación de Panjer corre en una grilla más gruesa (su paso está en la tabla), así que en las pérdidas menores su curva puede quedar bajo las otras dos.',
         }}
       >
         <ChartOverTable chart={<UPlotChart height="fill" {...chart} />}>
@@ -92,7 +101,7 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Method', es: 'Método' }, lang)}</th>
-                <th>{pick({ en: '99.9% quantile (EUR)', es: 'Cuantil 99,9% (EUR)' }, lang)}</th>
+                <th>{pick({ en: '99.9% quantile (EUR)', es: 'Cuantil 99,9 % (EUR)' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'How', es: 'Cómo' }, lang)}</th>
               </tr>
             </thead>
@@ -192,31 +201,6 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
         }}
       >
         <ChartOverTable chart={<UPlotChart height="fill" {...chart} />}>
-          <div data-infinite-mean={String(o.infinite_mean)}>
-            {o.infinite_mean ? (
-              <Callout variant="strong" title={pick({ en: 'Infinite mean', es: 'Media infinita' }, lang)}>
-                {pick(
-                  {
-                    en: `The true tail index is ${formatNumber(o.tail_index, 'en', { digits: 3 })}, which is 1 or more: the severity has an infinite mean, so the annual loss has no mean and no mean-based quantity is computed for this variant.`,
-                    es: `El índice de cola verdadero es ${formatNumber(o.tail_index, 'es', { digits: 3 })}, que es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media y no se calcula ninguna cantidad basada en la media en esta variante.`,
-                  },
-                  lang,
-                )}
-              </Callout>
-            ) : null}
-            <KeyTable
-              table="tail-truth"
-              rows={[
-                { id: 'tail-index', label: { en: 'True tail index', es: 'Índice de cola verdadero' }, value: formatNumber(o.tail_index, lang, { digits: 3 }), attrs: { 'data-tail-index': String(o.tail_index) } },
-                {
-                  id: 'mean',
-                  label: { en: 'True annual mean', es: 'Media anual verdadera' },
-                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${mean.reason ?? ''})` : `${whole(mean.value_eur, lang)} EUR`,
-                  attrs: { 'data-mean': mean.value_eur === null ? 'not-available' : 'available' },
-                },
-              ]}
-            />
-          </div>
           <table className="caos-table ct-wrap-head" data-table="threshold-stability">
             <thead>
               <tr>
@@ -243,7 +227,33 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
               ))}
             </tbody>
           </table>
-          <C17TestsTable variant={sel.data.variant} host="tail" />
+          {/* under the thresholds table: above it the callout and the key rows left no data row in view at 1280 (U16-R5 c23 n4) */}
+          <div data-infinite-mean={String(o.infinite_mean)}>
+            {o.infinite_mean ? (
+              <Callout variant="strong" title={pick({ en: 'Infinite mean', es: 'Media infinita' }, lang)}>
+                {pick(
+                  {
+                    en: `The true tail index is ${formatNumber(o.tail_index, 'en', { digits: 3 })}, which is 1 or more: the severity has an infinite mean, so the annual loss has no mean and no mean-based quantity is computed for this variant.`,
+                    es: `El índice de cola verdadero es ${formatNumber(o.tail_index, 'es', { digits: 3 })}, que es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media y no se calcula ninguna cantidad basada en la media en esta variante.`,
+                  },
+                  lang,
+                )}
+              </Callout>
+            ) : null}
+            <KeyTable
+              table="tail-truth"
+              rows={[
+                { id: 'tail-index', label: { en: 'True tail index', es: 'Índice de cola verdadero' }, value: formatNumber(o.tail_index, lang, { digits: 3 }), attrs: { 'data-tail-index': String(o.tail_index) } },
+                {
+                  id: 'mean',
+                  label: { en: 'True annual mean', es: 'Media anual verdadera' },
+                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${es(mean.reason, lang)})` : `${whole(mean.value_eur, lang)} EUR`,
+                  attrs: { 'data-mean': mean.value_eur === null ? 'not-available' : 'available' },
+                },
+              ]}
+            />
+          </div>
+          <C17TestsTable variant={sel.data.variant} host="tail" cell={cell.id} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

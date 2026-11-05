@@ -7,6 +7,7 @@ import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/char
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { docText } from '../c14/C14Common';
 import { LEG_SHORT, SHOCK_TEXT, moneyDoc, outputsOf, scaleUnit, text, type C15Sel } from './selection';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
@@ -53,7 +54,7 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={f.distances.map((x) => ({ id: `${x.leg}-${x.measure}-${x.shock}`, label: distLabel(x), value: x.distance_bp, tone: x.binds ? ('bad' as const) : ('accent' as const) }))}
-              axis={{ label: { en: 'Lowest post-shock rate minus the floor (the floor is zero)', es: 'Tasa más baja posterior al choque menos el piso (el piso es cero)' }, unit: { en: 'bp', es: 'pb' }, format: { digits: 4 } }}
+              axis={{ label: { en: 'Lowest post-shock rate minus the floor (the floor is zero)', es: 'Tasa más baja posterior al choque menos el piso (el piso es cero)' }, unit: { en: 'bp', es: 'pb' }, format: { decimals: 1 } }}
             />
           }
         >
@@ -122,6 +123,9 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
               ))}
             </tbody>
           </table>
+          {f.effects.length === 0 ? (
+            <p className="ct-note" data-block="floor-effects-none">{pick({ en: 'The effects table is empty: in this variant no floor changes the measure.', es: 'La tabla de efectos está vacía: en esta variante ningún piso cambia la medida.' }, lang)}</p>
+          ) : null}
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -141,10 +145,15 @@ export function thresholdsChart(sel: C15Sel | null): Pick<UPlotChartProps, 'x' |
   const tests = o.thresholds.tests;
   return {
     x: { values: tests.map((_, i) => i + 1), label: { en: 'Test (numbered as in the table)', es: 'Prueba (numerada como en la tabla)' }, format: { decimals: 0 } },
-    y: { label: { en: 'Ratio of the measure to its base', es: 'Razón de la medida a su base' }, format: { percent: true, decimals: 0 } },
+    y: { label: { en: 'Measure over its base', es: 'Medida sobre su base' }, format: { percent: true, decimals: 0 } },
     series: [
-      { label: { en: 'Measured', es: 'Medido' }, values: tests.map((t) => t.ratio), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
-      { label: { en: 'Threshold of the test', es: 'Umbral de la prueba' }, values: tests.map((t) => t.threshold), color: '--color-bad', width: 2.2, dash: [6, 3] },
+      // a breached test is drawn apart from the tests within their threshold, not only named in the table (R4 c18 m6)
+      { label: { en: 'Measured, within its threshold', es: 'Medido, dentro de su umbral' }, values: tests.map((t) => (t.breached ? null : t.ratio)), color: '--color-accent', width: 2.4, mode: 'points', size: 12 },
+      ...(tests.some((t) => t.breached)
+        ? [{ label: { en: 'Measured, above its threshold', es: 'Medido, sobre su umbral' }, values: tests.map((t) => (t.breached ? t.ratio : null)), color: '--color-warn' as const, width: 2.4, mode: 'points' as const, size: 14 }]
+        : []),
+      // a mark per test, not a line: the three thresholds belong to three different tests and a line would join them (U16-R2 b07 m6)
+      { label: { en: 'Threshold of the test', es: 'Umbral de la prueba' }, values: tests.map((t) => t.threshold), color: '--color-bad', width: 2.2, mode: 'points', size: 8 },
     ],
   };
 }
@@ -165,13 +174,17 @@ export function ThresholdsView({ sel }: { sel: C15Sel | null }) {
         title={{ en: 'The prioritised-bank tests', es: 'Las pruebas de banco priorizado' }}
         {...card}
         note={{
-          en: 'A bank is prioritised when any of three tests is breached: delta NII over 5 percent of Tier 1, delta EVE over 15 percent of Tier 1, or delta NII over 18 percent of the twelve-month net interest and indexation margin. The dashed line joins the three thresholds, one per test, and a point above the line at its own test breaches.',
-          es: 'Un banco es priorizado cuando se supera cualquiera de tres pruebas: delta NII sobre el 5 por ciento del capital de nivel 1, delta EVE sobre el 15 por ciento del capital de nivel 1, o delta NII sobre el 18 por ciento del margen neto de intereses y reajustes a doce meses. La línea punteada une los tres umbrales, uno por prueba, y un punto sobre la línea en su propia prueba la supera.',
+          en: 'A bank is prioritised when any of three tests is breached: delta NII over 5 percent of Tier 1, delta EVE over 15 percent of Tier 1, or delta NII over 18 percent of the twelve-month net interest and indexation margin. Each red mark is the threshold of its test; a blue point is within its threshold, and an amber point above the red mark of its own test breaches it.',
+          es: 'Un banco es priorizado cuando se supera cualquiera de tres pruebas: delta NII sobre el 5 por ciento del capital de nivel 1, delta EVE sobre el 15 por ciento del capital de nivel 1, o delta NII sobre el 18 por ciento del margen neto de intereses y reajustes a doce meses. Cada marca roja es el umbral de su prueba; un punto azul está dentro de su umbral, y un punto ámbar sobre la marca roja de su propia prueba la supera.',
         }}
       >
         <ChartOverTable
           chart={<UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} readout={(i) => `${pick(TEST_TEXT[t.tests[i].id].name, lang)}`} />}
         >
+          {/* the view's answer first, never at the fold of its box (R4 c18 m15) */}
+          <p data-block="verdict" data-prioritised={t.prioritised}>
+            <strong>{pick(t.prioritised ? { en: 'The bank is prioritised: at least one test is breached.', es: 'El banco es priorizado: al menos una prueba excede su umbral.' } : { en: 'The bank is not prioritised: no test is breached.', es: 'El banco no es priorizado: ninguna prueba excede su umbral.' }, lang)}</strong>
+          </p>
           <table className="caos-table ct-wrap-head" data-table="thresholds" data-prioritised={t.prioritised}>
             <thead>
               <tr>
@@ -203,10 +216,8 @@ export function ThresholdsView({ sel }: { sel: C15Sel | null }) {
             <dd>{cell(t.tier1, lang)}</dd>
             <dt>{pick({ en: `Net interest and indexation margin, 12 months (${unit})`, es: `Margen neto de intereses y reajustes, 12 meses (${unit})` }, lang)}</dt>
             <dd>{cell(t.net_interest_and_indexation_margin_12m, lang)}</dd>
-            <dt>{pick({ en: 'The bank', es: 'El banco' }, lang)}</dt>
-            <dd>{pick(t.prioritised ? { en: 'is prioritised: at least one test is breached', es: 'es priorizado: al menos una prueba es superada' } : { en: 'is not prioritised: no test is breached', es: 'no es priorizado: ninguna prueba es superada' }, lang)}</dd>
             <dt>{pick({ en: 'Reference', es: 'Referencia' }, lang)}</dt>
-            <dd>{t.reference}</dd>
+            <dd>{docText(t.reference, lang)}</dd>
           </dl>
         </ChartOverTable>
       </PlotCard>

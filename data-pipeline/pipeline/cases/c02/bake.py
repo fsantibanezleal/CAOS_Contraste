@@ -28,6 +28,7 @@ from ...io import fetch as fetching
 from ...io import sources as registry
 from ...io.formats import write_json
 from ...stages.export import write_artifact
+from ..reference_text import with_reference_text
 from . import battery, blocks, findings, models, reader
 from . import conventions as cv
 from .fits import Fit, build_fits
@@ -97,6 +98,12 @@ def check(doc: dict[str, Any]) -> list[str]:
     return list(_semantics().check_c02(doc))
 
 
+def document_tests(test_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The test rows of a document with each reference in both languages (``extras.reference_text``, c02-outputs 4.0.0): the Spanish
+    Reason column printed nothing for the rows whose reference the engine writes in English only (U16-R4 c03 m11)."""
+    return with_reference_text(test_rows)
+
+
 def _split_block(f: Fit, seed: int) -> dict[str, Any]:
     sp = f.sp
     return {"protocol": "locked-stratified-holdout", "seed": seed, "train_rows": int(len(sp.train)), "calibration_rows": int(len(sp.calibration)),
@@ -141,7 +148,8 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
     d_hold = np.array([int(f.yhold.sum()) for f in hz])
     backtest = blocks.backtest_row(champ_pd, n_hold, d_hold) if term is not None else None      # the lifetime back-test presumes a cumulative curve
     cum = np.array([events_by[k] / rows_by[k] for k in range(1, 6)])
-    detail, impact = blocks.impact_block(cum, "the five file event rates, read as the cumulative PD of horizons 1 to 5")
+    detail, impact = blocks.impact_block(cum, cv.t("the five file event rates, read as the cumulative PD of horizons 1 to 5",
+                                              "las cinco tasas de evento de los archivos, leídas como la PD acumulada de los horizontes 1 a 5"))
     docs: dict[str, dict[str, Any]] = {}
     values: dict[str, float] = {}
     for hid in VARIANT_IDS:
@@ -166,7 +174,7 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
             "split": _split_block(f, seed), "rungs": rung_blocks, "challenger": table, "transfer": battery.transfer_block(fits, f),
             "term_structure": term, "term_structure_reason": term_reason, "impact_detail": detail, "parameters": cv.parameters(), "requirements": REQUIREMENTS}
         doc = build_artifact(case_id=CASE_ID, variant_id=hid, model=models.model_records(f, False, cv.BATTERY_RUNGS), outputs=outputs,
-                             tests=test_rows, impact=impact, findings=findings.build(test_rows), lineage=lineage, lane=lane)
+                             tests=document_tests(test_rows), impact=impact, findings=findings.build(test_rows), lineage=lineage, lane=lane)
         docs[hid] = doc
         values[f"event_rate_{hid}"] = outputs["counts"]["event_rate"]
         for r in rung_blocks:
@@ -242,7 +250,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: 
         sums.append(_sum(root, rel))
         o = doc["outputs"]
         if vid == cv.POOLED:
-            title, short = cv.t("Pooled: the five files stacked", "Agrupada: los cinco archivos apilados"), cv.t("Pooled", "Agrupada")
+            title, short = cv.POOLED_TITLE, cv.POOLED_SHORT
         else:
             title = cv.t(f"{o['years']}-year file", f"Archivo de {o['years']} año{'s' if o['years'] > 1 else ''}")
             short = cv.t(f"{o['years']} y", f"{o['years']} a")
@@ -256,7 +264,8 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: 
     wanted = expect_ranges(built.values) if strict_expect else {k: (-1.0, 1.0) for k in built.values}
     ranges = expectations.check(CASE_ID, wanted, built.values)
     manifest_doc = build_case_manifest(
-        case_id=CASE_ID, title=dict(CASE.title), category={"en": "Credit scoring", "es": "Scoring de crédito"}, question=dict(CASE.question),
+        depends_on=CASE.depends_on(),
+        case_id=CASE_ID, title=dict(CASE.title), category={"en": "Credit scoring", "es": "Puntuación crediticia"}, question=dict(CASE.question),
         sources=list(SOURCES), seed=seed, variants=entries, default_variant="h1", contract={cv.SOURCE_ID: built.contract},
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details())
     write_json(paths.manifests / f"{CASE_ID}.json", manifest_doc)

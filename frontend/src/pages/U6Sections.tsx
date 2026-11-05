@@ -3,11 +3,12 @@
 // rungs of each variant with the case's own metrics. Every number is read from the committed variant artifacts when the
 // page opens; none is typed in, and a value the artifact leaves null says "not available" (T13).
 import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import { isValidElement, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
-import type { C03Outputs } from '../workbench/c03/selection';
+import { modelName } from '../workbench/names';
+import { reasonText, type C03Outputs } from '../workbench/c03/selection';
 import type { C06Outputs } from '../workbench/c06/selection';
 import type { C07Outputs } from '../workbench/c07/selection';
 import type { C08Outputs } from '../workbench/c08/selection';
@@ -22,13 +23,21 @@ export const U6_CASES = new Set(['C03', 'C06', 'C07', 'C08', 'C09']);
 /** The cases with a rung comparison for the Benchmark (the provisions cases compare regimes, in the App). */
 export const U6_BENCHMARK_CASES = new Set(['C03', 'C08', 'C09']);
 
-export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(v, lang, { decimals });
-export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
+/** A value that rounds to zero at the digits shown is zero, never "-0.000" (U16-R2 b11 m4). `scale` is 100 for a percent. */
+const unsignedZero = (v: number | null | undefined, decimals: number, scale = 1): number | null | undefined =>
+  typeof v === 'number' && Math.abs(v * scale) < 0.5 * 10 ** -decimals ? 0 : v;
+export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(unsignedZero(v, decimals), lang, { decimals });
+export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(unsignedZero(v, decimals, 100), lang, { percent: true, decimals });
+/** A difference of probabilities in percentage points, as C04 writes its own (U16-R2 b12 m9). */
+export const pp = (v: number | null | undefined, lang: Lang, decimals = 2) => (typeof v === 'number' ? `${num(v * 100, lang, decimals)} pp` : formatNumber(null, lang));
+/** A p-value: three significant digits, so 1.0e-91 never reads 0.000 (U16-R2 b11 m5); the same format as the C01 rows. */
+export const pval = (v: number | null | undefined, lang: Lang, digits = 3) => formatNumber(v, lang, { digits });
 
 /** An amount for a table cell: scaled to billions or millions with its unit, never an eleven-digit number. */
 export function money(v: number | null | undefined, currency: string, lang: Lang): string {
   const c = compactMoney(v, currency);
-  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, c.format)} ${pick(c.unit, lang)}`;
+  // one decimal for a scaled amount, so the amounts of a table read alike ("867.0 m" beside "457.3 m", U16-R2 b12 m14)
+  return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, pick(c.unit, 'en') === currency ? c.format : { decimals: 1 })} ${pick(c.unit, lang)}`;
 }
 
 /** The weighted mean of the values that are present, or null when there is none. */
@@ -43,13 +52,30 @@ function wmean(items: Array<{ v: number | null | undefined; w: number }>): numbe
   return w > 0 ? s / w : null;
 }
 
+/** A text cell longer than this wraps like a text column: a "not available (reason)" cell must not widen the table past its pane. */
+const LONG_CELL = 28;
+
+/** The box of a comparison table: it scrolls sideways at every width with a faded right edge and a gap after the last column, so
+ * a table wider than its pane is reached, never cut (R3 c23 M2: above 900 px the C18 table was clipped at the pane edge). */
+const TABLE_BOX = { overflowX: 'auto', maxWidth: '100%', minWidth: 0, paddingRight: '1.5rem', maskImage: 'linear-gradient(to right, #000 calc(100% - 1.5rem), transparent)' } as const;
+
 export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
+  // a column that holds a text cell is a text column, header and every cell: one alignment per column (R4 c29 m8, C16: a reason
+  // left-aligned under a right-aligned header beside right-aligned values)
+  const isText = (c: Cell | undefined) => (typeof c === 'string' && c.length > LONG_CELL) || isValidElement(c);
+  const textCol = head.map((_, j) => j < wide || rows.some((r) => isText(r[j])));
+  // a column with a reason or a sentence keeps a readable width inside the scroll box: laid out narrow at 390, the C12 wrong-way
+  // reason in the ORE column wrapped one word per line (R5 c30 m8)
+  const sentence = (c: Cell | undefined) => (typeof c === 'string' ? c.length > 2 * LONG_CELL : isValidElement(c));
+  const readable = head.map((_, j) => j >= wide && rows.some((r) => sentence(r[j])));
   return (
-    <table className="caos-table" data-state="ready">
+    <div data-table-box style={TABLE_BOX}>
+    {/* rows several lines tall read from the top (R3 c23 M3: the C21 year pair sat 500 px down its centred row) */}
+    <table className="caos-table ct-top" data-state="ready">
       <thead>
         <tr>
           {head.map((h, i) => (
-            <th key={h} className={i < wide ? 'caos-col-text' : undefined}>
+            <th key={h} className={textCol[i] ? 'caos-col-text' : undefined} style={readable[i] ? { minWidth: '12rem' } : undefined}>
               {h}
             </th>
           ))}
@@ -59,7 +85,9 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
         {rows.map((r, i) => (
           <tr key={i}>
             {r.map((c, j) => (
-              <td key={j} className={j < wide ? 'caos-col-text' : undefined}>
+              // an element cell (a marked citation) is text that wraps like a long string (the R2b review: the C21 four-fifths cell ran
+              // the table past the pane at 1280)
+              <td key={j} className={textCol[j] ? 'caos-col-text' : undefined}>
                 {c}
               </td>
             ))}
@@ -67,6 +95,7 @@ export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -115,7 +144,7 @@ export function experimentRows(manifest: CaseManifest, vs: VariantArtifact<unkno
     const base = o.ccf_by_design.rows.filter((r) => r.estimator === 'mean');
     const inside = o.ccf_by_design.rows.filter((r) => r.within_tolerance).length;
     const row = base[0];
-    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pct(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
+    return [name, pct(o.generator.true_ccf.value, lang), pct(row?.estimate.value, lang), pp(row?.bias, lang), `${inside} / ${o.ccf_by_design.rows.length}`];
   });
 }
 
@@ -130,7 +159,7 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
     C03: [t('Variant', 'Variante'), t('Training loans', 'Créditos de entrenamiento'), t('Vintages with a 5-year mark', 'Cosechas con marca de 5 años'), t('Predicted 5-year PD', 'PD a 5 años predicha'), t('Observed 5-year PD', 'PD a 5 años observada'), t('Largest PSI', 'PSI máximo')],
     C06: [t('Variant', 'Variante'), t('Accounts', 'Cuentas'), t('Gross carrying amount', 'Importe en libros bruto'), t('Expected credit loss', 'Pérdida crediticia esperada'), t('Coverage', 'Cobertura'), t('Share not in stage 1', 'Parte fuera de la etapa 1')],
     C07: [t('Variant', 'Variante'), t('CMF B-1', 'CMF B-1'), t('IFRS 9', 'IFRS 9'), t('BdE Annex 9', 'Anejo 9 del BdE')],
-    C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD proxy media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
+    C08: [t('Variant', 'Variante'), t('Defaults', 'Incumplimientos'), t('Mean LGD proxy', 'LGD aproximación media'), t('Share at 1', 'Parte en 1'), t('Share above 1', 'Parte sobre 1'), t('Downturn cohorts covered', 'Cohortes de recesión cubiertas')],
     C09: [t('Variant', 'Variante'), t('Known CCF', 'CCF conocido'), t('Mean estimator, fixed horizon', 'Estimador de media, horizonte fijo'), t('Its bias', 'Su sesgo'), t('Estimates inside the tolerance', 'Estimaciones dentro de la tolerancia')],
   };
   return (
@@ -144,9 +173,25 @@ export function U6ExperimentsSection({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
-function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
+/** A rung by its short title, the one label source of the Benchmark (U16-R2 b11 m6: "beta Beta regression" doubled the code). */
+export function rungName(v: VariantArtifact<unknown>, id: string, lang: Lang): string {
   const m = v.model.find((x) => x.id === id);
-  return m ? `${m.rung ? `${m.rung} ` : ''}${pick(m.title, lang)}` : id;
+  return m ? pick(m.short_title ?? m.title, lang) : (ABSENT_RUNG[id] ? pick(ABSENT_RUNG[id], lang) : id);
+}
+/** A rung the document declares absent has no model record, so no short title: its name is here (the identifier stays the same in both languages). */
+const ABSENT_RUNG: Record<string, { en: string; es: string }> = { 'P5-tabpfn': { en: 'P5 TabPFN', es: 'P5 TabPFN' } };
+
+/** The C03 Benchmark rows of one variant: each rung with its AUC (or "not available" and the reason), interval, Brier and gap. */
+export function c03BenchmarkRows(v: VariantArtifact<unknown>, lang: Lang): Cell[][] {
+  const o = v.outputs as C03Outputs;
+  return o.rung_comparison.map((r) => [
+    rungName(v, r.rung_id, lang),
+    // the reason in the reader language (R3 c23 B1: the Spanish Benchmark printed the engine's English)
+    r.auc === null ? `${formatNumber(null, lang)}${r.reason ? ` (${pick(reasonText(r.reason), lang)})` : ''}` : num(r.auc, lang, 4),
+    r.auc_ci_low === null || r.auc_ci_high === null ? '' : `${num(r.auc_ci_low, lang, 4)} - ${num(r.auc_ci_high, lang, 4)}`,
+    num(r.brier, lang, 4),
+    pct(r.calibration_gap_5y, lang),
+  ]);
 }
 
 /** The Benchmark section of a case: its rungs compared with its own metrics, one table per variant. */
@@ -161,19 +206,13 @@ export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
       {all.data.map((v) => {
         const name = title[v.variant_id] ?? v.variant_id;
         if (manifest.case_id === 'C03') {
-          const o = v.outputs as C03Outputs;
+          
           return (
             <section key={v.variant_id}>
               <h4>{name}</h4>
               <Table
-                head={[t('Rung', 'Peldaño'), 'AUC', t('95% interval', 'Intervalo 95%'), 'Brier', t('5-year calibration gap', 'Brecha de calibración a 5 años')]}
-                rows={o.rung_comparison.map((r) => [
-                  rungName(v, r.rung_id, lang),
-                  r.auc === null ? `${formatNumber(null, lang)}${r.reason ? ` (${r.reason})` : ''}` : num(r.auc, lang, 4),
-                  r.auc_ci_low === null || r.auc_ci_high === null ? '' : `${num(r.auc_ci_low, lang, 4)} - ${num(r.auc_ci_high, lang, 4)}`,
-                  num(r.brier, lang, 4),
-                  pct(r.calibration_gap_5y, lang),
-                ])}
+                head={[t('Rung', 'Peldaño'), 'AUC', t('95% interval', 'Intervalo 95 %'), 'Brier', t('5-year calibration gap', 'Brecha de calibración a 5 años')]}
+                rows={c03BenchmarkRows(v, lang)}
               />
             </section>
           );
@@ -205,7 +244,8 @@ export function U6BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
             <h4>{name}</h4>
             <Table
               head={[t('EAD model', 'Modelo de EAD'), t('Predicted EAD', 'EAD predicha'), t('Realised EAD', 'EAD realizada'), t('Relative gap', 'Brecha relativa'), t('Worst band light', 'Peor luz por tramo')]}
-              rows={models.map((r) => [r.m.model_id, money(r.pred, cur, lang), money(r.real, cur, lang), pct(r.rel, lang), light[r.worst] ?? r.worst])}
+              // each EAD model by its name (the raw-id scan of the pages: ccf-cohort-floor-cap, direct-ead)
+              rows={models.map((r) => [pick(modelName(r.m.model_id, { caseId: 'C09', models: v.model }) ?? { en: r.m.model_id, es: r.m.model_id }, lang), money(r.pred, cur, lang), money(r.real, cur, lang), pct(r.rel, lang), light[r.worst] ?? r.worst])}
             />
           </section>
         );

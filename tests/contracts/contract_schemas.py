@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import fnmatch
 import json
+import subprocess
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -79,9 +81,36 @@ def validator(ref: str) -> Draft202012Validator:
     return Draft202012Validator({"$schema": DIALECT, "$ref": sid}, registry=registry())
 
 
+def resolve_name(ref: str, instance: Any) -> str:
+    """The ref (path under schemas/ without the suffix) of a schema given as a bare file name, which is what
+    ``scripts/check_documents.py`` (verbatim from the template) passes: ``case-index`` -> ``common/case-index``. A name that
+    several case folders share (``models``, ``variant``, ``variant-scenario``, ``variant-reverse``) resolves to the one whose
+    ``case_id`` const equals the document's ``case_id`` (every schema under ``schemas/<case>/`` declares it). A ref that
+    already has a folder, or an ``$id``, is returned as it is."""
+    if "/" in ref or ref.startswith(BASE):
+        return ref
+    named = [p for p in schema_files() if p.name == f"{ref}.schema.json"]
+    if len(named) > 1 and isinstance(instance, dict):
+        named = [p for p in named if Candidate(p).consts.get("case_id") == instance.get("case_id")] or named
+    if len(named) != 1:
+        raise SelectionError(f"schema name {ref!r} resolves to {len(named)} files: {[p.relative_to(SCHEMAS).as_posix() for p in named]}")
+    return named[0].relative_to(SCHEMAS).as_posix().removesuffix(".schema.json")
+
+
 def errors(ref: str, instance: Any) -> list[str]:
-    """Every way ``instance`` departs from the schema ``ref``, as ``path: message``; empty when it conforms."""
-    v = validator(ref)
+    """Every way ``instance`` departs from the schema ``ref`` (a ref, an ``$id`` or a bare file name, see
+    :func:`resolve_name`), as ``path: message``; empty when it conforms."""
+    v = validator(resolve_name(ref, instance))
+    found = sorted(v.iter_errors(instance), key=lambda e: [str(p) for p in e.absolute_path])
+    return [f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message}" for e in found[:25]]
+
+
+def component_errors(name: str, instance: Any) -> list[str]:
+    """Every way ``instance`` departs from the OpenAPI component ``name`` of docs/contracts/api.openapi.json (the document is
+    self-contained: its components reference one another locally); empty when it conforms."""
+    api = load_json(CONTRACTS / "api.openapi.json")
+    assert name in api["components"]["schemas"], f"api.openapi.json has no component {name!r}"
+    v = Draft202012Validator({"$schema": DIALECT, "$ref": f"#/components/schemas/{name}", "components": api["components"]})
     found = sorted(v.iter_errors(instance), key=lambda e: [str(p) for p in e.absolute_path])
     return [f"{'/'.join(str(p) for p in e.absolute_path) or '$'}: {e.message}" for e in found[:25]]
 
@@ -229,6 +258,18 @@ def catalog_rows() -> list[dict[str, str]]:
     return rows
 
 
+def latest_history_version(contract_id: str) -> str:
+    """The newest version the catalog's History table records for a contract (its rows carry a date in the third column)."""
+    versions = []
+    for line in (CONTRACTS / "catalog.md").read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) > 2 and cells[0] == contract_id and len(cells[2]) == 10 and cells[2][4] == "-" and cells[2][7] == "-":
+            versions.append(cells[1])
+    if not versions:
+        raise LookupError(f"no History row for {contract_id}")
+    return max(versions, key=lambda v: tuple(int(x) for x in v.split(".")))
+
+
 def exempt_from_documents(rows: list[dict[str, str]], fixtures: list[Path]) -> set[str]:
     """Schemas allowed to have no committed document under data/ or the registries: those whose catalog row is
     ``active`` (served by a provider) and those that a document under docs/contracts/fixtures/ covers."""
@@ -255,3 +296,22 @@ def committed_documents() -> list[Path]:
     docs += [ROOT / "data-pipeline" / "config" / "sources.json", ROOT / "data-pipeline" / "config" / "licences.json",
              ROOT / "data" / "sources" / "manifest.json"]
     return docs
+
+
+def edit(path: Path, change) -> None:
+    """Load a committed JSON document, change it, write it back compact (the plant of the document-guard tests)."""
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    change(doc)
+    path.write_text(json.dumps(doc, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+
+
+NO_NUMPY = ("import sys, runpy; sys.modules['numpy'] = None; path = sys.argv[1]; sys.argv = sys.argv[1:]; "
+            "runpy.run_path(path, run_name='__main__')")
+
+
+def run_readiness_guard(root: Path | None = None, *, no_numpy: bool = False) -> subprocess.CompletedProcess:
+    """Run the readiness guard as CI does, on the repository or on a copy; ``no_numpy`` makes ``import numpy`` fail first."""
+    script = str(ROOT / "scripts" / "check_readiness.py")
+    args = [str(root)] if root else []
+    cmd = [sys.executable, "-c", NO_NUMPY, script, *args] if no_numpy else [sys.executable, script, *args]
+    return subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)

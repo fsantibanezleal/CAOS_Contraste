@@ -10,6 +10,13 @@ import { Pending } from '../Pending';
 import { LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20ShockRow } from './selection';
+import { es, localTests } from './localise';
+import { inputName } from '../names';
+
+/** The share of fields present with one decimal, as the table writes it (U16-R4 c24 n10: a bar of 99.6 % was labelled "100 %"). */
+export const QUALITY_FORMAT = { percent: true, decimals: 1 } as const;
+/** A p value with three fixed decimals (0.498 beside 0.031 and 0.890; U16-R4 c24 n12: "0.5" for 0.4979), significant digits below 0.001. */
+const pText = (v: number, lang: 'en' | 'es'): string => (Math.abs(v) < 1e-3 ? sig(v, lang) : formatNumber(v, lang, { decimals: 3 }));
 
 const TITLE_DEGRADATION: BiText = { en: 'Degradation by shock', es: 'Degradación por choque' };
 const TITLE_DRIFT: BiText = { en: 'Drift by shock', es: 'Deriva por choque' };
@@ -27,7 +34,7 @@ const BLOCK_TEXT: Record<Block, { title: Bi; note: (source: string | null) => Bi
     title: { en: 'Contraste-applied', es: 'Aplicados por Contraste' },
     note: (source) => ({
       en: `Contraste applies each shock family to the structured view itself, with the parameters of ${source ?? 'the dataset metadata'}. These are Contraste's own application, labelled as such, and not the dataset's shipped shocks.`,
-      es: `Contraste aplica cada familia de choques a la vista estructurada misma, con los parámetros de ${source ?? 'los metadatos del conjunto'}. Es la aplicación propia de Contraste, etiquetada como tal, y no los choques entregados por el conjunto.`,
+      es: `Contraste aplica cada familia de choques a la vista estructurada misma, con los parámetros de ${source ? es(source, 'es') : 'los metadatos del conjunto'}. Es la aplicación propia de Contraste, etiquetada como tal, y no los choques entregados por el conjunto.`,
     }),
   },
 };
@@ -58,7 +65,7 @@ function BlockCard({ sel, block }: { sel: C20Sel; block: Block }) {
               title={{ en: 'AUC loss by shock', es: 'Pérdida de AUC por choque' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: -r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
+              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: 0 - r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
               axis={{ label: { en: 'AUC loss against the clean set (positive is a loss)', es: 'Pérdida de AUC (positiva) vs. conjunto limpio' }, format: { decimals: 3 } }}
             />
           )
@@ -156,8 +163,9 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Shock', es: 'Choque' }, lang)}</th>
-                <th>PSI</th>
-                <th>CSI</th>
+                {/* the largest PSI and CSI over the inputs, not the PSI of the test row below (U16-R3 c20 m6) */}
+                <th>{pick({ en: 'Largest input PSI', es: 'Mayor PSI de las entradas' }, lang)}</th>
+                <th>{pick({ en: 'Largest input CSI', es: 'Mayor CSI de las entradas' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Chi-square test', es: 'Prueba chi-cuadrado' }, lang)}</th>
               </tr>
             </thead>
@@ -170,19 +178,19 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text" data-benchmark={r.drift.chi2_p_value === null ? 'none' : r.drift.chi2_p_value < 0.05 ? 'exceeded' : 'within'} data-na={r.drift.chi2_p_value === null ? 'true' : undefined}>
                     {r.drift.chi2_p_value === null
                       ? `${formatNumber(null, lang)} (${pick({ en: 'the test did not run', es: 'la prueba no corrió' }, lang)})`
-                      : `p = ${sig(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'above the benchmark at 5%', es: 'sobre el umbral al 5%' } : { en: 'within the benchmark at 5%', es: 'dentro del umbral al 5%' }, lang)}`}
+                      : `p = ${pText(r.drift.chi2_p_value, lang)}, ${pick(r.drift.chi2_p_value < 0.05 ? { en: 'significant at 5% (p below 0.05)', es: 'significativo al 5 % (p bajo 0,05)' } : { en: 'not significant at 5%', es: 'no significativo al 5 %' }, lang)}`}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
       <PlotCard
         fill
-        title={{ en: `CSI by shock and the inputs of ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'en').toLowerCase() : 'the shock'}`, es: `CSI por choque y las entradas de ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'es').toLowerCase() : 'el choque'}` }}
+        title={{ en: `CSI by shock and the inputs of ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'en') : 'the shock'}`, es: `CSI por choque y las entradas de ${focus ? pick(text(SHOCK_TEXT, focus.shock_id), 'es') : 'el choque'}` }}
         {...card}
         note={{ en: 'The CSI applies the PSI formula to each input. The table lists every input of the shock in focus with its own PSI, CSI and chi-square p-value.', es: 'El CSI aplica la fórmula del PSI a cada entrada. La tabla lista cada entrada del choque en foco con su propio PSI, CSI y valor p de chi-cuadrado.' }}
       >
@@ -199,10 +207,10 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {(focus?.drift.variables ?? []).map((v) => (
                 <tr key={v.name} data-input={v.name}>
-                  <td className="ct-text">{v.name}</td>
+                  <td className="ct-text">{pick(inputName(v.name) ?? { en: v.name, es: v.name }, lang)}</td>
                   <td>{f3(v.psi, lang)}</td>
                   <td>{f3(v.csi, lang)}</td>
-                  <td data-na={v.chi2_p_value === null ? 'true' : undefined}>{v.chi2_p_value === null ? formatNumber(null, lang) : sig(v.chi2_p_value, lang)}</td>
+                  <td data-na={v.chi2_p_value === null ? 'true' : undefined}>{v.chi2_p_value === null ? formatNumber(null, lang) : pText(v.chi2_p_value, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -242,7 +250,7 @@ export function QualityView({ sel }: { sel: C20Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: r.data_quality.completeness, highlight: r.shock_id === sel.shock }))}
-              axis={{ label: { en: 'Share of fields present', es: 'Parte de los campos presentes' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+              axis={{ label: { en: 'Share of fields present', es: 'Parte de los campos presentes' }, format: QUALITY_FORMAT, range: [0, 1] }}
             />
           }
         >

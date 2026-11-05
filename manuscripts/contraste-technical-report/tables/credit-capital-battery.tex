@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Validation tests of the portfolio models on each loan type: the convergence of the Monte Carlo value at risk of 5,000 identical names to the large-portfolio quantile ($z$ statistic, two-sided $p$-value, light); the Kolmogorov distance $D$ between the CreditRisk+ recursion and a sample of the same model, with its $p$-value and light; and the worst relative gap between the sum of the Euler contributions and the total over the three copula samples and both levels.}
+\label{tab:cc-battery}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.3cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.2cm}}
+\toprule
+Loan type & MC $z$ & MC $p$ & Light & CR+ $D$ & CR+ $p$ & Light & VaR gap & ES gap \\
+\midrule
+Commercial and industrial & $-0.54$ & 0.587 & green & 0.00126 & 0.554 & green & 0.0015 & \ensuremath{2.1\times10^{-14}} \\
+Commercial real estate & $-1.51$ & 0.131 & green & 0.00069 & 0.992 & green & 0.0037 & \ensuremath{1.7\times10^{-14}} \\
+Residential real estate & $23.38$ & \ensuremath{6.3\times10^{-121}} & red & 0.00086 & 0.930 & green & 0.0016 & \ensuremath{8.1\times10^{-15}} \\
+Credit cards & $1.27$ & 0.205 & green & 0.00084 & 0.940 & green & 0.0018 & \ensuremath{1.3\times10^{-15}} \\
+Other consumer & $7.73$ & \ensuremath{1.1\times10^{-14}} & red & 0.00100 & 0.819 & green & 0.0013 & \ensuremath{5.2\times10^{-15}} \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -145,7 +145,7 @@ export interface components {
         };
         /**
          * C01 variant
-         * @description Catalog row c01-variant 2.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.
+         * @description Catalog row c01-variant 3.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind. 3.0.0 adds the reject_inference block (S-6), required and null on every variant but the German twin.
          */
         "c01-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -235,6 +235,86 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @description S-6: reject inference on a sample with a known rejected population (the German twin; null elsewhere). */
+        c01RejectInference: {
+            design: {
+                population: string;
+                learner: string;
+                n_rows: number;
+                n_dev: number;
+                n_test: number;
+                reps: number;
+                accept_share: number;
+                test_share: number;
+                weight_floor: number;
+                bands: number;
+                min_accepted: number;
+                prudence: number;
+                c_inverse_penalty: number;
+                bootstrap: number;
+                level: number;
+                h2_reduction: number;
+                h3_auc_gain: number;
+            };
+            rungs: {
+                id: string;
+                title: components["schemas"]["common-text"];
+                short_title: components["schemas"]["common-text"];
+                source: string;
+                what: components["schemas"]["common-text"];
+            }[];
+            regimes: {
+                id: string;
+                kappa: number;
+                title: components["schemas"]["common-text"];
+                short_title: components["schemas"]["common-text"];
+                what: components["schemas"]["common-text"];
+                default_rate: {
+                    population: number;
+                    accepted: number;
+                    rejected: number;
+                };
+                rungs: components["schemas"]["c01RejectRung"][];
+            }[];
+            hypotheses: {
+                id: string;
+                holds: boolean;
+                value: number;
+                lo: number;
+                hi: number;
+                rung: string;
+                statement: components["schemas"]["common-text"];
+                outcome: components["schemas"]["common-text"];
+            }[];
+        };
+        c01RejectRung: {
+            id: string;
+            /** @description Mean level bias (mean PD minus the observed default rate) on the accept-all population, over the repetitions, with the percentile bootstrap interval of that mean. */
+            bias: components["schemas"]["c01RejectStat"];
+            abs_bias: number;
+            /** @description 1 - |mean bias of the rung| / |mean bias of the accepted-only model|, with its paired bootstrap interval; 0 for the accepted-only model itself. */
+            reduction: {
+                value: number;
+                lo: number;
+                hi: number;
+            };
+            /** @description Share of repetitions in which the rung's absolute bias is below the accepted-only model's. */
+            beats_share: number;
+            auc: components["schemas"]["c01RejectStat"];
+            /** @description Paired difference of the AUC on the accept-all population against the accepted-only model. */
+            auc_vs_accepted_only: components["schemas"]["c01RejectStat"];
+            brier: components["schemas"]["c01RejectStat"];
+            /** @description The per-repetition level bias and AUC, six decimals, in repetition order. */
+            reps: {
+                bias: number[];
+                auc: number[];
+            };
+        };
+        c01RejectStat: {
+            mean: number;
+            lo: number;
+            hi: number;
+        };
         c01ReliabilityBin: {
             n: number;
             pd: number;
@@ -312,6 +392,8 @@ export interface components {
             };
             sample: components["schemas"]["c01ScoredSample"] | null;
             irb: components["schemas"]["c01Irb"];
+            /** @description S-6, reject inference on a simulated legacy policy: carried by the German twin, null on every other variant. */
+            reject_inference: components["schemas"]["c01RejectInference"] | null;
         };
         /**
          * C02 models
@@ -324,12 +406,14 @@ export interface components {
         };
         /**
          * C02 horizon variant
-         * @description Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
+         * @description Catalog row c02-outputs 2.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
          */
         "c02-variant-horizon": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
             case_id: "C02";
             outputs: components["schemas"]["c02Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         } & unknown & unknown & unknown & unknown & unknown & unknown & {
@@ -394,7 +478,8 @@ export interface components {
                 /** @enum {unknown} */
                 rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
                 label: components["schemas"]["common-text"];
-                engine: string;
+                /** @description The engine of the rung, a bilingual text with the library names as published (an English string in a document baked before c02-models 2.0.0). */
+                engine: string | components["schemas"]["common-text"];
                 reference: string;
             }[];
             protocol: components["schemas"]["c02Split"];
@@ -410,7 +495,7 @@ export interface components {
             reason: components["schemas"]["common-text"];
             /** @constant */
             source: "engine-provisions-api";
-            pd_basis: string;
+            pd_basis: components["schemas"]["common-text"];
             lgd: {
                 value: number;
                 /** @constant */
@@ -418,8 +503,8 @@ export interface components {
             };
             ecl_12m_effect: number | null;
             ecl_lifetime_effect: number | null;
-            unit: string;
-            reason_if_null: string | null;
+            unit: components["schemas"]["common-text"];
+            reason_if_null: components["schemas"]["common-text"] | null;
         };
         /** @description C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label. */
         c02Outputs: {
@@ -450,14 +535,15 @@ export interface components {
             /** @enum {unknown} */
             name: "perturbation_grid" | "perturbation_tolerance" | "n_seeds" | "n_bootstrap_refits" | "overfit_tolerance" | "weak_spot_multiple" | "shift_score" | "worst_subsample_share" | "decision_cutoff_reject_share";
             value: number | number[] | string;
-            unit: string;
+            /** @description The unit, a bilingual text (an English string in a document baked before c02-outputs 3.0.0). */
+            unit: string | components["schemas"]["common-text"];
             /**
              * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
              * @constant
              */
             label: "convention";
-            /** @description Where the construction comes from and how the value was proposed (decision Q8). */
-            basis: string;
+            /** @description Where the construction comes from and how the value was proposed (decision Q8). A bilingual text (an English string in a document baked before c02-outputs 3.0.0). */
+            basis: string | components["schemas"]["common-text"];
         };
         /** @description The named parameters of the document, each once. */
         c02Params: components["schemas"]["c02Param"][] & unknown;
@@ -584,6 +670,7 @@ export interface components {
             cells: {
                 /** @enum {unknown} */
                 rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
+                model_id: string;
                 fitted_on_years: number;
                 scored_on_years: number;
                 /** @description A value in [0, 1]. */
@@ -603,7 +690,7 @@ export interface components {
         };
         /**
          * C03 vintage-cohort variant
-         * @description Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
+         * @description Catalog row c03-outputs 4.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
          */
         "c03-variant-vintage-cohort": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -611,11 +698,13 @@ export interface components {
             outputs: components["schemas"]["c03Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         c03Calibration: {
             rung_id: string;
-            /** @description The vintages pooled: those whose 5-year mark is observed. */
-            scope: string;
+            /** @description The vintages pooled: those whose 5-year mark is observed (bilingual since c03-outputs 2.0.0). */
+            scope: components["schemas"]["common-text"];
             rows: components["schemas"]["c03DecileRow"][];
         };
         c03Coefficient: {
@@ -684,6 +773,7 @@ export interface components {
             calibration: components["schemas"]["c03Calibration"];
             rung_comparison: components["schemas"]["c03RungResult"][];
             stability: components["schemas"]["c03Stability"];
+            sequential: components["schemas"]["c03Sequential"];
         };
         /** @description A PD rung of the existing engine ladder (docs/design/features/c01-retail-pd/design.md rungs P0 to P5), fitted on a training window; training_cutoff is that of the latest cohort window, the earlier windows' cutoffs sit in cohort_windows. */
         c03Rung: {
@@ -703,6 +793,55 @@ export interface components {
             brier: number | null;
             calibration_gap_5y: number | null;
             reason: string | null;
+        };
+        /** @description The e-process of the cohort under one combination of its vintages. */
+        c03SeqPath: {
+            /** @description log E at each age (months), null where no loan of the cohort is observed at that age; the monitor rejects at log 20. */
+            log_e: (number | null)[];
+            /** @description The first age at which the process reached the threshold; null when it never did. */
+            rejection_month: number | null;
+            /** @description min(1, 1 / sup E): valid at any stopping time. */
+            anytime_p_value: number;
+            max_log_e: number;
+        };
+        /** @description One vintage as a grade of the cohort's e-process, set beside the fixed-window reading at the 5-year mark. */
+        c03SeqVintage: {
+            fiscal_year: number;
+            n: number;
+            /** @description Months of age observed for the vintage (a multiple of the age step). */
+            months_observed: number;
+            /** @description Charge-offs in the observed age intervals (whole loans). */
+            defaults: number;
+            /** @description The sum over the observed intervals of the vintage's loans times the predicted interval PD. */
+            predicted_defaults: number;
+            /** @description The first age at which this vintage's own e-process reached the threshold. */
+            rejection_month: number | null;
+            max_log_e: number | null;
+            log_e: (number | null)[];
+            /** @description The light of the champion's binomial row on this vintage at the 5-year mark; null when the mark is not observed. */
+            five_year_light: ("green" | "amber" | "red" | "not_evaluated" | "error") | null;
+            /** @description The months between the rejection and the last age; null when the vintage never rejected. */
+            months_before_the_mark: number | null;
+        };
+        /** @description BS-15 (unit D15): the engine's e-process monitor of defaults against the predicted PD, read at every age of the vintages of the cohort instead of once at the 5-year mark. The vintages are the grades, the ages the steps; the average is valid whatever their dependence. */
+        c03Sequential: {
+            engine: string;
+            engine_version: string;
+            /** @description The size of the monitor. */
+            alpha_level: number;
+            /** @description 1 / alpha_level: the value the process must reach to reject. */
+            threshold: number;
+            /** @enum {string} */
+            direction: "upper" | "lower" | "two-sided";
+            /** @enum {string} */
+            headline: "average" | "product";
+            /** @description The ages at which the cohort is read. */
+            months: number[];
+            vintages: components["schemas"]["c03SeqVintage"][];
+            average: components["schemas"]["c03SeqPath"];
+            product: components["schemas"]["c03SeqPath"];
+            reading: components["schemas"]["common-text"];
+            limits: components["schemas"]["common-text"];
         };
         /** @description Population stability of each test vintage against the training window and its observed 5-year rate against the training mean (the crisis contrast). */
         c03Stability: {
@@ -822,7 +961,7 @@ export interface components {
         };
         /**
          * C04 agency variant
-         * @description Catalog row c04-agency 1.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
+         * @description Catalog row c04-agency 2.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).
          */
         "c04-variant-agency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -831,7 +970,7 @@ export interface components {
         };
         /**
          * C04 family variant
-         * @description Catalog row c04-family 1.0.0: one simulation family of the transition estimators (outputs.kind generator).
+         * @description Catalog row c04-family 1.1.0: one simulation family of the transition estimators (outputs.kind generator).
          */
         "c04-variant-generator": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -919,11 +1058,142 @@ export interface components {
             lifetime: components["schemas"]["c04Lifetime"][];
             origination: number[];
             irb: components["schemas"]["c04Irb"];
+            withdrawal_bounds?: components["schemas"]["c04WithdrawalAnchorStudy"] | null;
+        };
+        /** @description One grade of one annual cohort: the fields of c04AnchorRow and the cohort's label. */
+        c04AnchorCohortRow: {
+            label: string;
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
+        };
+        c04AnchorGrade: {
+            grade: string;
+            cohorts: components["schemas"]["c04AnchorCohortRow"][];
+            pooled: components["schemas"]["c04AnchorRow"] | null;
+            k_over_cohorts: {
+                n: number;
+                median: number | null;
+                q25: number | null;
+                q75: number | null;
+                share_above_1: number | null;
+            } | null;
+            stability: {
+                usable_cohorts: number;
+                cohorts_containing_pooled_k: number;
+                share_cohorts_containing_pooled_k: number;
+                stable: boolean;
+            } | null;
+            k_above_1: {
+                pooled_k: number | null;
+                pooled_k_low: number | null;
+                holds: boolean;
+                holds_with_lower_bound: boolean;
+            } | null;
+            tipping: {
+                threshold: number;
+                next_grade: string;
+                k: number | null;
+                infinite: "k"[];
+                /** @enum {string} */
+                decision_industry: "above" | "below" | "none";
+                /** @enum {string} */
+                status: "flips_up" | "flips_down" | "robust";
+                pd_manski_upper: number | null;
+            } | null;
+        };
+        /** @description One grade of the pooled cohorts: the transition page's defaults D, survivors S and withdrawals W against the default page's defaults A over its cohort Na; the PD of the usual estimate, of the default page, the anchored k with its band (None where it is not defined; `infinite` names the ones that are infinite) and the anchored PD with its interval. */
+        c04AnchorRow: {
+            defaults: number;
+            survivors: number;
+            withdrawn: number;
+            anchor_defaults: number;
+            anchor_cohort: number;
+            pd_industry: number | null;
+            pd_anchor_rate: number | null;
+            pd_anchored: number | null;
+            pd_lower: number | null;
+            pd_upper: number | null;
+            defaults_implied: number | null;
+            k: number | null;
+            k_low: number | null;
+            k_high: number | null;
+            infinite: ("k" | "k_low" | "k_high")[];
+            /** @enum {string} */
+            flag: "ok" | "anchor_below_observed" | "anchor_above_identified" | "no_anchor";
+            /** @enum {string} */
+            reason: "ok" | "no_cohort" | "no_observed_defaults" | "no_withdrawals";
         };
         /** @description None for a grade without ratings, and for tab 3's events where they outnumber the cohort. */
         c04Bounds: {
             lower: (number | null)[];
             upper: (number | null)[];
+        };
+        c04BoundsDesign: {
+            /** @enum {string} */
+            id: "first_year" | "pooled" | "capture70" | "first_year_x10";
+            reps: number;
+            cohorts: number;
+            cohort_scale: number;
+            capture: number;
+            seed_key: string;
+            seed: number;
+            treatments: components["schemas"]["c04BoundsTreatment"][];
+            anchored_k: {
+                median: (number | null)[];
+                q05: (number | null)[];
+                q95: (number | null)[];
+                share_infinite: number[];
+            };
+        };
+        c04BoundsTreatment: {
+            /** @enum {string} */
+            id: "industry" | "unfollowed" | "followed" | "anchored" | "identified";
+            coverage: components["schemas"]["c04Rate"][];
+            mean_width: (number | null)[];
+            relative_bias: (number | null)[];
+        };
+        /** @description BS-14's hypothesis (i) read off the rungs' coverage of one grade's true PD against the criteria fixed before the run (the anchored interval covers at least 90% at informative 1, 3 and 9; the existing treatments under 50% at 9; refuted if the anchored interval does not cover more than every existing treatment at 9). */
+        c04BoundsVerdict: {
+            grade: number;
+            reps: number;
+            level: number;
+            designs: string[];
+            rows: {
+                /** @enum {string} */
+                id: "anchored-coverage" | "existing-coverage" | "anchored-better";
+                design: string;
+                informative: number;
+                /** @enum {string} */
+                treatment: "industry" | "unfollowed" | "followed" | "anchored";
+                value: number;
+                mcse: number;
+                threshold: number;
+                /** @enum {string} */
+                comparison: "at_least" | "below" | "above";
+                holds: boolean;
+            }[];
+            summary: {
+                refuted: boolean;
+                anchored_covers_90: boolean;
+                existing_under_50: boolean;
+            };
         };
         c04CapitalPoint: {
             /** @description Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160). */
@@ -1015,6 +1285,7 @@ export interface components {
             } | null;
             rungs: (components["schemas"]["c04MarkovRung"] | components["schemas"]["c04MomentumRung"] | components["schemas"]["c04CycleRung"] | components["schemas"]["c04WithdrawalsRung"] | components["schemas"]["c04ThinRung"])[];
             simulations: components["schemas"]["c04Simulation"][];
+            bounds_verdict?: components["schemas"]["c04BoundsVerdict"] | null;
         };
         c04Fit: {
             parity: {
@@ -1292,6 +1563,18 @@ export interface components {
             };
             overlap_jeffreys: number[];
         };
+        /** @description BS-14: the default page (tab 2) as the anchor of the transition page's withdrawals (tab 4), per grade, annual cohorts and pooled; None where the transition page has no default category. */
+        c04WithdrawalAnchorStudy: {
+            level: number;
+            stability_share: number;
+            grades: components["schemas"]["c04AnchorGrade"][];
+        };
+        /** @description BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the existing treatments of withdrawn ratings and of the anchored interval, over the rung's own draws, in four designs (first year, five cohorts pooled, a second source that counts 70% of the defaults, ten times the cohort). */
+        c04WithdrawalBounds: {
+            level: number;
+            truth: (number | null)[];
+            designs: components["schemas"]["c04BoundsDesign"][];
+        };
         c04WithdrawalsRung: {
             value: number;
             seed_key: string;
@@ -1309,6 +1592,7 @@ export interface components {
             pd_kept: components["schemas"]["c04Performance"];
             pd_followed: components["schemas"]["c04Performance"];
             pd_latent: components["schemas"]["c04Performance"];
+            bounds?: components["schemas"]["c04WithdrawalBounds"];
         };
         /**
          * C05 low-default models
@@ -1563,7 +1847,7 @@ export interface components {
         };
         /**
          * C06 models
-         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         * @description Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
          */
         "c06-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -1578,6 +1862,8 @@ export interface components {
             /** @constant */
             case_id: "C06";
             outputs: components["schemas"]["c06Outputs"];
+        } & {
+            tests?: unknown;
         };
         /** @description The SICR view's pair of curves for a sampled account: the origination forward curve against the current one over the same remaining window. */
         c06AccountCurve: {
@@ -1610,7 +1896,7 @@ export interface components {
             /** @enum {string} */
             primary_source: "sba-7a" | "freddie-mac";
             freddie_mac_available: boolean;
-            freddie_mac_reason: string | null;
+            freddie_mac_reason: components["schemas"]["common-text"] | null;
             notice: components["schemas"]["common-text"];
         };
         /** @description Calibration at 12, 24 and 36 months per predicted-risk decile against the observed cumulative incidence (SDD row Lifetime PD rungs); an unobserved cell is null with its reason. */
@@ -1804,7 +2090,7 @@ export interface components {
         c06Rung: {
             rung_id: string;
             /** @enum {string} */
-            kind: "kaplan-meier" | "discrete-time-hazard" | "cox";
+            kind: "kaplan-meier" | "discrete-time-hazard" | "cox" | "piecewise-constant-hazard-network";
             covariates: string[];
             macro_covariates: string[];
             competing_prepayment: boolean;
@@ -1824,7 +2110,7 @@ export interface components {
             c_index: number | null;
             integrated_brier: number | null;
             calibration_gap_12m: number | null;
-            reason: string | null;
+            reason: components["schemas"]["common-text"] | null;
         };
         c06ScenarioDefinition: {
             id: string;
@@ -1983,6 +2269,8 @@ export interface components {
             /** @constant */
             case_id: "C07";
             outputs: components["schemas"]["c07Outputs"];
+        } & {
+            tests?: unknown;
         };
         c07B1Detail: {
             /** @description ISO 4217 code of the money fields of this block. */
@@ -2005,7 +2293,7 @@ export interface components {
                 applied: number;
                 /** @enum {string} */
                 method: "standard" | "internal" | "max";
-                internal_reason: string | null;
+                internal_reason: components["schemas"]["common-text"] | null;
             } & unknown)[];
             /** @description Counter-cyclical general provisions (B-1 N 9): their own line, outside the comparable total and never per segment. */
             additional_provisions: {
@@ -2025,7 +2313,7 @@ export interface components {
         c07B1Table: {
             table_id: string;
             portfolio: string;
-            source: string;
+            source: components["schemas"]["common-text"];
             cells: {
                 row: string;
                 column: string;
@@ -2089,14 +2377,16 @@ export interface components {
                 synthetic: true;
                 notice: components["schemas"]["common-text"];
                 seed: number;
-                calibration_source: string;
+                /** @description Where the bank's calibration comes from, a bilingual text from c07-models 3.0.0 (an English string in a document baked before). */
+                calibration_source: string | components["schemas"]["common-text"];
             };
             calibration_targets: {
                 metric: string;
                 unit: string;
                 target: number;
                 achieved: number;
-                source: string;
+                /** @description The publication, locator, URL and file hash of the target, a bilingual text from c07-models 3.0.0 (an English string in a document baked before). */
+                source: string | components["schemas"]["common-text"];
                 as_of: string;
             }[];
             segments: {
@@ -2339,6 +2629,8 @@ export interface components {
             outputs: components["schemas"]["c08Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         c08Bin: {
             lower: number;
@@ -2371,7 +2663,7 @@ export interface components {
             primary_source: string;
             /** @constant */
             freddie_mac_available: false;
-            freddie_mac_reason: string;
+            freddie_mac_reason: components["schemas"]["common-text"];
             notice: components["schemas"]["common-text"];
         } | {
             primary_source: string;
@@ -2414,8 +2706,8 @@ export interface components {
         c08DownturnPeriod: {
             first_year: number;
             last_year: number;
-            indicator: string;
-            macro_source: string;
+            indicator: components["schemas"]["common-text"];
+            macro_source: components["schemas"]["common-text"];
         };
         c08DownturnRow: {
             cohort_id: string;
@@ -2703,7 +2995,7 @@ export interface components {
         c08Floors: {
             regime: string;
             cells: components["schemas"]["c08FloorCell"][];
-            source: string;
+            source: components["schemas"]["common-text"];
         };
         /** @description How much the IRB LGD floors (Basel III final, CRE32.16, CRE32.58 to CRE32.59) bind on the estimates. */
         c08FloorsBite: {
@@ -2802,7 +3094,7 @@ export interface components {
         c08RungSpec: {
             rung_id: string;
             /** @enum {string} */
-            kind: "ols" | "fractional-logit" | "beta" | "hurdle" | "tobit" | "gradient-boosted" | "cure-decomposition";
+            kind: "ols" | "fractional-logit" | "beta" | "hurdle" | "tobit" | "gradient-boosted" | "random-forest" | "neural-network" | "cure-decomposition";
             covariates: string[];
             coefficients: components["schemas"]["c08Coefficient"][];
             /** @description The endpoint transformation of beta rungs; null elsewhere. */
@@ -2832,7 +3124,7 @@ export interface components {
                 treatment: "excluded" | "projected" | "not-applicable";
                 n_excluded: number;
                 n_projected: number;
-                reason: string | null;
+                reason: components["schemas"]["common-text"] | null;
             };
             note: components["schemas"]["common-text"];
         } & ({
@@ -2869,6 +3161,8 @@ export interface components {
             /** @constant */
             case_id: "C09";
             outputs: components["schemas"]["c09Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };
@@ -2987,7 +3281,7 @@ export interface components {
         c09EadFloor: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
-            rule: string;
+            rule: components["schemas"]["common-text"];
             /** @description A share or an observed rate in [0, 1]. */
             off_balance_share: number;
             rows: components["schemas"]["c09FloorRow"][];
@@ -3124,7 +3418,7 @@ export interface components {
         };
         /**
          * C10 models
-         * @description Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).
+         * @description Catalog row c10-models 2.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).
          */
         "c10-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -3149,6 +3443,8 @@ export interface components {
             };
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /**
          * C10 loan-type variant
@@ -3164,6 +3460,8 @@ export interface components {
                 truth_status?: "real-outcomes";
                 inputs?: unknown;
             };
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };
@@ -3787,6 +4085,8 @@ export interface components {
             estimator: "analytic" | "monte-carlo";
             /** @description Monte Carlo scenarios; null for an analytic rung. */
             n_scenarios: number | null;
+            /** @description Whether any variant evaluates the rung; a rung that never runs (the Student-t importance sampler: no twist is specified) keeps its planned count but is drawn as not run. */
+            evaluated: boolean;
             engine_function: string;
             reference: string;
             parameters: {
@@ -3856,12 +4156,14 @@ export interface components {
         };
         /**
          * C11 window variant
-         * @description Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
+         * @description Catalog row c11-outputs 3.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
          */
         "c11-variant-window": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
             case_id: "C11";
             outputs: components["schemas"]["c11Outputs"];
+        } & {
+            tests?: unknown;
         } & {
             tests?: unknown;
         };
@@ -3898,6 +4200,121 @@ export interface components {
             weight: number;
             /** @description How the series becomes a return of the portfolio (a log return, a duration times a yield change). */
             transform: string;
+        };
+        /** @description BS-16, the beyond tier: the engine's adaptive conformal wrapper around HS-250, GARCH-t and FHS, wrapped against unwrapped in this window. */
+        c11Conformal: {
+            method: components["schemas"]["c11ConformalMethod"];
+            rows: components["schemas"]["c11ConformalRow"][];
+            hypothesis: components["schemas"]["c11ConformalHypothesis"];
+        };
+        /** @description One model at one level over the three stress windows: windows passed without and with the wrapper, and the worst FZ0 change. */
+        c11ConformalCell: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            windows_passed_unwrapped: number;
+            windows_passed_wrapped: number;
+            extra_windows: number;
+            worst_fz0_change: number | null;
+            holds: boolean;
+        };
+        /** @description The plan's hypothesis of BS-16 with its measured cells and its verdict, the same in every window document. */
+        c11ConformalHypothesis: {
+            /** @constant */
+            id: "BS-16";
+            statement: components["schemas"]["common-text"];
+            refuted_if: components["schemas"]["common-text"];
+            pass_rule: components["schemas"]["common-text"];
+            run: {
+                gamma: number;
+                level_min: number;
+                level_max: number;
+                stress_windows: string[];
+                fz0_tolerance: number;
+                /** @description A probability in [0, 1]. */
+                pass_p: number;
+                n_stress_days: number;
+                n_runs: number;
+            };
+            cells: components["schemas"]["c11ConformalCell"][];
+            independence_2007_09: components["schemas"]["c11ConformalIndependence"][];
+            n_cells: number;
+            n_cells_hold: number;
+            refuted: boolean;
+            holds: boolean;
+            verdict: components["schemas"]["common-text"];
+        };
+        c11ConformalIndependence: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            independence_p: number | null;
+            fails: boolean;
+        };
+        c11ConformalMethod: {
+            /** @constant */
+            id: "BS-16";
+            /** @constant */
+            tier: "beyond";
+            title: components["schemas"]["common-text"];
+            source: string;
+            gamma: number;
+            level_min: number;
+            level_max: number;
+            /** @constant */
+            first_level: "alpha";
+            wrapped_models: string[];
+            description: components["schemas"]["common-text"];
+        };
+        /** @description One wrapped model at one tail level in this window, beside the same model unwrapped. */
+        c11ConformalRow: {
+            model_id: string;
+            rung: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            n_days: number;
+            unwrapped: components["schemas"]["c11ConformalScore"];
+            wrapped: components["schemas"]["c11ConformalScore"];
+            /** @description (wrapped FZ0 minus unwrapped FZ0) over the absolute unwrapped FZ0: positive is worse. */
+            fz0_change: number | null;
+            /** @description Days on which the update of the working level was cut by the band. */
+            n_clipped: number;
+            n_fallback_days: number;
+            working_level: {
+                min: number;
+                mean: number;
+                max: number;
+            };
+            series: components["schemas"]["c11ConformalSeries"];
+        };
+        /** @description The back-test and score reading of one VaR and ES sequence: the engine's coverage tests, the Acerbi-Szekely test against the ladder's null, FZ0 and Z2. */
+        c11ConformalScore: {
+            n_exceedances: number;
+            expected_exceedances: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            hit_rate: number;
+            kupiec_p: number | null;
+            independence_p: number | null;
+            conditional_coverage_p: number | null;
+            es_test_p: number | null;
+            /** @enum {string} */
+            es_test_light: "green" | "amber" | "red" | "not_evaluated";
+            /** @description Average FZ0 loss over the window; null when an ES is not finite. */
+            fz0_mean: number | null;
+            /** @description The engine's Z2 statistic, 1 minus the mean of loss over ES on the hit days, over alpha: 0 under a correct ES, negative when the ES is understated. */
+            z2: number | null;
+            eligible: boolean;
+            passes_coverage: boolean;
+            /** @description 1 plus the number of ladder models with a lower average FZ0 at the level. */
+            ladder_rank: number | null;
+        };
+        /** @description The wrapped model's path: its working level, its VaR and ES (positive losses) and the days the loss exceeded the VaR. */
+        c11ConformalSeries: {
+            /** @description The working tail level on each grid day. */
+            working_level: number[];
+            var: number[];
+            es: number[];
+            exceedance_days: number[];
         };
         c11DataStatus: {
             first_observation: string;
@@ -4136,6 +4553,8 @@ export interface components {
             models: components["schemas"]["c11ModelOutput"][];
             comparison: components["schemas"]["c11Comparison"];
             es_backtests: components["schemas"]["c11EsNull"][];
+            /** @description BS-16, the beyond tier; null in a partial bake that leaves the ladder without the three wrapped models. */
+            conformal: components["schemas"]["c11Conformal"] | null;
         } & unknown;
         /** @description A fitted parameter across the refits of a window: minimum, median and maximum. */
         c11Parameter: {
@@ -4447,6 +4866,8 @@ export interface components {
             tests?: unknown;
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
         };
         /** @description The BA-CVA reduced block: sector, rating, EAD, M, DF, SCVA, K_reduced and the capital DS x K_reduced. No official numeric example is verified (B8); the limit says so. */
         c12BaCva: {
@@ -4680,8 +5101,8 @@ export interface components {
         };
         /** @description The HW1F calibration per backtest date with its sample window (which ends before the date), the counterparty curve, the GIRR parameters and the stated limits of the case. The calibration dates are unique and increasing. */
         c12Fit: {
-            /** @constant */
-            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)";
+            /** @description The estimator as the views print it, a bilingual text (c12-models 2.0.0); the English sentence alone in a document baked before 2.0.0. */
+            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)" | components["schemas"]["c12Label"];
             calibrations: components["schemas"]["c12Calibration"][];
             /** @constant */
             min_history_years: 3;
@@ -5155,7 +5576,7 @@ export interface components {
         };
         /**
          * C13 deficiency variant
-         * @description Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.
+         * @description Catalog row c13-outputs 3.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.
          */
         "c13-variant-deficiency": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -5163,6 +5584,87 @@ export interface components {
             outputs: components["schemas"]["c13Outputs"];
         } & {
             tests?: unknown;
+        } & {
+            tests?: unknown;
+        };
+        /** @description BS-13, beyond the state of the art: the engine's scale-and-level complement to the PLA test, calibrated on a simulated null, with its flags on this variant, the verdict of the plan's hypothesis (stale-volatility only) and the lag ladder (stale-volatility only). Added to the regulatory zone, never substituted for it. */
+        c13Complement: {
+            /** @constant */
+            tier: "beyond";
+            /** @constant */
+            plan_id: "BS-13";
+            engine_function: string;
+            window_days: number;
+            size: number;
+            /** @enum {unknown} */
+            correction: "bonferroni" | "none";
+            /** @enum {unknown} */
+            role: "size" | "power";
+            n_replications: number;
+            calibration: {
+                null_case_seeds: number[];
+                n_per_block: number;
+                n_null: number;
+                thresholds_per_statistic: components["schemas"]["c13ComplementThresholds"];
+                thresholds_family: components["schemas"]["c13ComplementThresholds"];
+            };
+            flags: {
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family: components["schemas"]["c13ComplementFlags"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+                family_with_pla: components["schemas"]["c13Rate"];
+            };
+            against_ks: {
+                ks_flagged: number;
+                wald_flagged: number;
+                wald_at_least_ks: boolean;
+            } | null;
+            by_size: {
+                size: number;
+                wald: components["schemas"]["c13Rate"];
+                spearman_abs: components["schemas"]["c13Rate"];
+                spearman_roll: components["schemas"]["c13Rate"];
+                wald_held_out: components["schemas"]["c13Rate"];
+                spearman_abs_held_out: components["schemas"]["c13Rate"];
+                spearman_roll_held_out: components["schemas"]["c13Rate"];
+            }[];
+            lag_ladder: {
+                lag_days: number;
+                per_statistic: components["schemas"]["c13ComplementFlags"];
+                family_any: components["schemas"]["c13Rate"];
+                pla_amber_or_red: components["schemas"]["c13Rate"];
+            }[] | null;
+            hypothesis: {
+                /** @constant */
+                plan_id: "BS-13";
+                statement: components["schemas"]["common-text"];
+                /** @constant */
+                statistic: "spearman_roll";
+                /** @constant */
+                size_basis: "family-1pct-bonferroni";
+                power_threshold: number;
+                refuted_below: number;
+                size_limit: number;
+                measured_power: components["schemas"]["c13Rate"];
+                held_out_size: components["schemas"]["c13Rate"];
+                pla_power: components["schemas"]["c13Rate"];
+                n_null_desk_years: number;
+                /** @enum {unknown} */
+                verdict: "holds" | "refuted" | "not-established";
+                reading: components["schemas"]["common-text"];
+            } | null;
+        };
+        c13ComplementFlags: {
+            wald: components["schemas"]["c13Rate"];
+            spearman_abs: components["schemas"]["c13Rate"];
+            spearman_roll: components["schemas"]["c13Rate"];
+            any: components["schemas"]["c13Rate"];
+        };
+        /** @description The critical values of the complement: the Wald statistic flags above its value, the two Spearman statistics below theirs. */
+        c13ComplementThresholds: {
+            wald: number;
+            spearman_abs: number;
+            spearman_roll: number;
         };
         /** @description One planted deficiency and how the generator plants it. */
         c13DeficiencyPlan: {
@@ -5363,6 +5865,7 @@ export interface components {
             example: components["schemas"]["c13Example"];
             desk_backtest: components["schemas"]["c13DeskLevel"][] & unknown;
             detection: components["schemas"]["c13Detection"];
+            pla_complement: components["schemas"]["c13Complement"];
         } & unknown;
         c13Pla: {
             thresholds: components["schemas"]["c13PlaThresholds"];
@@ -5397,6 +5900,14 @@ export interface components {
             excess_kurtosis: number;
             min: number;
             max: number;
+        };
+        /** @description A count of flagged replications out of n, its rate and its 95 percent Wilson interval. */
+        c13Rate: {
+            k: number;
+            n: number;
+            rate: number;
+            ci_low: number;
+            ci_high: number;
         };
         c13ReplicationPlan: {
             n_replications: number;
@@ -5927,7 +6438,8 @@ export interface components {
             source_field: string;
             reported_amount: number | null;
             reason_missing: components["schemas"]["c14Label"] | null;
-            slotting_assumption: string;
+            /** @description The slotting assumption of the item: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it. */
+            slotting_assumption: string | components["schemas"]["common-text"];
             amount: number;
             cash_flows: {
                 behavioural: components["schemas"]["c14Flow"][];
@@ -6333,7 +6845,8 @@ export interface components {
         /** @description One FDIC call-report quarter read for the case and the financials fields taken from it. */
         c14Report: {
             report_date: string;
-            source: string;
+            /** @description The provenance of the financials file: a bilingual text from c14-outputs 2.0.0; the English string alone in a document baked before it. */
+            source: string | components["schemas"]["common-text"];
             fields: string[];
         };
         /** @description nmd_treatment says what the behavioural flows use: the capped used values of nmd_segments (standardised-capped) or every NMD in the overnight bucket (contractual-overnight). One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test. */
@@ -6416,7 +6929,8 @@ export interface components {
             short_form: "exp(-t_k / x)";
             /** @constant */
             long_form: "1 - exp(-t_k / x)";
-            reference: string;
+            /** @description The reference of the shock shapes: a bilingual text from c14-models 2.0.0; the English string alone in a document baked before it. */
+            reference: string | components["schemas"]["common-text"];
         };
         /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
         c14ShockSize: {
@@ -7232,7 +7746,8 @@ export interface components {
             surprise_pp: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             effect: number;
-            formula: string;
+            /** @description The formula of the effect, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            formula: string | components["schemas"]["common-text"];
         } | null;
         /** @description A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). A currency with fewer than four published secondary-market tenors (the engine's Nelson-Siegel fit needs four points) takes the Banco Central's monetary policy rate (F022.TPM.TIN.D001.NO.Z.D, the overnight rate) as an extra point at 1/360 year; it is a policy rate and not a yield, it is listed in series_codes, and the source says so. Only the CLP curve has such an anchor. */
         c15Curve: {
@@ -7638,7 +8153,8 @@ export interface components {
             abs_pn_ur: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             charge: number;
-            formula: string;
+            /** @description The formula of the charge, with symbols and a legend: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            formula: string | components["schemas"]["common-text"];
             note: components["schemas"]["common-text"];
         };
         /** @description One synthetic Banco Andino item in the currency of its leg, slotted into the buckets (the Annex 1 NMD caps applied). */
@@ -8714,7 +9230,8 @@ export interface components {
                 components["schemas"]["c15ThresholdTest"]
             ];
             prioritised: boolean;
-            reference: string;
+            /** @description The reference of the prioritised-bank tests: a bilingual text from c15-outputs 3.0.0; the English string alone in a document baked before it. */
+            reference: string | components["schemas"]["common-text"];
         };
         /** @description A rolling tranche of the replicating portfolio and its weight. */
         c15Tranche: {
@@ -10092,7 +10609,7 @@ export interface components {
             /** @enum {string} */
             aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
             /** @enum {string} */
-            status: "verified" | "UNVERIFIED";
+            status: "verified" | "UNVERIFIED" | "SECONDARY_SOURCE";
             /** @description Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted). */
             n_defined: number;
             capital_eur: components["schemas"]["c17MoneyQuantiles"];
@@ -10103,7 +10620,7 @@ export interface components {
             /** @description Standard deviation across the replications of ln(capital / true quantile). */
             log_sd: number;
         };
-        /** @description The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination. */
+        /** @description The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination; rungs 7 to 10 (S-3 of the method tiers plan, status SECONDARY_SOURCE) the mean-adjusted single loss approximation on the GPD fitted by maximum likelihood, by minimum Cramer-von Mises distance and by the optimally bias-robust estimator, and on the lognormal fitted by Cramer-von Mises (the control). */
         c17CapitalByRung: {
             lda_lognormal: components["schemas"]["c17Capital"];
             lda_lognormal_truncated: components["schemas"]["c17Capital"];
@@ -10111,6 +10628,10 @@ export interface components {
             sla: components["schemas"]["c17Capital"];
             sla_mean_corrected: components["schemas"]["c17MeanCorrectedSla"];
             scenario: components["schemas"]["c17OptionalCapital"];
+            sla_mean_adjusted: components["schemas"]["c17OptionalCapital"];
+            sla_cvm: components["schemas"]["c17OptionalCapital"];
+            sla_obre: components["schemas"]["c17OptionalCapital"];
+            sla_cvm_lognormal: components["schemas"]["c17OptionalCapital"];
         };
         /** @description The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion. */
         c17CapitalUnverified: {
@@ -10174,13 +10695,13 @@ export interface components {
             };
             panjer: {
                 step_eur: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             fft: {
                 n_points: number;
                 padding_factor: number;
                 tilt: number;
-                exceedance: number[];
+                exceedance: (number | null)[];
             };
             quantile_999_eur: {
                 monte_carlo: number;
@@ -10389,7 +10910,7 @@ export interface components {
         /** @description A rung of the operational risk ladder of dossier 05. */
         c17Rung: {
             /** @enum {string} */
-            rung_id: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "sla-mean-corrected" | "scenario";
+            rung_id: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "sla-mean-corrected" | "scenario" | "sla-mean-adjusted" | "sla-cvm" | "sla-obre" | "sla-cvm-lognormal";
             label: components["schemas"]["common-text"];
             /** @enum {string} */
             severity_law: "lognormal" | "lognormal-truncated" | "lognormal-gpd-splice" | "gpd" | "none";
@@ -10397,7 +10918,7 @@ export interface components {
             /** @enum {string} */
             aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
             /** @enum {string} */
-            status: "verified" | "UNVERIFIED";
+            status: "verified" | "UNVERIFIED" | "SECONDARY_SOURCE";
             reference: string;
         } & ({
             /** @enum {string} */
@@ -10409,6 +10930,11 @@ export interface components {
             rung_id?: "sla-mean-corrected";
             /** @constant */
             status?: "UNVERIFIED";
+        } | {
+            /** @enum {string} */
+            rung_id?: "sla-mean-adjusted" | "sla-cvm" | "sla-obre" | "sla-cvm-lognormal";
+            /** @constant */
+            status?: "SECONDARY_SOURCE";
         });
         c17Scenario: {
             scenario_id: string;
@@ -12760,11 +13286,11 @@ export interface components {
         };
         c21Attribute: {
             /** @enum {unknown} */
-            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             /** @description The legal mapping of the attribute, from the addendum H3 section 5 table only. */
             legal: {
                 /** @enum {unknown} */
-                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only";
+                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only" | "age_ecoa_only";
                 ecoa: boolean;
                 fha: boolean;
                 note: components["schemas"]["common-text"];
@@ -12866,6 +13392,29 @@ export interface components {
             four_fifths?: {
                 /** @enum {unknown} */
                 highest_rate_group?: "<25" | "25-34" | "35-44" | "45-54" | "55-64" | "65-74" | ">74";
+                groups?: unknown;
+            };
+            contrasts?: unknown;
+        } | {
+            /** @constant */
+            field?: "applicant_age_above_62";
+            legal?: {
+                /** @constant */
+                basis?: "age_ecoa_only";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: false;
+                /** @constant */
+                fha_disparate_impact?: "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))";
+            };
+            /** @enum {unknown} */
+            reference_group?: "62 or over" | "under 62";
+            groups?: unknown;
+            excluded_groups?: unknown;
+            four_fifths?: {
+                /** @enum {unknown} */
+                highest_rate_group?: "62 or over" | "under 62";
                 groups?: unknown;
             };
             contrasts?: unknown;
@@ -13045,7 +13594,7 @@ export interface components {
             selection_rate: number;
         };
         /** @enum {unknown} */
-        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "applicant_age_above_62" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
+        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
         /** @description The required label, on every C21 document. */
         c21Label: {
             /** @constant */
@@ -13231,7 +13780,7 @@ export interface components {
                 reason: components["schemas"]["common-text"];
             };
             /** @enum {unknown} */
-            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             k: number;
             /** @constant */
             alpha: 0.05;
@@ -13259,7 +13808,7 @@ export interface components {
         };
         /**
          * C22 models
-         * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
+         * @description Catalog row c22-models 2.0.0: the C22 models artifact with the exact-probability parity points of the three count tests and the engine's 25 named size and power studies (U16-P2).
          */
         "c22-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -13268,7 +13817,7 @@ export interface components {
         };
         /**
          * C22 validator variant
-         * @description Catalog row c22-variant 1.0.0: one validation harness run (outputs.kind validator).
+         * @description Catalog row c22-variant 3.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.
          */
         "c22-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -13287,9 +13836,21 @@ export interface components {
                 y: (number | null)[];
             }[];
         };
+        /** @description A size above its bound that the engine documents on its own page (DOCUMENTED_EXCESS in the engine's size suites): the page, the level, the measured size, the bound, the excess (measured minus bound), whether it exceeds in this run, and the engine's statement. */
+        c22Excess: {
+            page: string;
+            repository: string;
+            level: number;
+            measured: number;
+            bound: number;
+            excess: number;
+            exceeds: boolean;
+            engine: components["schemas"]["common-text"];
+        };
         c22Fit: {
             parity: components["schemas"]["c22Parity"][];
             levels: number[];
+            studies: components["schemas"]["c22StudyRecord"][];
         };
         c22Generator: {
             name: string;
@@ -13318,7 +13879,8 @@ export interface components {
         c22Outputs: {
             /** @constant */
             kind: "validator";
-            family: string;
+            /** @enum {string} */
+            family: "null" | "miscalibration" | "clustering" | "drift" | "discrimination-decay" | "leakage" | "broken-monotonicity" | "concentration" | "other-families";
             ladder: {
                 values: number[];
                 label: components["schemas"]["common-text"];
@@ -13326,7 +13888,8 @@ export interface components {
             levels: number[];
             /** @description axis: the x axis of a panel whose simulations do not run along the family's ladder; measures: whether its rates are */
             panels: {
-                id: string;
+                /** @enum {string} */
+                id: "calibration" | "discrimination" | "stability" | "rating" | "transitions" | "settings" | "portfolio" | "grades" | "obligors" | "years" | "ecb" | "delong" | "development" | "auc" | "feature" | "migration-500" | "migration-2000" | "curve" | "counts" | "ccr" | "ifrs9" | "lgd-ead" | "market-var" | "market-es" | "portfolio-credit" | "fairness" | "ml";
                 label: components["schemas"]["common-text"];
                 axis: components["schemas"]["common-text"] | null;
                 /** @enum {string} */
@@ -13352,10 +13915,13 @@ export interface components {
             size_bounds: {
                 [key: string]: number;
             };
+            /** @description BS-15 (unit D15): the engine's e-process sequential monitors against the fixed-window tests read every day; null on every variant but other-families. */
+            sequential: components["schemas"]["c22Sequential"] | null;
         };
         /** @description A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
         c22Parity: {
-            test_id: string;
+            /** @enum {string} */
+            test_id: "pd.binomial" | "pd.jeffreys" | "pd.binomial_vasicek";
             n: number;
             pd: number;
             ratio: number;
@@ -13375,13 +13941,104 @@ export interface components {
             wilson_low: number;
             wilson_high: number;
         };
+        /** @description How a monitor reads a scenario: the share of series ever rejected, rejected by the early step (day 250, year 3), and the median first-rejection step (null when more than half never reject) and the median among the rejected series. */
+        c22SeqDetection: {
+            ever: number;
+            by: number;
+            median_day: number | null;
+            median_day_among_detected: number | null;
+        };
+        c22SeqHitScenario: {
+            id: string;
+            /** @enum {string} */
+            kind: "null" | "rate" | "cluster";
+            factor: number | null;
+            cluster: number | null;
+            label: components["schemas"]["common-text"];
+            e_rate: components["schemas"]["c22SeqDetection"];
+            e_cluster: components["schemas"]["c22SeqDetection"];
+            e_battery: components["schemas"]["c22SeqDetection"];
+            kupiec_trailing: components["schemas"]["c22SeqDetection"];
+            kupiec_cumulative: components["schemas"]["c22SeqDetection"];
+            traffic_light: components["schemas"]["c22SeqDetection"];
+            independence_trailing: components["schemas"]["c22SeqDetection"];
+            kupiec_one_shot_power: number;
+        };
+        c22SeqHits: {
+            alpha: number;
+            horizon: number;
+            window: number;
+            by_day: number;
+            reps: number;
+            generator: string;
+            /** @description The smallest count of exceptions in the window that is outside the green zone. */
+            traffic_light_exceptions: number;
+            scenarios: components["schemas"]["c22SeqHitScenario"][];
+        };
+        c22SeqHypothesis: {
+            /** @enum {string} */
+            id: "H1" | "H2" | "H3";
+            holds: boolean;
+            rule: components["schemas"]["common-text"];
+            measured: components["schemas"]["common-text"];
+            values: {
+                id: string;
+                value: number | null;
+            }[];
+        };
+        c22SeqMethod: {
+            engine: string;
+            engine_version: string;
+            /** @description The size of the monitor. */
+            alpha_level: number;
+            /** @description The value the e-process must reach to reject: 1 / alpha_level. */
+            threshold: number;
+            monitors: string[];
+            label: components["schemas"]["common-text"];
+            description: components["schemas"]["common-text"];
+        };
+        c22SeqPd: {
+            pd: number[];
+            obligors_per_grade_year: number;
+            years: number;
+            by_year: number;
+            reps: number;
+            scenarios: components["schemas"]["c22SeqPdScenario"][];
+        };
+        c22SeqPdScenario: {
+            id: string;
+            factor: number;
+            label: components["schemas"]["common-text"];
+            e_product: components["schemas"]["c22SeqDetection"];
+            e_average: components["schemas"]["c22SeqDetection"];
+            chi2_one_shot_power: number;
+            chi2_every_year: components["schemas"]["c22SeqDetection"];
+        };
+        c22SeqVerdict: {
+            holds: boolean;
+            held: ("H1" | "H2" | "H3")[];
+            failed: ("H1" | "H2" | "H3")[];
+            text: components["schemas"]["common-text"];
+            scope: components["schemas"]["common-text"];
+        };
+        /** @description The sequential-monitor experiment: the method, the VaR-hit experiment, the PD-book experiment, the three hypotheses with their measured numbers and the verdict. */
+        c22Sequential: {
+            method: components["schemas"]["c22SeqMethod"];
+            seed: number;
+            hits: components["schemas"]["c22SeqHits"];
+            pd_grades: components["schemas"]["c22SeqPd"];
+            hypotheses: components["schemas"]["c22SeqHypothesis"][];
+            verdict: components["schemas"]["c22SeqVerdict"];
+        };
         /** @description One simulation: a registered test on one generator at one severity, its rates per rule ("p<0.05", "p<0.01", and rules such as "metric>0.1"), the exact probability where one exists and whether the rate agrees with it. */
         c22Simulation: {
             key: string;
-            test_id: string;
+            /** @enum {string} */
+            test_id: "ccr.pfe_exceedance_backtest" | "disc.auc_vs_initial" | "disc.delong" | "fair.fisher_exact" | "fair.two_proportion_z" | "ifrs9.stage_migration_backtest" | "lgd_ead.downturn_coverage" | "lgd_ead.lgd_calibration_by_segment" | "lgd_ead.lgd_calibration_over_time" | "market.acerbi_szekely" | "market.christoffersen_conditional_coverage" | "market.christoffersen_independence" | "market.du_escanciano_conditional" | "market.du_escanciano_unconditional" | "market.duration_test" | "market.dynamic_quantile_test" | "market.kupiec_pof" | "market.mcneil_frey_residual_test" | "ml.conformal_coverage" | "ml.shift_resilience" | "pd.binomial" | "pd.binomial_vasicek" | "pd.chi2_grades" | "pd.default_profile" | "pd.hosmer_lemeshow" | "pd.jeffreys" | "pd.normal_multiperiod" | "pd.spiegelhalter" | "pd.traffic_lights" | "portfolio.crp_recursion_vs_mc" | "portfolio.mc_convergence" | "portfolio.tail_backtest" | "rating.hhi" | "rating.markov_order" | "rating.matrix_reference" | "rating.migration_ztests" | "rating.momentum" | "rating.time_homogeneity" | "stability.chi2" | "stability.csi" | "stability.ks" | "stability.psi";
             label: components["schemas"]["common-text"];
             scenario: components["schemas"]["common-text"];
-            panel: string;
+            /** @enum {string} */
+            panel: "calibration" | "discrimination" | "stability" | "rating" | "transitions" | "settings" | "portfolio" | "grades" | "obligors" | "years" | "ecb" | "delong" | "development" | "auc" | "feature" | "migration-500" | "migration-2000" | "curve" | "counts" | "ccr" | "ifrs9" | "lgd-ead" | "market-var" | "market-es" | "portfolio-credit" | "fairness" | "ml";
             severity: number;
             x: number;
             rates: {
@@ -13397,6 +14054,39 @@ export interface components {
             seed: number;
             n_rep: number;
             generator: string;
+            study: components["schemas"]["c22Study"] | null;
+        };
+        /** @description The engine's named study behind a simulation of a test outside the five credit families (riskvalidation.generators.size_studies, U16-E2): its index among the test's studies, its label, the rule of its rejection, which generator ran (the null or the stated alternative) with its text, whether the design is the null alone or the two points of the other-families variant (no study exposes its departure as a parameter), and the engine's documented excess where there is one. */
+        c22Study: {
+            index: number;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            rule: "p" | "p_le" | "red" | "alarm";
+            /** @enum {string} */
+            rule_label: "p<0.05" | "p<=0.05" | "red" | "alarm";
+            /** @enum {string} */
+            arm: "null" | "alternative";
+            text: components["schemas"]["common-text"];
+            /** @enum {string} */
+            departure: "null" | "two-point";
+            excess: components["schemas"]["c22Excess"] | null;
+        };
+        /** @description One named study of the engine (riskvalidation.generators.size_studies.STUDIES): the test, its index among the test's studies, the generators of the null and of the stated alternative, the pipeline that runs the test where it is not the test itself, the fixed arguments of the test, and the engine's own repetitions and seeds (C22 runs the study with its own seeds and repetitions). */
+        c22StudyRecord: {
+            /** @enum {string} */
+            test_id: "ccr.pfe_exceedance_backtest" | "fair.fisher_exact" | "fair.two_proportion_z" | "ifrs9.stage_migration_backtest" | "lgd_ead.downturn_coverage" | "lgd_ead.lgd_calibration_by_segment" | "lgd_ead.lgd_calibration_over_time" | "market.acerbi_szekely" | "market.christoffersen_conditional_coverage" | "market.christoffersen_independence" | "market.du_escanciano_conditional" | "market.du_escanciano_unconditional" | "market.duration_test" | "market.dynamic_quantile_test" | "market.kupiec_pof" | "market.mcneil_frey_residual_test" | "ml.conformal_coverage" | "ml.shift_resilience" | "portfolio.crp_recursion_vs_mc" | "portfolio.mc_convergence" | "portfolio.tail_backtest";
+            index: number;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            rule: "p" | "p_le" | "red" | "alarm";
+            null_generator: string;
+            alternative_generator: string;
+            pipeline: string | null;
+            test_kwargs: Record<string, never>;
+            engine_n_rep: number;
+            engine_power_n_rep: number | null;
+            engine_seed: number;
+            engine_power_seed: number;
         };
         caseIndexEntry: {
             case_id: string;
@@ -13459,7 +14149,7 @@ export interface components {
         };
         /**
          * Case manifest
-         * @description Catalog row case-manifest 1.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts and the contract-1 reports.
+         * @description Catalog row case-manifest 2.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts, the contract-1 reports and what the case reads of other cases (depends_on).
          */
         "common-case-manifest": {
             /** @constant */
@@ -13491,6 +14181,17 @@ export interface components {
                     number
                 ];
             };
+            /** @description What the producer reads of other cases, stated by the producer from the paths it opens and the modules it imports (never by hand), sorted by kind then ref; empty when the case reads nothing of another case. The engine is never listed: every case depends on it. */
+            depends_on: {
+                /**
+                 * @description document: a committed document of another case the producer reads; code: a product module of another case it imports.
+                 * @enum {unknown}
+                 */
+                kind: "document" | "code";
+                /** @description <case>/<file>.json or manifests/<case>.json for a document; pipeline.cases.<module> for code. */
+                ref: string;
+                reason: components["schemas"]["common-text"];
+            }[];
         };
         /**
          * Contract family
@@ -14150,7 +14851,7 @@ export interface components {
         };
         /**
          * Governance validation report
-         * @description Catalog row governance-report 1.0.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.
+         * @description Catalog row governance-report 1.1.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.
          */
         "governance-governance-report": {
             /** @constant */
@@ -14816,7 +15517,7 @@ export interface components {
             reference: string;
             policy: components["schemas"]["repPolicy"];
         };
-        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason. */
+        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, a packaged label computed with other cut points (`<label>+custom`, source packaged-policy-overridden), an inline battery string parsed, or unresolved with its reason. */
         repPolicy: {
             label: string;
             /** @description spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy. */
@@ -14835,7 +15536,7 @@ export interface components {
              * @description Computed by riskvalidation.governance.policy.resolve_policy.
              * @enum {string}
              */
-            source: "packaged-policy" | "inline-battery" | "unresolved";
+            source: "packaged-policy" | "packaged-policy-overridden" | "inline-battery" | "unresolved";
             reason: string | null;
         } & (unknown & unknown & unknown);
         /** @description I.3 section 1: Executive summary (06 l.1219-1237). */

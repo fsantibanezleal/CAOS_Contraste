@@ -6,9 +6,42 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Flagged, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { cohortLabel, cohortYear, fitOf, floorCellLabel, humanize, outputsOf, type C08Sel } from './selection';
+import { cohortLabel, cohortYear, fitOf, floorCellLabel, outputsOf, segmentLabel, type C08Sel } from './selection';
+import { YEAR_FORMAT, rangeText } from './words';
+
+export { YEAR_FORMAT };
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A difference of two LGDs in percentage points, as the downturn finding says it ("0.14 points"; R5 c11 n6: the mark and the table
+ * wrote "0.14 %"). */
+const points = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v === null || v === undefined ? null : v * 100, lang, { decimals: 2 });
+
+/** A cohort's name with its period kept whole: a phone breaks "Defaults 2009-10" before the period, never inside it (R4 c10 n1). */
+export function CohortName({ name }: { name: string }) {
+  const m = /^(.*\s)(\S*\d\S*)$/.exec(name);
+  if (!m) return <>{name}</>;
+  return (
+    <>
+      {m[1]}
+      <span style={{ whiteSpace: 'nowrap' }}>{m[2]}</span>
+    </>
+  );
+}
+
+/** The share of the plot height kept above the data for each mark label: the shell writes x-mark labels from the top row down, so a
+ * label row over the data hid the downturn line and the uncovered point at 390 (R4 c10 MJ1). */
+export const MARK_ROW_SHARE = 0.13;
+
+/** The y range of a chart whose x marks are labelled: the data from a little below its lowest value, and one label row of headroom per
+ * mark above its highest. */
+export function labelledRange(values: number[], nMarks: number): [number, number] {
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const span = Math.max(hi - lo, 0.01);
+  const bottom = lo - 0.1 * span;
+  const free = Math.min(MARK_ROW_SHARE * nMarks, 0.6);
+  return [bottom, bottom + (hi - bottom) / (1 - free)];
+}
 
 /** The downturn add-on: long-run LGD, downturn LGD and the LGD the crisis cohorts realised, with the coverage. */
 export function DownturnView({ sel }: { sel: C08Sel | null }) {
@@ -20,6 +53,20 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
   const rows = [...t.rows].sort((a, b) => cohortYear(sel, a.cohort_id) - cohortYear(sel, b.cohort_id));
   const yes = pick({ en: 'covered', es: 'cubierta' }, lang);
   const no = pick({ en: 'not covered', es: 'no cubierta' }, lang);
+  // the downturn years the bake detected and every cohort the add-on fails to cover are drawn and labelled on the chart, with the
+  // shortfall, not only named under it (rubric law 2; R3 c09 MN2)
+  const marks = [
+    { x: t.period.first_year, label: { en: `Downturn from ${t.period.first_year}`, es: `Recesión desde ${t.period.first_year}` } },
+    { x: t.period.last_year, label: { en: `Downturn to ${t.period.last_year}`, es: `Recesión hasta ${t.period.last_year}` } },
+    ...rows
+      .filter((r) => !r.covered)
+      .map((r) => {
+        // the period only ("2009-10"), so at 390 the label keeps its shortfall in the plot width (R4 c10 MJ1); the full name is the table's
+        const name = cohortLabel(sel, r.cohort_id);
+        const period = (t: string) => t.split(' ').at(-1) ?? t;
+        return { x: cohortYear(sel, r.cohort_id), label: { en: `${period(name.en)}: not covered, shortfall ${points(r.shortfall, 'en')} points`, es: `${period(name.es)}: no cubierta, faltante ${points(r.shortfall, 'es')} puntos` } };
+      }),
+  ];
   return (
     <ViewsRow>
       <PlotCard
@@ -27,29 +74,42 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
         title={{ en: 'Downturn LGD against the crisis losses', es: 'LGD de recesión contra las pérdidas de la crisis' }}
         {...card}
         note={{
-          en: 'The downturn LGD is the long-run LGD plus an add-on. A crisis cohort whose realised LGD lies above the downturn line was not covered by the add-on, and the shortfall is the distance. The macro path that defines the downturn years is named below the chart.',
-          es: 'La LGD de recesión es la LGD de largo plazo más un ajuste. Una cohorte de crisis cuya LGD realizada queda sobre la línea de recesión no fue cubierta por el ajuste, y el faltante es la distancia. La trayectoria macro que define los años de recesión se nombra bajo el gráfico.',
+          en: 'The downturn LGD is the long-run LGD plus an add-on. A crisis cohort whose realised LGD lies above the downturn line was not covered by the add-on, and the shortfall is the distance. The downturn years are marked on the chart and named below it with the indicator that identifies them; a cohort the add-on does not cover is drawn in red and labelled with its shortfall.',
+          es: 'La LGD de recesión es la LGD de largo plazo más un ajuste. Una cohorte de crisis cuya LGD realizada queda sobre la línea de recesión no fue cubierta por el ajuste, y el faltante es la distancia. Los años de recesión se marcan en el gráfico y se nombran bajo él con el indicador que los identifica; una cohorte que el ajuste no cubre se dibuja en rojo y se rotula con su faltante.',
         }}
       >
         <ChartOverTable
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: rows.map((r) => cohortYear(sel, r.cohort_id)), label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Mean LGD', es: 'LGD media' }, format: { percent: true, digits: 2 } }}
+              x={{
+                values: rows.map((r) => cohortYear(sel, r.cohort_id)),
+                label: { en: 'First default year of the cohort', es: 'Primer año de incumplimiento de la cohorte' },
+                format: YEAR_FORMAT,
+                // the axis spans the downturn years, so the mark of the last one is drawn (a vertical mark does not widen the x scale)
+                range: [Math.min(t.period.first_year, ...rows.map((r) => cohortYear(sel, r.cohort_id))), Math.max(t.period.last_year, ...rows.map((r) => cohortYear(sel, r.cohort_id)))],
+              }}
+              y={{
+                label: { en: 'Mean LGD', es: 'LGD media' },
+                // two decimals, so the readout tells the covered 81.78 % from the uncovered 82.21 % (R4 c10 n2)
+                format: { percent: true, decimals: 2 },
+                range: labelledRange(rows.flatMap((r) => [r.long_run_lgd.value, r.downturn_lgd.value, r.crisis_realised_lgd.value]), marks.length),
+              }}
               series={[
                 { label: { en: 'Long-run LGD', es: 'LGD de largo plazo' }, values: rows.map((r) => r.long_run_lgd.value), color: '--color-fg-subtle', width: 1.8, dash: [6, 3] },
                 { label: { en: 'Downturn LGD', es: 'LGD de recesión' }, values: rows.map((r) => r.downturn_lgd.value), color: '--color-warn', width: 2.6 },
-                { label: { en: 'Realised in the crisis', es: 'Realizada en la crisis' }, values: rows.map((r) => r.crisis_realised_lgd.value), color: '--color-bad', mode: 'points', size: 11 },
+                { label: { en: 'Realised, covered by the add-on', es: 'Realizada, cubierta por el ajuste' }, values: rows.map((r) => (r.covered ? r.crisis_realised_lgd.value : null)), color: '--color-good', mode: 'points', size: 11 },
+                { label: { en: 'Realised, not covered by the add-on', es: 'Realizada, no cubierta por el ajuste' }, values: rows.map((r) => (r.covered ? null : r.crisis_realised_lgd.value)), color: '--color-bad', mode: 'points', size: 11 },
               ]}
+              marks={marks}
             />
           }
         >
           <p className="ct-note" data-downturn-period={`${t.period.first_year}-${t.period.last_year}`}>
             {pick(
               {
-                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by ${t.period.indicator}. Macro source: ${t.period.macro_source}.`,
-                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por ${t.period.indicator}. Fuente macro: ${t.period.macro_source}.`,
+                en: `Downturn years ${t.period.first_year} to ${t.period.last_year}, identified by the ${pick(t.period.indicator, 'en')}. Macro source: ${pick(t.period.macro_source, 'en')}.`,
+                es: `Años de recesión ${t.period.first_year} a ${t.period.last_year}, identificados por la ${pick(t.period.indicator, 'es')}. Fuente macro: ${pick(t.period.macro_source, 'es')}.`,
               },
               lang,
             )}
@@ -73,13 +133,13 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
                 <th>{pick({ en: 'Add-on', es: 'Ajuste' }, lang)}</th>
                 <th>{pick({ en: 'Realised in the crisis', es: 'Realizada en la crisis' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Covered', es: 'Cubierta' }, lang)}</th>
-                <th>{pick({ en: 'Shortfall', es: 'Faltante' }, lang)}</th>
+                <th>{pick({ en: 'Shortfall (points)', es: 'Faltante (puntos)' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.cohort_id} data-cohort={r.cohort_id} data-covered={String(r.covered)} className={r.cohort_id === sel.cohort ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(cohortLabel(sel, r.cohort_id), lang)}</td>
+                  <td className="ct-text"><CohortName name={pick(cohortLabel(sel, r.cohort_id), lang)} /></td>
                   <td className="ct-wide-only">
                     <Flagged value={r.long_run_lgd.value} flag={r.long_run_lgd.flag} />
                   </td>
@@ -91,7 +151,7 @@ export function DownturnView({ sel }: { sel: C08Sel | null }) {
                     <Flagged value={r.crisis_realised_lgd.value} flag={r.crisis_realised_lgd.flag} />
                   </td>
                   <td className="ct-text">{r.covered ? yes : no}</td>
-                  <td>{p2(r.shortfall, lang)}</td>
+                  <td>{points(r.shortfall, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -129,8 +189,8 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
               title={{ en: 'Share of defaults where the floor binds', es: 'Proporción de incumplimientos donde el piso se activa' }}
               height="fill"
               orientation="horizontal"
-              data={fb.rows.map((r) => ({ id: r.segment_id, label: { en: humanize(r.segment_id), es: humanize(r.segment_id) }, value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
-              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, digits: 2 } }}
+              data={fb.rows.map((r) => ({ id: r.segment_id, label: segmentLabel(r.segment_id), value: r.share_binding, tone: 'accent' as const, highlight: r.segment_id === sel.segment }))}
+              axis={{ label: { en: 'Share where the floor binds', es: 'Proporción donde el piso se activa' }, format: { percent: true, decimals: 2 }, range: [0, 1] }}
             />
           }
         >
@@ -150,7 +210,7 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
             <tbody>
               {fb.rows.map((r) => (
                 <tr key={r.segment_id} data-floor={r.floor_id} data-segment={r.segment_id} className={r.segment_id === sel.segment ? 'ct-current' : undefined}>
-                  <td className="ct-text" title={r.reference}>{humanize(r.segment_id)}</td>
+                  <td className="ct-text" title={rangeText(r.reference, lang)}>{pick(segmentLabel(r.segment_id), lang)}</td>
                   <td>{p2(r.floor, lang)}</td>
                   <td className="ct-wide-only">{count(r.n, lang)}</td>
                   <td>{p2(r.share_binding, lang)}</td>
@@ -163,13 +223,13 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
           </table>
         </ChartOverTable>
       </PlotCard>
-      <PlotCard fill title={{ en: 'The floor cells', es: 'Las celdas de los pisos' }} {...card} note={{ en: 'The LGD floors of the framework as the bake transcribed them: a floor per portfolio and collateral class.', es: 'Los pisos de LGD del marco tal como los transcribió la corrida: un piso por cartera y clase de garantía.' }}>
+      <PlotCard fill title={{ en: 'The floor cells', es: 'Las celdas de los pisos' }} {...card} note={{ en: 'The LGD floors of the framework as the run recorded them: a floor per portfolio and collateral class.', es: 'Los pisos de LGD del marco tal como los registró la corrida: un piso por cartera y clase de garantía.' }}>
         {cells.length === 0 ? (
           <p className="caos-pending" data-state="unavailable">
             {pick({ en: 'Not available: the models artifact carries no floor cells.', es: 'No disponible: el artefacto de modelos no trae las celdas de pisos.' }, lang)}
           </p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="floor-cells">
               <thead>
                 <tr>
@@ -183,12 +243,12 @@ export function FloorsView({ sel }: { sel: C08Sel | null }) {
                   <tr key={c.id} data-cell={c.id} className={cellOf(fb.rows.find((r) => r.segment_id === sel.segment)?.floor_id ?? '')?.id === c.id ? 'ct-current' : undefined}>
                     <td className="ct-text">{pick(floorCellLabel(c), lang)}</td>
                     <td>{p2(c.floor, lang)}</td>
-                    <td className="ct-text ct-wide-only" translate="no">{c.reference}</td>
+                    <td className="ct-text ct-wide-only" translate="no">{rangeText(c.reference, lang)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="ct-note" data-regime={fit?.floors.regime} translate="no">{fit?.floors.source}</p>
+            <p className="ct-note" data-regime={fit?.floors.regime} translate="no">{fit?.floors.source ? pick(fit.floors.source, lang) : null}</p>
           </div>
         )}
       </PlotCard>

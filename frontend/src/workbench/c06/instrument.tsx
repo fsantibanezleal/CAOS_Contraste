@@ -9,10 +9,11 @@ import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { RailSelect } from './RailSelect';
 import { AccountReadout, C06ContextView, CurveReadout, C06FindingsView, C06VariantsView, SurfaceReadout, WeightReadout } from './C06Common';
-import { segmentLabel } from './format';
+import { STAGE_TEXT, segmentLabel } from './format';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
+import { PchView } from './PchView';
 import { BacktestView, DecileView, LadderView, RungsView } from './ValidationViews';
 
 export interface C06Instrument {
@@ -88,7 +89,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <Knob
           id="c06-weight"
           label={{ en: 'Weight', es: 'Peso' }}
-          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100% es una sensibilidad, nunca la medida.' }}
+          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100 % es una sensibilidad, nunca la medida.' }}
           value={sel.weight}
           min={0}
           max={1}
@@ -127,7 +128,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c06-account"
           label={{ en: 'Account', es: 'Cuenta' }}
-          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${a.stage}, ${segmentLabel(a.segment_id).en.toLowerCase()}`, es: `${a.stage}, ${segmentLabel(a.segment_id).es.toLowerCase()}` } }))}
+          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${pick(STAGE_TEXT[a.stage] ?? a.stage, 'en')}, ${segmentLabel(a.segment_id).en.toLowerCase()}`, es: `${pick(STAGE_TEXT[a.stage] ?? a.stage, 'es')}, ${segmentLabel(a.segment_id).es.toLowerCase()}` } }))}
           value={sel.account}
           onChange={setAccount}
         />
@@ -172,7 +173,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     [
       { id: 'term', label: { en: 'Term structures', es: 'Estructuras de plazo' }, content: <TermStructureView sel={sel} /> },
       { id: 'sicr', label: { en: 'SICR', es: 'SICR' }, content: <SicrView sel={sel} /> },
-      { id: 'nonlinearity', label: { en: 'Non-linearity', es: 'No linealidad' }, content: <NonLinearityView sel={sel} /> },
+      { id: 'nonlinearity', label: { en: 'Nonlinearity', es: 'No linealidad' }, content: <NonLinearityView sel={sel} /> },
       { id: 'ladder', label: { en: 'Ladder', es: 'Escalera' }, content: <LadderView sel={sel} /> },
     ],
     { en: 'Views of the lifetime PD model', es: 'Vistas del modelo de PD de vida' },
@@ -180,9 +181,10 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   const validation = tabs(
     [
-      { id: 'backtest', label: { en: 'Backtest', es: 'Backtest' }, content: <BacktestView sel={sel} /> },
+      { id: 'backtest', label: { en: 'Backtest', es: 'Retrospectiva' }, content: <BacktestView sel={sel} /> },
       { id: 'deciles', label: { en: 'Deciles', es: 'Deciles' }, content: <DecileView sel={sel} /> },
       { id: 'rungs', label: { en: 'Rungs', es: 'Peldaños' }, content: <RungsView sel={sel} /> },
+      { id: 'pch', label: { en: 'PC-Hazard', es: 'PC-Hazard' }, content: <PchView sel={sel} /> },
     ],
     { en: 'Views of the validation', es: 'Vistas de la validación' },
     'c06-validation',

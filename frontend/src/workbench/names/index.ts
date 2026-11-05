@@ -1,0 +1,555 @@
+// The names of every id a reader can meet in a finding's evidence or a tests table: tests, models, segments, design limits,
+// outputs blocks, rate configurations and contract rules (U16-R2b, the ruling of 2026-10-24: a raw id shown where the product
+// has a name is a blocker). The views of a case keep their own words where they have them; the Findings card of every case, the
+// governance views and every fallback read these, so no view prints an id. The names gate (names.test.ts) walks every committed
+// document and fails on any key these do not name.
+import type { Bi as BiText } from '../c03/U6Shared';
+import { HORIZON_LONG, SUBJECT_TEXT } from '../c12/selection';
+import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT } from '../c09/selection';
+import { ESTIMATOR_TEXT as C10_ESTIMATOR_TEXT } from '../c10/selection';
+import { LOAN_TEXT } from '../c18/selection';
+import { SHOCK_TEXT } from '../c20/selection';
+import { FIELD_TEXT, GROUP_TEXT } from '../c21/selection';
+import { DESIGN_LIMITS, OUTPUT_BLOCKS } from './design';
+import MODELS from './models.gen.json';
+import { TEST_NAMES } from './tests';
+
+export { DESIGN_LIMITS, OUTPUT_BLOCKS, TEST_NAMES };
+
+type Lang = 'en' | 'es';
+const bi = (en: string, es: string): BiText => ({ en, es });
+const join = (parts: Array<BiText | null | undefined>, sep = ', '): BiText => {
+  const xs = parts.filter((p): p is BiText => !!p);
+  return bi(xs.map((p) => p.en).join(sep), xs.map((p) => p.es).join(sep));
+};
+const num = (s: string, lang: Lang): string => (lang === 'es' ? s.replace('.', ',') : s);
+const GEN = MODELS as {
+  models: Record<string, Record<string, BiText>>;
+  rates: Record<string, Record<string, BiText>>;
+  variants: Record<string, Record<string, BiText>>;
+  sources: Record<string, string>;
+};
+
+/** A variant's title in its case manifest (for the views that load no manifest: the governance report). */
+export const variantName = (caseId: string, variantId: string): BiText | null => GEN.variants[caseId]?.[variantId] ?? null;
+
+/** A source by its published name (the manifests' `source_details`), the same in both languages; null for an unknown id. */
+export const sourceName = (id: string): string | null => GEN.sources[id] ?? null;
+
+/** The fits of the governance inventory that are not a variant of their case (an inventory entry is one fit: the models
+ * document `models-<fit>.json`; data-pipeline/pipeline/governance/inputs.json). C06 and C08 fit one ladder per variant and take
+ * the variant's name. */
+const FIT_NAME: Record<string, BiText> = {
+  'C01/german': bi('German Credit fit', 'Ajuste German Credit'),
+  'C01/taiwan': bi('Taiwan fit', 'Ajuste Taiwán'),
+  'C01/taiwan-small': bi('Taiwan small-sample fit', 'Ajuste Taiwán de muestra pequeña'),
+  'C02/polish-horizons': bi('Polish horizons fit', 'Ajuste de los horizontes polacos'),
+  'C03/sba-7a': bi('SBA 7(a) fit', 'Ajuste SBA 7(a)'),
+  'C04/transitions': bi('Rating transitions', 'Transiciones de calificación'),
+  'C05/ldp': bi('Low-default portfolios', 'Carteras de bajo incumplimiento'),
+  'C05/sp2009': bi('S&P 2009 fit', 'Ajuste S&P 2009'),
+  'C07/banco-andino': bi('Banco Andino', 'Banco Andino'),
+  'C09/generator': bi('Generator', 'Generador'),
+  'C10/c10': bi('Portfolio model ladder', 'Escalera de modelos de cartera'),
+  'C11/ladder': bi('VaR and ES ladder', 'Escalera de VaR y ES'),
+  'C12/hw1f-treasury-2000-2025': bi('Hull-White, Treasury 2000 to 2025', 'Hull-White, Tesoro 2000 a 2025'),
+  'C13/generator': bi('Generator', 'Generador'),
+  'C14/svb-2021-2022': bi('SVB, 2021 to 2022', 'SVB, 2021 a 2022'),
+  'C15/banco-andino-2026-09': bi('Banco Andino, September 2026', 'Banco Andino, septiembre de 2026'),
+  'C16/svb-liquidity': bi('SVB liquidity', 'Liquidez de SVB'),
+  'C17/generator': bi('Generator', 'Generador'),
+  'C18/banco-andino': bi('Banco Andino', 'Banco Andino'),
+  'C20/c20-ladder': bi('ML model ladder', 'Escalera de modelos de ML'),
+  'C21/hmda-de-2018-2023': bi('HMDA Delaware, 2018 to 2023', 'HMDA Delaware, 2018 a 2023'),
+  'C22/generators': bi('Generators', 'Generadores'),
+};
+
+/** An inventory entry (`C02/polish-horizons`) or a variant key (`C05/ldp-sim-0`) in words: its case and its fit or variant;
+ * null for a key with no name. */
+export function entryName(key: string): BiText | null {
+  const i = key.indexOf('/');
+  if (i < 0) return null;
+  const caseId = key.slice(0, i);
+  const name = FIT_NAME[key] ?? variantName(caseId, key.slice(i + 1));
+  return name ? bi(`${caseId}, ${name.en}`, `${caseId}, ${name.es}`) : null;
+}
+
+/** An entry key in words, or as written when it has no name. */
+export const entryText = (key: string): BiText => entryName(key) ?? bi(key, key);
+
+/** A test row's model and segment in words ("P1 Scorecard, portfolio"), each part named or, failing that, left out. */
+export function rowWhere(caseId: string, modelId: string | null | undefined, segment: string | null | undefined, models?: NameContext['models']): BiText | null {
+  const ctx = { caseId, models };
+  const parts = [modelId ? modelName(modelId, ctx) : null, segment ? segmentName(segment, ctx) : null].filter((p): p is BiText => !!p);
+  return parts.length ? bi(parts.map((p) => p.en).join(', '), parts.map((p) => p.es).join(', ')) : null;
+}
+
+/** A test's name. A repeated test of a rate key (`market.dynamic_quantile_test#2`) adds its number; an id no map holds is null. */
+export function testName(id: string): BiText | null {
+  const m = /^(.*)#(\d+)$/.exec(id);
+  const base = TEST_NAMES[m ? m[1] : id];
+  if (!base) return null;
+  return m ? bi(`${base.en} (${Number(m[2]) + 1})`, `${base.es} (${Number(m[2]) + 1})`) : base;
+}
+
+/** A test's name, else the id: for a view that must print something; the names gate keeps this fallback unused. */
+export const testText = (id: string): BiText => testName(id) ?? bi(id, id);
+
+/** What the names of a case read: its id and, when the view loaded it, the document's own model list. */
+export interface NameContext {
+  caseId: string;
+  models?: ReadonlyArray<{ id: string; title?: BiText; short_title?: BiText }>;
+}
+
+/** C09's composed CCF ids (`ccf-<design>-<treatment>[-<estimator>]`, the bake's ead_models and fits) in C09's own words. */
+function c09Model(id: string): BiText | null {
+  const m = /^ccf-(fixed-horizon|cohort|variable-horizon)-(none|censor|floor-cap|bounded-scale)(?:-(mean|pooled))?$/.exec(id);
+  if (!m) return null;
+  const parts: BiText[] = [DESIGN_TEXT[m[1]], TREATMENT_TEXT[m[2]], ...(m[3] ? [ESTIMATOR_TEXT[m[3]]] : [])];
+  const low = (lang: Lang) => parts.map((p) => p[lang].toLowerCase()).join(', ');
+  return bi(`CCF, ${low('en')}`, `CCF, ${low('es')}`);
+}
+
+/** A model's name: the document's short title (or title), else the committed documents' table, else the case's composed form. */
+export function modelName(id: string, ctx: NameContext): BiText | null {
+  const named = baseModelName(id, ctx);
+  // the documents baked before U16-F10a write "P1 Scorecard" in Spanish; the ruling of 2026-10-27 translates it (the producer's
+  // SHORT_TITLES do from the re-bake on, and this then changes nothing)
+  const base = named ? bi(named.en, named.es.replace(/\bScorecard\b/g, 'Tarjeta de puntuación').replace(/\bscorecard\b/g, 'tarjeta de puntuación')) : null;
+  // C20's model trained with the planted leak shares the clean model's short title: it is named apart (R3 c20 M3)
+  if (base && /-planted-leak$/.test(id) && !/leak/i.test(base.en)) return bi(`${base.en} with the planted leak`, `${base.es} con la fuga sembrada`);
+  return base;
+}
+
+function baseModelName(id: string, ctx: NameContext): BiText | null {
+  const own = ctx.models?.find((m) => m.id === id);
+  const fromDoc = own?.short_title && own.short_title.en !== id ? own.short_title : own?.title;
+  if (fromDoc && fromDoc.en !== id) return fromDoc;
+  const table = GEN.models[ctx.caseId]?.[id];
+  if (table) return table;
+  if (ctx.caseId === 'C09') return c09Model(id);
+  // C18's satellite of one loan class (c18/satellites: `c18-satellite-<loan>`), in C18's words for the class
+  const sat = ctx.caseId === 'C18' ? /^c18-satellite-(.+)$/.exec(id) : null;
+  if (sat && LOAN_TEXT[sat[1]]) return bi(`Satellite of ${LOAN_TEXT[sat[1]].en.toLowerCase()}`, `Satélite de ${LOAN_TEXT[sat[1]].es.toLowerCase()}`);
+  return null;
+}
+
+/** The scope of a tests row of a credit or market portfolio whose document gives no segment (R5 ruling 2: never a blank or "-"). */
+export const WHOLE_PORTFOLIO: BiText = bi('whole portfolio', 'toda la cartera');
+/** The scope of a tests row of C12's counterparty book whose document gives no segment, or gives `all` (R5 ruling 2). */
+export const WHOLE_BOOK: BiText = bi('whole book', 'toda la cartera');
+
+const SEGMENT_FIXED: Record<string, BiText> = {
+  portfolio: bi('portfolio', 'cartera'),
+  // the whole portfolio of a credit or market case (C06's rows); C12's counterparty book is the whole book (segmentName, R5 ruling 2)
+  all: WHOLE_PORTFOLIO,
+  annual: bi('the annual cohorts', 'las cohortes anuales'),
+  // C16's two run-off denominators, as its producer names them (`c16/document.py` SEGMENT_NAME): the generic red-row findings cite them
+  'board-stated-share': bi('board-stated share', 'proporción declarada por la Junta'),
+  'call-report-dep': bi('call-report deposits', 'depósitos del reporte'),
+  semesters: bi('the semesters', 'los semestres'),
+  holdout: bi('holdout', 'muestra reservada'),
+  screen: bi('the leakage screen', 'el filtro de fuga'),
+  'train-vs-holdout': bi('training against holdout', 'entrenamiento contra muestra reservada'),
+  'shap-vs-ale-range': bi('SHAP against the ALE range', 'SHAP contra el rango de ALE'),
+  'window:pooled': bi('the windows pooled', 'las ventanas agrupadas'),
+  age: bi('age', 'edad'),
+  sex: bi('sex', 'sexo'),
+  marital_status: bi('marital status', 'estado civil'),
+  'minimum-transfer-amount-0': bi('minimum transfer amount 0', 'monto mínimo de transferencia 0'),
+  // C02's pooled file: the horizon indicator of each row, in years ahead (data-pipeline/pipeline/cases/c02/conventions.py HORIZON_FEATURE;
+  // R4 c03 NB3: "input horizon_years")
+  'characteristic:horizon_years': bi('horizon indicator of the pooled file (years ahead)', 'indicador de horizonte del archivo agrupado (años hacia adelante)'),
+};
+
+/** C20's Fed portfolios and the fields of their loans (the Federal Reserve's hypothetical portfolios, c20/v_shift.py). */
+const FED_PORTFOLIO: Record<string, BiText> = {
+  typical: bi('typical', 'típica'),
+  'lower-risk': bi('lower-risk', 'de menor riesgo'),
+  'higher-risk': bi('higher-risk', 'de mayor riesgo'),
+};
+const FED_FIELD: Record<string, BiText> = {
+  committed_exposure_amt: bi('committed exposure', 'exposición comprometida'),
+  utilized_exposure_amt: bi('utilised exposure', 'exposición utilizada'),
+  interest_rate: bi('interest rate', 'tasa de interés'),
+  term: bi('term', 'plazo'),
+  orig_year: bi('origination year', 'año de originación'),
+  rating: bi('rating', 'calificación'),
+  facility_type_cat: bi('facility type', 'tipo de facilidad'),
+  lien_position_cat: bi('lien position', 'posición del gravamen'),
+  domestic_flag: bi('domestic borrower', 'deudor doméstico'),
+  naics_two_digit_cat: bi('industry (two-digit NAICS)', 'industria (NAICS a dos dígitos)'),
+  interest_rate_variability: bi('interest rate variability', 'variabilidad de la tasa de interés'),
+  guarantor_flag: bi('guarantor', 'garante'),
+};
+
+/** The inputs of the UCI German credit file (C01's German twin, C20's SGCD) by name (data-pipeline/pipeline/cases/c01_features.py). */
+const GERMAN_FIELD: Record<string, BiText> = {
+  checking_status: bi('Status of the existing checking account', 'Estado de la cuenta corriente'),
+  duration_months: bi('Duration', 'Plazo'),
+  credit_history: bi('Credit history', 'Historial de crédito'),
+  purpose: bi('Purpose', 'Propósito'),
+  credit_amount: bi('Credit amount', 'Monto del crédito'),
+  savings: bi('Savings account and bonds', 'Cuenta de ahorro y bonos'),
+  employment_since: bi('Present employment since', 'Antigüedad en el empleo actual'),
+  installment_rate: bi('Instalment rate in percent of disposable income', 'Cuota como porcentaje del ingreso disponible'),
+  other_debtors: bi('Other debtors and guarantors', 'Otros deudores y avales'),
+  residence_since: bi('Present residence since', 'Antigüedad en la residencia actual'),
+  property: bi('Property', 'Bienes'),
+  other_installment_plans: bi('Other instalment plans', 'Otros planes de cuotas'),
+  housing: bi('Housing', 'Vivienda'),
+  existing_credits: bi('Number of existing credits at this bank', 'Créditos vigentes en este banco'),
+  job: bi('Job', 'Empleo'),
+  people_liable: bi('People liable to provide maintenance for', 'Personas a cargo'),
+  telephone: bi('Telephone', 'Teléfono'),
+  // the three columns the case reads and leaves unused (UCI codebook attributes 13, 9 and 20)
+  age_years: bi('Age in years', 'Edad en años'),
+  personal_status_sex: bi('Personal status and sex', 'Estado civil y sexo'),
+  foreign_worker: bi('Foreign worker', 'Trabajador extranjero'),
+};
+
+/** The columns of the UCI Default of Credit Card Clients file (C01, C20) by the names its codebook gives (variables X1 to X23,
+ * https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients, read 2026-10-27; the same words as
+ * data-pipeline/pipeline/cases/c01_features.py FEATURE_NAME): PAY_0 and PAY_2 to PAY_6 are the repayment status from September back
+ * to April 2005, BILL_AMT1 to 6 the bill statement and PAY_AMT1 to 6 the amount paid in the same months (the 2026-10-27 ruling: a
+ * column code alone is a raw id). */
+const MONTHS: ReadonlyArray<readonly [string, string]> = [
+  ['September', 'septiembre'], ['August', 'agosto'], ['July', 'julio'], ['June', 'junio'], ['May', 'mayo'], ['April', 'abril'],
+];
+const TAIWAN_FIELD: Record<string, BiText> = {
+  LIMIT_BAL: bi('Given credit', 'Crédito otorgado'),
+  SEX: bi('Sex', 'Sexo'),
+  EDUCATION: bi('Education', 'Educación'),
+  MARRIAGE: bi('Marital status', 'Estado civil'),
+  AGE: bi('Age', 'Edad'),
+  ...Object.fromEntries(
+    MONTHS.flatMap(([en, es], k) => [
+      [k === 0 ? 'PAY_0' : `PAY_${k + 1}`, bi(`Repayment status, ${en} 2005`, `Estado de pago, ${es} de 2005`)],
+      [`BILL_AMT${k + 1}`, bi(`Bill statement, ${en} 2005`, `Estado de cuenta, ${es} de 2005`)],
+      [`PAY_AMT${k + 1}`, bi(`Amount paid, ${en} 2005`, `Monto pagado, ${es} de 2005`)],
+    ]),
+  ),
+};
+
+/** The 64 ratios of the UCI Polish companies bankruptcy file (C02, C20) by the names its codebook gives (X1 to X64,
+ * https://archive.ics.uci.edu/dataset/365/polish+companies+bankruptcy+data, read 2026-10-27), the file's column code (Attr27) after the
+ * name, as a data dictionary writes it (the 2026-10-27 ruling on R3 c03 Q1). */
+const POLISH_RATIO: ReadonlyArray<readonly [string, string]> = [
+  ['net profit / total assets', 'utilidad neta / activos totales'],
+  ['total liabilities / total assets', 'pasivos totales / activos totales'],
+  ['working capital / total assets', 'capital de trabajo / activos totales'],
+  ['current assets / short-term liabilities', 'activos corrientes / pasivos de corto plazo'],
+  ['[(cash + short-term securities + receivables - short-term liabilities) / (operating expenses - depreciation)] * 365', '[(caja + valores de corto plazo + cuentas por cobrar - pasivos de corto plazo) / (gastos operacionales - depreciación)] * 365'],
+  ['retained earnings / total assets', 'utilidades retenidas / activos totales'],
+  ['EBIT / total assets', 'EBIT / activos totales'],
+  ['book value of equity / total liabilities', 'valor libro del patrimonio / pasivos totales'],
+  ['sales / total assets', 'ventas / activos totales'],
+  ['equity / total assets', 'patrimonio / activos totales'],
+  ['(gross profit + extraordinary items + financial expenses) / total assets', '(utilidad bruta + partidas extraordinarias + gastos financieros) / activos totales'],
+  ['gross profit / short-term liabilities', 'utilidad bruta / pasivos de corto plazo'],
+  ['(gross profit + depreciation) / sales', '(utilidad bruta + depreciación) / ventas'],
+  ['(gross profit + interest) / total assets', '(utilidad bruta + intereses) / activos totales'],
+  ['(total liabilities * 365) / (gross profit + depreciation)', '(pasivos totales * 365) / (utilidad bruta + depreciación)'],
+  ['(gross profit + depreciation) / total liabilities', '(utilidad bruta + depreciación) / pasivos totales'],
+  ['total assets / total liabilities', 'activos totales / pasivos totales'],
+  ['gross profit / total assets', 'utilidad bruta / activos totales'],
+  ['gross profit / sales', 'utilidad bruta / ventas'],
+  ['(inventory * 365) / sales', '(inventario * 365) / ventas'],
+  ['sales (n) / sales (n-1)', 'ventas (n) / ventas (n-1)'],
+  ['profit on operating activities / total assets', 'resultado operacional / activos totales'],
+  ['net profit / sales', 'utilidad neta / ventas'],
+  ['gross profit (in 3 years) / total assets', 'utilidad bruta (en 3 años) / activos totales'],
+  ['(equity - share capital) / total assets', '(patrimonio - capital social) / activos totales'],
+  ['(net profit + depreciation) / total liabilities', '(utilidad neta + depreciación) / pasivos totales'],
+  ['profit on operating activities / financial expenses', 'resultado operacional / gastos financieros'],
+  ['working capital / fixed assets', 'capital de trabajo / activos fijos'],
+  ['logarithm of total assets', 'logaritmo de los activos totales'],
+  ['(total liabilities - cash) / sales', '(pasivos totales - caja) / ventas'],
+  ['(gross profit + interest) / sales', '(utilidad bruta + intereses) / ventas'],
+  ['(current liabilities * 365) / cost of products sold', '(pasivos corrientes * 365) / costo de los productos vendidos'],
+  ['operating expenses / short-term liabilities', 'gastos operacionales / pasivos de corto plazo'],
+  ['operating expenses / total liabilities', 'gastos operacionales / pasivos totales'],
+  ['profit on sales / total assets', 'utilidad sobre ventas / activos totales'],
+  ['total sales / total assets', 'ventas totales / activos totales'],
+  ['(current assets - inventories) / long-term liabilities', '(activos corrientes - inventarios) / pasivos de largo plazo'],
+  ['constant capital / total assets', 'capital permanente / activos totales'],
+  ['profit on sales / sales', 'utilidad sobre ventas / ventas'],
+  ['(current assets - inventory - receivables) / short-term liabilities', '(activos corrientes - inventario - cuentas por cobrar) / pasivos de corto plazo'],
+  ['total liabilities / ((profit on operating activities + depreciation) * (12/365))', 'pasivos totales / ((resultado operacional + depreciación) * (12/365))'],
+  ['profit on operating activities / sales', 'resultado operacional / ventas'],
+  ['rotation receivables + inventory turnover in days', 'rotación de cuentas por cobrar + rotación de inventario en días'],
+  ['(receivables * 365) / sales', '(cuentas por cobrar * 365) / ventas'],
+  ['net profit / inventory', 'utilidad neta / inventario'],
+  ['(current assets - inventory) / short-term liabilities', '(activos corrientes - inventario) / pasivos de corto plazo'],
+  ['(inventory * 365) / cost of products sold', '(inventario * 365) / costo de los productos vendidos'],
+  ['EBITDA (profit on operating activities - depreciation) / total assets', 'EBITDA (resultado operacional - depreciación) / activos totales'],
+  ['EBITDA (profit on operating activities - depreciation) / sales', 'EBITDA (resultado operacional - depreciación) / ventas'],
+  ['current assets / total liabilities', 'activos corrientes / pasivos totales'],
+  ['short-term liabilities / total assets', 'pasivos de corto plazo / activos totales'],
+  ['(short-term liabilities * 365) / cost of products sold', '(pasivos de corto plazo * 365) / costo de los productos vendidos'],
+  ['equity / fixed assets', 'patrimonio / activos fijos'],
+  ['constant capital / fixed assets', 'capital permanente / activos fijos'],
+  ['working capital', 'capital de trabajo'],
+  ['(sales - cost of products sold) / sales', '(ventas - costo de los productos vendidos) / ventas'],
+  ['(current assets - inventory - short-term liabilities) / (sales - gross profit - depreciation)', '(activos corrientes - inventario - pasivos de corto plazo) / (ventas - utilidad bruta - depreciación)'],
+  ['total costs / total sales', 'costos totales / ventas totales'],
+  ['long-term liabilities / equity', 'pasivos de largo plazo / patrimonio'],
+  ['sales / inventory', 'ventas / inventario'],
+  ['sales / receivables', 'ventas / cuentas por cobrar'],
+  ['(short-term liabilities * 365) / sales', '(pasivos de corto plazo * 365) / ventas'],
+  ['sales / short-term liabilities', 'ventas / pasivos de corto plazo'],
+  ['sales / fixed assets', 'ventas / activos fijos'],
+];
+const POLISH_FIELD: Record<string, BiText> = Object.fromEntries(POLISH_RATIO.map(([en, es], k) => [`Attr${k + 1}`, bi(`${en} (Attr${k + 1})`, `${es} (Attr${k + 1})`)]));
+
+/** The model inputs C03 derives from the SBA 7(a) loan file by name (data-pipeline/pipeline/cases/c03/panel.py FEATURES). */
+const SBA_FIELD: Record<string, BiText> = {
+  log10_amount: bi('Log10 of the gross approved amount', 'Log10 del monto bruto aprobado'),
+  guarantee_share: bi('Share guaranteed by the SBA', 'Proporción garantizada por la SBA'),
+  term_months: bi('Term in months', 'Plazo en meses'),
+  sector: bi('Sector', 'Sector'),
+  revolver: bi('Revolving line', 'Línea rotativa'),
+  '(intercept)': bi('Intercept', 'Intercepto'),
+  // C20's planted leak (c20/v_leak.py LEAK): the default flag plus noise, dated one month after the observation date
+  future_status_code: bi('future status code (the planted leak)', 'código de estado futuro (la fuga sembrada)'),
+};
+
+/** An input of a data file by name: a column of the German or the Taiwan file, a ratio of the Polish file, a field of the Fed
+ * portfolios or an input C03 derives from the SBA file; null for any other. */
+export const inputName = (col: string): BiText | null =>
+  GERMAN_FIELD[col] ?? TAIWAN_FIELD[col] ?? POLISH_FIELD[col] ?? FED_FIELD[col] ?? SBA_FIELD[col] ?? null;
+
+/** An input, or an EBM pair of inputs ("BILL_AMT1 & BILL_AMT2"), in words; a column no codebook names keeps its text. */
+export function termName(term: string, lang: Lang): string {
+  return term
+    .split(' & ')
+    .map((c) => inputName(c)?.[lang] ?? c)
+    .join(' × ');
+}
+
+/** A rule over inputs (`log10_amount <= 5.00043 and sector > 0.0554929`) with each named input in words; an input no codebook
+ * names stays as written. */
+export function ruleNames(rule: string, lang: 'en' | 'es'): string {
+  return rule.replace(/[A-Za-z_][A-Za-z0-9_]*/g, (w) => {
+    const n = inputName(w);
+    return n ? n[lang] : w;
+  });
+}
+
+/** C20's Fed shift (`fed-higher-risk-x0.25`): the Fed's higher-risk portfolio drift at a multiple (c20/v_shift.py). */
+// the multiple first, so the options of a select still read apart when the rail cuts them (R3 c20 M1)
+const fedShift = (k: string): BiText => bi(`${num(k, 'en')} times the Fed higher-risk drift`, `${num(k, 'es')} veces la deriva de mayor riesgo de la Fed`);
+
+/** A segment of a test row or an evidence key in words; null when no form of the case matches (the gate fails on it). */
+export function segmentName(seg: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
+  if (seg === 'all' && ctx.caseId === 'C12') return WHOLE_BOOK;
+  if (SEGMENT_FIXED[seg]) return SEGMENT_FIXED[seg];
+  // a C18 loan class (the segment of a satellite's back-cast row), as the C18 views name it; the generic red-row findings cite it
+  if (ctx.caseId === 'C18' && LOAN_TEXT[seg]) return LOAN_TEXT[seg];
+  let m: RegExpExecArray | null;
+  // the input of a CSI row by the name its codebook gives (C02: the UCI file's Attr27; a `_missing` column is its missing-value
+  // indicator); a column no codebook names is said to be an input
+  if ((m = /^characteristic:(.+?)(_missing)?$/.exec(seg))) {
+    const n = inputName(m[1]);
+    const en = n ? n.en : `input ${m[1]}`;
+    const es = n ? n.es : `entrada ${m[1]}`;
+    return m[2] ? bi(`${en}, missing-value indicator`, `${es}, indicador de valor faltante`) : bi(en, es);
+  }
+  // a grade of the master scale (C01: G01 to G12), so the per-grade rows of a tests table read apart (R3 c23 M1)
+  if ((m = /^G(\d\d)$/.exec(seg))) return bi(`grade G${m[1]}`, `grado G${m[1]}`);
+  // C11's tail level of a back-test (`alpha=0.025`), as the C11 views write it ("2.5 % tail (97.5 % VaR)"; U16-F12g D3: 117 raw
+  // evidence keys in the Spanish Findings after the re-bake)
+  if ((m = /^alpha=(\d*\.?\d+)$/.exec(seg))) {
+    const a = Number(m[1]);
+    const pc = (v: number, lang: Lang) => num(String(Math.round(v * 1000) / 10), lang);
+    return bi(`${pc(a, 'en')}\u00a0% tail (${pc(1 - a, 'en')}\u00a0% VaR)`, `cola de ${pc(a, 'es')}\u00a0% (VaR al ${pc(1 - a, 'es')}\u00a0%)`);
+  }
+  switch (ctx.caseId) {
+    case 'C03':
+      // a vintage of the SBA panel by its fiscal year, so the rows of the tests table read apart (R3 c04 M1)
+      if ((m = /^fy(\d{4})$/.exec(seg))) return bi(`the fiscal year ${m[1]} vintage`, `la cosecha del año fiscal ${m[1]}`);
+      break;
+    case 'C04':
+      if (/^\d{4}$/.test(seg)) return bi(`cohort ${seg}`, `cohorte ${seg}`);
+      break;
+    case 'C06':
+      // an origination cohort of the lifetime PD backtest, which the finding now cites row by row (R4 c08 minor, U16-F12b)
+      if (/^\d{4}$/.test(seg)) return bi(`the ${seg} origination cohort`, `la cohorte de originación ${seg}`);
+      if (seg === 'older') return bi('the earlier origination cohorts', 'las cohortes de originación anteriores');
+      break;
+    case 'C05':
+      if (/^(AAA|AA|A|BBB|BB|B|CCC-C|C)$/.test(seg)) return bi(`grade ${seg}`, `grado ${seg}`);
+      break;
+    case 'C08':
+      if ((m = /^cohort-(\d{4})-(\d{2})$/.exec(seg))) {
+        const end = `${m[1].slice(0, 2)}${m[2]}`;
+        return bi(`the ${m[1]} to ${end} cohort`, `la cohorte ${m[1]} a ${end}`);
+      }
+      break;
+    case 'C10':
+      // the measure and the level of an Euler additivity row (R3 c11 n3)
+      if ((m = /^(var|es)-(0\.\d+)$/.exec(seg))) {
+        const level = String(Math.round(Number(m[2]) * 1e6) / 1e4);
+        const measure = m[1] === 'var' ? 'VaR' : 'ES';
+        return bi(`${measure} at ${level} %`, `${measure} al ${num(level, 'es')} %`);
+      }
+      if ((m = /^lhp-like-([\d.]+)$/.exec(seg))) return bi(`the LHP anchor at ${num(m[1], 'en')} %`, `el ancla LHP al ${num(m[1], 'es')} %`);
+      if ((m = /^rho=([\d.]+)\/(maximum-likelihood|moments)$/.exec(seg))) {
+        const e = C10_ESTIMATOR_TEXT[m[2]];
+        return bi(`known correlation ${num(m[1], 'en')}, ${e.en.toLowerCase()}`, `correlación conocida ${num(m[1], 'es')}, ${e.es.toLowerCase()}`);
+      }
+      break;
+    case 'C12':
+      if ((m = /^(book|risk factor|risk-factor)-([0-9a-z]+?)(?:-q(\d+))?$/.exec(seg)) && HORIZON_LONG[m[2]]) {
+        const s = SUBJECT_TEXT[m[1] === 'book' ? 'book' : 'risk-factor'];
+        const subject = bi(s.en.charAt(0).toLowerCase() + s.en.slice(1), s.es.charAt(0).toLowerCase() + s.es.slice(1));
+        return join([subject, HORIZON_LONG[m[2]], m[3] ? bi(`quantile ${m[3]} %`, `cuantil ${m[3]} %`) : null]);
+      }
+      break;
+    case 'C17':
+      // the cell of the capital-stability grid: the years of history and the collection threshold (c17/documents.py cell_id)
+      if ((m = /^y(\d+)-h(\d+)$/.exec(seg))) {
+        const t = Number(m[2]);
+        return bi(`${m[1]} years of losses, threshold ${t.toLocaleString('en-US')}`, `${m[1]} años de pérdidas, umbral ${t.toLocaleString('es-CL')}`);
+      }
+      break;
+    case 'C20':
+      if ((m = /^(\d+)-bootstrap-refits$/.exec(seg))) return bi(`${m[1]} bootstrap refits`, `${m[1]} reajustes por remuestreo`);
+      // the shifts of the decisions-that-flip view (the documents' impact_detail shift_id; R3 c20 B1)
+      if ((m = /^noise-([\d.]+)$/.exec(seg))) return bi(`input noise at ${num(m[1], 'en')} standard deviations`, `ruido en las entradas de ${num(m[1], 'es')} desviaciones estándar`);
+      if ((m = /^seed-(\d+)$/.exec(seg))) return bi(`retraining seed ${m[1]}`, `semilla de reentrenamiento ${m[1]}`);
+      if (seg === 'decision-time-leak-unavailable') return bi('at decision time, without the leak', 'en el momento de la decisión, sin la fuga');
+      if ((m = /^(\d+)-seeds$/.exec(seg))) return bi(`${m[1]} retraining seeds`, `${m[1]} semillas de reentrenamiento`);
+      if (seg === 'window:baseline') return bi('the baseline window', 'la ventana base');
+      // the weak-spot slices of one input (c20/v_perturb.py: the input as the UCI Taiwan file names its column)
+      if ((m = /^slices-of-(.+)$/.exec(seg))) {
+        const n = inputName(m[1]) ?? bi(m[1], m[1]);
+        return bi(`slices of ${n.en}`, `segmentos de ${n.es}`);
+      }
+      if ((m = /^(shipped|applied):(numeric-noise)$/.exec(seg))) {
+        return join([SHOCK_TEXT[m[2]], m[1] === 'shipped' ? bi('as shipped', 'como se entregan') : bi('applied by Contraste', 'aplicado por Contraste')]);
+      }
+      if ((m = /^(?:(control-zeros-kept):)?preset-eps-([\d.]+)$/.exec(seg))) {
+        const base = bi(`preset noise scale ${num(m[2], 'en')}`, `escala de ruido predefinida ${num(m[2], 'es')}`);
+        return m[1] ? join([base, bi('control zeros kept', 'ceros de control conservados')]) : base;
+      }
+      if ((m = /^(shipped|applied):(F\d)$/.exec(seg)) && SHOCK_TEXT[m[2]]) {
+        const how = m[1] === 'shipped' ? bi('as shipped', 'como se entregan') : bi('applied by Contraste', 'aplicado por Contraste');
+        return join([SHOCK_TEXT[m[2]], how]);
+      }
+      if ((m = /^(?:window:)?fed-higher-risk-x([\d.]+)$/.exec(seg))) return fedShift(m[1]);
+      // one field's drift from one Fed portfolio to another ("typical>higher-risk:interest_rate")
+      if ((m = /^([a-z-]+)>([a-z-]+):([a-z_]+)$/.exec(seg)) && FED_PORTFOLIO[m[1]] && FED_PORTFOLIO[m[2]] && FED_FIELD[m[3]]) {
+        const [a, b, f] = [FED_PORTFOLIO[m[1]], FED_PORTFOLIO[m[2]], FED_FIELD[m[3]]];
+        return bi(`${f.en}, ${a.en} against ${b.en} portfolio`, `${f.es}, cartera ${a.es} frente a ${b.es}`);
+      }
+      break;
+    case 'C21': {
+      // field | contrast | measure (c21 FindingsEvidence): "applicant_age|25-34 vs 35-44|controlled"
+      const [field, contrast, measure] = seg.split('|');
+      const f = FIELD_TEXT[field];
+      if (!f) break;
+      const c = contrast === undefined ? null : bi(contrastBi(contrast, 'en'), contrastBi(contrast, 'es'));
+      const how = measure === 'controlled' ? bi('controlled', 'controlado') : measure === 'rate_spread' ? bi('rate spread', 'diferencial de tasa') : null;
+      if (measure !== undefined && !how) break;
+      return join([f, c, how]);
+    }
+    default:
+      break;
+  }
+  return null;
+}
+
+/** A conformal window of C20 by name ("fed-higher-risk-x0.25", "pooled", "baseline"); the id when no form matches. */
+export const windowName = (w: string): BiText => segmentName(`window:${w}`, { caseId: 'C20' }) ?? segmentName(w, { caseId: 'C20' }) ?? bi(w, w);
+
+/** A C21 contrast ("25-34 vs 35-44") with the groups in the language's words and "vs" as "frente a" in Spanish. */
+function contrastBi(label: string, lang: Lang): string {
+  const words = Object.entries(GROUP_TEXT).reduce((acc, [g, b]) => acc.replaceAll(g, b[lang]), label);
+  return lang === 'es' ? words.replace(' vs ', ' frente a ') : words;
+}
+
+/** A measured rate of a `rate:<test>@<config>` key: the test, then its configuration (C22's scenario from its documents, collected by
+ * scripts/gen-names.mjs; C04's from the key's tail). */
+export function rateName(key: string, ctx: Pick<NameContext, 'caseId'>): BiText | null {
+  const [test, tail = ''] = key.split('@');
+  const t = testName(test);
+  if (!t) return null;
+  const detail = rateDetail(ctx.caseId, key, tail);
+  return detail ? join([t, detail]) : null;
+}
+
+const RATE_TAIL: Record<string, BiText> = {
+  null: bi('under the null (its size)', 'bajo la hipótesis nula (su tamaño)'),
+  'form-chi2': bi('chi-square form, Markov chain', 'forma chi-cuadrado, cadena de Markov'),
+  'form-lr': bi('likelihood ratio form, Markov chain', 'forma de razón de verosimilitud, cadena de Markov'),
+};
+
+function rateDetail(caseId: string, key: string, tail: string): BiText | null {
+  const docs = GEN.rates[caseId]?.[key];
+  if (docs) return docs;
+  if (RATE_TAIL[tail]) return RATE_TAIL[tail];
+  let m: RegExpExecArray | null;
+  if ((m = /^k([\d.]+)$/.exec(tail))) return bi(`k = ${num(m[1], 'en')}`, `k = ${num(m[1], 'es')}`);
+  if ((m = /^alpha([\d.]+)$/.exec(tail))) return bi(`alpha = ${num(m[1], 'en')}`, `alfa = ${num(m[1], 'es')}`);
+  return null;
+}
+
+/** A contract rule a finding cites (`contract:<rule>`), from the rule's own text (data-pipeline/pipeline/cases/c01_features.py). */
+export const CONTRACT_RULES: Record<string, BiText> = {
+  'C01-EDU-CODE': bi('an education code outside its documented codes (1 to 4)', 'un código de educación fuera de sus códigos documentados (1 a 4)'),
+  'C01-PAY-CODE': bi('a repayment status outside its documented codes (-1, 1 to 9)', 'un estado de pago fuera de sus códigos documentados (-1, 1 a 9)'),
+};
+
+/** What an evidence key names, in words, and its parts (the caller adds the row's result: p value and light). */
+export interface EvidenceLabel {
+  kind: 'test' | 'design' | 'block' | 'rate' | 'contract';
+  text: BiText;
+  testId?: string;
+  modelId?: string;
+  segment?: string;
+}
+
+/** The words of one evidence key, or null for a key no form names (the names gate fails on it). */
+export function evidenceLabel(key: string, ctx: NameContext): EvidenceLabel | null {
+  if (key.startsWith('design:')) {
+    const id = key.slice(7);
+    if (DESIGN_LIMITS[id]) return { kind: 'design', text: join([bi('Design limit', 'Límite de diseño'), DESIGN_LIMITS[id]], ': ') };
+    if (OUTPUT_BLOCKS[id]) return { kind: 'block', text: join([bi('Computed beforehand from', 'Calculado previamente desde'), OUTPUT_BLOCKS[id]], ' ') };
+    return null;
+  }
+  if (key.startsWith('contract:')) {
+    const rule = CONTRACT_RULES[key.slice(9)];
+    return rule ? { kind: 'contract', text: join([bi('Contract 1 rule', 'Regla del contrato 1'), rule], ': ') } : null;
+  }
+  if (key.startsWith('rate:')) {
+    const text = rateName(key.slice(5), ctx);
+    return text ? { kind: 'rate', text } : null;
+  }
+  const [testId, modelId, ...rest] = key.split('@');
+  const t = testName(testId);
+  if (!t) return null;
+  const parts: BiText[] = [];
+  // `-` is a row of no model, cited by its segment (`test@-@segment`, U16-R3 c20 M2)
+  if (modelId !== undefined && modelId !== '-') {
+    const mn = modelName(modelId, ctx);
+    if (!mn) return null;
+    parts.push(mn);
+  }
+  const segment = rest.length ? rest.join('@') : undefined;
+  if (segment !== undefined) {
+    const sn = segmentName(segment, ctx);
+    if (!sn) return null;
+    parts.push(sn);
+  }
+  // the model and the segment in parentheses after the test; after a name that ends in its own parentheses, a comma
+  const wrap = (name: string, rest: string) => (name.endsWith(')') ? `${name}, ${rest}` : `${name} (${rest})`);
+  const text = parts.length ? bi(wrap(t.en, parts.map((p) => p.en).join(', ')), wrap(t.es, parts.map((p) => p.es).join(', '))) : t;
+  return { kind: 'test', text, testId, modelId, segment };
+}
+
+/** The words of an evidence key in a language, else the key: for a renderer; the names gate keeps the fallback unused. */
+export function evidenceText(key: string, ctx: NameContext, lang: Lang): string {
+  const l = evidenceLabel(key, ctx);
+  return l ? l.text[lang] : key;
+}

@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{Selected statistics of the machine-learning tests of case C20 and the light each one earns: the overfit gaps of the gradient-boosted models, the loss of AUC under input noise with its control, the dispersion of the AUC and of the top-four reasons across retraining seeds, the agreement of the two explainers, the additivity gap, the leakage screens on the planted column, and the shift and conformal tests on the Federal Reserve shift probes.}
+\label{tab:vt-c20-stats}
+\begin{tabular}{p{6.4cm}lrl}
+\toprule
+Statistic & Variant & Value & Light \\
+\midrule
+Overfit gap (train minus holdout AUC), LightGBM, German & sgcd-seen & 0.1015 & red \\
+Overfit gap, LightGBM, Polish & fed-shift & 0.0843 & red \\
+Overfit gap, LightGBM, Taiwan & perturbation-grid & 0.0297 & green \\
+Overfit gap, XGBoost, Taiwan & seed-sweep & 0.0242 & green \\
+AUC loss at noise scale 0.1, inputs perturbed & perturbation-grid & 0.0712 & red \\
+AUC loss at noise scale 0.1, control run & perturbation-grid & 0.0081 & green \\
+AUC standard deviation over 20 seeds, LightGBM & seed-sweep & 0.00105 & green \\
+AUC standard deviation over 20 seeds, XGBoost & seed-sweep & 0.00079 & green \\
+Top-four reason overlap over 100 refits, LightGBM & seed-sweep & 0.727 & amber \\
+Top-four reason overlap over 100 refits, XGBoost & seed-sweep & 0.712 & amber \\
+Spearman rho of SHAP importance and ALE range, LightGBM & seed-sweep & 0.520 & amber \\
+Spearman rho of SHAP importance and ALE range, XGBoost & seed-sweep & 0.498 & amber \\
+Largest Shapley additivity gap, LightGBM & seed-sweep & $5.3\times10^{-15}$ & green \\
+Largest Shapley additivity gap, XGBoost & seed-sweep & $1.7\times10^{-6}$ & red \\
+Single-feature AUC of the planted future column & leakage-planted & 0.9998 & red \\
+Resemblance AUC, development against out-of-time & leakage-planted & 0.493 & green \\
+AUC drop on the worst subsample against the development-only reference & fed-shift & 0.0857 & red \\
+Conformal coverage of the 90 percent sets, baseline window & fed-shift & 0.895 & green \\
+Conformal coverage of the 90 percent sets, pooled window & fed-shift & 0.809 & red \\
+\bottomrule
+\end{tabular}
+\end{table}

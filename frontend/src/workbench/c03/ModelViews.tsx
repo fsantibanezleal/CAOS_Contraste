@@ -5,11 +5,16 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
+import { inputName } from '../names';
 import { U6TestsTable, p2, useCard } from './U6Shared';
-import { fitOf, fyRange, outputsOf, rungLabel, type C03Sel } from './selection';
+import { fitOf, fyRange, outputsOf, reasonText, rungLabel, type C03Sel } from './selection';
 
-const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
+// three fixed decimals: the precision does not change inside a column (R3 c04 m2)
+const d3 = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 3 });
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+
+/** A date, a window or a cohort keeps one line. */
+const NOWRAP = { whiteSpace: 'nowrap' } as const;
 
 /** The PD rungs on this test cohort: discrimination with its interval, Brier and the calibration gap at five years. */
 export function RungsView({ sel }: { sel: C03Sel | null }) {
@@ -35,8 +40,9 @@ export function RungsView({ sel }: { sel: C03Sel | null }) {
               title={{ en: 'AUC by rung', es: 'AUC por peldaño' }}
               height="fill"
               orientation="horizontal"
-              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: label(r.rung_id), value: r.auc, tone: 'accent' as const, highlight: r.rung_id === sel.rung, hint: label(r.rung_id) }))}
-              axis={{ label: { en: 'AUC (higher is better)', es: 'AUC (más alto es mejor)' }, format: { digits: 3 } }}
+              // three fixed decimals, as the table beside the bars (U16-R4 c04 m2: "0.5" beside "0.815"); no note that repeats the label (n4)
+              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: label(r.rung_id), value: r.auc, tone: 'accent' as const, highlight: r.rung_id === sel.rung }))}
+              axis={{ label: { en: 'AUC (higher is better)', es: 'AUC (más alto es mejor)' }, format: { decimals: 3 } }}
             />
           }
         >
@@ -55,7 +61,7 @@ export function RungsView({ sel }: { sel: C03Sel | null }) {
                 <tr key={r.rung_id} data-rung={r.rung_id} className={r.rung_id === sel.rung ? 'ct-current' : undefined}>
                   <td className="ct-text" title={r.rung_id}>{pick(label(r.rung_id), lang)}</td>
                   <td>
-                    <MaybeNumber value={r.auc} reason={r.reason} format={(v) => d3(v, lang)} />
+                    <MaybeNumber value={r.auc} reason={r.reason ? pick(reasonText(r.reason), lang) : r.reason} format={(v) => d3(v, lang)} />
                   </td>
                   <td className="ct-wide-only">
                     {r.auc_ci_low !== null && r.auc_ci_high !== null ? `${d3(r.auc_ci_low, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${d3(r.auc_ci_high, lang)}` : formatNumber(null, lang)}
@@ -99,18 +105,20 @@ export function CalibrationView({ sel }: { sel: C03Sel | null }) {
           es: 'Cada punto es una décima parte de los créditos, ordenados por PD predicha: la PD predicha en el eje horizontal, la tasa observada en el vertical, la línea identidad es una calibración perfecta.',
         }}
       >
+        {/* the parity plot keeps a stage of 22 rem, so it is drawn square at about 300 px at 1280 (R3 c04 m1: 140 x 170 px) */}
         <ChartOverTable
+          chartMin="22rem"
           chart={
             <UPlotChart
               height="fill"
               parity
-              x={{ values: rows.map((r) => r.predicted_pd), label: { en: 'Predicted PD', es: 'PD predicha' }, format: { percent: true, digits: 2 } }}
-              y={{ label: { en: 'Observed rate', es: 'Tasa observada' }, format: { percent: true, digits: 2 } }}
+              x={{ values: rows.map((r) => r.predicted_pd), label: { en: 'Predicted PD', es: 'PD predicha' }, format: { percent: true, decimals: 2 } }}
+              y={{ label: { en: 'Observed rate', es: 'Tasa observada' }, format: { percent: true, decimals: 2 } }}
               series={series}
             />
           }
         >
-          <p className="ct-note" data-scope="calibration">{`${pick({ en: 'Scope', es: 'Alcance' }, lang)}: ${o.calibration.scope}`}</p>
+          <p className="ct-note" data-scope="calibration">{`${pick({ en: 'Scope', es: 'Alcance' }, lang)}: ${pick(o.calibration.scope, lang)}`}</p>
           <table className="caos-table ct-wrap-head" data-table="deciles">
             <thead>
               <tr>
@@ -152,6 +160,20 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
   const no = pick({ en: 'no', es: 'no' }, lang);
   const windows = fit?.cohort_windows ?? [];
   const rung = fit?.ladder.find((r) => r.rung_id === sel.rung);
+  // the models artifact fits one ladder, on the window of the latest cohort: say so under every cohort (the rungs are not refitted per cohort)
+  const fitWindow = rung ? windows.find((w) => w.training.cutoff_date === rung.training_cutoff) : undefined;
+  const fitCaption = (l: 'en' | 'es') => {
+    if (!rung) return '';
+    const label = rungLabel(sel, rung.rung_id)[l];
+    const window = fitWindow ? fitWindow.label[l] : rung.training_cutoff;
+    const range = fitWindow ? fyRange(fitWindow.training.first_fy, fitWindow.training.last_fy) : '';
+    const other = fitWindow && fitWindow.id !== o.cohort.id;
+    // each input by its name (the raw-id scan: log10_amount, term_months)
+    const inputs = rung.covariates.map((c) => (inputName(c) ?? { en: c, es: c })[l]).join(', ');
+    return l === 'en'
+      ? `${label}: ${inputs} (${rung.engine}). Rungs as fitted for the window of the cohort ${window}${range ? ` (vintages ${range})` : ''}, cut-off ${rung.training_cutoff}${other ? `, not for the window of this cohort (${o.cohort.label.en})` : ''}`
+      : `${label}: ${inputs} (${rung.engine}). Peldaños tal como se ajustaron para la ventana de la cohorte ${window}${range ? ` (cosechas ${range})` : ''}, corte ${rung.training_cutoff}${other ? `, no para la ventana de esta cohorte (${o.cohort.label.es})` : ''}`;
+  };
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -170,8 +192,8 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
             chart={
               <UPlotChart
                 height="fill"
-                x={{ values: windows.map((w) => w.first_fy), label: { en: 'First fiscal year of the test cohort', es: 'Primer año fiscal de la cohorte de prueba' }, format: { decimals: 0 } }}
-                y={{ label: { en: 'Fiscal year', es: 'Año fiscal' }, format: { decimals: 0 } }}
+                x={{ values: windows.map((w) => w.first_fy), label: { en: 'First fiscal year of the test cohort', es: 'Primer año fiscal de la cohorte de prueba' }, format: { decimals: 0, grouping: false } }}
+                y={{ label: { en: 'Fiscal year', es: 'Año fiscal' }, format: { decimals: 0, grouping: false } }}
                 series={[
                   { label: { en: 'Last vintage trained on', es: 'Última cosecha de entrenamiento' }, values: windows.map((w) => w.training.last_fy), color: '--color-accent', mode: 'points', size: 11 },
                   { label: { en: 'First vintage tested', es: 'Primera cosecha de prueba' }, values: windows.map((w) => w.first_fy), color: '--color-fg-subtle', width: 1.6, dash: [5, 4] },
@@ -192,9 +214,10 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
               <tbody>
                 {windows.map((w) => (
                   <tr key={w.id} data-window={w.id} className={w.id === o.cohort.id ? 'ct-current' : undefined}>
-                    <td className="ct-text">{pick(w.label, lang)}</td>
-                    <td>{fyRange(w.training.first_fy, w.training.last_fy)}</td>
-                    <td className="ct-wide-only">{w.training.cutoff_date}</td>
+                    {/* the cohort, the window and the cut-off stay whole at 390 (U16-R4 c04 m5: "2005-" over "09-30") */}
+                    <td className="ct-text" style={NOWRAP}>{pick(w.label, lang)}</td>
+                    <td style={NOWRAP}>{fyRange(w.training.first_fy, w.training.last_fy)}</td>
+                    <td className="ct-wide-only" style={NOWRAP}>{w.training.cutoff_date}</td>
                     <td className="ct-wide-only">{count(w.training.n_loans, lang)}</td>
                     <td data-crisis={String(w.training.crisis_included)}>{w.training.crisis_included ? yes : no}</td>
                   </tr>
@@ -205,22 +228,36 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
         )}
       </PlotCard>
       <PlotCard fill title={{ en: 'This cohort and its rung', es: 'Esta cohorte y su peldaño' }} {...card}>
-        <div className="ct-scroll">
-          <dl className="ct-defs" data-training={o.cohort.id}>
-            <dt>{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</dt>
-            <dd>{`${pick(o.cohort.label, lang)} (${fyRange(o.cohort.first_fy, o.cohort.last_fy)})`}</dd>
-            <dt>{pick({ en: 'Trained on vintages', es: 'Entrenada con cosechas' }, lang)}</dt>
-            <dd>{fyRange(t.first_fy, t.last_fy)}</dd>
-            <dt>{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</dt>
-            <dd>{t.cutoff_date}</dd>
-            <dt>{pick({ en: 'Loans and charge-offs', es: 'Créditos y castigos' }, lang)}</dt>
-            <dd>{`${count(t.n_loans, lang)} / ${count(t.n_events, lang)}`}</dd>
-            <dt>{pick({ en: 'Crisis in the training', es: 'Crisis en el entrenamiento' }, lang)}</dt>
-            <dd data-crisis={String(t.crisis_included)}>{t.crisis_included ? yes : no}</dd>
-          </dl>
+        <div className="ct-scroll" data-caos-flow="">
+          {/* the cohort's facts as a two-column table: a table is what a card draws (gate G6), so a rung with no coefficients still
+              fills its card (a definition list left it painting 22% of its stage) */}
+          <table className="caos-table" data-training={o.cohort.id} data-table="cohort-facts">
+            <tbody>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</th>
+                <td className="ct-text">{`${pick(o.cohort.label, lang)} (${fyRange(o.cohort.first_fy, o.cohort.last_fy)})`}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Trained on vintages', es: 'Entrenada con cosechas' }, lang)}</th>
+                <td className="ct-text">{fyRange(t.first_fy, t.last_fy)}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</th>
+                <td className="ct-text">{t.cutoff_date}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Loans and charge-offs', es: 'Créditos y castigos' }, lang)}</th>
+                <td className="ct-text">{`${count(t.n_loans, lang)} / ${count(t.n_events, lang)}`}</td>
+              </tr>
+              <tr>
+                <th scope="row" className="ct-text">{pick({ en: 'Crisis in the training', es: 'Crisis en el entrenamiento' }, lang)}</th>
+                <td className="ct-text" data-crisis={String(t.crisis_included)}>{t.crisis_included ? yes : no}</td>
+              </tr>
+            </tbody>
+          </table>
           {rung ? (
             <table className="caos-table ct-wrap-head" data-table="rung-coefficients">
-              <caption className="ct-note">{`${pick(rungLabel(sel, rung.rung_id), lang)}: ${rung.covariates.join(', ')} (${rung.engine}, ${rung.training_cutoff})`}</caption>
+              <caption className="ct-note" data-block="rung-fit-window">{fitCaption(lang)}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Coefficient', es: 'Coeficiente' }, lang)}</th>
@@ -236,7 +273,7 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
                 ) : (
                   rung.coefficients.map((c) => (
                     <tr key={c.name}>
-                      <td className="ct-text">{c.name}</td>
+                      <td className="ct-text">{pick(inputName(c.name) ?? { en: c.name, es: c.name }, lang)}</td>
                       <td>{formatNumber(c.estimate, lang, { digits: 3 })}</td>
                       <td>
                         <MaybeNumber value={c.std_error} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />

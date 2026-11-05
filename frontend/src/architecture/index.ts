@@ -30,7 +30,7 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'Offline, the Python pipeline fits every rung on a leakage-safe split and runs the battery with the engine riskvalidation; it is the only lane that writes artifacts. The web replays them, and recomputes live only what is light and held to the pipeline by a parity test: an applicant\'s additive scores, the lights under the reader\'s policy, and the decision at any approval rate.',
       body_es:
-        'Fuera de línea, el pipeline en Python ajusta cada peldaño en una partición sin fugas y corre la batería con el motor riskvalidation; es el único carril que escribe artefactos. La web los reproduce, y recalcula en vivo solo lo liviano y sujeto al pipeline por una prueba de paridad: los puntajes aditivos de un solicitante, las luces con la política del lector, y la decisión con cualquier tasa de aprobación.',
+        'Fuera de línea, la cadena de cálculo en Python ajusta cada peldaño en una partición sin fugas y corre la batería con el motor riskvalidation; es el único carril que escribe artefactos. La web los reproduce, y recalcula en vivo solo lo liviano y sujeto a la cadena de cálculo por una prueba de paridad: los puntajes aditivos de un solicitante, las luces con la política del lector, y la decisión con cualquier tasa de aprobación.',
     },
     {
       id: 'flow',
@@ -48,9 +48,9 @@ export const architecture: ArchitectureConfig = {
       es: 'La validación',
       svg: validation,
       body_en:
-        'The ladder runs from anchors to the state of the art; the battery reads discrimination, the level and the fit of the calibration, and stability, as the ECB 2019 instructions and BCBS WP14 define them; findings follow a stated severity policy and cite their evidence; the impact compares the champion and the challenger at the same approval rate.',
+        'The ladder runs from anchors to the most recent published methods; the battery reads discrimination, the level and the fit of the calibration, and stability, as the ECB 2019 instructions and BCBS WP14 define them; findings follow a stated severity policy and cite their evidence; the impact compares the champion and the challenger at the same approval rate.',
       body_es:
-        'La escalera va de los anclajes al estado del arte; la batería lee la discriminación, el nivel y el ajuste de la calibración, y la estabilidad, como las definen las instrucciones del BCE de 2019 y el WP14 del BCBS; los hallazgos siguen una política de severidad declarada y citan su evidencia; el impacto compara al campeón y al retador con la misma tasa de aprobación.',
+        'La escalera va de los anclajes a los métodos publicados más recientes; la batería lee la discriminación, el nivel y el ajuste de la calibración, y la estabilidad, como las definen las instrucciones del BCE de 2019 y el WP14 del BCBS; los hallazgos siguen una política de severidad declarada y citan su evidencia; el impacto compara al campeón y al retador con la misma tasa de aprobación.',
     },
     {
       id: 'contracts',
@@ -60,7 +60,7 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'Every source carries its licence class; the fetcher hashes every file into the licence manifest; contract 1 decides what may enter, record by record; contract 2 is what the pipeline commits, and its export refuses any artifact whose lineage includes a source that may only be linked.',
       body_es:
-        'Cada fuente lleva su clase de licencia; el descargador registra el hash de cada archivo en el manifiesto de licencias; el contrato 1 decide lo que puede entrar, registro por registro; el contrato 2 es lo que el pipeline compromete, y su exportación rechaza todo artefacto cuyo linaje incluya una fuente que solo puede enlazarse.',
+        'Cada fuente lleva su clase de licencia; el descargador registra la huella de cada archivo en el manifiesto de licencias; el contrato 1 decide lo que puede entrar, registro por registro; el contrato 2 es lo que la cadena de cálculo versiona, y su exportación rechaza todo artefacto cuyo linaje incluya una fuente que solo puede enlazarse.',
     },
   ],
 };

@@ -14,11 +14,15 @@ lightgbm==4.7.0
 xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
+# the C11 R10 quantile network (S-1 of the method tiers): the gradient of the FZ0 loss only; BSD-3-Clause (data-pipeline/config/licences.json).
+# The CPU wheel (pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1) is enough; the bake is local, never in CI.
+torch==2.14.1
 pypdf==6.19.0
 # the engine: the validation tests, the regulatory calculators and the reference engines, at its PyPI release (during a batch, before
 # the release, a full commit of the engine's integration branch that the SDD names; tests/engine_pin.py); the `market` extra brings
-# `arch` for C11 and C13
-riskvalidation[market]==0.9.0
+# `arch` for C11 and C13; the `ml` and `stress` extras bring fairlearn, MAPIE and statsmodels, which the engine's size studies of the
+# fair., ml. and stress. tests import, for C22 (U16-P2; the bake stops naming the extra when one is absent)
+riskvalidation[market,ml,stress]==1.1.0
 # reads the EBA/ESRB 2025 macro-financial scenario workbook (C18, decision Q15 of the U13 sizing); MIT
 openpyxl==3.1.5
 # the layered layout of the governance dependency map (BSD-3-Clause; pipeline only, not an engine dependency; U15-P)

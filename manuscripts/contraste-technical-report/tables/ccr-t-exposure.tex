@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Exposure and credit valuation adjustment of the six variants of case C12, in USD: expected exposure at one year, its peak, the peak 95 percent potential future exposure, the effective expected positive exposure, the effective maturity and the CVA and DVA, with their Monte Carlo standard errors.}
+\label{tab:ccr-exposure}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Variant & EE at 1 year & Peak EE & Peak PFE 95\% & EEPE & $M$ (years) & CVA & DVA \\
+\midrule
+Single swap & 141,414 & 294,524 & 901,804 & $87{,}551\pm571$ & 5.0 & $10{,}337.7\pm55.8$ & $5{,}132.9\pm48.1$ \\
+Netting set & 101,950 & 294,524 & 894,000 & $59{,}954\pm429$ & 5.0 & $9{,}477.8\pm51.1$ & $4{,}344.1\pm41.1$ \\
+CSA, MPoR 10 days & 20,811 & 23,084 & 91,096 & $22{,}778\pm87$ & 5.0 & $699.5\pm1.5$ & $832.1\pm1.9$ \\
+CSA, MPoR 20 days & 30,126 & 33,639 & 131,236 & $33{,}183\pm138$ & 5.0 & $1{,}011.7\pm2.1$ & $1{,}136.7\pm2.5$ \\
+CSA with initial margin & 178 & 221 & 22 & $213\pm12$ & 5.0 & $7.0\pm0.1$ & $7.8\pm0.2$ \\
+Wrong-way risk & 101,950 & 294,524 & 894,000 & $59{,}954\pm429$ & 5.0 & $9{,}477.8\pm51.1$ & $4{,}344.1\pm41.1$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

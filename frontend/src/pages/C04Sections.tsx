@@ -4,6 +4,7 @@
 // artifacts at load time and every verdict is computed from them, never typed in.
 import { PlotCard, Verdict, formatNumber, pick, useShellLang, type BiText, type Provenance } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
+import type { ReactNode } from 'react';
 import { useT } from '../content/bi';
 import {
   ATTRIBUTION_FALLBACK,
@@ -27,8 +28,9 @@ import {
   type Lang,
 } from '../content/cases/C04Results';
 import type { C04MarkovRung, C04Simulation, C04ThinRung, CaseManifest, VariantArtifact } from '../lib/contract.types';
+import { attributionIn } from '../workbench/c04/selection';
 import { provenanceOf } from '../workbench/model';
-import { agencyLraChart, nonEmpty, rungText } from '../workbench/c04/C04Common';
+import { agencyLraChart, nonEmpty, rungText, sourceTextIn } from '../workbench/c04/C04Common';
 import { SP_ENTITY } from '../workbench/c04/FamilyViews';
 import {
   ESMA_DEFINITIONS,
@@ -63,6 +65,38 @@ const ratioText = (lang: Lang, x: number | null | undefined) => formatNumber(x, 
 const share = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 1 });
 /** An exact probability (by enumeration, no Monte Carlo error) at the findings' two decimals: 0.33%, not 0.3%. */
 const exactShare = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 2 });
+/** The no-break space of a Spanish percent ("5 %", es-CL as the shell writes it; R5 c30 m7). */
+const NB = '\u00a0';
+
+/** Engelmann's portfolio names as symbols (R5 c30 B3): the paper's "W hat", "W tilde" and "W_init" are Ŵ, W̃ and W with a subscript,
+ * the subscript a word of the view's language ("inicial"); "W_init 2" keeps its number. An unknown name is printed as written. */
+export function engelmannSymbol(name: string, lang: Lang): ReactNode {
+  const m = /^W(?: (hat|tilde)|_(init|ttc))(?: (\d+))?$/.exec(name);
+  if (!m) return name;
+  const [, accent, sub, n] = m;
+  const tail = n ? ` ${n}` : '';
+  if (accent) return `${accent === 'hat' ? 'Ŵ' : 'W̃'}${tail}`;
+  return (
+    <>
+      W<sub>{sub === 'ttc' ? 'TTC' : lang === 'es' ? 'inicial' : 'init'}</sub>
+      {tail}
+    </>
+  );
+}
+
+/** The same symbols in a plain string, for a verdict line, which takes text only (R6 c30 B2: the verdict printed "W hat" and
+ * "W_ttc"): Ŵ and W̃ as characters, a subscript as the word in parentheses ("W (TTC)", "W (inicial)"). */
+export function engelmannText(text: string, lang: Lang): string {
+  return text.replace(/W(?: (hat|tilde)|_(init|ttc))(?= |\b|$)/g, (_, accent, sub) =>
+    accent ? (accent === 'hat' ? 'Ŵ' : 'W̃') : `W (${sub === 'ttc' ? 'TTC' : lang === 'es' ? 'inicial' : 'init'})`);
+}
+
+/** A sentence of the papers' check with its symbols set as engelmannSymbol sets them (the W-hat note names W_ttc). */
+export function withEngelmannSymbols(text: string, lang: Lang): ReactNode {
+  const parts = text.split(/(W_(?:init|ttc)(?: \d+)?|W (?:hat|tilde)(?: \d+)?)/);
+  return parts.map((p, i) => (i % 2 ? <span key={i}>{engelmannSymbol(p, lang)}</span> : p));
+}
+
 const range = (lang: Lang, xs: number[], f: (l: Lang, x: number) => string) =>
   xs.length ? (Math.min(...xs) === Math.max(...xs) ? f(lang, xs[0]) : `${f(lang, Math.min(...xs))} ${lang === 'es' ? 'a' : 'to'} ${f(lang, Math.max(...xs))}`) : '-';
 
@@ -76,13 +110,13 @@ const sizeBound = (level: number, n: number) => level + SIZE_Z * Math.sqrt((leve
  * carries ESMA's attribution (verbatim, the source's own wording), as the family views do. */
 const FAMILY_SOURCE = {
   en: ` CEREP counts of ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
-  es: ` Conteos de CEREP de ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
+  es: ` Conteos de CEREP de ${SP_ENTITY.name}. ${attributionIn(ATTRIBUTION_FALLBACK, 'es')}.`,
 } as const;
 
 function agencyData(v: AgencyVariant, lang: Lang): string {
   const a = agencyFacts(v);
   return lang === 'es'
-    ? `${a.entity}: ${a.cohorts} cohortes anuales de ${a.first} a ${a.last} y ${a.semesters} semestres; ${formatNumber(a.ratings, 'es')} calificaciones en las cohortes anuales. ${a.attribution}.`
+    ? `${a.entity}: ${a.cohorts} cohortes anuales de ${a.first} a ${a.last} y ${a.semesters} semestres; ${formatNumber(a.ratings, 'es')} calificaciones en las cohortes anuales. ${attributionIn(a.attribution, 'es')}.`
     : `${a.entity}: ${a.cohorts} annual cohorts from ${a.first} to ${a.last} and ${a.semesters} semesters; ${formatNumber(a.ratings, 'en')} ratings over the annual cohorts. ${a.attribution}.`;
 }
 
@@ -103,9 +137,11 @@ function agencyShows(v: AgencyVariant, lang: Lang): string {
   return `${head}; ${homog}${ttc}.`;
 }
 
-function familyShows(f: FamilyVariant, lang: Lang): string {
+/** What a family variant shows: its impact items, then its findings by their titles (a register id is a key of the Findings id
+ * column, never reader text here: R4 c28 B5, the ruling of 2026-10-27), as the C22 section prints its own. */
+export function familyShows(f: FamilyVariant, lang: Lang): string {
   const items = Object.values(f.impact).map((it) => `${pick(it.label, lang)}: ${impactValue(it, lang)}`);
-  const findings = f.findings.map((x) => `${x.id} (${pick(SEVERITY_TEXT[x.severity] ?? x.severity, lang)})`).join(', ');
+  const findings = f.findings.map((x) => `${x.title ? pick(x.title, lang) : x.id} (${pick(SEVERITY_TEXT[x.severity] ?? x.severity, lang)})`).join('; ');
   return `${items.join('; ')}. ${lang === 'es' ? 'Hallazgos' : 'Findings'}: ${findings || '-'}.`;
 }
 
@@ -129,21 +165,24 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
     if (isAgency(v)) return [agencyData(v, lang), agencyShows(v, lang)];
     if (isFamily(v)) return [familyDesign(v, lang), familyShows(v, lang)];
     if (isPublished(v)) {
-      const papers = manifest.sources.filter((s) => manifest.source_details[s]?.class === 'derived-only').map((s) => manifest.source_details[s].name);
+      // the papers' names as the registry gives them, their locators in the view's language (R5 c30 B1: "section 4", "Table 5")
+      const papers = manifest.sources.filter((s) => manifest.source_details[s]?.class === 'derived-only').map((s) => sourceTextIn(manifest.source_details[s].name, lang));
       return [papers.join('; '), publishedShows(v, lang)];
     }
     return ['', ''];
   };
   return (
     <div data-state="ready">
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="c04-variants">
           <thead>
             <tr>
               <th className="caos-col-text">{t('Variant', 'Variante')}</th>
-              <th>{t('Truth', 'Verdad')}</th>
-              <th className="caos-col-text">{t('Data', 'Datos')}</th>
-              <th className="caos-col-text">{t('What the variant shows', 'Lo que muestra la variante')}</th>
+              <th className="caos-col-text">{t('Truth', 'Verdad')}</th>
+              {/* the two long columns keep a readable width inside the scroll box: laid out narrow at 390, a family's findings ran
+                  1,900 px tall (R5 c30 M1) */}
+              <th className="caos-col-text" style={{ minWidth: '14rem' }}>{t('Data', 'Datos')}</th>
+              <th className="caos-col-text" style={{ minWidth: '22rem' }}>{t('What the variant shows', 'Lo que muestra la variante')}</th>
             </tr>
           </thead>
           <tbody>
@@ -152,7 +191,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
               return (
                 <tr key={v.variant_id} data-variant={v.variant_id}>
                   <td className="caos-col-text">{pick(titleOf(manifest, v.variant_id), lang)}</td>
-                  <td>{pick(TRUTH_TEXT[v.provenance.truth_status] ?? v.provenance.truth_status, lang)}</td>
+                  <td className="caos-col-text">{pick(TRUTH_TEXT[v.provenance.truth_status] ?? v.provenance.truth_status, lang)}</td>
                   <td className="caos-col-text">{data}</td>
                   <td className="caos-col-text">{shows}</td>
                 </tr>
@@ -168,7 +207,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
           provenance={provenanceOf(agencies[0]?.provenance.truth_status)}
           note={{
             en: `The mean of the yearly one-year PDs (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition (D2 the default-rate page, D4 the transition page's default column), dash the agency's EU entity (${agencies.map((a) => a.outputs.agency.name).join('; ')}). A zero average has no point. Grey: each agency's TTC default rate under its pooled matrix. ${pick(ESMA_DEFINITIONS, 'en')} ${attribution}.`,
-            es: `La media de las PD anuales (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición (D2 la página de tasas de incumplimiento, D4 la columna de incumplimiento de la página de transiciones), trazo la entidad UE de la agencia (${agencies.map((a) => a.outputs.agency.name).join('; ')}). Un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia con su matriz agrupada. ${pick(ESMA_DEFINITIONS, 'es')} ${attribution}.`,
+            es: `La media de las PD anuales (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición (D2 la página de tasas de incumplimiento, D4 la columna de incumplimiento de la página de transiciones), trazo la entidad UE de la agencia (${agencies.map((a) => a.outputs.agency.name).join('; ')}). Un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia con su matriz agrupada. ${pick(ESMA_DEFINITIONS, 'es')} ${attributionIn(attribution, 'es')}.`,
           }}
         >
           <UPlotChart height={CHART_HEIGHT} x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
@@ -206,7 +245,7 @@ function DefinitionsCard({ agencies, manifest, provenance }: { agencies: AgencyV
       provenance={provenance}
       note={{
         en: `Long-run averages (EBA/GL/2017/16 paragraph 84) by agency and grade under D2, D3 and D4, and the pooled ratios. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `Promedios de largo plazo (párrafo 84 de EBA/GL/2017/16) por agencia y grado con D2, D3 y D4, y las razones agrupadas. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `Promedios de largo plazo (párrafo 84 de EBA/GL/2017/16) por agencia y grado con D2, D3 y D4, y las razones agrupadas. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict
@@ -218,7 +257,7 @@ function DefinitionsCard({ agencies, manifest, provenance }: { agencies: AgencyV
           es: `Agrupada en los años que ambas páginas cubren, la columna de incumplimiento de la matriz de transición (D4) da ${parts('es')}.${same.length ? ` D3 cuenta los mismos incumplimientos que D2 en cada grado para ${sameNames('es')}: las dos difieren solo por la cohorte.` : ''} ${pick(ESMA_DEFINITIONS, 'es')}`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-definitions">
           <thead>
             <tr>
@@ -292,7 +331,7 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
       provenance={provenance}
       note={{
         en: `The L1 distance of exp(Q) to each agency's pooled one-year matrix for the EM generator of the annual counts (Smith and dos Reis 2018), the diagonal and weighted adjustments and the JLT approximation (Israel, Rosenthal and Wei 2001); Theorem 3(c)'s moves are reachable through other grades but never observed. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict
@@ -304,7 +343,7 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
           es: `EM y los ajustes diagonal y ponderado reproducen las matrices agrupadas dentro de ${range('es', close, l1)} en L1; JLT queda a ${range('es', jlt, l1)} de ellas, ${range('es', ratios, times)} veces la distancia del ajuste diagonal. El teorema 3 excluye un generador exacto para ${excluded.length} de ${agencies.length} agencias${excluded.length ? ` (${conditions('es')})` : ''}; ${monotone} de ${agencies.length} matrices agrupadas son estocásticamente monótonas.`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-generators">
           <thead>
             <tr>
@@ -374,7 +413,7 @@ function LifetimeCard({ agencies, manifest, provenance }: { agencies: AgencyVari
       provenance={provenance}
       note={{
         en: `The latest five-year window of each agency: the share of its starting cohort that defaulted within the window on the default-rate page (D2, cumulative), the share in a default category at the window's end (D4), and the projections of the same cohort by the window's annual matrices chained (withdrawals a state), the pooled matrix to the fifth power and exp(5Q) of the EM generator. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, 'es')}.`,
       }}
     >
       <Verdict
@@ -386,7 +425,7 @@ function LifetimeCard({ agencies, manifest, provenance }: { agencies: AgencyVari
           es: `${sentence('es')}. Las matrices encadenadas llevan la columna de incumplimiento de la página de transiciones, que no cuenta una calificación retirada después de incumplir.`,
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-lifetime">
           <thead>
             <tr>
@@ -483,7 +522,7 @@ function EstimatorsCard({ markov, manifest, provenance }: { markov: FamilyVarian
         y={{ label: { en: 'RMSE of the one-year PD (log scale)', es: 'RMSE de la PD anual (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
         series={chart.series}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-estimators">
           <thead>
             <tr>
@@ -551,11 +590,11 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
   const verdict = (l: Lang) => {
     const size = markov
       ? l === 'es'
-        ? `En la cadena de Markov (${formatNumber(sizes[0]?.n_rep ?? null, 'es')} repeticiones o más), ${sizes.length - failing.length} de ${sizes.length} formas de prueba mantienen su tamaño al 5% y al 1% (la tasa a lo más el nivel más 3,09 EE de Monte Carlo)${failing.length ? `; no: ${failing.map((s) => `${label(markov, s, 'es')} ${share('es', s.rates[AT5]?.rate)} al 5%`).join('; ')}` : ''}.`
+        ? `En la cadena de Markov (${formatNumber(sizes[0]?.n_rep ?? null, 'es')} repeticiones o más), ${sizes.length - failing.length} de ${sizes.length} formas de prueba mantienen su tamaño al 5${NB}% y al 1${NB}% (la tasa a lo más el nivel más 3,09 EE de Monte Carlo)${failing.length ? `; no: ${failing.map((s) => `${label(markov, s, 'es')} ${share('es', s.rates[AT5]?.rate)} al 5${NB}%`).join('; ')}` : ''}.`
         : `On the Markov chain (${formatNumber(sizes[0]?.n_rep ?? null, 'en')} repetitions or more), ${sizes.length - failing.length} of ${sizes.length} test forms hold their size at 5% and 1% (the rate at most the level plus 3.09 Monte Carlo SEs)${failing.length ? `; not: ${failing.map((s) => `${label(markov, s, 'en')} ${share('en', s.rates[AT5]?.rate)} at 5%`).join('; ')}` : ''}.`
       : '';
     const pw = defects
-      .map((f) => `${pick(shortOf(manifest, f.variant_id), l)}, ${l === 'es' ? `${Math.round(POWER * 100)}% de potencia al 5%` : `${Math.round(POWER * 100)}% power at 5%`}: ${power(f, l)}`)
+      .map((f) => `${pick(shortOf(manifest, f.variant_id), l)}, ${l === 'es' ? `${Math.round(POWER * 100)}${NB}% de potencia al 5${NB}%` : `${Math.round(POWER * 100)}% power at 5%`}: ${power(f, l)}`)
       .join('. ');
     return `${size} ${pw}.`;
   };
@@ -570,16 +609,16 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
       }}
     >
       <Verdict compact title={{ en: 'What the simulations support', es: 'Lo que respaldan las simulaciones' }} tone={failing.length ? 'warn' : 'accent'} verdict={{ en: verdict('en'), es: verdict('es') }} />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table ct-wrap-head" data-table="bench-tests">
           <thead>
             <tr>
               <th className="caos-col-text">{t('Family', 'Familia')}</th>
               <th className="caos-col-text">{t('Test', 'Prueba')}</th>
               <th className="caos-col-text">{t('Setting', 'Ajuste')}</th>
-              <th>{t('Rate at 5% (SE)', 'Tasa al 5% (EE)')}</th>
-              <th>{t('Rate at 1% (SE)', 'Tasa al 1% (EE)')}</th>
-              <th>{t('Wilson 95%, 5%', 'Wilson 95%, 5%')}</th>
+              <th>{t('Rate at 5% (SE)', 'Tasa al 5 % (EE)')}</th>
+              <th>{t('Rate at 1% (SE)', 'Tasa al 1 % (EE)')}</th>
+              <th>{t('Wilson 95%, 5%', 'Wilson 95 %, 5 %')}</th>
               <th>{t('Repetitions', 'Repeticiones')}</th>
             </tr>
           </thead>
@@ -608,7 +647,7 @@ const METHOD_LABEL: Record<'wald' | 'agresti_coull' | 'jeffreys' | 'bootstrap', 
   wald: 'Wald',
   agresti_coull: 'Agresti-Coull',
   jeffreys: 'Jeffreys',
-  bootstrap: { en: 'Bootstrap (duration PD)', es: 'Bootstrap (PD de duración)' },
+  bootstrap: { en: 'Bootstrap (duration PD)', es: 'Remuestreo con reposición (PD de duración)' },
 };
 const METHOD_COLOR = { wald: '--color-bad', agresti_coull: '--color-warn', jeffreys: '--color-accent', bootstrap: '--color-magenta' } as const;
 
@@ -647,7 +686,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
   const mc = (l: Lang) =>
     rung
       ? l === 'es'
-        ? `Monte Carlo (familia de Markov, ${formatNumber(markov?.outputs.design.reps ?? null, 'es')} repeticiones, nivel ${share('es', rung.level)}): Wald cubre la PD anual verdadera en ${share('es', rung.coverage.wald[0]?.rate)} de las repeticiones en ${GRADES[0]} y ${share('es', rung.coverage.wald[CCC]?.rate)} en ${GRADES[CCC]}; Agresti-Coull ${range('es', rates('agresti_coull'), share)} entre los grados; Jeffreys ${range('es', rates('jeffreys'), share)}; el bootstrap de la PD de duración ${range('es', rates('bootstrap'), share)} (${formatNumber(rung.bootstrap.repetitions, 'es')} repeticiones).`
+        ? `Monte Carlo (familia de Markov, ${formatNumber(markov?.outputs.design.reps ?? null, 'es')} repeticiones, nivel ${share('es', rung.level)}): Wald cubre la PD anual verdadera en ${share('es', rung.coverage.wald[0]?.rate)} de las repeticiones en ${GRADES[0]} y ${share('es', rung.coverage.wald[CCC]?.rate)} en ${GRADES[CCC]}; Agresti-Coull ${range('es', rates('agresti_coull'), share)} entre los grados; Jeffreys ${range('es', rates('jeffreys'), share)}; el remuestreo de la PD de duración ${range('es', rates('bootstrap'), share)} (${formatNumber(rung.bootstrap.repetitions, 'es')} repeticiones).`
         : `Monte Carlo (Markov family, ${formatNumber(markov?.outputs.design.reps ?? null, 'en')} repetitions, level ${share('en', rung.level)}): Wald covers the true one-year PD in ${share('en', rung.coverage.wald[0]?.rate)} of the repetitions at ${GRADES[0]} and ${share('en', rung.coverage.wald[CCC]?.rate)} at ${GRADES[CCC]}; Agresti-Coull ${range('en', rates('agresti_coull'), share)} across the grades; Jeffreys ${range('en', rates('jeffreys'), share)}; the bootstrap of the duration PD ${range('en', rates('bootstrap'), share)} (${formatNumber(rung.bootstrap.repetitions, 'en')} repetitions).`
       : '';
   const exact = (l: Lang) =>
@@ -663,7 +702,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
       provenance={provenance}
       note={{
         en: `The share of repetitions in which each 95% interval covers the true one-year PD, by grade (Markov family, the chart), and the exact coverage by enumeration for cohorts of each size (thin family, the table). Paths drawn from ${GENERATOR_TEXT.en}.${FAMILY_SOURCE.en}`,
-        es: `La fracción de repeticiones en que cada intervalo al 95% cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
+        es: `La fracción de repeticiones en que cada intervalo al 95 % cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
       }}
     >
       <Verdict compact title={{ en: 'What the coverage supports', es: 'Lo que respalda la cobertura' }} tone="accent" verdict={{ en: `${mc('en')}${exact('en')}`, es: `${mc('es')}${exact('es')}` }} />
@@ -673,11 +712,11 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
           x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
           y={{ label: { en: 'Coverage of the true PD', es: 'Cobertura de la PD verdadera' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
           series={chart.series}
-          yMarks={[{ y: chart.level, label: { en: `Nominal ${Math.round(chart.level * 100)}%`, es: `Nominal ${Math.round(chart.level * 100)}%` }, tone: 'neutral' }]}
+          yMarks={[{ y: chart.level, label: { en: `Nominal ${Math.round(chart.level * 100)}%`, es: `Nominal ${Math.round(chart.level * 100)} %` }, tone: 'neutral' }]}
         />
       )}
       {thinRungs.length > 0 && (
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="bench-coverage-thin">
             <thead>
               <tr>
@@ -732,11 +771,11 @@ function PapersCard({ published }: { published: PublishedVariant }) {
         title={{ en: 'What the recomputation supports', es: 'Lo que respalda el recálculo' }}
         tone={agreements.every((p) => p.agree === p.total) ? 'good' : 'accent'}
         verdict={{
-          en: agreements.map((p) => `${pick(p.name, 'en')}: ${p.agree} of ${p.total} at the printed digits (${pick(p.detail, 'en')})`).join('. '),
-          es: agreements.map((p) => `${pick(p.name, 'es')}: ${p.agree} de ${p.total} a los dígitos impresos (${pick(p.detail, 'es')})`).join('. '),
+          en: engelmannText(agreements.map((p) => `${pick(p.name, 'en')}: ${p.agree} of ${p.total} at the printed digits (${pick(p.detail, 'en')})`).join('. '), 'en'),
+          es: engelmannText(agreements.map((p) => `${pick(p.name, 'es')}: ${p.agree} de ${p.total} a los dígitos impresos (${pick(p.detail, 'es')})`).join('. '), 'es'),
         }}
       />
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-irw">
           <thead>
             <tr>
@@ -760,7 +799,7 @@ function PapersCard({ published }: { published: PublishedVariant }) {
           </tbody>
         </table>
       </div>
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-sr190">
           <thead>
             <tr>
@@ -784,20 +823,24 @@ function PapersCard({ published }: { published: PublishedVariant }) {
           </tbody>
         </table>
       </div>
-      <div className="ct-scroll">
+      <div className="ct-scroll" data-caos-flow="">
         <table className="caos-table" data-table="bench-engelmann">
           <thead>
             <tr>
-              <th className="caos-col-text">{t('Value', 'Valor')}</th>
+              {/* the value's name keeps a readable width at 390: the long check note beside it wrapped it one word per line (R4 c28 m14) */}
+              <th className="caos-col-text" style={{ minWidth: '9rem' }}>{t('Value', 'Valor')}</th>
               <th>{t('Printed', 'Impreso')}</th>
               <th>{t('Recomputed', 'Recalculado')}</th>
-              <th className="caos-col-text">{t('Check', 'Verificación')}</th>
+              {/* and so does the check: its rounding note wrapped one word per line and made the W-hat row 490 px tall (R5 c30 m3) */}
+              <th className="caos-col-text" style={{ minWidth: '14rem' }}>{t('Check', 'Verificación')}</th>
             </tr>
           </thead>
           <tbody>
             {o.engelmann.w_ttc.printed.map((x, i) => (
               <tr key={`w-${i}`}>
-                <td className="caos-col-text">{`W_ttc ${STATES[i] ?? i + 1}`}</td>
+                <td className="caos-col-text">
+                  {engelmannSymbol('W_ttc', lang)} {STATES[i] ?? i + 1}
+                </td>
                 <td>{formatNumber(x, lang, { decimals: o.engelmann.w_ttc.decimals[i] })}</td>
                 <td>{f6(o.engelmann.w_ttc.recomputed[i])}</td>
                 <td className="caos-col-text">{yes(atPrintedDigits(x, o.engelmann.w_ttc.recomputed[i], o.engelmann.w_ttc.decimals[i]))}</td>
@@ -811,22 +854,28 @@ function PapersCard({ published }: { published: PublishedVariant }) {
             </tr>
             {o.engelmann.portfolios.flatMap((q) => [
               <tr key={`${q.name}-pd0`}>
-                <td className="caos-col-text">{`${q.name}, ${t('PD of the first year', 'PD del primer año')}`}</td>
+                <td className="caos-col-text">
+                  {engelmannSymbol(q.name, lang)}, {t('PD of the first year', 'PD del primer año')}
+                </td>
                 <td>{pctText(lang, q.pd0.printed, 4)}</td>
                 <td>{pctText(lang, q.pd0.recomputed, 6)}</td>
                 <td className="caos-col-text">
                   {q.pd0.check === 'printed digits'
                     ? yes(atPrintedDigits(q.pd0.printed, q.pd0.recomputed, q.pd0.decimals))
-                    : t(
-                        `within the rounding of its printed entries${q.pd0.note ? ` (${q.pd0.note.en})` : ''}`,
-                        `dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`,
+                    : (
+                        <>
+                          {t('within the rounding of its printed entries', 'dentro del redondeo de sus entradas impresas')}
+                          {q.pd0.note ? <> ({withEngelmannSymbols(pick(q.pd0.note, lang), lang)})</> : null}
+                        </>
                       )}
                 </td>
               </tr>,
               ...(q.extreme
                 ? [
                     <tr key={`${q.name}-extreme`}>
-                      <td className="caos-col-text">{`${q.name}, ${q.extreme.kind === 'min' ? t('lowest projected PD', 'menor PD proyectada') : t('highest projected PD', 'mayor PD proyectada')}`}</td>
+                      <td className="caos-col-text">
+                        {engelmannSymbol(q.name, lang)}, {q.extreme.kind === 'min' ? t('lowest projected PD', 'menor PD proyectada') : t('highest projected PD', 'mayor PD proyectada')}
+                      </td>
                       <td>{pctText(lang, q.extreme.printed, 4)}</td>
                       <td>{pctText(lang, q.extreme.recomputed, 6)}</td>
                       <td className="caos-col-text">{yes(atPrintedDigits(q.extreme.printed, q.extreme.recomputed, q.extreme.decimals))}</td>

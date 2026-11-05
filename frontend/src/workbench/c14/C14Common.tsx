@@ -2,7 +2,7 @@
 // value that moves with its controls) and the tests table every IRRBB view shares. The Findings card and the fixture
 // notice are the ones C06 and C07 use. Money is the document's: `units.money_scale` says whether a table cell is in
 // units, thousands or millions, and a narrow place (a read-out, an axis) scales it to bn or m with the unit that says so.
-import { Fragment } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts';
@@ -16,6 +16,9 @@ import {
   CALIBRATION_TEXT, CATEGORY_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SOURCE_KIND_TEXT, SHOCK_TEXT, amount, axisOf, cell, categoriesOf, fitOf, nmdModelOf,
   outputsOf, scaleUnit, scenarioFor, scenarioOf, shockOf, text, type C14Outputs, type C14Sel,
 } from './selection';
+import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise, type Rule } from './localise';
+import { segmentName, testText } from '../names';
+import { daySeconds } from '../../lib/days';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
@@ -28,17 +31,79 @@ const TEST_TEXT: Record<string, BiText> = {
   'irrbb.nii_out_of_sample': { en: 'NII projection against the realised NII', es: 'Proyección del NII contra el NII realizado' },
 };
 
+/** The provenance of a call report: the API address as a link named by its service (R3 c15 m9: the whole address wrapped over a long
+ * column at 390), then the file, its hash and the day it was read. */
+export function ReportSource({ text }: { text: string }) {
+  const m = /^(https:\/\/\S+) (\(.*\))$/.exec(text);
+  if (!m) return <>{text}</>;
+  return (
+    <>
+      <a href={m[1]} rel="noreferrer" target="_blank" translate="no">FDIC BankFind API</a>
+      {` ${m[2]}`}
+    </>
+  );
+}
+
+/** A text of a document in the language: a bilingual text (the IRRBB contracts from c14-outputs 2.0.0, c14-models 2.0.0 and
+ * c15-outputs 3.0.0, U16-F10d) is picked; an English string of a document baked before them goes through the rules, when given. */
+export function docText(v: string | { en: string; es: string } | null | undefined, lang: 'en' | 'es', rules?: ReadonlyArray<Rule>): string {
+  if (v === null || v === undefined) return '';
+  if (typeof v !== 'string') return v[lang];
+  return rules ? localise(v, lang, rules) : v;
+}
+
+/** A text with its ISO dates kept on one line each (R3 c15 n6: "al 2022-06-" / "30" split a date at its hyphen at 390). */
+export function NoBreakDates({ text }: { text: string }): ReactNode {
+  const parts = text.split(/(\d{4}-\d{2}-\d{2})/);
+  return (
+    <>
+      {parts.map((p, i) => (i % 2 === 1 ? <span key={i} style={{ whiteSpace: 'nowrap' }}>{p}</span> : p))}
+    </>
+  );
+}
+
+/** The segments of the IRRBB tests that the names module does not name: the leg of C15 and the deposit category. */
+const SEGMENT_TEXT: Record<string, BiText> = {
+  CLP: { en: 'CLP leg', es: 'Tramo CLP' },
+  UR: { en: 'UR leg', es: 'Tramo UR' },
+  wholesale: { en: 'Wholesale deposits', es: 'Depósitos mayoristas' },
+  'retail-transactional': { en: 'Retail transactional deposits', es: 'Depósitos minoristas transaccionales' },
+  'retail-non-transactional': { en: 'Retail non-transactional deposits', es: 'Depósitos minoristas no transaccionales' },
+  'retail-operational': { en: 'Retail operational deposits', es: 'Depósitos minoristas operativos' },
+  'retail-non-operational': { en: 'Retail non-operational deposits', es: 'Depósitos minoristas no operativos' },
+};
+
+/** The segment of a test row in words (the ruling of 2026-10-27: every tests table shows the segment of its rows). */
+export const testSegment = (seg: string, caseId: string): BiText => segmentName(seg, { caseId }) ?? SEGMENT_TEXT[seg] ?? { en: seg, es: seg };
+
+/** A row whose document gives no segment tests the whole balance sheet, and says so (R5 ruling 2; R5 c19 and c20 M1). */
+const BALANCE_SCOPE: BiText = { en: 'Whole balance sheet', es: 'Todo el balance' };
+/** The two C14 tests that read the wholesale fit (models: `fit.nmd_models[*].category`): the documents baked before U16-F13d leave
+ * their segment null, the producer names it from the re-bake on, and this then changes nothing. */
+const C14_WHOLESALE = new Set(['irrbb.nmd_parameter_stability', 'irrbb.behavioural_change_at_breach']);
+
+/** The segment key and words of a tests row: its own segment, the wholesale fit's, or the whole balance sheet. */
+export function rowScope(t: Pick<TestRow, 'test_id' | 'segment'>, caseId: string): { key: string; text: BiText } {
+  const seg = t.segment ?? (caseId === 'C14' && C14_WHOLESALE.has(t.test_id) ? 'wholesale' : null);
+  return seg ? { key: seg, text: testSegment(seg, caseId) } : { key: 'whole-balance-sheet', text: BALANCE_SCOPE };
+}
+
+/** A quarter in the language's form: "2022-Q4" in English, "2022-T4" (trimestre) in Spanish (R5 c19 n3); any text with one. */
+export const quarterText = (s: string, lang: 'en' | 'es'): string => (lang === 'es' ? s.replace(/(\d{4})-Q([1-4])/g, '$1-T$2') : s);
+
 /**
  * The rows the engine returned for the tests of this variant, as a block that sits under the drawing of the view the
  * tests belong to: a test that did not run shows its reason, not a number. `only` keeps the tests of one view.
  */
-export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; only?: (t: TestRow) => boolean }) {
+export function IrrbbTestsTable({ variant, only, lead }: { variant: VariantArtifact; only?: (t: TestRow) => boolean; lead?: BiText }) {
   const lang = useShellLang();
   const rows: TestRow[] = only ? variant.tests.filter(only) : variant.tests;
   return (
     <div data-block="tests">
       <p className="ct-note">
-        {pick({ en: 'The tests the engine returned: the statistic when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico cuando corrió, la luz bajo la política comprometida y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {pick({ en: 'The tests the engine returned: the statistic when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico cuando corrió, la luz bajo la política versionada y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {/* a view that shows some of the tests says which, and where the others are (R4 c18 n1) */}
+        {lead ? ` ${pick(lead, lang)}` : null}
       </p>
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row for this view.', es: 'Esta variante no trae filas de pruebas para esta vista.' }, lang)}</p>
@@ -57,12 +122,15 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text">{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
-                  <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
+                  <td className="ct-text">
+                    {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                    <span className="ct-note" data-segment={rowScope(t, variant.case_id).key} style={{ display: 'block' }}>{pick(rowScope(t, variant.case_id).text, lang)}</span>
+                  </td>
+                  <td data-na={ran && t.statistic !== null ? undefined : 'true'} style={{ whiteSpace: 'nowrap' }}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes ? localise(t.notes, lang, TEST_NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
                 </tr>
               );
             })}
@@ -102,7 +170,7 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
   const card = useCard(first as unknown as VariantArtifact | undefined);
   const sorted = [...variants].sort((a, b) => a.v.outputs.valuation_date.localeCompare(b.v.outputs.valuation_date));
   const ratio = (v: VariantArtifact<C14Outputs>, nmd: string) => scenarioOf(v.outputs, calibration, nmd)?.outlier.ratio ?? null;
-  const x = sorted.map((e) => Date.parse(`${e.v.outputs.valuation_date}T00:00:00Z`) / 1000);
+  const x = sorted.map((e) => daySeconds(e.v.outputs.valuation_date));
   return (
     <PlotCard
       fill
@@ -123,8 +191,8 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
               { label: NMD_TEXT.behavioural, values: sorted.map((e) => ratio(e.v, 'behavioural')), color: '--color-accent', width: 2.6, mode: 'points', size: 11 },
               { label: NMD_TEXT.contractual, values: sorted.map((e) => ratio(e.v, 'contractual')), color: '--color-magenta', width: 2.2, mode: 'points', size: 11 },
             ]}
-            marks={sorted.map((e, i) => ({ x: x[i], label: { en: e.v.outputs.quarter, es: e.v.outputs.quarter } }))}
-            yMarks={[{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15% del capital de nivel 1' }, tone: 'bad' }]}
+            marks={sorted.map((e, i) => ({ x: x[i], label: { en: e.v.outputs.quarter, es: quarterText(e.v.outputs.quarter, 'es') } }))}
+            yMarks={[{ y: 0.15, label: { en: 'Outlier threshold: 15% of Tier 1', es: 'Umbral de valor atípico: 15 % del capital de nivel 1' }, tone: 'bad' }]}
           />
         }
       >
@@ -147,8 +215,8 @@ export function C14VariantsTable({ variants, onPick, current, calibration }: { v
               return (
                 <tr key={id} data-variant={id} data-date={v.outputs.valuation_date} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
-                    <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
-                    <span className="ct-note">{` ${v.outputs.valuation_date}`}</span>
+                    <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{quarterText(pick(title, lang), lang)}</button>
+                    <span className="ct-note"> <span style={{ whiteSpace: 'nowrap' }}>{v.outputs.valuation_date}</span></span>
                   </td>
                   <td>{b ? formatNumber(b.outlier.ratio, lang, { percent: true, decimals: 2 }) : formatNumber(null, lang)}</td>
                   <td>{c ? formatNumber(c.outlier.ratio, lang, { percent: true, decimals: 2 }) : formatNumber(null, lang)}</td>
@@ -233,7 +301,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(o.bank.notice, lang)}</dd>
           <dt>{pick({ en: 'Valuation date', es: 'Fecha de valoración' }, lang)}</dt>
-          <dd>{`${o.valuation_date} (${o.quarter})`}</dd>
+          <dd>{`${o.valuation_date} (${quarterText(o.quarter, lang)})`}</dd>
           <dt>{pick({ en: 'Sign convention', es: 'Convención de signo' }, lang)}</dt>
           <dd>{pick(o.sign_convention.statement, lang)}</dd>
           <dt>{pick({ en: 'Money', es: 'Dinero' }, lang)}</dt>
@@ -249,19 +317,19 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
           {o.data.call_reports.map((r) => (
             <Fragment key={r.report_date}>
               <dt>{`${pick({ en: 'Call report', es: 'Reporte' }, lang)} ${r.report_date}`}</dt>
-              <dd data-report={r.report_date}>{r.source}</dd>
+              <dd data-report={r.report_date}><ReportSource text={docText(r.source, lang)} /></dd>
             </Fragment>
           ))}
           <dt>{pick({ en: 'Treasury curve', es: 'Curva del Tesoro' }, lang)}</dt>
-          <dd>{`${o.curve.source} (${o.curve.date})`}</dd>
+          <dd>{`${localise(o.curve.source, lang, IRRBB_SOURCE_RULES)} (${o.curve.date})`}</dd>
           <dt>{pick({ en: 'Interpolation', es: 'Interpolación' }, lang)}</dt>
-          <dd>{o.curve.interpolation}</dd>
+          <dd>{localise(o.curve.interpolation, lang, IRRBB_SOURCE_RULES)}</dd>
           <dt>{pick({ en: 'Tenors the date lacks', es: 'Plazos que la fecha no trae' }, lang)}</dt>
           <dd data-missing-tenors={o.curve.missing_tenors.length}>{o.curve.missing_tenors.length === 0 ? pick({ en: 'none', es: 'ninguno' }, lang) : o.curve.missing_tenors.map((t) => `${formatNumber(t, lang, { digits: 4 })} ${lang === 'es' ? 'años' : 'y'}`).join(', ')}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The behavioural assumptions', es: 'Los supuestos conductuales' }} {...card} note={{ en: 'Each assumption names where it comes from: a regulatory cap, a fit, or a synthetic value stated here. The standardised EVE uses the capped values.', es: 'Cada supuesto dice de dónde viene: un tope regulatorio, un ajuste, o un valor sintético declarado aquí. El EVE estandarizado usa los valores con tope.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c14-assumptions">
             <thead>
               <tr>
@@ -279,7 +347,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
                     <td className="ct-text">{pick(text(ASSUMPTION_TEXT, k), lang)}</td>
                     <td>{assumptionValue(a.value, a.unit, lang)}</td>
                     <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, a.source_kind), lang)}</td>
-                    <td className="ct-text ct-wide-only">{a.source}</td>
+                    <td className="ct-text ct-wide-only">{localise(a.source, lang, IRRBB_SOURCE_RULES)}</td>
                   </tr>
                 );
               })}
@@ -288,7 +356,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The slotted balance sheet', es: 'El balance ubicado en tramos' }} {...card} note={{ en: `Amounts in ${unit}. An item the financials lack shows not available with its reason and the slotting assumption that replaces it, never an invented number.`, es: `Montos en ${unit}. Una partida que los estados no traen muestra no disponible con su razón y el supuesto de ubicación que la reemplaza, nunca un número inventado.` }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c14-items">
             <thead>
               <tr>
@@ -315,7 +383,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
                     )}
                   </td>
                   <td>{cell(i.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{i.slotting_assumption}</td>
+                  <td className="ct-text ct-wide-only">{docText(i.slotting_assumption, lang, IRRBB_SOURCE_RULES)}</td>
                 </tr>
               ))}
             </tbody>

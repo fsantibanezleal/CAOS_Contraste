@@ -11,7 +11,9 @@ import type { Text } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, ConventionNote, Doc, GovernanceDoc } from './common';
 import { OpinionCard } from './OpinionBlock';
-import { GOVERNANCE_FILES, OPINION_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
+import { entryName, entryText, modelName, rowWhere, segmentName, sourceName, testText, variantName } from '../names';
+import { readerWords } from './readerText';
+import { GOVERNANCE_FILES, OPINION_NAME, STATUS_NAME, entryLabel, reportFile, tierName, type GovFindings, type GovInventory, type GovReport, type ReportSection } from './model';
 
 type Block = ReportSection['blocks'][number];
 type OutcomeRow = Extract<Block, { kind: 'outcomes' }>['rows'][number];
@@ -25,6 +27,17 @@ const KIND_NAME: Record<string, Text> = { p_value: { en: 'p-value', es: 'valor p
 const DIRECTION_NAME: Record<string, Text> = { upper_bad: { en: 'upper is bad', es: 'lo alto es malo' }, lower_bad: { en: 'lower is bad', es: 'lo bajo es malo' } };
 const INPUT_KIND: Record<string, Text> = { document: { en: 'document', es: 'documento' }, engine: { en: 'engine', es: 'motor' }, convention: { en: 'convention', es: 'convención' } };
 
+/** The role a model plays in a table of the report (decision W15: champion, challenger, benchmark, reference). */
+const ROLE_NAME: Record<string, Text> = {
+  champion: { en: 'champion', es: 'campeón' },
+  challenger: { en: 'challenger', es: 'retador' },
+  benchmark: { en: 'benchmark', es: 'referencia externa' },
+  reference: { en: 'reference', es: 'referencia' },
+  dgp: { en: 'generating process', es: 'proceso generador' },
+};
+/** The words of a column whose cells are tokens of a closed set, by the column's English title; any other column prints as written. */
+const TOKEN_COLUMNS: Record<string, Record<string, Text>> = { light: LIGHT_TEXT, status: STATUS_NAME, role: ROLE_NAME };
+
 function PolicyCell({ row }: { row: OutcomeRow }) {
   const lang = useShellLang();
   const p = row.policy;
@@ -36,26 +49,47 @@ function PolicyCell({ row }: { row: OutcomeRow }) {
       <span className="ct-note">
         {pick(SOURCE_NAME[p.source] ?? { en: p.source, es: p.source }, lang)}; {pick({ en: 'kind: ', es: 'tipo: ' }, lang)}
         {p.kind ? pick(KIND_NAME[p.kind], lang) : unknown}; {pick({ en: 'direction: ', es: 'sentido: ' }, lang)}
-        {p.direction ? pick(DIRECTION_NAME[p.direction], lang) : p.source === 'inline-battery' ? pick({ en: 'not available (no policy file, backlog BL-085)', es: 'no disponible (sin archivo de política, pendiente BL-085)' }, lang) : unknown}
+        {p.direction ? pick(DIRECTION_NAME[p.direction], lang) : p.source === 'inline-battery' ? pick({ en: 'not available (the battery runs inline, and no policy file states its direction)', es: 'no disponible (la batería corre en línea y ningún archivo de política declara su sentido)' }, lang) : unknown}
       </span>
     </>
   );
 }
 
-function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string }) {
+/** A model grade of the report's rows (C01's `G08`) by its name, where the names module has no form for the case (R3 c23 M1:
+ * the rows of one test and one model must be told apart by their grade). */
+const gradeName = (seg: string): Text | null => (/^G\d\d$/.test(seg) ? { en: `grade ${seg}`, es: `grado ${seg}` } : null);
+
+/** The model and the segment of an outcome row in words, the grade always shown. */
+export function outcomeWhere(caseId: string, modelId: string | null | undefined, segment: string | null | undefined): Text | null {
+  const known = segment ? segmentName(segment, { caseId }) : null;
+  const grade = !known && segment ? gradeName(segment) : null;
+  const base = rowWhere(caseId, modelId, segment);
+  if (!grade) return base;
+  return base ? { en: `${base.en}, ${grade.en}`, es: `${base.es}, ${grade.es}` } : grade;
+}
+
+/** A rung of the case by its name in the models document, else the id (R3 c23 B6). */
+const rungWords = (caseId: string, id: string, lang: 'en' | 'es'): string => {
+  const n = modelName(id, { caseId });
+  return n ? n[lang] : id;
+};
+
+/** The test rows of one variant, each test, model and segment in words (U16-R2b: no raw id where a name exists). */
+function OutcomesTable({ rows, variant, caseId }: { rows: OutcomeRow[]; variant: string; caseId: string }) {
   const lang = useShellLang();
   const num = (v: number | null) => formatNumber(v, lang, { digits: 4 });
+  const where = (r: OutcomeRow) => pick(outcomeWhere(caseId, r.model_id, r.segment) ?? { en: '-', es: '-' }, lang);
   return (
-    <div style={{ maxHeight: 420, overflow: 'auto', minWidth: 0 }} data-outcomes={variant}>
+    <div className="ct-fade-scroll" style={{ maxHeight: 420, minWidth: 0 }} data-outcomes={variant}>
       <table className="caos-table" data-state="ready">
         <caption className="ct-note">
           {pick({ en: 'Test rows of the variant ', es: 'Filas de prueba de la variante ' }, lang)}
-          <span translate="no">{variant}</span>
+          {pick(variantName(caseId, variant) ?? { en: variant, es: variant }, lang)}
         </caption>
         <thead>
           <tr>
             <th className="caos-col-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-            <th className="caos-col-text ct-wide-only">{pick({ en: 'Model, segment', es: 'Modelo, segmento' }, lang)}</th>
+            <th className="caos-col-text ct-wide-only ct-repeated">{pick({ en: 'Model, segment', es: 'Modelo, segmento' }, lang)}</th>
             <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
             <th>{pick({ en: 'p-value', es: 'valor p' }, lang)}</th>
             <th>{pick({ en: 'Metric', es: 'Métrica' }, lang)}</th>
@@ -67,14 +101,10 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
           {rows.map((r, i) => (
             <tr key={i} data-test={r.test_id} data-light={r.light}>
               <td className="caos-col-text">
-                <span translate="no">{r.test_id}</span>
+                {pick(testText(r.test_id), lang)}
+                <span className="ct-narrow-only">{where(r)}</span>
               </td>
-              <td className="caos-col-text ct-wide-only">
-                <span translate="no">
-                  {r.model_id ?? '-'}
-                  {r.segment ? `, ${r.segment}` : ''}
-                </span>
-              </td>
+              <td className="caos-col-text ct-wide-only ct-repeated">{where(r)}</td>
               <td>{num(r.statistic)}</td>
               <td>{num(r.p_value)}</td>
               <td>{num(r.metric)}</td>
@@ -92,9 +122,57 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
   );
 }
 
-function BlockView({ block }: { block: Block }) {
+/** The fit of an entry in words for the engine's report sentences: the entry's name without its case (`German Credit fit`). */
+const fitWords = (caseId: string, fit: string, lang: 'en' | 'es'): string => {
+  const n = entryName(`${caseId}/${fit}`);
+  return n ? n[lang].slice(caseId.length + 2) : fit;
+};
+const count = (n: string, lang: 'en' | 'es') => formatNumber(Number(n), lang, { decimals: 0 });
+
+/** The sentences the engine's report builder (riskvalidation.governance.report) writes with a fit id, source ids or a plural that
+ * does not agree with its count, read whole in words; any other sentence is shown as it comes (the R2b page review c23). */
+const REPORT_SENTENCES: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es', caseId: string, t: Text) => string]> = [
+  [/^Scope: the fit (\S+) of case (C\d\d); the full battery of the default variant \((\d+) test rows\) and the findings of its (\d+) variants\.$/,
+    (m, lang) => lang === 'en'
+      ? `Scope: ${m[2]}, ${fitWords(m[2], m[1], 'en')}; the full battery of the default variant (${count(m[3], 'en')} test rows) and the findings of its ${m[4] === '1' ? 'one variant' : `${count(m[4], 'en')} variants`}.`
+      : `Alcance: ${m[2]}, ${fitWords(m[2], m[1], 'es')}; la batería completa de la variante por defecto (${count(m[3], 'es')} filas de prueba) y los hallazgos de ${m[4] === '1' ? 'su única variante' : `sus ${count(m[4], 'es')} variantes`}.`],
+  [/^(.+): (\d+) model records in the fit (\S+); tier (\d) \((.+)\)\.$/,
+    (m, lang, caseId, t) => {
+      const n = m[2] === '1' ? (lang === 'en' ? 'one model record' : 'un registro de modelo') : lang === 'en' ? `${count(m[2], 'en')} model records` : `${count(m[2], 'es')} registros de modelo`;
+      if (lang === 'en') return `${m[1]}: ${n} in the ${fitWords(caseId, m[3], 'en')}; tier ${m[4]} (${m[5]}).`;
+      // the entry's Spanish title and the reading in Spanish, from the document's own Spanish sentence (R3 c23 B1)
+      const es = /^(.+): \d+ registros? de modelo en el ajuste \S+; nivel \d \((.+)\)\.$/.exec(t.es);
+      return `${es ? es[1] : m[1]}: ${n} en el ${fitWords(caseId, m[3], 'es')}; nivel ${m[4]} (${readerWords(es ? es[2] : m[5], 'es')}).`;
+    }],
+  [/^The design alternatives are the rungs of the ladder in the models document: (.+)\.$/,
+    (m, lang, caseId) =>
+      `${lang === 'en' ? 'The design alternatives are the rungs of the ladder in the models document' : 'Las alternativas de diseño son los peldaños de la escalera del documento de modelos'}: ${m[1].split(', ').map((id) => rungWords(caseId, id, lang)).join(', ')}.`],
+  [/^(?:Sources|Fuentes): (.+)\.$/,
+    (m, lang) => `${lang === 'en' ? 'Sources' : 'Fuentes'}: ${m[1].split(', ').map((s) => sourceName(s) ?? s).join('; ')}.`],
+  [/^(\d+) register rows are stated limits of the synthetic case \(risk_accepted\); use restrictions are the SDD non-goals\.$/,
+    (m, lang) => lang === 'en'
+      ? `${m[1] === '1' ? 'One register row is a stated limit' : `${count(m[1], 'en')} register rows are stated limits`} of the synthetic case (risk accepted); use restrictions are the SDD non-goals.`
+      : `${m[1] === '1' ? 'Una fila del registro es un límite declarado' : `${count(m[1], 'es')} filas del registro son límites declarados`} del caso sintético (riesgo aceptado); las restricciones de uso son los no-objetivos del SDD.`],
+];
+
+/** A report sentence in the reader's language and words: the engine's English sentence matched whole, else the document's text. */
+export function reportSentence(t: Text, caseId: string, lang: 'en' | 'es'): string {
+  for (const [re, f] of REPORT_SENTENCES) {
+    const m = re.exec(t.en);
+    if (m) return f(m, lang, caseId, t);
+  }
+  return readerWords(t[lang], lang);
+}
+
+/** The title of a register key, from the findings register (R3 c23 B6: a key alone is a raw id). */
+const findingTitle = (findings: GovFindings | undefined, key: string, lang: 'en' | 'es'): string | null => {
+  const row = findings?.rows.find((r) => r.key === key);
+  return row ? pick(row.title, lang) : null;
+};
+
+function BlockView({ block, caseId, findings }: { block: Block; caseId: string; findings?: GovFindings }) {
   const lang = useShellLang();
-  if (block.kind === 'text') return <p><Doc t={block.text} /></p>;
+  if (block.kind === 'text') return <p><span translate={lang === 'es' ? 'no' : undefined}>{reportSentence(block.text, caseId, lang)}</span></p>;
   if (block.kind === 'list')
     return (
       <ul>
@@ -103,10 +181,23 @@ function BlockView({ block }: { block: Block }) {
         ))}
       </ul>
     );
-  if (block.kind === 'outcomes') return <OutcomesTable rows={block.rows} variant={block.variant_id} />;
-  const cell = (v: string | number | boolean | null): string => (typeof v === 'number' ? formatNumber(v, lang, { digits: 4 }) : v === null ? pick({ en: 'not available', es: 'no disponible' }, lang) : typeof v === 'boolean' ? pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang) : v);
+  if (block.kind === 'outcomes') return <OutcomesTable rows={block.rows} variant={block.variant_id} caseId={caseId} />;
+  const cell = (v: string | number | boolean | null, column?: string): string => {
+    if (typeof v === 'number') return formatNumber(v, lang, { digits: 4 });
+    if (v === null) return pick({ en: 'not available', es: 'no disponible' }, lang);
+    if (typeof v === 'boolean') return pick(v ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang);
+    const words = column ? TOKEN_COLUMNS[column.toLowerCase()]?.[v] : undefined;
+    if (words) return pick(words, lang);
+    // a variant by its name (the R2b page review: `german-twin`)
+    const variant = column?.toLowerCase() === 'variant' ? variantName(caseId, v) : null;
+    if (variant) return pick(variant, lang);
+    // a model by its name in the models document (R3 c23 B6: `P0-constant`)
+    if (column?.toLowerCase() === 'model') return rungWords(caseId, v, lang);
+    return v;
+  };
+  const keyed = block.columns.findIndex((c) => c.en === 'Key');
   return (
-    <div style={{ maxHeight: 360, overflow: 'auto', minWidth: 0 }}>
+    <div className="ct-fade-scroll" style={{ maxHeight: 360, minWidth: 0 }}>
       <table className="caos-table" data-state="ready">
         <caption className="ct-note">{pick(block.caption, lang)}</caption>
         <thead>
@@ -116,6 +207,7 @@ function BlockView({ block }: { block: Block }) {
                 {pick(c, lang)}
               </th>
             ))}
+            {keyed >= 0 && <th className="caos-col-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>}
           </tr>
         </thead>
         <tbody>
@@ -123,9 +215,10 @@ function BlockView({ block }: { block: Block }) {
             <tr key={i}>
               {r.map((v, j) => (
                 <td key={j} className="caos-col-text">
-                  <span translate={typeof v === 'string' ? 'no' : undefined}>{cell(v)}</span>
+                  <span translate={typeof v === 'string' && !TOKEN_COLUMNS[block.columns[j]?.en.toLowerCase()]?.[v] ? 'no' : undefined}>{cell(v, block.columns[j]?.en)}</span>
                 </td>
               ))}
+              {keyed >= 0 && <td className="caos-col-text">{findingTitle(findings, String(r[keyed]), lang) ?? pick({ en: 'not available (the register does not hold this key)', es: 'no disponible (el registro no contiene esta clave)' }, lang)}</td>}
             </tr>
           ))}
         </tbody>
@@ -135,7 +228,7 @@ function BlockView({ block }: { block: Block }) {
 }
 
 /** One of the twelve sections: filled with its inputs, or absent with its reason; what the template asks for and the product lacks is listed as missing. */
-export function SectionView({ section }: { section: ReportSection }) {
+export function SectionView({ section, caseId = '', findings }: { section: ReportSection; caseId?: string; findings?: GovFindings }) {
   const lang = useShellLang();
   const opinion = 'opinion' in section ? section.opinion : null;
   const level = 'opinion_level' in section ? section.opinion_level : null;
@@ -150,7 +243,7 @@ export function SectionView({ section }: { section: ReportSection }) {
       {section.status === 'absent' && section.absent_reason && (
         <p data-state="unavailable" className="caos-pending">
           {pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}
-          <Doc t={section.absent_reason} />
+          <Doc t={section.absent_reason} capital />
         </p>
       )}
       {level !== null && (
@@ -160,7 +253,7 @@ export function SectionView({ section }: { section: ReportSection }) {
         </p>
       )}
       {section.blocks.map((b, i) => (
-        <BlockView key={i} block={b} />
+        <BlockView key={i} block={b} caseId={caseId} findings={findings} />
       ))}
       {opinion && <OpinionCard opinion={opinion} />}
       {section.missing.length > 0 && (
@@ -168,7 +261,7 @@ export function SectionView({ section }: { section: ReportSection }) {
           {section.missing.map((m, i) => (
             <li key={i}>
               <strong>{pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}</strong>
-              <Doc t={m.element} />. <Doc t={m.reason} />
+              <Doc t={m.element} capital />. <Doc t={m.reason} capital />
             </li>
           ))}
         </ul>
@@ -182,7 +275,7 @@ export function SectionView({ section }: { section: ReportSection }) {
             {section.inputs.map((inp, i) => (
               <li key={i}>
                 <span lang="en" translate="no" style={{ overflowWrap: 'anywhere' }}>
-                  {inp.ref}
+                  {readerWords(inp.ref, 'en')}
                 </span>{' '}
                 ({pick(INPUT_KIND[inp.kind], lang)})
               </li>
@@ -195,7 +288,7 @@ export function SectionView({ section }: { section: ReportSection }) {
 }
 
 /** The report of one entry: its title, tier and test counts, and its twelve sections. */
-export function ReportDocument({ report }: { report: GovReport }) {
+export function ReportDocument({ report, findings }: { report: GovReport; findings?: GovFindings }) {
   const lang = useShellLang();
   const c = report.test_counts;
   const n = (v: number) => formatNumber(v, lang, { decimals: 0 });
@@ -203,12 +296,12 @@ export function ReportDocument({ report }: { report: GovReport }) {
     <article data-report={report.entry_key} data-sections={report.sections.length}>
       <h3 className="ct-sub">{pick(report.title, lang)}</h3>
       <p data-report-header>
-        <span translate="no">{report.entry_key}</span>, {tierName(report.tier, lang)}. {pick({ en: 'Test rows: ', es: 'Filas de prueba: ' }, lang)}
-        {pick(LIGHT_TEXT.green, lang)} {n(c.green)}, {pick(LIGHT_TEXT.amber, lang)} {n(c.amber)}, {pick(LIGHT_TEXT.red, lang)} {n(c.red)}, {pick(LIGHT_TEXT.not_evaluated, lang)} {n(c.not_evaluated)}, {pick(LIGHT_TEXT.error, lang)} {n(c.error)}.
+        {pick(entryText(report.entry_key), lang)}, {tierName(report.tier, lang)}. {pick({ en: 'Test rows: ', es: 'Filas de prueba: ' }, lang)}
+        {pick(LIGHT_TEXT.green, lang)}: {n(c.green)}, {pick(LIGHT_TEXT.amber, lang)}: {n(c.amber)}, {pick(LIGHT_TEXT.red, lang)}: {n(c.red)}, {pick({ en: 'not evaluated', es: 'no evaluadas' }, lang)}: {n(c.not_evaluated)}, {pick(LIGHT_TEXT.error, lang)}: {n(c.error)}.
       </p>
       <AsOf asOf={report.as_of} basis={report.as_of_basis} />
       {report.sections.map((s) => (
-        <SectionView key={s.number} section={s} />
+        <SectionView key={s.number} section={s} caseId={report.entry_key.split('/')[0]} findings={findings} />
       ))}
     </article>
   );
@@ -239,7 +332,7 @@ export function ReportReader({ inv }: { inv: GovInventory }) {
         </select>
       </p>
       <GovernanceDoc<GovReport> key={key} file={reportFile(key)}>
-        {(report) => <ReportDocument report={report} />}
+        {(report) => <GovernanceDoc<GovFindings> file={GOVERNANCE_FILES.findings}>{(findings) => <ReportDocument report={report} findings={findings} />}</GovernanceDoc>}
       </GovernanceDoc>
     </>
   );
@@ -254,8 +347,8 @@ export function ReportsTabLoader() {
         es="Un informe de validación por entrada del inventario, en las doce secciones de la plantilla del dossier 06 I.3. Una sección se completa con insumos nombrados, o queda ausente con su razón, y lo que la plantilla pide y Contraste no tiene detrás se lista como no disponible. La sección 11 da la opinión en la escala de cuatro niveles del BCE como resultado de una regla declarada: no es una aprobación."
       />
       <P
-        en="Pick an entry to read its report. Each section names the inputs it was assembled from, in a fold under it: a committed document, an engine function or a stated convention. A section that is filled can still list elements of the template that Contraste holds nothing behind, such as a written soundness assessment or a monitoring pack; those are not invented, they are listed as not available with the reason. The report of an entry the bake has not written is shown as not available yet, with the file that is missing."
-        es="Elija una entrada para leer su informe. Cada sección nombra los insumos con que se armó, en un pliegue bajo ella: un documento comprometido, una función del motor o una convención declarada. Una sección completa puede igualmente listar elementos de la plantilla que Contraste no tiene detrás, como una evaluación escrita de solidez o un paquete de monitoreo; no se inventan, se listan como no disponibles con su razón. El informe de una entrada que la generación no ha escrito se muestra como aún no disponible, con el archivo que falta."
+        en="Pick an entry to read its report. Each section names the inputs it was assembled from, in a fold under it: a committed document, an engine function or a stated convention. A section that is filled can still list elements of the template that Contraste holds nothing behind, such as a written soundness assessment or a monitoring pack; those are not invented, they are listed as not available with the reason. The report of an entry that has not been written yet is shown as not available yet, with the file that is missing."
+        es="Elija una entrada para leer su informe. Cada sección nombra los insumos con que se armó, en un pliegue bajo ella: un documento versionado, una función del motor o una convención declarada. Una sección completa puede igualmente listar elementos de la plantilla que Contraste no tiene detrás, como una evaluación escrita de solidez o un paquete de monitoreo; no se inventan, se listan como no disponibles con su razón. El informe de una entrada que la generación no ha escrito se muestra como aún no disponible, con el archivo que falta."
       />
       <ConventionNote />
       <GovernanceDoc<GovInventory> file={GOVERNANCE_FILES.inventory}>{(inv) => <ReportReader inv={inv} />}</GovernanceDoc>

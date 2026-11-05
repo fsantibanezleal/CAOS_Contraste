@@ -95,7 +95,7 @@ export function scaleFactor(o: Pick<MoneyDoc, 'units'>): number {
 /** The unit text of a column of money in the document's scale: "CLP millions". */
 export function scaleUnit(o: MoneyDoc): Bi {
   const word = o.units.money_scale === 'millions' ? { en: 'millions', es: 'millones' } : o.units.money_scale === 'thousands' ? { en: 'thousands', es: 'miles' } : null;
-  return word ? { en: `${o.currency} ${word.en}`, es: `${o.currency} ${word.es}` } : { en: o.currency, es: o.currency };
+  return word ? { en: `${o.currency} ${word.en}`, es: `${word.es} de ${o.currency}` } : { en: o.currency, es: o.currency };
 }
 /** An amount in a narrow place (a read-out): scaled to units, then to bn or m with the unit that says so. */
 export function amount(o: MoneyDoc, v: number | null | undefined, currency?: string) {

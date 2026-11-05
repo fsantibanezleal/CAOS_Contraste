@@ -5,12 +5,22 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
-import { useCard } from '../c03/U6Shared';
+import { noteText } from '../c08/notes';
+import { referenceText, useCard } from '../c03/U6Shared';
 import { ConventionLine, MarketTestsTable, lightWord, rowsMin } from './MarketCommon';
+import { P_FORMAT } from './ComparisonViews';
 import { alphaLabel, fitOf, levelOf, modelLabel, outputsOf, testName, testsOf, type C11Sel } from './selection';
 
 const TONE = { green: 'good', amber: 'warn', red: 'bad' } as const;
+
+/** A sentence of the document printed after a colon: in Spanish the clause starts in lower case ("Kupiec: rojo al 5 por ciento",
+ * R5 c15 n3), unless its first word is an acronym or a proper name in capitals ("FRTB", "MAR32"); English keeps it as written. */
+export function afterColon(sentence: string, lang: 'en' | 'es'): string {
+  if (lang === 'en' || !/^\p{Lu}\p{Ll}/u.test(sentence)) return sentence;
+  return sentence.charAt(0).toLocaleLowerCase('es') + sentence.slice(1);
+}
 
 /** The traditional back-tests of the model at the level, with the eligibility they decide and the gates that failed. */
 export function TestsView({ sel }: { sel: C11Sel | null }) {
@@ -23,22 +33,24 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
   const name = modelLabel(sel, sel.model);
   const failed = model?.failed_gates ?? [];
   const gates = fitOf(sel)?.eligibility_gates ?? [];
+  const tail = (l: 'en' | 'es') => formatNumber(sel.alpha, l, { percent: true, decimals: sel.alpha === 0.025 ? 1 : 0 });
   return (
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `Back-tests of ${name.en}`, es: `Backtests de ${name.es}` }}
+        // the tail level of the rows in the title, as the timeline names it (R4 c14 n8)
+        title={{ en: `Back-tests at the ${tail('en')} tail: ${name.en}`, es: `Pruebas retrospectivas en la cola de ${tail('es')}: ${name.es}` }}
         {...card}
         note={{
           en: 'Each p-value is the engine\'s; the bar is empty for a test that did not run. A model is eligible for the comparison when no gate test is red at either level.',
           es: 'Cada valor p es del motor; la barra queda vacía para una prueba que no corrió. Un modelo es elegible para la comparación cuando ninguna prueba de compuerta está en rojo en ningún nivel.',
         }}
       >
-        <ChartOverTable
-          chartMin={rowsMin(rows.length)}
+        <ChartAbove
+          chartHeight={rowsMin(rows.length)}
           chart={
             <BarChart
-              title={{ en: 'p-value of each back-test', es: 'Valor p de cada backtest' }}
+              title={{ en: 'p-value of each back-test', es: 'Valor p de cada prueba retrospectiva' }}
               height="fill"
               orientation="horizontal"
               data={rows.map((t) => ({
@@ -47,7 +59,7 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
                 value: t.light === 'not_evaluated' || t.light === 'error' ? null : t.p_value,
                 tone: t.light === 'not_evaluated' || t.light === 'error' ? ('neutral' as const) : TONE[t.light],
               }))}
-              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 }, range: [0, 1] }}
+              axis={{ label: { en: 'p-value', es: 'Valor p' }, format: P_FORMAT, range: [0, 1] }}
             />
           }
         >
@@ -67,14 +79,26 @@ export function TestsView({ sel }: { sel: C11Sel | null }) {
           </p>
           {gates.length > 0 ? (
             <p className="ct-note">
-              {gates.map((g) => `${pick(testName(g.test_id), lang)}: ${pick(g.rule, lang)}`).join(' ')}
+              {gates.map((g) => `${pick(testName(g.test_id), lang)}: ${afterColon(pick(g.rule, lang), lang)}`).join(' ')}
             </p>
           ) : null}
           <MarketTestsTable rows={rows} table="c11-tests" />
-        </ChartOverTable>
+        </ChartAbove>
       </PlotCard>
     </ViewsRow>
   );
+}
+
+/** The x values of the Z2 chart: the bin centres, widened by one point at either end when a mark lies beyond the outer centre (the
+ * bars are drawn at the centres, so a mark between the outer edge and the outer centre extends the axis too; R2b c12 M1). `front` is
+ * the number of points added before the centres. Exported so the rule is tested by running it (R3 c12 m14). */
+export function z2Axis(centers: readonly number[], marks: readonly number[]): { xs: number[]; front: number } {
+  const c0 = centers[0];
+  const cN = centers[centers.length - 1];
+  const lo = Math.min(c0, ...marks);
+  const hi = Math.max(cN, ...marks);
+  const pad = (hi - lo) * 0.04;
+  return { xs: [...(lo < c0 ? [lo - pad] : []), ...centers, ...(hi > cN ? [hi + pad] : [])], front: lo < c0 ? 1 : 0 };
 }
 
 /** Z2 of Acerbi and Szekely against the model's simulated null: the realised statistic, the model's own critical values, and the published points as a reference. */
@@ -85,7 +109,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   if (!sel || !o) return <Pending />;
   const fit = fitOf(sel);
   const name = modelLabel(sel, sel.model);
-  const title: BiText = { en: `Expected shortfall back-test of ${name.en}`, es: `Backtest de la pérdida esperada de ${name.es}` };
+  const title: BiText = { en: `Expected shortfall back-test: ${name.en}`, es: `Prueba retrospectiva de la pérdida esperada: ${name.es}` };
   // Z2 is defined at the 2.5 percent tail: at the level in focus when the document has it, else at the level it does have
   const es = o.es_backtests.find((e) => e.model_id === sel.model && e.alpha === sel.alpha) ?? o.es_backtests.find((e) => e.model_id === sel.model) ?? null;
   const esAlpha = es?.alpha ?? sel.alpha;
@@ -98,9 +122,9 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
           <ConventionLine />
           <p className="ct-note" data-state="unavailable">
             {row
-              ? `${formatNumber(null, lang)} (${row.notes ?? row.reference})`
+              ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : referenceText(row, lang)})`
               : sel.alpha === 0.01
-                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5% en el riel.' }, lang)
+                ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'La prueba retrospectiva de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5 % en el riel.' }, lang)
                 : level && level.es_status === 'not-forecast'
                   ? pick({ en: 'Not available: this model forecasts no ES, so there is nothing to back-test.', es: 'No disponible: este modelo no pronostica la ES, así que no hay nada que probar.' }, lang)
                   : pick({ en: 'Not available: the document carries no Z2 for this model and level.', es: 'No disponible: el documento no trae Z2 para este modelo y nivel.' }, lang)}
@@ -114,22 +138,20 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   const ref = fit?.es_reference ?? null;
   const fmt = (v: number) => formatNumber(v, lang, { digits: 4 });
   const marks = [
-    { x: es.realised, label: { en: `Realised Z2 ${formatNumber(es.realised, 'en', { digits: 4 })}`, es: `Z2 realizado ${formatNumber(es.realised, 'es', { digits: 4 })}` } },
-    { x: es.critical_5pct, label: { en: 'Model 5% critical value', es: 'Valor crítico del modelo, 5%' } },
-    { x: es.critical_0_01pct, label: { en: 'Model 0.01% critical value', es: 'Valor crítico del modelo, 0,01%' } },
+    { x: es.realised, label: { en: `Z2 ${formatNumber(es.realised, 'en', { digits: 3 })}`, es: `Z2 ${formatNumber(es.realised, 'es', { digits: 3 })}` } },
+    { x: es.critical_5pct, label: { en: 'Crit. 5%', es: 'Crít. 5 %' } },
+    { x: es.critical_0_01pct, label: { en: 'Crit. 0.01%', es: 'Crít. 0,01 %' } },
     ...(ref
       ? [
-          { x: ref.yellow, label: { en: `Published reference ${formatNumber(ref.yellow, 'en', { decimals: 2 })}`, es: `Referencia publicada ${formatNumber(ref.yellow, 'es', { decimals: 2 })}` } },
-          { x: ref.red, label: { en: `Published reference ${formatNumber(ref.red, 'en', { decimals: 2 })}`, es: `Referencia publicada ${formatNumber(ref.red, 'es', { decimals: 2 })}` } },
+          { x: ref.yellow, label: { en: `Ref. ${formatNumber(ref.yellow, 'en', { decimals: 2 })}`, es: `Ref. ${formatNumber(ref.yellow, 'es', { decimals: 2 })}` } },
+          { x: ref.red, label: { en: `Ref. ${formatNumber(ref.red, 'en', { decimals: 2 })}`, es: `Ref. ${formatNumber(ref.red, 'es', { decimals: 2 })}` } },
         ]
       : []),
   ];
-  // the axis takes in every mark: a Z2 far from the null is drawn at its place, with the histogram between
-  const lo = Math.min(h.edges[0], ...marks.map((m) => m.x));
-  const hi = Math.max(h.edges[h.edges.length - 1], ...marks.map((m) => m.x));
-  const pad = (hi - lo) * 0.04;
-  const xs = [...(lo < h.edges[0] ? [lo - pad] : []), ...centers, ...(hi > h.edges[h.edges.length - 1] ? [hi + pad] : [])];
-  const front = lo < h.edges[0] ? 1 : 0;
+  // the axis takes in every mark: a Z2 far from the null is drawn at its place, with the histogram between. The bars are drawn at
+  // the bin centres, so a mark between the outer edge and the outer centre extends the axis too (R2b c12 M1: a Z2 of 1.0, the last
+  // edge, fell outside an axis that ended at the last centre, in 45 of 168 states)
+  const { xs, front } = z2Axis(centers, marks.map((m) => m.x));
   const counts: Array<number | null> = xs.map((_, i) => (i >= front && i < front + centers.length ? h.counts[i - front] : null));
   const test = testsOf(sel, o, sel.model, esAlpha).find((t) => t.test_id === 'market.acerbi_szekely');
   return (
@@ -148,8 +170,8 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 } }}
-              y={{ label: { en: 'Simulated draws per bin', es: 'Simulaciones por tramo' }, format: { decimals: 0 } }}
-              series={[{ label: { en: 'Null distribution', es: 'Distribución nula' }, values: counts, color: '--color-accent', width: 2 }]}
+              y={{ label: { en: 'Draws per bin', es: 'Simulaciones por tramo' }, format: { decimals: 0 } }}
+              series={[{ label: { en: 'Null distribution (one point per bin)', es: 'Distribución nula (un punto por tramo)' }, values: counts, color: '--color-accent', mode: 'points', size: 7 }]}
               marks={marks}
             />
           }
@@ -160,9 +182,9 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <dd data-level={esAlpha}>{pick(alphaLabel(esAlpha), lang)}</dd>
             <dt>{pick({ en: 'Realised Z2', es: 'Z2 realizado' }, lang)}</dt>
             <dd>{fmt(es.realised)}</dd>
-            <dt>{pick({ en: 'Model 5% critical value (yellow)', es: 'Valor crítico del modelo al 5% (amarillo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 5% critical value, the amber boundary', es: 'Valor crítico del modelo al 5 %, el límite ámbar' }, lang)}</dt>
             <dd>{fmt(es.critical_5pct)}</dd>
-            <dt>{pick({ en: 'Model 0.01% critical value (red)', es: 'Valor crítico del modelo al 0,01% (rojo)' }, lang)}</dt>
+            <dt>{pick({ en: 'Model 0.01% critical value, the red boundary', es: 'Valor crítico del modelo al 0,01 %, el límite rojo' }, lang)}</dt>
             <dd>{fmt(es.critical_0_01pct)}</dd>
             <dt>{pick({ en: 'Simulated draws', es: 'Simulaciones' }, lang)}</dt>
             <dd>{formatNumber(es.n_draws, lang, { decimals: 0 })}</dd>
@@ -177,7 +199,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
                   {pick(
                     {
                       en: `${formatNumber(ref.yellow, 'en', { decimals: 2 })} (yellow) and ${formatNumber(ref.red, 'en', { decimals: 2 })} (red) for ${ref.n_days} days at ${formatNumber(ref.alpha, 'en', { percent: true, decimals: 1 })}: ${ref.status.en}`,
-                      es: `${formatNumber(ref.yellow, 'es', { decimals: 2 })} (amarillo) y ${formatNumber(ref.red, 'es', { decimals: 2 })} (rojo) para ${ref.n_days} días al ${formatNumber(ref.alpha, 'es', { percent: true, decimals: 1 })}: ${ref.status.es}`,
+                      es: `${formatNumber(ref.yellow, 'es', { decimals: 2 })} (amarillo) y ${formatNumber(ref.red, 'es', { decimals: 2 })} (rojo) para ${ref.n_days} días al ${formatNumber(ref.alpha, 'es', { percent: true, decimals: 1 })}: ${afterColon(ref.status.es, 'es')}`,
                     },
                     lang,
                   )}

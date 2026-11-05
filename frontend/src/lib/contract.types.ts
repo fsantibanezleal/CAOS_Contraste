@@ -134,6 +134,13 @@ export type GroupStat = components['schemas']['c01GroupStat'];
 
 export type VariantOutputs = components['schemas']['c01VariantOutputs'];
 
+/** S-6, reject inference on a simulated legacy policy: the German twin's block of C01 (null on every other variant). */
+export type RejectInference = components['schemas']['c01RejectInference'];
+
+export type RejectRung = components['schemas']['c01RejectRung'];
+
+export type RejectStat = components['schemas']['c01RejectStat'];
+
 export type TestRow = components['schemas']['common-test-result'];
 
 export type ImpactItem = components['schemas']['common-impact-item'];
@@ -249,6 +256,8 @@ export const MANIFEST = {
   artifacts: { array: 'json' },
   contract: { map: { object: CONTRACT_SUMMARY } },
   expect: { map: nums },
+  // what the producer reads of other cases (case-manifest 2.0.0, U16-P1b)
+  depends_on: { array: { object: { kind: 'string', ref: 'string', reason: 'text' } } },
 } satisfies Record<keyof CaseManifest, Kind>;
 
 export const MODEL_SUMMARY = {
@@ -334,6 +343,66 @@ export const SAMPLE = {
   ebm_logit: nums,
 } satisfies Record<keyof ScoredSample, Kind>;
 
+const REJECT_STAT = { mean: num, lo: num, hi: num } satisfies Record<keyof RejectStat, Kind>;
+
+const REJECT_RUNG = {
+  id: 'string',
+  bias: { object: REJECT_STAT },
+  abs_bias: num,
+  reduction: { object: { value: num, lo: num, hi: num } },
+  beats_share: num,
+  auc: { object: REJECT_STAT },
+  auc_vs_accepted_only: { object: REJECT_STAT },
+  brier: { object: REJECT_STAT },
+  reps: { object: { bias: nums, auc: nums } },
+} satisfies Record<keyof RejectRung, Kind>;
+
+export const C01_REJECT = {
+  design: {
+    object: {
+      population: 'string',
+      learner: 'string',
+      n_rows: 'integer',
+      n_dev: 'integer',
+      n_test: 'integer',
+      reps: 'integer',
+      accept_share: num,
+      test_share: num,
+      weight_floor: num,
+      bands: 'integer',
+      min_accepted: 'integer',
+      prudence: num,
+      c_inverse_penalty: num,
+      bootstrap: 'integer',
+      level: num,
+      h2_reduction: num,
+      h3_auc_gain: num,
+    } satisfies Record<keyof RejectInference['design'], Kind>,
+  },
+  rungs: { array: { object: { id: 'string', title: 'text', short_title: 'text', source: 'string', what: 'text' } satisfies Record<keyof RejectInference['rungs'][number], Kind> } },
+  regimes: {
+    array: {
+      object: {
+        id: 'string',
+        kappa: num,
+        title: 'text',
+        short_title: 'text',
+        what: 'text',
+        default_rate: { object: { population: num, accepted: num, rejected: num } },
+        rungs: { array: { object: REJECT_RUNG } },
+      } satisfies Record<keyof RejectInference['regimes'][number], Kind>,
+    },
+  },
+  hypotheses: {
+    array: {
+      object: { id: 'string', holds: 'boolean', value: num, lo: num, hi: num, rung: 'string', statement: 'text', outcome: 'text' } satisfies Record<
+        keyof RejectInference['hypotheses'][number],
+        Kind
+      >,
+    },
+  },
+} satisfies Record<keyof RejectInference, Kind>;
+
 export const VARIANT_OUTPUTS = {
   rungs: { map: { object: RUNG_OUTPUTS } },
   n: 'integer',
@@ -343,6 +412,7 @@ export const VARIANT_OUTPUTS = {
   },
   sample: { nullable: { object: SAMPLE } },
   irb: { object: C01_IRB },
+  reject_inference: { nullable: { object: C01_REJECT } },
 } satisfies Record<keyof VariantOutputs, Kind>;
 
 export const TEST_ROW = {
@@ -780,10 +850,38 @@ export type C22Curve = components['schemas']['c22Curve'];
 
 export type C22Outputs = components['schemas']['c22Outputs'];
 
+/** BS-15 (unit D15): the e-process sequential monitors against the fixed-window tests, the other-families block of C22 (null on every other variant). */
+export type C22Sequential = components['schemas']['c22Sequential'];
+
+export type C22SeqDetection = components['schemas']['c22SeqDetection'];
+
+export type C22SeqHitScenario = components['schemas']['c22SeqHitScenario'];
+
+export type C22SeqPdScenario = components['schemas']['c22SeqPdScenario'];
+
+export type C22SeqHypothesis = components['schemas']['c22SeqHypothesis'];
+
+/** BS-15 (unit D15): the e-process of defaults against the predicted PD by age, per vintage and for the cohort (every C03 cohort document). */
+export type C03Sequential = components['schemas']['c03Sequential'];
+
+export type C03SeqVintage = components['schemas']['c03SeqVintage'];
+
+export type C03SeqPath = components['schemas']['c03SeqPath'];
+
 /** A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
 export type C22Parity = components['schemas']['c22Parity'];
 
 export type C22Fit = components['schemas']['c22Fit'];
+
+/** The engine's named study behind a simulation of a test outside the five credit families (U16-P2); null for the credit
+ * families' simulations. */
+export type C22Study = components['schemas']['c22Study'];
+
+/** A size above its bound that the engine documents on its own page. */
+export type C22Excess = components['schemas']['c22Excess'];
+
+/** One named study of the engine, as the models artifact records it. */
+export type C22StudyRecord = components['schemas']['c22StudyRecord'];
 
 const C22_RATE = {
   object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<
@@ -791,6 +889,96 @@ const C22_RATE = {
     Kind
   >,
 } as const;
+
+const C22_STUDY = {
+  object: {
+    index: 'integer',
+    label: 'text',
+    rule: 'string',
+    rule_label: 'string',
+    arm: 'string',
+    text: 'text',
+    departure: 'string',
+    excess: {
+      nullable: {
+        object: { page: 'string', repository: 'string', level: num, measured: num, bound: num, excess: num, exceeds: 'boolean', engine: 'text' } satisfies Record<
+          keyof C22Excess,
+          Kind
+        >,
+      },
+    },
+  } satisfies Record<keyof C22Study, Kind>,
+} as const;
+
+const C22_SEQ_DETECTION = { ever: num, by: num, median_day: nNum, median_day_among_detected: nNum } satisfies Record<keyof C22SeqDetection, Kind>;
+
+const C22_SEQUENTIAL = {
+  method: {
+    object: { engine: 'string', engine_version: 'string', alpha_level: num, threshold: num, monitors: { array: 'string' }, label: 'text', description: 'text' },
+  },
+  seed: 'integer',
+  hits: {
+    object: {
+      alpha: num,
+      horizon: 'integer',
+      window: 'integer',
+      by_day: 'integer',
+      reps: 'integer',
+      generator: 'string',
+      traffic_light_exceptions: 'integer',
+      scenarios: {
+        array: {
+          object: {
+            id: 'string',
+            kind: 'string',
+            factor: nNum,
+            cluster: nNum,
+            label: 'text',
+            e_rate: { object: C22_SEQ_DETECTION },
+            e_cluster: { object: C22_SEQ_DETECTION },
+            e_battery: { object: C22_SEQ_DETECTION },
+            kupiec_trailing: { object: C22_SEQ_DETECTION },
+            kupiec_cumulative: { object: C22_SEQ_DETECTION },
+            traffic_light: { object: C22_SEQ_DETECTION },
+            independence_trailing: { object: C22_SEQ_DETECTION },
+            kupiec_one_shot_power: num,
+          } satisfies Record<keyof C22SeqHitScenario, Kind>,
+        },
+      },
+    },
+  },
+  pd_grades: {
+    object: {
+      pd: nums,
+      obligors_per_grade_year: 'integer',
+      years: 'integer',
+      by_year: 'integer',
+      reps: 'integer',
+      scenarios: {
+        array: {
+          object: {
+            id: 'string',
+            factor: num,
+            label: 'text',
+            e_product: { object: C22_SEQ_DETECTION },
+            e_average: { object: C22_SEQ_DETECTION },
+            chi2_one_shot_power: num,
+            chi2_every_year: { object: C22_SEQ_DETECTION },
+          } satisfies Record<keyof C22SeqPdScenario, Kind>,
+        },
+      },
+    },
+  },
+  hypotheses: {
+    array: {
+      object: { id: 'string', holds: 'boolean', rule: 'text', measured: 'text', values: { array: { object: { id: 'string', value: nNum } } } } satisfies Record<
+        keyof C22SeqHypothesis,
+        Kind
+      >,
+    },
+  },
+  verdict: { object: { holds: 'boolean', held: { array: 'string' }, failed: { array: 'string' }, text: 'text', scope: 'text' } },
+} satisfies Record<keyof C22Sequential, Kind>;
 
 export const C22_OUTPUTS = {
   kind: 'string',
@@ -815,6 +1003,7 @@ export const C22_OUTPUTS = {
         seed: 'integer',
         n_rep: 'integer',
         generator: 'string',
+        study: { nullable: C22_STUDY },
       } satisfies Record<keyof C22Simulation, Kind>,
     },
   },
@@ -855,6 +1044,7 @@ export const C22_OUTPUTS = {
   estimators: { nullable: { object: { auc: { map: num }, ece_when_right: { map: num } } } },
   specimen: { object: { severity: 'integer' } },
   size_bounds: { map: num },
+  sequential: { nullable: { object: C22_SEQUENTIAL } },
 } satisfies Record<keyof C22Outputs, Kind>;
 
 export const VARIANT_C22 = { ...VARIANT, outputs: { object: C22_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
@@ -879,6 +1069,24 @@ export const MODELS_C22 = {
         },
       },
       levels: nums,
+      studies: {
+        array: {
+          object: {
+            test_id: 'string',
+            index: 'integer',
+            label: 'text',
+            rule: 'string',
+            null_generator: 'string',
+            alternative_generator: 'string',
+            pipeline: { nullable: 'string' },
+            test_kwargs: 'json',
+            engine_n_rep: 'integer',
+            engine_power_n_rep: nInt,
+            engine_seed: 'integer',
+            engine_power_seed: 'integer',
+          } satisfies Record<keyof C22StudyRecord, Kind>,
+        },
+      },
     } satisfies Record<keyof C22Fit, Kind>,
   },
 } satisfies Record<keyof ModelsArtifact, Kind>;
@@ -955,6 +1163,57 @@ export type C04Definition = 'd2' | 'd3' | 'd4' | 'keep';
 
 export type C04AgencyOutputs = components['schemas']['c04AgencyOutputs'];
 
+/** BS-14 on the real cohorts (riskvalidation 1.1.0 transitions.withdrawals): per grade, the anchored k of each annual
+ * cohort and of the pooled cohorts (the default page as the anchor of the transition page), its stability and the
+ * tipping k of the master-scale boundary; null for an agency whose transition page has no default category. */
+export type C04AnchorGrade = components['schemas']['c04AnchorGrade'];
+export type C04AnchorRow = components['schemas']['c04AnchorRow'];
+export type C04AnchorCohortRow = components['schemas']['c04AnchorCohortRow'];
+const C04_ANCHOR_ROW = {
+  defaults: num,
+  survivors: num,
+  withdrawn: num,
+  anchor_defaults: num,
+  anchor_cohort: num,
+  pd_industry: nNum,
+  pd_anchor_rate: nNum,
+  pd_anchored: nNum,
+  pd_lower: nNum,
+  pd_upper: nNum,
+  defaults_implied: nNum,
+  k: nNum,
+  k_low: nNum,
+  k_high: nNum,
+  infinite: { array: 'string' },
+  flag: 'string',
+  reason: 'string',
+} satisfies Record<keyof C04AnchorRow, Kind>;
+const C04_ANCHOR_STUDY = {
+  object: {
+    level: num,
+    stability_share: num,
+    grades: {
+      array: {
+        object: {
+          grade: 'string',
+          cohorts: { array: { object: { label: 'string', ...C04_ANCHOR_ROW } satisfies Record<keyof C04AnchorCohortRow, Kind> } },
+          pooled: { nullable: { object: C04_ANCHOR_ROW } },
+          k_over_cohorts: { nullable: { object: { n: 'integer', median: nNum, q25: nNum, q75: nNum, share_above_1: nNum } } },
+          stability: {
+            nullable: { object: { usable_cohorts: 'integer', cohorts_containing_pooled_k: 'integer', share_cohorts_containing_pooled_k: num, stable: 'boolean' } },
+          },
+          k_above_1: { nullable: { object: { pooled_k: nNum, pooled_k_low: nNum, holds: 'boolean', holds_with_lower_bound: 'boolean' } } },
+          tipping: {
+            nullable: {
+              object: { threshold: num, next_grade: 'string', k: nNum, infinite: { array: 'string' }, decision_industry: 'string', status: 'string', pd_manski_upper: nNum },
+            },
+          },
+        } satisfies Record<keyof C04AnchorGrade, Kind>,
+      },
+    },
+  },
+} as const;
+
 const nNumGrid = { nullable: { array: nNums } } as const;
 export const C04_AGENCY_OUTPUTS = {
   kind: 'string',
@@ -1015,6 +1274,7 @@ export const C04_AGENCY_OUTPUTS = {
   irb: {
     object: { regime: 'string', asset_class: 'string', lgd: num, maturity: num, pd_floor: num, references: { map: 'string' } } satisfies Record<keyof C04Irb, Kind>,
   },
+  withdrawal_bounds: { nullable: C04_ANCHOR_STUDY },
 } satisfies Record<keyof C04AgencyOutputs, Kind>;
 
 /** A harness rate: rejections (or hits) over n repetitions with its Monte Carlo SE and Wilson interval. */
@@ -1054,6 +1314,43 @@ export type C04Simulation = components['schemas']['c04Simulation'];
 export type C04Family = components['schemas']['c04FamilyOutputs']['family'];
 
 export type C04FamilyOutputs = components['schemas']['c04FamilyOutputs'];
+
+/** BS-14 (riskvalidation.transitions.withdrawals): the coverage of the true one-year PD by grade of the treatments of
+ * withdrawn ratings and of the anchored interval, per rung, in four designs. */
+export type C04WithdrawalBounds = components['schemas']['c04WithdrawalBounds'];
+export type C04BoundsDesign = components['schemas']['c04BoundsDesign'];
+export type C04BoundsTreatment = components['schemas']['c04BoundsTreatment'];
+export type C04BoundsVerdict = components['schemas']['c04BoundsVerdict'];
+const C04_BOUNDS_DESIGN = {
+  object: {
+    id: 'string',
+    reps: 'integer',
+    cohorts: 'integer',
+    cohort_scale: 'integer',
+    capture: num,
+    seed_key: 'string',
+    seed: 'integer',
+    treatments: {
+      array: { object: { id: 'string', coverage: { array: C04_RATE }, mean_width: nNums, relative_bias: nNums } satisfies Record<keyof C04BoundsTreatment, Kind> },
+    },
+    anchored_k: { object: { median: nNums, q05: nNums, q95: nNums, share_infinite: nums } },
+  } satisfies Record<keyof C04BoundsDesign, Kind>,
+} as const;
+const C04_WITHDRAWAL_BOUNDS = {
+  object: { level: num, truth: nNums, designs: { array: C04_BOUNDS_DESIGN } } satisfies Record<keyof C04WithdrawalBounds, Kind>,
+} as const;
+const C04_BOUNDS_VERDICT = {
+  object: {
+    grade: 'integer',
+    reps: 'integer',
+    level: num,
+    designs: { array: 'string' },
+    rows: {
+      array: { object: { id: 'string', design: 'string', informative: num, treatment: 'string', value: num, mcse: num, threshold: num, comparison: 'string', holds: 'boolean' } },
+    },
+    summary: { object: { refuted: 'boolean', anchored_covers_90: 'boolean', existing_under_50: 'boolean' } },
+  } satisfies Record<keyof C04BoundsVerdict, Kind>,
+} as const;
 
 const C04_RATES = { array: C04_RATE } as const;
 const C04_THREE = (k: Kind) => ({ object: { wald: k, agresti_coull: k, jeffreys: k } }) as const;
@@ -1130,6 +1427,7 @@ const C04_WITHDRAWALS_RUNG = {
     pd_kept: C04_PERFORMANCE,
     pd_followed: C04_PERFORMANCE,
     pd_latent: C04_PERFORMANCE,
+    bounds: C04_WITHDRAWAL_BOUNDS,
   } satisfies Record<keyof C04WithdrawalsRung, Kind>,
 } as const;
 const C04_THIN_RUNG = {
@@ -1155,6 +1453,7 @@ export const C04_FAMILY_OUTPUTS = {
       object: { key: 'string', test_id: 'string', rung: nNum, rates: { map: C04_RATE }, seed: 'integer', n_rep: 'integer' } satisfies Record<keyof C04Simulation, Kind>,
     },
   },
+  bounds_verdict: { nullable: C04_BOUNDS_VERDICT },
 } satisfies Record<keyof C04FamilyOutputs, Kind>;
 
 /** A printed value beside its recomputation; the bake stops unless they agree (contract section 3). */

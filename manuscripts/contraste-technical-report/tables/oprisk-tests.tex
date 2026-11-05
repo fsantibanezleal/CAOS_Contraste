@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The lights of the five operational-risk validation tests over the four variant documents of case C17. The lights compare a descriptive metric with tolerances of the product, not with a regulatory threshold; the capital stability test is run for ten methods in each of the sixteen cells.}
+\label{tab:op-tests}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Test & Green & Amber & Red & Not evaluated & Results \\
+\midrule
+\texttt{benchmark\_reproduction} & 4 & 0 & 0 & 0 & 4 \\
+\texttt{threshold\_stability} & 16 & 0 & 0 & 0 & 16 \\
+\texttt{capital\_stability} & 0 & 0 & 156 & 0 & 156 \\
+\texttt{sma\_ilm\_response} & 0 & 0 & 4 & 0 & 4 \\
+\texttt{scenario\_influence} & 2 & 2 & 0 & 0 & 4 \\
+\bottomrule
+\end{tabular}}
+\end{table}

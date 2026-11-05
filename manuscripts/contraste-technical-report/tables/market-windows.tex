@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\caption{Case C11, one row per window: the book, the number of forecast days, the number of the eighteen models that pass the coverage, conditional coverage and expected shortfall tests at both tail levels, the champion at each level with its average FZ0 loss, and the size of the 90 percent model confidence set at each level.}
+\label{tab:market-windows}
+\begin{tabular}{llrrp{3.2cm}p{3.2cm}rr}
+\toprule
+Window & Book & Days & Eligible & Champion at 1\% & Champion at 2.5\% & In set 1\% & In set 2.5\% \\
+\midrule
+Calm 2004--06 & mixed & 750 & 11 & GJR-t (-4.521) & EWMA (-4.659) & 13 & 13 \\
+Equity 2007--09 & equity & 504 & 0 & none & none & 13 & 13 \\
+FX 2008--09 & fx & 251 & 11 & ES-CAViaR (-3.557) & Cond. EVT (-3.716) & 14 & 14 \\
+Equity 2020 & equity & 104 & 4 & Filtered HS (-1.986) & Cond. EVT (-2.364) & 15 & 14 \\
+Rates 2022 & rates & 249 & 4 & EWMA (-3.811) & EWMA (-4.002) & 15 & 13 \\
+Mixed 2023 & mixed & 64 & 18 & GJR-t (-4.439) & GJR-t (-4.623) & 2 & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}

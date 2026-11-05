@@ -16,12 +16,18 @@ import pandas as pd
 from . import fits, ops, sgcd, shocks
 from .conv import REJECT_SHARE, impact_cutoff, parameters_block, sgcd_notice, t
 from . import data
+from ...core.text import number
 from .data import Frame
 
 GROUPS = {"seen": sgcd.SEEN_BATCHES, "held-out": sgcd.HELD_OUT_BATCHES}
 SHIPPED_SHOCKS = {"seen": ("F0", "F1", "F2", "F3"), "held-out": ("F0", "F4")}
 APPLIED_SHOCKS = {"seen": ("F0", "F1", "F2", "F3", "numeric-noise"), "held-out": ("F0", "F4", "numeric-noise")}
 N_CHECK_FEATURES = len(sgcd.feature_names())
+
+
+#: the design limit of the SGCD variants; the Spanish names the benchmark and the scoring in Spanish (U16-R3 c20 B7)
+SGCD_LIMIT = t("SGCD is a research benchmark and must not be used for real-world credit scoring; nothing here scores a person",
+               "SGCD es un conjunto de referencia de investigación y no debe usarse para la calificación de crédito real; nada aquí puntúa a una persona")
 
 
 def _levels(ref: pd.Series, cur: pd.Series) -> list[str]:
@@ -208,7 +214,16 @@ def build(frame: Frame, rungs: dict[str, Any], ds: sgcd.Dataset, codebook: dict[
                                       "label": t("Decisions that flip at the stated cut-off, largest over the applied shocks",
                                                  "Decisiones que cambian en el punto de corte indicado, la mayor entre los choques aplicados")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [fits.rung_id("P4-lightgbm", frame)],
-            "limits": [("sgcd-not-for-scoring", t("SGCD is a research benchmark and must not be used for real-world credit scoring; nothing here scores a person",
-                                                  "SGCD es un benchmark de investigación y no debe usarse para scoring de crédito real; nada aquí puntúa a una persona")),
-                       ("small-groups", t("Each shock row holds 30 to 90 records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
-                                         "Cada fila de choque tiene de 30 a 90 registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso"))]}
+            "limits": [("sgcd-not-for-scoring", SGCD_LIMIT),
+                       ("small-groups", small_groups_limit(shipped["rows"], applied["rows"]))]}
+
+
+def small_groups_limit(shipped: list[dict[str, Any]], applied: list[dict[str, Any]]) -> dict[str, str]:
+    """The limit of the small shock rows, with the record range of the document's own rows (U16-R5 c26 B2, ruling 9: a fixed "30 to 90
+    records" sat beside a row of 27; m5 the held-out rows hold 60 and 90)."""
+    sizes = [int(r["n_records"]) for r in [*shipped, *applied]]
+    lo, hi = min(sizes), max(sizes)
+    span = {lang: (number(hi, lang=lang) if lo == hi else f"{number(lo, lang=lang)} {'to' if lang == 'en' else 'a'} {number(hi, lang=lang)}")
+            for lang in ("en", "es")}
+    return t(f"Each shock row holds {span['en']} records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
+             f"Cada fila de choque tiene {'' if lo == hi else 'de '}{span['es']} registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso")

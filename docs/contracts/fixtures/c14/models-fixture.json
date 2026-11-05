@@ -507,7 +507,10 @@
       "flattener_long": -0.6,
       "short_form": "exp(-t_k / x)",
       "long_form": "1 - exp(-t_k / x)",
-      "reference": "SRP31.91 to SRP31.92"
+      "reference": {
+        "en": "SRP31.91 to SRP31.92",
+        "es": "SRP31.91 a SRP31.92"
+      }
     },
     "nmd_caps": [
       {

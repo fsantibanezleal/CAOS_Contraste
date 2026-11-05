@@ -162,6 +162,6 @@ def transfer_block(fits: dict[str, Fit], fit: Fit) -> dict[str, Any]:
             for j in range(1, 6):
                 g = fits[f"h{j}"]
                 p = fit.rungs[rid].pd(fit.pp.transform(g.X.iloc[g.sp.holdout]))
-                cells.append({"rung": cv.RUNG_CODE[rid], "fitted_on_years": fit.years, "scored_on_years": j,
+                cells.append({"rung": cv.RUNG_CODE[rid], "model_id": rid, "fitted_on_years": fit.years, "scored_on_years": j,
                               "auc": disc.disc_auc(p, g.yhold).metric, "n": int(len(g.yhold)), "events": int(g.yhold.sum())})
     return {"label": "exploratory", "reason": cv.TRANSFER_REASON, "cells": cells}

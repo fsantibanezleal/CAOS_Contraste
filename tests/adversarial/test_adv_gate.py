@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from planting import NODE, NODE_MODULES, ROOT, link_node_modules, unlink_node_modules
+from product_planting import NODE, NODE_MODULES, ROOT, link_node_modules, unlink_node_modules
 
 # CONTRASTE_DIST names a built site elsewhere (the checked-out branch cannot build until the web reads the readiness)
 DIST = Path(os.environ.get("CONTRASTE_DIST", ROOT / "frontend" / "dist"))

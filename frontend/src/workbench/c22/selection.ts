@@ -41,14 +41,23 @@ export const COUNT_TESTS: Array<{ id: CountTest; label: Text; color: ShellColorT
 ];
 
 /** One colour per test, the same in every view. */
-/** The series colours of a chart, by position: seven hues, then the same hues dashed, so every curve of a panel can be
- * told apart (keyed by test, several tests shared the accent). */
+/** The series colours of a chart, by position: seven hues, then the same hues in a dash-dot, so every curve of a panel can be
+ * told apart (keyed by test, several tests shared the accent); the dash-dot is not the plain dash of an exact curve, which the
+ * notes call "dashed" (U16-R5 c29 N2). */
 const PALETTE: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-accent-2', '--color-fg'];
 export function seriesStyle(i: number): { color: ShellColorToken; dash?: number[] } {
-  return { color: PALETTE[i % PALETTE.length], dash: i >= PALETTE.length ? [8, 3] : undefined };
+  return { color: PALETTE[i % PALETTE.length], dash: i >= PALETTE.length ? [10, 3, 2, 3] : undefined };
 }
 
 export const rule = (level: number) => `p<${level}`;
+
+/** The engine's documented excess of a simulation (a size above its bound that the engine's own page states), or null:
+ * only the simulations of the engine's named studies carry one (U16-P2). */
+export const excessOf = (s: C22Simulation) => s.study?.excess ?? null;
+
+/** The row key a simulation of a study has in the detection matrix: its key without the variant's suffix (`@null`, `@d1`),
+ * so a test with several studies keeps one row per study. */
+export const rowKeyOf = (s: C22Simulation) => s.key.slice(0, s.key.indexOf('@'));
 
 /** The rate of a simulation at the selected level (or a named rule), and its exact value where one exists. */
 export function rateOf(s: C22Simulation, ruleKey: string) {

@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The liquidity validation tests run on the five path and formula variants of Silicon Valley Bank: the light (G green, A amber, R red, n/e not evaluated, a dash where the test does not apply to the variant) and, in parentheses, the statistic; the run-off adequacy row is the ratio of modelled to realised cumulative outflow at the two-day event horizon against the 85 per cent of the board review.}
+\label{tab:alm-c16-battery}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Test & \shortstack{LCR standard\\run-off} & LiST Adverse & LiST Extreme & 2023 fast run & \shortstack{HTM losses in\\the CBC} \\
+\midrule
+Printed compounding example (absolute deviation) & \relax G ($3.66\times10^{-7}$) & \relax G ($3.66\times10^{-7}$) & \relax G ($3.66\times10^{-7}$) & \relax G ($3.66\times10^{-7}$) & \relax G ($3.66\times10^{-7}$) \\
+Nine haircut cases (largest deviation) & \relax G (0) & \relax G (0) & \relax G (0) & \relax G (0) & \relax G (0) \\
+Net liquidity position identity (residual) & -- & \relax G (0) & \relax G (0) & \relax G (0) & \relax G (0) \\
+Survival monotone in severity (largest increase, days) & -- & -- & \relax G (0) & -- & -- \\
+Cliff effect (share of assets) & -- & \relax A ($-$0.0222) & \relax A ($-$0.0298) & \relax n/e & \relax A ($-$0.0222) \\
+Modelled over realised outflow, board share & \relax A (0.506) & \relax R (0.108) & \relax R (0.115) & \relax R (0.201) & \relax R (0.108) \\
+Held-to-maturity loss lowers the capacity (USD thousands) & -- & -- & -- & -- & \relax G ($1.45\times10^{7}$) \\
+Revaluation against reported fair value & -- & -- & -- & -- & \relax R (0.282) \\
+Run-off against generator truth (largest z) & -- & -- & -- & \relax G (0.537) & -- \\
+Survival monotone in uninsured share (days) & -- & \relax G (0) & -- & -- & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

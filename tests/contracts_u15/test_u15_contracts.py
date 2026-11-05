@@ -533,10 +533,12 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
     assert len(block["rows"]) == len(default["tests"]) == sum(rep["test_counts"].values())
     for row in block["rows"]:
         p = row["policy"]
-        assert p["source"] in ("packaged-policy", "inline-battery", "unresolved")
+        assert p["source"] in ("packaged-policy", "packaged-policy-overridden", "inline-battery", "unresolved")
         if p["source"] == "unresolved":
             assert p["reason"]
-    assert any(r["policy"]["source"] == "inline-battery" and r["policy"]["parameters"] for r in block["rows"])
+    # the 1.0 documents carry packaged battery labels (contraste-<battery> X.Y.Z): the cut points are the committed policy file's entry
+    assert any(r["policy"]["source"] == "packaged-policy" and r["policy"]["label"].startswith("contraste-") and r["policy"]["parameters"]
+               for r in block["rows"])
     decisions = ex["cases"]["C07"]["spec_decisions"]
     assert re.fullmatch(r"[0-9a-f]{40}", ex["engine_commit"])
     for row in block["rows"]:
@@ -544,7 +546,10 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
         assert p["kind"] == decisions[row["test_id"]]                                  # spec(test_id).decision, None where unregistered
         assert (p["kind"] is None) == (p["kind_reason"] is not None)
         if p["source"] == "inline-battery":
-            assert p["direction"] is None and p["direction_reason"] == "no policy file (BL-085)"
+            assert p["direction"] is None and p["direction_reason"] == "no policy file for an inline battery string"
+        if p["source"] == "packaged-policy" and p["label"].startswith("contraste-"):
+            assert re.fullmatch(r"contraste-[a-z0-9-]+ \d+\.\d+\.\d+", p["label"]) and p["version"] == p["label"].rsplit(" ", 1)[1]
+            assert (p["direction"] is None) == (p["direction_reason"] is not None)
 
 
 # --- the appetite ------------------------------------------------------------------------------------------------------------------------
@@ -574,14 +579,14 @@ def test_the_appetite_recomputes_from_the_inventory_and_the_register() -> None:
     high = [r for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")]
     over = [r for r in rows if r["overdue"]]
     distinct = lambda rs: len({(r["entry_key"], r["id"]) for r in rs})   # noqa: E731
-    assert m["open-high-severity"]["numerator"] == distinct(high) == 4 and m["open-high-severity"]["register_rows"] == len(high) == 8
+    assert m["open-high-severity"]["numerator"] == distinct(high) == 5 and m["open-high-severity"]["register_rows"] == len(high) == 9
     assert m["overdue-remediation"]["numerator"] == distinct(over) == 3 and m["overdue-remediation"]["register_rows"] == len(over) == 7
-    assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 39
+    assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 42
     assert all(m[k]["register_rows"] is None for k in m if k not in ("open-high-severity", "overdue-remediation"))
     assert m["entries-under-exception"]["numerator"] == sum(1 for e in inv["entries"] if e["lifecycle"]["exception"])
     assert m["entries-in-breach"]["numerator"] == sum(1 for e in inv["entries"] if e["attributes"]["A36"]["value"]["red"] > 0)
     assert m["pma-magnitude"]["value"] == pytest.approx(324129997.0 / 97592002519.53)
-    assert app["population"] == {"entries": 4, "findings": len(rows), "distinct_findings": 39, "tier1_entries": 2}
+    assert app["population"] == {"entries": 4, "findings": len(rows), "distinct_findings": 42, "tier1_entries": 2}
 
 
 # --- the planted defects: each refused by the layer the table names ---------------------------------------------------------------------
@@ -1134,6 +1139,7 @@ API_MODULES: dict[str, list[str]] = {
     "appetite": ["light", "tier1_validated_on_time", "open_high_severity", "overdue_remediation", "entries_under_exception",
                  "entries_in_breach", "pma_magnitude", "owner_and_complete_record", "appetite_metrics", "appetite_population"],
     "policy": ["resolve_policy"],
+    "reasons": ["codes", "code_of", "bilingual"],
     "report": ["executive_counts", "build_report"],
 }
 VALIDATION = ["inventory_completeness", "findings_overdue", "validation_due", "tier_override_documented", "edges_acyclic"]
@@ -1158,7 +1164,7 @@ def api_sections() -> dict[str, str]:
 
 def test_the_engine_contract_exists_with_its_header() -> None:
     text = API.read_text(encoding="utf-8")
-    assert text.startswith("# Engine governance API contract: `engine-governance-api` 1.0.0")
+    assert text.startswith("# Engine governance API contract: `engine-governance-api` 1.1.0")
     for word in ("Owner: U15-S", "Changing a signature, a unit or a golden value is a breaking change", "Reused engine functions", "Conventions (all functions)"):
         assert word in text, word
 
@@ -1371,7 +1377,7 @@ def test_golden_the_policy_identity_of_a_test_row() -> None:
     assert "riskvalidation-default 2026.10.1" in body and "packaged-policy" in body
     assert "contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0" in body and "inline-battery" in body
     assert "unresolved" in body and "reason" in body
-    assert "spec(test_id).decision" in body and "no policy file (BL-085)" in body and "pd.jeffreys" in body and "kind `p_value`" in body
+    assert "spec(test_id).decision" in body and "no policy file for an inline battery string" in body and "pd.jeffreys" in body and "kind `p_value`" in body
 
 
 def test_golden_the_appetite_light_rule_and_the_scope_profiles() -> None:
@@ -1424,7 +1430,7 @@ def test_golden_the_register_report_and_appetite_numbers_of_the_contract_equal_t
     body = _golden_text("findings.register_counts")
     assert f"total {c['total']}" in body and f"overdue {c['overdue']}" in body
     assert all(f"{s} {n}" in body for s, n in c["by_severity"].items())
-    assert "open 49, validated_closed 4, risk_accepted 28" in body and c["by_status"]["open"] == 49
+    assert "open 50, validated_closed 4, risk_accepted 30" in body and c["by_status"]["open"] == 50
     counts = rep["test_counts"]
     assert json.dumps(counts) in _golden_text("report.executive_counts").replace("'", '"') or str(counts).replace("'", '"') in         _golden_text("report.executive_counts")
     m = {x["id"]: x for x in app["metrics"]}

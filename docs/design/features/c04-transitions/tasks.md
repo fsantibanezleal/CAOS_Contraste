@@ -23,3 +23,7 @@ function floors PDs; CAOS_RiskValidation#24), 0.4.2 (the MSE and RMSE with their
 coverage and overlap of the intervals, which C04 had computed itself; #27), 0.4.3 (a NaN rate passed `RatingPaths`'
 checks and made a draw run without end; the order test's form measured on three chains; #30); in this repository,
 C01's TabPFN weights loaded from the home directory because the cache setting came after the import.
+
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `c04-transitions`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).

@@ -21,4 +21,5 @@ def test_the_labels_of_the_capital_start_and_the_headline_are_stated(built) -> N
         head = next(f for f in built.variants[vid]["findings"] if f["id"] == "headline-simple-sum")
         for text in (head["title"], o["headline_cet1"]["statement"]):
             assert "fail their own" in text["en"] and "back-cast" in text["en"]
-            assert "falla" in text["es"].lower() and "back-cast" in text["es"].lower() or "retrospectiv" in text["es"].lower()
+            # the Spanish names the back-cast in Spanish (U16-R3 c19 B3, ruling of 2026-10-27: no English technical word in Spanish)
+            assert "falla" in text["es"].lower() and "retroproyecci" in text["es"].lower() and "back-cast" not in text["es"].lower()

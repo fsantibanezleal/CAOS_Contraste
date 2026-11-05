@@ -1,4 +1,4 @@
-"""CT-907: the six rungs, their range, the beta rung's epsilons and the rung that cannot be fitted."""
+"""CT-907 and S-5: the eight rungs, their range, the beta rung's epsilons and the rung that cannot be fitted."""
 from __future__ import annotations
 
 import numpy as np
@@ -8,7 +8,8 @@ from c08_helpers import range_findings
 from pipeline.cases.c08 import cutoff as C
 from pipeline.cases.c08.ladder import EPSILONS, RUNGS, fit_ladder
 
-RUNG_IDS = ["L1-ols", "L2-fractional-logit", "L3-beta", "L4-hurdle", "L5-gradient-boosted", "L6-tobit"]
+RUNG_IDS = ["L1-ols", "L2-fractional-logit", "L3-beta", "L4-hurdle", "L5-gradient-boosted", "L6-tobit",
+            "L7-random-forest", "L8-neural-network"]
 
 
 @pytest.fixture(scope="module")

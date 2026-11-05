@@ -8,10 +8,11 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard, type Bi } from '../c03/U6Shared';
-import { C10TestsTable, IllustrativeNotice } from './C10Common';
+import { noteText } from '../c08/notes';
+import { C10TestsTable, NoticeFlow } from './C10Common';
 import { barMin, fullMoney, moneyAxis } from './format';
 import {
-  ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
+  DIAGNOSTIC_TEXT, ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, referenceNote, rungOf, text, measureText,
   type C10Rung, type C10Sel,
 } from './selection';
 
@@ -49,7 +50,7 @@ function NoRung({ sel, reason }: { sel: C10Sel; reason: string }) {
       <PlotCard fill title={{ en: 'The loss distribution of this rung', es: 'La distribución de pérdidas de este escalón' }} {...card}>
         <p className="caos-pending" data-state="unavailable">
           {pick({ en: 'This rung did not run, so it draws no distribution and shows no number. Why: ', es: 'Este escalón no corrió, así que no dibuja distribución ni muestra número. Motivo: ' }, lang)}
-          {reason}
+          {noteText(reason, lang)}
         </p>
       </PlotCard>
     </ViewsRow>
@@ -68,7 +69,10 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
   const lhp = rung.id === 'c1-lhp' ? undefined : rungOf(o, 'c1-lhp');
   const overlay = lhp?.evaluated && lhp.distribution ? lhp.distribution : null;
   const d = rung.distribution;
-  const grid = unionX(d.loss, overlay?.loss ?? []);
+  // the axis spans the rung in focus: the LHP overlay is drawn only where this rung has support, so a narrow rung is not squeezed into a tenth of the plot (U16-R2 b05 m1)
+  const own0 = d.loss[0] ?? 0;
+  const own1 = d.loss[d.loss.length - 1] ?? 0;
+  const grid = unionX(d.loss, (overlay?.loss ?? []).filter((x) => x >= own0 && x <= own1));
   const { div, unit } = moneyAxis(grid[grid.length - 1] ?? 0, ccy);
   const own = alignTo(d.loss, d.density, grid).map((v) => (v === null ? null : v * div));
   const lhpLine = overlay ? alignTo(overlay.loss, overlay.density, grid).map((v) => (v === null ? null : v * div)) : null;
@@ -95,7 +99,7 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
           es: `${rung.label.es}: la densidad de la pérdida de la cartera en un año en ${unit.es}, con la pérdida esperada, el VaR y el déficit esperado al ${lv.es} marcados y, para un escalón muestreado, su error estándar de Monte Carlo. La curva punteada es la cartera homogénea grande del primer escalón: la aproximación infinitamente granular, que no tiene concentración por nombre, nunca la distribución de pérdidas verdadera de esta cartera.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -124,7 +128,7 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
               {m && m.es === null ? (
                 <tr data-marker="es" data-na="true">
                   <td className="ct-text">{pick({ en: 'Expected shortfall', es: 'Déficit esperado' }, lang)}</td>
-                  <td colSpan={2}>{`${formatNumber(null, lang)} (${m.es_reason ?? ''})`}</td>
+                  <td colSpan={2}>{`${formatNumber(null, lang)} (${noteText(m.es_reason, lang)})`}</td>
                 </tr>
               ) : (
                 row('es', { en: 'Expected shortfall', es: 'Déficit esperado' }, m?.es ?? null, m?.es_se)
@@ -145,6 +149,7 @@ export function LossView({ sel }: { sel: C10Sel | null }) {
               : pick({ en: 'An analytic rung: no scenarios, no sampling error.', es: 'Un escalón analítico: sin escenarios y sin error de muestreo.' }, lang)}
           </p>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -162,7 +167,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
   const { div, unit } = moneyAxis(Math.max(0, ...vars), ccy);
   const data = o.rungs.map((r) => {
     const m = measureOf(r, sel.level);
-    return { id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: m ? m.var / div : null, tone: 'accent' as const, highlight: r.id === sel.rung, hint: r.evaluated ? undefined : { en: r.reason ?? '', es: r.reason ?? '' } };
+    return { id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: m ? m.var / div : null, tone: 'accent' as const, highlight: r.id === sel.rung, hint: r.evaluated ? undefined : { en: noteText(r.reason, 'en'), es: noteText(r.reason, 'es') } };
   });
   return (
     <ViewsRow>
@@ -175,7 +180,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
           es: `El VaR al ${lv.es} de la misma cartera ilustrativa con cada modelo de la escalera, en ${unit.es}. La pérdida esperada es la misma en todos; lo que cambia es la cola: las cópulas agregan dependencia, CreditRisk+ un factor Gamma, el ajuste de granularidad la concentración por nombre que la cartera infinitamente granular omite. Un escalón que no corrió dice por qué y no tiene barra.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: `VaR at ${lv.en} by rung`, es: `VaR al ${lv.es} por escalón` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: `VaR (${unit.en})`, es: `VaR (${unit.es})` }, format: { decimals: div > 1 ? 2 : 0 } }} />}
@@ -208,7 +213,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
                         <td>{m.var_se === null ? none : fullMoney(m.var_se, lang)}</td>
                         <td className="ct-wide-only">{m.es_se === null ? none : fullMoney(m.es_se, lang)}</td>
                         <td className="ct-text ct-wide-only">
-                          {[pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang), r.simulation ? `${count(r.simulation.n_scenarios, lang)} ${pick({ en: 'scenarios', es: 'escenarios' }, lang)}` : null, ...r.diagnostics.map((x) => `${x.name} ${formatNumber(x.value, lang, { digits: 4 })} ${x.unit}`)].filter(Boolean).join('; ')}
+                          {[pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang), r.simulation ? `${count(r.simulation.n_scenarios, lang)} ${pick({ en: 'scenarios', es: 'escenarios' }, lang)}` : null, ...r.diagnostics.map((x) => measureText(DIAGNOSTIC_TEXT, x.name, x.value, x.unit, lang))].filter(Boolean).join('; ')}
                         </td>
                       </>
                     ) : (
@@ -228,7 +233,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
             .map((r) => (
               <p key={`es-${r.id}`} className="ct-note" data-state="unavailable" data-es-reason={r.id}>
                 <strong>{pick(r.label, lang)}</strong>
-                {`: ${pick({ en: 'no expected shortfall. Why: ', es: 'sin déficit esperado. Motivo: ' }, lang)}${measureOf(r, sel.level)?.es_reason ?? ''}`}
+                {`: ${pick({ en: 'no expected shortfall. Why: ', es: 'sin déficit esperado. Motivo: ' }, lang)}${noteText(measureOf(r, sel.level)?.es_reason, lang)}`}
               </p>
             ))}
           {o.rungs
@@ -236,11 +241,12 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
             .map((r) => (
               <p key={r.id} className="ct-note" data-state="unavailable" data-rung-reason={r.id}>
                 <strong>{pick(r.label, lang)}</strong>
-                {`: ${pick({ en: 'did not run, so it has no number. Why: ', es: 'no corrió, así que no tiene número. Motivo: ' }, lang)}${r.reason ?? ''}`}
+                {`: ${pick({ en: 'did not run, so it has no number. Why: ', es: 'no corrió, así que no tiene número. Motivo: ' }, lang)}${noteText(r.reason, lang)}`}
               </p>
             ))}
           <C10TestsTable variant={sel.data.variant} only={(t) => t.test_id === 'portfolio.mc_convergence' || t.test_id === 'portfolio.crp_recursion_vs_mc'} />
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -285,7 +291,7 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
           es: `La contribución de Euler de cada grupo de la cartera ilustrativa al VaR y al déficit esperado al ${lv.es}, del escalón ${method.es}: la pérdida esperada del grupo dado que la cartera está en el VaR, o más allá. Suman el total. La parte de un grupo en la cola puede estar lejos de su parte en la exposición.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         {own ? null : (
           <p className="ct-note" data-state="fallback">
             {pick({ en: 'The rung in focus carries no Euler contributions (only the sampled rungs do); this view shows the first rung that does.', es: 'El escalón en foco no trae contribuciones de Euler (solo los escalones muestreados); esta vista muestra el primero que las trae.' }, lang)}
@@ -350,10 +356,11 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
               )}
             </p>
           ) : (
-            <p className="ct-note" data-state="unavailable">{`${pick({ en: 'No asymptotic anchor for this rung. Why: ', es: 'Sin ancla asintótica para este escalón. Motivo: ' }, lang)}${lvl.anchor_reason ?? ''}`}</p>
+            <p className="ct-note" data-state="unavailable">{`${pick({ en: 'No asymptotic anchor for this rung. Why: ', es: 'Sin ancla asintótica para este escalón. Motivo: ' }, lang)}${noteText(lvl.anchor_reason, lang)}`}</p>
           )}
           <C10TestsTable variant={sel.data.variant} only={(t) => t.test_id === 'portfolio.euler_additivity'} />
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -387,7 +394,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
           es: `El ajuste de granularidad de Gordy y Lutkebohmert se suma al VaR de la cartera infinitamente granular y es una parte de la EAD. La curva es el ajuste de n nombres idénticos de la mezcla de la cartera al ${lv.es}: cae como 1 sobre n, y la recursión de CreditRisk+ del mismo modelo de un factor se dibuja al lado como verificación. Un punto para el que no se corrió la recursión no tiene verificación y dice por qué.`,
         }}
       >
-        <IllustrativeNotice notice={o.portfolio.notice} />
+        <NoticeFlow notice={o.portfolio.notice}>
         <ChartOverTable
           chart={
             <UPlotChart
@@ -396,7 +403,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
               y={{ label: { en: 'Adjustment, share of the EAD', es: 'Ajuste, parte de la EAD' }, format: { percent: true, decimals: 2 } }}
               series={[
                 { label: { en: 'Granularity adjustment', es: 'Ajuste de granularidad' }, values: rows.map((r) => r.ga), color: '--color-accent', width: 2.4 },
-                { label: { en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, values: rows.map((r) => r.truth_ga), color: '--color-magenta', mode: 'points', size: 9 },
+                ...(rows.some((r) => r.truth_ga !== null) ? [{ label: { en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, values: rows.map((r) => r.truth_ga), color: '--color-magenta' as const, mode: 'points' as const, size: 9 }] : []),
               ]}
             />
           }
@@ -416,7 +423,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
                   <td>{count(r.n_names, lang)}</td>
                   <td className="ct-wide-only">{formatNumber(r.hhi, lang, { digits: 3 })}</td>
                   <td>{p(r.ga, 4)}</td>
-                  <td data-na={r.truth_ga === null ? 'true' : undefined} title={r.truth_ga === null ? (r.truth_reason ?? undefined) : undefined}>{r.truth_ga === null ? formatNumber(null, lang) : p(r.truth_ga, 4)}</td>
+                  <td data-na={r.truth_ga === null ? 'true' : undefined} title={r.truth_ga === null ? (noteText(r.truth_reason, lang) || undefined) : undefined}>{r.truth_ga === null ? formatNumber(null, lang) : p(r.truth_ga, 4)}</td>
                 </tr>
               ))}
             </tbody>
@@ -426,7 +433,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Level', es: 'Nivel' }, lang)}</th>
                 <th>{pick({ en: 'Gamma quantile', es: 'Cuantil Gamma' }, lang)}</th>
-                <th>delta</th>
+                <th>δ</th>
                 <th>{pick({ en: 'Adjustment, share of the EAD', es: 'Ajuste, parte de la EAD' }, lang)}</th>
                 <th>{pick({ en: `Adjustment, ${gr.currency}`, es: `Ajuste, ${gr.currency}` }, lang)}</th>
               </tr>
@@ -445,19 +452,20 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
           </table>
           {truthGaps(rows).map(([reason, group]) => (
             <p key={reason} className="ct-note" data-state="unavailable" data-names-reason={group.map((r) => r.n_names).join(',')}>
-              {`${group.map((r) => count(r.n_names, lang)).join(', ')} ${pick({ en: 'names, no recursion check. Why: ', es: 'nombres, sin verificación por recursión. Motivo: ' }, lang)}${reason}`}
+              {`${group.map((r) => count(r.n_names, lang)).join(', ')} ${pick({ en: 'names, no recursion check. Why: ', es: 'nombres, sin verificación por recursión. Motivo: ' }, lang)}${noteText(reason, lang)}`}
             </p>
           ))}
           <p className="ct-note" data-ga="parameters">
             {pick(
               {
-                en: `Gamma factor with shape and rate ${formatNumber(gr.xi, 'en', { digits: 3 })}, loss-given-default dispersion ${formatNumber(gr.gamma, 'en', { digits: 3 })}, portfolio capital K* ${p(gr.k_star, 3)} from the IRB formula at the regulatory correlation. Reference value: delta ${formatNumber(gr.delta_reference, 'en', { digits: 3 })} at xi 0.25 and level ${levelBi(0.999).en} (${gr.delta_reference_source}).`,
-                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: delta ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con xi 0,25 y nivel ${levelBi(0.999).es} (${gr.delta_reference_source}).`,
+                en: `Gamma factor with shape and rate ${formatNumber(gr.xi, 'en', { digits: 3 })}, loss-given-default dispersion ${formatNumber(gr.gamma, 'en', { digits: 3 })}, portfolio capital K* ${p(gr.k_star, 3)} from the IRB formula at the regulatory correlation. Reference value: δ ${formatNumber(gr.delta_reference, 'en', { digits: 3 })} at ξ 0.25 and level ${levelBi(0.999).en} (${gr.delta_reference_source}).`,
+                es: `Factor Gamma con forma y tasa ${formatNumber(gr.xi, 'es', { digits: 3 })}, dispersión de la pérdida dado el incumplimiento ${formatNumber(gr.gamma, 'es', { digits: 3 })}, capital de la cartera K* ${p(gr.k_star, 3)} con la fórmula IRB a la correlación regulatoria. Valor de referencia: δ ${formatNumber(gr.delta_reference, 'es', { digits: 3 })} con ξ 0,25 y nivel ${levelBi(0.999).es} (${referenceNote(gr.delta_reference_source, 'es')}).`,
               },
               lang,
             )}
           </p>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );

@@ -25,6 +25,7 @@ import numpy as np
 from riskvalidation.market import scoring as rv_scoring
 
 from . import portfolio as pf
+from . import quantile_net as qn
 from .constants import LEVELS, SPAN, Window
 from .forecast import SPEC_BY_ID, Hyper, run_model
 from .readers import Series
@@ -106,3 +107,47 @@ def select(series: dict[str, Series], base: Hyper | None = None, workers: int = 
 
 def dumps(record: dict) -> str:
     return json.dumps(record, indent=1, sort_keys=True) + "\n"
+
+
+# ------------------------------------------------------------------------------------------------------------------- the R10 network
+
+#: the network's two hyperparameters that change what it can fit, chosen the same way as the others: on the span, one at a time, by the
+#: lowest summed average FZ0 of the rolling one-step forecasts of the network itself; the epochs, the learning rate, the number of starts
+#: and the refit frequency are fixed by the compute budget and not tuned (S-1 of the method tiers)
+NET_GRID = {"hidden_units": (4, 8, 16), "weight_decay": (1e-3, 1e-2, 1e-1)}
+
+
+def _score_net(args: tuple) -> tuple[str, float, str, float]:
+    name, value, cls, y, idx, hp, base = args
+    pos = idx[::STRIDE]
+    net = replace(base, **{name: value}, refit_every_days=max(1, base.refit_every_days // STRIDE))
+    run = run_model(SPEC_BY_ID["nn-fz"], y, pos, hp, net=net)
+    total = 0.0
+    for a in LEVELS:
+        v, e = run.var[a], run.es[a]
+        if not np.isfinite(e).all():
+            total += 1e6
+            continue
+        total += rv_scoring.mean_scores(y[pos], v, e, a).fz0_mean
+    return name, value, cls, float(total)
+
+
+def select_net(series: dict[str, Series], hp: Hyper, base: qn.NetHyper = qn.NET, workers: int = 1, log=print) -> tuple[qn.NetHyper, dict]:
+    """Choose the network's hidden units and weight decay on the span (the series cut at its end); return them and the full record."""
+    data = span_portfolios(series)
+    tasks = [(n, v, cls, data[cls][0], data[cls][1], hp, base) for n, grid in NET_GRID.items() for v in grid for cls in data]
+    if workers <= 1:
+        results = [_score_net(t) for t in tasks]
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            results = list(pool.map(_score_net, tasks))
+    record: dict = {"span": list(SPAN), "stride": STRIDE, "series": list(SERIES_CLASSES), "base": base.to_json(), "grid": {}, "selected": {}}
+    chosen = {}
+    for name, grid in NET_GRID.items():
+        scores = {v: sum(r[3] for r in results if r[0] == name and r[1] == v) for v in grid}
+        best = min(grid, key=lambda v: (scores[v], grid.index(v)))
+        chosen[name] = best
+        record["grid"][name] = {"model": "nn-fz", "candidates": [{"value": v, "score": scores[v]} for v in grid]}
+        record["selected"][name] = best
+        log(f"  network {name}: {best} among {dict(scores)}")
+    return replace(base, **chosen), record

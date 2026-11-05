@@ -6,6 +6,12 @@ import type { ReactNode } from 'react';
 import { C01WriteUp } from '../content/cases/C01';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
+import { engineText, licenceParts, licenceText } from './c01Text';
+import { CONTRACT_RULES, inputName, ruleNames } from './names';
+
+/** A rung's title with its input named (the documents of the U8 bake write "Single variable (PAY_0)"; the producer names it from the
+ * re-bake on, and this leaves a named title as it is; R3 c01 B2, B4). */
+const rungTitle = (t: BiText, lang: 'en' | 'es'): string => ruleNames(pick(t, lang), lang);
 
 const WRITE_UPS: Record<string, () => ReactNode> = { C01: () => <C01WriteUp /> };
 
@@ -15,6 +21,9 @@ const CLASS_TEXT: Record<string, BiText> = {
   'link-only': { en: 'link-only: linked, never read', es: 'solo enlace: enlazada, nunca leída' },
   unusable: { en: 'unusable: the terms forbid this use', es: 'inutilizable: los términos prohíben este uso' },
 };
+
+/** The licence class after the licence: it starts a sentence when the licence ends with a full stop (R4 c01 n4). */
+const classAfter = (licence: string, text: string): string => (/\.\s*$/.test(licence) ? text.charAt(0).toUpperCase() + text.slice(1) : text);
 
 const TRUTH_TEXT: Record<string, BiText> = {
   'real-outcomes': { en: 'real outcomes', es: 'resultados reales' },
@@ -41,7 +50,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
             <tr>
               <th className="caos-col-text">{pick({ en: 'Source', es: 'Fuente' }, lang)}</th>
               <th className="caos-col-text">{pick({ en: 'Licence and class', es: 'Licencia y clase' }, lang)}</th>
-              <th className="caos-col-text">{pick({ en: 'Attribution', es: 'Atribución' }, lang)}</th>
+              <th className="caos-col-text">{pick({ en: 'Attribution', es: 'Atribución (texto exigido por la fuente, en su idioma)' }, lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -56,7 +65,15 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                     ({s?.publisher})
                   </td>
                   <td className="caos-col-text">
-                    <span translate="no">{s?.licence}</span> <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
+                    {s && lang === 'es' && licenceText(id, s.licence, 'es') !== s.licence ? (
+                      // the Spanish gloss is read as Spanish; the licence's own name, with its version, is not translated
+                      (() => {
+                        const [before, name, after] = licenceParts(licenceText(id, s.licence, 'es'));
+                        return <span>{before}{name ? <span translate="no">{name}</span> : null}{after}</span>;
+                      })()
+                    ) : (
+                      <span translate="no">{s ? s.licence : ''}</span>
+                    )}{' '}<em>{s ? classAfter(s.licence, pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)) : ''}</em>
                   </td>
                   {/* the source's required wording, verbatim in its own language */}
                   <td className="caos-col-text" translate="no" lang="en">
@@ -82,9 +99,9 @@ export function ContextView({ sel }: { sel: Selection | null }) {
             {sel.data.models.model.map((r) => (
               <tr key={r.id} data-rung={r.id}>
                 <td>{pick(r.short_title, lang)}</td>
-                <td className="caos-col-text">{pick(r.title, lang)}</td>
+                <td className="caos-col-text">{rungTitle(r.title, lang)}</td>
                 <td className="caos-col-text">
-                  {r.engine}
+                  {engineText(r.engine, lang)}
                   {r.engine_version !== 'n/a' ? `, ${r.engine_version}` : ''}
                 </td>
                 <td className="caos-col-text" translate="no">
@@ -121,7 +138,7 @@ export function ContextView({ sel }: { sel: Selection | null }) {
         <table className="caos-table">
           <thead>
             <tr>
-              <th>{pick({ en: 'Slice', es: 'Tramo' }, lang)}</th>
+              <th>{pick({ en: 'Slice', es: 'Partición' }, lang)}</th>
               <th>N</th>
               <th>{pick({ en: 'Defaults', es: 'Incumplimientos' }, lang)}</th>
               <th>{pick({ en: 'Default rate', es: 'Tasa' }, lang)}</th>
@@ -144,13 +161,26 @@ export function ContextView({ sel }: { sel: Selection | null }) {
             ))}
           </tbody>
         </table>
+        {fit.train_rows < fit.split.train.n ? (
+          // the models of a variant fitted on fewer rows than the training split (small-sample; R3 c02 m8)
+          <p className="ct-note" data-train-rows={fit.train_rows}>
+            {pick(
+              {
+                en: `The models of this variant were fitted on ${formatNumber(fit.train_rows, 'en')} of the ${formatNumber(fit.split.train.n, 'en')} training rows.`,
+                es: `Los modelos de esta variante se ajustaron con ${formatNumber(fit.train_rows, 'es')} de las ${formatNumber(fit.split.train.n, 'es')} filas de entrenamiento.`,
+              },
+              lang,
+            )}
+          </p>
+        ) : null}
         <p className="ct-note">
           {Object.entries(m.contract)
             .map(([src, c]) =>
               pick(
                 {
-                  en: `${src}: ${formatNumber(c.counts.input, 'en')} records, ${formatNumber(c.counts.accepted, 'en')} accepted, ${formatNumber(c.counts.rejected, 'en')} rejected, ${formatNumber(c.counts.flagged, 'en')} flags (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'en')}`).join(', ') || 'none'}); not used: ${c.ignored_columns.join(', ') || 'nothing'}.`,
-                  es: `${src}: ${formatNumber(c.counts.input, 'es')} registros, ${formatNumber(c.counts.accepted, 'es')} aceptados, ${formatNumber(c.counts.rejected, 'es')} rechazados, ${formatNumber(c.counts.flagged, 'es')} marcas (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${r} ${formatNumber(n, 'es')}`).join(', ') || 'ninguna'}); sin usar: ${c.ignored_columns.join(', ') || 'nada'}.`,
+                  // the rules and the columns by name, never their ids (R3 c01 B1, B2, c02 B1, B2)
+                  en: `${m.source_details[src]?.name ?? src}: ${formatNumber(c.counts.input, 'en')} records, ${formatNumber(c.counts.accepted, 'en')} accepted, ${formatNumber(c.counts.rejected, 'en')} rejected, ${formatNumber(c.counts.flagged, 'en')} flags (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${formatNumber(n, 'en')} for ${CONTRACT_RULES[r]?.en ?? r}`).join('; ') || 'none'}); not used: ${c.ignored_columns.map((k) => inputName(k)?.en ?? k).join(', ') || 'nothing'}.`,
+                  es: `${m.source_details[src]?.name ?? src}: ${formatNumber(c.counts.input, 'es')} registros, ${formatNumber(c.counts.accepted, 'es')} aceptados, ${formatNumber(c.counts.rejected, 'es')} rechazados, ${formatNumber(c.counts.flagged, 'es')} marcas (${Object.entries(c.by_rule.flagged).map(([r, n]) => `${formatNumber(n, 'es')} por ${CONTRACT_RULES[r]?.es ?? r}`).join('; ') || 'ninguna'}); sin usar: ${c.ignored_columns.map((k) => inputName(k)?.es ?? k).join(', ') || 'nada'}.`,
                 },
                 lang,
               ),

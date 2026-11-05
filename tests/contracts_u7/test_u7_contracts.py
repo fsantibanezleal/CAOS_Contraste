@@ -763,7 +763,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == "1.0.0"
+        assert d["version"] == cs.latest_history_version(r[0]), r[0]  # the row agrees with its History (U16 bumps)
         assert d["status"] == "real"                         # the integrator set real when the bake landed (0.11.000)
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
@@ -778,7 +778,8 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns() -> None:
     # the fragment's version history, merged into the catalog's History at 0.11.000
     hist_text = catalog.split("## History", 1)[1]
     history = [row_cells(ln)[:2] for ln in hist_text.splitlines() if ln.startswith("| ") and row_cells(ln)[0] in ROW_IDS]
-    assert history == [[rid, "1.0.0"] for rid in ROW_IDS]
+    for rid in ROW_IDS:
+        assert [rid, "1.0.0"] in history, rid  # the fragment's first version; the bumps of U16 follow it
     assert "| api | 4.0.0 |" in hist_text
     schemas = {dict(zip(header, r))["schema file"] for r in data}
     for ref in EXPECTED:

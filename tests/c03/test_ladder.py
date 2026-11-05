@@ -20,7 +20,7 @@ def test_the_ladder_fits_the_existing_rungs_and_names_their_kinds(tables, fit_20
         p = rung.pd(probe)
         assert len(p) == len(probe) and (p > 0).all() and (p < 1).all(), f"{rid}: a PD is open (0, 1)"
     assert fit_2008.not_evaluated == {"P5-tabpfn": fit.TABPFN_REASON}
-    assert "not installed" in fit.TABPFN_REASON and "requirements-tabpfn.txt" in fit.TABPFN_REASON
+    assert "not installed" in fit.TABPFN_REASON and "optional extra" in fit.TABPFN_REASON  # the extra by name, no path (U16-R3 c04 m9)
     assert fit_2008.n_events > 0 and fit_2008.n_loans > fit_2008.n_events
 
 

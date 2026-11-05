@@ -10,9 +10,10 @@ rate is quoted from dossier 12.
 from __future__ import annotations
 
 import math
+import re
 import sys
+from decimal import ROUND_HALF_UP, Decimal
 import time
-import zlib
 from pathlib import Path
 from typing import Any
 
@@ -60,12 +61,45 @@ from riskvalidation.validation.rating_system import concentration
 
 from .. import __version__
 from ..core import expect as expectations
+from ..core import text as tx
 from ..core import lineage as lin
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import papers
 from ..io.formats import write_json
 from ..stages.export import write_artifact
-from .c01_ladder import _t, _v
+from . import c22_sequential as seq
+from . import c22_studies as cs
+from .c01_ladder import _t as _bi, _v
+
+_ES_PERCENT = re.compile(r"(\d)%")
+
+
+def _t(en: str, es: str) -> dict[str, str]:
+    """A bilingual text of the case: a Spanish percent takes the shell's no-break space ("al 5 %", U16-R5 c28 m2), as the studies'
+    texts do (c22_studies ``_forms``); the English keeps its form."""
+    return _bi(en, _ES_PERCENT.sub("\\1\u00a0%", es))
+
+
+def _num(x: float, lang: str) -> str:
+    """A setting of a scenario as Python's ``g`` writes it, in the language's form (U16-R5 c28: a blanket replace of the point wrote
+    "5,000 deudores" in Spanish)."""
+    decimals = len(f"{x:g}".partition(".")[2])
+    return tx.number(x, decimals, lang=lang)
+
+
+def _with(value: str, label: str) -> str:
+    """A value with the label it belongs to, never a parenthesis inside another (U16-R5 c29 m13: "14 % (Dynamic quantile test (250
+    days at 1%))")."""
+    return f"{value}, {label}" if "(" in label else f"{value} ({label})"
+
+
+def generator_titles(rows: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """The title of each generator model: the scenario of its first simulation, in words (U16-R5 c28 B1, ruling 8: a model named by
+    its configuration key, "port-5000-k1.5", in a finding is a raw id). The key stays the model's id."""
+    out: dict[str, dict[str, str]] = {}
+    for r in rows:
+        out.setdefault(r["generator"], dict(r["scenario"]))
+    return out
 
 CASE_ID = "C22"
 SOURCES = ("bcbs-wp14", "yurdakul-naranjo-2020")
@@ -124,7 +158,7 @@ TEST_LABEL: dict[str, dict[str, str]] = {
     "rating.time_homogeneity": _t("Time homogeneity (chi-square)", "Homogeneidad temporal (chi-cuadrado)"),
     "rating.markov_order": _t("Markov order (grouped by direction)", "Orden de Markov (agrupado por dirección)"),
     "rating.matrix_reference": _t("Matrix against a reference", "Matriz contra una referencia"),
-    "rating.momentum": _t("Downward momentum (hazard)", "Momentum a la baja (riesgo)"),
+    "rating.momentum": _t("Downward momentum (hazard)", "Impulso a la baja (riesgo)"),
 }
 
 _T0 = time.perf_counter()
@@ -136,12 +170,54 @@ def _log(msg: str) -> None:
 
 def _seed(case_seed: int, key: str) -> int:
     """A seed per simulation, a pure function of the case seed and the simulation's key."""
-    return int(np.random.SeedSequence([case_seed, zlib.crc32(key.encode("utf-8"))]).generate_state(1)[0])
+    return cs.derive_seed(case_seed, key)
 
 
 def _pct(x: float, decimals: int = 1) -> dict[str, str]:
-    en = f"{100 * x:.{decimals}f}%"
-    return _t(en, en.replace(".", ","))
+    """A share as a percent in both languages, rounded half up from its decimal value as the views round it (U16-R4 c27 m1: the
+    float format gave "1.32%" for 0.01325 where the views say 1.33 %), with the shell's forms (``pipeline.core.text``)."""
+    v = float((Decimal(repr(float(x))) * 100).quantize(Decimal(1).scaleb(-decimals), rounding=ROUND_HALF_UP))
+    return _t(tx.percent(v / 100, decimals, lang="en"), tx.percent(v / 100, decimals, lang="es"))
+
+
+def psi_rule_title(rule_rate: float, bench_rate: float, bench_within: bool) -> dict[str, str]:
+    """The F-PSI-RULE title from its numbers (U16-R4 c26 B1: it said the chi-square benchmark "controls the error" while its rate at 5%
+    exceeds its bound): the false-alarm rate of the 0.10 rule of thumb and the benchmark's rate at 5% against its bound."""
+    r, b = _pct(rule_rate), _pct(bench_rate)
+    side = ("within its bound", "dentro de su cota") if bench_within else ("above its bound at this size", "sobre su cota en este tamaño")
+    return _t(f"The PSI 0.10 rule of thumb raises a false alarm in {r['en']} of the samples of 100 where nothing changed; the chi-square "
+              f"benchmark is far closer to its level ({b['en']} at 5%, {side[0]})",
+              f"La regla empírica PSI 0,10 da una falsa alarma en el {r['es']} de las muestras de 100 en que nada cambió; la referencia "
+              f"chi-cuadrado queda mucho más cerca de su nivel ({b['es']} al 5{tx.NBSP}%, {side[1]})")
+
+
+def decay_title(power: float) -> dict[str, str]:
+    """The F-DECAY-POWER title with its rate (U16-R4 c26 n3: "rarely caught" for a power of 25 percent, one time in four)."""
+    p = _pct(power)
+    return _t(f"With 150 defaulters an AUC drop of two points is caught in {p['en']} of the samples, about one time in four: small portfolios "
+              "see only large decays",
+              f"Con 150 incumplidos una caída de dos puntos de AUC se detecta en el {p['es']} de las muestras, cerca de una vez en cuatro: las "
+              "carteras pequeñas solo ven deterioros grandes")
+
+
+def migration_title(power: float) -> dict[str, str]:
+    """The F-MIGRATION-POWER title with its rate (U16-R4 c26 n3: "unseen half the time" for a power of 55.5 percent, unseen 44.5)."""
+    miss = _pct(1.0 - power)
+    return _t("Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen in "
+              f"{miss['en']} of the samples with 500 obligors per grade",
+              "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa "
+              f"inadvertida en el {miss['es']} de las muestras con 500 deudores por grado")
+
+
+def mc_convergence_label(ex: dict[str, Any]) -> dict[str, str]:
+    """The impact label of the Monte Carlo convergence size: whether this run is above its bound (U16-R4 c27 n4: it said "the engine's
+    documented excess" beside a rate this run measures within its bound)."""
+    b = _pct(ex["bound"], 2)
+    if ex["exceeds"]:
+        return _t(f"Monte Carlo quantile convergence test: size at 1% (above its bound of {b['en']} in this run, as the engine documents)",
+                  f"Prueba de convergencia del cuantil Monte Carlo: tamaño al 1{tx.NBSP}% (sobre su cota de {b['es']} en esta corrida, como documenta el motor)")
+    return _t(f"Monte Carlo quantile convergence test: size at 1% (within its bound of {b['en']} in this run; the engine documents an excess)",
+              f"Prueba de convergencia del cuantil Monte Carlo: tamaño al 1{tx.NBSP}% (dentro de su cota de {b['es']} en esta corrida; el motor documenta un exceso)")
 
 
 class Book:
@@ -152,6 +228,8 @@ class Book:
         self.rows: list[dict[str, Any]] = []
         self.generators: dict[str, dict[str, Any]] = {}
         self.sims: dict[str, Any] = {}
+        #: the simulations of the engine's named studies, run before the variants (c22_studies.run_jobs)
+        self.study_runs: dict[tuple[str, str], Any] = {}
 
     def gen(self, ref: str, g: Any) -> str:
         if ref not in self.generators:
@@ -173,13 +251,41 @@ class Book:
             "key": key, "test_id": tid, "label": label or TEST_LABEL[tid], "scenario": scenario, "panel": panel,
             "severity": severity, "x": float(x), "rates": {r: v.to_dict() for r, v in sim.rates.items()},
             "exact": exact, "agrees": agree, "p_histogram": sim.p_histogram(20) if histogram else None,
-            "seed": seed, "n_rep": n_rep, "generator": gen_ref,
+            "seed": seed, "n_rep": n_rep, "generator": gen_ref, "study": None,
         })
         self.sims[key] = sim
         return sim
 
     def rate(self, key: str, rule: str = "p<0.05") -> float:
         return float(self.sims[key].rates[rule].rate)
+
+    def add_study(self, tid: str, index: int, study: Any, arm: str, *, key: str, severity: int, histogram: bool,
+                  departure: str) -> dict[str, Any]:
+        """One row from the engine's named study `tid` (its arm: `null` or `alternative`), run by c22_studies: C22 writes no
+        simulation of its own (ADR-0069). The rates are the study's at both levels first, then its own rule."""
+        sim = self.study_runs[(self.family, key)]
+        cs.require_defined(key, sim)
+        texts = cs.study_texts(study, index)
+        text = texts["null"] if arm == "null" else texts["alternative"]
+        rates = {r: v.to_dict() for r, v in cs.study_rates(sim).items()}
+        ref = f"{tid if index == 0 else f'{tid}#{index}'}-{arm}"
+        self.gen(ref, study.null if arm == "null" else study.alternative)
+        seed = _seed(self.case_seed, f"{self.family}:{key}")
+        if sim.seed != seed:
+            raise RuntimeError(f"{key}: the simulation ran with seed {sim.seed}, the case derives {seed}")
+        row = {
+            "key": key, "test_id": tid, "label": cs.row_label(tid, study, index, len(cs.load_studies()[tid])),
+            "scenario": cs.study_scenario(texts, text, len(cs.load_studies()[tid])),
+            "panel": cs.PANEL_OF[tid], "severity": severity, "x": float(severity), "rates": rates, "exact": None,
+            "agrees": None, "p_histogram": sim.p_histogram(20) if histogram else None, "seed": seed, "n_rep": sim.n_rep,
+            "generator": ref,
+            "study": {"index": index, "label": texts["label"], "rule": study.rule, "rule_label": cs.rejection_label(study),
+                      "arm": arm, "text": text, "departure": departure,
+                      "excess": cs.excess_block(tid, rates, sim.n_rep) if arm == "null" and self.family == "null" else None},
+        }
+        self.rows.append(row)
+        self.sims[key] = sim
+        return row
 
 
 def _exact_counts(test: str, n: int, pd_applied: float, *, pd_true: float, rho_true: float, **kw: Any) -> dict[str, float]:
@@ -304,10 +410,10 @@ def _null(book: Book) -> dict[str, Any]:
          _t("the first year's counts against the chain's own one-year matrix", "los conteos del primer año contra la matriz anual de la propia cadena"), None),
         ("rating.momentum@null", "rating.momentum", chain, "paths-5x1000-5y",
          lambda d: {"paths": d["segments"]}, {}, "transitions",
-         _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin momentum (c = 0)"), None),
+         _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin impulso (c = 0)"), None),
         # the settings the harness found to matter
         ("pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow", logit, "logistic-5000", None, {"fitted": True}, "settings",
-         _t("the same, with G - 2 degrees of freedom (fitted=True)", "lo mismo, con G - 2 grados de libertad (fitted=True)"), None),
+         _t("the same, with G − 2 degrees of freedom (the model fitted on the same sample)", "lo mismo, con G − 2 grados de libertad (el modelo ajustado sobre la misma muestra)"), None),
         ("pd.traffic_lights@upper", "pd.traffic_lights", SERIES, "series-5y-3pct", feed_series(), {"ties": "upper"}, "settings",
          _t("the upper tie rule WP14's simulation used", "la regla de empates superior que usó la simulación de WP14"),
          _exact_traffic([1000] * 5, 0.03, 0.03, ties="upper")),
@@ -355,8 +461,8 @@ def _null(book: Book) -> dict[str, Any]:
         "tests_within_bound": _impact(within, "tests", f"Tests of the battery that hold their size at 5% and 1% (of {len(holds)})",
                                       f"Pruebas de la batería que mantienen su tamaño al 5% y 1% (de {len(holds)})"),
         "size_hl_fitted": _impact(book.rate("pd.hosmer_lemeshow@fitted"), "probability",
-                                  "Hosmer-Lemeshow with G - 2 on a validation sample: size at 5%",
-                                  "Hosmer-Lemeshow con G - 2 en una muestra de validación: tamaño al 5%"),
+                                  "Hosmer-Lemeshow with G − 2 on a validation sample: size at 5%",
+                                  "Hosmer-Lemeshow con G − 2 en una muestra de validación: tamaño al 5%"),
         "size_normal": _impact(book.rate("pd.normal_multiperiod@null"), "probability",
                                "Normal test over five years: size at 5%", "Prueba normal en cinco años: tamaño al 5%"),
         "psi010_false_alarm_n100": _impact(book.rate("stability.psi@n100", "metric>0.1"), "probability",
@@ -365,8 +471,8 @@ def _null(book: Book) -> dict[str, Any]:
     }
     findings = [
         _finding("F-HL-DOF", "S2", "closed", ["pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow@null"],
-                 "Hosmer-Lemeshow with G - 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
-                 "Hosmer-Lemeshow con G - 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"),
+                 "Hosmer-Lemeshow with G − 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
+                 "Hosmer-Lemeshow con G − 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"),
         _finding("F-NORMAL-SIZE", "S3", "accepted", ["pd.normal_multiperiod@null"],
                  "The normal test over five years rejects above its level, as WP14's own Table 7 shows; read it as an early warning",
                  "La prueba normal en cinco años rechaza sobre su nivel, como muestra la propia Tabla 7 de WP14; léase como alerta temprana"),
@@ -382,9 +488,9 @@ def _null(book: Book) -> dict[str, Any]:
         _finding("F-JEFFREYS-DISCRETE", "S4", "accepted", ["pd.jeffreys@null", "pd.binomial@null"],
                  "The Jeffreys test is Bayesian; on a discrete count its exact size moves with the number of obligors and can exceed the level (1.38% at 1% for 1,000 obligors at PD 1%)",
                  "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38% al 1% para 1.000 deudores con PD 1%)"),
-        _finding("F-PSI-RULE", "S2", "accepted", ["stability.psi@n100"],
-                 "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
-                 "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"),
+        {**_finding("F-PSI-RULE", "S2", "accepted", ["stability.psi@n100"], "", ""),
+         "title": psi_rule_title(book.rate("stability.psi@n100", "metric>0.1"), book.rate("stability.psi@n100"),
+                                 within_size(book.sims["stability.psi@n100"].rates["p<0.05"], 0.05))},
     ]
     trans = ("rating.time_homogeneity@null", "rating.markov_order@null", "rating.matrix_reference@null",
              "rating.momentum@null")
@@ -415,35 +521,188 @@ def _null(book: Book) -> dict[str, Any]:
         ("port-1000-1pct", port, lambda d: [cal.pd_binomial(**feed_cell()(d)), cal.pd_jeffreys(**feed_cell()(d))], {}),
         ("two-sample-1000", two, lambda d: st.stability_psi(d["expected_counts"], d["actual_counts"]), {}),
     ])
+    other = _null_other(book)
+    impact.update(other["impact"])
+    findings.extend(other["findings"])
+    values.update(other["values"])
     return {"impact": impact, "findings": findings, "values": values, "specimen": specimen, "golden": [],
             "exact_curves": [], "estimators": {"auc": auc_perf, "ece_when_right": ece_perf}}
 
 
+def _rate(d: dict[str, Any]) -> Rate:
+    return Rate(d["rejections"], d["n"], d["undefined"])
+
+
+def _names(rows: list[dict[str, Any]], lang: str) -> str:
+    return ", ".join(r["label"][lang] for r in rows)
+
+
+def mc_excess_title(ex: dict[str, Any]) -> tuple[str, str]:
+    """The title of the documented-excess finding: "this excess" only when this run is over its bound; a run within it says the
+    engine documents an excess of its own (U16-R5 c29 N3)."""
+    if ex["exceeds"]:
+        en_doc, es_doc = "the engine documents this excess on its page", "el motor documenta este exceso en su página"
+    else:
+        en_doc, es_doc = "the engine documents an excess of its own run on its page", "el motor documenta un exceso de su propia corrida en su página"
+    return (f"The Monte Carlo quantile convergence test measures {_pct(ex['measured'], 2)['en']} at 1% against a bound of {_pct(ex['bound'], 2)['en']} ("
+            f"{'above' if ex['exceeds'] else 'within'} it in this run); {en_doc} {ex['page']}: {ex['engine']['en']}",
+            f"La prueba de convergencia del cuantil Monte Carlo mide {_pct(ex['measured'], 2)['es']} al 1% contra una cota de {_pct(ex['bound'], 2)['es']} ("
+            f"{'sobre' if ex['exceeds'] else 'dentro de'} ella en esta corrida); {es_doc} {ex['page']}: {ex['engine']['es']}")
+
+
+def _null_other(book: Book) -> dict[str, Any]:
+    """The 21 p-value tests of the other seven families at the boundary of their null: the engine's named studies, 4,000
+    repetitions, both levels (CT-301, BL-091, BL-075)."""
+    studies = cs.load_studies()
+    rows = [book.add_study(tid, i, st, "null", key=cs.study_key(tid, i, "null"), severity=0, histogram=True, departure="null")
+            for tid, lst in studies.items() for i, st in enumerate(lst)]
+
+    def holds(row: dict[str, Any]) -> bool:
+        return all(within_size(_rate(row["rates"][f"p<{a:g}"]), a) for a in LEVELS)
+
+    by_test: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        by_test.setdefault(r["test_id"], []).append(r)
+    kept = [tid for tid, rs in by_test.items() if all(holds(r) for r in rs)]
+    over = [r for r in rows if not holds(r)]
+    undocumented = [r for r in over if not r["study"]["excess"]]
+    top = max(rows, key=lambda r: r["rates"]["p<0.05"]["rate"])
+    mc = next(r for r in rows if r["test_id"] == "portfolio.mc_convergence")
+    ex = mc["study"]["excess"]
+    conservative = [r for r in rows if r["rates"]["p<0.05"]["wilson_high"] < 0.05]
+    impact = {
+        "other_tests_within_bound": _impact(len(kept), "tests", f"Tests of the other seven families that hold their size at 5% and 1% (of {len(by_test)})",
+                                            f"Pruebas de las otras siete familias que mantienen su tamaño al 5% y 1% (de {len(by_test)})"),
+        "other_size_mc_convergence": {"value": float(ex["measured"]), "unit": "probability", "label": mc_convergence_label(ex)},
+    }
+    if undocumented:
+        sev, status = "S2", "open"
+        tail_en = f"; above their bound and not documented by the engine: {_names(undocumented, 'en')}"
+        tail_es = f"; sobre su cota y sin documentar por el motor: {_names(undocumented, 'es')}"
+    elif over:
+        sev, status = "S4", "accepted"
+        tail_en = f"; above its bound, as the engine documents: {_names(over, 'en')}"
+        tail_es = f"; sobre su cota, como documenta el motor: {_names(over, 'es')}"
+    else:
+        sev, status, tail_en, tail_es = "S4", "closed", "", ""
+    findings = [
+        _finding("F-OTHER-SIZE", sev, status, [r["key"] for r in over] or [top["key"]],
+                 f"{len(kept)} of {len(by_test)} tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all {len(rows)} studies counted){tail_en}",
+                 f"{len(kept)} de {len(by_test)} pruebas de las otras siete familias mantienen su tamaño al 5% y 1% en 4.000 repeticiones (se cuentan los {len(rows)} estudios){tail_es}"),
+        _finding("F-OTHER-MC-EXCESS", "S4", "accepted", [mc["key"]], *mc_excess_title(ex)),
+    ]
+    if conservative:
+        findings.append(_finding(
+            "F-OTHER-CONSERVATIVE", "S4", "accepted", [r["key"] for r in conservative],
+            f"{len(conservative)} studies are conservative: their rate at 5% lies wholly below the level ({_names(conservative, 'en')}); a discrete or estimated null makes them under-reject, which costs power, not credibility",
+            f"{len(conservative)} estudios son conservadores: su tasa al 5% queda por completo bajo el nivel ({_names(conservative, 'es')}); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"))
+    values = {"other_tests_within_bound": float(len(kept)), "other_size_mc_convergence_1pct": ex["measured"]}
+    return {"impact": impact, "findings": findings, "values": values}
+
+
+#: the studies whose power the case declares a range for before the bake (EXPECT), by (test, index) -> value name
+POWER_VALUES = {
+    ("ccr.pfe_exceedance_backtest", 0): "other_power_pfe", ("ifrs9.stage_migration_backtest", 0): "other_power_stage_migration",
+    ("lgd_ead.lgd_calibration_by_segment", 0): "other_power_lgd_segment", ("market.mcneil_frey_residual_test", 0): "other_power_mcneil_frey",
+    ("portfolio.tail_backtest", 0): "other_power_tail95", ("portfolio.mc_convergence", 0): "other_power_mc_convergence",
+    ("portfolio.crp_recursion_vs_mc", 0): "other_power_crp", ("market.kupiec_pof", 0): "other_power_kupiec",
+    ("fair.two_proportion_z", 0): "other_power_fair_z",
+}
+
+
+def _other_families(book: Book) -> dict[str, Any]:
+    """The power of the 21 tests against the stated alternatives of the engine's studies. No Study exposes its departure as
+    a parameter (it holds a null generator and an alternative generator), so each is measured at two points: severity 0,
+    the null, and severity 1, the stated alternative, 2,000 repetitions each."""
+    studies = cs.load_studies()
+    pairs: list[tuple[str, int, dict[str, Any], dict[str, Any]]] = []
+    for tid, lst in studies.items():
+        for i, study in enumerate(lst):
+            r0 = book.add_study(tid, i, study, "null", key=cs.study_key(tid, i, "d0"), severity=0, histogram=False, departure="two-point")
+            r1 = book.add_study(tid, i, study, "alternative", key=cs.study_key(tid, i, "d1"), severity=1, histogram=False, departure="two-point")
+            pairs.append((tid, i, r0, r1))
+
+    def power(r: dict[str, Any]) -> float:
+        return r["rates"]["p<0.05"]["rate"]
+
+    ordered = sorted(pairs, key=lambda p: power(p[3]))
+    lo, hi = ordered[0], ordered[-1]
+    above80 = [p for p in pairs if power(p[3]) >= 0.8]
+    below50 = [p for p in pairs if power(p[3]) < 0.5]
+    median = float(np.median([power(p[3]) for p in pairs]))
+    rises = sum(power(p[3]) > power(p[2]) for p in pairs)
+    impact = {
+        "other_power_min": _impact(power(lo[3]), "probability", f"Weakest power at 5% against a stated alternative: {lo[3]['label']['en']}",
+                                   f"Menor potencia al 5% contra una alternativa declarada: {lo[3]['label']['es']}"),
+        "other_power_max": _impact(power(hi[3]), "probability", f"Strongest power at 5% against a stated alternative: {hi[3]['label']['en']}",
+                                   f"Mayor potencia al 5% contra una alternativa declarada: {hi[3]['label']['es']}"),
+        "other_power_median": _impact(median, "probability", f"Median power at 5% of the {len(pairs)} studies against their stated alternatives",
+                                      f"Potencia mediana al 5% de los {len(pairs)} estudios contra sus alternativas declaradas"),
+        "other_studies_above_80": _impact(len(above80), "studies", f"Studies whose power at 5% reaches 80% (of {len(pairs)})",
+                                          f"Estudios cuya potencia al 5% llega a 80% (de {len(pairs)})"),
+    }
+
+    def named(ps: list, lang: str) -> str:
+        return ", ".join(f"{p[3]['label'][lang]} {_pct(power(p[3]), 0)[lang]}" for p in ps)
+
+    findings = [
+        _finding("F-OTHER-POWER", "S3", "accepted", [lo[3]["key"], hi[3]["key"]],
+                 f"Against its stated alternative a test's power at 5% runs from {_with(_pct(power(lo[3]), 0)['en'], lo[3]['label']['en'])} to {_with(_pct(power(hi[3]), 0)['en'], hi[3]['label']['en'])}; {len(above80)} of {len(pairs)} studies reach 80%. The alternatives are the engine's choices (one departure each), not the only defects a test faces",
+                 f"Contra su alternativa declarada la potencia de una prueba al 5% va de {_with(_pct(power(lo[3]), 0)['es'], lo[3]['label']['es'])} a {_with(_pct(power(hi[3]), 0)['es'], hi[3]['label']['es'])}; {len(above80)} de {len(pairs)} estudios llegan a 80%. Las alternativas son elección del motor (una desviación cada una), no los únicos defectos que una prueba enfrenta"),
+    ]
+    if below50:
+        findings.append(_finding(
+            "F-OTHER-POWER-LOW", "S3", "accepted", [p[3]["key"] for p in below50],
+            f"{len(below50)} studies detect their stated alternative less than half of the time at 5%: {named(below50, 'en')}",
+            f"{len(below50)} estudios detectan su alternativa declarada menos de la mitad de las veces al 5%: {named(below50, 'es')}"))
+    values = {name: power(next(p[3] for p in pairs if (p[0], p[1]) == k)) for k, name in POWER_VALUES.items()}
+    values["other_studies_above_size"] = float(rises)
+    return {"impact": impact, "findings": findings, "values": values, "specimen": [], "golden": [], "exact_curves": [],
+            "estimators": None}
+
+
 MISCAL = (1.0, 1.1, 1.25, 1.5, 2.0, 3.0)
+
+
+#: the label of the Hosmer-Lemeshow power at k 1.25 (U16-R5 c28 m6: "every odds is")
+HL_POWER_LABEL = _t("Hosmer-Lemeshow power at 5% when all odds are 1.25 times too low",
+                    "Potencia de Hosmer-Lemeshow al 5% cuando todas las razones de chances son 1,25 veces muy bajas")
+
+
+def miscalibration_scenarios(k: float) -> dict[str, dict[str, str]]:
+    """The scenarios of the miscalibration rung k, each number in its language's form."""
+    n = {lang: tx.number(5000, lang=lang) for lang in ("en", "es")}
+    return {
+        "portfolio": _t(f"{n['en']} obligors, PD applied 2%, true {_num(2 * k, 'en')}%", f"{n['es']} deudores, PD aplicada 2%, verdadera {_num(2 * k, 'es')}%"),
+        "grades": _t(f"seven grades, every true PD {_num(k, 'en')} times its grade PD", f"siete grados, cada PD verdadera {_num(k, 'es')} veces la del grado"),
+        "obligors": _t(f"{n['en']} obligors, every model odds divided by {_num(k, 'en')}", f"{n['es']} deudores, cada razón de chances del modelo dividida por {_num(k, 'es')}"),
+        "years": _t(f"five years, PD applied 3%, true {_num(3 * k, 'en')}%", f"cinco años, PD aplicada 3%, verdadera {_num(3 * k, 'es')}%"),
+    }
 
 
 def _miscalibration(book: Book) -> dict[str, Any]:
     """True PD = k times the PD applied, every grade and year (CT-302)."""
     for i, k in enumerate(MISCAL):
         port = DefaultCounts(5000, 0.02 * k, pd_forecast=0.02)
-        scen_p = _t(f"5,000 obligors, PD applied 2%, true {2 * k:g}%", f"5.000 deudores, PD aplicada 2%, verdadera {2 * k:g}%".replace(".", ","))
+        scen = miscalibration_scenarios(k)
+        scen_p = scen["portfolio"]
         for tid, kw in (("pd.binomial", {}), ("pd.jeffreys", {}), ("pd.binomial_vasicek", {"rho": 0.12})):
             book.run(f"{tid}@k{k:g}", tid, port, f"port-5000-k{k:g}", panel="portfolio", severity=i, x=k, scenario=scen_p,
                      n_rep=N_POWER, feed=feed_cell(), test_kwargs=kw,
                      exact=_exact_counts(tid, 5000, 0.02, pd_true=0.02 * k, rho_true=0.0, **kw))
         grades = DefaultCounts(GR_N, np.minimum(np.array(GR_PD) * k, 0.99), pd_forecast=GR_PD)
-        scen_g = _t(f"seven grades, every true PD {k:g} times its grade PD", f"siete grados, cada PD verdadera {k:g} veces la del grado".replace(".", ","))
+        scen_g = scen["grades"]
         book.run(f"pd.chi2_grades@k{k:g}", "pd.chi2_grades", grades, f"grades-7-k{k:g}", panel="grades", severity=i, x=k,
                  scenario=scen_g, n_rep=N_POWER, feed=feed_grades())
         book.run(f"pd.default_profile@k{k:g}", "pd.default_profile", grades, f"grades-7-k{k:g}", panel="grades",
                  severity=i, x=k, scenario=scen_g, n_rep=N_POWER, feed=feed_grades(), test_kwargs={"n_sim": 2000})
         logit = LogisticPortfolio(n=5000, calibration_intercept=-math.log(k))
-        scen_o = _t(f"5,000 obligors, every model odds divided by {k:g}", f"5.000 deudores, cada razón de chances del modelo dividida por {k:g}".replace(".", ","))
+        scen_o = scen["obligors"]
         for tid in ("pd.hosmer_lemeshow", "pd.spiegelhalter"):
             book.run(f"{tid}@k{k:g}", tid, logit, f"logistic-5000-k{k:g}", panel="obligors", severity=i, x=k, scenario=scen_o,
                      n_rep=N_POWER)
         series = DefaultCounts.over_years([1000] * 5, [0.03 * k] * 5, pd_forecast=[0.03] * 5)
-        scen_y = _t(f"five years, PD applied 3%, true {3 * k:g}%", f"cinco años, PD aplicada 3%, verdadera {3 * k:g}%".replace(".", ","))
+        scen_y = scen["years"]
         book.run(f"pd.normal_multiperiod@k{k:g}", "pd.normal_multiperiod", series, f"series-5y-k{k:g}", panel="years",
                  severity=i, x=k, scenario=scen_y, n_rep=N_POWER, feed=feed_series())
         book.run(f"pd.traffic_lights@k{k:g}", "pd.traffic_lights", series, f"series-5y-k{k:g}", panel="years", severity=i,
@@ -462,9 +721,7 @@ def _miscalibration(book: Book) -> dict[str, Any]:
     impact = {
         "jeffreys_k80": _impact(k80, "ratio", "True-to-applied PD the portfolio Jeffreys test detects with 80% power (5,000 obligors, PD 2%)",
                                 "PD verdadera sobre aplicada que la prueba de Jeffreys de cartera detecta con 80% de potencia (5.000 deudores, PD 2%)"),
-        "hl_power_k125": _impact(book.rate("pd.hosmer_lemeshow@k1.25"), "probability",
-                                 "Hosmer-Lemeshow power at 5% when every odds is 1.25 times too low",
-                                 "Potencia de Hosmer-Lemeshow al 5% cuando toda razón de chances es 1,25 veces muy baja"),
+        "hl_power_k125": _impact(book.rate("pd.hosmer_lemeshow@k1.25"), "probability", HL_POWER_LABEL["en"], HL_POWER_LABEL["es"]),
         "profile_power_k3": _impact(book.rate("pd.default_profile@k3"), "probability",
                                     "Default-profile test at 5% when every PD is 3 times too low (blind to the level)",
                                     "Prueba del perfil al 5% cuando cada PD es 3 veces muy baja (ciega al nivel)"),
@@ -514,8 +771,8 @@ def _wp14_golden(book: Book, wp: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return {"study": "bcbs-wp14", "title": _t("BCBS WP14 Tables 7 and 8: the normal and traffic-lights tests",
                                               "BCBS WP14 Tablas 7 y 8: las pruebas normal y de semáforo"),
             "runs_published": wp["runs"], "runs": wp["runs"], "cells": cells, "agree": agree, "total": len(cells),
-            "note": _t("Traffic lights with the upper tie rule. The cell that does not agree, Table 8 DV_LV at 0.1%, prints 0.955; 200,000 runs give 0.9475 (SE 0.0005) and its neighbouring levels agree.",
-                       "Semáforo con la regla de empates superior. La celda que no concuerda, Tabla 8 DV_LV al 0,1%, imprime 0,955; 200.000 corridas dan 0,9475 (EE 0,0005) y sus niveles vecinos concuerdan.")}, agree
+            "note": _t("Traffic lights with the upper tie rule. The cell that does not agree, Table 8 at 0.1% in the scenario of time dependence, varying asset correlations, larger and varying unconditional PDs (WP14 Table 3), prints 0.955; 200,000 runs give 0.9475 (SE 0.0005) and its neighbouring levels agree.",
+                       "Semáforo con la regla de empates superior. La celda que no concuerda, Tabla 8 al 0,1\u00a0% en el escenario de dependencia temporal, correlaciones de activos variables y PD incondicionales mayores y variables (tabla 3 de WP14), imprime 0,955; 200.000 corridas dan 0,9475 (EE 0,0005) y sus niveles vecinos concuerdan.")}, agree
 
 
 def _clustering(book: Book, wp: dict[str, Any]) -> dict[str, Any]:
@@ -613,18 +870,28 @@ def _yn_golden(book: Book, yn: dict[str, Any]) -> tuple[dict[str, Any], int]:
             "mean_z": mean_z}, agree
 
 
+def drift_scenarios(s: float) -> dict[str, dict[str, str]]:
+    """The scenarios of the drift rung s, each number in its language's form."""
+    return {
+        "two_sample": _t(f"two samples of {tx.number(1000, lang='en')}, the current shifted by {_num(s, 'en')} SD",
+                         f"dos muestras de {tx.number(1000, lang='es')}, la actual desplazada {_num(s, 'es')} DE"),
+        "calibration": _t(f"{tx.number(5000, lang='en')} obligors, covariates shifted by {_num(s, 'en')} SD, the model right",
+                          f"{tx.number(5000, lang='es')} deudores, covariables desplazadas {_num(s, 'es')} DE, el modelo correcto"),
+    }
+
+
 def _drift(book: Book, yn: dict[str, Any]) -> dict[str, Any]:
     """The current population shifted, the model still right (CT-302, CT-304)."""
     for i, s in enumerate(DRIFT):
         two = TwoSample(1000, 1000, shift=s)
-        scen = _t(f"two samples of 1,000, the current shifted by {s:g} SD", f"dos muestras de 1.000, la actual desplazada {s:g} DE".replace(".", ","))
+        scen = drift_scenarios(s)["two_sample"]
         book.run(f"stability.psi@s{s:g}", "stability.psi", two, f"two-sample-1000-s{s:g}", panel="stability", severity=i, x=s,
                  scenario=scen, n_rep=N_POWER, rules=_psi_rules())
         for tid in ("stability.chi2", "stability.ks"):
             book.run(f"{tid}@s{s:g}", tid, two, f"two-sample-1000-s{s:g}", panel="stability", severity=i, x=s, scenario=scen,
                      n_rep=N_POWER)
         logit = LogisticPortfolio(n=5000, shift=s)
-        scen_c = _t(f"5,000 obligors, covariates shifted by {s:g} SD, the model right", f"5.000 deudores, covariables desplazadas {s:g} DE, el modelo correcto".replace(".", ","))
+        scen_c = drift_scenarios(s)["calibration"]
         for tid in ("pd.hosmer_lemeshow", "pd.spiegelhalter"):
             book.run(f"{tid}@s{s:g}", tid, logit, f"logistic-5000-s{s:g}", panel="calibration", severity=i, x=s, scenario=scen_c,
                      n_rep=N_POWER)
@@ -716,9 +983,8 @@ def _decay(book: Book) -> dict[str, Any]:
         _finding("F-AUC-INIT-C01", "S2", "closed", ["disc.auc_vs_initial@m0.467", "disc.auc_vs_initial@m0.467-extended"],
                  "At C01's slice sizes the ECB form rejects about one time in six when nothing changed; C01 now adds the development AUC's variance",
                  "Con los tamaños de tramo de C01 la forma del BCE rechaza cerca de una vez en seis sin cambio; C01 ahora suma la varianza del AUC de desarrollo"),
-        _finding("F-DECAY-POWER", "S3", "accepted", ["disc.auc_vs_initial@d0.02", "disc.auc_vs_initial@d0.05"],
-                 "With 150 defaulters an AUC drop of two points is rarely caught: small portfolios see only large decays",
-                 "Con 150 incumplidos una caída de dos puntos de AUC rara vez se detecta: las carteras pequeñas solo ven deterioros grandes"),
+        {**_finding("F-DECAY-POWER", "S3", "accepted", ["disc.auc_vs_initial@d0.02", "disc.auc_vs_initial@d0.05"], "", ""),
+         "title": decay_title(book.rate("disc.auc_vs_initial@d0.02"))},
     ]
     values = {"ecb_size_c01_ratio": book.rate("disc.auc_vs_initial@m0.467"),
               "ext_size_c01_ratio": book.rate("disc.auc_vs_initial@m0.467-extended"),
@@ -792,6 +1058,12 @@ MONO = (1.0, 1.25, 1.5, 2.0, 3.0, 4.0)
 SWAP = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
 
+def migration_scenario(ratio: float, n: int) -> dict[str, str]:
+    """The scenario of a broken-monotonicity migration rung, each number in its language's form."""
+    return _t(f"grade 4 to grade 2 at {_num(ratio, 'en')} times grade 4 to grade 3; {tx.number(n, lang='en')} obligors per grade",
+              f"grado 4 a grado 2 a {_num(ratio, 'es')} veces grado 4 a grado 3; {tx.number(n, lang='es')} deudores por grado")
+
+
 def _monotonicity(book: Book) -> dict[str, Any]:
     """A migration cell farther from the diagonal above its neighbour; two grades' PDs moved past each other."""
     base = decaying_matrix(7)
@@ -800,8 +1072,7 @@ def _monotonicity(book: Book) -> dict[str, Any]:
         for n in (500, 2000):
             book.run(f"rating.migration_ztests@r{ratio:g}-n{n}", "rating.migration_ztests", Migrations([n] * 7, m),
                      f"migrations-7-{n}-r{ratio:g}", panel=f"migration-{n}", severity=i, x=ratio,
-                     scenario=_t(f"grade 4 to grade 2 at {ratio:g} times grade 4 to grade 3; {n:,} obligors per grade",
-                                 f"grado 4 a grado 2 a {ratio:g} veces grado 4 a grado 3; {n:,} deudores por grado".replace(",", ".")),
+                     scenario=migration_scenario(ratio, n),
                      n_rep=N_POWER)
         _log(f"migration ratio={ratio:g}")
     for i, s in enumerate(SWAP):
@@ -823,9 +1094,8 @@ def _monotonicity(book: Book) -> dict[str, Any]:
                                        "Prueba del perfil: potencia al 5% cuando los grados 3 y 4 están invertidos"),
     }
     findings = [
-        _finding("F-MIGRATION-POWER", "S3", "accepted", ["rating.migration_ztests@r2-n500", "rating.migration_ztests@r1-n500"],
-                 "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen half the time with 500 obligors per grade",
-                 "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida la mitad de las veces con 500 deudores por grado"),
+        {**_finding("F-MIGRATION-POWER", "S3", "accepted", ["rating.migration_ztests@r2-n500", "rating.migration_ztests@r1-n500"], "", ""),
+         "title": migration_title(book.rate("rating.migration_ztests@r2-n500"))},
     ]
     values = {"migration_power_r2_n500": book.rate("rating.migration_ztests@r2-n500"),
               "migration_size_r1_n500": book.rate("rating.migration_ztests@r1-n500")}
@@ -889,7 +1159,7 @@ def _concentration(book: Book) -> dict[str, Any]:
 
 VARIANTS: tuple[dict[str, Any], ...] = (
     {"id": "null", "run": _null, "ladder": None,
-     "panels": ("calibration", "discrimination", "stability", "rating", "transitions", "settings"),
+     "panels": ("calibration", "discrimination", "stability", "rating", "transitions", "settings", *cs.OTHER_PANELS),
      "title": _t("The null: the model is right", "La nula: el modelo es correcto"),
      "short": _t("Null", "Nula"),
      "regime": _t("Every p-value test on data where its null hypothesis holds at the boundary: its size, at 5% and 1%.",
@@ -929,6 +1199,15 @@ VARIANTS: tuple[dict[str, Any], ...] = (
      "title": _t("Concentration in grades", "Concentración en grados"), "short": _t("Concentration", "Concentración"),
      "regime": _t("A share of every grade's mass moves into the modal grade, up to half.",
                   "Una fracción de la masa de cada grado se mueve al grado modal, hasta la mitad.")},
+    # U16-P2 (BL-091, BL-075): the power of the 21 p-value tests of the other seven families against the engine's stated
+    # alternatives; no Study exposes its departure as a parameter, so two points: the null and the stated alternative
+    {"id": "other-families", "run": _other_families,
+     "ladder": ((0, 1), _t("departure (0: the test's null, 1: the stated alternative)", "desviación (0: la nula de la prueba, 1: la alternativa declarada)")),
+     "panels": cs.OTHER_PANELS,
+     "title": _t("The other families: power against the stated alternative", "Las otras familias: potencia contra la alternativa declarada"),
+     "short": _t("Other families", "Otras"),
+     "regime": _t("The 21 p-value tests of counterparty credit risk, IFRS 9, LGD and EAD, market, portfolio, fairness and machine learning, each against the one alternative the engine's study states.",
+                  "Las 21 pruebas con valor p de riesgo de contraparte, NIIF 9, LGD y EAD, mercado, cartera, equidad y aprendizaje automático, cada una contra la única alternativa que declara el estudio del motor.")},
 )
 
 PANEL_LABEL: dict[str, dict[str, str]] = {
@@ -943,6 +1222,7 @@ PANEL_LABEL: dict[str, dict[str, str]] = {
     "migration-500": _t("Migrations, 500 per grade", "Migraciones, 500 por grado"),
     "migration-2000": _t("Migrations, 2,000 per grade", "Migraciones, 2.000 por grado"),
     "curve": _t("The PD curve's shape", "La forma de la curva de PD"), "counts": _t("Chi-square on the counts", "Chi-cuadrado de los conteos"),
+    **cs.PANEL_LABEL,
 }
 
 #: the x axis of a panel whose simulations do not run along the family's ladder
@@ -1008,6 +1288,27 @@ EXPECT: dict[str, tuple[float, float]] = {
     "hhi_power_c05": (0.0, 0.0),
     "chi2_power_c005": (0.88, 1.0),
     "hhi_max_statistic": (1.05, 1.15),              # ten grades: 1.0937 at an initial CV of 0.6, 1.0913 at P10's 0.6017
+    # U16-P2, declared before the first bake from the engine's U16-E2 report (4,000 repetitions there; 4,000 and 2,000 here,
+    # other seeds): 20 of the 21 tests hold their size at both levels (the Monte Carlo quantile convergence test is the
+    # engine's documented excess, 1.55% at 1% against a bound of 1.49%); three more sit near their bounds (the LGD over
+    # time test 5.92% at 5%, the market back-tests at 700 repetitions in the engine), so 18 to 21
+    "other_tests_within_bound": (18.0, 21.0),
+    "other_size_mc_convergence_1pct": (0.009, 0.022),
+    # the power at 5% against the stated alternative, the engine's figure (U16-E2) with four Monte Carlo SEs at 2,000 repetitions
+    "other_power_pfe": (0.65, 0.78),                # 71.30%
+    "other_power_stage_migration": (0.67, 0.79),    # 72.88%
+    "other_power_lgd_segment": (0.77, 0.87),        # 81.65%
+    "other_power_mcneil_frey": (0.91, 0.975),       # 94.27%
+    "other_power_tail95": (0.25, 0.35),             # 29.93% (60 years, 95%)
+    "other_power_mc_convergence": (0.69, 0.80),     # 74.12%
+    "other_power_crp": (0.49, 0.60),                # 54.45%
+    "other_power_kupiec": (0.62, 0.76),             # 68.85% (the red light, 1,500 days)
+    "other_power_fair_z": (0.97, 1.0),              # 99.03%
+    "other_studies_above_size": (25.0, 25.0),
+    # BS-15 (D15), declared before the run: the engine page's own pilot gave 2.2 % for the e-process and 65.5 % for the trailing Kupiec; a size
+    # above the anytime bound (5 % plus three standard errors, 6.46 % at 2,000 series) or a repeated Kupiec inside it would refute the premise
+    "seq_e_process_size": (0.0, 0.0646),
+    "seq_kupiec_trailing_size": (0.30, 1.0),
 }
 
 
@@ -1056,13 +1357,26 @@ def _models(seed: int, rv: str, paths: Any) -> dict[str, Any]:
                                     parity.append({"test_id": test, "n": n, "pd": pd, "ratio": ratio, "rho_true": rho_t,
                                                    "rho_assumed": rho_a, "alpha": a,
                                                    "critical_count": ex["critical_count"], "probability": ex["probability"]})
+    classes = cs.generator_classes()
+    records.extend({"id": g["id"], "family": "generator", "rung": "dgp", "title": g["title"],
+                    "short_title": _t(g["class"], g["class"]), "engine": f"{g['module']}.{g['class']}", "engine_version": rv,
+                    "licence": "MIT", "checkpoint_sha256": None, "calibration": None, "parameters": {},
+                    "details": {"class": g["class"]}} for g in classes)
     lineage = lin.build(CASE_ID, sources=[], truth_status="synthetic-known-truth", seed=seed, code_version=__version__,
-                        riskvalidation_version=rv, generators=tuple(cls for _, cls, _ in families))
+                        riskvalidation_version=rv, generators=tuple(cls for _, cls, _ in families) + tuple(g["class"] for g in classes))
     doc = build_models_artifact(case_id=CASE_ID, fit_id="generators", model=records,
-                                fit={"parity": parity, "levels": list(LEVELS)}, lineage=lineage,
+                                fit={"parity": parity, "levels": list(LEVELS), "studies": cs.model_studies()}, lineage=lineage,
                                 lane={"lane": "precompute", "reasons": []})
     rel = f"{CASE_ID}/models-generators.json"
     return {"rel": rel, **write_artifact(paths.root, rel, doc, exact=frozenset({"details", "parity"}), engines=ENGINES, run_ms=RUN_MS)}
+
+
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c01_ladder": {"en": "Uses the text and package-version helpers of the C01 ladder module (_t and _v), so the bilingual labels and the version records are built one way.",
+        "es": "Usa los auxiliares de texto y de versión de paquete del módulo de la escalera de C01 (_t y _v), de modo que las etiquetas bilingües y los registros de versión se construyen de una sola manera."},
+}
 
 
 class C22:
@@ -1074,6 +1388,12 @@ class C22:
     question = _t("How often does each validation test reject a right model, and which defects does it catch?",
                   "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ..core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path, only: tuple[str, ...] | None = None) -> dict[str, Any]:
         from ..io import sources as registry
@@ -1091,12 +1411,34 @@ class C22:
                                                        "Los mecanismos generadores y la cuadratura de la calculadora en vivo"),
                                           "path": models["rel"], "bytes": models["bytes"], "lane": models["lane"], "gate": models["gate"]}]
         values: dict[str, float] = {}
+        wanted = tuple(v["id"] for v in VARIANTS if only is None or v["id"] in only)
+        study_variants = tuple(v for v in wanted if v in ("null", "other-families"))
+        runs: dict[tuple[str, str], Any] = {}
+        if study_variants:
+            # the engine's named studies of the 21 tests outside the credit families (U16-P2): each registered test has one,
+            # the optional extras are installed, and the 75 simulations run in worker processes before the variants are built
+            cs.check_registry()
+            cs.check_extras()
+            jobs = cs.jobs_for(seed, study_variants)
+            _log(f"{len(jobs)} study simulations on {cs.default_workers()} workers")
+            runs = cs.run_jobs(jobs, log=_log)
+            for (variant, key), sim in runs.items():
+                cs.require_defined(f"{variant}:{key}", sim)
         for v in VARIANTS:
             if only is not None and v["id"] not in only:
                 continue
             book = Book(seed, v["id"])
+            book.study_runs = runs
             args = (book, wp) if v["id"] == "clustering" else (book, yn) if v["id"] == "drift" else (book,)
             res = v["run"](*args)
+            sequential = None
+            if v["id"] == "other-families":
+                # BS-15 (unit D15): the engine's e-process monitors against the fixed-window tests read every day; the numbers the hypothesis
+                # is judged on join the variant's impact, its scalars the expected ranges
+                sequential = seq.build_block(seed, rv)
+                res["impact"].update(seq.impact_items(sequential))
+                res["values"].update(seq.values(sequential))
+                _log(f"sequential monitors: hypothesis holds = {sequential['verdict']['holds']}")
             values.update(res["values"])
             ladder = None if v["ladder"] is None else {"values": list(v["ladder"][0]), "label": v["ladder"][1]}
             outputs = {
@@ -1106,14 +1448,16 @@ class C22:
                            for p in v["panels"]],
                 "simulations": book.rows, "generators": book.generators, "golden": res["golden"],
                 "exact_curves": res["exact_curves"], "estimators": res["estimators"],
-                "specimen": {"severity": 0 if v["id"] == "null" else SPECIMEN_SEVERITY},
+                "specimen": {"severity": 0 if v["id"] in ("null", "other-families") else SPECIMEN_SEVERITY},
                 "size_bounds": {f"p<{a:g}": size_bound(a, N_NULL if v["id"] == "null" else N_POWER) for a in LEVELS},
+                "sequential": sequential,
             }
             sources = ["bcbs-wp14"] if v["id"] == "clustering" else ["yurdakul-naranjo-2020"] if v["id"] == "drift" else []
             gens = tuple(sorted({g["name"] for g in book.generators.values()}))
             lineage = lin.build(CASE_ID, sources=sources, truth_status="synthetic-known-truth", seed=seed, code_version=__version__,
                                 riskvalidation_version=rv, generators=gens)
-            model = [{"id": ref, "family": "generator", "rung": g["name"], "title": _t(ref, ref), "short_title": _t(ref, ref),
+            titles = generator_titles(book.rows)
+            model = [{"id": ref, "family": "generator", "rung": g["name"], "title": titles.get(ref, _t(ref, ref)), "short_title": titles.get(ref, _t(ref, ref)),
                       "engine": f"riskvalidation.generators ({g['name']})", "engine_version": rv, "licence": "MIT",
                       "checkpoint_sha256": None, "calibration": None, "parameters": {}} for ref, g in book.generators.items()]
             art = build_artifact(case_id=CASE_ID, variant_id=v["id"], model=model, outputs=outputs, tests=res["specimen"],
@@ -1128,6 +1472,7 @@ class C22:
         expect = EXPECT if only is None else {k: r for k, r in EXPECT.items() if k in values}
         ranges = expectations.check(CASE_ID, expect, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Validating the validator", "es": "Validar al validador"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries,
             default_variant="null" if any(e["variant_id"] == "null" for e in entries) else entries[1]["variant_id"],

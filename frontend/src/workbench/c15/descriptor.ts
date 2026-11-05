@@ -227,14 +227,16 @@ const INDEXATION: Kind = { object: {
   pn_ur: 'number',
   abs_pn_ur: 'number',
   charge: 'number',
-  formula: 'string',
+  // c15-outputs 3.0.0: a bilingual text; a document baked before it carries the English string alone
+  formula: { anyOf: ['string', 'text'] },
   note: 'text',
 } };
 
 const CPI_SCENARIO: Kind = { nullable: { object: {
   surprise_pp: 'number',
   effect: 'number',
-  formula: 'string',
+  // c15-outputs 3.0.0: a bilingual text; a document baked before it carries the English string alone
+  formula: { anyOf: ['string', 'text'] },
 } } };
 
 const LEG_EVE: Kind = { object: {
@@ -309,7 +311,8 @@ const THRESHOLDS: Kind = { object: {
   net_interest_and_indexation_margin_12m: 'number',
   tests: { array: THRESHOLD_TEST },
   prioritised: 'boolean',
-  reference: 'string',
+  // c15-outputs 3.0.0: a bilingual text; a document baked before it carries the English string alone
+  reference: { anyOf: ['string', 'text'] },
 } };
 
 const BUCKET_DEF: Kind = 'json';

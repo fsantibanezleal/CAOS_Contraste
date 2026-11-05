@@ -4,16 +4,20 @@
 import { formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
-import type { Bi } from '../c03/U6Shared';
+import { referenceText, type Bi } from '../c03/U6Shared';
 import { MaybeNumber } from '../c06/format';
+import { noteText } from '../c08/notes';
+import { WHOLE_PORTFOLIO } from '../c08/words';
+import { segmentName } from '../names';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
 
-/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. */
-export function ConventionLine() {
+/** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. A case whose
+ * numbers are decimals of another base (C13: the desk notional) states its own line (R3 c14 m8). */
+export function ConventionLine({ line = CONVENTION_LINE }: { line?: Bi } = {}) {
   const lang = useShellLang();
   return (
     <p className="ct-note" data-convention="true">
-      {pick(CONVENTION_LINE, lang)}
+      {pick(line, lang)}
     </p>
   );
 }
@@ -28,20 +32,48 @@ export const zoneText = (zone: string): Bi => text(ZONE_TEXT, zone);
 export const lightWord = (light: TestRow['light']): BiText => LIGHT_TEXT[light];
 
 /**
+ * The policy alphas of the rows, one clause per distinct pair with the tests it applies to: the Acerbi-Szekely rows carry their own alphas,
+ * which are not those of the Kupiec and Christoffersen rows (U16-R2 b05 M1).
+ */
+export function policyOf(rows: TestRow[], lang: 'en' | 'es'): string {
+  const groups = new Map<string, string[]>();
+  for (const r of rows) {
+    if (r.alpha_amber === null || r.alpha_red === null) continue;
+    const key = `${r.alpha_amber}|${r.alpha_red}`;
+    const name = pick(testName(r.test_id), lang);
+    groups.set(key, [...new Set([...(groups.get(key) ?? []), name])]);
+  }
+  const clause = (key: string, names: string[]) => {
+    const [a, b] = key.split('|').map(Number);
+    const alphas = lang === 'en' ? `amber below ${formatNumber(a, lang, { digits: 3 })}, red below ${formatNumber(b, lang, { digits: 3 })}` : `ámbar bajo ${formatNumber(a, lang, { digits: 3 })}, rojo bajo ${formatNumber(b, lang, { digits: 3 })}`;
+    return groups.size === 1 ? alphas : `${names.join(', ')}: ${alphas}`;
+  };
+  return [...groups].map(([k, n]) => clause(k, n)).join('; ');
+}
+
+/** The segment of a back-test row in words, on every row (R5 ruling 2, c15 Q1): its tail level as the names module writes it ("1 % tail
+ * (99 % VaR)"), the whole portfolio for a row of no segment, the segment as written when no form names it. */
+export function marketSegment(t: Pick<TestRow, 'segment'>, caseId: string): Bi {
+  if (!t.segment) return WHOLE_PORTFOLIO;
+  return segmentName(t.segment, { caseId }) ?? { en: t.segment, es: t.segment };
+}
+
+/**
  * The back-test rows of one model and level: the test in words, its statistic and p-value (or "not available"), the light
  * under the committed policy and the note, which for a test that did not run is the reason. The p-value that lights a row
- * is the engine's; the policy alphas are in the row (`alpha_amber`, `alpha_red`) and printed in the header note.
+ * is the engine's; the policy alphas are in the row (`alpha_amber`, `alpha_red`) and printed in the header note. Each row names its
+ * segment under the test (R5 ruling 2).
  */
-export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: string }) {
+export function MarketTestsTable({ rows, table, caseId = 'C11' }: { rows: TestRow[]; table: string; caseId?: string }) {
   const lang = useShellLang();
-  const policy = rows.find((r) => r.alpha_amber !== null && r.alpha_red !== null);
+  const policy = policyOf(rows, lang);
   return (
     <div data-block="tests">
       <p className="ct-note">
         {pick(
           {
-            en: `The tests the engine returned: the statistic and p-value when it ran and the light under the committed policy${policy ? ` (amber below ${formatNumber(policy.alpha_amber, 'en', { decimals: 2 })}, red below ${formatNumber(policy.alpha_red, 'en', { decimals: 2 })})` : ''}. A test that did not run says why and shows no number.`,
-            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política comprometida${policy ? ` (ámbar bajo ${formatNumber(policy.alpha_amber, 'es', { decimals: 2 })}, rojo bajo ${formatNumber(policy.alpha_red, 'es', { decimals: 2 })})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
+            en: `The tests the engine returned: the statistic and p-value when it ran and the light under the committed policy${policy ? ` (${policyOf(rows, 'en')})` : ''}. A test that did not run says why and shows no number.`,
+            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política versionada${policy ? ` (${policy})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
           },
           lang,
         )}
@@ -54,7 +86,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
         <table className="caos-table ct-wrap-head" data-table={table}>
           <thead>
             <tr>
-              <th className="ct-text">{pick({ en: 'Back-test', es: 'Backtest' }, lang)}</th>
+              <th className="ct-text">{pick({ en: 'Back-test', es: 'Prueba retrospectiva' }, lang)}</th>
               <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
               <th>p</th>
               <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
@@ -66,17 +98,20 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
               const ran = t.light !== 'not_evaluated' && t.light !== 'error';
               return (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text" title={t.reference}>{pick(testName(t.test_id), lang)}</td>
+                  <td className="ct-text" title={referenceText(t, lang)}>
+                    {pick(testName(t.test_id), lang)}
+                    <span className="ct-row-detail" data-segment={t.segment ?? undefined}>{pick(marketSegment(t, caseId), lang)}</span>
+                  </td>
                   <td>
                     <MaybeNumber value={ran ? t.statistic : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                   </td>
                   <td>
-                    <MaybeNumber value={ran ? t.p_value : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 2 })} />
+                    <MaybeNumber value={ran ? t.p_value : null} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
                   </td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(lightWord(t.light), lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : referenceText(t, lang)}</td>
                 </tr>
               );
             })}
