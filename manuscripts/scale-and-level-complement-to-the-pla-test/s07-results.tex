@@ -1,0 +1,166 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The main comparison}
+\label{sec:results-main}
+
+Table~\ref{tab:main-results} gives the detection rate of every detector on every variant of the committed bake.
+The engine's statistics, recomputed here, agree count for count with the committed C13 documents of the product on all six variants (the Wald, absolute-value and rolling-mean flags and the regulatory zone), so the table extends the committed results and does not replace them.
+The critical values read from the 10,000 null desk-years at a size of 1\% per statistic are 9.833 for the Wald statistic, 0.9353 for the absolute-value Spearman and 0.9619 for the rolling-mean Spearman; at the Bonferroni split of the family size they are 12.007, 0.9263 and 0.9493.
+
+\input{tables/main-results}
+
+On the stale-volatility desk, the regulatory zone flags none of the 1,000 replications (0.0\%, interval 0.0 to 0.4\%), the Kolmogorov--Smirnov distance alone flags none, the desk back-test flags 0.5\% (0.2 to 1.2\%) and the Christoffersen test 12.7\% (10.8 to 14.9\%).
+The union of the three proposed statistics flags 99.9\% (99.4 to 100.0\%), and the rolling-mean statistic alone flags 99.9\% as well.
+The comparators that read the dynamics or the scale come between: the Ljung--Box statistic of the squared residual flags 71.9\% (69.0 to 74.6\%), the absolute-value Spearman 76.7\% (74.0 to 79.2\%), the Wald test on the squares 20.0\%, the Wald test with the ordinary covariance 41.0\% (38.0 to 44.1\%) and the same test with the HC3 covariance 14.2\% (12.2 to 16.5\%).
+The two regulatory statistics with their thresholds moved to the same 1\% size are informative about where the blind spot lies: the Kolmogorov--Smirnov distance flags 6.3\% and the Spearman correlation of the levels 55.2\%.
+A large part of the failure of the regulatory zone on this desk is therefore the position of its thresholds, written for a green limit of 0.80 where the correct model has a mean of 0.992, and the rest is the choice of statistic, since no recalibrated level statistic reaches the rolling mean's 99.9\%.
+
+On the other variants the complement keeps what the regulatory zone has and adds what it lacks.
+The union flags the missing-basis, wrong-correlation, omitted-factor and time-misalignment variants in 100.0\% of replications, where the regulatory zone flags 96.0, 100.0, 90.1 and 100.0\%.
+The components are not interchangeable.
+The rolling-mean statistic flags the wrong-correlation variant in 4.5\% and the time-misalignment variant in 42.3\%, and the absolute-value statistic flags the wrong correlation in 8.7\%; the Wald test flags the missing-basis variant in 0.9\% and the omitted-factor variant in 0.6\%, at its false-alarm rate, as Corollary~\ref{cor:noise} predicts for a basis independent of RTPL.
+On the desk with no deficiency the false-alarm rates are 0.9\% (0.5 to 1.7\%) for the union, 1.2\% for the rolling-mean statistic, 1.6\% (1.0 to 2.6\%) for the absolute-value statistic and 0.8\% for the Wald test; with 1,000 held-out desk-years the sampling standard deviation of a rate near 1\% is 0.31 percentage points, so the interval of the absolute-value statistic is compatible with its 1\% size.
+Figure~\ref{fig:detection-map} shows the table as a map: the three proposed statistics cover, jointly, the columns that each of them leaves pale.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{detection-map}
+\caption{Percent of the 1,000 replications of each C13 variant flagged by each detector at its calibrated size, on the committed bake; darker cells are higher rates, and the stale-volatility row is the one the regulatory zone does not flag.}
+\label{fig:detection-map}
+\end{figure}
+
+\subsection{Stability across independent bakes}
+\label{sec:results-repeats}
+
+The committed bake is one draw of 1,000 desk-years per variant.
+Table~\ref{tab:repeats} gives the mean and the standard deviation of each rate over five further bakes of 1,000, drawn under other case seeds, with the thresholds unchanged.
+The stale-volatility rates are stable: the union flags $99.9\pm0.2$\% and the rolling-mean statistic alone $100.0\pm0.0$\%, the absolute-value statistic $75.3\pm0.7$\%, the Ljung--Box statistic $71.8\pm0.9$\%, the recalibrated Spearman correlation of the levels $56.8\pm0.8$\% and the regulatory zone $0.0\pm0.0$\%.
+The false-alarm rate of the union on five fresh null bakes is $1.0\pm0.3$\%, that of the rolling-mean statistic $0.8\pm0.3$\% and that of the absolute-value statistic $1.0\pm0.2$\%, so the 1.6\% of the committed bake for the last is a draw at the upper end of that spread and not a drift.
+The weak cells repeat too: the rolling-mean statistic flags the wrong correlation in $4.8\pm0.5$\% and the time misalignment in $42.9\pm0.2$\%.
+Across the table the standard deviation over bakes never exceeds 2 percentage points.
+
+\input{tables/repeats}
+
+\subsection{The age of the volatility input}
+\label{sec:results-lag}
+
+Figure~\ref{fig:mechanism} shows the mechanism on one desk-year of each kind: when the risk model's volatility is twenty days old, the 20-day mean of $|\RTPL|$ follows the 20-day mean of $|\HPL|$ with a delay of the order of the lag.
+The correlation of the two rolling means is 0.994 on average on the desks with no deficiency and 0.691 on the stale desks.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{mechanism}
+\caption{Twenty-day rolling means of the absolute hypothetical and risk-theoretical profit and loss of one desk-year with no deficiency (left) and of one desk-year whose risk model uses a volatility twenty days old (right), under the committed generator, in percent of the desk notional.}
+\label{fig:mechanism}
+\end{figure}
+
+Table~\ref{tab:lag-ladder} and Figure~\ref{fig:power-by-lag} give the rates as the lag grows.
+The regulatory zone flags nothing until a lag of 40 days (0.2\%) and flags 5.1\% at 80 days; the desk back-test flags 3.9\% and 13.5\% at the same lags.
+The rolling-mean statistic flags 5.7\% at a lag of 2 days, 57.6\% at 5, 97.5\% at 10, 99.9\% at 20 and 100.0\% at 40 and 80 days; the union is a little lower at the short lags (2.9\% and 37.3\% at 2 and 5 days) because the Bonferroni split places each statistic at 0.333\%.
+The Ljung--Box statistic rises more slowly (9.0, 26.1, 49.2, 71.9, 82.6 and 86.8\%), the absolute-value statistic is strong from 20 days (76.7\% and above) and weak at 5 and 10 days (4.5 and 25.6\%), and the Wald statistic with the HC3 covariance needs 80 days to flag 45.2\%.
+The mean of the Wald statistic goes from 2.05 on the desks with no deficiency to 2.07, 2.54, 3.35, 4.97, 9.04 and 18.78 at the six lags, so the regression component moves in the right direction and slowly, as Proposition~\ref{prop:slope} implies.
+The flag rate of the rolling-mean statistic is non-decreasing in the lag over the six lags, so H4 holds on this range.
+
+\input{tables/lag-ladder}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\linewidth]{power-by-lag}
+\caption{Percent of 1,000 stale-volatility replications flagged by each detector against the age of the volatility input of the risk model in days (logarithmic axis), committed seeds; the regulatory zone and the desk back-test are near zero over the range where the rolling-mean statistic rises to 100\%.}
+\label{fig:power-by-lag}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{statistic-distributions}
+\caption{Left: distribution of the rolling-mean Spearman statistic on the 10,000 null desk-years and on 1,000 stale-volatility desk-years at lags of 5, 10 and 20 days, with the 1\% critical value as a vertical line. Right: distribution of the HC3 Wald statistic on the null and at a lag of 20 days, clipped at 40, with its critical value.}
+\label{fig:distributions}
+\end{figure}
+
+Figure~\ref{fig:distributions} shows why the two statistics differ: at a lag of 20 days the distribution of the rolling-mean statistic leaves the null almost entirely, whereas the distribution of the Wald statistic keeps most of its mass inside the null.
+
+\subsection{A threshold-free comparison}
+\label{sec:results-auc}
+
+A detector's rate depends on its threshold; the area under the ROC curve does not.
+Table~\ref{tab:auc} gives it for the nine statistics between the stale desks and the held-out null.
+The rolling-mean statistic has the largest area at every lag: 0.976 at 5 days, 0.999 at 10 and 1.000 at 20 (0.9999 to 1.0000 at 20 days), against 0.837, 0.946 and 0.988 for the absolute-value statistic, 0.807, 0.925 and 0.980 for the Spearman correlation of the levels, and 0.699, 0.856 and 0.938 for the Ljung--Box statistic.
+The Kolmogorov--Smirnov distance has 0.596, 0.680 and 0.785, and the Wald statistic with the HC3 covariance 0.549, 0.613 and 0.677.
+The Spearman correlation of the levels has a large area, 0.980 at 20 days, while the regulatory zone flags nothing on this desk: the information is in the statistic, and the thresholds of the zone are what discard it.
+Figure~\ref{fig:power-against-size} gives the power against the held-out false-alarm rate: at a lag of 10 days the rolling-mean statistic flags 86.2\% at 0.1\% size and 97.5\% at 1\%, while the Spearman correlation of the levels flags 1.3\% and 11.3\% at the same sizes.
+
+\input{tables/auc}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{power-against-size}
+\caption{Percent of stale-volatility replications flagged, at lags of 10 days (left) and 20 days (right), against the false-alarm rate on 1,000 held-out null desk-years (logarithmic axis), for sizes of 0.1\% to 20\% read from the 10,000 null desk-years; each curve is one statistic.}
+\label{fig:power-against-size}
+\end{figure}
+
+\subsection{Defects the rank statistics cannot see}
+\label{sec:results-misscale}
+
+Table~\ref{tab:mis-scale} tests H5 on the no-deficiency desk with a constant defect planted in RTPL.
+A mis-scale of 10\% in either direction gives a mean fitted slope of 1.111 or 0.909, the values $1/c$ of Proposition~\ref{prop:invariance}, and the Wald test flags 100.0\% of the replications; the regulatory zone flags 0.0\%, and the two rank statistics keep their false-alarm rates of 1.6\% and 1.2\%, unchanged by the rescaling.
+A mis-scale of 20 or 25\% is flagged by the zone in 16.2\% and 8.4\%, and by the Wald test in 100.0\%.
+A level error is seen by the rank statistics only when large: a shift of 0.1 standard deviations of the HPL is flagged by the Wald test in 100.0\%, by the zone in 18.2\%, by the absolute-value statistic in 26.0\% and by the rolling-mean statistic in 7.9\%, and a shift of 0.2 standard deviations by the zone in 97.3\% and by the rolling-mean statistic in 39.4\%.
+H5 holds, and the table shows the role of the regression component: the two regression components, with either covariance, are the only detectors with full power against a constant mis-scale of 10\%.
+
+\input{tables/mis-scale}
+
+\subsection{Size on desks that differ from the calibration null}
+\label{sec:results-altnull}
+
+Table~\ref{tab:alt-nulls} tests H3.
+With the thresholds of the calibration null unchanged, the false-alarm rate of the union is 0.2\% when the volatility is less persistent (0.90) and 0.7\% when it is less dispersed (0.20), both at or below the stated size, and 0.3\% when the pricing noise is smaller.
+It exceeds the stated size when the volatility is more persistent or more dispersed: 4.0\% (3.0 to 5.4\%) at a persistence of 0.995 and 6.2\% (4.9 to 7.9\%) at a dispersion of 0.50, where the absolute-value statistic alone has 8.5\% (6.9 to 10.4\%).
+When the pricing noise is 30\% of the factor profit and loss the union flags 99.0\% (98.2 to 99.5\%) of desks with no deficiency, the absolute-value statistic 99.7\% and the rolling-mean statistic 63.5\%, while the Wald statistic with the HC3 covariance stays between 1.1 and 1.7\% and the Ljung--Box statistic at 1.1\% in every row.
+H3 fails.
+The rank statistics read the agreement of two scales, and a larger pricing noise is a real, if benign, loss of agreement between the pricing and the risk models; the calibration null has to be the desk's own, with its own noise, as Proposition~\ref{prop:size} requires through exchangeability.
+Figure~\ref{fig:alt-null} gives the rates on a logarithmic scale.
+
+\input{tables/alt-nulls}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\linewidth]{alternative-nulls}
+\caption{False-alarm rate in percent, on a symmetric logarithmic axis, of the rolling-mean statistic, the absolute-value statistic and the union on 1,000 desk-years with nothing planted whose generator differs from the calibration null in one parameter, with the 95\% Wilson interval and the 1\% stated size as a dashed line.}
+\label{fig:alt-null}
+\end{figure}
+
+\subsection{The predictions}
+\label{sec:results-hypotheses}
+
+Table~\ref{tab:hypotheses} gives the outcome of each prediction.
+H1 holds by a wide margin: the union flags the stale desk in 99.9\% of replications at a held-out false-alarm rate of 0.9\%, against the criterion of 30\% at a size of at most 1\% and a refutation bound of 10\%; the lower end of its interval, 99.4\%, is far above the criterion, and the size is not above 1\% beyond its sampling interval (0.5 to 1.7\%).
+H2 holds in part.
+The Wald statistic flags the wrong-correlation variant in 100.0\% of replications, as often as the Kolmogorov--Smirnov distance alone, and the desk with no deficiency at 0.8\%; it does not flag the missing-basis variant (0.9\% against 86.7\% for the distance), for the reason of Corollary~\ref{cor:noise}.
+H3 fails, H4 holds and H5 holds, as shown above.
+
+\input{tables/hypotheses}
+
+\subsection{Checks of the propositions}
+\label{sec:results-theory}
+
+Table~\ref{tab:theory-size} compares Proposition~\ref{prop:size} with the false-alarm rate of the critical value read from $N$ Gaussian null draws, repeated 2,000 to 20,000 times: the mean and the standard deviation agree with the proposition to the third significant figure (for $N=10{,}000$ and $p=1\%$, 1.012\% against 1.010\% and 0.100 against 0.100 points).
+Table~\ref{tab:theory-loo} makes the check on the real null: each of the ten blocks of 1,000 null desk-years is flagged with the critical value calibrated on the other 9,000, and the mean over the ten folds is 1.01, 0.99 and 1.00\% for the Wald, absolute-value and rolling-mean statistics against 1.011\% predicted, with a standard deviation over folds of 0.31 to 0.35 points, close to the 0.31 points that a rate of 1\% on 1,000 desk-years carries.
+
+\input{tables/theory-size}
+
+\input{tables/theory-loo}
+
+Table~\ref{tab:theory-slope-corr} and Figure~\ref{fig:theory-check} compare Propositions~\ref{prop:slope} and~\ref{prop:rolling} with simulation.
+On windows of 100,000 days the simulated slope equals Equation~\eqref{eq:slope} to within 1.2 standard errors at every lag (0.9603 against 0.9601 at 20 days) and the simulated correlation of the rolling means equals Equation~\eqref{eq:rolling-corr} to within 0.006 (0.8084 $\pm$ 0.0014 against 0.8054 at 20 days; 0.6021 $\pm$ 0.0025 against 0.5969 at 40).
+On the 250-day windows of the desk the mean correlation is lower, 0.6946 $\pm$ 0.0023 at 20 days in the noise-free model and 0.6908 on the committed desks with their pricing noise, and the mean slope is above the closed form by 0.003 at 20 days (0.9633 against 0.9601) and by 0.016 at 80 days, which is the small-sample bias of a ratio of sample moments of a persistent process.
+The closed forms are population quantities, the 250-day desk is a sample of them, and the thresholds are calibrated on the sample law, so the decision never depends on the population value.
+
+\input{tables/theory-slope-corr}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{theory-check}
+\caption{Left: the closed-form correlation of the rolling means against the age of the volatility input, for five windows, with the mean and twice the standard error of the simulated 250-day windows for the 20-day mean. Right: the closed-form regression slope of Proposition~\ref{prop:slope} against the mean fitted slope over 1,000 C13 desk-years with twice its standard error.}
+\label{fig:theory-check}
+\end{figure}

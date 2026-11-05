@@ -1,0 +1,163 @@
+\section{Theory}
+\label{sec:theory}
+
+This section gives four results and one conjecture.
+Proposition~\ref{prop:size} states the false-alarm rate of a critical value read from a simulated null, for any statistic.
+Propositions~\ref{prop:slope} and~\ref{prop:rolling} derive in closed form what the regression component and the rolling-mean component measure on a desk whose risk model uses a volatility $L$ days old, which explains the difference in their power.
+Proposition~\ref{prop:invariance} assigns to each component the defect it alone can see.
+The conjecture of Section~\ref{sec:theory-conjecture} concerns the dependence of the power on the window.
+Section~\ref{sec:results} compares each closed form with a simulation; the conditions under which each result holds are stated with it.
+
+\subsection{The size of a critical value read from a simulated null}
+\label{sec:theory-size}
+
+The regulatory thresholds have no size on a desk-year of a correct model.
+The complement's thresholds have one, and it is not exactly the nominal $p$.
+The in-sample count of the engine's documentation, at most $pN$ null desk-years beyond the critical value, is a statement about the calibration sample; the false-alarm rate on a new desk-year is the quantity a desk cares about, and the following proposition gives it.
+
+\begin{proposition}[Size of a simulation-calibrated critical value]
+\label{prop:size}
+Let $T_1,\dots,T_N$ and $T$ be independent draws of a statistic with a continuous law, $k=\lfloor pN\rfloor\ge1$, and let $c$ be the $(k+1)$-th largest of $T_1,\dots,T_N$.
+Then
+\begin{enumerate}
+\item[(a)] $\Prob(T>c)=\dfrac{k+1}{N+1}$, which lies in $\bigl(\tfrac{pN}{N+1},\ \tfrac{pN+1}{N+1}\bigr]$;
+\item[(b)] the conditional size $S=\Prob(T>c\mid T_1,\dots,T_N)$ follows a Beta law with parameters $k+1$ and $N-k$, with mean $\tfrac{k+1}{N+1}$ and variance
+\begin{equation}
+\Var(S)=\frac{(k+1)(N-k)}{(N+1)^2(N+2)};
+\label{eq:size-var}
+\end{equation}
+\item[(c)] exactly $k$ of the $N$ calibration values exceed $c$, so the in-sample rate is $k/N\le p$;
+\item[(d)] if $m$ statistics are calibrated each at $p$ on the same draws, a desk-year that is exchangeable with the null is flagged by at least one of them with probability at most $m(k+1)/(N+1)$.
+\end{enumerate}
+When the law has atoms, the strict inequality $T>c$ makes every rate above at most the stated value.
+\end{proposition}
+
+\begin{proof}
+(a) The $N+1$ values $T_1,\dots,T_N,T$ are exchangeable and, the law being continuous, almost surely distinct.
+The event $T>c$ holds exactly when fewer than $k+1$ of the calibration values exceed $T$, that is when $T$ has descending rank at most $k+1$ among the $N+1$ values, which has probability $(k+1)/(N+1)$ by exchangeability.
+Because $k\le pN<k+1$, the value $(k+1)/(N+1)$ exceeds $pN/(N+1)$ and is at most $(pN+1)/(N+1)$.
+(b) Let $F$ be the distribution function of $T$ and $U_i=F(T_i)$, which are uniform on $(0,1)$.
+The critical value corresponds to the order statistic $U_{(N-k)}$ of $N$ uniform draws, the $(N-k)$-th smallest, which has a Beta law with parameters $N-k$ and $k+1$; and $S=1-U_{(N-k)}$ has the Beta law with parameters $k+1$ and $N-k$ whose mean and variance are those stated.
+(c) By construction of the $(k+1)$-th largest value, the $k$ largest exceed it and the others do not.
+(d) The union bound over the $m$ events of (a), each of probability $(k+1)/(N+1)$.
+\end{proof}
+
+Applied to the default calibration, a null of $N=10{,}000$ desk-years and $p=0.01$, the proposition gives $k=100$ and a false-alarm rate of $101/10001=1.010\%$ with a standard deviation of $0.100$ percentage points: the stated 1\% is exceeded by 0.010 points on average and the critical value read from this null carries a Monte Carlo spread of $\pm0.20$ points at 95\%.
+With the Bonferroni split at $\alpha=0.01$, $p=0.01/3$ gives $k=33$, a mean rate of $0.340\%$ per statistic and a union of at most $1.02\%$.
+The result is the exact-test property of Monte Carlo tests \citep{dufour2006} written for an upper-tail critical value rather than a p-value, and it is the same $(b+1)/(m+1)$ that \citet{phipson2010} derive for simulated p-values.
+Its condition is exchangeability of the desk-year with the null draws, which is a statement about the desk, not about the rule; Section~\ref{sec:results} measures what happens when it fails.
+
+\subsection{What the regression component sees under a stale volatility}
+\label{sec:theory-slope}
+
+Consider the stylised desk of the generator, written in the notation of Section~\ref{sec:problem}.
+The hypothetical profit and loss is $\HPL_t=c\,\sigma_t\zeta_t+\eta_t$ with $\zeta_t$ independent standard normal shocks shared with the risk model, $c$ the standard deviation of the factor profit and loss at unit scale and $\eta_t$ a pricing noise independent of everything else.
+The scale is $\sigma_t=\exp(\mu+g_{t-1})$ with $g$ a stationary Gaussian AR(1) of variance $v$ and persistence $\phi\in(0,1)$, and $\mu=-v$ so that $\E\sigma_t^2=1$.
+A risk model with a volatility input $L$ days old has $\RTPL_t=c\,\sigma_{t-L}\zeta_t$.
+
+\begin{proposition}[Population regression of HPL on RTPL under a stale volatility]
+\label{prop:slope}
+In this desk the population intercept is $a=0$ and the population slope is
+\begin{equation}
+b_L=\frac{\Cov(\HPL_t,\RTPL_t)}{\Var(\RTPL_t)}=\E[\sigma_t\sigma_{t-L}]=\exp\!\bigl(-v\,(1-\phi^{L})\bigr),
+\label{eq:slope}
+\end{equation}
+which equals 1 for $L=0$, decreases with $L$, and tends to $e^{-v}$ as $L\to\infty$.
+\end{proposition}
+
+\begin{proof}
+Both series have mean zero, so $a=0$.
+With $\zeta_t$ independent of the volatility path, $\Cov(\HPL_t,\RTPL_t)=c^2\,\E[\sigma_t\sigma_{t-L}]\,\E[\zeta_t^2]=c^2\E[\sigma_t\sigma_{t-L}]$, the noise $\eta_t$ being independent of RTPL, and $\Var(\RTPL_t)=c^2\E[\sigma_{t-L}^2]=c^2$.
+For jointly Gaussian $g_{t-1}$ and $g_{t-L-1}$ of variance $v$ and correlation $\phi^{L}$, $\E[\sigma_t\sigma_{t-L}]=e^{2\mu}\exp\bigl(\tfrac12\Var(g_{t-1}+g_{t-L-1})\bigr)=e^{-2v}\exp\bigl(v(1+\phi^{L})\bigr)=\exp(-v(1-\phi^{L}))$.
+\end{proof}
+
+For the generator, $v=0.35^2=0.1225$ and $\phi=0.98$, so a volatility input 20 days old gives $b_{20}=0.9601$: the regression line is tilted by four per cent.
+The sampling standard deviation of the fitted slope on a 250-day desk-year is 0.051 (Table~\ref{tab:theory-slope-corr} and Section~\ref{sec:results}), so the shift is less than one sampling standard deviation and the Wald statistic of Equation~\eqref{eq:wald}, whose noncentrality is the squared shift in units of the covariance, has little power at a lag of 20 days.
+The same argument explains a second feature of the regression component.
+
+\begin{corollary}[Noise in HPL that is independent of RTPL is invisible to the regression]
+\label{cor:noise}
+If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$, the population coefficients are $(a,b)=(0,1)$ whatever the variance of $\varepsilon_t$, and the Wald statistic of Equation~\eqref{eq:wald} keeps its null law.
+\end{corollary}
+
+\begin{proof}
+$\Cov(\HPL_t,\RTPL_t)=\Var(\RTPL_t)+\Cov(\varepsilon_t,\RTPL_t)=\Var(\RTPL_t)$ and $\E\HPL_t=\E\RTPL_t$.
+\end{proof}
+
+The generator's missing-basis variant adds such a term to HPL, and the experiments show the Wald statistic flagging it at its false-alarm rate (0.9\% against 0.8\% on the desk with no deficiency), while the absolute-value and rolling-mean rank statistics flag it in 100.0\% and 99.9\% of replications.
+This is a property of any regression of HPL on RTPL, not of the HC3 covariance: the regression component measures level and scale of the conditional mean, and a basis that is independent of the risk model's series leaves the conditional mean where it was.
+
+\subsection{What the rolling-mean component sees}
+\label{sec:theory-rolling}
+
+The rank statistic of Equation~\eqref{eq:rho-roll} has no closed form, but the Pearson correlation of the same two rolling means does, and it explains the statistic's behaviour.
+Write $m^2=(\E|\zeta|)^2=2/\pi$ and $\kappa(h)=\exp(v\phi^{|h|})-1$.
+Within a window of $w$ days, and with the pricing noise set to zero so that the closed form is the part due to the volatility alone, let $A=\tfrac1w\sum_s|\HPL_s|$ and $B=\tfrac1w\sum_s|\RTPL_s|$ over the same days.
+
+\begin{proposition}[Correlation of the rolling means under a stale volatility]
+\label{prop:rolling}
+In the noise-free stylised desk the population correlation of the two rolling means is
+\begin{equation}
+\rho_L^{(w)}=\frac{w\bigl(e^{-v(1-\phi^{L})}-m^2e^{-v}\bigr)+m^2e^{-v}\sum_{d\neq0}(w-|d|)\,\kappa(d+L)}{w\bigl(1-m^2e^{-v}\bigr)+m^2e^{-v}\sum_{d\neq0}(w-|d|)\,\kappa(d)},
+\label{eq:rolling-corr}
+\end{equation}
+with the sums over $d=-(w-1),\dots,w-1$, $d\ne0$.
+Then $\rho_0^{(w)}=1$; $\rho_L^{(w)}$ is strictly decreasing in $L$ for $L\ge w-1$; and $\rho_L^{(w)}\to\rho_\infty^{(w)}$ as $L\to\infty$ with
+\begin{equation}
+\rho_\infty^{(w)}=\frac{w\,e^{-v}(1-m^2)}{w\bigl(1-m^2e^{-v}\bigr)+m^2e^{-v}\sum_{d\neq0}(w-|d|)\,\kappa(d)}.
+\label{eq:rolling-limit}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Let $X_s=\sigma_s|\zeta_s|$ and $Y_s=\sigma_{s-L}|\zeta_s|$ over a window of $w$ days, so that $A$ and $B$ are $c/w$ times their sums, with $c$ cancelling in the correlation.
+For $s\ne u$, independence of the shocks gives $\Cov(X_s,X_u)=m^2\Cov(\sigma_s,\sigma_u)=m^2e^{-v}\kappa(s-u)$, using $(\E\sigma)^2=e^{-v}$ and $\Cov(\sigma_s,\sigma_u)=(\E\sigma)^2\kappa(s-u)$ for the log-normal pair; for $s=u$, $\Var(X_s)=\E\sigma^2\,\E\zeta^2-m^2e^{-v}=1-m^2e^{-v}$.
+In the same way $\Cov(X_s,Y_u)=m^2e^{-v}\kappa(s-u+L)$ for $s\ne u$, and for $s=u$ it is $\E[\sigma_s\sigma_{s-L}]-m^2e^{-v}=e^{-v(1-\phi^{L})}-m^2e^{-v}$ by Proposition~\ref{prop:slope}.
+Also $\Var(Y_s)=\Var(X_s)$ and $\Cov(Y_s,Y_u)=\Cov(X_s,X_u)$ by stationarity.
+Summing over the $w-|d|$ pairs with $s-u=d$ gives $\Var(A)\propto$ the denominator and $\Cov(A,B)\propto$ the numerator of Equation~\eqref{eq:rolling-corr}, and $\Var(B)=\Var(A)$.
+At $L=0$ the numerator equals the denominator.
+For $L\ge w-1$ every $d+L\ge0$, so $\kappa(d+L)=\exp(v\phi^{d+L})-1$ is strictly decreasing in $L$, as is $e^{-v(1-\phi^{L})}$, while the denominator does not depend on $L$.
+As $L\to\infty$, $\phi^{L}\to0$, so each $\kappa(d+L)\to0$ and the first term of the numerator tends to $w\,e^{-v}(1-m^2)$.
+\end{proof}
+
+For the generator, with $w=20$, Equation~\eqref{eq:rolling-corr} gives $\rho_{5}=0.980$, $\rho_{10}=0.933$, $\rho_{20}=0.805$, $\rho_{40}=0.597$ and a limit of $\rho_\infty=0.196$; the population correlation falls from 1 to 0.8 within the lag that the regulatory zone cannot see, while the slope of Proposition~\ref{prop:slope} moves from 1 to 0.96.
+Two features of Equation~\eqref{eq:rolling-corr} matter for the design.
+First, the correlation is one for a correct model and falls with $L$ at a rate set by the persistence $\phi$ of the volatility: a desk whose volatility moves slowly (large $\phi$) has a smaller fall for the same lag and a stale input is harder to see, as the alternative nulls of Section~\ref{sec:results} suggest from the other side.
+Second, the closed form is a population quantity: a 250-day desk-year holds few independent volatility regimes when the half-life of the volatility is about 34 days, so the sample correlation is biased downward and varies a lot from desk to desk.
+Section~\ref{sec:results} shows that on windows of 100,000 days the simulated correlation matches Equation~\eqref{eq:rolling-corr} within 0.006, and that on windows of 250 days its mean falls to 0.69 at a lag of 20 days.
+
+\subsection{Invariance and the division of labour between the components}
+\label{sec:theory-invariance}
+
+\begin{proposition}[Invariance]
+\label{prop:invariance}
+Let $c>0$ and replace $\RTPL_t$ by $c\,\RTPL_t$.
+Then $r_S$, $\rho_{\mathrm{abs}}$ and $\rho_{\mathrm{roll}}^{(w)}$ are unchanged, whereas the population coefficients of Equation~\eqref{eq:mz} change from $(0,1)$ to $(0,1/c)$ and the Wald statistic of Equation~\eqref{eq:wald} grows without bound with the sample size when $c\ne1$.
+\end{proposition}
+
+\begin{proof}
+Ranks are unchanged by a positive scaling, $|c\,\RTPL_t|=c|\RTPL_t|$, and the rolling mean is linear, so each rank statistic is unchanged.
+If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$ then $\HPL_t=(1/c)(c\RTPL_t)+\varepsilon_t$, which is the regression line with slope $1/c$ and intercept zero.
+The statistic $W$ is a quadratic form in $\hat\beta-\beta_0$, which converges to $(0,1/c-1)$, while $\hat V$ shrinks at rate $1/n$.
+\end{proof}
+
+The proposition separates the defects.
+A constant mis-scale of the risk-theoretical series, from a rescaled sensitivity or a unit error, is seen by the regression component and cannot be seen by either rank statistic or by the Spearman correlation of the levels; the Kolmogorov--Smirnov distance sees it only when the two marginal laws differ by more than 0.09 in distribution function, which takes a large mis-scale.
+A defect of timing or of the order of the sizes, which keeps the line $(0,1)$ nearly intact (Proposition~\ref{prop:slope}), is seen by the rank statistics.
+Sections~\ref{sec:results} and~\ref{sec:ablation} measure both statements.
+
+\subsection{A conjecture on the window}
+\label{sec:theory-conjecture}
+
+The default window of 20 days was fixed before the evaluation; Equation~\eqref{eq:rolling-corr} shows its role without determining the best value.
+We state a conjecture and its evidence rather than a result.
+
+\begin{remark}[Conjecture, claim status C]
+\label{rem:conjecture}
+For a fixed lag $L$ and fixed size, the power of the rolling-mean statistic as a function of the window $w$ is unimodal: it is low for $w=1$, where the statistic reduces to $\rho_{\mathrm{abs}}$, rises to a maximum at a window no longer than the lag, and decreases for longer windows, because a long window averages the two scale paths over spans in which both have changed.
+\end{remark}
+
+The evidence is the following.
+At $w=1$ the power on the stale desk is 4.5, 25.6 and 76.7\% at lags of 5, 10 and 20 days (the absolute-value Spearman statistic); at $w=5$ it is 91.1, 99.8 and 100\%; and it does not increase from $w=5$ to $w=60$ at any lag tested, falling to 15.4, 61.9 and 94.2\% at $w=60$ (Table~\ref{tab:ablation} and Figure~\ref{fig:window-ablation}).
+The conjecture holds in the conditions of the generator, with a null calibrated for each window; whether the location of the maximum is a fixed fraction of the lag, and how the maximum moves with the persistence $\phi$ of the volatility, is open.
+It is not used in the method: the window stays at the 20 days fixed in advance.

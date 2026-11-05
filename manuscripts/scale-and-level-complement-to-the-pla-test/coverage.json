@@ -1,7 +1,11 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:lag-ladder",
+    "tab:auc",
+    "tab:mis-scale",
+    "fig:power-by-lag"
   ],
   "claims": {
     "BS-13": "sec:proposed-method"

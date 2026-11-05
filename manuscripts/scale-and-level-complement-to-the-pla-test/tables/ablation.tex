@@ -1,0 +1,27 @@
+\begin{table*}[htbp]
+\centering
+\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Ablation of the complement: held-out false-alarm rate (Size) and percent of 1,000 replications flagged on the stale-volatility variant at lags of 5, 10, 20 and 40 days (L5 to L40) and on the missing-basis, wrong-correlation, omitted-factor and time-misalignment variants, for the full complement and for each component removed, replaced or changed; every configuration is calibrated on the same 10,000 null desk-years at a family size of 1\% (the no-correction row at 1\% per statistic).}
+\label{tab:ablation}
+\begin{tabular}{p{5.6cm}rrrrrrrrr}
+\toprule
+Configuration & Size & L5 & L10 & L20 & L40 & Basis & Corr. & Factor & Time \\
+\midrule
+Full complement (three statistics, Bonferroni) & 0.9 & 37.3 & 94.0 & 99.9 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+Without the Wald test & 1.0 & 44.5 & 96.3 & 100.0 & 100.0 & 100.0 & 7.4 & 100.0 & 100.0 \\
+Without the absolute-value Spearman & 0.6 & 44.4 & 96.3 & 99.9 & 100.0 & 99.7 & 100.0 & 97.3 & 100.0 \\
+Without the rolling-mean Spearman & 1.0 & 3.8 & 17.3 & 67.7 & 92.4 & 100.0 & 100.0 & 100.0 & 100.0 \\
+Wald test alone & 0.8 & 2.4 & 6.0 & 14.2 & 28.7 & 0.9 & 100.0 & 0.6 & 100.0 \\
+Absolute-value Spearman alone & 1.6 & 4.5 & 25.6 & 76.7 & 94.1 & 100.0 & 8.7 & 100.0 & 100.0 \\
+Rolling-mean Spearman alone (20 days) & 1.2 & 57.6 & 97.5 & 99.9 & 100.0 & 99.9 & 4.5 & 98.7 & 42.3 \\
+Rolling-mean Spearman, 5 days & 1.2 & 91.1 & 99.8 & 100.0 & 100.0 & 100.0 & 8.9 & 100.0 & 100.0 \\
+Rolling-mean Spearman, 10 days & 1.0 & 82.9 & 99.8 & 100.0 & 100.0 & 100.0 & 7.3 & 100.0 & 94.5 \\
+Rolling-mean Spearman, 40 days & 1.0 & 24.2 & 83.4 & 98.4 & 99.9 & 96.8 & 2.8 & 81.6 & 11.6 \\
+Rolling-mean Spearman, 60 days & 1.0 & 15.4 & 61.9 & 94.2 & 98.8 & 87.5 & 2.6 & 63.4 & 5.3 \\
+OLS covariance in place of HC3 & 1.1 & 44.2 & 95.4 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+\relax No multiplicity correction (1\% each) & 3.3 & 59.4 & 97.9 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+Rolling means at 5, 10, 20 and 40 days (Bonferroni) & 0.5 & 76.7 & 99.5 & 100.0 & 100.0 & 100.0 & 4.1 & 100.0 & 100.0 \\
+Full complement and regulatory zone & 0.9 & 37.3 & 94.0 & 99.9 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table*}

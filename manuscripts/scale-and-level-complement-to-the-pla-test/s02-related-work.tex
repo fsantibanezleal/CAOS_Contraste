@@ -1,0 +1,58 @@
+\section{Related work}
+\label{sec:related-work}
+
+The complement sits between three bodies of work: the regulatory attribution test and its two statistics, the econometric evaluation of forecasts of a level and of a volatility, and the statistical machinery needed to give a decision a stated false-alarm rate.
+This section groups the published methods by approach, says what each assumes, gives and misses with respect to the problem of Section~\ref{sec:problem}, and states where the proposed method stands.
+
+\subsection{The regulatory attribution test and its statistics}
+\label{sec:rw-regulatory}
+
+The market risk standard of the Basel Committee \citep{bcbs2019,bcbs2016} compares the hypothetical and the risk-theoretical profit and loss of a desk over 250 trading days with two statistics and sorts the desk into a green, amber or red zone from fixed thresholds on each.
+The Spearman correlation \citep{spearman1904} is the Pearson correlation of the ranks; it is unchanged by any increasing transformation of either series, so it assumes that the order of the daily moves is what matters, gives a measure of monotone association and fails whenever two series share their order while differing in the size or the timing of their scale.
+The Kolmogorov--Smirnov distance \citep{smirnov1948} is the largest vertical gap between the two empirical distribution functions; it assumes exchangeability of the days inside each series, gives a measure of the marginal difference and fails whenever two series have the same marginal law and a different dynamics, which is the case of a volatility that moves late.
+Neither statistic has a stated false-alarm rate on a desk-year of a correct model: the zone thresholds are fixed numbers, and we measure in Section~\ref{sec:results} that on the C13 generator the correct model never leaves the green zone while the distance between the statistic of a correct model and the threshold is large (a mean Spearman correlation of 0.992 against a green limit of 0.80, a mean distance of 0.033 against 0.09).
+The proposed method stays in this family of two-series statistics computed on the same 250-day pair and adds what the family does not contain, a statistic of scale and of its timing, with a calibrated threshold.
+
+\subsection{Evaluation of forecasts by regression and by proxies}
+\label{sec:rw-forecast}
+
+The regression of realisations on forecasts, with a joint test of intercept zero and slope one, is due to \citet{mincer1969}: a forecast is efficient in the sense of being unbiased and of using its information fully when the realisation has conditional mean equal to the forecast.
+The regression assumes a forecast of a conditional mean and a realisation observed with noise that is uncorrelated with the forecast, gives a test of level and scale, and fails against any defect that leaves the conditional mean intact.
+\citet{patton2009} survey the use of the regression for forecasts of volatility and correlation, with squared or absolute returns as proxies for the unobserved volatility, and \citet{patton2011} proves that only a family of loss functions ranks volatility forecasts consistently when the true volatility is replaced by a noisy proxy; \citet{andersen1998} show that a high-frequency realised volatility makes the proxy much less noisy than a squared daily return.
+The comparison of competing forecasts has a literature of its own: the test of equal predictive accuracy of \citet{diebold1995}, its conditional version \citep{giacomini2006}, the model confidence set \citep{hansen2011}, the study of whether any volatility model beats a GARCH(1,1) \citep{hansen2005}, and the theory of consistent scoring functions for point forecasts \citep{gneiting2011}.
+These tests compare forecasts with a realisation or with each other; the attribution problem has no external realisation, since both series are model outputs on the same market moves, and the quantity of interest is the agreement of two series rather than the accuracy of one.
+The proposed method borrows the regression and the absolute-value proxy and applies them to the pair of series of the attribution test, with a rank correlation of rolling means that is built for the scale-timing defect the regression does not see.
+
+\subsection{Back-testing of risk measures}
+\label{sec:rw-backtest}
+
+The proportion-of-failures test of \citet{kupiec1995} checks that a value-at-risk is exceeded at its nominal rate; \citet{christoffersen1998} adds a likelihood-ratio test of independence of the exceedances and a joint test of conditional coverage; \citet{berkowitz2001} and \citet{diebold1998} test the whole predictive density through the probability integral transform of the realisations; \citet{engle2004} model the quantile directly by regression and test its dynamics; \citet{fissler2016} show that value-at-risk and expected shortfall are jointly elicitable, which allows a joint scoring function.
+Back-tests assume a realised loss series and a risk measure forecast for each day, give a decision about the risk measure and have little power with 250 days at a 99\% level, where about two and a half exceedances are expected.
+The regulation applies a back-test at the desk level next to the attribution test, and we run the desk limit of the standard and the conditional-coverage test of \citet{christoffersen1998} on the same desk-years in Section~\ref{sec:results}; both are weak against a stale volatility (0.5\% and 12.7\%).
+The proposed method is not a back-test: it needs no risk measure, only the two profit and loss series, and it asks whether the risk model's scale tracks the pricing model's scale.
+
+\subsection{Covariance estimation and simulation-calibrated decisions}
+\label{sec:rw-calibration}
+
+When the variance of the regression error changes over time, the ordinary least-squares standard errors are wrong; \citet{white1980} gives a covariance estimator that is consistent under heteroskedasticity of unknown form, \citet{mackinnon1985} study variants of it with improved finite-sample properties, among them the variants that rescale each residual by its leverage, and \citet{long2000} compare the small-sample behaviour of the variants and favour HC3 where the sample is not large.
+\citet{neweywest1987} extend the idea to serial correlation.
+We use the HC3 covariance because the profit and loss of a desk has a time-varying volatility by construction, and we report the ordinary least-squares covariance as an ablation.
+A decision whose critical value is read from simulated draws of the null has an exact level in finite samples when the statistic of the data is exchangeable with the simulated statistics \citep{dufour2006}; \citet{phipson2010} show that the exact p-value of such a procedure is $(b+1)/(m+1)$ and never zero, and \citet{davidson2000} study how the number of simulated draws affects the power of a simulated test.
+\citet{dunn1961} gives the Bonferroni split of a family-wise size over several comparisons, which we use to combine the three statistics.
+The proposed method follows this route and adds a result that the simulated-null literature does not need and the calibration of a desk does: the size on a desk-year that is not exchangeable with the null, measured on six desks that differ from it.
+
+\subsection{Volatility dynamics and residual diagnostics}
+\label{sec:rw-volatility}
+
+The conditional heteroskedasticity models of \citet{engle1982} and \citet{bollerslev1986} describe a volatility that depends on past shocks, and the stochastic volatility models, among them the multivariate model of \citet{harvey1994}, describe it as a latent log-autoregressive process; the generator used here is of the second kind, with a log-AR(1) volatility known at the start of the day.
+The Ljung--Box test \citep{ljung1978} applied to the squares of a residual is the standard diagnostic of remaining conditional heteroskedasticity, and it is a natural published comparator for a method that targets a volatility that moves late: the residual HPL minus RTPL of a stale-volatility model is heteroskedastic with the clusters of the true volatility.
+We run it on the squared residual and report in Section~\ref{sec:results} that it flags the stale desk in 71.9\% of replications at 1\% size, against 99.9\% for the proposed union; it does not see a missing basis (1.0\%).
+The statistic has an asymptotic chi-square reference under independence of the squared residual; we calibrate it on the simulated null like every other comparator, so that its size is the same 1\% by construction and the comparison with the proposed statistics is one of power at equal size.
+
+\subsection{Where the proposed method stands}
+\label{sec:rw-position}
+
+Among the published methods, the regulatory statistics read levels and distributions and are blind to the timing of scale; the regression of \citet{mincer1969} reads level and scale of the conditional mean and is blind to a defect that leaves it intact; back-tests need a risk measure; residual diagnostics read the dynamics of the difference of the two series but not the agreement of their scales.
+The proposed method reads the three things together and decides each at a stated size.
+It does not replace any of them, it does not claim a regulatory standing, and it is evaluated against all of them on the same desk-years, including the regulatory statistic with its threshold moved to the same size, which isolates how much of the blind spot is the threshold and how much is the statistic.
+The claim is therefore one of added detection at a stated size on desks with a known planted deficiency, and not a claim about the accuracy of the regulatory test on real desks or about a ranking of volatility models.

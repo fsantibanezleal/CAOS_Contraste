@@ -1,0 +1,82 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{The desk and its two series}
+\label{sec:problem-desk}
+
+Consider a trading desk observed over $n=250$ consecutive trading days, the window of the attribution test.
+On day $t$ the hypothetical profit and loss $\HPL_t$ is the revaluation by the front-office pricing models of the positions held at the close of day $t-1$ under the market moves of day $t$, and the risk-theoretical profit and loss $\RTPL_t$ is the revaluation of the same positions under the same moves by the pricing function that the risk model uses.
+Both are expressed as a decimal of the notional of the desk, so that they share one unit and the regression of Section~\ref{sec:proposed-method} is well posed.
+The risk model also produces a daily value-at-risk, which the desk back-test uses and the attribution test does not; the complement proposed here never reads it.
+
+The two series are model outputs on the same market moves.
+Write $f_t\in\R^d$ for the vector of factor moves of day $t$ and $\sigma_t>0$ for the scale of the desk's profit and loss on that day, known at the start of the day when the volatility is an ex-ante forecast.
+A risk model that is correct in its factors, its sensitivities and its volatility has $\RTPL_t=\HPL_t-u_t$ with $u_t$ a pricing noise that does not depend on the market moves, so that the two series differ only by the difference between the pricing functions.
+A deficiency of the risk model changes one of four things: the sensitivities or the correlation used to aggregate them (a wrong correlation, an omitted factor), the scale that multiplies the factor moves (a volatility input that is out of date), the dating of the series (a misalignment of one day), or the model-free part of the hypothetical series (a basis between the pricing models that the risk model does not carry).
+The generator of Section~\ref{sec:experimental-design} plants each of the five deficiencies in the risk model alone, with the rest of the desk, including the pricing noise, unchanged.
+
+\subsection{The regulatory test}
+\label{sec:problem-regulatory}
+
+The regulatory test computes two statistics on $(\HPL_t,\RTPL_t)_{t=1}^{250}$.
+The first is the Spearman correlation
+\begin{equation}
+r_S=\operatorname{corr}\bigl(\operatorname{rank}(\HPL_t),\operatorname{rank}(\RTPL_t)\bigr),
+\label{eq:spearman}
+\end{equation}
+the Pearson correlation of the average ranks of the two series.
+The second is the Kolmogorov--Smirnov distance
+\begin{equation}
+\mathrm{KS}=\sup_x\bigl|F_{\RTPL}(x)-F_{\HPL}(x)\bigr|,\qquad F(x)=0.004\,\#\{t:\,y_t\le x\},
+\label{eq:ks}
+\end{equation}
+where the empirical distribution function $F$ has the step $0.004=1/250$ of the 250-day window.
+The zone of the desk is green when $r_S>0.80$ and $\mathrm{KS}<0.09$, red when $r_S<0.70$ or $\mathrm{KS}>0.12$, and amber otherwise \citep{bcbs2019}.
+The product's engine implements the statistics and the zones exactly as the standard states them and returns no compliance claim.
+The zone has consequences: a desk in the red zone is not eligible for the internal model and returns to it only after a green attribution test and a satisfactory back-test over twelve months, and a desk in the amber zone stays in the model and carries a capital surcharge \citep{bcbs2019}.
+The two statistics are computed on the same 250 pairs and the zone is decided by the worse of them, so a desk is green only when both statistics are green; the thresholds are constants of the standard and do not depend on the desk, its instruments or its volatility.
+
+\subsection{The detection problem and the size requirement}
+\label{sec:problem-detection}
+
+Let $\mathcal S$ be a statistic computed on a desk-year, and let $\mathcal N$ be the law of $\mathcal S$ on a desk whose risk model is correct.
+A detector is a rule that flags the desk-year when $\mathcal S$ falls in a region $\mathcal R$.
+Its size is $\alpha=\Prob_{\mathcal N}(\mathcal S\in\mathcal R)$ and its power against a deficiency $\delta$ is $1-\beta_\delta=\Prob_\delta(\mathcal S\in\mathcal R)$.
+The problem has two requirements.
+The size must be stated and controlled, because a desk that is flagged without a deficiency loses its eligibility for the internal model or pays a surcharge for nothing; and the power must be high against the deficiencies that the regulatory test does not see, in particular against a volatility input that is out of date by $L$ days.
+The two requirements cannot be met by choosing a threshold alone: a threshold gives a size only relative to the law $\mathcal N$ of the statistic, and a statistic gives a power only relative to the deficiency it reads.
+The complement therefore specifies, in Section~\ref{sec:proposed-method}, three statistics, each aimed at one part of the deficiency space, and one rule that turns the null law of each into a threshold.
+
+\subsection{Assumptions and notation}
+\label{sec:problem-assumptions}
+
+We assume that the desk-year is a stationary window of 250 days of both series; that a null desk-year, simulated from the desk's own generator with nothing planted, can be drawn as often as needed and is independent across draws; that the statistics have continuous null laws or that ties are rare enough that the rank argument of Proposition~\ref{prop:size} applies up to the order of the number of ties; and that HPL and RTPL are in the same unit.
+The first assumption is the usual one for a one-year window; the second is the one that makes the size a property of the rule and the third is a convenience that the numerical work checks.
+When the second assumption fails, because the desk's own law differs from the simulated one, the size is not the stated one, and Section~\ref{sec:results} measures by how much.
+Table~\ref{tab:notation} lists the symbols.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation used in the formulation, the method and the theory: each symbol with its meaning and its unit; the profit and loss series are decimals of the desk notional and every statistic is dimensionless.}
+\label{tab:notation}
+\begin{tabular}{p{2.6cm}p{9.4cm}p{2.2cm}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$\HPL_t,\RTPL_t$ & hypothetical and risk-theoretical profit and loss on day $t$ & decimal of notional \\
+$n$ & number of days of the attribution window, $250$ & days \\
+$\sigma_t$ & scale of the desk's profit and loss on day $t$, known at the start of the day & dimensionless \\
+$L$ & age of the volatility input of the risk model & days \\
+$a,\ b$ & intercept and slope of the regression of HPL on RTPL & decimal of notional; dimensionless \\
+$W$ & Wald statistic of $(a,b)=(0,1)$ under the HC3 covariance & dimensionless \\
+$\rho_{\mathrm{abs}}$ & Spearman correlation of $|\HPL_t|$ and $|\RTPL_t|$ & dimensionless \\
+$\rho_{\mathrm{roll}}^{(w)}$ & Spearman correlation of the $w$-day rolling means of $|\HPL_t|$ and $|\RTPL_t|$ & dimensionless \\
+$w$ & length of the rolling window, $20$ by default & days \\
+$N$ & number of null desk-years used to calibrate the thresholds & desk-years \\
+$p,\ k$ & size of one statistic and the count $k=\lfloor pN\rfloor$ that fixes its critical value & dimensionless; count \\
+$\alpha$ & size of the union of the three decisions (family size), $0.01$ by default & dimensionless \\
+$v,\ \phi$ & variance and persistence of the log volatility of the generator, $v=0.35^2$, $\phi=0.98$ & dimensionless \\
+\bottomrule
+\end{tabular}
+\end{table}
