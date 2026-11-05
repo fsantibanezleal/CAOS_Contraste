@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c06/models.schema.json",
   "title": "C06 models",
-  "description": "Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+  "description": "Catalog row c06-models 1.1.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -283,7 +283,8 @@
           "enum": [
             "kaplan-meier",
             "discrete-time-hazard",
-            "cox"
+            "cox",
+            "piecewise-constant-hazard-network"
           ]
         },
         "covariates": {

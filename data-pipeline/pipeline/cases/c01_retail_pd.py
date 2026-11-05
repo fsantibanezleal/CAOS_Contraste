@@ -15,19 +15,22 @@ import numpy as np
 import pandas as pd
 
 from .. import __version__
+from ..core.text import number
 from ..core import expect as expectations
 from ..core import lineage as lin
 from ..core.calibration import GRADES, MASTER_SCALE_UPPER
 from ..core.manifest import build_artifact, build_case_manifest, build_models_artifact
 from ..io import readers
-from ..io.formats import write_json
+from ..io.formats import read_json, write_json
 from ..model.ebm import score_logit
 from ..stages import evaluate, split
 from ..stages.export import write_artifact
 from ..stages.ingest import ingest
+from ..core.schemas import validate_document
 from . import c01_capital as cap
 from . import c01_features as feat
-from .c01_ladder import Rung, _t, _v, fit_ladder
+from . import c01_reject as reject
+from .c01_ladder import SHORT_TITLES, Rung, _t, _v, fit_ladder
 
 CASE_ID = "C01"
 SOURCES = ("uci-taiwan", "uci-german")
@@ -47,7 +50,7 @@ GERMAN_COST = {"bad_accepted": 5.0, "good_rejected": 1.0}  # german.doc, section
 VARIANTS: tuple[dict[str, Any], ...] = (
     {"id": "holdout", "fit": "taiwan", "truth": "real-outcomes",
      "title": _t("Holdout as observed", "Muestra reservada tal como se observa"), "short": _t("Holdout", "Reservada"),
-     "regime": _t("The locked 30% holdout, opened once.", "La muestra reservada del 30%, abierta una sola vez.")},
+     "regime": _t("The locked 30% holdout, opened once.", "La muestra reservada del 30 %, abierta una sola vez.")},
     {"id": "drift-moderate", "fit": "taiwan", "truth": "synthetic-known-truth",
      "title": _t("Covariate drift, moderate", "Deriva de covariables, moderada"), "short": _t("Drift 0.25", "Deriva 0,25"),
      "regime": _t("Real holdout rows resampled toward recent delinquency, weights exp(0.25 z).",
@@ -56,12 +59,12 @@ VARIANTS: tuple[dict[str, Any], ...] = (
      "title": _t("Covariate drift, severe", "Deriva de covariables, severa"), "short": _t("Drift 0.6", "Deriva 0,6"),
      "regime": _t("The same shift at exp(0.6 z).", "El mismo desplazamiento con exp(0,6 z).")},
     {"id": "prior-shift", "fit": "taiwan", "truth": "synthetic-known-truth",
-     "title": _t("Prior shift x1.5", "Cambio de prior x1,5"), "short": _t("Prior x1.5", "Prior x1,5"),
+     "title": _t("Prior shift x1.5", "Cambio de la probabilidad a priori x1,5"), "short": _t("Prior x1.5", "A priori x1,5"),
      "regime": _t("Real holdout rows resampled so the default rate is 1.5 times the observed one.",
                   "Filas reales remuestreadas para que la tasa de incumplimiento sea 1,5 veces la observada.")},
     {"id": "label-noise", "fit": "taiwan", "truth": "synthetic-known-truth",
-     "title": _t("Label noise 5%", "Ruido de etiqueta 5%"), "short": _t("Noise 5%", "Ruido 5%"),
-     "regime": _t("5% of the holdout labels flipped at random.", "El 5% de las etiquetas de la muestra reservada invertidas al azar.")},
+     "title": _t("Label noise 5%", "Ruido de etiqueta 5 %"), "short": _t("Noise 5%", "Ruido 5 %"),
+     "regime": _t("5% of the holdout labels flipped at random.", "El 5 % de las etiquetas de la muestra reservada invertidas al azar.")},
     {"id": "small-sample", "fit": "taiwan-small", "truth": "real-outcomes",
      "title": _t("Small sample (2,000 rows)", "Muestra pequeña (2.000 filas)"), "short": _t("2,000 rows", "2.000 filas"),
      "regime": _t("The ladder retrained on 2,000 training rows, evaluated on the same holdout.",
@@ -212,10 +215,10 @@ def _impact(fit: Fit, pds: dict[str, np.ndarray], raws: dict[str, np.ndarray], y
         "approval_rate": {"value": float(a.mean()), "unit": "fraction", "label": lab("Approval rate (both models)", "Tasa de aprobación (ambos modelos)")},
         "bad_rate_champion": {"value": float(y[a].mean()), "unit": "fraction", "label": lab("Bad rate among approved, champion", "Tasa de malos entre aprobados, campeón")},
         "bad_rate_challenger": {"value": float(y[b].mean()), "unit": "fraction", "label": lab("Bad rate among approved, challenger", "Tasa de malos entre aprobados, retador")},
-        "el_champion": {"value": float(LGD * (champ[a] * ead[a]).sum()), "unit": cur, "label": lab("Expected loss of the approved, champion (LGD 50%)", "Pérdida esperada de los aprobados, campeón (LGD 50%)")},
-        "el_challenger": {"value": float(LGD * (chall[b] * ead[b]).sum()), "unit": cur, "label": lab("Expected loss of the approved, challenger (LGD 50%)", "Pérdida esperada de los aprobados, retador (LGD 50%)")},
-        "loss_champion": {"value": float(LGD * ead[a & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, champion (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, campeón (LGD 50%)")},
-        "loss_challenger": {"value": float(LGD * ead[b & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, challenger (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, retador (LGD 50%)")},
+        "el_champion": {"value": float(LGD * (champ[a] * ead[a]).sum()), "unit": cur, "label": lab("Expected loss of the approved, champion (LGD 50%)", "Pérdida esperada de los aprobados, campeón (LGD 50 %)")},
+        "el_challenger": {"value": float(LGD * (chall[b] * ead[b]).sum()), "unit": cur, "label": lab("Expected loss of the approved, challenger (LGD 50%)", "Pérdida esperada de los aprobados, retador (LGD 50 %)")},
+        "loss_champion": {"value": float(LGD * ead[a & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, champion (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, campeón (LGD 50 %)")},
+        "loss_challenger": {"value": float(LGD * ead[b & (y == 1)].sum()), "unit": cur, "label": lab("Realised loss of the approved defaulters, challenger (LGD 50%)", "Pérdida realizada de los aprobados que incumplen, retador (LGD 50 %)")},
         "swap_in": {"value": float((b & ~a).sum()), "unit": "applicants", "label": lab("Approved by the challenger only", "Aprobados solo por el retador")},
         "swap_out": {"value": float((a & ~b).sum()), "unit": "applicants", "label": lab("Approved by the champion only", "Aprobados solo por el campeón")},
         "swap_in_bad_rate": {"value": float(y[b & ~a].mean()) if (b & ~a).any() else None, "unit": "fraction", "label": lab("Bad rate of the challenger-only approvals", "Tasa de malos de los aprobados solo por el retador")},
@@ -228,7 +231,7 @@ def _impact(fit: Fit, pds: dict[str, np.ndarray], raws: dict[str, np.ndarray], y
         unit = cap.account_capital(cls, p, ead, rev)["basel3"]
         out[f"capital_{key}"] = {"value": float(LGD * unit[m].sum()), "unit": cur, "label": lab(
             f"IRB capital of the approved, {key} (Basel III, LGD 50%)",
-            f"Capital IRB de los aprobados, {es} (Basilea III, LGD 50%)")}
+            f"Capital IRB de los aprobados, {es} (Basilea III, LGD 50 %)")}
     if fit.source == "uci-german":
         def cost(p: np.ndarray) -> tuple[float, float]:
             best = (np.inf, 0.0)
@@ -263,6 +266,8 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
     """Findings from the battery under the case's severity policy (SEVERITY), for the champion and the challenger;
     the design limits and the data-quality flags are S3 and S4."""
     out: list[dict[str, Any]] = []
+    # the variant is named, never printed as its id (U16-R2 b01 m8: 'la población holdout')
+    vtitle = next(v["title"] for v in VARIANTS if v["id"] == variant)
     for rung in (CHAMPION, CHALLENGER if CHALLENGER in fit.rungs else "P5-tabpfn"):
         for family, ids, on_red, on_amber in SEVERITY:
             hit = [r for r in rows if r["model_id"] == rung and r["test_id"] in ids and r["light"] in ("red", "amber")
@@ -271,22 +276,26 @@ def _findings(rows: list[dict], variant: str, fit: Fit) -> list[dict[str, Any]]:
                 continue
             sev = on_red if any(r["light"] == "red" for r in hit) else on_amber
             ev = sorted({f"{r['test_id']}@{rung}" for r in hit})
-            names = ", ".join(sorted({r["test_id"] for r in hit}))
             tag = "".join(w[0] for w in family.split()).upper()
+            # the model by its short title, and no test id: the evidence under the title names each test (U16-R2b c01 B1)
+            short = SHORT_TITLES.get(rung, {"en": rung, "es": rung})
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": ev,
-                        "title": _t(f"{rung}: {family} tests flag the {variant} population ({names})",
-                                    f"{rung}: las pruebas de {_ES[family]} alertan en la población {variant} ({names})")})
+                        "title": _t(f"{short['en']}: {family} tests flag the variant \"{vtitle['en']}\"",
+                                    f"{short['es']}: las pruebas de {_ES[family]} alertan en la variante «{vtitle['es']}»")})
     out.append({"id": "F-OOT", "severity": "S3", "status": "accepted", "evidence": ["design:single-snapshot"],
                 "title": _t("No out-of-time validation is possible: the data is a single snapshot",
                             "No es posible validar fuera del tiempo: los datos son una sola foto")})
     flags = (fit.contract.get("by_rule") or {}).get("flagged") or {}
     if flags:
+        # the rules in words and the counts in each language's form (U16-R3 c01 B1: never the rule id, and no list separator turned
+        # into a full stop by a blanket replace)
+        def counts(lang: str, unit: str) -> str:
+            return "; ".join(f"{number(v, lang=lang)}{f' {unit}' if i == 0 else ''} {feat.RULE_TEXT.get(k, {lang: k})[lang]}"
+                             for i, (k, v) in enumerate(sorted(flags.items())))
         out.append({"id": "F-CODES", "severity": "S4", "status": "accepted",
                     "evidence": [f"contract:{k}" for k in sorted(flags)],
-                    "title": _t("Codes outside the documented scale are kept as their own bins (" +
-                                ", ".join(f"{k}: {v:,}" for k, v in sorted(flags.items())) + " records)",
-                                "Códigos fuera de la escala documentada se conservan como tramos propios (" +
-                                ", ".join(f"{k}: {v:,}" for k, v in sorted(flags.items())).replace(",", ".") + " registros)")})
+                    "title": _t(f"Codes outside the documented scale are kept as their own bins: {counts('en', 'records')}",
+                                f"Códigos fuera de la escala documentada se conservan como tramos propios: {counts('es', 'registros')}")})
     return out
 
 
@@ -322,6 +331,11 @@ def _models_doc(fit: Fit, *, seed: int, lineage) -> dict[str, Any]:
                                  lane={"lane": "precompute", "reasons": []})
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C01:
     id = CASE_ID
     slug = "retail-cards-pd"
@@ -330,9 +344,15 @@ class C01:
     title = _t("Retail cards PD: champion vs challenger", "PD de tarjetas: campeón vs retador")
     question = _t("Does a monotone WoE scorecard match the challengers the literature says can beat it, once "
                   "calibration is required, and what do the validation tests say when the population shifts?",
-                  "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, "
+                  "¿Iguala una tarjeta de puntuación WoE monótona a los retadores que según la literatura pueden superarla, "
                   "cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ..core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, *, seed: int, paths, data_root: Path) -> dict[str, Any]:
         tw, tw_rep = _load_taiwan(data_root)
@@ -350,6 +370,10 @@ class C01:
                                     categorical=feat.TAIWAN_CATEGORICAL, monotone=feat.TAIWAN_MONOTONE, seed=seed,
                                     train_n=2000, base_split=base.sp, ead_col="BILL_AMT1")
         rv = _v("riskvalidation")
+        # S-6: reject inference on the German twin, a population whose every outcome is known (c01_reject); its own repetitions and
+        # seeds, so no number of the ladder moves
+        _log("reject inference on the German twin")
+        rejected = reject.run(de, feat.GERMAN_FEATURES, feat.GERMAN_CATEGORICAL, seed=seed, population="uci-german")
         entries: list[dict[str, Any]] = []
         values: dict[str, float] = {}
         for fit_id, fit in fits.items():
@@ -395,6 +419,8 @@ class C01:
             rows += evaluate.csi_rows(Xtr, X, list(fit.features), fit.categorical)
             outputs["n"] = int(len(y))
             outputs["defaults"] = int(y.sum())
+            # contract 2 has no optional keys: only the German twin, whose every outcome is known, carries the S-6 block
+            outputs["reject_inference"] = rejected if v["id"] == "german-twin" else None
             outputs["groups"] = _by_group(fit, pos, y, pds)
             # 50 scored applicants for the live parity test, on the two variants whose rows are not resampled
             outputs["sample"] = _sample(fit, pos[:50]) if v["id"] in ("holdout", "german-twin") else None
@@ -433,7 +459,8 @@ class C01:
                 values["transactor_effect_P1-scorecard_holdout"] = (rev - trn) / rev
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
-            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"},
+            depends_on=self.depends_on(),
+            case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Puntuación crediticia"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries, default_variant="holdout",
             contract={"uci-taiwan": tw_rep.summary(), "uci-german": de_rep.summary()}, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))
@@ -455,7 +482,7 @@ def _irb_facts(cls: str, full: np.ndarray | None) -> dict[str, Any]:
         "lgd_floor_source": "BCBS d424, IRB paragraph 121 and its table (CRE32.58 to CRE32.59)",
         "transactor_source": "BCBS d424, standardised paragraph 56 and IRB paragraph 25; CRR3 Article 4(1)(152)",
         "ead": _t("the current bill (BILL_AMT1, floored at 0), the drawn balance only",
-                  "la cuenta actual (BILL_AMT1, con piso 0), solo el saldo utilizado") if cards else
+                  "el saldo facturado actual (BILL_AMT1, con piso 0), solo el saldo utilizado") if cards else
                _t("the credit amount", "el monto del crédito"),
     }
 
@@ -502,3 +529,41 @@ def _tabpfn_available() -> bool:
 
 
 CASE = C01()
+
+
+def attach_reject_inference(*, seed: int, root: Path, manifests: Path, data_root: Path) -> list[str]:
+    """Add S-6 (``outputs.reject_inference``) to the committed C01 variants without refitting the ladder.
+
+    The full bake of C01 fits the Taiwan ladder (PLTR alone takes minutes) and the reject-inference experiment draws its own repetitions
+    and seeds, so no number of the ladder depends on it; this step reads each committed variant, sets the German twin's block from
+    ``c01_reject.run`` on the raw German file (``None`` on the others), writes it back through the producer's own writer (schema
+    validated, lane gate re-measured) and carries the new size and gate to the manifest. ``bake`` writes the same block, which
+    tests/c01_reject/test_reject_document.py holds. Returns the variants rewritten.
+    """
+    de, _ = _load_german(data_root)
+    rejected = reject.run(de, feat.GERMAN_FEATURES, feat.GERMAN_CATEGORICAL, seed=seed, population="uci-german")
+    manifest = read_json(manifests / f"{CASE_ID}.json")
+    done: list[str] = []
+    for art in manifest["artifacts"]:
+        if art["role"] != "variant":
+            continue
+        doc = read_json(root / art["path"])
+        doc["outputs"]["reject_inference"] = rejected if art["variant_id"] == "german-twin" else None
+        entry = write_artifact(root, art["path"], doc, exact=frozenset({"sample", "parity"}), engines=ENGINES, run_ms=RUN_MS)
+        art.update({k: entry[k] for k in ("path", "bytes", "lane", "gate")})
+        done.append(art["variant_id"])
+    validate_document(f"data/derived/manifests/{CASE_ID}.json", manifest)
+    write_json(manifests / f"{CASE_ID}.json", manifest)
+    return done
+
+
+if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(prog="pipeline.cases.c01_retail_pd", description="C01 side steps that do not refit the ladder.")
+    ap.add_argument("step", choices=["attach-reject-inference"])
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--output", type=Path, required=True, help="the derived root (data/derived)")
+    ap.add_argument("--data-root", type=Path, required=True)
+    a = ap.parse_args()
+    print("rewritten:", ", ".join(attach_reject_inference(seed=a.seed, root=a.output, manifests=a.output / "manifests", data_root=a.data_root)))

@@ -26,6 +26,8 @@ import { loadCase, loadIndex, useArtifact, type CaseData } from '../api/artifact
 import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
+import { caseLabel } from './caseLabels';
+import { useMeasuredLayout } from './layout';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
 import { FindingsWithOpinion } from './governance/OpinionBlock';
@@ -54,7 +56,7 @@ function DecisionReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(v?.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: shortName(v ? rung(v, CHAMPION) : undefined, CHAMPION), value: champ?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'From the committed cut-off curve; the Impact group draws it.', es: 'Desde la curva de corte comprometida; el grupo Impacto la dibuja.' } },
+        { label: shortName(v ? rung(v, CHAMPION) : undefined, CHAMPION), value: champ?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'From the committed cut-off curve; the Impact group draws it.', es: 'Desde la curva de corte versionada; el grupo Impacto la dibuja.' } },
         { label: shortName(v && sel ? rung(v, sel.challenger) : undefined, sel?.challenger ?? ''), value: chall?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 } },
       ]}
     />
@@ -106,8 +108,8 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(sel?.data.variant.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La scorecard, desde la tabla de puntos comprometida.' } },
-        { label: { en: 'PD, scorecard', es: 'PD, scorecard' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
+        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La tarjeta de puntuación, desde la tabla de puntos versionada.' } },
+        { label: { en: 'PD, scorecard', es: 'PD, tarjeta de puntuación' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'PD, EBM (raw)', es: 'PD, EBM (cruda)' }, value: live?.pdEbm ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Before its calibration map.', es: 'Antes de su mapa de calibración.' } },
         { label: { en: 'Outcome', es: 'Resultado' }, text: live ? (live.defaulted ? { en: 'defaulted', es: 'incumplió' } : { en: 'did not default', es: 'no incumplió' }) : undefined, unitless: true },
       ]}
@@ -120,8 +122,10 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
  * list below). The Focus button of shell 0.14.0 takes 37 px at the head of the rail, so C01 (in Spanish), C04, C07 and C22 each
  * overflowed it by 10 to 39 px (ADR-0071 rule 6) until their variant note went to the Variants and Context groups. Shell 0.14.1 put
  * the button beside the case select; C10's five loan types and two grids still overflowed by 2 px at 1280 x 800 in English.
+ * The 1.00.000 full gate found C16, C18 and C20 over by 6 to 7 px in Spanish in the gate's wide font, where each read-out's
+ * lane and data badges take two lines; C16's and C18's titles say what their chips say, and C20's Context names its title.
  */
-const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C10', 'C22']);
+export const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C10', 'C16', 'C18', 'C20', 'C22']);
 
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {
@@ -139,6 +143,8 @@ export function liveScores(sel: Selection | null) {
 
 export function Workbench() {
   const lang = useShellLang();
+  // the scroll boxes' cues and the plots' floors, measured in the browser (U16-F12a, R4 ruling 8)
+  useMeasuredLayout();
   const index = useArtifact((s) => loadIndex(s), [], { unavailable: true });
   const readiness = useReadiness();
   const [caseId, setCaseId] = useState<string | null>(null);
@@ -185,7 +191,7 @@ export function Workbench() {
   const PLANNED_MARK = { en: ' (planned)', es: ' (planificado)' };
   const cases: CaseDef[] = entries.map((c) => ({
     id: c.case_id,
-    name: c.title[lang] + (isPlanned(readiness ?? null, c) ? PLANNED_MARK[lang] : ''),
+    name: caseLabel(c.case_id, c.title, lang) + (isPlanned(readiness ?? null, c) ? PLANNED_MARK[lang] : ''),
     category: c.category[lang],
     kind: c.kind,
   }));
@@ -234,7 +240,7 @@ export function Workbench() {
           <Knob
             id="lgd"
             label={{ en: 'LGD', es: 'LGD' }}
-            hint={{ en: 'Loss given default, assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50% es el piso de Basilea III para QRRE (CRE32.58).' }}
+            hint={{ en: 'Loss given default, assumed for every approved account; 50 % is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50 % es el piso de Basilea III para QRRE (CRE32.58).' }}
             value={lgd}
             min={0.1}
             max={1}
@@ -279,7 +285,7 @@ export function Workbench() {
           <PolicyReadout sel={sel} />
           {moved && (
             <button type="button" className="ct-linkbutton" onClick={() => setAlphas(COMMITTED)}>
-              {pick({ en: 'Back to the committed policy', es: 'Volver a la política comprometida' }, lang)}
+              {pick({ en: 'Back to the committed policy', es: 'Volver a la política versionada' }, lang)}
             </button>
           )}
         </>
@@ -293,7 +299,7 @@ export function Workbench() {
           <Knob
             id="applicant"
             label={{ en: 'Applicant of the sample', es: 'Solicitante de la muestra' }}
-            hint={{ en: 'One of the 50 holdout applicants scored live from the committed points table and EBM.', es: 'Uno de los 50 solicitantes de la muestra reservada puntuados en vivo con la tabla de puntos y el EBM comprometidos.' }}
+            hint={{ en: 'One of the 50 holdout applicants scored live from the committed points table and EBM.', es: 'Uno de los 50 solicitantes de la muestra reservada puntuados en vivo con la tabla de puntos y el EBM versionados.' }}
             value={applicant + 1}
             min={1}
             max={sample.ids.length}
@@ -336,6 +342,8 @@ export function Workbench() {
     <CaseWorkbench
       caseId={selected ?? ''}
       source={prov}
+      // C04's notes are data the reader needs whole: at 1280 px each takes the height it needs (shell 0.19.5, SHC-101; R5 c05 M1)
+      noteFit={selected === 'C04'}
       focus
       cases={{
         cases,

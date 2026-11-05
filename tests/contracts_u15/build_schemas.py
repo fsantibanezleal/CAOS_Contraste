@@ -467,9 +467,10 @@ def report_defs() -> dict:
         "alpha_red": NUM_OR_NULL,
         "parameters": {"type": "object", "additionalProperties": {"type": ["number", "string"]}},
         "version": nullable(S()),
-        "source": eng(E("packaged-policy", "inline-battery", "unresolved"), "policy.resolve_policy"),
+        "source": eng(E("packaged-policy", "packaged-policy-overridden", "inline-battery", "unresolved"), "policy.resolve_policy"),
         "reason": nullable(S()),
-    }, "The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.")
+    }, "The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, a packaged label computed with other cut points "
+       "(`<label>+custom`, source packaged-policy-overridden), an inline battery string parsed, or unresolved with its reason.")
     when_null(policy, "kind", ["kind_reason"])
     when_null(policy, "direction", ["direction_reason"])
     when(policy, "source", "unresolved", {"reason": S(minLength=1), "kind": {"type": "null"}, "direction": {"type": "null"}})
@@ -538,7 +539,7 @@ def report_schema() -> dict:
     root = Ob(props)
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": f"{BASE}governance/governance-report.schema.json",
             "title": "Governance validation report",
-            "description": "Catalog row governance-report 1.0.0: the I.3 validation report of one inventory entry "
+            "description": "Catalog row governance-report 1.1.0: the I.3 validation report of one inventory entry "
                            "(data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its "
                            "reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.",
             **root, "$defs": reachable(root, d)}

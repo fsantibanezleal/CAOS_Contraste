@@ -40,7 +40,7 @@ ENGINES = {"numpy", "scipy", "riskvalidation"}
 RUN_MS = 600_000.0
 #: the measured results are exact in the documents: their identities close to 1e-9 and rounding to nine digits would only add noise
 EXACT = frozenset({"outputs", "fit", "tests"})
-REQUIREMENTS = [f"CT-21{n:02d}" for n in range(1, 20)]
+REQUIREMENTS = [f"CT-21{n:02d}" for n in range(1, 23)]
 
 #: what a reader should see, declared before the bake and wide on purpose (a result outside is a finding to read, not to tune away)
 EXPECT_APPROVAL = (0.55, 0.95)   # approvals over decisions, Delaware, any year
@@ -158,6 +158,10 @@ def build(seed: int, data_root: Path | str | None, *, k: int = est.SITUATION_K, 
         fs, cs, fd, cd = samples[a], samples[b], designs[a], designs[b]
         attrs, tests = [], []
         for f in legal.ATTRIBUTES:
+            why = est.not_evaluated(f, fs)
+            if why is not None:
+                _log(f"{pid}: {f} {why['en']}")
+                continue
             res = est.attribute_result(f, fs, fd, cs, cd)
             attrs.append(res.block)
             tests.extend(res.tests)
@@ -246,7 +250,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, 
     sums.append(_sum(root, RAW_REL))
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, expect_ranges(built.values), built.values)
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category={"en": "ML and AI model risk", "es": "Riesgo de modelos de ML e IA"}, question=_question(),
         sources=list(SOURCES), seed=seed, variants=entries, default_variant=built.order[-1], contract={"hmda": built.contract},
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details())

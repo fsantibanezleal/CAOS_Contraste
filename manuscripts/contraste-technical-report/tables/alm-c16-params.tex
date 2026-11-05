@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The run-off parameters of the liquidity ladder: for each of the three deposit segments of Silicon Valley Bank, the LiST class it is mapped to, its opening balance, the run-off mechanism, the daily compounding rate under the Adverse and the Extreme scenario of the European Central Bank (or, for financial customers, the share leaving on the first day) and the cumulative outflow share after the 125 relevant days of the horizon.}
+\label{tab:alm-c16-params}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrlrrrr}
+\toprule
+Segment & LiST class & \shortstack{Opening balance\\(USD bn)} & Mechanism & Adverse rate & Extreme rate & \shortstack{Adverse\\outflow, 125\\days (\%)} & \shortstack{Extreme\\outflow, 125\\days (\%)} \\
+\midrule
+retail insured & other retail & 9.99 & open maturity compounding & 0.00373218 & 0.00440873 & 37.34 & 42.44 \\
+non operational corporate & non operational non financial corporates & 151.59 & open maturity compounding & 0.00688541 & 0.01065229 & 57.84 & 73.78 \\
+financial & non operational other financial & 13.90 & full runoff & 1.0 & 1.0 & 100.00 & 100.00 \\
+\bottomrule
+\end{tabular}}
+\end{table}

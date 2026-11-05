@@ -23,8 +23,20 @@ from riskvalidation.validation import lgd_ead as rv_val
 from .build import DOWNTURN_SD, lgd, t
 from .panel import COHORTS, AnnualRate, Defaults
 
-INDICATOR = "annual charge-off rate of the SBA 7(a) book (charge-offs of the year over loans open on 1 January)"
-SOURCE = "sba-foia (a credit indicator of the book itself; no macro path is read)"
+INDICATOR = t("annual charge-off rate of the SBA 7(a) book (charge-offs of the year over loans open on 1 January)",
+              "tasa anual de castigos de la cartera SBA 7(a) (castigos del año sobre los préstamos abiertos al 1 de enero)")
+SOURCE = t("the SBA FOIA loan file (a credit indicator of the book itself; no macro path is read)",
+           "el archivo de préstamos FOIA de la SBA (un indicador de crédito de la propia cartera; no se lee una trayectoria macro)")
+
+
+#: how the add-on is built, in both languages (a Spanish view prints it: "aproximada", never "proxy", R3 c09)
+APPROACH = t(
+    "Cohort-based add-on: the default-weighted mean LGD proxy of the downturn cohorts minus the long-run mean over the six "
+    "cohorts, with the downturn identified from the annual charge-off rate of the SBA 7(a) book. An illustration, not a "
+    "regulatory estimate.",
+    "Ajuste por cohortes: la LGD aproximada media ponderada por incumplimientos de las cohortes de crisis menos la media de largo "
+    "plazo de las seis cohortes, con la crisis identificada por la tasa anual de castigos de la cartera SBA 7(a). Una "
+    "ilustración, no una estimación regulatoria.")
 
 
 @dataclass(frozen=True)
@@ -98,13 +110,7 @@ def plan(defaults: Defaults, annual: AnnualRate, threshold: float | None = None)
     if not rows:
         raise ValueError("no cohort has half of its default years inside the downturn period")
     coverage = {"n_cohorts": len(rows), "share_covered": float(sum(r["covered"] for r in rows) / len(rows))}
-    period = {"first_year": first, "last_year": last, "indicator": INDICATOR, "macro_source": SOURCE}
-    approach = t(
-        "Cohort-based add-on: the default-weighted mean LGD proxy of the downturn cohorts minus the long-run mean over the six "
-        "cohorts, with the downturn identified from the annual charge-off rate of the SBA 7(a) book. An illustration, not a "
-        "regulatory estimate.",
-        "Ajuste por cohortes: la LGD proxy media ponderada por incumplimientos de las cohortes de crisis menos la media de largo "
-        "plazo de las seis cohortes, con la crisis identificada por la tasa anual de castigos de la cartera SBA 7(a). Una "
-        "ilustración, no una estimación regulatoria.")
+    period = {"first_year": first, "last_year": last, "indicator": dict(INDICATOR), "macro_source": dict(SOURCE)}
+    approach = dict(APPROACH)
     return DownturnPlan(period, approach, rows, coverage, tests, thr, sorted(flagged), [r["cohort_id"] for r in rows],
                         float(res.long_run), float(res.downturn))

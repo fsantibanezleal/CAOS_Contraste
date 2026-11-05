@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{AUC of the ladder on each evaluation population of the Taiwan sample and on the German twin: the observed holdout, two covariate shifts, a prior shift, label noise, a ladder refitted on 2,000 rows, and the German twin, where TabPFN runs.}
+\label{tab:cs-c01-variants}
+\begin{tabular}{lrrrrrr}
+\toprule
+Variant & Scorecard & L1 & PLTR & EBM & LightGBM & TabPFN \\
+\midrule
+\relax Holdout & \relax 0.7587 & \relax 0.7587 & \relax 0.7749 & \relax 0.7746 & \relax 0.7770 & \relax -- \\
+\relax Drift 0.25 & \relax 0.7842 & \relax 0.7842 & \relax 0.7966 & \relax 0.7953 & \relax 0.7994 & \relax -- \\
+\relax Drift 0.6 & \relax 0.8178 & \relax 0.8178 & \relax 0.8244 & \relax 0.8230 & \relax 0.8277 & \relax -- \\
+\relax Prior shift x1.5 & \relax 0.7689 & \relax 0.7689 & \relax 0.7811 & \relax 0.7838 & \relax 0.7852 & \relax -- \\
+\relax Label noise 5\% & \relax 0.7174 & \relax 0.7174 & \relax 0.7321 & \relax 0.7314 & \relax 0.7340 & \relax -- \\
+\relax 2,000 rows & \relax 0.7525 & \relax 0.7511 & \relax 0.7528 & \relax 0.7649 & \relax 0.7601 & \relax -- \\
+\relax German twin & \relax 0.7883 & \relax 0.7908 & \relax 0.7861 & \relax 0.7874 & \relax 0.7784 & \relax 0.7769 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -49,6 +49,7 @@ export const FIELD_TEXT: Record<string, Bi> = {
   derived_ethnicity: { en: 'Ethnicity', es: 'Etnicidad' },
   derived_sex: { en: 'Sex', es: 'Sexo' },
   applicant_age: { en: 'Age', es: 'Edad' },
+  applicant_age_above_62: { en: 'Age, 62 or over', es: 'Edad, 62 o más' },
 };
 
 export const BASIS_TEXT: Record<string, Bi> = {
@@ -72,6 +73,34 @@ export const CONTROL_TEXT: Record<string, Bi> = {
 };
 
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
+
+/** The groups the bake names in its own words (the 62 contrast, BL-087); every other group is a source label and reads the same in both languages. */
+export const GROUP_TEXT: Record<string, Bi> = {
+  '62 or over': { en: '62 or over', es: '62 o más' },
+  'under 62': { en: 'under 62', es: 'menores de 62' },
+  // the categories of the HMDA data, in the words of the public data's own Spanish usage
+  'American Indian or Alaska Native': { en: 'American Indian or Alaska Native', es: 'Indígena americano o nativo de Alaska' },
+  Asian: { en: 'Asian', es: 'Asiático' },
+  'Black or African American': { en: 'Black or African American', es: 'Negro o afroamericano' },
+  'Native Hawaiian or Other Pacific Islander': { en: 'Native Hawaiian or Other Pacific Islander', es: 'Nativo de Hawái u otro isleño del Pacífico' },
+  White: { en: 'White', es: 'Blanco' },
+  '2 or more minority races': { en: '2 or more minority races', es: '2 o más razas minoritarias' },
+  Joint: { en: 'Joint', es: 'Conjunto' },
+  'Free Form Text Only': { en: 'Free Form Text Only', es: 'Solo texto libre' },
+  'Race Not Available': { en: 'Race Not Available', es: 'Raza no disponible' },
+  'Ethnicity Not Available': { en: 'Ethnicity Not Available', es: 'Etnicidad no disponible' },
+  'Sex Not Available': { en: 'Sex Not Available', es: 'Sexo no disponible' },
+  'Not Hispanic or Latino': { en: 'Not Hispanic or Latino', es: 'No hispano ni latino' },
+  'Hispanic or Latino': { en: 'Hispanic or Latino', es: 'Hispano o latino' },
+  Male: { en: 'Male', es: 'Hombre' },
+  Female: { en: 'Female', es: 'Mujer' },
+};
+
+export const groupBi = (group: string): Bi => text(GROUP_TEXT, group);
+
+/** A contrast label ("62 or over vs under 62") with the groups the bake names in its own words in the language asked. */
+export const contrastText = (label: string, lang: 'en' | 'es'): string =>
+  Object.entries(GROUP_TEXT).reduce((acc, [g, bi]) => acc.replaceAll(g, bi[lang]), label);
 
 /** The selection a variant opens on: the first attribute and its first contrast group. */
 export function defaultSel(data: CaseData | null): C21Sel | null {

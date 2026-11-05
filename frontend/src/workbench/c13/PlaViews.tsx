@@ -4,12 +4,12 @@
 // control). Every view names the deficiency the generator planted.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { ChartOverTable, MaybeNumber } from '../c06/format';
+import { ChartOverTable } from '../c06/format';
 import { rowsMin } from '../c11/MarketCommon';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
 import { ViewFoot, deficiencyName } from './C13Common';
-import { STATISTIC_TEXT, ZONE_TEXT, ecdfGap, outputsOf, rankSeries, text, type C13Sel } from './selection';
+import { STATISTIC_TEXT, ZONE_TEXT, ecdfGap, seedText, outputsOf, rankSeries, text, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
@@ -31,8 +31,8 @@ export function RanksView({ sel }: { sel: C13Sel | null }) {
         title={{ en: `Rank scatter, ${name.en}`, es: `Dispersión de rangos, ${name.es}` }}
         {...card}
         note={{
-          en: `One replication kept whole (number ${count(ex.replication_index, 'en')}, seed ${count(ex.seed, 'en')}): each point is a day, ranked on the hypothetical and on the risk-theoretical P&L. A model that explains the desk puts the points on the diagonal.`,
-          es: `Una replicación guardada completa (número ${count(ex.replication_index, 'es')}, semilla ${count(ex.seed, 'es')}): cada punto es un día, ordenado por el P&L hipotético y por el P&L teórico del riesgo. Un modelo que explica la mesa pone los puntos en la diagonal.`,
+          en: `One replication kept whole (number ${count(ex.replication_index, 'en')}, seed ${seedText(ex.seed, 'en')}): each point is a day, ranked on the hypothetical and on the risk-theoretical P&L. A model that explains the desk puts the points on the diagonal.`,
+          es: `Una replicación guardada completa (número ${count(ex.replication_index, 'es')}, semilla ${seedText(ex.seed, 'es')}): cada punto es un día, ordenado por el P&L hipotético y por el P&L teórico del riesgo. Un modelo que explica la mesa pone los puntos en la diagonal.`,
         }}
       >
         <ChartOverTable
@@ -40,7 +40,7 @@ export function RanksView({ sel }: { sel: C13Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: x, label: { en: 'Rank of the hypothetical P&L (HPL)', es: 'Rango del P&L hipotético (HPL)' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Rank of the risk-theoretical P&L (RTPL)', es: 'Rango del P&L teórico del riesgo (RTPL)' }, format: { decimals: 0 } }}
+              y={{ label: { en: 'Rank of the RTPL', es: 'Rango del RTPL' }, format: { decimals: 0 } }}
               series={[
                 { label: { en: 'Days', es: 'Días' }, values: y, mode: 'points', color: '--color-accent', size: 5 },
                 { label: { en: 'Same rank', es: 'Mismo rango' }, values: x, color: '--color-fg-faint', width: 1, dash: [4, 3] },
@@ -230,7 +230,7 @@ export function DetectionView({ sel }: { sel: C13Sel | null }) {
     { id: 'red', label: { en: 'Red zone', es: 'Zona roja' }, value: d.n_red, tone: 'bad' as const },
     { id: 'spearman', label: { en: 'Spearman flagged', es: 'Marcada por Spearman' }, value: d.by_test.spearman_flagged, tone: 'neutral' as const },
     { id: 'ks', label: { en: 'KS flagged', es: 'Marcada por KS' }, value: d.by_test.ks_flagged, tone: 'neutral' as const },
-    { id: 'desk', label: { en: 'Desk back-test flagged', es: 'Marcada por el backtest de mesa' }, value: d.by_test.desk_backtest_flagged, tone: 'neutral' as const },
+    { id: 'desk', label: { en: 'Desk back-test flagged, at either level', es: 'Marcada por la prueba de la mesa, en cualquier nivel' }, value: d.by_test.desk_backtest_flagged, tone: 'neutral' as const },
   ];
   return (
     <ViewsRow>
@@ -267,14 +267,18 @@ export function DetectionView({ sel }: { sel: C13Sel | null }) {
             <dt>{pick({ en: 'Amber or red', es: 'Ámbar o roja' }, lang)}</dt>
             <dd>{`${pct(d.share_amber_or_red, lang, 2)} (${count(d.n_amber_or_red, lang)} / ${count(d.n_replications, lang)})`}</dd>
             <dt>{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</dt>
-            <dd>{`${pct(d.ci_low, lang, 2)} - ${pct(d.ci_high, lang, 2)} (${pick({ en: 'Monte Carlo SE', es: 'EE de Monte Carlo' }, lang)} ${pct(d.mc_se, lang, 2)})`}</dd>
+            <dd>{`${pct(d.ci_low, lang, 2)} - ${pct(d.ci_high, lang, 2)} (${pick({ en: 'Monte Carlo SE', es: 'error estándar de Monte Carlo' }, lang)} ${pct(d.mc_se, lang, 2)})`}</dd>
             <dt>{pick({ en: 'Red', es: 'Roja' }, lang)}</dt>
             <dd>{`${pct(d.share_red, lang, 2)} (${count(d.n_red, lang)})`}</dd>
-            <dt>{pick({ en: 'Flagged by Spearman, KS, desk back-test', es: 'Marcadas por Spearman, KS, backtest de mesa' }, lang)}</dt>
-            <dd>{`${count(d.by_test.spearman_flagged, lang)}, ${count(d.by_test.ks_flagged, lang)}, ${count(d.by_test.desk_backtest_flagged, lang)}`}</dd>
+            <dt>{pick({ en: 'Flagged by Spearman / KS / desk back-test at either level', es: 'Marcadas por Spearman / KS / prueba de la mesa en cualquier nivel' }, lang)}</dt>
+            {/* " / " between the counts: a comma read as the thousands separator ("0, 1,000, 954", R3 c14 m11) */}
+            <dd>{`${count(d.by_test.spearman_flagged, lang)} / ${count(d.by_test.ks_flagged, lang)} / ${count(d.by_test.desk_backtest_flagged, lang)}`}</dd>
             <dt>{pick({ en: 'Flagged by the test meant to catch it', es: 'Marcadas por la prueba que debe detectarla' }, lang)}</dt>
             <dd>
-              <MaybeNumber value={d.intended_test_flagged} reason={d.intended_test_flagged === null ? pick({ en: 'no deficiency planted, so no test is meant to catch it', es: 'no se siembra deficiencia, así que ninguna prueba debe detectarla' }, lang) : null} format={(v) => count(v, lang)} />
+              {/* the control has no test to catch a deficiency: "not applicable" with its reason inline, never "not available" (R3 c14 m7) */}
+              {d.intended_test_flagged === null
+                ? pick({ en: 'not applicable: no deficiency planted, so no test is meant to catch it', es: 'no aplica: no se siembra deficiencia, así que ninguna prueba debe detectarla' }, lang)
+                : count(d.intended_test_flagged, lang)}
             </dd>
           </dl>
           <ViewFoot o={o} />

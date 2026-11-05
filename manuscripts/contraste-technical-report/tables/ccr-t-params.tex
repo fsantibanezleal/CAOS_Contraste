@@ -1,0 +1,39 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The parameters of case C12 as the artifacts record them: the Hull-White coefficients estimated at the curve date with their standard errors, and the conventions of the synthetic book, the CSA, the credit curve, the initial margin and the backtest.}
+\label{tab:ccr-params}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llll}
+\toprule
+Parameter & Value & Unit & Status \\
+\midrule
+\relax Mean reversion $a$ & $0.1675\pm0.0784$ & per year & estimated (AR(1) regression) \\
+\relax Volatility $\sigma$ & $0.00880\pm0.00007$ & per square-root year & estimated (AR(1) regression) \\
+Short-rate proxy tenor & 0.25 & years & shortest Treasury zero rate \\
+Observations in the fit & 8,939 & daily & 1990-01-02 to 2025-09-29 \\
+Monte Carlo paths & 20,000 & paths & convention (antithetic) \\
+Seed & 42 & integer & convention \\
+Report grid points & 33 & dates & monthly, quarterly, half-yearly \\
+PFE quantile & 0.95 & decimal & convention \\
+CSA threshold & 0 & USD & convention \\
+CSA minimum transfer amount & 10,000 & USD & convention \\
+CSA independent amount & 0 & USD & convention \\
+Margin period of risk, short and long & 10 and 20 & business days & convention (CRE53.24 floor of 10) \\
+Counterparty spread (synthetic flat, sensitivity only) & 0.0125 & per year & convention \\
+Counterparty loss given default & 0.60 & decimal & convention \\
+Bank own spread & 0.0080 & per year & convention \\
+Bank loss given default & 0.60 & decimal & convention \\
+Initial margin quantile & 0.99 & decimal & convention \\
+Initial margin horizon and MPoR & 14 and 14 & calendar days & convention (10 business days) \\
+Initial margin regression order & 2 & polynomial order & convention \\
+\relax Wrong-way parameter grid $b$ & -2, 0, 1, 2, 4 & per USD million & convention \\
+BA-CVA sector and rating & financials, investment-grade & MAR50.16 Table 1 & convention \\
+Stress calibration window & 2007-01-01 to 2009-12-31 & dates & convention (CRE53.7) \\
+Backtest start and paths per date & 2000-01, 4,000 & month, paths & convention \\
+Simulated backtests for critical values & 1,000 & backtests & convention \\
+Agreement threshold with the reference engine & 2 & combined standard errors & convention \\
+Agreement threshold of the closed-form checks & 3 & standard errors & convention \\
+\bottomrule
+\end{tabular}}
+\end{table}

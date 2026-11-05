@@ -20,147 +20,147 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "sha256": "63762148d49dc6e14918df742a1023d9dadfde20f1869db5a183170d7c7221c1",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "sha256": "d7c51ece804ce48857cabd50152c2218e1a91ac51dd1efeb818dee57b63fe7f1",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "sha256": "99ecbc9eb6c44b95a91c9538c5e7dd898fb5b16eb8020755a2ba29d03fa6e65d",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "sha256": "1e63726939417b12033837ca208e3683636a4c4e969248a7b8e35e6bc86acc50",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "sha256": "aca66adaa70dd735e3dba9d2293319b6a62813e14d61a307deeb92327d2d4a15",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "sha256": "e25a3596e1ca1050874363e6d55ef68a6884228d190d356034456815ee91db3b",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "sha256": "475aa91d80397bf7bc243d8e924507a6cfc15ea6acc24d61c872f6752a643cee",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "sha256": "5564c3ff959c5c9030b0df8b95a5335d422cb3e9a5cc33f4c2a55ae35d4d8b51",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "sha256": "f2bf8cb6904e1a5bb51d17d64106890fc569e9eded4e6b8dc9d314c088d16ae6",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "sha256": "c3897a659164ff5d91c85784aad6937d8337580f9f10ac8bc34a5a77e9f5fe74",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "sha256": "8f3c3ee5def90d067bd3ffb76278f19c38f0ee3d8139a24428166a159423fb4e",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061",
+    "sha256": "fa4466c5abfd0101866ee661e750f55b4c9566e9ee6efa158b5c997b6aa88edc",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
+    "sha256": "e611baa926c51e2bb1757898f0bb32a27aa2ef28425b4afe4fabc4ffa760e83d",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
+    "sha256": "dfe272b20797ea662089cc06ae7cb4b0cc42ae4e5fb6dbf79398fbe81f40a2e8",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
+    "sha256": "ef6427efdbfeca37212d006e19213bce73855124961a11c15ea465a6ef2ef462",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
+    "sha256": "913ffc14391768cf6af21c09ac870e168a66b447eac9f35d11328daeaf8c998c",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
+    "sha256": "519d4e41ffc743e376ec835f8a8f422767a2730c0d63207b0425c56aeba79c09",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
+    "sha256": "ab1114038649eaa005c5ab5ae574d1542d73c8fe0034b5bf35e8cfcfa09b00b6",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
+    "sha256": "87201d6738417ebecfd8995daf1c6aef23236d170b69e7817fa1ee3b38da36da",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "sha256": "f8143ea4bbea18b0612c6f916a365cab5f792384456be2073bf278618d329fff",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "sha256": "d97e6a99bb6c2ac448256a0c86b413fad0358e110aa5babfd00926bd61e0d29b",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "sha256": "fcb7937b3de6b85ff83637494ef66073bc5b60b8726e5daf68234498b6f273b7",
     "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "sha256": "fa6da36e9e985181cb12c6a6c481eb60a5b686a2acee0549933a84d6117bddd7",
     "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "sha256": "e4b24e12c946433d77ff09e9e92b2ab0fa789488bb90ad16e2eb12470a4e65b5",
     "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "sha256": "400b273dfbc7241fba04facaea180d920e8cfb56aec64c26ecf2f94a47e8fa33",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "sha256": "7a1da38de2b5c3362eb36d857c74c96832058fc94ae00108fbcc53edf1e8c0bd",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "sha256": "8f36f666ad722bc7da9c547431585455b4386945e67d7dbacb3448f34759c3a0",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "sha256": "a250cc3d62810245050baea50f83f47a13dd1f617c0d0e3eb35c83d01b99e408",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "sha256": "e24434b04aeaed9643893af5633a748c234502ce7f437259b441ab7d73b6cbf9",
     "ref": null
    }
   ]
@@ -274,14 +274,14 @@
      "basis": "read at data/derived/manifests/C01.json#/title"
     },
     "A03": {
-     "value": "german@0.07.000/riskvalidation-0.4.3",
+     "value": "german@1.00.000/riskvalidation-1.0.1",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C01/models-german.json#/fit_id | data/derived/C01/models-german.json#/provenance/code_version | data/derived/C01/models-german.json#/provenance/riskvalidation_version"
     },
     "A04": {
      "value": {
       "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
-      "es": "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
+      "es": "¿Iguala una tarjeta de puntuación WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
      },
      "status": "present",
      "basis": "case level only; read at data/derived/manifests/C01.json#/question"
@@ -315,7 +315,7 @@
     "A08": {
      "value": {
       "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
-      "es": "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
+      "es": "¿Iguala una tarjeta de puntuación WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
      },
      "status": "present",
      "basis": "read at data/derived/manifests/C01.json#/question"
@@ -492,7 +492,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.4.3",
+     "value": "riskvalidation 1.0.1",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
@@ -508,14 +508,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-12",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
+     "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-12",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -542,7 +542,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-02-09"
+      "earliest_due": "2027-02-24"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -587,8 +587,8 @@
      "family": "pd-scoring",
      "rung": "P0",
      "title": {
-      "en": "Single variable (checking_status)",
-      "es": "Una variable (checking_status)"
+      "en": "Single variable (Status of the existing checking account)",
+      "es": "Una variable (Estado de la cuenta corriente)"
      }
     },
     {
@@ -601,7 +601,7 @@
      "rung": "P1",
      "title": {
       "en": "WoE logistic scorecard",
-      "es": "Scorecard logística WoE"
+      "es": "Tarjeta de puntuación logística WoE"
      }
     },
     {
@@ -640,7 +640,7 @@
      "rung": "P3",
      "title": {
       "en": "Explainable boosting machine (GA2M)",
-      "es": "Máquina de boosting explicable (GA2M)"
+      "es": "Máquina de potenciación explicable (GA2M)"
      }
     },
     {
@@ -653,7 +653,7 @@
      "rung": "P4",
      "title": {
       "en": "Monotone gradient boosting (LightGBM)",
-      "es": "Gradient boosting monótono (LightGBM)"
+      "es": "Potenciación de gradiente monótona (LightGBM)"
      }
     },
     {
@@ -846,13 +846,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-12",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-12",
-    "next_full_revalidation": "2029-10-12",
-    "next_monitoring": "2027-04-12",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-04-27",
     "null_reason": null
    },
    "graph": {
@@ -872,7 +872,7 @@
    "fit_id": "banco-andino",
    "title": {
     "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
-    "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
+    "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anejo 9 del BdE"
    },
    "attributes": {
     "A01": {
@@ -883,20 +883,20 @@
     "A02": {
      "value": {
       "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
-      "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
+      "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anejo 9 del BdE"
      },
      "status": "present",
      "basis": "read at data/derived/manifests/C07.json#/title"
     },
     "A03": {
-     "value": "banco-andino@0.07.000/riskvalidation-0.5.0",
+     "value": "banco-andino@1.00.000/riskvalidation-1.0.1",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C07/models-banco-andino.json#/fit_id | data/derived/C07/models-banco-andino.json#/provenance/code_version | data/derived/C07/models-banco-andino.json#/provenance/riskvalidation_version"
     },
     "A04": {
      "value": {
       "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
-      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
+      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anejo 9 del BdE sobre una misma cartera bajo tensión?"
      },
      "status": "present",
      "basis": "case level only; read at data/derived/manifests/C07.json#/question"
@@ -928,7 +928,7 @@
     "A08": {
      "value": {
       "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
-      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
+      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anejo 9 del BdE sobre una misma cartera bajo tensión?"
      },
      "status": "present",
      "basis": "read at data/derived/manifests/C07.json#/question"
@@ -1080,7 +1080,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.5.0",
+     "value": "riskvalidation 1.0.1",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
@@ -1096,14 +1096,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-12",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C07/models-banco-andino.json#/provenance/code_version"
+     "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C07/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-12",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1130,7 +1130,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-12-11"
+      "earliest_due": "2026-12-26"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1209,7 +1209,7 @@
      "rung": "L0-ttc-one-factor-constant-hazard",
      "title": {
       "en": "IFRS 9 probability-weighted ECL",
-      "es": "ECL IFRS 9 ponderada por probabilidad"
+      "es": "PCE IFRS 9 ponderada por probabilidad"
      }
     },
     {
@@ -1402,13 +1402,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-12",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-12",
-    "next_full_revalidation": "2029-10-12",
-    "next_monitoring": "2027-01-12",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-01-27",
     "null_reason": null
    },
    "graph": {
@@ -1445,7 +1445,7 @@
      "basis": "read at data/derived/manifests/C18.json#/title"
     },
     "A03": {
-     "value": "banco-andino@0.15.000/riskvalidation-0.9.0",
+     "value": "banco-andino@1.00.000/riskvalidation-1.0.1",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C18/models-banco-andino.json#/fit_id | data/derived/C18/models-banco-andino.json#/provenance/code_version | data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version"
     },
@@ -1632,7 +1632,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.9.0",
+     "value": "riskvalidation 1.0.1",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
@@ -1648,14 +1648,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-21",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.15.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
+     "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-21",
+     "value": "2027-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1682,7 +1682,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-11-20"
+      "earliest_due": "2026-11-26"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1941,13 +1941,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-21",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-21",
-    "next_full_revalidation": "2029-10-21",
-    "next_monitoring": "2027-01-21",
+    "next_review": "2027-10-27",
+    "next_full_revalidation": "2029-10-27",
+    "next_monitoring": "2027-01-27",
     "null_reason": null
    },
    "graph": {
@@ -1984,7 +1984,7 @@
      "basis": "read at data/derived/manifests/C22.json#/title"
     },
     "A03": {
-     "value": "generators@0.07.000/riskvalidation-0.4.3",
+     "value": "generators@1.00.000/riskvalidation-1.0.1",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C22/models-generators.json#/fit_id | data/derived/C22/models-generators.json#/provenance/code_version | data/derived/C22/models-generators.json#/provenance/riskvalidation_version"
     },
@@ -2006,6 +2006,7 @@
     },
     "A06": {
      "value": [
+      "riskvalidation.fairness.plants.ThresholdBiasPlant",
       "riskvalidation.generators.BinormalScores",
       "riskvalidation.generators.DefaultCounts",
       "riskvalidation.generators.GradeFrequencies",
@@ -2013,7 +2014,20 @@
       "riskvalidation.generators.Migrations",
       "riskvalidation.generators.NestedLda",
       "riskvalidation.generators.TwoSample",
-      "riskvalidation.harness.exact"
+      "riskvalidation.generators.credit.DownturnLgd",
+      "riskvalidation.generators.credit.LgdCalibration",
+      "riskvalidation.generators.credit.StageTransitions",
+      "riskvalidation.generators.exceedances.EsResiduals",
+      "riskvalidation.generators.exceedances.LhpLossRates",
+      "riskvalidation.generators.exceedances.PfeSeries",
+      "riskvalidation.generators.hits.EsLosses",
+      "riskvalidation.generators.hits.PitSeries",
+      "riskvalidation.generators.hits.VarHits",
+      "riskvalidation.generators.montecarlo.CreditRiskPlusSample",
+      "riskvalidation.generators.montecarlo.McQuantile",
+      "riskvalidation.harness.exact",
+      "riskvalidation.ml.plants.CovariateShiftPlant",
+      "riskvalidation.ml.plants.ExchangeabilityBreakPlant"
      ],
      "status": "derivable",
      "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
@@ -2069,7 +2083,21 @@
        "TwoSample",
        "Migrations",
        "GradeFrequencies",
-       "NestedLda"
+       "NestedLda",
+       "PfeSeries",
+       "StageTransitions",
+       "LgdCalibration",
+       "DownturnLgd",
+       "EsResiduals",
+       "LhpLossRates",
+       "McQuantile",
+       "CreditRiskPlusSample",
+       "ThresholdBiasPlant",
+       "VarHits",
+       "EsLosses",
+       "PitSeries",
+       "CovariateShiftPlant",
+       "ExchangeabilityBreakPlant"
       ]
      },
      "status": "present",
@@ -2096,7 +2124,9 @@
        "tests_within_bound",
        "size_hl_fitted",
        "size_normal",
-       "psi010_false_alarm_n100"
+       "psi010_false_alarm_n100",
+       "other_tests_within_bound",
+       "other_size_mc_convergence"
       ]
      },
      "status": "present",
@@ -2111,7 +2141,21 @@
       "dgp",
       "dgp",
       "dgp",
-      "exact"
+      "exact",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp"
      ],
      "status": "present",
      "basis": "read at data/derived/C22/models-generators.json#/model/0/rung and the other model records"
@@ -2177,7 +2221,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.4.3",
+     "value": "riskvalidation 1.0.1",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version validates the entry; independence is not established because the pipeline and the engine are built in the same programme (W15-4); C22 itself is validated by its exact rejection probabilities and by the engine's own tests (A D1)"
     },
@@ -2193,14 +2237,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-12",
+      "date": "2026-10-27",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
+     "basis": "the release date of code version 1.00.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2029-10-12",
+     "value": "2029-10-27",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -2218,7 +2262,7 @@
     "A37": {
      "value": {
       "S1": 0,
-      "S2": 1,
+      "S2": 2,
       "S3": 0,
       "S4": 0
      },
@@ -2227,7 +2271,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2027-04-10"
+      "earliest_due": "2027-04-25"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -2380,6 +2424,188 @@
      "title": {
       "en": "Exact rejection probabilities of the count tests",
       "es": "Probabilidades exactas de rechazo de las pruebas de conteo"
+     }
+    },
+    {
+     "key": "C22/generators/G8-pfe-series",
+     "model_id": "G8-pfe-series",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Exposure series with a PFE forecast (counterparty credit risk)",
+      "es": "Serie de exposiciones con un pronóstico de PFE (riesgo de contraparte)"
+     }
+    },
+    {
+     "key": "C22/generators/G9-stage-transitions",
+     "model_id": "G9-stage-transitions",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Stage migrations of IFRS 9 accounts",
+      "es": "Migraciones de etapa de cuentas NIIF 9"
+     }
+    },
+    {
+     "key": "C22/generators/G10-lgd-calibration",
+     "model_id": "G10-lgd-calibration",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Realised and predicted LGD of workouts",
+      "es": "LGD realizada y predicha de recuperaciones"
+     }
+    },
+    {
+     "key": "C22/generators/G11-downturn-lgd",
+     "model_id": "G11-downturn-lgd",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Downturn workouts against a downturn estimate",
+      "es": "Recuperaciones de ciclo bajo contra una estimación de ciclo bajo"
+     }
+    },
+    {
+     "key": "C22/generators/G12-es-residuals",
+     "model_id": "G12-es-residuals",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Expected shortfall residuals of exceedances",
+      "es": "Residuos de expected shortfall de las excedencias"
+     }
+    },
+    {
+     "key": "C22/generators/G13-lhp-loss-rates",
+     "model_id": "G13-lhp-loss-rates",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Yearly loss rates of a large homogeneous portfolio",
+      "es": "Tasas de pérdida anuales de una cartera homogénea grande"
+     }
+    },
+    {
+     "key": "C22/generators/G14-mc-quantile",
+     "model_id": "G14-mc-quantile",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A Monte Carlo quantile of the LHP loss rate",
+      "es": "Un cuantil Monte Carlo de la tasa de pérdida LHP"
+     }
+    },
+    {
+     "key": "C22/generators/G15-credit-risk-plus-sample",
+     "model_id": "G15-credit-risk-plus-sample",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A CreditRisk+ loss sample",
+      "es": "Una muestra de pérdidas de CreditRisk+"
+     }
+    },
+    {
+     "key": "C22/generators/G16-threshold-bias-plant",
+     "model_id": "G16-threshold-bias-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Decisions with a planted threshold gap between two groups",
+      "es": "Decisiones con una brecha de umbral plantada entre dos grupos"
+     }
+    },
+    {
+     "key": "C22/generators/G17-var-hits",
+     "model_id": "G17-var-hits",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "VaR exceedances (hits), independent or clustered",
+      "es": "Excedencias de VaR, independientes o agrupadas"
+     }
+    },
+    {
+     "key": "C22/generators/G18-es-losses",
+     "model_id": "G18-es-losses",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Losses with VaR and ES forecasts",
+      "es": "Pérdidas con pronósticos de VaR y ES"
+     }
+    },
+    {
+     "key": "C22/generators/G19-pit-series",
+     "model_id": "G19-pit-series",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Probability integral transforms of a forecast distribution",
+      "es": "Transformadas integrales de probabilidad de una distribución pronosticada"
+     }
+    },
+    {
+     "key": "C22/generators/G20-covariate-shift-plant",
+     "model_id": "G20-covariate-shift-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A model with a planted covariate shift",
+      "es": "Un modelo con un desplazamiento de covariables plantado"
+     }
+    },
+    {
+     "key": "C22/generators/G21-exchangeability-break-plant",
+     "model_id": "G21-exchangeability-break-plant",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "A conformal model with a planted exchangeability break",
+      "es": "Un modelo conforme con una ruptura de intercambiabilidad plantada"
      }
     }
    ],
@@ -2559,11 +2785,11 @@
     "profile": "default",
     "review_kind": "attestation",
     "last_validation": {
-     "date": "2026-10-12",
+     "date": "2026-10-27",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2029-10-12",
+    "next_review": "2029-10-27",
     "next_full_revalidation": null,
     "next_monitoring": null,
     "null_reason": {

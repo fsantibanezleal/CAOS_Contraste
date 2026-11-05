@@ -410,7 +410,9 @@ def models_doc() -> dict:
         "schema": "contraste.models/v1", "case_id": "C12", "fit_id": "fixture-hw1f-2018-2019",
         "model": [dict(model_summary("hw1f-exposure", "hw1f"), details={})],
         "fit": {
-            "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+            "estimator": label("exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+                               "AR(1) exacto por MCO sobre la tasa cero más corta del Tesoro (Brigo et al., arXiv 0812.4210, ecuaciones "
+                               "55 a 57)"),
             "calibrations": cals, "min_history_years": 3,
             "closed_forms_source": "QuantLib 1.44: hullwhite.hpp, hullwhite.cpp, jamshidianswaptionengine.cpp",
             "closed_forms_status": "formulas transcribed from the engine source; the journal derivations are UNVERIFIED as papers",

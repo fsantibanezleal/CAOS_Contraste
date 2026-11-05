@@ -1,0 +1,9 @@
+/* The p-value panels of C22 with the numbered-curves note under them: the grid takes the height left above the note (it scrolls
+   with its cue when the panels do not fit), the note keeps its own, so the card body no longer cuts the note (U16-R4 c26, c27). */
+.ct-c22-flow { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; min-width: 0; }
+.ct-c22-flow > .ct-panels-fill { flex: 1 1 0; height: auto; }
+.ct-c22-flow > .ct-note { flex: none; margin: 0; }
+@media (max-width: 900px) {
+  .ct-c22-flow { height: auto; }
+  .ct-c22-flow > .ct-panels-fill { flex: none; }
+}

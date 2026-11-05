@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\caption{The lights of the machine-learning tests of case C20 in each of its six variants: the tests that ran, the number of rows with each light and the share of the holdout decisions that the variant's shock or perturbation flips at the case's cut-off. Not eval. counts the rows that could not be evaluated. The data-quality and stability rows of the shock variants are counted in the first two groups.}
+\label{tab:vt-c20-lights}
+\begin{tabular}{lp{4.2cm}rrrrr}
+\toprule
+Variant & Tests run & Green & Amber & Red & Not eval. & Flipped (\%) \\
+\midrule
+sgcd-seen & \nolinkurl{additivity}, \nolinkurl{data_quality}, \nolinkurl{overfit}, \nolinkurl{stability.chi2}, \nolinkurl{stability.psi} & 8 & 2 & 1 & 0 & 1.1 \\
+sgcd-held-out & \nolinkurl{additivity}, \nolinkurl{data_quality}, \nolinkurl{overfit}, \nolinkurl{stability.chi2}, \nolinkurl{stability.psi} & 5 & 0 & 2 & 0 & 2.2 \\
+fed-shift & \nolinkurl{additivity}, \nolinkurl{cbpe_estimate}, \nolinkurl{conformal_coverage}, \nolinkurl{overfit}, \nolinkurl{shift_resilience}, \nolinkurl{stability.chi2}, \nolinkurl{stability.csi}, \nolinkurl{stability.ks}, \nolinkurl{stability.psi} & 2 & 1 & 5 & 1 & 34.2 \\
+perturbation-grid & \nolinkurl{overfit}, \nolinkurl{robustness}, \nolinkurl{weak_spot} & 3 & 0 & 1 & 0 & 29.5 \\
+seed-sweep & \nolinkurl{additivity}, \nolinkurl{effect_agreement}, \nolinkurl{overfit}, \nolinkurl{reason_code_stability}, \nolinkurl{seed_stability} & 5 & 4 & 1 & 0 & 3.7 \\
+leakage-planted & \nolinkurl{leakage_screen} & 1 & 0 & 1 & 0 & 32.0 \\
+\bottomrule
+\end{tabular}
+\end{table}

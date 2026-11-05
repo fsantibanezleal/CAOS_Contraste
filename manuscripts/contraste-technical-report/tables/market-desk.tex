@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.0pt}
+\caption{Case C13, the desk back-test on 1,000 replications of each variant: the exceptions of the hypothetical P\&L against the risk model's value at risk at the 99 and 97.5 percent levels (mean and standard deviation), the percentage of replications over the limit of the framework at each level, and the number of replications flagged by the Spearman statistic, by the Kolmogorov-Smirnov statistic and by the desk back-test at either level.}
+\label{tab:market-desk}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Variant & Exc. 99\% & Over 99\% & Exc. 97.5\% & Over 97.5\% & Spearman & KS & Desk \\
+\midrule
+None (size) & 2.6 (1.6) & 0.0 & 6.5 (2.5) & 0.0 & 0 & 0 & 0 \\
+Missing basis & 14.2 (5.8) & 56.5 & 22.2 (7.1) & 13.0 & 919 & 867 & 565 \\
+Stale volatility & 5.0 (2.4) & 0.5 & 9.2 (3.3) & 0.0 & 0 & 0 & 5 \\
+Wrong correlation & 19.3 (4.2) & 95.3 & 28.8 (4.9) & 36.7 & 0 & 1000 & 954 \\
+Omitted factor & 8.0 (2.8) & 6.4 & 14.9 (3.8) & 0.0 & 805 & 448 & 64 \\
+Time misalignment & 2.7 (1.6) & 0.0 & 6.5 (2.6) & 0.0 & 1000 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -82,6 +82,6 @@ def test_the_freddie_mac_slot_declares_its_absence(tmp_path, variant):
     with pytest.raises(readers.DeclaredAbsence, match="owner's account is missing"):
         readers.read_freddie(tmp_path)
     status = variant.document["outputs"]["data_status"]
-    assert status["freddie_mac_available"] is False and status["freddie_mac_reason"] == readers.FREDDIE_REASON
+    assert status["freddie_mac_available"] is False and status["freddie_mac_reason"]["en"] == readers.FREDDIE_REASON
     assert status["primary_source"] == "sba-7a"
     assert "not mortgages" in status["notice"]["en"]

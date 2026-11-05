@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The reverse liquidity stress: for each base scenario the survival period at several run-off multipliers (days; horizon when the position never turns negative), the largest admissible multiplier at which no daily rate exceeds one, and the threshold multiplier at which the survival period first falls to the 30-day target; a base whose horizon is not longer than the target is refused with its reason and no number.}
+\label{tab:alm-c16-reverse}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+Base scenario & \shortstack{Base survival\\(day)} & \shortstack{Cap on the\\multiplier} & \shortstack{Multiplier for\\a 30-day\\survival period} & \shortstack{Survival at the\\multiplier\\(day)} & $m=1$ & $m=2$ & $m=3$ & $m=5$ & $m=8$ \\
+\midrule
+LiST adverse & 62 & 145.23 & 2.118175 & 30 & 62 & 32 & 22 & 13 & 9 \\
+LiST extreme & 41 & 93.88 & 1.383141 & 30 & 41 & 21 & 15 & 9 & 6 \\
+2023 fast run & horizon & 18.43 & refused & no bracket & horizon & 5 & 1 & 1 & 1 \\
+\bottomrule
+\end{tabular}}
+\end{table}

@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The hypothesis on the random forest and the neural network: in each test cohort the lowest RMSE of the six earlier rungs against the lower of the two machine-learning rungs, their difference (positive when the machine-learning rung wins) and the count of cohorts won, which the adoption rule reads as refuted.}
+\label{tab:lgd-ead-ml}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllrlrr}
+\toprule
+Cohort & Best of the six earlier rungs & RMSE & Better of forest and network & RMSE & Gain & Wins \\
+\midrule
+2003--06 & Gradient boosting & 0.2902 & Neural network & 0.2901 & $0.0001$ & yes \\
+2007--08 & Gradient boosting & 0.2825 & Neural network & 0.2826 & $-0.0001$ & no \\
+2009--10 & Gradient boosting & 0.3029 & Random forest & 0.3033 & $-0.0004$ & no \\
+2011--13 & Gradient boosting & 0.3181 & Random forest & 0.3190 & $-0.0008$ & no \\
+2014--19 & Gradient boosting & 0.2754 & Random forest & 0.2749 & $0.0004$ & yes \\
+2020--23 & Gradient boosting & 0.3110 & Random forest & 0.3112 & $-0.0002$ & no \\
+Cohorts won &  &  &  &  &  & 2 of 6 \\
+\bottomrule
+\end{tabular}}
+\end{table}

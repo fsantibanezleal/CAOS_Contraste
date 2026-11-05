@@ -20,6 +20,7 @@ import {
   type ReportSection,
   type Severity,
 } from './model';
+import { entryText } from '../names';
 
 export type Opinion = Extract<ReportSection, { number: 11 }>['opinion'];
 
@@ -32,8 +33,9 @@ export function OpinionCard({ opinion }: { opinion: Opinion }) {
     <div data-opinion data-level={opinion.level} data-outcome={opinion.recommendation.outcome}>
       <Callout variant={tone} title={`${pick({ en: 'Opinion level ', es: 'Nivel de opinión ' }, lang)}${opinion.level}: ${pick(OPINION_NAME[opinion.level] ?? opinion.level_label, lang)}`}>
         <p data-opinion-rule>
-          {pick({ en: 'Rule ', es: 'Regla ' }, lang)}
-          <span translate="no">{opinion.rule.id}</span>: <Doc t={opinion.rule.text} />
+          {/* the rule by what it is, not by its decision id (R3 c23 B5) */}
+          {pick({ en: 'The rule of the opinion: ', es: 'La regla de la opinión: ' }, lang)}
+          <Doc t={opinion.rule.text} />
         </p>
         <p data-opinion-findings>
           {opinion.open_findings.length === 0
@@ -81,7 +83,7 @@ export function OpinionBlockView({ caseId, inv }: { caseId: string; inv: GovInve
         <div key={e.key} data-opinion-entry={e.key}>
           {mine.length > 1 && (
             <h4>
-              <span translate="no">{e.key}</span>: {pick(e.title, lang)}
+              {pick(entryText(e.key), lang)}: {pick(e.title, lang)}
             </h4>
           )}
           <GovernanceDoc<GovReport> file={reportFile(e.key)}>{(report) => <ReportOpinion report={report} />}</GovernanceDoc>
@@ -115,9 +117,9 @@ export function FindingsWithOpinion({ caseId, children }: { caseId: string; chil
   return (
     <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%', gap: 0 }}>
       <div className="ct-part ct-part-3">{children}</div>
-      <details className="ct-note" data-opinion-disclosure onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setOpened(true); }} style={{ margin: 0, fontSize: '0.72rem', lineHeight: 1, padding: 0 }}>
+      <details className="ct-note" data-opinion-disclosure onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setOpened(true); }} style={{ margin: 0, fontSize: '0.72rem', lineHeight: 1.4, padding: 0 }}>
         <summary>{pick({ en: 'Overall opinion on the evidence (governance)', es: 'Opinión global sobre la evidencia (gobernanza)' }, lang)}</summary>
-        <div style={{ maxHeight: 260, overflow: 'auto', minWidth: 0 }}>
+        <div className="ct-fade-scroll" style={{ maxHeight: 260, minWidth: 0 }}>
           {opened ? <OpinionBlock caseId={caseId} /> : null}
         </div>
       </details>

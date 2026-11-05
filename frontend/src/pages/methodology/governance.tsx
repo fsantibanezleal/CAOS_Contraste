@@ -5,8 +5,9 @@
 // SR 26-2, PRA SS1/23, OSFI E-23 and the ECB reporting instructions were read at their primary sources on 2026-10-20. Every
 // tier count, band, deadline, frequency, threshold and the opinion rule is a stated convention of Contraste, said to be one
 // wherever it appears. The recommendation is the rule's output on the evidence; Contraste approves no model (SDD non-goal 1).
-import { Callout, Cite, DocSection, Equation, Figure, useShellLang } from '@fasl-work/caos-app-shell';
-import { P, T, useT } from '../../content/bi';
+import { Callout, Cite, DocSection, Figure, useShellLang } from '@fasl-work/caos-app-shell';
+import { Equation, P, T, useT } from '../../content/bi';
+import { tierColor } from '../../workbench/governance/DependencyMap';
 import { RULE_OUTPUT_LABEL, TIER_RULE_TEX, tierOf } from '../../workbench/governance/model';
 import type { MethodologySection } from '../methodologyRegistry';
 
@@ -19,7 +20,6 @@ function TierRuleFigure() {
   const T0 = 40;
   const cw = (W - L - 8) / 4;
   const ch = 44;
-  const shade = ['#2d1b69', '#2a6f97', '#5aa469', '#c9c25a'];
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('The 4 by 4 tier matrix: the tier of each pair of materiality and complexity scores', 'La matriz de niveles de 4 por 4: el nivel de cada par de puntajes de materialidad y complejidad')} style={{ width: '100%', height: 'auto', maxWidth: 480 }}>
       <text x={L + 2 * cw} y={14} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">{t('Complexity C', 'Complejidad C')}</text>
@@ -34,7 +34,7 @@ function TierRuleFigure() {
             const tier = tierOf(m, c);
             return (
               <g key={c}>
-                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={shade[tier - 1]} />
+                <rect x={L + (c - 1) * cw + 0.5} y={T0 + r * ch + 0.5} width={cw - 1} height={ch - 1} fill={tierColor(tier)} />
                 <text x={L + (c - 0.5) * cw} y={T0 + (r + 0.5) * ch + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={tier >= 3 ? '#141414' : '#f4f4f4'}>{t(`Tier ${tier}`, `Nivel ${tier}`)}</text>
               </g>
             );
@@ -77,12 +77,12 @@ function Body() {
           <T en="Findings: severity, status and deadlines" es="Hallazgos: severidad, estado y plazos" />
         </h3>
         <P
-          en={<>The ECB scores supervisory findings on a scale from F1, a low impact, to F4, a very high one <Cite id="ecbtrim" />. The product keeps its own direction, S1 critical to S4 minor, because 447 finding rows in 19 cases and their views already use it, and shows beside every severity its ECB F equivalent: S1 is F4, S2 is F3, S3 is F2 and S4 is F1. The direction of dossier 06 (S1 low) is a convention, not a requirement, so the mapping is stated rather than the direction changed.</>}
-          es={<>El BCE califica los hallazgos supervisores en una escala de F1, un impacto bajo, a F4, uno muy alto <Cite id="ecbtrim" />. El producto conserva su propia dirección, S1 crítico a S4 menor, porque 447 filas de hallazgos en 19 casos y sus vistas ya la usan, y muestra junto a cada severidad su equivalente F del BCE: S1 es F4, S2 es F3, S3 es F2 y S4 es F1. La dirección del dossier 06 (S1 bajo) es una convención, no un requisito, así que se declara la correspondencia en vez de cambiar la dirección.</>}
+          en={<>The ECB scores supervisory findings on a scale from F1, a low impact, to F4, a very high one <Cite id="ecbtrim" />. The product keeps its own direction, S1 critical to S4 minor, because 732 finding rows in 21 cases and their views already use it, and shows beside every severity its ECB F equivalent: S1 is F4, S2 is F3, S3 is F2 and S4 is F1. The direction of dossier 06 (S1 low) is a convention, not a requirement, so the mapping is stated rather than the direction changed.</>}
+          es={<>El BCE califica los hallazgos supervisores en una escala de F1, un impacto bajo, a F4, uno muy alto <Cite id="ecbtrim" />. El producto conserva su propia dirección, S1 crítico a S4 menor, porque 732 filas de hallazgos en 21 casos y sus vistas ya la usan, y muestra junto a cada severidad su equivalente F del BCE: S1 es F4, S2 es F3, S3 es F2 y S4 es F1. La dirección del dossier 06 (S1 bajo) es una convención, no un requisito, así que se declara la correspondencia en vez de cambiar la dirección.</>}
         />
         <P
           en="The register adds what the validation workflow needs and the case documents lack: the quantitative anchor (the statistic or metric of the cited test row, or an absence with its reason), the owner role, a due date counted from the raised date by a deadline table of severity by tier, the ageing and an overdue flag. The seven states (open, action plan agreed, in progress, submitted for closure, validated and closed, overdue, risk accepted) are those of the workflow; the product's three statuses map to them (open to open, accepted to risk accepted, closed to validated and closed). Every deadline is a convention: no regulatory source prescribes days."
-          es="El registro agrega lo que el flujo de validación necesita y los documentos de los casos no tienen: el ancla cuantitativa (el estadístico o la métrica de la fila de prueba citada, o una ausencia con su razón), el rol responsable, una fecha de vencimiento contada desde la fecha de levantamiento por una tabla de plazos de severidad por nivel, la antigüedad y una marca de vencido. Los siete estados (abierto, plan de acción acordado, en curso, enviado a cierre, validado y cerrado, vencido, riesgo aceptado) son los del flujo; los tres estados del producto se mapean a ellos (abierto a abierto, aceptado a riesgo aceptado, cerrado a validado y cerrado). Cada plazo es una convención: ninguna fuente regulatoria prescribe días."
+          es="El registro agrega lo que el flujo de validación necesita y los documentos de los casos no tienen: el ancla cuantitativa (el estadístico o la métrica de la fila de prueba citada, o una ausencia con su razón), el rol responsable, una fecha de vencimiento contada desde la fecha de registro por una tabla de plazos de severidad por nivel, la antigüedad y una marca de vencido. Los siete estados (abierto, plan de acción acordado, en curso, enviado a cierre, validado y cerrado, vencido, riesgo aceptado) son los del flujo; los tres estados del producto se mapean a ellos (abierto a abierto, aceptado a riesgo aceptado, cerrado a validado y cerrado). Cada plazo es una convención: ninguna fuente regulatoria prescribe días."
         />
         <h3 className="ct-sub">
           <T en="The overall opinion, the recommendation and the model risk appetite" es="La opinión global, la recomendación y el apetito de riesgo de modelo" />
@@ -93,7 +93,7 @@ function Body() {
         />
         <Equation
           tex="L=\max\left(L_{\mathrm{sev}},\,L_{\mathrm{RWEA}}\right),\quad L_{\mathrm{sev}}=\begin{cases}4&\exists\,S1\\3&\exists\,S2\\2&\exists\,S3\ \text{or}\ S4\\1&\text{none}\end{cases},\quad L_{\mathrm{RWEA}}=\begin{cases}4&s\ge 0.10\\3&0.05\le s<0.10\\\text{none}&s<0.05\end{cases}"
-          caption={<T en={<>The opinion level L of an entry: L_sev from the most severe open finding, L_RWEA from the share s of RWEA of a finding's anchor where it has one. The rule is a convention of Contraste (dossier 06 UNVERIFIED item 30); the 5 and 10 percent cut points are the ECB's.</>} es={<>El nivel de opinión L de una entrada: L_sev desde el hallazgo abierto más severo, L_RWEA desde la fracción s de RWEA del ancla de un hallazgo donde la tiene. La regla es una convención de Contraste (dossier 06 SIN VERIFICAR punto 30); los puntos de corte de 5 y 10 por ciento son los del BCE.</>} />}
+          caption={<T en={<>The opinion level L of an entry: L<sub>sev</sub> from the most severe open finding, L_RWEA from the share s of RWEA of a finding's anchor where it has one. The rule is a convention of Contraste (dossier 06 UNVERIFIED item 30); the 5 and 10 percent cut points are the ECB's.</>} es={<>El nivel de opinión L de una entrada: L<sub>sev</sub> desde el hallazgo abierto más severo, L_RWEA desde la fracción s de RWEA del ancla de un hallazgo donde la tiene. La regla es una convención de Contraste (dossier 06 SIN VERIFICAR punto 30); los puntos de corte de 5 y 10 por ciento son los del BCE.</>} />}
         />
         <P
           en="The recommendation is the rule's text for the level: approve, approve with conditions, or remediate before use. It is shown with its label, and the label is part of the recommendation:"

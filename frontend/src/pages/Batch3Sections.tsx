@@ -14,7 +14,10 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../lib/policy';
 import { P, useT } from '../content/bi';
 import { Marked } from '../workbench/c21/Marked';
-import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
+import { groupBi } from '../workbench/c21/selection';
+import { inputName, modelName } from '../workbench/names';
+import { SHOCK_TEXT as C20_SHOCK_TEXT } from '../workbench/c20/selection';
+import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 
 type Lang = 'en' | 'es';
 type Cell = string | ReactElement;
@@ -71,13 +74,37 @@ function c02Light(p: number, lang: Lang): string {
   return `${pick(LIGHT_TEXT[light], lang)} (${T(lang)('Hosmer-Lemeshow p', 'p de Hosmer-Lemeshow')} ${num(p, lang, 3)})`;
 }
 
+/** A C02 rung's title with the Polish column code in its codebook's words (R4 c28 B4: "Una variable (Attr39)"); `AttrNN_missing` is the
+ * indicator that the ratio is missing. The rest of the title is the document's. */
+function c02Title(t: BiText, lang: Lang): string {
+  const words = (code: string): string | null => {
+    const n = inputName(code);
+    return n ? pick(n, lang).replace(/\s*\(Attr\d+\)$/, '') : null;
+  };
+  return pick(t, lang).replace(/\s*\((Attr\d+)(_missing)?\)/, (whole, code: string, missing?: string) => {
+    const w = words(code);
+    if (!w) return whole;
+    return missing ? (lang === 'es' ? `: falta el dato de ${w}` : `: ${w} is missing`) : `: ${w}`;
+  });
+}
+
+/** A C02 rung by its short name ("P4 LightGBM"): two rungs share the code P4 (R4 c28 m4). */
+const c02Short = (v: Variant, r: { rung: string; model_id: string }, lang: Lang): string => {
+  const m = v.model.find((x) => x.id === r.model_id);
+  const short = m?.short_title ? pick(m.short_title, lang) : '';
+  // the document's short title names the rung ("P4 LightGBM"); one that does not is no name for it, and the rung code stays
+  return short.startsWith(`${r.rung} `) ? short : r.rung;
+};
+
 function c02Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C02Outputs;
   const champ = o.rungs.find((r) => r.rung === 'P1');
   const best = o.rungs.reduce<C02Outputs['rungs'][number] | undefined>((b, r) => (!b || r.discrimination.auc > b.discrimination.auc ? r : b), undefined);
   const noChamp = t('the document holds no P1 rung', 'el documento no contiene el peldaño P1');
-  const cell = champ ? o.transfer.cells.find((c) => c.rung === 'P1') : undefined;
+  // the cell of the rung fitted on one file and scored on ANOTHER: the first P1 cell is the diagonal (fitted and scored on the same horizon), which is no transfer (U16-R2 b12 m12)
+  const cell = champ ? o.transfer.cells.find((c) => c.rung === 'P1' && c.fitted_on_years !== c.scored_on_years) : undefined;
+  const yrs = (n: number) => (n === 1 ? t('1 year', '1 año') : t(`${n} years`, `${n} años`));
   const horizon = o.years === null ? t('Pooled (all five files)', 'Agrupado (los cinco archivos)') : o.years === 1 ? t('1 year', '1 año') : t(`${o.years} years`, `${o.years} años`);
   return [
     name,
@@ -85,10 +112,10 @@ function c02Row(name: string, v: Variant, lang: Lang): Cell[] {
     formatNumber(o.counts.rows, lang),
     formatNumber(o.counts.events, lang),
     champ ? num(champ.discrimination.auc, lang, 3) : na(lang, noChamp),
-    best ? `${best.rung} (${num(best.discrimination.auc, lang, 3)})` : na(lang, t('the document holds no rung', 'el documento no contiene ningún peldaño')),
+    best ? `${c02Short(v, best, lang)} (${num(best.discrimination.auc, lang, 3)})` : na(lang, t('the document holds no rung', 'el documento no contiene ningún peldaño')),
     champ ? c02Light(champ.calibration.hosmer_lemeshow.p_value, lang) : na(lang, noChamp),
     champ && cell
-      ? `${signed(cell.auc - champ.discrimination.auc, lang)} (${t(`fitted on ${cell.fitted_on_years} years, scored on ${cell.scored_on_years}`, `ajustado con ${cell.fitted_on_years} años, evaluado en ${cell.scored_on_years}`)})`
+      ? `${signed(cell.auc - champ.discrimination.auc, lang)} (${t(`fitted on ${yrs(cell.fitted_on_years)}, scored on ${cell.scored_on_years}`, `ajustado con ${yrs(cell.fitted_on_years)}, evaluado en ${cell.scored_on_years}`)})`
       : na(lang, champ ? bi(o.transfer.reason, lang) : noChamp),
   ];
 }
@@ -99,18 +126,18 @@ function c02Ladder(name: string, v: Variant, lang: Lang): B3Table {
   const champ = o.rungs.find((r) => r.rung === 'P1');
   const modelTitle = (id: string): string => {
     const m = v.model.find((x) => x.id === id);
-    return m ? pick(m.title, lang) : id;
+    return m ? c02Title(m.title, lang) : id;
   };
   const rows = o.rungs.map((r): Cell[] => {
     const pair = o.challenger.find((c) => c.challenger === r.model_id);
     const d = r === champ ? t('Champion', 'Campeón') : pair ? signed(pair.auc_diff, lang) : na(lang, t('the document holds no paired test for this rung', 'el documento no contiene prueba pareada para este peldaño'));
-    const p = r === champ ? '' : pair ? num(pair.delong_p_value, lang, 3) : na(lang);
+    const p = r === champ ? '' : pair ? pval(pair.delong_p_value, lang) : na(lang);
     return [
       `${r.rung} ${modelTitle(r.model_id)}`,
       `${num(r.discrimination.auc, lang, 3)} (${num(r.discrimination.auc_ci.lo, lang, 3)} ${t('to', 'a')} ${num(r.discrimination.auc_ci.hi, lang, 3)})`,
       num(r.calibration.brier, lang, 4),
       num(r.calibration.ece, lang, 4),
-      num(r.calibration.hosmer_lemeshow.p_value, lang, 3),
+      pval(r.calibration.hosmer_lemeshow.p_value, lang),
       d,
       p,
     ];
@@ -118,7 +145,7 @@ function c02Ladder(name: string, v: Variant, lang: Lang): B3Table {
   return {
     key: `ladder-${v.variant_id}`,
     title: name,
-    head: [t('Rung', 'Peldaño'), t('AUC (95% interval)', 'AUC (intervalo 95%)'), 'Brier', 'ECE', t('Hosmer-Lemeshow p', 'p de Hosmer-Lemeshow'), t('AUC difference to the champion', 'Diferencia de AUC con el campeón'), t('DeLong p of the difference', 'p de DeLong de la diferencia')],
+    head: [t('Rung', 'Peldaño'), t('AUC (95% interval)', 'AUC (intervalo 95 %)'), 'Brier', 'ECE', t('Hosmer-Lemeshow p', 'p de Hosmer-Lemeshow'), t('AUC difference to the champion', 'Diferencia de AUC con el campeón'), t('DeLong p of the difference', 'p de DeLong de la diferencia')],
     rows,
     wide: 1,
     note: t(
@@ -152,11 +179,11 @@ function c12Effect(o: C12Outputs, lang: Lang): string {
     parts.push(
       t(
         `wrong-way factor b = ${num(top.b, lang, 1)}: CVA ${money(top.cva.amount, cur, lang)} against ${money(ind, cur, lang)} independent (${change === null ? na(lang) : `${change > 0 ? '+' : ''}${pct(change, lang, 1)}`})`,
-        `factor de riesgo de camino equivocado b = ${num(top.b, lang, 1)}: CVA ${money(top.cva.amount, cur, lang)} frente a ${money(ind, cur, lang)} independiente (${change === null ? na(lang) : `${change > 0 ? '+' : ''}${pct(change, lang, 1)}`})`,
+        `factor de correlación adversa b = ${num(top.b, lang, 1)}: CVA ${money(top.cva.amount, cur, lang)} frente a ${money(ind, cur, lang)} independiente (${change === null ? na(lang) : `${change > 0 ? '+' : ''}${pct(change, lang, 1)}`})`,
       ),
     );
   }
-  return parts.length ? join(parts) : na(lang, t('this variant has neither an initial margin nor a wrong-way factor', 'esta variante no tiene margen inicial ni factor de riesgo de camino equivocado'));
+  return parts.length ? join(parts) : na(lang, t('this variant has neither an initial margin nor a wrong-way factor', 'esta variante no tiene margen inicial ni factor de correlación adversa'));
 }
 
 function c12Gap(o: C12Outputs, lang: Lang): string {
@@ -164,10 +191,11 @@ function c12Gap(o: C12Outputs, lang: Lang): string {
   const r = o.ore_reconciliation;
   const cur = o.exposure.ee.currency;
   if (!r.eepe_agreement || !r.cva_agreement) return na(lang, bi(r.reason, lang, t('the document holds no ORE reconciliation', 'el documento no contiene conciliación con ORE')));
-  const within = r.eepe_agreement.within_two_se && r.cva_agreement.within_two_se;
+  // a verdict per measure: one joint verdict called the EEPE gap of the 10-day MPoR "outside" when only the CVA gap is (R4 c29 m4)
+  const side = (w: boolean) => t(w ? 'within' : 'outside', w ? 'dentro' : 'fuera');
   return t(
-    `EEPE ${signed(r.eepe_agreement.difference, lang, 2)} ${cur}, CVA ${signed(r.cva_agreement.difference, lang, 2)} ${cur} (ORE minus Python; ${within ? 'within' : 'outside'} two combined standard errors)`,
-    `EEPE ${signed(r.eepe_agreement.difference, lang, 2)} ${cur}, CVA ${signed(r.cva_agreement.difference, lang, 2)} ${cur} (ORE menos Python; ${within ? 'dentro de' : 'fuera de'} dos errores estándar combinados)`,
+    `EEPE ${signed(r.eepe_agreement.difference, lang, 2)} ${cur}, ${side(r.eepe_agreement.within_two_se)}; CVA ${signed(r.cva_agreement.difference, lang, 2)} ${cur}, ${side(r.cva_agreement.within_two_se)} (ORE minus Python, against two combined standard errors)`,
+    `EEPE ${signed(r.eepe_agreement.difference, lang, 2)} ${cur}, ${side(r.eepe_agreement.within_two_se)}; CVA ${signed(r.cva_agreement.difference, lang, 2)} ${cur}, ${side(r.cva_agreement.within_two_se)} (ORE menos Python, frente a dos errores estándar combinados)`,
   );
 }
 
@@ -254,11 +282,28 @@ const bandName = (r: { method: string; nu: number | null }, lang: Lang): string 
 };
 const bandOf = (o: C18Outputs | C18Aggregation | C18Reverse): Schemas['c18BandRow'][] => ('aggregation' in o ? (o as C18Outputs).aggregation.band : []);
 
+const SUPERSCRIPT: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+/** A probability as a percent at two decimals, and in powers of ten below 0.005 %, which two decimals print as zero (R5 c30 m6: the
+ * reverse-stress tail probability 2.4e-15 read "0.00 %"): "2.41 × 10⁻¹³ %", the mantissa at three significant digits. */
+export function tailPct(p: number | null | undefined, lang: Lang): string {
+  if (p === null || p === undefined || !Number.isFinite(p) || p === 0 || Math.abs(p) >= 0.00005) return pct(p ?? null, lang, 2);
+  const x = p * 100;
+  const e = Math.floor(Math.log10(Math.abs(x)));
+  const mant = x / 10 ** e;
+  const exp = String(e).replace(/[-0-9]/g, (c) => SUPERSCRIPT[c]);
+  return `${num(mant, lang, 2)} × 10${exp}\u00a0%`;
+}
+
 function c18Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C18Outputs | C18Aggregation | C18Reverse;
   const isScenario = o.kind === 'scenario';
-  const noPath = na(lang, t('this variant runs the aggregation only', 'esta variante corre solo la agregación'));
+  // each kind gives its own reason: the reverse stress solves for a scenario and runs no capital path, it is no aggregation
+  // (R5 c30 B2: its row said "this variant runs the aggregation only", which its document and its next cell contradict)
+  const noPath =
+    o.kind === 'reverse'
+      ? na(lang, t('the reverse stress solves for a scenario; it runs no capital path', 'la tensión inversa resuelve un escenario; no corre una trayectoria de capital'))
+      : na(lang, t('this variant runs the aggregation only', 'esta variante corre solo la agregación'));
   const notReverse = na(lang, t('this variant is not a reverse stress', 'esta variante no es un estrés inverso'));
   const rows = isScenario ? (o as C18Outputs).headline_cet1.rows : [];
   const last = rows[rows.length - 1];
@@ -275,7 +320,7 @@ function c18Row(name: string, v: Variant, lang: Lang): Cell[] {
     'aggregation' in o ? clpM(o.aggregation.headline.capital_clp_m, lang) : na(lang, t('this variant does not aggregate capital', 'esta variante no agrega capital')),
     lo && hi ? `${clpM(lo.capital_clp_m, lang)} (${bandName(lo, lang)}) ${t('to', 'a')} ${clpM(hi.capital_clp_m, lang)} (${bandName(hi, lang)})` : na(lang, t('this variant has no dependence band', 'esta variante no tiene banda de dependencia')),
     rev ? num(rev.mahalanobis_distance, lang, 3) : notReverse,
-    rev ? pct(rev.plausibility.tail_probability, lang, 2) : notReverse,
+    rev ? tailPct(rev.plausibility.tail_probability, lang) : notReverse,
   ];
 }
 
@@ -305,6 +350,13 @@ function c18Band(name: string, v: Variant, lang: Lang): B3Table | null {
 
 type C20Doc = C20Shock | C20Shift | C20Seeds | C20Perturbation | C20Leakage;
 
+/** A C20 rung by its name in the variant's models (the R2b page review: `P4-lightgbm`). */
+const c20Rung = (v: Variant, id: string, lang: Lang): string => {
+  // the seeds rows name the rung (`P4-lightgbm`), the model records the rung on its dataset (`P4-lightgbm-taiwan`, R3 c23 B2)
+  const own = v.model.find((m) => m.id === id) ?? v.model.find((m) => m.id.startsWith(`${id}-`));
+  return bi(modelName(own?.id ?? id, { caseId: 'C20', models: v.model }) ?? { en: id, es: id }, lang);
+};
+
 function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C20Doc;
@@ -313,13 +365,13 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
       const aucs = o.shipped.rows.map((r) => r.performance.auc);
       const lo = Math.min(...aucs);
       const hi = Math.max(...aucs);
-      const range = aucs.length ? (lo === hi ? num(lo, lang, 3) : `${num(lo, lang, 3)} ${t('to', 'a')} ${num(hi, lang, 3)}`) : na(lang, t('the document holds no shipped shock', 'el documento no contiene shocks entregados'));
+      const range = aucs.length ? (lo === hi ? num(lo, lang, 3) : `${num(lo, lang, 3)} ${t('to', 'a')} ${num(hi, lang, 3)}`) : na(lang, t('the document holds no shipped shock', 'el documento no contiene choques entregados'));
       return [
         name,
-        t('Shock', 'Shock'),
-        o.seen_or_held_out === 'seen' ? t('AUC under the seen shocks', 'AUC bajo los shocks vistos') : t('AUC under the held-out shocks', 'AUC bajo los shocks reservados'),
+        t('Shock', 'Choque'),
+        o.seen_or_held_out === 'seen' ? t('AUC under the seen shocks', 'AUC bajo los choques vistos') : t('AUC under the held-out shocks', 'AUC bajo los choques reservados'),
         range,
-        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => r.shock_id).join(', ')})`, `${o.shipped.rows.length} familias de shocks tal como se entregaron (${o.shipped.rows.map((r) => r.shock_id).join(', ')})`),
+        t(`${o.shipped.rows.length} shock families as shipped (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).en).join(', ')})`, `${o.shipped.rows.length} familias de choques tal como se entregaron (${o.shipped.rows.map((r) => (C20_SHOCK_TEXT[r.shock_id] ?? { en: r.shock_id, es: r.shock_id }).es).join(', ')})`),
       ];
     }
     case 'shift': {
@@ -337,8 +389,8 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
         name,
         t('Seeds', 'Semillas'),
         t('Standard deviation of the AUC across seeds', 'Desviación estándar del AUC entre semillas'),
-        o.rows.length ? join(o.rows.map((r) => `${r.rung}: ${num(r.auc.sd, lang, 3)}`)) : na(lang, t('the document holds no seed row', 'el documento no contiene fila de semillas')),
-        o.rows.length ? join(o.rows.map((r) => t(`${r.rung}: ${r.n_seeds} seeds`, `${r.rung}: ${r.n_seeds} semillas`))) : na(lang),
+        o.rows.length ? join(o.rows.map((r) => `${c20Rung(v, r.rung, lang)}: ${num(r.auc.sd, lang, 3)}`)) : na(lang, t('the document holds no seed row', 'el documento no contiene fila de semillas')),
+        o.rows.length ? join(o.rows.map((r) => t(`${c20Rung(v, r.rung, 'en')}: ${r.n_seeds} seeds`, `${c20Rung(v, r.rung, 'es')}: ${r.n_seeds} semillas`))) : na(lang),
       ];
     case 'perturbation': {
       const r = o.rows.find((x) => x.eps === o.preset_eps);
@@ -356,7 +408,7 @@ function c20Row(name: string, v: Variant, lang: Lang): Cell[] {
         t('Leakage', 'Fuga'),
         t('Planted leak caught by the screen', 'Fuga sembrada detectada por el filtro'),
         yes(lang, o.caught),
-        t(`planted feature ${o.planted_feature} (single-feature AUC ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`, `variable sembrada ${o.planted_feature} (AUC de una sola variable ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`),
+        t(`feature: ${(inputName(o.planted_feature) ?? { en: o.planted_feature, es: o.planted_feature }).en} (single-feature AUC ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`, `variable: ${(inputName(o.planted_feature) ?? { en: o.planted_feature, es: o.planted_feature }).es} (AUC de una sola variable ${num(o.screen.single_feature_auc.max_auc, lang, 2)})`),
       ];
     default:
       return [name, na(lang), na(lang), na(lang), na(lang)];
@@ -372,7 +424,7 @@ function c20Seeds(name: string, v: Variant, lang: Lang): B3Table | null {
     title: name,
     head: [t('Rung', 'Peldaño'), t('Seeds', 'Semillas'), t('AUC, mean', 'AUC, media'), t('AUC, standard deviation', 'AUC, desviación estándar'), t('AUC, lowest to highest', 'AUC, de menor a mayor'), t('Grade assignment changed', 'Asignación de grado cambiada'), t('Attribution rank correlation (mean)', 'Correlación de rango de atribución (media)'), t('Reason-code overlap (mean)', 'Solapamiento de códigos de razón (media)')],
     rows: o.rows.map((r): Cell[] => [
-      r.rung,
+      c20Rung(v, r.rung, lang),
       formatNumber(r.n_seeds, lang),
       num(r.auc.mean, lang, 3),
       num(r.auc.sd, lang, 3),
@@ -396,36 +448,71 @@ const ATTRIBUTE_TEXT: Record<string, BiText> = {
   derived_ethnicity: { en: 'Ethnicity', es: 'Etnia' },
   derived_sex: { en: 'Sex', es: 'Sexo' },
   applicant_age: { en: 'Age', es: 'Edad' },
+  // the attribute of the two groups at 62, named once: "Age, 62 or over, 62 or over" repeated the group (R4 c29 m6)
+  applicant_age_above_62: { en: 'Age, split at 62', es: 'Edad, corte en 62' },
 };
+// every group by the C21 names, the HMDA categories in Spanish on the Spanish page (R4 c28 B3: "Female", "Hispanic or Latino")
+const groupName = (group: string, lang: Lang): string => bi(groupBi(group), lang);
 const BENCHMARK_LABEL_TEXT: Record<string, BiText> = { 'employment benchmark': { en: 'employment benchmark', es: 'referencia de empleo' } };
 const attrName = (field: string, lang: Lang): string => bi(ATTRIBUTE_TEXT[field] ?? { en: field, es: field }, lang);
 
+/** The four-fifths flags of a year pair by attribute; the benchmark and its citation are written once when every attribute shares
+ * them (five copies of "(employment benchmark, 29 CFR 1607.4(D))" made the cell about 700 px tall at 390, R4 c28 M1). */
+function fourFifths(o: C21Outputs, lang: Lang): string {
+  const t = T(lang);
+  const source = (a: C21Outputs['attributes'][number]) => `${bi(BENCHMARK_LABEL_TEXT[a.four_fifths.label] ?? { en: a.four_fifths.label, es: a.four_fifths.label }, lang)}, ${a.four_fifths.citation}`;
+  const sources = [...new Set(o.attributes.map(source))];
+  const one = sources.length === 1;
+  const parts = o.attributes.map((a) => {
+    const flagged = a.four_fifths.groups.filter((g) => g.flag).map((g) => groupName(g.group, lang));
+    const flags = flagged.length ? t(`flagged ${flagged.join(', ')}`, `marcado ${flagged.join(', ')}`) : t('no group flagged', 'ningún grupo marcado');
+    return `${attrName(a.field, lang)}: ${flags}${one ? '' : ` (${source(a)})`}`;
+  });
+  return `${join(parts)}${one && sources[0] ? ` (${sources[0]})` : ''}`;
+}
+
+/** The headline row of a C21 year pair: the years and the four-fifths flags by attribute; the groups are rows of their own table. */
 function c21Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C21Outputs;
-  const per = (f: (a: C21Outputs['attributes'][number], c: C21Outputs['attributes'][number]['contrasts'][number]) => string): string =>
-    join(o.attributes.flatMap((a) => a.contrasts.map((c) => `${attrName(a.field, lang)}, ${c.group}: ${f(a, c)}`)));
   return [
     name,
     `${o.fit_year} ${t('to', 'a')} ${o.confirm_year}`,
-    per((_, c) => (c.adverse_impact_ratio.value === null ? na(lang, bi(c.adverse_impact_ratio.note, lang)) : num(c.adverse_impact_ratio.value, lang, 2))),
     // the regulation's own citation ("29 CFR 1607.4") is kept as the source writes it, marked by the C21 helper
-    <Marked key="four-fifths">{join(
-      o.attributes.map((a) => {
-        const flagged = a.four_fifths.groups.filter((g) => g.flag).map((g) => g.group);
-        const label = bi(BENCHMARK_LABEL_TEXT[a.four_fifths.label] ?? { en: a.four_fifths.label, es: a.four_fifths.label }, lang);
-        return `${attrName(a.field, lang)}: ${flagged.length ? t(`flagged ${flagged.join(', ')}`, `marcado ${flagged.join(', ')}`) : t('no group flagged', 'ningún grupo marcado')} (${label}, ${a.four_fifths.citation})`;
-      }),
-    )}</Marked>,
-    per((_, c) => {
-      const e = c.controlled.estimate;
-      return e ? t(`odds ratio ${num(e.odds_ratio, lang, 2)} (coefficient ${num(e.coefficient, lang, 2)}, 95% interval ${num(e.ci.lo, lang, 2)} to ${num(e.ci.hi, lang, 2)})`, `razón de momios ${num(e.odds_ratio, lang, 2)} (coeficiente ${num(e.coefficient, lang, 2)}, intervalo 95% ${num(e.ci.lo, lang, 2)} a ${num(e.ci.hi, lang, 2)})`) : na(lang, c.controlled.reason);
-    }),
-    per((_, c) => {
-      const e = c.confirmation.estimate;
-      return e ? `${yes(lang, e.same_sign)} (${t('coefficient', 'coeficiente')} ${num(e.fit_coefficient, lang, 2)} ${t('then', 'luego')} ${num(e.confirm_coefficient, lang, 2)})` : na(lang, c.confirmation.reason);
-    }),
+    <Marked key="four-fifths">{fourFifths(o, lang)}</Marked>,
   ];
+}
+
+/**
+ * The groups of a C21 year pair, one row per (attribute, group): eighteen groups in one cell made every year-pair row about 1,800 px
+ * tall at 390 (R4 c28 M1, c29 m7). The adverse impact ratio has three digits, as the four-fifths flag decides at 0.8 (0.796 is not
+ * 0.80, R4 c29 m6).
+ */
+function c21Groups(name: string, v: Variant, lang: Lang): B3Table {
+  const t = T(lang);
+  const o = v.outputs as C21Outputs;
+  const rows = o.attributes.flatMap((a) =>
+    a.contrasts.map((c): Cell[] => {
+      const ctl = c.controlled.estimate;
+      const conf = c.confirmation.estimate;
+      return [
+        attrName(a.field, lang),
+        groupName(c.group, lang),
+        c.adverse_impact_ratio.value === null ? na(lang, bi(c.adverse_impact_ratio.note, lang)) : num(c.adverse_impact_ratio.value, lang, 3),
+        ctl
+          ? t(`odds ratio ${num(ctl.odds_ratio, lang, 2)} (coefficient ${num(ctl.coefficient, lang, 2)}, 95% interval ${num(ctl.ci.lo, lang, 2)} to ${num(ctl.ci.hi, lang, 2)})`, `razón de momios ${num(ctl.odds_ratio, lang, 2)} (coeficiente ${num(ctl.coefficient, lang, 2)}, intervalo 95 % ${num(ctl.ci.lo, lang, 2)} a ${num(ctl.ci.hi, lang, 2)})`)
+          : na(lang, c.controlled.reason),
+        conf ? `${yes(lang, conf.same_sign)} (${t('coefficient', 'coeficiente')} ${num(conf.fit_coefficient, lang, 2)} ${t('then', 'luego')} ${num(conf.confirm_coefficient, lang, 2)})` : na(lang, c.confirmation.reason),
+      ];
+    }),
+  );
+  return {
+    key: `groups-${v.variant_id}`,
+    title: t(`${name}: by group`, `${name}: por grupo`),
+    head: [t('Attribute', 'Atributo'), t('Group', 'Grupo'), t('Adverse impact ratio', 'Razón de impacto adverso'), t('Conditional disparity (controlled model)', 'Disparidad condicional (modelo controlado)'), t('Replicates in the next year', 'Se replica en el año siguiente')],
+    rows,
+    wide: 2,
+  };
 }
 
 // -------------------------------------------------------------------------------------- the generic impact table
@@ -470,13 +557,13 @@ export function batch3ExperimentTables(manifest: CaseManifest, vs: Variant[], la
         c02Row,
         t(
           'The AUC is read on the locked holdout; the calibration light applies the committed policy to the Hosmer-Lemeshow p of the champion; the transfer change is the AUC of the champion fitted on one horizon and scored on another, minus its holdout AUC, and is exploratory because the firm overlap across the files is unknown.',
-          'El AUC se lee en la muestra reservada bloqueada; la luz de calibración aplica la política comprometida al p de Hosmer-Lemeshow del campeón; el cambio en la transferencia es el AUC del campeón ajustado con un horizonte y evaluado en otro, menos su AUC reservado, y es exploratorio porque se desconoce el solapamiento de empresas entre los archivos.',
+          'El AUC se lee en la muestra reservada bloqueada; la luz de calibración aplica la política versionada al p de Hosmer-Lemeshow del campeón; el cambio en la transferencia es el AUC del campeón ajustado con un horizonte y evaluado en otro, menos su AUC reservado, y es exploratorio porque se desconoce el solapamiento de empresas entre los archivos.',
         ),
         2,
       );
     case 'C12':
       return one(
-        [t('Variant', 'Variante'), t('EEPE', 'EEPE'), t('CVA', 'CVA'), t('SA-CCR EAD', 'EAD de SA-CCR'), t('Effect of the initial margin or of the wrong-way factor', 'Efecto del margen inicial o del factor de riesgo de camino equivocado'), t('ORE reconciliation gap', 'Brecha de conciliación con ORE')],
+        [t('Variant', 'Variante'), t('EEPE', 'EEPE'), t('CVA', 'CVA'), t('SA-CCR EAD', 'EAD de SA-CCR'), t('Effect of the initial margin or of the wrong-way factor', 'Efecto del margen inicial o del factor de correlación adversa'), t('ORE reconciliation gap', 'Brecha de conciliación con ORE')],
         c12Row,
         t(
           'EEPE is the effective expected positive exposure of the variant, CVA its credit valuation adjustment and EAD the exposure at default of the standardised approach for counterparty credit risk; the gap is ORE minus Python, with its sign, and a variant ORE cannot reproduce says so.',
@@ -510,20 +597,23 @@ export function batch3ExperimentTables(manifest: CaseManifest, vs: Variant[], la
         c20Row,
         t(
           'Each kind of variant asks one question of the same model and states one measure: how the AUC holds under seen and held-out shocks, how far it falls in the worst subsample, how much it varies across seeds, how it degrades under noise, and whether a planted leak is caught.',
-          'Cada tipo de variante hace una pregunta al mismo modelo y declara una medida: cómo se mantiene el AUC bajo shocks vistos y reservados, cuánto cae en la peor submuestra, cuánto varía entre semillas, cómo se degrada con ruido y si se detecta una fuga sembrada.',
+          'Cada tipo de variante hace una pregunta al mismo modelo y declara una medida: cómo se mantiene el AUC bajo choques vistos y reservados, cuánto cae en la peor submuestra, cuánto varía entre semillas, cómo se degrada con ruido y si se detecta una fuga sembrada.',
         ),
         3,
       );
     case 'C21':
-      return one(
-        [t('Year pair', 'Par de años'), t('Fit and confirmation years', 'Años de ajuste y confirmación'), t('Adverse impact ratio, by group', 'Razón de impacto adverso, por grupo'), t('Four-fifths rule, employment benchmark', 'Regla de cuatro quintos, referencia de empleo'), t('Conditional disparity (controlled model)', 'Disparidad condicional (modelo controlado)'), t('Replicates in the next year', 'Se replica en el año siguiente')],
+      return [
+        ...one(
+        [t('Year pair', 'Par de años'), t('Fit and confirmation years', 'Años de ajuste y confirmación'), t('Four-fifths rule, employment benchmark', 'Regla de cuatro quintos, referencia de empleo')],
         c21Row,
         t(
           'The adverse impact ratio is the selection rate of the group over the reference group; the four-fifths rule is an employment benchmark, not a credit-law threshold; the conditional disparity is the odds ratio of a model with the controls the public data hold, an approximation of comparative evidence; no row is a finding of violation.',
           'La razón de impacto adverso es la tasa de selección del grupo sobre la del grupo de referencia; la regla de cuatro quintos es una referencia de empleo, no un umbral de la ley de crédito; la disparidad condicional es la razón de momios de un modelo con los controles que contienen los datos públicos, una aproximación a evidencia comparativa; ninguna fila es una declaración de infracción.',
         ),
         2,
-      );
+        ),
+        ...vs.map((v) => c21Groups(nameOf(v), v, lang)),
+      ];
     default:
       return impactTables(manifest, vs, lang);
   }

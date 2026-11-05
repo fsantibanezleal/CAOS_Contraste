@@ -9,8 +9,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import math
+
 import numpy as np
 from riskvalidation.validation import oprisk as val
+
+from ...core import text as tx
 
 from . import params as P
 from .generator import Variant
@@ -25,8 +29,25 @@ def T(en: str, es: str) -> dict[str, str]:
 
 
 def es_num(x: float, spec: str) -> str:
-    """A number in a Spanish sentence: the decimal comma (the gate's G11 and the Spanish UI write 0,96, not 0.96)."""
-    return format(x, spec).replace(".", ",")
+    """A number in a Spanish sentence: the decimal comma (the gate's G11 and the Spanish UI write 0,96, not 0.96), and a percent with
+    the no-break space before its sign (86,9\u00a0%, the shell's es-CL form; U16-F9c)."""
+    out = format(x, spec).replace(".", ",")
+    return out[:-1] + "\u00a0%" if out.endswith("%") else out
+
+
+def sig2(x: float, lang: str) -> str:
+    """A ratio with two significant digits and at least two decimals, in the language's form: 0.0044 (not "0.00 times the truth",
+    U16-R3 c18 m6), 0.042, 0.26, 1.50."""
+    decimals = 2 if x == 0 else max(2, 1 - math.floor(math.log10(abs(x))))
+    return tx.number(x, decimals, lang=lang)
+
+
+#: the generator's notice: the English acronym of the Loss Data Collection Exercise is glossed once in Spanish (U16-R3 c18 m8)
+GENERATOR_NOTICE = T("Synthetic data: a bank invented for the case whose annual loss distribution is known by construction; the LDCE medians "
+                     "shape it and it describes no real bank.",
+                     "Datos sintéticos: un banco inventado para el caso cuya distribución de pérdida anual se conoce por construcción; "
+                     "las medianas del Ejercicio de Recolección de Datos de Pérdidas (LDCE, por su sigla en inglés) lo moldean y no "
+                     "describe a ningún banco real.")
 
 
 def rv_version() -> str:
@@ -59,6 +80,36 @@ class CellResult:
 
 def _q(x: np.ndarray, method: str = "linear") -> dict[str, float]:
     return {k: float(v) for k, v in zip(KEYS, np.percentile(x, PCT, method=method))}
+
+
+#: the rungs of S-3 of the method tiers plan: the key of the replication arrays and the model id of the capital_stability row
+S3_RUNGS: tuple[tuple[str, str], ...] = (("sla_mean_adjusted", "sla-mean-adjusted"), ("sla_cvm", "sla-cvm"), ("sla_obre", "sla-obre"),
+                                         ("sla_cvm_lognormal", "sla-cvm-lognormal"))
+S3_NAME = {"sla-cvm": T("Cramer-von Mises GPD", "GPD de Cramér-von Mises"), "sla-obre": T("optimally bias-robust GPD", "GPD óptimamente robusta al sesgo")}
+
+
+def s3_counts(capitals: list[dict[str, Any]], rung_key: str) -> tuple[int, int, int]:
+    """``(cells, smaller spread, smaller bias)`` of a robust rung against the splice LDA over the cells where both have a capital: spread is the
+    interquartile range of capital over the truth, bias the absolute log of the median ratio to the truth (``params.S3_HYPOTHESIS``)."""
+    n = spread = bias = 0
+    for cap in capitals:
+        r, sp = cap[rung_key], cap["lda_splice"]
+        if r is None or sp is None:
+            continue
+        n += 1
+        spread += r["iqr_over_truth"] < sp["iqr_over_truth"]
+        bias += abs(math.log(r["ratio_to_truth"]["median"])) < abs(math.log(sp["ratio_to_truth"]["median"]))
+    return n, spread, bias
+
+
+def s3_verdict(n: int, spread: int, bias: int) -> str:
+    """``holds``, ``refuted`` or ``inconclusive`` by the shares of ``params.S3_HYPOTHESIS`` (no cell with both rungs: inconclusive)."""
+    if n == 0:
+        return "inconclusive"
+    h = P.S3_HYPOTHESIS
+    if min(spread, bias) / n < h["refuted_below_share"]:
+        return "refuted"
+    return "holds" if min(spread, bias) / n >= h["holds_at_share"] else "inconclusive"
 
 
 def _row(res: Any, segment: str | None = None) -> dict[str, Any]:
@@ -124,7 +175,8 @@ def model_summaries(rv: str) -> list[dict[str, Any]]:
     lvl = {"level": {"value": P.LEVEL, "unit": "probability"}}
     by_id = {r["rung_id"]: r for r in P.LADDER}
     out = []
-    for rid in ("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario"):
+    for rid in ("lda-lognormal", "lda-lognormal-truncated", "lda-splice", "sla", "sla-mean-corrected", "scenario", "sla-mean-adjusted", "sla-cvm",
+                "sla-obre", "sla-cvm-lognormal"):
         extra = dict(lvl)
         if rid in ("lda-splice", "scenario"):
             extra["splice_threshold_eur"] = {"value": P.SPLICE_THRESHOLD_EUR, "unit": "EUR"}
@@ -155,22 +207,35 @@ def _findings(v: Variant, cells: dict[str, dict[str, Any]], truth: float, orc_me
     out: list[dict[str, Any]] = []
     s5, s10 = cells["y5-h10000"]["lda_splice"], cells["y10-h20000"]["lda_splice"]
     out.append({"id": "F-1", "severity": "S2", "status": "open", "evidence": ev("lda-splice", "y5-h10000") or ["design:replications"],
-                "title": T(f"At tail index {v.tail_index:g} with 5 years of data the splice LDA capital has an interquartile range of "
-                           f"{s5['iqr_over_truth']:.0%} of the true 99.9 percent quantile (10 years, threshold 20,000: {s10['iqr_over_truth']:.0%}).",
-                           f"Con índice de cola {es_num(v.tail_index, 'g')} y 5 años de datos el capital LDA con empalme tiene un rango intercuartil de "
-                           f"{s5['iqr_over_truth']:.0%} del cuantil 99,9 por ciento verdadero (10 años, umbral 20.000: {s10['iqr_over_truth']:.0%}).")})
+                "title": T(f"At tail index {v.tail_index:g} with 5 years of data and threshold EUR 10,000 the splice LDA capital has an interquartile range of "
+                           f"{s5['iqr_over_truth']:.0%} of the true 99.9 percent quantile (10 years, threshold EUR 20,000: {s10['iqr_over_truth']:.0%}).",
+                           f"Con índice de cola {es_num(v.tail_index, 'g')}, 5 años de datos y umbral de EUR 10.000 el capital LDA con empalme tiene un rango intercuartil de "
+                           f"{tx.percent(s5['iqr_over_truth'], 0, lang='es')} del cuantil 99,9 por ciento verdadero (10 años, umbral de EUR 20.000: "
+                           f"{tx.percent(s10['iqr_over_truth'], 0, lang='es')}).")})
     a, b = cells["y10-h20000"]["lda_lognormal"], cells["y10-h20000"]["lda_lognormal_truncated"]
     out.append({"id": "F-2", "severity": "S3", "status": "open",
                 "evidence": ev("lda-lognormal", "y10-h20000") + ev("lda-lognormal-truncated", "y10-h20000") or ["design:replications"],
-                "title": T(f"Ignoring the collection threshold gives a median capital of {a['ratio_to_truth']['median']:.2f} times the truth; "
-                           f"modelling the truncation gives {b['ratio_to_truth']['median']:.2f} (10 years, threshold 20,000).",
-                           f"Ignorar el umbral de recolección da un capital mediano de {es_num(a['ratio_to_truth']['median'], '.2f')} veces la verdad; "
-                           f"modelar el truncamiento da {es_num(b['ratio_to_truth']['median'], '.2f')} (10 años, umbral 20.000).")})
+                "title": T(f"Ignoring the collection threshold gives a median capital of {sig2(a['ratio_to_truth']['median'], 'en')} times the truth; "
+                           f"modelling the truncation gives {sig2(b['ratio_to_truth']['median'], 'en')} (10 years, threshold EUR 20,000).",
+                           f"Ignorar el umbral de recolección da un capital mediano de {sig2(a['ratio_to_truth']['median'], 'es')} veces la verdad; "
+                           f"modelar el truncamiento da {sig2(b['ratio_to_truth']['median'], 'es')} (10 años, umbral de EUR 20.000).")})
     out.append({"id": "F-3", "severity": "S3", "status": "open", "evidence": ["design:sma-not-calibrated-to-the-999-quantile"],
                 "title": T(f"The SMA operational risk capital is {orc_median / truth:.1%} of the true 99.9 percent quantile at tail index {v.tail_index:g}; "
                            "it depends on the losses only through the 10-year average and the BIC.",
                            f"El capital por riesgo operacional del SMA es {es_num(orc_median / truth, '.1%')} del cuantil 99,9 por ciento verdadero con índice de cola "
                            f"{es_num(v.tail_index, 'g')}; depende de las pérdidas solo por el promedio de 10 años y el BIC.")})
+    caps = [{"lda_splice": c["lda_splice"], **{k: c[k]["summary"] for k, _ in S3_RUNGS}} for c in cells.values()]
+    es_word = {"holds": "se sostiene", "refuted": "se refuta", "inconclusive": "no es concluyente"}
+    lines_en, lines_es, refs = [], [], []
+    for key, mid in S3_RUNGS[1:3]:
+        n, sp, bi = s3_counts(caps, key)
+        verdict = s3_verdict(n, sp, bi)
+        lines_en.append(f"the {S3_NAME[mid]['en']} has the smaller spread in {sp} of {n} cells and the smaller bias in {bi} (hypothesis {verdict})")
+        lines_es.append(f"la {S3_NAME[mid]['es']} tiene el menor rango en {sp} de {n} celdas y el menor sesgo en {bi} (hipótesis: {es_word[verdict]})")
+        refs += ev(mid, "y10-h20000")
+    out.append({"id": "F-5", "severity": "S3", "status": "open", "evidence": refs + ev("lda-splice", "y10-h20000") or ["design:replications"],
+                "title": T(f"Robust severity, tail index {v.tail_index:g}: against the splice LDA, " + "; ".join(lines_en) + ".",
+                           f"Severidad robusta, índice de cola {es_num(v.tail_index, 'g')}: frente al LDA con empalme, " + "; ".join(lines_es) + ".")})
     if v.infinite_mean:
         out.append({"id": "F-4", "severity": "S2", "status": "open", "evidence": ["design:infinite-mean"],
                     "title": T("The severity has an infinite mean: no true mean, no expected shortfall and no mean-corrected single loss approximation exist.",
@@ -210,6 +275,13 @@ def variant_document(v: Variant, truth: Truth, bank: dict[str, Any], cells: list
                            else {"summary": None, "reason": "fewer than four histories gave a scenario combination (the prior or the fit was refused by the engine)"})
         if row is not None:
             tests.append(row)
+        for key, mid in S3_RUNGS:
+            s, row = capital_summary(a[key], tq, mid, cid, "closed-form", "SECONDARY_SOURCE")
+            cap[key] = ({"summary": s, "reason": None} if s is not None
+                        else {"summary": None, "reason": "fewer than four histories gave a capital: the fitted severity has no mean (a tail index of 1 or more) "
+                                                         "or the engine refused the fit"})
+            if row is not None:
+                tests.append(row)
         stab, stab_row = _stability(c)
         tests.append(stab_row)
         ok = np.isfinite(a["agree"])
@@ -249,10 +321,7 @@ def models_document(vs: list[Variant], truths: dict[float, Truth], seed_base: in
         "currency": P.CURRENCY,
         "generator": {"name": P.GENERATOR, "shaped_on": "bcbs160-ldce-2008", "assets_eur_bn": P.ASSETS_EUR_BN, "frequency_law": "poisson",
                       "severity_law": "gpd", "generator_floor_eur": P.FLOOR_EUR,
-                      "notice": T("Synthetic data: a bank invented for the case whose annual loss distribution is known by construction; the LDCE medians "
-                                  "shape it and it describes no real bank.",
-                                  "Datos sintéticos: un banco inventado para el caso cuya distribución de pérdida anual se conoce por construcción; "
-                                  "las medianas de la LDCE lo moldean y no describe a ningún banco real.")},
+                      "notice": GENERATOR_NOTICE},
         "calibration": P.LDCE_TARGETS,
         "variants": [{"variant_id": v.variant_id, "tail_index": v.tail_index, "infinite_mean": v.infinite_mean, "lambda_per_year": v.lambda_per_year,
                       "location_eur": P.FLOOR_EUR, "scale_eur": v.scale_eur, "true_quantile_999_eur": truths[v.tail_index].quantile_eur,

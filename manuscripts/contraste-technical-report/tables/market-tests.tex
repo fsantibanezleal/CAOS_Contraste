@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{The six tests the case C11 battery runs on every model at every tail level, with the null hypothesis and the alternative as the committed test records state them and the p-value below which the light turns amber and red; the lights are internal screening levels of the validation, not regulatory thresholds.}
+\label{tab:market-tests}
+\begin{tabular}{p{2.9cm}p{4.4cm}p{4.4cm}rr}
+\toprule
+Test & Null hypothesis & Alternative & Amber below & Red below \\
+\midrule
+\relax Kupiec proportion of failures & The exceedance probability equals alpha & the exceedance probability differs from alpha & 0.1 & 0.05 \\
+\relax Christoffersen independence & The exceedances are independent over time & an exceedance is more (or less) likely after an exceedance & 0.1 & 0.05 \\
+\relax Christoffersen conditional coverage & The exceedance probability equals alpha and the exceedances are independent & the coverage is wrong or the exceedances cluster & 0.1 & 0.05 \\
+\relax Duration test & The no-hit durations are memoryless (Weibull b = 1) & the durations have a Weibull hazard with b != 1 (clustering or too regular exceedances) & 0.1 & 0.05 \\
+\relax Dynamic quantile test & The hits are unpredictable from their past and from the VaR (conditional coverage holds) & the hits are predictable: the quantile forecasts are conditionally biased & 0.1 & 0.05 \\
+\relax Acerbi-Szekely $Z_2$ & The ES forecasts are correct (the statistic has the simulated null distribution) & risk is underestimated (the statistic is negative) & 0.05 & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{table}

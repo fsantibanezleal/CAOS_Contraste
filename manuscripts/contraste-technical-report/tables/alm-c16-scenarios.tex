@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The six liquidity variants of Silicon Valley Bank at 31 December 2022: the scenario family and phase, the horizon in days, the first day on which the net liquidity position turns negative (horizon when it never does), the minimum position in billions of US dollars, the cliff effect as a share of total assets, the modelled cumulative outflow after the two days of the March 2023 run as a share of the modelled deposit base, and the Basel liquidity coverage ratio of the call-report aggregates where the variant runs the formula.}
+\label{tab:alm-c16-scenarios}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lllrrrrrr}
+\toprule
+Variant & Family & Phase & Horizon (days) & \shortstack{Survival period\\(day)} & \shortstack{Minimum NLP\\(USD bn)} & \shortstack{Cliff effect\\(\% of assets)} & \shortstack{Modelled\\outflow, 2 days\\(\% of base)} & LCR \\
+\midrule
+LCR standard run-off & combined & lcr-30-day & 30 & -- & -- & -- & -- & 0.473 \\
+LiST Adverse & idiosyncratic & protracted & 125 & 62 & $-$41.0 & $-$2.22 & 9.1 & -- \\
+LiST Extreme & idiosyncratic & protracted & 125 & 41 & $-$65.6 & $-$2.98 & 9.8 & -- \\
+2023 fast run & idiosyncratic & acute & 5 & horizon & 13.8 & -- & 17.1 & -- \\
+HTM losses in the CBC & idiosyncratic & protracted & 125 & 44 & $-$55.4 & $-$2.22 & 9.1 & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

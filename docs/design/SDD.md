@@ -105,6 +105,10 @@ or address.
 | The explainable additive challenger is the EBM | Glass-box GA2M with monotone shape functions | https://arxiv.org/abs/1909.09223 |
 | The four UCI credit datasets are mirror-allowed (CC BY 4.0) and carry the credit-scoring cases | Taiwan cards with six months of history, German credit as the twin | https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients |
 | The executive view rests on the supervisory record, not on surveys | 77 investigations in 2025, about 16 findings each; no primary source found for fines or inventory sizes | https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html |
+| The P&L attribution test is complemented on scale and timing, never replaced | MAR32's PLA zone reads a Spearman correlation and a KS distance only; a model with an old volatility passes it | https://www.bis.org/bcbs/publ/d457.htm; https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/market/09_pla-complement.md |
+| Withdrawn ratings get a PD as a function of the odds of withdrawal before default, anchored on a second default count | No treatment of a withdrawal is right for every k; Manski's bound is the limit | https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/transitions/06_withdrawal-bounds.md |
+| Calibration and back-tests read every day are monitored by e-processes | Ville's inequality keeps the size at any stopping time; a repeated fixed-window test does not | https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/sequential/README.md |
+| The VaR level of a model is recalibrated day by day by adaptive conformal inference | Gibbs and Candes' update keeps long-run coverage under distribution shift | https://arxiv.org/abs/2106.00170; https://github.com/fsantibanezleal/CAOS_RiskValidation/blob/main/docs/market/08_conformal-recalibration.md |
 
 Choices with no source because they are engineering, measured in this document instead: the live lane runs TypeScript
 ports with parity tests (Pyodide is not used, and is admitted only by measurement, see `Lanes`), and the page and
@@ -464,8 +468,8 @@ the ones the dossiers and `docs/frameworks/` record.
 | data | openpyxl | 3.1.5 | reading the EBA/ESRB 2025 macro-financial scenario workbook of C18 (U13 decision Q15; MIT) | none recorded |
 | reference (optional) | open-source-risk-engine | 1.8.17.0 | ORE, run natively from its Windows wheel as the reference engine of the C12 exposure reconciliation (`data-pipeline/requirements-ore.txt`, U9 decision D4); pipeline only, never an engine dependency | none: ORE is the open reference engine the dossiers name |
 | reference (optional) | QuantLib | 1.44 | the independent check of the Hull-White closed forms in C12 (`data-pipeline/requirements-ore.txt`, U9 decision B4); pipeline only | none recorded |
-| engine | riskvalidation | 0.9.0 | the validation tests, regulatory calculators and generators (the PyPI release 0.9.0, tag v0.09.000: the batch 3 packages of 0.8.x (liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) and model governance, `riskvalidation.governance`) | none: no toolkit implements the ECB tests as specified |
-| models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
+| engine | riskvalidation | 1.1.0 | the validation tests, regulatory calculators and generators (the PyPI release 1.0.1, tag v1.01.000, the patch of the first stable release 1.0.0: the batch 3 packages of 0.8.x (liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) and model governance, `riskvalidation.governance`) | none: no toolkit implements the ECB tests as specified |
+| models | torch | 2.14.1 | CPU runtime of the C11 R10 quantile network trained on FZ0 and of the C06 PC-Hazard rung (BSD-3-Clause; `data-pipeline/requirements.txt`), and of the TabPFN extra | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
 | notebooks | arch | 8.0.0 | the independent GARCH reference of the topic 07 state-of-the-art notebook, the package the engine's garch rung calls (the engine's `market` extra, `arch>=8.0,<9`; U17 sizing technology matrix) | none: the engine's own reference |
 | notebooks | mapie | 1.5.0 | the conformal reference of the topic 13 state-of-the-art notebook (the engine's `ml` extra, `mapie>=1.5,<2`; BSD-3-Clause) | none: the engine's own reference |
@@ -477,7 +481,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.15.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.19.12 | the shared app shell, pinned exactly (ADR-0078); since 0.19.0 it draws every chart with Tier A and the C07 and C18 waterfalls, bridge and grouped bars; 0.19.1 lets a filling card flow on a phone (data-caos-flow) and names Spanish dates; 0.19.2 corrects the gate's sticky-header reading (G5); 0.19.3 writes its own labels in Spanish (D16-21); 0.19.4 wraps the rail's lane badge and judges a drawing by its visible part (G6); 0.19.5 gives a case whole notes at 1280 px (`noteFit`, C04); 0.19.6 marks the footer licence translate=no; 0.19.7 to 0.19.12 fix the shell and its gate (plot captions wrap in their card, the instrument marked outside Focus, document framing, whole scrollable documents measured, an interrupted JSON read re-fetched), no product change | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
@@ -485,10 +489,12 @@ the ones the dossiers and `docs/frameworks/` record.
 | web | katex | 0.16.47 | typeset equations on the Methodology pages | none recorded (0.19.0 is current and was not adopted) |
 | web | lucide-react | 1.52.0 | icons | none recorded |
 | web | uplot | 1.6.32 | the interactive curves | none recorded |
-| build | vite | 8.3.2 | bundler and dev server | none recorded |
+| build | vite | 8.3.5 | bundler and dev server; 8.3.5 carries the fixes of the Windows command-execution advisories (template 0.11.001) | none recorded |
 | build | @vitejs/plugin-react | 6.1.1 | the React transform for vite | none recorded |
 | build | typescript | 5.9.3 | type check of the web and the generated contract types | none recorded (7.0.2 is a major change and was not adopted) |
 | build | openapi-typescript | 7.13.0 | generates `contract.gen.ts` from the OpenAPI document built from the schema files | hand-written types, rejected: they drift (the generation step fails when they are not current) |
+| build | @redocly/openapi-core | 1.34.22 | the private Redocly 1.x modules openapi-typescript 7.13.0 consumes, pinned by an npm override so the codegeneration bridge's version and byte hash hold (`frontend/scripts/codegen-compatibility.mjs`, template 0.14.002) | Redocly 2.x override rejected: it breaks the private `lib/ref-utils.js` import the generator uses |
+| build | minimatch | 11.0.1 | scoped patched glob dependency of the contract generator (GHSA-g3hv-75wg-m249); the guarded adapter preserves its legacy consumer | minimatch 5.x, rejected: the pattern-amplification advisory |
 | build | @redocly/ajv | 8.11.2 | the strict validator of the contract generator, pinned exactly | none recorded |
 | build | @types/node | 24.19.1 | types of the build scripts | none recorded |
 | build | @types/react | 19.3.0 | types of React | none recorded |
@@ -498,8 +504,10 @@ the ones the dossiers and `docs/frameworks/` record.
 
 ## Resources
 
+Every bake pins its thread counts (`OPENBLAS_NUM_THREADS`, `OMP_NUM_THREADS`, `MKL_NUM_THREADS` = 4, set by `data-pipeline/pipeline/__init__.py` and `data-pipeline/run.py` before numpy or a model library loads; `tests/test_pinned_threads.py`), because the BLAS summation order and LightGBM's OpenMP split follow the thread count: a bake writes the same bytes on any device. The one stated exception is the wall-clock `run_seconds` of the C12 ORE reconciliation, which the C12 determinism test excludes.
+
 What each stage needs on the development workstation (Windows 11, 2026-10-12; Python 3.13.14, Node 24.14.1; 16 GB of RAM
-free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value was measured by running the
+free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value not marked otherwise was measured by running the
 command in the `where it runs` column's first cell with the process tree polled every 20 ms: memory is the largest
 summed working set of the tree, time is the wall clock, disk is what the stage leaves behind. The commands and their
 outputs are in the CF-D report. Bakes were run with `--output` into a temporary root, so `data/derived/` is never
@@ -511,13 +519,13 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 | bake C01 (`data-pipeline/run.py C01`, every rung trained, seven variants) | 634 MB peak | 2,064,356 bytes of artifacts | 183.7 s | workstation, never CI |
 | bake C04 (`run.py C04`, nine variants: three agencies, five families, the papers) | 157 MB peak | 856,267 bytes | 296.4 s | workstation, never CI |
 | bake C05 (`run.py C05`, six variants) | 212 MB peak | 561,195 bytes | 32.0 s | workstation, never CI |
-| bake C22 (`run.py C22`, the size and power runs of all eight variants, at least 4,000 repetitions per test) | 231 MB peak | 523,182 bytes | 1,096.8 s | workstation, never CI |
-| tests (`pytest tests`, 385 passed and 2 skipped: the pipeline, contract, guard and bake-artifact tests) | 435 MB peak (300 MB the largest process) | none outside the temporary directory | 125.6 s | workstation, never CI |
-| tests (`pytest tests/adversarial`, the plants of this document's validation files, including two browser-gate plants) | 677 MB peak (282 MB the largest process) | temporary copies of the repository's committed files, about 10 MB each | 1,344.9 s for 88 plants (the two gate plants take 424 s, the leakage plants 30 to 186 s each) | workstation; the Python plants alone also fit CI (ADR-0074) |
-| tests (`npm test` in `frontend/`, 22 files, 560 tests) | 1,872 MB peak summed over the vitest workers (294 MB the largest process) | none | 3.9 s | workstation and CI web job |
-| build (`npm run build`, the four built cases, measured in a copy whose index lists them: the branch's own index lists 22 and its build stops before the web reads the readiness) | 566 MB peak | 6,727,923 bytes in `frontend/dist`, 123 files | 16.0 s | workstation and CI web job |
-| gate (`npm run gate`, every route, tab, sub-tab and case at five sizes, both themes and both languages, on that build) | 910 MB peak | 14,285,565 bytes of captures in `gate-output` | 427.4 s, 868 measured states | workstation, never CI |
-| deploy payload (GitHub Pages) | none | at most 7.7 MB: the 6,727,923 bytes measured for the four built cases plus under 1 MB for the provider documents of the 18 planned cases (36 empty-envelope files; the one example in `docs/contracts/fixtures` is 368 bytes) | at most the 15-minute timeout of the CI web job; one Pages deploy after CI on main | CI after main |
+| bake C22 (`run.py C22`, the size and power runs of all nine variants, at least 4,000 repetitions per test, every registered p-value test; the 75 simulations of the engine's named studies run first on 8 worker processes, the longest, the machine-learning shift resilience study, taking most of the wall time) | about 1.4 GB summed over the main process and the 8 workers (sampled while the pool ran, shared machine) | 695,453 bytes | 9,578 s (U16-P2, riskvalidation 0.9.0 plus the U16-E2 studies; 1,096.8 s before it, eight variants on engine 0.4.3) | workstation, never CI |
+| tests (`pytest tests`, 3,998 tests collected on 2026-10-21 at the wave 3 integration line, 21 of the 22 cases built: the pipeline, contract, guard, bake-artifact and case tests; the full run is made by the release run that writes the convergence verdict, `docs/design/features/release-1-0/design.md`) | not re-measured here: 435 MB peak (300 MB the largest process) when the suite had 387 tests | none outside the temporary directory | not re-measured here: 125.6 s at 387 tests | workstation, never CI |
+| tests (`pytest tests/adversarial`, 88 tests collected on 2026-10-21 the plants of this document's validation files, including two browser-gate plants) | 677 MB peak (282 MB the largest process) | temporary copies of the repository's committed files, about 10 MB each | 1,344.9 s for 88 plants (the two gate plants take 424 s, the leakage plants 30 to 186 s each) | workstation; the Python plants alone also fit CI (ADR-0074) |
+| tests (`npm test` in `frontend/`, 57 files, 1,913 tests, all passed on 2026-10-21 at the wave 3 integration line) | 1,872 MB peak summed over the vitest workers when the suite had 560 tests | none | measured by the release run (3.9 s at 560 tests) | workstation and CI web job |
+| build (`npm run build`; 21 of the 22 cases are built and C19 is planned, so the build reads the index of the 21 manifests) | 566 MB peak, measured at four built cases | 6,727,923 bytes in `frontend/dist`, 123 files, measured at four built cases | 16.0 s, measured at four built cases | workstation and CI web job; UNVERIFIED at 21 built cases until the release run measures it |
+| gate (`npm run gate`, every route, tab, sub-tab and case at five sizes, both themes and both languages, on that build) | 910 MB peak, measured at 868 states | 14,285,565 bytes of captures in `gate-output`, measured at 868 states | 427.4 s at 868 states | workstation, never CI. The last full gate log is the 0.12.000 release: 2,069 measured states, 0 failures, 15 cases built. The 0.13.000 gate walked all 21 built cases with no failure (`CHANGELOG.md`, 0.13.000); its state count is UNVERIFIED here and the release run records it |
+| deploy payload (GitHub Pages) | none | UNVERIFIED at 21 built cases: 6,727,923 bytes of `frontend/dist` were measured at four built cases, and the 21 built cases add their documents under `data/derived/`; the release run measures the payload | at most the 15-minute timeout of the CI web job; one Pages deploy after CI on main | CI after main |
 
 ## Lanes
 
@@ -541,41 +549,68 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 
 ## Method ladder
 
-A method is accepted only with its engine called for real, pinned dependency and licence, configuration with
-units, training or calibration where applicable, a checkpoint or parameter record, inference on every applicable
-case variant, its validation tests, documentation transcribed from the dossier, and an honest lane label
-(ADR-0069).
+Every method of Contraste is a row, with its tier (`classical`, `sota` or `beyond`; CAOS_MANAGE `conventions/method-tiers-and-manuscripts.md`,
+template 0.13.000). A method is accepted only with its engine called for real, pinned dependency and licence, configuration with
+units, training or calibration where applicable, a checkpoint or parameter record, inference on every applicable case variant, its
+validation tests, documentation transcribed from the dossier, and an honest lane label (ADR-0069). The beyond rows name what each is:
+BS-1 to BS-12 are the product's measurements, protocols, reconciliations and test constructions beyond common practice; BS-13 to BS-16
+are the methods Contraste proposes (the plan `plans/contraste/method-tiers-sdd-plan.md` in CAOS_MANAGE, validated 2026-10-28).
 
-| Method (owner) | Accepted when |
-|---|---|
-| WoE monotone scorecard (P) | optbinning bins fitted on train only reproduce monotone event rates; the points table recomputes every score exactly; AUC with DeLong CI, KS, Brier, calibration by grade and PSI out of sample are reported. |
-| Penalised LR and PLTR (P) | paired DeLong against the scorecard reported; rule set stable across 20 bootstraps (Jaccard reported). |
-| EBM/GA2M (P) | monotone shape functions where declared; per-term points table; post-calibration reliability; live additive scoring equals offline within 1e-9. |
-| Monotone GBM plus calibration (P) | monotonicity verified on PDP grids; isotonic or Platt map fitted on a separate slice; Brier and reliability before and after; reason-code stability (bootstrap top-4 overlap). |
-| TabPFN challenger (P) | runs only on small cases; the weights licence is shown on every view; same gates as GBM. |
-| Rating master scale and calibration (E) | Tasche (2013) Table 1 scaled PD and scaled LR columns reproduced; Pluto-Tasche tables 1, 2, 3, 4, 7 reproduced to 0.01 pp. |
-| TTC/PIT Z-factor (E) | implied Z reproduces the LHP relation; PIT PDs average back to TTC over the cycle on the generator. |
-| Transition estimators (E) | rows sum to 1; generator rows to 0; equality with the transitionMatrix cohort estimator on the same data; regularised generator distance reported. |
-| Lifetime PD rungs (P) | cumulative PD monotone; calibration at 12, 24, 36 months against Aalen-Johansen per decile; C-index and integrated Brier for Cox rungs. |
-| IFRS 9 ECL engine (E) | reconciliation identities close within 1e-6; weighted ECL >= average-scenario ECL in the convex regime (property test); the non-linearity example 2.68% vs 1.80% reproduced; overlays reported as separate lines. |
-| CMF B-1 (E) | PE = PI x PDI / 100 for every transcribed cell; the consumer matrix lookup reproduces the 16 cells; the 0.50% minimum enforced. |
-| BdE Annex 9 (E) | coverage tables reproduced as transcribed; the category-to-stage mapping exposed. |
-| LGD rungs (P) | predictions inside [0,1]; out-of-time calibration by bucket; endpoint sensitivity reported for beta rungs. |
-| CCF/EAD rungs (P) | known CCF recovered on the generator within the reported error; the CCF convention named on every view. |
-| IRB and LHP (E) | CRE99 Table 1 reproduced within 0.005 pp; Basel II mode carries 1.06 and 0.03%; Chile mode uses the RAN 21-6 correlations. |
-| Copula MC, CreditRisk+, GA, IS (E) | MC converges to LHP as n grows; Euler contributions sum to the total; the CreditRisk+ recursion matches MC; GA delta = 4.83; IS unbiased against plain MC. |
-| VaR/ES estimators (E and P) | each rung run over the full rolling schedule with no look-ahead; own GARCH-t (scipy) matches `arch` within 1e-4 on the log-likelihood; FZ0 losses computed for every rung. |
-| VaR/ES backtests (E) | MAR99 Table 2 reproduced to two decimals; Kupiec and Christoffersen match closed forms; Acerbi-Szekely critical values simulated per model. |
-| CCR and CVA (P) | own HW1F single-swap EE matches ORE within MC error at every grid point; EEPE and CVA recomputed from EE match ORE; path convergence reported. |
-| SA-CCR, BA-CVA, SMA, output floor, LCR/NSFR, FRTB cascade (E) | official worked examples reproduced (SA-CCR five netting sets, SMA 5.37bn, output floor 101.5 and 95); invariants for BA-CVA, SBM, LCR, NSFR where no official example exists. |
-| IRRBB/ALM (E) | SRP31.92 values reproduced (0.417, 41.7, +25.4, -1.6 bp); the 2016 and 2024 shock tables as fixtures; EVE sum-of-parts reconciles; the CMF Annex 1 worked example reproduced; CLP shocks labelled when not from the CMF. |
-| Liquidity (E) | LiST compounding 12.11% after 125 days reproduced; survival period monotone in run-off severity. |
-| Op risk (E) | Shevchenko benchmark mean 738.9056 and 99.9% quantile 5,849 to 5,850 across MC, Panjer and FFT. |
-| Aggregation (E) | Euler contributions sum to the total; the dependence band (sum, var-covar, Gaussian, t, worst case) always shown. |
-| Stress satellites (P) | back-cast through 2008-2009 and 2020 with satellites estimated on prior data; coefficient signs checked. |
-| Fed supervisory replication (P) | published hypothetical-portfolio loss rates reproduced within the tolerance stated in the case. |
-| Validation tests, all (E) | each reproduces a published worked example or an independent reference (scipy distributions) to a stated tolerance; every result carries `reference`, `h0` and a policy version. |
-| ML validation and fairness tests (E) | each test detects its planted defect on the generator with power reported at alpha 0.05 and holds its size under the null within Monte Carlo error. |
+| id | tier | method | acceptance criterion | gate |
+|---|---|---|---|---|
+| M-1 | classical | WoE monotone scorecard (P) | optbinning bins fitted on train only reproduce monotone event rates; the points table recomputes every score exactly; AUC with DeLong CI, KS, Brier, calibration by grade and PSI out of sample are reported. | `tests/test_c01.py` |
+| M-2 | classical | Penalised logistic regression (P) | paired DeLong against the scorecard reported | `tests/test_c01.py` |
+| M-3 | sota | Penalised logistic tree regression, PLTR (P) | rule set stable across 20 bootstraps (Jaccard reported) | `tests/test_c01.py` |
+| M-4 | sota | EBM/GA2M (P) | monotone shape functions where declared; per-term points table; post-calibration reliability; live additive scoring equals offline within 1e-9. | `tests/test_c01.py` |
+| M-5 | sota | Monotone GBM plus calibration (P) | monotonicity verified on PDP grids; isotonic or Platt map fitted on a separate slice; Brier and reliability before and after; reason-code stability (bootstrap top-4 overlap). | `tests/test_c01.py` |
+| M-6 | sota | TabPFN challenger (P) | runs only on small cases; the weights licence is shown on every view; same gates as GBM. | `tests/test_c01.py` |
+| M-7 | classical | Rating master scale and calibration (E) | Tasche (2013) Table 1 scaled PD and scaled LR columns reproduced; Pluto-Tasche tables 1, 2, 3, 4, 7 reproduced to 0.01 pp. | `tests/test_c05.py` |
+| M-8 | classical | TTC/PIT Z-factor (E) | implied Z reproduces the LHP relation; PIT PDs average back to TTC over the cycle on the generator. | `tests/test_c04.py` |
+| M-9 | sota | Transition estimators (E) | rows sum to 1; generator rows to 0; equality with the transitionMatrix cohort estimator on the same data; regularised generator distance reported. | `tests/test_c04.py` |
+| M-10 | sota | Lifetime PD rungs (P) | cumulative PD monotone; calibration at 12, 24, 36 months against Aalen-Johansen per decile; C-index and integrated Brier for Cox rungs. | `tests/c06/` |
+| M-11 | sota | IFRS 9 ECL engine (E) | reconciliation identities close within 1e-6; weighted ECL >= average-scenario ECL in the convex regime (property test); the non-linearity example 2.68% vs 1.80% reproduced; overlays reported as separate lines. | `tests/c06/` |
+| M-12 | classical | CMF B-1 (E) | PE = PI x PDI / 100 for every transcribed cell; the consumer matrix lookup reproduces the 16 cells; the 0.50% minimum enforced. | `tests/c07/` |
+| M-13 | classical | BdE Annex 9 (E) | coverage tables reproduced as transcribed; the category-to-stage mapping exposed. | `tests/c07/` |
+| M-14 | classical | LGD rungs (P) | predictions inside [0,1]; out-of-time calibration by bucket; endpoint sensitivity reported for beta rungs. | `tests/c08/` |
+| M-15 | classical | CCF/EAD rungs (P) | known CCF recovered on the generator within the reported error; the CCF convention named on every view. | `tests/c09/` |
+| M-16 | classical | IRB and LHP (E) | CRE99 Table 1 reproduced within 0.005 pp; Basel II mode carries 1.06 and 0.03%; Chile mode uses the RAN 21-6 correlations. | `tests/test_c01_capital.py` |
+| M-17 | sota | Copula MC, CreditRisk+, GA, IS (E) | MC converges to LHP as n grows; Euler contributions sum to the total; the CreditRisk+ recursion matches MC; GA delta = 4.83; IS unbiased against plain MC. | `tests/c10/` |
+| M-18 | sota | VaR/ES estimators (E and P) | each rung run over the full rolling schedule with no look-ahead; own GARCH-t (scipy) matches `arch` within 1e-4 on the log-likelihood; FZ0 losses computed for every rung. | `tests/c11/` |
+| M-19 | classical | VaR/ES backtests (E) | MAR99 Table 2 reproduced to two decimals; Kupiec and Christoffersen match closed forms; Acerbi-Szekely critical values simulated per model. | `tests/c11/` |
+| M-20 | sota | CCR and CVA (P) | own HW1F single-swap EE matches ORE within MC error at every grid point; EEPE and CVA recomputed from EE match ORE; path convergence reported. | `tests/c12/` |
+| M-21 | classical | SA-CCR, BA-CVA, SMA, output floor, LCR/NSFR, FRTB cascade (E) | official worked examples reproduced (SA-CCR five netting sets, SMA 5.37bn, output floor 101.5 and 95); invariants for BA-CVA, SBM, LCR, NSFR where no official example exists. | `tests/test_regulatory*.py` |
+| M-22 | sota | IRRBB/ALM (E) | SRP31.92 values reproduced (0.417, 41.7, +25.4, -1.6 bp); the 2016 and 2024 shock tables as fixtures; EVE sum-of-parts reconciles; the CMF Annex 1 worked example reproduced; CLP shocks labelled when not from the CMF. | `tests/c14/`, `tests/c15/` |
+| M-23 | sota | Liquidity (E) | LiST compounding 12.11% after 125 days reproduced; survival period monotone in run-off severity. | `tests/c16/` |
+| M-24 | sota | Op risk (E) | Shevchenko benchmark mean 738.9056 and 99.9% quantile 5,849 to 5,850 across MC, Panjer and FFT. | `tests/c17/` |
+| M-25 | sota | Aggregation (E) | Euler contributions sum to the total; the dependence band (sum, var-covar, Gaussian, t, worst case) always shown. | `tests/c18/` |
+| M-26 | classical | Stress satellites (P) | back-cast through 2008-2009 and 2020 with satellites estimated on prior data; coefficient signs checked. | `tests/c18/` |
+| M-27 | classical | Fed supervisory replication (P) | published hypothetical-portfolio loss rates reproduced within the tolerance stated in the case. | `tests/c18/` |
+| M-28 | classical | Validation tests, all (E) | each reproduces a published worked example or an independent reference (scipy distributions) to a stated tolerance; every result carries `reference`, `h0` and a policy version. | `tests/test_c22.py` |
+| M-29 | sota | ML validation and fairness tests (E) | each test detects its planted defect on the generator with power reported at alpha 0.05 and holds its size under the null within Monte Carlo error. | `tests/c20/`, `tests/c21/` |
+| M-30 | sota | Quantile network trained on the FZ0 loss, C11 R10 (P; plan S-1) | trained on each window's train span only, no look-ahead; its VaR and ES pass the same eligibility gates and FZ0 ranking as the other rungs; reported whether it wins or not | `tests/c11/` |
+| M-31 | sota | VAR conditional forecasts and growth-at-risk quantile satellites, C18 (E and P; plan S-2) | back-cast through 2008-09 and 2020 on prior data beside the OLS satellites, with the coefficient-sign checks | `tests/c18/` |
+| M-32 | sota | Robust severity estimators (optimally bias-robust, Cramer-von Mises) with the mean-adjusted SLA, C17 (E; plan S-3) | on the generators of known truth, the capital's bias and spread reported beside the MLE splice | `tests/c17/` |
+| M-33 | sota | Neural discrete-time survival, PC-Hazard, C06 (P; plan S-4) | calibration at 12, 24 and 36 months against Aalen-Johansen per decile, C-index and integrated Brier beside Cox, at the six reporting dates | `tests/c06/` |
+| M-34 | sota | Random forest and neural LGD rungs, C08 (P; plan S-5) | out-of-time calibration by bucket and the ladder's metrics on the same split as the other LGD rungs | `tests/c08/` |
+| M-35 | sota | Reject inference (parcelling and augmentation) on a sample with a known rejected population (P; plan S-6) | the accepted-only model's bias on the full population measured, and each reject-inference rung's reduction of it with its interval | `tests/test_c01.py`, `tests/c02/` |
+| M-36 | sota | PD curve calibration carried to a new period: Tasche's (2013) approaches compared, the 2009 curve rebuilt by quasi moment matching and carried by the scaled PD, the scaled likelihood ratio and their robust variants (E) | each approach's forecast PD and implied default profile against S&P's observed 2010 and 2011, with the IRB capital it implies; Tasche (2013) Table 1 reproduced | `tests/test_c05.py` |
+| M-37 | sota | The published size and power studies of the validation tests rerun: BCBS Working Paper 14 Tables 7 and 8, Yurdakul and Naranjo (2020) Table 4, Demler, Pencina and D'Agostino (2012), by exact enumeration and simulation (E) | each published cell agrees with the rerun within the pooled two-sample bound (the absolute z at most 3.29, `harness.rates.agrees_with_published`) or the disagreement is stated: WP14 143 of 144 cells, Yurdakul and Naranjo at least 48 of 54 with the systematic offset stated | `tests/test_c22.py` |
+| BS-1 | beyond | Measurement: The measured size and power of the validation tests on planted defects | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-1 |
+| BS-2 | beyond | Reconciliation: The reconciliations against reference engines that exist today | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-2 |
+| BS-3 | beyond | Protocol: The leakage-safe protocol per case, with gates | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-3 |
+| BS-4 | beyond | Method-adjacent: estimator treatment: The default definition as part of the PD, informative withdrawals and thin grades | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-4 |
+| BS-5 | beyond | Protocol: Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-5 |
+| BS-6 | beyond | Engine coverage: Engines and test catalogues no open toolkit provides | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-6 |
+| BS-7 | beyond | Method-adjacent: currency treatment: The UF as its own currency in IRRBB | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-7 |
+| BS-8 | beyond | Test construction: A test that flags a behavioural assumption changed at a limit breach | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-8 |
+| BS-9 | beyond | Protocol: The dependence band shown with every aggregate | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-9 |
+| BS-10 | beyond | Test construction: The batch 3 test corrections, with the error rate each one removes measured on planted data | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-10 |
+| BS-11 | beyond | Method-adjacent: reverse stress rule: Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-11 |
+| BS-12 | beyond | Measurement: The instability of the operational-risk capital, measured on independent histories of known truth | its committed evidence, as `## Beyond the state of the art` states it | the evidence and tests that section lists for BS-12 |
+| BS-13 | beyond | Proposed method: a scale-and-level complement to the FRTB PLA test (C13) | at a size of at most 1 %, the stale-volatility model flagged in at least 30 % of replications; refuted below 10 % | `tests/c13/`; engine `market` tests |
+| BS-14 | beyond | Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04) | the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments under 50 %; refuted if not better or if the anchored k is unstable | `tests/test_c04.py`; engine `transitions` tests |
+| BS-15 | beyond | Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03) | size held at 5 % under optional stopping where the repeated Kupiec rule exceeds it, median delay below the 250-day window at severity 3 or more, power cost under 10 points; refuted if the delay is not lower | `tests/test_c22.py`, `tests/c11/`; engine `validation.sequential` tests |
+| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09 | `tests/c11/`; engine `market` tests |
 
 ## Cases
 
@@ -674,9 +709,11 @@ both languages) before any deploy.
 
 ### Requirements map
 
-EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Product requirements (`CT-`) are stated with their gates in the
-feature folders; the hundreds digit is the unit (0 for U0, 1 for U1). Engine requirements (`RV-`) are stated and
-gated in the engine repository.
+EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Product requirements (`CT-`, plus `NB-`, `RP-` and `CV-` for the notebooks, the
+README and the verdict) are stated with their gates in the 27 feature folders of `docs/design/features/`. Engine requirements (`RV-`)
+are stated and gated in the engine repository. Convergence is generated, not written here: `scripts/convergence_verdict.py` lists every
+requirement of both repositories with its gate and the gate's result in the release run (ADR-0075 section 4;
+`docs/design/features/release-1-0/`).
 
 | Unit | Feature folder | Requirements |
 |---|---|---|
@@ -686,7 +723,28 @@ gated in the engine repository.
 | U2 | `docs/design/features/c05-ldp-calibration/` | CT-201 to CT-211: the paper readers checked against their own print; every golden cell within the engine's tolerance; the generator's truth recovered; coverage and power; the capital's assumptions; expected ranges; no derived-only counts published; live parity; the C05 instrument; the measured gate |
 | U2 | `docs/design/features/c01-irb-capital/` | CT-212 to CT-217: C01's IRB capital along every cut-off under three regimes with its stated assumptions; each point the engine's sum; every card a revolver, the six-month full payers as the sensitivity; the live capital linear in the LGD and the retail functions at parity; the Basel III LGD floor flagged; the measured gate |
 | U3 | `docs/design/features/c22-validator/` | CT-301 to CT-313: the size of every test with a p-value on its null; power against seven planted defects at severities 0 to 5; exact rejection probabilities beside the simulated ones; WP14, Yurdakul-Naranjo and Demler et al. reproduced cell by cell; findings evidenced by measured rates; known truth and determinism; expected ranges; the live exact size and power at parity; the C22 instrument; the measured gate; C05 on the engine's generator; C01's Hosmer-Lemeshow with G degrees of freedom and its AUC test with the development variance |
-| engine | `CAOS_RiskValidation` `docs/design/` | RV-001 to RV-007 (the `TestResult` record, the policy, the suite runner) and RV-101 to RV-114 (PD and stability tests), converged in `riskvalidation` 0.01.000; RV-901 (regulatory parameters with paragraph and in-force date) lands in U9 |
+| U4 | `docs/design/features/c04-transitions/` | CT-401 to CT-414 (15 requirements): case C04 (rating transitions and TTC PD by grade) |
+| U5-P1 | `docs/design/features/c06/` | CT-501 to CT-517 (17 requirements): case C06 (lifetime PD, IFRS 9 staging and ECL on the SBA 7(a) twin) |
+| U5-P2 | `docs/design/features/c07/` | CT-701 to CT-713 (13 requirements): case C07 (the Chile provisions trilogy) |
+| U6-P1 | `docs/design/features/c03/` | CT-801 to CT-812 (12 requirements): case C03 (SME PD by vintage through 2008, on the SBA 7(a) loans) |
+| U6-P2 | `docs/design/features/c08/` | CT-901 to CT-917 (17 requirements): case C08 (LGD and downturn LGD on the SBA 7(a) charge-off twin) |
+| U6-P3 | `docs/design/features/c09/` | CT-1001 to CT-1013 (13 requirements): case C09 (EAD and CCF for revolving lines) |
+| U7-P | `docs/design/features/c10/` | CT-1101 to CT-1112 (12 requirements): case C10 (portfolio credit capital) |
+| U8-P1 | `docs/design/features/c11/` | CT-601 to CT-615 (15 requirements): case C11 (market VaR and ES back-testing across 2008, 2020, 2022 and 2023) |
+| U8-P2 | `docs/design/features/c13/` | CT-1301 to CT-1313 (13 requirements): case C13 (FRTB desk eligibility: PLA and desk back-testing) |
+| U9-P1 | `docs/design/features/c12/` | CT-1201 to CT-1221 (21 requirements): case C12 (swap exposure, CVA and SA-CCR on a synthetic USD swap book) |
+| U10-P1 | `docs/design/features/c14/` | CT-1401 to CT-1414 (14 requirements): case C14 (IRRBB six shocks on a USD balance sheet, SVB 2022) |
+| U10-P2 | `docs/design/features/c15/` | CT-1501 to CT-1517 (17 requirements): case C15 (IRRBB on a CLP and UF balance sheet, RAN 21-13 Annex 1) |
+| U11-P | `docs/design/features/c16/` | CT-1601 to CT-1623 (23 requirements): case C16 (liquidity stress, LCR and the March 2023 run, on the call reports of the bank that failed on 2023-03-10) |
+| U12-P | `docs/design/features/c17/` | CT-1701 to CT-1715 (15 requirements): case C17 (operational risk: LDA against SMA) |
+| U13-P1 | `docs/design/features/c18/` | CT-1801 to CT-1825 (25 requirements): case C18 (ICAAP and IAPE capital aggregation under macro scenarios) |
+| U14-P1 | `docs/design/features/c02/` | CT-0201 to CT-0218 (18 requirements): case C02 (corporate PD across the 1 to 5 year horizons on the UCI Polish bankruptcy files) |
+| U14-P2 | `docs/design/features/c20/` | CT-2001 to CT-2025 (25 requirements): case C20 (ML model validation: drift, robustness, explanation stability) |
+| U14-P3 | `docs/design/features/c21/` | CT-2101 to CT-2119 (19 requirements): case C21 (fair-lending disparity testing on HMDA decisions, Delaware, 2018 to 2024) |
+| U16 | `docs/design/features/release-1-0/` | CV-001 to CV-013 (13 requirements): the generated convergence verdict of release 1.0 |
+| U17 | `docs/design/features/notebooks/` | NB-001 to NB-021 (21 requirements): the product notebooks |
+| U17 | `docs/design/features/repository/` | RP-001 to RP-005 (5 requirements): the README states the repository by areas |
+| engine | `CAOS_RiskValidation` `docs/design/features/` | RV- requirements (21 feature folders, 514 requirement rows at the engine head of 2026-10-21), stated and gated in the engine repository; the verdict lists them beside the product's (`docs/design/features/release-1-0/`) |
 
 ## Oracles
 
@@ -706,6 +764,11 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
+Two kinds of entry are listed here. **BS-1 to BS-12** are what Contraste does beyond common practice without proposing a new
+method: measurements, protocols, reconciliations, engine coverage and test constructions (the rule counts none of them, by itself,
+as a method beyond the state of the art; each says what it is in the Method ladder). **BS-13 to BS-16** are the methods Contraste
+proposes, each with its hypothesis, its method and the evaluation that confirms or refutes it; each is reported whatever its result.
+
 A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
 demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and
@@ -719,7 +782,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
   https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
   an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
-  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
   and its Spanish counterpart.
   Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
   `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
@@ -759,8 +822,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   `data/derived/C12/wrong-way-risk.json`.
   Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
   QuantLib as reference engines whose numbers Contraste must not claim as validated beyond the reconciliations actually run.
-  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and
-  `notebooks/en/08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb`, with their
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-the-reconciliations-against-printed-answers.ipynb` and
+  `notebooks/en/08-counterparty-and-regulatory-calculators/08-exposure-reconciled-to-a-reference-engine.ipynb`, with their
   Spanish counterparts.
 
 - **BS-3** The leakage-safe protocol per case, with gates.
@@ -773,8 +836,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Evidence: `docs/design/features/c01-retail-pd/requirements.md` (CT-101 to CT-103), `tests/test_leakage.py` (3 passed when the claim
   was assembled), `data/derived/C01/models-taiwan.json`, `data/derived/C02/h1.json` to `h5.json` and `pooled.json`,
   `data/derived/C03/fy2015-17.json`, `data/derived/C03/fy2018-20.json`, `data/derived/C22/leakage.json`. Demonstrated by
-  `notebooks/en/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
-  `notebooks/es/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
+  `notebooks/en/02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
+  `notebooks/es/02-credit-scoring/07-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
   Beyond: the research dossier 04 states the leakage rules, and dossier 07 names the single-split evaluation of an open toolkit as the
   counter-example; neither gives a protocol declared per case with a gate that fails when it is broken. Not claimed: a calibration
   before the test window (the drafted text names it for a later case) and any leak by time beyond what the gate CT-103 perturbs.
@@ -789,7 +852,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   `docs/design/features/c04-transitions/requirements.md`.
   Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
   default event, and cohort and duration estimators take the agencies' tables as given.
-  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb` and
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-the-default-definition-withdrawals-and-thin-grades.ipynb` and
   its Spanish counterpart.
 
 - **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
@@ -799,8 +862,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   weighted mean factor in the convex regime and able to fall below it outside; and one synthetic bank is provisioned under CMF B-1,
   IFRS 9 and Bank of Spain Annex 9 with a gap bridge that reconciles in six scenarios.
   Evidence: `data/derived/C06/rd-2008-12.json`, `data/derived/C07/base.json`, `docs/design/features/c06/requirements.md`,
-  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`
-  (Spanish: `notebooks/es/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
+  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb`
+  (Spanish: `notebooks/es/04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
   Beyond: IFRS 9 does not prescribe detailed methods; the research (dossiers 02 and 03) found no public comparison of the three
   regimes on one portfolio, which is UNVERIFIED beyond the searches those dossiers record. The C07 bank is synthetic and labelled so.
   Not claimed: that any regime is right or any engine figure compliant; that the weighted ECL is above the mean-path ECL on every
@@ -815,7 +878,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   are demonstrated by the units of their own topics.
   Evidence: `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C01/holdout.json`, `data/derived/C10/grid-22.json`,
   `data/derived/C10/grid-40.json`, `data/derived/C10/commercial-industrial.json`, `data/derived/C10/credit-cards.json`,
-  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb`.
+  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-an-engine-reconciled-to-its-anchors.ipynb`.
   Beyond: the research dossiers 04, 05 and 06 record no maintained permissive implementation of these families. Scope of the
   record: for the portfolio engines, dossier 04 section H.8 records a search of 2026-10-04 on CRAN and GitHub (archived CRAN
   packages, a GPL-2 CRAN package, a GPL-2.0 repository and small educational repositories), and the search of GitHub and PyPI is
@@ -826,12 +889,12 @@ no claim is stated before its demonstration exists. Each claim is stated only as
 
 - **BS-7** The UF as its own currency in IRRBB.
   What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency (the UR) with its own curve, its own shock sizes (200/250/150 bp for the EVE and 300 bp for the NII, against 300/400/200 bp and 300 bp for the peso), its own floor (-2 percent, against 0 for the peso), the indexation charge (2.5% of the absolute net UF position) and the 50% offset of the gain leg against the loss leg. On the committed Banco Andino variants the charge is 55.9% of the delta NII of the short-UF variant, and a single-currency treatment of the same flows (peso curve, peso sizes, zero floor, no charge) gives a delta NII 6.8 to 8.8 times smaller and a delta EVE 10 to 27% smaller in the three variants whose net UF position is 30% of Tier 1.
-  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the BCBS standard (https://www.bis.org/basel_framework/chapter/SRP/31.htm, with the 2016 calibration https://www.bis.org/bcbs/publ/d368.htm and the 2024 recalibration https://www.bis.org/publications/202407-standards-recalibration-shocks-interest-rate-risk-banking-book.pdf) has 21 currencies in its shock table, neither the peso nor a UF-like unit; the Chilean treatment is the Annex 1 of chapter 21-13 of the CMF (https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf). The claim is regional: no public implementation of Annex 1 was found, which is UNVERIFIED beyond the dossier's search. Limits: the floors are implemented and tested but none binds on the committed curves (the closest post-shock rate is 20.48 bp from its floor in every variant), so their effect on a number is not demonstrated; there is no second implementation to reconcile with; the bank is synthetic.
 
 - **BS-8** A test that flags a behavioural assumption changed at a limit breach.
   What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
-  Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
 
 - **BS-9** The dependence band shown with every aggregate.
@@ -917,6 +980,33 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
   internal gates; it says nothing about the capital of any real bank.
 
+
+- **BS-13** A scale-and-level complement to the FRTB P&L attribution test (C13).
+  Problem: the PLA's Spearman and Kolmogorov-Smirnov statistics miss a risk model that uses 20-day-old volatility (amber or red in 0.0 % of
+  1,000 replications, `data/derived/C13/stale-volatility.json`). Method: a Mincer-Zarnowitz regression of HPL on RTPL with a joint Wald test
+  of intercept 0 and slope 1, and the Spearman correlation of |HPL| and |RTPL| and of their 20-day rolling means, with thresholds set to the
+  PLA's own size. Hypothesis: at a size of at most 1 %, the stale-volatility model is flagged in at least 30 % of replications; refuted below
+  10 %. Evaluation: the six C13 variants from the committed generator, a lag ladder of 5, 10, 20 and 40 days, the size cross-checked on C22.
+  Beyond: the regulatory PLA (BCBS MAR32) has no statistic of scale or of volatility timing. Evidence: written with the result.
+- **BS-14** An anchored tipping-point PD under informative rating withdrawals (C04).
+  Problem: removing, keeping or following withdrawals understates the B-grade PD by 15 to 38 % when withdrawal is informative (`docs/cases/C04.md`).
+  Method: the PD by grade as a function of the odds k of withdrawal in the year of default (k = 1 the usual estimate, k large the Manski
+  bound, Manski 1989, https://doi.org/10.2307/145818), the tipping k at which a decision flips, k anchored where two sources count defaults
+  differently. Hypothesis: the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments
+  under 50 %; refuted if coverage is not better or the anchored k is unstable across years. Evidence: written with the result.
+- **BS-15** E-process sequential monitors for calibration and back-tests (C22, C11, C03).
+  Problem: the fixed-window tests are read once per window. Method: betting e-processes for VaR hits, for defaults against predicted PD by
+  grade and for a battery, rejecting when the process exceeds 20 (Ville's inequality: an anytime-valid size of 5 %; Ramdas et al.,
+  https://arxiv.org/abs/2210.01948). Hypothesis: the size holds at 5 % under optional stopping where the repeated Kupiec rule exceeds it, and
+  the median detection delay is below the 250-day window at severity 3 or more, at a power cost under 10 points; refuted if the delay is not
+  lower than the traffic light's. Evidence: written with the result.
+- **BS-16** Adaptive conformal recalibration of VaR against the 17-model ladder (C11).
+  Method: adaptive conformal inference on each model's level (Gibbs and Candes, https://arxiv.org/abs/2106.00170), wrapped against unwrapped
+  on Kupiec, conditional coverage, Acerbi-Szekely Z2 and FZ0 in the stress windows. Hypothesis: HS-250, GARCH-t and FHS wrapped pass in at
+  least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09. The French
+  equity series is derived-only: the recalibration runs on the device's data root and only its outputs are committed. Evidence: written
+  with the result.
+
 ## Deploy driver
 
 One place only, decided in the plan: **`github-pages` with a `CNAME` on `contraste.fasl-work.com`**
@@ -963,6 +1053,7 @@ Where the ADRs fit as written:
 | ADR-0061 and the no-internal-packages rule | fits: `riskvalidation` is the separate engine repository; this product declares no package |
 | ADR-0065 to ADR-0068 community files, English, no em-dash, versioning | fit: `scripts/check_content_standards.py`, `scripts/check_version_coherence.py` |
 | ADR-0074 CI budget | fits: the product CI runs no pipeline suite; the engine's unit tests are cheap and run in its own CI |
+| ADR-0070 | fits: the App is a workbench with Focus mode (`CaseWorkbench` `focus`, `frontend/src/workbench/Workbench.tsx`); `npm run gate` runs with `--require-focus` (G18); the App's kind is `product.json` `app` (default workbench), and only a surface App without simulation waives Focus, with its reason here as "not applicable: <reason>" |
 | Product quality bar, section 0 (one selected case on App, real action capability, honesty) | fits strongly: thresholds, policy, segments, windows and scenario weights are real live inputs |
 | Units gate | applies from the second observable on: PD in (0, 1), LGD in [0, 1], CCF by stated convention, VaR and ES in the portfolio's units |
 | One deploy place | fits: GitHub Pages (`Deploy driver`) |

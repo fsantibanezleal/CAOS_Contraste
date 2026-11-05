@@ -44,6 +44,8 @@ jobs:
           python -c "import sys, yaml, pathlib; [yaml.safe_load(p.read_text()) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('workflows: OK')"
       - name: CONTRACT 2, manifests and artifacts consistent
         run: python scripts/check_artifacts.py
+      - name: Every committed document valid against its schema file, each governed by one catalog row (ADR-0080)
+        run: python scripts/check_documents.py
       - name: Every artifact carries true provenance (CT-003)
         run: python scripts/check_provenance.py
       - name: No raw rows of a non-mirror source (CT-006)
@@ -58,12 +60,82 @@ jobs:
         run: python scripts/check_deploy_place.py
       - name: The notebooks, layout, English and Spanish mirror, levels, anatomy, metadata and cleanliness (static; the execution is a local gate, ADR-0074)
         run: python scripts/check_notebooks.py
+      - name: The manuscripts, product.json declares the Zenodo technical report (static; the online read is a local release step, ADR-0074)
+        run: python scripts/check_manuscripts.py
+      - name: The tier names stay internal, never in a notebook, a manuscript, the README or the app (CAOS_MANAGE method-tiers rule, section 0)
+        run: python scripts/check_internal_names.py
       - name: The README states the repository by areas
         run: python scripts/check_readme_areas.py
+      - name: An animated SVG carries its reduced-motion block and plays ten seconds at most (shell 0.14.0, reuses the shell's analysis)
+        run: python scripts/check_svg_animation.py
+      - name: The SDD technology table is the pinned dependencies (spec area)
+        run: python scripts/check_tech_matrix.py
+      - name: Contract versions follow their schemas, each with its History entry, against the base (spec area)
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base="$BEFORE"
+          if [ -z "${base//0/}" ]; then base=origin/develop; fi  # a new branch or a manual run has no before SHA
+          python scripts/check_contract_versions.py --base "$base"
+      - name: The contract catalog, every row complete and every path it names present (ADR-0080)
+        run: python scripts/check_contracts.py docs/contracts/catalog.md --repo-root .
+      - name: The readiness document is current with the catalog and the bake (ADR-0080)
+        run: python scripts/check_readiness.py
+      - name: Rows still served by a provider (listed while building; none on main)
+        run: |
+          set +e
+          python scripts/check_skeleton.py docs/contracts/catalog.md
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "::error::main is a release: every catalog row must be real"; exit 1; fi
+          [ "$code" -eq 0 ] || [ "$code" -eq 2 ]
+
+  product-plants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install the existing guard prerequisites
+        run: cd frontend && npm ci
+      - name: Install the existing schema validator
+        run: pip install jsonschema==4.26.0
+      - name: Every product guard rejects a planted defect
+        run: pip install pytest==9.1.1 && python -m pytest tests/adversarial -q
+
+  # BEGIN TEMPLATE-ONLY PLANTS
+  template-plants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install the existing guard prerequisites
+        run: cd frontend && npm ci
+      - name: Install the existing schema validator
+        run: pip install jsonschema==4.26.0
+      - name: Every template guard rejects a planted defect
+        run: pip install pytest==9.1.1 && python -m pytest tests/template/adversarial -q
+  # END TEMPLATE-ONLY PLANTS
 
   web:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -88,36 +160,18 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Base-integrity guards (the regressions this archetype forbids)
-        run: |
-          fail=0
-          # the tracked paths, read once. `git ls-files | grep -q` failed at random under pipefail: grep -q exits on its first
-          # match, git ls-files dies of SIGPIPE and the pipeline reports 141, so a test (and its negation) flipped run to run.
-          # Every test below reads the list from a here-string: no pipe, no early-closing reader.
-          files="$(git ls-files)"
-          # a real .env must never be tracked; an example file (.env.example, frontend/.env.example) may be
-          envs="$(grep -E '(^|/)\.env(\..+)?$' <<<"$files" | grep -vE '(^|/)\.env(\..+)?\.example$' || true)"
-          if [ -n "$envs" ]; then
-            echo "::error::a real .env is tracked (only an .env.example may be): $(tr '\n' ' ' <<<"$envs")"; fail=1; fi
-          # venvs, native binaries and heavy model blobs must never be tracked
-          if grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$' <<<"$files"; then
-            echo "::error::a venv or native/heavy binary is tracked"; fail=1; fi
-          # raw or heavy data must never be tracked; commit only compact derived artifacts under data/derived/
-          if grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy)$' <<<"$files"; then
-            echo "::error::raw or heavy data tracked; commit only compact derived artifacts (data/derived/)"; fail=1; fi
-          # no leaked local machine paths in tracked sources
-          if git grep -nE '[A-Z]:\\_(Repos|worktrees|Temp)|[A-Z]:/_(Repos|worktrees|Temp)' -- . ':!.github' >/dev/null 2>&1; then
-            echo "::error::a local machine path in a tracked file"; fail=1; fi
-          if [ "$fail" -eq 0 ]; then echo "guards: OK"; fi
-          exit $fail
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Base-integrity guards (the regressions this archetype forbids; a model file a catalog row declares is admitted, 0.09.000)
+        run: python scripts/check_base_integrity.py
       - name: No template residue (an instantiated product replaces the example)
         run: python scripts/check_template_residue.py
       - name: Every path a document names exists
         run: python scripts/check_doc_paths.py
       - name: No em-dash or emoji in product content (ADR-0067)
         run: python scripts/check_content_standards.py
+      - name: Spanish texts carry their accents (BL-089)
+        run: python scripts/check_spanish.py
       - name: CI budget, no training, trunk-only triggers (ADR-0074)
         run: python scripts/check_ci_budget.py

@@ -45,6 +45,14 @@ def sf_on_grid(h: np.ndarray, step: float, x: np.ndarray) -> np.ndarray:
     return np.interp(x, nodes, sf)
 
 
+def sf_within_grid(h: np.ndarray, step: float, x: np.ndarray) -> list[float | None]:
+    """``sf_on_grid`` where the pmf grid reaches, and ``None`` past its last node: the recursion computes no probability there, and the
+    interpolation would hold its last value flat as if it were data (U16-R2, b08 M1)."""
+    nodes, sf = agg.exceedance_from_pmf(h, step)
+    inside = np.interp(x, nodes, sf)
+    return [float(v) if xi <= nodes[-1] else None for v, xi in zip(inside, x)]
+
+
 def exceedance_axis(quantile: float, n: int = P.EXCEEDANCE_POINTS) -> np.ndarray:
     """A geometric axis of ``n`` points from a ten-thousandth of the 99.9 percent quantile to ten times it, rounded to 3 digits."""
     lo, hi = math.log10(quantile) - 3.0, math.log10(quantile) + 1.0

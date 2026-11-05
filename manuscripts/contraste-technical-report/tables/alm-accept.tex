@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The acceptance checks of the two methods run on the committed documents: the worked example of the standardised shocks of the Basel Committee, the sum of parts of the economic value, the worked cases of the Chilean Annex 1, the compounding example of the European Central Bank, the monotone survival period and the net liquidity position identity, each with the reference value, the computed value, the deviation, the tolerance and whether the check passes.}
+\label{tab:alm-accept}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lllrrrl}
+\toprule
+Component & Check & Reference & Computed & Deviation & Tolerance & Outcome \\
+\midrule
+Standardised shocks & Short-rate scalar at 3.5 years & 0.417 & 0.4169 & 0.00014 & 0.0005 & pass \\
+Standardised shocks & Short-up shock for 100 bp (bp) & 41.7 & 41.6862 & 0.01380 & 0.05 & pass \\
+Standardised shocks & Steepener (bp) & 25.4 & 25.3864 & 0.01361 & 0.05 & pass \\
+Standardised shocks & Flattener (bp) & $-$1.6 & $-$1.6393 & 0.03932 & 0.05 & pass \\
+Economic value & Sum of parts against whole, largest relative residual over three dates & 0 & $2.5\times10^{-15}$ & $2.5\times10^{-15}$ & 1e-09 & pass \\
+Annex 1 & Worked cases of the Chilean standard reproduced (pairs, table rows, charge, Hoja 10) & 19 of 19 & 19 of 19 & 0.0 & 0 & pass \\
+Run-off compounding & Cumulative outflow after 125 days at 0.103258 per cent a day & 0.1211 & 0.121148 & $3.7\times10^{-7}$ & 5e-07 & pass \\
+Survival period & Survival period shortens with severity: Adverse 62 days, Extreme 41 days & non-increasing & 62 then 41 & 0 & 0 & pass \\
+Net liquidity position & Identity of the position with capacity less cumulative net outflow, four ladders & 0 & 0 & 0 & 1e-06 & pass \\
+\bottomrule
+\end{tabular}}
+\end{table}

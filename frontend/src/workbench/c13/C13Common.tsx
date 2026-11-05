@@ -8,11 +8,14 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { rangeText, truthText } from '../c08/words';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { ConventionLine, rowsMin } from '../c11/MarketCommon';
-import { DEFICIENCY_TEXT, INTENDED_TEXT, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, text, type C13Outputs, type C13Sel } from './selection';
+import { DEFICIENCY_TEXT, GENERATOR_TEXT, INTENDED_TEXT, PARAMETER_TEXT, UNIT_TEXT, parameterText, STATISTIC_TEXT, ZONE_TEXT, fitOf, levelLabel, outputsOf, seedText, text, type C13Outputs, type C13Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** A label that starts a line of a list starts with a capital (R3 c14 m9). */
+const capital = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 const pct = (v: number | null | undefined, lang: 'en' | 'es', decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
 
 /** The deficiency of a document in words: its name, or the control. */
@@ -27,31 +30,45 @@ export function KnownBanner({ o }: { o: C13Outputs }) {
       <p className="ct-note">
         <strong>{pick(k.planted ? { en: 'Known deficiency: ', es: 'Deficiencia conocida: ' } : { en: 'No deficiency planted: ', es: 'Sin deficiencia sembrada: ' }, lang)}</strong>
         {k.planted ? `${pick(deficiencyName(o), lang)}. ` : ''}
-        {pick(k.mechanism, lang)}
+        {/* the control's mechanism starts with the words of the label before it: said once (R3 c14 m6) */}
+        {k.planted ? pick(k.mechanism, lang) : pick(k.mechanism, lang).replace(/^(No deficiency|Sin deficiencia): /, '')}
         {k.planted ? ` ${pick({ en: 'Meant to be caught by:', es: 'Debe detectarla:' }, lang)} ${pick(text(INTENDED_TEXT, k.intended_to_fail), lang)}.` : ''}
+        {/* the synthetic notice in the same paragraph, so the Findings card keeps half the viewport at 1280 (gate G6: 49.8 %) */}
+        {' '}
+        <span data-synthetic="true">{pick(o.generator.notice, lang)}</span>
       </p>
-      <p className="ct-note" data-synthetic="true">{pick(o.generator.notice, lang)}</p>
     </div>
   );
 }
+
+/** The convention of the C13 numbers: decimals of the desk notional, not of a portfolio value (R3 c14 m8). */
+export const C13_CONVENTION: Bi = {
+  en: 'VaR is a positive loss and the HPL and RTPL are signed P&L, all as decimals of the desk notional: a VaR of 1\u00a0% means a loss of 1\u00a0% of the notional.',
+  es: 'El VaR es una pérdida positiva y el HPL y el RTPL son P&L con signo, todos como decimales del nocional de la mesa: un VaR de 1\u00a0% significa una pérdida de 1\u00a0% del nocional.',
+};
 
 /** The lines every C13 view carries under its drawing: the sign convention, once, and the known deficiency. */
 export function ViewFoot({ o }: { o: C13Outputs }) {
   return (
     <>
-      <ConventionLine />
+      <ConventionLine line={C13_CONVENTION} />
       <KnownBanner o={o} />
     </>
   );
 }
 
+/** The findings box never collapses below a readable height on a phone (the box was a 10 px sliver, U16-R2 b06 B4); at 1280 it
+ * fills the instrument and scrolls inside, so it never spills under the governance disclosure (U16-R2b c14 M1). The floor is the
+ * stylesheet's `.ct-c13-findings` rule below 900 px; this constant documents it. */
+export const FINDINGS_MIN_HEIGHT = 'min(70vh, 36rem)';
+
 export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   return (
-    <div className="ct-stack" data-block="c13-findings">
+    <div className="ct-stack" data-caos-flow="" data-block="c13-findings">
       <KnownBanner o={o} />
-      <div style={{ flex: '1 1 0', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      <div className="ct-c13-findings">
         <ViewsRow>
           <FindingsCard variant={sel.data.variant} />
         </ViewsRow>
@@ -87,7 +104,7 @@ export function C13VariantsTable({ variants, onPick, current }: { variants: Arra
           />
         }
       >
-        <ConventionLine />
+        <ConventionLine line={C13_CONVENTION} />
         {first ? <p className="ct-note" data-synthetic="true">{pick(first.generator.notice, lang)}</p> : null}
         <table className="caos-table ct-wrap-head" data-table="variants-c13">
           <thead>
@@ -109,7 +126,8 @@ export function C13VariantsTable({ variants, onPick, current }: { variants: Arra
                   </td>
                   <td className="ct-text ct-wide-only">{pick(text(INTENDED_TEXT, v.outputs.known_deficiency.intended_to_fail), lang)}</td>
                   <td>{pct(d.share_amber_or_red, lang)}</td>
-                  <td className="ct-wide-only">{`${pct(d.ci_low, lang)} - ${pct(d.ci_high, lang)}`}</td>
+                  {/* "a to b" with no-break spaces: a phone broke "a - b" at its hyphen (R3 c14 m14) */}
+                  <td className="ct-wide-only">{`${pct(d.ci_low, lang)}\u00a0${pick({ en: 'to', es: 'a' }, lang)}\u00a0${pct(d.ci_high, lang)}`}</td>
                   <td className="ct-text">{d.role === 'power' ? pick({ en: 'power', es: 'potencia' }, lang) : pick({ en: 'size', es: 'tamaño' }, lang)}</td>
                 </tr>
               );
@@ -157,22 +175,22 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'Convention', es: 'Convención' }, lang)}</dt>
           <dd data-convention="definition">{pick(o.sign_convention.definition, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
         <KnownBanner o={o} />
       </PlotCard>
       <PlotCard title={{ en: 'The desk P&L generator', es: 'El generador de P&L de la mesa' }} {...card}>
         <dl className="ct-defs" data-table="c13-generator">
           <dt>{pick({ en: 'Generator', es: 'Generador' }, lang)}</dt>
-          <dd>{fit?.generator.name ?? o.generator.name}</dd>
+          <dd>{pick(text(GENERATOR_TEXT, fit?.generator.name ?? o.generator.name), lang)}</dd>
           {fit ? (
             <>
               <dt>{pick({ en: 'True risk model', es: 'Modelo de riesgo verdadero' }, lang)}</dt>
               <dd>{pick(fit.generator.true_risk_model, lang)}</dd>
               {fit.generator.parameters.map((p) => (
                 <Fragment key={p.name}>
-                  <dt>{p.name}</dt>
-                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${p.unit}`}</dd>
+                  <dt>{capital(pick(text(PARAMETER_TEXT, p.name), lang))}</dt>
+                  <dd>{`${formatNumber(p.value, lang, { digits: 4 })} ${p.unit === 'correlation' ? '' : pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</dd>
                 </Fragment>
               ))}
             </>
@@ -182,7 +200,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'Window', es: 'Ventana' }, lang)}</dt>
           <dd>{pick({ en: `${count(o.generator.window_days, 'en')} days, P&L as a decimal of the desk notional`, es: `${count(o.generator.window_days, 'es')} días, P&L como decimal del nocional de la mesa` }, lang)}</dd>
           <dt>{pick({ en: 'Replications', es: 'Replicaciones' }, lang)}</dt>
-          <dd>{pick({ en: `${count(o.generator.n_replications, 'en')}, seed ${count(o.generator.seed_base, 'en')} plus the index`, es: `${count(o.generator.n_replications, 'es')}, semilla ${count(o.generator.seed_base, 'es')} más el índice` }, lang)}</dd>
+          <dd>{pick({ en: `${count(o.generator.n_replications, 'en')}, seed ${seedText(o.generator.seed_base, 'en')} plus the index`, es: `${count(o.generator.n_replications, 'es')}, semilla ${seedText(o.generator.seed_base, 'es')} más el índice` }, lang)}</dd>
           <dt>{pick({ en: 'Notice of the models document', es: 'Aviso del documento de modelos' }, lang)}</dt>
           <dd>{pick((fit?.generator ?? o.generator).notice, lang)}</dd>
         </dl>
@@ -196,11 +214,11 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
           <dt>{pick({ en: 'ECDF step', es: 'Paso de la ECDF' }, lang)}</dt>
           <dd>{formatNumber(t.ecdf_step, lang, { decimals: 3 })}</dd>
           <dt>{pick({ en: 'Reference', es: 'Referencia' }, lang)}</dt>
-          <dd>{t.reference}</dd>
+          <dd>{rangeText(t.reference, lang)}</dd>
           {(fit?.desk_limits ?? []).map((l) => (
             <Fragment key={l.alpha}>
               <dt>{levelLabel(l.alpha, lang)}</dt>
-              <dd>{pick({ en: `more than ${count(l.limit_exceptions, 'en')} exceptions in 250 days moves the desk to the standardised approach (${l.reference})`, es: `más de ${count(l.limit_exceptions, 'es')} excepciones en 250 días pasa la mesa al método estandarizado (${l.reference})` }, lang)}</dd>
+              <dd>{pick({ en: `more than ${count(l.limit_exceptions, 'en')} exceptions in 250 days moves the desk to the standardised approach (${l.reference})`, es: `más de ${count(l.limit_exceptions, 'es')} excepciones en 250 días pasa la mesa al método estandarizado (${rangeText(l.reference, 'es')})` }, lang)}</dd>
             </Fragment>
           ))}
         </dl>
@@ -221,7 +239,7 @@ export function C13ContextView({ sel }: { sel: C13Sel | null }) {
                   <td className="ct-text">{pick(text(DEFICIENCY_TEXT, d.deficiency_id), lang)}</td>
                   <td className="ct-text">
                     {pick(d.mechanism, lang)}
-                    {d.parameters.length > 0 ? ` (${d.parameters.map((p) => `${p.name} ${formatNumber(p.value, lang, { digits: 3 })} ${p.unit}`).join(', ')})` : ''}
+                    {d.parameters.length > 0 ? ` (${d.parameters.map((p) => parameterText(p, lang, 3)).join(', ')})` : ''}
                   </td>
                   <td className="ct-text ct-wide-only">{pick(text(INTENDED_TEXT, d.intended_to_fail), lang)}</td>
                 </tr>

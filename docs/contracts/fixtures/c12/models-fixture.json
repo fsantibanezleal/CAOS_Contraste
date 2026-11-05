@@ -25,7 +25,10 @@
     }
   ],
   "fit": {
-    "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+    "estimator": {
+      "en": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+      "es": "AR(1) exacto por MCO sobre la tasa cero más corta del Tesoro (Brigo et al., arXiv 0812.4210, ecuaciones 55 a 57)"
+    },
     "calibrations": [
       {
         "backtest_date": "2018-12-31",

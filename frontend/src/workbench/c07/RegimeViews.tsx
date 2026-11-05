@@ -2,16 +2,37 @@
 // B-1 comparable total to the IFRS 9 total, each regime in its own detail (the B-1 minimum and max rule, the IFRS 9
 // probability-weighted components with the overlays apart, the BdE categories mapped to stages), and the scenario's
 // delta against the base. Every drawing has its table with the same numbers; every number is the document's.
-import { BarChart, PlotCard, Stage, ViewsRow, fitLabel, formatNumber, niceTicks, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
-import { useState } from 'react';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BarDatum, type BiText } from '@fasl-work/caos-app-shell';
 import { ChartOverTable, MaybeNumber, STAGE_TEXT, money, pct } from '../c06/format';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { FixtureNotice } from '../c06/C06Common';
 import { componentLabel, outputsOf, type C07Outputs, type C07Sel, type RegimeId } from './selection';
 
+/** The short name of each regime, as the rail's chips name it: a grouped bar's member label (the full names are in the legend; R2b
+ * c08 M1: the full names were cut mid-word under every group). */
+const REGIME_SHORT: Record<RegimeId, BiText> = { 'cmf-b1': { en: 'B-1', es: 'B-1' }, ifrs9: { en: 'IFRS 9', es: 'IFRS 9' }, 'bde-annex9': { en: 'BdE 9', es: 'BdE 9' } };
+
+/** The macro drivers and units of a scenario's shocks in words (R2b c08 B2: "gdp-growth", "percentage points" in the Spanish page). */
+const DRIVER_TEXT: Record<string, BiText> = {
+  'gdp-growth': { en: 'GDP growth', es: 'Crecimiento del PIB' },
+  unemployment: { en: 'Unemployment', es: 'Desempleo' },
+  'house-prices': { en: 'House prices', es: 'Precios de la vivienda' },
+  'consumer-arrears': { en: 'Consumer arrears', es: 'Morosidad de consumo' },
+  'uf-inflation': { en: 'UF inflation', es: 'Inflación de la UF' },
+};
+const UNIT_TEXT: Record<string, BiText> = {
+  'percentage points': { en: 'percentage points', es: 'puntos porcentuales' },
+  percent: { en: 'percent', es: 'por ciento' },
+};
+
+/** A scenario by the name its variant has in the case manifest, never its id (R2b c08 B2). */
+function scenarioName(sel: C07Sel, id: string): BiText {
+  const a = sel.data.manifest.artifacts.find((x) => x.role === 'variant' && x.variant_id === id);
+  return (a?.short_title ?? a?.title ?? { en: id, es: id }) as BiText;
+}
+
 const LIVE = 'live' as const;
-const REGIME_COLOR: Record<RegimeId, string> = { 'cmf-b1': '--color-accent', ifrs9: '--color-warn', 'bde-annex9': '--color-good' };
 const REGIME_TONE: Record<RegimeId, 'accent' | 'warn' | 'good'> = { 'cmf-b1': 'accent', ifrs9: 'warn', 'bde-annex9': 'good' };
 const STATUS_TEXT: Record<string, BiText> = {
   'statutory-chile-loans': { en: 'Statutory for loans in Chile', es: 'Estatutaria para créditos en Chile' },
@@ -26,8 +47,6 @@ function regimeName(id: RegimeId, label: BiText): BiText {
   return id === 'ifrs9' ? IFRS9_NAME : label;
 }
 
-const colorOf = (token: string) => `var(${token})`;
-
 const segmentName = (o: C07Outputs, id: string): BiText => o.portfolio.segments.find((x) => x.segment_id === id)?.label ?? { en: id, es: id };
 
 const CATEGORY_TEXT: Record<string, BiText> = {
@@ -37,86 +56,37 @@ const CATEGORY_TEXT: Record<string, BiText> = {
   'written-off': { en: 'Written off', es: 'Fallido' },
 };
 
-/** Grouped bars: one group per segment, one bar per regime. */
+/** Grouped bars: one group per segment, one bar per regime, drawn by the shell (D16-21); the bar under the pointer or the keyboard is
+ * read in the shell's live readout. */
 function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
   const lang = useShellLang();
-  const [picked, setPicked] = useState<string | null>(null);
   const cur = o.currency;
   const segs = o.comparison.rows;
-  const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
   const value = (r: (typeof segs)[number], id: RegimeId) => (id === 'cmf-b1' ? r.cmf_b1_provision : id === 'ifrs9' ? r.ifrs9_provision : r.bde_annex9_provision);
   const ids: RegimeId[] = ['cmf-b1', 'ifrs9', 'bde-annex9'];
-  const chosen = picked ? picked.split('|') : null;
-  const cs = chosen ? segs.find((r) => r.segment_id === chosen[0]) : null;
+  const nameOf = (id: RegimeId) => regimeName(id, o.regimes.find((r) => r.regime === id)?.label ?? { en: id, es: id });
+  // 18 bars in six groups need about 28 rem: on a phone the card is as tall as what it holds, and the stage kept 160 px, so the
+  // drawing showed 4 of 6 segments and no axis (R3 c08 M2)
   return (
-    <div className="ct-map">
-      <Stage label={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }} className="ct-map-stage">
-        {({ width, height }) => {
-          const left = 64;
-          const bottom = 54;
-          const top = 10;
-          const plotW = Math.max(width - left - 8, 40);
-          const plotH = Math.max(height - top - bottom, 40);
-          const hi = Math.max(...segs.flatMap((r) => ids.map((id) => value(r, id))), 1);
-          const ticks = niceTicks(0, hi, plotH, 22, 6);
-          const top2 = Math.max(hi, ticks[ticks.length - 1]);
-          const sy = (v: number) => top + plotH - (v / top2) * plotH;
-          const gw = plotW / Math.max(segs.length, 1);
-          const bw = Math.min((gw * 0.8) / 3, 40);
-          return (
-            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }, lang)}>
-              {ticks.map((t) => (
-                <g key={t}>
-                  <line className="dg-grid" x1={left} x2={width - 4} y1={sy(t)} y2={sy(t)} />
-                  <text className="dg-tick" x={left - 6} y={sy(t) + 4} textAnchor="end">{formatNumber(t / 1e6, lang, { digits: 3 })}</text>
-                </g>
-              ))}
-              {segs.map((r, gi) => {
-                const x0 = left + gi * gw + (gw - bw * 3) / 2;
-                return (
-                  <g key={r.segment_id} data-group={r.segment_id}>
-                    {ids.map((id, bi) => {
-                      const v = value(r, id);
-                      const key = `${r.segment_id}|${id}`;
-                      return (
-                        <rect
-                          key={id}
-                          x={x0 + bi * bw}
-                          y={sy(v)}
-                          width={bw - 2}
-                          height={Math.max(sy(0) - sy(v), 1)}
-                          style={{ fill: colorOf(REGIME_COLOR[id]), stroke: picked === key ? 'var(--color-fg)' : 'none', strokeWidth: 2, opacity: sel.regime === id ? 1 : 0.78 }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`${label(r.segment_id)}, ${id}: ${money(v, lang, cur)}`}
-                          onClick={() => setPicked(picked === key ? null : key)}
-                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === key ? null : key)}
-                        />
-                      );
-                    })}
-                    {(() => {
-                      const fit = fitLabel(label(r.segment_id), gw - 6, 12, 2);
-                      return (
-                        <text className="dg-axis-label" x={left + gi * gw + gw / 2} y={height - 38} textAnchor="middle">
-                          <title>{label(r.segment_id)}</title>
-                          {fit.lines.map((ln, li) => (
-                            <tspan key={li} x={left + gi * gw + gw / 2} dy={li === 0 ? 0 : 14}>{ln}</tspan>
-                          ))}
-                        </text>
-                      );
-                    })()}
-                  </g>
-                );
-              })}
-              <text className="dg-note" x={left} y={height - 4}>{pick({ en: `${cur} millions`, es: `millones de ${cur}` }, lang)}</text>
-            </svg>
-          );
-        }}
-      </Stage>
-      <p className="ct-note" aria-live="polite">
-        {chosen && cs
-          ? `${label(cs.segment_id)}, ${pick(regimeName(chosen[1] as RegimeId, o.regimes.find((r) => r.regime === chosen[1])?.label ?? { en: chosen[1], es: chosen[1] }), lang)}: ${money(value(cs, chosen[1] as RegimeId), lang, cur)} ${cur}`
-          : pick({ en: 'Pick a bar to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
+    <div className="ct-map" data-caos-flow="" style={{ minHeight: 'max(28rem, calc(50rem - 25vw))' }}>
+      <BarChart
+        title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
+        height="fill"
+        data={segs.flatMap((r) =>
+          ids.map((id) => ({
+            id: `${r.segment_id}|${id}`,
+            label: REGIME_SHORT[id],
+            group: { id: r.segment_id, label: segmentName(o, r.segment_id) },
+            value: value(r, id) / 1e6,
+            tone: REGIME_TONE[id],
+            highlight: sel.regime === id,
+          })),
+        )}
+        legend={ids.map((id) => ({ tone: REGIME_TONE[id], label: nameOf(id) }))}
+        axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 3 } }}
+      />
+      <p className="ct-note">
+        {pick({ en: 'Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anejo 9 del BdE.' }, lang)}
       </p>
     </div>
   );
@@ -134,7 +104,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
     <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
-        title={{ en: `The three regimes, scenario ${o.scenario_id} (${cur} millions)`, es: `Los tres regímenes, escenario ${o.scenario_id} (millones de ${cur})` }}
+        title={{ en: `The three regimes, scenario ${pick(scenarioName(sel, o.scenario_id), 'en')} (${cur} millions)`, es: `Los tres regímenes, escenario ${pick(scenarioName(sel, o.scenario_id), 'es')} (millones de ${cur})` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
@@ -207,62 +177,79 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
   const c = o.comparison;
   const cur = c.currency;
   const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
+  // the drawing and the gap table a card each (R3 c08 M1: under a 28 rem drawing in one card, the table kept half a row at 1280 and
+  // the drawing lost its last bar and its value axis); the gap table takes three fifths of the row and shows the two gaps it is named
+  // for next to the segment (U16-R4 c09 M1: in half the row both gap columns were cut at the card edge)
   return (
-    <ViewsRow>
-    <PlotCard
-      fill
-      title={{ en: 'Provision by segment and the gaps against B-1', es: 'Provisión por segmento y las brechas contra B-1' }}
-      lane={REPLAY}
-      provenance={prov}
-      dataKey={stateKey}
-      note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
-    >
-      <ChartOverTable chart={<GroupedBars o={o} sel={sel} />}>
-        <table className="caos-table ct-wrap-head" data-table="segments">
-          <thead>
-            <tr>
-              <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
-              <th>{`CMF B-1 (${cur})`}</th>
-              <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
-              <th>BdE Annex 9</th>
-              <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
-              <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
+    <ViewsRow shares={[2, 3]}>
+      <PlotCard
+        fill
+        title={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+      >
+        <GroupedBars o={o} sel={sel} />
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'The gaps against B-1 by segment', es: 'Las brechas contra B-1 por segmento' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
+      <table className="caos-table ct-wrap-head" data-table="segments">
+        <thead>
+          <tr>
+            <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
+            <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
+            <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
+            <th>{`CMF B-1 (${cur})`}</th>
+            <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
+            <th>{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.rows.map((r) => (
+            <tr key={r.segment_id} data-segment={r.segment_id} className={sel.segment === r.segment_id ? 'ct-current' : undefined}>
+              <td className="ct-text">{label(r.segment_id)}</td>
+              <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
+              <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
+              <td>{money(r.cmf_b1_provision, lang, cur)}</td>
+              <td>{money(r.ifrs9_provision, lang, cur)}</td>
+              <td>{money(r.bde_annex9_provision, lang, cur)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {c.rows.map((r) => (
-              <tr key={r.segment_id} data-segment={r.segment_id} className={sel.segment === r.segment_id ? 'ct-current' : undefined}>
-                <td className="ct-text">{label(r.segment_id)}</td>
-                <td>{money(r.cmf_b1_provision, lang, cur)}</td>
-                <td>{money(r.ifrs9_provision, lang, cur)}</td>
-                <td>{money(r.bde_annex9_provision, lang, cur)}</td>
-                <td>{money(r.gap_ifrs9_minus_b1, lang, cur)}</td>
-                <td>{money(r.gap_bde_minus_b1, lang, cur)}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr data-row="unallocated">
-              <td className="ct-text">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</td>
-              <td>{money(c.unallocated.cmf_b1_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.ifrs9_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.bde_annex9_provision, lang, cur)}</td>
-              <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
-              <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </ChartOverTable>
-    </PlotCard>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr data-row="unallocated">
+            <td className="ct-text">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</td>
+            <td>{money(c.unallocated.gap_ifrs9_minus_b1, lang, cur)}</td>
+            <td>{money(c.unallocated.gap_bde_minus_b1, lang, cur)}</td>
+            <td>{money(c.unallocated.cmf_b1_provision, lang, cur)}</td>
+            <td>{money(c.unallocated.ifrs9_provision, lang, cur)}</td>
+            <td>{money(c.unallocated.bde_annex9_provision, lang, cur)}</td>
+          </tr>
+        </tfoot>
+      </table>
+        </div>
+      </PlotCard>
     </ViewsRow>
   );
+}
+
+/** A bridge step's name on the drawing: the words before its colon ("Measurement basis"), else the whole label. */
+export function stepShort(label: { en: string; es: string }): { en: string; es: string } {
+  const cut = (t: string) => (t.includes(': ') ? t.slice(0, t.indexOf(': ')) : t);
+  return { en: cut(label.en), es: cut(label.es) };
 }
 
 /** The bridge from the B-1 comparable total to the IFRS 9 total: exhaustive steps that sum to the gap. */
 export function BridgeView({ sel }: { sel: C07Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
-  const [picked, setPicked] = useState<string | null>(null);
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
@@ -273,17 +260,23 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
   if (!from || !to) return <Pending />;
   const sum = b.steps.reduce((a, s) => a + s.amount, 0);
   const closes = Math.abs(from.total_provision + sum - to.total_provision) <= 1e-6 * Math.max(1, Math.abs(to.total_provision));
-  let run = from.total_provision;
-  const bars = [
-    { id: 'from', label: from.label, amount: from.total_provision, lo: from.total_provision, hi: from.total_provision, kind: 'total' },
-    ...b.steps.map((s) => {
+  // the totals are dots and the steps float from the running total, in millions; the axis spans the running total only (it does not start at zero)
+  let run = from.total_provision / 1e6;
+  const bars: BarDatum[] = [
+    { id: 'from', label: from.label, value: from.total_provision / 1e6, span: [from.total_provision / 1e6, from.total_provision / 1e6], tone: 'accent' },
+    ...b.steps.map((s): BarDatum => {
       const start = run;
-      run += s.amount;
-      return { id: s.id, label: s.label, amount: s.amount, lo: Math.min(start, run), hi: Math.max(start, run), kind: 'step' };
+      run += s.amount / 1e6;
+      // the drawing names a step by the words before its colon, the full label is the bar's hint (U16-R4 c09 n1: cut with an ellipsis)
+      return { id: s.id, label: stepShort(s.label), hint: s.label, value: s.amount / 1e6, span: [start, run], tone: s.amount >= 0 ? 'bad' : 'good' };
     }),
-    { id: 'to', label: IFRS9_NAME, amount: to.total_provision, lo: to.total_provision, hi: to.total_provision, kind: 'total' },
+    { id: 'to', label: IFRS9_NAME, value: to.total_provision / 1e6, span: [to.total_provision / 1e6, to.total_provision / 1e6], tone: 'warn' },
   ];
-  const chosen = bars.find((x) => x.id === picked) ?? null;
+  const zeros = b.steps.filter((s) => s.amount === 0).map((s) => s.label);
+  const ends = bars.flatMap((x) => x.span as [number, number]);
+  const lo0 = Math.min(...ends);
+  const hi0 = Math.max(...ends);
+  const pad = Math.max((hi0 - lo0) * 0.12, 1);
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -295,65 +288,25 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
         note={{ en: 'The steps are exhaustive: they sum to the gap, and an unexplained step would be its own line. The B-1 additional provisions are outside both totals and are not a step; the B-1 minimum top-up and the IFRS 9 overlays are.', es: 'Los pasos son exhaustivos: suman la brecha, y un paso sin explicar sería su propia línea. Las provisiones adicionales de B-1 están fuera de ambos totales y no son un paso; el complemento del mínimo de B-1 y los ajustes de IFRS 9 sí lo son.' }}
       >
         <div className="ct-map">
-          <Stage label={{ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }} className="ct-map-stage">
-            {({ width, height }) => {
-              const labelW = Math.min(Math.max(width * 0.34, 90), 190);
-              const x0 = labelW + 8;
-              const plotW = Math.max(width - x0 - 70, 40);
-              const top = 6;
-              const axis = 22;
-              const rowH = (height - top - axis) / bars.length;
-              // the totals are markers, so the axis spans the running total only (it does not start at zero)
-              const lo0 = Math.min(...bars.map((x) => x.lo));
-              const hi0 = Math.max(...bars.map((x) => x.hi));
-              const pad = Math.max((hi0 - lo0) * 0.12, 1);
-              const ticks = niceTicks(lo0 - pad, hi0 + pad, plotW, 60, 6);
-              const dmin = Math.min(lo0 - pad, ticks[0]);
-              const dmax = Math.max(hi0 + pad, ticks[ticks.length - 1]);
-              const sx = (v: number) => x0 + ((v - dmin) / (dmax - dmin)) * plotW;
-              return (
-                <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }, lang)}>
-                  {ticks.map((t) => (
-                    <g key={t}>
-                      <line className="dg-grid" x1={sx(t)} x2={sx(t)} y1={top} y2={height - axis} />
-                      <text className="dg-tick" x={sx(t)} y={height - 6} textAnchor="middle">{formatNumber(t / 1e6, lang, { digits: 4 })}</text>
-                    </g>
-                  ))}
-                  {bars.map((x, i) => {
-                    const y = top + i * rowH;
-                    const h = Math.max(rowH * 0.62, 3);
-                    const fill = x.kind === 'total' ? (x.id === 'from' ? REGIME_COLOR['cmf-b1'] : REGIME_COLOR.ifrs9) : x.amount >= 0 ? '--color-bad' : '--color-good';
-                    return (
-                      <g key={x.id} data-bar={x.id}>
-                        <text className="dg-bar-label" x={labelW} y={y + rowH / 2 + 4} textAnchor="end">{fitLabel(pick(x.label, lang), labelW, 11, 1).lines[0]}</text>
-                        <rect
-                          x={x.kind === 'total' ? sx(x.lo) - h / 2 : sx(x.lo)}
-                          y={y + (rowH - h) / 2}
-                          width={x.kind === 'total' ? h : Math.max(sx(x.hi) - sx(x.lo), 1.5)}
-                          height={h}
-                          rx={x.kind === 'total' ? h / 2 : 0}
-                          style={{ fill: colorOf(fill), stroke: picked === x.id ? 'var(--color-fg)' : 'none', strokeWidth: 2 }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`${pick(x.label, lang)}: ${money(x.amount, lang, cur)}`}
-                          onClick={() => setPicked(picked === x.id ? null : x.id)}
-                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === x.id ? null : x.id)}
-                        />
-                        <text className="dg-tick" x={sx(x.hi) + (x.kind === 'total' ? h / 2 + 4 : 4)} y={y + rowH / 2 + 4}>{formatNumber(x.amount / 1e6, lang, { digits: 4 })}</text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              );
-            }}
-          </Stage>
-          <p className="ct-note" aria-live="polite">
-            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
+          <BarChart
+            title={{ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }}
+            height="fill"
+            data={bars}
+            axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: `${cur} millions`, es: `millones de ${cur}` }, format: { digits: 4 }, range: [lo0 - pad, hi0 + pad] }}
+          />
+          <p className="ct-note">
+            {pick({ en: `Millions of ${cur}; the axis covers the running total of the bridge, and the two totals are the dots`, es: `Millones de ${cur}; el eje cubre el total acumulado del puente, y los dos totales son los puntos` }, lang)}
+            {/* a step of zero has no length, so the shell draws it as a dot too (U16-R4 c09 m2) */}
+            {zeros.length
+              ? lang === 'en'
+                ? `; a step of zero (${zeros.map((z) => z.en).join(', ')}) is a dot on the running total.`
+                : `; un paso de cero (${zeros.map((z) => z.es).join(', ')}) es un punto sobre el total acumulado.`
+              : '.'}
           </p>
         </div>
       </PlotCard>
       <PlotCard fill title={{ en: 'The steps in numbers', es: 'Los pasos en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="gap-bridge" data-closes={String(closes)}>
             <thead>
               <tr>
@@ -409,9 +362,9 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50% se aplica a la cartera normal evaluada individualmente.' }}
+        note={{ en: 'The group provision is the larger of the standard method and the internal one, unless the CMF has not objected to the internal one. The 0.50% minimum applies to the individually assessed normal portfolio.', es: 'La provisión grupal es la mayor entre el método estándar y el interno, salvo que la CMF no haya objetado el interno. El mínimo de 0,50 % se aplica a la cartera normal evaluada individualmente.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="group-max-rule">
             <thead>
               <tr>
@@ -428,7 +381,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
                   <td className="ct-text">{pick(segmentName(o, g.segment_id), lang)}</td>
                   <td>{money(g.standard, lang, cur)}</td>
                   <td>
-                    <MaybeNumber value={g.internal} reason={g.internal_reason} format={(v) => money(v, lang, cur)} />
+                    <MaybeNumber value={g.internal} reason={null} format={(v) => money(v, lang, cur)} />
                   </td>
                   <td>{money(g.applied, lang, cur)}</td>
                   <td className="ct-text ct-wide-only">{pick(METHOD[g.method], lang)}</td>
@@ -436,6 +389,10 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
               ))}
             </tbody>
           </table>
+          {/* the reason is the same for every row: said once under the table, not in every cell (U16-R2 b04 M8) */}
+          {d.group_max_rule.find((g) => g.internal_reason) ? (
+            <p className="ct-note" data-note="internal-reason">{pick(d.group_max_rule.find((g) => g.internal_reason)!.internal_reason!, lang)}</p>
+          ) : null}
           <table className="caos-table" data-table="b1-minimum" data-binding={String(d.minimum_check.binding)}>
             <tbody>
               <tr>
@@ -466,7 +423,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
         dataKey={stateKey}
         note={{ en: 'The additional provisions are counter-cyclical, a board policy with a minimum and a maximum: they are in what the bank books but outside the total the three regimes are compared on. They may never cover model deficiencies.', es: 'Las provisiones adicionales son contracíclicas, una política del directorio con mínimo y máximo: están en lo que el banco constituye pero fuera del total sobre el que se comparan los tres regímenes. Nunca pueden cubrir deficiencias de los modelos.' }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="b1-booked">
             <tbody>
               <tr>
@@ -516,16 +473,16 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100% de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
+        note={{ en: 'The IFRS 9 measure is the weighted sum of the scenarios (5.5.17(a), B5.5.42). A single scenario at 100% weight is a sensitivity and never the measure. IFRS 9 5.5 is carved out for bank loans in Chile: this is a comparison, not the provision Chilean banks book.', es: 'La medida IFRS 9 es la suma ponderada de los escenarios (5.5.17(a), B5.5.42). Un solo escenario con 100 % de peso es una sensibilidad y nunca la medida. IFRS 9 5.5 está excluida para los créditos bancarios en Chile: esto es una comparación, no la provisión que constituyen los bancos chilenos.' }}
       >
-        <div className="ct-scroll" data-measure={d.measure}>
+        <div className="ct-scroll" data-caos-flow="" data-measure={d.measure}>
           <table className="caos-table ct-wrap-head" data-table="ifrs9-components">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
                 <th>{pick({ en: 'Weight', es: 'Peso' }, lang)}</th>
                 <th>z</th>
-                <th>{`${pick({ en: 'ECL at 100% weight (sensitivity)', es: 'PCE con 100% de peso (sensibilidad)' }, lang)} (${cur})`}</th>
+                <th>{`${pick({ en: 'ECL at 100% weight (sensitivity)', es: 'PCE con 100 % de peso (sensibilidad)' }, lang)} (${cur})`}</th>
               </tr>
             </thead>
             <tbody>
@@ -572,7 +529,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
           {d.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="ifrs9-overlays">
               <thead>
                 <tr>
@@ -616,7 +573,7 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
   const cur = d.currency;
   return (
     <ViewsRow>
-      <PlotCard fill title={{ en: 'BdE Annex 9: coverage by category', es: 'Anexo 9 del BdE: cobertura por categoría' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'The coverage of each category over its exposure, with the percentages of the alternative solutions of the Annex.', es: 'La cobertura de cada categoría sobre su exposición, con los porcentajes de las soluciones alternativas del Anexo.' }}>
+      <PlotCard fill title={{ en: 'BdE Annex 9: coverage by category', es: 'Anejo 9 del BdE: cobertura por categoría' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'The coverage of each category over its exposure, with the percentages of the alternative solutions of the Annex.', es: 'La cobertura de cada categoría sobre su exposición, con los porcentajes de las soluciones alternativas del Anejo.' }}>
         <ChartOverTable
           chart={
         <BarChart
@@ -653,8 +610,8 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
           </table>
           <p className="ct-note">
             {d.method === 'alternative-solutions'
-              ? pick({ en: 'Method: the alternative solutions of the Annex (Spanish GAAP), aligned with IFRS 9.', es: 'Método: las soluciones alternativas del Anexo (PGC español), alineadas con IFRS 9.' }, lang)
-              : pick({ en: 'Method: internal methodology, validated under the Annex.', es: 'Método: metodología interna, validada bajo el Anexo.' }, lang)}
+              ? pick({ en: 'Method: the alternative solutions of the Annex (Spanish GAAP), aligned with IFRS 9.', es: 'Método: las soluciones alternativas del Anejo (PGC español), alineadas con IFRS 9.' }, lang)
+              : pick({ en: 'Method: internal methodology, validated under the Annex.', es: 'Método: metodología interna, validada bajo el Anejo.' }, lang)}
           </p>
         </div>
         </ChartOverTable>
@@ -675,7 +632,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
   if (dv === null) {
     return (
       <ViewsRow>
-        <PlotCard title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <PlotCard title={{ en: `Scenario ${pick(scenarioName(sel, o.scenario_id), 'en')}`, es: `Escenario ${pick(scenarioName(sel, o.scenario_id), 'es')}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
           <p>{pick(o.scenario.description, lang)}</p>
           <p className="caos-pending" data-state="unavailable">
             {pick({ en: 'Not available: this is the base scenario, the reference the other scenarios are measured against, so it has no change to report.', es: 'No disponible: este es el escenario base, la referencia contra la que se miden los otros, así que no tiene cambio que informar.' }, lang)}
@@ -686,25 +643,25 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
   }
   return (
     <ViewsRow shares={[1, 1]}>
-      <PlotCard fill title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+      <PlotCard fill title={{ en: `Scenario ${pick(scenarioName(sel, o.scenario_id), 'en')}`, es: `Escenario ${pick(scenarioName(sel, o.scenario_id), 'es')}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <p>{pick(o.scenario.description, lang)}</p>
         {o.scenario.shocks.length === 0 ? (
-          <p className="ct-note">{pick({ en: 'The scenario applies no shock to any driver.', es: 'El escenario no aplica shock a ningún motor.' }, lang)}</p>
+          <p className="ct-note">{pick({ en: 'The scenario applies no shock to any driver.', es: 'El escenario no aplica choque a ningún motor.' }, lang)}</p>
         ) : (
           <table className="caos-table" data-table="shocks">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Driver', es: 'Motor' }, lang)}</th>
-                <th>{pick({ en: 'Shock', es: 'Shock' }, lang)}</th>
+                <th>{pick({ en: 'Shock', es: 'Choque' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {o.scenario.shocks.map((s) => (
                 <tr key={s.driver} data-driver={s.driver}>
-                  <td className="ct-text">{s.driver}</td>
+                  <td className="ct-text">{pick(DRIVER_TEXT[s.driver] ?? { en: s.driver, es: s.driver }, lang)}</td>
                   <td>{formatNumber(s.value, lang, { digits: 3 })}</td>
-                  <td className="ct-text">{s.unit}</td>
+                  <td className="ct-text">{pick(UNIT_TEXT[s.unit] ?? { en: s.unit, es: s.unit }, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -734,7 +691,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
                 <td>{money(dv.ifrs9_delta, lang, dv.currency)}</td>
               </tr>
               <tr data-delta="bde-annex9">
-                <td className="ct-text">BdE Annex 9</td>
+                <td className="ct-text">{pick({ en: 'BdE Annex 9', es: 'Anejo 9 del BdE' }, lang)}</td>
                 <td>{money(dv.bde_annex9_delta, lang, dv.currency)}</td>
               </tr>
             </tbody>

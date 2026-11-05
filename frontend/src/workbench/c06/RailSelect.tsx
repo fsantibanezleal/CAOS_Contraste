@@ -11,8 +11,8 @@ export interface RailSelectOption {
   hint?: BiText;
 }
 
-/** The width an option may take in the 248 px rail at the select's 13 px type, less the arrow and the padding. */
-export const RAIL_OPTION_WIDTH = 176;
+/** The width an option may take in the 248 px rail at the select's 13 px type, less the arrow and the padding. 160 and not 176: the shell gate (G5, shell 0.17.0) measures the text against the room the select leaves and fitLabel estimated 9% short (BL-090). */
+export const RAIL_OPTION_WIDTH = 160;
 
 export function RailSelect({ id, label, options, value, onChange }: { id: string; label: BiText; options: RailSelectOption[]; value: string; onChange: (id: string) => void }) {
   const lang = useShellLang();

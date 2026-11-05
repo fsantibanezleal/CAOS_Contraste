@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { components } from '../../lib/contract.gen';
 import { conform, type ModelsArtifact, type VariantArtifact } from '../../lib/contract.types';
 import { cards, escapeHtml, fixtureData, html, setLang } from '../c03/u6-testkit';
+import { noteText } from '../c08/notes';
 import { C11_FIT, C11_OUTPUTS } from './descriptor';
 import { C11ContextView, C11FindingsView, C11VariantsTable, LevelReadout, ModelReadout, TestReadout } from './C11Common';
 import { EsBacktestView, TestsView } from './BacktestViews';
@@ -266,11 +267,11 @@ describe('the back-tests', () => {
     expect(drawn.map(([, y]) => y)).toEqual(es.histogram.counts);
     const marks = c.marks ?? [];
     const at = (x: number) => marks.find((m) => m.x === x);
-    expect(en(at(es.realised)?.label)).toContain('Realised');
+    expect(en(at(es.realised)?.label)).toContain('Z2');
     expect(en(at(es.critical_5pct)?.label)).toContain('5%');
     expect(en(at(es.critical_0_01pct)?.label)).toContain('0.01%');
-    expect(en(at(fit.es_reference.yellow)?.label)).toContain('reference');
-    expect(en(at(fit.es_reference.red)?.label)).toContain('reference');
+    expect(en(at(fit.es_reference.yellow)?.label)).toContain('Ref.');
+    expect(en(at(fit.es_reference.red)?.label)).toContain('Ref.');
     expect(markup).toContain(formatNumber(es.critical_5pct, 'en', { digits: 4 }));
     expect(markup).toContain(formatNumber(es.critical_0_01pct, 'en', { digits: 4 }));
     expect(markup).toContain(count(es.n_draws));
@@ -349,7 +350,8 @@ describe('the windows, the context and the findings', () => {
     expect(markup).toContain(count(o.data_status.n_observed_days));
     for (const s of fit.data_sources) expect(markup).toContain(escapeHtml(s.url));
     const challenger = fit.ladder.find((r) => r.status === 'challenger-not-run')!;
-    expect(markup).toContain(escapeHtml(challenger.not_run_reason as string));
+    // the reason as the reader reads it: no plan unit ("the U8 bake", R3 c12 B2; U16-F10a)
+    expect(markup).toContain(escapeHtml(noteText(challenger.not_run_reason as string, 'en')));
     expect(markup).toContain(escapeHtml(fit.ladder[0].title.en));
     expect(markup).toContain('data-fixture="true"');
   });
@@ -413,6 +415,7 @@ describe('the C11 rail', () => {
   it('is written in Spanish', () => {
     expect(railHtml(0, 'es')).toContain(`Cola de ${formatNumber(0.01, 'es', { percent: true, decimals: 0 })}`);
     expect(railHtml(1, 'es')).toContain('Modelo');
-    expect(railHtml(2, 'es')).toContain('Backtest');
+    // the 2026-10-27 ruling: back-test is translated (prueba retrospectiva)
+    expect(railHtml(2, 'es')).toContain('Prueba retrospectiva');
   });
 });

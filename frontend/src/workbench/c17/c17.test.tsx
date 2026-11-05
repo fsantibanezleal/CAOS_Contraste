@@ -12,7 +12,7 @@ import { conform, type ModelsArtifact, type VariantArtifact } from '../../lib/co
 import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, setLang } from '../c03/u6-testkit';
 import { C17_FIT, C17_OUTPUTS } from './descriptor';
 import { useC17Instrument } from './instrument';
-import { defaultSel, outputsOf, type C17Sel } from './selection';
+import { RUNG_ORDER, defaultSel, outputsOf, type C17Sel } from './selection';
 import { C17ContextView, C17FindingsView, C17VariantsTable, RungReadout, ScenarioReadout, ThresholdReadout, YearsReadout } from './C17Common';
 import { ByMethodView, ByYearsView, ScenarioView } from './CapitalViews';
 import { ExceedanceView, TailIndexView, exceedanceChart, stabilityChart } from './LossViews';
@@ -111,7 +111,8 @@ describe('the C17 instrument', () => {
     expect(markup).toContain(num(o.truth.annual_loss_quantile.value_eur));
     const cell = o.cells[0];
     for (const rung of ['lda-lognormal', 'lda-lognormal-truncated', 'lda-splice', 'sla', 'sla-mean-corrected', 'scenario']) expect(markup).toContain(`data-rung="${rung}"`);
-    expect(markup).toContain(num(cell.capital.lda_splice.capital_eur.median));
+    // the table writes its money in its own scale (U16-R3 c18 M2): millions of EUR here
+    expect(markup).toContain(formatNumber(cell.capital.lda_splice.capital_eur.median / 1e6, 'en', { digits: 4 }));
     expect(markup).toContain(pct(cell.capital.lda_splice.share_underestimating));
     expect(markup).toMatch(/data-rung="sla-mean-corrected"[^>]*data-status="UNVERIFIED"/);
     expect(markup).toContain('UNVERIFIED');
@@ -170,7 +171,7 @@ describe('the C17 instrument', () => {
       expect(markup).toContain(pct(sc.influence, 1).replace('-', '-'));
     }
     expect(markup).toContain(num(s.base_capital_eur));
-    expect(markup).toContain(escapeHtml(s.reference));
+    expect(markup).toContain(escapeHtml(s.reference.replace('Wuthrich', 'Wüthrich'))); // the authors as published (U16-R4 c21 m7)
     expect(markup).toMatch(/gamma/i);
     expect(markup).toContain('Settlement error');
   });
@@ -319,7 +320,7 @@ describe('the C17 rail', () => {
     expect(railHtml(1)).toMatch(/data-control="c17-threshold"[^>]*><span[^>]*>Collection threshold<\/span><div class="caos-chip-row"/);
     expect(railHtml(2)).toMatch(/data-control="c17-rung"[^>]*><label[^>]*>Method<\/label><select/);
     expect(railHtml(3)).toMatch(/data-control="c17-scenario"[^>]*><label[^>]*>Scenario<\/label><select/);
-    expect(railHtml(2).match(/<option/g)?.length).toBe(6);
+    expect(railHtml(2).match(/<option/g)?.length).toBe(RUNG_ORDER.length); // the six rungs and the four S-3 rungs
     expect(railHtml(3).match(/<option/g)?.length).toBe(o.scenario_influence.scenarios.length);
     expect(railHtml(2)).not.toContain('>lda-splice<');
     expect(railHtml(3)).not.toContain('>S1<');

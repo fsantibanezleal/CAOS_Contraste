@@ -11,7 +11,11 @@
 | 7 | Docs: the C05 case page, the guide to calibrating a PD curve and estimating low-default PDs, framework cards updated | - | done |
 | 8 | The measured gate over the whole matrix, screenshots read in light and dark | CT-211 | done |
 
-## Convergence verdict (2026-10-05)
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `c05-ldp-calibration`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).
+
+### History: the verdict written by hand on 2026-10-05
 
 Converged. Two canonical bakes agree on every C05 number, the 20,000 generated years and the Monte Carlo p-values
 included; C01 changed only its version fields. The 79 pipeline tests (one skipped: the template's instantiate test,

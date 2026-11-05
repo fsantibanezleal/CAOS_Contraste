@@ -7,7 +7,8 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
-import { INCOMPLETE_TEXT, WORKOUT_CONVENTION, outputsOf, type C08Outputs, type C08Sel } from './selection';
+import { DATASET_TEXT, INCOMPLETE_TEXT, WORKOUT_CONVENTION, freddieReason, outputsOf, type C08Outputs, type C08Sel } from './selection';
+import { truthText, wordsOf } from './words';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -30,16 +31,16 @@ export function C08VariantsTable({ variants, onPick, current }: { variants: Arra
       fill
       title={{ en: 'The default cohorts', es: 'Las cohortes de incumplimiento' }}
       {...card}
-      note={{ en: 'The mean LGD proxy of the defaults of each cohort; a mean outside 0 to 1 would carry its flag. Pick a cohort to load it.', es: 'La media del proxy de LGD de los incumplimientos de cada cohorte; una media fuera de 0 a 1 llevaría su marca. Elija una cohorte para cargarla.' }}
+      note={{ en: 'The mean LGD proxy of the defaults of each cohort; a mean outside 0 to 1 would carry its flag. Pick a cohort to load it.', es: 'La media de la LGD aproximada de los incumplimientos de cada cohorte; una media fuera de 0 a 1 llevaría su marca. Elija una cohorte para cargarla.' }}
     >
       <ChartOverTable
         chart={
           <BarChart
-            title={{ en: 'Mean LGD proxy by default cohort', es: 'Proxy de LGD medio por cohorte de incumplimiento' }}
+            title={{ en: 'Mean LGD proxy by default cohort', es: 'LGD aproximada media por cohorte de incumplimiento' }}
             height="fill"
             orientation="vertical"
             data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.lgd_distribution.mean.value, tone: v.outputs.lgd_distribution.mean.flag === 'in-range' ? ('accent' as const) : ('bad' as const), highlight: id === current }))}
-            axis={{ label: { en: 'Mean LGD proxy', es: 'Proxy de LGD medio' }, format: { percent: true, digits: 2 } }}
+            axis={{ label: { en: 'Mean LGD proxy', es: 'LGD aproximada media' }, format: { percent: true, digits: 2 } }}
           />
         }
       >
@@ -115,15 +116,15 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
           <dt>{pick({ en: 'Default cohort', es: 'Cohorte de incumplimiento' }, lang)}</dt>
           <dd>{pick(o.cohort.label, lang)}</dd>
           <dt>{pick({ en: 'Primary data', es: 'Datos principales' }, lang)}</dt>
-          <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
+          <dd data-primary-source={d.primary_source}>{pick(wordsOf(DATASET_TEXT, d.primary_source), lang)}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
-            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ?? ''}`}
+            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${freddieReason(d.freddie_mac_reason, lang)}`}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'Training and workout', es: 'Entrenamiento y recuperación' }} {...card} note={{ en: 'Only defaults whose workout closed before the cut-off train the models; later default cohorts are the tests.', es: 'Solo los incumplimientos cuya recuperación cerró antes del corte entrenan los modelos; las cohortes de incumplimiento posteriores son las pruebas.' }}>
@@ -139,7 +140,7 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
           <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
           <dd data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
           <dt>{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
-          <dd>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${w.incomplete_workouts.reason}` : ''}`}</dd>
+          <dd>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
           <dt>{pick({ en: 'Note', es: 'Nota' }, lang)}</dt>
           <dd>{pick(w.note, lang)}</dd>
         </dl>
@@ -148,7 +149,7 @@ export function C08ContextView({ sel }: { sel: C08Sel | null }) {
   );
 }
 
-/** The live read-out of the Model section: the model in focus on this cohort. */
+/** The live read-out of the Model section: the model in focus on this cohort, at the tables' three fixed decimals (R4 c10 m1). */
 export function RungReadout({ sel }: { sel: C08Sel | null }) {
   const o = outputsOf(sel);
   const r = o?.rung_comparison.find((x) => x.rung_id === sel?.rung) ?? null;
@@ -158,9 +159,9 @@ export function RungReadout({ sel }: { sel: C08Sel | null }) {
       variant={sel?.data.variant}
       title={{ en: 'This model on the cohort', es: 'Este modelo en la cohorte' }}
       items={[
-        { label: { en: 'R squared', es: 'R cuadrado' }, value: r?.r2 ?? null, unitless: true, format: { digits: 3 }, hint: why ?? { en: 'Share of the variance of the LGD that the model explains.', es: 'Proporción de la varianza de la LGD que explica el modelo.' } },
-        { label: { en: 'RMSE', es: 'RMSE' }, value: r?.rmse ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'Root mean squared error of the predicted LGD; lower is better.', es: 'Raíz del error cuadrático medio de la LGD predicha; menor es mejor.' } },
-        { label: { en: 'Spearman', es: 'Spearman' }, value: r?.spearman ?? null, unitless: true, format: { digits: 3 }, hint: why ?? { en: 'Rank correlation between predicted and realised LGD.', es: 'Correlación de rangos entre la LGD predicha y la realizada.' } },
+        { label: { en: 'R squared', es: 'R cuadrado' }, value: r?.r2 ?? null, unitless: true, format: { decimals: 3 }, hint: why ?? { en: 'Share of the variance of the LGD that the model explains.', es: 'Proporción de la varianza de la LGD que explica el modelo.' } },
+        { label: { en: 'RMSE', es: 'RMSE' }, value: r?.rmse ?? null, unitless: true, format: { decimals: 3 }, hint: { en: 'Root mean squared error of the predicted LGD; lower is better.', es: 'Raíz del error cuadrático medio de la LGD predicha; menor es mejor.' } },
+        { label: { en: 'Spearman', es: 'Spearman' }, value: r?.spearman ?? null, unitless: true, format: { decimals: 3 }, hint: why ?? { en: 'Rank correlation between predicted and realised LGD.', es: 'Correlación de rangos entre la LGD predicha y la realizada.' } },
         { label: { en: 'Calibration gap', es: 'Brecha de calibración' }, value: r?.calibration_gap ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The signed calibration gap the engine reports for this model.', es: 'La brecha de calibración con signo que el motor informa para este modelo.' } },
       ]}
     />

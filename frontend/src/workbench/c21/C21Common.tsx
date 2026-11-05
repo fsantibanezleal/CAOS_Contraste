@@ -12,11 +12,20 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
 import { Marked } from './Marked';
+import { BreakingCode } from '../c22/codeBreaks';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
-import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
+import { BASIS_TEXT, CONTROL_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
+import { es, treatmentName } from './localise';
 
 /** The short label every C21 view says before its content. */
+
+/** The HMDA fields the data notes list that the attribute and control maps do not name (the CFPB data dictionary). */
+const DATA_FIELD_TEXT: Record<string, { en: string; es: string }> = {
+  action_taken: { en: 'Action taken on the application', es: 'Acción tomada sobre la solicitud' },
+  rate_spread: { en: 'Rate spread', es: 'Diferencial de tasa' },
+};
+
 export function NoLegalClaim({ legal }: { legal: C21Legal | null }) {
   const lang = useShellLang();
   return (
@@ -41,7 +50,16 @@ export function LegalSentences({ legal }: { legal: C21Legal | null }) {
       <ul className="ct-note">
         {rows.map(([id, r]) => (
           <li key={id} data-legal={id}>
-            <span translate="no" lang="en">{`"${r.quote}"`}</span> (<Marked>{r.citation}</Marked>)
+            {/* the sentence in the reader's language; in Spanish the English original follows, marked as such (R2b c21) */}
+            {lang === 'es' ? (
+              <>
+                {`«${pick(r.text, 'es')}» `}
+                <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${r.quote}"`}</span>)</span>
+              </>
+            ) : (
+              <span translate="no" lang="en">{`"${r.quote}"`}</span>
+            )}{' '}
+            (<Marked>{es(r.citation, lang)}</Marked>)
           </li>
         ))}
       </ul>
@@ -119,7 +137,7 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
               title={{ en: 'Lowest approval rate by year pair', es: 'Menor tasa de aprobación por par de años' }}
               height="fill"
               orientation="horizontal"
-              data={lowest.map((l) => ({ id: l.id, label: { en: `${l.fit}-${l.confirm}`, es: `${l.fit}-${l.confirm}` } as BiText, value: l.rate, highlight: l.id === current, hint: { en: l.group, es: l.group } as BiText }))}
+              data={lowest.map((l) => ({ id: l.id, label: { en: `${l.fit}-${l.confirm}`, es: `${l.fit}-${l.confirm}` } as BiText, value: l.rate, highlight: l.id === current, hint: groupBi(l.group) as BiText }))}
               axis={{ label: { en: 'Lowest group approval rate (an indicator only)', es: 'Menor tasa de aprobación de un grupo (solo un indicador)' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             />
           )
@@ -145,10 +163,10 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
                 <tr key={id} data-variant={id} data-pair={o.pair_id} className={id === current ? 'ct-current' : undefined}>
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
-                    <span className="ct-note">{` ${o.fit_year} - ${o.confirm_year}`}</span>
+                    {/* the title is the pair ("2018-19"): its years are not repeated beside it (U16-R4 c25 n2) */}
                   </td>
                   <td className="ct-wide-only">{int(o.scope.rows_fit, lang)}</td>
-                  <td data-na={lowest ? undefined : 'true'}>{lowest ? `${pc1(lowest.selection_rate, lang)} (${lowest.group})` : formatNumber(null, lang)}</td>
+                  <td data-na={lowest ? undefined : 'true'}>{lowest ? `${pc1(lowest.selection_rate, lang)} (${pick(groupBi(lowest.group), lang)})` : formatNumber(null, lang)}</td>
                   <td className="ct-text" data-same-sign={same === null ? 'none' : same}>
                     {same === null ? formatNumber(null, lang) : pick(same ? { en: 'same sign', es: 'mismo signo' } : { en: 'sign changed', es: 'signo cambiado' }, lang)}
                   </td>
@@ -181,6 +199,29 @@ export function C21VariantsView({ sel, onPick }: { sel: C21Sel | null; onPick: (
 const dd = (children: ReactNode, key: string) => <Fragment key={key}>{children}</Fragment>;
 
 /** The case, the scope, the conventions of the outcome and the identifiers, the licence sentence (UNVERIFIED) and the data notes. */
+/** An English quotation: in Spanish its Spanish rendering first and the original after it, marked (U16-R3 c21 B3, as LegalSentences). */
+function Quoted({ quote, lang }: { quote: string; lang: 'en' | 'es' }) {
+  const spanish = es(quote, 'es');
+  if (lang === 'es' && spanish !== quote) {
+    return (
+      <>
+        {`«${spanish}» `}
+        <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${quote}"`}</span>)</span>
+      </>
+    );
+  }
+  return <span translate="no" lang="en">{`"${quote}"`}</span>;
+}
+
+/** A rule of the contract's identifiers ("<activity_year>-<row>") with its placeholders in words (U16-R3 c21 B7). */
+const PLACEHOLDER: Record<string, { en: string; es: string }> = { activity_year: { en: 'activity year', es: 'año de actividad' }, row: { en: 'row number', es: 'fila' } };
+export const formulaWords = (rule: string, lang: 'en' | 'es'): string => rule.replace(/<([a-z_]+)>/g, (m, k: string) => (PLACEHOLDER[k] ? `<${PLACEHOLDER[k][lang]}>` : m));
+
+/** A state of the HMDA file by its name: the postal code the file writes is a raw id where the product names the state (U16-R5 c27
+ * B1, ruling 6: "DE" is Delaware, and "Estado DE" read as a preposition in Spanish). A code with no entry is shown as written. */
+const STATE_TEXT: Record<string, BiText> = { DE: { en: 'Delaware', es: 'Delaware' } };
+export const stateName = (code: string): BiText => STATE_TEXT[code] ?? { en: code, es: code };
+
 export function C21ContextView({ sel }: { sel: C21Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -202,15 +243,15 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Year pair', es: 'Par de años' }, lang)}</dt>
           <dd>{`${o.fit_year} - ${o.confirm_year}`}</dd>
           <dt>{pick({ en: 'State', es: 'Estado' }, lang)}</dt>
-          <dd>{o.scope.state}</dd>
+          <dd data-state-code={o.scope.state}>{pick(stateName(o.scope.state), lang)}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
-          <dd>{o.scope.source}</dd>
+          <dd>{o.scope.source === 'hmda' ? 'HMDA' : o.scope.source}</dd>
           <dt>{pick({ en: 'Rows', es: 'Filas' }, lang)}</dt>
           <dd>{`${int(o.scope.rows_fit, lang)} / ${int(o.scope.rows_confirm, lang)}`}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The legal reading', es: 'La lectura legal' }} {...card}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <LegalSentences legal={o.legal} />
         </div>
       </PlotCard>
@@ -227,24 +268,26 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           )}
           <dt>{pick({ en: 'Debt-to-income bins', es: 'Tramos de deuda sobre ingreso' }, lang)}</dt>
           <dd><Marked>{`${c.dti_recode.bins.join(', ')}. ${pick(c.dti_recode.note, lang)}`}</Marked></dd>
-          <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas de a pares' }, lang)}</dt>
+          <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas por pares' }, lang)}</dt>
           <dd><Marked>{pick(c.group_exclusion, lang)}</Marked></dd>
           <dt>{pick({ en: 'Identifiers', es: 'Identificadores' }, lang)}</dt>
-          <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${c.identifiers.id}; ${c.identifiers.observation_date})`}</dd>
+          <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${formulaWords(c.identifiers.id, lang)}; ${formulaWords(c.identifiers.observation_date, lang)})`}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The licence of the data', es: 'La licencia de los datos' }} {...card}>
         <dl className="ct-defs" data-table="c21-licence" data-status={l.status}>
-          <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
-          <dd>{`${l.status}: ${pick(l.note, lang)}`}</dd>
+          {/* the licence status, not a second "Estado" beside the state's (U16-R5 c27 n3) */}
+          <dt>{pick({ en: 'Licence status', es: 'Estado de la licencia' }, lang)}</dt>
+          {/* the note says the status itself ("is UNVERIFIED", "está SIN VERIFICAR"): it is not said twice (U16-R4 c25 n3) */}
+          <dd>{/UNVERIFIED|SIN VERIFICAR/.test(pick(l.note, lang)) ? pick(l.note, lang) : `${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> (<Marked>{l.platform_terms_cover}</Marked>)</dd>
+          <dd><Quoted quote={l.platform_terms} lang={lang} /> (<Marked>{es(l.platform_terms_cover, lang)}</Marked>)</dd>
           <dt>{pick({ en: 'CFPB statement', es: 'Declaración de la CFPB' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.modified_statement}"`}</span></dd>
+          <dd><Quoted quote={l.modified_statement} lang={lang} /></dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'How each field is published', es: 'Cómo se publica cada campo' }} {...card} note={{ en: 'A field the release bins, rounds, tops or withholds says so, with its reason; the public data carry no credit score.', es: 'Un campo que la publicación agrupa, redondea, trunca o retiene lo dice, con su razón; los datos públicos no traen puntaje de crédito.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c21-notes">
             <thead>
               <tr>
@@ -257,10 +300,11 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
             <tbody>
               {o.data_notes.map((n) => (
                 <tr key={n.field} data-field={n.field}>
-                  <td className="ct-text">{n.field}</td>
-                  <td className="ct-text">{n.treatment}</td>
+                  {/* the field by its name, its code in the public file beside it (a data dictionary) */}
+                  <td className="ct-text">{DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field] ? <>{pick(DATA_FIELD_TEXT[n.field] ?? FIELD_TEXT[n.field] ?? CONTROL_TEXT[n.field], lang)} <BreakingCode id={n.field} /></> : n.field}</td>
+                  <td className="ct-text">{treatmentName(n.treatment, lang)}</td>
                   <td data-na={n.n_missing === null ? 'true' : undefined}>{n.n_missing === null ? formatNumber(null, lang) : int(n.n_missing, lang)}</td>
-                  <td className="ct-text ct-wide-only">{pick(n.reason, lang)}</td>
+                  <td className="ct-text ct-wide-only"><Marked>{pick(n.reason, lang)}</Marked></td>
                 </tr>
               ))}
             </tbody>
@@ -285,8 +329,8 @@ export function AttributeReadout({ sel }: { sel: C21Sel | null }) {
       title={sel && a ? text(FIELD_TEXT, a.field) : { en: 'The attribute', es: 'El atributo' }}
       items={[
         { label: { en: 'Basis', es: 'Base' }, text: a ? text(BASIS_TEXT, a.legal.basis) : na, unitless: true, hint: hint('The prohibited basis the field maps to in the research addendum; no legal claim.', 'La base prohibida a la que se asigna el campo en el anexo de investigación; sin afirmación legal.') },
-        { label: { en: 'Reference', es: 'Referencia' }, text: a ? { en: a.reference_group, es: a.reference_group } : na, unitless: true, hint: hint('The group the contrasts compare with.', 'El grupo con el que comparan los contrastes.') },
-        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? { en: a.four_fifths.highest_rate_group, es: a.four_fifths.highest_rate_group } : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
+        { label: { en: 'Reference', es: 'Referencia' }, text: a ? groupBi(a.reference_group) : na, unitless: true, hint: hint('The group the contrasts compare with.', 'El grupo con el que comparan los contrastes.') },
+        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? groupBi(a.four_fifths.highest_rate_group) : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
       ]}
     />
   );
@@ -298,7 +342,7 @@ export function GroupReadout({ sel }: { sel: C21Sel | null }) {
   return (
     <LiveReadout
       variant={sel?.data.variant}
-      title={c ? { en: c.group, es: c.group } : { en: 'The group', es: 'El grupo' }}
+      title={c ? groupBi(c.group) : { en: 'The group', es: 'El grupo' }}
       items={[
         { label: { en: 'Approval rate', es: 'Tasa de aprobación' }, value: c?.selection_rate_group ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The share of the decided applications that were approved: an indicator only.', 'La parte de las solicitudes decididas que se aprobó: solo un indicador.') },
         { label: { en: 'Parity gap', es: 'Brecha de paridad' }, value: c?.parity_gap ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The rate of the group minus the rate of the reference group.', 'La tasa del grupo menos la tasa del grupo de referencia.') },

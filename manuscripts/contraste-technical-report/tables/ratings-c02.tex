@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Share of the holdout companies of each Polish bankruptcy document whose master-scale grade under a challenger differs by at least two grades from the grade under the logistic scorecard, in percent; the grade of a PD is its position on the geometric master scale of twelve grades.}
+\label{tab:ratings-c02}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Document & Rows & Events & L1 logistic & PLTR & EBM & LightGBM & XGBoost \\
+\midrule
+1-year file & 5,910 & 410 & 18.6 & 35.6 & 39.4 & 39.7 & 40.4 \\
+2-year file & 9,792 & 515 & 12.9 & 50.0 & 50.0 & 49.5 & 49.7 \\
+3-year file & 10,503 & 495 & 16.4 & 42.6 & 41.4 & 43.4 & 45.3 \\
+4-year file & 10,173 & 400 & 17.1 & 39.6 & 44.7 & 41.1 & 40.2 \\
+5-year file & 7,027 & 271 & 7.8 & 48.5 & 53.5 & 50.0 & 52.4 \\
+Pooled & 43,405 & 2,091 & 19.2 & 41.7 & 41.0 & 47.4 & 46.6 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

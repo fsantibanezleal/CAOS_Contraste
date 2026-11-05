@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Structural checks of the fitted methods on the three fits of C01: the sign of every scorecard coefficient, the stability of the PLTR rule set over 20 bootstrap resamples, the largest violation of the declared monotone direction on the partial-dependence grid, and the overlap of the four principal reasons.}
+\label{tab:cs-checks}
+\begin{tabular}{lrrrrr}
+\toprule
+Fit & \shortstack{Negative WoE\\coefficients} & \shortstack{PLTR Jaccard\\mean / min} & \shortstack{Largest monotone\\violation} & \shortstack{Constrained\\inputs} & \shortstack{Top-4 reason overlap\\mean / min} \\
+\midrule
+\relax Taiwan, 16,800 rows & \relax 13 of 13 & \relax 0.411 / 0.367 & \relax 0 & \relax 13 & \relax 0.760 / 0.725 \\
+\relax Taiwan, 2,000 rows & \relax 10 of 10 & \relax 0.349 / 0.281 & \relax 0 & \relax 13 & \relax 0.719 / 0.662 \\
+\relax German, 560 rows & \relax 10 of 10 & \relax 0.280 / 0.196 & \relax 0 & \relax 2 & \relax 0.731 / 0.624 \\
+\bottomrule
+\end{tabular}
+\end{table}

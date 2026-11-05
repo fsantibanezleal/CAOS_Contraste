@@ -44,7 +44,7 @@ LABELS = {
     "transfer-1-2": ("Transfer 1 to 2", "Traspaso 1 a 2"),
     "transfer-2-3": ("Transfer 2 to 3", "Traspaso 2 a 3"),
     "transfer-2-1": ("Transfer 2 to 1", "Traspaso 2 a 1"),
-    "remeasurement": ("Re-measurement", "Remedición"),
+    "remeasurement": ("Remeasurement", "Remedición"),
     "macro-update": ("Macro update", "Actualización macro"),
     "write-off": ("Write-off", "Castigo"),
     "derecognition": ("Derecognition (repaid or matured)", "Baja (pagado o vencido)"),

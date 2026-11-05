@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The PC-Hazard network fitted at each of the six reporting dates of case C06 on the SBA 7(a) loans as known at the date: the loans and defaults of the fit, the split into training and hold-out loans, the epochs run before early stopping, the epoch of the lowest hold-out loss and the negative log-likelihood per training default on each part.}
+\label{tab:prov-pch-fit}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Reporting date & Loans & Defaults & Training loans & Hold-out loans & Epochs run & Best epoch & Training NLL & Hold-out NLL \\
+\midrule
+2006-12 & 734,944 & 48,839 & 587,956 & 146,988 & 189 & 129 & 7.082 & 7.092 \\
+2008-12 & 871,618 & 74,139 & 697,210 & 174,408 & 191 & 131 & 6.772 & 6.762 \\
+2010-12 & 956,331 & 124,423 & 765,154 & 191,177 & 466 & 406 & 6.189 & 6.216 \\
+2019-12 & 1,389,366 & 194,583 & 1,111,237 & 278,129 & 820 & 760 & 6.239 & 6.258 \\
+2020-06 & 1,405,062 & 196,307 & 1,123,472 & 281,590 & 594 & 534 & 6.249 & 6.261 \\
+2023-06 & 1,538,248 & 206,776 & 1,230,872 & 307,376 & 563 & 503 & 6.304 & 6.319 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

@@ -36,7 +36,7 @@ export function fitOf(sel: Pick<C17Sel, 'data'> | null): C17Fit | null {
 }
 
 /** The rungs of the ladder of dossier 05, in order: the order of the contract's ladder. */
-export const RUNG_ORDER = ['lda-lognormal', 'lda-lognormal-truncated', 'lda-splice', 'sla', 'sla-mean-corrected', 'scenario'] as const;
+export const RUNG_ORDER = ['lda-lognormal', 'lda-lognormal-truncated', 'lda-splice', 'sla', 'sla-mean-corrected', 'scenario', 'sla-mean-adjusted', 'sla-cvm', 'sla-obre', 'sla-cvm-lognormal'] as const;
 
 /** A rung in few words (a bar, a chip, a table row); the models artifact carries the full sentence. */
 export const RUNG_SHORT: Record<string, Bi> = {
@@ -46,14 +46,24 @@ export const RUNG_SHORT: Record<string, Bi> = {
   sla: { en: 'Single loss approximation (SLA)', es: 'Aproximación de una pérdida (SLA)' },
   'sla-mean-corrected': { en: 'SLA, mean-corrected', es: 'SLA, corregida por la media' },
   scenario: { en: 'Scenario combination', es: 'Combinación con escenarios' },
+  'sla-mean-adjusted': { en: 'Mean-adjusted SLA, GPD by likelihood', es: 'SLA con ajuste por media, GPD por verosimilitud' },
+  'sla-cvm': { en: 'Robust GPD, Cramer-von Mises', es: 'GPD robusta, Cramér-von Mises' },
+  'sla-obre': { en: 'Robust GPD, optimally bias-robust', es: 'GPD robusta, óptimamente robusta al sesgo' },
+  'sla-cvm-lognormal': { en: 'Robust lognormal, Cramer-von Mises (control)', es: 'Lognormal robusta, Cramér-von Mises (control)' },
 };
 
-/** The word UNVERIFIED stays in English in both languages: it is the label of the contract, not a translation. */
+/** The label of the contract is UNVERIFIED in the document and in the English view; the Spanish view says SIN VERIFICAR (U16-R2, b08 B3; C16 says it so). */
 export const UNVERIFIED = 'UNVERIFIED';
+export const UNVERIFIED_ES = 'SIN VERIFICAR';
+/** The status of the S-3 rungs: the mean-adjusted form is the one a secondary source states; the primary text was not read. */
+export const SECONDARY_SOURCE = 'SECONDARY_SOURCE';
+/** A status the views draw in the cautionary tone. */
+export const isCaution = (status: string | null | undefined): boolean => status === UNVERIFIED || status === SECONDARY_SOURCE;
 
 export const STATUS_TEXT: Record<string, Bi> = {
   verified: { en: 'verified', es: 'verificado' },
-  UNVERIFIED: { en: UNVERIFIED, es: UNVERIFIED },
+  UNVERIFIED: { en: UNVERIFIED, es: UNVERIFIED_ES },
+  SECONDARY_SOURCE: { en: 'secondary source', es: 'fuente secundaria' },
 };
 
 export const AGGREGATION_TEXT: Record<string, Bi> = {
@@ -100,7 +110,7 @@ export const rungLabel = (rung: string): Bi => text(RUNG_SHORT, rung);
 /** A rung's name with the label the contract requires: the UNVERIFIED rung carries it in every place it is named. */
 export function rungName(rung: string): Bi {
   const base = rungLabel(rung);
-  return rung === 'sla-mean-corrected' ? { en: `${base.en} (${UNVERIFIED})`, es: `${base.es} (${UNVERIFIED})` } : base;
+  return rung === 'sla-mean-corrected' ? { en: `${base.en} (${UNVERIFIED})`, es: `${base.es} (${UNVERIFIED_ES})` } : base;
 }
 
 /** The cell of the grid for the years and the threshold chosen, or the first when the document carries no such cell. */
@@ -145,7 +155,7 @@ export function cellLabel(years: number, threshold: number): Bi {
 
 /** The words of an engine test of operational risk; an id without an entry is shown as it is. */
 export const TEST_TEXT: Record<string, BiText> = {
-  'oprisk.benchmark_reproduction': { en: 'Benchmark reproduction: Monte Carlo, Panjer and FFT', es: 'Reproducción del benchmark: Monte Carlo, Panjer y FFT' },
+  'oprisk.benchmark_reproduction': { en: 'Benchmark reproduction: Monte Carlo, Panjer and FFT', es: 'Reproducción del valor de referencia: Monte Carlo, Panjer y FFT' },
   'oprisk.threshold_stability': { en: 'Stability of the tail index across thresholds', es: 'Estabilidad del índice de cola entre umbrales' },
   'oprisk.capital_stability': { en: 'Stability of the 99.9 percent capital across histories', es: 'Estabilidad del capital al 99,9 por ciento entre historias' },
   'oprisk.sma_ilm_response': { en: 'Response of the SMA ILM to one large loss', es: 'Respuesta del ILM del SMA a una pérdida grande' },

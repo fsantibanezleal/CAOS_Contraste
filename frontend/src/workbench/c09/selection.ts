@@ -3,8 +3,9 @@
 // helpers find, name and map. The known CCF of the generator is always read beside the estimates, and a CCF outside
 // [0, 1] is never clipped: the contract flags it and the views print the flag.
 import { formatNumber } from '@fasl-work/caos-app-shell';
-import type { Bi } from '../c03/U6Shared';
+import { humanize, type Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
+import { modelName } from '../names';
 import type { components } from '../../lib/contract.gen';
 
 export type C09Outputs = components['schemas']['c09Outputs'];
@@ -64,6 +65,23 @@ const KIND_TEXT: Record<string, Bi> = {
 };
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
 
+/** What the generator of a document is shaped on. */
+export const SHAPED_ON_TEXT: Record<string, Bi> = {
+  'fed-2025-cards-hypothetical-portfolios': { en: 'The Federal Reserve 2025 hypothetical credit-card portfolios', es: 'Las carteras hipotéticas de tarjetas de crédito de la Reserva Federal 2025' },
+};
+
+/** The facility classes of the EAD floor and the items of the supervisory CCF table (framework terms). */
+export const FACILITY_TEXT: Record<string, Bi> = {
+  'unconditionally-cancellable': { en: 'Unconditionally cancellable', es: 'Cancelable sin condiciones' },
+  commitments: { en: 'Commitments', es: 'Compromisos' },
+  'direct-credit-substitutes': { en: 'Direct credit substitutes', es: 'Sustitutos directos de crédito' },
+  'nifs-rufs-transaction-related-contingents': { en: 'Transaction-related contingents (NIFs and RUFs)', es: 'Contingentes relacionados con transacciones (NIF y RUF)' },
+  'short-term-self-liquidating-trade-letters-of-credit': { en: 'Short-term self-liquidating trade letters of credit', es: 'Cartas de crédito comerciales de corto plazo que se autoliquidan' },
+};
+
+/** The words for a facility class or a supervisory item; the id in words when the map lacks it. */
+export const facilityLabel = (id: string): Bi => FACILITY_TEXT[id] ?? { en: humanize(id), es: humanize(id) };
+
 /** The treatments the document carries for a design, in document order. */
 export function treatmentsOf(o: C09Outputs, design: string): string[] {
   return [...new Set(o.ccf_by_design.rows.filter((r) => r.design === design).map((r) => r.treatment))];
@@ -74,10 +92,18 @@ export function ccfRow(o: C09Outputs | null, design: string, treatment: string):
   return o?.ccf_by_design.rows.find((r) => r.design === design && r.treatment === treatment) ?? null;
 }
 
-/** The words for an EAD model: its kind, and its treatment when two models share a kind. Never the internal id. */
+/** The covariates of an EAD model in words (R2b c10 B3: the ids printed in English in the Spanish view). */
+export const COVARIATE_TEXT: Record<string, Bi> = {
+  utilisation: { en: 'utilisation', es: 'utilización' },
+  log_limit: { en: 'log of the limit', es: 'logaritmo del límite' },
+  credit_score: { en: 'credit score', es: 'puntaje de crédito' },
+};
+
+/** The words for an EAD model: its kind, and its treatment when two models share a kind; a CCF estimate of the design table
+ * (`ccf-<design>-<treatment>-<estimator>`) by its design, treatment and estimator. Never the internal id. */
 export function modelLabel(o: C09Outputs, id: string): Bi {
   const m = o.ead_models.find((x) => x.model_id === id);
-  if (!m) return { en: id, es: id };
+  if (!m) return modelName(id, { caseId: 'C09' }) ?? { en: id, es: id };
   const base = text(KIND_TEXT, m.kind);
   const twins = o.ead_models.filter((x) => x.kind === m.kind).length > 1;
   if (!twins || !m.treatment) return base;

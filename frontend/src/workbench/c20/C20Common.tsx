@@ -1,7 +1,7 @@
 // C20's notices, Findings, Variants and Context groups and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls). Every view that shows SGCD carries the dataset card's prohibited-use
 // sentence (conventions/third-party-datasets.md; 07 A.3 l.212-213): `SgcdNotice` is the one place that writes it.
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
@@ -14,8 +14,39 @@ import {
   DATASET_TEXT, KIND_TEXT, SCREEN_TEXT, asKind, blockRows, fitOf, kindOf, outputsOf, text,
   type C20Kind, type C20Outputs, type C20Sel,
 } from './selection';
+import { es, localParams } from './localise';
+import { modelName, type NameContext } from '../names';
+
+/** The rows a bar drawing holds whole in its card at 1280; past them the drawing keeps its full height in a box that scrolls (R2b c20:
+ * the real drift's 38 bars asked 72.8 rem and the seed flips' 20 bars 40.4 rem of a card that clips what overflows, so the axis and
+ * the tables could not be reached; ADR-0071, long content scrolls inside the one container that owns it). */
+export const BARS_WHOLE = 12;
+/** A rung of the seeds and noise rows ("P4-lightgbm") by the short title of the model of the document it names ("P4-lightgbm-taiwan"). */
+export function rungTitle(id: string, models: NameContext['models'] = []): BiText {
+  const own = modelName(id, { caseId: 'C20', models });
+  if (own) return own;
+  const full = models?.find((m) => m.id.startsWith(`${id}-`));
+  return (full && modelName(full.id, { caseId: 'C20', models })) ?? { en: id, es: id };
+}
+/** The least height of a drawing of `rows` bars over its tables: its own height up to BARS_WHOLE bars, a fixed box past them. */
+export const barBox = (rows: number): string => (rows > BARS_WHOLE ? '22rem' : barMin(rows));
+/** A drawing of many bars at its full height inside a box that scrolls; a phone flows (the stack is as tall as what it holds). */
+export function TallBars({ rows, children }: { rows: number; children: ReactNode }) {
+  if (rows <= BARS_WHOLE) return <>{children}</>;
+  return (
+    <div className="ct-c20-bars" data-caos-flow="" data-bars={rows}>
+      <div style={{ height: barMin(rows), display: 'flex', flexDirection: 'column' }}>{children}</div>
+    </div>
+  );
+}
 
 type Notice = NonNullable<C20Outputs['sgcd_notice']>;
+
+/** The Spanish rendering of the dataset card's prohibited-use sentence (data-pipeline/pipeline/cases/c20/conv.py SGCD_QUOTE). */
+const QUOTE_ES: Record<string, string> = {
+  'It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals.':
+    'Se ofrece solo para investigación y evaluación comparativa y no debe usarse para la calificación de crédito real ni para ninguna decisión de producción sobre personas.',
+};
 
 /** The sentence of the dataset card, in the page's language, with the card's own words quoted. */
 export function SgcdNoticeText({ notice }: { notice: Notice | null }) {
@@ -27,7 +58,16 @@ export function SgcdNoticeText({ notice }: { notice: Notice | null }) {
         <>
           {pick(notice.text, lang)}
           {': '}
-          <span translate="no" lang="en">{`"${notice.quote}"`}</span>
+          {/* in Spanish the card's sentence in Spanish, the English original after it, marked as such (ruling of 2026-10-27, as C21's
+              legal sentences); a quote without a known rendering stays in English, marked */}
+          {lang === 'es' && QUOTE_ES[notice.quote] ? (
+            <>
+              {`«${QUOTE_ES[notice.quote]}» `}
+              <span data-original="en">(original en inglés: <span translate="no" lang="en">{`"${notice.quote}"`}</span>)</span>
+            </>
+          ) : (
+            <span translate="no" lang="en">{`"${notice.quote}"`}</span>
+          )}
         </>
       ) : (
         pick({ en: 'The notice is not available in this document.', es: 'El aviso no está disponible en este documento.' }, lang)
@@ -81,21 +121,21 @@ function headline(o: C20Outputs, lang: 'en' | 'es'): { measure: BiText; value: s
   switch (o.kind) {
     case 'shock': {
       const rows = o.shipped.rows;
-      const worst = rows.length ? Math.min(...rows.map((r) => r.performance.auc_delta)) : null;
-      return { measure: { en: 'Largest AUC loss, as shipped', es: 'Mayor pérdida de AUC, como se entrega' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss, as shipped', es: 'Mayor pérdida de AUC, como se entrega' }, value: worst === null || rows.length === 0 ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'shift': {
       const s = o.synthetic_shift.shifts;
-      const worst = s.length ? Math.min(...s.map((x) => x.metric.auc_delta)) : null;
-      return { measure: { en: 'Largest AUC loss under a synthetic shift', es: 'Mayor pérdida de AUC bajo un cambio sintético' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss under a synthetic shift', es: 'Mayor pérdida de AUC bajo un cambio sintético' }, value: worst === null || s.length === 0 ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'seeds': {
       const sd = o.rows.length ? Math.max(...o.rows.map((r) => r.auc.sd)) : null;
       return { measure: { en: 'Largest AUC standard deviation across seeds', es: 'Mayor desviación estándar del AUC entre semillas' }, value: sd === null ? formatNumber(null, lang) : f3(sd, lang) };
     }
     case 'perturbation': {
-      const at = o.rows.find((r) => r.eps === o.preset_eps);
-      return { measure: { en: 'AUC change at the preset noise scale', es: 'Cambio del AUC en la escala de ruido preestablecida' }, value: at ? f3(at.metric.auc_delta, lang) : formatNumber(null, lang) };
+      const worst = worstLoss(o);
+      return { measure: { en: 'Largest AUC loss over the noise scales', es: 'Mayor pérdida de AUC entre las escalas de ruido' }, value: worst === null ? formatNumber(null, lang) : f3(worst, lang) };
     }
     case 'leakage':
       return { measure: { en: 'Planted leak caught', es: 'Fuga plantada detectada' }, value: pick(o.caught ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang) };
@@ -103,17 +143,27 @@ function headline(o: C20Outputs, lang: 'en' | 'es'): { measure: BiText; value: s
 }
 
 /** The largest AUC loss a variant shows (positive is a loss), or null for a kind that measures no AUC change. */
-function worstLoss(o: C20Outputs): number | null {
-  if (o.kind === 'shock') return o.shipped.rows.length ? Math.max(...o.shipped.rows.map((r) => -r.performance.auc_delta)) : null;
-  if (o.kind === 'shift') return o.synthetic_shift.shifts.length ? Math.max(...o.synthetic_shift.shifts.map((x) => -x.metric.auc_delta)) : null;
-  if (o.kind === 'perturbation') return o.rows.length ? Math.max(...o.rows.map((r) => -r.metric.auc_delta)) : null;
+export function worstLoss(o: C20Outputs): number | null {
+  if (o.kind === 'shock') return o.shipped.rows.length ? Math.max(...o.shipped.rows.map((r) => 0 - r.performance.auc_delta)) : null;
+  if (o.kind === 'shift') return o.synthetic_shift.shifts.length ? Math.max(...o.synthetic_shift.shifts.map((x) => 0 - x.metric.auc_delta)) : null;
+  if (o.kind === 'perturbation') return o.rows.length ? Math.max(...o.rows.map((r) => 0 - r.metric.auc_delta)) : null;
   return null;
+}
+
+/**
+ * The bars of the Variants chart: one per variant that measures an AUC loss. The variant on screen is the selection; when it has no
+ * bar (the seed sweep, the leak), every bar takes the neutral tone, so none reads as selected (U16-R4 c24 n6).
+ */
+export function variantBars(measured: Array<{ id: string; title: BiText; loss: number | null }>, current: string) {
+  const has = measured.some((m) => m.id === current);
+  return measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current, ...(has ? {} : { tone: 'neutral' as const }) }));
 }
 
 /** The six variants of C20 in rows: what each is, on which data, and its headline number. */
 export function C20VariantsTable({ variants, onPick, current }: { variants: Entry[]; onPick: (id: string) => void; current: string }) {
   const lang = useShellLang();
-  const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
+  // the badges are those of the variant on screen, not of the first one (U16-R4 c24 n5: the seed sweep's card said "Synthetic data")
+  const card = useCard((variants.find((e) => e.id === current) ?? variants[0])?.v as unknown as VariantArtifact | undefined);
   const sgcd = variants.find((e) => e.v.outputs.dataset_id === 'sgcd');
   const measured = variants.map((e) => ({ id: e.id, title: e.title, loss: worstLoss(e.v.outputs) })).filter((m) => m.loss !== null);
   return (
@@ -121,7 +171,7 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
       fill
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
-      note={{ en: 'Each variant answers one question on a locked holdout with synthetic shifts applied to the evaluation set only. Pick one to load it.', es: 'Cada variante responde una pregunta en una muestra reservada, con cambios sintéticos aplicados solo al conjunto de evaluación. Elija una para cargarla.' }}
+      note={{ en: 'Each variant answers one question on a locked holdout with synthetic shifts applied to the evaluation set only. The chart compares the largest AUC loss; the seed sweep and the leak measure other things and have no bar. Pick one to load it.', es: 'Cada variante responde una pregunta en una muestra reservada, con cambios sintéticos aplicados solo al conjunto de evaluación. El gráfico compara la mayor pérdida de AUC; el barrido de semillas y la fuga miden otras cosas y no tienen barra. Elija una para cargarla.' }}
     >
       <LabelledOverTable
         chartMin={barMin(Math.max(1, measured.length))}
@@ -133,8 +183,8 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
               title={{ en: 'Largest AUC loss by variant', es: 'Mayor pérdida de AUC por variante' }}
               height="fill"
               orientation="horizontal"
-              data={measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current }))}
-              axis={{ label: { en: 'AUC loss (positive is a loss); the seed sweep and the leak measure other things', es: 'Pérdida de AUC (positivo es una pérdida); el barrido de semillas y la fuga miden otras cosas' }, format: { decimals: 3 } }}
+              data={variantBars(measured, current)}
+              axis={{ label: { en: 'AUC loss (positive is a loss)', es: 'Pérdida de AUC (positiva)' }, format: { decimals: 3 } }}
             />
           )
         }
@@ -206,7 +256,8 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
         </p>
         <dl className="ct-defs" data-table="c20-case">
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
-          <dd>{pick(KIND_TEXT[o.kind], lang)}</dd>
+          {/* the variant's whole title (the rail shows only its chip, DENSE_RAIL); it says what the kind says and more */}
+          <dd data-kind={o.kind}>{pick(m.artifacts.find((a) => a.role === 'variant' && a.variant_id === v.variant_id)?.title ?? KIND_TEXT[o.kind], lang)}</dd>
           <dt>{pick({ en: 'Data', es: 'Datos' }, lang)}</dt>
           <dd data-dataset={o.dataset_id}>{pick(text(DATASET_TEXT, o.dataset_id), lang)}</dd>
           <dt>{pick({ en: 'Model fitted on', es: 'Modelo ajustado con' }, lang)}</dt>
@@ -220,8 +271,9 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
         </dl>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The data and the model', es: 'Los datos y el modelo' }} {...card} note={{ en: 'The model reads one view of each record; a shock that does not reach that view cannot move it.', es: 'El modelo lee una vista de cada registro; un choque que no llega a esa vista no puede moverlo.' }}>
-          <div className="ct-scroll">
+        // the sentence on the view a shock reaches is the SGCD variants' (U16-R4 c24 n13: it was printed on variants with no shock)
+        <PlotCard title={{ en: 'The data and the model', es: 'Los datos y el modelo' }} {...card} {...(o.kind === 'shock' ? { note: { en: 'The model reads one view of each record; a shock that does not reach that view cannot move it.', es: 'El modelo lee una vista de cada registro; un choque que no llega a esa vista no puede moverlo.' } } : {})}>
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="c20-datasets">
               <thead>
                 <tr>
@@ -235,18 +287,18 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
                   <tr key={d.id} data-dataset={d.id}>
                     <td className="ct-text">{pick(text(DATASET_TEXT, d.id), lang)}</td>
                     <td>{int(d.rows, lang)}</td>
-                    <td className="ct-text">{d.role}</td>
+                    <td className="ct-text">{es(d.role, lang)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="ct-note" data-sgcd-commit={fit.sgcd.commit}>{pick({ en: `SGCD at commit ${fit.sgcd.commit.slice(0, 7)}, shock seed ${fit.sgcd.seed}.`, es: `SGCD en el commit ${fit.sgcd.commit.slice(0, 7)}, semilla de los choques ${fit.sgcd.seed}.` }, lang)}</p>
+            <p className="ct-note" data-sgcd-commit={fit.sgcd.commit}>{pick({ en: `SGCD at commit ${fit.sgcd.commit.slice(0, 7)}, shock seed ${fit.sgcd.seed}.`, es: `SGCD en la versión ${fit.sgcd.commit.slice(0, 7)}, semilla de los choques ${fit.sgcd.seed}.` }, lang)}</p>
           </div>
         </PlotCard>
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
-        <div className="ct-scroll">
-          <ParamTable params={o.parameters as unknown as NamedParam[]} />
+        <div className="ct-scroll" data-caos-flow="">
+          <ParamTable params={localParams(o.parameters as unknown as NamedParam[], lang)} />
         </div>
       </PlotCard>
     </div>
@@ -314,7 +366,7 @@ export function SeedReadout({ sel }: { sel: C20Sel | null }) {
         { label: { en: 'AUC, mean', es: 'AUC, media' }, value: r?.auc.mean ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The mean AUC over the retraining seeds.', 'El AUC medio entre las semillas de reentrenamiento.') },
         { label: { en: 'AUC, sd', es: 'AUC, desv.' }, value: r?.auc.sd ?? null, unitless: true, format: { decimals: 4 }, hint: hint('The standard deviation of the AUC across seeds.', 'La desviación estándar del AUC entre semillas.') },
         { label: { en: 'Grades changed', es: 'Grados cambiados' }, value: r?.grade_assignment_changed_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The share of obligors whose grade changes with the seed.', 'La parte de deudores cuyo grado cambia con la semilla.') },
-        { label: { en: 'Reason codes kept', es: 'Códigos de razón que se mantienen' }, value: r?.reason_code_overlap.mean ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The mean overlap of the top four reasons across bootstrap refits.', 'El solapamiento medio de las cuatro razones principales entre reajustes bootstrap.') },
+        { label: { en: 'Reason codes kept', es: 'Códigos de razón que se mantienen' }, value: r?.reason_code_overlap.mean ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The mean overlap of the top four reasons across bootstrap refits.', 'El solapamiento medio de las cuatro razones principales entre reajustes por remuestreo.') },
       ]}
     />
   );
@@ -368,7 +420,7 @@ export function FairnessReadout({ sel }: { sel: C20Sel | null }) {
       title={{ en: 'The fairness test', es: 'La prueba de equidad' }}
       items={[
         { label: { en: 'Gap', es: 'Brecha' }, value: row?.value ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The largest difference between groups, on the Taiwan model; labelled evidence, never a compliance statement.', 'La mayor diferencia entre grupos, en el modelo de Taiwán; evidencia etiquetada, nunca una declaración de cumplimiento.') },
-        { label: { en: 'Light', es: 'Luz' }, text: row ? ({ green: { en: 'green', es: 'verde' }, amber: { en: 'amber', es: 'ámbar' }, red: { en: 'red', es: 'rojo' }, not_evaluated: { en: 'not evaluated', es: 'sin evaluar' }, error: { en: 'error', es: 'error' } } as Record<string, BiText>)[row.light] ?? na : na, unitless: true, hint: hint('Under the committed policy; a convention.', 'Bajo la política comprometida; una convención.') },
+        { label: { en: 'Light', es: 'Luz' }, text: row ? ({ green: { en: 'green', es: 'verde' }, amber: { en: 'amber', es: 'ámbar' }, red: { en: 'red', es: 'rojo' }, not_evaluated: { en: 'not evaluated', es: 'sin evaluar' }, error: { en: 'error', es: 'error' } } as Record<string, BiText>)[row.light] ?? na : na, unitless: true, hint: hint('Under the committed policy; a convention.', 'Bajo la política versionada; una convención.') },
       ]}
     />
   );

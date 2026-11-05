@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.0pt}
+\caption{The quantile network trained on the FZ0 loss against the ladder in each window of case C11: eligibility, exceedances of its 99 percent value at risk with the expected number, the Kupiec p-value, its average FZ0 loss, the champion's average FZ0 loss at each level and whether the network belongs to the 90 percent model confidence set.}
+\label{tab:market-nn}
+\begin{tabular}{lcrrrrcrrc}
+\toprule
+Window & Eligible & Exc. 1\% (exp.) & Kupiec $p$ & FZ0 1\% & Best 1\% & Set 1\% & FZ0 2.5\% & Best 2.5\% & Set 2.5\% \\
+\midrule
+Calm 2004--06 & no & 22 (7.5) & $<0.001$ & -4.286 & -4.521 & yes & -4.588 & -4.659 & yes \\
+Equity 2007--09 & no & 16 (5.0) & $<0.001$ & -2.371 & -- & yes & -2.856 & -- & yes \\
+FX 2008--09 & yes & 5 (2.5) & 0.164 & -3.527 & -3.557 & yes & -3.685 & -3.716 & yes \\
+Equity 2020 & no & 4 (1.0) & 0.026 & -1.669 & -1.986 & yes & -2.368 & -2.364 & yes \\
+Rates 2022 & no & 11 (2.5) & $<0.001$ & -3.445 & -3.811 & yes & -3.909 & -4.002 & yes \\
+Mixed 2023 & yes & 1 (0.6) & 0.676 & -4.134 & -4.439 & no & -4.374 & -4.623 & no \\
+\bottomrule
+\end{tabular}
+\end{table}

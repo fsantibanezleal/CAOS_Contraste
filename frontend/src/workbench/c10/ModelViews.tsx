@@ -7,10 +7,22 @@ import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
-import { IllustrativeNotice } from './C10Common';
-import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, SECTOR_TEXT, fitOf, outputsOf, text, type C10Sel } from './selection';
+import { NoticeFlow } from './C10Common';
+import { noteText } from '../c08/notes';
+import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, gridOf, measureText, outputsOf, referenceNote, rungOf, text, type C10GridOutputs, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+
+/** The inputs a simulator grid sets for every rung: the known PD and the asset correlations of its cells, as its generator states them. */
+export function gridInputs(g: C10GridOutputs, lang: 'en' | 'es'): string {
+  const pd = formatNumber(g.generator.known_pd, lang, { digits: 4 });
+  const rhos = g.generator.rho_grid;
+  const lo = formatNumber(Math.min(...rhos), lang, { digits: 4 });
+  const hi = formatNumber(Math.max(...rhos), lang, { digits: 4 });
+  return lang === 'es'
+    ? `fijadas por la grilla simulada: PD conocida ${pd}; correlación de activos de ${lo} a ${hi} según la celda`
+    : `set by the simulated grid: known PD ${pd}; asset correlation ${lo} to ${hi} by cell`;
+}
 
 /** The ladder: every rung of the models artifact with its method, scenarios, engine function, reference and inputs. */
 export function LadderView({ sel }: { sel: C10Sel | null }) {
@@ -18,7 +30,19 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
   const card = useCard(sel?.data.variant);
   const fit = fitOf(sel);
   if (!sel || !fit) return <Pending />;
-  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: r.n_scenarios, tone: 'accent' as const, hint: r.n_scenarios === null ? ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) : undefined }));
+  const o = outputsOf(sel);
+  const grid = o ? null : gridOf(sel);
+  // the scenarios a rung ran: the variant's own simulation when it carries the rung (a rung that did not run has none, whatever the
+  // ladder plans for it), the planned count of the models artifact for a document that does not (U16-R2 b05 B2)
+  const ran = (id: string, planned: number | null, evaluated?: boolean): { n: number | null; why: BiText | undefined } => {
+    const rung = o ? rungOf(o, id) : undefined;
+    // a document without rungs of its own (a simulator grid) draws a rung no variant runs as not run, never its plan (R2b c11 B4)
+    if (!rung && evaluated === false) return { n: null, why: { en: 'Not run: no variant evaluates this rung.', es: 'No corre: ninguna variante evalúa este escalón.' } };
+    if (!rung) return { n: planned, why: planned === null ? ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) : undefined };
+    if (!rung.evaluated) return { n: null, why: { en: noteText(rung.reason, 'en'), es: noteText(rung.reason, 'es') } };
+    return { n: rung.simulation?.n_scenarios ?? null, why: rung.simulation ? undefined : ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) };
+  };
+  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: ran(r.id, r.n_scenarios, r.evaluated).n, tone: 'accent' as const, hint: ran(r.id, r.n_scenarios, r.evaluated).why }));
   return (
     <ViewsRow>
       <PlotCard
@@ -26,8 +50,8 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
         title={{ en: 'The ladder of portfolio models', es: 'La escalera de modelos de cartera' }}
         {...card}
         note={{
-          en: 'From the infinitely granular approximation to the sampled and recursive models: each rung is a function of the engine with its reference and its inputs. The bars are the Monte Carlo scenarios of the sampled rungs; an analytic rung has none.',
-          es: 'De la aproximación infinitamente granular a los modelos muestreados y recursivos: cada escalón es una función del motor con su referencia y sus entradas. Las barras son los escenarios de Monte Carlo de los escalones muestreados; un escalón analítico no tiene.',
+          en: 'From the infinitely granular approximation to the sampled and recursive models: each rung is a function of the engine with its reference and its inputs. The bars are the Monte Carlo scenarios of the sampled rungs; an analytic rung has none, so its bar reads not available.',
+          es: 'De la aproximación infinitamente granular a los modelos muestreados y recursivos: cada escalón es una función del motor con su referencia y sus entradas. Las barras son los escenarios de Monte Carlo de los escalones muestreados; un escalón analítico no tiene, así que su barra dice no disponible.',
         }}
       >
         <ChartOverTable
@@ -52,10 +76,14 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{`${r.rung}: ${pick(r.label, lang)}`}</td>
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
-                  <td className="ct-wide-only" data-na={r.n_scenarios === null ? 'true' : undefined}>{r.n_scenarios === null ? formatNumber(null, lang) : count(r.n_scenarios, lang)}</td>
-                  <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
-                  <td className="ct-text">{r.reference}</td>
-                  <td className="ct-text ct-wide-only">{r.parameters.map((p) => `${p.name} ${formatNumber(p.value, lang, { digits: 4 })} ${p.unit === '-' ? '' : p.unit}`.trim()).join('; ')}</td>
+                  <td className="ct-text ct-wide-only" data-na={ran(r.id, r.n_scenarios, r.evaluated).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios, r.evaluated).n === null ? (ran(r.id, r.n_scenarios, r.evaluated).why ? pick(ran(r.id, r.n_scenarios, r.evaluated).why as BiText, lang) : formatNumber(null, lang)) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
+                  {/* a rung that does not run calls no engine function: the planned one is not named (R4 c12 m-N3) */}
+                  <td className="ct-text ct-wide-only" translate="no">{r.evaluated === false ? <span translate="yes">{pick({ en: 'none: the rung does not run', es: 'ninguna: el escalón no corre' }, lang)}</span> : <code>{r.engine_function}</code>}</td>
+                  <td className="ct-text">{referenceNote(r.reference, lang)}</td>
+                  {/* the variant's own calibration of the rung (each loan type fits its own PD and correlation); the fit's ladder only when the variant has none (R3 c11 B1) */}
+                  {/* a simulator grid has no rungs of its own: it runs the LHP estimators only, so the LHP rung takes the generator's known PD and
+                      correlation grid and the other rungs say they do not run on it, never a loan type's calibration (R4 c12, c13 B1; R5 c13 B1) */}
+                  <td className="ct-text ct-wide-only" data-inputs={r.id}>{grid ? (r.id.endsWith('-lhp') ? gridInputs(grid, lang) : pick({ en: 'not run on the simulated grid', es: 'no corre en la grilla simulada' }, lang)) : ((o ? rungOf(o, r.id)?.parameters : undefined) ?? r.parameters).map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
@@ -87,7 +115,7 @@ export function PortfolioView({ sel }: { sel: C10Sel | null }) {
           es: 'Nombres agrupados por tamaño, probabilidad de incumplimiento y carga en el factor sistemático: pocos nombres grandes, un grupo medio y muchos pequeños. Está construida para mostrar cómo la concentración y la dependencia mueven la cola, y nunca es la cartera de un banco.',
         }}
       >
-        <IllustrativeNotice notice={spec.notice} />
+        <NoticeFlow notice={spec.notice}>
         <ChartOverTable
           chartMin={barMin(spec.groups.length)}
           chart={
@@ -145,6 +173,7 @@ export function PortfolioView({ sel }: { sel: C10Sel | null }) {
             ) : null}
           </dl>
         </ChartOverTable>
+        </NoticeFlow>
       </PlotCard>
     </ViewsRow>
   );
@@ -193,13 +222,14 @@ export function EstimatorsView({ sel }: { sel: C10Sel | null }) {
                 <td className="ct-text">{pick(text(ESTIMATOR_TEXT, e.id), lang)}</td>
                 <td className="ct-text">{pick(text(INTERVAL_TEXT, e.interval_method), lang)}</td>
                 <td className="ct-text" translate="no"><code>{e.engine_function}</code></td>
-                <td className="ct-text ct-wide-only">{e.reference}</td>
+                <td className="ct-text ct-wide-only">{referenceNote(e.reference, lang)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </PlotCard>
-      <PlotCard title={{ en: 'The simulator grid', es: 'La grilla del simulador' }} {...card}>
+      {/* the simulator's card is synthetic on every variant, a loan type's too (R4 c13 n4: it was badged real) */}
+      <PlotCard title={{ en: 'The simulator grid', es: 'La grilla del simulador' }} {...card} provenance="synthetic">
         <dl className="ct-defs" data-table="c10-simulator-spec">
           <dt>{pick({ en: 'Known correlations', es: 'Correlaciones conocidas' }, lang)}</dt>
           <dd>{s.rho_grid.map((r) => formatNumber(r, lang, { percent: true, decimals: 0 })).join(', ')}</dd>

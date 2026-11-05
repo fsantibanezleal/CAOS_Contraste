@@ -32,7 +32,8 @@ def effective_cbc(lad: dict[str, Any]) -> np.ndarray:
 def _es(reason: str, target: int) -> str:
     m = re.match(r"the target of (\d+) days is not below the horizon of (\d+) days", reason)
     if m:
-        return f"El objetivo de {m.group(1)} días no es menor que el horizonte de {m.group(2)} días: no existe un intervalo."
+        return (f"El objetivo de {m.group(1)} días no es menor que el horizonte de {m.group(2)} días, así que un periodo de supervivencia "
+                "bajo él no se puede separar de sobrevivir el horizonte: no existe un intervalo.")
     m = re.match(r"the base survival period of (\d+) days is already at or below the target", reason)
     if m:
         return f"El periodo de supervivencia base de {m.group(1)} días ya es menor o igual que el objetivo de {target} días."
@@ -95,27 +96,30 @@ def reverse_document(paths: dict[str, Path], sh: Shared) -> dict[str, Any]:
         days = [survival_days(p["survival"]) for p in blk["curve"]]
         tests.append(_tr(val.survival_monotone_in_severity(days, conv["monotonicity_tolerance_days"]["value"]), segment=vid))
 
-    def mi(b: dict[str, Any], label: str) -> dict[str, Any]:
-        return {"value": b["solved"]["multiplier"], "unit": "multiple of the daily rates", "label": txt(label, label)}
+    def mi(b: dict[str, Any], en: str, es: str) -> dict[str, Any]:
+        return {"value": b["solved"]["multiplier"], "unit": "multiple of the daily rates", "label": txt(en, es)}
 
     o = {"kind": "reverse-stress", "valuation_date": "2022-12-31", "currency": "USD", "units": UNITS, "bank": BANK, "conventions": conv,
          "target": {"days": target, "statement": txt(
              f"The run-off multiplier at which the survival period first falls to {target} days (dossier 05 E.5 rung 5): the threshold multiplier, the "
              "smallest one at which the survival period is at most the target, with the survival reached there.",
-             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} días: el multiplicador umbral.")},
+             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} días (dossier 05 E.5, "
+             "peldaño 5): el multiplicador umbral, el menor con el que el periodo de supervivencia es como máximo el objetivo, con la "
+             "supervivencia alcanzada allí.")},
          "cap_rule": {"each_rate_below_one": True, "statement": txt(
              "The multiplier scales every segment's daily rate and is capped so that each rate stays at most 1; a rate already at 1 stays.",
-             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como máximo 1.")},
+             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como máximo 1; una tasa que ya "
+             "es 1 se mantiene.")},
          "bases": bases}
-    impact = {"multiplier_list_adverse": mi(bases[0], "Reverse-stress multiplier, LiST Adverse"),
-              "multiplier_list_extreme": mi(bases[1], "Reverse-stress multiplier, LiST Extreme"),
-              "multiplier_fast_run": mi(bases[2], "Reverse-stress multiplier, fast run")}
+    impact = {"multiplier_list_adverse": mi(bases[0], "Reverse-stress multiplier, LiST Adverse", "Multiplicador del estrés inverso, LiST adverso"),
+              "multiplier_list_extreme": mi(bases[1], "Reverse-stress multiplier, LiST Extreme", "Multiplicador del estrés inverso, LiST extremo"),
+              "multiplier_fast_run": mi(bases[2], "Reverse-stress multiplier, fast run", "Multiplicador del estrés inverso, corrida rápida")}
     findings = []
     for b in bases:
         if b["solved"]["status"] == "refused":
             findings.append(finding(f"F-liq-reverse-{b['base_id']}", "S4", ["liq.reverse_stress_round_trip"],
-                                    f"The reverse stress of the {b['base_id']} base is refused: its ladder is shorter than the target",
-                                    f"El estrés inverso de la base {b['base_id']} se rechaza: su escalera es menor que el objetivo"))
+                                    f"The reverse stress of the {VARIANT_LABEL[b['base_id']][0]} base is refused: its ladder is shorter than the target",
+                                    f"El estrés inverso de la base {VARIANT_LABEL[b['base_id']][1]} se rechaza: su escalera es menor que el objetivo"))
     return {"outputs": o, "tests": tests, "impact": impact, "findings": findings, "models": [model_summary(sh.engine_version, "reverse-stress")]}
 
 

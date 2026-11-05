@@ -4,17 +4,19 @@
 // over a real Treasury curve; the counterparty curve is a proxy (an AAA to A market spread derived from the Treasury HQM
 // curve, or a stated synthetic flat spread); initial margin is a regression proxy, never SIMM; every named parameter of the
 // book and the CSA is a convention; the wrong-way variant has no ORE reconciliation.
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
-import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
+import { noteText } from '../c08/notes';
+import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
-import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
+import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, segmentText, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
+import { segmentName, testText } from '../names';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -26,30 +28,90 @@ export const years = (v: number | null | undefined, lang: Lang) => formatNumber(
 
 /** The grid of a definition list in a narrow place: the term may wrap and the value keeps 60 percent, so a number never breaks over lines (G19). */
 export const DEFS_STYLE = { gridTemplateColumns: 'minmax(0, 40%) minmax(0, 1fr)' } as const;
+
+/** The numbers of a drawing in a card of their own beside it, so a table of a handful of rows shows every row at 1280 (R2b c13:
+ * under a drawing, the 42 % table box showed the PIT classes' header only and one GIRR tenor; the ruling of 2026-10-24). */
+export function NumbersCard({ card, title, children }: { card: ReturnType<typeof useCard>; title?: BiText; children: ReactNode }) {
+  return (
+    <PlotCard fill title={title ?? { en: 'In numbers', es: 'En números' }} {...card}>
+      <div className="ct-scroll" data-caos-flow="" data-block="numbers">
+        {children}
+      </div>
+    </PlotCard>
+  );
+}
+
+/** A drawing over tables that need more room than the shared 42 % box: the C12 box gives them 68 % at 1280 (a phone flows). */
+export function TallTables({ children }: { children: ReactNode }) {
+  return <div className="ct-c12-tall">{children}</div>;
+}
+
+/** A long table in pages of `size` rows, with how many rows there are and the buttons to turn the page (the ruling of 2026-10-24: a
+ * table of hundreds of rows is paged so the card shows a readable set; R2b c13 m6, the 309 calibrations ran 16,986 px at 390). */
+export function Paged<T>({ rows, size, name, children }: { rows: T[]; size: number; name: string; children: (page: T[]) => ReactNode }) {
+  const lang = useShellLang();
+  const [page, setPage] = useState(0);
+  const pages = Math.max(1, Math.ceil(rows.length / size));
+  const p = Math.min(page, pages - 1);
+  const first = p * size;
+  const last = Math.min(rows.length, first + size);
+  return (
+    <div data-paged={name} data-rows={rows.length}>
+      {children(rows.slice(first, last))}
+      <p className="ct-note ct-c12-pager">
+        <button type="button" className="ct-linkbutton" disabled={p === 0} onClick={() => setPage(p - 1)}>{pick({ en: 'Previous', es: 'Anteriores' }, lang)}</button>
+        <span data-page-range={`${first + 1}-${last}`}>
+          {pick({ en: `Rows ${formatNumber(first + 1, 'en', { decimals: 0 })} to ${formatNumber(last, 'en', { decimals: 0 })} of ${formatNumber(rows.length, 'en', { decimals: 0 })}`, es: `Filas ${formatNumber(first + 1, 'es', { decimals: 0 })} a ${formatNumber(last, 'es', { decimals: 0 })} de ${formatNumber(rows.length, 'es', { decimals: 0 })}` }, lang)}
+        </span>
+        <button type="button" className="ct-linkbutton" disabled={p >= pages - 1} onClick={() => setPage(p + 1)}>{pick({ en: 'Next', es: 'Siguientes' }, lang)}</button>
+      </p>
+    </div>
+  );
+}
 /** A value that must stay on one line: a number, an amount, a pair of them. */
 export function Nw({ children }: { children: ReactNode }) {
   return <span style={{ whiteSpace: 'nowrap' }}>{children}</span>;
 }
 
+/** A sentence after a colon: lower case in Spanish (R4 c15 n7, "aproximación: La tasa"), unless it opens with an acronym. */
+export const afterColon = (s: string, lang: Lang): string => (lang === 'es' && /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
+
 /** The unit of a column of the documents' money. */
 export const MONEY_UNIT: Bi = { en: 'USD', es: 'USD' };
 
 /** The words an absent block says when the view is given a document of another kind. */
-export const NOT_SWAP: BiText = { en: 'Not available: this document is not a swap-exposure document of the counterparty credit risk case.', es: 'No disponible: este documento no es un documento de exposición de swaps del caso de riesgo de crédito de contraparte.' };
+export const NOT_SWAP: BiText = { en: 'Not available: this document is not a swap-exposure document of the counterparty credit risk case.', es: 'No disponible: este documento no es un documento de exposición de permutas del caso de riesgo de crédito de contraparte.' };
 
 // --- the tests table ---------------------------------------------------------------------------------------------------
 
 /** The words of the tests the counterparty engine returns for C12; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
-  'ccr.ee_analytic_vs_simulated': { en: 'Analytic and simulated EE of a single swap', es: 'EE analítica y simulada de un solo swap' },
+  'ccr.ee_analytic_vs_simulated': { en: 'Analytic and simulated EE of a single swap', es: 'EE analítica y simulada de una sola permuta' },
+  'ccr.quantlib_swaption_payer': { en: 'Payer swaption against QuantLib 1.44', es: 'Opción sobre permuta pagadora frente a QuantLib 1.44' },
+  'ccr.quantlib_swaption_receiver': { en: 'Receiver swaption against QuantLib 1.44', es: 'Opción sobre permuta receptora frente a QuantLib 1.44' },
   'ccr.martingale_discounted_bonds': { en: 'Discounted bond prices are martingales', es: 'Los precios de bonos descontados son martingalas' },
   'ccr.eepe_recomputed': { en: 'EEPE recomputed from the EE profile', es: 'EEPE recalculada desde el perfil de EE' },
   'ccr.cva_recomputed': { en: 'CVA recomputed from the discounted EE', es: 'CVA recalculado desde la EE descontada' },
   'ccr.path_convergence': { en: 'Convergence in the number of paths', es: 'Convergencia en el número de trayectorias' },
   'ccr.reconcile_ee_profile': { en: 'EE profile reconciled with ORE', es: 'Perfil de EE conciliado con ORE' },
-  'ccr.pfe_exceedance_backtest': { en: 'PFE exceedance back-test (secondary)', es: 'Backtest de excedencias del PFE (secundario)' },
-  'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Backtest PIT de la distribución de exposición' },
+  'ccr.pfe_exceedance_backtest': { en: 'PFE exceedance back-test (secondary)', es: 'Prueba retrospectiva de excedencias del PFE (secundaria)' },
+  'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Prueba retrospectiva PIT de la distribución de exposición' },
 };
+
+/** A row with no segment in the document is a test of the whole counterparty book, and says so (R5 ruling 2: every tests row names its
+ * segment, a row of no segment its scope in words; R5 c16 and c17 M1). */
+const BOOK_SCOPE: BiText = { en: 'Whole book', es: 'Toda la cartera' };
+
+/** The segment of a tests row in words: a back-test horizon, a CSA term, or the whole book. */
+export function rowSegment(segment: string | null, lang: Lang): string {
+  if (!segment) return pick(BOOK_SCOPE, lang);
+  const own = segmentText(segment, lang);
+  return own === segment ? pick(segmentName(segment, { caseId: 'C12' }) ?? { en: segment, es: segment }, lang) : own;
+}
+
+const SUPERSCRIPT: Record<string, string> = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+/** "1e-6" in a reference is a power of ten, "10⁻⁶", as the SA-CCR and BA-CVA views print it (R5 c17 n2). */
+export const powerOfTen = (s: string): string => s.replace(/\b1e-(\d+)\b/g, (_m, n: string) => `10⁻${[...n].map((d) => SUPERSCRIPT[d]).join('')}`);
 
 const LIGHT_ORDER = ['green', 'amber', 'red', 'not_evaluated', 'error'] as const;
 const LIGHT_TONE_BAR = { green: 'good', amber: 'warn', red: 'bad', not_evaluated: 'neutral', error: 'bad' } as const;
@@ -92,7 +154,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                   <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
                   <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Reason or note', es: 'Razón o nota' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Note', es: 'Nota' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,12 +162,15 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
-                      <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
+                      <td className="ct-text" title={t.test_id}>
+                        {pick(TEST_TEXT[t.test_id] ?? testText(t.test_id), lang)}
+                        <span className="ct-note" data-segment={t.segment ?? 'whole-book'} style={{ display: 'block' }}>{rowSegment(t.segment, lang)}</span>
+                      </td>
+                      <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? <Nw>{formatNumber(t.statistic, lang, { digits: 4 })}</Nw> : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{powerOfTen((t.notes ? noteText(t.notes, lang) : referenceText(t, lang)).replace(/W\^2/g, 'W²'))}</td>
                     </tr>
                   );
                 })}
@@ -143,8 +208,8 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
       title={{ en: 'The variants of the case', es: 'Las variantes del caso' }}
       {...card}
       note={{
-        en: 'The six variants of the SDD on the same book and curve. The bars give the effective expected positive exposure (EEPE) of each: collateral and initial margin lower it, the wrong-way variant changes the CVA and not the exposure. The table holds the headline numbers of each document.',
-        es: 'Las seis variantes del SDD sobre la misma cartera y curva. Las barras dan la exposición positiva esperada efectiva (EEPE) de cada una: el colateral y el margen inicial la bajan, la variante de correlación adversa cambia el CVA y no la exposición. La tabla trae las cifras principales de cada documento.',
+        en: 'The six variants of the case on the same book and curve. The bars give the effective expected positive exposure (EEPE) of each: collateral and initial margin lower it; the wrong-way variant keeps the exposure, and its CVA moves with the dependence b of the default intensity on the portfolio value: the table gives it at b = 0, where it equals the netting set’s. The table holds the headline numbers of each document.',
+        es: 'Las seis variantes del caso sobre la misma cartera y curva. Las barras dan la exposición positiva esperada efectiva (EEPE) de cada una: el colateral y el margen inicial la bajan; la variante de correlación adversa mantiene la exposición, y su CVA se mueve con la dependencia b de la intensidad de incumplimiento respecto del valor de la cartera: la tabla lo da en b = 0, donde iguala al del conjunto de neteo. La tabla trae las cifras principales de cada documento.',
       }}
     >
       <ChartOverTable
@@ -183,7 +248,7 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
                   <td>{cell(o.cva_dva.cva.amount, lang)}</td>
                   <td>{cell(o.sa_ccr.ead.amount, lang)}</td>
                   <td className="ct-wide-only" data-ore={o.ore_reconciliation.status}>
-                    {o.ore_reconciliation.status === 'reconciled' ? pick({ en: 'reconciled', es: 'conciliada' }, lang) : pick({ en: 'no reconciliation', es: 'sin conciliación' }, lang)}
+                    {o.ore_reconciliation.status !== 'reconciled' ? pick({ en: 'no reconciliation', es: 'sin conciliación' }, lang) : o.ore_reconciliation.all_within_two_se === false ? pick({ en: 'compared, outside two SE', es: 'comparada, fuera de dos ES' }, lang) : pick({ en: 'reconciled', es: 'conciliada' }, lang)}
                   </td>
                 </tr>
               );
@@ -208,20 +273,20 @@ export function C12VariantsView({ sel, onPick }: { sel: C12Sel | null; onPick: (
 // --- the context ------------------------------------------------------------------------------------------------------
 
 const NAMED_TEXT: Record<string, Bi> = {
-  notionals: { en: 'Notionals of the four swaps', es: 'Nocionales de los cuatro swaps' },
-  maturities_years: { en: 'Maturities of the four swaps', es: 'Vencimientos de los cuatro swaps' },
-  sides: { en: 'Side of each swap', es: 'Lado de cada swap' },
+  notionals: { en: 'Notionals of the four swaps', es: 'Nocionales de las cuatro permutas' },
+  maturities_years: { en: 'Maturities of the four swaps', es: 'Vencimientos de las cuatro permutas' },
+  sides: { en: 'Side of each swap', es: 'Lado de cada permuta' },
   netting_set_members: { en: 'Members of the netting set', es: 'Miembros del conjunto de neteo' },
-  single_swap_member: { en: 'The swap of the single-swap variant', es: 'El swap de la variante de un solo swap' },
+  single_swap_member: { en: 'The swap of the single-swap variant', es: 'La permuta de la variante de una sola permuta' },
   fixed_rate_rule: { en: 'Rule of the fixed rate', es: 'Regla de la tasa fija' },
   csa_threshold: { en: 'CSA threshold', es: 'Umbral del CSA' },
   csa_minimum_transfer_amount: { en: 'CSA minimum transfer amount', es: 'Monto mínimo de transferencia del CSA' },
   csa_independent_amount: { en: 'CSA independent amount', es: 'Monto independiente del CSA' },
   mpor_business_days_short: { en: 'Margin period of risk, short', es: 'Periodo de riesgo de margen, corto' },
   mpor_business_days_long: { en: 'Margin period of risk, long', es: 'Periodo de riesgo de margen, largo' },
-  counterparty_spread: { en: 'Counterparty spread, synthetic', es: 'Spread de la contraparte, sintético' },
+  counterparty_spread: { en: 'Counterparty spread, synthetic', es: 'Diferencial de la contraparte, sintético' },
   counterparty_lgd: { en: 'Counterparty loss given default', es: 'Pérdida dado el incumplimiento de la contraparte' },
-  bank_spread: { en: 'Own spread of the bank', es: 'Spread propio del banco' },
+  bank_spread: { en: 'Own spread of the bank', es: 'Diferencial propio del banco' },
   bank_lgd: { en: 'Own loss given default', es: 'Pérdida dado el incumplimiento propia' },
   pfe_quantile: { en: 'Quantile of the PFE', es: 'Cuantil del PFE' },
   path_count: { en: 'Monte Carlo paths', es: 'Trayectorias de Monte Carlo' },
@@ -236,9 +301,9 @@ const NAMED_TEXT: Record<string, Bi> = {
   ba_cva_rating: { en: 'Rating class of the counterparty (BA-CVA)', es: 'Clase de calificación de la contraparte (BA-CVA)' },
   stress_window_start: { en: 'Start of the stress window', es: 'Inicio de la ventana de estrés' },
   stress_window_end: { en: 'End of the stress window', es: 'Fin de la ventana de estrés' },
-  backtest_window_start: { en: 'Start of the back-test window', es: 'Inicio de la ventana del backtest' },
-  backtest_paths_per_date: { en: 'Paths per back-test date', es: 'Trayectorias por fecha del backtest' },
-  backtest_simulated_critical_count: { en: 'Simulated back-tests for the critical values', es: 'Backtests simulados para los valores críticos' },
+  backtest_window_start: { en: 'Start of the back-test window', es: 'Inicio de la ventana de la prueba retrospectiva' },
+  backtest_paths_per_date: { en: 'Paths per back-test date', es: 'Trayectorias por fecha de la prueba retrospectiva' },
+  backtest_simulated_critical_count: { en: 'Simulated back-tests for the critical values', es: 'Pruebas retrospectivas simuladas para los valores críticos' },
   reconciliation_se_threshold: { en: 'ORE agreement threshold', es: 'Umbral de acuerdo con ORE' },
   ee_check_k_se: { en: 'Threshold of the analytic EE check', es: 'Umbral de la verificación de la EE analítica' },
 };
@@ -261,23 +326,50 @@ const UNIT_TEXT: Record<string, Bi> = {
   class: { en: 'class', es: 'clase' },
   date: { en: 'date', es: 'fecha' },
   month: { en: 'month', es: 'mes' },
-  'simulated backtests': { en: 'simulated back-tests', es: 'backtests simulados' },
+  'simulated backtests': { en: 'simulated back-tests', es: 'pruebas retrospectivas simuladas' },
   'combined standard errors': { en: 'combined standard errors', es: 'errores estándar combinados' },
   'standard errors': { en: 'standard errors', es: 'errores estándar' },
 };
 const VALUE_TEXT: Record<string, Bi> = {
   payer: { en: 'payer', es: 'pagador' },
   receiver: { en: 'receiver', es: 'receptor' },
-  "the par yield at the swap's maturity on the curve date, rounded to 10 bp": { en: "the par yield at the swap's maturity on the curve date, rounded to 10 bp", es: 'el rendimiento par al vencimiento del swap en la fecha de la curva, redondeado a 10 pb' },
+  "the par yield at the swap's maturity on the curve date, rounded to 10 bp": { en: "the par yield at the swap's maturity on the curve date, rounded to 10 bp", es: 'el rendimiento par al vencimiento de la permuta en la fecha de la curva, redondeado a 10 pb' },
   financials: SECTOR_TEXT.financials,
   'investment-grade': RATING_TEXT['investment-grade'],
   'high-yield-or-not-rated': RATING_TEXT['high-yield-or-not-rated'],
 };
+/** Units that name the kind of value, not a measure: the value already says it ("payer, receiver"), so no unit is appended. */
+const KIND_UNITS = new Set(['payer or receiver', 'trade ids', 'trade id', 'rule', 'date', 'month']);
+/** Units that name what a word or a count is (a sector, a class, an order): printed after the value in brackets, never joined to it (R3 c13 m10: "Financieras sector de la Tabla 1"). */
+const LABEL_UNITS = new Set(['MAR50.16 Table 1 sector', 'class', 'polynomial order']);
 const CONVENTION_WORD: Bi = { en: 'convention', es: 'convención' };
+
+/** The value cell of a named parameter: the value with its unit after it, a label unit in brackets, a kind unit not repeated. */
+export function conventionCell(v: unknown, unit: string, lang: Lang): string {
+  const value = conventionValue(v, unit, lang);
+  if (KIND_UNITS.has(unit)) return value;
+  const u = pick(text(UNIT_TEXT, unit), lang);
+  if (!u) return value;
+  return LABEL_UNITS.has(unit) ? `${value} (${u})` : `${value} ${u}`;
+}
+
+/** The case's short title and its question: the question alone, in bold, when it already holds the title's words (R3 c13 m13: the
+ * short question and the full one repeated most words), both otherwise. */
+export function questionLead(title: string, question: string): ReactNode {
+  const words = (t: string) => t.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+  const inQuestion = new Set(words(question));
+  const own = words(title);
+  if (own.length > 0 && own.filter((w) => inQuestion.has(w)).length / own.length >= 0.8) return <strong>{question}</strong>;
+  return (
+    <>
+      <strong>{title}</strong>{/[?!.]$/.test(title) ? ' ' : '. '}{question}
+    </>
+  );
+}
 
 function conventionValue(v: unknown, unit: string, lang: Lang): string {
   const one = (x: unknown): string => {
-    if (typeof x === 'number') return unit === 'USD' && Math.abs(x) >= 1e6 ? `${formatNumber(x / 1e6, lang, { digits: 4 })} ${lang === 'es' ? 'M' : 'm'}` : formatNumber(x, lang, { digits: 4, grouping: unit !== 'integer' });
+    if (typeof x === 'number') return unit === 'USD' && Math.abs(x) >= 1e6 ? `${formatNumber(x / 1e6, lang, { digits: 4 })} ${lang === 'es' ? 'M' : 'mn'}` : formatNumber(x, lang, { digits: 4, grouping: unit !== 'integer' });
     if (typeof x === 'string') return VALUE_TEXT[x] ? pick(VALUE_TEXT[x], lang) : x;
     return String(x);
   };
@@ -301,29 +393,29 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       <PlotCard title={{ en: 'The case', es: 'El caso' }} {...card}>
         <FixtureNotice variant={v} />
         <p>
-          <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
+          {questionLead(pick(m.title, lang), pick(m.question, lang))}
         </p>
         <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-case" data-variant-id={o.variant}>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd>{pick(text(VARIANT_TEXT, o.variant), lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
-          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de swaps y el CSA son sintéticos, con parámetros con nombre que son convenciones; el spread de la contraparte es un proxy o un spread sintético declarado.' }, lang)}</dd>
+          <dd>{pick({ en: 'The Treasury par yield curve is real; the swap book and the CSA are synthetic, with named parameters that are conventions; the counterparty spread is a proxy or a stated synthetic spread.', es: 'La curva de rendimientos par del Tesoro es real; la cartera de permutas y el CSA son sintéticos, con parámetros con nombre que son convenciones; el diferencial de la contraparte es una aproximación o un diferencial sintético declarado.' }, lang)}</dd>
           <dt>{pick({ en: 'Sign convention', es: 'Convención de signos' }, lang)}</dt>
           <dd>{pick(o.sign_convention.statement, lang)}</dd>
           <dt>{pick({ en: 'Initial margin', es: 'Margen inicial' }, lang)}</dt>
-          <dd>{pick({ en: 'A regression proxy of the dynamic initial margin that ORE documents, never ISDA SIMM, whose public methodology restricts its use to a market participant\'s own transactions.', es: 'Un proxy por regresión del margen inicial dinámico que documenta ORE, nunca ISDA SIMM, cuya metodología pública restringe su uso a las operaciones propias de un participante del mercado.' }, lang)}</dd>
+          <dd>{pick({ en: 'A regression proxy of the dynamic initial margin that ORE documents, never ISDA SIMM, whose public methodology restricts its use to a market participant\'s own transactions.', es: 'Una aproximación por regresión del margen inicial dinámico que documenta ORE, nunca ISDA SIMM, cuya metodología pública restringe su uso a las operaciones propias de un participante del mercado.' }, lang)}</dd>
           <dt>{pick({ en: 'Wrong-way variant', es: 'Variante de correlación adversa' }, lang)}</dt>
           <dd>{pick({ en: 'It has no ORE reconciliation: ORE\'s wrong-way example is a different model.', es: 'No tiene conciliación con ORE: el ejemplo de correlación adversa de ORE es otro modelo.' }, lang)}</dd>
           <dt>{pick({ en: 'Units', es: 'Unidades' }, lang)}</dt>
           <dd>{pick({ en: 'Money in USD, rates as decimals with continuous compounding, time in years from the curve date, the margin period in business days.', es: 'Dinero en USD, tasas como decimales con capitalización continua, tiempo en años desde la fecha de la curva, el periodo de margen en días hábiles.' }, lang)}</dd>
         </dl>
       </PlotCard>
-      <PlotCard title={{ en: 'The swap book', es: 'La cartera de swaps' }} {...card} note={{ en: 'The netting set holds the swaps below; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene los swaps de abajo; la variante de un solo swap tiene el primero. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
-        <div className="ct-scroll">
+      <PlotCard title={{ en: 'The swap book', es: 'La cartera de permutas' }} {...card} note={{ en: 'The netting set holds the swaps above; the single-swap variant holds the first. Notional, fixed rate, maturity and side are conventions of the case.', es: 'El conjunto de neteo tiene las permutas de arriba; la variante de una sola permuta tiene la primera. Nocional, tasa fija, vencimiento y lado son convenciones del caso.' }}>
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-book">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Swap', es: 'Swap' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Swap', es: 'Permuta' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Side', es: 'Lado' }, lang)}</th>
                 <th>{pick({ en: 'Notional (USD)', es: 'Nocional (USD)' }, lang)}</th>
                 <th>{pick({ en: 'Fixed rate', es: 'Tasa fija' }, lang)}</th>
@@ -347,7 +439,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </div>
       </PlotCard>
       <PlotCard title={{ en: 'The Treasury curve and the calibration', es: 'La curva del Tesoro y la calibración' }} {...card} note={{ en: 'The par yields are the Treasury daily curve of the curve date; a tenor the source does not carry is listed as absent and never interpolated silently. The short-rate parameters are estimated only on data before the curve date.', es: 'Los rendimientos par son la curva diaria del Tesoro de la fecha de la curva; un plazo que la fuente no trae se lista como ausente y nunca se interpola en silencio. Los parámetros de la tasa corta se estiman solo con datos anteriores a la fecha de la curva.' }}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-curve">
             <dt>{pick({ en: 'Curve date', es: 'Fecha de la curva' }, lang)}</dt>
             <dd>{o.curve.curve_date}</dd>
@@ -360,7 +452,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
             <dt>{pick({ en: 'Sample of the calibration', es: 'Muestra de la calibración' }, lang)}</dt>
             <dd>{`${cal.sample_start} ${pick({ en: 'to', es: 'a' }, lang)} ${cal.sample_end}; ${cal.n_obs} ${pick({ en: 'observations', es: 'observaciones' }, lang)}; ${years(cal.history_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>
             <dt>{pick({ en: 'Reversion a and volatility sigma', es: 'Reversión a y volatilidad sigma' }, lang)}</dt>
-            <dd data-calibration={cal.backtest_date}>{`a = ${formatNumber(cal.a, lang, { digits: 4 })} (SE ${formatNumber(cal.a_se, lang, { digits: 4 })}); sigma = ${formatNumber(cal.sigma, lang, { digits: 4 })} (SE ${formatNumber(cal.sigma_se, lang, { digits: 4 })})`}</dd>
+            <dd data-calibration={cal.backtest_date}>{`a = ${formatNumber(cal.a, lang, { digits: 4 })} (${lang === 'es' ? 'ES' : 'SE'} ${formatNumber(cal.a_se, lang, { digits: 4 })}); sigma = ${formatNumber(cal.sigma, lang, { digits: 4 })} (${lang === 'es' ? 'ES' : 'SE'} ${formatNumber(cal.sigma_se, lang, { digits: 4 })})`}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="c12-curve-points">
             <thead>
@@ -382,8 +474,8 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
           </table>
         </div>
       </PlotCard>
-      <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every notional, rate, term, CSA term, spread, grid, threshold and seed of the case is a convention, labelled as one.', es: 'Cada nocional, tasa, plazo, término del CSA, spread, grilla, umbral y semilla del caso es una convención, rotulada como tal.' }}>
-        <div className="ct-scroll">
+      <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Every notional, rate, term, CSA term, spread, grid, threshold and seed of the case is a convention, labelled as one.', es: 'Cada nocional, tasa, plazo, término del CSA, diferencial, grilla, umbral y semilla del caso es una convención, rotulada como tal.' }}>
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="c12-conventions">
             <thead>
               <tr>
@@ -396,7 +488,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
               {params.map(([k, p]) => (
                 <tr key={k} data-convention={k} data-status={p.label}>
                   <td className="ct-text">{pick(text(NAMED_TEXT, k), lang)}</td>
-                  <td className="ct-text">{`${conventionValue(p.value, p.unit, lang)} ${pick(text(UNIT_TEXT, p.unit), lang)}`.trim()}</td>
+                  <td className="ct-text">{conventionCell(p.value, p.unit, lang)}</td>
                   <td className="ct-text">{p.label === 'convention' ? word : p.label}</td>
                 </tr>
               ))}
@@ -405,32 +497,34 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         </div>
       </PlotCard>
       {fit ? (
-        <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha del backtest y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
-          <div className="ct-scroll">
+        <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha de la prueba retrospectiva y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
+          <div className="ct-scroll" data-caos-flow="">
             <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-fit">
               <dt>{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</dt>
-              <dd><span translate="no">{fit.estimator}</span></dd>
+              <dd>{typeof fit.estimator === 'string' ? <span translate="no">{fit.estimator}</span> : pick(fit.estimator, lang)}</dd>
               <dt>{pick({ en: 'Minimum history', es: 'Historia mínima' }, lang)}</dt>
               <dd>{`${fit.min_history_years} ${pick({ en: 'years (CRE53.51)', es: 'años (CRE53.51)' }, lang)}`}</dd>
               <dt>{pick({ en: 'Closed forms', es: 'Formas cerradas' }, lang)}</dt>
               <dd data-unverified="true">
                 <T en="transcribed from " es="transcritas de " />
                 <span translate="no">{fit.closed_forms_source}</span>
-                <T en="; the journal derivations are UNVERIFIED as papers" es="; las derivaciones de la literatura NO están verificadas como artículos" />
+                <T en="; the journal derivations are not verified as papers" es="; las derivaciones de la literatura no están verificadas como artículos" />
               </dd>
               <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
-              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
-              <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del spread' }, lang)}</dt>
+              <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'aproximación' }, lang)}: ${afterColon(pick(fit.credit_curve.derivation, lang), lang)}`}</dd>
+              <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del diferencial' }, lang)}</dt>
               <dd>{pick(fit.credit_curve.licence_basis, lang)}</dd>
-              <dt>{pick({ en: 'Synthetic spread', es: 'Spread sintético' }, lang)}</dt>
+              <dt>{pick({ en: 'Synthetic spread', es: 'Diferencial sintético' }, lang)}</dt>
               <dd data-status={fit.credit_curve.synthetic_spread.label}>{`${formatNumber(Number(fit.credit_curve.synthetic_spread.value), lang, { percent: true, decimals: 2 })} (${word})`}</dd>
-              <dt>{pick({ en: 'Negative spread', es: 'Spread negativo' }, lang)}</dt>
-              <dd>{pick({ en: 'A negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread.', es: 'Un spread HQM menos Tesoro negativo se fija en cero y se cuenta, nunca se arrastra como spread negativo.' }, lang)}</dd>
+              <dt>{pick({ en: 'Negative spread', es: 'Diferencial negativo' }, lang)}</dt>
+              <dd>{pick({ en: 'A negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread.', es: 'Un diferencial HQM menos Tesoro negativo se fija en cero y se cuenta, nunca se arrastra como diferencial negativo.' }, lang)}</dd>
             </dl>
+            <Paged rows={fit.calibrations} size={12} name="c12-calibrations">
+              {(page) => (
             <table className="caos-table ct-wrap-head" data-table="c12-calibrations">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: 'Back-test date', es: 'Fecha del backtest' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Back-test date', es: 'Fecha de la prueba retrospectiva' }, lang)}</th>
                   <th>{pick({ en: 'a', es: 'a' }, lang)}</th>
                   <th>{pick({ en: 'sigma', es: 'sigma' }, lang)}</th>
                   <th className="ct-wide-only">{pick({ en: 'Observations', es: 'Observaciones' }, lang)}</th>
@@ -438,7 +532,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 </tr>
               </thead>
               <tbody>
-                {fit.calibrations.map((c) => (
+                {page.map((c) => (
                   <tr key={c.backtest_date} data-calibration={c.backtest_date}>
                     <td className="ct-text">{c.backtest_date}</td>
                     <td>{formatNumber(c.a, lang, { digits: 4 })}</td>
@@ -449,6 +543,8 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
                 ))}
               </tbody>
             </table>
+              )}
+            </Paged>
             <ul className="ct-note" data-table="c12-limits">
               {fit.limits.map((l, i) => (
                 <li key={i}>{pick(l, lang)}</li>
@@ -496,8 +592,8 @@ export function HorizonReadout({ sel }: { sel: C12Sel | null }) {
       title={sel ? { en: `${pick(text(HORIZON_LONG, sel.horizon), 'en')}, ${pick(text(SUBJECT_TEXT, sel.subject), 'en').toLowerCase()}`, es: `${pick(text(HORIZON_LONG, sel.horizon), 'es')}, ${pick(text(SUBJECT_TEXT, sel.subject), 'es').toLowerCase()}` } : { en: 'The horizon', es: 'El horizonte' }}
       items={[
         { label: { en: 'W²', es: 'W²' }, value: h?.w2 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The Anderson-Darling statistic of the PITs: large when they are not uniform.', es: 'El estadístico de Anderson-Darling de los PIT: grande cuando no son uniformes.' } },
-        { label: { en: '5% value', es: 'Valor al 5%' }, value: h?.critical_simulated.p05 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The 95th percentile of W² when the whole back-test is simulated under the model itself.', es: 'El percentil 95 de W² cuando todo el backtest se simula bajo el propio modelo.' } },
-        { label: { en: 'Decision', es: 'Decisión' }, text: h ? (h.reject_at_5pct ? { en: 'rejected at 5%', es: 'rechazado al 5%' } : { en: 'not rejected', es: 'no rechazado' }) : NA, hint: { en: 'Against the simulated critical value, not the independent-sample table.', es: 'Contra el valor crítico simulado, no la tabla de muestras independientes.' } },
+        { label: { en: '5% value', es: 'Valor al 5 %' }, value: h?.critical_simulated.p05 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The 95th percentile of W² when the whole back-test is simulated under the model itself.', es: 'El percentil 95 de W² cuando toda la prueba retrospectiva se simula bajo el propio modelo.' } },
+        { label: { en: 'Decision', es: 'Decisión' }, text: h ? (h.reject_at_5pct ? { en: 'rejected at 5%', es: 'rechazado al 5 %' } : { en: 'not rejected', es: 'no rechazado' }) : NA, hint: { en: 'Against the simulated critical value, not the independent-sample table.', es: 'Contra el valor crítico simulado, no la tabla de muestras independientes.' } },
       ]}
     />
   );

@@ -14,15 +14,17 @@ import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import {
   C20ContextView, C20FindingsView, C20VariantsView, FairnessReadout, NoiseReadout, ScreenReadout, SeedReadout, ShiftReadout, ShockReadout, WindowReadout,
+  rungTitle,
 } from './C20Common';
 import { DecisionFlipView, FairnessView } from './FairnessViews';
 import { ExplainerView, LeakageView, PerturbationView, SeedsView } from './RobustnessViews';
 import { CbpeView, ConformalView, RealDriftView, SyntheticShiftView } from './ShiftViews';
 import { DegradationView, DriftView, QualityView } from './ShockViews';
 import {
-  ATTRIBUTE_TEXT, FAIR_TESTS, SCREEN_TEXT, SHOCK_TEXT, blockRows, defaultSel, outputsOf, text, type Block, type C20Kind, type C20Sel, type Screen,
+  ATTRIBUTE_TEXT, FAIR_TESTS, SCREEN_TEXT, SHOCK_TEXT, blockRows, defaultSel, outputsOf, railShiftName, text, type Block, type C20Kind, type C20Sel, type Screen,
 } from './selection';
 import { testName } from './U14Common';
+import { windowName } from '../names';
 
 export interface C20Instrument {
   sel: C20Sel | null;
@@ -32,6 +34,16 @@ export interface C20Instrument {
   context: { content: ReactElement };
   controls: Record<string, string | number | boolean>;
 }
+
+/** The variants of the case that carry the views of a kind, named as the rail names them (U16-R2 b09 m12). */
+const KIND_VARIANTS: Record<string, { en: string; es: string }> = {
+  shock: { en: 'SGCD seen or SGCD held out', es: 'SGCD vistos o SGCD no vistos' },
+  shift: { en: 'Fed shift', es: 'Desplazamiento Fed' },
+  seeds: { en: 'Seeds', es: 'Semillas' },
+  perturbation: { en: 'Noise', es: 'Ruido' },
+  leakage: { en: 'Leakage', es: 'Fuga' },
+};
+const listOf = (names: string[], or: string) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} ${or} ${names[names.length - 1]}`);
 
 type Tab = { id: string; label: BiText; kinds: C20Kind[]; content: (sel: C20Sel) => ReactElement };
 
@@ -127,9 +139,9 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       label: { en: 'Shift', es: 'Cambio' },
       content: (
         <>
-          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } }))} value={sel.shift} onChange={setShift} />}
+          {shifts.length > 1 && <RailSelect id="c20-shift" label={{ en: 'Synthetic shift', es: 'Cambio sintético' }} options={shifts.map((x) => ({ id: x.shift_id, label: railShiftName(x.shift_id) ?? windowName(x.shift_id) }))} value={sel.shift} onChange={setShift} />}
           <ShiftReadout sel={sel} />
-          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: { en: w.window, es: w.window } }))} value={sel.window} onChange={setWin} />}
+          {wins.length > 1 && <RailSelect id="c20-window" label={{ en: 'Conformal window', es: 'Ventana conforme' }} options={wins.map((w) => ({ id: w.window, label: railShiftName(w.window) ?? windowName(w.window) }))} value={sel.window} onChange={setWin} />}
           <WindowReadout sel={sel} />
         </>
       ),
@@ -140,7 +152,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       label: { en: 'Rung', es: 'Peldaño' },
       content: (
         <>
-          {o.rows.length > 1 && <RailSelect id="c20-rung" label={{ en: 'Rung in focus', es: 'Peldaño en foco' }} options={o.rows.map((r) => ({ id: r.rung, label: { en: r.rung, es: r.rung } }))} value={sel.rung} onChange={setRung} />}
+          {o.rows.length > 1 && <RailSelect id="c20-rung" label={{ en: 'Rung in focus', es: 'Peldaño en foco' }} options={o.rows.map((r) => ({ id: r.rung, label: rungTitle(r.rung, sel.data.variant.model) }))} value={sel.rung} onChange={setRung} />}
           <SeedReadout sel={sel} />
         </>
       ),
@@ -194,7 +206,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     if (mine.length === 0) {
       return (
         <p className="caos-pending" data-state="unavailable" data-group={key}>
-          {pick({ en: 'Not available in this variant: pick another variant for these views.', es: 'No disponible en esta variante: elija otra variante para estas vistas.' }, lang)}
+          {pick(
+            {
+              en: `Not available in this variant: pick ${listOf([...new Set(list.flatMap((t) => t.kinds))].map((k) => KIND_VARIANTS[k]?.en ?? k), 'or')} for these views.`,
+              es: `No disponible en esta variante: elija ${listOf([...new Set(list.flatMap((t) => t.kinds))].map((k) => KIND_VARIANTS[k]?.es ?? k), 'o')} para estas vistas.`,
+            },
+            lang,
+          )}
         </p>
       );
     }

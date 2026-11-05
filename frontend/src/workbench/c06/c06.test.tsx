@@ -12,6 +12,7 @@ import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC06Instrument } from './instrument';
 import { axisScale, compactMoney } from './format';
+import { truthStatusText } from '../c05/selection';
 import { defaultSel, liveEcl, outputsOf, rescaled, scenarioEcl, type C06Sel } from './selection';
 import { C06ContextView, C06FindingsView, C06VariantsTable, CurveReadout, WeightReadout } from './C06Common';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
@@ -107,7 +108,9 @@ describe('the C06 instrument', () => {
     for (const m of o.settings.sicr.multiplier_schedule) expect(markup).toContain(`data-multiplier="${m.multiplier}"`);
     expect(markup).toContain(`data-threefold="${o.settings.sicr.threefold_ratio}"`);
     expect(markup).toContain('data-floor=');
-    for (const p of o.sicr_points) expect(markup).toContain(`data-account="${p.account_id}" data-trigger="${p.trigger}"`);
+    // U16-F9c (the ruling of 2026-10-24 on long tables): the accounts are counted by stage and trigger, not listed one row each
+    for (const p of o.sicr_points) expect(markup).toContain(`data-stage="${p.stage}" data-trigger="${p.trigger}"`);
+    expect(markup).toContain(`data-accounts="${o.sicr_points.length}"`);
   });
 
   it('the waterfall draws every line, the overlays as their own lines apart from the model ECL', () => {
@@ -171,14 +174,14 @@ describe('the C06 instrument', () => {
     expect(markup).toContain('the cohort is younger than the horizon');
     expect(markup).toContain('not available');
     const rungs = html(<RungsView sel={sel} />);
-    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason);
+    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason.en);
   });
 
   it('the context says the data is a fixture and why Freddie Mac is not there', () => {
     const markup = html(<C06ContextView sel={sel} />);
-    expect(markup).toContain(o.data_status.freddie_mac_reason as string);
+    expect(markup).toContain(o.data_status.freddie_mac_reason!.en);
     expect(markup).toContain(o.data_status.notice.en);
-    expect(markup).toContain(variant.provenance.truth_status);
+    expect(markup).toContain(truthStatusText(variant.provenance.truth_status).en);
   });
 
   it('the identities close on the one tolerance basis', () => {
@@ -237,7 +240,8 @@ describe('the C06 rail on the real document', () => {
   it('compact money keeps the unit with the value and leaves a null as null', () => {
     expect(compactMoney(19_584_239_970.51, 'USD').unit).toEqual({ en: 'bn USD', es: 'mil M USD' });
     expect(compactMoney(19_584_239_970.51, 'USD').value).toBeCloseTo(19.58423997, 6);
-    expect(compactMoney(590_890_026.3, 'CLP').unit).toEqual({ en: 'm CLP', es: 'M CLP' });
+    // a million is "mn" in English (R3 c13 m8; U16-F10a)
+    expect(compactMoney(590_890_026.3, 'CLP').unit).toEqual({ en: 'mn CLP', es: 'M CLP' });
     expect(compactMoney(1234.5, 'USD').unit).toEqual({ en: 'USD', es: 'USD' });
     expect(compactMoney(null, 'USD').value).toBeNull();
     expect(axisScale(30_000_000_000, 'USD')).toEqual({ div: 1e9, unit: { en: 'bn USD', es: 'mil M USD' } });

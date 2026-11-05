@@ -77,7 +77,7 @@
 
   <rect class="bx" x="306" y="128" width="558" height="296" rx="8"/>
   <text class="it l-en" x="322" y="150">Model: the ladder (P0 anchors, P1 scorecard, P2 L1 and PLTR, P3 EBM, P4 monotone GBM, P5 TabPFN)</text>
-  <text class="it l-es" x="322" y="150">Modelo: la escalera (anclas P0, scorecard P1, L1 y PLTR P2, EBM P3, GBM monótono P4, TabPFN P5)</text>
+  <text class="it l-es" x="322" y="150">Modelo: la escalera (anclas P0, tarjeta de puntuación P1, L1 y PLTR P2, EBM P3, GBM monótono P4, TabPFN P5)</text>
   <text class="sub l-en" x="322" y="168">with each rung's engine, licence, AUC and interval; the points table; EBM shapes; GBM partial dependence</text>
   <text class="sub l-es" x="322" y="168">con el motor, la licencia, la AUC y su intervalo de cada peldaño; la tabla de puntos; formas EBM; dependencia parcial GBM</text>
   <text class="it l-en" x="322" y="198">Validation: the battery, test by rung; calibration by grade; discrimination; stability; by group</text>
@@ -87,7 +87,7 @@
   <text class="it l-en" x="322" y="258">Findings: S1 to S4, each with its evidence: a test, a contract rule or a stated limit</text>
   <text class="it l-es" x="322" y="258">Hallazgos: S1 a S4, cada uno con su evidencia: una prueba, una regla del contrato o un límite declarado</text>
   <text class="it l-en" x="322" y="288">Variants: the regimes side by side (drift, prior shift, label noise, small sample, the German twin)</text>
-  <text class="it l-es" x="322" y="288">Variantes: los regímenes lado a lado (deriva, cambio de prior, ruido de etiqueta, muestra pequeña, el gemelo alemán)</text>
+  <text class="it l-es" x="322" y="288">Variantes: los regímenes lado a lado (deriva, cambio de a priori, ruido de etiqueta, muestra pequeña, el gemelo alemán)</text>
   <text class="it l-en" x="322" y="318">Context: the question, the sources and their licences, the split, the write-up</text>
   <text class="it l-es" x="322" y="318">Contexto: la pregunta, las fuentes y sus licencias, la partición, el desarrollo</text>
   <path class="ln" d="M322 352 h520"/>

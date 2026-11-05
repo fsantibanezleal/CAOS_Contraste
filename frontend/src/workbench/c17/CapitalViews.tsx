@@ -9,18 +9,29 @@ import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
-import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
+import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, isCaution, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
+import { es, inSentence } from './localise';
 
 const ratio = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
 
+/** The money scale of a capital table: the unit of its largest 95th percentile, so no cell carries an 11-digit amount and the last
+ * column fits at 1280 (U16-R3 c18 M2: on xi 0.96 and 1.1 the euro amounts reached 122,693,631,000 and cut the last column). */
+export function tableScale(capitals: ReadonlyArray<C17Capital | null>): { div: number; unit: BiText } {
+  // the scale of the medians, as the drawing's axis: a 95th percentile in thousands of that unit still fits, a median keeps its digits
+  return axisScale(Math.max(0, ...capitals.map((c) => c?.capital_eur.median ?? 0)), 'EUR');
+}
+
+/** An amount in the scale of its table, with four significant digits (0.009415, 108.5, 4,316). */
+const scaled = (v: number, div: number, lang: 'en' | 'es') => formatNumber(v / div, lang, div === 1 ? { decimals: 0 } : { digits: 4 });
+
 /** The cells of a summary row: the percentiles, the ratio to the truth, the share that underestimates, the spread. */
-function SummaryCells({ s, lang }: { s: C17Capital; lang: 'en' | 'es' }) {
+function SummaryCells({ s, lang, div }: { s: C17Capital; lang: 'en' | 'es'; div: number }) {
   return (
     <>
-      <td className="ct-wide-only">{whole(s.capital_eur.p05, lang)}</td>
-      <td>{whole(s.capital_eur.median, lang)}</td>
-      <td className="ct-wide-only">{whole(s.capital_eur.p95, lang)}</td>
+      <td className="ct-wide-only">{scaled(s.capital_eur.p05, div, lang)}</td>
+      <td>{scaled(s.capital_eur.median, div, lang)}</td>
+      <td className="ct-wide-only">{scaled(s.capital_eur.p95, div, lang)}</td>
       <td>{ratio(s.ratio_to_truth.median, lang)}</td>
       <td>{pct(s.share_underestimating, lang)}</td>
       <td className="ct-wide-only">{pct(s.iqr_over_truth, lang)}</td>
@@ -29,19 +40,23 @@ function SummaryCells({ s, lang }: { s: C17Capital; lang: 'en' | 'es' }) {
   );
 }
 
-function HeadCells({ lang }: { lang: 'en' | 'es' }) {
+function HeadCells({ lang, unit }: { lang: 'en' | 'es'; unit: BiText }) {
+  const u = pick(unit, lang);
   return (
     <>
-      <th className="ct-wide-only">{pick({ en: '5th percentile (EUR)', es: 'Percentil 5 (EUR)' }, lang)}</th>
-      <th>{pick({ en: 'Median (EUR)', es: 'Mediana (EUR)' }, lang)}</th>
-      <th className="ct-wide-only">{pick({ en: '95th percentile (EUR)', es: 'Percentil 95 (EUR)' }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: `5th percentile (${u})`, es: `Percentil 5 (${u})` }, lang)}</th>
+      <th>{pick({ en: `Median (${u})`, es: `Mediana (${u})` }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: `95th percentile (${u})`, es: `Percentil 95 (${u})` }, lang)}</th>
       <th>{pick({ en: 'Median over the truth', es: 'Mediana sobre la verdad' }, lang)}</th>
       <th>{pick({ en: 'Histories below the truth', es: 'Historias bajo la verdad' }, lang)}</th>
       <th className="ct-wide-only">{pick({ en: 'Spread over the truth', es: 'Dispersión sobre la verdad' }, lang)}</th>
-      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desviación estándar log' }, lang)}</th>
+      <th className="ct-wide-only">{pick({ en: 'Log standard deviation', es: 'Desv. estándar log' }, lang)}</th>
     </>
   );
 }
+
+/** The format of an influence bar: one decimal under half a percent, so a small negative influence is never "-0 %" (U16-R3 c18 m5). */
+export const influenceFormat = (v: number): { percent: true; decimals: number } => ({ percent: true, decimals: Math.abs(v) < 0.005 ? 1 : 0 });
 
 /** The capital of every rung of the ladder in the cell chosen, drawn beside the true quantile of the generator. */
 export function ByMethodView({ sel }: { sel: C17Sel | null }) {
@@ -54,13 +69,14 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
   const rungs = RUNG_ORDER.map((id) => ({ id, ...capitalOf(cell, id) }));
   const scale = axisScale(Math.max(truth, ...rungs.map((r) => r.summary?.capital_eur.median ?? 0)), 'EUR');
   const label = cellLabel(cell.years, cell.collection_threshold_eur);
+  const money = tableScale(rungs.map((r) => r.summary));
   const data = [
     { id: 'truth', label: { en: 'True quantile', es: 'Cuantil verdadero' }, value: truth / scale.div, tone: 'neutral' as const, hint: { en: 'The 99.9 percent quantile of the annual loss of the generator', es: 'El cuantil al 99,9 por ciento de la pérdida anual del generador' } },
     ...rungs.map((r) => ({
       id: r.id,
       label: rungName(r.id),
       value: r.summary ? r.summary.capital_eur.median / scale.div : null,
-      tone: r.summary?.status === UNVERIFIED || r.id === 'sla-mean-corrected' ? ('warn' as const) : ('accent' as const),
+      tone: isCaution(r.summary?.status) || r.id === 'sla-mean-corrected' ? ('warn' as const) : ('accent' as const),
       highlight: r.id === sel.rung,
     })),
   ];
@@ -72,8 +88,8 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
         title={{ en: `Capital by method: ${label.en}`, es: `Capital por método: ${label.es}` }}
         {...card}
         note={{
-          en: 'The 99.9 percent capital each method gives, as the median over the independent histories of the cell, beside the true quantile of the generator (grey). A method below the grey bar underestimates the capital. Amber is the mean-corrected approximation, kept UNVERIFIED until it is checked against its primary text. A method with no bar was not evaluated for this cell, and the table says why.',
-          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue UNVERIFIED hasta que se verifique contra su texto primario. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
+          en: 'The 99.9 percent capital each method gives, as the median over the independent histories of the cell, beside the true quantile of the generator (grey). A method below the grey bar underestimates the capital. Amber is the mean-corrected approximation, kept UNVERIFIED until it is checked against its primary text. The four mean-adjusted rungs (robust and likelihood fits of the severity) are amber too: their form comes from a secondary source. A method with no bar was not evaluated for this cell, and the table says why.',
+          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue SIN VERIFICAR hasta que se verifique contra su texto primario. Los cuatro métodos con ajuste por media (ajustes robustos y de verosimilitud de la severidad) también son ámbar: su forma viene de una fuente secundaria. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
         }}
       >
         <ChartOverTable
@@ -84,32 +100,16 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={data}
-              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9% (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
+              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9 % (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
             />
           }
         >
-          <div data-infinite-mean={String(o.infinite_mean)}>
-            {o.infinite_mean ? (
-              <p className="ct-note">
-                {pick({ en: 'The tail index of this variant is 1 or more, so the severity has no mean: the mean-corrected approximation needs it and is not available.', es: 'El índice de cola de esta variante es 1 o más, así que la severidad no tiene media: la aproximación corregida por la media la necesita y no está disponible.' }, lang)}
-              </p>
-            ) : null}
-          </div>
-          <p className="ct-note" data-bar-truth data-quantile={truth}>
-            {pick(
-              {
-                en: `True 99.9% quantile of the generator, the grey bar: ${whole(truth, 'en')} EUR. A method that is exact has a median over the truth of 1.`,
-                es: `Cuantil verdadero 99,9% del generador, la barra gris: ${whole(truth, 'es')} EUR. Un método exacto tiene una mediana sobre la verdad de 1.`,
-              },
-              lang,
-            )}
-          </p>
           <table className="caos-table ct-wrap-head" data-table="capital-by-rung" data-cell={cell.id}>
             <thead>
               <tr>
                 <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Method', es: 'Método' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
-                <HeadCells lang={lang} />
+                <HeadCells lang={lang} unit={money.unit} />
               </tr>
             </thead>
             <tbody>
@@ -121,12 +121,12 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
                     {r.summary ? (
                       <>
                         <td className="ct-wide-only">{whole(r.summary.n_defined, lang)}</td>
-                        <SummaryCells s={r.summary} lang={lang} />
+                        <SummaryCells s={r.summary} lang={lang} div={money.div} />
                       </>
                     ) : (
                       <td colSpan={8} data-na="true" className="ct-text">
                         {na}
-                        <span className="ct-note">{` (${r.reason ?? ''})`}</span>
+                        <span className="ct-note">{` (${es(r.reason, lang)})`}</span>
                       </td>
                     )}
                   </tr>
@@ -134,7 +134,23 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
               })}
             </tbody>
           </table>
-          <C17TestsTable variant={sel.data.variant} host="method" />
+          <div data-infinite-mean={String(o.infinite_mean)}>
+            {o.infinite_mean ? (
+              <p className="ct-note">
+                {pick({ en: 'The tail index of this variant is 1 or more, so the severity has no mean: the mean-corrected approximation needs it and is not available.', es: 'El índice de cola de esta variante es 1 o más, así que la severidad no tiene media: la aproximación corregida por la media la necesita y no está disponible.' }, lang)}
+              </p>
+            ) : null}
+          </div>
+          <p className="ct-note" data-bar-truth data-quantile={truth}>
+            {pick(
+              {
+                en: `True 99.9% quantile of the generator, the grey bar: ${whole(truth, 'en')} EUR. A method that is exact has a median over the truth of 1.`,
+                es: `Cuantil verdadero 99,9 % del generador, la barra gris: ${whole(truth, 'es')} EUR. Un método exacto tiene una mediana sobre la verdad de 1.`,
+              },
+              lang,
+            )}
+          </p>
+          <C17TestsTable variant={sel.data.variant} host="method" cell={cell.id} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -150,6 +166,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
   const truth = o.truth.annual_loss_quantile.value_eur;
   const rung = rungName(sel.rung);
   const cells = o.cells.map((c) => ({ c, ...capitalOf(c, sel.rung) }));
+  const money = tableScale(cells.map((x) => x.summary));
   const scale = axisScale(Math.max(truth, ...cells.map((x) => x.summary?.capital_eur.median ?? 0)), 'EUR');
   const na = formatNumber(null, lang);
   const data = [
@@ -158,7 +175,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
       id: c.id,
       label: cellLabel(c.years, c.collection_threshold_eur),
       value: summary ? summary.capital_eur.median / scale.div : null,
-      tone: summary?.status === UNVERIFIED ? ('warn' as const) : ('accent' as const),
+      tone: isCaution(summary?.status) ? ('warn' as const) : ('accent' as const),
       highlight: c.years === sel.years && c.collection_threshold_eur === sel.threshold,
     })),
   ];
@@ -173,26 +190,28 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
           es: 'El mismo método en cada celda de la grilla: 5 o 10 años de pérdidas registradas, y pérdidas registradas desde EUR 10.000 o desde EUR 20.000. Cada barra es la mediana sobre las historias independientes de la celda; la dispersión de las historias está en la tabla. La barra gris es el cuantil verdadero.',
         }}
       >
+        <div className="ct-c17-tall">
         <ChartOverTable
-          chartMin={`${data.length * 2.5 + 3}rem`}
+          chartMin={`${data.length * 1.4 + 5}rem`}
           chart={
             <BarChart
-              title={{ en: `Median capital of ${rung.en.toLowerCase()} by cell, against the true quantile`, es: `Capital mediano de ${rung.es.toLowerCase()} por celda, contra el cuantil verdadero` }}
+              title={{ en: `Median capital of ${inSentence(rung.en)} by cell, against the true quantile`, es: `Capital mediano de ${inSentence(rung.es)} por celda, contra el cuantil verdadero` }}
               height="fill"
               orientation="horizontal"
               data={data}
-              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9% (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
+              axis={{ label: { en: `99.9% capital (${pick(scale.unit, 'en')})`, es: `Capital al 99,9 % (${pick(scale.unit, 'es')})` }, format: { digits: 3 } }}
             />
           }
         >
           <table className="caos-table ct-wrap-head" data-table="capital-by-cell" data-rung={sel.rung}>
             <thead>
               <tr>
-                <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
+                <th className="ct-text" style={{ minWidth: lang === 'es' ? '7rem' : '9.5rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Losses per history, median', es: 'Pérdidas por historia, mediana' }, lang)}</th>
-                <HeadCells lang={lang} />
+                <th className="ct-wide-only">{pick({ en: 'With a capital', es: 'Con capital' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Median losses', es: 'Pérdidas, mediana' }, lang)}</th>
+                <HeadCells lang={lang} unit={money.unit} />
               </tr>
             </thead>
             <tbody>
@@ -201,13 +220,14 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                   <td className="ct-text">{pick(cellLabel(c.years, c.collection_threshold_eur), lang)}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_replications, lang)}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_failed, lang)}</td>
+                  <td className="ct-wide-only" data-n-defined={summary ? summary.n_defined : undefined}>{summary ? whole(summary.n_defined, lang) : na}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_losses_median, lang)}</td>
                   {summary ? (
-                    <SummaryCells s={summary} lang={lang} />
+                    <SummaryCells s={summary} lang={lang} div={money.div} />
                   ) : (
                     <td colSpan={7} data-na="true" className="ct-text">
                       {na}
-                      <span className="ct-note">{` (${reason ?? ''})`}</span>
+                      <span className="ct-note">{` (${es(reason, lang)})`}</span>
                     </td>
                   )}
                 </tr>
@@ -215,6 +235,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
             </tbody>
           </table>
         </ChartOverTable>
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -236,6 +257,7 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
     label: x.label,
     value: x.influence,
     tone: x.influence < 0 ? ('warn' as const) : ('accent' as const),
+    format: influenceFormat(x.influence),
     highlight: x.scenario_id === focus?.scenario_id,
   }));
   return (
@@ -245,8 +267,8 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
         title={{ en: 'Influence of each scenario on the capital', es: 'Influencia de cada escenario en el capital' }}
         {...card}
         note={{
-          en: `One history (${where.en}, seed ${s.seed}) with its scenario points combined with the losses by ${method.en.toLowerCase()}. The influence of a scenario is the capital with all the points, minus the capital without that point, over the capital with all of them. A negative influence means the point lowers the capital.`,
-          es: `Una historia (${where.es}, semilla ${s.seed}) con sus puntos de escenario combinados con las pérdidas por ${method.es.toLowerCase()}. La influencia de un escenario es el capital con todos los puntos, menos el capital sin ese punto, sobre el capital con todos. Una influencia negativa significa que el punto baja el capital.`,
+          en: `One history (${where.en}, seed ${s.seed}) with its scenario points combined with the losses by ${inSentence(method.en)}. The influence of a scenario is the capital with all the points, minus the capital without that point, over the capital with all of them. A negative influence means the point lowers the capital.`,
+          es: `Una historia (${where.es}, semilla ${s.seed}) con sus puntos de escenario combinados con las pérdidas por ${inSentence(method.es)}. La influencia de un escenario es el capital con todos los puntos, menos el capital sin ese punto, sobre el capital con todos. Una influencia negativa significa que el punto baja el capital.`,
         }}
       >
         <ChartOverTable
@@ -264,13 +286,13 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
                 attrs: { 'data-prior': s.prior_kind },
                 value: pick(
                   {
-                    en: 'Gamma on the Pareto shape alpha = 1 / xi, unrestricted (an infinite mean is not excluded); mean and 90 percent interval from the scenario points. the reading of the method by Contraste, stated on every result.',
+                    en: 'Gamma on the Pareto shape alpha = 1 / xi, unrestricted (an infinite mean is not excluded); mean and 90 percent interval from the scenario points. The Contraste reading of the method, stated on every result.',
                     es: 'Gamma sobre la forma de Pareto alfa = 1 / xi, sin restricción (no se excluye una media infinita); media e intervalo del 90 por ciento desde los puntos de escenario. Lectura de Contraste del método, declarada en cada resultado.',
                   },
                   lang,
                 ),
               },
-              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: s.reference },
+              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: es(s.reference, lang) },
             ]}
           />
           <table className="caos-table ct-wrap-head" data-table="scenarios">

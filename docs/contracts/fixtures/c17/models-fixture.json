@@ -230,6 +230,54 @@
         "aggregation": "panjer",
         "status": "verified",
         "reference": "dossier 05 F.5, Shevchenko and Wuthrich (2006)"
+      },
+      {
+        "rung_id": "sla-mean-adjusted",
+        "label": {
+          "en": "Mean-adjusted single loss approximation, GPD by maximum likelihood",
+          "es": "Aproximacion de una perdida con ajuste por media, GPD por maxima verosimilitud"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "riskvalidation.oprisk.robust.sla_var_mean_adjusted"
+      },
+      {
+        "rung_id": "sla-cvm",
+        "label": {
+          "en": "Robust GPD by minimum Cramer-von Mises distance, mean-adjusted single loss approximation",
+          "es": "GPD robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "Opdyke and Cavallo (2012)"
+      },
+      {
+        "rung_id": "sla-obre",
+        "label": {
+          "en": "Optimally bias-robust GPD at 95 percent efficiency, mean-adjusted single loss approximation",
+          "es": "GPD optimamente robusta al sesgo con eficiencia de 95 por ciento, aproximacion de una perdida con ajuste por media"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "Hampel et al. (1986) section 4.2"
+      },
+      {
+        "rung_id": "sla-cvm-lognormal",
+        "label": {
+          "en": "Robust lognormal by minimum Cramer-von Mises distance, mean-adjusted single loss approximation (control)",
+          "es": "Lognormal robusta por distancia minima de Cramer-von Mises, aproximacion de una perdida con ajuste por media (control)"
+        },
+        "severity_law": "lognormal-truncated",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "SECONDARY_SOURCE",
+        "reference": "the control"
       }
     ],
     "aggregation": {

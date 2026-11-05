@@ -40,7 +40,7 @@ GOLDENS = (("stable-retail-adverse", "adverse", "stable-retail", 125, "dossier-0
            ("other-retail-adverse", "adverse", "other-retail", 125, "recomputed"),
            ("non-operational-nfc-adverse-2-days", "adverse", "non-operational-non-financial-corporates", 2, "recomputed"),
            ("committed-credit-facilities-adverse-63-days", "adverse", "committed-credit-facilities", 63, "recomputed"))
-P_ENTER, P_EXIT = 0.01, 0.05                  # the stress-state transition law of the generator: a convention (UNVERIFIED, contract 1.2.0)
+P_ENTER, P_EXIT = 0.01, 0.05                  # the stress-state transition law of the generator: a convention (UNVERIFIED, contract 2.0.0)
 N_DEPOSITORS = 1000                           # per segment
 GENERATOR_HORIZON = 125
 TRUTH_HORIZONS = (2, 5, 30, 125)
@@ -74,21 +74,27 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
     segs = balance.deposit_segments(report)
     total = sum(s["opening"] for s in segs)
     lst = runoff.LIST_PARAMETERS["adverse"]["open_maturity"]
-    spec = {"retail-insured": (0.0, lst["other-retail"], "stress hazard: the LiST Adverse rate of other retail sight deposits"),
-            "non-operational-corporate": (0.0, fit_rate, "stress hazard: the fast-run daily rate calibrated on the pre-2023 Table A.1 rows"),
-            "financial": (0.0, lst["non-operational-other-financial"], "stress hazard: a financial customer's sight deposit leaves in full (LiST para 111)")}
+    # the stress rate of each segment in both languages (R3 c17: the English "stress hazard" sat inside the Spanish basis)
+    spec = {"retail-insured": (0.0, lst["other-retail"], ("stress hazard: the LiST Adverse rate of other retail sight deposits",
+                                                          "tasa de salida en estrés: la tasa LiST Adversa de los depósitos a la vista de otros minoristas")),
+            "non-operational-corporate": (0.0, fit_rate, ("stress hazard: the fast-run daily rate calibrated on the pre-2023 Table A.1 rows",
+                                                          "tasa de salida en estrés: la tasa diaria de la corrida rápida calibrada en las filas de la Tabla A.1 anteriores a 2023")),
+            "financial": (0.0, lst["non-operational-other-financial"], ("stress hazard: a financial customer's sight deposit leaves in full (LiST paragraph 111)",
+                                                                        "tasa de salida en estrés: el depósito a la vista de un cliente financiero sale completo (párrafo 111 de LiST)"))}
     cfg_segments, doc_segments = [], []
     for s in segs:
         calm, stress, what = spec[s["segment"]]
         share = s["opening"] / total
-        cfg_segments.append(DepositorSegment(s["segment"], share, calm, stress, P_ENTER, P_EXIT))
+        cfg_segments.append(DepositorSegment(s["segment"], share, calm, stress))
         doc_segments.append({"segment": s["segment"], "share_of_deposits": share, "calm_daily_hazard": calm, "stress_daily_hazard": stress,
                              "p_enter_stress": P_ENTER, "p_exit_stress": P_EXIT,
-                             "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what}; the "
+                             "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what[0]}; the "
                                           "transition law is a convention.",
-                                          f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what}; la ley de "
+                                          f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what[1]}; la ley de "
                                           "transición es una convención.")})
-    gen = DepositorGenerator(DepositorConfig(tuple(cfg_segments), N_DEPOSITORS, GENERATOR_HORIZON))
+    # engine-liquidity-api 2.0.0 (BL-082): one stress chain shared by every depositor, so its two probabilities belong to the configuration; the
+    # document still writes them on each segment row (the c16GeneratorSegment schema requires both), equal to the configuration's
+    gen = DepositorGenerator(DepositorConfig(tuple(cfg_segments), N_DEPOSITORS, GENERATOR_HORIZON, P_ENTER, P_EXIT))
     truth = gen.truth()["outflow_rate"]
     rows = [{"segment": k, "horizon_days": n, "true_outflow_rate": float(truth[k][n - 1])} for k in truth for n in TRUTH_HORIZONS]
     checks = [c for c in gen.verify(n_draws, seed) if c.se > 0.0]
@@ -137,26 +143,31 @@ def models_fit(report: Report, conv: dict, cal: dict[str, Any], generator: dict[
                 "sources": {"annex": "ECB LiST 2019 results annex", "n_banks_slide": 9, "median_slides": [15], "dossier": "dossier 05 E.1 line 240"},
                 "statement": txt("Reference points of the LiST 2019 stress test, not results of this model: 103 banks, median reported survival period 176 days "
                                  "under the Adverse and 122 days under the Extreme shock (results annex slides 9 and 15).",
-                                 "Puntos de referencia del test de estrés LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
-                                 "informado de 176 días en el Adverso y 122 en el Extremo.")},
+                                 "Puntos de referencia de la prueba de estrés LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
+                                 "informado de 176 días en el choque Adverso y 122 días en el Extremo (anexo de resultados, láminas 9 y 15).")},
             "calendar_note": txt("The rates are defined on the 2019 TARGET2 relevant-day calendar (125 relevant days in six months); the C16 ladder runs on the "
                                  "US business-day convention.",
-                                 "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 días en seis meses); la escalera de C16 usa días hábiles de EE.UU.")},
+                                 "Las tasas se definen sobre el calendario de días relevantes TARGET2 de 2019 (125 días relevantes en seis meses); la "
+                                 "escalera de C16 usa la convención de días hábiles de EE.UU.")},
         "list_goldens": goldens,
         "table_a1": {"source": "BCBS, Report on the 2023 banking turmoil (d555), Box A, Table A.1",
                      "attribution": "Bank for International Settlements, source cited; one table within the limited-extract terms (addendum L2.1)",
                      "rows": [{"row_id": r.row_id, "bank": r.bank, "year": r.year, "outflow_share": r.outflow_share, "days": r.days} for r in runoff.TABLE_A1],
                      "lcr_range": {"label": "LCR deposit outflow rates", "low": lo, "high": hi, "days": days}},
         "calibration": cal, "generator": generator,
-        "sources": [{"source_id": sid, "publisher": pub, "licence_class": cls, "licence_basis": basis, "statement": txt(st + " A reading of the notice, not legal advice.", st)}
-                    for sid, pub, cls, basis, st in (
-            ("fdic-bankfind", "FDIC", "mirror-allowed", "unverified", "Presumed US government public data; the licence sentence is UNVERIFIED."),
-            ("fed-h8", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement."),
-            ("fed-svb-review", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement."),
+        "sources": [{"source_id": sid, "publisher": pub, "licence_class": cls, "licence_basis": basis,
+                     "statement": txt(en + " A reading of the notice, not legal advice.", es + " Es una lectura del aviso, no asesoría legal.")}
+                    for sid, pub, cls, basis, en, es in (
+            ("fdic-bankfind", "FDIC", "mirror-allowed", "unverified", "Presumed US government public data; the licence sentence is UNVERIFIED.",
+             "Se presume dato público del gobierno de EE. UU.; la frase de licencia está SIN VERIFICAR."),
+            ("fed-h8", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement.", "Declaración de dominio público de la Junta."),
+            ("fed-svb-review", "Federal Reserve Board", "mirror-allowed", "notice-read", "Board public-domain statement.", "Declaración de dominio público de la Junta."),
             ("bcbs-d555-table-a1", "Bank for International Settlements", "mirror-allowed", "notice-read",
-             "Table A.1 enters as constants with the source stated, within the BIS limited-extract terms; the rest of d555 is derived-only."),
+             "Table A.1 enters as constants with the source stated, within the BIS limited-extract terms; the rest of d555 is derived-only.",
+             "La Tabla A.1 entra como constantes con la fuente declarada, dentro de los términos de extracto limitado del BPI; el resto de d555 es solo derivado."),
             ("ecb-list-2019", "European Central Bank", "mirror-allowed", "notice-read",
-             "Parameters used with the ECB cited, the text accurate and any modification stated."))]}
+             "Parameters used with the ECB cited, the text accurate and any modification stated.",
+             "Parámetros usados citando al BCE, con el texto exacto y toda modificación declarada."))]}
 
 
 def models_summary(ev: str) -> list[dict[str, Any]]:

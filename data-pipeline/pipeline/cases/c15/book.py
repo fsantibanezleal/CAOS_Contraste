@@ -30,6 +30,13 @@ MID = GRID.midpoints
 Text = dict[str, str]
 
 
+
+#: the deposit categories in words, as the views name them (frontend/src/workbench/c15/C15Common.tsx CATEGORY_TEXT; the raw-id scan of
+#: 2026-10-24: "Depósitos a la vista en pesos, retail-operational")
+CATEGORY_WORDS = {"retail-operational": ("retail operational", "minoristas operacionales"),
+                  "retail-non-operational": ("retail non-operational", "minoristas no operacionales"),
+                  "wholesale": ("wholesale", "mayoristas")}
+
 def t(en: str, es: str) -> Text:
     return {"en": en, "es": es}
 
@@ -60,11 +67,11 @@ def _spec(vid: str, en: str, es: str, d_en: str, d_es: str, cpi: float | None = 
 SPECS: dict[str, VariantSpec] = {s.id: s for s in (
     _spec("long-uf", "Long UF", "UF largo",
           "A net long UF book: UF assets exceed UF funding by 30 percent of Tier 1, the difference funded in pesos.",
-          "Libro con posición neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del Tier 1, financiado en pesos.",
+          "Libro con posición neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del capital de nivel 1, financiado en pesos.",
           net_uf_share_tier1=0.30),
     _spec("short-uf", "Short UF", "UF corto",
           "A net short UF book: UF funding exceeds UF assets by 30 percent of Tier 1, so an indexation surprise is a loss.",
-          "Libro con posición neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del Tier 1.",
+          "Libro con posición neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del capital de nivel 1.",
           net_uf_share_tier1=-0.30),
     _spec("cpi-surprise", "CPI surprise +2.5 pp", "Sorpresa de IPC +2,5 pp",
           "The long UF book under a 2.5 percentage point inflation surprise on its net UF position.",
@@ -74,7 +81,7 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
           "A near-flat UF position and a CLP book with 35 percent of its fixed loans and securities moved to the long end, so the "
           "long-end rise of the steepener acts on it.",
           "Posición en UF casi plana y libro en pesos con 35 por ciento de sus créditos fijos y valores en el tramo largo, de modo que el alza "
-          "del tramo largo del empinamiento actúa sobre el.",
+          "del tramo largo del empinamiento actúa sobre él.",
           net_uf_share_tier1=0.05, clp_long_asset_share=0.35),
     _spec("offset-on-off", "CLP/CLF offset on and off", "Compensación CLP/CLF activada y desactivada",
           "A long UF book funded in long CLP bonds (twice the maturity), so the two legs move in opposite directions and the 50 percent "
@@ -82,10 +89,12 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
           "Libro largo en UF fondeado con bonos largos en pesos (el doble de plazo): los dos tramos se mueven en sentido contrario y la "
           "compensación de 50 por ciento se lee activada y desactivada.",
           offset="compared", net_uf_share_tier1=0.30, clp_bond_years_scale=2.0),
-    _spec("floors-active", "Floors active", "Pisos activos",
-          "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor.",
+    # the book most exposed to the floor, not one where a floor binds: none does on the curves of the date (R4 c18 m13)
+    _spec("floors-active", "Floor-exposed UF book", "Libro en UF expuesto al piso",
+          "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor; "
+          "no floor binds on the curves of the valuation date.",
           "Posición en UF casi plana con 70 por ciento de los créditos comerciales en UF a tasa variable: el libro más expuesto al piso "
-          "posterior al choque de la UR.",
+          "posterior al choque de la UR; ningún piso actúa sobre las curvas de la fecha de valoración.",
           net_uf_share_tier1=0.05, ur_floating_share=0.70),
 )}
 
@@ -193,10 +202,10 @@ class Book:
         return {
             "nmd_core_share": {"value": sum(s["balance"] * s["core_share_used"] for s in segs) / total, "unit": "share",
                                "source_kind": "regulatory-cap",
-                               "source": "balance-weighted average of the used values of nmd_segments (the SRP31 Table 4 caps applied to the "
+                               "source": "balance-weighted average of the used values of the deposit categories below (the SRP31 Table 4 caps applied to the "
                                          "synthetic requests)"},
             "nmd_core_maturity_years": {"value": sum(s["balance"] * s["core_maturity_used_years"] for s in segs) / total, "unit": "years",
-                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of nmd_segments"},
+                                        "source_kind": "regulatory-cap", "source": "balance-weighted average of the used values of the deposit categories below"},
             "prepayment_cpr": a("prepayment_cpr", asm.PREPAYMENT_CPR),
             "term_deposit_redemption_rate": a("term_deposit_redemption_rate", asm.TERM_DEPOSIT_REDEMPTION_RATE),
             "deposit_beta": a("deposit_beta", asm.DEPOSIT_BETA)}
@@ -349,7 +358,7 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
         s = rv_slotting.nmd_split(balance, cat, req.share, req.maturity, enforce_caps=True, grid=GRID)
         code = {"retail-operational": "RO", "retail-non-operational": "RN", "wholesale": "W"}[cat]
         legs["CLP"].items.append(Item(
-            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {cat}", f"Depósitos a la vista en pesos, {cat}"), "liability", "deposits-nmd",
+            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {CATEGORY_WORDS[cat][0]}", f"Depósitos a la vista en pesos, {CATEGORY_WORDS[cat][1]}"), "liability", "deposits-nmd",
             asm.CATEGORY_CLASS[cat], f"{cmf}: Depósitos totales, split synthetic (assumptions.deposit_split); core share and maturity requested "
             "synthetic, capped by SRP31 Table 4", float(balance), -np.asarray(s.flows, dtype=float), {"kind": "nmd", "margin": None}))
         segments.append({"category": cat, "balance": float(balance), "requested_core_share": float(s.requested_core_share),

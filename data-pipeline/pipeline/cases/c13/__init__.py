@@ -14,15 +14,26 @@ from typing import Any
 CASE_ID = "C13"
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C13:
     id = CASE_ID
     slug = "frtb-desk-eligibility"
-    title = {"en": "FRTB desk eligibility: PLA and desk backtesting", "es": "Elegibilidad de mesas FRTB: PLA y backtesting de mesa"}
+    title = {"en": "FRTB desk eligibility: PLA and desk backtesting", "es": "Elegibilidad de mesas FRTB: PLA y prueba retrospectiva de mesa"}
     category_id = "market-ccr"
     kind = "synthetic"
     question = {"en": "Do the P&L attribution and desk backtesting tests of FRTB detect planted model deficiencies?",
-                "es": "¿Detectan las pruebas de atribución de P&L y de backtesting de mesa de FRTB deficiencias de modelo plantadas?"}
+                "es": "¿Detectan las pruebas de atribución de P&L y la prueba retrospectiva de mesa de FRTB deficiencias de modelo sembradas?"}
     sources: tuple[str, ...] = ()  # a generator: no registered input file
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None, scale: float = 1.0) -> dict[str, Any]:
         from .bake import bake_case

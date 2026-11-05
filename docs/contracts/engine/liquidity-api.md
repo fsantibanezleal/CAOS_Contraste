@@ -1,4 +1,4 @@
-# Engine liquidity API contract: `engine-liquidity-api` 1.2.1
+# Engine liquidity API contract: `engine-liquidity-api` 2.0.0
 
 Owner: U11-S (unit sizing `plans/contraste/units/U11-sizing.md`, CAOS_MANAGE). Implemented by U11-E in `riskvalidation.liquidity`,
 `riskvalidation.regulatory.lcr_nsfr` and `riskvalidation.validation.liquidity` (repository CAOS_RiskValidation); called by the C16 bake
@@ -17,7 +17,7 @@ is transcribed from the dossier or the addendum named on its line; an item they 
 do not settle, is marked UNVERIFIED here and is not silently decided (list at the end). No official LCR or NSFR worked example exists
 (01 lines 1045 to 1046), so none is claimed: the LCR and NSFR carry constructed tests and invariants (01 M.1).
 
-Version history: 1.0.0, the first contract; 1.1.0 after U11-E (the `scored` keyword of `fast_run_scenario`, the FastRun class, the shared depositor chain); 1.2.0 after the U11-E review (the reverse-stress threshold multiplier, the inflow cap ceiling, the empty-stock shares, the RSF key `operational_deposits_held`, the cap wording of the reverse curve and the HQLA share basis). 1.2.1, a patch at the 0.13.000 release: the engine-repository files this page cites are named as `CAOS_RiskValidation/<path>`; no clause changes.
+Version history: 1.0.0, the first contract; 1.1.0 after U11-E (the `scored` keyword of `fast_run_scenario`, the FastRun class, the shared depositor chain); 1.2.0 after the U11-E review (the reverse-stress threshold multiplier, the inflow cap ceiling, the empty-stock shares, the RSF key `operational_deposits_held`, the cap wording of the reverse curve and the HQLA share basis). 1.2.1, a patch at the 0.13.000 release: the engine-repository files this page cites are named as `CAOS_RiskValidation/<path>`; no clause changes. 2.0.0, a major version at the engine 1.0.0 release (BL-082, U16-E1): `p_enter_stress` and `p_exit_stress` move from `DepositorSegment` to `DepositorConfig`, and a `DepositorSegment` no longer takes them; the four functions of `liquidity/_checks.py` are internal and outside the promise.
 
 ## Conventions (all functions)
 
@@ -226,7 +226,7 @@ The derivative liabilities add-on (NSF30.8, dossier 01 G.2: "5% to 20% of deriva
 
 ## Module `riskvalidation/liquidity/_checks.py`
 
-Input checks naming the offending field; they are self-contained (they do not import `validation._common`) and add only what the per-package `_checks.py` of
+Internal to the engine: the four functions below are not part of the 2.0.0 promise (the engine's `CAOS_RiskValidation/docs/api-policy.md` lists them as not public), no Contraste producer calls them, and a later release may change or remove them without a major version. They stay documented because the other functions of this page raise the errors they word. Input checks naming the offending field; they are self-contained (they do not import `validation._common`) and add only what the per-package `_checks.py` of
 `oprisk`, `lgd_ead` and `provisions` do not hold. Each returns the validated array and raises `ValueError(f"{name}: {reason}, got {value}")`.
 
 ### `riskvalidation.liquidity._checks.check_nonnegative_stock`
@@ -554,18 +554,18 @@ class DepositorSegment:
     share_of_deposits: float     # share of the call-report deposits, in [0, 1]
     calm_daily_hazard: float     # in [0, 1]
     stress_daily_hazard: float   # in [0, 1]
-    p_enter_stress: float        # per day, in [0, 1]
-    p_exit_stress: float         # per day, in [0, 1]
 
 @dataclass(frozen=True)
 class DepositorConfig:
     segments: tuple[DepositorSegment, ...]
     n_depositors: int            # per segment, positive
     horizon_days: int            # positive
+    p_enter_stress: float        # per day, calm to stress, a number in [0, 1]
+    p_exit_stress: float         # per day, stress to calm, a number in [0, 1]
 ```
 
-- Units: hazards and probabilities are decimals per relevant day; shares sum to 1 (`check_weights_sum_to_one`); the configuration serialises through `GeneratorBase.config()` into the `generator.config` block of `c16-models`.
-- Invariants: frozen and hashable; a share vector that does not sum to one, a probability outside `[0, 1]` or a non-positive count raises `ValueError` naming the field; every segment id is in `SEGMENTS`. The stress state is one chain shared by every depositor, so `p_enter_stress` and `p_exit_stress` must be equal across the segments; a configuration whose segments disagree raises `ValueError` naming the field (stated in 1.1.0 after U11-E; moving the two probabilities to `DepositorConfig` is backlog item BL-082 of a later major version).
+- Units: hazards and probabilities are decimals per relevant day; shares sum to 1 (`check_weights_sum_to_one`); the configuration serialises through `GeneratorBase.config()` into the `generator.config` block of `c16-models`, with `parameters.p_enter_stress` and `parameters.p_exit_stress` at configuration level and no longer inside each segment row (the committed C16 document still writes both on each segment row, which the `c16GeneratorSegment` schema requires; the adapter reads them from the configuration).
+- Invariants: frozen and hashable; a share vector that does not sum to one, a non-positive count, or a `p_enter_stress` or `p_exit_stress` that is not a number in `[0, 1]` (a string, a flag or a list is refused too) raises `ValueError` naming the field; every segment id is in `SEGMENTS`. The stress state is one chain shared by every depositor, so the two probabilities belong to the configuration and the 1.1.0 refusal of segments that disagree is gone because the case cannot arise (BL-082, 2.0.0). A `DepositorSegment` built with the two probabilities raises `TypeError`. Migration from 1.2.1: `DepositorConfig(segments, n_depositors, horizon_days, p_enter_stress, p_exit_stress)`; the draws and the truth for a configuration whose segments agreed are those of 1.2.1 (the same formulas on the same random stream).
 - Golden: a configuration of one segment with `share_of_deposits = 1.0` passes; `0.9` raises; the three-segment shares `0.057, 0.864, 0.079` sum to 1.0.
 
 ### `riskvalidation.liquidity.deposits.DepositorGenerator`

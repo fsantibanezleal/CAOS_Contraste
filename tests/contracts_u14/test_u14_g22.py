@@ -41,7 +41,7 @@ def test_the_schema_makes_the_block_nullable_and_the_reason_optional_so_every_1_
     out = schema["$defs"]["c02Outputs"]
     assert schema["$defs"]["c02TermStructure"]["type"] == ["object", "null"]          # a widened type: the gate's mechanical floor sees no break
     assert "term_structure" in out["required"] and "term_structure_reason" in out["properties"] and "term_structure_reason" not in out["required"]
-    assert "1.1.0" in schema["description"]
+    assert "2.0.0" in schema["description"]          # U16-F2: the contract moved to 2.0.0 (BiText impact texts, transfer cells keyed on the model)
     h1 = load(H1)
     old = copy.deepcopy(h1)
     old["outputs"].pop("term_structure_reason", None)                                    # a 1.0.0 document has no such key
@@ -81,10 +81,10 @@ def test_a_reason_that_is_not_a_bilingual_text_is_refused_by_the_schema() -> Non
     assert errors(bad)
 
 
-def test_the_catalog_row_is_1_1_0_with_its_history_line() -> None:
+def test_the_catalog_row_keeps_its_1_1_0_history_line() -> None:
     text = (cs.ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
-    row = next(line for line in text.splitlines() if line.startswith("| c02-outputs | 1."))
-    assert row.startswith("| c02-outputs | 1.1.0 |")
+    row = next(line for line in text.splitlines() if line.startswith("| c02-outputs | 2."))      # U16-F2 moved the row to 2.0.0
+    assert row.startswith("| c02-outputs | 2.0.0 |")
     hist = [line for line in text.splitlines() if line.startswith("| c02-outputs | 1.1.0 | 2026-10-20 |")]
     assert len(hist) == 1 and "term_structure block nullable with term_structure_reason (U14 G22)" in hist[0] and hist[0].rstrip().endswith("| minor |")
     assert "independent samples, not one cohort" in hist[0] and "every 1.0.0 document stays valid" in hist[0]

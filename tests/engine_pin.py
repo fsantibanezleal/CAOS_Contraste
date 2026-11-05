@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 
 ENGINE_PIN = re.compile(
-    r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@(?P<ref>\S+)\s*$", re.M)
-PYPI_PIN = re.compile(r"^riskvalidation(?:\[market\])?==(?P<version>\d+\.\d+\.\d+)\s*$", re.M)
+    r"^riskvalidation(?:\[[a-z,]+\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@(?P<ref>\S+)\s*$", re.M)
+PYPI_PIN = re.compile(r"^riskvalidation(?:\[[a-z,]+\])?==(?P<version>\d+\.\d+\.\d+)\s*$", re.M)
 SDD_ENGINE_ROW = re.compile(r"^\|\s*engine\s*\|\s*riskvalidation\s*\|\s*(?P<ref>[^|\s]+)\s*\|", re.M)
 TAG = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
 

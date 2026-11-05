@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
+import { entryText, rowWhere, testText } from '../names';
 import {
   GOVERNANCE_FILES,
   PRODUCT_STATUS_NAME,
@@ -17,6 +18,7 @@ import {
   severityByStatus,
   severityText,
   sortRows,
+  useGovernance,
   type AppetiteMetric,
   type FindingRow,
   type GovAppetite,
@@ -44,6 +46,19 @@ const STATUS_FILL: Record<string, string> = {
   risk_accepted: 'var(--color-fg-faint)',
 };
 
+/** Why a finding has no quantitative anchor, said by what its evidence is (a design limit, a contract rule, a measured rate, a
+ * test cited for no model); null when the evidence holds a test row, whose missing value the document's reason explains. */
+function evidenceKind(evidence: string[]): { en: string; es: string } | null {
+  if (!evidence.length || evidence.some((k) => k.split('@').length >= 2)) return null;
+  const kinds = new Set(evidence.map((k) => (/^(design|contract|rate):/.exec(k)?.[1] ?? 'test')));
+  const one = kinds.size === 1 ? [...kinds][0] : null;
+  if (one === 'design') return { en: 'the finding rests on a stated design limit, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en un límite de diseño declarado, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'contract') return { en: 'the finding rests on a rule of the contract, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en una regla del contrato, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'rate') return { en: 'the finding rests on a measured rate, not on a test row, so there is no statistic to read', es: 'el hallazgo descansa en una tasa medida, no en una fila de prueba, así que no hay estadístico que leer' };
+  if (one === 'test') return { en: 'the finding cites its tests for no single model, so no one row holds the statistic', es: 'el hallazgo cita sus pruebas sin un modelo único, así que ninguna fila sola tiene el estadístico' };
+  return { en: 'the finding rests on design limits, contract rules or measured rates, not on one test row, so there is no statistic to read', es: 'el hallazgo descansa en límites de diseño, reglas del contrato o tasas medidas, no en una fila de prueba, así que no hay estadístico que leer' };
+}
+
 function AnchorCell({ row }: { row: FindingRow }) {
   const lang = useShellLang();
   if (row.anchor) {
@@ -52,16 +67,21 @@ function AnchorCell({ row }: { row: FindingRow }) {
       <>
         {pick(a.metric === 'statistic' ? { en: 'statistic', es: 'estadístico' } : { en: 'metric', es: 'métrica' }, lang)} {formatNumber(a.value, lang, { digits: 4 })}
         <br />
-        <span translate="no" title={a.basis}>
-          {a.test_id}@{a.model_id}
+        <span title={a.basis}>
+          {pick(testText(a.test_id), lang)}
+          {(() => {
+            const w = rowWhere(row.case_id, a.model_id, a.segment);
+            return w ? ` (${pick(w, lang)})` : '';
+          })()}
         </span>
       </>
     );
   }
+  const kind = evidenceKind(row.evidence);
   return (
     <span data-anchor="unavailable">
       {pick({ en: 'not available: ', es: 'no disponible: ' }, lang)}
-      {row.anchor_reason ? <Doc t={row.anchor_reason} /> : ''}
+      {kind ? pick(kind, lang) : row.anchor_reason ? <Doc t={row.anchor_reason} /> : ''}
     </span>
   );
 }
@@ -90,9 +110,10 @@ export function RegisterTable({ rows }: { rows: FindingRow[] }) {
           {sorted.map((r) => (
             <tr key={r.key} data-finding={r.key} data-severity={r.severity} data-status={r.status} data-overdue={r.overdue ? 'true' : 'false'}>
               <td className="caos-col-text">
-                <span translate="no">{r.entry_key}</span>
+                {/* the entry and the finding in words (the R2b page review: `C14/svb-2021-2022` and `F1`) */}
+                {pick(entryText(r.entry_key), lang)}
                 <br />
-                <span translate="no">{r.id}</span>
+                <Doc t={r.title} />
               </td>
               <td className="caos-col-text">{severityText(r.severity, r.ecb_f, lang)}</td>
               <td className="caos-col-text">
@@ -132,7 +153,13 @@ export function SeverityStatusBars({ rows }: { rows: FindingRow[] }) {
     <div data-stacked-bars>
       {data.map((d) => (
         <div key={d.severity} data-severity-bar={d.severity} data-total={d.total} style={{ display: 'grid', gridTemplateColumns: 'minmax(7rem, 11rem) 1fr', alignItems: 'center', gap: '0.5rem', margin: '0.35rem 0', minWidth: 0 }}>
-          <span>{severityText(d.severity, ecb(d.severity), lang)}</span>
+          <span>
+            {severityText(d.severity, ecb(d.severity), lang)}
+            <br />
+            <span className="ct-note" data-severity-counts>
+              {statuses.filter((s) => d.byStatus[s]).map((s) => `${pick(STATUS_NAME[s], lang)} ${formatNumber(d.byStatus[s], lang, { decimals: 0 })}`).join('; ')}
+            </span>
+          </span>
           <div
             role="img"
             aria-label={`${d.severity}: ${statuses.filter((s) => d.byStatus[s]).map((s) => `${pick(STATUS_NAME[s], lang)} ${d.byStatus[s]}`).join(', ') || '0'}`}
@@ -140,9 +167,7 @@ export function SeverityStatusBars({ rows }: { rows: FindingRow[] }) {
           >
             {statuses.map((s) =>
               d.byStatus[s] ? (
-                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-bg)', fontSize: 11, fontWeight: 600, minWidth: 0 }}>
-                  {formatNumber(d.byStatus[s], lang, { decimals: 0 })}
-                </span>
+                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], minWidth: 0 }} />
               ) : null,
             )}
           </div>
@@ -261,7 +286,7 @@ export function RegisterSection({ findings }: { findings: GovFindings }) {
       </p>
       <ConventionNote />
       <AsOf asOf={findings.as_of} basis={findings.as_of_basis} />
-      <PlotCard title={{ en: 'The findings register', es: 'El registro de hallazgos' }} lane="replay" provenance="synthetic" note={{ en: 'Sort by any column. A due date is the raised date plus the deadline of its severity and tier, a stated convention.', es: 'Ordene por cualquier columna. Una fecha de vencimiento es la fecha de levantamiento más el plazo de su severidad y nivel, una convención declarada.' }}>
+      <PlotCard title={{ en: 'The findings register', es: 'El registro de hallazgos' }} lane="replay" provenance="synthetic" note={{ en: 'Sort by any column. A due date is the raised date plus the deadline of its severity and tier, a stated convention.', es: 'Ordene por cualquier columna. Una fecha de vencimiento es la fecha de registro más el plazo de su severidad y nivel, una convención declarada.' }}>
         <RegisterTable rows={findings.rows} />
       </PlotCard>
       <PlotCard title={{ en: 'Severity by status', es: 'Severidad por estado' }} lane="replay" provenance="synthetic">
@@ -275,9 +300,18 @@ export function RegisterSection({ findings }: { findings: GovFindings }) {
 }
 
 /** The appetite metrics, drawn from the appetite document. */
-export function AppetiteSection({ appetite }: { appetite: GovAppetite }) {
+export function AppetiteSection({ appetite, registerRows }: { appetite: GovAppetite; registerRows?: number }) {
   const lang = useShellLang();
   const n = (v: number) => formatNumber(v, lang, { decimals: 0 });
+  // the appetite counts the register's rows and the inventory's own findings: say so when the register is at hand (VS-5)
+  const own = registerRows !== undefined ? appetite.population.findings - registerRows : 0;
+  const rows =
+    own > 0
+      ? {
+          en: `${n(appetite.population.findings)} finding rows: the ${n(registerRows ?? 0)} of the register and the ${n(own)} of the inventory itself`,
+          es: `${n(appetite.population.findings)} filas de hallazgos: las ${n(registerRows ?? 0)} del registro y las ${n(own)} del propio inventario`,
+        }
+      : { en: `${n(appetite.population.findings)} register rows`, es: `${n(appetite.population.findings)} filas del registro` };
   return (
     <>
       <h3 className="ct-sub">{pick({ en: 'The model risk appetite', es: 'El apetito de riesgo de modelo' }, lang)}</h3>
@@ -288,8 +322,8 @@ export function AppetiteSection({ appetite }: { appetite: GovAppetite }) {
       <p data-appetite-population>
         {pick(
           {
-            en: `${n(appetite.population.distinct_findings)} distinct findings (${n(appetite.population.findings)} register rows) across ${n(appetite.population.entries)} entries, ${n(appetite.population.tier1_entries)} of them Tier 1.`,
-            es: `${n(appetite.population.distinct_findings)} hallazgos distintos (${n(appetite.population.findings)} filas del registro) en ${n(appetite.population.entries)} entradas, ${n(appetite.population.tier1_entries)} de ellas de Nivel 1.`,
+            en: `${n(appetite.population.distinct_findings)} distinct findings (${rows.en}) across ${n(appetite.population.entries)} entries, ${n(appetite.population.tier1_entries)} of them Tier 1.`,
+            es: `${n(appetite.population.distinct_findings)} hallazgos distintos (${rows.es}) en ${n(appetite.population.entries)} entradas, ${n(appetite.population.tier1_entries)} de ellas de Nivel 1.`,
           },
           lang,
         )}
@@ -305,9 +339,15 @@ export function FindingsTab({ findings, appetite }: { findings: GovFindings; app
   return (
     <>
       <RegisterSection findings={findings} />
-      <AppetiteSection appetite={appetite} />
+      <AppetiteSection appetite={appetite} registerRows={findings.counts.total} />
     </>
   );
+}
+
+/** The appetite with the register's row count when the register was read; without it, the appetite's own count alone. */
+function AppetiteWithRegister({ appetite }: { appetite: GovAppetite }) {
+  const findings = useGovernance<GovFindings>(GOVERNANCE_FILES.findings);
+  return <AppetiteSection appetite={appetite} registerRows={findings.state === 'ready' ? findings.data.counts.total : undefined} />;
 }
 
 /** The tab: each document in its own declared state, so a missing appetite never hides the register. */
@@ -315,7 +355,7 @@ export function FindingsTabLoader() {
   return (
     <>
       <GovernanceDoc<GovFindings> file={GOVERNANCE_FILES.findings}>{(findings) => <RegisterSection findings={findings} />}</GovernanceDoc>
-      <GovernanceDoc<GovAppetite> file={GOVERNANCE_FILES.appetite}>{(appetite) => <AppetiteSection appetite={appetite} />}</GovernanceDoc>
+      <GovernanceDoc<GovAppetite> file={GOVERNANCE_FILES.appetite}>{(appetite) => <AppetiteWithRegister appetite={appetite} />}</GovernanceDoc>
     </>
   );
 }

@@ -15,6 +15,8 @@ import {
   GENERATOR_KEYS,
   GRADES,
   N_GRADES,
+  attributionIn,
+  engelmannName,
   isAgency,
   isFamily,
   isPublished,
@@ -106,8 +108,8 @@ export const ATTRIBUTION_FALLBACK = 'Source: ESMA CEREP; tables transformed by C
 /** What the known-truth families draw their paths from (contract.md section 2: the case computes the generator by EM
  * on S&P's pooled annual counts); the artifact's own source string is English only. */
 export const GENERATOR_TEXT = {
-  en: "the EM generator of S&P's pooled annual CEREP counts (riskvalidation.transitions.em)",
-  es: 'el generador EM de los conteos anuales agrupados de S&P en CEREP (riskvalidation.transitions.em)',
+  en: "the engine's EM generator of S&P's pooled annual CEREP counts",
+  es: 'el generador EM del motor sobre los conteos anuales agrupados de S&P en CEREP',
 } as const;
 
 export interface AgencyFacts {
@@ -260,7 +262,7 @@ export function paperAgreements(p: PublishedVariant): PaperAgreement[] {
       total: checks.length,
       detail: {
         en: `TTC PD printed ${pctText('en', e.ttc_pd.printed, 4)}, recomputed ${pctText('en', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${q.name} is judged within the rounding of its printed entries${q.pd0.note ? ` (${q.pd0.note.en})` : ''}`).join('; ')}` : ''}`,
-        es: `PD TTC impresa ${pctText('es', e.ttc_pd.printed, 4)}, recalculada ${pctText('es', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${q.name} se juzga dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`).join('; ')}` : ''}`,
+        es: `PD TTC impresa ${pctText('es', e.ttc_pd.printed, 4)}, recalculada ${pctText('es', e.ttc_pd.recomputed, 5)}${rounding.length ? `; ${rounding.map((q) => `${engelmannName(q.name, 'es')} se juzga dentro del redondeo de sus entradas impresas${q.pd0.note ? ` (${q.pd0.note.es})` : ''}`).join('; ')}` : ''}`,
       },
     },
   ];
@@ -292,7 +294,7 @@ export const TEST_NAME: Record<string, BiText> = {
   'rating.time_homogeneity': { en: 'Time homogeneity', es: 'Homogeneidad temporal' },
   'rating.matrix_reference': { en: 'Cohort against the pooled matrix', es: 'Cohorte contra la matriz agrupada' },
   'rating.markov_order': { en: 'Markov order', es: 'Orden de Markov' },
-  'rating.momentum': { en: 'Momentum hazard', es: 'Riesgo de momentum' },
+  'rating.momentum': { en: 'Momentum hazard', es: 'Riesgo de impulso' },
   'rating.migration_ztests': { en: 'ECB migration z-tests', es: 'Pruebas z de migración del BCE' },
   'rating.mwb': { en: 'ECB migration bandwidth', es: 'Ancho de banda de migración del BCE' },
 };
@@ -369,7 +371,7 @@ function LraTable({ agencies, manifest }: { agencies: AgencyVariant[]; manifest:
     }),
   );
   return (
-    <div className="ct-scroll">
+    <div className="ct-scroll" data-caos-flow="">
       <table className="caos-table ct-wrap-head" data-table="results-lra">
         <thead>
           <tr>
@@ -409,14 +411,16 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
   if (all.state === 'error') return <LoadError error={all.error} />;
   const { agencies, families, published } = kindsOf(all.data);
   const t = (en: string, es: string) => (lang === 'es' ? es : en);
-  const attribution = agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK;
+  // ESMA's attribution in the language of the page: the source name verbatim, the words around it translated (U16-R4 c05 B1: the
+  // Spanish results printed "Source: ESMA CEREP; tables transformed by Contraste.")
+  const attribution = attributionIn(agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK, lang);
   return (
     <div data-state="ready" data-results={manifest.case_id}>
       <h3>{t('Measured: the agencies', 'Medido: las agencias')}</h3>
       <p>
         {t(
           `Read from this release's artifacts (pipeline ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): CEREP's corporate long-term ratings by category, one-year cohorts, each agency's EU entity as ESMA computes its statistics. Every PD names its definition: D2 the default-rate page, D3 the defaults page, D4 the transition page's default column. ${attribution}.`,
-          `Leído desde los artefactos de esta versión (pipeline ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
+          `Leído desde los artefactos de esta versión (cadena de cálculo ${manifest.engine.pipeline}, riskvalidation ${manifest.engine.riskvalidation ?? ''}): las calificaciones corporativas de largo plazo por categoría de CEREP, cohortes de un año, la entidad UE de cada agencia como ESMA calcula sus estadísticas. Cada PD nombra su definición: D2 la página de tasas de incumplimiento, D3 la página de incumplimientos, D4 la columna de incumplimiento de la página de transiciones. ${attribution}.`,
         )}{' '}
         {pick(ESMA_DEFINITIONS, lang)}
       </p>
@@ -435,8 +439,8 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
       <h3>{t('Measured: the known-truth families', 'Medido: las familias de verdad conocida')}</h3>
       <p>
         {t(
-          `Rating paths drawn by riskvalidation's RatingPaths from ${GENERATOR_TEXT.en}, so every error is measured against a truth that is known (${attribution}).`,
-          `Trayectorias de calificación generadas por RatingPaths de riskvalidation desde ${GENERATOR_TEXT.es}, así que cada error se mide contra una verdad conocida (${attribution}).`,
+          `Rating paths drawn by riskvalidation's rating-path generator from ${GENERATOR_TEXT.en}, so every error is measured against a truth that is known (${attribution}).`,
+          `Trayectorias de calificación generadas por el generador de trayectorias de calificación de riskvalidation desde ${GENERATOR_TEXT.es}, así que cada error se mide contra una verdad conocida (${attribution}).`,
         )}
       </p>
       <ul data-results="families">

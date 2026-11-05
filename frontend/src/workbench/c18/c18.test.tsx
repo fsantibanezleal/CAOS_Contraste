@@ -251,10 +251,22 @@ describe('the stress group', () => {
     for (const r of o.severity.rows) expect(markup).toContain(`data-severity="${r.maps_to_regressor}"`);
     expect(markup).toContain(formatNumber(o.severity.minimum_ratio, 'en', { digits: 4 }));
     expect(markup).toContain('convention');
+    // PR-C18-2: the column judges the ratio against the minimum; is_stress is the scenario's kind, never the verdict
     const weak = clone(fedV);
     weak.outputs.severity.rows[0].ratio = 0.5;
-    weak.outputs.severity.rows[0].is_stress = false;
-    expect(html(<SeverityView sel={selOf(weak)} />)).toMatch(/data-severity="unemployment_rate"[^>]*data-stress="false"/);
+    weak.outputs.severity.rows[0].is_stress = true;
+    const weakMarkup = html(<SeverityView sel={selOf(weak)} />);
+    expect(weakMarkup).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="false"/);
+    expect(weakMarkup).toContain('no, below the minimum');
+    const strong = clone(fedV);
+    strong.outputs.severity.rows[0].ratio = 1.2;
+    strong.outputs.severity.rows[0].is_stress = true;
+    expect(html(<SeverityView sel={selOf(strong)} />)).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="true"/);
+    const base = clone(fedV);
+    base.outputs.severity.rows[0].is_stress = false;
+    const baseMarkup = html(<SeverityView sel={selOf(base)} />);
+    expect(baseMarkup).toMatch(/data-severity="unemployment_rate"[^>]*data-severe="not-judged"/);
+    expect(baseMarkup).toContain('not judged (baseline)');
   });
 
   it('the losses are listed by risk and year, with the total', () => {
@@ -273,7 +285,8 @@ describe('the aggregation group', () => {
     expect(markup).toContain('data-headline="simple-sum"');
     expect(markup).toContain(cell(a.headline.capital_clp_m));
     expect((markup.match(/data-status="information-not-capital"/g) ?? []).length).toBeGreaterThanOrEqual(a.band.filter((b) => b.status === 'information-not-capital').length);
-    expect(markup).toContain(text({ en: 'Information, not capital: only the simple sum is the capital of this case.', es: 'Información, no capital: solo la suma simple es el capital de este caso.' }));
+    // the caption says once that only the simple sum is capital (U16-R4 c23 m8: it was said twice in the card)
+    expect(markup).toContain(text({ en: 'Only the simple sum is the capital of this case', es: 'Solo la suma simple es el capital de este caso' }));
     for (const b of a.band) expect(markup).toContain(cell(b.capital_clp_m));
     // the model risk measures sit beside the band as sensitivity information
     expect(markup).toContain(formatNumber(a.model_risk.barrieu_scandolo.am, 'en', { digits: 4 }));
@@ -390,9 +403,9 @@ describe('tests, findings, variants and context', () => {
     setLang('es');
     const band = html(<BandView sel={selOf(fedV)} />);
     expect(band).toContain('Suma simple');
-    expect(band).toContain('Información, no capital');
+    expect(band).toContain('información, no capital');
     const fan = html(<FanView sel={selOf(fedV)} />);
     expect(fan).toContain(pct(fedV.outputs.capital_plan.cases[1].years[2].cet1.pct_of_rwa, 'es'));
-    expect(html(<PathsView sel={selOf(fedV)} />)).toContain('adaptación calibrada en EE. UU.'.slice(0, 20));
+    expect(html(<PathsView sel={selOf(fedV)} />)).toContain(escapeHtml(fedV.outputs.scenario.adaptation_statement.es)); // the statement alone: the label and the model note repeated it (U16-R2 b09 m11)
   });
 });

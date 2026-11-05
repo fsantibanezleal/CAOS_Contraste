@@ -16,6 +16,11 @@ CASE_ID = "C14"
 SOURCES = ("fdic-bankfind", "treasury-par-curve")
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C14:
     id = CASE_ID
     slug = "irrbb-six-shocks-svb"
@@ -26,9 +31,15 @@ class C14:
     question = {
         "en": "Would the standardised EVE outlier test and the NII sensitivity have flagged the position of the bank that failed in March "
               "2023, read on its call reports, and how much does the answer hang on the deposit assumptions?",
-        "es": "¿Habría señalado el test de valores atípicos del EVE estandarizado y la sensibilidad del NII la posición del banco que quebró "
+        "es": "¿Habría señalado la prueba de valores atípicos del EVE estandarizado y la sensibilidad del NII la posición del banco que quebró "
               "en marzo de 2023, leída en sus reportes, y cuánto depende la respuesta de los supuestos sobre depósitos?"}
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None) -> dict[str, Any]:
         from .bake import bake_case

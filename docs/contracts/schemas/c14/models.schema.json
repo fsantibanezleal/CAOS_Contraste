@@ -2202,8 +2202,16 @@
           "const": "1 - exp(-t_k / x)"
         },
         "reference": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "../common/text.schema.json"
+            }
+          ],
+          "description": "The reference of the shock shapes: a bilingual text from c14-models 2.0.0; the English string alone in a document baked before it."
         }
       },
       "description": "The six shock shapes of SRP31.91 to SRP31.92 with x = 4."

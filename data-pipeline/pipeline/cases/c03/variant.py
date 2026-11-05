@@ -13,9 +13,11 @@ from typing import Any
 
 import numpy as np
 
+from ...core import text as tx
+from ..c01_ladder import SHORT_TITLES
 from ..c06.panel import months_between
-from . import evaluate, fit, models, panel, windows
-from .fit import MONTHS, WindowFit
+from . import evaluate, fit, models, panel, sequential, windows
+from .fit import MONTHS, RUNG_KINDS, WindowFit
 
 CURRENCY = "USD"
 CHAMPION = "P1-scorecard"
@@ -81,16 +83,16 @@ def training_block(cohort: windows.Cohort, wf: WindowFit, crisis: int) -> dict[s
     w = wf.window
     mark = windows.five_year_mark(w.last_fy)
     en = (f"Approval fiscal years FY{w.first_fy} to FY{w.last_fy}: the 5-year mark of FY{w.last_fy} closes on {mark}, before the first "
-          f"approval of {cohort.name} on {cohort.first_fy - 1}-10-01. {wf.n_loans:,} loans with a known 5-year outcome and "
-          f"{wf.n_events:,} charge-offs; the rungs were fitted on a stratified sample of {wf.fit_rows:,} of them. ")
+          f"approval of {cohort.name} on {cohort.first_fy - 1}-10-01. {tx.number(wf.n_loans, lang='en')} loans with a known 5-year outcome and "
+          f"{tx.number(wf.n_events, lang='en')} charge-offs; the rungs were fitted on a stratified sample of {tx.number(wf.fit_rows, lang='en')} of them. ")
     es = (f"Años fiscales de aprobación AF{w.first_fy} a AF{w.last_fy}: la marca de 5 años de AF{w.last_fy} cierra el {mark}, antes de la "
-          f"primera aprobación de AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} el {cohort.first_fy - 1}-10-01. {wf.n_loans:,} créditos "
-          f"con resultado a 5 años conocido y {wf.n_events:,} castigos; los escalones se ajustaron con una muestra estratificada de "
-          f"{wf.fit_rows:,} de ellos. ")
+          f"primera aprobación de AF{cohort.first_fy}-{str(cohort.last_fy)[2:]} el {cohort.first_fy - 1}-10-01. {tx.number(wf.n_loans, lang='es')} créditos "
+          f"con resultado a 5 años conocido y {tx.number(wf.n_events, lang='es')} castigos; los peldaños se ajustaron con una muestra estratificada de "
+          f"{tx.number(wf.fit_rows, lang='es')} de ellos. ")
     if crisis > 0:
-        en += (f"The window holds {crisis:,} charge-offs dated in the recession ({CRISIS_TEXT[0]}): the model is trained through "
+        en += (f"The window holds {tx.number(crisis, lang='en')} charge-offs dated in the recession ({CRISIS_TEXT[0]}): the model is trained through "
                "the crisis.")
-        es += (f"La ventana contiene {crisis:,} castigos fechados en la recesión ({CRISIS_TEXT[1]}): el modelo se entrena a través "
+        es += (f"La ventana contiene {tx.number(crisis, lang='es')} castigos fechados en la recesión ({CRISIS_TEXT[1]}): el modelo se entrena a través "
                "de la crisis.")
     else:
         en += "The window closes before the recession (December 2007): the model has seen no outcome of the crisis."
@@ -120,6 +122,24 @@ def _deciles(p: np.ndarray, y: np.ndarray) -> list[dict[str, Any]]:
     return rows
 
 
+#: a rung of C03 by the words the views name it with (``frontend/src/workbench/c03/selection.ts`` KIND_TEXT), so a model has one name
+#: in the findings and in the views (U16-R3 c04 m7: "P1 Scorecard" in the findings, "WoE scorecard" everywhere else)
+RUNG_TEXT: dict[str, dict[str, str]] = {
+    "constant": t("Constant (base rate)", "Constante (tasa base)"),
+    "woe-scorecard": t("WoE scorecard", "Tarjeta de puntuación WoE"),
+    "penalised-logit": t("Penalised logit", "Logit penalizado"),
+    "pltr": t("Logit with rule features", "Logit con reglas"),
+    "ebm": t("Explainable boosting machine", "Máquina de potenciación explicable"),
+    "monotone-gbm": t("Monotone gradient boosting", "Potenciación del gradiente monótona"),
+}
+
+
+def rung_text(rung: str) -> dict[str, str]:
+    """The words of a rung id (its kind), else the ladder's short title, else the id."""
+    kind = RUNG_KINDS.get(rung)
+    return RUNG_TEXT.get(kind, SHORT_TITLES.get(rung, t(rung, rung))) if kind else SHORT_TITLES.get(rung, t(rung, rung))
+
+
 def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort, crisis: int, champion: str) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for rung in dict.fromkeys((champion, "P4-lightgbm")):
@@ -131,15 +151,16 @@ def _findings(tests: list[dict[str, Any]], wf: WindowFit, cohort: windows.Cohort
             if not hit:
                 continue
             sev = on_red if any(r["light"] == "red" for r in hit) else on_amber
-            names = ", ".join(sorted({r["test_id"] for r in hit}))
             tag = "".join(w[0] for w in family.split()).upper()
             out.append({"id": f"F-{tag}-{rung}", "severity": sev, "status": "open", "evidence": sorted({f"{r['test_id']}@{rung}" for r in hit}),
-                        "title": t(f"{rung}: {family} tests flag the {cohort.name} cohort ({names})",
-                                   f"{rung}: las pruebas de {family_es} alertan en la cohorte {cohort.name} ({names})")})
+                        # the rung by its short title and no test id: the evidence names each test (U16-R2b c04 B2)
+                        "title": t(f"{rung_text(rung)['en']}: {family} tests flag the {cohort.name} cohort",
+                                   f"{rung_text(rung)['es']}: las pruebas de {family_es} alertan en la cohorte AF{cohort.first_fy}-{str(cohort.last_fy)[2:]}")})
     if crisis == 0:
         out.append({"id": "F-CRISIS", "severity": "S2", "status": "open", "evidence": ["design:training-window-before-the-crisis"],
-                    "title": t("The window closes before the 2007-09 recession: the rungs have seen no crisis outcome",
-                               "La ventana cierra antes de la recesión de 2007-09: los escalones no han visto ningún resultado de la crisis")})
+                    # the years in words, not "2007-09", which reads as September 2007 beside ISO dates (U16-R3 c04 m12)
+                    "title": t("The window closes before the 2007 to 2009 recession: the rungs have seen no crisis outcome",
+                               "La ventana cierra antes de la recesión de 2007 a 2009: los peldaños no han visto ningún resultado de la crisis")})
     out.append({"id": "F-DATA", "severity": "S3", "status": "accepted", "evidence": ["design:sba-7a-is-not-a-bank-book"],
                 "title": t("SBA 7(a) small-business loans under a federal guarantee, not a bank's SME book; no delinquency, balance or rating",
                            "Créditos a pequeñas empresas SBA 7(a) bajo garantía federal, no la cartera pyme de un banco; sin mora, saldo ni calificación")})
@@ -225,7 +246,8 @@ def bake_cohort(loans: panel.Loans, cohort: windows.Cohort, seed: int, *, observ
             comparison.append({"rung_id": rid, "auc": None, "auc_ci_low": None, "auc_ci_high": None, "brier": None,
                                "calibration_gap_5y": None, "reason": wf.not_evaluated[rid]})
     pooled_years = [fy for fy, ok in marks.items() if ok]
-    scope = f"vintages with an observed 5-year mark: FY{pooled_years[0]}" + (f" to FY{pooled_years[-1]}" if len(pooled_years) > 1 else "")
+    scope = t(f"vintages with an observed 5-year mark: FY{pooled_years[0]}" + (f" to FY{pooled_years[-1]}" if len(pooled_years) > 1 else ""),
+              f"cosechas con marca de 5 años observada: AF{pooled_years[0]}" + (f" a AF{pooled_years[-1]}" if len(pooled_years) > 1 else ""))
     calibration = {"rung_id": champion, "scope": scope, "rows": _deciles(pd_eval[champion], y_eval)}
 
     tests: list[dict[str, Any]] = []
@@ -267,6 +289,8 @@ def bake_cohort(loans: panel.Loans, cohort: windows.Cohort, seed: int, *, observ
                                     "PSI de la distribución de PD del campeón en cada cosecha contra las filas de entrenamiento (diez tramos sobre "
                                     "los cuantiles de entrenamiento); 0,10 y 0,25 son convenciones, no límites. La PD observada a 5 años contra "
                                     "la media de entrenamiento es el contraste de la crisis.")},
+        # BS-15 (D15): the e-process of defaults against the predicted PD, read at every age of the vintages
+        "sequential": sequential.build(curves, tests, champion),
     }
     document = {"model": models.model_summaries(wf), "outputs": outputs, "tests": tests, "impact": impact,
                 "findings": _findings(tests, wf, cohort, crisis, champion)}

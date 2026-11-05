@@ -128,7 +128,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <Knob
           id="c07-weight"
           label={{ en: 'Weight', es: 'Peso' }}
-          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100% es una sensibilidad, nunca la medida.' }}
+          hint={{ en: 'The probability weight of the chosen scenario; the others keep their ratios. IFRS 9 asks for at least two probability-weighted outcomes, so 100% is a sensitivity, never the measure.', es: 'El peso de probabilidad del escenario elegido; los otros conservan sus proporciones. IFRS 9 pide al menos dos resultados ponderados por probabilidad, así que 100 % es una sensibilidad, nunca la medida.' }}
           value={sel.weight}
           min={0}
           max={1}
@@ -174,9 +174,12 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     ),
   };
 
-  const tabs = (items: Array<{ id: string; label: BiText; content: ReactElement }>, aria: BiText, key: string) => (
-    <SubTabs key={key} ariaLabel={pick(aria, lang)} tabs={items.map((t) => ({ ...t, label: pick(t.label, lang) }))} />
+  const tabs = (items: Array<{ id: string; label: BiText; content: ReactElement }>, aria: BiText, key: string, link?: { value: string; onChange: (id: string) => void }) => (
+    <SubTabs key={key} ariaLabel={pick(aria, lang)} tabs={items.map((t) => ({ ...t, label: pick(t.label, lang) }))} {...(link ?? {})} />
   );
+  // the regime of the rail and the regime tab are one choice: opening IFRS 9 or BdE Annex 9 moves the rail's regime with it (U16-R2 b04 m2)
+  const REGIME_TAB: Record<RegimeId, string> = { 'cmf-b1': 'b1', ifrs9: 'ifrs9', 'bde-annex9': 'bde' };
+  const TAB_REGIME: Record<string, RegimeId> = { b1: 'cmf-b1', ifrs9: 'ifrs9', bde: 'bde-annex9' };
   const comparison = tabs(
     [
       { id: 'three', label: { en: 'Three regimes', es: 'Tres regímenes' }, content: <ThreeRegimeView sel={sel} /> },
@@ -191,10 +194,11 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     [
       { id: 'b1', label: { en: 'CMF B-1', es: 'CMF B-1' }, content: <B1View sel={sel} /> },
       { id: 'ifrs9', label: { en: 'IFRS 9', es: 'IFRS 9' }, content: <Ifrs9View sel={sel} /> },
-      { id: 'bde', label: { en: 'BdE Annex 9', es: 'BdE Anexo 9' }, content: <BdeView sel={sel} /> },
+      { id: 'bde', label: { en: 'BdE Annex 9', es: 'BdE Anejo 9' }, content: <BdeView sel={sel} /> },
     ],
     { en: 'Views of each regime', es: 'Vistas de cada régimen' },
     'c07-regimes',
+    { value: REGIME_TAB[sel.regime], onChange: (id) => setRegime(TAB_REGIME[id] ?? 'cmf-b1') },
   );
   const validation = <TablesView sel={sel} />;
   return {

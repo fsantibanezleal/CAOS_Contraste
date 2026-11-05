@@ -17,6 +17,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import calibration, documents as docs
@@ -111,8 +112,8 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         outs[k] = out
         lineage = _lineage(seed, rv)
         variants[f"level-{k}"] = build_artifact(
-            case_id=CASE_ID, variant_id=f"level-{k}", model=docs.model_summaries(k, data[k], rv), outputs=out, tests=tests,
-            impact=docs.impact(out), findings=docs.findings(out), lineage=lineage, lane={"lane": "precompute", "reasons": []})
+            case_id=CASE_ID, variant_id=f"level-{k}", model=docs.model_summaries(k, data[k], rv), outputs=out, tests=with_reference_text(tests),
+            impact=docs.impact(out), findings=docs.findings(out, data[k].test["cohort"].n_excluded / data[k].n_test_defaults), lineage=lineage, lane={"lane": "precompute", "reasons": []})
         say(f"level {k}: known CCF {params.known_ccf(k):.4f}")
     models = docs.models_document(pl, data, rv)
     models_doc = build_models_artifact(case_id=CASE_ID, fit_id=models["fit_id"], model=models["model"], fit=models["fit"],
@@ -163,7 +164,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | None, scale: float, title
                         "truth_status": "synthetic-known-truth", "models_ref": MODELS_REL, **e})
     (Path(paths.root) / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built["values"])
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=title, category={"en": "LGD and EAD", "es": "LGD y EAD"}, question=question, sources=[], seed=seed,
         variants=entries, default_variant=DEFAULT_VARIANT, contract={}, expect=ranges, riskvalidation_version=docs.rv_version(),
         source_details={})

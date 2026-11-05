@@ -1,7 +1,7 @@
 // The selection the C08 views share, and the readings of a default-cohort document every view needs. Nothing here
 // computes a statistic: the LGD proxy, the rungs, the downturn add-on and the floors' bite are the bake's; the helpers
 // find, name and map. A loss given default is never clipped to [0, 1]: the contract flags it and the views print the flag.
-import type { Bi } from '../c03/U6Shared';
+import { humanize, type Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 
@@ -38,7 +38,9 @@ export const KIND_TEXT: Record<string, Bi> = {
   beta: { en: 'Beta regression', es: 'Regresión beta' },
   hurdle: { en: 'Two-stage hurdle', es: 'Modelo en dos etapas' },
   tobit: { en: 'Tobit', es: 'Tobit' },
-  'gradient-boosted': { en: 'Gradient boosting', es: 'Gradient boosting' },
+  'gradient-boosted': { en: 'Gradient boosting', es: 'Árboles potenciados por gradiente' },
+  'random-forest': { en: 'Random forest', es: 'Bosque aleatorio' },
+  'neural-network': { en: 'Neural network', es: 'Red neuronal' },
   'cure-decomposition': { en: 'Cure-rate decomposition', es: 'Descomposición por tasa de cura' },
 };
 
@@ -52,6 +54,20 @@ export function kindOf(sel: Pick<C08Sel, 'data'> | null, id: string): string | n
 export function rungLabel(sel: Pick<C08Sel, 'data'> | null, id: string): Bi {
   const k = kindOf(sel, id);
   return k ? KIND_TEXT[k] : { en: id, es: id };
+}
+
+/** The short words of a model for the rail's select, which fits an option to 160 px: the full name is its hint (R4 c10 n4: "Árboles
+ * potenciados por…", "Modelo en dos etap…"). A kind not listed keeps its name. */
+export const KIND_SHORT: Record<string, Bi> = {
+  hurdle: { en: 'Two-stage hurdle', es: 'Dos etapas' },
+  'gradient-boosted': { en: 'Gradient boosting', es: 'Árboles potenciados' },
+  'cure-decomposition': { en: 'Cure-rate split', es: 'Tasa de cura' },
+};
+
+/** The rail's words for a model: its short name where it has one, else its name. */
+export function rungShortLabel(sel: Pick<C08Sel, 'data'> | null, id: string): Bi {
+  const k = kindOf(sel, id);
+  return (k ? KIND_SHORT[k] : undefined) ?? rungLabel(sel, id);
 }
 
 /** The first calendar year of a default cohort: the models artifact names it, else the id's four leading digits. */
@@ -74,13 +90,38 @@ export function cohortIds(sel: Pick<C08Sel, 'data'> | null): string[] {
 
 export { humanize } from '../c03/U6Shared';
 
+/** The data a document names as its primary source. */
+export const DATASET_TEXT: Record<string, Bi> = {
+  'sba-7a-chargeoff-twin': { en: 'SBA 7(a) charge-off twin', es: 'Gemelo de castigos de SBA 7(a)' },
+};
+
+/** The segments of the floors' bite (the SBA book by term and revolving status), with their term in months. */
+export const SEGMENT_TEXT: Record<string, Bi> = {
+  'sme-revolver': { en: 'SME revolving line', es: 'Línea rotativa pyme' },
+  'sme-term-up-to-84': { en: 'SME term loan, up to 84 months', es: 'Préstamo a plazo pyme, hasta 84 meses' },
+  'sme-term-85-239': { en: 'SME term loan, 85 to 239 months', es: 'Préstamo a plazo pyme, de 85 a 239 meses' },
+  'sme-term-240-plus': { en: 'SME term loan, 240 months or more', es: 'Préstamo a plazo pyme, 240 meses o más' },
+};
+
+/** The short words of a segment for the rail's select, which fits an option to 160 px: the full name and the floor cell are its hint
+ * (the full names cut to one "SME term loan, ..." three times, R3 c09 BN1). */
+export const SEGMENT_SHORT: Record<string, Bi> = {
+  'sme-revolver': { en: 'Revolving line', es: 'Línea rotativa' },
+  'sme-term-up-to-84': { en: 'Up to 84 months', es: 'Hasta 84 meses' },
+  'sme-term-85-239': { en: '85 to 239 months', es: 'De 85 a 239 meses' },
+  'sme-term-240-plus': { en: '240 months or more', es: '240 meses o más' },
+};
+
+/** The words for a segment of the floors' bite; the id in words when the map lacks it. */
+export const segmentLabel = (id: string): Bi => SEGMENT_TEXT[id] ?? { en: humanize(id), es: humanize(id) };
+
 const COLLATERAL_TEXT: Record<string, Bi> = {
   unsecured: { en: 'unsecured', es: 'sin garantía' },
   financial: { en: 'financial collateral', es: 'garantía financiera' },
   receivables: { en: 'receivables', es: 'cuentas por cobrar' },
   'real-estate': { en: 'real estate', es: 'bienes raíces' },
   'other-physical': { en: 'other physical collateral', es: 'otra garantía física' },
-  qrre: { en: 'qualifying revolving retail', es: 'minorista revolvente calificado' },
+  qrre: { en: 'qualifying revolving', es: 'revolvente calificado' },
   mortgage: { en: 'residential mortgage', es: 'hipoteca residencial' },
 };
 const PORTFOLIO_TEXT: Record<string, Bi> = { corporate: { en: 'Corporate', es: 'Corporativa' }, retail: { en: 'Retail', es: 'Minorista' } };
@@ -95,13 +136,18 @@ export function floorCellLabel(cell: { portfolio: string; collateral: string }):
 export const WORKOUT_CONVENTION: Record<string, Bi> = {
   'eba-interbank-plus-5pp': { en: 'EBA reading: an interbank rate plus 5 percentage points', es: 'Lectura de la EBA: una tasa interbancaria más 5 puntos porcentuales' },
   fixed: { en: 'A fixed rate', es: 'Una tasa fija' },
-  'none-proxy': { en: 'None: a charge-off proxy is not discounted', es: 'Ninguno: un proxy de castigo no se descuenta' },
+  'none-proxy': { en: 'None: a charge-off proxy is not discounted', es: 'Ninguno: una aproximación por castigos no se descuenta' },
 };
 export const INCOMPLETE_TEXT: Record<string, Bi> = {
   excluded: { en: 'excluded from the training set', es: 'excluidos del entrenamiento' },
   projected: { en: 'projected to closure', es: 'proyectados hasta el cierre' },
   'not-applicable': { en: 'not applicable', es: 'no aplica' },
 };
+
+/** Why the Freddie Mac data is not used, without the name the row already gives ("Freddie Mac: the owner's account is missing"). */
+export function freddieReason(reason: Bi | null | undefined, lang: 'en' | 'es'): string {
+  return reason ? reason[lang].replace(/^Freddie Mac:\s*/, '') : '';
+}
 
 /** The selection a variant opens on: the first model, the shift the beta rung uses, the cohort of the variant, the first floor row. */
 export function defaultSel(data: CaseData | null): C08Sel | null {

@@ -9,12 +9,13 @@ import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { BiText } from '@fasl-work/caos-app-shell';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
-import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
+import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
+import { noteText } from '../workbench/c08/notes';
 import { DEFICIENCY_TEXT, INTENDED_TEXT, type C13Outputs } from '../workbench/c13/selection';
 import { SHOCK_TEXT as C14_SHOCK_TEXT, scenarioOf, type C14Outputs } from '../workbench/c14/selection';
 import { SHOCK_TEXT as C15_SHOCK_TEXT, type C15Outputs, type C15Pair } from '../workbench/c15/selection';
 import { AGGREGATION_TEXT, RUNG_ORDER, STATUS_TEXT, capitalOf, cellLabel, cellOf, rungName, type C17Outputs } from '../workbench/c17/selection';
-import { DIRECTION_TEXT, ZONE_TEXT, alphaShort, text as c11Text, type C11Outputs } from '../workbench/c11/selection';
+import { DIRECTION_TEXT, ZONE_TEXT, alphaShort, reasonText as c11Reason, text as c11Text, type C11Outputs } from '../workbench/c11/selection';
 import { ESTIMATOR_KIND_TEXT, ESTIMATOR_SHORT, METHOD_TEXT, estimatorOf, levelLabel, measureOf, text as c10Text, type C10GridOutputs, type C10Outputs } from '../workbench/c10/selection';
 
 type Lang = 'en' | 'es';
@@ -41,7 +42,16 @@ export const W2_BENCHMARK_CASES = new Set(['C10', 'C11', 'C13', 'C17']);
 const C10_LEVEL_FOCUS = 0.999;
 
 /** What a value the artifact leaves out reads like: "not available", and the reason when the document gives one. */
-const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${reason})` : ''}`;
+// a reason the documents write in English only reads in the page's language, as in the views (the R2b review: the C11 champion reason)
+/** Reasons of the C17 documents the shared note table does not hold, in Spanish (R3 c23 B1: the xi 1.1 reason printed in English). */
+const C17_REASON_ES: Record<string, string> = {
+  'the tail index is 1 or more: the severity has an infinite mean and the mean correction lambda x E[X] does not exist':
+    'el índice de cola es 1 o más: la severidad tiene media infinita y la corrección por la media, lambda por E[X], no existe',
+  'the tail index is 1 or more: the severity has an infinite mean, so the annual loss has no mean':
+    'el índice de cola es 1 o más: la severidad tiene media infinita, así que la pérdida anual no tiene media',
+};
+const reasonIn = (reason: string, lang: Lang): string => (lang === 'es' && C17_REASON_ES[reason] ? C17_REASON_ES[reason] : noteText(reason, lang));
+const na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${reasonIn(reason, lang)})` : ''}`;
 const bi = (t: BiText | undefined, lang: Lang, fallback = ''): string => (t ? pick(t, lang) : fallback);
 const join = (parts: string[]): string => parts.join('; ');
 /** A value between two bounds: "0.0030 (0.0025 to 0.0036)". */
@@ -95,8 +105,13 @@ function c10GridRow(name: string, v: Variant, lang: Lang): Cell[] {
   return [name, `${o.cells.map((c) => num(c.known_rho, lang, 2)).join(', ')} (${lang === 'es' ? 'nula' : 'null'}: ${num(o.generator.null_rho, lang, 2)})`, size('maximum-likelihood'), size('moments'), pow('maximum-likelihood'), pow('moments')];
 }
 
+/** "not available" with a C11 reason in the page's language: the C11 producer's reasons are read by the C11 table, which holds the
+ * reasons written since U16-F10c (R4 c28 B1: "no model is eligible" was printed in English on the Spanish page). */
+const c11Na = (lang: Lang, reason?: string | null): string => `${formatNumber(null, lang)}${reason ? ` (${c11Reason(reason, lang)})` : ''}`;
+
 function c11Row(name: string, v: Variant, lang: Lang): Cell[] {
   const o = v.outputs as C11Outputs;
+  const na = c11Na;
   const per = (f: (alpha: number) => string): string => join(o.levels.map((l) => `${bi(alphaShort(l.alpha), lang)}: ${f(l.alpha)}`));
   const champ = (alpha: number) => o.comparison.champions.find((c) => c.alpha === alpha);
   const level = (alpha: number) => {
@@ -112,7 +127,9 @@ function c11Row(name: string, v: Variant, lang: Lang): Cell[] {
     per((a) => {
       const l = level(a);
       if (!l) return na(lang, champ(a)?.reason);
-      return l.traffic_light ? bi(c11Text(ZONE_TEXT, l.traffic_light.final_zone), lang) : na(lang, lang === 'es' ? 'el semáforo de Basilea se define solo para el VaR al 99%' : 'the Basel traffic light is defined for the 99% VaR only');
+      // a light the document could not evaluate says why, as every other missing value of the table does (R4 c29 m3)
+      if (l.traffic_light?.final_zone === 'not_evaluated') return na(lang, l.traffic_light.reason);
+      return l.traffic_light ? bi(c11Text(ZONE_TEXT, l.traffic_light.final_zone), lang) : na(lang, lang === 'es' ? 'el semáforo de Basilea se define solo para el VaR al 99\u00a0%' : 'the Basel traffic light is defined for the 99% VaR only');
     }),
     per((a) => {
       const l = level(a);
@@ -170,6 +187,15 @@ function largestPair<T extends { shock: string; pair: C15Pair }>(rows: T[], fiel
   return best;
 }
 
+/** The one measure the CPI-surprise variant adds, so its row does not repeat the long-UF row cell for cell (R4 c29 m5). */
+function cpiEffect(o: C15Outputs, lang: Lang): string {
+  const c = (o as { cpi_scenario?: { surprise_pp: number; effect: number } | null }).cpi_scenario;
+  if (!c) return '';
+  const pp = `${c.surprise_pp > 0 ? '+' : ''}${num(c.surprise_pp, lang, 1)}\u00a0pp`;
+  const effect = scaled(c.effect, o.units, o.reporting_currency, lang);
+  return lang === 'es' ? `; efecto de la sorpresa de IPC de ${pp}: ${effect} (positivo es una pérdida)` : `; effect of the CPI surprise of ${pp}: ${effect} (positive is a loss)`;
+}
+
 function c15Row(name: string, v: Variant, lang: Lang): Cell[] {
   const o = v.outputs as C15Outputs;
   const shock = (s: string | null) => (s ? ` (${bi(C15_SHOCK_TEXT[s] ?? { en: s, es: s }, lang)})` : '');
@@ -185,7 +211,7 @@ function c15Row(name: string, v: Variant, lang: Lang): Cell[] {
     eve('with_offset'),
     eve('without_offset'),
     eveTest ? outlier(eveTest.ratio, eveTest.threshold, eveTest.breached, lang) : na(lang),
-    `${scaled(o.nii.delta_nii, o.units, o.reporting_currency, lang)} (${lang === 'es' ? 'con el cargo por reajustabilidad de' : 'with the indexation charge of'} ${scaled(o.nii.indexation_charge, o.units, o.reporting_currency, lang)})`,
+    `${scaled(o.nii.delta_nii, o.units, o.reporting_currency, lang)} (${lang === 'es' ? 'con el cargo por reajustabilidad de' : 'with the indexation charge of'} ${scaled(o.nii.indexation_charge, o.units, o.reporting_currency, lang)})${cpiEffect(o, lang)}`,
     niiTest ? outlier(niiTest.ratio, niiTest.threshold, niiTest.breached, lang) : na(lang),
   ];
 }
@@ -225,11 +251,11 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
     if (loan.length)
       out.push({
         key: 'loan-type',
-        head: [t('Loan type', 'Tipo de crédito'), t('Fitted PD (95% interval)', 'PD ajustada (intervalo 95%)'), t('Fitted correlation (95% interval)', 'Correlación ajustada (intervalo 95%)'), t('Exceedances in the evaluation years', 'Excedencias en los años de evaluación'), t('99.9% capital, C2 Monte Carlo', 'Capital al 99,9%, C2 Monte Carlo'), t('99.9% capital, LHP (C1)', 'Capital al 99,9%, LHP (C1)')],
+        head: [t('Loan type', 'Tipo de crédito'), t('Fitted PD (95% interval)', 'PD ajustada (intervalo 95 %)'), t('Fitted correlation (95% interval)', 'Correlación ajustada (intervalo 95 %)'), t('Exceedances in the evaluation years', 'Excedencias en los años de evaluación'), t('99.9% capital, C2 Monte Carlo', 'Capital al 99,9 %, C2 Monte Carlo'), t('99.9% capital, LHP (C1)', 'Capital al 99,9 %, LHP (C1)')],
         rows: loan.map((v) => c10LoanRow(nameOf(v), v, lang)),
         note: t(
           'The fit reads the yearly loss rates up to 2006 by maximum likelihood; the exceedances count the years from 2007 to 2012 in which the loss rate went over the fitted quantile of each level; the capital is the economic capital of the illustrative portfolio, in the currency shown.',
-          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las excedencias cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
+          'El ajuste lee las tasas de pérdida anuales hasta 2006 por máxima verosimilitud; las superaciones cuentan los años de 2007 a 2012 en que la tasa de pérdida superó el cuantil ajustado de cada nivel; el capital es el capital económico de la cartera ilustrativa, en la moneda indicada.',
         ),
       });
     if (grid.length)
@@ -251,13 +277,13 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c11Row,
       t(
         'The champion of a level is the model with the lowest average FZ0 score among the eligible ones; the confidence set (MCS) counts the models the test cannot separate from the best. The Basel traffic light is defined for the 99% VaR only.',
-        'El campeón de un nivel es el modelo con el menor puntaje FZ0 promedio entre los elegibles; el conjunto de confianza (MCS) cuenta los modelos que la prueba no logra separar del mejor. El semáforo de Basilea se define solo para el VaR al 99%.',
+        'El campeón de un nivel es el modelo con el menor puntaje FZ0 promedio entre los elegibles; el conjunto de confianza (MCS) cuenta los modelos que la prueba no logra separar del mejor. El semáforo de Basilea se define solo para el VaR al 99 %.',
       ),
       5,
     );
   if (id === 'C13')
     return one(
-      [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Share caught (95% interval)', 'Parte detectada (intervalo 95%)'), t('PLA zones, joint (replications)', 'Zonas PLA, conjuntas (réplicas)')],
+      [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Share caught (95% interval)', 'Parte detectada (intervalo 95 %)'), t('PLA zones, joint (replications)', 'Zonas PLA, conjuntas (réplicas)')],
       c13Row,
       t(
         'A replication is caught when its joint zone of the P&L attribution test is amber or red; on the control, with no deficiency, that share is the false alarm rate.',
@@ -271,7 +297,7 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       c14Row,
       t(
         'The largest of the six prescribed shocks of the 2024 calibration, with the shock that gives it; the outlier test compares it with 15% of Tier 1 capital. A positive delta is a loss; contractual puts every non-maturity deposit in the overnight bucket.',
-        'El mayor de los seis shocks prescritos de la calibración 2024, con el shock que lo da; la prueba de valor atípico lo compara con 15% del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
+        'El mayor de los seis choques prescritos de la calibración 2024, con el choque que lo da; la prueba de valor atípico lo compara con 15 % del capital de nivel 1. Un delta positivo es una pérdida; contractual pone todo depósito sin vencimiento en el tramo a la vista.',
       ),
       5,
     );
@@ -280,13 +306,13 @@ export function wave2ExperimentTables(manifest: CaseManifest, vs: Variant[], lan
       [t('Variant', 'Variante'), t('Largest delta EVE, offset applied', 'Mayor delta EVE, con compensación'), t('Largest delta EVE, no offset', 'Mayor delta EVE, sin compensación'), t('Outlier test, delta EVE', 'Prueba de valor atípico, delta EVE'), t('Delta NII with the indexation charge', 'Delta NII con el cargo por reajustabilidad'), t('Outlier test, delta NII', 'Prueba de valor atípico, delta NII')],
       c15Row,
       t(
-        'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows stay on the fixtures until the owner supplies the data.',
-        'El mayor de los seis shocks del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50% aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
+        'The largest of the six shocks of Annex 1 over the CLP and UF legs, with the 50% offset applied or not; the bank is synthetic, calibrated to public aggregates, and its rows show example inputs until the owner supplies the data.',
+        'El mayor de los seis choques del Anexo 1 sobre los tramos CLP y UF, con la compensación de 50 % aplicada o no; el banco es sintético, calibrado a agregados públicos, y sus filas siguen en los ejemplos hasta que el dueño entregue los datos.',
       ),
       6,
     );
   return one(
-    [t('Variant', 'Variante'), t('Tail index', 'Índice de cola'), t('True 99.9% quantile', 'Cuantil verdadero al 99,9%'), t('LDA capital over the true quantile (median)', 'Capital LDA sobre el cuantil verdadero (mediana)'), t('Its dispersion (IQR over the true quantile)', 'Su dispersión (rango intercuartil sobre el cuantil verdadero)'), t('SMA capital', 'Capital SMA')],
+    [t('Variant', 'Variante'), t('Tail index', 'Índice de cola'), t('True 99.9% quantile', 'Cuantil verdadero al 99,9 %'), t('LDA capital over the true quantile (median)', 'Capital LDA sobre el cuantil verdadero (mediana)'), t('Its dispersion (IQR over the true quantile)', 'Su dispersión (rango intercuartil sobre el cuantil verdadero)'), t('SMA capital', 'Capital SMA')],
     c17Row,
     t(
       `The LDA capital is the spliced lognormal and GPD rung over ${C17_YEARS} years of losses collected above EUR 20,000, across the independent histories of the cell; a ratio of 1 is the true quantile. The SMA capital is the standardised measure of the synthetic bank with no added loss.`,
@@ -324,7 +350,7 @@ function c10Rungs(name: string, v: Variant, lang: Lang): W2Table {
   return {
     key: `rungs-${v.variant_id}`,
     title: name,
-    head: [t('Rung', 'Peldaño'), t('Method', 'Método'), t('Estimator', 'Estimador'), t('99.9% VaR', 'VaR al 99,9%'), t('99.9% ES', 'ES al 99,9%'), t('99.9% capital', 'Capital al 99,9%'), t('Monte Carlo error of the VaR', 'Error de Monte Carlo del VaR'), t('Capital against the reference', 'Capital frente a la referencia')],
+    head: [t('Rung', 'Peldaño'), t('Method', 'Método'), t('Estimator', 'Estimador'), t('99.9% VaR', 'VaR al 99,9 %'), t('99.9% ES', 'ES al 99,9 %'), t('99.9% capital', 'Capital al 99,9 %'), t('Monte Carlo error of the VaR', 'Error de Monte Carlo del VaR'), t('Capital against the reference', 'Capital frente a la referencia')],
     rows,
     wide: 3,
     note: t(
@@ -351,7 +377,7 @@ function c10Estimators(name: string, v: Variant, lang: Lang): W2Table {
   return {
     key: `estimators-${v.variant_id}`,
     title: name,
-    head: [t('Known correlation', 'Correlación conocida'), t('Estimator', 'Estimador'), t('Mean estimate', 'Estimación media'), t('Bias', 'Sesgo'), 'RMSE', t('Coverage of the 95% interval', 'Cobertura del intervalo 95%'), t('Rejection of the null', 'Rechazo de la nula')],
+    head: [t('Known correlation', 'Correlación conocida'), t('Estimator', 'Estimador'), t('Mean estimate', 'Estimación media'), t('Bias', 'Sesgo'), 'RMSE', t('Coverage of the 95% interval', 'Cobertura del intervalo 95 %'), t('Rejection of the null', 'Rechazo de la nula')],
     rows,
     wide: 2,
     note: t('The simulator knows the true correlation of each cell, so the bias and the coverage are measured against it.', 'El simulador conoce la correlación verdadera de cada celda, así que el sesgo y la cobertura se miden contra ella.'),
@@ -373,7 +399,7 @@ function c11Ladder(name: string, v: Variant, lang: Lang): W2Table {
       if (isChamp) versus = t('Champion', 'Campeón');
       else if (!dm) versus = na(lang);
       else if (dm.p_value === null || dm.p_value === undefined) versus = na(lang, dm.not_evaluated_reason);
-      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${num(dm.p_value, lang, 3)})`;
+      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${pval(dm.p_value, lang)})`;
       return [
         bi(alphaShort(l.alpha), lang),
         `${m.rung} ${modelTitle(v, m.model_id, lang)}`,
@@ -416,7 +442,7 @@ function c13Detection(manifest: CaseManifest, vs: Variant[], lang: Lang): W2Tabl
   });
   return {
     key: 'detection',
-    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por el backtest de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95%)')],
+    head: [t('Desk', 'Mesa'), t('Planted deficiency', 'Deficiencia sembrada'), t('Intended to fail', 'Debía fallar'), t('Flagged by Spearman', 'Marcada por Spearman'), t('Flagged by Kolmogorov-Smirnov', 'Marcada por Kolmogorov-Smirnov'), t('Flagged by the desk back-test', 'Marcada por la prueba retrospectiva de mesa'), t('Joint zone amber or red (95% interval)', 'Zona conjunta ámbar o roja (intervalo 95 %)')],
     rows,
     wide: 3,
     note: t(
@@ -448,7 +474,7 @@ function c17Ladder(name: string, v: Variant, lang: Lang): W2Table {
   const sma = o.sma_response.rows.find((r) => r.added_loss_eur === 0) ?? o.sma_response.rows[0];
   if (sma)
     rows.push([t('Standardised measurement approach (SMA)', 'Enfoque de medición estandarizado (SMA)'), t('closed form', 'forma cerrada'), STATUS_TEXT.verified ? pick(STATUS_TEXT.verified, lang) : '', money(sma.orc_eur, o.currency, lang), q ? num(sma.orc_eur / q.value_eur, lang, 2) : na(lang), '', '']);
-  const truth = q ? `${t('True 99.9% quantile', 'Cuantil verdadero al 99,9%')}: ${money(q.value_eur, o.currency, lang)}` : '';
+  const truth = q ? `${t('True 99.9% quantile', 'Cuantil verdadero al 99,9 %')}: ${money(q.value_eur, o.currency, lang)}` : '';
   return {
     key: `ladder-${v.variant_id}`,
     title: `${name} (${pick(cellLabel(cell.years, cell.collection_threshold_eur), lang)}${truth ? `; ${truth}` : ''})`,
@@ -457,7 +483,7 @@ function c17Ladder(name: string, v: Variant, lang: Lang): W2Table {
     wide: 3,
     note: t(
       'The ratio is the median capital over the true 99.9% quantile of the generator, so 1 is exact and below 1 underestimates; the SMA is a regulatory measure with no sampling, so it has a single value.',
-      'La razón es el capital mediano sobre el cuantil verdadero al 99,9% del generador, así que 1 es exacto y bajo 1 subestima; el SMA es una medida regulatoria sin muestreo, así que tiene un solo valor.',
+      'La razón es el capital mediano sobre el cuantil verdadero al 99,9 % del generador, así que 1 es exacto y bajo 1 subestima; el SMA es una medida regulatoria sin muestreo, así que tiene un solo valor.',
     ),
   };
 }

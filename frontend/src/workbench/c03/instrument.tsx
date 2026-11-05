@@ -9,6 +9,7 @@ import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { C03ContextView, C03FindingsView, C03VariantsView, HorizonReadout, ModelReadout, VintageReadout } from './C03Common';
 import { CalibrationView, RungsView, TrainingView } from './ModelViews';
+import { SequentialView } from './SequentialView';
 import { defaultSel, outputsOf, rungLabel, type C03Sel } from './selection';
 import { CurvesView, FiveYearView, StabilityView, fyText } from './VintageViews';
 
@@ -122,6 +123,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     [
       { id: 'calibration', label: { en: 'Calibration and tests', es: 'Calibración y pruebas' }, content: <CalibrationView sel={sel} /> },
       { id: 'stability', label: { en: 'Stability', es: 'Estabilidad' }, content: <StabilityView sel={sel} /> },
+      // BS-15 (D15): the e-process monitor read at every age, beside the fixed-window tests read at the mark
+      { id: 'sequential', label: { en: 'Sequential', es: 'Secuencial' }, content: <SequentialView sel={sel} /> },
     ],
     { en: 'Views of the validation', es: 'Vistas de la validación' },
     'c03-validation',

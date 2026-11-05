@@ -1,0 +1,32 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Internal validity}
+\label{sec:limits-internal}
+
+Every number comes from one generator with one volatility law, a log-AR(1) of persistence 0.98 that is known at the start of the day, and one pricing noise of 10\% of the factor profit and loss.
+The stale-volatility deficiency is the easiest form of a scale-timing defect to detect: the lag is exact, the volatility is persistent enough that a lag of 20 days leaves the correlation of the rolling means at 0.69, and the generator's own risk model is otherwise correct.
+The thresholds are specific to that generator, and the alternative nulls of Section~\ref{sec:results-altnull} show the consequence: the size is 4.0 to 6.2\% on two of the four alternatives that change the volatility law and 99.0\% on one that changes the pricing noise.
+The ablation of Section~\ref{sec:ablation} was computed on the committed seeds that the main results use, so a choice made from it, such as a shorter window, would be selected on the evaluation data.
+The three comparators that the engine does not carry were written for this evaluation; they agree with independent implementations to a relative difference below $10^{-9}$ on a desk-year, which checks their arithmetic and not whether the published tests are best applied this way (the Ljung--Box lag of 10 and the squared residual are choices of ours, not of the cited authors).
+The Monte Carlo spread of the critical values, a standard deviation of 0.10 percentage points at a size of 1\% and 0.058 at 0.333\% (Proposition~\ref{prop:size}), is small against the effects reported but not against the difference between two sizes of 1.0 and 1.2\%, which the tables do not claim to resolve.
+
+\subsection{External validity}
+\label{sec:limits-external}
+
+The desks are synthetic: two factors, one volatility process, one deficiency at a time and a window of 250 days.
+No real desk is evaluated, and the results say nothing about the correlations, the distances or the pricing noise of the desks of a bank, nor about how often a real risk model has a stale volatility input.
+A real desk has many factors, jumps in the profit and loss, a pricing noise that depends on the instruments and the market regime, several simultaneous deficiencies, and a back-history that may be shorter than the null the calibration needs.
+The calibration needs a simulator of the desk's own null.
+A bank that has one can use the complement as specified; a bank that does not would have to build the null from a model of its desk or from historical windows in which the model is known to be sound, and neither route was tested here.
+The proposition on the size requires the desk-year to be exchangeable with the null draws, and the experiments show what the size becomes when it is not.
+
+\subsection{Construct validity and scope}
+\label{sec:limits-construct}
+
+The detection rate of a planted deficiency is a measure of the statistic's power against that deficiency in that generator.
+It is not a measure of usefulness for the supervisory decision, in which the costs of a false alarm and of a miss are not those of the experiments.
+The lag of 20 days is one way of getting the scale wrong; a misparametrised decay of an exponentially weighted volatility, a volatility that omits a regime, and a volatility estimated on a window of the wrong length are others, and they were not planted.
+The complement has no regulatory standing: it changes neither the regulatory zone nor the thresholds of the standard \citep{bcbs2019}, which the engine returns unchanged beside it, and the manuscript makes no claim about how a supervisor should use it.
+The comparison with published methods covers the nine detectors of Section~\ref{sec:design-comparators}.
+The review of related work is limited to the sources cited, and the absence of a published statistic of the same form as the complement is a statement about that search and not a proof.

@@ -36,6 +36,57 @@ const DIST: Kind = { object: {
 
 const ZONE_COUNTS: Kind = { object: { green: 'integer', amber: 'integer', red: 'integer' } };
 
+// BS-13 (beyond tier): the engine's scale-and-level complement to the PLA test. The member is optional in the schema (a 2.0
+// document stays valid); every baked document carries it.
+const RATE: Kind = { object: { k: 'integer', n: 'integer', rate: 'number', ci_low: 'number', ci_high: 'number' } };
+const COMPLEMENT_THRESHOLDS: Kind = { object: { wald: 'number', spearman_abs: 'number', spearman_roll: 'number' } };
+const COMPLEMENT_FLAGS: Kind = { object: { wald: RATE, spearman_abs: RATE, spearman_roll: RATE, any: RATE } };
+
+const PLA_COMPLEMENT: Kind = { object: {
+  tier: 'string',
+  plan_id: 'string',
+  engine_function: 'string',
+  window_days: 'integer',
+  size: 'number',
+  correction: 'string',
+  role: 'string',
+  n_replications: 'integer',
+  calibration: { object: {
+    null_case_seeds: { array: 'integer' },
+    n_per_block: 'integer',
+    n_null: 'integer',
+    thresholds_per_statistic: COMPLEMENT_THRESHOLDS,
+    thresholds_family: COMPLEMENT_THRESHOLDS,
+  } },
+  flags: { object: { per_statistic: COMPLEMENT_FLAGS, family: COMPLEMENT_FLAGS, pla_amber_or_red: RATE, family_with_pla: RATE } },
+  against_ks: { nullable: { object: { ks_flagged: 'integer', wald_flagged: 'integer', wald_at_least_ks: 'boolean' } } },
+  by_size: { array: { object: {
+    size: 'number',
+    wald: RATE,
+    spearman_abs: RATE,
+    spearman_roll: RATE,
+    wald_held_out: RATE,
+    spearman_abs_held_out: RATE,
+    spearman_roll_held_out: RATE,
+  } } },
+  lag_ladder: { nullable: { array: { object: { lag_days: 'integer', per_statistic: COMPLEMENT_FLAGS, family_any: RATE, pla_amber_or_red: RATE } } } },
+  hypothesis: { nullable: { object: {
+    plan_id: 'string',
+    statement: 'text',
+    statistic: 'string',
+    size_basis: 'string',
+    power_threshold: 'number',
+    refuted_below: 'number',
+    size_limit: 'number',
+    measured_power: RATE,
+    held_out_size: RATE,
+    pla_power: RATE,
+    n_null_desk_years: 'integer',
+    verdict: 'string',
+    reading: 'text',
+  } } },
+} };
+
 // A block that the schema composes by a rule (a oneOf on a const: no deficiency is planted false and intended to fail none,
 // a planted one is planted true; a desk limit is 12 at 99 percent and 30 at 97.5) is declared 'json': the typed interfaces
 // of contract.gen.ts read these.
@@ -93,6 +144,7 @@ export const C13_OUTPUTS: Kind = { object: {
     by_test: { object: { spearman_flagged: 'integer', ks_flagged: 'integer', desk_backtest_flagged: 'integer' } },
     intended_test_flagged: { nullable: 'integer' },
   } },
+  pla_complement: PLA_COMPLEMENT,
 } } satisfies { object: Record<keyof components['schemas']['c13Outputs'], Kind> };
 
 export const C13_FIT: Kind = { object: {

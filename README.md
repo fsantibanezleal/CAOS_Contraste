@@ -29,8 +29,8 @@ document. The 22 cases (21 committed, C19 planned: `data/derived/readiness.json`
 | Web | [frontend/](frontend/) | active | The static React site on the shared CAOS app shell (`@fasl-work/caos-app-shell`, pinned exactly in `frontend/package.json`): the App workbench and the pages Introduction, Methodology, Implementation, Experiments and Benchmark, in English and Spanish, light and dark; it replays the committed artifacts and computes live what a reader changes. Run it with `cd frontend && npm ci && npm run dev`; `npm test`, `npm run build` and `npm run gate` (the measured UI gate, local only). Live at https://contraste.fasl-work.com. Design: [docs/design/features/web/](docs/design/features/web/requirements.md) |
 | API | [app/](app/) | dormant: this solution does not require a request-time backend at the moment | A FastAPI layer kept for activation on an ADR-0002 trigger: six read-only endpoints over the committed documents: `GET /api/cases`, `/api/cases/{case_id}/manifest`, `/api/artifacts/{path}` and `/api/readiness`, plus the health checks `/health` and `/healthz`. See [app/README.md](app/README.md) and [the guide](docs/guides/04_run-the-api.md) |
 | Core pipelines | [data-pipeline/](data-pipeline/) | active: offline only, never in CI | Fetch with a licence manifest, contract 1 on every input record, the model ladder, the validation battery and contract 2 on every artifact: `fetch.py`, `run.py` (a sandbox bake with `--output <folder>`, the release bake without) and `validate.py` (your own scored sample). One package of code per case under `pipeline/cases/`. See [the fetch and bake guide](docs/guides/01_fetch-and-bake.md) and [the pipeline architecture](docs/architecture/05_precompute-pipeline.md) |
-| Packages | (PyPI) [riskvalidation 0.9.0](https://pypi.org/project/riskvalidation/0.9.0/) | active: one package, published on PyPI | `riskvalidation`, the engine of every validation test, regulatory calculator and generator (MIT), consumed as a dependency and never copied: the notebooks pin the release v0.08.000 as `riskvalidation==0.9.0`, and the pipeline pins it in `data-pipeline/requirements.txt`. The third-party packages are pinned in the same files, in the SDD technology table and in [the framework cards](docs/frameworks.md) |
-| Notebooks | [notebooks/](notebooks/) | active | Didactic notebooks in two trees, [English](notebooks/en/README.md) and [Spanish](notebooks/es/README.md), by topic and from simple to complex (fundamentals, the method in practice, state of the art, beyond it), executed and committed. Topic 01 is here (install the engine, a first test result, policies, a battery on your own sample); the other topics follow. Run them with `./scripts/setup.sh --notebooks` and `python scripts/run_notebooks.py`. See [notebooks/README.md](notebooks/README.md) |
+| Packages | (PyPI) [riskvalidation 1.1.0](https://pypi.org/project/riskvalidation/1.1.0/) | active: one package, published on PyPI | `riskvalidation`, the engine of every validation test, regulatory calculator and generator (MIT), consumed as a dependency and never copied: the notebooks pin the release v0.08.000 as `riskvalidation==1.1.0`, and the pipeline pins it in `data-pipeline/requirements.txt`. The third-party packages are pinned in the same files, in the SDD technology table and in [the framework cards](docs/frameworks.md) |
+| Notebooks | [notebooks/](notebooks/) | active | Didactic notebooks in two trees, [English](notebooks/en/README.md) and [Spanish](notebooks/es/README.md), by topic and from simple to complex (fundamentals, the method in practice, comparison with published methods, proposed methods), executed and committed. Fourteen topics, from installing the engine to validating the validator. Run them with `./scripts/setup.sh --notebooks` and `python scripts/run_notebooks.py`. See [notebooks/README.md](notebooks/README.md) |
 | Data | [data/](data/) | active | The licence manifest of every source (`data/sources/manifest.json`), the committed derived artifacts and manifests the site replays (`data/derived/`, one folder per case, plus `readiness.json`) and two synthetic scored samples for your own-model door (`data/examples/`). Raw data never lives here: it lives under `CONTRASTE_DATA`. Every source has a licence class (mirror-allowed, derived-only, link-only, unusable). See [data/README.md](data/README.md) |
 | Contracts | [docs/contracts/](docs/contracts/) | active | The catalog of every boundary and model slot with its version, schema, producer and consumer tests; the JSON schemas, the engine API documents, the fixtures served while a case is unbuilt, the OpenAPI document and the version lock. See [the catalog](docs/contracts/catalog.md) |
 | Documentation | [docs/](docs/) | active | The software design document with every requirement and the gate that fails when it is violated, the feature folders, the architecture pages, the framework cards, the guides and the case pages. See [docs/README.md](docs/README.md) and [the design](docs/design/SDD.md) |
@@ -51,17 +51,26 @@ portfolio (C22). Every live computation is a TypeScript port held to the engine 
 
 ## Run it
 
+The [numbered local workflow](scripts/local/README.md), PowerShell or Bash, from any directory:
+
 ```bash
-./scripts/setup.sh                     # the pipeline environment (.venv-pipeline); setup.ps1 on Windows
-.venv-pipeline/bin/python data-pipeline/fetch.py --all          # the sources, into $CONTRASTE_DATA
-.venv-pipeline/bin/python data-pipeline/run.py C01 --output <dir>   # a sandbox bake; no --output: the release bake
-.venv-pipeline/bin/python -m pytest    # the pipeline tests, sandboxed
-cd frontend && npm ci && npm run dev   # the web on http://localhost:5173; npm test, npm run build, npm run gate
+bash scripts/local/00_install-prereqs.sh   # checks Python 3.12+, Node and git; installs nothing unless --install
+bash scripts/local/01_init.sh              # the declared environments under $CAOS_VENVS_ROOT/contraste, the locked frontend
+bash scripts/local/02_generate-data.sh     # a full bake into a fresh stage under $CAOS_TEMP_ROOT; promote with --release --from-stage <stage>
+bash scripts/local/03_dev.sh               # the web on http://127.0.0.1:5173 (the API is dormant)
 ```
 
-Set `CONTRASTE_DATA` and `CONTRASTE_MODELS` (`.env.example`) to directories outside the repository. The full path,
-from fetching to the measured gate, is [guide 01](docs/guides/01_fetch-and-bake.md).
+Set `CAOS_VENVS_ROOT`, `CAOS_DATA_ROOT`, `CAOS_TEMP_ROOT`, `CONTRASTE_DATA` and `CONTRASTE_MODELS` (`.env.example`) to
+directories outside the repository. One case at a time, and the tests:
 
+```bash
+<pipeline python> data-pipeline/fetch.py --all              # the sources, into $CONTRASTE_DATA
+<pipeline python> data-pipeline/run.py C01 --output <dir>   # a sandbox bake; no --output: the release bake
+<pipeline python> -m pytest                                 # the pipeline tests, sandboxed
+cd frontend && npm test && npm run build && npm run gate    # the web tests, the build and the measured gate
+```
+
+The full path, from fetching to the measured gate, is [guide 01](docs/guides/01_fetch-and-bake.md).
 ## Validate your own model
 
 ```bash

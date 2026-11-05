@@ -13,6 +13,7 @@ import numpy as np
 from riskvalidation.liquidity import ladder, scenarios
 from riskvalidation.validation import liquidity as val
 
+from ...core.text import number
 from ...io import treasury
 from ...io.fdic import Report
 from . import balance
@@ -27,6 +28,16 @@ TIME_DATES = ("2021-12-31", "2022-06-30")
 FDIC_SOURCE = "https://api.fdic.gov/banks/financials (CERT 24735, REPDTE {date})"
 H8_SERIES = {"large-domestic-deposits": ("h8-deposits-large-domestic", "Deposits, large domestically chartered banks", "Depósitos, bancos grandes domésticos"),
              "small-domestic-deposits": ("h8-deposits-small-domestic", "Deposits, small domestically chartered banks", "Depósitos, bancos pequeños domésticos")}
+
+
+#: the back-test segments in words (a finding title never prints a slug): English, Spanish
+SEGMENT_NAME = {"board-stated-share": ("board-stated share", "proporción declarada por la Junta"),
+                "call-report-dep": ("call-report deposits", "depósitos del reporte")}
+
+
+def _segment_name(segment: str | None) -> tuple[str, str]:
+    """The words of a back-test segment in both languages; a segment without words keeps its id."""
+    return SEGMENT_NAME.get(segment or "", (str(segment), str(segment)))
 
 
 def basis_of(vid: str) -> str:
@@ -71,6 +82,20 @@ def model_summary(ev: str, rung: str = "behavioural-ladder", details: bool = Fal
     if details:
         m["details"] = {}
     return m
+
+
+#: the tests other than the run-off back-tests that raise a finding when red or amber, in words (frontend/src/workbench/names/tests.ts)
+OTHER_FINDING_NAMES: dict[str, tuple[str, str]] = {
+    "liq.cliff_effect_diagnostic": ("The cliff-effect diagnostic", "El diagnóstico del efecto acantilado"),
+    "liq.htm_revaluation_vs_reported": ("The HTM revaluation against the reported fair value", "La revaluación HTM contra el valor razonable reportado"),
+    "liq.htm_loss_effect": ("The effect of the HTM unrealised loss on the CBC", "El efecto de la pérdida no realizada HTM en el CBC"),
+    "liq.nlp_identity": ("The NLP identity on the ladder", "La identidad de la NLP en la escalera"),
+    "liq.list_compounding_golden": ("The LiST compounding example", "El ejemplo de composición de LiST"),
+    "liq.cbc_haircut_rules": ("The CBC haircut rules", "Las reglas de recorte del CBC"),
+    "liq.uninsured_share_sensitivity": ("The sensitivity to the uninsured share", "La sensibilidad a la parte no asegurada"),
+    "liq.survival_monotone_in_severity": ("The survival period against the severity", "El periodo de supervivencia frente a la severidad"),
+    "liq.runoff_vs_generator_truth": ("The run-off against the generator truth", "La salida de depósitos contra la verdad del generador"),
+}
 
 
 def finding(fid: str, sev: str, tests: list[str], en: str, es: str) -> dict[str, Any]:
@@ -138,9 +163,10 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
             "data_cutoff": vd, "read_up_to_valuation_date": True,
             "rule": txt("No call report dated after the valuation date is read.", "No se lee ningún reporte de llamada posterior a la fecha de valoración.")}
     reasons = {"path": txt("The LCR is a 30-day aggregate ratio: its formula gives no daily path, so no ladder, survival period or cliff is stated.",
-                           "El LCR es una razón agregada a 30 días: su fórmula no da trayectoria diaria."),
+                           "El LCR es una razón agregada a 30 días: su fórmula no da trayectoria diaria, así que no se declara escalera, "
+                           "periodo de supervivencia ni acantilado."),
                "lcr": txt("This variant runs the run-off ladder, not the LCR formula.", "Esta variante corre la escalera de salidas, no la fórmula del LCR."),
-               "htm": txt("Only the HTM variant takes the held-to-maturity book at fair value.", "Solo la variante HTM toma el libro a valor razonable.")}
+               "htm": txt("Only the HTM variant takes the held-to-maturity book at fair value.", "Solo la variante HTM toma el libro mantenido hasta el vencimiento a valor razonable.")}
     o = {"kind": "scenario", "valuation_date": vd, "currency": "USD", "units": UNITS, "bank": BANK,
          "variant": {"id": vid, "label": txt(*VARIANT_LABEL[vid][:2]), "description": txt(*VARIANT_LABEL[vid][2:]), "scenario_family": row["scenario_family"],
                      "phase": row["phase"], "parameter_set": row["parameter_set"], "horizon_days": h, "axis": row["axis"]},
@@ -156,8 +182,8 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
     for t in adequacy:
         if t.light.value != "green":
             findings.append(finding(f"F-liq-adequacy-{t.segment}", "S2" if t.light.value == "red" else "S3", ["liq.runoff_adequacy_back_test"],
-                                    f"The modelled outflow is {t.statistic:.3f} of the realised outflow ({t.segment})",
-                                    f"La salida modelada es {t.statistic:.3f} de la realizada ({t.segment})"))
+                                    f"The modelled outflow is {number(t.statistic, 3, lang='en')} of the realised outflow ({_segment_name(t.segment)[0]})",
+                                    f"La salida modelada es {number(t.statistic, 3, lang='es')} de la realizada ({_segment_name(t.segment)[1]})"))
     if p is not None:
         tests.append(_tr(val.nlp_identity(p.cbc_total, p.total_out, p.total_in, p.nlp, conv["nlp_identity_tolerance"]["value"])))
         tests.append(_tr(val.cliff_effect_diagnostic(p.nlp, sheet["total_assets"], conv["cliff_days"]["near"], conv["cliff_days"]["far"],
@@ -179,6 +205,15 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
         rv = htm["revaluation"]
         tests.append(_tr(val.htm_revaluation_vs_reported(rv["model_fair_value"], htm["reported"]["htm_fair_value"], htm["reported"]["htm_amortised_cost"],
                                                          conv["htm_revaluation_green"]["value"], conv["htm_revaluation_amber"]["value"])))
+    # every other red or amber test raises a finding too (R2b c17 M2: the red HTM revaluation and the amber cliffs raised none)
+    for t in tests:
+        tid = t["test_id"]
+        if tid in OTHER_FINDING_NAMES and t["light"] in ("red", "amber") and not any(f["evidence"] == [tid] for f in findings):
+            name_en, name_es = OTHER_FINDING_NAMES[tid]
+            red = t["light"] == "red"
+            findings.append(finding(f"F-liq-{tid.split('.')[-1].replace('_', '-')}", "S2" if red else "S3", [tid],
+                                    f"{name_en} is {'red' if red else 'amber'} in this variant",
+                                    f"{name_es} está en {'rojo' if red else 'ámbar'} en esta variante"))
     impact = {"lcr": {"value": lcr["ratio"], "unit": "ratio", "label": txt("LCR, a Basel formula on call-report aggregates", "LCR, una fórmula de Basilea sobre agregados del reporte de llamada")}
               if lcr else {"value": None, "unit": "ratio", "label": txt("No LCR in this variant", "Sin LCR en esta variante")},
               "survival_days": _impact_survival(p.survival if p else None, h)}

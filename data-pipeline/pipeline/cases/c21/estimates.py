@@ -35,6 +35,7 @@ from riskvalidation.fairness import replication as rv_replication
 from riskvalidation.fairness import situation as rv_situation
 from riskvalidation.validation import fairness as rv_tests
 
+from ...core import text as tx
 from . import legal
 from .legal import t
 from .reader import Sample
@@ -66,6 +67,10 @@ class Design:
     usable: np.ndarray
     situation: np.ndarray  # the nine non-protected attributes of the situation test, one column each
 
+
+#: why the counterfactual test is not run, as a sentence in both languages (U16-R4 c25 n4: the Spanish had no full stop)
+COUNTERFACTUAL_REASON = {"en": "Public HMDA gives no counterfactual dataset, so the counterfactual test (mutatis mutandis) is not run.",
+                         "es": "El HMDA público no entrega un conjunto contrafactual, de modo que la prueba contrafactual (mutatis mutandis) no se ejecuta."}
 
 def build_design(s: Sample) -> Design:
     with np.errstate(invalid="ignore", divide="ignore"):
@@ -163,6 +168,25 @@ def _confirmation(fit: Fit, confirm: Fit, years: tuple[int, int]) -> tuple[dict[
     return {"estimate": {"fit_year": years[0], "confirm_year": years[1], "fit_coefficient": r.fit_coefficient,
                          "confirm_coefficient": r.confirm_coefficient, "same_sign": r.same_sign, "size_ratio": r.size_ratio},
             "reason": None}, r
+
+
+def not_evaluated(field: str, s: Sample) -> dict[str, str] | None:
+    """The bilingual reason a field is not evaluated in the fit year of a pair, or None when it is (BL-087).
+
+    Only the 62 contrast can be not evaluated: a group without a decision row is never tested (a test on an empty group has no
+    meaning), the pair carries no block for the attribute and its data note says why. The other attributes keep the refusal of
+    ``attribute_result`` (a bake whose race, ethnicity, sex or age bands are empty is a broken input, not a state).
+    """
+    if field != legal.AGE62:
+        return None
+    present = set(s.attribute[field].tolist())
+    absent = [g for g in legal.GROUPS[field] if g not in present]
+    if not absent:
+        return None
+    en = " and ".join(absent)
+    es = " y ".join(legal.GROUP_ES.get(g, g) for g in absent)
+    return t(f"not evaluated in {s.year}: no decision row for the group {en}, so no test runs on an empty group",
+             f"no evaluado en {s.year}: sin filas de decisión para el grupo {es}, de modo que ninguna prueba se ejecuta sobre un grupo vacío")
 
 
 # --- one attribute -------------------------------------------------------------------------------------------------------
@@ -266,10 +290,7 @@ def situation_result(fit_s: Sample, fit_d: Design, k: int = SITUATION_K) -> tupl
     res = rv_situation.situation_test(x, (attr[sel] == SITUATION_PROTECTED).astype(np.int64), fit_s.decision[sel], k, tau=0.0,
                                       alpha=0.05, comparator="ceteris-paribus", normalization="range", categorical=SITUATION_CATEGORICAL)
     block = {"label": "situation-testing", "comparator": "ceteris-paribus",
-             "counterfactual_test": {"run": False, "reason": t("Public HMDA gives no counterfactual dataset, so the counterfactual test "
-                                                              "(mutatis mutandis) is not run",
-                                                              "El HMDA público no entrega un conjunto contrafactual, de modo que la prueba "
-                                                              "contrafactual (mutatis mutandis) no se ejecuta")},
+             "counterfactual_test": {"run": False, "reason": COUNTERFACTUAL_REASON},
              "attribute": SITUATION_ATTRIBUTE, "k": k, "alpha": 0.05, "tau": 0, "distance_normalization": "range",
              "label_parameters": "convention", "centers": "excluded", "interval": "one-sided Wald, equation (10) of arXiv 2502.01267",
              "n_complainants": res.n_complainants, "n_cases": res.n_cases, "n_significant": res.n_significant}
@@ -277,6 +298,20 @@ def situation_result(fit_s: Sample, fit_d: Design, k: int = SITUATION_K) -> tupl
 
 
 # --- data notes ----------------------------------------------------------------------------------------------------------
+def age62_note(s: Sample | None) -> dict[str, Any]:
+    """The data note of the 62 contrast: the public release derives the field from the exact age, which it does not publish (addendum
+    row of ``applicant_age_above_62``: binned); NA is an excluded group; a pair without a group says so."""
+    why = None if s is None else not_evaluated(legal.AGE62, s)
+    en = ("Derived by the public release from the applicant age (Yes for 62 or over, No for under 62, NA when the age is not available); the "
+          "exact age is not published. NA is an excluded group, counted and never in a pairwise test")
+    es = ("Derivado por la publicación pública a partir de la edad del solicitante (Yes para 62 o más, No para menores de 62, NA cuando la "
+          "edad no está disponible); la edad exacta no se publica. NA es un grupo excluido, contado y nunca en una prueba por pares")
+    if why is not None:
+        en, es = f"{en}; {why['en']}", f"{es}; {why['es']}"
+    return {"field": legal.AGE62, "treatment": "binned",
+            "n_missing": None if s is None else int((s.attribute[legal.AGE62] == "NA").sum()), "reason": t(en, es)}
+
+
 def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = None) -> list[dict[str, Any]]:
     """What the public release withholds, bins or rounds. With a sample (the fit year of a pair) the notes carry its counts; without
     one (the models document, which spans the fit years) the counts are null, a nullable value and never a fabricated number."""
@@ -297,10 +332,12 @@ def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = N
                     "Las filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión; sus conteos por código están en "
                     "los documentos de resultados.")
     else:
-        by_code = ", ".join(f"{k}: {action_counts.get(k, 0)}" for k in legal.EXCLUDED_CODES)
+        def by_code(lang: str) -> str:
+            return ", ".join(f"{k}: {tx.number(action_counts.get(k, 0), lang=lang)}" for k in legal.EXCLUDED_CODES)
         n_left_out = sum(v for k, v in action_counts.items() if k in legal.EXCLUDED_CODES)
-        left_out = (f"{n_left_out} rows of codes 4 to 8 are left out of every rate by the decision convention (by code, {by_code}).",
-                    f"{n_left_out} filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión (por código, {by_code}).")
+        # the counts in the shell's number forms (U16-R3 c21 m6: "13344 filas", "4: 5190")
+        left_out = (f"{tx.number(n_left_out, lang='en')} rows of codes 4 to 8 are left out of every rate by the decision convention (by code, {by_code('en')}).",
+                    f"{tx.number(n_left_out, lang='es')} filas de los códigos 4 a 8 quedan fuera de toda tasa por la convención de decisión (por código, {by_code('es')}).")
     ls = None if s is None else s.action <= 2
     return [
         {"field": "action_taken", "treatment": "unmodified", "n_missing": None,
@@ -336,4 +373,5 @@ def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = N
                      "estimate reads those loans only, and the loans without it are left out",
                      "Se reporta para préstamos originados y solicitudes aprobadas no aceptadas que lo tienen (códigos 1 y 2); la estimación "
                      "del diferencial de tasa lee solo esos préstamos y los préstamos sin él quedan fuera")},
+        age62_note(s),
     ]

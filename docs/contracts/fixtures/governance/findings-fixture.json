@@ -20,147 +20,147 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "sha256": "63762148d49dc6e14918df742a1023d9dadfde20f1869db5a183170d7c7221c1",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "sha256": "d7c51ece804ce48857cabd50152c2218e1a91ac51dd1efeb818dee57b63fe7f1",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "sha256": "99ecbc9eb6c44b95a91c9538c5e7dd898fb5b16eb8020755a2ba29d03fa6e65d",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "sha256": "1e63726939417b12033837ca208e3683636a4c4e969248a7b8e35e6bc86acc50",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "sha256": "aca66adaa70dd735e3dba9d2293319b6a62813e14d61a307deeb92327d2d4a15",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "sha256": "e25a3596e1ca1050874363e6d55ef68a6884228d190d356034456815ee91db3b",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "sha256": "475aa91d80397bf7bc243d8e924507a6cfc15ea6acc24d61c872f6752a643cee",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "sha256": "5564c3ff959c5c9030b0df8b95a5335d422cb3e9a5cc33f4c2a55ae35d4d8b51",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "sha256": "f2bf8cb6904e1a5bb51d17d64106890fc569e9eded4e6b8dc9d314c088d16ae6",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "sha256": "c3897a659164ff5d91c85784aad6937d8337580f9f10ac8bc34a5a77e9f5fe74",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "sha256": "8f3c3ee5def90d067bd3ffb76278f19c38f0ee3d8139a24428166a159423fb4e",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061",
+    "sha256": "fa4466c5abfd0101866ee661e750f55b4c9566e9ee6efa158b5c997b6aa88edc",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
+    "sha256": "e611baa926c51e2bb1757898f0bb32a27aa2ef28425b4afe4fabc4ffa760e83d",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
+    "sha256": "dfe272b20797ea662089cc06ae7cb4b0cc42ae4e5fb6dbf79398fbe81f40a2e8",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
+    "sha256": "ef6427efdbfeca37212d006e19213bce73855124961a11c15ea465a6ef2ef462",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
+    "sha256": "913ffc14391768cf6af21c09ac870e168a66b447eac9f35d11328daeaf8c998c",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
+    "sha256": "519d4e41ffc743e376ec835f8a8f422767a2730c0d63207b0425c56aeba79c09",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
+    "sha256": "ab1114038649eaa005c5ab5ae574d1542d73c8fe0034b5bf35e8cfcfa09b00b6",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
+    "sha256": "87201d6738417ebecfd8995daf1c6aef23236d170b69e7817fa1ee3b38da36da",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "sha256": "f8143ea4bbea18b0612c6f916a365cab5f792384456be2073bf278618d329fff",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "sha256": "d97e6a99bb6c2ac448256a0c86b413fad0358e110aa5babfd00926bd61e0d29b",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "sha256": "fcb7937b3de6b85ff83637494ef66073bc5b60b8726e5daf68234498b6f273b7",
     "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "sha256": "fa6da36e9e985181cb12c6a6c481eb60a5b686a2acee0549933a84d6117bddd7",
     "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "sha256": "e4b24e12c946433d77ff09e9e92b2ab0fa789488bb90ad16e2eb12470a4e65b5",
     "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "sha256": "400b273dfbc7241fba04facaea180d920e8cfb56aec64c26ecf2f94a47e8fa33",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "sha256": "7a1da38de2b5c3362eb36d857c74c96832058fc94ae00108fbcc53edf1e8c0bd",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "sha256": "8f36f666ad722bc7da9c547431585455b4386945e67d7dbacb3448f34759c3a0",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "sha256": "a250cc3d62810245050baea50f83f47a13dd1f617c0d0e3eb35c83d01b99e408",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "sha256": "e24434b04aeaed9643893af5633a748c234502ce7f437259b441ab7d73b6cbf9",
     "ref": null
    }
   ]
@@ -257,8 +257,8 @@
    "id": "F-CF-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: calibration fit tests flag the german-twin population (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)",
-    "es": "P4-lightgbm: las pruebas de ajuste de calibración alertan en la población german-twin (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)"
+    "en": "P4 LightGBM: calibration fit tests flag the variant \"German Credit twin\"",
+    "es": "P4 LightGBM: las pruebas de ajuste de calibración alertan en la variante «Gemelo German Credit»"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -286,10 +286,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 120,
-   "due": "2027-02-09",
-   "ageing_days": 80,
+   "due": "2027-02-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -305,8 +305,8 @@
    "id": "F-D-P4-lightgbm",
    "entry_key": "C01/german",
    "title": {
-    "en": "P4-lightgbm: discrimination tests flag the german-twin population (disc.auc_vs_initial)",
-    "es": "P4-lightgbm: las pruebas de discriminación alertan en la población german-twin (disc.auc_vs_initial)"
+    "en": "P4 LightGBM: discrimination tests flag the variant \"German Credit twin\"",
+    "es": "P4 LightGBM: las pruebas de discriminación alertan en la variante «Gemelo German Credit»"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -332,10 +332,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 120,
-   "due": "2027-02-09",
-   "ageing_days": 80,
+   "due": "2027-02-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -373,10 +373,10 @@
    },
    "owner_role": "Head of PD models (synthetic role)",
    "tier": 2,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 120,
-   "due": "2027-02-09",
-   "ageing_days": 80,
+   "due": "2027-02-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -404,7 +404,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 64% of the CMF B-1 total (gap -54.4 CLP bn) and BdE Annex 9 is 52%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 64% del total CMF B-1 (brecha -54,4 mil millones CLP) y el Anejo 9 del BdE es 52%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 64 % del total CMF B-1 (brecha -54,4 mil millones CLP) y el Anejo 9 del BdE es 52 %"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -430,10 +430,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 60,
-   "due": "2026-12-11",
-   "ageing_days": 80,
+   "due": "2026-12-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -450,7 +450,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.4%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,4%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,4 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -476,10 +476,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -496,7 +496,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.33% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,33% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,33 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -522,10 +522,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -553,7 +553,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -574,10 +574,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -605,7 +605,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Stage 2 defaults 3.0 times as often as Stage 1 in the generator's realised outcomes, but 86% of Stage 3 entries come directly from Stage 1 (amber)",
-    "es": "La Etapa 2 incumple 3.0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 86% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+    "es": "La Etapa 2 incumple 3,0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 86 % de las entradas a Etapa 3 viene directo de la Etapa 1 (ámbar)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -631,10 +631,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -651,7 +651,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 119% of the CMF B-1 total (gap 52.0 CLP bn) and BdE Annex 9 is 69%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 119% del total CMF B-1 (brecha 52,0 mil millones CLP) y el Anejo 9 del BdE es 69%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 119 % del total CMF B-1 (brecha 52,0 mil millones CLP) y el Anejo 9 del BdE es 69 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -677,10 +677,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -697,7 +697,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.3%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,3%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 6,3 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -723,10 +723,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -743,7 +743,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.10% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,10% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,10 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -769,10 +769,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -800,7 +800,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -821,10 +821,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -852,7 +852,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 71% of the CMF B-1 total (gap -52.4 CLP bn) and BdE Annex 9 is 54%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 71% del total CMF B-1 (brecha -52,4 mil millones CLP) y el Anejo 9 del BdE es 54%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 71 % del total CMF B-1 (brecha -52,4 mil millones CLP) y el Anejo 9 del BdE es 54 %"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -878,10 +878,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 60,
-   "due": "2026-12-11",
-   "ageing_days": 80,
+   "due": "2026-12-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -898,7 +898,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.6%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,6%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 6,6 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -924,10 +924,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -944,7 +944,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.26% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,26% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,26 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -970,10 +970,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1001,7 +1001,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1022,10 +1022,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1053,7 +1053,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Stage 2 defaults 2.7 times as often as Stage 1 in the generator's realised outcomes, but 80% of Stage 3 entries come directly from Stage 1 (amber)",
-    "es": "La Etapa 2 incumple 2.7 veces más que la Etapa 1 en los resultados realizados del generador, pero el 80% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+    "es": "La Etapa 2 incumple 2,7 veces más que la Etapa 1 en los resultados realizados del generador, pero el 80 % de las entradas a Etapa 3 viene directo de la Etapa 1 (ámbar)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1079,10 +1079,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1099,7 +1099,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 76% of the CMF B-1 total (gap -40.0 CLP bn) and BdE Annex 9 is 56%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 76% del total CMF B-1 (brecha -40,0 mil millones CLP) y el Anejo 9 del BdE es 56%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 76 % del total CMF B-1 (brecha -40,0 mil millones CLP) y el Anejo 9 del BdE es 56 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1125,10 +1125,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1145,7 +1145,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.8%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,8%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,8 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1171,10 +1171,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1191,7 +1191,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.25% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,25% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,25 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1217,10 +1217,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1248,7 +1248,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1269,10 +1269,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1300,7 +1300,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Stage 2 defaults 2.9 times as often as Stage 1 in the generator's realised outcomes, but 79% of Stage 3 entries come directly from Stage 1 (amber)",
-    "es": "La Etapa 2 incumple 2.9 veces más que la Etapa 1 en los resultados realizados del generador, pero el 79% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+    "es": "La Etapa 2 incumple 2,9 veces más que la Etapa 1 en los resultados realizados del generador, pero el 79 % de las entradas a Etapa 3 viene directo de la Etapa 1 (ámbar)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1326,10 +1326,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1346,7 +1346,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 86% of the CMF B-1 total (gap -27.7 CLP bn) and BdE Annex 9 is 59%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 86% del total CMF B-1 (brecha -27,7 mil millones CLP) y el Anejo 9 del BdE es 59%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 86 % del total CMF B-1 (brecha -27,7 mil millones CLP) y el Anejo 9 del BdE es 59 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1372,10 +1372,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1392,7 +1392,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.3%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,3%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,3 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1418,10 +1418,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1438,7 +1438,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.19% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,19% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,19 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1464,10 +1464,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1495,7 +1495,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1516,10 +1516,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1547,7 +1547,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Stage 2 defaults 2.2 times as often as Stage 1 in the generator's realised outcomes, but 58% of Stage 3 entries come directly from Stage 1 (amber)",
-    "es": "La Etapa 2 incumple 2.2 veces más que la Etapa 1 en los resultados realizados del generador, pero el 58% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+    "es": "La Etapa 2 incumple 2,2 veces más que la Etapa 1 en los resultados realizados del generador, pero el 58 % de las entradas a Etapa 3 viene directo de la Etapa 1 (ámbar)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1573,10 +1573,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1593,7 +1593,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "On one portfolio the IFRS 9 total is 70% of the CMF B-1 total (gap -49.5 CLP bn) and BdE Annex 9 is 51%",
-    "es": "Sobre una misma cartera el total IFRS 9 es 70% del total CMF B-1 (brecha -49,5 mil millones CLP) y el Anejo 9 del BdE es 51%"
+    "es": "Sobre una misma cartera el total IFRS 9 es 70 % del total CMF B-1 (brecha -49,5 mil millones CLP) y el Anejo 9 del BdE es 51 %"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -1619,10 +1619,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 60,
-   "due": "2026-12-11",
-   "ageing_days": 80,
+   "due": "2026-12-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -1639,7 +1639,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.1%",
-    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,1%"
+    "es": "La PCE ponderada supera a la PCE en la trayectoria media de escenarios en 7,1 %"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1665,10 +1665,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1685,7 +1685,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Overlays are 0.28% of the IFRS 9 allowance, each a separate line",
-    "es": "Los ajustes posmodelo son 0,28% de la provisión IFRS 9, cada uno en una línea separada"
+    "es": "Los ajustes posmodelo son 0,28 % de la provisión IFRS 9, cada uno en una línea separada"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1711,10 +1711,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1742,7 +1742,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
-    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0,0 millones CLP)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1763,10 +1763,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1794,7 +1794,7 @@
    "entry_key": "C07/banco-andino",
    "title": {
     "en": "Stage 2 defaults 3.0 times as often as Stage 1 in the generator's realised outcomes, but 81% of Stage 3 entries come directly from Stage 1 (amber)",
-    "es": "La Etapa 2 incumple 3.0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 81% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+    "es": "La Etapa 2 incumple 3,0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 81 % de las entradas a Etapa 3 viene directo de la Etapa 1 (ámbar)"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -1820,10 +1820,10 @@
    },
    "owner_role": "Head of provisioning models (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-10",
-   "ageing_days": 80,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1840,7 +1840,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1861,10 +1861,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1881,7 +1881,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio stays 0.81% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-    "es": "Bajo este escenario la razón de PE se mantiene 0,81% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
+    "es": "Bajo este escenario la razón de PE se mantiene 0,81 % de los APR sobre el objetivo interno de 14,50 % en su punto más bajo, el año 3."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -1902,10 +1902,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1943,10 +1943,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -1984,10 +1984,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2003,8 +2003,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2025,10 +2025,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2045,7 +2045,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2066,10 +2066,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2086,7 +2086,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio falls to 12.98% of RWA in year 3, 1.52% of RWA below the internal target of 14.50%.",
-    "es": "Bajo este escenario la razón de PE cae a 12,98% de los APR en el año 3, 1,52% de los APR bajo el objetivo interno de 14,50%."
+    "es": "Bajo este escenario la razón de PE cae a 12,98 % de los APR en el año 3, 1,52 % de los APR bajo el objetivo interno de 14,50 %."
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -2107,10 +2107,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 60,
-   "due": "2026-12-20",
-   "ageing_days": 71,
+   "due": "2026-12-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -2127,7 +2127,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "On the loss-only path CET1 falls to 7.09% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,09% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,09 % de los APR en el año 3, bajo el mínimo legal de 9,06 %; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
    },
    "severity": "S1",
    "ecb_f": "F4",
@@ -2148,10 +2148,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 30,
-   "due": "2026-11-20",
-   "ageing_days": 71,
+   "due": "2026-11-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -2189,10 +2189,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2230,10 +2230,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2249,8 +2249,8 @@
    "id": "scenario-milder-than-gfc",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-    "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
+    "en": "1 path variable of this scenario is milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variable de trayectoria de este escenario es más suave que la crisis financiera global (razón bajo 0,75)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2271,10 +2271,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2290,8 +2290,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2312,10 +2312,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2332,7 +2332,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2353,10 +2353,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2373,7 +2373,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio falls to 13.25% of RWA in year 3, 1.25% of RWA below the internal target of 14.50%.",
-    "es": "Bajo este escenario la razón de PE cae a 13,25% de los APR en el año 3, 1,25% de los APR bajo el objetivo interno de 14,50%."
+    "es": "Bajo este escenario la razón de PE cae a 13,25 % de los APR en el año 3, 1,25 % de los APR bajo el objetivo interno de 14,50 %."
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -2394,10 +2394,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 60,
-   "due": "2026-12-20",
-   "ageing_days": 71,
+   "due": "2026-12-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -2414,7 +2414,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "On the loss-only path CET1 falls to 7.36% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,36% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+    "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,36 % de los APR en el año 3, bajo el mínimo legal de 9,06 %; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
    },
    "severity": "S1",
    "ecb_f": "F4",
@@ -2435,10 +2435,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 30,
-   "due": "2026-11-20",
-   "ageing_days": 71,
+   "due": "2026-11-26",
+   "ageing_days": 65,
    "overdue": true,
    "remediation": null,
    "remediation_reason": {
@@ -2476,10 +2476,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2517,10 +2517,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2536,8 +2536,8 @@
    "id": "scenario-milder-than-gfc",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-    "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
+    "en": "1 path variable of this scenario is milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variable de trayectoria de este escenario es más suave que la crisis financiera global (razón bajo 0,75)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2558,10 +2558,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2577,8 +2577,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2599,10 +2599,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2619,7 +2619,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+    "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2 % menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia retroproyección de 2020 a 2025."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2640,10 +2640,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2660,7 +2660,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "Under this scenario the PE ratio stays 0.56% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-    "es": "Bajo este escenario la razón de PE se mantiene 0,56% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
+    "es": "Bajo este escenario la razón de PE se mantiene 0,56 % de los APR sobre el objetivo interno de 14,50 % en su punto más bajo, el año 3."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2681,10 +2681,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2722,10 +2722,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2763,10 +2763,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2804,10 +2804,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2823,8 +2823,8 @@
    "id": "non-credit-losses-at-expected-loss",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-    "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
+    "en": "Only credit responds to the scenario: market and operational losses are held at their expected loss and IRRBB stays outside the capital path, so the stressed loss is a floor.",
+    "es": "Solo el crédito responde al escenario: las pérdidas de mercado y operacional se mantienen en su pérdida esperada y el IRRBB queda fuera de la trayectoria de capital, por lo que la pérdida bajo tensión es un piso."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2845,10 +2845,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2864,8 +2864,8 @@
    "id": "reverse-scenario",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real_gdp_growth by -2.58 and unemployment_rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
-    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza real_gdp_growth en -2,58 y unemployment_rate en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 0,0%); la base de solo pérdidas ya termina bajo el mínimo."
+    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real GDP growth by -2.58 points and the unemployment rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 2.4E-15).",
+    "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza el crecimiento del PIB real en -2,58 puntos y la tasa de desempleo en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 2,4E-15)."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2886,10 +2886,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2905,8 +2905,8 @@
    "id": "headline-simple-sum",
    "entry_key": "C18/banco-andino",
    "title": {
-    "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,518 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
-    "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.518 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2% bajo la suma y es información, no capital."
+    "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,517 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
+    "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.517 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2 % bajo la suma y es información, no capital."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -2927,10 +2927,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2947,7 +2947,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The aggregation model moves the figure by up to 67.4% over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the validator, never capital.",
-    "es": "El modelo de agregación mueve la cifra hasta 67,4% sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el validador, nunca capital."
+    "es": "El modelo de agregación mueve la cifra hasta 67,4 % sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el validador, nunca capital."
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -2968,10 +2968,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 90,
-   "due": "2027-01-19",
-   "ageing_days": 71,
+   "due": "2027-01-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -2988,7 +2988,7 @@
    "entry_key": "C18/banco-andino",
    "title": {
     "en": "The additive approximation exceeds the Gaussian copula figure by 33.8%; the published range of 30 to 40 percent is a reference and no gate.",
-    "es": "La aproximación aditiva excede la cifra de la cópula gaussiana en 33,8%; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
+    "es": "La aproximación aditiva excede la cifra de la cópula gaussiana en 33,8 %; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -3009,10 +3009,10 @@
    },
    "owner_role": "Head of capital planning (synthetic role)",
    "tier": 1,
-   "raised": "2026-10-21",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-19",
-   "ageing_days": 71,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3028,8 +3028,8 @@
    "id": "F-MIGRATION-POWER",
    "entry_key": "C22/generators",
    "title": {
-    "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen half the time with 500 obligors per grade",
-    "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida la mitad de las veces con 500 deudores por grado"
+    "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen in 44.5 % of the samples with 500 obligors per grade",
+    "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida en el 44,5 % de las muestras con 500 deudores por grado"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -3051,10 +3051,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3105,10 +3105,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3158,10 +3158,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3189,7 +3189,7 @@
    "entry_key": "C22/generators",
    "title": {
     "en": "The ECB concentration statistic is bounded: with ten grades and an initial CV of 0.6 it cannot reject at 5%; test concentration on the counts",
-    "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5%; pruébese la concentración en los conteos"
+    "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5 %; pruébese la concentración en los conteos"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -3211,10 +3211,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3253,10 +3253,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3272,8 +3272,8 @@
    "id": "F-DECAY-POWER",
    "entry_key": "C22/generators",
    "title": {
-    "en": "With 150 defaulters an AUC drop of two points is rarely caught: small portfolios see only large decays",
-    "es": "Con 150 incumplidos una caída de dos puntos de AUC rara vez se detecta: las carteras pequeñas solo ven deterioros grandes"
+    "en": "With 150 defaulters an AUC drop of two points is caught in 25.5 % of the samples, about one time in four: small portfolios see only large decays",
+    "es": "Con 150 incumplidos una caída de dos puntos de AUC se detecta en el 25,5 % de las muestras, cerca de una vez en cuatro: las carteras pequeñas solo ven deterioros grandes"
    },
    "severity": "S3",
    "ecb_f": "F2",
@@ -3295,10 +3295,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3348,10 +3348,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3401,10 +3401,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 365,
-   "due": "2027-10-12",
-   "ageing_days": 80,
+   "due": "2027-10-27",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3454,10 +3454,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3507,10 +3507,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3560,10 +3560,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 365,
-   "due": "2027-10-12",
-   "ageing_days": 80,
+   "due": "2027-10-27",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3613,10 +3613,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3643,8 +3643,8 @@
    "id": "F-HL-DOF",
    "entry_key": "C22/generators",
    "title": {
-    "en": "Hosmer-Lemeshow with G - 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
-    "es": "Hosmer-Lemeshow con G - 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"
+    "en": "Hosmer-Lemeshow with G − 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
+    "es": "Hosmer-Lemeshow con G − 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -3666,10 +3666,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3707,10 +3707,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3760,10 +3760,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3813,10 +3813,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 270,
-   "due": "2027-07-09",
-   "ageing_days": 80,
+   "due": "2027-07-24",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3866,10 +3866,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3886,7 +3886,7 @@
    "entry_key": "C22/generators",
    "title": {
     "en": "The Jeffreys test is Bayesian; on a discrete count its exact size moves with the number of obligors and can exceed the level (1.38% at 1% for 1,000 obligors at PD 1%)",
-    "es": "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38% al 1% para 1.000 deudores con PD 1%)"
+    "es": "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38 % al 1 % para 1.000 deudores con PD 1 %)"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -3908,10 +3908,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 365,
-   "due": "2027-10-12",
-   "ageing_days": 80,
+   "due": "2027-10-27",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3938,8 +3938,8 @@
    "id": "F-PSI-RULE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
-    "es": "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"
+    "en": "The PSI 0.10 rule of thumb raises a false alarm in 85.0 % of the samples of 100 where nothing changed; the chi-square benchmark is far closer to its level (7.0 % at 5%, above its bound at this size)",
+    "es": "La regla empírica PSI 0,10 da una falsa alarma en el 85,0 % de las muestras de 100 en que nada cambió; la referencia chi-cuadrado queda mucho más cerca de su nivel (7,0 % al 5 %, sobre su cota en este tamaño)"
    },
    "severity": "S2",
    "ecb_f": "F3",
@@ -3960,10 +3960,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 180,
-   "due": "2027-04-10",
-   "ageing_days": 80,
+   "due": "2027-04-25",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -3990,8 +3990,8 @@
    "id": "F-TRANSITION-SIZE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.72%, Markov order (grouped by direction) 6.05%, Matrix against a reference 3.70%, Downward momentum (hazard) 4.45%); the order test, near its bound in 4,000 repetitions, rejects 5.05% at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Momentum a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.73 %, Markov order (grouped by direction) 6.05 %, Matrix against a reference 3.70 %, Downward momentum (hazard) 4.45 %); the order test, near its bound in 4,000 repetitions, rejects 5.05 % at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5 %: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05 % al 5 % en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4016,10 +4016,10 @@
    },
    "owner_role": "Head of validation tooling (synthetic role)",
    "tier": 4,
-   "raised": "2026-10-12",
+   "raised": "2026-10-27",
    "deadline_days": 365,
-   "due": "2027-10-12",
-   "ageing_days": 80,
+   "due": "2027-10-27",
+   "ageing_days": 65,
    "overdue": false,
    "remediation": null,
    "remediation_reason": {
@@ -4027,24 +4027,177 @@
     "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
    },
    "risk_acceptance": null
+  },
+  {
+   "key": "C22/null/F-OTHER-SIZE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-OTHER-SIZE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "19 of 21 tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all 25 studies counted); above their bound and not documented by the engine: Christoffersen independence, Christoffersen conditional coverage",
+    "es": "19 de 21 pruebas de las otras siete familias mantienen su tamaño al 5 % y 1 % en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "rate:market.christoffersen_independence@null",
+    "rate:market.christoffersen_conditional_coverage@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 180,
+   "due": "2027-04-25",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/null/F-OTHER-MC-EXCESS",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-OTHER-MC-EXCESS",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The Monte Carlo quantile convergence test measures 1.33 % at 1% against a bound of 1.49 % (within it in this run); the engine documents an excess of its own run on its page docs/portfolio/07_validation-tests.md: The engine's page states the measured size, 1.55% at 1% against a bound of 1.49% (4,000 repetitions): the z-test of the sample quantile estimates its standard error from the sample (Woodruff), which oversizes it slightly at 1%; with the exact standard error its size is 1.20%, within both bounds.",
+    "es": "La prueba de convergencia del cuantil Monte Carlo mide 1,33 % al 1 % contra una cota de 1,49 % (dentro de ella en esta corrida); el motor documenta un exceso de su propia corrida en su página docs/portfolio/07_validation-tests.md: La página del motor declara el tamaño medido, 1,55 % al 1 % contra una cota de 1,49 % (4.000 repeticiones): la prueba z del cuantil muestral estima su error estándar desde la muestra (Woodruff), lo que la sobredimensiona levemente al 1 %; con el error estándar exacto su tamaño es 1,20 %, dentro de ambas cotas."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:portfolio.mc_convergence@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 365,
+   "due": "2027-10-27",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-OTHER-CONSERVATIVE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-OTHER-CONSERVATIVE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "8 studies are conservative: their rate at 5% lies wholly below the level (McNeil-Frey residual test, Tail back-test (LHP quantile), 60 years at the 95% level, Tail back-test (LHP quantile), 250 years at the 99% level, CreditRisk+ recursion against Monte Carlo, Duration test, Dynamic quantile test (1,500 days at 5%), Dynamic quantile test (250 days at 2.5%), Dynamic quantile test (750 days at 1%)); a discrete or estimated null makes them under-reject, which costs power, not credibility",
+    "es": "8 estudios son conservadores: su tasa al 5 % queda por completo bajo el nivel (Prueba de residuos de McNeil-Frey, Prueba retrospectiva de cola (cuantil LHP), 60 años al nivel 95 %, Prueba retrospectiva de cola (cuantil LHP), 250 años al nivel 99 %, Recursión de CreditRisk+ contra Monte Carlo, Prueba de duración, Prueba de cuantil dinámico (1.500 días al 5 %), Prueba de cuantil dinámico (250 días al 2,5 %), Prueba de cuantil dinámico (750 días al 1 %)); una nula discreta o estimada los hace rechazar de menos, lo que cuesta potencia, no credibilidad"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:market.mcneil_frey_residual_test@null",
+    "rate:portfolio.tail_backtest@null",
+    "rate:portfolio.tail_backtest#1@null",
+    "rate:portfolio.crp_recursion_vs_mc@null",
+    "rate:market.duration_test@null",
+    "rate:market.dynamic_quantile_test@null",
+    "rate:market.dynamic_quantile_test#2@null",
+    "rate:market.dynamic_quantile_test#3@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-27",
+   "deadline_days": 365,
+   "due": "2027-10-27",
+   "ageing_days": 65,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
   }
  ],
  "counts": {
-  "total": 81,
+  "total": 84,
   "by_severity": {
    "S1": 2,
-   "S2": 14,
+   "S2": 15,
    "S3": 41,
-   "S4": 24
+   "S4": 26
   },
   "by_status": {
-   "open": 49,
+   "open": 50,
    "action_plan_agreed": 0,
    "in_progress": 0,
    "submitted_for_closure": 0,
    "validated_closed": 4,
    "overdue": 0,
-   "risk_accepted": 28
+   "risk_accepted": 30
   },
   "overdue": 7,
   "by_case": [
@@ -4110,21 +4263,21 @@
    },
    {
     "case_id": "C22",
-    "total": 20,
+    "total": 23,
     "by_severity": {
      "S1": 0,
-     "S2": 9,
+     "S2": 10,
      "S3": 7,
-     "S4": 4
+     "S4": 6
     },
     "by_status": {
-     "open": 1,
+     "open": 2,
      "action_plan_agreed": 0,
      "in_progress": 0,
      "submitted_for_closure": 0,
      "validated_closed": 4,
      "overdue": 0,
-     "risk_accepted": 15
+     "risk_accepted": 17
     },
     "overdue": 0
    }

@@ -12,6 +12,7 @@ import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC07Instrument } from './instrument';
+import { truthStatusText } from '../c05/selection';
 import { defaultSel, liveIfrs9, outputsOf, reweighted, type C07Sel } from './selection';
 import { C07ContextView, C07FindingsView, C07VariantsTable, Ifrs9Readout } from './C07Common';
 import { B1View, BdeView, BridgeView, DeltaView, Ifrs9View, SegmentsView, ThreeRegimeView } from './RegimeViews';
@@ -187,7 +188,7 @@ describe('the C07 instrument', () => {
     const markup = html(<C07ContextView sel={sel} />);
     expect(markup).toContain('Banco Andino');
     expect(markup).toContain(o.notice.en);
-    expect(markup).toContain(variant.provenance.truth_status);
+    expect(markup).toContain(truthStatusText(variant.provenance.truth_status).en);
   });
 
   it('the scenarios table shows the three totals of each variant and no change for the base', () => {

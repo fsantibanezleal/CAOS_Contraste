@@ -13,6 +13,7 @@ import { C15_FIT, C15_OUTPUTS } from './descriptor';
 import { useC15Instrument } from './instrument';
 import { amount, defaultSel, moneyDoc, outputsOf, worst, type C15Sel } from './selection';
 import { C15ContextView, C15FindingsView, C15VariantsTable, LegReadout, OffsetReadout, ShockReadout } from './C15Common';
+import { docText } from '../c14/C14Common';
 import { DynamicLegView, EarEvarLegView, EveByLegView, PositionsView } from './LegViews';
 import { IndexationView, NiiView } from './RateViews';
 import { FloorsView, ThresholdsView, thresholdsChart } from './FloorViews';
@@ -145,7 +146,7 @@ describe('the C15 instrument', () => {
   it('the indexation charge is derived from the net UF position and is never folded into the rate result', () => {
     const markup = html(<IndexationView sel={sel} />);
     const c = o.indexation_charge;
-    expect(markup).toContain(escapeHtml(c.formula));
+    expect(markup).toContain(escapeHtml(docText(c.formula, 'en'))); // c15-outputs 3.0.0 (U16-F10d): the formula is bilingual
     expect(markup).toContain(formatNumber(c.net_position_uf_units, 'en', { digits: 4 }));
     expect(markup).toContain(cell(c.pn_ur));
     expect(markup).toContain(cell(c.charge));
@@ -159,7 +160,7 @@ describe('the C15 instrument', () => {
     const withCpi = html(<IndexationView sel={selOf(cpi)} />);
     const s = cpi.outputs.cpi_scenario!;
     expect(withCpi).toContain('data-cpi="present"');
-    expect(withCpi).toContain(escapeHtml(s.formula));
+    expect(withCpi).toContain(escapeHtml(docText(s.formula, 'en')));
     expect(withCpi).toContain(cell(s.effect));
     expect(withCpi).toContain(formatNumber(s.surprise_pp, 'en', { digits: 4 }));
     const without = html(<IndexationView sel={sel} />);
@@ -288,11 +289,11 @@ describe('the C15 instrument', () => {
     expect(markup).toContain('above the floor');
   });
 
-  it('the prioritised-bank thresholds are lines: 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
+  it('the prioritised-bank thresholds are marks (U16-R2 b07 m6: three tests, no line between them): 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
     const chart = thresholdsChart(sel);
     expect(chart?.x.values).toEqual([1, 2, 3]);
     expect(chart?.series.map((s) => s.values)).toEqual([o.thresholds.tests.map((t) => t.ratio), [0.05, 0.15, 0.18]]);
-    expect(chart?.series[1].mode).not.toBe('points');
+    expect(chart?.series[1].mode).toBe('points');
     const markup = html(<ThresholdsView sel={sel} />);
     for (const t of o.thresholds.tests) {
       expect(markup).toContain(`data-test-id="${t.id}"`);
@@ -303,7 +304,7 @@ describe('the C15 instrument', () => {
     }
     expect(markup).toContain('data-breached="false"');
     expect(markup).toContain('data-prioritised="false"');
-    expect(markup).toContain(escapeHtml(o.thresholds.reference));
+    expect(markup).toContain(escapeHtml(docText(o.thresholds.reference, 'en'))); // c15-outputs 3.0.0: the reference is bilingual (R3 c16 B2)
     expect(thresholdsChart(null)).toBeNull();
   });
 
@@ -459,8 +460,9 @@ describe('the C15 rail', () => {
     const markup = html(<OffsetReadout sel={selOf(offsetV)} />);
     const on = amount(moneyDoc(v), worst(v.eve.rows, (r) => r.pair, 'on'));
     const off = amount(moneyDoc(v), worst(v.eve.rows, (r) => r.pair, 'off'));
-    expect(markup).toContain(formatNumber(on.value, 'en', on.format));
-    expect(markup).toContain(formatNumber(off.value, 'en', off.format));
+    // the rail prints the bars' two decimals (R5 c20 m-n1, U16-F13d)
+    expect(markup).toContain(formatNumber(on.value, 'en', { decimals: 2 }));
+    expect(markup).toContain(formatNumber(off.value, 'en', { decimals: 2 }));
     expect(markup).toContain(formatNumber(v.offset_rule.share, 'en', { percent: true, decimals: 0 }));
   });
 

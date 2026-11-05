@@ -9,7 +9,10 @@ import { Pending } from '../Pending';
 import { Labelled, LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { RULE_OF_THUMB } from './ShockViews';
-import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
+import { EVALUATION_SET_TEXT, PORTFOLIO_TEXT, asKind, cbpeNoteEn, evaluationSet, text, type C20Sel } from './selection';
+import { localTests } from './localise';
+import { inputName, segmentName, windowName } from '../names';
+import { TallBars, barBox } from './C20Common';
 
 const TITLE_REAL: BiText = { en: 'Real drift between the portfolios', es: 'Deriva real entre las carteras' };
 const TITLE_SYNTH: BiText = { en: 'Synthetic shift', es: 'Cambio sintético' };
@@ -17,6 +20,14 @@ const TITLE_CONFORMAL: BiText = { en: 'Conformal coverage over time', es: 'Cober
 const TITLE_CBPE: BiText = { en: 'Label-free performance estimate', es: 'Estimación de desempeño sin etiquetas' };
 
 /** The real drift between two portfolios of the Federal Reserve, variable by variable, with no model: PSI, CSI, KS and the chi-square test. */
+/** The tone of a conformal window: its test's light (U16-R3 c20 m5: the baseline window, 89.5 % against a 90 % target with p 0.31 and a
+ * green test, was drawn red from the coverage alone); null when the document has no test row for the window. */
+export function windowTone(window: string, tests: ReadonlyArray<{ test_id: string; segment?: string | null; light: string }>): 'good' | 'warn' | 'bad' | null {
+  const t = tests.find((x) => x.test_id === 'ml.conformal_coverage' && x.segment === `window:${window}`);
+  if (!t) return null;
+  return t.light === 'green' ? 'good' : t.light === 'amber' ? 'warn' : t.light === 'red' ? 'bad' : null;
+}
+
 export function RealDriftView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -25,7 +36,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_REAL} needs="shift" />;
   const d = o.real_drift;
   const name = (id: string) => pick(text(PORTFOLIO_TEXT, id), lang);
-  const bars = d.pairs.flatMap((p) => p.variables.map((v) => ({ id: `${p.a}-${p.b}-${v.name}`, label: { en: `${v.name} (${text(PORTFOLIO_TEXT, p.a).en} to ${text(PORTFOLIO_TEXT, p.b).en})`, es: `${v.name} (${text(PORTFOLIO_TEXT, p.a).es} a ${text(PORTFOLIO_TEXT, p.b).es})` }, value: v.psi })));
+  const bars = d.pairs.flatMap((p) => p.variables.map((v) => ({ id: `${p.a}-${p.b}-${v.name}`, label: { en: `${pick(inputName(v.name) ?? v.name, 'en')} (${text(PORTFOLIO_TEXT, p.a).en} to ${text(PORTFOLIO_TEXT, p.b).en})`, es: `${pick(inputName(v.name) ?? v.name, 'es')} (${text(PORTFOLIO_TEXT, p.a).es} a ${text(PORTFOLIO_TEXT, p.b).es})` }, value: v.psi })));
   const rules = RULE_OF_THUMB.map((v) => ({
     id: `rule-${v}`,
     label: { en: `Rule of thumb ${formatNumber(v, 'en', { decimals: 2 })} (convention)`, es: `Regla empírica ${formatNumber(v, 'es', { decimals: 2 })} (convención)` },
@@ -39,8 +50,9 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
         title={TITLE_REAL}
         {...card}
         note={{
-          en: 'The portfolios of typical, higher and lower risk are different real populations of loans, so the drift between them is a real shift. No model is scored here: the view compares the variables only. The grey bars are the legacy PSI rule of thumb, a convention and not a regulatory threshold.',
-          es: 'Las carteras de riesgo típico, mayor y menor son poblaciones reales distintas de créditos, así que la deriva entre ellas es un cambio real. Aquí no se puntúa ningún modelo: la vista compara solo las variables. Las barras grises son la regla empírica heredada del PSI, una convención y no un umbral regulatorio.',
+          // the Fed's portfolios are hypothetical, as the case page says (U16-R5 c26 M1: "different real populations of loans")
+          en: "The Federal Reserve's three hypothetical portfolios of typical, higher and lower risk are different populations, so the drift between them is a shift between populations, known by construction. No model is scored here: the view compares the variables only. The grey bars are the legacy PSI rule of thumb, a convention and not a regulatory threshold.",
+          es: 'Las tres carteras hipotéticas de la Reserva Federal, de riesgo típico, mayor y menor, son poblaciones distintas, así que la deriva entre ellas es un cambio entre poblaciones, conocido por construcción. Aquí no se puntúa ningún modelo: la vista compara solo las variables. Las barras grises son la regla empírica heredada del PSI, una convención y no un umbral regulatorio.',
         }}
       >
         <LabelledOverTable
@@ -50,18 +62,20 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               reason={{ en: 'Real drift between the portfolios, with no model.', es: 'Deriva real entre las carteras, sin modelo.' }}
             />
           }
-          chartMin={barMin(bars.length + rules.length)}
+          chartMin={barBox(bars.length + rules.length)}
           chart={
             bars.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the document carries no variable of any portfolio pair.', es: 'No disponible: el documento no trae ninguna variable de ningún par de carteras.' }, lang)}</p>
             ) : (
+              <TallBars rows={bars.length + rules.length}>
               <BarChart
                 title={{ en: 'PSI by variable and portfolio pair', es: 'PSI por variable y par de carteras' }}
                 height="fill"
                 orientation="horizontal"
-                data={[...bars, ...rules]}
+                data={[...rules, ...[...bars].sort((a, b) => b.value - a.value)]}
                 axis={{ label: { en: 'Population stability index', es: 'Índice de estabilidad poblacional' }, format: { decimals: 2 } }}
               />
+              </TallBars>
             )
           }
         >
@@ -81,7 +95,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
                 p.variables.map((v) => (
                   <tr key={`${p.a}-${p.b}-${v.name}`} data-pair={`${p.a}-${p.b}`} data-input={v.name}>
                     <td className="ct-text">{`${name(p.a)} / ${name(p.b)}`}</td>
-                    <td className="ct-text">{v.name}</td>
+                    <td className="ct-text">{pick(inputName(v.name) ?? { en: v.name, es: v.name }, lang)}</td>
                     <td>{f3(v.psi, lang)}</td>
                     <td>{f3(v.csi, lang)}</td>
                     <td className="ct-wide-only">{f3(v.ks, lang)}</td>
@@ -91,7 +105,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               )}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -99,6 +113,21 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The synthetic shift of the evaluation set built from a portfolio as the reference: performance, PSI and flips under each shift, and the worst subsample. */
+/**
+ * The bars of the synthetic shift: the AUC loss under each shift and on the worst subsample, positive a loss. A loss is drawn in the
+ * bad tone and a gain in the good one (U16-R4 c24 n2: every loss was drawn green, the opposite of the shock chart).
+ */
+export function syntheticShiftBars(
+  s: { shifts: Array<{ shift_id: string; metric: { auc_delta: number } }>; worst_subsample: { share: number; metric: { auc_delta: number } } },
+  current: string | null,
+) {
+  const rows = [
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: windowName(x.shift_id) as BiText, value: 0 - x.metric.auc_delta, highlight: x.shift_id === current })),
+    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
+  ];
+  return rows.map((r) => ({ ...r, tone: r.value > 0 ? ('bad' as const) : ('good' as const) }));
+}
+
 export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -106,10 +135,10 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   const o = asKind(sel, 'shift');
   if (!o) return <NotInVariant sel={sel} title={TITLE_SYNTH} needs="shift" />;
   const s = o.synthetic_shift;
-  const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: -x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
-    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: -s.worst_subsample.metric.auc_delta, highlight: false },
-  ];
+  const rows = syntheticShiftBars(s, sel.shift);
+  const ev = evaluationSet(s);
+  const evName = text(EVALUATION_SET_TEXT, ev.id);
+  const evalText: BiText = ev.rows === null ? evName : { en: `${evName.en} (${int(ev.rows, 'en')} rows)`, es: `${evName.es} (${int(ev.rows, 'es')} filas)` };
   return (
     <ViewsRow>
       <PlotCard
@@ -117,8 +146,8 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
         title={TITLE_SYNTH}
         {...card}
         note={{
-          en: `The ${text(PORTFOLIO_TEXT, s.reference_portfolio).en.toLowerCase()} portfolio is the reference of the shift, injected into the evaluation set ${s.evaluation_set} only. The score is the strength of the shift; the cut-off of the decision flips is held fixed. A stress test, not a forecast.`,
-          es: `La cartera de ${text(PORTFOLIO_TEXT, s.reference_portfolio).es.toLowerCase()} es la referencia del cambio, inyectado solo en el conjunto de evaluación ${s.evaluation_set}. El puntaje es la fuerza del cambio; el corte de las decisiones que cambian se mantiene fijo. Una prueba de estrés, no un pronóstico.`,
+          en: `The ${text(PORTFOLIO_TEXT, s.reference_portfolio).en.toLowerCase()} portfolio is the reference of the shift, injected into the evaluation set only: ${evalText.en}. The score is the strength of the shift; the cut-off of the decision flips is held fixed. A stress test, not a forecast.`,
+          es: `La cartera de ${text(PORTFOLIO_TEXT, s.reference_portfolio).es.toLowerCase()} es la referencia del cambio, inyectado solo en el conjunto de evaluación: ${evalText.es}. El puntaje es la fuerza del cambio; el corte de las decisiones que cambian se mantiene fijo. Una prueba de estrés, no un pronóstico.`,
         }}
       >
         <LabelledOverTable
@@ -129,7 +158,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               title={{ en: 'AUC loss under each shift', es: 'Pérdida de AUC bajo cada cambio' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ ...r, tone: r.value < 0 ? ('bad' as const) : ('good' as const) }))}
+              data={rows}
               axis={{ label: { en: 'AUC loss against the unshifted set (positive is a loss)', es: 'Pérdida de AUC contra el conjunto sin cambio (positivo es una pérdida)' }, format: { decimals: 3 } }}
             />
           }
@@ -148,7 +177,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {s.shifts.map((x) => (
                 <tr key={x.shift_id} data-shift={x.shift_id} className={x.shift_id === sel.shift ? 'ct-current' : undefined}>
-                  <td className="ct-text">{x.shift_id}</td>
+                  <td className="ct-text">{pick(segmentName(x.shift_id, { caseId: 'C20' }) ?? { en: x.shift_id, es: x.shift_id }, lang)}</td>
                   <td>{f3(x.score, lang)}</td>
                   <td>{f3(x.metric.auc, lang)}</td>
                   <td>{f4(x.metric.auc_delta, lang)}</td>
@@ -166,7 +195,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.shift')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.shift')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -174,6 +203,9 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The split conformal coverage by window against its target: a coverage that falls below it reads as an exchangeability violation. */
+/** The coverage of the conformal chart, with the decimal of its table (U16-R5 c26 m2: the chart said 89 % beside the table's 89.5 %). */
+export const CONFORMAL_FORMAT = { percent: true, decimals: 1 } as const;
+
 export function ConformalView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -182,7 +214,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_CONFORMAL} needs="shift" />;
   const c = o.synthetic_shift.label_free.conformal;
   const rows = [
-    ...c.coverage_by_window.map((w) => ({ id: w.window, label: { en: w.window, es: w.window } as BiText, value: w.coverage, highlight: w.window === sel.window, tone: w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const) })),
+    ...c.coverage_by_window.map((w) => ({ id: w.window, label: windowName(w.window), value: w.coverage, highlight: w.window === sel.window, tone: windowTone(w.window, sel.data.variant.tests) ?? (w.coverage < c.target_coverage ? ('bad' as const) : ('good' as const)) })),
     { id: 'overall', label: { en: 'All windows', es: 'Todas las ventanas' } as BiText, value: c.coverage, highlight: false, tone: undefined },
     { id: 'target', label: { en: 'Target (1 minus alpha)', es: 'Meta (1 menos alfa)' } as BiText, value: c.target_coverage, highlight: false, tone: 'neutral' as const },
   ];
@@ -206,7 +238,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={rows}
-              axis={{ label: { en: 'Coverage of the conformal sets', es: 'Cobertura de los conjuntos conformes' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+              axis={{ label: { en: 'Coverage of the conformal sets', es: 'Cobertura de los conjuntos conformes' }, format: CONFORMAL_FORMAT, range: [0, 1] }}
             />
           }
         >
@@ -222,7 +254,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {c.coverage_by_window.map((w) => (
                 <tr key={w.window} data-window={w.window} data-below-target={w.coverage < c.target_coverage} className={w.window === sel.window ? 'ct-current' : undefined}>
-                  <td className="ct-text">{w.window}</td>
+                  <td className="ct-text">{pick(windowName(w.window), lang)}</td>
                   <td className="ct-wide-only">{int(w.n, lang)}</td>
                   <td>{pc1(w.coverage, lang)}</td>
                   <td>{sig(w.binomial_p_value, lang)}</td>
@@ -236,7 +268,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.conformal')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.conformal')} caseId="C20" models={sel.data.variant.model} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -253,7 +285,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
   const s = o.synthetic_shift;
   const e = s.label_free.cbpe;
   const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: `Measured, ${x.shift_id}`, es: `Medido, ${x.shift_id}` } as BiText, value: x.metric.auc })),
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: `Measured, ${pick(windowName(x.shift_id), 'en')}`, es: `Medido, ${pick(windowName(x.shift_id), 'es')}` } as BiText, value: x.metric.auc })),
     { id: 'cbpe', label: { en: 'CBPE estimate (no labels)', es: 'Estimación CBPE (sin etiquetas)' } as BiText, value: e.estimated_auc, tone: 'warn' as const },
   ];
   return (
@@ -288,7 +320,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
               <li key={a.id} data-assumption={a.id}>{pick(a.text, lang)}</li>
             ))}
           </ul>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.cbpe')} />
+          <U14TestsTable tests={lang === 'en' ? sel.data.variant.tests.map((t) => (t.test_id === 'ml.cbpe_estimate' && t.notes ? { ...t, notes: cbpeNoteEn(t.notes) } : t)) : localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} caseId="C20" models={sel.data.variant.model} />
           <SgcdNotice sel={sel} />
           <p className="ct-note">{pick({ en: `Share of rows in the worst subsample: ${pc(s.worst_subsample.share, 'en')}.`, es: `Parte de las filas en la peor submuestra: ${pc(s.worst_subsample.share, 'es')}.` }, lang)}</p>
         </LabelledOverTable>

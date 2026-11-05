@@ -19,7 +19,9 @@ CURRENCY = "USD"
 CASE_ID = "C08"
 PRIMARY_SOURCE = "sba-7a-chargeoff-twin"
 REGIME = "basel-iii-final"
-FLOOR_SOURCE = "dossier 01 section A.5 (Basel III final, CRE32.16, CRE32.17 and CRE32.58 to CRE32.59); the retail secured order is UNVERIFIED"
+FLOOR_SOURCE = {
+    "en": "dossier 01 section A.5 (Basel III final, CRE32.16, CRE32.17 and CRE32.58 to CRE32.59); the retail secured order is UNVERIFIED",
+    "es": "dossier 01, sección A.5 (Basilea III final, CRE32.16, CRE32.17 y CRE32.58 a CRE32.59); el orden de los minoristas garantizados está NO VERIFICADO"}
 #: the cell rung used where one rung must stand for the ladder (calibration buckets for the floors, the floors): chosen before
 #: seeing a test cohort, in this order, the first fitted
 REFERENCE_RUNGS = ("L2-fractional-logit", "L1-ols")
@@ -33,20 +35,27 @@ def t(en: str, es: str) -> dict[str, str]:
     return {"en": en, "es": es}
 
 
+#: each rung's title and its short name; the short name is the one every C08 view prints for the model (frontend c08/selection.ts
+#: KIND_TEXT), so a finding that names the model by its short title says the same words in both languages (U16-R5 c11 B1: the Spanish
+#: "L4 Hurdle"; n1: "L1 OLS" beside "Linear regression")
 RUNG_TEXT = {
-    "L1-ols": (("OLS, clipped to [0, 1]", "MCO, recortado a [0, 1]"), ("L1 OLS", "L1 MCO")),
-    "L2-fractional-logit": (("Fractional logit (quasi-likelihood)", "Logit fraccional (cuasi-verosimilitud)"), ("L2 Fractional logit", "L2 Logit fraccional")),
-    "L3-beta": (("Beta regression on the endpoint-adjusted LGD", "Regresión beta sobre la LGD con extremos ajustados"), ("L3 Beta", "L3 Beta")),
-    "L4-hurdle": (("Two-stage hurdle (loss or not, then severity)", "Dos etapas (hay pérdida o no, luego severidad)"), ("L4 Hurdle", "L4 Hurdle")),
-    "L5-gradient-boosted": (("Gradient-boosted trees (catboost, cross-entropy)", "Árboles con gradiente (catboost, entropía cruzada)"), ("L5 Boosted trees", "L5 Árboles")),
-    "L6-tobit": (("Two-limit Tobit", "Tobit de dos límites"), ("L6 Tobit", "L6 Tobit")),
+    "L1-ols": (("OLS, clipped to [0, 1]", "MCO, recortado a [0, 1]"), ("Linear regression", "Regresión lineal")),
+    "L2-fractional-logit": (("Fractional logit (quasi-likelihood)", "Logit fraccional (cuasi-verosimilitud)"), ("Fractional logit", "Logit fraccional")),
+    "L3-beta": (("Beta regression on the endpoint-adjusted LGD", "Regresión beta sobre la LGD con extremos ajustados"), ("Beta regression", "Regresión beta")),
+    "L4-hurdle": (("Two-stage hurdle (loss or not, then severity)", "Dos etapas (hay pérdida o no, luego severidad)"), ("Two-stage hurdle", "Modelo en dos etapas")),
+    "L5-gradient-boosted": (("Gradient-boosted trees (catboost, cross-entropy)", "Árboles con gradiente (catboost, entropía cruzada)"), ("Gradient boosting", "Árboles potenciados por gradiente")),
+    "L6-tobit": (("Two-limit Tobit", "Tobit de dos límites"), ("Tobit", "Tobit")),
+    "L7-random-forest": (("Random forest (scikit-learn, squared error)", "Bosque aleatorio (scikit-learn, error cuadrático)"),
+                         ("Random forest", "Bosque aleatorio")),
+    "L8-neural-network": (("Neural network (scikit-learn, two hidden layers)", "Red neuronal (scikit-learn, dos capas ocultas)"),
+                          ("Neural network", "Red neuronal")),
 }
 
 NOTICE = t(
     "Small-business loans, not mortgages: the SBA 7(a) charge-offs are the public twin of the mortgage case. Freddie Mac's data is "
     "not used (the owner's account is missing). The LGD is a proxy: the file has no recovery cash flows after the charge-off.",
     "Préstamos a pequeñas empresas, no hipotecas: los castigos SBA 7(a) son el gemelo público del caso hipotecario. No se usan los "
-    "datos de Freddie Mac (falta la cuenta del propietario). La LGD es un proxy: el archivo no tiene flujos de recuperación "
+    "datos de Freddie Mac (falta la cuenta del propietario). La LGD es una aproximación: el archivo no tiene flujos de recuperación "
     "posteriores al castigo.")
 
 
@@ -55,8 +64,8 @@ def lgd_proxy_block() -> dict[str, Any]:
         "definition": t(
             "LGD proxy = gross charge-off amount over the gross approved amount (SBA 7(a) fields GrossChargeOffAmount and "
             "GrossApproval, the only exposure field the file carries). It is a proxy, not a workout LGD.",
-            "Proxy de LGD = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y "
-            "GrossApproval, el único campo de exposición del archivo). Es un proxy, no una LGD de recuperación."),
+            "LGD aproximada = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y "
+            "GrossApproval, el único campo de exposición del archivo). Es una aproximación, no una LGD de recuperación."),
         "formula": "GrossChargeOffAmount / GrossApproval",
         "source_field": "GrossChargeOffAmount",
         "exposure_field": "GrossApproval",
@@ -66,18 +75,33 @@ def lgd_proxy_block() -> dict[str, Any]:
             "The proxy is biased low: the approved amount overstates the exposure at default of an amortising loan, so the "
             "denominator is too large. A second effect pushes the other way: the SBA 7(a) public file has no recovery cash flows "
             "after charge-off, so the proxy ignores recoveries and costs and overstates the loss net of recoveries; it can also "
-            "exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect "
-            "(decision D2).",
-            "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un credito que se "
+            "exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect.",
+            "La aproximación tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un crédito que se "
             "amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: el archivo "
-            "público SBA 7(a) no tiene flujos de recuperación posteriores al castigo, de modo que el proxy ignora recuperaciones y "
+            "público SBA 7(a) no tiene flujos de recuperación posteriores al castigo, de modo que la aproximación ignora recuperaciones y "
             "costos y sobreestima la pérdida neta de recuperaciones; también puede superar 1 si se castigan intereses "
-            "capitalizados o comisiones. La dirección declarada es el efecto del denominador (decisión D2)."),
+            "capitalizados o comisiones. La dirección declarada es el efecto del denominador."),
     }
 
 
+#: the declared absence of the Freddie Mac slot (``pipeline.io.sba.FREDDIE_REASON``) in both languages; any other reason is an error, so
+#: a Spanish view never prints an English sentence (U16-R2 b04 B5)
+FREDDIE_REASONS_ES = {
+    "Freddie Mac: the owner's account is missing; the SBA twin is published":
+        "Freddie Mac: falta la cuenta del propietario; se publica el gemelo SBA",
+}
+
+
+def freddie_reason_block(reason: str) -> dict[str, str]:
+    """The Freddie Mac reason as the bilingual text the documents carry."""
+    try:
+        return t(reason, FREDDIE_REASONS_ES[reason])
+    except KeyError:
+        raise ValueError(f"the Freddie Mac reason {reason!r} has no Spanish text: add it to FREDDIE_REASONS_ES") from None
+
+
 def data_status_block(freddie_reason: str) -> dict[str, Any]:
-    return {"primary_source": PRIMARY_SOURCE, "freddie_mac_available": False, "freddie_mac_reason": freddie_reason,
+    return {"primary_source": PRIMARY_SOURCE, "freddie_mac_available": False, "freddie_mac_reason": freddie_reason_block(freddie_reason),
             "notice": NOTICE}
 
 
@@ -85,9 +109,10 @@ def workout_block() -> dict[str, Any]:
     return {
         "discount_rate_convention": "none-proxy", "discount_rate": None,
         "incomplete_workouts": {"treatment": "not-applicable", "n_excluded": 0, "n_projected": 0,
-                                "reason": "the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record"},
-        "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
-                  "No se descuenta un proxy de castigo; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (párrafo NO VERIFICADO)."),
+                                "reason": t("the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record",
+                                            "el archivo SBA no tiene flujos de recuperación que descontar ni proyectar; el castigo es todo el registro")},
+        "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (the paragraph number is not confirmed).",
+                  "No se descuenta una aproximación por castigos; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (el número de párrafo no está confirmado)."),
     }
 
 
@@ -96,7 +121,7 @@ def closure_rule() -> dict[str, str]:
         "Only defaults whose charge-off closed strictly before the cutoff enter the training set (the file has no later record of a "
         "workout); later default cohorts are the tests. The file has no default date before the charge-off, so the open workouts "
         f"excluded are counted as the charge-offs of the {WORKOUT_WINDOW_MONTHS} months after the cutoff, a stated stand-in.",
-        "Solo entran al entrenamiento los incumplimientos cuyo castigo cerro estrictamente antes del corte (el archivo no tiene "
+        "Solo entran al entrenamiento los incumplimientos cuyo castigo cerró estrictamente antes del corte (el archivo no tiene "
         "registro posterior de una recuperación); las cohortes posteriores son de prueba. El archivo no tiene fecha de "
         "incumplimiento anterior al castigo, de modo que los procesos abiertos excluidos se cuentan como los castigos de los "
         f"{WORKOUT_WINDOW_MONTHS} meses posteriores al corte, un sustituto declarado.")

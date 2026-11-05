@@ -1,0 +1,23 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The 2009 S\&P rating system carried to 2010 and 2011 by the nine calibration approaches: the PD each forecasts for the portfolio (the first four use the observed PD of the forecast year), the accuracy ratio (AR) of the model it implies, the Monte Carlo $p$-value of the default-profile test with its standard error (100,000 samples), and the average IRB risk weight (RW) of the forecast portfolio, in percent of exposure.}
+\label{tab:ratings-calibration}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Approach & 2010 PD (\%) & 2010 AR (\%) & 2010 $p$ (\%) & 2010 RW (\%) & 2011 PD (\%) & 2011 AR (\%) & 2011 $p$ (\%) & 2011 RW (\%) \\
+\midrule
+Invariant default profile & 1.141 & 79.3 & $4.6\pm0.1$ & 60.9 & 0.753 & 80.1 & $78.2\pm0.1$ & 51.6 \\
+Invariant accuracy ratio & 1.141 & 82.7 & $7.9\pm0.1$ & 57.3 & 0.753 & 82.7 & $89.1\pm0.1$ & 49.4 \\
+Scaled PDs & 1.141 & 81.0 & $4.2\pm0.1$ & 58.8 & 0.753 & 77.5 & $37.0\pm0.2$ & 53.5 \\
+Scaled likelihood ratio & 1.141 & 84.5 & $11.1\pm0.1$ & 55.0 & 0.753 & 81.4 & $82.0\pm0.1$ & 50.5 \\
+Invariant likelihood ratio, PD known & 1.546 & 84.4 & $10.1\pm0.1$ & 61.6 & 0.868 & 81.3 & $80.8\pm0.1$ & 53.3 \\
+Invariant PD curve (2009 curve unchanged) & 4.318 & 83.7 & $4.2\pm0.1$ & 90.7 & 3.751 & 79.9 & $37.0\pm0.2$ & 92.6 \\
+Conditional profiles, least squares & 4.799 & 83.5 & $3.4\pm0.1$ & 95.5 & 3.499 & 80.1 & $42.1\pm0.2$ & 88.9 \\
+Conditional profiles, least chi-square & 5.347 & 83.4 & $2.9\pm0.1$ & 98.4 & 2.834 & 80.4 & $51.0\pm0.2$ & 83.2 \\
+Invariant likelihood ratio, profile known & 5.377 & 83.3 & $2.9\pm0.1$ & 98.5 & 2.794 & 80.4 & $51.5\pm0.2$ & 82.8 \\
+Observed & 1.141 & 90.2 &  &  & 0.753 & 88.7 &  &  \\
+\bottomrule
+\end{tabular}}
+\end{table*}

@@ -2,11 +2,12 @@
 // (waterfall, overlays as bars of their own), what the scenario weights do to the ECL (the simplex, staging
 // recomputed against frozen) and the stage summary. The drawings are SVG at the size their stage measures; every
 // drawing has its table beside it with the same numbers, and the numbers are the document's.
-import { BarChart, PlotCard, Stage, ViewsRow, fitLabel, formatNumber, niceTicks, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, Stage, ViewsRow, fitLabel, formatNumber, textWidth, niceTicks, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { useState } from 'react';
 import { provenanceOf, REPLAY } from '../model';
 import { viridis } from '../c04/MatrixMap';
 import { Pending } from '../Pending';
+import { columnScale } from './amounts';
 import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, axisScale, money, pct } from './format';
 import { nearestPoint, outputsOf, rescaled, type C06Sel } from './selection';
 
@@ -286,7 +287,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
           </div>
         </PlotCard>
         <PlotCard fill title={{ en: 'The lines in numbers', es: 'Las líneas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="waterfall">
               <thead>
                 <tr>
@@ -324,7 +325,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
             {o.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table ct-wrap-head" data-table="overlays">
               <thead>
                 <tr>
@@ -359,6 +360,35 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
 
 const CORNER_ANGLES = [-90, 30, 150];
 
+/** The width of a lower corner label of the simplex in a drawing this wide: each lower label sits under its corner and runs inwards
+ * over half the drawing, room for a scenario's full name in a few lines (R2b c07: "Adverso (punto medio de las formas Fed, propio de
+ * Contraste)" ran outwards and was cut to two lines with an ellipsis). */
+export const cornerLabelWidth = (width: number): number => Math.max(width / 2 - 12, 60);
+
+/** A corner label broken at words into lines of at most `width` pixels, never shortened (the shell's fitLabel keeps two lines and
+ * then cuts with an ellipsis); a word wider than the line keeps a line of its own. */
+export function cornerLines(label: string, width: number, px = 12): string[] {
+  const lines: string[] = [];
+  for (const word of label.split(/\s+/).filter(Boolean)) {
+    const last = lines[lines.length - 1];
+    if (last !== undefined && textWidth(`${last} ${word}`, px) <= width) lines[lines.length - 1] = `${last} ${word}`;
+    else lines.push(word);
+  }
+  return lines;
+}
+
+/** The simplex in a drawing of this size whose top label takes `topLines` lines and whose lower labels take at most
+ * `bottomLines`: the radius, the apex and the centre. The drawing keeps the room the labels take: the top label's last line sits
+ * 20 px over the apex (clear of the corner's point and ring) with its first line's ascent inside the drawing, and the lower labels
+ * start 28 px under their corners (the 1.00.000 gate found the top label cut by 14 px when the triangle took the height, G10). */
+export function simplexLayout(width: number, height: number, topLines: number, bottomLines: number): { r: number; apex: number; cx: number; cy: number } {
+  const topRoom = 33 + (topLines - 1) * 13;
+  const bottomRoom = 32 + (bottomLines - 1) * 13;
+  const r = Math.max(Math.min((width / 2 - 14) / 0.866, (height - topRoom - bottomRoom) / 1.5), 30);
+  const apex = topRoom + Math.max(0, (height - topRoom - bottomRoom - 1.5 * r) / 2);
+  return { r, apex, cx: width / 2, cy: apex + r };
+}
+
 /** The ternary heat map of the scenario-weight simplex, with the live weights marked; a table of every grid point. */
 export function WeightsView({ sel }: { sel: C06Sel | null }) {
   const lang = useShellLang();
@@ -376,11 +406,14 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
   const vlo = Math.min(...vals);
   const vhi = Math.max(...vals);
   const t = (v: number) => (vhi > vlo ? (v - vlo) / (vhi - vlo) : 0.5);
-  const fmt = (v: number) => (sel.surface === 'ecl' ? money(v, lang, cur) : pct(v, lang, 2));
+  // the colour scale reads in the unit of the amounts (billions, millions), never as eleven bare digits (U16-R2 b03 M4)
+  const sc = axisScale(Math.max(Math.abs(vlo), Math.abs(vhi)), cur);
+  const fmt = (v: number) => (sel.surface === 'ecl' ? `${formatNumber(v / sc.div, lang, { digits: 4 })} ${pick(sc.unit, lang)}` : pct(v, lang, 2));
   const scenarioLabel = (id: string): BiText => o.scenarios.find((s) => s.id === id)?.label ?? { en: id, es: id };
   const ternary = g.scenario_ids.length === 3;
+  const eclScale = columnScale(g.points.flatMap((p) => [p.ecl_recomputed, p.ecl_frozen]), cur);
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
         title={{
@@ -392,18 +425,17 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
         dataKey={stateKey}
         note={{
           en: 'Each corner is one scenario at 100% weight. Staging recomputed moves accounts between stages as the weights change; frozen keeps the staging at the weighted conditions, and then the ECL is linear in the weights. The ring is the rail\'s weights.',
-          es: 'Cada vértice es un escenario con 100% de peso. Etapas recalculadas mueve cuentas entre etapas al cambiar los pesos; congeladas mantiene las etapas en las condiciones ponderadas, y entonces la PCE es lineal en los pesos. El anillo son los pesos del panel.',
+          es: 'Cada vértice es un escenario con 100 % de peso. Con etapas recalculadas, las cuentas se mueven entre etapas al cambiar los pesos; con etapas congeladas, las etapas se mantienen en las condiciones ponderadas, y entonces la PCE es lineal en los pesos. El anillo son los pesos del panel.',
         }}
       >
         {ternary ? (
           <div className="ct-map">
             <Stage label={{ en: 'Scenario-weight simplex', es: 'Simplex de pesos de escenarios' }} className="ct-map-stage">
               {({ width, height }) => {
-                // the two lower labels run outwards from their corners: the drawing leaves each the room its fitted label needs
-                const labelW = Math.min(Math.max(width * 0.26, 64), 150);
-                const r = Math.max(Math.min((width / 2 - labelW - 14) / 0.866, (height - 60) / 1.5), 30);
-                const cx = width / 2;
-                const cy = height / 2 + r * 0.1;
+                // the two lower labels sit under their corners and run inwards, each over half the drawing, in as many lines as they need
+                const labelW = cornerLabelWidth(width);
+                const lines = g.scenario_ids.map((id, i) => cornerLines(pick(scenarioLabel(id), lang), i === 0 ? Math.min(width * 0.8, 220) : labelW));
+                const { r, cx, cy } = simplexLayout(width, height, lines[0].length, Math.max(lines[1]?.length ?? 1, lines[2]?.length ?? 1));
                 const corner = CORNER_ANGLES.map((a) => [cx + r * Math.cos((a * Math.PI) / 180), cy + r * Math.sin((a * Math.PI) / 180)] as const);
                 const at = (w: number[]) => [w[0] * corner[0][0] + w[1] * corner[1][0] + w[2] * corner[2][0], w[0] * corner[0][1] + w[1] * corner[1][1] + w[2] * corner[2][1]] as const;
                 const live = at(weights);
@@ -417,13 +449,15 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                     <circle cx={live[0]} cy={live[1]} r={Math.max(Math.min(r / 9, 14), 5) + 4} data-live-weights={weights.map((x) => String(Math.round(x * 1000) / 1000)).join('/')} style={{ fill: 'none', stroke: 'var(--color-fg)', strokeWidth: 2.4 }} />
                     {g.scenario_ids.map((id, i) => {
                       const [x, y] = corner[i];
-                      const anchor = i === 0 ? 'middle' : i === 1 ? 'start' : 'end';
-                      const dy = i === 0 ? -20 : 28;
-                      const dx = i === 0 ? 0 : i === 1 ? 8 : -8;
+                      const anchor = i === 0 ? 'middle' : i === 1 ? 'end' : 'start';
+                      const dy = i === 0 ? -20 - (lines[0].length - 1) * 13 : 28;
+                      const lx = i === 0 ? x : i === 1 ? width - 4 : 4;
                       const full = pick(scenarioLabel(id), lang);
                       return (
-                        <text key={id} x={x + dx} y={y + dy} textAnchor={anchor} className="dg-axis-label">
-                          {fitLabel(full, i === 0 ? Math.min(width * 0.8, 220) : labelW, 12, 1).lines[0]}
+                        <text key={id} x={lx} y={y + dy} textAnchor={anchor} className="dg-axis-label">
+                          {lines[i].map((line, k) => (
+                            <tspan key={k} x={lx} dy={k === 0 ? 0 : 13}>{line}</tspan>
+                          ))}
                           <title>{full}</title>
                         </text>
                       );
@@ -432,6 +466,11 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                 );
               }}
             </Stage>
+            <div data-colour-bar="simplex" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span className="ct-note">{fmt(vlo)}</span>
+              <span aria-hidden="true" style={{ flex: '1 1 6rem', minWidth: '6rem', height: '0.6rem', borderRadius: 3, background: `linear-gradient(to right, ${[0, 0.25, 0.5, 0.75, 1].map((x) => viridis(x)).join(', ')})` }} />
+              <span className="ct-note">{fmt(vhi)}</span>
+            </div>
             <p className="ct-note">{pick({ en: `Colour: ${fmt(vlo)} (dark) to ${fmt(vhi)} (light).`, es: `Color: ${fmt(vlo)} (oscuro) a ${fmt(vhi)} (claro).` }, lang)}</p>
           </div>
         ) : (
@@ -440,14 +479,24 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
           </p>
         )}
       </PlotCard>
-      <PlotCard fill title={{ en: 'The grid in numbers', es: 'La grilla en números' }} lane={LIVE} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+      <PlotCard
+        fill
+        title={{ en: 'The grid in numbers', es: 'La grilla en números' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Weights in the order: ${g.scenario_ids.map((id) => pick(scenarioLabel(id), 'en')).join(' / ')}.`,
+          es: `Pesos en el orden: ${g.scenario_ids.map((id) => pick(scenarioLabel(id), 'es')).join(' / ')}.`,
+        }}
+      >
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="weight-grid">
             <thead>
               <tr>
-                <th className="ct-text">{g.scenario_ids.map((id) => pick(scenarioLabel(id), lang)).join(' / ')}</th>
-                <th>{pick({ en: 'ECL, recomputed', es: 'PCE, recalculada' }, lang)}</th>
-                <th>{pick({ en: 'ECL, frozen', es: 'PCE, congelada' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Weights', es: 'Pesos' }, lang)}</th>
+                <th>{`${pick({ en: 'ECL, recomputed', es: 'PCE, recalculada' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
+                <th>{`${pick({ en: 'ECL, frozen', es: 'PCE, congelada' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
                 <th className="ct-wide-only">{pick({ en: 'Stage 2, recomputed', es: 'Etapa 2, recalculada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Stage 2, frozen', es: 'Etapa 2, congelada' }, lang)}</th>
               </tr>
@@ -456,8 +505,8 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
               {g.points.map((p) => (
                 <tr key={p.weights.join('/')} data-weights={p.weights.join('/')} className={p === near ? 'ct-current' : undefined}>
                   <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{p.weights.map((x) => pct(x, lang, 0)).join(' / ')}</td>
-                  <td>{money(p.ecl_recomputed, lang, cur)}</td>
-                  <td>{money(p.ecl_frozen, lang, cur)}</td>
+                  <td>{eclScale.fmt(p.ecl_recomputed, lang)}</td>
+                  <td>{eclScale.fmt(p.ecl_frozen, lang)}</td>
                   <td className="ct-wide-only">{pct(p.stage2_ratio_recomputed, lang, 1)}</td>
                   <td className="ct-wide-only">{pct(p.stage2_ratio_frozen, lang, 1)}</td>
                 </tr>
@@ -481,8 +530,11 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const s = o.stage_summary;
   const closing = (stage: string) => o.reconciliation.allowance.find((r) => r.stage === stage)?.closing ?? null;
+  const gcaScale = columnScale(s.rows.map((r) => r.gross_carrying_amount), s.currency);
+  const eclScale = columnScale(s.rows.map((r) => r.ecl), s.currency);
+  const closingScale = columnScale(s.rows.map((r) => closing(r.stage)), s.currency);
   return (
-    <ViewsRow shares={[2, 3]}>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard fill title={{ en: 'Coverage by stage', es: 'Cobertura por etapa' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Coverage is the model ECL over the gross carrying amount of the stage.', es: 'La cobertura es la PCE del modelo sobre el valor en libros bruto de la etapa.' }}>
         <BarChart
           title={{ en: 'Coverage by stage', es: 'Cobertura por etapa' }}
@@ -493,28 +545,29 @@ export function StageSummaryView({ sel }: { sel: C06Sel | null }) {
         />
       </PlotCard>
       <PlotCard fill title={{ en: 'The stages in numbers', es: 'Las etapas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="stage-summary">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Stage', es: 'Etapa' }, lang)}</th>
                 <th>{pick({ en: 'Accounts', es: 'Cuentas' }, lang)}</th>
-                <th>{`${pick({ en: 'Gross carrying amount', es: 'Valor en libros bruto' }, lang)} (${s.currency})`}</th>
-                <th>{pick({ en: 'Model ECL', es: 'PCE del modelo' }, lang)}</th>
+                <th>{`${pick({ en: 'Gross carrying amount', es: 'Valor en libros bruto' }, lang)} (${pick(gcaScale.unit, lang)})`}</th>
+                <th>{`${pick({ en: 'Model ECL', es: 'PCE del modelo' }, lang)} (${pick(eclScale.unit, lang)})`}</th>
                 <th>{pick({ en: 'Coverage', es: 'Cobertura' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Allowance closing, overlays included', es: 'Cobertura final, con ajustes' }, lang)}</th>
+                <th className="ct-wide-only">{`${pick({ en: 'Allowance closing, with overlays', es: 'Provisión final, con ajustes' }, lang)} (${pick(closingScale.unit, lang)})`}</th>
               </tr>
             </thead>
             <tbody>
               {s.rows.map((r) => (
                 <tr key={r.stage} data-stage={r.stage}>
-                  <td className="ct-text">{pick(STAGE_TEXT[r.stage], lang)}</td>
+                  {/* the stage on one line, as the other cells (R5 c09 n2: "Stage / 1" wrapped at 1280) */}
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{pick(STAGE_TEXT[r.stage], lang)}</td>
                   <td>{formatNumber(r.accounts, lang, { decimals: 0 })}</td>
-                  <td>{money(r.gross_carrying_amount, lang, s.currency)}</td>
-                  <td>{money(r.ecl, lang, s.currency)}</td>
+                  <td>{gcaScale.fmt(r.gross_carrying_amount, lang)}</td>
+                  <td>{eclScale.fmt(r.ecl, lang)}</td>
                   <td>{pct(r.coverage, lang, 2)}</td>
                   <td className="ct-wide-only">
-                    <MaybeNumber value={closing(r.stage)} reason={null} format={(v) => money(v, lang, s.currency)} />
+                    <MaybeNumber value={closing(r.stage)} reason={null} format={(v) => closingScale.fmt(v, lang)} />
                   </td>
                 </tr>
               ))}

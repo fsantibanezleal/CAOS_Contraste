@@ -3,15 +3,19 @@
 // that moves with its controls). The Findings card and the fixture notice are the ones C06 and C07 use.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText, type FormatOptions } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
+import './c10-flow.css';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
-import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
+import { adjustmentText, noteText, seriesText } from '../c08/notes';
+import { WHOLE_PORTFOLIO } from '../c08/words';
+import { LiveReadout, referenceText, useCard, type Bi } from '../c03/U6Shared';
+import { segmentName } from '../names';
 import {
-  ESTIMATOR_TEXT, INTERVAL_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
+  ESTIMATOR_TEXT, GENERATOR_TEXT, INTERVAL_TEXT, SOURCE_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Estimator, type C10GridOutputs, type C10Outputs, type C10Sel,
 } from './selection';
 
@@ -20,12 +24,82 @@ const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') 
 
 /** The words of the portfolio tests; an id without an entry is shown as the document gives it. */
 export const TEST_TEXT: Record<string, Bi> = {
-  'portfolio.tail_backtest': { en: 'Tail back-test of the evaluation years', es: 'Backtest de cola de los años de evaluación' },
+  'portfolio.tail_backtest': { en: 'Tail back-test of the evaluation years', es: 'Prueba retrospectiva de cola de los años de evaluación' },
   'portfolio.mc_convergence': { en: 'Monte Carlo against the analytic anchor', es: 'Monte Carlo frente al ancla analítica' },
   'portfolio.euler_additivity': { en: 'Euler contributions add up', es: 'Las contribuciones de Euler suman el total' },
   'portfolio.crp_recursion_vs_mc': { en: 'CreditRisk+ recursion against Monte Carlo', es: 'Recursión de CreditRisk+ frente a Monte Carlo' },
   'portfolio.correlation_size_power': { en: 'Size and power of the correlation estimate', es: 'Tamaño y potencia de la estimación de la correlación' },
 };
+
+
+/** The segment of a test row in words: the measure and level of an Euler row ("VaR at 99.9 %"), the LHP anchor, a known correlation
+ * as a percent with its estimator ("known correlation 2.0 %, maximum likelihood", as the cell table writes it; R5 c13 N3), the names
+ * module's words for the others. A row with no segment names its scope: the whole portfolio, and for the tail back-test its primary
+ * level, which is the level of the row's count and p-value (R5 c13 M1, c14 M1-R5, ruling 2). Every tests table shows it, so no two rows
+ * read the same (R3 c11 n3, the 2026-10-27 ruling). */
+export function segmentText(seg: string | null, lang: 'en' | 'es', row?: Pick<TestRow, 'test_id' | 'extras'>): string {
+  if (!seg) {
+    const primary = row?.test_id === 'portfolio.tail_backtest' ? (row.extras as { primary_level?: unknown } | null)?.primary_level : undefined;
+    if (typeof primary === 'number') {
+      const level = formatNumber(primary, lang, { percent: true, decimals: primary === 0.999 ? 1 : 0 });
+      return lang === 'en' ? `${WHOLE_PORTFOLIO.en}, the ${level} level` : `${WHOLE_PORTFOLIO.es}, nivel de ${level}`;
+    }
+    return pick(WHOLE_PORTFOLIO, lang);
+  }
+  const rho = /^rho=([\d.]+)\/(maximum-likelihood|moments)$/.exec(seg);
+  if (rho && ESTIMATOR_TEXT[rho[2]]) {
+    const e = pick(ESTIMATOR_TEXT[rho[2]], lang).toLowerCase();
+    const known = formatNumber(Number(rho[1]), lang, { percent: true, decimals: 1 });
+    return lang === 'en' ? `known correlation ${known}, ${e}` : `correlación conocida ${known}, ${e}`;
+  }
+  const m = /^(var|es)-([\d.]+)$/.exec(seg);
+  if (m) {
+    const level = formatNumber(Number(m[2]), lang, { percent: true, decimals: Number(m[2]) === 0.999 ? 1 : 0 });
+    const what = m[1] === 'var' ? 'VaR' : 'ES';
+    return lang === 'en' ? `${what} at ${level}` : `${what} al ${level}`;
+  }
+  // the LHP anchor's level as the shell writes a percent, as the Euler rows do ("99.9 %"; R4 c12 n7)
+  const lhp = /^lhp-like-([\d.]+)$/.exec(seg);
+  if (lhp) {
+    const level = formatNumber(Number(lhp[1]) / 100, lang, { percent: true, decimals: Number(lhp[1]) % 1 === 0 ? 0 : 1 });
+    return lang === 'en' ? `the LHP anchor at ${level}` : `el ancla LHP al ${level}`;
+  }
+  return segmentName(seg, { caseId: 'C10' })?.[lang] ?? seg;
+}
+
+/** What the light of a size-power row grades, ahead of its reference: the rejection rate of the replications, against alpha at the null
+ * correlation (the size) or against the power thresholds elsewhere (R5 c13 N4: a red row printed "not available" twice and no reason).
+ * Null for any other test. */
+export function sizePowerText(t: Pick<TestRow, 'test_id' | 'extras'>, lang: 'en' | 'es'): string | null {
+  if (t.test_id !== 'portfolio.correlation_size_power') return null;
+  const e = t.extras as { role?: string; rate?: number; alpha?: number; null_rho?: number; thresholds?: { power_green?: number; power_amber?: number } } | null;
+  if (!e || typeof e.rate !== 'number' || (e.role !== 'size' && e.role !== 'power')) return null;
+  const pc = (v: number, d: number) => formatNumber(v, lang, { percent: true, decimals: d });
+  const rate = pc(e.rate, 1);
+  if (e.role === 'size') {
+    const alpha = typeof e.alpha === 'number' ? pc(e.alpha, 0) : formatNumber(null, lang);
+    return lang === 'en' ? `size: rejection rate ${rate} against alpha ${alpha}` : `tamaño: tasa de rechazo ${rate} frente a alfa ${alpha}`;
+  }
+  const nul = typeof e.null_rho === 'number' ? pc(e.null_rho, 1) : formatNumber(null, lang);
+  const th = e.thresholds;
+  const bands = th && typeof th.power_green === 'number' && typeof th.power_amber === 'number'
+    ? (lang === 'en' ? ` (green from ${pc(th.power_green, 0)}, amber from ${pc(th.power_amber, 0)})` : ` (verde desde ${pc(th.power_green, 0)}, ámbar desde ${pc(th.power_amber, 0)})`)
+    : '';
+  return lang === 'en' ? `power: rejection rate ${rate} against the null correlation ${nul}${bands}` : `potencia: tasa de rechazo ${rate} frente a la correlación nula ${nul}${bands}`;
+}
+
+/** The quarters a missing-quarter row stands for, from its reason ("1985Q1, 1985Q2, 1985Q3, 1985Q4: ..."): a whole year is named by the
+ * year (R4 c13 n8: the row printed "1985Q1" for four quarters). */
+export function missingQuartersText(quarter: string, reason: string, lang: 'en' | 'es'): string {
+  const listed = /^((?:\d{4}Q\d)(?:, \d{4}Q\d)*):/.exec(reason)?.[1].split(', ') ?? [quarter];
+  const years = [...new Set(listed.map((q) => q.slice(0, 4)))];
+  if (years.length !== 1) return listed.join(', ');
+  const qs = listed.map((q) => Number(q.slice(5))).sort((a, b) => a - b);
+  const Q = lang === 'en' ? 'Q' : 'T';
+  if (qs.length === 1) return `${years[0]}${Q}${qs[0]}`;
+  const run = qs.every((q, i) => i === 0 || q === qs[i - 1] + 1);
+  return run ? `${years[0]}, ${Q}${qs[0]} ${lang === 'en' ? 'to' : 'a'} ${Q}${qs.at(-1)}` : `${years[0]}, ${qs.map((q) => `${Q}${q}`).join(', ')}`;
+}
 
 const TRUTH_TEXT: Record<string, Bi> = {
   'real-outcomes': { en: 'Real outcomes', es: 'Resultados reales' },
@@ -39,6 +113,19 @@ export function IllustrativeNotice({ notice }: { notice: Bi }) {
     <p className="ct-note" data-portfolio="illustrative">
       <strong>{pick(notice, lang)}</strong>
     </p>
+  );
+}
+
+/**
+ * The body of a C10 card that opens with the illustrative-portfolio notice and holds a drawing over its tables: the notice, then
+ * what follows it in a column whose stack takes the height left under the notice (U16-R4 c13 M1; `c10-flow.css`).
+ */
+export function NoticeFlow({ notice, children }: { notice: Bi; children: ReactNode }) {
+  return (
+    <div className="ct-c10-flow" data-caos-flow="">
+      <IllustrativeNotice notice={notice} />
+      {children}
+    </div>
   );
 }
 
@@ -57,7 +144,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
   return (
     <div data-block="tests">
       <p className="ct-note">
-        {pick({ en: 'The tests the engine returned: the statistic and p-value when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió, la luz bajo la política comprometida y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
+        {pick({ en: 'The tests the engine returned: the statistic and p-value when it ran, the light under the committed policy and its reference. A test that did not run says why and shows no number.', es: 'Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió, la luz bajo la política versionada y su referencia. Una prueba que no corrió dice por qué y no muestra número.' }, lang)}
       </p>
       {rows.length === 0 ? (
         <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row for this view.', es: 'Esta variante no trae filas de pruebas para esta vista.' }, lang)}</p>
@@ -67,6 +154,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
             <tr>
               <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
               <th className="ct-text ct-wide-only">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
+              <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
               <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
               <th>p</th>
               <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
@@ -80,12 +168,14 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
                   <td className="ct-text">{pick(text(TEST_TEXT, t.test_id), lang)}</td>
                   <td className="ct-text ct-wide-only">{modelName(t.model_id)}</td>
+                  <td className="ct-text" data-segment={t.segment ?? undefined}>{segmentText(t.segment, lang, t)}</td>
                   <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                   <td data-na={ran && t.p_value !== null ? undefined : 'true'}>{ran && t.p_value !== null ? formatNumber(t.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  {/* a measure of its own, so a phone's scroll box does not wrap the reference one word a line (R3 c11 n2) */}
+                  <td className="ct-text" style={{ minWidth: '16rem' }}>{[sizePowerText(t, lang), t.notes ? noteText(t.notes, lang) : referenceText(t, lang)].filter(Boolean).join('; ')}</td>
                 </tr>
               );
             })}
@@ -110,7 +200,8 @@ type AnyVariant = VariantArtifact<C10Outputs | C10GridOutputs>;
 /** The variants side by side: the fitted correlation of each loan type and the size of each simulator length. Pick one to load it. */
 export function C10VariantsTable({ variants, onPick, current }: { variants: Array<{ id: string; title: BiText; v: AnyVariant }>; onPick: (id: string) => void; current: string }) {
   const lang = useShellLang();
-  const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
+  // the badge is the loaded variant's truth status, not the first row's (R3 c11 m-P: "Real data" on a simulator grid)
+  const card = useCard((variants.find((x) => x.id === current) ?? variants[0])?.v as unknown as VariantArtifact | undefined);
   const loans = variants.filter((x) => x.v.outputs.kind === 'loan-type') as Array<{ id: string; title: BiText; v: VariantArtifact<C10Outputs> }>;
   const grids = variants.filter((x) => x.v.outputs.kind === 'correlation-grid') as Array<{ id: string; title: BiText; v: VariantArtifact<C10GridOutputs> }>;
   const backtest99 = (v: VariantArtifact<C10Outputs>) => v.outputs.backtest.rows.find((r) => r.level === 0.99) ?? null;
@@ -147,7 +238,7 @@ export function C10VariantsTable({ variants, onPick, current }: { variants: Arra
                 <th className="ct-text">{pick({ en: 'Loan type', es: 'Tipo de crédito' }, lang)}</th>
                 <th>{pick({ en: 'Fitted correlation', es: 'Correlación ajustada' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'IRB correlation', es: 'Correlación IRB' }, lang)}</th>
-                <th>{pick({ en: 'Years above the 99% quantile', es: 'Años sobre el cuantil 99%' }, lang)}</th>
+                <th>{pick({ en: 'Years above the 99 % quantile', es: 'Años sobre el cuantil 99 %' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -257,13 +348,13 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
         <PlotCard title={{ en: 'The Federal Reserve series', es: 'La serie de la Reserva Federal' }} {...card} note={{ en: 'A quarter the table lacks is a missing quarter with its reason: it is never interpolated, and the year it belongs to has no rate.', es: 'Un trimestre que la tabla no tiene es un trimestre faltante con su razón: nunca se interpola, y el año al que pertenece no tiene tasa.' }}>
           <dl className="ct-defs" data-table="c10-series">
             <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
-            <dd>{o.data_status.source}</dd>
+            <dd>{pick(text(SOURCE_TEXT, o.data_status.source), lang)}</dd>
             <dt>{pick({ en: 'Table', es: 'Tabla' }, lang)}</dt>
             <dd translate="no">{o.data_status.table}</dd>
             <dt>{pick({ en: 'Series', es: 'Serie' }, lang)}</dt>
-            <dd>{o.data_status.series}</dd>
+            <dd>{seriesText(o.data_status.series, lang)}</dd>
             <dt>{pick({ en: 'Adjustment and scope', es: 'Ajuste y alcance' }, lang)}</dt>
-            <dd>{`${o.data_status.seasonal_adjustment}, ${o.data_status.bank_scope}`}</dd>
+            <dd>{`${adjustmentText(o.data_status.seasonal_adjustment, lang)}, ${adjustmentText(o.data_status.bank_scope, lang)}`}</dd>
             <dt>{pick({ en: 'Files as of', es: 'Archivos al' }, lang)}</dt>
             <dd>{o.data_status.files_as_of}</dd>
             <dt>{pick({ en: 'Quarters expected', es: 'Trimestres esperados' }, lang)}</dt>
@@ -277,15 +368,15 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
             <table className="caos-table ct-wrap-head" data-table="c10-missing-quarters">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: 'Missing quarter', es: 'Trimestre faltante' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Missing quarters', es: 'Trimestres faltantes' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Reason', es: 'Razón' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
                 {o.data_status.missing_quarters.map((q) => (
                   <tr key={q.quarter} data-quarter={q.quarter}>
-                    <td className="ct-text">{q.quarter}</td>
-                    <td className="ct-text">{q.reason}</td>
+                    <td className="ct-text">{missingQuartersText(q.quarter, q.reason, lang)}</td>
+                    <td className="ct-text">{noteText(q.reason, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -297,9 +388,9 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
         <PlotCard title={{ en: 'The simulator', es: 'El simulador' }} {...card} note={{ en: 'The truth is the correlation the generator draws the yearly factor with. Every replication uses an independent seeded stream.', es: 'La verdad es la correlación con que el generador simula el factor anual. Cada replicación usa una corriente con semilla independiente.' }}>
           <dl className="ct-defs" data-table="c10-generator">
             <dt>{pick({ en: 'Generator', es: 'Generador' }, lang)}</dt>
-            <dd>{g.generator.name}</dd>
+            <dd>{pick(text(GENERATOR_TEXT, g.generator.name), lang)}</dd>
             <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-            <dd data-shaped-on={g.generator.shaped_on}>{g.generator.shaped_on}</dd>
+            <dd data-shaped-on={g.generator.shaped_on}>{noteText(g.generator.shaped_on, lang)}</dd>
             <dt>{pick({ en: 'Known PD', es: 'PD conocida' }, lang)}</dt>
             <dd>{formatNumber(g.generator.known_pd, lang, { percent: true, decimals: 2 })}</dd>
             <dt>{pick({ en: 'Years in the series', es: 'Años de la serie' }, lang)}</dt>
@@ -359,8 +450,10 @@ export function RungReadout({ sel }: { sel: C10Sel | null }) {
   const ccy = o?.currency ?? '';
   const level = sel ? levelBi(sel.level) : { en: '', es: '' };
   const why: BiText = r && !r.evaluated ? { en: 'This rung did not run, so it has no number.', es: 'Este escalón no corrió, así que no tiene número.' } : { en: 'Not in this document.', es: 'No está en este documento.' };
-  const [elM, varM, esM, seM] = moneySet([m?.el ?? null, m?.var ?? null, m?.es ?? null, m?.var_se ?? null], ccy);
-  const esWhy: BiText = m && m.es === null ? { en: m.es_reason ?? '', es: m.es_reason ?? '' } : { en: 'The expected shortfall: the mean loss beyond the VaR.', es: 'El déficit esperado: la pérdida media más allá del VaR.' };
+  // three rows: the VaR's Monte Carlo error is in the rung view's measure table beside it (a fourth row made the rail
+  // scroll at 1280 x 800 in Spanish in the gate's wide font, ADR-0071 rule 6)
+  const [elM, varM, esM] = moneySet([m?.el ?? null, m?.var ?? null, m?.es ?? null], ccy);
+  const esWhy: BiText = m && m.es === null ? { en: noteText(m.es_reason, 'en'), es: noteText(m.es_reason, 'es') } : { en: 'The expected shortfall: the mean loss beyond the VaR.', es: 'El déficit esperado: la pérdida media más allá del VaR.' };
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -369,9 +462,6 @@ export function RungReadout({ sel }: { sel: C10Sel | null }) {
         { label: { en: 'Expected loss', es: 'Pérdida esperada' }, ...elM, hint: m ? { en: 'The mean of the portfolio loss over one year.', es: 'La media de la pérdida de la cartera en un año.' } : why },
         { label: { en: 'VaR', es: 'VaR' }, ...varM, hint: { en: 'The loss the portfolio does not exceed with the confidence of the level.', es: 'La pérdida que la cartera no supera con la confianza del nivel.' } },
         { label: { en: 'Expected shortfall', es: 'Déficit esperado' }, ...esM, hint: esWhy },
-        m && m.var_se === null && r?.evaluated
-          ? { label: { en: 'Error of the VaR', es: 'Error del VaR' }, text: { en: 'none, analytic', es: 'ninguno, analítico' }, hint: { en: 'An analytic rung has no sampling error.', es: 'Un escalón analítico no tiene error de muestreo.' } }
-          : { label: { en: 'Error of the VaR', es: 'Error del VaR' }, ...seM, hint: { en: 'The Monte Carlo standard error of the VaR.', es: 'El error estándar de Monte Carlo del VaR.' } },
       ]}
     />
   );
@@ -390,7 +480,7 @@ export function LevelReadout({ sel }: { sel: C10Sel | null }) {
         { label: { en: 'Fitted quantile', es: 'Cuantil ajustado' }, value: b?.fitted_quantile ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The yearly loss rate the fitted distribution puts at the level.', es: 'La tasa de pérdida anual que la distribución ajustada pone en el nivel.' } },
         { label: { en: 'Years expected above', es: 'Años esperados sobre él' }, value: b?.expected_exceedances ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'Evaluation years times one minus the level.', es: 'Años de evaluación por uno menos el nivel.' } },
         { label: { en: 'Years observed above', es: 'Años observados sobre él' }, value: b?.observed_exceedances ?? null, unitless: true, format: { decimals: 0 }, hint: { en: 'Evaluation years whose loss rate is above the fitted quantile.', es: 'Años de evaluación cuya tasa de pérdida supera el cuantil ajustado.' } },
-        { label: { en: 'Light', es: 'Luz' }, text: light ?? NA, hint: { en: 'The light of the binomial tail probability under the committed policy.', es: 'La luz de la probabilidad de cola binomial bajo la política comprometida.' } },
+        { label: { en: 'Light', es: 'Luz' }, text: light ?? NA, hint: { en: 'The light of the binomial tail probability under the committed policy.', es: 'La luz de la probabilidad de cola binomial bajo la política versionada.' } },
       ]}
     />
   );
@@ -408,8 +498,8 @@ export function EstimatorReadout({ sel }: { sel: C10Sel | null }) {
       title={sel ? { en: `${text(ESTIMATOR_TEXT, sel.estimator).en}: the fit`, es: `${text(ESTIMATOR_TEXT, sel.estimator).es}: el ajuste` } : { en: 'The fit', es: 'El ajuste' }}
       items={[
         { label: { en: 'Asset correlation', es: 'Correlación de activos' }, value: f?.rho.estimate ?? null, unitless: true, format: fmt, hint: { en: 'The correlation of the obligors with the one systematic factor, squared loading.', es: 'La correlación de los deudores con el único factor sistemático, carga al cuadrado.' } },
-        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95% por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95%.' } },
-        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95% interval by ${method.en}.`, es: `Intervalo del 95% por ${method.es}.` } : { en: 'The 95% interval.', es: 'El intervalo del 95%.' } },
+        { label: { en: 'Interval, low', es: 'Intervalo, inferior' }, value: f?.rho.ci_low ?? null, unitless: true, format: fmt, hint: method ? { en: `95 % interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95 % interval.', es: 'El intervalo del 95 %.' } },
+        { label: { en: 'Interval, high', es: 'Intervalo, superior' }, value: f?.rho.ci_high ?? null, unitless: true, format: fmt, hint: method ? { en: `95 % interval by ${method.en}.`, es: `Intervalo del 95 % por ${method.es}.` } : { en: 'The 95 % interval.', es: 'El intervalo del 95 %.' } },
         { label: { en: 'Probability of default', es: 'Probabilidad de incumplimiento' }, value: f?.pd.estimate ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The long-run yearly default or loss rate of the fitted distribution.', es: 'La tasa anual de incumplimiento o pérdida de largo plazo de la distribución ajustada.' } },
       ]}
     />
@@ -450,7 +540,7 @@ export function CellReadout({ sel }: { sel: C10Sel | null }) {
       items={[
         { label: { en: 'Role of the cell', es: 'Papel de la celda' }, text: role ?? NA, hint: { en: 'Size where the known correlation equals the null; power elsewhere.', es: 'Tamaño donde la correlación conocida es la de la nula; potencia en las demás.' } },
         { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, value: e?.rejection_rate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the test rejects that the correlation equals the null.', es: 'Con qué frecuencia la prueba rechaza que la correlación sea la de la nula.' } },
-        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95% interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95% contiene la correlación conocida.' } },
+        { label: { en: 'Coverage of the interval', es: 'Cobertura del intervalo' }, value: e?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'How often the 95 % interval holds the known correlation.', es: 'Con qué frecuencia el intervalo del 95 % contiene la correlación conocida.' } },
         { label: { en: 'Mean estimate', es: 'Estimación media' }, value: e?.mean_estimate ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The mean of the estimates over the valid replications.', es: 'La media de las estimaciones en las replicaciones válidas.' } },
       ]}
     />

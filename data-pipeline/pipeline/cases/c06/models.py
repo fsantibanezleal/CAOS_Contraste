@@ -7,6 +7,7 @@ import numpy as np
 from riskvalidation.provisions import term_structure as rv_ts
 
 from . import macro as mc
+from . import neural
 from .build import (CURRENCY, NOTICE, RUNG_KIND, RUNG_TEXT, SEGMENT_LABELS, month_label, policy_block, t)
 from .ladder import AGE_LABELS, Ladder, N_BANDS
 from .panel import N_STRATA, SECTOR_NAMES, SEGMENT_IDS
@@ -26,14 +27,22 @@ def _positive_curve(months: np.ndarray, f: np.ndarray) -> dict[str, Any]:
     return {"months": months[keep].astype(int).tolist(), "cumulative_pd": f[keep].tolist()}
 
 
-def ladder_blocks(run: DateRun, cleaning: dict[str, int] | None = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """``(fit.ladder, model records)``: one entry per rung, evaluated or not."""
+#: the licence expression of torch as data-pipeline/config/licences.json verifies it (package metadata of the pinned wheel)
+TORCH_LICENCE = "Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT"
+
+
+def ladder_blocks(run: DateRun, cleaning: dict[str, int] | None = None, evaluation: Any = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """``(fit.ladder, model records)``: one entry per rung, evaluated or not. ``evaluation`` (``backtest.S4Evaluation``) adds the
+    S-4 deciles to the Cox and PC-Hazard records and the PC-Hazard summary beside Cox."""
     lad: Ladder = run.ladder
     cutoff = str(np.datetime64(run.reporting_date, "D"))
     entries, records = [], []
-    for rung in ("L0-km", "L1-dth", "L2-cox"):
+    for rung in ("L0-km", "L1-dth", "L2-cox", "L3-pch"):
         title, short = RUNG_TEXT[rung]
-        status = {"L0-km": lad.km.status, "L1-dth": lad.dth.status, "L2-cox": lad.cox.status}[rung]
+        status = {"L0-km": lad.km.status, "L1-dth": lad.dth.status, "L2-cox": lad.cox.status, "L3-pch": lad.pch.status}[rung]
+        engine, engine_version, licence, checkpoint = (("torch", _torch_version(), TORCH_LICENCE, None) if rung == "L3-pch"
+                                                       else ("statsmodels", _statsmodels_version(), "BSD-3-Clause", None))
+        extra_params: dict[str, Any] = {}
         cov, macro_cov, coefs, base, details = [], [], [], {"months": [], "cumulative_pd": []}, {}
         if status.evaluated and rung == "L0-km":
             f = 1.0 - lad.km.survival.at(MONTHS.astype(float) + 0.0, 1.0)
@@ -60,12 +69,41 @@ def ladder_blocks(run: DateRun, cleaning: dict[str, int] | None = None) -> tuple
             f = 1.0 - np.exp(-m.cumulative_hazard.at(MONTHS.astype(float), 0.0))
             base = _positive_curve(MONTHS, f)
             details = {"ties": "breslow", "time_scale": "loan age in months", "macro": "none: statsmodels PHReg has no time-varying covariates"}
+            if evaluation is not None:
+                details["decile_calibration"] = evaluation.deciles["L2-cox"]
+        if status.evaluated and rung == "L3-pch":
+            m = lad.pch
+            cov = list(m.names)
+            f = m.cumulative(np.array([REFERENCE_STRATUM]), np.array([0.0]), MONTHS.astype(float))[0]
+            base = _positive_curve(MONTHS, f)
+            checkpoint = m.weights_sha256
+            extra_params = {"network_parameters": {"value": float(m.n_parameters), "unit": "weights"},
+                            "best_epoch": {"value": float(m.best_epoch), "unit": "epochs"},
+                            "holdout_loans": {"value": float(m.n_val_loans), "unit": "loans"}}
+            details = {"method": ("PC-Hazard (Kvamme and Borgan 2019, arXiv 1910.06724): a feed-forward network maps the loan covariates to a "
+                                  "piecewise-constant hazard rate per three-month interval of loan age; the likelihood is the discrete-time "
+                                  "one of the interval counts (defaults and exposure)"),
+                       "architecture": {"inputs": len(m.names), "hidden": list(m.hidden), "activation": "relu", "outputs": neural.N_INTERVALS,
+                                        "output_transform": "softplus (a positive rate per month)"},
+                       "grid": {"interval_months": neural.WIDTH, "intervals": neural.N_INTERVALS, "last_interval": "open: its rate holds beyond"},
+                       "training": {"optimiser": "adam", "learning_rate": neural.LEARNING_RATE, "weight_decay": neural.WEIGHT_DECAY,
+                                    "batch": "full", "max_epochs": neural.MAX_EPOCHS, "patience": neural.PATIENCE,
+                                    "holdout_share": neural.VAL_SHARE, "epochs_run": m.epochs, "best_epoch": m.best_epoch,
+                                    "train_nll_per_default": m.train_nll, "holdout_nll_per_default": m.val_nll,
+                                    "train_loans": m.n_train_loans, "holdout_loans": m.n_val_loans},
+                       "seed": m.seed, "time_scale": "loan age in months", "macro": "none: the rung stands on the loan covariates, as Cox",
+                       "covariates_as": "L2-cox",
+                       "baseline_reference": "a loan under 50,000 USD, term up to 5 years, other or unknown sector, not revolving, from age 0"}
+            if evaluation is not None:
+                details["decile_calibration"] = evaluation.deciles["L3-pch"]
+                details["evaluation"] = evaluation.summary
         entries.append({"rung_id": rung, "kind": RUNG_KIND[rung], "covariates": cov, "macro_covariates": macro_cov,
                         "competing_prepayment": False, "training_cutoff": cutoff, "coefficients": coefs, "baseline": base})
-        params = {"n_loans": {"value": float(status.n_loans), "unit": "loans"}, "n_defaults": {"value": float(status.n_events), "unit": "defaults"}}
+        params = {"n_loans": {"value": float(status.n_loans), "unit": "loans"}, "n_defaults": {"value": float(status.n_events), "unit": "defaults"},
+                  **extra_params}
         records.append({"id": rung, "family": "lifetime-pd", "rung": RUNG_KIND[rung], "title": t(*title), "short_title": t(*short),
-                        "engine": "statsmodels", "engine_version": _statsmodels_version(), "licence": "BSD-3-Clause",
-                        "calibration": None, "parameters": params, "checkpoint_sha256": None,
+                        "engine": engine, "engine_version": engine_version, "licence": licence,
+                        "calibration": None, "parameters": params, "checkpoint_sha256": checkpoint,
                         "details": {"evaluated": status.evaluated, "reason": status.reason, "cleaning": dict(cleaning or {}), **details}})
     return entries, records
 
@@ -74,6 +112,12 @@ def _statsmodels_version() -> str:
     import statsmodels
 
     return statsmodels.__version__
+
+
+def _torch_version() -> str:
+    import torch
+
+    return str(torch.__version__)
 
 
 def fit_block(run: DateRun) -> dict[str, Any]:
@@ -111,8 +155,8 @@ def fit_block(run: DateRun) -> dict[str, Any]:
             "staging_policy": staging}
 
 
-def model_records(run: DateRun, cleaning: dict[str, int] | None = None) -> list[dict[str, Any]]:
-    return ladder_blocks(run, cleaning)[1]
+def model_records(run: DateRun, cleaning: dict[str, int] | None = None, evaluation: Any = None) -> list[dict[str, Any]]:
+    return ladder_blocks(run, cleaning, evaluation)[1]
 
 
 def model_summaries(run: DateRun) -> list[dict[str, Any]]:

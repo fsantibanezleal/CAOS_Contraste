@@ -1,0 +1,137 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{Idea}
+\label{sec:method-idea}
+
+The regulatory statistics read the order of the daily moves and the marginal distribution of the two series.
+What a risk model can get wrong while keeping both is the size of the day's move and the date at which its scale changes.
+The complement therefore adds three statistics, each aimed at one part of that gap, on the same 250-day pair, and a decision that fixes the false-alarm rate of each from a simulated null.
+The first statistic reads the mapping from RTPL to HPL as a regression line and asks whether it is the identity; it sees a mis-scaled or shifted model.
+The second reads the order of the sizes of the daily moves by correlating the absolute values; it sees a model that misreads how large the day's move is, whatever its sign.
+The third correlates the rolling means of the absolute values; the daily shock is shared by HPL and RTPL, the rolling mean averages most of it away and leaves the two scales, so the statistic reads the timing of the scale and falls when the risk model's volatility is out of date.
+The three together are the scale-and-level complement.
+It is added to the regulatory zone, which the engine returns unchanged beside the complement's own decision, and it carries no regulatory standing.
+
+\subsection{The regression component}
+\label{sec:method-regression}
+
+Regress the hypothetical on the risk-theoretical profit and loss by least squares,
+\begin{equation}
+\HPL_t=a+b\,\RTPL_t+e_t,\qquad t=1,\dots,250,
+\label{eq:mz}
+\end{equation}
+and collect the coefficients in $\hat\beta=(\hat a,\hat b)'$.
+When the risk model is the pricing model up to a noise that is uncorrelated with RTPL, the population coefficients are $(a,b)=(0,1)$, the identity of \citet{mincer1969}.
+The Wald statistic of that joint hypothesis is
+\begin{equation}
+W=(\hat\beta-\beta_0)'\,\hat V^{-1}(\hat\beta-\beta_0),\qquad \beta_0=(0,1)',
+\label{eq:wald}
+\end{equation}
+with $\hat V$ the HC3 covariance of the coefficients,
+\begin{equation}
+\hat V=(X'X)^{-1}X'\operatorname{diag}\!\Bigl(\frac{\hat e_t^{2}}{(1-h_t)^{2}}\Bigr)X(X'X)^{-1},
+\label{eq:hc3}
+\end{equation}
+where $X$ has rows $(1,\RTPL_t)$, $\hat e_t$ are the residuals and $h_t$ is the leverage of day $t$ \citep{mackinnon1985}.
+The HC3 covariance is used because the volatility of the profit and loss changes over time, so the residual variance of the regression changes with it and the ordinary least-squares covariance would misstate the standard errors \citep{white1980}.
+The engine reports the asymptotic $\chi^2_2$ tail of $W$ as a reference value; the decision never uses it, because the null law of $W$ on a desk with time-varying volatility is not $\chi^2_2$, as the critical value measured in Section~\ref{sec:results} shows (9.83 at a 1\% size, against 9.21 for $\chi^2_2$).
+A model that reproduces the hypothetical series exactly has zero residual; the engine then returns $W=0$ when the coefficients are $(0,1)$ and an infinite statistic otherwise.
+
+\subsection{The rank components}
+\label{sec:method-rank}
+
+The second statistic is the Spearman correlation of the absolute values,
+\begin{equation}
+\rho_{\mathrm{abs}}=\operatorname{corr}\bigl(\operatorname{rank}|\HPL_t|,\operatorname{rank}|\RTPL_t|\bigr),
+\label{eq:rho-abs}
+\end{equation}
+which discards the sign and keeps the order of the sizes.
+The third is built from the $w$-day rolling means
+\begin{equation}
+A_t=\frac1w\sum_{j=0}^{w-1}|\HPL_{t-j}|,\qquad B_t=\frac1w\sum_{j=0}^{w-1}|\RTPL_{t-j}|,\qquad t=w,\dots,250,
+\label{eq:rolling}
+\end{equation}
+which give $251-w$ overlapping points, and its statistic is
+\begin{equation}
+\rho_{\mathrm{roll}}^{(w)}=\operatorname{corr}\bigl(\operatorname{rank}A_t,\operatorname{rank}B_t\bigr).
+\label{eq:rho-roll}
+\end{equation}
+The default window is $w=20$ days, about one trading month, and the engine accepts any integer from 2 to 247.
+Both rank statistics lie in $[-1,1]$, are dimensionless, and are unchanged when RTPL is multiplied by a positive constant, a property that Proposition~\ref{prop:invariance} uses.
+The rolling means overlap, so consecutive points of the two series are strongly dependent; the statistic is a descriptive measure of agreement of two slow scale paths, and its null law is not that of a rank correlation of independent pairs, which is why the decision reads it against a simulated null.
+The absolute value discards the sign, so the second and third statistics cannot see a model whose signs are wrong, which the regulatory Spearman correlation of the levels reads; the rolling mean discards the daily shock, so the third statistic cannot see a model whose daily moves are misordered while its scale path is right.
+
+\subsection{Calibration and decision}
+\label{sec:method-calibration}
+
+The three statistics have no closed-form null law on a desk with a stochastic volatility, so the critical values come from the desk's own null.
+Let $\mathcal D_0$ be $N$ desk-years of a model with nothing planted, drawn from the caller's generator, and let $S^{(1)},\dots,S^{(N)}$ be the values of one statistic on them.
+For a size $p$ let $k=\lfloor pN\rfloor$; the engine requires $k\ge1$, that is $N\ge 1/p$.
+The critical value is the $(k+1)$-th most extreme null value:
+\begin{equation}
+c_W=W_{(k+1)}^{\downarrow},\qquad c_{\mathrm{abs}}=\rho_{\mathrm{abs},(k+1)}^{\uparrow},\qquad c_{\mathrm{roll}}=\rho_{\mathrm{roll},(k+1)}^{\uparrow},
+\label{eq:critical}
+\end{equation}
+where $x^{\downarrow}_{(j)}$ is the $j$-th largest and $x^{\uparrow}_{(j)}$ the $j$-th smallest of the null values, so that at most $k\le pN$ of the null desk-years lie strictly beyond each critical value.
+The decision on a desk-year with statistics $(W,\rho_{\mathrm{abs}},\rho_{\mathrm{roll}})$ is
+\begin{equation}
+\text{flag}=\indic[W>c_W]\ \vee\ \indic[\rho_{\mathrm{abs}}<c_{\mathrm{abs}}]\ \vee\ \indic[\rho_{\mathrm{roll}}<c_{\mathrm{roll}}].
+\label{eq:decision}
+\end{equation}
+With the Bonferroni split of \citet{dunn1961} each statistic is calibrated at $p=\alpha/3$, so that the union of the three flags has a size of at most $\alpha$ by the union bound; the engine's default is $\alpha=0.01$ and a calibration without the split is available.
+The resulting size is not exactly $p$: Proposition~\ref{prop:size} gives it, and the experiments of Section~\ref{sec:results} measure it on held-out null desk-years.
+Algorithm~\ref{alg:complement} states the whole procedure.
+
+\begin{algorithm}[htbp]
+\caption{The scale-and-level complement: calibration on a simulated null and decision on a desk-year.}
+\label{alg:complement}
+\begin{algorithmic}[1]
+\Require null generator $G$, number of null desk-years $N$, family size $\alpha$, window $w$, desk-year $(\HPL,\RTPL)$ of 250 days
+\Ensure flag of the complement and the regulatory zone of the desk-year
+\State $p\gets\alpha/3$; $k\gets\lfloor pN\rfloor$; \textbf{if} $k<1$ \textbf{then} refuse
+\For{$i=1,\dots,N$}
+\State draw $(\HPL^{(i)},\RTPL^{(i)})$ from $G$ with nothing planted
+\State $S^{(i)}\gets\bigl(W,\rho_{\mathrm{abs}},\rho^{(w)}_{\mathrm{roll}}\bigr)$ by Equations~\eqref{eq:wald}, \eqref{eq:rho-abs} and \eqref{eq:rho-roll}
+\EndFor
+\State $c_W\gets$ the $(k+1)$-th largest $W^{(i)}$; $c_{\mathrm{abs}},c_{\mathrm{roll}}\gets$ the $(k+1)$-th smallest values
+\State $(W,\rho_{\mathrm{abs}},\rho_{\mathrm{roll}})\gets$ the statistics of the desk-year
+\State \Return $W>c_W\ \vee\ \rho_{\mathrm{abs}}<c_{\mathrm{abs}}\ \vee\ \rho_{\mathrm{roll}}<c_{\mathrm{roll}}$ and the regulatory zone of $(\HPL,\RTPL)$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Parameters, complexity and implementation}
+\label{sec:method-implementation}
+
+The method has four parameters, all fixed before the evaluation and none tuned on its results: the window $w=20$ days, the family size $\alpha=0.01$, the Bonferroni split over three statistics, and the null size $N=10{,}000$ desk-years, which resolves a per-statistic size of $0.01/3$ with $k=33$.
+The null size trades the cost of simulating against the Monte Carlo spread of the critical values, which Proposition~\ref{prop:size} quantifies: the conditional size of a critical value read from $N=10{,}000$ values at $p=0.01$ has a standard deviation of 0.10 percentage points.
+Computing the three statistics on one desk-year costs $O(n\log n)$ for the ranks and $O(n)$ for the regression and the rolling means, so the calibration costs $O(Nn\log n)$ and the decision on a desk-year $O(n\log n)$; on the hardware of Section~\ref{sec:reproducibility} one desk-year takes about 10 ms including its generation.
+The method is implemented in the module \texttt{riskvalidation.market.pla\_complement} of the open-source engine \texttt{riskvalidation} 1.1.0, with the functions \texttt{pla\_mz\_wald}, \texttt{pla\_abs\_spearman}, \texttt{pla\_rolling\_abs\_spearman}, \texttt{pla\_complement\_statistics}, \texttt{pla\_complement\_calibrate}, \texttt{pla\_complement\_decide} and \texttt{pla\_complement}.
+Missing or degenerate input raises an error as the engine's regulatory statistics do: anything other than 250 finite observations per series, a series without spread, a constant absolute series, or a window out of range.
+The functions draw no random number; the calibration null is simulated by the caller from the caller's own generator, and the engine states in its documentation that the thresholds are specific to the generator that produced them.
+
+\subsection{Design choices and the alternatives considered}
+\label{sec:method-choices}
+
+Each element of the specification answers a choice between alternatives, and the choices are stated here with their reasons so that a change can be made knowingly.
+\emph{Absolute values rather than squares.}
+The absolute value of a daily move is linear in the scale of the day, $\E|\RTPL_t|=\sqrt{2/\pi}\,c\,\sigma_{t-L}$ for the stylised desk, whereas the square is quadratic and its rolling mean is dominated by the few largest days of the window; the regression on the squared series, which is the proxy of the variance used by the volatility-forecast literature, is run as a comparator and flags the stale desk in 20.0\% of replications against 76.7\% for the absolute-value Spearman statistic.
+\emph{Ranks rather than values in the two scale statistics.}
+A rank correlation is dimensionless and invariant to any positive rescaling of either series (Proposition~\ref{prop:invariance}), so the two scale statistics are orthogonal to the regression component by construction: the regression sees the mapping from one series to the other, the rank statistics see the agreement of their scale paths whatever the mapping.
+The Pearson correlation of the rolling means is the quantity whose closed form Proposition~\ref{prop:rolling} gives, and it is used in the theory for that reason, not in the decision.
+\emph{Simulation rather than asymptotics.}
+On a desk of 250 days with a log-autoregressive volatility, the null law of the Wald statistic under HC3 is not $\chi^2_2$, and the null laws of the two rank statistics of overlapping rolling means have no standard form; a simulated null gives each of them a threshold with the size of Proposition~\ref{prop:size} and costs nothing in the generality of the statistic.
+\emph{Bonferroni rather than a joint region.}
+The union bound over the three statistics is valid whatever their dependence and is conservative when they are positively dependent; a joint calibration, for example on the smallest of three simulated p-values, would give a size closer to the nominal one and is not implemented, so the measured union size (0.9\% against 1\%) shows how little the bound gives away on these desks.
+\emph{Twenty days.}
+The window is about one trading month, long enough to average out most of the daily shock and short enough to follow a volatility that changes over weeks; it was fixed before the evaluation, and the ablation reports how the result depends on it.
+
+\subsection{Reading a flag}
+\label{sec:method-reading}
+
+A desk-year flagged by the complement is flagged by at least one of the three statistics, and which one carries information.
+A high Wald statistic says that the map from RTPL to HPL is not the identity: a constant mis-scale, a level error, or a larger departure of the kind that the regulatory zone also reads, such as a wrong correlation or a misaligned series.
+A low absolute-value correlation says that the order of the sizes of the daily moves differs between the two series, which a basis or an omitted factor produces; the sign and the order of the signed moves can remain intact.
+A low rolling-mean correlation says that the two scale paths disagree over weeks, which a volatility that moves late produces, and which a large idiosyncratic noise also produces unless the null contains it.
+The complement therefore reports its three flags and the regulatory zone side by side and no combined grade, and it states the size at which each flag was calibrated, together with the number of null desk-years and the window.
+The union is a convenience for a yes-or-no question of whether anything is wrong at the stated family size; the three separate flags are the diagnosis.

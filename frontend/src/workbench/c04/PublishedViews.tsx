@@ -12,7 +12,7 @@ import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/tra
 import type { C04PublishedOutputs, Text, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { isPublished, type C04Sel, type PublishedVariant } from './selection';
+import { CORRELATION_PICKED, engelmannName, isPublished, type C04Sel, type PublishedVariant } from './selection';
 
 const LIVE = 'live' as const;
 type Lang = 'en' | 'es';
@@ -79,7 +79,8 @@ const INTERVAL_NAME: Record<string, Both> = {
   wald: { en: 'Wald', es: 'Wald' },
   agresti_coull: { en: 'Agresti-Coull', es: 'Agresti-Coull' },
 };
-const N_DAGGER: Both = { en: 'N dagger', es: 'N daga' };
+// the paper's symbol in both languages, as the table's rows print it (R5 c06 q4: "N dagger" beside "N†" in one table)
+const N_DAGGER: Both = { en: 'N†', es: 'N†' };
 
 /** Table 5's correlations, in the order of its rows and of its N dagger. */
 const table5Rhos = (o: C04PublishedOutputs) => [...new Set(o.sr190.rows.map((r) => r.rho))];
@@ -129,7 +130,7 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
   for (const p of e.portfolios) {
     rows.push({
       key: `${p.name}-pd0`,
-      label: { en: `${p.name}, PD of year 1`, es: `${p.name}, PD del año 1` },
+      label: { en: `${p.name}, PD of year 1`, es: `${engelmannName(p.name, 'es')}, PD del año 1` },
       printed: p.pd0.printed,
       recomputed: p.pd0.recomputed,
       decimals: p.pd0.decimals,
@@ -140,7 +141,7 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
     if (p.extreme) {
       rows.push({
         key: `${p.name}-${p.extreme.kind}`,
-        label: p.extreme.kind === 'min' ? { en: `${p.name}, lowest projected PD`, es: `${p.name}, PD proyectada mínima` } : { en: `${p.name}, highest projected PD`, es: `${p.name}, PD proyectada máxima` },
+        label: p.extreme.kind === 'min' ? { en: `${p.name}, lowest projected PD`, es: `${engelmannName(p.name, 'es')}, PD proyectada mínima` } : { en: `${p.name}, highest projected PD`, es: `${engelmannName(p.name, 'es')}, PD proyectada máxima` },
         printed: p.extreme.printed,
         recomputed: p.extreme.recomputed,
         decimals: p.extreme.decimals,
@@ -186,13 +187,13 @@ export function pathChart(o: C04PublishedOutputs): { years: number[]; series: Ch
   const ps = o.engelmann.portfolios;
   const years = (ps[0]?.pd_path ?? []).map((_, i) => i + 1);
   const ttc = o.engelmann.ttc_pd.recomputed;
-  const series: ChartSeries[] = ps.map((p, i) => ({ label: p.name, values: p.pd_path, color: PATH_COLOR[i % PATH_COLOR.length], width: 2 }));
+  const series: ChartSeries[] = ps.map((p, i) => ({ label: { en: p.name, es: engelmannName(p.name, 'es') }, values: p.pd_path, color: PATH_COLOR[i % PATH_COLOR.length], width: 2 }));
   const yMarks = [{ y: ttc, label: both((l) => `${l === 'en' ? 'TTC PD' : 'PD TTC'} ${pctd(l, ttc, 4)}`), tone: 'neutral' as const }];
   const marks = ps.flatMap((p) => {
     const ext = p.extreme;
     if (!ext) return [];
     const word = (l: Lang) => (ext.kind === 'min' ? (l === 'en' ? 'min' : 'mín') : l === 'en' ? 'max' : 'máx');
-    return [{ x: extremeAt(p.pd_path, ext.kind) + 1, label: both((l) => `${p.name}, ${word(l)}`) }];
+    return [{ x: extremeAt(p.pd_path, ext.kind) + 1, label: both((l) => `${engelmannName(p.name, l)}, ${word(l)}`) }];
   });
   return { years, series: series.filter((s) => s.values.some((x) => x !== null)), yMarks, marks };
 }
@@ -227,7 +228,7 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
           es: `Recalculados por riskvalidation ${v.provenance.riskvalidation_version ?? ''} desde los artículos en la raíz de datos; un valor concuerda dentro de media unidad del último dígito impreso. Israel et al.: concuerdan ${irwAgree} de ${o.irw.rows.length}; el Teorema 3(c) se cumple en ${t3} de ${o.irw.theorem3_c.length} matrices (un movimiento alcanzable pero nunca observado: no hay generador exacto); la serie logarítmica (1) toma ${o.irw.series_terms} términos hasta el 1e-8 declarado, como está impreso. Schuermann y Hanson: concuerdan ${srAgree} de ${o.sr190.rows.length} con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el único conteo cuya cota inferior de Wald se imprime como la de la tabla. Engelmann: su matriz (11) tal como está impresa (filas que suman 1 dentro de ${formatNumber(o.engelmann.row_sum_deviation, 'es', { digits: 2 })}), a saldo unitario. El grupo Modelo cita cada artículo.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <p className="ct-sm-title">
             {pick({ en: 'Israel, Rosenthal and Wei (2001), section 4: the L1 distance of exp(Q) to P', es: 'Israel, Rosenthal y Wei (2001), sección 4: la distancia L1 de exp(Q) a P' }, lang)}
           </p>
@@ -337,7 +338,7 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `Engelmann (2024), section 4: each starting portfolio projected by (9) under his unstressed matrix (11) as printed, at unit balance, recomputed; the PD of each year. Dashed: the PD of his TTC portfolio (10), to which every path drifts. Marked: the extremes the paper prints, at the year the path reaches them (their values in the table). The matrix itself is derived-only and not shown.`,
-          es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Segmentada: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
+          es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Discontinua: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
         }}
       >
         <UPlotChart
@@ -391,12 +392,12 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
       source: 'schuermann-hanson-2004',
       title: { en: 'Schuermann and Hanson (2004), Table 5', es: 'Schuermann y Hanson (2004), Tabla 5' },
       computes: {
-        en: `Schuermann and Hanson's Wald and Agresti-Coull intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N dagger.`,
-        es: `Los intervalos de Wald y de Agresti-Coull de Schuermann y Hanson al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N daga.`,
+        en: `Schuermann and Hanson's Wald and Agresti-Coull intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N†.`,
+        es: `Los intervalos de Wald y de Agresti-Coull de Schuermann y Hanson al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N†.`,
       },
       here: {
-        en: `The ${o.sr190.rows.length * 2} bounds and ${o.sr190.rows.length} lengths at ${o.sr190.defaults} defaults of ${o.sr190.n}, the count the print implies, and the ${o.sr190.n_dagger.printed.length} values of N dagger; the Impact group recomputes them live.`,
-        es: `Las ${o.sr190.rows.length * 2} cotas y ${o.sr190.rows.length} largos con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el conteo que implica lo impreso, y los ${o.sr190.n_dagger.printed.length} valores de N daga; el grupo Impacto los recalcula en vivo.`,
+        en: `The ${o.sr190.rows.length * 2} bounds and ${o.sr190.rows.length} lengths at ${o.sr190.defaults} defaults of ${o.sr190.n}, the count the print implies, and the ${o.sr190.n_dagger.printed.length} values of N†; the Impact group recomputes them live.`,
+        es: `Las ${o.sr190.rows.length * 2} cotas y ${o.sr190.rows.length} largos con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el conteo que implica lo impreso, y los ${o.sr190.n_dagger.printed.length} valores de N†; el grupo Impacto los recalcula en vivo.`,
       },
       matrices: {
         en: "Table 5 holds the paper's own interval computations and no data; it has no matrix to show.",
@@ -443,7 +444,7 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
           es: "Cada artículo es solo de derivados: su PDF queda en la raíz de datos y solo se publican los resultados recalculados desde él, así que una matriz que un artículo reimprime nunca se dibuja aquí; las matrices propias de las agencias están en las variantes S&P, Moody's y Fitch, desde CEREP.",
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="papers">
             <thead>
               <tr>
@@ -573,8 +574,8 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N dagger; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
-          es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N daga; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+          en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N†; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N† from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+          es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N†; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N† de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
         }}
       >
         <UPlotChart
@@ -582,7 +583,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
           y={{ label: { en: 'PD bound', es: 'Cota de la PD' }, format: { percent: true, decimals: 1 } }}
           series={series}
-          marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.rho, label: CORRELATION_PICKED }]}
         />
       </PlotCard>
       <PlotCard
@@ -596,7 +597,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           es: `Cotas en puntos básicos, de la inferior a la superior; las filas N† son números efectivos de deudores, y las filas del panel dan su N† en la última columna. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table ct-wrap-head" data-table="table5-live">
             <thead>
               <tr>
@@ -631,7 +632,7 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
               })}
               {atRail.map((r) => (
                 <tr key={`rail-${r.key}`} data-row={`rail|${r.key}`} className="ct-current">
-                  <td className="ct-text">{`${pick(r.label, lang)}, ${pick({ en: 'rail', es: 'panel' }, lang)} ${rhoText(lang)}, ${lv(lang)}`}</td>
+                  <td className="ct-text">{`${pick(r.label, lang)}, ${pick(CORRELATION_PICKED, lang).toLowerCase()} ${rhoText(lang)}, ${lv(lang)}`}</td>
                   <td>-</td>
                   <td>{bpRange(lang, r.i.lower, r.i.upper, SR190_DECIMALS + 1)}</td>
                   <td className="ct-text">{`N† ${formatNumber(r.i.nEffective, lang, { digits: 4 })}`}</td>

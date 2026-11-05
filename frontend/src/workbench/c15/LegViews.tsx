@@ -72,15 +72,15 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={chartData}
-              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
           <dl className="ct-defs" data-table="eve-measure" data-measure={measure} data-offset={sel.offset}>
             <dt>{pick({ en: `Annex 1 delta EVE under the offset chosen (${unit})`, es: `Delta EVE del Anexo 1 con la compensación elegida (${unit})` }, lang)}</dt>
             <dd>{cell(measure, lang)}</dd>
-            <dt>{pick({ en: `The document's own measure (${unit}), offset ${o.offset_rule.state === 'compared' ? 'compared' : o.offset_rule.state}`, es: `La medida propia del documento (${unit}), compensación ${o.offset_rule.state === 'compared' ? 'comparada' : o.offset_rule.state === 'on' ? 'activa' : 'inactiva'}` }, lang)}</dt>
-            <dd>{`${cell(o.eve.delta_eve, lang)} (${formatNumber(o.eve.delta_eve_share_tier1, lang, { percent: true, decimals: 2 })} ${pick({ en: 'of Tier 1', es: 'del capital N1' }, lang)})`}</dd>
+            <dt>{pick({ en: `The document's own measure (${unit}), ${o.offset_rule.state === 'compared' ? 'with the offset (the rule is compared, on against off)' : `offset ${o.offset_rule.state}`}`, es: `La medida propia del documento (${unit}), ${o.offset_rule.state === 'compared' ? 'con la compensación (la regla se compara, activa contra inactiva)' : `compensación ${o.offset_rule.state === 'on' ? 'activa' : 'inactiva'}`}` }, lang)}</dt>
+            <dd>{`${cell(o.eve.delta_eve, lang)} (${formatNumber(o.eve.delta_eve_share_tier1, lang, { percent: true, decimals: 2 })} ${pick({ en: 'of Tier 1', es: 'del capital de nivel 1' }, lang)})`}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="eve-by-leg">
             <thead>
@@ -111,7 +111,8 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{pick(OFFSET_LONG[sel.offset], lang)}.</p>
-          <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'} />
+          {/* every test of the document: the NII view keeps the CMF golden values only (R4 c18 n1) */}
+          <IrrbbTestsTable variant={sel.data.variant} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -148,7 +149,7 @@ export function PositionsView({ sel }: { sel: C15Sel | null }) {
               <UPlotChart
                 height="fill"
                 x={{ values: x, label: buckets ? { en: 'Bucket midpoint', es: 'Punto medio del tramo' } : { en: 'Time bucket', es: 'Tramo' }, ...(buckets ? { unit: { en: 'years', es: 'años' } } : {}), format: { digits: 3 } }}
-                y={{ label: { en: `Net repricing cash flow (${pick(axis.unit, 'en')})`, es: `Flujo neto de repreciación (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+                y={{ label: { en: `Net cash flow (${pick(axis.unit, 'en')})`, es: `Flujo neto (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
                 series={[
                   { label: LEG_TEXT.CLP, values: row.clp.net_cash_flows.map((v) => v / axis.div), color: '--color-accent', width: 2.4 },
                   { label: LEG_TEXT.UR, values: row.ur.net_cash_flows.map((v) => v / axis.div), color: '--color-magenta', width: 2.4, dash: [6, 3] },
@@ -189,7 +190,7 @@ export function PositionsView({ sel }: { sel: C15Sel | null }) {
                   <th className="ct-text">{pick({ en: `Items of the leg: ${text(LEG_SHORT, leg.leg).en}`, es: `Partidas del tramo: ${text(LEG_SHORT, leg.leg).es}` }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Side', es: 'Lado' }, lang)}</th>
-                  <th>{pick({ en: `Amount (${leg.currency})`, es: `Monto (${leg.currency})` }, lang)}</th>
+                  <th>{pick({ en: `Amount (${pick(scaleUnit({ ...doc, currency: leg.currency }), 'en')})`, es: `Monto (${pick(scaleUnit({ ...doc, currency: leg.currency }), 'es')})` }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -244,7 +245,7 @@ export function DynamicLegView({ sel }: { sel: C15Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: months, label: { en: 'Month of the projection', es: 'Mes de la proyección' }, format: { decimals: 0 } }}
-              y={{ label: { en: `Net interest income per month (${pick(axis.unit, 'en')})`, es: `Margen financiero neto por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `NII per month (${pick(axis.unit, 'en')})`, es: `NII por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={leg.scenarios.map((s, i) => ({ label: DYN_TEXT[s.scenario], values: s.monthly_nii.map((v) => v / axis.div), color: colors[i % colors.length], width: 2.4, ...(i === 0 ? {} : { dash: [6, 3] }) }))}
             />
           }
@@ -337,8 +338,8 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
         title={{ en: `Earnings at risk and economic value at risk: ${text(LEG_SHORT, e.leg).en} leg`, es: `Ganancias en riesgo y valor económico en riesgo: tramo ${text(LEG_SHORT, e.leg).es}` }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} EaR is the base NII of the leg minus the lower quantile of its simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below and carry the Monte Carlo error of the number of paths${converted ? '; the UF leg is converted at the UF value' : ''}.`,
-          es: `${o.sign_convention.statement.es} El EaR es el NII base del tramo menos el cuantil inferior de su NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo y llevan el error de Monte Carlo del número de trayectorias${converted ? '; el tramo UF se convierte al valor de la UF' : ''}.`,
+          en: `${o.sign_convention.statement.en} EaR is the base NII of the leg minus the lower quantile of its simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named in the list and carry the Monte Carlo error of the number of paths${converted ? '; the UF leg is converted at the UF value' : ''}.`,
+          es: `${o.sign_convention.statement.es} El EaR es el NII base del tramo menos el cuantil inferior de su NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado en la lista y llevan el error de Monte Carlo del número de trayectorias${converted ? '; el tramo UF se convierte al valor de la UF' : ''}.`,
         }}
       >
         <ChartOverTable
@@ -349,7 +350,7 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="vertical"
               data={bars}
-              axis={{ label: { en: 'Loss at the confidence level', es: 'Pérdida al nivel de confianza' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Loss at the confidence level', es: 'Pérdida al nivel de confianza' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
@@ -385,7 +386,7 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
             {e.parameters.map((p) => (
               <Fragment key={p.name}>
                 <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
-                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' && p.unit === 'per year' ? 'por año' : p.unit})`}</dd>
+                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' ? (p.unit === 'per year' ? 'por año' : p.unit === 'per square-root year' ? 'por raíz cuadrada del año' : p.unit) : p.unit})`}</dd>
               </Fragment>
             ))}
             <dt>{pick({ en: 'Paths', es: 'Trayectorias' }, lang)}</dt>

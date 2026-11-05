@@ -1,16 +1,34 @@
 // C09's Validation, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls). The Findings card and the fixture notice are the ones C06 and C07 use.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { Fragment, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable, compactMoney } from '../c06/format';
+import { compactMoney } from '../c06/format';
+import { ChartAbove } from '../c16/C16Common';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
-import { bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, type C09Outputs, type C09Sel } from './selection';
+import { truthText } from '../c08/words';
+import { SHAPED_ON_TEXT, bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, text, type C09Outputs, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
+/** The convention's formula with its reference date as a subscript: E(t_r) is written E(t<sub>r</sub>), as the pages write it (R3 c10
+ * m9); a subscript element, not the modifier letter, which at the page's size read as a comma (R4 c11 m8). */
+export function formulaText(formula: string): ReactNode {
+  const parts = formula.split(/\bt_r\b/);
+  return parts.map((p, i) => (
+    <Fragment key={i}>
+      {p}
+      {i < parts.length - 1 ? (
+        <>
+          t<sub>r</sub>
+        </>
+      ) : null}
+    </Fragment>
+  ));
+}
 
 export function C09FindingsView({ sel }: { sel: C09Sel | null }) {
   if (!sel) return <Pending />;
@@ -33,11 +51,12 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
       title={{ en: 'The acceleration levels', es: 'Los niveles de aceleración' }}
       {...card}
       note={{
-        en: 'A higher level draws utilisation up more steeply before default, so the CCF measured a fixed year before default drifts from the truth. Pick a level to load it.',
-        es: 'Un nivel más alto sube la utilización con más fuerza antes del incumplimiento, así que el CCF medido un año fijo antes del incumplimiento se aleja de la verdad. Elija un nivel para cargarlo.',
+        en: 'A higher level draws utilisation up more steeply before default. The bars are the bias of the CCF measured a fixed year before default at each level, how far it sits from the known CCF; it can be small. Pick a level to load it.',
+        es: 'Un nivel más alto sube la utilización con más fuerza antes del incumplimiento. Las barras son el sesgo del CCF medido un año fijo antes del incumplimiento en cada nivel, cuánto se aleja del CCF conocido; puede ser pequeño. Elija un nivel para cargarlo.',
       }}
     >
-      <ChartOverTable
+      <ChartAbove
+        chartHeight="13rem"
         chart={
           <BarChart
             title={{ en: 'Bias of the untreated fixed-horizon CCF by level', es: 'Sesgo del CCF a horizonte fijo sin tratar por nivel' }}
@@ -67,7 +86,7 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
                   <td className="ct-text">
                     <button type="button" className="ct-linkbutton" onClick={() => onPick(id)}>{pick(title, lang)}</button>
                   </td>
-                  <td className="ct-wide-only">{pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en ${g.acceleration_window_months} meses` }, lang)}</td>
+                  <td className="ct-wide-only">{g.acceleration_window_months === 0 ? pick({ en: 'none', es: 'ninguna' }, lang) : pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en ${g.acceleration_window_months} meses` }, lang)}</td>
                   <td>
                     <Flagged value={g.true_ccf.value} flag={g.true_ccf.flag} />
                   </td>
@@ -78,7 +97,7 @@ export function C09VariantsTable({ variants, onPick, current }: { variants: Arra
             })}
           </tbody>
         </table>
-      </ChartOverTable>
+      </ChartAbove>
     </PlotCard>
   );
 }
@@ -122,23 +141,23 @@ export function C09ContextView({ sel }: { sel: C09Sel | null }) {
           <dt>{pick({ en: 'Convention', es: 'Convención' }, lang)}</dt>
           <dd>{pick(o.convention.definition, lang)}</dd>
           <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-          <dd translate="no">{o.convention.formula}</dd>
+          <dd translate="no">{formulaText(o.convention.formula)}</dd>
           <dt>{pick({ en: 'In US terms', es: 'En términos de EE.UU.' }, lang)}</dt>
           <dd>{pick(o.convention.us_terms, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The generator and the replications', es: 'El generador y las replicaciones' }} {...card} note={{ en: 'The truth is the CCF the generator draws balances with. Development and test replications use independent seeds.', es: 'La verdad es el CCF con que el generador simula los saldos. Las replicaciones de desarrollo y de prueba usan semillas independientes.' }}>
         <dl className="ct-defs" data-table="c09-generator">
           <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-          <dd data-shaped-on={g.shaped_on}>{g.shaped_on}</dd>
+          <dd data-shaped-on={g.shaped_on}>{pick(text(SHAPED_ON_TEXT, g.shaped_on), lang)}</dd>
           <dt>{pick({ en: 'Known CCF', es: 'CCF conocido' }, lang)}</dt>
           <dd>
             <Flagged value={g.true_ccf.value} flag={g.true_ccf.flag} />
           </dd>
           <dt>{pick({ en: 'Acceleration', es: 'Aceleración' }, lang)}</dt>
-          <dd>{pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over the last ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en los últimos ${g.acceleration_window_months} meses` }, lang)}</dd>
+          <dd>{g.acceleration_window_months === 0 ? pick({ en: 'none', es: 'ninguna' }, lang) : pick({ en: `x${formatNumber(g.acceleration_factor, 'en', { digits: 3 })} over the last ${g.acceleration_window_months} months`, es: `x${formatNumber(g.acceleration_factor, 'es', { digits: 3 })} en los últimos ${g.acceleration_window_months} meses` }, lang)}</dd>
           <dt>{pick({ en: 'Test replications', es: 'Replicaciones de prueba' }, lang)}</dt>
           <dd data-seeds="test">{`${count(r.test.n_replications, lang)} (${pick({ en: 'seeds', es: 'semillas' }, lang)} ${r.test.seeds.join(', ')}); ${count(r.test.n_facilities, lang)} ${pick({ en: 'facilities', es: 'líneas' }, lang)}, ${count(r.test.n_defaults, lang)} ${pick({ en: 'defaults', es: 'incumplimientos' }, lang)}`}</dd>
           <dt>{pick({ en: 'Development replications', es: 'Replicaciones de desarrollo' }, lang)}</dt>

@@ -12,7 +12,7 @@ def test_every_target_names_its_source() -> None:
         pub = sources.PUBLICATIONS[t["publication"]]
         assert pub["url"].startswith("https://www.cmfchile.cl/") and len(pub["sha256"]) == 64 and pub["bytes"] > 0
         assert t["as_of"] == "2026-08-31" and t["status"] == "CMF primary" and t["where"]
-        assert pub["url"] in sources.source_text(t)
+        assert all(pub["url"] in text for text in sources.source_text(t).values())
     # the unit conversion value has its primary source too
     assert sources.PUBLICATIONS["sii-uf-2026"]["url"] == "https://www.sii.cl/valores_y_fechas/uf/uf2026.htm"
     assert sources.UF_VALUE == 40873.77 and sources.UF_DATE == "2026-08-31"

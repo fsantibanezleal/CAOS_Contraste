@@ -3,13 +3,16 @@
 // live applicant, the EBM's shape functions, the GBM's monotone partial dependence and reason-code stability, the L1
 // regression's coefficients and PLTR's rules, TabPFN. Every view fills the panel with a table beside or above the
 // drawing of the same numbers (ADR-0071 rule 8).
-import { PlotCard, SubTabs, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, SubTabs, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo, type ReactElement } from 'react';
 import type { EbmExport, GbmDetails, ModelRecord, ScorecardDetails } from '../lib/contract.types';
 import { liveScores } from './Workbench';
-import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
+import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
+import { RejectInferenceCard } from './RejectInference';
+import { engineText, ruleText, unitName, type Bi } from './c01Text';
+import { inputName, ruleNames, termName } from './names';
 
 const PALETTE = ['--color-fg-subtle', '--color-accent', '--color-accent-2', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-fg'] as const;
 
@@ -47,8 +50,86 @@ export function droppedReason(why: string, lang: 'en' | 'es'): string {
   return why;
 }
 
+/** The codes of the UCI Statlog (German Credit Data) file by their meaning in its codebook (attribute descriptions,
+ * https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data): the German twin's scorecard bins print the meaning, never the
+ * code (U16-R2b c01 B2). */
+const GERMAN_CODE_TEXT: Record<string, { en: string; es: string }> = {
+  A11: { en: 'under 0 DM', es: 'menos de 0 DM' },
+  A12: { en: '0 to under 200 DM', es: 'de 0 a menos de 200 DM' },
+  A13: { en: '200 DM or more, or salary assignments for at least 1 year', es: '200 DM o más, o asignación de sueldo por al menos 1 año' },
+  A14: { en: 'no checking account', es: 'sin cuenta corriente' },
+  A30: { en: 'no credits taken, or all paid back duly', es: 'sin créditos, o todos pagados al día' },
+  A31: { en: 'all credits at this bank paid back duly', es: 'todos los créditos de este banco pagados al día' },
+  A32: { en: 'existing credits paid back duly till now', es: 'créditos vigentes pagados al día hasta ahora' },
+  A33: { en: 'delay in paying off in the past', es: 'atrasos en pagos pasados' },
+  A34: { en: 'critical account, or other credits existing', es: 'cuenta crítica, u otros créditos vigentes' },
+  A40: { en: 'car (new)', es: 'auto nuevo' },
+  A41: { en: 'car (used)', es: 'auto usado' },
+  A42: { en: 'furniture or equipment', es: 'muebles o equipamiento' },
+  A43: { en: 'radio or television', es: 'radio o televisión' },
+  A44: { en: 'domestic appliances', es: 'electrodomésticos' },
+  A45: { en: 'repairs', es: 'reparaciones' },
+  A46: { en: 'education', es: 'educación' },
+  A47: { en: 'vacation', es: 'vacaciones' },
+  A48: { en: 'retraining', es: 'recapacitación' },
+  A49: { en: 'business', es: 'negocios' },
+  A410: { en: 'others', es: 'otros' },
+  A61: { en: 'under 100 DM', es: 'menos de 100 DM' },
+  A62: { en: '100 to under 500 DM', es: 'de 100 a menos de 500 DM' },
+  A63: { en: '500 to under 1,000 DM', es: 'de 500 a menos de 1.000 DM' },
+  A64: { en: '1,000 DM or more', es: '1.000 DM o más' },
+  A65: { en: 'unknown, or no savings account', es: 'desconocido, o sin cuenta de ahorro' },
+  A71: { en: 'unemployed', es: 'desempleado' },
+  A72: { en: 'under 1 year', es: 'menos de 1 año' },
+  A73: { en: '1 to under 4 years', es: 'de 1 a menos de 4 años' },
+  A74: { en: '4 to under 7 years', es: 'de 4 a menos de 7 años' },
+  A75: { en: '7 years or more', es: '7 años o más' },
+  A101: { en: 'none', es: 'ninguno' },
+  A102: { en: 'co-applicant', es: 'codeudor' },
+  A103: { en: 'guarantor', es: 'aval' },
+  A121: { en: 'real estate', es: 'bienes raíces' },
+  A122: { en: 'building society savings or life insurance', es: 'ahorro para vivienda o seguro de vida' },
+  A123: { en: 'car or other property', es: 'auto u otro bien' },
+  A124: { en: 'unknown, or no property', es: 'desconocido, o sin bienes' },
+  A141: { en: 'bank', es: 'banco' },
+  A142: { en: 'stores', es: 'tiendas' },
+  A143: { en: 'none', es: 'ninguno' },
+  A151: { en: 'rent', es: 'arriendo' },
+  A152: { en: 'own', es: 'propia' },
+  A153: { en: 'for free', es: 'gratuita' },
+  A171: { en: 'unemployed or unskilled, non-resident', es: 'desempleado o no calificado, no residente' },
+  A172: { en: 'unskilled, resident', es: 'no calificado, residente' },
+  A173: { en: 'skilled employee or official', es: 'empleado calificado o funcionario' },
+  A174: { en: 'management, self-employed or highly qualified', es: 'gerencia, independiente o altamente calificado' },
+  A191: { en: 'none', es: 'ninguno' },
+  A192: { en: "yes, registered under the customer's name", es: "sí, registrado a nombre del cliente" },
+};
+
+/** The education codes of the UCI Taiwan file by the codebook (X3: 1 graduate school, 2 university, 3 high school, 4 others); the
+ * file also carries 0, 5 and 6, which the codebook does not document (R3 c01 B3, c02 B3). */
+const EDUCATION_TEXT: Record<string, { en: string; es: string }> = {
+  '1': { en: 'graduate school', es: 'posgrado' },
+  '2': { en: 'university', es: 'universidad' },
+  '3': { en: 'high school', es: 'secundaria' },
+  '4': { en: 'others', es: 'otros' },
+};
+
+/** A category of a categorical input by its codebook name: a German code (A11) or a Taiwan education code; an undocumented code
+ * says so. */
+export function categoryName(input: string, code: string): { en: string; es: string } {
+  if (GERMAN_CODE_TEXT[code]) return GERMAN_CODE_TEXT[code];
+  if (input === 'EDUCATION') return EDUCATION_TEXT[code] ?? { en: `undocumented code ${code}`, es: `código no documentado ${code}` };
+  return { en: `code ${code}`, es: `código ${code}` };
+}
+
 export function binText(bin: string, lang: 'en' | 'es'): string {
   if (bin === 'Missing') return lang === 'es' ? 'Sin dato' : 'Missing';
+  // a set of the German file's category codes: their meanings, joined by "or"
+  const codes = /^\{\s*(A\d+(?:\s*,\s*A\d+)*)\s*\}$/.exec(bin);
+  if (codes) {
+    const ids = codes[1].split(/\s*,\s*/);
+    if (ids.every((c) => GERMAN_CODE_TEXT[c])) return ids.map((c) => GERMAN_CODE_TEXT[c][lang]).join(lang === 'es' ? ' o ' : ' or ');
+  }
   if (bin === 'Special') return lang === 'es' ? 'Especial' : 'Special';
   const m = /^([[(])\s*(-?inf|-?\d+(?:\.\d+)?)\s*,\s*(-?inf|-?\d+(?:\.\d+)?)\s*([\])])$/.exec(bin);
   if (!m) return bin;
@@ -108,37 +189,45 @@ export function LadderView({ sel }: { sel: Selection | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: 'Held-out AUC with its DeLong 95% interval, the paired DeLong test against the scorecard, and the calibration of each rung (Brier, ECE). Engines and licences are in the Context group.',
-            es: 'AUC fuera de muestra con su intervalo 95% de DeLong, la prueba pareada de DeLong contra la scorecard y la calibración de cada peldaño (Brier, ECE). Motores y licencias están en el grupo Contexto.',
+            en: 'Held-out AUC with its DeLong 95 % interval, the paired DeLong test against the scorecard, and the calibration of each rung (Brier, ECE); on a narrow screen the interval and the ECE sit under their value. Engines and licences are in the Context group.',
+            es: 'AUC fuera de muestra con su intervalo 95 % de DeLong, la prueba pareada de DeLong contra la tarjeta de puntuación y la calibración de cada peldaño (Brier, ECE); en una pantalla angosta el intervalo y el ECE quedan bajo su valor. Motores y licencias están en el grupo Contexto.',
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table">
               <thead>
                 <tr>
                   <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                   <th>AUC</th>
-                  <th className="ct-wide-only">{pick({ en: '95% interval', es: 'Intervalo 95%' }, lang)}</th>
+                  <th className="ct-wide-only ct-repeated">{pick({ en: '95 % interval', es: 'Intervalo 95 %' }, lang)}</th>
                   <th>{pick({ en: 'DeLong p', es: 'p de DeLong' }, lang)}</th>
                   <th>Brier</th>
-                  <th className="ct-wide-only">ECE</th>
+                  <th className="ct-wide-only ct-repeated">ECE</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.m.id} data-rung={r.m.id} title={`${pick(r.m.title, lang)}: ${r.m.engine} (${r.m.licence})`}>
+                  <tr key={r.m.id} data-rung={r.m.id} title={`${pick(r.m.title, lang)}: ${engineText(r.m.engine, lang)} (${r.m.licence})`}>
                     <td>{pick(shortName(r.m, r.m.id), lang)}</td>
-                    <td>{f(r.auc)}</td>
-                    <td className="ct-wide-only">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
+                    <td>
+                      {f(r.auc)}
+                      {r.lo !== null && r.hi !== null ? <span className="ct-narrow-only">{`${f(r.lo)} - ${f(r.hi)}`}</span> : null}
+                    </td>
+                    <td className="ct-wide-only ct-repeated">{r.lo !== null && r.hi !== null ? `${f(r.lo)} - ${f(r.hi)}` : ''}</td>
                     <td>{r.m.id === CHAMPION ? pick({ en: 'champion', es: 'campeón' }, lang) : formatNumber(r.delongP, lang, { digits: 2 })}</td>
-                    <td>{f(r.brier, 4)}</td>
-                    <td className="ct-wide-only">{f(r.ece, 4)}</td>
+                    <td>
+                      {f(r.brier, 4)}
+                      <span className="ct-narrow-only">{`ECE ${f(r.ece, 4)}`}</span>
+                    </td>
+                    <td className="ct-wide-only ct-repeated">{f(r.ece, 4)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </PlotCard>
+        <TabPfnCard sel={sel} />
+        <RejectInferenceCard sel={sel} />
         <div className="ct-tall-only">
           <PlotCard
             fill
@@ -163,7 +252,7 @@ export function LadderView({ sel }: { sel: Selection | null }) {
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'Defaulters caught against non-defaulters flagged, riskier first. Dashed: the P0 anchors.', es: 'Incumplidores detectados contra no incumplidores marcados, de mayor a menor riesgo. Segmentadas: los anclajes P0.' }}
+        note={{ en: 'Defaulters caught against non-defaulters flagged, riskier first. Dashed: the P0 anchors.', es: 'Incumplidores detectados contra no incumplidores marcados, de mayor a menor riesgo. Discontinuas: los anclajes P0.' }}
       >
         <UPlotChart
           height="fill"
@@ -209,10 +298,17 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
   if (!sel || !sc || !dist) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const f = (v: number | null, d = 3) => formatNumber(v, lang, { decimals: d });
+  // each input by its codebook name, the reason after a colon (R3 c01 B2, B4; c02 m10: no parentheses inside parentheses)
   const dropped = (l: 'en' | 'es') =>
     Object.entries(sc.dropped)
-      .map(([k, why]) => `${k} (${droppedReason(why, l)})`)
+      .map(([k, why]) => `${termName(k, l)}: ${droppedReason(why, l)}`)
       .join('; ');
+  // with no scored applicant the card beside the points table shows the four characteristics of highest information value, a replay
+  // in the place of the four reasons (R3 c01 M2, m8; c02 m1 to m3)
+  const byIv = sc.features
+    .map((f) => ({ f, iv: sc.iv[f] }))
+    .sort((a, b) => b.iv - a.iv)
+    .slice(0, 4);
   return (
     <ViewsRow shares={[3, 2]}>
       <PlotCard
@@ -222,15 +318,16 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${formatNumber(sc.scaling.score_ref, 'en', { decimals: 0 })} points at odds ${formatNumber(sc.scaling.odds_ref, 'en', { decimals: 0 })} to 1, ${formatNumber(sc.scaling.pdo, 'en', { decimals: 0 })} points to double the odds; bins fitted on the training slice only. Highlighted: the applicant's bins.${dropped('en') ? ` Not in the scorecard: ${dropped('en')}.` : ''}`,
-          es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con odds ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar las odds; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped('es') ? ` Fuera de la scorecard: ${dropped('es')}.` : ''}`,
+          en: `${formatNumber(sc.scaling.score_ref, 'en', { decimals: 0 })} points at odds ${formatNumber(sc.scaling.odds_ref, 'en', { decimals: 0 })} to 1, ${formatNumber(sc.scaling.pdo, 'en', { decimals: 0 })} points to double the odds; bins fitted on the training slice only.${live ? " Highlighted: the applicant's bins." : ''}${dropped('en') ? ` Not in the scorecard: ${dropped('en')}.` : ''}`,
+          es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con razón de probabilidades de ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar la razón; tramos ajustados solo con la partición de entrenamiento.${live ? ' Destacados: los tramos del solicitante.' : ''}${dropped('es') ? ` Fuera de la tarjeta de puntuación: ${dropped('es')}.` : ''}`,
         }}
       >
-        <div className="ct-scroll">
-          <table className="caos-table">
+        <div className="ct-scroll" data-caos-flow="">
+          {/* the headers wrap at a word too, so the Points column stays in the card at 1280 in Spanish (R3 c01 M3) */}
+          <table className="caos-table ct-wrap-head">
             <thead>
               <tr>
-                <th>{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Bin', es: 'Tramo' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Count', es: 'Cantidad' }, lang)}</th>
                 <th>{pick({ en: 'Default rate', es: 'Tasa de incumplimiento' }, lang)}</th>
@@ -246,7 +343,8 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                   const here = live ? live.card.rows[j] === r.row : false;
                   return (
                     <tr key={`${r.feature}-${r.row}`} data-current={here ? 'true' : undefined} className={here ? 'ct-current' : undefined}>
-                      <td>{r.feature}</td>
+                      {/* the name wraps, so a long one ("Status of the existing checking account") leaves the Points column in the card (R3 c01 M3) */}
+                      <td className="ct-text">{pick(inputName(r.feature) ?? { en: r.feature, es: r.feature }, lang)}</td>
                       <td className="ct-text">{binText(r.bin, lang)}</td>
                       <td className="ct-wide-only">{formatNumber(r.count, lang)}</td>
                       <td>{formatNumber(r.event_rate, lang, { percent: true, decimals: 1 })}</td>
@@ -260,16 +358,32 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
         </div>
       </PlotCard>
       <>
+        {/* the column is split by measure, not by the reasons' height (R4 c01 M1, c02 M1: the reasons' two-line Spanish names left the
+            distribution a plot of 10 px): the distribution's part keeps its plot's floor (data-plot-floor, measured by layout.ts) and
+            the reasons' card gives up the rest, its table scrolling with its cue. The four reasons are the card's point (adverse action):
+            the card keeps its own height and the distribution takes the rest above its floor (R5 c01 n4, c02 n1: both parts shrank, and
+            the reasons' card showed 1 of its 4 rows over a distribution of 330 px) */}
+        <div className="ct-part" style={{ flex: '0 0 auto' }}>
         <PlotCard
-          title={{ en: 'The applicant in the rail: principal reasons', es: 'El solicitante del panel: razones principales' }}
-          lane="live"
+          fill
+          title={live ? { en: 'The applicant in the rail: principal reasons', es: 'El solicitante del panel: razones principales' } : { en: 'The four strongest characteristics', es: 'Las cuatro características más fuertes' }}
+          lane={live ? 'live' : REPLAY}
           provenance={prov}
           dataKey={stateKey}
-          note={{
-            en: 'The four characteristics where the applicant fell furthest below the average points of all applicants (Regulation B, comment 9(b)(2)-5).',
-            es: 'Las cuatro características donde el solicitante quedó más bajo el promedio de puntos de todos los solicitantes (Regulation B, comentario 9(b)(2)-5).',
-          }}
+          note={
+            live
+              ? {
+                  // one line, so the chart below keeps its height (R3 c01 M2)
+                  en: 'Furthest below the average points of all applicants (Regulation B, comment 9(b)(2)-5).',
+                  es: 'Más bajo el promedio de puntos de los solicitantes (Regulation B, comentario 9(b)(2)-5).',
+                }
+              : {
+                  en: "By information value on the training split: this variant's document carries no scored applicants (Holdout and German do).",
+                  es: 'Por valor de información en la partición de entrenamiento: el documento de esta variante no trae solicitantes puntuados.',
+                }
+          }
         >
+          <div className="ct-scroll" data-caos-flow="">
           {live && reasons ? (
             <table className="caos-table">
               <thead>
@@ -285,7 +399,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                 {reasons.map((r, k) => (
                   <tr key={r.feature}>
                     <td>{k + 1}</td>
-                    <td className="caos-col-text">{r.feature}</td>
+                    <td className="caos-col-text">{pick(inputName(r.feature) ?? { en: r.feature, es: r.feature }, lang)}</td>
                     <td>{formatNumber(r.points, lang, { decimals: 0 })}</td>
                     <td>{formatNumber(r.avg, lang, { decimals: 1 })}</td>
                     <td>{formatNumber(r.shortfall, lang, { decimals: 1 })}</td>
@@ -294,50 +408,51 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
               </tbody>
             </table>
           ) : (
-            <>
-              <p className="ct-note">{pick({ en: 'This variant resamples the holdout, so it carries no scored applicants (pick Holdout or German); below, the characteristics by information value on the training slice.', es: 'Esta variante remuestrea la muestra reservada, así que no trae solicitantes puntuados (elija Reservada o Alemán); abajo, las características según su valor de información en el tramo de entrenamiento.' }, lang)}</p>
-              <table className="caos-table">
-                <thead>
-                  <tr>
-                    <th className="caos-col-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
-                    <th>{pick({ en: 'Information value', es: 'Valor de información' }, lang)}</th>
+            <table className="caos-table" data-table="iv">
+              <thead>
+                <tr>
+                  <th className="caos-col-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
+                  <th>{pick({ en: 'Information value', es: 'Valor de información' }, lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byIv.map((r) => (
+                  <tr key={r.f}>
+                    <td className="caos-col-text">{pick(inputName(r.f) ?? { en: r.f, es: r.f }, lang)}</td>
+                    <td>{formatNumber(r.iv, lang, { decimals: 3 })}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {sc.features
-                    .map((f) => ({ f, iv: sc.iv[f] }))
-                    .sort((a, b) => b.iv - a.iv)
-                    .slice(0, 6)
-                    .map((r) => (
-                      <tr key={r.f}>
-                        <td className="caos-col-text">{r.f}</td>
-                        <td>{formatNumber(r.iv, lang, { decimals: 3 })}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </>
+                ))}
+              </tbody>
+            </table>
           )}
+          </div>
         </PlotCard>
+        </div>
+        <div className="ct-part" data-plot-floor="11rem" data-block="applicant-distribution" style={{ flex: '1 1 auto' }}>
         <PlotCard
+          // the chart fills its card in both states (R3 c01 M2: a fixed 220 px chart under a six-row table was cut by its column at 1280 x 800)
           fill
-          title={{ en: 'Where this applicant sits', es: 'Dónde se ubica este solicitante' }}
-          lane="live"
+          // with no scored applicant the card shows the two distributions only: titled and laned for what it draws (R2b c01 M2)
+          title={live ? { en: 'Where this applicant sits', es: 'Dónde se ubica este solicitante' } : { en: 'PD of defaulters and non-defaulters', es: 'PD de incumplidores y no incumplidores' }}
+          lane={live ? 'live' : REPLAY}
           provenance={prov}
           dataKey={stateKey}
-          note={{ en: "The scorecard's PD of this variant's defaulters and non-defaulters; the marker is the applicant's live PD.", es: 'La PD de la scorecard de los incumplidores y no incumplidores de esta variante; la marca es la PD en vivo del solicitante.' }}
+          // short notes: the chart keeps its height under the card above (R3 c01 M2)
+          note={live ? { en: "The scorecard's PD, log scale; the marker is the applicant.", es: 'PD de la tarjeta, escala logarítmica; la marca es el solicitante.' } : { en: "The scorecard's PD on this variant, log scale.", es: 'PD de la tarjeta en esta variante, escala logarítmica.' }}
         >
           <UPlotChart
             height="fill"
-            x={{ values: dist.x, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
-            y={{ label: { en: 'Share of the group', es: 'Fracción del grupo' }, format: { percent: true, decimals: 0 } }}
+            // the bins are log10 PD bins: drawn on a log axis, and the two groups apart by the dash as well as the colour (R3 c02 m12, m13)
+            x={{ values: dist.x, log: true, label: { en: 'PD (bin centre)', es: 'PD (centro del tramo)' }, format: { percent: true, digits: 2 } }}
+            y={{ label: { en: 'Share of the group', es: 'Fracción' }, format: { percent: true, decimals: 0 } }}
             series={[
               { label: { en: 'Defaulters', es: 'Incumplidores' }, values: dist.def, color: '--color-bad' },
-              { label: { en: 'Non-defaulters', es: 'No incumplidores' }, values: dist.non, color: '--color-good' },
+              { label: { en: 'Non-defaulters', es: 'No incumplidores' }, values: dist.non, color: '--color-good', dash: [6, 4] },
             ]}
             marks={live ? [{ x: live.pdScorecard, label: { en: 'applicant', es: 'solicitante' } }] : undefined}
           />
         </PlotCard>
+        </div>
       </>
     </ViewsRow>
   );
@@ -352,63 +467,99 @@ function termImportance(ex: EbmExport): Array<{ name: string; spread: number; in
     .sort((a, b) => b.spread - a.spread);
 }
 
-/** The EBM's six strongest main effects: each term's score over its bins (the "boosted scorecard"), and every term
- * by the spread of its scores. */
+/** One panel of the EBM view: the term's score over its bins, with the axis label in both languages; a categorical term names each
+ * category by its codebook (`categories`, in the order of `y`), never by its code or its position (R3 c01 B3, c02 B3). */
+export interface EbmShape {
+  name: string;
+  x: number[];
+  y: number[];
+  categorical: boolean;
+  xLabel: Bi;
+  categories?: Array<{ code: string; label: Bi }>;
+}
+
+/**
+ * The six strongest main effects as panels. A continuous term plots each bin at its left edge; a categorical term plots
+ * each category at its own code (the key of `categories`, whose value is the bin of the score): the code of a category is
+ * not its position (U16-R2 B3: EDUCATION 4 was drawn at 5). The axis names the feature's unit from the data dictionary
+ * (`fit.features`): a money feature is in NT dollars, or Deutsche Mark for the German twin.
+ */
+export function ebmShapes(ex: EbmExport, fit?: { features?: Array<{ name: string; unit: string }> }, kind: 'all' | 'continuous' | 'categorical' = 'all'): EbmShape[] {
+  const isCategorical = (index: number) => ex.features[ex.terms[index].features[0]].levels[0].kind !== 'continuous';
+  return termImportance(ex)
+    .filter((t) => ex.terms[t.index].features.length === 1)
+    .filter((t) => (kind !== 'continuous' && kind !== 'categorical') || (kind === 'categorical') === isCategorical(t.index))
+    .slice(0, kind === 'categorical' ? undefined : 6)
+    .map((t) => {
+      const term = ex.terms[t.index];
+      const feat = ex.features[term.features[0]];
+      const lv = feat.levels[0];
+      const scores = term.scores as number[];
+      // the German money by its symbol on a small axis ("Monto del crédito (marcos alemanes)" was cut at the panel edge)
+      const declared = fit?.features?.find((f) => f.name === term.name)?.unit ?? '';
+      const unit = declared === 'DM' ? { en: 'DM', es: 'DM' } : unitName(declared);
+      if (lv.kind === 'continuous') {
+        const cuts = lv.cuts ?? [];
+        // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, the first at the first cut
+        const x = [cuts[0] - 1e-9, ...cuts];
+        const label = (l: 'en' | 'es') => (unit ? `${termName(term.name, l)} (${unit[l]})` : termName(term.name, l));
+        return { name: term.name, x, y: scores.slice(1, cuts.length + 2), categorical: false, xLabel: { en: label('en'), es: label('es') } };
+      }
+      const cats = Object.entries(lv.categories ?? {}).sort((a, b) => a[1] - b[1]);
+      return {
+        name: term.name,
+        x: cats.map(([code], i) => (Number.isFinite(Number(code)) ? Number(code) : i + 1)),
+        y: cats.map(([, bin]) => scores[bin]),
+        categorical: true,
+        xLabel: { en: termName(term.name, 'en'), es: termName(term.name, 'es') },
+        categories: cats.map(([code]) => ({ code, label: categoryName(term.name, code) })),
+      };
+    });
+}
+
+/** The EBM's six strongest continuous main effects: each term's score over its bins (the "boosted scorecard"), and every term
+ * by the spread of its scores. The categorical inputs have a view of their own (EbmCategoriesView): one bar per named category
+ * needs more height than a small multiple has (R3 c01 B3: ten German purposes in a 200 px panel), and content is split, never cut
+ * (ADR-0071 rule 6). */
 export function EbmView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const ex = sel ? details<{ export: EbmExport }>(sel, 'P3-ebm')?.export : undefined;
-  const shapes = useMemo(() => {
-    if (!ex) return null;
-    return termImportance(ex)
-      .filter((t) => ex.terms[t.index].features.length === 1)
-      .slice(0, 6)
-      .map((t) => {
-        const term = ex.terms[t.index];
-        const feat = ex.features[term.features[0]];
-        const lv = feat.levels[0];
-        const scores = term.scores as number[];
-        if (lv.kind === 'continuous') {
-          const cuts = lv.cuts ?? [];
-          // bin k (1..cuts+1) covers [cut_(k-1), cut_k); plot each bin at its left edge, the first at the first cut
-          const x = [cuts[0] - 1e-9, ...cuts];
-          return { name: term.name, x, y: scores.slice(1, cuts.length + 2), categorical: false };
-        }
-        const cats = Object.entries(lv.categories ?? {}).sort((a, b) => a[1] - b[1]);
-        return { name: term.name, x: cats.map((_, i) => i + 1), y: cats.map(([, k]) => scores[k]), categorical: true };
-      });
-  }, [ex]);
+  const fit = sel?.data.models.fit;
+  const shapes = useMemo(() => (ex ? ebmShapes(ex, fit, 'continuous') : null), [ex, fit]);
   if (!sel || !ex || !shapes) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
-  const pairs = ex.terms.filter((t) => t.features.length === 2).map((t) => t.name);
+  const pairs = (l: 'en' | 'es') => ex.terms.filter((t) => t.features.length === 2).map((t) => termName(t.name, l));
+  const categorical = ebmShapes(ex, fit, 'categorical').length;
   return (
     <ViewsRow shares={[2, 1]}>
       <PlotCard
         fill
-        title={{ en: 'Shape functions of the six strongest terms', es: 'Funciones de forma de los seis términos más fuertes' }}
+        title={{ en: 'Shape functions of the six strongest continuous main effects', es: 'Funciones de forma de los seis efectos principales continuos más fuertes' }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `Each panel is one term's contribution to the log-odds of default over its bins; their sum plus the intercept is the model. Pairwise terms: ${pairs.join(', ') || 'none'}.`,
-          es: `Cada panel es la contribución de un término a las log-odds de incumplimiento sobre sus tramos; su suma más el intercepto es el modelo. Términos de pares: ${pairs.join(', ') || 'ninguno'}.`,
+          en: `Each panel is one term's contribution to the log-odds of default over its bins; their sum plus the intercept is the model.${categorical ? ` The ${categorical === 1 ? 'categorical input is' : `${categorical} categorical inputs are`} in the next view, one bar per category.` : ''} Pairwise terms: ${pairs('en').join('; ') || 'none'}.`,
+          es: `Cada panel es la contribución de un término al logaritmo de la razón de probabilidades de incumplimiento sobre sus tramos; su suma más el intercepto es el modelo.${categorical ? ` ${categorical === 1 ? 'La variable categórica está' : `Las ${categorical} variables categóricas están`} en la vista siguiente, una barra por categoría.` : ''} Términos de pares: ${pairs('es').join('; ') || 'ninguno'}.`,
         }}
       >
-        <div className="ct-grid6-fill" data-views="6">
+        <div className="ct-grid6-fill" data-caos-flow="" data-views="6">
           {shapes.map((s) => (
-            <div key={s.name} className="ct-small-multiple">
+            <div key={s.name} className="ct-small-multiple" data-term={s.name}>
               <UPlotChart
                 height="fill"
-                x={{ values: s.x, label: { en: s.categorical ? `${s.name} (category)` : s.name, es: s.categorical ? `${s.name} (categoría)` : s.name } }}
-                y={{ label: { en: 'Log-odds', es: 'Log-odds' }, format: { decimals: 2 } }}
-                series={[{ label: { en: s.name, es: s.name }, values: s.y, color: '--color-accent', mode: s.categorical ? 'points' : 'line' }]}
+                x={{ values: s.x, label: s.xLabel }}
+                y={{ label: { en: 'Log-odds', es: 'Logaritmo de la razón' }, format: { decimals: 2 } }}
+                // the series is the term's log-odds, so the screen-reader table does not repeat the x title as its value column (R4 c02 m12)
+                series={[{ label: { en: 'Log-odds', es: 'Logaritmo de la razón' }, values: s.y, color: '--color-accent', mode: 'line' }]}
               />
             </div>
           ))}
         </div>
       </PlotCard>
-      <PlotCard fill title={{ en: 'Terms by the spread of their scores', es: 'Términos según la amplitud de sus puntajes' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Spread: the largest minus the smallest score of the term, in log-odds.', es: 'Amplitud: el mayor menos el menor puntaje del término, en log-odds.' }}>
-        <div className="ct-scroll">
+      <PlotCard fill title={{ en: 'Terms by the spread of their scores', es: 'Términos según la amplitud de sus puntajes' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Spread: the largest minus the smallest score of the term, in log-odds.', es: 'Amplitud: el mayor menos el menor puntaje del término, en logaritmo de la razón de probabilidades.' }}>
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>
@@ -419,7 +570,7 @@ export function EbmView({ sel }: { sel: Selection | null }) {
             <tbody>
               {termImportance(ex).map((t) => (
                 <tr key={t.name}>
-                  <td className="caos-col-text">{t.name}</td>
+                  <td className="caos-col-text">{termName(t.name, lang)}</td>
                   <td>{formatNumber(t.spread, lang, { decimals: 3 })}</td>
                 </tr>
               ))}
@@ -428,6 +579,46 @@ export function EbmView({ sel }: { sel: Selection | null }) {
         </div>
       </PlotCard>
     </ViewsRow>
+  );
+}
+
+/** The EBM's categorical main effects, strongest first: one horizontal bar per category, each named by the dataset's codebook (the German
+ * codes A11 to A410, the Taiwan education codes; R3 c01 B3, c02 B3), at the height its rows need, in a card that scrolls with a fade when
+ * they are more than it holds (ADR-0071 rule 6). */
+export function EbmCategoriesView({ sel }: { sel: Selection | null }) {
+  const stateKey = useWorkbenchState()?.stateKey;
+  const ex = sel ? details<{ export: EbmExport }>(sel, 'P3-ebm')?.export : undefined;
+  const fit = sel?.data.models.fit;
+  const shapes = useMemo(() => (ex ? ebmShapes(ex, fit, 'categorical') : null), [ex, fit]);
+  if (!sel || !ex || !shapes) return <Pending />;
+  const prov = provenanceOf(sel.data.variant.provenance.truth_status);
+  return (
+    <PlotCard
+      fill
+      title={{ en: 'The categorical inputs: the score of each category', es: 'Las variables categóricas: el puntaje de cada categoría' }}
+      lane={REPLAY}
+      provenance={prov}
+      dataKey={stateKey}
+      note={{
+        en: "Each bar is a category's contribution to the log-odds of default; a code the codebook does not document is labelled undocumented.",
+        es: 'Cada barra es la contribución de una categoría al logit (el logaritmo de la razón de probabilidades) de incumplimiento; un código que el libro de códigos no documenta se indica como tal.',
+      }}
+    >
+      {/* the panels fill the stage at every size (a list of fixed-height charts drew 18 % of a 2560 stage, gate G6) */}
+      <div className="ct-panels-fill" data-caos-flow="" data-views={String(Math.min(shapes.length, 6))}>
+        {shapes.map((s) => (
+          <div key={s.name} className="ct-small-multiple" data-term={s.name}>
+            <BarChart
+              title={s.xLabel}
+              orientation="horizontal"
+              height="fill"
+              data={(s.categories ?? []).map((c, k) => ({ id: c.code, label: c.label, value: s.y[k], tone: 'accent' as const }))}
+              axis={{ label: { en: `${s.xLabel.en}: log-odds`, es: `${s.xLabel.es}: logit` }, format: { decimals: 2 } }}
+            />
+          </div>
+        ))}
+      </div>
+    </PlotCard>
   );
 }
 
@@ -449,7 +640,7 @@ export function GbmView({ sel }: { sel: Selection | null }) {
     return {
       x: levels,
       series: top.map((t, k) => ({
-        label: { en: `${t.name} (${t.f.direction > 0 ? 'raises' : 'lowers'} risk)`, es: `${t.name} (${t.f.direction > 0 ? 'sube' : 'baja'} el riesgo)` },
+        label: { en: `${termName(t.name, 'en')} (${t.f.direction > 0 ? 'raises' : 'lowers'} risk)`, es: `${termName(t.name, 'es')} (${t.f.direction > 0 ? 'sube' : 'baja'} el riesgo)` },
         values: t.f.pdp.map((v) => v - t.f.pdp[0]),
         color: PALETTE[(k + 1) % PALETTE.length],
       })),
@@ -461,7 +652,7 @@ export function GbmView({ sel }: { sel: Selection | null }) {
   const worst = Math.max(...Object.values(g.monotonicity.features).map((f) => f.max_violation));
   return (
     <>
-      <PlotCard title={{ en: 'Monotone gradient boosting: the checks', es: 'Gradient boosting monótono: las verificaciones' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+      <PlotCard title={{ en: 'Monotone gradient boosting: the checks', es: 'Potenciación de gradiente monótona: las verificaciones' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <Verdict
           compact
           title={{ en: 'Monotone in every constrained feature', es: 'Monótono en cada variable restringida' }}
@@ -479,7 +670,7 @@ export function GbmView({ sel }: { sel: Selection | null }) {
               <td>{formatNumber(g.rounds, lang)}</td>
             </tr>
             <tr>
-              <td>{pick({ en: 'Reason codes: mean top-4 overlap with 10 bootstrap refits', es: 'Códigos de razón: coincidencia media del top 4 con 10 reajustes bootstrap' }, lang)}</td>
+              <td>{pick({ en: 'Reason codes: mean top-4 overlap with 10 bootstrap refits', es: 'Códigos de razón: coincidencia media de los 4 principales con 10 reajustes por remuestreo' }, lang)}</td>
               <td>{stab ? formatNumber(stab.overlap_mean, lang, { percent: true, decimals: 1 }) : pick({ en: 'not computed', es: 'no calculado' }, lang)}</td>
             </tr>
             {xg && (
@@ -493,16 +684,17 @@ export function GbmView({ sel }: { sel: Selection | null }) {
       </PlotCard>
       <PlotCard
         fill
-        title={{ en: 'Partial dependence of the six strongest constrained features', es: 'Dependencia parcial de las seis variables restringidas más fuertes' }}
+        // the count it draws (R3 c01 m10: "the six strongest" over the German twin's two constrained features)
+        title={chart.series.length === 1 ? { en: 'Partial dependence of the constrained feature', es: 'Dependencia parcial de la variable restringida' } : { en: `Partial dependence of the ${COUNT_TEXT[chart.series.length]?.en ?? chart.series.length} strongest constrained features`, es: `Dependencia parcial de las ${COUNT_TEXT[chart.series.length]?.es ?? chart.series.length} variables restringidas más fuertes` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: "Raw log-odds, centred at the lowest quantile, along each feature's quantiles in the training slice.", es: 'Log-odds crudas, centradas en el cuantil más bajo, a lo largo de los cuantiles de cada variable en el tramo de entrenamiento.' }}
+        note={{ en: "Raw log-odds, centred at the lowest quantile, along each feature's quantiles in the training slice.", es: 'Logaritmo de la razón de probabilidades crudo, centrado en el cuantil más bajo, a lo largo de los cuantiles de cada variable en la partición de entrenamiento.' }}
       >
         <UPlotChart
           height="fill"
           x={{ values: chart.x, label: { en: 'Quantile of the feature', es: 'Cuantil de la variable' }, format: { decimals: 2 } }}
-          y={{ label: { en: 'Change in log-odds', es: 'Cambio en log-odds' }, format: { decimals: 2 } }}
+          y={{ label: { en: 'Change in log-odds', es: 'Cambio del logaritmo de la razón' }, format: { decimals: 2 } }}
           series={chart.series}
         />
       </PlotCard>
@@ -518,7 +710,17 @@ interface PenalisedDetails {
   selected_rules?: Array<{ rule: string; coefficient: number }>;
   n_candidate_rules?: number;
   stability?: { bootstraps: number; jaccard_mean: number; jaccard_min: number };
+  woe_encoded?: string[];
 }
+
+/** A count as a word in a title ("the six strongest"). */
+const COUNT_TEXT: Record<number, { en: string; es: string }> = {
+  2: { en: 'two', es: 'dos' },
+  3: { en: 'three', es: 'tres' },
+  4: { en: 'four', es: 'cuatro' },
+  5: { en: 'five', es: 'cinco' },
+  6: { en: 'six', es: 'seis' },
+};
 
 /** The penalised rungs: the L1 regression's coefficients on WoE, and PLTR's selected rules with their stability. */
 export function PenalisedView({ sel }: { sel: Selection | null }) {
@@ -539,22 +741,23 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `Penalty strength C = ${l1.C}, chosen by cross-validated log loss; ${l1.selected?.length ?? 0} of ${coefs.length} variables survive.`,
-          es: `Fuerza de penalización C = ${String(l1.C).replace('.', ',')}, elegida por log loss con validación cruzada; sobreviven ${l1.selected?.length ?? 0} de ${coefs.length} variables.`,
+          en: `Penalty strength C = ${formatNumber(l1.C, 'en', { digits: 3 })}, chosen by cross-validated log loss; ${l1.selected?.length ?? 0} of ${coefs.length} variables survive.`,
+          es: `Fuerza de penalización C = ${formatNumber(l1.C, 'es', { digits: 3 })}, elegida por la pérdida logarítmica con validación cruzada; sobreviven ${l1.selected?.length ?? 0} de ${coefs.length} variables.`,
         }}
       >
-        <div className="ct-stack">
+        <div className="ct-stack" data-caos-flow="">
           <Verdict
             compact
-            title={{ en: 'Signs agree with WoE', es: 'Signos de acuerdo con el WoE' }}
+            // the title says what the verdict found (R3 c02 m10: "Signs agree with WoE" over "Some coefficient is positive")
+            title={l1.signs_agree_with_woe ? { en: 'Signs agree with WoE', es: 'Signos de acuerdo con el WoE' } : { en: 'A sign disagrees with WoE', es: 'Un signo en desacuerdo con el WoE' }}
             tone={l1.signs_agree_with_woe ? 'good' : 'warn'}
             verdict={
               l1.signs_agree_with_woe
-                ? { en: 'Every surviving coefficient is negative on WoE, as a sound scorecard requires.', es: 'Todo coeficiente que sobrevive es negativo sobre el WoE, como exige una scorecard sólida.' }
+                ? { en: 'Every surviving coefficient is negative on WoE, as a sound scorecard requires.', es: 'Todo coeficiente que sobrevive es negativo sobre el WoE, como exige una tarjeta de puntuación sólida.' }
                 : { en: 'Some coefficient is positive on WoE: a sign the penalty did not remove.', es: 'Algún coeficiente es positivo sobre el WoE: un signo que la penalización no eliminó.' }
             }
           />
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table">
               <thead>
                 <tr>
@@ -565,7 +768,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               <tbody>
                 {coefs.map(([k, b]) => (
                   <tr key={k}>
-                    <td>{k}</td>
+                    <td className="ct-text">{pick(inputName(k) ?? { en: k, es: k }, lang)}</td>
                     <td>{b === 0 ? pick({ en: '0 (removed)', es: '0 (eliminada)' }, lang) : formatNumber(b, lang, { decimals: 3 })}</td>
                   </tr>
                 ))}
@@ -581,15 +784,15 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: `${rules.length} of ${pl.n_candidate_rules ?? 0} candidate rules selected; Jaccard stability of the selection over ${pl.stability?.bootstraps ?? 0} bootstraps: mean ${formatNumber(pl.stability?.jaccard_mean, 'en', { decimals: 2 })}, minimum ${formatNumber(pl.stability?.jaccard_min, 'en', { decimals: 2 })}.`,
-          es: `${rules.length} de ${pl.n_candidate_rules ?? 0} reglas candidatas seleccionadas; estabilidad de Jaccard de la selección en ${pl.stability?.bootstraps ?? 0} bootstraps: media ${formatNumber(pl.stability?.jaccard_mean, 'es', { decimals: 2 })}, mínimo ${formatNumber(pl.stability?.jaccard_min, 'es', { decimals: 2 })}.`,
+          en: `${rules.length} of ${pl.n_candidate_rules ?? 0} candidate rules selected; Jaccard stability of the selection over ${pl.stability?.bootstraps ?? 0} bootstraps: mean ${formatNumber(pl.stability?.jaccard_mean, 'en', { decimals: 2 })}, minimum ${formatNumber(pl.stability?.jaccard_min, 'en', { decimals: 2 })}.${pl.woe_encoded?.length ? ' An input marked (WoE) is cut on its WoE, not on its code.' : ''}`,
+          es: `${rules.length} de ${pl.n_candidate_rules ?? 0} reglas candidatas seleccionadas; estabilidad de Jaccard de la selección en ${pl.stability?.bootstraps ?? 0} remuestreos: media ${formatNumber(pl.stability?.jaccard_mean, 'es', { decimals: 2 })}, mínimo ${formatNumber(pl.stability?.jaccard_min, 'es', { decimals: 2 })}.${pl.woe_encoded?.length ? ' Una variable marcada (WoE) se corta en su WoE, no en su código.' : ''}`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table">
             <thead>
               <tr>
-                <th className="caos-col-text">{pick({ en: 'Rule (on the training slice)', es: 'Regla (en el tramo de entrenamiento)' }, lang)}</th>
+                <th className="caos-col-text">{pick({ en: 'Rule (on the training slice)', es: 'Regla (en la partición de entrenamiento)' }, lang)}</th>
                 <th>{pick({ en: 'Coefficient', es: 'Coeficiente' }, lang)}</th>
               </tr>
             </thead>
@@ -597,7 +800,7 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               {rules.map((r) => (
                 <tr key={r.rule}>
                   <td className="caos-col-text">
-                    <code>{r.rule}</code>
+                    {ruleNames(ruleText(r.rule, lang, pl.woe_encoded), lang)}
                   </td>
                   <td>{formatNumber(r.coefficient, lang, { decimals: 3 })}</td>
                 </tr>
@@ -612,76 +815,53 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
 
 /** The foundation-model challenger, with the licence of its weights on the view, and its ROC against the scorecard and
  * the GBM on the same records. */
-export function TabPfnView({ sel }: { sel: Selection | null }) {
+/** The Spanish of the TabPFN licence the German twin's document declares; another wording prints as declared. */
+const TABPFN_LICENCE_ES: Record<string, string> = {
+  'code Apache-2.0; TabPFN v2 weights, Prior Labs License v1.1 (Apache 2.0 plus attribution: Built with PriorLabs-TabPFN)':
+    'código bajo Apache-2.0; pesos de TabPFN v2 bajo la Prior Labs License v1.1 (Apache 2.0 más la atribución «Built with PriorLabs-TabPFN»)',
+};
+
+/**
+ * The research challenger of the German twin: the weights' licence, the attribution its licence asks for and its ensemble. It sits
+ * in the Ladder, under the rungs it joins (R4 c01 M4: a seventh peer sub-view broke ADR-0071 rule 5); the Ladder's table and ROC
+ * carry its AUC, its DeLong p and its curve with every other rung.
+ */
+export function TabPfnCard({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const r = sel ? record(sel, 'P5-tabpfn') : undefined;
-  const chart = useMemo(() => {
-    if (!sel || !r) return null;
-    const v = sel.data.variant;
-    const x = grid(0, 1, 101);
-    const ids = [CHAMPION, 'P4-lightgbm', 'P5-tabpfn'].filter((id) => v.outputs.rungs[id]);
-    return { x, series: ids.map((id) => ({ id, values: interp(v.outputs.rungs[id].roc.fpr, v.outputs.rungs[id].roc.tpr, x) })) };
-  }, [sel, r]);
-  if (!sel || !r || !chart) return <Pending />;
+  if (!sel || !r) return null;
   const v = sel.data.variant;
   const d = r.details as { licence: string; attribution: string; n_estimators: number };
-  const prov = provenanceOf(v.provenance.truth_status);
-  const colors = { [CHAMPION]: '--color-accent', 'P4-lightgbm': '--color-accent-2', 'P5-tabpfn': '--color-magenta' } as const;
+  // the licence in the reader's language, the licences' names as published; the attribution the licence asks for is quoted in its
+  // original beside the Spanish rendering (R4 ruling 6)
+  const licence = { en: d.licence, es: TABPFN_LICENCE_ES[d.licence] ?? d.licence };
   return (
-    <>
-      <PlotCard title={{ en: 'TabPFN v2, research challenger', es: 'TabPFN v2, retador de investigación' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <Verdict compact title={{ en: 'Weights licence', es: 'Licencia de los pesos' }} tone="warn" verdict={{ en: d.licence, es: d.licence }} />
-        <p className="ct-note">{d.attribution}</p>
-        <table className="caos-table">
-          <tbody>
-            <tr>
-              <td>{pick({ en: 'AUC on this variant', es: 'AUC en esta variante' }, lang)}</td>
-              <td>{formatNumber(value(test(v, 'disc.auc', r.id)), lang, { decimals: 4 })}</td>
-            </tr>
-            <tr>
-              <td>{pick({ en: 'DeLong p against the scorecard', es: 'p de DeLong contra la scorecard' }, lang)}</td>
-              <td>{formatNumber(test(v, 'disc.delong', r.id)?.p_value ?? null, lang, { digits: 3 })}</td>
-            </tr>
-            <tr>
-              <td>{pick({ en: 'Ensemble members', es: 'Miembros del ensamble' }, lang)}</td>
-              <td>{formatNumber(d.n_estimators, lang)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </PlotCard>
-      <PlotCard
-        fill
-        title={{ en: 'ROC on the same records: TabPFN, the GBM and the scorecard', es: 'ROC en los mismos registros: TabPFN, el GBM y la scorecard' }}
-        lane={REPLAY}
-        provenance={prov}
-        dataKey={stateKey}
-        note={{ en: 'Built with PriorLabs-TabPFN.', es: 'Construido con PriorLabs-TabPFN.' }}
-      >
-        <UPlotChart
-          height="fill"
-          x={{ values: chart.x, label: { en: 'False positive rate', es: 'Tasa de falsos positivos' }, format: { decimals: 2 } }}
-          y={{ label: { en: 'True positive rate', es: 'Tasa de verdaderos positivos' }, range: [0, 1], format: { decimals: 2 } }}
-          series={[
-            { label: { en: 'Random ranking', es: 'Orden al azar' }, values: chart.x, color: '--color-fg-faint', dash: [4, 4], width: 1 },
-            ...chart.series.map((s) => ({ label: shortName(rung(v, s.id), s.id), values: s.values, color: colors[s.id as keyof typeof colors], width: 2 })),
-          ]}
-        />
-      </PlotCard>
-    </>
+    <PlotCard
+      title={{ en: 'TabPFN v2, research challenger', es: 'TabPFN v2, retador de investigación' }}
+      lane={REPLAY}
+      provenance={provenanceOf(v.provenance.truth_status)}
+      dataKey={stateKey}
+      note={{ en: `${d.attribution}.`, es: `Construido con PriorLabs-TabPFN (en el original, «${d.attribution}»).` }}
+    >
+      <Verdict compact title={{ en: 'Weights licence', es: 'Licencia de los pesos' }} tone="warn" verdict={licence} />
+      <p className="ct-note">
+        {pick({ en: 'Ensemble members', es: 'Miembros del ensamble' }, lang)}: {formatNumber(d.n_estimators, lang)}.
+      </p>
+    </PlotCard>
   );
 }
 
 export function ModelGroup({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
-  const hasTabPfn = !!sel?.data.models.model.find((m) => m.id === 'P5-tabpfn');
+  // six peers on every variant (ADR-0071 rule 5): the German twin's TabPFN is a card of the Ladder (R4 c01 M4)
   const tabs: Array<{ id: string; label: BiText; content: ReactElement }> = [
     { id: 'ladder', label: { en: 'Ladder', es: 'Escalera' }, content: <LadderView sel={sel} /> },
-    { id: 'scorecard', label: { en: 'Scorecard', es: 'Scorecard' }, content: <ScorecardView sel={sel} /> },
+    { id: 'scorecard', label: { en: 'Scorecard', es: 'Tarjeta de puntuación' }, content: <ScorecardView sel={sel} /> },
     { id: 'ebm', label: { en: 'EBM', es: 'EBM' }, content: <EbmView sel={sel} /> },
+    { id: 'ebm-categories', label: { en: 'EBM categories', es: 'Categorías EBM' }, content: <EbmCategoriesView sel={sel} /> },
     { id: 'gbm', label: { en: 'GBM', es: 'GBM' }, content: <GbmView sel={sel} /> },
     { id: 'penalised', label: { en: 'L1 and PLTR', es: 'L1 y PLTR' }, content: <PenalisedView sel={sel} /> },
   ];
-  if (hasTabPfn) tabs.push({ id: 'tabpfn', label: { en: 'TabPFN', es: 'TabPFN' }, content: <TabPfnView sel={sel} /> });
   return <SubTabs ariaLabel={pick({ en: 'Views of the model', es: 'Vistas del modelo' }, lang)} tabs={tabs.map((t) => ({ ...t, label: pick(t.label, lang) }))} />;
 }

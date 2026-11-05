@@ -166,9 +166,7 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
                         riskvalidation_version=ev, manifest=manifest_in, generators=("banco-andino-irrbb-synthetic/1.0.0",))
     lane = {"lane": "precompute", "reasons": []}
     pub = c07_src.PUBLICATIONS[targets.PUBLICATION]
-    calibration_source = (f"{pub['title']}, Cuadro N 1 column Bancos, {pub['url']}, sha256 {pub['sha256']}; the three loan portfolios are the C07 "
-                          f"targets; securities, deposits, equity and loans to banks are the other figures of the same table; scaled to the C07 "
-                          f"total exposure; the UF shares, profiles, deposit split and behaviour are synthetic")
+    calibration_source = calibration_source_text(pub)
     docs: dict[str, dict[str, Any]] = {}
     values: dict[str, float] = {}
     contract: dict[str, Any] = {}
@@ -233,6 +231,13 @@ def _sum(root: Path, rel: str) -> str:
     return f"{hashlib.sha256((Path(root) / rel).read_bytes()).hexdigest()}  {rel}"
 
 
+def calibration_source_text(pub: dict[str, Any]) -> str:
+    """The calibration source of the book: the CMF table as the publication names it ("Cuadro N° 1", R4 c18 m3), and what is synthetic."""
+    return (f"{pub['title']}, Cuadro N° 1 column Bancos, {pub['url']}, sha256 {pub['sha256']}; the three loan portfolios are the C07 "
+            f"targets; securities, deposits, equity and loans to banks are the other figures of the same table; scaled to the C07 "
+            f"total exposure; the UF shares, profiles, deposit split and behaviour are synthetic")
+
+
 def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, Any]:
     built = build(seed, data_root)
     root = Path(paths.root)
@@ -261,7 +266,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, 
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
     contract = {k: v for k, v in built.contract[DEFAULT_VARIANT].items() if k != "_book"}
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category={"en": "Balance sheet: IRRBB and liquidity", "es": "Balance: IRRBB y liquidez"},
         question=_question(), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract,
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))

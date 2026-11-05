@@ -22,6 +22,8 @@ from .run import LIFETIME_CAP_MONTHS, PERIOD_MONTHS, RHO, STAGE1_MONTHS, DateRun
 from ...io import contract as c1
 
 WINDOW_MONTHS = 12
+#: the Spanish of ``io.sba.FREDDIE_REASON`` (the registry of the readers keeps the English; the name Freddie Mac stays)
+FREDDIE_REASON_ES = "Freddie Mac: falta la cuenta del titular; se publica el gemelo de la SBA"
 
 
 def opening_date(reporting_date: np.datetime64) -> np.datetime64:
@@ -81,6 +83,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
     rf = build_rollforward(loans, run0, run1, overlays, bd.CURRENCY)
     follow = bt.follow_up(loans, run1)
     life = bt.lifetime_results(loans, run1, follow)
+    s4 = bt.s4_evaluation(run1, follow, life)
 
     stage = run1.stage.astype(np.int64)
     ids = list(run1.scenario_ids)
@@ -130,7 +133,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
         "kind": "reporting-date", "reporting_date": iso, "currency": bd.CURRENCY, "period_months": PERIOD_MONTHS,
         "horizon": {"stage1_months": STAGE1_MONTHS, "lifetime_cap_months": LIFETIME_CAP_MONTHS},
         "settings": bd.settings_block(),
-        "data_status": {"primary_source": "sba-7a", "freddie_mac_available": False, "freddie_mac_reason": FREDDIE_REASON,
+        "data_status": {"primary_source": "sba-7a", "freddie_mac_available": False, "freddie_mac_reason": {"en": FREDDIE_REASON, "es": FREDDIE_REASON_ES},
                         "notice": bd.NOTICE},
         "scenarios": [{"id": sid, "label": bd.t(mc.SCENARIO_LABELS[sid]["en"], mc.SCENARIO_LABELS[sid]["es"]), "weight": float(run1.weights[k]),
                        "z_mean": float(zm[k])} for k, sid in enumerate(ids)],
@@ -148,5 +151,5 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
         f"pd12_mean@{iso}": float(run1.pd12.mean()), f"accounts@{iso}": float(run1.a),
     }
     return VariantResult(variant_id=bd.variant_id(rd), reporting_date=rd, document=document,
-                         models={"fit": fit, "model": md.model_records(run1, cleaning)}, values=values, contract=contract, run=run1)
+                         models={"fit": fit, "model": md.model_records(run1, cleaning, s4)}, values=values, contract=contract, run=run1)
 

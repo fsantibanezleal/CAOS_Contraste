@@ -7,7 +7,8 @@ import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { SHOCK_TEXT, ORIGIN_TEXT, axisOf, documentOffset, moneyDoc, outputsOf, scaleUnit, text, worst, type C15Sel } from './selection';
-import { IrrbbTestsTable } from '../c14/C14Common';
+import { IrrbbTestsTable, docText } from '../c14/C14Common';
+import { FORMULA_RULES } from './localise';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
@@ -49,7 +50,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={bars}
-              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Delta NII, positive is a loss', es: 'Delta NII, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
@@ -77,7 +78,7 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
                 <td>{sameAsDocument ? cell(n.delta_nii, lang) : formatNumber(null, lang)}</td>
                 <td className="ct-text ct-wide-only">
                   {sameAsDocument
-                    ? `${pick({ en: 'The rate result plus the charge', es: 'El resultado de tasa más el cargo' }, lang)}; ${SHARE(n.delta_nii_share_tier1, lang)} ${pick({ en: 'of Tier 1', es: 'del capital N1' }, lang)}.`
+                    ? `${pick({ en: 'The rate result plus the charge', es: 'El resultado de tasa más el cargo' }, lang)}; ${SHARE(n.delta_nii_share_tier1, lang)} ${pick({ en: 'of Tier 1', es: 'del capital de nivel 1' }, lang)}.`
                     : pick({ en: 'The document gives the total under its own offset state only.', es: 'El documento da el total solo con su propio estado de compensación.' }, lang)}
                 </td>
               </tr>
@@ -105,7 +106,11 @@ export function NiiView({ sel }: { sel: C15Sel | null }) {
               ))}
             </tbody>
           </table>
-          <IrrbbTestsTable variant={sel.data.variant} only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'} />
+          <IrrbbTestsTable
+            variant={sel.data.variant}
+            only={(t) => t.test_id === 'irrbb.cmf_annex1_goldens'}
+            lead={{ en: 'This view shows the test of the CMF golden values, which covers the delta NII. The delta EVE view lists every test of the document.', es: 'Esta vista muestra la prueba de los valores de referencia de la CMF, que cubre el delta NII. La vista del delta EVE lista todas las pruebas del documento.' }}
+          />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -146,12 +151,12 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
                 { id: 'charge', label: { en: 'Standard charge', es: 'Cargo estándar' }, value: c.charge / axis.div, tone: 'warn' as const },
                 { id: 'cpi', label: { en: 'CPI surprise effect', es: 'Efecto de la sorpresa de IPC' }, value: s ? s.effect / axis.div : null, tone: s && s.effect > 0 ? ('bad' as const) : ('good' as const) },
               ]}
-              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Loss, positive is a loss', es: 'Pérdida, positivo es una pérdida' }, unit: axis.unit, format: { decimals: 2 } }}
             />
           }
         >
           <dl className="ct-defs" data-table="indexation">
-            <dt>{pick({ en: 'Net UF position (UF)', es: 'Posición neta en UF (UF)' }, lang)}</dt>
+            <dt>{pick({ en: `Net UF position (${pick(scaleUnit({ ...moneyDoc(o), currency: 'UF' }), 'en')})`, es: `Posición neta en UF (${pick(scaleUnit({ ...moneyDoc(o), currency: 'UF' }), 'es')})` }, lang)}</dt>
             <dd>{formatNumber(c.net_position_uf_units, lang, { digits: 4 })}</dd>
             <dt>{pick({ en: 'Value of one UF (CLP)', es: 'Valor de una UF (CLP)' }, lang)}</dt>
             <dd>{formatNumber(o.ur_currency.uf_value, lang, { decimals: 0 })}</dd>
@@ -164,7 +169,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
             <dt>{pick({ en: `Indexation charge (${unit})`, es: `Cargo por reajustabilidad (${unit})` }, lang)}</dt>
             <dd>{cell(c.charge, lang)}</dd>
             <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-            <dd translate="no">{c.formula}</dd>
+            <dd translate="no">{docText(c.formula, lang, FORMULA_RULES)}</dd>
             <dt>{pick({ en: 'In words', es: 'En palabras' }, lang)}</dt>
             <dd>{pick(c.note, lang)}</dd>
             <dt>{pick({ en: `Rate result of delta NII (${unit})`, es: `Resultado de tasa del delta NII (${unit})` }, lang)}</dt>
@@ -179,7 +184,7 @@ export function IndexationView({ sel }: { sel: C15Sel | null }) {
               <dt>{pick({ en: `Effect (${unit}); positive is a loss`, es: `Efecto (${unit}); positivo es una pérdida` }, lang)}</dt>
               <dd>{cell(s.effect, lang)}</dd>
               <dt>{pick({ en: 'Formula', es: 'Fórmula' }, lang)}</dt>
-              <dd translate="no">{s.formula}</dd>
+              <dd translate="no">{docText(s.formula, lang, FORMULA_RULES)}</dd>
             </dl>
           ) : (
             <p className="ct-note" data-table="cpi-scenario" data-cpi="absent" data-na="true" data-state="unavailable">

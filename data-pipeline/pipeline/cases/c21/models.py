@@ -13,7 +13,7 @@ from . import legal
 #: (field, role, alias): the snapshot spellings of the data dictionary; the Data Browser's loan_to_value_ratio is the alias of the combined ratio
 FIELDS = (
     ("derived_race", "attribute", None), ("derived_ethnicity", "attribute", None), ("derived_sex", "attribute", None),
-    ("applicant_age", "attribute", None), ("action_taken", "outcome", None), ("rate_spread", "pricing", None),
+    ("applicant_age", "attribute", None), ("applicant_age_above_62", "attribute", None), ("action_taken", "outcome", None), ("rate_spread", "pricing", None),
     ("debt_to_income_ratio", "control", None), ("combined_loan_to_value_ratio", "control", "loan_to_value_ratio"),
     ("income", "control", None), ("loan_amount", "control", None), ("property_value", "control", None), ("loan_type", "control", None),
     ("loan_purpose", "control", None), ("lien_status", "control", None), ("occupancy_type", "control", None))

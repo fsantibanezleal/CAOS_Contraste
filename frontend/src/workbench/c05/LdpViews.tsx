@@ -10,6 +10,7 @@ import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { GRADE_COLOR, averageRiskWeight, isLdp, quadrature, useLiveBounds, type C05Sel, type LdpVariant } from './selection';
+import { testText } from '../names';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 3) => formatNumber(v, lang, { percent: true, decimals });
@@ -32,7 +33,7 @@ export function BoundsView({ sel }: { sel: C05Sel | null }) {
     const o = v.outputs;
     const series = o.grades.flatMap((g, j) => [
       { label: { en: `${g}, independent`, es: `${g}, independiente` }, values: o.bounds.independent.map((b) => b[j]), color: GRADE_COLOR[j], width: 2 },
-      { label: { en: `${g}, correlation 12%`, es: `${g}, correlación 12%` }, values: o.bounds.correlated.map((b) => b[j]), color: GRADE_COLOR[j], width: 1.4, dash: [6, 4] },
+      { label: { en: `${g}, correlation 12%`, es: `${g}, correlación 12 %` }, values: o.bounds.correlated.map((b) => b[j]), color: GRADE_COLOR[j], width: 1.4, dash: [6, 4] },
     ]);
     const flat = (vals: number[]) => o.grades.map((g, j) => ({ label: { en: `${g} expert`, es: `${g} experta` }, values: o.gammas.map(() => vals[j]), color: GRADE_COLOR[j], width: 1, dash: [1, 4] }));
     return { x: o.gammas, series: [...series, ...flat(o.expert_pd)] };
@@ -69,7 +70,7 @@ export function BoundsView({ sel }: { sel: C05Sel | null }) {
           x={{ values: chart.x, label: GAMMA_AXIS, format: { percent: true, decimals: 1 } }}
           y={{ label: { en: 'PD bound (log scale)', es: 'Cota de la PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
           series={chart.series}
-          marks={[{ x: sel.gamma, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.gamma, label: { en: 'Level picked', es: 'Nivel elegido' } }]}
         />
       </PlotCard>
       <PlotCard
@@ -83,7 +84,7 @@ export function BoundsView({ sel }: { sel: C05Sel | null }) {
           es: `Al ${pct(lang, sel.gamma, 1)}, correlación ${pct(lang, sel.rho, 0)}${sel.scaled ? `, escaladas a la cota de la cartera (K ${formatNumber(live.k, lang, { decimals: 3 })})` : ''}.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="pools">
             <thead>
               <tr>
@@ -139,7 +140,7 @@ export function ScalingView({ sel }: { sel: C05Sel | null }) {
           es: 'Un factor K común a todos los grados iguala la media ponderada de las cotas a la cota más prudente de toda la cartera (la del mejor grado): se conservan el orden y las razones y se abandona su lectura como cotas de confianza. El artículo lo propone a un nivel moderado.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="scaling">
             <thead>
               <tr>
@@ -151,7 +152,7 @@ export function ScalingView({ sel }: { sel: C05Sel | null }) {
                 {o.grades.map((g) => (
                   <th key={`raw-${g}`} className="ct-wide-only">{pick({ en: `${g} unscaled`, es: `${g} sin escalar` }, lang)}</th>
                 ))}
-                <th className="ct-room-only">{pick({ en: 'K, correlation 12%', es: 'K, correlación 12%' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: 'K, correlation 12%', es: 'K, correlación 12 %' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -176,6 +177,27 @@ export function ScalingView({ sel }: { sel: C05Sel | null }) {
   );
 }
 
+/** A row of the size-and-power table in words: its key is `<test>_<segment>` ("jeffreys_A", "vasicek_portfolio"; R2b c06 B3). */
+function sizePowerRow(key: string, names: Record<string, BiText>, lang: 'en' | 'es'): string {
+  const [test, ...rest] = key.split('_');
+  const seg = rest.join('_');
+  const id = test === 'vasicek' ? 'pd.binomial_vasicek' : `pd.${test}`;
+  const name = names[id] ? pick(names[id], lang) : key;
+  const where = seg === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : `${lang === 'es' ? 'grado' : 'grade'} ${seg}`;
+  return `${name}, ${where}`;
+}
+
+/** The notes of the recomputed tables of Pluto and Tasche in Spanish, beside the English the document writes (R2b c06 M2). */
+const GOLDEN_NOTE_ES: Record<string, string> = {
+  "75%: the paper's 0.65% is the bound at 76.3%; the exact one is 0.638%, and Table 11 scales with the 0.65%":
+    '75 %: el 0,65 % del artículo es la cota al 76,3 %; la exacta es 0,638 %, y la Tabla 11 escala con el 0,65 %',
+  'every printed cell lies at or above the exact bound, within 0.0094 percentage points':
+    'cada celda impresa está en la cota exacta o sobre ella, dentro de 0,0094 puntos porcentuales',
+  'B at 99.9%: printed 9.54%, exact 9.44%': 'B al 99,9 %: impreso 9,54 %, exacto 9,44 %',
+  'Monte Carlo of the stated model, checked by a deterministic quadrature in riskvalidation; the print lies 1% to 5% above it at 99% and 99.9%':
+    'Monte Carlo del modelo declarado, verificado con una cuadratura determinista en riskvalidation; lo impreso queda entre 1 % y 5 % sobre él al 99 % y al 99,9 %',
+};
+
 /** The battery on the expert model: Jeffreys per grade and for the portfolio, the binomial and the Vasicek binomial. */
 export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
   const lang = useShellLang();
@@ -186,7 +208,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
   const NAME: Record<string, BiText> = {
     'pd.jeffreys': { en: 'Jeffreys', es: 'Jeffreys' },
     'pd.binomial': { en: 'Binomial', es: 'Binomial' },
-    'pd.binomial_vasicek': { en: 'Vasicek binomial (12%)', es: 'Binomial de Vasicek (12%)' },
+    'pd.binomial_vasicek': { en: 'Vasicek binomial (12%)', es: 'Binomial de Vasicek (12 %)' },
   };
   const kt = v.outputs.known_truth;
   return (
@@ -202,7 +224,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
           es: `PD expertas ${v.outputs.expert_pd.map((p) => pct(lang, p, 2)).join(', ')} para los grados ${v.outputs.grades.join(', ')}, contra los incumplimientos de este año. Unilateral: un valor p bajo significa más incumplimientos de los que la PD permite. Las luces siguen la política del panel.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="ldp-tests">
             <thead>
               <tr>
@@ -215,8 +237,8 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
             <tbody>
               {v.tests.map((t) => (
                 <tr key={`${t.test_id}-${t.segment}`}>
-                  <td className="ct-text">{pick(NAME[t.test_id] ?? { en: t.test_id, es: t.test_id }, lang)}</td>
-                  <td className="ct-text">{t.segment === 'portfolio' ? pick({ en: 'portfolio', es: 'cartera' }, lang) : t.segment}</td>
+                  <td className="ct-text">{pick(NAME[t.test_id] ?? testText(t.test_id), lang)}</td>
+                  <td className="ct-text">{t.segment === 'portfolio' || !t.segment ? pick({ en: 'whole portfolio', es: 'toda la cartera' }, lang) : pick({ en: `grade ${t.segment}`, es: `grado ${t.segment}` }, lang)}</td>
                   <td>{t.n_events !== null && t.n !== null ? `${formatNumber(t.n_events, lang)} / ${formatNumber(t.n, lang)}` : '-'}</td>
                   <LightCell row={t} alphas={sel.alphas} />
                 </tr>
@@ -234,10 +256,10 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
           dataKey={stateKey}
           note={{
             en: 'Share of years each test rejects at 5%: against the true PDs (its size, 5% if it is right) and against the expert PDs, half the truth (its power).',
-            es: 'Fracción de años en que cada prueba rechaza al 5%: contra las PD verdaderas (su tamaño, 5% si es correcta) y contra las PD expertas, la mitad de la verdad (su potencia).',
+            es: 'Fracción de años en que cada prueba rechaza al 5 %: contra las PD verdaderas (su tamaño, 5 % si es correcta) y contra las PD expertas, la mitad de la verdad (su potencia).',
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="size-power">
               <thead>
                 <tr>
@@ -249,7 +271,7 @@ export function LdpTestsView({ sel }: { sel: C05Sel | null }) {
               <tbody>
                 {Object.keys(kt.tests.true).map((k) => (
                   <tr key={k}>
-                    <td className="ct-text">{k.replace('_', ', ')}</td>
+                    <td className="ct-text">{sizePowerRow(k, NAME, lang)}</td>
                     <td>{pct(lang, kt.tests.true[k].reject_5, 1)}</td>
                     <td>{pct(lang, kt.tests.expert[k].reject_5, 1)}</td>
                   </tr>
@@ -292,10 +314,10 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
           dataKey={stateKey}
           note={{
             en: `${cells.filter((c) => c.gap === 0).length} of ${cells.length} cells identical at the printed precision; the others, cell by cell: ${Object.values(o.golden.notes).join('; ')}.`,
-            es: `${cells.filter((c) => c.gap === 0).length} de ${cells.length} celdas idénticas a la precisión impresa; las demás, celda por celda: ${Object.values(o.golden.notes).join('; ')}.`,
+            es: `${cells.filter((c) => c.gap === 0).length} de ${cells.length} celdas idénticas a la precisión impresa; las demás, celda por celda: ${Object.values(o.golden.notes).map((n) => GOLDEN_NOTE_ES[n] ?? n).join('; ')}.`,
           }}
         >
-          <div className="ct-scroll">
+          <div className="ct-scroll" data-caos-flow="">
             <table className="caos-table" data-table="golden-ldp">
               <thead>
                 <tr>
@@ -329,9 +351,9 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
   if (!kt) return <Pending />;
   const methods: Array<{ id: string; label: BiText }> = [
     { id: 'independent', label: { en: 'Independent', es: 'Independiente' } },
-    { id: 'correlated', label: { en: 'Correlation 12%', es: 'Correlación 12%' } },
+    { id: 'correlated', label: { en: 'Correlation 12%', es: 'Correlación 12 %' } },
     { id: 'scaled', label: { en: 'Scaled', es: 'Escalada' } },
-    { id: 'scaled_correlated', label: { en: 'Scaled, 12%', es: 'Escalada, 12%' } },
+    { id: 'scaled_correlated', label: { en: 'Scaled, 12%', es: 'Escalada, 12 %' } },
   ];
   return (
     <ViewsRow shares={[3, 2]}>
@@ -343,10 +365,10 @@ export function KnownTruthView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{
           en: 'Share of years in which each bound is at least the true PD, and its median at 75% as a multiple of the truth (true PDs 0.05%, 0.10%, 0.20%; correlation 12%). From 75% up a one-year bound covers the truth in every year; at 50% a year without defaults puts grade B\'s just under it, and scaling lowers the bounds further.',
-          es: 'Fracción de años en que cada cota es al menos la PD verdadera, y su mediana al 75% como múltiplo de la verdad (PD verdaderas 0,05%, 0,10%, 0,20%; correlación 12%). Desde el 75% una cota de un año cubre la verdad todos los años; al 50% un año sin incumplimientos deja la del grado B justo bajo ella, y el escalado baja más las cotas.',
+          es: 'Fracción de años en que cada cota es al menos la PD verdadera, y su mediana al 75 % como múltiplo de la verdad (PD verdaderas 0,05 %, 0,10 %, 0,20 %; correlación 12 %). Desde el 75 % una cota de un año cubre la verdad todos los años; al 50 % un año sin incumplimientos deja la del grado B justo bajo ella, y el escalado baja más las cotas.',
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="coverage">
             <thead>
               <tr>
@@ -463,10 +485,10 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `Corporate function, maturity ${formatNumber(o.irb.maturity, 'en', { decimals: 1 })} years, regime and LGD from the rail, one unit of EAD per obligor; the highlighted row is the rail's estimate, whose PDs the bounds view shows. The PD floor (0.05% in Basel III and CRR3, 0.03% in Basel II) lifts the expert PDs of the best grades: what the floor does and does not cure.`,
-          es: `Función corporativa, vencimiento ${formatNumber(o.irb.maturity, 'es', { decimals: 1 })} años, régimen y LGD del panel, una unidad de EAD por deudor; la fila destacada es la estimación del panel, cuyas PD muestra la vista de cotas. El piso de PD (0,05% en Basilea III y CRR3, 0,03% en Basilea II) eleva las PD expertas de los mejores grados: lo que el piso corrige y lo que no.`,
+          es: `Función corporativa, vencimiento ${formatNumber(o.irb.maturity, 'es', { decimals: 1 })} años, régimen y LGD del panel, una unidad de EAD por deudor; la fila destacada es la estimación del panel, cuyas PD muestra la vista de cotas. El piso de PD (0,05 % en Basilea III y CRR3, 0,03 % en Basilea II) eleva las PD expertas de los mejores grados: lo que el piso corrige y lo que no.`,
         }}
       >
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <table className="caos-table" data-table="ldp-capital">
             <thead>
               <tr>
@@ -496,7 +518,7 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
         dataKey={stateKey}
         note={{
           en: `The portfolio's average risk weight under each kind of bound, from 50% to 99.5%, at the rail's correlation, regime and LGD; flat lines for the expert PDs${o.true_pd ? ' and the truth' : ''}. The paper argues for a moderate level: the bound is a conservative PD, and its price grows fastest near the top.`,
-          es: `El ponderador medio de la cartera con cada tipo de cota, de 50% a 99,5%, a la correlación, el régimen y la LGD del panel; líneas planas para las PD expertas${o.true_pd ? ' y la verdad' : ''}. El artículo aboga por un nivel moderado: la cota es una PD conservadora y su precio crece más rápido cerca del máximo.`,
+          es: `El ponderador medio de la cartera con cada tipo de cota, de 50 % a 99,5 %, a la correlación, el régimen y la LGD del panel; líneas planas para las PD expertas${o.true_pd ? ' y la verdad' : ''}. El artículo aboga por un nivel moderado: la cota es una PD conservadora y su precio crece más rápido cerca del máximo.`,
         }}
       >
         <UPlotChart
@@ -504,7 +526,7 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
           x={{ values: LEVELS, label: GAMMA_AXIS, format: { percent: true, decimals: 1 } }}
           y={{ label: { en: 'Average risk weight (share of EAD)', es: 'Ponderador medio (fracción de la EAD)' }, format: { percent: true, decimals: 0 } }}
           series={data.series}
-          marks={[{ x: sel.gamma, label: { en: 'rail', es: 'panel' } }]}
+          marks={[{ x: sel.gamma, label: { en: 'Level picked', es: 'Nivel elegido' } }]}
         />
       </PlotCard>
     </ViewsRow>

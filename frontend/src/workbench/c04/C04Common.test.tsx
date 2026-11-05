@@ -31,7 +31,7 @@ import {
   rateChart,
   rungText,
 } from './C04Common';
-import { GRADES, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
+import { GRADES, attributionIn, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
 import { esDecimals } from './esDecimals';
 
 type Lang = 'en' | 'es';
@@ -131,7 +131,7 @@ describe('C04 Findings', () => {
         }
         if (isAgency(v)) {
           expect(markup).toContain(esc(v.outputs.agency.name));
-          expect(markup).toContain(esc(v.outputs.attribution));
+          expect(markup).toContain(esc(attributionIn(v.outputs.attribution, lang)));
         }
         expect(markup).toContain(lang === 'es' ? 'Lo que encontró la validación' : 'What the validation found');
       });
@@ -247,7 +247,8 @@ describe('C04 Variants', () => {
           if (v.outputs.lra.d4) expect(markup).toContain(`<td data-cell="d4">${esc(pct3(lang, v.outputs.lra.d4.rate[sel.grade]))}</td>`);
           expect(markup).toContain(esc(v.outputs.agency.name));
         }
-        expect(markup).toContain(esc('Source: ESMA CEREP; tables transformed by Contraste'));
+        // ESMA's attribution in the language of the view (U16-R4 c05 B1: an English attribution in a Spanish view is a blocker)
+        expect(markup).toContain(esc(attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang)));
       });
     }
   }
@@ -296,7 +297,7 @@ describe('C04 Context', () => {
         expectSound(markup, `context ${c.id} ${lang}`);
         for (const id of manifest.sources) {
           expect(markup).toContain(`data-licence-class="${manifest.source_details[id].class}"`);
-          expect(markup).toContain(esc(manifest.source_details[id].attribution));
+          expect(markup).toContain(esc(attributionIn(manifest.source_details[id].attribution, lang)));
         }
         expect(markup).toContain('data-licence-class="generator"');
         for (const e of entries) expect(markup).toContain(`data-truth="${e.truth_status}"`);
@@ -526,7 +527,7 @@ describe('C04 cross-case sections', () => {
       // the families' cards (estimators, tests, coverage) name S&P's entity and carry ESMA's attribution; the agencies'
       // cards name the three entities
       const source = lang === 'en' ? 'CEREP counts of ' : 'Conteos de CEREP de ';
-      expect(markup.split(esc(`${source}Standard & Poor's Credit Market Services Europe Limited. Source: ESMA CEREP; tables transformed by Contraste.`)).length - 1).toBe(3);
+      expect(markup.split(esc(`${source}Standard & Poor's Credit Market Services Europe Limited. ${attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang)}.`)).length - 1).toBe(3);
       const entities = esc(ags.map((a) => a.outputs.agency.name).join('; '));
       expect(markup.split(entities).length - 1).toBeGreaterThanOrEqual(3);
     });

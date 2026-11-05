@@ -13,7 +13,7 @@ Text = dict  # {"en": str, "es": str}
 
 #: the eleven categories, in the order the case selector shows them
 CATEGORIES: dict[str, Text] = {
-    "credit-scoring": {"en": "Credit scoring", "es": "Scoring de crédito"},
+    "credit-scoring": {"en": "Credit scoring", "es": "Puntuación crediticia"},
     "ratings-calibration": {"en": "Ratings and calibration", "es": "Calificaciones y calibración"},
     "provisions": {"en": "Provisions", "es": "Provisiones"},
     "lgd-ead": {"en": "LGD and EAD", "es": "LGD y EAD"},

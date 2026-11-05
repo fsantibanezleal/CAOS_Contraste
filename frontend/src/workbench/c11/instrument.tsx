@@ -12,6 +12,7 @@ import { RailSelect } from '../c06/RailSelect';
 import { C11ContextView, C11FindingsView, C11VariantsView, LevelReadout, ModelReadout, TestReadout } from './C11Common';
 import { EsBacktestView, TestsView } from './BacktestViews';
 import { ChampionView, DmView } from './ComparisonViews';
+import { ConformalVerdictView, ConformalView } from './ConformalViews';
 import { TimelineView, ZonesView } from './ExceedanceViews';
 import { alphaLabel, alphaShort, defaultSel, levelOf, modelLabel, outputsOf, testName, type C11Alpha, type C11Sel } from './selection';
 
@@ -79,10 +80,10 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   };
   const testSection: RailSection = {
     id: 'test',
-    label: { en: 'Back-test', es: 'Backtest' },
+    label: { en: 'Back-test', es: 'Prueba' },
     content: (
       <>
-        <RailSelect id="c11-test" label={{ en: 'Back-test', es: 'Backtest' }} options={tests.map((t) => ({ id: t, label: testName(t) }))} value={sel.test} onChange={setTest} />
+        <RailSelect id="c11-test" label={{ en: 'Back-test', es: 'Prueba retrospectiva' }} options={tests.map((t) => ({ id: t, label: testName(t) }))} value={sel.test} onChange={setTest} />
         <TestReadout sel={sel} />
       </>
     ),
@@ -104,13 +105,15 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'traditional', label: { en: 'Coverage and independence', es: 'Cobertura e independencia' }, content: <TestsView sel={sel} /> },
       { id: 'es', label: { en: 'Expected shortfall', es: 'Pérdida esperada' }, content: <EsBacktestView sel={sel} /> },
     ],
-    { en: 'Views of the back-tests', es: 'Vistas de los backtests' },
+    { en: 'Views of the back-tests', es: 'Vistas de las pruebas retrospectivas' },
     'c11-backtests',
   );
   const comparison = tabs(
     [
       { id: 'champion', label: { en: 'Champion and set', es: 'Campeón y conjunto' }, content: <ChampionView sel={sel} /> },
       { id: 'dm', label: { en: 'Diebold-Mariano', es: 'Diebold-Mariano' }, content: <DmView sel={sel} /> },
+      { id: 'conformal', label: { en: 'Conformal recalibration', es: 'Recalibración conforme' }, content: <ConformalView sel={sel} /> },
+      { id: 'bs16', label: { en: 'Conformal hypothesis', es: 'Hipótesis conforme' }, content: <ConformalVerdictView sel={sel} /> },
     ],
     { en: 'Views of the comparison', es: 'Vistas de la comparación' },
     'c11-comparison',
@@ -120,7 +123,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     rail: [levelSection, modelSection, testSection],
     groups: [
       { id: 'exceedances', label: { en: 'Exceedances', es: 'Excedencias' }, lane: 'replay', provenance: prov, content: exceedances },
-      { id: 'backtests', label: { en: 'Back-tests', es: 'Backtests' }, lane: 'replay', provenance: prov, content: backtests },
+      { id: 'backtests', label: { en: 'Back-tests', es: 'Pruebas retrospectivas' }, lane: 'replay', provenance: prov, content: backtests },
       { id: 'comparison', label: { en: 'Comparison', es: 'Comparación' }, lane: 'replay', provenance: prov, content: comparison },
       { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <C11FindingsView sel={sel} /> },
     ],

@@ -225,8 +225,9 @@ describe('the published variant: three papers recomputed', () => {
     };
     // short labels: the shell draws a mark's label beside its line, and the printed values are in the table
     expect(chart.marks).toEqual([
-      { x: at('W_init 2', 'min'), label: { en: 'W_init 2, min', es: 'W_init 2, mín' } },
-      { x: at('W tilde', 'max'), label: { en: 'W tilde, max', es: 'W tilde, máx' } },
+      // the Spanish prints the paper's symbols with Spanish subscripts (ruling 6 of 2026-10-27, U16-R4 c06 n5)
+      { x: at('W_init 2', 'min'), label: { en: 'W_init 2, min', es: 'W_inic 2, mín' } },
+      { x: at('W tilde', 'max'), label: { en: 'W tilde, max', es: 'W̃, máx' } },
     ]);
     expect(chart.marks.map((m) => m.x)).toEqual([21, 5]);
     const keys = charts(html(<PapersView sel={sel()} />))[0].keys;

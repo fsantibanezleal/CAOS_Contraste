@@ -74,7 +74,7 @@ def test_rates_ratios_and_the_four_fifths_flag_are_the_engine_calls_on_exact_cou
     df = reference_frame(2018)
     for field in legal.ATTRIBUTES:
         a = attribute(doc, field)
-        col = df[field if field != "applicant_age" else "applicant_age"]
+        col = df[field].map(legal.RAW_VALUES[field]) if field in legal.RAW_VALUES else df[field]
         counts = {g["group"]: (g["n_approved"], g["n"]) for g in a["groups"]}
         for g, (x, n) in counts.items():                           # the counts are the file's, group by group
             assert n == int((col == g).sum()) and x == int(((col == g) & (df.y == 1)).sum())

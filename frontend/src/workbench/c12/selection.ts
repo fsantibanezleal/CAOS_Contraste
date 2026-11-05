@@ -28,11 +28,12 @@ export type Subject = 'book' | 'risk-factor';
 /** The variants of the case in the order the SDD states them, and the words for each. */
 export const VARIANT_ORDER: readonly VariantId[] = ['single-swap', 'netting-set', 'csa-mpor-10d', 'csa-mpor-20d', 'with-im', 'wrong-way-risk'];
 export const VARIANT_TEXT: Record<string, Bi> = {
-  'single-swap': { en: 'Single swap', es: 'Un solo swap' },
+  'single-swap': { en: 'Single swap', es: 'Una sola permuta' },
   'netting-set': { en: 'Netting set', es: 'Conjunto de neteo' },
   'csa-mpor-10d': { en: 'CSA, MPoR 10 days', es: 'CSA, MPoR de 10 días' },
   'csa-mpor-20d': { en: 'CSA, MPoR 20 days', es: 'CSA, MPoR de 20 días' },
-  'with-im': { en: 'CSA with initial margin', es: 'CSA con margen inicial' },
+  // the variant's own name, the one its selector shows (R2b c13 m5: "Con margen inicial" in the rail, "CSA con margen inicial" here)
+  'with-im': { en: 'With initial margin', es: 'Con margen inicial' },
   'wrong-way-risk': { en: 'Wrong-way risk', es: 'Riesgo de correlación adversa' },
 };
 export const BASIS_TEXT: Record<string, Bi> = {
@@ -64,7 +65,7 @@ export const SUBJECT_TEXT: Record<Subject, Bi> = {
 };
 export const SUBJECT_LONG: Record<Subject, Bi> = {
   book: { en: 'the value of the synthetic book revalued on the realised curve', es: 'el valor de la cartera sintética revalorada con la curva realizada' },
-  'risk-factor': { en: 'the risk factor: the shortest Treasury zero rate, the proxy of the short rate', es: 'el factor de riesgo: la tasa cero más corta del Tesoro, el proxy de la tasa corta' },
+  'risk-factor': { en: 'the risk factor: the shortest Treasury zero rate, the proxy of the short rate', es: 'el factor de riesgo: la tasa cero más corta del Tesoro, el sustituto de la tasa corta' },
 };
 export const CASE_ORDER: readonly CaseId[] = ['base', 'a-plus-1se', 'a-minus-1se', 'sigma-plus-1se', 'sigma-minus-1se'];
 export const CASE_TEXT: Record<string, Bi> = {
@@ -167,7 +168,10 @@ export function collateralRange(o: C12Outputs | null): { min: number; max: numbe
   const v = o?.sa_ccr.v.amount ?? 0;
   const top = Math.max(2 * Math.max(v, committedCollateral(o), 0), 100_000);
   const max = Math.ceil(top / 1000);
-  return { min: 0, max, step: Math.max(1, Math.round(max / 200)) };
+  // a negative collateral is collateral the bank posted, which raises the exposure (CRE52.17): the range reaches below 0 when the
+  // document's does, so the control and the chart can show it (R3 c13 BL5: the margined variants marked 0 and drew the EAD at 0)
+  const min = Math.min(0, Math.floor((2 * committedCollateral(o)) / 1000));
+  return { min, max, step: Math.max(1, Math.round((max - min) / 200)) };
 }
 
 /** The live SA-CCR on the collateral in focus, from the document's inputs: the port of CRE52. */
@@ -211,6 +215,8 @@ export function defaultSel(data: CaseData | null, peers: Peers | null = null): C
 
 /** An amount of USD for a narrow place: scaled to bn or m with the unit that says so (the table beside keeps the whole amount). */
 export function amount(v: number | null | undefined, currency = 'USD') {
+  // zero is plain USD, never "0 bn USD" (the shared form gives zero the billion unit; R4 c16 m3, R5 c17 m3)
+  if (v === 0) return { ...compactMoney(0, currency), value: 0, unit: { en: currency, es: currency } };
   return compactMoney(v ?? null, currency);
 }
 /** The scale of a money axis in USD: the divisor and the unit its title carries. */
@@ -231,4 +237,15 @@ export function histogram(pits: readonly number[], bins = 10): number[] {
   const counts = new Array<number>(bins).fill(0);
   for (const p of pits) counts[Math.min(bins - 1, Math.max(0, Math.floor(p * bins)))] += 1;
   return counts;
+}
+
+/** The segment of an engine test row in words ("book-10bd-q90" is "Book, 10 business days, quantile 90 %"); an unknown form is returned as it is. */
+export function segmentText(segment: string | null | undefined, lang: 'en' | 'es'): string {
+  if (!segment) return '';
+  const m = /^(book|risk factor|risk-factor)-([0-9a-z]+?)(?:-q(\d+))?$/.exec(segment);
+  const horizon = m ? HORIZON_LONG[m[2]] : undefined;
+  if (!m || !horizon) return segment;
+  const subject = SUBJECT_TEXT[m[1] === 'book' ? 'book' : 'risk-factor'][lang];
+  const quantile = m[3] ? `${lang === 'es' ? 'cuantil' : 'quantile'} ${m[3]} %` : '';
+  return [subject, horizon[lang], quantile].filter(Boolean).join(', ');
 }

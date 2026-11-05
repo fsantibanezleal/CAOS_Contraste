@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Earnings at risk and economic value at risk at the 99 per cent level for the peso leg and the UF leg of each variant of Banco Andino, from 100,000 antithetic Hull-White paths per leg with seed 42, in billions of Chilean pesos, with the Monte Carlo standard error of the engine; the volatility is 0.010 for the peso leg and 0.006 for the UF leg, and the mean reversion is 0.1 per year in both.}
+\label{tab:alm-c15-ear}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Variant & Leg & \shortstack{Base NII (CLP\\bn)} & \shortstack{EaR 99\% $\pm$\\s.e. (CLP bn)} & \shortstack{Base EVE (CLP\\bn)} & \shortstack{EVaR 99\% $\pm$\\s.e. (CLP bn)} \\
+\midrule
+Long UF & CLP & 213.3 & $4.896\pm0.0255$ & 569.9 & $1.051\pm0.0006$ \\
+Long UF & UR & 47.7 & $6.249\pm0.0232$ & 65.1 & $89.031\pm0.2560$ \\
+Short UF & CLP & 242.6 & $4.896\pm0.0255$ & 989.7 & $27.034\pm0.1031$ \\
+Short UF & UR & 32.1 & $6.249\pm0.0232$ & $-$359.5 & $41.921\pm0.1100$ \\
+CPI surprise & CLP & 213.3 & $4.896\pm0.0255$ & 569.9 & $1.051\pm0.0006$ \\
+CPI surprise & UR & 47.7 & $6.249\pm0.0232$ & 65.1 & $89.031\pm0.2560$ \\
+CLP steepener & CLP & 236.8 & $4.896\pm0.0255$ & 445.1 & $56.494\pm0.1751$ \\
+CLP steepener & UR & 41.2 & $6.249\pm0.0232$ & $-$111.8 & $69.402\pm0.1952$ \\
+Offset on and off & CLP & 210.5 & $4.896\pm0.0255$ & 664.5 & $23.622\pm0.1428$ \\
+Offset on and off & UR & 47.7 & $6.249\pm0.0232$ & 65.1 & $89.031\pm0.2560$ \\
+Floor-exposed UF book & CLP & 225.4 & $4.896\pm0.0255$ & 745.4 & $8.986\pm0.0318$ \\
+Floor-exposed UF book & UR & 36.1 & $3.572\pm0.0147$ & $-$65.9 & $44.258\pm0.1206$ \\
+\bottomrule
+\end{tabular}}
+\end{table}

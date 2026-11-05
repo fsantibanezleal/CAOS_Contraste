@@ -36,9 +36,11 @@ ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split(".")
 ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
 # sha256 of the three adopted scripts at the template release 0.10 (git show of scripts/<name> at its tag)
+# the sha256 of the scripts at template 0.14.000 (check_notebooks.py: the level sections Comparison and Evidence; run_notebooks.py
+# copies models/ since 0.13.001; check_readme_areas.py unchanged since v0.11.000)
 ADOPTED = {
-    "check_notebooks.py": "827f67ebd495ea643ef814c0d33378e46f6ed232937f2bb192daf2458c13fc50",
-    "run_notebooks.py": "f5caebdefbe98ce23e733198c7c8157c9683f76f0340a6dc613f90b27c6f6123",
+    "check_notebooks.py": "0f4fc43b9dee8a197abe67ffdc355263d24896687a6146ba52316e712679d01b",
+    "run_notebooks.py": "196088e5e94bc6de48aa793e5d45c6f40c00985095b4838ec1dddb48d73d5df9",
     "check_readme_areas.py": "1eb76a810d13aeebf12809a69490e8e1cac4cdf6f51516e0568e9d2c717e96e2",
 }
 
@@ -90,6 +92,8 @@ def copy_set(dest: Path) -> Path:
     (dest / "docs" / "design").mkdir(parents=True)
     shutil.copy(ROOT / "docs" / "design" / "SDD.md", dest / "docs" / "design" / "SDD.md")
     shutil.copy(ROOT / "README.md", dest / "README.md")
+    # the method declarations the notebook bar counts method cells by (template 0.12.000)
+    shutil.copy(ROOT / "product.json", dest / "product.json")
     for path in sorted((ROOT / "data-pipeline").glob("**/model/*.py")):
         target = dest / path.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -271,9 +275,44 @@ def stream_text(cell: dict) -> str:
     return "".join("".join(o["text"]) for o in cell["outputs"] if o["output_type"] == "stream")
 
 
-def numeric_tokens(cell: dict) -> list[str]:
-    """The numbers a code cell printed, in order: what the two trees must share (their text is in their own language)."""
-    return NUMBER.findall(stream_text(cell))
+SPANISH_DECIMAL = re.compile(r"(?<![\d,])(\d+),(?=\d+%)")  # "2,5%" of a label; the grouping commas of {:,} and "[0,2)" stay
+SPANISH_THOUSANDS = re.compile(r"\d{1,3}(?:\.\d{3})+")
+SPANISH_NUMBER = re.compile(r"-?\d+,\d+(?:\.\d+)?(?:[eE][-+]?\d+)?|-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+
+
+def numeric_tokens(cell: dict, lang: str = "en") -> list[str]:
+    """The numbers a code cell printed, in order: what the two trees must share (their text is in their own language).
+
+    Since the producers write the numbers of their texts as the shell does (fee234b, U16-P1a), a Spanish label carries
+    "2,5%" where the English one has "2.5%": the decimal comma before a percent is read back to the point, so the number is still compared."""
+    text = stream_text(cell)
+    if lang != "es":
+        return NUMBER.findall(text)
+    # a comma between digits stays one token ("0,0694"): same_numbers reads it as a decimal comma or as the English pair
+    return SPANISH_NUMBER.findall(SPANISH_DECIMAL.sub(r"\1.", text))
+
+
+def same_numbers(english: list[str], spanish: list[str]) -> bool:
+    """Equal token by token, with the differences of a Spanish label: the thousands point ("1.500 dias" for "1500 days"), a
+    token of the form 1.500 or 12.345.678 whose digits are the English token's; and the decimal comma ("0,0694" for "0.0694"),
+    a token with a comma between digits that is the English decimal, or the English pair of integers when both trees print
+    the same comma (Python's {:,} grouping, an interval such as [0,2))."""
+    i = j = 0
+    while i < len(english) and j < len(spanish):
+        e, s = english[i], spanish[j]
+        if e == s or (SPANISH_THOUSANDS.fullmatch(s) is not None and e == s.replace(".", "")):
+            i, j = i + 1, j + 1
+            continue
+        if "," in s:
+            left, right = s.split(",", 1)
+            if e == f"{left}.{right}":
+                i, j = i + 1, j + 1
+                continue
+            if e == left and i + 1 < len(english) and english[i + 1] == right:
+                i, j = i + 2, j + 1
+                continue
+        return False
+    return i == len(english) and j == len(spanish)
 
 
 def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
@@ -286,19 +325,34 @@ def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
         assert len(a_cells) == len(b_cells)
         for i, (x, y) in enumerate(zip(a_cells, b_cells), 1):
             assert [o["output_type"] for o in x["outputs"]] == [o["output_type"] for o in y["outputs"]], f"{en.name}: code cell {i}"
-            assert numeric_tokens(x) == numeric_tokens(y), f"{en.name}: code cell {i}: the printed numbers of the two trees differ"
+            assert same_numbers(numeric_tokens(x), numeric_tokens(y, "es")), f"{en.name}: code cell {i}: the printed numbers of the two trees differ"
 
 
-# English labels the English notebooks print; a Spanish notebook prints none of them (conventions/product-notebooks.md:
+def test_adversarial_the_spanish_number_reading_allows_only_the_thousands_point_and_the_decimal_comma():
+    cell = {"outputs": [{"output_type": "stream", "text": ["a (1500 days at 2.5%) 0.058\n"]}]}
+    es_cell = {"outputs": [{"output_type": "stream", "text": ["a (1.500 dias al 2,5%) 0.058\n"]}]}
+    assert same_numbers(numeric_tokens(cell), numeric_tokens(es_cell, "es"))
+    for wrong in ("a (1.501 dias al 2,5%) 0.058\n", "a (1.500 dias al 2,6%) 0.058\n", "a (1.500 dias al 2,5%) 0.059\n", "a (1.500 dias al 2,5%)\n"):
+        assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
+
+
+def test_adversarial_a_spanish_decimal_comma_reads_as_the_english_decimal_and_a_shared_comma_stays_a_pair():
+    cell = {"outputs": [{"output_type": "stream", "text": ["rates (1y 0.0694, 2y 0.0526) on [0,2) of 5,910 rows, 26,943.01 EUR\n"]}]}
+    es_cell = {"outputs": [{"output_type": "stream", "text": ["tasas (1 año 0,0694, 2 años 0,0526) en [0,2) de 5,910 filas, 26,943.01 EUR\n"]}]}
+    assert same_numbers(numeric_tokens(cell), numeric_tokens(es_cell, "es"))
+    for wrong in ("tasas (1 año 0,0695, 2 años 0,0526) en [0,2) de 5,910 filas, 26,943.01 EUR\n",
+                  "tasas (1 año 0,0694, 2 años 0,0526) en [0,3) de 5,910 filas, 26,943.01 EUR\n",
+                  "tasas (1 año 0,0694) en [0,2) de 5,910 filas, 26,943.01 EUR\n"):
+        assert not same_numbers(numeric_tokens(cell), numeric_tokens({"outputs": [{"output_type": "stream", "text": [wrong]}]}, "es")), wrong
+
+
+# English labels the English notebooks print (the set the notebook-bar rewrite of 0.12.000 still prints); a Spanish notebook prints none of them (conventions/product-notebooks.md:
 # each notebook is written in its tree's language: prose, comments, labels and printed text)
 ENGLISH_LABELS = (
-    "registered tests", "derived folder found", "default case", "held-out cards", "test rows", "keys of a test row",
-    "cards in the sample", "mean PD of the scorecard", "standard error", "95% interval", "pairs compared",
-    "equal to the engine", "p-value, SciPy", "expected defaults", "Brier score", "tests with a threshold", "worst light",
-    "tasks:", "tests compared", "all agree", "thresholds by kind", "same label", "same threshold", "obligors:",
-    "truth status", "same envelope", "installed riskvalidation", "ignored columns", "contract 1 counts", "first upper bounds",
-    "grades:", "defaults:", "no value", "amber below", "light:", "policy:", "50 cards", "9000 cards", "mean PD",
-    "module version", "worst:", "results:", "counts:", "expected by the PDs",
+    "registered tests", "default case", "held-out cards", "test rows", "mean PD of the scorecard", "standard error",
+    "95% interval", "expected defaults", "Brier score", "tests with a threshold", "worst light", "thresholds by kind",
+    "same label", "obligors:", "truth status", "installed riskvalidation", "ignored columns", "first upper bounds", "grades:",
+    "defaults:", "light:", "policy:", "50 cards", "9000 cards", "mean PD", "counts:", "expected by the PDs",
 )
 
 
@@ -379,13 +433,14 @@ def test_the_ci_runs_the_static_checks_and_never_the_notebooks():
 def test_the_adopted_scripts_are_the_template_scripts_byte_for_byte():
     for name, digest in ADOPTED.items():
         data = (SCRIPTS / name).read_bytes().replace(b"\r\n", b"\n")
-        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the template release 0.10"
+        assert hashlib.sha256(data).hexdigest() == digest, f"{name} differs from the adopted template release (.template-version)"
 
 
 @pytest.mark.skipif(not (ROOT / ".venv-notebooks").exists(), reason="the notebook environment .venv-notebooks is a local release gate (ADR-0074)")
-def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel():
-    done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check"], capture_output=True, text=True, check=False,
-                          cwd=ROOT, timeout=3000)
+def test_every_notebook_runs_top_to_bottom_in_a_fresh_kernel(tmp_path):
+    # template 0.11.000: --check names its temp root (--tmp, else CAOS_TEMP_ROOT) and never falls back to the system temp
+    done = subprocess.run([sys.executable, str(SCRIPTS / "run_notebooks.py"), "--check", "--tmp", str(tmp_path)], capture_output=True, text=True, check=False,
+                          cwd=ROOT, timeout=7200)  # 220 notebooks in fresh kernels: about an hour on a loaded machine
     assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
     assert "nothing written" in done.stdout
 
@@ -588,6 +643,9 @@ def test_adversarial_a_hand_edited_output_fails_the_release_gate(repo):
     # local-only: the execution gate needs the notebook environment, which CI does not install
     (repo / "scripts").mkdir()
     shutil.copy(SCRIPTS / "run_notebooks.py", repo / "scripts" / "run_notebooks.py")
+    # the runner checks the method packages through the guard beside it (template 0.12.000)
+    for name in ("check_notebooks.py", "notebook_bar.json"):
+        shutil.copy(SCRIPTS / name, repo / "scripts" / name)
     shutil.copytree(ROOT / "data-pipeline", repo / "data-pipeline", dirs_exist_ok=True)
     shutil.copy(ROOT / "VERSION", repo / "VERSION")
     if sys.platform == "win32":
@@ -602,7 +660,7 @@ def test_adversarial_a_hand_edited_output_fails_the_release_gate(repo):
     cell = next(c for c in code_cells(nb) if any(o["output_type"] == "stream" for o in c["outputs"]))
     next(o for o in cell["outputs"] if o["output_type"] == "stream")["text"] = ["edited by hand\n"]
     write_nb(target, nb)
-    done = subprocess.run([sys.executable, str(repo / "scripts" / "run_notebooks.py"), "--check", "--only", str(target)],
+    done = subprocess.run([sys.executable, str(repo / "scripts" / "run_notebooks.py"), "--check", "--tmp", str(repo.parent), "--only", str(target)],
                           capture_output=True, text=True, check=False, timeout=900)
     assert done.returncode == 1 and "stale" in done.stdout, done.stdout[-1500:]
 
@@ -710,10 +768,12 @@ def test_every_folder_and_document_an_area_row_links_exists():
 
 
 def test_the_packages_row_links_the_engine_release():
-    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split("\n## ", 1)[0]
+    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split(chr(10) + "## ", 1)[0]
     row = next(ln for ln in section.splitlines() if ln.startswith("| Packages"))
     assert ENGINE_RELEASE in row and "riskvalidation" in row
-    assert "published on PyPI" in row and "not yet" not in row
+    assert "published on PyPI" in row and "not yet" not in row and "not published" not in row
+    first = (ROOT / "notebooks" / "en" / TOPIC_01 / "01-install-the-engine-and-open-an-artifact.ipynb").read_text(encoding="utf-8")
+    assert f"pip install riskvalidation=={ENGINE_PIN}" in first  # the install line of the published release
 
 
 def test_the_areas_section_follows_the_purpose_and_the_live_urls():

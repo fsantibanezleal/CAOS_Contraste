@@ -16,7 +16,9 @@ import type {
   C04Performance,
   C04Rate,
   C04Simulation,
+  C04BoundsVerdict,
   C04ThinRung,
+  C04WithdrawalBounds,
   C04WithdrawalsRung,
   VariantArtifact,
 } from '../../lib/contract.types';
@@ -37,6 +39,7 @@ import {
   type C04Sel,
   type Estimator,
   type FamilyVariant,
+  attributionIn,
 } from './selection';
 
 type Lang = 'en' | 'es';
@@ -110,7 +113,7 @@ const TEST_LABEL: Record<string, BiText> = {
   'rating.time_homogeneity': t('Time homogeneity', 'Homogeneidad temporal'),
   'rating.markov_order': t('Markov order', 'Orden de Markov'),
   'rating.matrix_reference': t('Against the reference matrix', 'Contra la matriz de referencia'),
-  'rating.momentum': t('Momentum hazard', 'Riesgo de momentum'),
+  'rating.momentum': t('Momentum hazard', 'Riesgo instantáneo de impulso'),
 };
 const TEST_COLOR: Record<string, ShellColorToken> = {
   'rating.time_homogeneity': '--color-accent',
@@ -125,7 +128,7 @@ const INTERVAL_LABEL: Record<Interval, BiText> = {
   wald: t('Wald', 'Wald'),
   agresti_coull: t('Agresti-Coull', 'Agresti-Coull'),
   jeffreys: t('Jeffreys', 'Jeffreys'),
-  bootstrap: t('Bootstrap', 'Bootstrap'),
+  bootstrap: t('Bootstrap', 'Remuestreo'),
 };
 const INTERVAL_COLOR: Record<Interval, ShellColorToken> = { wald: '--color-bad', agresti_coull: '--color-accent-2', jeffreys: '--color-accent', bootstrap: '--color-magenta' };
 const ANALYTIC: Analytic[] = ['wald', 'agresti_coull', 'jeffreys'];
@@ -251,7 +254,7 @@ function ChartCard({ v, spec, title, note }: { v: FamilyVariant; spec: ChartSpec
     );
     return (
       <PlotCard fill title={title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={`${note} ${why}`}>
-        <div className="ct-scroll">
+        <div className="ct-scroll" data-caos-flow="">
           <SpecTable spec={spec} />
         </div>
       </PlotCard>
@@ -270,7 +273,7 @@ function TableCard({ v, title, note, children }: { v: FamilyVariant; title: BiTe
   const stateKey = useWorkbenchState()?.stateKey;
   return (
     <PlotCard fill title={title} lane={REPLAY} provenance={provenanceOf(v.provenance.truth_status)} dataKey={stateKey} note={note}>
-      <div className="ct-scroll">{children}</div>
+      <div className="ct-scroll" data-caos-flow="">{children}</div>
     </PlotCard>
   );
 }
@@ -331,7 +334,7 @@ function truthNote(lang: Lang, sel: C04Sel): string {
   return L(
     lang,
     `The truth is the EM generator of the pooled annual CEREP counts of S&P's EU entity (${SP_ENTITY.name}); ${attributionOf(sel)}.`,
-    `La verdad es el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (${SP_ENTITY.name}); atribución: ${attributionOf(sel)}.`,
+    `La verdad es el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (${SP_ENTITY.name}); atribución: ${attributionIn(attributionOf(sel), 'es')}.`,
   );
 }
 
@@ -340,8 +343,8 @@ function truthNote(lang: Lang, sel: C04Sel): string {
 const definitionNote = (lang: Lang) =>
   L(
     lang,
-    `Default: the chain's absorbing state, fitted on the transition page's default column with withdrawals removed (${pick(DEFINITION_LABEL.d4, 'en')}).`,
-    `Incumplimiento: el estado absorbente de la cadena, ajustado sobre la columna de incumplimiento de la página de transiciones, sin los retiros (${pick(DEFINITION_LABEL.d4, 'es')}).`,
+    `Default: the chain's absorbing state, fitted on the transition page's default column with withdrawals removed (${pick(DEFINITION_LABEL.d4, 'en')}). The rail's default definition does not apply to a generator drawing.`,
+    `Incumplimiento: el estado absorbente de la cadena, ajustado sobre la columna de incumplimiento de la página de transiciones, sin los retiros (${pick(DEFINITION_LABEL.d4, 'es')}). La definición de incumplimiento del panel no se aplica al dibujo de un generador.`,
   );
 
 /** What the design means for the family: one chain drawn again and again with a defect planted along a ladder, the
@@ -420,7 +423,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
   const rows: Array<[string, string]> = [
     [
       L(lang, 'Generator', 'Generador'),
-      L(lang, "EM generator of the pooled annual CEREP counts of S&P's EU entity (riskvalidation.transitions.em)", 'Generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (riskvalidation.transitions.em)'),
+      L(lang, "EM generator of the pooled annual CEREP counts of S&P's EU entity (the EM of riskvalidation)", 'Generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P (el EM de riskvalidation)'),
     ],
     [L(lang, 'Entity', 'Entidad'), entity],
     [
@@ -440,7 +443,8 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
     [
       L(lang, 'Seeds', 'Semillas'),
       design.seed_key
-        ? L(lang, `case seed ${num(lang, v.provenance.seed)}, one seed per rung from the key ${design.seed_key}`, `semilla del caso ${num(lang, v.provenance.seed)}, una semilla por peldaño desde la clave ${design.seed_key}`)
+        // the key itself is a raw id in prose (R6 c06 B1); it stays in the committed document's design block
+        ? L(lang, `case seed ${num(lang, v.provenance.seed)}, one seed per rung derived from it`, `semilla del caso ${num(lang, v.provenance.seed)}, una semilla por peldaño derivada de ella`)
         : L(lang, 'none: nothing is drawn', 'ninguna: no se sortea nada'),
     ],
     [L(lang, 'Engine', 'Motor'), `riskvalidation ${v.provenance.riskvalidation_version ?? ''}`.trim()],
@@ -457,12 +461,12 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Every repetition simulates this chain: the one-year transition probabilities of the true generator Q, the EM generator of the pooled annual CEREP counts of S&P's EU entity, ${entity}. Rows: the grade at the start of the year; columns: the state at its end, default (D) last; percent. ${definitionNote('en')} A row picks its grade. ${att}.`,
-            `Cada repetición simula esta cadena: las probabilidades de transición a un año del generador verdadero Q, el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P, ${entity}. Filas: el grado al inicio del año; columnas: el estado al final, con el incumplimiento (D) al último; porcentaje. ${definitionNote('es')} Una fila elige su grado. Atribución: ${att}.`,
+            `Cada repetición simula esta cadena: las probabilidades de transición a un año del generador verdadero Q, el generador EM de los conteos anuales agrupados de CEREP de la entidad UE de S&P, ${entity}. Filas: el grado al inicio del año; columnas: el estado al final, con el incumplimiento (D) al último; porcentaje. ${definitionNote('es')} Una fila elige su grado. Atribución: ${attributionIn(att, 'es')}.`,
           )}
         >
           {/* the scale above the map, not in the card's head: there the title and the lane badges leave it no room (the
               agency matrix view measured the head overflowing in Spanish at 1280 x 800) */}
-          <div className="ct-stack">
+          <div className="ct-stack" data-caos-flow="">
             <div className="ct-stack-natural" data-controls="c04-map">
               <ChipGroup id="c04-map-scale" label={t('Colour scale', 'Escala de color')} options={SCALES} value={sel.mapScale} onChange={(id) => sel.act.setMapScale(id as MapScale)} />
             </div>
@@ -487,7 +491,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The default column of exp(Q) and exp(5Q), percent on a log scale (${pick(DEFINITION_LABEL.d4, 'en')}); ${GRADES[sel.grade]} marked. CEREP counts of ${SP_ENTITY.name}; ${att}.`,
-            `La columna de incumplimiento de exp(Q) y exp(5Q), en porcentaje y escala logarítmica (${pick(DEFINITION_LABEL.d4, 'es')}); se marca ${GRADES[sel.grade]}. Conteos de CEREP de ${SP_ENTITY.name}; atribución: ${att}.`,
+            `La columna de incumplimiento de exp(Q) y exp(5Q), en porcentaje y escala logarítmica (${pick(DEFINITION_LABEL.d4, 'es')}); se marca ${GRADES[sel.grade]}. Conteos de CEREP de ${SP_ENTITY.name}; atribución: ${attributionIn(att, 'es')}.`,
           )}
         />
       }
@@ -498,7 +502,7 @@ export function GeneratorView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `${designNote('en', o.family)} The exit rate is minus Q's diagonal, per year; the PDs are exp(Q)'s and exp(5Q)'s, in percent. ${att}.`,
-            `${designNote('es', o.family)} La tasa de salida es menos la diagonal de Q, por año; las PD son las de exp(Q) y exp(5Q), en porcentaje. Atribución: ${att}.`,
+            `${designNote('es', o.family)} La tasa de salida es menos la diagonal de Q, por año; las PD son las de exp(Q) y exp(5Q), en porcentaje. Atribución: ${attributionIn(att, 'es')}.`,
           )}
         >
           <table className="caos-table" data-table="family-design">
@@ -600,7 +604,7 @@ export function MarkovEstimatorsView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `${num(lang, n)} repetitions of five years observed at annual snapshots, percent on a log scale, against the true PD (dashed): where an estimator's RMSE is above the PD, one estimate says little about it. Thick: the rail's estimator (${label}); ${GRADES[g]} is marked. Cohort: the five annual cohorts pooled (Anderson and Goodman's pooled estimator); duration: the transition times; EM: the snapshots; diagonal, weighted and JLT: the log of the pooled matrix repaired (Israel, Rosenthal and Wei). ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `${num(lang, n)} repeticiones de cinco años observados en instantáneas anuales, en porcentaje y escala logarítmica, contra la PD verdadera (segmentada): donde la RMSE de un estimador supera la PD, una estimación dice poco de ella. Gruesa: el estimador del panel (${label}); se marca ${GRADES[g]}. Cohortes: las cinco cohortes anuales agrupadas (el estimador agrupado de Anderson y Goodman); duración: los tiempos de transición; EM: las instantáneas; diagonal, ponderado y JLT: el logaritmo de la matriz agrupada reparado (Israel, Rosenthal y Wei). ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `${num(lang, n)} repeticiones de cinco años observados en instantáneas anuales, en porcentaje y escala logarítmica, contra la PD verdadera (discontinua): donde la RMSE de un estimador supera la PD, una estimación dice poco de ella. Gruesa: el estimador del panel (${label}); se marca ${GRADES[g]}. Cohortes: las cinco cohortes anuales agrupadas (el estimador agrupado de Anderson y Goodman); duración: los tiempos de transición; EM: las instantáneas; diagonal, ponderado y JLT: el logaritmo de la matriz agrupada reparado (Israel, Rosenthal y Wei). ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -612,7 +616,7 @@ export function MarkovEstimatorsView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             "The mean estimate minus the truth, over the truth, in percent; the rail's estimator thick, with two Monte Carlo SEs either side (dashed).",
-            'La estimación media menos la verdad, sobre la verdad, en porcentaje; el estimador del panel en grueso, con dos EE de Monte Carlo a cada lado (segmentadas).',
+            'La estimación media menos la verdad, sobre la verdad, en porcentaje; el estimador del panel en grueso, con dos EE de Monte Carlo a cada lado (discontinuas).',
           )}
         />
       }
@@ -711,7 +715,7 @@ export function MarkovZerosView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The share of the ${num('en', n)} repetitions in which each estimator's one-year PD is exactly 0, in percent: a pooled cohort without a default in a grade gives 0, the generator estimators give a positive PD. Thick: the rail's estimator, with its ${pct0('en', 0.95)} Wilson interval (dashed). ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `La fracción de las ${num('es', n)} repeticiones en que la PD a un año de cada estimador es exactamente 0, en porcentaje: una cohorte agrupada sin incumplimientos en un grado da 0, los estimadores por generador dan una PD positiva. Gruesa: el estimador del panel, con su intervalo de Wilson al ${pct0('es', 0.95)} (segmentadas). ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `La fracción de las ${num('es', n)} repeticiones en que la PD a un año de cada estimador es exactamente 0, en porcentaje: una cohorte agrupada sin incumplimientos en un grado da 0, los estimadores por generador dan una PD positiva. Gruesa: el estimador del panel, con su intervalo de Wilson al ${pct0('es', 0.95)} (discontinuas). ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -837,8 +841,8 @@ export function MarkovSizeView({ sel }: { sel: C04Sel | null }) {
           title={bi((l) => `${L(l, 'Size of the transition tests on a Markov chain, at', 'Tamaño de las pruebas de transición en una cadena de Markov, al')} ${pct0(l, 0.05)}`)}
           note={L(
             lang,
-            `The chain is Markov and stable, so every rejection is a false alarm. Each test's rejection rate in percent (dots) with its ${pct0('en', 0.95)} Wilson interval (small dots), against its size bound (dashed): the level plus 3.09 Monte Carlo SEs at its repetitions, riskvalidation's size_bound. Tests and repetitions: ${numbered('en')}; the order test's two forms run on a seed of their own. The reference matrix is the true one, against the first year's counts. ${truthNote('en', sel)}`,
-            `La cadena es de Markov y estable, así que cada rechazo es una falsa alarma. La tasa de rechazo de cada prueba en porcentaje (puntos) con su intervalo de Wilson al ${pct0('es', 0.95)} (puntos pequeños), contra su cota de tamaño (segmentada): el nivel más 3,09 EE de Monte Carlo a sus repeticiones, el size_bound de riskvalidation. Pruebas y repeticiones: ${numbered('es')}; las dos formas de la prueba de orden corren con una semilla propia. La matriz de referencia es la verdadera, contra los conteos del primer año. ${truthNote('es', sel)}`,
+            `The chain is Markov and stable, so every rejection is a false alarm. Each test's rejection rate in percent (dots) with its ${pct0('en', 0.95)} Wilson interval (small dots), against its size bound (dashed): the level plus 3.09 Monte Carlo SEs at its repetitions, riskvalidation's size bound. Tests and repetitions: ${numbered('en')}; the order test's two forms run on a seed of their own. The reference matrix is the true one, against the first year's counts. ${truthNote('en', sel)}`,
+            `La cadena es de Markov y estable, así que cada rechazo es una falsa alarma. La tasa de rechazo de cada prueba en porcentaje (puntos) con su intervalo de Wilson al ${pct0('es', 0.95)} (puntos pequeños), contra su cota de tamaño (discontinua): el nivel más 3,09 EE de Monte Carlo a sus repeticiones, la cota de tamaño de riskvalidation. Pruebas y repeticiones: ${numbered('es')}; las dos formas de la prueba de orden corren con una semilla propia. La matriz de referencia es la verdadera, contra los conteos del primer año. ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -984,7 +988,7 @@ export function MarkovCoverageView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The share of repetitions whose interval holds the true one-year PD, in percent: Wald, Agresti-Coull and Jeffreys on the pooled cohort counts (${num('en', n)} repetitions), and the resampling bootstrap of the duration PD (${num('en', r.bootstrap.n_boot)} replicates, in the first ${num('en', nb)} repetitions). Dashed: ${pct0('en', r.level)} plus or minus two Monte Carlo SEs at ${num('en', n)} repetitions, where a correct interval's coverage falls. ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `La fracción de repeticiones cuyo intervalo contiene la PD anual verdadera, en porcentaje: Wald, Agresti-Coull y Jeffreys sobre los conteos de cohortes agrupados (${num('es', n)} repeticiones), y el bootstrap por remuestreo de la PD de duración (${num('es', r.bootstrap.n_boot)} réplicas, en las primeras ${num('es', nb)} repeticiones). Segmentadas: ${pct0('es', r.level)} más o menos dos EE de Monte Carlo a ${num('es', n)} repeticiones, donde cae la cobertura de un intervalo correcto. ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `La fracción de repeticiones cuyo intervalo contiene la PD anual verdadera, en porcentaje: Wald, Agresti-Coull y Jeffreys sobre los conteos de cohortes agrupados (${num('es', n)} repeticiones), y el remuestreo de la PD de duración (${num('es', r.bootstrap.n_boot)} réplicas, en las primeras ${num('es', nb)} repeticiones). Discontinuas: ${pct0('es', r.level)} más o menos dos EE de Monte Carlo a ${num('es', n)} repeticiones, donde cae la cobertura de un intervalo correcto. ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1004,7 +1008,7 @@ export function MarkovCoverageView({ sel }: { sel: C04Sel | null }) {
         <TableCard
           v={v}
           title={t('Coverage by grade', 'Cobertura por grado')}
-          note={L(lang, `Percent of the repetitions, each with its Monte Carlo SE in parentheses; the bootstrap over ${num('en', nb)} repetitions.`, `Porcentaje de las repeticiones, cada uno con su EE de Monte Carlo entre paréntesis; el bootstrap sobre ${num('es', nb)} repeticiones.`)}
+          note={L(lang, `Percent of the repetitions, each with its Monte Carlo SE in parentheses; the bootstrap over ${num('en', nb)} repetitions.`, `Porcentaje de las repeticiones, cada uno con su EE de Monte Carlo entre paréntesis; el remuestreo sobre ${num('es', nb)} repeticiones.`)}
         >
           <table className="caos-table ct-wrap-head" data-table="markov-coverage">
             <thead>
@@ -1042,7 +1046,7 @@ interface LadderAxis {
   format: FormatOptions;
 }
 const LADDER_AXIS: Record<'momentum' | 'cycle' | 'withdrawals', LadderAxis> = {
-  momentum: { label: t('Momentum alpha (beta 1 a year)', 'Alfa de momentum (beta 1 por año)'), short: t('Alpha', 'Alfa'), format: { decimals: 3 } },
+  momentum: { label: t('Momentum alpha (beta 1 a year)', 'Alfa del impulso (beta 1 por año)'), short: t('Alpha', 'Alfa'), format: { decimals: 3 } },
   cycle: { label: t('k, the downgrade multiplier of the third year', 'k, el multiplicador de las rebajas del tercer año'), short: 'k', format: { decimals: 2 } },
   withdrawals: { label: t('k: withdrawal times 1 + k in the year before default', 'k: retiro por 1 + k en el año previo al incumplimiento'), short: 'k', format: { decimals: 0 } },
 };
@@ -1113,7 +1117,7 @@ function TwoTestsView({ v, sel, charts, testIds, axis, table, title, note }: { v
     L(
       l,
       `Rejection rates in percent along the ladder (${num('en', n)} repetitions per rung, Monte Carlo SE at most ${num('en', 100 * maxSe, { decimals: 1 })} points; each in the table): solid at ${pct0('en', 0.05)}, dashed at ${pct0('en', 0.01)}, dotted the nominal ${pct0('en', 0.05)}.`,
-      `Tasas de rechazo en porcentaje a lo largo de la escalera (${num('es', n)} repeticiones por peldaño, EE de Monte Carlo a lo más ${num('es', 100 * maxSe, { decimals: 1 })} puntos; cada uno en la tabla): continuas al ${pct0('es', 0.05)}, segmentadas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}.`,
+      `Tasas de rechazo en porcentaje a lo largo de la escalera (${num('es', n)} repeticiones por peldaño, EE de Monte Carlo a lo más ${num('es', 100 * maxSe, { decimals: 1 })} puntos; cada uno en la tabla): continuas al ${pct0('es', 0.05)}, discontinuas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}.`,
     );
   return (
     <ViewRow
@@ -1126,7 +1130,7 @@ function TwoTestsView({ v, sel, charts, testIds, axis, table, title, note }: { v
           note={L(
             lang,
             `Solid at ${pct0('en', 0.05)}, dashed at ${pct0('en', 0.01)}, dotted the nominal ${pct0('en', 0.05)}; each rate's Monte Carlo SE in the table.`,
-            `Continuas al ${pct0('es', 0.05)}, segmentadas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}; el EE de Monte Carlo de cada tasa en la tabla.`,
+            `Continuas al ${pct0('es', 0.05)}, discontinuas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}; el EE de Monte Carlo de cada tasa en la tabla.`,
           )}
         />
       }
@@ -1185,11 +1189,11 @@ export function MomentumPowerView({ sel }: { sel: C04Sel | null }) {
         <ChartCard
           v={v}
           spec={charts[0]}
-          title={t('What the tests see of rating momentum', 'Lo que ven las pruebas del momentum de calificación')}
+          title={t('What the tests see of rating momentum', 'Lo que ven las pruebas del impulso de calificación')}
           note={L(
             lang,
             `Rejection rates in percent along alpha (${num('en', n)} repetitions per rung, Monte Carlo SE at most ${num('en', 100 * maxSe, { decimals: 1 })} points; each in the table): solid at ${pct0('en', 0.05)}, dashed at ${pct0('en', 0.01)}, dotted the nominal ${pct0('en', 0.05)}. Alpha 0 is a Markov chain, so its rates are the tests' size; alpha ${num('en', EMPIRICAL_ALPHA)} (marked) gives the hazard coefficient dos Reis, Pfeuffer and Smith estimate on Moody's data: c, with which a stay entered by a downgrade is left exp(c) times faster. ${truthNote('en', sel)}`,
-            `Tasas de rechazo en porcentaje a lo largo de alfa (${num('es', n)} repeticiones por peldaño, EE de Monte Carlo a lo más ${num('es', 100 * maxSe, { decimals: 1 })} puntos; cada uno en la tabla): continuas al ${pct0('es', 0.05)}, segmentadas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}. Alfa 0 es una cadena de Markov, así que sus tasas son el tamaño de las pruebas; alfa ${num('es', EMPIRICAL_ALPHA)} (marcado) da el coeficiente de riesgo que dos Reis, Pfeuffer y Smith estiman con datos de Moody's: c, con el que una estadía que empieza con una rebaja se deja exp(c) veces más rápido. ${truthNote('es', sel)}`,
+            `Tasas de rechazo en porcentaje a lo largo de alfa (${num('es', n)} repeticiones por peldaño, EE de Monte Carlo a lo más ${num('es', 100 * maxSe, { decimals: 1 })} puntos; cada uno en la tabla): continuas al ${pct0('es', 0.05)}, discontinuas al ${pct0('es', 0.01)}, punteada el nivel nominal del ${pct0('es', 0.05)}. Alfa 0 es una cadena de Markov, así que sus tasas son el tamaño de las pruebas; alfa ${num('es', EMPIRICAL_ALPHA)} (marcado) da el coeficiente de riesgo que dos Reis, Pfeuffer y Smith estiman con datos de Moody's: c, con el que una estadía que empieza con una rebaja se deja exp(c) veces más rápido. ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1201,7 +1205,7 @@ export function MomentumPowerView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The mean fitted c (0 for a Markov chain) with two Monte Carlo SEs either side (dashed), against dos Reis et al.'s ${num('en', DOS_REIS_C)} on Moody's data (dotted); alpha ${num('en', EMPIRICAL_ALPHA)} marked.`,
-            `El c ajustado medio (0 en una cadena de Markov) con dos EE de Monte Carlo a cada lado (segmentadas), contra el ${num('es', DOS_REIS_C)} de dos Reis et al. con datos de Moody's (punteada); alfa ${num('es', EMPIRICAL_ALPHA)} marcado.`,
+            `El c ajustado medio (0 en una cadena de Markov) con dos EE de Monte Carlo a cada lado (discontinuas), contra el ${num('es', DOS_REIS_C)} de dos Reis et al. con datos de Moody's (punteada); alfa ${num('es', EMPIRICAL_ALPHA)} marcado.`,
           )}
         />
       }
@@ -1264,10 +1268,10 @@ export function momentumProjectionCharts(v: FamilyVariant, sel: C04Sel): ChartSp
       x,
       y: pdAxis((l) => `${L(l, 'Five-year PD of', 'PD a cinco años de')} ${GRADES[g]}`, [freq, power, dur, plain]),
       series: [
-        { label: t('Default frequency of the momentum chain', 'Frecuencia de incumplimiento de la cadena con momentum'), values: freq, color: '--color-fg', width: 2.6 },
+        { label: t('Default frequency of the momentum chain', 'Frecuencia de incumplimiento de la cadena con impulso'), values: freq, color: '--color-fg', width: 2.6 },
         { label: powName, values: power, color: '--color-accent', width: 2 },
         { label: durName, values: dur, color: '--color-magenta', width: 2 },
-        { label: t('Plain chain, no momentum', 'Cadena sin momentum'), values: plain, color: '--color-fg-subtle', width: 1.2, dash: [6, 4] },
+        { label: t('Plain chain, no momentum', 'Cadena sin impulso'), values: plain, color: '--color-fg-subtle', width: 1.2, dash: [6, 4] },
       ],
       marks,
     },
@@ -1308,7 +1312,7 @@ export function MomentumProjectionView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Means over ${num('en', n)} repetitions, in percent: the initial cohort's default frequency after five years (the momentum chain's own), the pooled one-year cohort matrix to the fifth power and exp(5Q) of the duration generator, both from the same paths, against the plain chain's five-year PD (dashed). Alpha ${num('en', EMPIRICAL_ALPHA)} marked. ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `Medias sobre ${num('es', n)} repeticiones, en porcentaje: la frecuencia de incumplimiento de la cohorte inicial a cinco años (la propia de la cadena con momentum), la matriz de cohortes anual agrupada a la quinta potencia y exp(5Q) del generador de duración, ambas de las mismas trayectorias, contra la PD a cinco años de la cadena sin momentum (segmentada). Alfa ${num('es', EMPIRICAL_ALPHA)} marcado. ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `Medias sobre ${num('es', n)} repeticiones, en porcentaje: la frecuencia de incumplimiento de la cohorte inicial a cinco años (la propia de la cadena con impulso), la matriz de cohortes anual agrupada a la quinta potencia y exp(5Q) del generador de duración, ambas de las mismas trayectorias, contra la PD a cinco años de la cadena sin impulso (discontinua). Alfa ${num('es', EMPIRICAL_ALPHA)} marcado. ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1320,7 +1324,7 @@ export function MomentumProjectionView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             'Each projection minus the frequency, paired by repetition, in percentage points; two Monte Carlo SEs either side (dashed).',
-            'Cada proyección menos la frecuencia, pareadas por repetición, en puntos porcentuales; dos EE de Monte Carlo a cada lado (segmentadas).',
+            'Cada proyección menos la frecuencia, pareadas por repetición, en puntos porcentuales; dos EE de Monte Carlo a cada lado (discontinuas).',
           )}
         />
       }
@@ -1331,7 +1335,7 @@ export function MomentumProjectionView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Percent, the mean over the repetitions with its Monte Carlo SE in parentheses; the errors are the projection minus the frequency. Plain chain's five-year PD of ${grade}: ${pctText('en', rungs[0]?.pd_5y_frequency.truth[g])}. The one-year cohort PD shows momentum raising the one-year rate as well.`,
-            `Porcentaje, la media sobre las repeticiones con su EE de Monte Carlo entre paréntesis; los errores son la proyección menos la frecuencia. PD a cinco años de ${grade} en la cadena sin momentum: ${pctText('es', rungs[0]?.pd_5y_frequency.truth[g])}. La PD de cohorte a un año muestra que el momentum también sube la tasa a un año.`,
+            `Porcentaje, la media sobre las repeticiones con su EE de Monte Carlo entre paréntesis; los errores son la proyección menos la frecuencia. PD a cinco años de ${grade} en la cadena sin impulso: ${pctText('es', rungs[0]?.pd_5y_frequency.truth[g])}. La PD de cohorte a un año muestra que el impulso también sube la tasa a un año.`,
           )}
         >
           <table className="caos-table ct-wrap-head" data-table="momentum-projection">
@@ -1479,7 +1483,7 @@ export function CyclePitTtcView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Means over ${num('en', n)} repetitions (solid) against their truths (dashed), in percent: the stressed year's cohort PD (a point-in-time reading), the long-run average of EBA/GL/2017/16 paragraph 84 (the mean of the five yearly cohort PDs) and Anderson and Goodman's pooled PD; dotted, the stable chain's exp(Q), the through-the-cycle reference. ${definitionNote('en')} ${truthNote('en', sel)}`,
-            `Medias sobre ${num('es', n)} repeticiones (continuas) contra sus verdades (segmentadas), en porcentaje: la PD de cohorte del año de estrés (una lectura puntual en el tiempo), el promedio de largo plazo del párrafo 84 de EBA/GL/2017/16 (la media de las cinco PD de cohorte anuales) y la PD agrupada de Anderson y Goodman; punteada, exp(Q) de la cadena estable, la referencia a lo largo del ciclo. ${definitionNote('es')} ${truthNote('es', sel)}`,
+            `Medias sobre ${num('es', n)} repeticiones (continuas) contra sus verdades (discontinuas), en porcentaje: la PD de cohorte del año de estrés (una lectura puntual en el tiempo), el promedio de largo plazo del párrafo 84 de EBA/GL/2017/16 (la media de las cinco PD de cohorte anuales) y la PD agrupada de Anderson y Goodman; punteada, exp(Q) de la cadena estable, la referencia a lo largo del ciclo. ${definitionNote('es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1615,7 +1619,7 @@ export function WithdrawalsBiasView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `Means over ${num('en', n)} repetitions in percent, against the true one-year PD (dashed): withdrawals removed (CEREP's transition page), kept in the denominator, followed to the year end (a withdrawn rating that defaults counts) and the latent chain (every obligor followed, withdrawn or not). ${WITHDRAWAL_DEFINITIONS.en}. ${pick(ESMA_DEFINITIONS, 'en')} ${truthNote('en', sel)}`,
-            `Medias sobre ${num('es', n)} repeticiones en porcentaje, contra la PD anual verdadera (segmentada): retiros eliminados (la página de transiciones de CEREP), mantenidos en el denominador, seguidos al fin del año (una calificación retirada que incumple cuenta) y la cadena latente (todo deudor seguido, retirado o no). ${WITHDRAWAL_DEFINITIONS.es}. ${pick(ESMA_DEFINITIONS, 'es')} ${truthNote('es', sel)}`,
+            `Medias sobre ${num('es', n)} repeticiones en porcentaje, contra la PD anual verdadera (discontinua): retiros eliminados (la página de transiciones de CEREP), mantenidos en el denominador, seguidos al fin del año (una calificación retirada que incumple cuenta) y la cadena latente (todo deudor seguido, retirado o no). ${WITHDRAWAL_DEFINITIONS.es}. ${pick(ESMA_DEFINITIONS, 'es')} ${truthNote('es', sel)}`,
           )}
         />
       }
@@ -1627,7 +1631,7 @@ export function WithdrawalsBiasView({ sel }: { sel: C04Sel | null }) {
           note={L(
             lang,
             `The grade's ratings withdrawn within a year, in percent, two Monte Carlo SEs either side (dashed)${rate === null ? '' : `; dotted, the base ${pct0('en', rate)} a year`}.`,
-            `Las calificaciones del grado retiradas en el año, en porcentaje, dos EE de Monte Carlo a cada lado (segmentadas)${rate === null ? '' : `; punteada, la base del ${pct0('es', rate)} al año`}.`,
+            `Las calificaciones del grado retiradas en el año, en porcentaje, dos EE de Monte Carlo a cada lado (discontinuas)${rate === null ? '' : `; punteada, la base del ${pct0('es', rate)} al año`}.`,
           )}
         />
       }
@@ -1703,6 +1707,138 @@ export function WithdrawalsTestsView({ sel }: { sel: C04Sel | null }) {
           "Time homogeneity compares the five annual matrices; the reference test, the last year's counts against exp(Q) (the last: every path starts without a withdrawal history). The latent chain is Markov at every k: what a rejection would see is the withdrawals alone.",
           'La homogeneidad temporal compara las cinco matrices anuales; la prueba de referencia, los conteos del último año contra exp(Q) (el último: toda trayectoria parte sin historia de retiros). La cadena latente es de Markov con todo k: lo que un rechazo vería son solo los retiros.',
         )
+      }
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// withdrawals, BS-14: the coverage of the true PD by the existing treatments and by the anchored interval
+// (riskvalidation 1.1.0 transitions.withdrawals; the study's draws are its own, the family's numbers do not move)
+
+type BoundsTreatment = 'industry' | 'unfollowed' | 'followed' | 'anchored' | 'identified';
+const BOUNDS_TREATMENTS: BoundsTreatment[] = ['industry', 'unfollowed', 'followed', 'anchored', 'identified'];
+const BOUNDS_LABEL: Record<BoundsTreatment, BiText> = {
+  industry: t('Removed (k 1)', 'Eliminados (k 1)'),
+  unfollowed: t('Kept in the denominator (k 0)', 'Mantenidos en el denominador (k 0)'),
+  followed: t('Followed to the year end', 'Seguidos al fin del año'),
+  anchored: t('Anchored on the default page', 'Anclada en la página de incumplimientos'),
+  identified: t('Identified band (Manski)', 'Banda identificada (Manski)'),
+};
+const BOUNDS_COLOR: Record<BoundsTreatment, ShellColorToken> = {
+  industry: DEFINITION_COLOR.d4,
+  unfollowed: DEFINITION_COLOR.keep,
+  followed: '--color-accent',
+  anchored: '--color-good',
+  identified: '--color-fg-subtle',
+};
+const BOUNDS_DESIGN_LABEL: Record<string, BiText> = {
+  first_year: t('First-year cohort', 'Cohorte del primer año'),
+  pooled: t('Five cohorts pooled', 'Cinco cohortes agrupadas'),
+  capture70: t('Second source counts 70 %', 'La segunda fuente cuenta el 70 %'),
+  first_year_x10: t('First-year cohort, ten times larger', 'Cohorte del primer año, diez veces mayor'),
+};
+const BOUNDS_CRITERION_LABEL: Record<string, BiText> = {
+  'anchored-coverage': t('Anchored covers at least', 'La anclada cubre al menos'),
+  'existing-coverage': t('Existing treatment covers under', 'El tratamiento existente cubre menos de'),
+  'anchored-better': t('Anchored covers more than the best existing', 'La anclada cubre más que el mejor existente'),
+};
+const boundsOf = (r: C04WithdrawalsRung) => (r as C04WithdrawalsRung & { bounds?: C04WithdrawalBounds | null }).bounds ?? null;
+
+/** Coverage of the true one-year PD of the selected grade along k, one line per treatment, in one design. */
+export function withdrawalBoundsCharts(v: FamilyVariant, sel: C04Sel): ChartSpec[] {
+  const rungs = rungsOf<C04WithdrawalsRung>(v, 'withdrawals');
+  if (!rungs || rungs.some((r) => !boundsOf(r))) return [];
+  const g = sel.grade;
+  const xs = rungValues(v);
+  const x = { values: xs, label: LADDER_AXIS.withdrawals.label, format: LADDER_AXIS.withdrawals.format };
+  const coverage = (design: string, tr: BoundsTreatment) =>
+    rungs.map((r) => boundsOf(r)?.designs.find((d) => d.id === design)?.treatments.find((x) => x.id === tr)?.coverage[g]?.rate ?? null);
+  return ['first_year', 'pooled'].map((design) => ({
+    key: `bounds-${design}`,
+    x,
+    y: { label: t('Coverage of the true PD (%)', 'Cobertura de la PD verdadera (%)'), range: [0, 1] as [number, number], format: { percent: true, digits: 3 } },
+    series: [
+      ...BOUNDS_TREATMENTS.map((tr) => ({ label: BOUNDS_LABEL[tr], values: coverage(design, tr), color: BOUNDS_COLOR[tr], width: tr === 'anchored' ? 2.6 : 1.8, ...(tr === 'identified' ? { dash: [6, 3] } : {}) })),
+      { label: bi((l) => `${L(l, 'The floor fixed before the study', 'El piso fijado antes del estudio')} ${pct0(l, 0.9)}`), values: flat(xs, 0.9), color: '--color-fg' as ShellColorToken, width: 1, dash: [2, 4] },
+    ],
+  }));
+}
+
+export function WithdrawalsBoundsView({ sel }: { sel: C04Sel | null }) {
+  const lang = useShellLang();
+  const v = familyOf(sel);
+  const charts = useMemo(() => (v && sel ? withdrawalBoundsCharts(v, sel) : []), [v, sel]);
+  if (!sel) return <Pending />;
+  const rungs = v ? rungsOf<C04WithdrawalsRung>(v, 'withdrawals') : null;
+  const verdict = v ? ((v.outputs as { bounds_verdict?: C04BoundsVerdict | null }).bounds_verdict ?? null) : null;
+  if (!v || !rungs || !verdict || charts.length < 2) return <NotThisFamily />;
+  const grade = GRADES[sel.grade];
+  const reps = verdict.reps;
+  const truth = boundsOf(rungs[0])?.truth[sel.grade] ?? null;
+  const common = {
+    en: `Share of ${num('en', reps)} repetitions whose 95 % interval covers the true one-year PD of ${grade} (${pctText('en', truth)}): removed and kept are the two CEREP pages' treatments (Jeffreys intervals), followed reads the year end of every withdrawn rating (the default page's count), anchored is the interval of riskvalidation's transitions.withdrawals with k read off the default page, the identified band runs from k 0 to Manski's bound. Dotted, the 90 % floor fixed before the study.`,
+    es: `Fracción de ${num('es', reps)} repeticiones cuyo intervalo al 95 % cubre la PD anual verdadera de ${grade} (${pctText('es', truth)}): eliminados y mantenidos son los tratamientos de las dos páginas de CEREP (intervalos de Jeffreys), seguidos lee el fin del año de toda calificación retirada (el conteo de la página de incumplimientos), la anclada es el intervalo de transitions.withdrawals de riskvalidation con k leído de la página de incumplimientos, la banda identificada va de k 0 a la cota de Manski. Punteado, el piso del 90 % fijado antes del estudio.`,
+  };
+  const s = verdict.summary;
+  const outcome = L(
+    lang,
+    `Verdict on ${GRADES[verdict.grade]}: the anchored interval ${s.anchored_covers_90 ? 'covers at least 90 % in every design and k' : 'falls under 90 % somewhere'}; the existing treatments ${s.existing_under_50 ? 'all fall under 50 % at k 9' : 'do not all fall under 50 % at k 9 (the first-year cohort keeps them above it)'}; the hypothesis is ${s.refuted ? 'refuted' : 'not refuted'}.`,
+    `Veredicto sobre ${GRADES[verdict.grade]}: el intervalo anclado ${s.anchored_covers_90 ? 'cubre al menos el 90 % en todo diseño y k' : 'cae bajo el 90 % en algún caso'}; los tratamientos existentes ${s.existing_under_50 ? 'caen todos bajo el 50 % con k 9' : 'no caen todos bajo el 50 % con k 9 (la cohorte del primer año los deja sobre él)'}; la hipótesis ${s.refuted ? 'queda refutada' : 'no queda refutada'}.`,
+  );
+  const yes = L(lang, 'Yes', 'Sí');
+  const no = L(lang, 'No', 'No');
+  return (
+    <ViewRow
+      left={
+        <ChartCard
+          v={v}
+          spec={charts[0]}
+          title={bi((l) => `${grade}: ${L(l, 'coverage of the true PD, first-year cohort', 'cobertura de la PD verdadera, cohorte del primer año')}`)}
+          note={`${pick(common, lang)} ${L(lang, "The first-year cohort is the model's exact setting: nobody was withdrawn earlier.", 'La cohorte del primer año es el escenario exacto del modelo: nadie fue retirado antes.')} ${truthNote(lang, sel)}`}
+        />
+      }
+      top={
+        <ChartCard
+          v={v}
+          spec={charts[1]}
+          title={bi((l) => `${grade}: ${L(l, 'five cohorts pooled', 'cinco cohortes agrupadas')}`)}
+          note={L(
+            lang,
+            "The same coverage when Contraste's five annual cohorts are pooled: a rating withdrawn in an earlier year is missing from a later cohort, a selection the one-period model does not see.",
+            'La misma cobertura al agrupar las cinco cohortes anuales de Contraste: una calificación retirada en un año anterior falta en una cohorte posterior, una selección que el modelo de un período no ve.',
+          )}
+        />
+      }
+      bottom={
+        <TableCard v={v} title={t('The criteria fixed before the study', 'Los criterios fijados antes del estudio')} note={outcome}>
+          <table className="caos-table ct-wrap-head" data-table="withdrawals-bounds-verdict">
+            <thead>
+              <tr>
+                <th className="ct-text">{L(lang, 'Criterion', 'Criterio')}</th>
+                <th className="ct-text">{L(lang, 'Design', 'Diseño')}</th>
+                <th>k</th>
+                <th className="ct-text ct-wide-only">{L(lang, 'Treatment', 'Tratamiento')}</th>
+                <th>{L(lang, 'Coverage, %', 'Cobertura, %')}</th>
+                <th>{L(lang, 'Threshold, %', 'Umbral, %')}</th>
+                <th className="ct-text">{L(lang, 'Holds', 'Se cumple')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {verdict.rows.map((r, i) => (
+                <tr key={i} data-criterion={r.id}>
+                  <td className="ct-text">{pick(BOUNDS_CRITERION_LABEL[r.id] ?? t('Criterion', 'Criterio'), lang)}</td>
+                  <td className="ct-text">{pick(BOUNDS_DESIGN_LABEL[r.design] ?? t('Design', 'Diseño'), lang)}</td>
+                  <td>{num(lang, r.informative)}</td>
+                  <td className="ct-text ct-wide-only">{pick(BOUNDS_LABEL[r.treatment as BoundsTreatment] ?? t('Treatment', 'Tratamiento'), lang)}</td>
+                  <td>{rateSe(lang, { rate: r.value, se: r.mcse } as C04Rate)}</td>
+                  <td>{num(lang, r.threshold * 100, { decimals: 1 })}</td>
+                  <td className="ct-text">{r.holds ? yes : no}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableCard>
       }
     />
   );
@@ -1953,6 +2089,7 @@ export const FAMILY_VIEWS: Record<C04Family, FamilyViewDef[]> = {
   withdrawals: [
     { id: 'bias', label: t('Bias', 'Sesgo'), View: WithdrawalsBiasView, charts: withdrawalBiasCharts },
     { id: 'tests', label: t('Tests', 'Pruebas'), View: WithdrawalsTestsView, charts: (v) => withdrawalTestCharts(v) },
+    { id: 'bounds', label: t('Anchored bounds', 'Cotas ancladas'), View: WithdrawalsBoundsView, charts: withdrawalBoundsCharts },
   ],
   thin: [
     { id: 'coverage', label: t('Coverage', 'Cobertura'), View: ThinCoverageView, charts: thinCoverageCharts },

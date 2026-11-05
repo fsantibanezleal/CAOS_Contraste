@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The test rows of each variant of case C12 by light: the rows that check the engine against closed forms, identities, convergence and the reference engines, and the rows of the exposure backtest (PIT statistics and exceedance counts); no row is amber or not evaluated.}
+\label{tab:ccr-tests}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Variant & Engine rows & Green & Amber & Red & Backtest rows & Green & Amber & Red \\
+\midrule
+Single swap & 12 & 12 & 0 & 0 & 30 & 0 & 0 & 30 \\
+Netting set & 11 & 11 & 0 & 0 & 30 & 0 & 0 & 30 \\
+CSA, MPoR 10 days & 12 & 9 & 0 & 3 & 30 & 0 & 0 & 30 \\
+CSA, MPoR 20 days & 12 & 8 & 0 & 4 & 30 & 0 & 0 & 30 \\
+CSA with initial margin & 12 & 10 & 0 & 2 & 30 & 0 & 0 & 30 \\
+Wrong-way risk & 8 & 8 & 0 & 0 & 30 & 0 & 0 & 30 \\
+\bottomrule
+\end{tabular}}
+\end{table}

@@ -22,6 +22,12 @@ from . import curves as c15_curves
 from . import targets
 from .book import MID, Book, Item, t
 
+#: a shock and a leg in words, English and Spanish, as the views name them (frontend/src/workbench/c15/selection.ts)
+SHOCK_WORDS = {"parallel-up": ("parallel up", "paralelo al alza"), "parallel-down": ("parallel down", "paralelo a la baja"),
+               "steepener": ("steepener", "empinamiento"), "flattener": ("flattener", "aplanamiento"),
+               "short-up": ("short rates up", "tasas cortas al alza"), "short-down": ("short rates down", "tasas cortas a la baja")}
+LEG_WORDS = {"CLP": ("CLP leg", "tramo CLP"), "UR": ("UF (UR) leg", "tramo UF (UR)")}
+
 SHOCKS = shocks.SHOCKS
 PARALLEL = ("parallel-up", "parallel-down")
 UR_FLOOR = -0.02
@@ -59,6 +65,18 @@ UR_BLOCK = {"label": "UR", "code": "CLF", "treated_as_one_currency": True,
                             "Todos los flujos reajustables (UF) se tratan como una sola moneda, UR (RAN 21-13 Anexo 1).")}
 OFFSET_RULE = t("When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
                 "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al revés), con piso en cero.")
+
+
+# The texts a Spanish view prints, bilingual at the source (U16-F10d, R3 c16): the reference of the prioritised-bank tests (B2:
+# "Annex" in the Spanish view) and the two formulas, written with symbols and a legend instead of the document keys pn_ur and
+# surprise_pp (the ruling of 2026-10-27), PN_UR in one case in both (m14).
+THRESHOLDS_REFERENCE = {"en": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)", "es": "RAN 21-13 Anexo 1 (banco priorizado, dossier 03 F.2)"}
+CHARGE_FORMULA = {"en": "charge = 0.025 × |PN_UR|, where PN_UR is the net UF position times the UF value",
+                  "es": "cargo = 0,025 × |PN_UR|, donde PN_UR es la posición neta en UF por el valor de la UF"}
+CPI_FORMULA = {"en": "effect = −PN_UR × s / 100, positive is a loss, where PN_UR is the net UF position in CLP and s the CPI surprise in "
+                     "percentage points",
+               "es": "efecto = −PN_UR × s / 100, positivo es una pérdida, donde PN_UR es la posición neta en UF en CLP y s la sorpresa de "
+                     "IPC en puntos porcentuales"}
 
 
 @dataclass
@@ -227,23 +245,26 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                                   "floor": floors[n], "distance_bp": gap, "binds": bool(gap <= 0.0)})
     low = min(distances, key=lambda d: d["distance_bp"])
     dist = low["distance_bp"]
-    where = f"{low['leg']}, {'delta EVE' if low['measure'] == 'delta-eve' else 'delta NII'}, {low['shock']}"
+    # the leg, the measure and the shock in words (R2b c16 B2, B3: "(UR, delta NII, parallel-down)" printed the shock's id)
+    measure = 'delta EVE' if low['measure'] == 'delta-eve' else 'delta NII'
+    where = (f"{LEG_WORDS[low['leg']][0]}, {measure}, {SHOCK_WORDS[low['shock']][0]}",
+             f"{LEG_WORDS[low['leg']][1]}, {measure}, {SHOCK_WORDS[low['shock']][1]}")
     n_bound = sum(1 for d in distances if d["binds"])
     floors_block = {
         "ur_floor": UR_FLOOR, "other_floor": OTHER_FLOOR, "effects": effects, "distances": distances,
-        "rule": t("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP (RAN 21-13 Annex 1); the engine's apply_floor also keeps "
+        "rule": t("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP (RAN 21-13 Annex 1); the engine's floor function also keeps "
                   "a rate that is already below its floor at its pre-shock value, a reading that is UNVERIFIED for the UR floor. The smallest distance "
-                  f"between a post-shock rate and its floor is {dist:.2f} bp ({where}); the floors bind in {n_bound} shock and leg combination"
+                  f"between a post-shock rate and its floor is {dist:.2f} bp ({where[0]}); the floors bind in {n_bound} shock and leg combination"
                   f"{'' if n_bound == 1 else 's'}.",
-                  "Las tasas posteriores al choque tienen piso de -2 por ciento para la UR y 0 por ciento para el CLP (RAN 21-13 Anexo 1); apply_floor "
-                  "del motor también mantiene en su valor previo una tasa que ya está bajo su piso, lectura que no está verificada para el piso UR. "
-                  f"La menor distancia entre una tasa posterior al choque y su piso es {es(dist, 2)} pb ({where}); los pisos actúan en {n_bound} "
-                  f"combinación{'' if n_bound == 1 else 'es'} de choque y tramo.")}
+                  "Las tasas posteriores al choque tienen piso de -2 por ciento para la UR y 0 por ciento para el CLP (RAN 21-13 Anexo 1); la función "
+                  "de piso del motor también mantiene en su valor previo una tasa que ya está bajo su piso, lectura que no está verificada para el piso UR. "
+                  f"La menor distancia entre una tasa posterior al choque y su piso es {es(dist, 2)} pb ({where[1]}); los pisos actúan en {n_bound} "
+                  f"{'combinación' if n_bound == 1 else 'combinaciones'} de choque y tramo.")}
 
     # ---- the indexation charge and the CPI surprise
     ic = float(eve_nii.indexation_charge(pn_ur))
     indexation = {"rate": 0.025, "net_position_uf_units": float(book.net_uf_position), "pn_ur": float(pn_ur), "abs_pn_ur": float(abs(pn_ur)), "charge": ic,
-                  "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+                  "formula": CHARGE_FORMULA,
                   "note": t("The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise on the net UF position, "
                             "added once to the largest pair of the delta NII.",
                             "El cargo estándar por reajustabilidad, equivalente a una sorpresa de inflación de 2,5 por ciento sobre la posición neta en "
@@ -251,7 +272,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     cpi = None
     if spec.cpi_surprise_pp is not None:
         cpi = {"surprise_pp": float(spec.cpi_surprise_pp), "effect": float(-pn_ur * spec.cpi_surprise_pp / 100.0),
-               "formula": "effect = -pn_ur x surprise_pp / 100 (loss-positive)"}
+               "formula": CPI_FORMULA}
 
     # ---- the dynamic NII of both legs under the base path and the two parallel shocks (engine: simulate_nii)
     dyn_legs = []
@@ -293,7 +314,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                            "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
         ear_legs.append({"leg": n, "method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
                          "parameters": [{"name": "a", "value": asm.HW1F_A, "unit": "per year"},
-                                        {"name": "sigma", "value": asm.HW1F_SIGMA[n], "unit": "per year"}],
+                                        {"name": "sigma", "value": asm.HW1F_SIGMA[n], "unit": "per square-root year"}],
                          "base_nii": float(b_nii), "base_eve": float(b_eve), "levels": levels, "mc_error_method": "batch-means",
                          "n_batches": asm.N_BATCHES})
     margin_12m = float(sum(leg["scenarios"][0]["total"] for leg in dyn_legs))
@@ -302,7 +323,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     pb = eve_nii.prioritised_bank(a2.delta_nii, a1.delta_eve, tier1, margin_12m)
     thresholds = {"tier1": float(tier1), "net_interest_and_indexation_margin_12m": margin_12m,
                   "tests": [{k: _plain(v) for k, v in x.items()} for x in pb.tests], "prioritised": bool(pb.prioritised),
-                  "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"}
+                  "reference": THRESHOLDS_REFERENCE}
 
     # ---- the validation tests (engine: riskvalidation.validation.irrbb)
     rows = []
@@ -359,15 +380,20 @@ def _impact(o: dict[str, Any]) -> dict[str, Any]:
                           "label": t("Delta NII with the indexation charge", "Delta NII con el cargo por reajustabilidad")}}
 
 
-def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: str, effects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+#: the evidence of the floors finding: the floor distances of the document, the block the finding reads (R4 c18 n2: it cited the CMF
+#: golden-value test, which checks the shock sizes, the offset and the charge, not the floors)
+FLOORS_EVIDENCE = ["design:floors.distances"]
+
+
+def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: tuple[str, str], effects: list[dict[str, Any]]) -> list[dict[str, Any]]:
     by = {x["id"]: x for x in th["tests"]}
     e, n = by["eve-tier1"], by["nii-tier1"]
     sev = "S2" if th["prioritised"] else "S3"
     out = [{"id": "F1", "severity": sev, "status": "open", "evidence": ["design:annex1-prioritised-bank-tests"], "title": t(
         f"Delta EVE is {e['ratio'] * 100:.1f} percent of Tier 1 (threshold 15 percent) and delta NII with the indexation charge is "
         f"{n['ratio'] * 100:.1f} percent (threshold 5 percent); the bank is {'prioritised' if th['prioritised'] else 'not prioritised'} under the Annex 1 tests.",
-        f"El delta EVE es {es(e['ratio'] * 100)} por ciento del Tier 1 (umbral 15 por ciento) y el delta NII con el cargo por reajustabilidad es "
-        f"{es(n['ratio'] * 100)} por ciento (umbral 5 por ciento); el banco {'es priorizado' if th['prioritised'] else 'no es priorizado'} según los tests del Anexo 1.")}]
+        f"El delta EVE es {es(e['ratio'] * 100)} por ciento del capital de nivel 1 (umbral 15 por ciento) y el delta NII con el cargo por reajustabilidad es "
+        f"{es(n['ratio'] * 100)} por ciento (umbral 5 por ciento); el banco {'es priorizado' if th['prioritised'] else 'no es priorizado'} según las pruebas del Anexo 1.")}]
     ic, d_nii = o["indexation_charge"]["charge"], o["nii"]["delta_nii"]
     out.append({"id": "F2", "severity": "S3", "status": "open", "evidence": ["design:indexation-charge-is-a-standard-add-on"], "title": t(
         f"The standard indexation charge is {ic / d_nii * 100:.0f} percent of the delta NII: it depends on the size of the net UF position, not on the rate "
@@ -375,16 +401,16 @@ def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: str, ef
         f"El cargo estándar por reajustabilidad es {es(ic / d_nii * 100, 0)} por ciento del delta NII: depende del tamaño de la posición neta en UF y no "
         "del choque de tasas, y no se modela ninguna cobertura.")})
     if effects:
-        out.append({"id": "F3", "severity": "S3", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
+        out.append({"id": "F3", "severity": "S3", "status": "open", "evidence": FLOORS_EVIDENCE, "title": t(
             f"The post-shock floors bind in {len(effects)} combinations of shock and leg and change the measures; the smallest distance to a floor elsewhere is "
             f"{dist:.1f} bp.",
             f"Los pisos posteriores al choque actúan en {len(effects)} combinaciones de choque y tramo y modifican las medidas; la menor distancia a un piso "
             f"en el resto es {es(dist)} pb.")})
     else:
-        out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
-            f"No post-shock floor binds on the curves of the valuation date: the smallest distance to a floor is {dist:.1f} bp ({where}); the floors would "
+        out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": FLOORS_EVIDENCE, "title": t(
+            f"No post-shock floor binds on the curves of the valuation date: the smallest distance to a floor is {dist:.1f} bp ({where[0]}); the floors would "
             "matter only at lower rates.",
-            f"Ningún piso posterior al choque actúa sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where}); los "
+            f"Ningún piso posterior al choque actúa sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where[1]}); los "
             "pisos importarían solo con tasas más bajas.")})
     out.append({"id": "F4", "severity": "S3", "status": "open", "evidence": ["design:clp-curve-fourth-point"], "title": t(
         "The pesos curve has three published tenors and the engine's Nelson-Siegel fit needs four: the monetary policy rate is its overnight point, a "

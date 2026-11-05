@@ -974,7 +974,14 @@ def fragment_rows() -> dict[str, list[str]]:
         catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
         text = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     header = next(ln for ln in text.splitlines() if ln.startswith("| id | version"))
-    assert row_cells(header) == ["id", "version", "owner", "schema file", "example", "producer test", "consumer test",
+    # the catalog gained the `documents` column after these rows were written (U16-W2, template 0.11.000): the cells
+    # are read in the columns the rows had, so the column is dropped from the catalog header and its rows
+    drop = row_cells(header).index("documents") if "documents" in row_cells(header) else None
+
+    def strip(cells: list[str]) -> list[str]:
+        return cells if drop is None else cells[:drop] + cells[drop + 1:]
+
+    assert strip(row_cells(header)) == ["id", "version", "owner", "schema file", "example", "producer test", "consumer test",
                                  "missing-data behavior", "provider", "model io", "swap test", "status"]
     lines = text.splitlines()
     table = []
@@ -982,7 +989,7 @@ def fragment_rows() -> dict[str, list[str]]:
         if not ln.startswith("|"):
             break
         table.append(ln)
-    return {row_cells(ln)[0]: row_cells(ln) for ln in table if row_cells(ln)[0] in ROW_IDS}
+    return {row_cells(ln)[0]: strip(row_cells(ln)) for ln in table if row_cells(ln)[0] in ROW_IDS}
 
 
 def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_cited_test_exists() -> None:
@@ -991,7 +998,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
     me = Path(__file__).read_text(encoding="utf-8")
     for rid, cells in rows.items():
         # engine-liquidity-api 1.1.0 after U11-E (additive: the `scored` keyword of fast_run_scenario), at the batch 3 integration
-        assert cells[1] == {"engine-liquidity-api": "1.2.1", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == "real"  # the case rows since C16 merged, the engine row since engine 0.8.0 was released (U16 D16-14)
+        assert cells[1] == {"engine-liquidity-api": "2.0.0", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == "real"  # the case rows since C16 merged, the engine row since engine 0.8.0 was released (U16 D16-14)
         assert cells[8].startswith("fixture:docs/contracts/fixtures/c16/") or cells[8].startswith("fixture:docs/contracts/engine/")
         for cell in (cells[5], cells[6], cells[10]):
             for ref in cell.split(", "):

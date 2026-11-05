@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The 99.9 percent capital of the robust severity estimators with the mean-adjusted single loss approximation, as a multiple of the true quantile: median over independent histories and, in brackets, the interquartile range, for ten years of data and a threshold of EUR 20,000, beside the maximum likelihood splice and the misspecified lognormal control.}
+\label{tab:op-m32-ratio}
+\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Method & $\xi=0.6$ & $\xi=0.8$ & $\xi=0.96$ & $\xi=1.1$ \\
+\midrule
+Lognormal and GPD splice & 0.84 (1.35) & 0.91 (1.98) & 0.93 (2.23) & 0.73 (2.32) \\
+GPD by likelihood, mean-adjusted SLA & 0.91 (0.75) & 0.98 (1.00) & 0.71 (0.60) & 0.27 (0.16) \\
+\relax GPD by Cram\'er-von Mises & 0.96 (1.22) & 0.96 (1.43) & 0.56 (0.61) & 0.21 (0.16) \\
+GPD optimally bias-robust & 0.92 (0.77) & 0.98 (1.08) & 0.68 (0.59) & 0.27 (0.14) \\
+\relax Lognormal by Cram\'er-von Mises (control) & 0.29 (0.15) & 0.15 (0.18) & 0.13 (0.26) & 0.089 (0.18) \\
+\bottomrule
+\end{tabular}}
+\end{table}

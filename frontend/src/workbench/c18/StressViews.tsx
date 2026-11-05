@@ -3,17 +3,21 @@
 // the satellites against the realised (signed) charge-off rates, the severity of each path against the global financial
 // crisis, and the expected losses by risk and year. The paths and the satellites are a US-calibrated adaptation and every view
 // says so. A realised charge-off rate can be negative (a net recovery): it is drawn and written as it is, never floored.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell, digits } from './C18Common';
 import {
-  CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT, US_ADAPTATION,
+  CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT,
   backcastOf, fitOf, outputsOf, satFitOf, text,
-  type C18Sel,
+  type C18Backcast, type C18Outputs, type C18Sel,
+  inSentence, plottedUnit,
 } from './selection';
+import { unitEs } from './localise';
+
+export { plottedUnit };
 
 type Lang = 'en' | 'es';
 /** A quarter end as "2026 Q1" (T1 in Spanish). */
@@ -21,7 +25,10 @@ export function quarterText(date: string, lang: Lang): string {
   const [y, m] = date.split('-').map(Number);
   return `${y} ${lang === 'es' ? 'T' : 'Q'}${Math.ceil(m / 3)}`;
 }
-const RATE = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { percent: true, decimals: 3 });
+/** A text that ends as a sentence: one full stop. */
+const asSentenceEnd = (s: string): string => (/[.!?]$/.test(s) ? s : `${s}.`);
+// a rate under half the last shown decimal is 0, never "-0.000 %" (U16-R3 c19 m11)
+const RATE = (v: number | null | undefined, lang: Lang) => formatNumber(v !== null && v !== undefined && Math.abs(v) < 5e-6 ? 0 : v, lang, { percent: true, decimals: 3 });
 
 const COEF_TEXT: Record<string, Bi> = {
   intercept: { en: 'Intercept', es: 'Constante' },
@@ -40,6 +47,14 @@ const SIGN_TEXT: Record<string, Bi> = {
 };
 
 /** The scenario as published and as transposed onto the jump-off of Banco Andino, path by path. */
+/** The line of the policy-shock window: its span, then its label; a label that states the span itself is not prefixed by it again
+ * (U16-R5 c25 n1: "2031 to 2033: The policy shock acts in 2031 to 2033"). */
+export function windowLine(win: { start_year: number; end_year: number; label: BiText }, lang: Lang): string {
+  const label = pick(win.label, lang);
+  const span = lang === 'en' ? `${win.start_year} to ${win.end_year}` : `${win.start_year} a ${win.end_year}`;
+  return label.includes(span) ? label : `${span}: ${label}`;
+}
+
 export function PathsView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -64,8 +79,8 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(s.title, 'en')} (${pick(text(PROVIDER_TEXT, s.provider), 'en')}, vintage ${s.vintage_date}). The line is the path of ${name(p.maps_to_regressor).toLowerCase()} after the shape of the published path was carried onto the last observed value of the bank; the published values and the levels are in the tables.`,
-          es: `${pick(s.title, 'es')} (${pick(text(PROVIDER_TEXT, s.provider), 'es')}, versión ${s.vintage_date}). La línea es la trayectoria de ${name(p.maps_to_regressor).toLowerCase()} tras llevar la forma de la trayectoria publicada al último valor observado del banco; los valores publicados y los niveles están en las tablas.`,
+          en: `${pick(s.title, 'en')} (${pick(text(PROVIDER_TEXT, s.provider), 'en')}, vintage ${s.vintage_date}). The line is the path of ${inSentence(name(p.maps_to_regressor))} after the shape of the published path was carried onto the last observed value of the bank; the published values and the levels are in the tables.`,
+          es: `${pick(s.title, 'es')} (${pick(text(PROVIDER_TEXT, s.provider), 'es')}, versión ${s.vintage_date}). La línea es la trayectoria de ${inSentence(name(p.maps_to_regressor))} tras llevar la forma de la trayectoria publicada al último valor observado del banco; los valores publicados y los niveles están en las tablas.`,
         }}
       >
         <ChartOverTable
@@ -74,21 +89,21 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: p.transposed.map((_, i) => i + 1), label: { en: `Quarter of the projection (1 is ${quarterText(p.transposed[0].date, 'en')})`, es: `Trimestre de la proyección (1 es ${quarterText(p.transposed[0].date, 'es')})` }, format: { decimals: 0 } }}
-              y={{ label: { en: `${name(p.maps_to_regressor)} (${p.unit})`, es: `${name(p.maps_to_regressor)} (${p.unit})` }, format: { digits: 4 } }}
+              y={{ label: { en: `${name(p.maps_to_regressor)} (${plottedUnit(p).en})`, es: `${name(p.maps_to_regressor)} (${plottedUnit(p).es})` }, format: { digits: 4 } }}
               series={[{ label: { en: 'Transposed onto Banco Andino', es: 'Transpuesta a Banco Andino' }, values: p.transposed.map((q) => q.value), color: '--color-accent', width: 2.8 }]}
               yMarks={marks}
             />
           }
         >
-          <p className="ct-note" data-adaptation={s.adaptation_label}>{`${pick(text(LABEL_TEXT, s.adaptation_label), lang)}. ${pick(s.adaptation_statement, lang)} ${pick(US_ADAPTATION, lang)}`}</p>
+          <p className="ct-note" data-adaptation={s.adaptation_label}>{pick(s.adaptation_statement, lang)}</p>
           {win ? (
-            <p className="ct-note" data-window={`${win.start_year}-${win.end_year}`}>{`${win.start_year} ${pick({ en: 'to', es: 'a' }, lang)} ${win.end_year}: ${pick(win.label, lang)}`}</p>
+            <p className="ct-note" data-window={`${win.start_year}-${win.end_year}`}>{windowLine(win, lang)}</p>
           ) : null}
           <table className="caos-table ct-wrap-head" data-table="c18-paths">
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Path', es: 'Trayectoria' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Published unit', es: 'Unidad publicada' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'How the level is built', es: 'Cómo se arma el nivel' }, lang)}</th>
                 <th>{pick({ en: 'Published at the jump-off', es: 'Publicado en el punto de partida' }, lang)}</th>
                 <th>{pick({ en: 'Jump-off of the bank', es: 'Punto de partida del banco' }, lang)}</th>
@@ -99,7 +114,7 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
               {s.paths.map((q, i) => (
                 <tr key={`${q.maps_to_regressor}-${i}`} data-path={i} data-transposition={q.transposition.label} className={i === sel.path ? 'ct-current' : undefined}>
                   <td className="ct-text" title={q.variable}>{name(q.maps_to_regressor)}</td>
-                  <td className="ct-text ct-wide-only">{q.unit}</td>
+                  <td className="ct-text ct-wide-only">{unitEs(q.unit, lang)}</td>
                   <td className="ct-text">{pick(text(LEVEL_RULE_TEXT, q.level_rule.kind), lang)}</td>
                   <td>{formatNumber(q.transposition.source_jump_off.value, lang, { digits: 4 })}</td>
                   <td>{formatNumber(q.transposition.target.value, lang, { digits: 4 })}</td>
@@ -149,6 +164,15 @@ export function PathsView({ sel }: { sel: C18Sel | null }) {
 }
 
 /** The projected loss rate of each Federal Reserve loan type under the path, and the three classes of the bank built from them. */
+/** One colour per loan type, and a dash on the residential line: the default palette drew the commercial and the residential lines in two close blues in the dark theme (U16-R2 b09 m8). */
+const LOAN_COLOR: Record<string, ShellColorToken> = {
+  'commercial-industrial': '--color-accent',
+  'commercial-real-estate': '--color-warn',
+  residential: '--color-magenta',
+  'credit-cards': '--color-bad',
+  'other-consumer': '--color-good',
+};
+
 export function SatellitesView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -178,7 +202,7 @@ export function SatellitesView({ sel }: { sel: C18Sel | null }) {
               height="fill"
               x={{ values: q.map((_, i) => i + 1), label: { en: `Quarter of the projection (1 is ${q[0] ? quarterText(q[0].quarter_end, 'en') : ''})`, es: `Trimestre de la proyección (1 es ${q[0] ? quarterText(q[0].quarter_end, 'es') : ''})` }, format: { decimals: 0 } }}
               y={{ label: { en: 'Projected charge-off rate', es: 'Tasa de castigo proyectada' }, format: { percent: true, decimals: 2 } }}
-              series={sat.fed_loan_types.map((f) => ({ label: text(LOAN_TEXT, f.fed_loan_type), values: f.quarters.map((x) => x.rate), width: f.fed_loan_type === sel.loan ? 3.4 : 1.6 }))}
+              series={sat.fed_loan_types.map((f) => ({ label: text(LOAN_TEXT, f.fed_loan_type), values: f.quarters.map((x) => x.rate), color: LOAN_COLOR[f.fed_loan_type] ?? '--color-fg-subtle', width: f.fed_loan_type === sel.loan ? 3.4 : 1.6, ...(f.fed_loan_type === 'residential' ? { dash: [6, 3] as [number, number] } : {}) }))}
             />
           }
         >
@@ -250,16 +274,32 @@ export function SatellitesView({ sel }: { sel: C18Sel | null }) {
   );
 }
 
+/**
+ * The peaks the back-cast test judges, drawn on the chart at their quarter and labelled with their rate (U16-R4 c23 M3, rubric
+ * law 2: the red test compares the size and the timing of the two peaks, so both are marked); one mark when both peaks fall in
+ * the same quarter. The x of a mark is the quarter's position in the window, as the chart's x axis counts it.
+ */
+export function backcastMarks(b: C18Backcast): Array<{ x: number; label: BiText }> {
+  const m = b.metrics;
+  const at = (q: string) => b.quarters.findIndex((x) => x.quarter_end === q) + 1;
+  const predicted = { en: `Predicted peak ${RATE(m.peak_predicted, 'en')}`, es: `Máximo predicho ${RATE(m.peak_predicted, 'es')}` };
+  const realised = { en: `Realised peak ${RATE(m.peak_realised, 'en')}`, es: `Máximo realizado ${RATE(m.peak_realised, 'es')}` };
+  const xp = at(m.peak_predicted_quarter);
+  const xr = at(m.peak_realised_quarter);
+  if (xp > 0 && xp === xr) return [{ x: xp, label: { en: `${predicted.en} · ${realised.en}`, es: `${predicted.es} · ${realised.es}` } }];
+  return [...(xp > 0 ? [{ x: xp, label: predicted }] : []), ...(xr > 0 ? [{ x: xr, label: realised }] : [])];
+}
+
 /** The satellites, fitted before 2020, predict 2020 to 2025; the realised charge-off rates are drawn as they are, signed. */
 export function BackcastView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
-  const title: BiText = { en: 'The back-cast against the realised rates', es: 'El back-cast frente a las tasas realizadas' };
+  const title: BiText = { en: 'The back-cast against the realised rates', es: 'La prueba retrospectiva frente a las tasas realizadas' };
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const b = backcastOf(o, sel.loan);
-  if (!b) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document has no back-cast for this loan type.', es: 'No disponible: el documento no trae back-cast para este tipo de préstamo.' }} />;
+  if (!b) return <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: the document has no back-cast for this loan type.', es: 'No disponible: el documento no trae prueba retrospectiva para este tipo de préstamo.' }} />;
   const fit = satFitOf(fitOf(sel), sel.loan);
   const m = b.metrics;
   const loanName = text(LOAN_TEXT, sel.loan);
@@ -271,8 +311,8 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(loanName, 'en')}, link ${pick(text(LINK_TEXT, b.link), 'en')}, fitted on ${b.fit_window.start} to ${b.fit_window.end} and scored out of time on 2020 Q1 to 2025 Q4. A realised charge-off rate can be negative, a net recovery: it is drawn below the zero line and never floored. ${pick(o.backcast.statement, 'en')}`,
-          es: `${pick(loanName, 'es')}, enlace ${pick(text(LINK_TEXT, b.link), 'es')}, ajustado con ${b.fit_window.start} a ${b.fit_window.end} y evaluado fuera de tiempo en 2020 T1 a 2025 T4. Una tasa de castigo realizada puede ser negativa, una recuperación neta: se dibuja bajo la línea de cero y nunca se trunca. ${pick(o.backcast.statement, 'es')}`,
+          en: `${pick(loanName, 'en')}, link ${pick(text(LINK_TEXT, b.link), 'en')}, fitted on ${quarterText(b.fit_window.start, 'en')} to ${quarterText(b.fit_window.end, 'en')} and scored out of time on 2020 Q1 to 2025 Q4. A realised charge-off rate can be negative, a net recovery: it is drawn below the zero line and never floored. ${pick(o.backcast.statement, 'en')}`,
+          es: `${pick(loanName, 'es')}, enlace ${pick(text(LINK_TEXT, b.link), 'es')}, ajustado con ${quarterText(b.fit_window.start, 'es')} a ${quarterText(b.fit_window.end, 'es')} y evaluado fuera de tiempo en 2020 T1 a 2025 T4. Una tasa de castigo realizada puede ser negativa, una recuperación neta: se dibuja bajo la línea de cero y nunca se trunca. ${pick(o.backcast.statement, 'es')}`,
         }}
       >
         <ChartOverTable
@@ -287,6 +327,7 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
                 { label: { en: 'Realised', es: 'Realizada' }, values: b.quarters.map((x) => x.realised), color: '--color-bad', width: 2.2, dash: [5, 3] },
               ]}
               yMarks={[{ y: 0, label: { en: 'Zero: below it a net recovery', es: 'Cero: bajo él, una recuperación neta' }, tone: 'neutral' }]}
+              marks={backcastMarks(b)}
             />
           }
         >
@@ -380,7 +421,24 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
   );
 }
 
+/**
+ * The bars of the severity chart: each path's peak deviation over the crisis's, and the minimum ratio. A bar carries no note that
+ * repeats its own label (U16-R4 c22 m6). is_stress is the scenario's kind (not the baseline); the minimum-ratio rule is judged
+ * here, on a stress path only (PR-C18-2).
+ */
+export function severityBars(o: C18Outputs) {
+  const sv = o.severity;
+  const severe = (r: (typeof sv.rows)[number]): boolean => r.ratio >= sv.minimum_ratio;
+  return [
+    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor) as BiText, value: r.ratio, tone: !r.is_stress ? ('neutral' as const) : severe(r) ? ('accent' as const) : ('warn' as const), hint: undefined as BiText | undefined })),
+    { id: 'minimum', label: { en: 'Minimum ratio (a convention)', es: 'Razón mínima (una convención)' } as BiText, value: sv.minimum_ratio, tone: 'neutral' as const, hint: undefined as BiText | undefined },
+  ];
+}
+
 /** How severe each path is against the global financial crisis, and whether it reaches the case's minimum ratio. */
+/** The severity chart's title, which its summary and data table print: "deviation", as the table under it (U16-R5 c24 n3). */
+export const SEVERITY_TITLE: BiText = { en: 'Path peak deviation over the crisis peak deviation', es: 'Desviación máxima de la trayectoria sobre la de la crisis' };
+
 export function SeverityView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -389,10 +447,8 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const sv = o.severity;
-  const bars = [
-    ...sv.rows.map((r) => ({ id: r.maps_to_regressor, label: text(REGRESSOR_TEXT, r.maps_to_regressor), value: r.ratio, tone: r.is_stress ? ('accent' as const) : ('warn' as const), hint: text(REGRESSOR_TEXT, r.maps_to_regressor) })),
-    { id: 'minimum', label: { en: 'Minimum ratio (a convention)', es: 'Razón mínima (una convención)' } as BiText, value: sv.minimum_ratio, tone: 'neutral' as const },
-  ];
+  const severe = (r: (typeof sv.rows)[number]): boolean => r.ratio >= sv.minimum_ratio;
+  const bars = severityBars(o);
   return (
     <ViewsRow>
       <PlotCard
@@ -400,15 +456,16 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${sv.reference_episode.start} to ${sv.reference_episode.end}) for the same variable. A path below the minimum ratio, a convention of the case, is not a stress. ${pick(sv.reference_episode.source, 'en')}`,
-          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${sv.reference_episode.start} a ${sv.reference_episode.end}) para la misma variable. Una trayectoria bajo la razón mínima, una convención del caso, no es un estrés. ${pick(sv.reference_episode.source, 'es')}`,
+          // the crisis in quarters, as the definition below it, and the caption a sentence (U16-R5 c25 n2)
+          en: `The peak deviation of each path over the peak deviation of the global financial crisis (${quarterText(sv.reference_episode.start, 'en')} to ${quarterText(sv.reference_episode.end, 'en')}) for the same variable. A stress path below the minimum ratio, a convention of the case, is not severe enough; a baseline path is not judged. ${asSentenceEnd(pick(sv.reference_episode.source, 'en'))}`,
+          es: `La desviación máxima de cada trayectoria sobre la desviación máxima de la crisis financiera global (${quarterText(sv.reference_episode.start, 'es')} a ${quarterText(sv.reference_episode.end, 'es')}) para la misma variable. Una trayectoria de estrés bajo la razón mínima, una convención del caso, no es lo bastante severa; una trayectoria base no se juzga. ${asSentenceEnd(pick(sv.reference_episode.source, 'es'))}`,
         }}
       >
         <ChartOverTable
           chartMin={`${bars.length * 2.3 + 4}rem`}
           chart={
             <BarChart
-              title={{ en: 'Path peak over the crisis peak', es: 'Máximo de la trayectoria sobre el máximo de la crisis' }}
+              title={SEVERITY_TITLE}
               height="fill"
               orientation="horizontal"
               data={bars}
@@ -420,22 +477,22 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Variable', es: 'Variable' }, lang)}</th>
-                <th>{pick({ en: 'Path peak', es: 'Máximo de la trayectoria' }, lang)}</th>
+                <th>{pick({ en: 'Peak deviation of the path', es: 'Desviación máxima de la trayectoria' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Quarter', es: 'Trimestre' }, lang)}</th>
-                <th>{pick({ en: 'Crisis peak', es: 'Máximo de la crisis' }, lang)}</th>
+                <th>{pick({ en: 'Peak deviation of the crisis', es: 'Desviación máxima de la crisis' }, lang)}</th>
                 <th>{pick({ en: 'Ratio', es: 'Razón' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'A stress?', es: '¿Es un estrés?' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Severe enough?', es: '¿Lo bastante severa?' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {sv.rows.map((r) => (
-                <tr key={r.maps_to_regressor} data-severity={r.maps_to_regressor} data-stress={String(r.is_stress)}>
-                  <td className="ct-text" title={r.variable}>{`${pick(text(REGRESSOR_TEXT, r.maps_to_regressor), lang)} (${r.unit})`}</td>
+                <tr key={r.maps_to_regressor} data-severity={r.maps_to_regressor} data-stress={String(r.is_stress)} data-severe={r.is_stress ? String(severe(r)) : 'not-judged'}>
+                  <td className="ct-text" title={r.variable}>{`${pick(text(REGRESSOR_TEXT, r.maps_to_regressor), lang)} (${unitEs(r.unit, lang)})`}</td>
                   <td>{formatNumber(r.path_peak_deviation, lang, { digits: 4 })}</td>
                   <td className="ct-wide-only">{quarterText(r.path_peak_quarter, lang)}</td>
                   <td>{formatNumber(r.history_peak_deviation, lang, { digits: 4 })}</td>
                   <td>{formatNumber(r.ratio, lang, { digits: 4 })}</td>
-                  <td className="ct-text">{r.is_stress ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no, below the minimum', es: 'no, bajo el mínimo' }, lang)}</td>
+                  <td className="ct-text">{!r.is_stress ? pick({ en: 'not judged (baseline)', es: 'no se juzga (escenario base)' }, lang) : severe(r) ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no, below the minimum', es: 'no, bajo el mínimo' }, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -453,6 +510,33 @@ export function SeverityView({ sel }: { sel: C18Sel | null }) {
 const RISK_COLOR = { credit: '--color-accent', market: '--color-warn', irrbb: '--color-magenta', operational: '--color-good' } as const;
 
 /** The expected losses of the scenario by risk and year, the engine of the depletion of the capital. */
+/**
+ * What the key cannot show: the series that lie on each other (U16-R4 c22 m9, c23 m6: Market and IRRBB are zero in every year and draw
+ * one line, the credit line lies under the total). From the committed rows; null when every series has a line of its own.
+ */
+export function lossesOverlap(rows: ReadonlyArray<{ credit: number; market: number; irrbb: number; operational: number; total: number }>): Bi | null {
+  const zero = RISK_ORDER.filter((k) => rows.every((r) => r[k] === 0));
+  const share = Math.min(...rows.map((r) => (r.total > 0 ? r.credit / r.total : 0)));
+  const parts: Bi[] = [];
+  if (zero.length > 0) {
+    const en = zero.map((k) => pick(text(RISK_TEXT, k), 'en'));
+    const es = zero.map((k) => pick(text(RISK_TEXT, k), 'es'));
+    const join = (xs: string[], and: string) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} ${and} ${xs[xs.length - 1]}`);
+    parts.push(
+      zero.length === 1
+        ? { en: `${en[0]} is zero in every year: its line lies on the zero line.`, es: `${es[0]} es cero en todos los años: su línea queda sobre la línea de cero.` }
+        : { en: `${join(en, 'and')} are zero in every year: their lines lie on one another, on the zero line.`, es: `${join(es, 'y')} son cero en todos los años: sus líneas quedan una sobre otra, en la línea de cero.` },
+    );
+  }
+  if (share >= 0.95) {
+    parts.push({
+      en: `Credit is ${formatNumber(Math.floor(share * 100), 'en', { decimals: 0 })} percent or more of the total in every year, so its line lies just under the total line.`,
+      es: `El crédito es ${formatNumber(Math.floor(share * 100), 'es', { decimals: 0 })} por ciento o más del total en todos los años, así que su línea queda justo bajo la del total.`,
+    });
+  }
+  return parts.length ? { en: parts.map((p) => p.en).join(' '), es: parts.map((p) => p.es).join(' ') } : null;
+}
+
 export function LossesView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -461,6 +545,7 @@ export function LossesView({ sel }: { sel: C18Sel | null }) {
   if (!sel) return <Pending />;
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const rows = o.losses.scenario_losses;
+  const overlap = lossesOverlap(rows);
   return (
     <ViewsRow>
       <PlotCard fill title={title} {...card} note={{ en: pick(o.losses.basis, 'en'), es: pick(o.losses.basis, 'es') }}>
@@ -500,7 +585,7 @@ export function LossesView({ sel }: { sel: C18Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: `Amounts in ${pick(MONEY_UNIT, 'en')}; the credit loss is the satellite projections times the book of each class.`, es: `Montos en ${pick(MONEY_UNIT, 'es')}; la pérdida de crédito son las proyecciones de los satélites por el libro de cada clase.` }, lang)}</p>
+          <p className="ct-note">{pick({ en: `Amounts in ${pick(MONEY_UNIT, 'en')}; the credit loss is the satellite projections times the book of each class.`, es: `Montos en ${pick(MONEY_UNIT, 'es')}; la pérdida de crédito son las proyecciones de los satélites por el libro de cada clase.` }, lang)}{overlap ? ` ${pick(overlap, lang)}` : ''}</p>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

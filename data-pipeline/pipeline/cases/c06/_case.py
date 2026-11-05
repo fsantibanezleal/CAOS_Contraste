@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from ..reference_text import with_reference_text
 
 SOURCES = ("sba-foia", "fed-stress-tests")
 CASE_ID = "C06"
@@ -17,7 +18,7 @@ DEFAULT_VARIANT = "rd-2020-06"
 #: a quarter enters the implied systematic factor with at least this many loans at risk (the young book of the first years
 #: has almost no defaults, which is its age and not the cycle)
 MIN_QUARTER_AT_RISK = 50_000
-ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation"}
+ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "torch"}
 #: the money blocks are written exact: their identities close to 1e-6 of the gross amount, and rounding to nine significant
 #: digits would only add noise to them
 EXACT = frozenset({"reconciliation", "waterfall", "stage_summary", "ecl_by_scenario", "stage_flows", "overlays", "weight_grid",
@@ -41,6 +42,11 @@ def _t(en: str, es: str) -> dict:
     return {"en": en, "es": es}
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C06:
     id = CASE_ID
     slug = "lifetime-pd-ecl"
@@ -54,6 +60,12 @@ class C06:
         "¿Cómo se comportan la PD de por vida, las etapas de IFRS 9 y la pérdida esperada en préstamos públicos a pequeñas empresas "
         "a través de fechas de reporte, y qué encuentra un validador cuando el modelo de cada fecha se prueba con lo que ocurrió después?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path) -> dict[str, Any]:
         from ...core import expect as expectations
@@ -109,7 +121,7 @@ class C06:
                             "short_title": _t(f"Models {en_m[:3]} {year}", f"Modelos {es_m[:3]} {year}"), "regime": regime,
                             "path": rel_m, "bytes": e_m["bytes"], "lane": e_m["lane"], "gate": e_m["gate"]})
             d = res.document
-            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=d["model"], outputs=d["outputs"], tests=d["tests"],
+            art = build_artifact(case_id=CASE_ID, variant_id=vid, model=d["model"], outputs=d["outputs"], tests=with_reference_text(d["tests"]),
                                  impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
             rel = f"{CASE_ID}/{vid}.json"
             e_v = write_artifact(paths.root, rel, art, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)
@@ -122,6 +134,7 @@ class C06:
             del res
         ranges = expectations.check(CASE_ID, bd.EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Provisions", "es": "Provisiones"}, question=self.question,
             sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))

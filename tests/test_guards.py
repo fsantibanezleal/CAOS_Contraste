@@ -3,6 +3,7 @@ itself). Each test builds a throwaway tree, plants the case, and runs the real s
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -36,32 +37,6 @@ def _git_tree(tmp: Path) -> Path:
         _put(tree, f"filler{i}.txt", f"filler {i}\n")
     subprocess.run(["git", "init", "-q"], cwd=tree, check=True)
     return tree
-
-
-def test_check_artifacts_reads_one_or_many_artifacts_and_the_index_files(tmp_path):
-    d = tmp_path / "data" / "derived"
-    n_single = _put(d, "A/trace.json", {"t": [0, 1]})
-    n_v1 = _put(d, "B/v1.json", {"x": 1})
-    n_v2 = _put(d, "B/v2.json", {"x": 22})
-    _put(d, "contract/index.json", {"families": []})
-    gate = {"lane": "live"}
-    _put(d, "manifests/A.json", {"artifact": {"path": "A/trace.json", "bytes": n_single}, "lane": "live", "gate": gate})
-    _put(d, "manifests/B.json", {"artifacts": [{"path": "B/v1.json", "bytes": n_v1, "lane": "live", "gate": gate},
-                                               {"path": "B/v2.json", "bytes": n_v2, "lane": "live", "gate": gate}]})
-    index = {"files": ["contract/index.json"], "cases": [{"case_id": "A", "manifest_path": "manifests/A.json"},
-                                                         {"case_id": "B", "manifest_path": "manifests/B.json"}]}
-    _put(d, "manifests/index.json", index)
-    ok = _run("check_artifacts.py", str(tmp_path))
-    assert ok.returncode == 0 and "2 cases, 3 artifacts" in ok.stdout, ok.stdout
-    # drift in the second variant, a lane that disagrees with its gate, a declared file gone
-    _put(d, "manifests/B.json", {"artifacts": [{"path": "B/v1.json", "bytes": n_v1, "lane": "live", "gate": gate},
-                                               {"path": "B/v2.json", "bytes": n_v2 + 1, "lane": "precompute", "gate": gate}]})
-    (d / "contract" / "index.json").unlink()
-    bad = _run("check_artifacts.py", str(tmp_path))
-    assert bad.returncode == 1
-    assert "byte drift" in bad.stdout and "B/v2.json" in bad.stdout
-    assert "lane/gate mismatch: B B/v2.json" in bad.stdout
-    assert "declared by the index but missing or empty" in bad.stdout
 
 
 REQ = """# Requirements: a unit not built yet
@@ -159,17 +134,111 @@ def test_residue_guard_scans_the_helper_scripts_and_skips_its_own_tests(tmp_path
     assert "tests/test_guards.py" not in res.stdout
 
 
-@TEMPLATE_ONLY
-def test_instantiate_renames_the_lockfile_and_drops_the_template_guide(tmp_path):
+def _instantiate_a_copy(tmp_path: Path, *, ci_edit=None, expected_exit: int = 0) -> tuple[Path, subprocess.CompletedProcess]:
+    """A copy of the template, instantiated with --no-run: the copy and the script's result."""
     copy = tmp_path / "product"
     ignore = shutil.ignore_patterns(".git", "node_modules", ".venv*", "dist", "public/data", "__pycache__",
                                     ".pytest_cache", ".ruff_cache", "gate-output")
     shutil.copytree(ROOT, copy, ignore=ignore)
+    if ci_edit is not None:
+        ci = copy / ".github/workflows/ci.yml"
+        ci.write_text(ci_edit(ci.read_text(encoding="utf-8")), encoding="utf-8")
     # the script resolves its root from its own location: run the COPY's script, never this repository's
     res = subprocess.run([sys.executable, str(copy / "scripts" / "instantiate.py"), "--slug", "probe", "--name", "Probe",
                           "--repo", "CAOS_Probe", "--deploy", "pages", "--visibility", "public", "--tagline-en",
                           "A probe.", "--tagline-es", "Una sonda.", "--no-run"], capture_output=True, text=True, cwd=copy)
-    assert res.returncode == 0, res.stdout + res.stderr
+    assert res.returncode == expected_exit, res.stdout + res.stderr
+    return copy, res
+
+
+@TEMPLATE_ONLY
+def test_adversarial_instantiate_removes_the_template_own_tests_and_says_so(tmp_path):
+    """EX-015: tests/template/ holds the base guards' tests that need the example; a product has none of them."""
+    assert (ROOT / "tests" / "template").is_dir(), "the template's own tests are the thing instantiate must remove"
+    copy, res = _instantiate_a_copy(tmp_path)
+    assert not (copy / "tests" / "template").exists()
+    assert "removed tests/template" in res.stdout, res.stdout
+    assert (copy / "tests" / "test_guards.py").is_file() and (copy / "tests" / "adversarial").is_dir()  # the rest stays
+    # the template's CI runs the moved plants too; the product's workflow names no path that no longer exists
+    assert "tests/template" in (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert "tests/template" not in (copy / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    source = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    generated = (copy / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    prefix = "pip install pytest==9.1.1 && python -m pytest "
+    def commands(text):
+        return re.findall(r"^\s*run: (.*python -m pytest.*)$", text, re.M)
+    assert commands(source) == [prefix + "tests/adversarial -q", prefix + "tests/template/adversarial -q"]
+    assert commands(generated) == [prefix + "tests/adversarial -q"]
+    assert "  template-plants:" not in generated and "TEMPLATE-ONLY PLANTS" not in generated
+    assert "python -m pytest -q" not in generated
+    assert "  product-plants:" in generated
+    for target in [ROOT, copy]:
+        budget = _run("check_ci_budget.py", str(target))
+        assert budget.returncode == 0 and "ci budget: OK" in budget.stdout, budget.stdout + budget.stderr
+    # no feature row names a test that is gone, so the product's SDD guard is green from the first run (a feature left with
+    # no requirement is removed with them)
+    named = [f.as_posix() for f in (copy / "docs" / "design" / "features").rglob("*.md") if "tests/template/" in f.read_text(encoding="utf-8")]
+    assert named == [], named
+    schema = ROOT / "frontend" / "node_modules" / "@fasl-work" / "caos-app-shell" / "src" / "content" / "executive.schema.json"
+    if schema.is_file():  # check_sdd validates the executive view against the shell's schema, which npm ci installs
+        (copy / schema.relative_to(ROOT)).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(schema, copy / schema.relative_to(ROOT))
+        sdd = subprocess.run([sys.executable, str(copy / "scripts" / "check_sdd.py")], capture_output=True, text=True, cwd=copy)
+        # from 0.13.000 the one thing a new product owes its SDD at once is the method tiers: the example claims nothing beyond the
+        # state of the art, which holds only for the template (guide 09); every other check is green from the first run
+        findings = [ln for ln in sdd.stdout.splitlines() if ln.startswith("  - ")]
+        assert findings and all("method-tiers-and-manuscripts.md" in ln for ln in findings), sdd.stdout
+        assert any("no beyond method" in ln for ln in findings) and any("None claimed" in ln for ln in findings), sdd.stdout
+
+
+@TEMPLATE_ONLY
+@pytest.mark.parametrize("defect", [
+    "missing", "duplicate", "reversed", "extra-job", "unmarked", "wrong-command",
+    "quoted-extra-job", "single-quoted-extra-job", "explicit-extra-job", "inline-extra-job", "punctuated-extra-job",
+    "prefixed-start", "indented-start", "prefixed-end", "continued-job",
+])
+def test_adversarial_instantiate_refuses_ambiguous_template_ci_before_identity_writes(tmp_path, defect):
+    start, end = "  # BEGIN TEMPLATE-ONLY PLANTS\n", "  # END TEMPLATE-ONLY PLANTS\n"
+
+    def mutate(text):
+        if defect == "missing":
+            return text.replace(start, "", 1)
+        if defect == "duplicate":
+            return text + start
+        if defect == "reversed":
+            return text.replace(start, "MARKER\n", 1).replace(end, start, 1).replace("MARKER\n", end, 1)
+        if defect == "extra-job":
+            return text.replace(end, "  unrelated-job:\n    timeout-minutes: 10\n" + end, 1)
+        foreign = "    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    steps:\n      - run: echo retained-static-must-survive\n"
+        keys = {"quoted-extra-job": '  "retained-static":\n', "single-quoted-extra-job": "  'retained-static':\n",
+                "explicit-extra-job": "  ? retained-static\n  :\n", "punctuated-extra-job": "  retained.static:\n"}
+        if defect in keys:
+            return text.replace(end, keys[defect] + foreign + end, 1)
+        if defect == "inline-extra-job":
+            return text.replace(end, "  retained-static: {runs-on: ubuntu-latest, timeout-minutes: 10, steps: [{run: echo retained-static-must-survive}]}\n" + end, 1)
+        if defect == "prefixed-start":
+            return text.replace(start, "  # prefix" + start, 1)
+        if defect == "indented-start":
+            return text.replace(start, " " + start, 1)
+        if defect == "prefixed-end":
+            return text.replace(end, "  # prefix" + end, 1)
+        if defect == "continued-job":
+            return text.replace(end, end + "    if: false\n", 1)
+        if defect == "unmarked":
+            return text + "\n  leaked-job:\n    steps:\n      - run: python -m pytest tests/template/adversarial -q\n"
+        return text.replace("python -m pytest tests/template/adversarial -q", "python -m pytest -q", 1)
+
+    copy, result = _instantiate_a_copy(tmp_path, ci_edit=mutate, expected_exit=2)
+    assert "template-only" in result.stdout, result.stdout
+    assert (copy / ".template-source").exists()
+    assert (copy / "VERSION").read_bytes() == (ROOT / "VERSION").read_bytes()
+    assert (copy / "product.json").read_bytes() == (ROOT / "product.json").read_bytes()
+    assert (copy / "tests/template").is_dir()
+
+
+@TEMPLATE_ONLY
+def test_instantiate_renames_the_lockfile_and_drops_the_template_guide(tmp_path):
+    copy, _ = _instantiate_a_copy(tmp_path)
     lock = json.loads((copy / "frontend" / "package-lock.json").read_text(encoding="utf-8"))
     assert lock["name"] == "probe-frontend" and lock["version"] == "0.1.0"
     assert lock["packages"][""]["name"] == "probe-frontend" and lock["packages"][""]["version"] == "0.1.0"
@@ -177,6 +246,114 @@ def test_instantiate_renames_the_lockfile_and_drops_the_template_guide(tmp_path)
     assert not (copy / "docs" / "guides" / "00_instantiate.md").exists()
     assert "00_instantiate" not in (copy / "docs" / "guides.md").read_text(encoding="utf-8")
     assert not (copy / ".template-source").exists()
+
+
+def _template_only_offenders(tests_root: Path) -> list[str]:
+    """Test functions that run instantiate.py or remove the template's sentinel without the TEMPLATE_ONLY marker. Such a
+    test needs the template's own tree, so in every instantiated product it fails instead of skipping (BD-1: two did, found
+    on CAOS_ChancaDEM's re-instantiation, 2026-10-26)."""
+    import ast
+
+    offenders: list[str] = []
+    for path in sorted(tests_root.rglob("test_*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef) or not node.name.startswith("test_"):
+                continue
+            body = ast.unparse(node)
+            runs_instantiate = "instantiate.py" in body and "subprocess" in body
+            drops_sentinel = ".template-source" in body and ".unlink(" in body
+            marked = any("TEMPLATE_ONLY" in ast.unparse(d) for d in node.decorator_list)
+            if (runs_instantiate or drops_sentinel) and not marked:
+                offenders.append(f"{path.relative_to(tests_root).as_posix()}::{node.name}")
+    return offenders
+
+
+def test_every_test_that_needs_the_template_tree_is_template_only():
+    assert _template_only_offenders(ROOT / "tests") == []
+
+
+def test_adversarial_an_unmarked_template_only_test_is_named(tmp_path):
+    planted = tmp_path / "tests" / "test_planted.py"
+    planted.parent.mkdir(parents=True)
+    # the planted source is spelled in pieces, so this test's own body never holds the tokens the guard looks for
+    script, sentinel, drop = "instan" + "tiate.py", ".template" + "-source", ".un" + "link("
+    planted.write_text(
+        "import subprocess, sys\n\n\ndef test_runs_it(tmp_path):\n"
+        f"    subprocess.run([sys.executable, 'scripts/{script}', '--no-run'])\n\n\n"
+        f"def test_drops_it(repo):\n    (repo / '{sentinel}'){drop})\n",
+        encoding="utf-8",
+    )
+    assert _template_only_offenders(tmp_path / "tests") == ["test_planted.py::test_runs_it", "test_planted.py::test_drops_it"]
+
+
+# What the content-based residue guard cannot see in a test: the example's rows, notebook paths and guide,
+# named by id or path. Its own MARKERS (the model, the case ids, the references ...) are imported, never copied (BD-3).
+EXAMPLE_NAMES = (
+    ("an example requirement id", re.compile(r"\bEX-\d{3}\b")),
+    ("an example notebook", re.compile(r"\b02-threshold-and-final-size\b|01-getting-started/0[12]-the-(?:problem-and-the-data|method-step-by-step)")),
+    ("the template's own guide", re.compile(r"00_instantiate\.md")),
+    ("the example catalog history row", re.compile(r"\|\s*surrogate-model\s*\|\s*1\.0\.0\s*\|\s*2026-10-11\s*\|")),
+)
+# a test module exercises a base guard or tool when it names one: a check_*.py script, the notebook runner, instantiate, the gate
+BASE_TOOL = re.compile(r"\bcheck_[a-z_]+\b|\brun_notebooks\b|\binstantiate\.py\b|\bgate\.mjs\b")
+
+
+def _example_bound_offenders(tests_root: Path) -> list[str]:
+    """Test modules outside tests/template/ that exercise a base guard or tool AND hold a string the residue guard treats as
+    example residue (its MARKERS, or one of EXAMPLE_NAMES). Such a module plants into or reads the template's example, so in a
+    product that replaced the example it fails for that reason alone, and the product's residue guard lists it (BD-3: found on
+    CAOS_ChancaDEM, 2026-10-27, 102 failures). The base guards are taken verbatim and tested in the template, so those tests
+    belong in tests/template/, which instantiate.py removes. A module that builds a synthetic tree in tmp_path must not spell the
+    example's names either (use a neutral name): the product's residue guard reads the module, not the tree it builds. This
+    file is exempt like the residue guard's own SELF set, because it must name what it looks for."""
+    sys.path.insert(0, str(SCRIPTS))
+    import check_template_residue as r
+
+    patterns = [*r.MARKERS, *EXAMPLE_NAMES]
+    offenders: list[str] = []
+    for path in sorted(tests_root.rglob("test_*.py")):
+        rel = path.relative_to(tests_root).as_posix()
+        if rel.startswith("template/") or f"tests/{rel}" in r.SELF:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if not BASE_TOOL.search(text):
+            continue
+        for n, line in enumerate(text.splitlines(), 1):
+            hit = next((name for name, pat in patterns if pat.search(line)), None)
+            if hit:
+                offenders.append(f"{rel}:{n}: {hit}")
+                break
+    return offenders
+
+
+def test_no_example_bound_test_of_a_base_guard_is_left_outside_tests_template():
+    assert _example_bound_offenders(ROOT / "tests") == []
+
+
+def test_adversarial_an_example_bound_guard_test_outside_tests_template_is_named(tmp_path):
+    tests = tmp_path / "tests"
+    # the planted sources are spelled in pieces, so this file never holds the strings the guard looks for
+    topic, nb = "01-getting" + "-started", "01-the-problem" + "-and-the-data.ipynb"
+    planted = {
+        "adversarial/test_planted_notebook.py": (
+            "from planting import guard\n\n\ndef test_it(repo):\n"
+            f"    edit(repo, 'notebooks/en/{topic}/{nb}', 'a', 'b')\n    guard(repo, 'check_notebooks.py')\n"),
+        "test_planted_case.py": "import subprocess\n\n\ndef test_it():\n    subprocess.run(['check_artifacts.py', 'EX0" + "1_subcritical'])\n",
+        "test_planted_row.py": "def test_it():\n    run('check_sdd.py', 'EX" + "-001')\n",
+        # controls: the same strings in tests/template/, an example test that runs no guard, and a clean guard test
+        "template/adversarial/test_kept.py": f"def test_it(repo):\n    guard(repo, 'check_notebooks.py', '{topic}')\n",
+        "test_example_only.py": "def test_it():\n    assert precompute('EX0" + "2_epidemic')\n",
+        "test_clean.py": "def test_it(tmp_path):\n    run('check_sdd.py', str(tmp_path))\n",
+        # BD-4: a product names its own first topic and its own workbench feature, as ChancaDEM does
+        "test_product_names.py": "def test_it(repo):\n    guard(repo, 'check_notebooks.py', 'notebooks/en/01-getting" + "-started/01-first-run.ipynb', 'docs/design/features/workbench')\n",
+    }
+    for rel, body in planted.items():
+        (tests / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tests / rel).write_text(body, encoding="utf-8")
+    found = _example_bound_offenders(tests)
+    assert [f.split(":")[0] for f in found] == ["adversarial/test_planted_notebook.py", "test_planted_case.py", "test_planted_row.py"], found
+    assert "an example notebook" in found[0] and "an example case id" in found[1] and "an example requirement id" in found[2]
 
 
 def _version_tree(tmp: Path) -> Path:
@@ -261,39 +438,18 @@ def test_web_baseline_requires_the_stylesheet_of_every_shell_entry_it_imports(tm
 
 
 # ---- the CI base-integrity guard step (`.github/workflows/ci.yml`, job `guards`), run as GitHub runs it
+# U16-W2 (template 0.11.000) replaced the inline bash step by `python scripts/check_base_integrity.py`: the step is now one
+# command, so the test reads the command out of the workflow and runs that script on throwaway trees. The SIGPIPE regression
+# the inline step had (`git ls-files | grep -q` under pipefail) stays covered: the script reads the list once, no pipe.
 
 
-def _ci_guard_script() -> str:
-    """The `run: |` block of the base-integrity guard step, dedented: the very script CI runs."""
+def _ci_guard_command() -> list[str]:
+    """The command of the base-integrity guard step, as the workflow writes it."""
     lines = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8").splitlines()
     start = next(i for i, x in enumerate(lines) if x.strip().startswith("- name: Base-integrity guards"))
-    assert lines[start + 1].strip() == "run: |", lines[start + 1]
-    indent, body = None, []
-    for x in lines[start + 2:]:
-        if not x.strip():
-            body.append("")
-            continue
-        lead = len(x) - len(x.lstrip())
-        indent = lead if indent is None else indent
-        if lead < indent:
-            break
-        body.append(x[indent:])
-    return "\n".join(body) + "\n"
-
-
-def _bash() -> str | None:
-    """Git's bash on Windows (the `bash` on PATH there is often WSL's, which cannot read a Windows path), else the PATH's."""
-    if sys.platform == "win32":
-        git = shutil.which("git")
-        if git:
-            for cand in (Path(git).resolve().parents[1] / "bin" / "bash.exe", Path(git).resolve().parents[2] / "bin" / "bash.exe"):
-                if cand.exists():
-                    return str(cand)
-        return None
-    return shutil.which("bash")
-
-
-NEEDS_BASH = pytest.mark.skipif(_bash() is None, reason="the CI guard step is a bash script and no bash was found")
+    run = lines[start + 1].strip()
+    assert run.startswith("run: python scripts/check_base_integrity.py"), run
+    return run.removeprefix("run: ").split()
 
 
 def _guard_run(tmp: Path, files: list[str]) -> subprocess.CompletedProcess:
@@ -302,13 +458,11 @@ def _guard_run(tmp: Path, files: list[str]) -> subprocess.CompletedProcess:
         _put(tree, rel, "x\n")
     subprocess.run(["git", "init", "-q"], cwd=tree, check=True)
     subprocess.run(["git", "add", "-A"], cwd=tree, check=True)
-    script = tmp / "guard.sh"
-    script.write_bytes(_ci_guard_script().encode("utf-8"))
-    # the workflow's default shell: `bash -eo pipefail {0}`
-    return subprocess.run([_bash(), "-eo", "pipefail", str(script)], cwd=tree, capture_output=True, text=True)
+    command = _ci_guard_command()
+    # the workflow runs it from the repository root with no argument; the tree under test is the argument here
+    return subprocess.run([sys.executable, str(ROOT / command[1]), str(tree)], capture_output=True, text=True)
 
 
-@NEEDS_BASH
 @pytest.mark.parametrize(
     ("files", "error"),
     [
@@ -329,14 +483,13 @@ def test_ci_guard_step_judges_the_tracked_files(tmp_path, files, error):
         assert res.returncode == 1 and error in res.stdout, out
 
 
-@NEEDS_BASH
 def test_ci_guard_step_is_stable_on_a_large_clean_tree(tmp_path):
     # `git ls-files | grep -q` under pipefail failed at random: grep -q exits on its first match, git ls-files dies of SIGPIPE,
-    # the pipeline reports 141 and `! git ls-files | grep -qx .env.example` turned true. The step reads the list once now.
+    # the pipeline reports 141 and `! git ls-files | grep -qx .env.example` turned true. The script reads the list once now.
     files = [".env.example"] + [f"src/part{i // 500}/file{i}.txt" for i in range(6000)]
     first = _guard_run(tmp_path, files)
     assert first.returncode == 0, first.stdout + first.stderr
-    script, tree = tmp_path / "guard.sh", tmp_path / "tree"
+    tree = tmp_path / "tree"
     for _ in range(15):
-        res = subprocess.run([_bash(), "-eo", "pipefail", str(script)], cwd=tree, capture_output=True, text=True)
-        assert res.returncode == 0, res.stdout + res.stderr
+        res = subprocess.run([sys.executable, str(ROOT / _ci_guard_command()[1]), str(tree)], capture_output=True, text=True)
+        assert res.returncode == 0 and "guards: OK" in res.stdout, res.stdout + res.stderr

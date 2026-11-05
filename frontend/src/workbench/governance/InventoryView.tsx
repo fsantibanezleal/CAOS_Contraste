@@ -7,6 +7,7 @@ import { PlotCard, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-
 import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
 import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
+import { entryText } from '../names';
 import { DependencyMap, EDGE_COLOR, SEVERITY_RING, tierColor } from './DependencyMap';
 import { GOVERNANCE_FILES, adoptedCell, severityText, tierName, worstOpen, type GovInventory, type InvEntry } from './model';
 import { SensitivityTable, TierMatrix, type CellPick } from './TierMatrix';
@@ -22,6 +23,15 @@ const LIFECYCLE_NAME: Record<string, { en: string; es: string }> = {
 };
 
 const EDGE_NAME = { document: { en: 'document: the downstream reads the upstream document', es: 'documento: el posterior lee el documento del anterior' }, code: { en: 'code: the downstream imports the upstream code', es: 'código: el posterior importa el código del anterior' } } as const;
+
+/** The kinds of a related link in words (contract governance-inventory: related[].kind). */
+const RELATED_NAME: Record<string, { en: string; es: string }> = {
+  'page-statement': { en: 'a statement of a case page', es: 'una afirmación de la página de un caso' },
+  method: { en: 'a shared method', es: 'un método compartido' },
+  source: { en: 'a shared source', es: 'una fuente compartida' },
+  measures: { en: 'the first measures the second', es: 'el primero mide al segundo' },
+  conceptual: { en: 'a conceptual link', es: 'un vínculo conceptual' },
+};
 
 const SELECT_NOTE = { en: 'A matrix cell picks its entries for the table.', es: 'Una celda de la matriz elige sus entradas para la tabla.' };
 
@@ -61,9 +71,7 @@ function InventoryTable({ inv, entries, onClear, filtered }: { inv: GovInventory
               return (
                 <tr key={e.key} data-entry={e.key} data-tier={e.tier_block.tier}>
                   <td>{number.get(e.key)}</td>
-                  <td className="caos-col-text">
-                    <span translate="no">{e.key}</span>
-                  </td>
+                  <td className="caos-col-text">{pick(entryText(e.key), lang)}</td>
                   <td className="caos-col-text ct-wide-only">{pick(e.title, lang)}</td>
                   <td>{tierName(e.tier_block.tier, lang)}</td>
                   <td className="ct-wide-only">{cell ? cell.m : '-'}</td>
@@ -138,8 +146,8 @@ function EdgeTable({ inv }: { inv: GovInventory }) {
       <tbody>
         {inv.edges.map((ed) => (
           <tr key={`${ed.upstream}>${ed.downstream}`}>
-            <td className="caos-col-text">{number.get(ed.upstream)}: <span translate="no">{ed.upstream}</span></td>
-            <td className="caos-col-text">{number.get(ed.downstream)}: <span translate="no">{ed.downstream}</span></td>
+            <td className="caos-col-text">{number.get(ed.upstream)}: {pick(entryText(ed.upstream), lang)}</td>
+            <td className="caos-col-text">{number.get(ed.downstream)}: {pick(entryText(ed.downstream), lang)}</td>
             <td className="caos-col-text">{pick(EDGE_NAME[ed.kind as keyof typeof EDGE_NAME] ?? { en: ed.kind, es: ed.kind }, lang)}</td>
           </tr>
         ))}
@@ -158,11 +166,11 @@ function RelatedLinks({ inv }: { inv: GovInventory }) {
       <ul className="ct-evidence" style={{ listStyle: 'none', paddingLeft: 0 }}>
         {inv.related.map((r) => (
           <li key={`${r.a}~${r.b}`} data-related-link={`${r.a}~${r.b}`}>
-            <span translate="no">{r.a}</span>
+            {pick(entryText(r.a), lang)}
             <svg width={44} height={10} aria-hidden style={{ margin: '0 6px', verticalAlign: 'middle' }}>
               <line x1={1} y1={5} x2={43} y2={5} stroke="var(--color-fg-subtle)" strokeWidth={2} strokeDasharray="4 3" />
             </svg>
-            <span translate="no">{r.b}</span> ({r.kind})
+            {pick(entryText(r.b), lang)} ({pick(RELATED_NAME[r.kind] ?? { en: r.kind, es: r.kind }, lang)})
           </li>
         ))}
       </ul>
@@ -186,7 +194,7 @@ function Excluded({ inv }: { inv: GovInventory }) {
         <tbody>
           {inv.excluded.map((x) => (
             <tr key={`${x.case_id}/${x.variant_id ?? ''}`}>
-              <td>{x.variant_id ? `${x.case_id}/${x.variant_id}` : x.case_id}</td>
+              <td className="caos-col-text">{x.variant_id ? pick(entryText(`${x.case_id}/${x.variant_id}`), lang) : x.case_id}</td>
               <td className="caos-col-text"><Doc t={x.reason} /></td>
             </tr>
           ))}

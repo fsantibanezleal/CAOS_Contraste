@@ -1,0 +1,337 @@
+% Chapter written by unit TR-2 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
+% Every number of the results is a macro of tables/ratings-numbers.tex, written by tables/make_ratings.py from data/derived.
+\input{../tables/ratings-numbers}
+\section{Methods: rating scales, calibration and rating transitions}
+\label{sec:ratings}
+
+A rating system turns the credit quality of an obligor into a grade and attaches to each grade a probability of default (PD). Almost every use of a bank's credit models runs through those grade PDs. The risk weight of the internal ratings-based approach is a function of the PD of the grade \citep{ratings:bcbs2005,ratings:gordy2003}; the provisioning models start a lifetime curve from it; and the supervisor reads the back-test of a rating system as a comparison between the default rate realised in each grade and the PD the grade carries. The risk area of this section is therefore the quantification and validation of grade PDs: how the scale of grades is built, which long-run level a grade should carry, how that level moves with the state of the economy, how obligors migrate between grades, and how a calibrated PD curve is carried to a period in which the rating profile and the default rate differ from those of the estimation sample.
+
+The regulation that governs the area is explicit about the estimate. The Basel framework requires that the PD of a grade be ``a long-run average of one-year default rates for borrowers in the grade'' (CRE36.63), obtained from a count-weighted average of the historical one-year default rates (CRE36.77 and CRE36.78), from at least five years of data for at least one source (CRE36.79), and increased by a margin of conservatism related to the likely range of errors (CRE36.67) \citep{ratings:cre36}. The floor of 0.05 percent on the PD of a corporate exposure sits in the same framework \citep{ratings:cre32}. The guidelines of the European Banking Authority on PD estimation fix the definition of the one-year default rate (paragraphs 73 to 77), define the long-run average as ``the observed average of the one-year default rates'' (paragraph 84), and ask institutions to analyse their rating philosophy through the design of the risk drivers, the migration across grades and the yearly default rates of each grade (paragraphs 66 and 67) \citep{ratings:eba2017}. Two consequences follow for a validator. A long-run average needs an interval that says how many defaults stand behind it, and a grade with no default needs an estimate that does not collapse to zero. A migration matrix is both a source of the long-run average (the guidelines name it as a way to estimate it) and a diagnostic of the rating philosophy, so its estimator, its repairs and its limits belong to the same analysis.
+
+Three cases of the product put these questions to data. Case C04, rating transitions and through-the-cycle PD by grade, asks what the published migrations of the rating agencies say about PDs by grade, and how far a migration matrix can be trusted to give them, to project them or to describe a chain that is Markov and stable. Its real data are the corporate long-term ratings of the EU entities of three agencies, published as annual cohorts of ratings and their end-of-year states by the central repository of the European Securities and Markets Authority \citep{ratings:cerep}: \rtgCohortsSp{} cohorts for S\&P, \rtgCohortsMoodys{} for Moody's and \rtgCohortsFitch{} for Fitch, on seven performing grades and default. Its known-truth data are rating paths drawn from a generator whose matrix is known. Case C05, low-default portfolios and PD calibration, asks two questions: which PD each grade of the 2009 S\&P rating system should carry in 2010 and in 2011 once the new profile and default rate are known, and what a portfolio with almost no defaults can defend as the PD of each grade. Case C02, corporate PD across horizons, brings the master scale into play: five files of Polish bankruptcy data are scored by a scorecard and by four challengers, and the master scale is the unit in which their disagreement is counted.
+
+Four methods carry the analysis. The master scale and the calibration of grade PDs (\Cref{sec:m7}) define the grade and the long-run PD it carries, with the most prudent estimate for portfolios without defaults. The credit-cycle factor (\Cref{sec:m8}) links the long-run PD of a grade to its point-in-time PD in a given year. The transition estimators (\Cref{sec:m9}) estimate the migration matrix, the generator behind it and the portfolio it implies. The carrying of a PD curve to a new period (\Cref{sec:m36}) compares the approaches of Tasche on the S\&P data. The results of the three cases are read together in \Cref{sec:results-ratings}.
+
+% the master scale and the calibration of grade PDs
+\subsection{The master scale and the calibration of grade PDs}
+\label{sec:m7}
+
+\paragraph{The scale.} A master scale maps a PD to one of $K$ ordered grades whose PD bands are fixed before any model is fitted, so that models and years are compared in one unit. The scale of the product is geometric, with upper bounds
+\begin{equation}
+u_k = 0.01\cdot 1.5^{k},\quad k = 0,\dots,10,\qquad u_{11} = 1,
+\label{eq:ratings-scale}
+\end{equation}
+that is, twelve grades from a first band below \rtgMsFirst{}\% to a tenth upper bound of \rtgMsTenth{}\%, each bound \rtgMsRatio{} times the one below it. The grade of a PD $p$ is the index of the first band that contains it. The parameters (the first bound of 1 percent, the ratio of 1.5 and the number of grades) are conventions of the pipeline fixed in advance; none of them is estimated from data. Where two models score the same obligors, the scale turns the comparison of two PD vectors $p$ and $q$ into the grade disagreement
+\begin{equation}
+\Delta_m(p,q) = \frac{1}{n}\sum_{i=1}^{n}\mathbf{1}\bigl\{\,|g(p_i)-g(q_i)|\ge m\,\bigr\},
+\label{eq:ratings-disagreement}
+\end{equation}
+the share of obligors whose grades differ by at least $m$ grades, with $m = 2$ in the product. The grade tables of the pipeline put a PD equal to a bound in the lower grade, while the engine's comparison counts the bounds at or below the PD; the two conventions differ only for a PD that equals a bound exactly.
+
+\paragraph{The long-run PD of a grade.} Let $n_i(t)$ be the ratings of grade $i$ alive at the start of cohort year $t$ and $d_i(t)$ those that defaulted within the year, for the $T_i$ cohorts in which the grade has ratings. The yearly rate is $\hat p_i(t) = d_i(t)/n_i(t)$, and the long-run average of the guidelines and the pooled, count-weighted rate are
+\begin{equation}
+\overline{\mathrm{PD}}_i = \frac{1}{T_i}\sum_{t=1}^{T_i}\hat p_i(t),
+\qquad
+\tilde p_i = \frac{\sum_{t} d_i(t)}{\sum_{t} n_i(t)}.
+\label{eq:ratings-lra}
+\end{equation}
+The first is the quantity of paragraph 84 of the guidelines \citep{ratings:eba2017} and the second the count-weighted form of the Basel text \citep{ratings:cre36}; they differ when cohort sizes differ, and the product reports both. Only the pooled rate is a binomial proportion, so only it carries an interval. The product uses the equal-tailed Jeffreys interval, the posterior interval under the prior $\mathrm{Beta}(\tfrac12,\tfrac12)$,
+\begin{equation}
+\Bigl[\,B_{\alpha/2}\bigl(D+\tfrac12,\,N-D+\tfrac12\bigr),\; B_{1-\alpha/2}\bigl(D+\tfrac12,\,N-D+\tfrac12\bigr)\Bigr],
+\label{eq:ratings-jeffreys}
+\end{equation}
+with $D = \sum_t d_i(t)$, $N = \sum_t n_i(t)$, $B_q$ the $q$-quantile of the Beta distribution, the lower bound set to $0$ when $D = 0$ and the upper bound to $1$ when $D = N$ \citep{ratings:brown2001,ratings:zhou2008}. It replaces the Wald interval, whose coverage is poor for a rare event throughout the unit interval \citep{ratings:brown2001}; the Agresti--Coull interval, which adds $\kappa^2/2$ successes and $\kappa^2$ trials to the counts, is the other interval the product reports \citep{ratings:agresti1998,ratings:schuermann2004}. When defaults of one grade are correlated the binomial sample size overstates the information; the correction of Miao and Gastwirth replaces $N$ by the effective number $N^{\dagger} = \bigl[1/N + (2/N^{2})\sum_{i<j}\sqrt{N_i N_j}\,\rho_{ij}\bigr]^{-1}$, with $N_i$ the trials of obligor $i$ and $\rho_{ij}$ the default correlation \citep{ratings:miao2004,ratings:schuermann2004}. The product computes it live for a reader's correlation and uses the independent form (level 95 percent) in the tables.
+
+\paragraph{Grades without defaults: the most prudent estimate.} Pluto and Tasche estimate the PD of each grade of a portfolio with few or no defaults as an upper confidence bound at level $\gamma$ under the most prudent assumption compatible with the ordering of the grades \citep{ratings:plutotasche2006}. With grades ordered best first and $p_A\le p_B\le p_C$, the most prudent assumption for grade $A$ is that it is as risky as every grade below it, so the obligors and defaults of $A$, $B$ and $C$ are pooled; for $B$ the pool is $B$ and $C$; for $C$ it is $C$ alone. With $N$ pooled obligors and $D$ pooled defaults the bound for independent defaults is the largest $p$ with
+\begin{equation}
+1-\gamma = \sum_{i=0}^{D}\binom{N}{i}p^{i}(1-p)^{N-i},
+\label{eq:ratings-clopper}
+\end{equation}
+the upper Clopper--Pearson limit \citep{ratings:clopper1934}, equal to the $\gamma$-quantile of $\mathrm{Beta}(D+1,N-D)$; for $D = 0$ it reduces to $1-(1-\gamma)^{1/N}$. For correlated defaults the paper places the obligors in the one-factor model of \Cref{sec:m8}: given the systematic factor $Y=y$ defaults are independent with probability $p(y)=\Phi\bigl((\Phi^{-1}(p)-\sqrt{\rho}\,y)/\sqrt{1-\rho}\bigr)$, and the bound solves
+\begin{equation}
+1-\gamma = \int_{-\infty}^{\infty}\varphi(y)\sum_{i=0}^{D}\binom{N}{i}\,p(y)^{i}\bigl(1-p(y)\bigr)^{N-i}\,\mathrm{d}y,
+\label{eq:ratings-correlated}
+\end{equation}
+with $\varphi$ the standard normal density. Correlation widens the bound, because a year without defaults is weaker evidence when defaults cluster. With a few defaults every bound lies above the average default rate of the portfolio, and the paper rescales the bounds by one factor $K$ chosen so that their obligor-weighted mean meets a target $\mathrm{PD}_{\text{target}}$,
+\begin{equation}
+K\,\frac{\sum_j n_j\,\hat p_j}{\sum_j n_j} = \mathrm{PD}_{\text{target}},\qquad \hat p_{j,\text{scaled}} = K\,\hat p_j,
+\label{eq:ratings-scaling}
+\end{equation}
+with the most prudent bound of the whole portfolio at the same level as the target of the final proposal. The scaled values keep the order and the ratios of the bounds and give up their reading as confidence bounds. For a cohort observed over $T$ years the paper uses yearly factors with $\mathrm{corr}(S_s,S_t)=\vartheta^{|s-t|}$, so an obligor defaults within the period with probability $\pi = 1-\prod_{t=1}^{T}\bigl(1-p(S_t)\bigr)$, and the bound is the largest $p$ with $1-\gamma \le \sum_{\ell=0}^{k}\binom{N}{\ell}\E\bigl[\pi^{\ell}(1-\pi)^{N-\ell}\bigr]$.
+
+\paragraph{Assumptions.} The ordering of the grades is assumed right; defaults are independent given the factor (or independent outright); the factor is Gaussian with a known asset correlation; the yearly factors follow the stated autocorrelation; and the target of the scaling is a stated portfolio quantity. The bounds answer how high the PD of a grade could be given what was observed. They are not estimates of it, and the authors themselves doubt their value as a back-test, since expert PDs are normally far below them \citep{ratings:plutotasche2006}. Bayesian estimation with an informative prior is the usual alternative \citep{ratings:kiefer2006}.
+
+\paragraph{Parameters.} The level of the intervals is 95 percent. The most prudent bounds are computed at the six levels 50, 75, 90, 95, 99 and 99.9 percent of the published example, with an asset correlation of \rtgLdpRho{} percent, the Basel minimum corporate value the paper uses; the multi-year bound uses $T=5$ years, $\rho=12$ percent, $\vartheta=0.3$, 100,000 factor paths and seed 5. The example portfolio has 100, 400 and 300 obligors in three grades, with 0, 2 and 1 defaults in its few-defaults form. For the known-truth variants a Vasicek generator draws \rtgSimYears{} years of the same three grades with true PDs \rtgSimTrueA{}, \rtgSimTrueB{} and \rtgSimTrueC{} percent. A hypothetical expert model carries \rtgLdpExpertA{}, \rtgLdpExpertB{} and \rtgLdpExpertC{} percent. These values come from the published example and from the case design; none is fitted.
+
+\begin{algorithm}[htbp]
+\caption{Most prudent PD bounds for ordered grades, independent or correlated defaults.}
+\label{alg:ratings-prudent}
+\begin{algorithmic}[1]
+\Require obligors $n_1,\dots,n_k$ and defaults $d_1,\dots,d_k$ of the grades, best first; level $\gamma$; asset correlation $\rho\ge 0$
+\Ensure bounds $\hat p_1\le\dots\le\hat p_k$
+\For{$j=1,\dots,k$}
+  \State $N\gets\sum_{l\ge j}n_l$, $\;D\gets\sum_{l\ge j}d_l$ \Comment{pool grade $j$ and every worse grade}
+  \If{$\rho=0$}
+    \State $\hat p_j\gets B_{\gamma}(D+1,\,N-D)$ \Comment{Clopper--Pearson, \cref{eq:ratings-clopper}}
+  \Else
+    \State define $F(p)=\sum_{m=1}^{Q}w_m\sum_{i=0}^{D}\binom{N}{i}p(y_m)^i(1-p(y_m))^{N-i}$ with Gauss--Hermite nodes $y_m$ and weights $w_m$
+    \State $\hat p_j\gets$ the root of $F(p)=1-\gamma$ bracketed in $(0,1)$, by Brent's method \Comment{\cref{eq:ratings-correlated}}
+  \EndIf
+\EndFor
+\State \Return $(\hat p_1,\dots,\hat p_k)$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.} The scale and the grade lookup cost $O(\log K)$ per obligor by binary search on the bounds. The long-run averages cost $O(\sum_i T_i)$. The independent bound costs one Beta quantile per grade after the $O(k)$ suffix sums of the pools. The correlated bound costs $O(I\,Q\,k)$ for $I$ root-search iterations and $Q$ quadrature nodes (the implementation uses $Q=256$ nodes and a relative tolerance of $10^{-12}$), and the multi-year bound $O(I\,M\,T\,k)$ for $M$ factor paths, because the paths are drawn once and reused for every trial value of $p$.
+
+\paragraph{Implementation.} The scale is the module \texttt{core.\allowbreak{}calibration} of the data pipeline (the bounds \texttt{MASTER\_\allowbreak{}SCALE\_\allowbreak{}UPPER}, the functions \texttt{grade\_\allowbreak{}of} and \texttt{grade\_\allowbreak{}table}); the grade disagreement is \texttt{grade\_\allowbreak{}disagreement} of the engine's \texttt{ml.\allowbreak{}challenger} module, called by the C02 battery. The long-run averages and their intervals are built by \texttt{pipeline.\allowbreak{}cases.\allowbreak{}c04\_\allowbreak{}agency}, with the intervals of \texttt{riskvalidation.\allowbreak{}transitions.\allowbreak{}intervals}. The bounds are the functions \texttt{most\_\allowbreak{}prudent\_\allowbreak{}pd}, \texttt{scale\_\allowbreak{}bounds}, \texttt{most\_\allowbreak{}prudent\_\allowbreak{}pd\_\allowbreak{}scaled} and \texttt{most\_\allowbreak{}prudent\_\allowbreak{}pd\_\allowbreak{}multiperiod} of \texttt{riskvalidation.\allowbreak{}engines.\allowbreak{}low\_\allowbreak{}default}, in version \rtgRvVersion{} of the engine, called by \texttt{pipeline.\allowbreak{}cases.\allowbreak{}c05\_\allowbreak{}ldp\_\allowbreak{}calibration}.
+
+\paragraph{Comparison and acceptance criterion.} The acceptance criterion is that the tables of Pluto and Tasche that print the independent and correlated bounds (tables 1, 2, 3, 4 and 7) are reproduced to 0.01 percentage points. Of the \rtgPtSpecN{} cells of those tables, \rtgPtSpecIdent{} are identical to the printed digits and the largest gap is \rtgPtSpecMax{} percentage points; the cells that differ by one unit of the printed last digit are the table 4 value at the 75 percent level, where the paper prints 0.65 percent for a bound that is exactly 0.638 percent (0.65 percent is the bound at the 76.3 percent level), and three cells of table 7 that sit at a rounding boundary. The bounds are compared on generated years of known truth by the share of years in which each bound covers the true PD (\Cref{tab:ratings-ldp-coverage}) and, through the master scale, a scorecard is compared with its challengers by the disagreement of \cref{eq:ratings-disagreement} (\Cref{tab:ratings-c02}).
+
+% the credit-cycle factor
+\subsection{The credit-cycle factor: through-the-cycle and point-in-time PD}
+\label{sec:m8}
+
+\paragraph{The one-factor model.} The one-factor model of Vasicek, in the form that underlies the internal ratings-based risk-weight functions, gives every obligor $i$ of a grade a standardised asset return
+\begin{equation}
+A_i = \sqrt{\rho}\,Z + \sqrt{1-\rho}\,\varepsilon_i,\qquad Z,\varepsilon_1,\varepsilon_2,\dots\ \text{independent standard normal},
+\label{eq:ratings-asset}
+\end{equation}
+and the obligor defaults when $A_i<\Phi^{-1}(p)$, where $\Phi$ is the standard normal distribution function and $p$ the through-the-cycle PD of the grade \citep{ratings:vasicek2002,ratings:gordy2003}. $Z$ is the systematic factor, shared by all obligors and low in a bad year; $\rho$ is the asset correlation; $\varepsilon_i$ is idiosyncratic. Given $Z=z$ the defaults are independent with the point-in-time PD
+\begin{equation}
+p(z)=\Phi\!\left(\frac{\Phi^{-1}(p)-\sqrt{\rho}\,z}{\sqrt{1-\rho}}\right).
+\label{eq:ratings-pit}
+\end{equation}
+\begin{proposition}\label{prop:ratings-ttc}
+The through-the-cycle PD is the average of the point-in-time PD over the cycle: $\E[p(Z)]=p$.
+\end{proposition}
+\begin{proof}
+$A_i$ is standard normal, because $\rho+(1-\rho)=1$, so $\Prob(A_i<\Phi^{-1}(p))=p$. Conditioning on $Z$ gives $\Prob(A_i<\Phi^{-1}(p))=\E[\Prob(A_i<\Phi^{-1}(p)\mid Z)]=\E[p(Z)]$.
+\end{proof}
+In an infinitely granular grade the default fraction converges to $p(Z)$ \citep{ratings:vasicek1991,ratings:gordy2003}; since $p(z)$ is decreasing in $z$, the $q$-quantile of the default fraction is $p(-\Phi^{-1}(q))$, and the internal ratings-based capital of a retail exposure is $K=\mathrm{LGD}\,\bigl[p(-\Phi^{-1}(0.999))-\mathrm{PD}\bigr]$ \citep{ratings:bcbs2005}. A rating system is point-in-time when its grade PDs follow $p(Z_t)$ and through-the-cycle when they stay at $p$; the first has stable default rates and frequent migration, the second the reverse, a pattern that the guidelines ask validators to take into account in back-testing \citep{ratings:eba2017,ratings:carlehed2012,ratings:forest2013}.
+
+\paragraph{The implied factor.} Inverting \cref{eq:ratings-pit} at an observed yearly default rate $\mathrm{DR}_t$ of a grade whose through-the-cycle PD is $\overline{\mathrm{PD}}$ gives the credit-cycle index of the year,
+\begin{equation}
+\hat z_t=\frac{\Phi^{-1}(\overline{\mathrm{PD}})-\sqrt{1-\rho}\,\Phi^{-1}(\mathrm{DR}_t)}{\sqrt{\rho}},
+\label{eq:ratings-implied}
+\end{equation}
+negative in bad years and positive in good ones; a year with a rate of exactly zero implies no finite factor and is left out. The index is the single systematic factor of the one-parameter representation of a transition matrix of Belkin, Suchower and Forest, in which every row is cut into the bins of a standard normal and all bins are shifted by $\sqrt{\rho}\,Z_t$, so that $P(i\to j\mid Z_t)=\Phi\bigl((x_{ij}-\sqrt{\rho}Z_t)/\sqrt{1-\rho}\bigr)-\Phi\bigl((x_{i,j-1}-\sqrt{\rho}Z_t)/\sqrt{1-\rho}\bigr)$ with thresholds $x_{ij}$ read from the long-run matrix and $Z_t$ fitted to each year \citep{ratings:belkin1998}. Only the scalar relations are implemented in the engine; the matrix form is not. Because a finite cohort of $n$ ratings adds sampling noise to $\mathrm{DR}_t$, the delta method gives the sampling variance of the implied factor at a true factor $z$,
+\begin{equation}
+\Var(\hat z_t\mid z)\;\approx\;\frac{1-\rho}{\rho}\;\frac{p(z)\bigl(1-p(z)\bigr)}{n\;\varphi\bigl(\Phi^{-1}(p(z))\bigr)^{2}},
+\label{eq:ratings-delta}
+\end{equation}
+which is derived here from the derivative of the inverse of \cref{eq:ratings-pit}; it is the scale against which the dispersion of the implied factors across years is read.
+
+\paragraph{Assumptions.} A single factor, standard normal and independent across years, drives all grades; the grade is homogeneous and infinitely granular (the finite cohort is handled by \cref{eq:ratings-delta}); the through-the-cycle PD of the grade equals its long-run average; and the asset correlation is known. The correlation is not estimated from the migration data. It is the value of the Basel corporate function at the through-the-cycle PD, $R(p)=0.12\,w+0.24\,(1-w)$ with $w=(1-e^{-50p})/(1-e^{-50})$, without the size adjustment \citep{ratings:bcbs2005}, so it falls from 0.24 at a very low PD to 0.12 at a high one. The index is therefore an index of the cycle conditional on that assumption, not a measurement of the cycle.
+
+\paragraph{Parameters.} The through-the-cycle PD is the long-run average of the default page (\cref{eq:ratings-lra}). The grades analysed are the three speculative grades, BB, B and CCC--C, the only ones with a default in most cohorts; the correlations are \rtgZSpBBRho{}, \rtgZSpBRho{} and \rtgZSpCCCCRho{} for S\&P. The mean over the cycle is checked by Gauss--Hermite quadrature with 120 nodes. The point-in-time PD is also evaluated at factors of $-2$ and $+2$, two standard deviations on either side of the average cycle.
+
+\paragraph{Use in validation.} The index serves three checks. First, it gives a back-test the state of the cycle: a high default rate of a grade in a year with a low $\hat z_t$ is what the conditional PD of \cref{eq:ratings-pit} predicts, whereas a high rate in a good year is a departure that the model does not explain. Second, it separates the rating philosophy from sampling error: the dispersion of the implied factors across years, compared with the sampling value of \cref{eq:ratings-delta}, says how much of the movement of the yearly rates is the cycle. Third, it supports a stress: the PD of a grade under a chosen factor, for instance $z=-2$, is the conditional PD of \cref{eq:ratings-pit}. The index does not estimate the asset correlation; the product fixes it by the regulatory function and reports the index conditional on that value.
+
+\paragraph{Complexity and implementation.} Each grade and year costs $O(1)$ in closed form, so a series costs $O(T)$ per grade and the quadrature check $O(Q)$. The functions are \texttt{conditional\_\allowbreak{}pd}, \texttt{implied\_\allowbreak{}factor}, \texttt{lhp\_\allowbreak{}cdf}, \texttt{lhp\_\allowbreak{}quantile} and \texttt{lhp\_\allowbreak{}pdf} of \texttt{riskvalidation.\allowbreak{}engines.\allowbreak{}vasicek}, with \texttt{irb.\allowbreak{}correlation} of \texttt{riskvalidation.\allowbreak{}regulatory} for $\rho$, in version \rtgRvVersion{} of the engine. The baked artifacts do not store the factor; the figure and table scripts of the report compute it from the committed yearly default rates.
+
+\paragraph{Comparison and acceptance criterion.} The acceptance criterion is that the implied factor reproduces the large-homogeneous-portfolio relation and that the point-in-time PDs average back to the through-the-cycle PD over the cycle. The first part is a property of \cref{eq:ratings-pit,eq:ratings-implied}, which are inverse functions, and the engine tests its identities (the quantile inverts the distribution, equals the conditional PD at the stressed factor, the implied factor inverts the conditional PD, the density integrates to the PD as its mean, and the retail capital identity above). The second part is \Cref{prop:ratings-ttc}; on the long-run PDs of the three agencies the relative error of the quadrature of the conditional PD against the through-the-cycle PD is at most \rtgPitMaxError{} (\Cref{tab:ratings-zfactor}). The dispersion of the implied factors across years is compared with the standard normal and with the sampling standard deviation of \cref{eq:ratings-delta}.
+
+% the transition estimators
+\subsection{Transition estimators: cohort, duration, Aalen--Johansen, generators and EM}
+\label{sec:m9}
+
+\paragraph{Data and states.} A migration matrix reaches a validator in two forms. Count matrices give, for each cohort, the number of ratings that moved from state $i$ at the start to state $j$ at the end of the period, plus a column of withdrawals; the publication of the European regulator is of this kind and only the cohort estimator can be computed from it \citep{ratings:cerep}. Paths give each obligor's states with their dates, and every estimator below can be computed from them. States are ordered best to worst, default is last and absorbing, and a withdrawal is a separate column and never a grade.
+
+\paragraph{The cohort estimator.} For a chain observed at dates $t=0,\dots,T$ with $n_{ij}(t)$ obligors moving from $i$ to $j$ in year $t$, the estimator of Anderson and Goodman for one period and for the stationary chain pooled over periods is
+\begin{equation}
+\hat p_{ij}(t)=\frac{n_{ij}(t)}{n_i(t-1)},\qquad
+\hat p_{ij}=\frac{\sum_{t}n_{ij}(t)}{\sum_{t}\sum_{k}n_{ik}(t)},
+\label{eq:ratings-cohort}
+\end{equation}
+with each row an independent multinomial sample \citep{ratings:andersongoodman1957}. The treatment of withdrawals defines two different default rates. The industry standard treats a withdrawal as non-informative and distributes its probability over the states in proportion to their values, which is the same as removing the withdrawals and renormalising the row \citep{ratings:schuermann2004}. The guidelines of the European Banking Authority keep an obligor in the denominator when its obligations are closed or sold during the year (paragraph 76) and count each defaulted obligor once (paragraph 77) \citep{ratings:eba2017}; the product keeps the withdrawals as an absorbing extra state to follow that reading. When withdrawal is informative, so that ratings about to default leave more often, removal understates the PD.
+
+\paragraph{The duration estimator and Aalen--Johansen.} For a time-homogeneous chain observed continuously, the likelihood of a generator $Q$ is $L_t(Q)=\exp\bigl(\sum_i[\sum_{j\ne i}\log(q_{ij})K_{ij}(t)-S_i(t)\sum_{j\ne i}q_{ij}]\bigr)$, with $K_{ij}(t)$ the jumps from $i$ to $j$ and $S_i(t)$ the time spent in $i$, and it is maximised by
+\begin{equation}
+\hat q_{ij}=\frac{K_{ij}}{S_i}\quad(j\ne i),\qquad \hat q_{ii}=-\sum_{j\ne i}\hat q_{ij},\qquad P(t)=\exp(t\hat Q),
+\label{eq:ratings-duration}
+\end{equation}
+the estimator of Lando and Skodeberg, whose PD by grade at horizon $t$ is the default column of $P(t)$ \citep{ratings:landoskodeberg2002}. Every observed move and every year of exposure enters, so a path that goes through an intermediate grade to default gives the best grades a positive PD where the cohort estimator gives zero. Without time homogeneity the Aalen--Johansen estimator is the product integral $\hat P(s,t)=\prod_{s<u\le t}\bigl(I+d\hat A(u)\bigr)$, with $d\hat A_{ij}(u)=dN_{ij}(u)/Y_i(u-)$ off the diagonal, rows summing to zero, and $Y_i(u-)$ the obligors in $i$ just before $u$ \citep{ratings:aalen1978}; it relaxes the homogeneity assumption, and Jafry and Schuermann report annual matrices statistically indistinguishable from their parametric counterparts \citep{ratings:jafry2004,ratings:schuermann2004}.
+
+\paragraph{From a matrix to a generator.} A one-year matrix $P$ answers one horizon; a generator $Q$ with non-negative off-diagonal entries and rows summing to zero answers all of them through $P(t)=\exp(tQ)$. Israel, Rosenthal and Wei show that if $S=\max\{(a-1)^2+b^2: a+bi\text{ an eigenvalue of }P\}<1$ the series
+\begin{equation}
+\tilde Q=(P-I)-\frac{(P-I)^2}{2}+\frac{(P-I)^3}{3}-\cdots
+\label{eq:ratings-logseries}
+\end{equation}
+converges to a matrix with zero row sums and $\exp(\tilde Q)=P$ exactly, and that $P$ has no exact generator if $\det P\le 0$, or $\det P>\prod_i p_{ii}$, or a state $j$ is accessible from $i$ while $p_{ij}=0$ \citep{ratings:israel2001}. The last condition is the usual one for rating matrices: a zero cell between grades that are connected through others. When $\tilde Q$ has negative off-diagonal entries the diagonal adjustment sets them to zero and restores the row sums on the diagonal, $q_{ij}=\max(\tilde q_{ij},0)$ and $q_{ii}=\tilde q_{ii}+\sum_{j\ne i}\min(\tilde q_{ij},0)$; the weighted adjustment spreads the negative mass over the other entries of the row; and the approximation of Jarrow, Lando and Turnbull, which assumes at most one move a year, sets $q_{ii}=\log p_{ii}$ and $q_{ij}=p_{ij}\log p_{ii}/(p_{ii}-1)$ \citep{ratings:israel2001,ratings:jarrow1997}. A repair is judged by the L1 distance $\sum_{ij}|P-\exp(Q)|_{ij}$. When the counts behind $P$ are available the generator is estimated by maximum likelihood from the snapshots instead: the EM algorithm iterates
+\begin{equation}
+q'_{ij}=\frac{\E_Q[K_{ij}\mid y]}{\E_Q[S_i\mid y]},
+\label{eq:ratings-em}
+\end{equation}
+where the expectations are closed forms through block matrix exponentials of order $2h$ for $h$ states, after Van Loan, and from a valid start the iterates converge to a stationary point of the likelihood or to the boundary \citep{ratings:smith2018,ratings:bladt2005,ratings:vanloan1978}.
+
+\paragraph{The portfolio a matrix implies.} A stress test projects a portfolio $W$ over $n$ grades with a transition matrix $T$, writes off the defaulted part and re-originates it with a vector $O$, so that $W'_t=W'_{t-1}T I_w+(W'_{t-1}T V_w)O'$, with $I_w$ the identity whose last entry is zero and $V_w=(0,\dots,0,1)'$. Engelmann proves that if the block of performing grades is primitive and $o_n=0$ there is a unique portfolio $W_{\mathrm{ttc}}$ that this map leaves fixed, reached from any start, so that a projection under an unstressed matrix drifts to a portfolio unrelated to the bank's own \citep{ratings:engelmann2024}. Primitivity is checked by the bound of Wielandt: a non-negative $k\times k$ matrix is primitive if and only if its power $(k-1)^2+1$ is strictly positive \citep{ratings:wielandt1950}.
+
+\paragraph{Assumptions.} The chain is Markov and, for the pooled and duration estimators, time-homogeneous; default is absorbing; the performing block is primitive for the portfolio result; withdrawals are non-informative under the industry treatment; and a count matrix reflects the cohort the publisher states. Momentum, the dependence of the next move on the last one, breaks the Markov assumption and is tested by the hazard test of dos Reis, Pfeuffer and Smith \citep{ratings:dosreis2020}. The assumptions that hold or fail on the data are measured in \Cref{sec:results-ratings}.
+
+\paragraph{Parameters.} The grades are seven performing grades (AAA, AA, A, BBB, BB, B and CCC--C) and default; the cohorts are the calendar years 2000 to 2025, and the EM generator is fitted to the transition counts of the annual cohorts with the withdrawals left out, with the default tolerance of $10^{-9}$ on the relative change of the log-likelihood and at most 2,000 iterations. The five-year horizon is the fifth power of the pooled matrix or the exponential of five times a generator. The engine starts EM from the pooled one-step rates plus $0.05/(h-1)$ on every move out of a non-default state, with $h$ the number of states, because an entry that starts at zero stays at zero. The known-truth variant draws \rtgMkReps{} repetitions of \rtgMkSnap{} annual snapshots from the chain whose generator is the EM generator of the pooled S\&P counts. The propagation uses the observed average cohort mix as the origination vector, a convergence tolerance of $10^{-14}$ on the L1 change and a row-sum tolerance of $10^{-3}$ for printed matrices.
+
+\begin{algorithm}[htbp]
+\caption{EM estimate of a generator from annual snapshot counts.}
+\label{alg:ratings-em}
+\begin{algorithmic}[1]
+\Require counts $n^{(s)}_{ab}$ of $a\to b$ over a step $\Delta_s$, $s=1,\dots,S$; a start $Q^{(0)}$ with a positive rate on every allowed move; tolerance $\tau$
+\Ensure generator $\hat Q$, log-likelihood path
+\Repeat
+  \For{each distinct step length $\Delta$}
+    \State form the block matrices $C_\gamma^{(ij)}=\begin{pmatrix}Q&q_{ij}e_ie_j^{\top}\\0&Q\end{pmatrix}$ and $C_\phi^{(i)}=\begin{pmatrix}Q&e_ie_i^{\top}\\0&Q\end{pmatrix}$ and their exponentials over $\Delta$
+  \EndFor
+  \State $\E[K_{ij}]\gets\sum_{s,a,b}n^{(s)}_{ab}\,\bigl(e^{C_\gamma^{(ij)}\Delta_s}\bigr)_{a,\,h+b}\big/\bigl(e^{Q\Delta_s}\bigr)_{ab}$ \Comment{E-step, jumps}
+  \State $\E[S_i]\gets\sum_{s,a,b}n^{(s)}_{ab}\,\bigl(e^{C_\phi^{(i)}\Delta_s}\bigr)_{a,\,h+b}\big/\bigl(e^{Q\Delta_s}\bigr)_{ab}$ \Comment{E-step, holding times}
+  \State $q_{ij}\gets\E[K_{ij}]/\E[S_i]$ for $j\ne i$, $\;q_{ii}\gets-\sum_{j\ne i}q_{ij}$ \Comment{M-step, \cref{eq:ratings-em}}
+  \State record $\ell(Q)=\sum n^{(s)}_{ab}\log\bigl(e^{Q\Delta_s}\bigr)_{ab}$
+\Until{the relative change of $\ell$ is at most $\tau$}
+\State \Return $Q$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.} The cohort matrix costs $O(h^2)$ per cohort. The duration generator costs one pass over the segments, $O(\#\text{segments})$. Aalen--Johansen costs at most $O(h^3)$ per observed transition time by a dense product. The logarithm series costs $O(h^3)$ per term. One EM iteration forms $h(h-1)+h$ block exponentials of order $2h$ for each distinct step length, $O(h^2\cdot h^3)=O(h^5)$ per length; with the single annual step length of the product and $h=8$ states the cost is negligible. The primitivity test costs $O(h^3\log h)$ by repeated squaring and one projection year $O(h^2)$.
+
+{\emergencystretch=4em \paragraph{Implementation.} The estimators are \texttt{cohort}, \texttt{pooled\_\allowbreak{}cohort}, \texttt{duration\_\allowbreak{}generator} and \texttt{aalen\_\allowbreak{}johansen} of \texttt{riskvalidation.\allowbreak{}transitions.\allowbreak{}estimators}; the logarithm series, the diagnostics and the repairs \texttt{log\_\allowbreak{}series}, \texttt{embedding\_\allowbreak{}diagnostics} and \texttt{generator} of \texttt{riskvalidation.\allowbreak{}transitions.\allowbreak{}embedding}; the EM generator \texttt{em\_\allowbreak{}generator} of \texttt{riskvalidation.\allowbreak{}transitions.\allowbreak{}em}; the portfolio functions \texttt{ttc\_\allowbreak{}portfolio} and \texttt{project} of \texttt{riskvalidation.\allowbreak{}transitions.\allowbreak{}ttc}, all in version \rtgRvVersion{}. The agency variants are assembled by \texttt{pipeline.\allowbreak{}cases.\allowbreak{}c04\_\allowbreak{}agency} and the known-truth families by \texttt{pipeline.\allowbreak{}cases.\allowbreak{}c04\_\allowbreak{}families}.\par}
+
+\paragraph{Comparison and acceptance criterion.} The acceptance criterion is that matrix rows sum to one and generator rows to zero, that the cohort estimator equals that of the independent package \texttt{transitionMatrix} on the same data, and that the distance of each regularised generator is reported. The row sums of the pooled matrices deviate from one by at most \rtgRowsumSp{}, \rtgRowsumMoodys{} and \rtgRowsumFitch{} for the three agencies, and the generator row sums by at most \rtgGenrowSpWeighted{} in absolute value. The engine's reconciliation test feeds one seeded panel to \texttt{pooled\_\allowbreak{}cohort} and to the package's cohort estimator \citep{ratings:transitionmatrix} and finds the largest element-wise difference of 0.0 (tolerance $10^{-12}$). Three published results are recomputed from their inputs: the nine distances of Israel, Rosenthal and Wei (\rtgIrwAgree{} of \rtgIrwTotal{} agree), the twelve interval bounds of Schuermann and Hanson for \rtgSrDefaults{} defaults among \rtgSrN{} obligors \citep{ratings:hanson2006}, and the portfolio and projection extremes of Engelmann (\Cref{tab:ratings-golden}). The estimators are compared on rating paths whose generator is known (\Cref{tab:ratings-estimators}).
+
+% carrying a PD curve to a new period
+\subsection{Carrying a PD curve to a new period: the approaches of Tasche}
+\label{sec:m36}
+
+\paragraph{The model.} Tasche treats the calibration of a PD curve as a forecasting problem: what is known at the start of the forecast period decides which part of the estimated model can be kept, and each choice is an invariance assumption that can be tested afterwards \citep{ratings:tasche2013}. Grades are $x=1,\dots,k$ (the product lists them best first). A borrower's grade $X$ at the start and its state at the end, default $D$ or survival $N$, have a joint distribution, and Proposition 3.1 of the paper gives three equivalent descriptions: the rating profile $\Prob[X=x]$ with the PD curve $\Prob[D\mid X=x]$; the unconditional PD $p$ with the conditional profiles $\Prob[X=x\mid D]$ and $\Prob[X=x\mid N]$; or $p$ with the likelihood ratio $\lambda(x)=\Prob[X=x\mid N]/\Prob[X=x\mid D]$. By the law of total probability and Bayes' formula
+\begin{equation}
+p=\sum_{x=1}^{k}\Prob[D\mid X=x]\,\Prob[X=x],\qquad
+\Prob[D\mid X=x]=\frac{p}{p+(1-p)\,\lambda(x)},
+\label{eq:ratings-bayes}
+\end{equation}
+and the discriminatory power is the accuracy ratio $\mathrm{AR}=\sum_{x\ge2}\Prob[X=x\mid N]\Prob[X\le x-1\mid D]-\sum_{x\le k-1}\Prob[X=x\mid N]\Prob[X\ge x+1\mid D]$. A profile and a PD curve always make a proper model, whereas a profile and a likelihood ratio do not: for a non-constant $\lambda$ the equation $1=\sum_x\Prob[X=x]/(p+(1-p)\lambda(x))$ has a solution if and only if $\sum_x\Prob[X=x]/\lambda(x)\ge1$ and $\sum_x\Prob[X=x]\lambda(x)>1$.
+
+\paragraph{Smoothing by quasi moment matching.} Observed grade default rates are noisy and often zero in the good grades. The paper smooths them with quasi moment matching \citep{ratings:tasche2009}, motivated by the binormal model: if the scores of defaulters and survivors are normal with a common variance, the PD curve is logistic in the score. For grades, which are not normal, the robust version transforms the grade first,
+\begin{equation}
+\Prob[D\mid X=x]\approx\frac{1}{1+\exp\bigl(\alpha+\beta\,\Phi^{-1}(\tilde F_N(x))\bigr)},\qquad
+\tilde F_N(x)=\tfrac12\bigl(\Prob[X<x\mid N]+\Prob[X\le x\mid N]\bigr),
+\label{eq:ratings-qmm}
+\end{equation}
+where the average of the distribution function and its left-continuous version keeps $\tilde F_N(x)<1$ in the best grade, which would otherwise force a PD of zero. The two constants are the solution of two equations: the unconditional PD of \cref{eq:ratings-bayes} equals its target $p$, and the accuracy ratio of the curve equals its target.
+
+\paragraph{The approaches.} Subscript 0 marks the estimation period and subscript 1 the forecast period; four cases separate what is known when the forecast is made. When the forecast profile $\Prob_1[X=x]$ and the forecast PD $p_1$ are known, four approaches apply. The invariant default profile keeps $\Prob_1[X=x\mid D]=\Prob_0[X=x\mid D]$, which gives a proper model only if $p_1\Prob_0[X=x\mid D]\le\Prob_1[X=x]$ and $p_1(1-\Prob_0[X=x\mid D])\le1-\Prob_1[X=x]$ for every grade; the implementation fits quasi moment matching to $p_1$ and the accuracy ratio implied by the two profiles. The invariant accuracy ratio fits it to $p_1$ and $\mathrm{AR}_0$. The scaled PDs approach, the popular one, sets $\Prob_1[D\mid X=x]=c_{\mathrm{PD}}\Prob_0[D\mid X=x]$ with
+\begin{equation}
+c_{\mathrm{PD}}=\frac{p_1}{\sum_x\Prob_0[D\mid X=x]\,\Prob_1[X=x]},
+\label{eq:ratings-cpd}
+\end{equation}
+and is improper when a scaled PD exceeds one. The scaled likelihood ratio sets $\lambda_1(x)=c_{\mathrm{LR}}\lambda_0(x)$, with $c_{\mathrm{LR}}$ the root of
+\begin{equation}
+1=\sum_x\frac{\Prob_1[X=x]}{p_1+(1-p_1)\,c_{\mathrm{LR}}\,\lambda_0(x)},
+\label{eq:ratings-clr}
+\end{equation}
+which exists and is unique, because the right-hand side falls from $1/p_1$ to zero as $c_{\mathrm{LR}}$ grows, so the model is always proper. When only $p_1$ is known the invariant likelihood ratio (the ``change in base rate'' theorem, $\Prob_1[D\mid X=x]=p_1/(p_1+(1-p_1)\lambda_0(x))$) applies \citep{ratings:elkan2001}. When only the forecast profile is known the old curve is kept and the PD follows from it as $p_1=\sum_x\Prob_0[D\mid X=x]\Prob_1[X=x]$, or the old conditional profiles are kept and $p_1$ is fitted by least squares or by minimum chi-square, or the old likelihood ratio is kept and $p_1$ is the root of the equation above. When neither is known, the old model is kept and the defaults are back-tested at the end of the period; that is the stale reference of the case. The nine approaches are the first four, the invariant likelihood ratio with known PD, and the four with the profile known.
+
+\paragraph{Goodness of fit.} The approaches are ranked by Pearson's chi-square test of the implied default profile against the observed default numbers \citep{ratings:pearson1900}: given $D$ defaults, the default numbers by grade are multinomial with the implied profile $q_x=n_x\Prob[D\mid X=x]/\sum_t n_t\Prob[D\mid X=t]$, and
+\begin{equation}
+T=\sum_x\frac{(d_x-D\,q_x)^2}{D\,q_x}.
+\label{eq:ratings-chi2}
+\end{equation}
+The test sees the shape of the curve and not its level. Expected counts in the best grades are tiny, so the asymptotic distribution is a poor guide and the $p$-value is a Monte Carlo one, $(1+\#\{T^{*}\ge T\})/(B+1)$ over $B$ multinomial samples, with its standard error recorded.
+
+\paragraph{Assumptions.} Each approach is an invariance assumption of its own (default profile, accuracy ratio, PD curve, likelihood ratio, conditional profiles), none of which is true by construction; the forecast PD is taken as the observed PD of the forecast year (a prophetic forecast, used to compare the approaches fairly) in the first four; the curve is monotone by construction only for the quasi moment matching approaches; and the grade scale of the estimation year is the one of the forecast year. The paper reports that scaling the PD curve is theoretically questionable because the scaled curve depends strongly on the unconditional PD of the estimation period \citep{ratings:tasche2013}.
+
+\paragraph{Parameters.} The estimation period is the 2009 S\&P rating system on \rtgGradesTasche{} grades, smoothed by quasi moment matching to its unconditional PD of \rtgQmmPd{}\% and its accuracy ratio of \rtgQmmAr{}\%; the solution is $\alpha=\rtgQmmAlpha{}$ and $\beta=\rtgQmmBeta{}$, from the binormal start $(\alpha,\beta)=(\rtgQmmAlphaStart{},\rtgQmmBetaStart{})$. The forecasts are for 2010, with an observed PD of \rtgCalYaObs{}\% on \rtgCalYaN{} obligors and \rtgCalYaD{} defaults, and for 2011, with \rtgCalYbObs{}\% on \rtgCalYbN{} obligors and \rtgCalYbD{} defaults. The default-profile test uses 100,000 multinomial samples and seed 2013. The capital of each forecast portfolio is the Basel III corporate internal ratings-based capital with a loss given default of 45 percent (the foundation value for senior unsecured exposures to financial institutions, CRE32.6), an effective maturity of 2.5 years, the PD floor of 0.05 percent and one unit of exposure per obligor \citep{ratings:bcbs2005,ratings:cre32}. The S\&P counts behind the paper's table are third-party data; the committed artifacts carry the grade default rates, the profiles, the fitted curves and the test statistics, and the counts themselves are read from the paper at run time.
+
+\begin{algorithm}[htbp]
+\caption{Carrying a PD curve to a forecast period: quasi moment matching and the scaled likelihood ratio.}
+\label{alg:ratings-calibration}
+\begin{algorithmic}[1]
+\Require estimation counts (obligors and defaults by grade); forecast profile $\Prob_1[X=x]$ and forecast PD $p_1$
+\Ensure forecast PD curve $\Prob_1[D\mid X=x]$
+\State derive $\Prob_0[X=x]$, $\Prob_0[D\mid X=x]$, $p_0$, $\Prob_0[X=x\mid N]$ and $\mathrm{AR}_0$ from the counts \Comment{\cref{eq:ratings-bayes}}
+\State $z(x)\gets\Phi^{-1}(\tilde F_N(x))$ for every grade
+\For{$\beta$ in a bracket around the binormal value}
+  \State $\alpha(\beta)\gets$ the root of $\sum_x\Prob_0[X=x]/(1+e^{\alpha+\beta z(x)})=p_0$ by Brent's method
+  \State $\mathrm{AR}(\beta)\gets$ accuracy ratio of the curve $(\alpha(\beta),\beta)$
+\EndFor
+\State $\beta^{*}\gets$ the root of $\mathrm{AR}(\beta)=\mathrm{AR}_0$ by Brent's method; $\;\alpha^{*}\gets\alpha(\beta^{*})$ \Comment{\cref{eq:ratings-qmm}}
+\State $\lambda_0(x)\gets\bigl(1-\Prob_0[D\mid X=x]\bigr)p_0\big/\bigl(\Prob_0[D\mid X=x](1-p_0)\bigr)$
+\State $c_{\mathrm{LR}}\gets$ the root of $\sum_x\Prob_1[X=x]/(p_1+(1-p_1)c\,\lambda_0(x))=1$, bracketed beyond its analytic bounds \Comment{\cref{eq:ratings-clr}}
+\State \Return $p_1/\bigl(p_1+(1-p_1)\,c_{\mathrm{LR}}\,\lambda_0(x)\bigr)$ for every grade
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.} The empirical model costs $O(k)$ for $k$ grades and the accuracy ratio $O(k^2)$ by the double sum of the definition or $O(k)$ with cumulative sums. Quasi moment matching solves two nested one-dimensional roots, $O(I_\beta I_\alpha k)$ for the iteration counts $I_\beta$ and $I_\alpha$, and the scaled likelihood ratio one root, $O(I\,k)$. The Monte Carlo $p$-value costs $O(Bk)$ for $B$ samples; with $B=100{,}000$ it dominates the cost of every other step.
+
+{\emergencystretch=4em \paragraph{Implementation.} The model, the smoothing and the approaches are in \texttt{riskvalidation.\allowbreak{}engines.\allowbreak{}pd\_\allowbreak{}curve}: \texttt{model\_\allowbreak{}from\_\allowbreak{}counts}, \texttt{qmm}, \texttt{invariant\_\allowbreak{}default\_\allowbreak{}profile}, \texttt{invariant\_\allowbreak{}accuracy\_\allowbreak{}ratio}, \texttt{scaled\_\allowbreak{}pds}, \texttt{scaled\_\allowbreak{}likelihood\_\allowbreak{}ratio}, \texttt{invariant\_\allowbreak{}likelihood\_\allowbreak{}ratio}, \texttt{invariant\_\allowbreak{}pd\_\allowbreak{}curve}, \texttt{invariant\_\allowbreak{}conditional\_\allowbreak{}profiles} and \texttt{profile\_\allowbreak{}chi2}; the test is \texttt{pd\_\allowbreak{}default\_\allowbreak{}profile} of \texttt{riskvalidation.\allowbreak{}validation.\allowbreak{}calibration}, all in version \rtgRvVersion{}; the case is assembled by \texttt{pipeline.\allowbreak{}cases.\allowbreak{}c05\_\allowbreak{}ldp\_\allowbreak{}calibration}. The engine solves the two equations of quasi moment matching as nested bracketed roots rather than by a Newton step from the binormal values, so it converges whenever a solution exists and reports an improper model when the target accuracy ratio cannot be reached on the grade scale.\par}
+
+\paragraph{Comparison and acceptance criterion.} The acceptance criterion is that each approach's forecast PD and implied default profile are compared with S\&P's observed 2010 and 2011 default experience, with the capital each implies, and that the published tables of the paper are reproduced. The comparison is \Cref{tab:ratings-calibration} and \Cref{fig:ratings-calibration}. The reproduction is in \Cref{tab:ratings-golden}: the smoothed curve (table 5, \rtgGoldFiveN{} cells, \rtgGoldFiveIdent{} identical to the printed digits and all within the engine's tolerance), the implied default profile (table 6, \rtgGoldSixN{} cells, \rtgGoldSixOk{} within tolerance), the \rtgGoldSevenN{} forecast cells (table 7, \rtgGoldSevenIdent{} identical, all within tolerance), the case 3 forecasts (table 8, within \rtgGoldEightMax{} percentage points) and the eight $p$-values of table 7 (largest gap \rtgGoldSevenpMax{} percentage points, inside the tolerance of three standard errors of a 2,000-sample run plus three of this run, because the paper does not state its number of simulations).
+
+\subsection{Results}
+\label{sec:results-ratings}
+
+\paragraph{Long-run PD by grade.} \Cref{tab:ratings-lra} gives the long-run PD of each grade for the three agencies. Within each agency the long-run average rises with the grade from zero or a few hundredths of a percent in AAA, AA and A to \rtgLraSpBB{}\% in BB, \rtgLraSpB{}\% in B and \rtgLraSpCCCC{}\% in CCC--C for S\&P. The thin grades carry no information that the point value shows: S\&P has \rtgLradSpAAA{} defaults on \rtgLranSpAAA{} rating-years in AAA, so the pooled rate is zero while the 95\% Jeffreys interval runs up to \rtgJeffupSpAAA{}\%: the point value reflects the sample size, not a PD known to be zero. The agencies disagree in the weakest grade by more than their intervals allow: the long-run average of CCC--C is \rtgLraSpCCCC{}\% for S\&P, \rtgLraMoodysCCCC{}\% for Moody's and \rtgLraFitchCCCC{}\% for Fitch, and the three 95\% intervals of the pooled rates are disjoint. CEREP states that no deterministic definition of a default event has been set up, so the gap measures the definitions of default and of the cohort as well as the credit quality; within S\&P, the ratio of the PD read from the transition page to the PD read from the default page is \rtgGapDfourCCCC{} in CCC--C and \rtgGapDfourB{} in B. The table does not say which agency's scale a bank's own grades should be mapped to, and it does not separate sampling error from the effect of the definition.
+
+\input{../tables/ratings-lra}
+
+\paragraph{The credit-cycle factor.} \Cref{fig:ratings-zfactor} and \Cref{tab:ratings-zfactor} read the yearly default rates through \cref{eq:ratings-implied}. For S\&P grade B and CCC--C the implied factors have a mean of \rtgZSpBMean{} and \rtgZSpCCCCMean{} and a standard deviation of \rtgZSpBSd{} and \rtgZSpCCCCSd{} over all \rtgZSpBN{} cohorts, close to the zero and one of a standard normal, and well above the \rtgZSpBSamp{} and \rtgZSpCCCCSamp{} that the finite cohorts alone would produce at a factor of zero; the dispersion is therefore the cycle, not cohort noise. The lowest factors fall in \rtgZSpBMinyear{} for grade B (\rtgZSpBMin{}) and in \rtgZSpCCCCMinyear{} for CCC--C (\rtgZSpCCCCMin{}), and the highest in \rtgZSpBMaxyear{} (\rtgZSpBMax{}) and \rtgZSpCCCCMaxyear{} (\rtgZSpCCCCMax{}). The factors of different grades move together without being one series: the correlation between the implied factors is \rtgZcorrBbB{} between BB and B, \rtgZcorrBCcc{} between B and CCC--C and \rtgZcorrBbCcc{} between BB and CCC--C, so a single factor with one correlation does not describe all grades equally. Where the grade is thin the table warns against over-reading: BB has a default in \rtgZSpBBN{} of \rtgCohortsSp{} cohorts for S\&P, \rtgZMoodysBBN{} for Moody's and \rtgZFitchBBN{} of \rtgCohortsFitch{} for Fitch; the years without defaults imply an infinite factor and are left out, which removes the good years and pulls the mean down to \rtgZSpBBMean{} for S\&P and \rtgZMoodysBBMean{} for Moody's. Fitch's CCC--C has a standard deviation of \rtgZFitchCCCCSd{} against a sampling value of \rtgZFitchCCCCSamp{}, which signals a rate series more volatile than a standard normal cycle explains. In this frame a two-standard-deviation bad year takes the PD of B from its long-run \rtgLraTwoSpB{}\% to \rtgPitBadB{}\%, and a good year of the same size takes it to \rtgPitGoodB{}\%: the PD answers bad years far more than good ones. The mean of the conditional PD over the factor returns the through-the-cycle PD to a relative error of at most \rtgPitMaxError{}, as \Cref{prop:ratings-ttc} states. The figure does not show whether the correlation of the Basel function is the right one for these obligors; it is an assumption of the index.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{ratings-zfactor}
+\caption{Credit-cycle factor implied by the yearly default rate of S\&P grades BB, B and CCC--C in each annual cohort of the ESMA CEREP publication, from the inverse of the one-factor relation with the through-the-cycle PD of each grade; the shaded band marks one standard deviation of a standard normal factor, and cohorts with no default are absent.}
+\label{fig:ratings-zfactor}
+\end{figure}
+
+\input{../tables/ratings-zfactor}
+
+\paragraph{Estimators against a known truth.} \Cref{tab:ratings-estimators} and \Cref{fig:ratings-estimators} compare the six estimators on \rtgMkReps{} repetitions of \rtgMkSnap{} annual snapshots drawn from a chain with known generator. The true one-year PD of AAA is \rtgMkTruthAAA{} basis points. The cohort estimator gives a PD of exactly zero in \rtgMkZeroAAA{}\% of the panels for AAA and \rtgMkZeroAA{}\% for AA, because the panel holds \rtgMkOyAAA{} and \rtgMkOyAA{} rating-years in those grades; the duration estimator, which sees every move and the time spent in each state, never gives zero and has a root mean squared error of \rtgMkDurationAAARmse{} basis points in AAA against \rtgMkCohortAAARmse{} for the cohort estimator. The EM generator and the two repairs remove the zero but not the variance: their errors in AAA, \rtgMkEmAAARmse{}, \rtgMkDiagonalAAARmse{} and \rtgMkWeightedAAARmse{} basis points, are those of the cohort estimator, and their biases are within one standard error of zero, so on these data the claim that EM overestimates the best grades less than other algorithms is neither confirmed nor refuted. The approximation of Jarrow, Lando and Turnbull is the exception: its bias in grade B is large and significant (\Cref{tab:ratings-estimators}), and its root mean squared error of \rtgMkJltBRmse{} basis points is more than twice that of the others, because its assumption of at most one move a year is false for this chain. The study cannot say how the estimators behave when the chain is not Markov; that is the question of the tests of the Markov assumption.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{ratings-estimators}
+\caption{Root mean squared error of the one-year PD over its true value, by grade and estimator, on logarithmic axes, and the share of panels in which the cohort estimator gives a PD of exactly zero, from repeated panels of annual snapshots drawn from a Markov chain with known generator.}
+\label{fig:ratings-estimators}
+\end{figure}
+
+\input{../tables/ratings-estimators}
+
+\paragraph{Generators and the portfolio a matrix implies.} \Cref{tab:ratings-generators} shows that no pooled agency matrix is the exponential of a generator: for each of the three agencies some zero cell joins grades that are connected through others (\rtgUnreachSp{} cells for S\&P, \rtgUnreachMoodys{} for Moody's, \rtgUnreachFitch{} for Fitch), so the third condition of Israel, Rosenthal and Wei excludes an exact generator even though the series converges ($S$ between \rtgSconvMoodys{} and \rtgSconvSp{}). The diagonal and weighted repairs and the EM generator reproduce the matrix within \rtgLOneSpWeighted{} to \rtgLOneSpEm{} in L1 distance for S\&P, and the approximation of Jarrow, Lando and Turnbull within \rtgLOneSpJlt{}, roughly ten times larger. The distance compares an exponential with a published estimate and does not say how far the repaired generator is from the truth. The five-year PD of CCC--C is \rtgPifiveSpCCCCCohort{}\% from the fifth power of the matrix and \rtgPifiveSpCCCCEm{}\% from the EM generator, and in AAA \rtgPifiveSpAAACohort{}\% against \rtgPifiveSpAAAEm{}\%: at five years the generators move the best grade by a fifth and the worst by a few hundredths of a point. The time-homogeneity test rejects across the annual cohorts (statistic \rtgSpHomogStat{} on \rtgSpHomogDof{} degrees of freedom), so every pooled matrix is an average over years, not the matrix of any one of them. \Cref{fig:ratings-ttc-drift} shows the consequence for a projection with an unstressed matrix, in the example of Engelmann: the through-the-cycle portfolio has a default rate of \rtgEngTtc{}\%; a portfolio that starts at \rtgEngStartB{}\% falls to \rtgEngMinB{}\% in year \rtgEngArgminB{}, and one that starts at \rtgEngStartC{}\% rises to \rtgEngMaxC{}\% in year \rtgEngArgmaxC{}, with no scenario in either path. A stress test whose current portfolio differs from the matrix's own therefore carries a movement that belongs to the matrix.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{ratings-ttc-drift}
+\caption{Default rate of four portfolios projected for fifty years with the same unstressed transition matrix, the example of Engelmann (2024), recomputed by the engine; every path moves toward the default rate of the through-the-cycle portfolio, drawn as a dotted line, although no scenario acts on any of them.}
+\label{fig:ratings-ttc-drift}
+\end{figure}
+
+\input{../tables/ratings-generators}
+
+\paragraph{Carrying the 2009 curve to 2010 and 2011.} \Cref{tab:ratings-calibration} and \Cref{fig:ratings-calibration} give the nine approaches. The observed PD fell from \rtgQmmPd{}\% in 2009 to \rtgCalYaObs{}\% in 2010 and \rtgCalYbObs{}\% in 2011, and the accuracy ratio rose from \rtgQmmAr{}\% to \rtgCalYaArObs{}\% and \rtgCalYbArObs{}\%. With the forecast PD set to the observed one, the Monte Carlo $p$-values of the default-profile test (standard error at most \rtgCalYaMcseMax{} and \rtgCalYbMcseMax{} percentage points) rank the approaches in 2010 as the scaled likelihood ratio (\rtgCalYaSlrP{}\%), the invariant accuracy ratio (\rtgCalYaIarP{}\%), the invariant default profile (\rtgCalYaIdpP{}\%) and the scaled PDs (\rtgCalYaSpdP{}\%), the last two below 5\%. The invariant likelihood ratio, which uses the forecast PD but not the forecast profile, gives \rtgCalYaIlrbP{}\% in 2010 and a portfolio PD of \rtgCalYaIlrbPd{}\%, and \rtgCalYbIlrbP{}\% in 2011 with \rtgCalYbIlrbPd{}\%. In 2011 every approach with the PD known has a $p$-value above 35\%, the scaled PDs lowest at \rtgCalYbSpdP{}\% and the invariant accuracy ratio highest at \rtgCalYbIarP{}\%. Among the approaches that use the forecast PD, the scaled likelihood ratio is first in 2010 and second in 2011, which agrees with the ranking the paper reports on its S\&P data, and the scaling of PDs is last in both years, so the evidence does not support it. The four approaches that know only the forecast profile forecast between \rtgCalYaIpcPd{}\% and \rtgCalYaIlrcPd{}\% in 2010, far above the observed \rtgCalYaObs{}\%, and between \rtgCalYbIlrcPd{}\% and \rtgCalYbIpcPd{}\% in 2011, against \rtgCalYbObs{}\% observed. With hindsight their invariances do not hold for these two years. The choice moves capital: the average risk weight of the 2010 portfolio is \rtgCalYaSlrRw{}\% of exposure under the scaled likelihood ratio and \rtgCalYaIpcRw{}\% when the 2009 curve is left unchanged, \rtgCalYaStale{}\% more; among the four approaches that know the forecast PD the spread of the risk weight is \rtgCalYaSpread{}\% in 2010 and \rtgCalYbSpread{}\% in 2011 (highest over lowest, less one). The table does not show that one approach is right in general: the two years are a small sample of a cycle, the grade counts in the best grades are tiny, and the ranking by $p$-value is a ranking of the shape of the implied default profile, not of its level.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\textwidth]{ratings-calibration}
+\caption{PD curves that five of the nine calibration approaches give for the seventeen S\&P grades in 2010 (left) and 2011 (right), on a logarithmic axis, with the observed default rate of each grade as an open circle where it is above zero; grades with no default in the year have no circle.}
+\label{fig:ratings-calibration}
+\end{figure}
+
+\input{../tables/ratings-calibration}
+
+\paragraph{Low-default portfolios.} \Cref{tab:ratings-ldp} and \Cref{fig:ratings-ldp-bounds} give the most prudent bounds of the published example. At the 75\% level the independent bounds are \rtgLdpIndBA{}\%, \rtgLdpIndBB{}\% and \rtgLdpIndBC{}\% for grades A, B and C, against \rtgLdpExpertA{}\%, \rtgLdpExpertB{}\% and \rtgLdpExpertC{}\% for the expert model; an asset correlation of \rtgLdpRho{}\% raises them to \rtgLdpCorBA{}\%, \rtgLdpCorBB{}\% and \rtgLdpCorBC{}\%, and at 99.9\% the correlated bound of grade C is \rtgLdpCorFC{}\% (independent \rtgLdpIndFC{}\%). In risk-weight terms the expert PDs give an average of \rtgLdpRwexpert{}\% (with the 0.05\% floor), the independent bounds at 75\% give \rtgLdpRwindependentSevenFive{}\%, the correlated ones \rtgLdpRwcorrelatedSevenFive{}\% and the bounds scaled to the portfolio bound \rtgLdpRwscaledSevenFive{}\%, so the cost of prudence is a multiple of the expert capital that grows with the level and with the correlation. On \rtgSimYears{} generated years of known truth (\Cref{tab:ratings-ldp-coverage}) every bound covers the true PD in 100\% of the years from the 75\% level, because the bound of a pooled zero-default sample is far above a true PD of 0.05 to 0.20 percent (the median ratio of the independent bound to the truth of grade C at 90\% is \rtgSimRatioMed{}); only at 50\% does coverage drop, to \rtgCovIndependentBA{}\% for the independent bound of grade B and to \rtgCovScaledBA{}\% and \rtgCovScaledCA{}\% for the scaled bounds of grades B and C. Coverage this high is not a sign of accuracy: the bounds are conservative by construction and the table says how conservative, not how close. The overdispersion of the generator is as the model states (\rtgSimOverdispSim{} against \rtgSimOverdispModel{} for the variance of the total number of defaults, and \rtgSimOverdispInd{} under independence), and the moment estimate of the correlation is \rtgSimRhoHat{}\%. The battery that might replace the bounds has little power: against the expert model, whose PDs are 50 to 60 percent of the truth, the correlated test of the portfolio rejects in \rtgPowExpertVasicekportfolio{}\% of the years at the 5\% level and holds its size (\rtgPowTrueVasicekportfolio{}\%), while the Jeffreys test of the portfolio rejects in \rtgPowExpertJeffreysportfolio{}\% of the years but also in \rtgPowTrueJeffreysportfolio{}\% under the truth, because it ignores the correlation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{ratings-ldp-bounds}
+\caption{Most prudent PD bound of the three grades of the Pluto and Tasche example (100, 400 and 300 obligors; 0, 2 and 1 defaults) against the confidence level, on a logarithmic axis, for independent defaults (dashed, markers) and for an asset correlation of 12 percent (solid, crosses).}
+\label{fig:ratings-ldp-bounds}
+\end{figure}
+
+\input{../tables/ratings-ldp}
+
+\input{../tables/ratings-ldp-coverage}
+
+\paragraph{Reproduction of the published tables.} \Cref{tab:ratings-golden} counts the printed values of five papers that the engine recomputes. The recomputation matches the print in most cells and the gaps are small and located: \rtgPtIdent{} of the \rtgPtCells{} cells of Pluto and Tasche are identical to the printed digits and the largest gap is \rtgPtMaxgap{} percentage points; of Tasche's cells, \rtgGoldSevenIdent{} of \rtgGoldSevenN{} forecast cells are identical and all lie within the tolerance; and \rtgIrwAgree{} of the \rtgIrwTotal{} distances of Israel, Rosenthal and Wei and \rtgSrAgree{} of the \rtgSrTotal{} interval bounds of Schuermann and Hanson agree. A match does not make the method right for a bank's portfolio; it shows that the implementation solves the published model.
+
+\input{../tables/ratings-golden}
+
+\paragraph{The master scale in case C02.} \Cref{tab:ratings-c02} gives the grade disagreement of \cref{eq:ratings-disagreement} between the logistic scorecard and each challenger on the holdout of each document. The logistic challenger with an $\ell_1$ penalty disagrees by two or more grades for \rtgCzLOneMin{}\% to \rtgCzLOneMax{}\% of the companies, and the tree, boosting and additive challengers for \rtgCzOtherMin{}\% to \rtgCzMax{}\%. The pooled document has \rtgCzRows{} rows and \rtgCzEvents{} events. A challenger can therefore gain discrimination and still re-grade a large part of the portfolio, a cost that the AUC difference does not show. The table does not say which grade is right; it only measures how far two models place the same company on the same scale.
+
+\input{../tables/ratings-c02}

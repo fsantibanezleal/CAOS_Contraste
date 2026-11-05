@@ -1,0 +1,78 @@
+\section{Experimental design}
+\label{sec:experimental-design}
+
+\subsection{Predictions}
+\label{sec:design-hypotheses}
+
+Five predictions are tested; they are listed with their criteria and outcomes in Table~\ref{tab:hypotheses}, and each is stated here in the form it takes before any number is shown.
+\textbf{H1}: at a size of at most 1\%, the complement flags the model that uses a 20-day-old volatility in at least 30\% of replications, and the prediction is refuted if it flags fewer than 10\%.
+This is the acceptance and refutation criterion fixed for the method before the evaluation.
+\textbf{H2}, the second clause of the research brief that proposed the method: the Wald component flags the wrong-correlation and the missing-basis variants at least as often as the Kolmogorov--Smirnov distance alone does, and flags the desk with no deficiency at most at its stated rate.
+\textbf{H3}: the false-alarm rate of the union stays at most 1\% on desks whose generator differs from the calibration null.
+\textbf{H4}: the flag rate of the rolling-mean statistic rises with the age $L$ of the volatility input.
+\textbf{H5}: the complement flags a constant mis-scale of RTPL that the regulatory zone does not.
+H1 and H2 come from the specification of the method; H3 to H5 are predictions about its limits, written from the theory of Section~\ref{sec:theory} (Proposition~\ref{prop:size} and its exchangeability condition for H3, Proposition~\ref{prop:rolling} for H4 and Proposition~\ref{prop:invariance} for H5).
+A prediction that fails is reported as failed, with its numbers.
+
+\subsection{Data and its provenance}
+\label{sec:design-data}
+
+All desk-years come from the committed generator of the C13 case of CAOS\_Contraste, \texttt{desk-pnl-generator/1.0.0}, whose truth status is a synthetic desk with a known true risk model; no external dataset is used and the case carries no licence class.
+The desk is a two-factor spread with loadings $0.006$ and $-0.004$ per standard deviation of the factor, a factor correlation of $0.6$, a log-AR(1) volatility with persistence $\phi=0.98$ and stationary standard deviation $0.35$ (so $v=0.1225$), known at the start of the day, a pricing noise of 10\% of the standard deviation of the factor profit and loss that is present in every variant, 300 burn-in days before the 250-day window, and the 97.5\% and 99\% value-at-risk of the true model for the desk back-test.
+Each of the six variants plants one deficiency in the risk model alone (Table~\ref{tab:variants}); the strengths were fixed before the generator was run and are not tuned to a catch rate.
+A desk-year is a pure function of its seed: replication $i$ of the variant with index $k$ under case seed $s$ uses the seed $1000s+1000k+i$ in the numpy \texttt{default\_rng}, and the draws are made in a fixed order whatever the variant, so that the variants share their desk and differ only in the planted term.
+The committed bake is case seed 13 with 1,000 replications per variant, whose statistics are committed in the product's derived data; the calibration null is the variant with nothing planted under the ten case seeds 5013 to 5022 (10,000 desk-years, with seeds that meet none of the committed ones); five further bakes use the case seeds 23, 33, 43, 53 and 63.
+
+\input{tables/variants}
+
+\subsection{Published methods compared}
+\label{sec:design-comparators}
+
+Every method below is run on the same desk-years as the proposed one; none enters through its reported numbers.
+The regulatory zone, the Kolmogorov--Smirnov distance alone and the Spearman correlation of the levels alone are the engine's own statistics and zones, as are the desk back-test over its limit (more than 12 exceptions at 99\% or more than 30 at 97.5\% in 250 days) and the Christoffersen conditional-coverage test at 97.5\% \citep{christoffersen1998}.
+The regression of Mincer and Zarnowitz \citep{mincer1969} is run with the ordinary least-squares covariance $s^2(X'X)^{-1}$, with $s^2=\hat e'\hat e/(n-2)$, and on the squared series $\HPL_t^2$ and $\RTPL_t^2$ with the HC3 covariance, the squares being the proxy of the variance in the sense of \citet{patton2009}.
+The Ljung--Box statistic \citep{ljung1978} of the squared residual $\HPL_t-\RTPL_t$ is
+\begin{equation}
+Q=n(n+2)\sum_{j=1}^{10}\frac{\hat\rho_j^{\,2}}{n-j},
+\label{eq:ljung-box}
+\end{equation}
+with $\hat\rho_j$ the autocorrelation of the squared residual at lag $j$.
+The three comparators that the engine does not carry, the ordinary-covariance regression, the regression on the squares and the Ljung--Box statistic, were written for this evaluation and agree with the independent implementations of \texttt{statsmodels} to a relative difference below $10^{-9}$ on a test desk-year.
+To separate the threshold from the statistic, the Kolmogorov--Smirnov distance and the Spearman correlation of the levels are also run with a threshold read from the same null at the same 1\% size.
+Every calibrated comparator uses the rule of Equation~\eqref{eq:critical} on the same 10,000 null desk-years at a size of 1\% per statistic; the union of the three proposed components uses the Bonferroni split.
+
+\subsection{Metrics and statistics}
+\label{sec:design-metrics}
+
+The detection rate of a detector on a variant is $\hat p=k/n$ with $k$ the number of flagged replications of $n=1{,}000$, and its 95\% interval is the Wilson interval \citep{wilson1927},
+\begin{equation}
+\frac{\hat p+z^2/(2n)\ \pm\ z\sqrt{\hat p(1-\hat p)/n+z^2/(4n^2)}}{1+z^2/n},\qquad z=1.96.
+\label{eq:wilson}
+\end{equation}
+On the variant with nothing planted $\hat p$ is the false-alarm rate, and the held-out one is the rate on the committed replications of that variant, whose seeds share nothing with the calibration null.
+The threshold-free comparison is the area under the ROC curve of a statistic $S$ between $n_1$ stale and $n_0$ held-out desk-years,
+\begin{equation}
+\mathrm{AUC}=\frac{1}{n_1n_0}\sum_{i=1}^{n_1}\sum_{j=1}^{n_0}\Bigl(\indic[S_i^{(1)}\succ S_j^{(0)}]+\tfrac12\indic[S_i^{(1)}=S_j^{(0)}]\Bigr),
+\label{eq:auc}
+\end{equation}
+where $\succ$ means more extreme in the flagging direction, with a percentile bootstrap interval from 1,000 resamples (seed 0).
+Stability is the mean and the standard deviation, with $n-1$ in the denominator, of a detection rate over the five further bakes.
+The outcome of a prediction is decided by the point estimate and its interval against the criterion of Table~\ref{tab:hypotheses}.
+Rates are reported in percent with one decimal, and a rate of zero is read through its interval, whose upper end is 0.4\% on 1,000 replications.
+Power and size are always read together: a detector with a high power and a size above the stated one is not preferred to a detector with a lower power and the stated size, which is why every calibrated detector uses the same null and the same nominal size.
+
+\subsection{Protocol, repetitions and the experiments}
+\label{sec:design-protocol}
+
+The thresholds are calibrated once, on the 10,000 null desk-years, before any desk with a planted deficiency is evaluated, and are applied unchanged to every experiment below.
+\begin{enumerate}
+\item \textbf{Committed bake}: the six variants under case seed 13, 1,000 replications each, every detector of Section~\ref{sec:design-comparators}; the statistics of the engine's functions are checked to agree count for count with the committed C13 documents of the product.
+\item \textbf{Five further bakes}: the six variants under case seeds 23 to 63, 30,000 desk-years, for the stability of every rate.
+\item \textbf{Lag ladder}: the stale-volatility variant at lags of 2, 5, 10, 20, 40 and 80 days under case seed 13; the lags 5, 10, 20 and 40 were fixed with the method, and 2 and 80 were added to locate the ends of the range.
+\item \textbf{Area under the curve and power against size}: the stale desks at lags of 5, 10 and 20 days against the held-out null, and the power at sizes from 0.1\% to 20\% with the held-out false-alarm rate at each.
+\item \textbf{Constant mis-scale and level error}: the no-deficiency desk of case seed 13 with RTPL multiplied by 0.8, 0.9, 1.1 or 1.25, or shifted by 0.1 or 0.2 standard deviations of the HPL, to test H5.
+\item \textbf{Alternative nulls}: 1,000 desk-years with nothing planted whose generator differs in one parameter (volatility persistence 0.90 or 0.995, volatility dispersion 0.20 or 0.50, pricing noise 5\% or 30\% of the factor profit and loss), with the thresholds of the calibration null, to test H3.
+\item \textbf{Ablation}: the full complement, each statistic removed or alone, the window at 5, 10, 40 and 60 days, the ordinary covariance in place of HC3, no multiplicity correction, and rolling means at four windows combined, on the held-out null and on the stale desks at four lags and the four other variants.
+\item \textbf{Checks of the theory}: the leave-one-block-out size on the real null, an independent simulation of the size of Proposition~\ref{prop:size} on Gaussian draws, and the slope and the rolling-mean correlation of Propositions~\ref{prop:slope} and~\ref{prop:rolling} on 250-day and 100,000-day windows of the noise-free model.
+\end{enumerate}
+The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve.

@@ -4,6 +4,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { rangeText } from '../c08/words';
 import { useCard } from '../c03/U6Shared';
 import { ViewFoot, deficiencyName } from './C13Common';
 import { fitOf, levelLabel, outputsOf, type C13Sel } from './selection';
@@ -21,8 +22,8 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
   if (!lvl) {
     return (
       <ViewsRow>
-        <PlotCard fill title={{ en: `Desk back-test, ${name.en}`, es: `Backtest de mesa, ${name.es}` }} {...card}>
-          <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no desk back-test at this level.', es: 'Esta variante no trae backtest de mesa en este nivel.' }, lang)}</p>
+        <PlotCard fill title={{ en: `Desk back-test, ${name.en}`, es: `Prueba retrospectiva de la mesa, ${name.es}` }} {...card}>
+          <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no desk back-test at this level.', es: 'Esta variante no trae prueba retrospectiva de la mesa en este nivel.' }, lang)}</p>
           <ViewFoot o={o} />
         </PlotCard>
       </ViewsRow>
@@ -30,11 +31,13 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
   }
   const e = lvl.exceptions;
   const bars = [
+    // short labels a 390 px chart writes whole ("5th perce...", R3 c14 m10); the hint names the percentile
     { id: 'min', label: { en: 'Fewest', es: 'Mínimo' }, value: e.min, tone: 'accent' as const },
-    { id: 'q05', label: { en: '5th percentile', es: 'Percentil 5' }, value: e.q05, tone: 'accent' as const },
+    { id: 'q05', label: { en: 'P5', es: 'P5' }, hint: { en: '5th percentile', es: 'Percentil 5' }, value: e.q05, tone: 'accent' as const },
     { id: 'q50', label: { en: 'Median', es: 'Mediana' }, value: e.q50, tone: 'accent' as const },
-    { id: 'mean', label: { en: 'Mean', es: 'Media' }, value: e.mean, tone: 'accent' as const },
-    { id: 'q95', label: { en: '95th percentile', es: 'Percentil 95' }, value: e.q95, tone: 'accent' as const },
+    // the mean with the decimal of the table (R3 c14 m2: a bar "22" beside 22.2)
+    { id: 'mean', label: { en: 'Mean', es: 'Media' }, value: e.mean, tone: 'accent' as const, format: { decimals: 1 } },
+    { id: 'q95', label: { en: 'P95', es: 'P95' }, hint: { en: '95th percentile', es: 'Percentil 95' }, value: e.q95, tone: 'accent' as const },
     { id: 'max', label: { en: 'Most', es: 'Máximo' }, value: e.max, tone: 'accent' as const },
     { id: 'limit', label: { en: 'Limit', es: 'Límite' }, value: lvl.limit_exceptions, tone: 'bad' as const },
   ];
@@ -42,7 +45,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `Desk back-test at the ${levelLabel(lvl.alpha, 'en')}, ${name.en}`, es: `Backtest de mesa en la ${levelLabel(lvl.alpha, 'es')}, ${name.es}` }}
+        title={{ en: `Desk back-test at the ${levelLabel(lvl.alpha, 'en')}, ${name.en}`, es: `Prueba retrospectiva de la mesa en la ${levelLabel(lvl.alpha, 'es', true)}, ${name.es}` }}
         {...card}
         note={{
           en: `Exceptions of the ${lvl.basis} against the desk VaR over ${count(lvl.n_days, 'en')} days, across the replications. More than ${count(lvl.limit_exceptions, 'en')} moves the desk to the standardised approach.`,
@@ -57,18 +60,19 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
               height="fill"
               orientation="vertical"
               data={bars}
-              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { decimals: 1 } }}
+              axis={{ label: { en: 'Exceptions', es: 'Excepciones' }, format: { decimals: 0 } }}
             />
           }
         >
           <div data-level={lvl.alpha}>
             <table className="caos-table ct-wrap-head" data-table="c13-desk">
-              <caption className="ct-note">{reference}</caption>
+              <caption className="ct-note">{rangeText(reference, lang)}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Level', es: 'Nivel' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Basis', es: 'Base' }, lang)}</th>
                   <th>{pick({ en: 'Limit', es: 'Límite' }, lang)}</th>
+                  <th>{pick({ en: 'Mean', es: 'Media' }, lang)}</th>
                   <th>{pick({ en: '95th percentile', es: 'Percentil 95' }, lang)}</th>
                   <th>{pick({ en: 'Within the limit', es: 'Dentro del límite' }, lang)}</th>
                   <th>{pick({ en: 'Over the limit', es: 'Sobre el límite' }, lang)}</th>
@@ -81,6 +85,7 @@ export function DeskView({ sel }: { sel: C13Sel | null }) {
                     <td className="ct-text">{levelLabel(l.alpha, lang)}</td>
                     <td className="ct-text ct-wide-only">{l.basis}</td>
                     <td>{count(l.limit_exceptions, lang)}</td>
+                    <td>{formatNumber(l.exceptions.mean, lang, { decimals: 1 })}</td>
                     <td>{formatNumber(l.exceptions.q95, lang, { decimals: 1 })}</td>
                     <td>{count(l.n_within_limit, lang)}</td>
                     <td>{count(l.n_over_limit, lang)}</td>

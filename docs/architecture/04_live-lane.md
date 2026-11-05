@@ -17,9 +17,10 @@ pipeline:
 Every threshold is labelled as policy, never as regulation, unless the row carries a regulatory reference
 (`frontend/src/lib/labels.test.ts`, CT-104).
 
-## Next: the engine in the browser
+## The live lane is TypeScript ports (decision D16-9)
 
-`riskvalidation` is pure NumPy and SciPy, so it can run in Pyodide and let a reader rerun any test with new
-segments, windows or a master scale. It is admitted feature by feature, only when the gate measures its cold start
-and run time in the browser and a parity test reproduces the committed value; it waits for the engine's first PyPI
-release, from which Pyodide installs it (no wheel is committed to this repository).
+The live lane stays what the table above lists: TypeScript ports of the engine's calculators in `frontend/src/engine/`, each held to the
+engine by a parity test on points the pipeline exports. `riskvalidation` is published on PyPI (the release the pipeline pins), and its core
+depends only on NumPy and SciPy, so Pyodide could install it. Pyodide is admitted only by measurement, feature by feature: when the gate
+measures its cold start and run time in the browser and a parity test reproduces the committed value. No such measurement exists and none is
+planned, so no Pyodide lane is wired and no wheel is committed to this repository.
