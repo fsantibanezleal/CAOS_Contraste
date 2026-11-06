@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\caption{Ablation of the proposed protocol: each row removes one component and reports, on the same data, the quantity the component makes visible; the first two rows read the committed CEREP artifacts, the next four the known-truth draws, the last two the exact enumeration and the matrix tests.}
+\label{tab:ablation}
+\resizebox{\linewidth}{!}{\begin{tabular}{p{3.2cm}p{2.6cm}p{3.2cm}p{2.4cm}p{3cm}}
+\toprule
+Component of the protocol & Without it & Quantity & With the component & Without the component \\
+\midrule
+\relax Report the three pages' definitions side by side & \relax Report the transition page only & \relax S\&P CCC to C, long-run PD (\%) & $26.64$ and $8.61$ & $8.61$ (the gap is not seen) \\
+\relax The same, carried to capital & \relax Report the transition page only & \relax S\&P risk weight (\%) & $58.0$ and $47.5$ & $47.5$ ($10.5$ points lower) \\
+\relax Informativeness ladder of $k$ & \relax Run $k=0$ only & \relax B, removed estimator, relative bias (\%) & $-35.1\pm0.3$ at $k=9$ & $2.6\pm0.4$ at $k=0$ (opposite sign) \\
+\relax Known-truth reference & \relax Compare the three treatments with one another & \relax B at $k=9$: bias of the least biased treatment (followed) & $-15.6\pm0.3$ against the truth & \relax treatments span $23.7$ points; the offset of every one from the truth is unknown \\
+\relax First-year cohort alone & \relax Pool five annual cohorts & \relax B, followed estimator, relative bias at $k=9$ (\%) & $1.4\pm0.8$ (first year) & $-15.6\pm0.3$ (pooled) \\
+\relax Paired observed and latent draws & \relax Independent draws & \relax Standard error of removed minus latent, B, $k=9$ ($10^{-5}$) & $3.0$ & $5.6$ \\
+\relax Exact enumeration of the coverage & \relax Estimate the coverage by simulation & \relax Repetitions to resolve the Wald coverage of AAA at $n=50$ to 10\% relative error & \relax 0 (exact) & $30{,}400$ \\
+\relax Matrix tests as the screen for withdrawals & \relax None needed (no screen) & \relax Rejection rate at 5\% of the weaker test at $k=9$ (\%) & $1.4$ and $5.8$ & \relax the screen detects no more than its size \\
+\bottomrule
+\end{tabular}}
+\end{table}

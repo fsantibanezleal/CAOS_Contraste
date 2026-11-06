@@ -1,0 +1,83 @@
+\subsection{Setting: a two-state chain with informative withdrawal}
+\label{sec:theory-setting}
+
+The question the theory answers is why each treatment of the withdrawn ratings has the bias it has, and how that bias depends on $k$. The simplest chain that carries the mechanism has one performing grade and default. The default time $\tau$ is exponential with hazard $\lambda$, so that the true one-year PD is $p=1-e^{-\lambda}$. The withdrawal time $U$, given $\tau$, has the hazard of Equation~\eqref{eq:withdrawal-hazard} with window $\omega=1$ year: $w$ outside the last year before $\tau$ and $\theta=w(1+k)$ inside it. A rating is observed from time $0$ until the first of $\tau$ and $U$, in annual snapshots. The cohort that starts at year $t$ consists of the ratings outstanding then, those with $\tau>t$ and $U>t$. For such a cohort, taking the numbers of ratings to infinity so that frequencies equal probabilities, four masses determine every estimator:
+\begin{align}
+a_t&=\Prob(\tau>t,\;U>t), & d_t&=\Prob(t<\tau\le t+1,\;U>\tau),\label{eq:masses-a}\\
+s_t&=\Prob(\tau>t+1,\;U>t+1), & f_t&=\Prob(t<\tau\le t+1,\;U>t).\label{eq:masses-b}
+\end{align}
+The mass $a_t$ is the size of the cohort, $d_t$ the defaults seen before any withdrawal (the default column of the transition page), $s_t$ the ratings still rated and not in default at the end of the year, and $f_t$ the defaults of the year among the cohort when the end of every rating is read on the latent path, including those withdrawn first. The estimators of Equation~\eqref{eq:estimators} converge, on a single cohort, to $d_t/(d_t+s_t)$ for the removal of the withdrawn ratings, to $d_t/a_t$ for keeping them, and to $f_t/a_t$ for following them; pooled over the years they converge to the same ratios of sums. The reference that follows everyone converges to $p$.
+
+Two features of the mechanism drive everything below. First, a rating that will default in the year $(t,t+1]$ was exposed to the elevated hazard for the part of its last year that lies after time $0$, so that an early withdrawal removes it from the observed defaults. Second, a rating that will default in the following year was exposed to the elevated hazard during the part of the current year that overlaps its window, so that it is withdrawn at a higher rate, is under-represented among the survivors, and is absent from later cohorts. The first feature biases the removal and keeping treatments in the first year; the second biases every treatment in the later years, including the one that follows the withdrawn ratings.
+
+\subsection{The first-year cohort}
+\label{sec:theory-first-year}
+
+\begin{proposition}[First-year cohort]\label{prop:first-year}
+Let $\theta=w(1+k)$ and $T\ge2$ years. For the cohort that starts at time $0$,
+\begin{align}
+d_0&=\lambda\,\frac{1-e^{-(\lambda+\theta)}}{\lambda+\theta},\label{eq:d0}\\
+s_0&=e^{-w}\Bigl[e^{-2\lambda}+\lambda\,\frac{e^{-\lambda-kw}-e^{-2\lambda}}{\lambda-kw}\Bigr],\label{eq:s0}
+\end{align}
+(the quotient read as its limit $e^{-2\lambda}$ when $\lambda=kw$), and the three estimators converge to
+\begin{equation}
+\hat p^{\mathrm{rem}}\to\frac{d_0}{d_0+s_0},\qquad \hat p^{\mathrm{kept}}\to d_0,\qquad \hat p^{\mathrm{fol}}\to p.
+\label{eq:first-year-limits}
+\end{equation}
+Consequently (i) the followed treatment is unbiased on the first cohort for every $k$; (ii) the kept treatment is strictly below the removal treatment whenever $w>0$, and is strictly decreasing in $k$; (iii) both tend to $0$ as $k\to\infty$, so that their relative biases tend to $-1$; and (iv) as $\lambda\to0$ with $w$ and $k$ fixed, the relative biases of the removal and keeping treatments tend to
+\begin{equation}
+\beta^{\mathrm{rem}}\to\frac{e^{w}\bigl(1-e^{-\theta}\bigr)}{\theta}-1,\qquad
+\beta^{\mathrm{kept}}\to\frac{1-e^{-\theta}}{\theta}-1,
+\label{eq:first-order}
+\end{equation}
+which do not depend on the PD.
+\end{proposition}
+
+\begin{proof}
+A rating with $\tau\le1$ has its whole life $(0,\tau)$ inside the elevated window, whose start $\tau-1$ is not after $0$, so $\Prob(U>\tau\mid\tau)=e^{-\theta\tau}$, and $d_0=\int_0^1\lambda e^{-\lambda\tau}e^{-\theta\tau}\,\dd\tau$, which is Equation~\eqref{eq:d0}. For $1<\tau<2$ the window $(\tau-1,\tau)$ meets the first year in $(\tau-1,1)$, of length $2-\tau$, so $\Prob(U>1\mid\tau)=\exp\{-w-kw(2-\tau)\}$; for $\tau\ge2$ it is $e^{-w}$. Then $s_0=\int_1^2\lambda e^{-\lambda\tau}e^{-w-kw(2-\tau)}\dd\tau+e^{-w}e^{-2\lambda}$, and the integral is $\lambda e^{-w}e^{-2kw}\bigl[e^{(kw-\lambda)\tau}\bigr]_1^2/(kw-\lambda)$, which gives Equation~\eqref{eq:s0}. The cohort at time $0$ is the whole population, so the followed estimator counts every default of the year, $\Prob(\tau\le1)=p$, which is (i). Since $d_0+s_0\le1$ (the two events are disjoint), $d_0/(d_0+s_0)\ge d_0$, with equality only if the withdrawn mass is zero. The integrand of $d_0$ decreases in $\theta$ and $\theta$ increases in $k$, so $d_0$ is strictly decreasing in $k$, which completes (ii). As $k\to\infty$, $d_0\le\lambda/\theta\to0$ while $s_0\to e^{-w-2\lambda}>0$, so both $d_0$ and $d_0/(d_0+s_0)$ tend to $0$, which is (iii). For (iv), $d_0=\lambda(1-e^{-\theta})/\theta+O(\lambda^{2})$, $s_0=e^{-w}+O(\lambda)$ and $p=\lambda+O(\lambda^{2})$; dividing gives Equation~\eqref{eq:first-order}.
+\end{proof}
+
+At $k=0$ the first-order biases are $(e^{w}-1)/w-1\approx w/2$ for the removal treatment and $(1-e^{-w})/w-1\approx-w/2$ for keeping: with $w=\wRate\%$ they are $\foRemkZero\%$ and $\foKeptkZero\%$. Removing a rating that is withdrawn without information shortens the time the cohort is exposed, and the defaults of the remaining ratings are divided by a smaller denominator, so the estimate is too high; keeping the ratings divides the defaults that were seen by a cohort that includes the ones that could no longer default, and the estimate is too low. At $k=9$ the first-order values are $\foRemkNine\%$ and $\foKeptkNine\%$.
+
+\subsection{Selection in the later cohorts}
+\label{sec:theory-selection}
+
+\begin{proposition}[Later cohorts]\label{prop:later}
+For a cohort that starts at year $t\ge1$ the followed estimator converges to
+\begin{equation}
+\frac{f_t}{a_t}=\frac{n_k}{n_k+e^{-\lambda}},\qquad n_k=\lambda\,\frac{e^{-\lambda}-e^{-kw}}{kw-\lambda},
+\label{eq:later}
+\end{equation}
+which does not depend on $t$, equals $p$ when $k=0$, and is strictly below $p$ when $k>0$. Its relative bias, to first order in $\lambda$, is $(1-e^{-kw})/(kw)-1$. The pooled followed estimator converges to $\sum_t a_tf_t/a_t\big/\sum_ta_t$, the average of the first-year value $p$ and of the later-year value of Equation~\eqref{eq:later} weighted by the cohort sizes.
+\end{proposition}
+
+\begin{proof}
+A rating of the cohort at year $t\ge1$ with default time $\tau\in(t,t+1]$ has its window $(\tau-1,\tau)$ overlapping $(0,t)$ in $(\tau-1,t)$, of length $t+1-\tau$, so its survival to $t$ without withdrawal has probability $e^{-wt}e^{-kw(t+1-\tau)}$; for $\tau>t+1$ the window does not meet $(0,t)$ and the probability is $e^{-wt}$. With $s=\tau-t$, $f_t=e^{-wt-\lambda t}\,\lambda\int_0^1e^{-\lambda s-kw(1-s)}\dd s=e^{-wt-\lambda t}\,n_k$ and $a_t=e^{-wt-\lambda t}(n_k+e^{-\lambda})$, whose ratio is Equation~\eqref{eq:later}; the factor $e^{-wt-\lambda t}$ cancels, so the ratio does not depend on $t$. At $k=0$, $n_0=1-e^{-\lambda}=p$ and $p+e^{-\lambda}=1$, so the ratio is $p$. For $k>0$ the integrand $e^{-kw(1-s)}$ is below $1$ on $s<1$, so $n_k<p$, and $x\mapsto x/(x+e^{-\lambda})$ is increasing, so the ratio is below $p$. As $\lambda\to0$, $n_k=\lambda(1-e^{-kw})/(kw)+O(\lambda^2)$, which gives the first-order bias. The pooled limit is the ratio of sums of the masses.
+\end{proof}
+
+The proposition explains the sign and the size of the bias that the guidelines' treatment retains. The ratings that will default next year are the ones withdrawn at the higher rate this year, so the cohort of next year is short of them, whatever is done with the ratings withdrawn within the year. At $k=9$ the first-order bias of a later cohort is $\foFolkNine\%$ and the pooled estimator, which averages one unbiased cohort with four biased ones, is below the truth by less than that: the closed-form value is $\thBfollowedPoolkNine\%$ on the chain of grade B. A validator who follows every withdrawn rating to the year end, and still pools years, keeps most of the bias.
+
+\subsection{The coverage of a rare PD}
+\label{sec:theory-coverage}
+
+\begin{proposition}[Wald coverage of a rare PD]\label{prop:wald}
+Let $X\sim\mathrm{Binomial}(n,p)$ and let the Wald interval be $\hat p\pm z\sqrt{\hat p(1-\hat p)/n}$ with $\hat p=X/n$, bounded to $[0,1]$. Then for every $n$ and $p>0$ the coverage satisfies $c_W(n,p)\le 1-(1-p)^n\le np$, and if $np\le1$ and $n\ge14$ with $z=1.96$,
+\begin{equation}
+1-(1-p)^n-\frac{(np)^4}{24}\;\le\;c_W(n,p)\;\le\;1-(1-p)^n.
+\label{eq:wald-coverage}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+At $X=0$ the interval is the single point $0$, which does not contain $p>0$, so $c_W\le\Prob(X\ge1)=1-(1-p)^n\le\mathbb E[X]=np$. For the lower bound, take $x\in\{1,2,3\}$. The upper end of the interval is at least $x/n\ge1/n\ge p$ when $np\le1$. The lower end is $\bigl(x-z\sqrt{x(1-x/n)}\bigr)/n$, which is not positive when $x(1+z^{2}/n)\le z^{2}$; for $x\le3$ and $n\ge14$ this holds at $z=1.96$ because $3(1+3.84/14)=3.82\le3.84$, and then the bounded lower end is $0\le p$. So the interval contains $p$ for $x=1,2,3$, and $c_W\ge\Prob(1\le X\le3)=\Prob(X\ge1)-\Prob(X\ge4)$. Finally $\Prob(X\ge4)\le\binom n4p^4\le(np)^4/24$.
+\end{proof}
+
+The proposition says that the Wald interval of a grade whose expected default count $np$ is at most one covers, in the best case, only the samples that contain a default, and that this probability is below $np$: a cohort that expects half a default gives a coverage of at most a half. For the Jeffreys interval of the case, whose upper end at $X=0$ is the $97.5\%$ quantile of the Beta distribution with parameters $1/2$ and $n+1/2$, the same enumeration gives the opposite behaviour: the interval at $X=0$ contains every $p$ below that quantile, so $c_J(n,p)\ge(1-p)^n$ whenever $p$ lies below it; for $n=50$ the quantile is near $5\%$. The coverage is bought with width: at the PD of AAA the expected length of the Jeffreys interval at 50 obligors is $\lenJeffAaaFifty$ basis points against a PD of $\pAaaBp$ basis points and a Wald length of $\lenWaldAaaFifty$ basis points. The enumerated coverage agrees with $1-(1-p)^n$ to $\cfAaaFiftyDiff$ for AAA at $n=50$ and with $(1-p)^n$ for the Jeffreys interval to $\cfJeffMaxDiff$ over the sizes up to 200 and the three lowest grades.
+
+\subsection{Conditions of validity and a conjecture}
+\label{sec:theory-conjecture}
+
+The propositions hold for a two-state chain with a constant default hazard, an exponential withdrawal time and a window of one year. Three conditions matter for applying them to a rating grade. First, the grade is a multi-state chain: a rating can move to a neighbouring grade before it defaults, its default hazard changes with the move, and the cohort at later years is a mixture of ratings that entered the grade at different times; the two-state formulas are then approximations whose error is a question of measurement. Second, the pooled expectation takes the cohort sizes as the weights of Equation~\eqref{eq:estimators}, and the horizon of five years truncates the window for defaults after the last snapshot, which the numerical evaluation of Section~\ref{sec:results-theory} includes and the closed forms above do not. Third, the single baseline rate $w$ stands for what is in practice a rate that varies by grade and by year.
+
+
+We state as a conjecture, with its evidence, that the first-order formulas of Equation~\eqref{eq:first-order} describe the bias of the first cohort of any grade whose PD is small compared with $1/\theta$. At $k=9$ the formulas give $\foRemkNine\%$ for removal and $\foKeptkNine\%$ for keeping, and the multi-state generator of S\&P-like cohorts gives, for the first cohort, $\removedYoneBbbkNine\pm\removedYoneBbbkNinese\%$, $\removedYoneBbkNine\pm\removedYoneBbkNinese\%$ and $\removedYoneBkNine\pm\removedYoneBkNinese\%$ for removal in grades BBB, BB and B (PDs of $0.08\%$ to $1.2\%$), and $\keptYoneBkNine\pm\keptYoneBkNinese\%$ for keeping in grade B. The conjecture would be refuted by a grade with a PD below $1/\theta=1.7$ whose measured first-cohort bias differs from the formula by more than three standard errors. Grade CCC to C, with a PD of $\pCcc\%$, is the nearest case: removal gives $\removedYoneCcckNine\pm\removedYoneCcckNinese\%$ against the first-order $\foRemkNine\%$, a difference of about three standard errors, while the exact closed form of Equation~\eqref{eq:first-year-limits} for the PD of that grade, $\thCccremovedYonekNine\%$, lies within two standard errors of the measurement. The first-order formula is therefore an accurate summary for grades with a PD of a few percent or less, and the exact closed form is needed above that.

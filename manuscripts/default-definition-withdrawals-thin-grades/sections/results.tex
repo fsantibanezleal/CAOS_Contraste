@@ -1,0 +1,107 @@
+\subsection{The default definition on the real cohorts}
+\label{sec:results-definitions}
+
+Table~\ref{tab:definitions} gives the long-run average PD of S\&P's grades under the four definitions, and Figure~\ref{fig:lra-definitions} shows the same quantities for S\&P and Fitch with the Jeffreys intervals of the pooled counts. The default page and the defaults page agree to within a few percent of each other in every grade, because they count the same distinct defaulted ratings and differ only in the cohort ($\spLraDtwoCcc\%$ and $\spLraDthreeCcc\%$ for CCC to C). The transition page does not agree with them. For CCC to C the long-run average is $\spLraDfourCcc\%$ against $\spLraDtwoCcc\%$, and keeping the withdrawals in the denominator lowers it further to $\spLraKeepCcc\%$. The gap index of Equation~\eqref{eq:gap-index} is $\spRatioCcc$ with a 95\% bootstrap interval of $\spRatioCccLo$ to $\spRatioCccHi$; the pooled counts say the same thing with sampling error alone, $\spPooledDefDtwoCcc$ defaults over $\spPooledNDtwoCcc$ ratings under the default page ($\spPooledRateDtwoCcc\%$, Jeffreys interval $\spJeffLoDtwoCcc\%$ to $\spJeffHiDtwoCcc\%$) against $\spPooledDefDfourCcc$ over $\spPooledNDfourCcc$ under the transition page ($\spPooledRateDfourCcc\%$, $\spJeffLoDfourCcc\%$ to $\spJeffHiDfourCcc\%$). The two intervals do not overlap. For grade B the index is $\spRatioB$ ($\spRatioBLo$ to $\spRatioBHi$): the transition page's average is about half the default page's, but the interval reaches $0.5$ and the claim is not made for that grade. The sign of the gap does not vary: the transition page's rate is below the default page's in $\spYearsBelowCcc$ of $\spYearsCcc$ years for CCC to C and in $\spYearsBelowB$ of $\spYearsB$ for B, as Figure~\ref{fig:yearly-gap} shows year by year. The two series move together: for CCC to C both pages peak in the same year, $\spPeakYearCccDtwo$, at $\spPeakRateCccDtwo\%$ under the default page and $\spPeakRateCccDfour\%$ under the transition page, and the gap persists in the years of low default rates, so it is not the effect of a few recession years.
+
+\input{tables/definitions}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{lra-definitions}
+\caption{Long-run average one-year PD by grade of S\&P and Fitch under the default page, the defaults page, the transition page and the transition page with the withdrawals kept, on a logarithmic axis, with the Jeffreys intervals of the pooled counts of the three pages that publish counts; grades with an average of zero are not drawn.}
+\label{fig:lra-definitions}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{yearly-gap}
+\caption{One-year default rate of S\&P's grades B and CCC to C for each annual cohort from 2000 to 2025 under the default page, the transition page and the transition page with the withdrawals kept, showing that the transition page lies below the default page in every year.}
+\label{fig:yearly-gap}
+\end{figure}
+
+Figure~\ref{fig:lra-definitions} shows that the gap is largest in the speculative grades, where the withdrawn share and the default rate are both large; in grade A the interval of the gap index of Table~\ref{tab:definitions} includes one, and in AA the index rests on a single year with a nonzero rate. It does not show why the gap exists. The three explanations that the data cannot separate are the definitions themselves (a rating that defaults and is then withdrawn leaves the transition page's default column), informative withdrawal, and the difference between the cohorts that the pages divide by, which is larger for the default page in $\spGapYears$ of S\&P's years.
+
+The capital consequence is in Table~\ref{tab:rw} and Figure~\ref{fig:rw-definitions}. The risk weight of S\&P's cohort mix is $\spRwDtwo\%$ with the PDs of the default page and $\spRwDfour\%$ with those of the transition page, a fall of $\spRwGap$ points whose 95\% bootstrap interval is $\spRwGapLo$ to $\spRwGapHi$ and which is positive in $\spRwGapShare\%$ of the $\bootB$ resamples; keeping the withdrawals lowers the weight to $\spRwKeep\%$. For Fitch the weight falls from $\fiRwDtwo\%$ to $\fiRwDfour\%$ ($\fiRwGapLo$ to $\fiRwGapHi$ points), and the transition page's gap index for CCC to C is $\fiRatioCcc$ ($\fiRatioCccLo$ to $\fiRatioCccHi$). The intervals of the levels overlap in Figure~\ref{fig:rw-definitions}, because the years that raise the rates under one page raise them under the other; the interval of the difference does not, because the resample is common to the definitions. Moody's default page gives $\moLraDtwoCcc\%$ for CCC to C and a weight of $\moRwDtwo\%$, so the default pages of S\&P and Moody's differ by a factor of $\agencyRatio$ for that grade, as large a spread as the definitions of one agency produce. Prediction H1 holds for CCC to C: the upper end of the interval of the gap index is below $0.5$ and the lower end of the risk-weight difference is above zero and above 5 points.
+
+\input{tables/rw}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{rw-definitions}
+\caption{IRB risk weight of each agency's cohort mix under each definition of the one-year default rate, with the 95\% percentile interval over resamples of the cohort years; Moody's has no transition page default category, so only its default page is shown.}
+\label{fig:rw-definitions}
+\end{figure}
+
+\subsection{Informative withdrawals on paths of known truth}
+\label{sec:results-withdrawals}
+
+The committed computation of the case is reproduced to within $\reproMax$ at its four levels of $k$, so the extension rests on the same generator and seeds. Table~\ref{tab:main-results} gives the extension, and Figure~\ref{fig:bias-ladder} plots the bias of grade B against $k$, pooled over five cohorts and on the first cohort alone. At $k=0$, with withdrawal independent of default, removing the withdrawn ratings overstates the PD of B by $\removedBkZero\pm\removedBkZerose$ percent, keeping them understates it by $\keptBkZero\pm\keptBkZerose$ percent, and following them is unbiased ($\followedBkZero\pm\followedBkZerose$), as the first-order formulas predict ($\foRemkZero\%$, $\foKeptkZero\%$ and zero). At $k=1$ the bias of removal has changed sign, $\removedBkOne\pm\removedBkOnese$ percent; at $k=9$, the case the committed computation reports, removal understates the PD by $\removedBkNine\pm\removedBkNinese$ percent, keeping by $\keptBkNine\pm\keptBkNinese$ percent and following by $\followedBkNine\pm\followedBkNinese$ percent (the committed $\repsCommitted$ repetitions gave $\committedremovedkNine\%$, $\committedkeptkNine\%$ and $\committedfollowedkNine\%$). At $k=19$ the removal treatment loses $\removedBkNineteen\pm\removedBkNineteense$ percent of the PD. Grade CCC to C behaves alike: $\removedCcckNine\pm\removedCcckNinese$ percent for removal and $\followedCcckNine\pm\followedCcckNinese$ percent for following at $k=9$. For the lowest grades the estimate is exactly zero in most repetitions (in $\zeroAaaRemoved\%$ of them for AAA with removal at $k=9$), a consequence of the thin cohorts that Section~\ref{sec:results-thin} measures.
+
+\input{tables/main-results}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{bias-ladder}
+\caption{Relative bias of the one-year PD of grade B against the informativeness of withdrawal for the removal, keeping and following treatments and the no-withdrawal reference, pooled over five annual cohorts (left) and on the first cohort (right), with 95\% intervals from the Monte Carlo standard error of $\repsNew$ repetitions.}
+\label{fig:bias-ladder}
+\end{figure}
+
+The right panel of Figure~\ref{fig:bias-ladder} is the finding of Proposition~\ref{prop:first-year}. On the first cohort the followed treatment is unbiased at every $k$ (at $k=9$, $\followedYoneBkNine\pm\followedYoneBkNinese$ percent, the sampling noise of the reference), while removal reaches $\removedYoneBkNine\pm\removedYoneBkNinese$ percent and keeping $\keptYoneBkNine\pm\keptYoneBkNinese$ percent. The left panel is the finding of Proposition~\ref{prop:later}: pooling five cohorts adds a bias to the followed treatment that the first cohort did not have. The figure does not show the behaviour of a validator who does not know $k$; the three curves are what each treatment would give at each value of the unknown $k$.
+
+The consequence for capital is in the last two columns of Table~\ref{tab:main-results} and in Figure~\ref{fig:rw-error-ladder}. With the true risk weight of the cohort mix at $\rwTruth\%$, the removal treatment lowers it by $\rwAbsremovedkNine$ points at $k=9$ (standard error $\rwremovedkNinese$) and the followed treatment by $\rwAbsfollowedkNine$ points; at $k=19$ the removal error is $\rwremovedkNineteen$ points. The no-withdrawal reference is within $\latentRwMaxZ$ standard errors of zero at every $k$. Prediction H2 holds: at $k=9$ the upper ends of the 95\% intervals of the bias are $\removedBkNine+1.96\times\removedBkNinese$ and $\followedBkNine+1.96\times\followedBkNinese$ percent, both below $-10\%$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\linewidth]{rw-error-ladder}
+\caption{Error, in points, of the IRB risk weight of S\&P's cohort mix computed from the PDs of each treatment of the withdrawn ratings against the informativeness of withdrawal, with 95\% intervals from the Monte Carlo standard error of $\repsNew$ repetitions.}
+\label{fig:rw-error-ladder}
+\end{figure}
+
+\subsection{What the matrix tests see}
+\label{sec:results-tests}
+
+Table~\ref{tab:tests} and Figure~\ref{fig:tests-rejection} give the rejection rates of the two tests at three levels of $k$ over $\repsTests$ repetitions. At $k=0$ the test of time homogeneity rejects $\testthkZerofive\%$ of the repetitions at the 5\% level (Wilson interval $\testthkZerofivelo$ to $\testthkZerofivehi$) and the test of the last matrix against the true one $\testmrkZerofive\%$, below its level. At $k=9$, where the treatments are $\removedBkNine\%$ and $\followedBkNine\%$ off the truth, the rates are $\testthkNinefive\%$ ($\testthkNinefivelo$ to $\testthkNinefivehi$) and $\testmrkNinefive\%$ ($\testmrkNinefivelo$ to $\testmrkNinefivehi$): the first is within the size of the test plus a fraction, and the second, which compares one year with the truth, is conservative. Neither interval reaches 10\%, so prediction H3 holds. At $k=19$, where removal loses $\removedBkNineteen\%$ of the PD, the rates rise to $\testthkNineteenfive\%$ and $\testmrkNineteenfive\%$, and only then does a test see something. The tests see the withdrawals only when the bias is already above half the PD, and then at a low rate.
+
+\input{tables/tests}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\linewidth]{tests-rejection}
+\caption{Rejection rate at the 5\% level of the test of time homogeneity across five annual matrices and of the test of the last matrix against the true one-year matrix, against the informativeness of withdrawal, with Wilson intervals over $\repsTests$ repetitions; the horizontal line is the level of the test.}
+\label{fig:tests-rejection}
+\end{figure}
+
+\subsection{Thin grades by exact enumeration}
+\label{sec:results-thin}
+
+Table~\ref{tab:thin} and Figure~\ref{fig:thin-coverage} give the exact coverage. With 50 obligors per grade the Wald interval contains the PD of AAA in $\waldAaaFifty\%$ of the samples ($\waldAaaFiftyFour\%$ to four digits), of AA in $\waldAaFifty\%$, and in $\waldBbbFifty\%$ of BBB, $\waldBFifty\%$ of B and $\waldCccFifty\%$ of CCC to C. The Agresti-Coull and Jeffreys intervals cover at least $\acMinFifty\%$ and $\jeffMinFifty\%$ in every grade at that size, so prediction H4 holds in both clauses. The price is the width: at the PD of AAA the expected lengths at 50 obligors are $\lenWaldAaaFifty$ basis points for the Wald interval, $\lenJeffAaaFifty$ for the Jeffreys interval and $\lenAcAaaFifty$ for the Agresti-Coull interval, against a PD of $\pAaaBp$ basis points. At 1,000 obligors the Wald interval covers the PD of AAA in $\waldAaaThou\%$ of the samples, and the Jeffreys interval, at $\jeffAaaThou\%$ for AAA and $\jeffBbThou\%$ for BB, has fallen below the nominal level in the thinnest grades, as the lower rows of Table~\ref{tab:thin} show. At the cohort sizes of the generator the Wald coverage is $\waldAaaGen\%$ for AAA, $\waldAaGen\%$ for AA and $\waldAGen\%$ for A. The grid of Figure~\ref{fig:thin-coverage} locates the size at which the Wald interval reaches 90\%: $\waldFirstBb$ obligors for BB, $\waldFirstCcc$ for CCC to C, and for AAA no size of the grid up to $\gridMax$ obligors (at $\gridMax$ the coverage is $\waldAaaFiftyK\%$). The grades cannot be told apart in the investment range: at 1,000 obligors the Jeffreys intervals of AAA and AA overlap with probability $\overlapAaaAaThou$, while B and CCC to C separate from 200 obligors (overlap $\overlapBCccTwo$).
+
+\input{tables/thin}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{thin-coverage}
+\caption{Exact coverage at the true PD of the Wald, Agresti-Coull and Jeffreys intervals against the number of obligors in the grade, for AAA (left) and BB (right), with the closed form $1-(1-p)^n$ of the Wald coverage as a dotted line and the nominal 95\% as a horizontal line.}
+\label{fig:thin-coverage}
+\end{figure}
+
+\subsection{The closed forms against the simulation}
+\label{sec:results-theory}
+
+Table~\ref{tab:theory} and Figure~\ref{fig:theory-vs-simulation} compare the closed forms of Section~\ref{sec:theory} with the engine's simulation on the two-state chain with the PD of grade B. The largest standardised difference over all $\thNcmp$ comparisons (two chains, five levels of $k$, four estimators including the reference, two scopes) is $\thMaxZ$, so prediction H5 holds. The closed form for the removal treatment pooled over five cohorts at $k=9$ is $\thBremovedPoolkNine\%$, against $\removedBkNine\pm\removedBkNinese\%$ on the multi-state generator of S\&P-like cohorts: the two-state chain predicts the multi-state removal bias to within one standard error. For following it predicts $\thBfollowedPoolkNine\%$ against $\followedBkNine\pm\followedBkNinese\%$ on the multi-state generator, a difference of several standard errors in the other direction, so the two-state closed form overstates the selection bias of the followed treatment for a multi-state grade. The figure shows the agreement for the three treatments in both scopes.
+
+\input{tables/theory}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{theory-vs-simulation}
+\caption{Relative bias of the one-year PD of a two-state chain with the PD of grade B against the informativeness of withdrawal: closed forms of the Theory section as lines and the means of the engine's simulation as points with 95\% intervals, pooled over five cohorts (left) and on the first cohort (right).}
+\label{fig:theory-vs-simulation}
+\end{figure}
+
+\subsection{Outcome of the predictions}
+\label{sec:results-verdicts}
+
+Table~\ref{tab:verdicts} lists the five predictions with their deciding quantity and their outcome. All five hold. Three details temper the reading. The gap index of grade B at S\&P is not below one half with confidence, so the claim of H1 is made for CCC to C only. The first-order formula of Equation~\eqref{eq:first-order} misses the measured first-cohort bias of grade CCC to C by about three standard errors and the exact closed form is needed there. And the Jeffreys interval, which satisfies H4 at 50 obligors, is below its nominal coverage in the thinnest grades at 1,000 obligors. The outcomes therefore support the statement that the three conventions move the PD, but they support the sharper claims only within the conditions listed: a speculative grade for the gap, a level of informativeness at or above one for the sign of the bias, and a cohort whose expected default count is below one for the shortfall of the Wald coverage.
+
+\input{tables/verdicts}

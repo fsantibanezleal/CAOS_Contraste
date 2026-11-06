@@ -1,0 +1,76 @@
+\subsection{Cohorts, grades and counts}
+\label{sec:problem-cohorts}
+
+A rating system has $G$ performing grades indexed by $g$, a default state and a withdrawn state. A cohort $t$ is the set of ratings that exist at the start of a calendar year $t$ in a given scale; $N_{g,t}$ is the number of them in grade $g$. At the end of the year each rating is in one of three places: in a default category, still rated and not in default, or withdrawn. The counts of the grade are $D_{g,t}$, $S_{g,t}$ and $W_{g,t}$, with
+\begin{equation}
+N_{g,t} = D_{g,t} + S_{g,t} + W_{g,t}.
+\label{eq:cohort}
+\end{equation}
+They are the entries of the default column, of the rest of the row and of the withdrawals column of the transition page. Two further counts come from the other pages of the repository: $A_{g,t}$, the number of distinct ratings of the cohort that defaulted at some time in the year, whatever their position at the end, and $E_{g,t}$, the number of default events of the cohort, which is at least $A_{g,t}$ when a rating defaults more than once. The default page divides $A_{g,t}$ by its own cohort size $N^{\ast}_{g,t}$, which ESMA computes from the ratings in the initial cohort and which can exceed $N_{g,t}$ read from the transition page. The units are ratings, not obligors: the repository counts ratings.
+
+\subsection{Four definitions of the one-year PD}
+\label{sec:problem-definitions}
+
+Each page gives a one-year PD of the grade in year $t$. The default page gives $p^{\Dtwo}_{g,t}=A_{g,t}/N^{\ast}_{g,t}$, the defaults page $p^{\Dthree}_{g,t}=E_{g,t}/N_{g,t}$ and the transition page $p^{\Dfour}_{g,t}=D_{g,t}/(D_{g,t}+S_{g,t})$, in which the withdrawn ratings are removed from the cohort. A fourth definition keeps the withdrawn ratings in the denominator without following them, $p^{\Dkeep}_{g,t}=D_{g,t}/N_{g,t}$, which is the transition page with the withdrawals as an absorbing state of their own. Collected,
+\begin{equation}
+p^{\Dtwo}_{g,t}=\frac{A_{g,t}}{N^{\ast}_{g,t}},\qquad
+p^{\Dthree}_{g,t}=\frac{E_{g,t}}{N_{g,t}},\qquad
+p^{\Dfour}_{g,t}=\frac{D_{g,t}}{D_{g,t}+S_{g,t}},\qquad
+p^{\Dkeep}_{g,t}=\frac{D_{g,t}}{N_{g,t}}.
+\label{eq:definitions}
+\end{equation}
+The long-run average of paragraph 84 of the guidelines is the mean of the one-year rates over the years $\mathcal T_g$ in which the grade has a rate under the definition \citep{EBA_2017},
+\begin{equation}
+\bar p^{\,\cdot}_{g}=\frac{1}{|\mathcal T_g|}\sum_{t\in\mathcal T_g}p^{\,\cdot}_{g,t},
+\label{eq:lra}
+\end{equation}
+with the dot standing for $\Dtwo$, $\Dthree$, $\Dfour$ or $\Dkeep$. The first three are the figures a validator reads off the three pages. The fourth is not published but is the other end of the range of treatments of the withdrawn ratings. The transition page of Moody's has no default category, so for that agency $p^{\Dfour}$ and $p^{\Dkeep}$ do not exist, and its default page is the only one of the four that can be read.
+
+\subsection{The latent chain and the truth}
+\label{sec:problem-truth}
+
+Real data have no truth, so the effect of the treatment of withdrawals is measured on rating paths drawn from a chain whose PDs are known. The latent chain is a continuous-time Markov chain on the $G$ grades and default, with generator $Q$, default absorbing, and the PD of grade $g$ over one year is the default entry of the matrix exponential,
+\begin{equation}
+p_g=\bigl[\exp(Q)\bigr]_{g,D}.
+\label{eq:truth}
+\end{equation}
+Withdrawal is a second, observation-side process. An obligor $i$ with latent default time $\tau_i$ (infinite when it does not default within the horizon) is withdrawn at a time with hazard
+\begin{equation}
+h_i(s)=w\bigl(1+k\,\mathbf 1\{\tau_i-\omega\le s<\tau_i\}\bigr),
+\label{eq:withdrawal-hazard}
+\end{equation}
+where $w$ is the baseline withdrawal rate per year, $\omega$ the length of the window before default in which withdrawal is more likely, and $k\ge 0$ the informativeness: withdrawal is $1+k$ times as likely in the window as outside it. At $k=0$ withdrawal is independent of default. The observed path of an obligor is its latent path cut at the withdrawal time, if there is one, and the obligor is then in the withdrawn state for the rest of the horizon.
+
+\subsection{Estimands, assumptions and what is measured}
+\label{sec:problem-estimands}
+
+The estimand is the true one-year PD of a grade, $p_g$ of Equation~\eqref{eq:truth}. A treatment $\tau$ of the withdrawn ratings is a rule that maps the observed counts to an estimate $\hat p^{\tau}_g$. The quantities measured are the relative bias $\beta_g(\tau,k)=\mathbb E[\hat p^{\tau}_g]/p_g-1$ of each treatment as a function of $k$, the error of the IRB risk weight that the estimates imply, the probability that a matrix test rejects the null that the chain is time-homogeneous or matches a reference matrix, and the exact coverage $c(n,p)$ of an interval estimator at the true PD. On real cohorts the estimand is replaced by the gap between definitions, since no truth exists, and the measurement is the ratio $\bar p^{\Dfour}_g/\bar p^{\Dtwo}_g$ and the difference of the implied risk weights.
+
+The assumptions are the following. The latent chain is Markov and time-homogeneous, with the generator estimated from S\&P's pooled counts. Withdrawal depends on the path only through the time to default, as Equation~\eqref{eq:withdrawal-hazard} states. Ratings are observed at annual snapshots, as the stock model of CEREP observes them. The cohorts of the generator have the sizes of S\&P's cohorts. On real data the gap between pages mixes three things that cannot be separated without a truth: the definitions themselves, informative withdrawal, and the difference in the cohorts the pages divide by. The notation is collected in Table~\ref{tab:notation}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Notation of the manuscript: each symbol, its meaning and its unit, where a unit exists. Counts are numbers of ratings, rates and probabilities are per year, and the informativeness $k$ is a ratio of hazards.}
+\label{tab:notation}
+\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$g,\ G$ & grade index and number of performing grades & 1 \\
+$t$ & cohort year & year \\
+$N_{g,t}$ & ratings of grade $g$ at the start of year $t$ & count \\
+$D_{g,t},\,S_{g,t},\,W_{g,t}$ & in default, still rated, withdrawn at the end of the year & count \\
+$A_{g,t},\,E_{g,t}$ & distinct defaulted ratings and default events of the cohort & count \\
+$N^{\ast}_{g,t}$ & cohort size of the default page & count \\
+$p^{\Dtwo},p^{\Dthree},p^{\Dfour},p^{\Dkeep}$ & one-year PD under the four definitions & probability \\
+$\bar p^{\,\cdot}_g$ & long-run average of the one-year rates & probability \\
+$Q,\ p_g$ & generator of the latent chain and its true one-year PD & 1/year, probability \\
+$w,\ k,\ \omega$ & baseline withdrawal rate, informativeness, window & 1/year, 1, year \\
+$\lambda,\ \theta$ & default hazard of the two-state chain and $w(1+k)$ & 1/year \\
+$\beta_g(\tau,k)$ & relative bias of treatment $\tau$ & 1 \\
+$\RW(p)$ & IRB risk weight of a PD $p$ & share of exposure \\
+$c(n,p)$ & exact coverage of an interval at $p$ with $n$ obligors & probability \\
+\bottomrule
+\end{tabular}
+\end{table}
