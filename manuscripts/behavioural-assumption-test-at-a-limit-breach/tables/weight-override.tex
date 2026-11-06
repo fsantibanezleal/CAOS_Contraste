@@ -1,0 +1,17 @@
+\begin{table*}[htbp]
+\centering
+\footnotesize
+\caption{An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the weights unchanged because they already sit on that tranche, and the flag rate and area under the ROC curve of the detectors that can read it.}
+\label{tab:weight-override}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rrrrrrrrr}
+\toprule
+Share $s$ & Invisible (\%) & Engine flags (\%) & Engine AUC & Stability flags (\%) & Stability AUC & Tolerance flags (\%) & Tolerance AUC & Mann--Whitney AUC \\
+\midrule
+0.05 & 22.1 & 83.4 & 0.506 & 47.6 & 0.483 & 3.2 & 0.498 & 0.519 \\
+0.1 & 22.1 & 83.4 & 0.506 & 45.4 & 0.467 & 2.5 & 0.502 & 0.537 \\
+0.2 & 22.1 & 83.0 & 0.498 & 40.6 & 0.442 & 2.4 & 0.521 & 0.576 \\
+0.4 & 22.1 & 81.5 & 0.457 & 43.2 & 0.437 & 2.5 & 0.564 & 0.604 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

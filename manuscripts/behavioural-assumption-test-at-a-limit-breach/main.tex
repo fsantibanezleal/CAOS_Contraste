@@ -9,11 +9,11 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+\setlength{\emergencystretch}{3em}
+% One macro per number quoted in the prose, written by make_tables.py from the committed results.
+\input{tables/numbers}
 
-\title{A test that flags a behavioural assumption changed at a limit breach}
+\title{A test that flags a behavioural assumption changed at a limit breach: exact detection on stated parameters, no discrimination on re-estimated ones}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +24,28 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+The review of the failure of Silicon Valley Bank found that the bank changed the duration it assumed for its deposits when a limit on interest rate risk was breached, and no published procedure turns that finding into a check that a validator can run.
+We state a test that counts the dates at which a behavioural parameter changed while a limit was breached, give its algorithm and an extension with a tolerance on the size of a change calibrated on a null population, and prove eight propositions about it.
+The engine reproduces the committed rows of the case of a US bank at three dates in 2021 and 2022 and agrees with the closed-form count on \gridTotal{} enumerated and \randomN{} random histories.
+On a stated parameter the test flags \statedAltEngine{} of the histories with a change planted at a breach date (lower bound \statedAltLoEngine{}\,\%) and \statedNullEngine{} (95\,\% interval \statedNullLoEngine{} to \statedNullHiEngine{}\,\%) of those whose changes are unrelated to the breach, as $1-(1-\lambda)^m$ predicts; the Fisher, Mann--Whitney and Welch tests run on the same histories detect \statedAltFisher{}, \statedAltMw{} and \statedAltWelch{}.
+On a parameter re-estimated at each date the test flags \fitNullEngine{} of the null banks and its area under the ROC curve against a planted 2-year lengthening is \fitAucCEngine{}.
+A tolerance calibrated at 5\,\% holds \fitNullTol{} false flags and detects \fitAddDTol{} of 4-year lengthenings but \fitAddCTol{} of 2-year ones, and it loses its size when the breach prevalence changes.
+An override of the replicating-portfolio weights toward the longest tranche is detected by none of the methods.
+The bank is real in aggregate and synthetic in behaviour, so no result concerns what it did.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/s01-introduction}
+\input{sections/s02-related-work}
+\input{sections/s03-problem}
+\input{sections/s04-proposed-method}
+\input{sections/s05-theory}
+\input{sections/s06-experimental-design}
+\input{sections/s07-results}
+\input{sections/s08-ablation}
+\input{sections/s09-discussion}
+\input{sections/s10-limitations}
+\input{sections/s11-reproducibility}
+\input{sections/s12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

@@ -1,0 +1,31 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{Inputs, output and notation}
+\label{sec:problem-inputs}
+
+A validator receives from the bank the history of one behavioural parameter and from the limit framework the history of one limit. The parameter is a real number used at each of $T\ge 1$ valuation dates $t=1,\dots,T$, in strictly increasing order: the core share of a category of deposits, its core maturity in years, a pass-through, or the weighted average maturity of a replicating portfolio. The limit gives a breach flag $b_t\in\{0,1\}$ at each date, equal to one when a limit was breached in the window that ends at $t$; in the product the limit is the outlier test of the standard, a loss of economic value above 15\,\% of Tier~1 capital under the worst of the prescribed shocks. The input is therefore the triple $(\theta_t,d_t,b_t)_{t=1}^{T}$ with the dates $d_t$, and the output is a light, red or green or not evaluated, with the number of flagged dates and their list. The change at date $t\ge 2$ is $\Delta_t=\theta_t-\theta_{t-1}$, the set of breach dates after the first is $B=\{t\ge 2: b_t=1\}$ with $m=|B|$ elements, and $n=T-1$ is the number of dates at which a change can occur. Table~\ref{tab:notation} lists every symbol of the paper with its unit.
+
+The first date cannot carry a change, because the history has no earlier value, and its breach flag is read by no part of the test. A breach at the first date matters only through the next date, at which a change would have been made in the light of it, and the dating convention of the product, in which the flag of date $t$ concerns the window ending at $t$, is a modelling choice that Section~\ref{sec:ablation} varies.
+
+\input{tables/notation}
+
+\subsection{Two kinds of parameter}
+\label{sec:problem-kinds}
+
+The question the test answers depends on how the parameter comes to change. A \emph{stated} parameter is one that the bank writes down and holds until someone decides to change it: the core share and the core maturity requested for a category of deposits, a cap, a policy rate. Its history is a step function, with a change only when a decision is made, and a change has a date, an author and, usually, a minute. A \emph{re-estimated} parameter is one that the bank computes afresh at each date from the data of a window: the weights of a replicating portfolio fitted to the last 16 quarters of the deposit cost and of the tranche yields, and the weighted average maturity they imply, or a deposit beta fitted on the quarters up to the date. Its history changes at nearly every date by construction, because the window moves and the estimate is a continuous function of the data. The weighted average maturity of the replicating portfolio is
+\begin{equation}
+\mathrm{WAM}_t=\frac12\sum_{j=1}^{J} w_{t,j}\,m_j,\qquad w_{t}\in\Delta^{J-1}=\Bigl\{w\ge 0,\ \sum_j w_j=1\Bigr\},
+\label{eq:wam}
+\end{equation}
+with $m_j$ the maturity in years of tranche $j$, $J=7$ tranches from 3 months to 10 years in the committed case, and the factor one half the weighted average maturity of a tranche that is reinvested evenly over its life. Both kinds appear in the committed case of the product: the requested core share and core maturity of the wholesale deposits are stated and held, and the weighted average maturity is re-estimated at each date. A bank can also hold a re-estimated parameter and override it, which is the situation that the review describes: a fitted value is replaced, from a date on, by a value chosen to meet a limit.
+
+\subsection{Events, null and alternative}
+\label{sec:problem-events}
+
+The event the validator wants to know about is that a change of an assumption was made at a breach date because of the breach. That cannot be observed in a table of numbers, and the test does not claim to observe it. It observes the coincidence $\{t\in B:\Delta_t\ne 0\}$, and the questions of this paper are what the coincidence says about the event. We formalise the question with two arms of histories that share their breach flags. In the \emph{null} arm, any change of the parameter is unrelated to the breaches: the changes of a stated parameter occur with probability $\lambda$ per date independently of the flags, and the changes of a re-estimated parameter are those of the fitted series. In the \emph{alternative} arm, an assumption is changed at one or more breach dates: at each date of $B$ with probability $\pi_m$, and at least once, a persistent lengthening of the parameter is added, so that the value used from that date on is the null value plus the planted amount. A rule is judged on the rate at which it flags the null arm, its false-flag rate, on the rate at which it flags the alternative arm, its detection rate, and on the area under the ROC curve of the statistic it thresholds, which does not depend on the threshold. Every history has at least one breach after the first date, because a rule that reads breach dates can flag nothing otherwise, and such histories would only add cases on which every rule is silent.
+
+\subsection{Assumptions}
+\label{sec:problem-assumptions}
+
+Four assumptions bound the formulation. First, the breach flags are produced by the limit framework and are taken as given: the test does not question whether a limit was breached, and a bank that sets no limit has no flags. Second, the dates are the dates at which the bank values the book and the parameter is observed at each of them; a parameter that is changed and changed back between two dates is not seen. Third, equality of two values of the parameter is equality in the arithmetic of the machine, which is the meaning of ``unchanged'' for a stated parameter held as a number, and Section~\ref{sec:results} measures what that convention costs when a parameter is recomputed. Fourth, the flag is a statement about the window ending at the date, so that a change made at date $t$ in anticipation of a breach that the flag records at date $t+1$ is not a coincidence by the definition; the look-ahead variant of Section~\ref{sec:proposed-method} reads one date ahead and the ablation measures what it adds. The synthetic behaviour of the committed case is a fifth, external assumption: the bank is real in aggregate and synthetic in behaviour, so that no result below is a statement about what the bank did.

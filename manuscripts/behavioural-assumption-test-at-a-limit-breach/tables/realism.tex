@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The real fitted series of the bank (25 rolling fits from 2016-Q4 to 2022-Q4, and the last 12) against the simulated banks on the properties of the changes that the detectors read; the simulated banks are circular block bootstraps of the 40 real quarterly rows with blocks of 6 quarters.}
+\label{tab:realism}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrr}
+\toprule
+Property of the fitted weighted average maturity & Real, 25 fits & Real, last 12 fits & Simulated, mean of 2,000 banks \\
+\midrule
+Median absolute change (years) & 0.435 & 0.437 & 0.140 \\
+Largest absolute change (years) & 0.919 & 0.843 & 1.116 \\
+Share of dates with no change & 0.167 & 0.000 & 0.276 \\
+Share of dates at the 5-year cap & 0.240 & 0.083 & 0.289 \\
+Standard deviation of the level (years) & 1.198 & 0.943 & 0.714 \\
+\bottomrule
+\end{tabular}}
+\end{table}

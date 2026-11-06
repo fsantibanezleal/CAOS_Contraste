@@ -1,0 +1,415 @@
+{
+ "engine": "riskvalidation 1.1.0",
+ "committed": {
+  "dates": [
+   "2021-12-31",
+   "2022-06-30",
+   "2022-12-31"
+  ],
+  "breach_flags": [
+   true,
+   true,
+   true
+  ],
+  "outlier_ratios": [
+   0.3406206160380708,
+   0.20907607753510177,
+   0.1808050215693884
+  ],
+  "series": {
+   "weighted average maturity of the fitted portfolio": {
+    "values": [
+     4.75947823090287,
+     4.204938032807932,
+     5.0
+    ],
+    "light": "red",
+    "statistic": 2.0,
+    "flagged_dates": [
+     "2022-06-30",
+     "2022-12-31"
+    ]
+   },
+   "requested core share": {
+    "values": [
+     0.6,
+     0.6,
+     0.6
+    ],
+    "light": "green",
+    "statistic": 0.0,
+    "flagged_dates": []
+   },
+   "requested core maturity": {
+    "values": [
+     5.0,
+     5.0,
+     5.0
+    ],
+    "light": "green",
+    "statistic": 0.0,
+    "flagged_dates": []
+   }
+  },
+  "prefix_runs": {
+   "vd-2021-q4": {
+    "rerun_light": "not_evaluated",
+    "rerun_statistic": null,
+    "committed_light": "not_evaluated",
+    "committed_statistic": null,
+    "committed_flagged": [],
+    "rerun_flagged": [],
+    "committed_note": "not evaluated: fewer than 2 dates",
+    "agree": true
+   },
+   "vd-2022-q2": {
+    "rerun_light": "red",
+    "rerun_statistic": 1.0,
+    "committed_light": "red",
+    "committed_statistic": 1.0,
+    "committed_flagged": [
+     "2022-06-30"
+    ],
+    "rerun_flagged": [
+     "2022-06-30"
+    ],
+    "committed_note": "1 change(s) coincide with a breach",
+    "agree": true
+   },
+   "vd-2022-q4": {
+    "rerun_light": "red",
+    "rerun_statistic": 2.0,
+    "committed_light": "red",
+    "committed_statistic": 2.0,
+    "committed_flagged": [
+     "2022-06-30",
+     "2022-12-31"
+    ],
+    "rerun_flagged": [
+     "2022-06-30",
+     "2022-12-31"
+    ],
+    "committed_note": "2 change(s) coincide with a breach",
+    "agree": true
+   }
+  },
+  "control_no_breach": {
+   "light": "green",
+   "statistic": 0.0
+  }
+ },
+ "rebuilt": {
+  "dates": [
+   {
+    "date": "2021-12-31",
+    "committed": 4.75947823090287,
+    "rebuilt": 4.75947823090287,
+    "abs_diff": 0.0
+   },
+   {
+    "date": "2022-06-30",
+    "committed": 4.204938032807932,
+    "rebuilt": 4.204938032807932,
+    "abs_diff": 0.0
+   },
+   {
+    "date": "2022-12-31",
+    "committed": 5.0,
+    "rebuilt": 5.0,
+    "abs_diff": 0.0
+   }
+  ],
+  "n_fits": 25,
+  "first_fit": "2016-12-31",
+  "last_fit": "2022-12-31",
+  "median_abs_change": 0.43515291993710736,
+  "max_abs_change": 0.9189692536198062,
+  "share_changes_zero": 0.16666666666666666,
+  "share_dates_at_cap": 0.24,
+  "wam": [
+   1.0202760089021616,
+   1.4211520962271158,
+   2.1683365543732993,
+   2.60189049013589,
+   3.5208597437556963,
+   4.318477030362567,
+   5.0,
+   5.0,
+   5.0,
+   5.0,
+   5.0,
+   4.282197891141728,
+   3.9949367487781693,
+   3.3569936409053662,
+   2.775316618020022,
+   2.2772751834316223,
+   2.2035958300275507,
+   3.046110911778737,
+   3.734124784478101,
+   4.363066559869589,
+   4.75947823090287,
+   4.4969624636873355,
+   4.204938032807932,
+   4.641689936919556,
+   5.0
+  ],
+  "fit_dates": [
+   "2016-12-31",
+   "2017-03-31",
+   "2017-06-30",
+   "2017-09-30",
+   "2017-12-31",
+   "2018-03-31",
+   "2018-06-30",
+   "2018-09-30",
+   "2018-12-31",
+   "2019-03-31",
+   "2019-06-30",
+   "2019-09-30",
+   "2019-12-31",
+   "2020-03-31",
+   "2020-06-30",
+   "2020-09-30",
+   "2020-12-31",
+   "2021-03-31",
+   "2021-06-30",
+   "2021-09-30",
+   "2021-12-31",
+   "2022-03-31",
+   "2022-06-30",
+   "2022-09-30",
+   "2022-12-31"
+  ]
+ },
+ "constructed": [
+  {
+   "label": "parameter held through a breach",
+   "values": [
+    4.0,
+    4.0,
+    4.0
+   ],
+   "breach": [
+    true,
+    true,
+    true
+   ],
+   "expected": "green",
+   "light": "green",
+   "statistic": 0.0,
+   "flagged_dates": [],
+   "agree": true
+  },
+  {
+   "label": "change with no breach",
+   "values": [
+    4.0,
+    4.5,
+    5.0
+   ],
+   "breach": [
+    false,
+    false,
+    false
+   ],
+   "expected": "green",
+   "light": "green",
+   "statistic": 0.0,
+   "flagged_dates": [],
+   "agree": true
+  },
+  {
+   "label": "change before the breach",
+   "values": [
+    4.0,
+    4.5,
+    4.5
+   ],
+   "breach": [
+    false,
+    false,
+    true
+   ],
+   "expected": "green",
+   "light": "green",
+   "statistic": 0.0,
+   "flagged_dates": [],
+   "agree": true
+  },
+  {
+   "label": "change at the breach",
+   "values": [
+    4.0,
+    4.0,
+    4.5
+   ],
+   "breach": [
+    false,
+    false,
+    true
+   ],
+   "expected": "red",
+   "light": "red",
+   "statistic": 1.0,
+   "flagged_dates": [
+    "2019-07-02"
+   ],
+   "agree": true
+  },
+  {
+   "label": "breach at the earlier date only",
+   "values": [
+    4.0,
+    4.5,
+    4.5
+   ],
+   "breach": [
+    true,
+    false,
+    false
+   ],
+   "expected": "green",
+   "light": "green",
+   "statistic": 0.0,
+   "flagged_dates": [],
+   "agree": true
+  },
+  {
+   "label": "two changes at two breaches",
+   "values": [
+    4.0,
+    4.5,
+    5.0
+   ],
+   "breach": [
+    false,
+    true,
+    true
+   ],
+   "expected": "red",
+   "light": "red",
+   "statistic": 2.0,
+   "flagged_dates": [
+    "2019-04-02",
+    "2019-07-02"
+   ],
+   "agree": true
+  },
+  {
+   "label": "change at the first date (no previous date)",
+   "values": [
+    4.0,
+    4.0,
+    4.0
+   ],
+   "breach": [
+    true,
+    false,
+    false
+   ],
+   "expected": "green",
+   "light": "green",
+   "statistic": 0.0,
+   "flagged_dates": [],
+   "agree": true
+  },
+  {
+   "label": "a single date",
+   "values": [
+    4.0
+   ],
+   "breach": [
+    true
+   ],
+   "expected": "not_evaluated",
+   "light": "not_evaluated",
+   "statistic": NaN,
+   "flagged_dates": [],
+   "agree": true
+  }
+ ],
+ "exhaustive": {
+  "grid_histories_by_length": {
+   "2": 8,
+   "3": 32,
+   "4": 128,
+   "5": 512,
+   "6": 2048
+  },
+  "grid_total": 2728,
+  "grid_disagreements": 0,
+  "random_histories": 20000,
+  "random_disagreements": 0,
+  "seed": 20261104
+ },
+ "comparators": {
+  "vd-2021-q4": {
+   "stability_light": "red",
+   "stability_statistic": 0.524283569410322,
+   "stability_metric_years": 2.555882400875319,
+   "committed_stability_light": "red",
+   "with_without_light": "red",
+   "with_without_statistic": 0.7222303959619759,
+   "committed_with_without_light": "red",
+   "hidden_breach": false
+  },
+  "vd-2022-q2": {
+   "stability_light": "amber",
+   "stability_statistic": 0.19667859824781136,
+   "stability_metric_years": 0.9588081664580792,
+   "committed_stability_light": "amber",
+   "with_without_light": "red",
+   "with_without_statistic": 0.5623093555876513,
+   "committed_with_without_light": "red",
+   "hidden_breach": false
+  },
+  "vd-2022-q4": {
+   "stability_light": "red",
+   "stability_statistic": 0.524283569410322,
+   "stability_metric_years": 2.555882400875319,
+   "committed_stability_light": "red",
+   "with_without_light": "red",
+   "with_without_statistic": 0.46549485991155765,
+   "committed_with_without_light": "red",
+   "hidden_breach": false
+  }
+ },
+ "last_digit": {
+  "held_exact": {
+   "light": "green",
+   "statistic": 0.0
+  },
+  "noise": [
+   {
+    "noise_sd": 0.0,
+    "light": "green",
+    "statistic": 0.0
+   },
+   {
+    "noise_sd": 1e-16,
+    "light": "green",
+    "statistic": 0.0
+   },
+   {
+    "noise_sd": 1e-13,
+    "light": "red",
+    "statistic": 2.0
+   },
+   {
+    "noise_sd": 1e-09,
+    "light": "red",
+    "statistic": 2.0
+   },
+   {
+    "noise_sd": 1e-06,
+    "light": "red",
+    "statistic": 2.0
+   }
+  ],
+  "recomputed_0_1_plus_0_2_vs_0_3": {
+   "equal_in_floating_point": false,
+   "light": "red",
+   "statistic": 2.0
+  }
+ }
+}

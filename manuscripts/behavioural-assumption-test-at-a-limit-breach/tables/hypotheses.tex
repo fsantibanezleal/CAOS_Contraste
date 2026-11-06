@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The nine predictions tested, with the criterion that decides each, the value measured by the experiments of this work and the outcome; the experiments are on the committed history of case C14, on constructed and enumerated histories and on 4,000 simulated histories per cell.}
+\label{tab:hypotheses}
+\begin{tabular}{@{}l p{4.6cm} p{3.2cm} p{3.1cm} l@{}}
+\toprule
+ID & Prediction & Criterion & Measured & Outcome \\
+\midrule
+H1 & The test is not evaluated at 2021-Q4, red at 2022-Q2 with one change and red at 2022-Q4 with two; the held core share and core maturity are not flagged & all three committed rows and the two held parameters reproduced by the engine on the committed series & 3 of 3 rows; 2 of 2 held parameters & held \\
+H2 & Green for a parameter held through a breach, for a change with no breach and for a change before the breach; red for a change at the breach; the committed series with its breach flags set to false is green & all constructed histories, every history of a binary grid, 20,000 random histories and the control agree with the closed-form count & 8 of 8 histories; 0 disagreements in 22,728 & held \\
+H3 & On a stated parameter the test flags every history in which an assumption was changed at a breach date & detection of at least 99\% in every cell (refuted below 95\%) & lowest lower bound 99.9\% over 11 cells & held \\
+H4 & The false-flag rate on a stated parameter with changes unrelated to breaches equals $E[1-(1-\lambda)^m]$ (Proposition~\ref{prop:false-flag}) & the closed form inside the 95\% interval of the measured rate in at least 10 of 11 cells (an interval misses one cell in twenty), a cell outside re-run under three further seeds & 10 of 11 cells; the one outside inside the interval under 3 of 3 further seeds & held \\
+H5 & The false-flag rate of the test on a stated parameter with unrelated changes is at most 5\% & the point estimate at most 5\% in every cell & 17.0 to 66.3\% & refuted \\
+H6 & On a re-estimated parameter the test separates a 2-year override at breach dates from none & area under the ROC curve at least 0.70 (refuted below 0.60) & 0.579 (0.561, 0.595) & refuted \\
+H7 & The tolerance rule calibrated at 5\% holds its size on held-out banks and flags a 4-year override & false-flag rate at most 5\% and detection of at least 90\% & 3.9\% false flags; 99.5\% detection & held \\
+H8 & The tolerance calibrated at breach prevalence 0.25 keeps its size at prevalences 0.10 and 0.50 & false-flag rate at most 5\% at every prevalence & 3.4 to 5.5\% & refuted \\
+H9 & A one-date look-ahead recovers overrides made one date before the breach & detection at least 1.5 times that of the same-date rule & 17.4\% against 14.5\% (ratio 1.20) & refuted \\
+\bottomrule
+\end{tabular}
+\end{table}

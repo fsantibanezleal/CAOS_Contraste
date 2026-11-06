@@ -1,0 +1,108 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The idea}
+\label{sec:method-idea}
+
+A limit is a statement that the measured risk of the bank must stay below a bound. The measure is a function of the book and of the assumptions, and a bank that breaches a limit can respond by changing the book, which reduces the risk, or by changing the assumptions, which reduces the measure and leaves the risk where it was. The first response leaves the history of the assumptions unchanged and the second does not. The proposed test therefore looks for the footprint of the second response and for nothing else: it asks, for one behavioural parameter, at how many dates the parameter differs from its value at the previous date while the limit was breached. A bank that holds its assumptions through a breach, or changes them at a date with no breach, or changes them before the breach is recorded, produces no count. A bank that changes an assumption at the date of a breach produces a count of at least one.
+
+The idea is a screen, in the sense of an exception report. A count of one is a prompt for a human review of the minutes and of the model file at that date, and not a finding of intent, because the parameter may have been changed for a reason that has nothing to do with the breach. The measurements of Section~\ref{sec:results} quantify how often that happens for parameters of each kind, and the theory of Section~\ref{sec:theory} gives the rates in closed form. The method has three parts: the statistic and its decision rule, which is what the engine implements; a family that replaces the exact inequality by a tolerance on the size of the change; and the calibration of that tolerance on a population of histories whose changes are known to be unrelated to the breaches. Only the first is part of the product; the other two are developed and evaluated here because the exact inequality turns out to be the weak point for re-estimated parameters.
+
+\subsection{From the finding to the statistic}
+\label{sec:method-derivation}
+
+The statistic is derived in four steps from the sentence of the review. The event of interest, that an assumption was changed at the moment a limit was breached, has two parts that a table of numbers does record: the parameter used at each date, which gives the indicator of a change $\indic\{\theta_t\ne\theta_{t-1}\}$, and the flag of the limit at each date, $\indic\{b_t=1\}$. The conjunction of the two at a date is the footprint of the event at that date, and it is one only when both parts occur there. The footprints of all the dates are then added, because a validator who finds one coincidence has found a reason to read the file and one who finds three has found the same reason three times, and the sum is the count of Equation~\eqref{eq:count}. Two alternatives were set aside. A sum of the sizes of the changes at breach dates, $\sum_{t\in B}|\Delta_t|$, depends on the unit and the scale of the parameter and would need a threshold in that unit, which a validator comparing a share, a maturity and a beta cannot set in one place. A correlation between the changes and the flags needs many dates before it means anything and would be undefined on a history in which the flag does not vary, which is the case of the committed bank. The count needs neither a unit nor a variation in the flag, and its decision needs no threshold because one coincidence is already the event.
+
+The derivation applied to the committed history is a short calculation. The fitted weighted average maturity at the three dates is \cOneFourWamA{}, \cOneFourWamB{} and \cOneFourWamC{} years and the flag is set at each of them. The changes are \cOneFourDeltaA{} and \cOneFourDeltaB{} years, both at dates with a flag, so the count on the history up to the second date is $c=1$, on the full history $c=2$, and on the history of the first date alone the count does not exist because there is no change to count. These are the committed rows. The same calculation on the requested core maturity, $5$, $5$ and $5$ years, gives $c=0$.
+
+\subsection{The statistic and the decision rule}
+\label{sec:method-statistic}
+
+For a history $(\theta_t,b_t)_{t=1}^{T}$ the statistic is the number of dates after the first at which the parameter changed while the flag was set,
+\begin{equation}
+c=\sum_{t=2}^{T}\indic\{\theta_t\ne\theta_{t-1}\}\,\indic\{b_t=1\}=\bigl|\{t\in B:\Delta_t\ne 0\}\bigr|,
+\label{eq:count}
+\end{equation}
+and the light is
+\begin{equation}
+\mathrm{light}=\begin{cases}\text{not evaluated}&T<2,\\ \text{red}&T\ge 2\ \text{and}\ c\ge 1,\\ \text{green}&T\ge 2\ \text{and}\ c=0.\end{cases}
+\label{eq:light}
+\end{equation}
+The null hypothesis that the engine attaches to the test is that no change of a behavioural parameter coincides with a limit breach, and the alternative is that a parameter changed at a date at which a limit was breached. The light is an internal rule of the product and not a regulatory limit: there is no statistic to compare with a critical value, since a single coincidence is the event of interest, and no parameter to tune. With fewer than two dates the test returns no number, not a zero, because a history of one date cannot show a change and a zero would read as a clean result. The decision depends on the parameter only through the indicator of a change, so that the unit of the parameter plays no role; Proposition~\ref{prop:exact} states the consequences.
+
+\subsection{A tolerance for the size of a change}
+\label{sec:method-tolerance}
+
+Equation~\eqref{eq:count} treats a change of $10^{-13}$ years like a change of two years. For a stated parameter that is the right reading of the word change, since the bank wrote one number and then another. For a parameter that is recomputed at each date it is the wrong one, because the estimate moves at every date and the count is then the number of breach dates whatever the bank did. The family with a tolerance $\delta\ge 0$ counts only the changes larger than the tolerance,
+\begin{equation}
+c_\delta=\sum_{t\in B}\indic\{|\Delta_t|>\delta\},\qquad c_\delta\ge 1\iff S>\delta,\qquad S=\max_{t\in B}|\Delta_t|,
+\label{eq:tolerance}
+\end{equation}
+with $c_0=c$ and $S=0$ when $B$ is empty. Every member of the family is the rule ``flag when the largest change at a breach date exceeds $\delta$'', so the family is the ROC curve of one statistic, $S$, and the area under that curve is the threshold-free measure of how well the family discriminates. A variant that reads one date ahead replaces $B$ by $B_L=\{t\ge 2: b_t=1\ \text{or}\ b_{t+1}=1\}$, so that a change made at the date before a breach is recorded is also counted; it has the same form and a larger set of dates.
+
+\subsection{Calibration of the tolerance}
+\label{sec:method-calibration}
+
+The tolerance has to be read from a null. Given $N$ histories of the same length, with the same breach process, produced by the same estimator and known to contain no override, the null scores $S_1,\dots,S_N$ are computed and the tolerance for a false-flag rate $\alpha$ is the order statistic
+\begin{equation}
+\delta_\alpha=S_{(k)},\qquad k=\lceil (N+1)(1-\alpha)\rceil,
+\label{eq:calibration}
+\end{equation}
+with $\delta_\alpha=+\infty$ when $k>N$, that is, when the calibration sample is too small for the level. Proposition~\ref{prop:conformal} shows that a new null history flagged by the rule $S>\delta_\alpha$ has probability at most $\alpha$ when it is exchangeable with the calibration histories. The guarantee is marginal over the draw of the calibration sample and it needs the null population to resemble the bank: the same length, the same estimator and the same breach prevalence. For a bank that has no population of its own the population is simulated, which is what Section~\ref{sec:experimental-design} does, and the guarantee is then only as good as the simulator; Section~\ref{sec:results} measures how much is lost when the breach prevalence differs.
+
+The re-estimated parameter of the committed case is the one that the engine's replicating portfolio produces at each date: with $y_{j,t}$ the yield of tranche $j$, $i_t$ the client rate, $C$ the covariance matrix of the tranche yields and $c_i$ the vector of their covariances with the client rate over the window of 16 quarters, the weights solve
+\begin{equation}
+\min_{w\in\Delta^{J-1}}\ \operatorname{Var}\Bigl(\sum_{j}w_j\,y_{j,t}-i_t\Bigr)=w^{\top}C\,w-2\,w^{\top}c_i+\operatorname{Var}(i_t),
+\label{eq:replicating}
+\end{equation}
+by exhaustive search over the supports for up to ten tranches, and the parameter is the $\mathrm{WAM}_t$ of Equation~\eqref{eq:wam} at the minimiser. Because the minimiser is a corner solution of a quadratic programme, the fitted weights jump between supports when the window moves, and the weighted average maturity sits at the cap of the grid in a share of the dates that Section~\ref{sec:results} measures.
+
+When the fitted parameter is overridden, the override that Section~\ref{sec:experimental-design} plants has two forms. The first is a persistent additive lengthening, $\theta_t'=\theta_t+y\,K_t$, with $K_t$ the number of planted dates up to $t$ and $y$ the size in years. The second moves the weights of the replicating portfolio toward the longest tranche, from each planted date on, with the cumulative share $s_t=\min(1,s\,K_t)$,
+\begin{equation}
+w_t'=(1-s_t)\,w_t+s_t\,e_J,\qquad \mathrm{WAM}_t'=(1-s_t)\,\mathrm{WAM}_t+s_t\,\tfrac12 m_J,
+\label{eq:override}
+\end{equation}
+where $e_J$ is the vector with its whole weight on the longest tranche. Equation~\eqref{eq:override} shows why this override is hard to see: its effect at a planted date is $s_t(\tfrac12 m_J-\mathrm{WAM}_t)$, which vanishes when the fitted weighted average maturity already sits at the 5-year cap of the tranche grid, and it shrinks every later change by the factor $1-s_t$.
+
+\subsection{Algorithms}
+\label{sec:method-algorithms}
+
+Algorithm~\ref{alg:test} is the test with an optional tolerance, and Algorithm~\ref{alg:calibration} is the calibration of the tolerance on a null population. The engine implements the first with $\delta=0$ and without the look-ahead. The test makes one pass over the dates after the first. At each date it asks whether the flag of that date is set, or, with the look-ahead, the flag of that date or of the next one, and whether the parameter differs from its previous value by more than the tolerance, and it adds the date to the list of flagged dates when both hold. The look-ahead is not applied at the last date, which has no next date. The count is the length of the list, the light follows from it, and a history with fewer than two dates returns before the loop with no statistic, so that a missing number is never read as zero. The calibration draws, for each null history, the flags of the breach process with at least one breach after the first date, because a history with no such breach has no statistic to rank, computes the largest change at the breach dates, sorts the scores and returns the order statistic of Equation~\eqref{eq:calibration}; when the sample is too small for the level the tolerance is infinite and the rule never flags, which is a statement that the sample cannot support the size and not a result.
+
+\begin{algorithm}[htbp]
+\caption{The coincidence test with an optional tolerance $\delta$ and an optional look-ahead.}
+\label{alg:test}
+\begin{algorithmic}[1]
+\Require values $\theta_1,\dots,\theta_T$, strictly increasing dates, breach flags $b_1,\dots,b_T$, tolerance $\delta\ge 0$, look-ahead flag
+\Ensure light, statistic $c_\delta$, list of flagged dates
+\If{$T<2$} \State \Return not evaluated, no statistic \EndIf
+\State $F\gets\emptyset$
+\For{$t=2,\dots,T$}
+  \State $\mathrm{at\_breach}\gets b_t=1$
+  \If{look-ahead and $t<T$} \State $\mathrm{at\_breach}\gets \mathrm{at\_breach}\ \textbf{or}\ b_{t+1}=1$ \EndIf
+  \If{$\mathrm{at\_breach}$ \textbf{and} $|\theta_t-\theta_{t-1}|>\delta$} \State $F\gets F\cup\{t\}$ \EndIf
+\EndFor
+\State $c_\delta\gets |F|$
+\State \Return red if $c_\delta\ge 1$ else green, $c_\delta$, $F$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htbp]
+\caption{Calibration of the tolerance on a null population, for a false-flag rate $\alpha$.}
+\label{alg:calibration}
+\begin{algorithmic}[1]
+\Require $N$ null histories of the length, estimator and breach process of the bank, size $\alpha$, look-ahead flag
+\Ensure tolerance $\delta_\alpha$
+\For{$i=1,\dots,N$}
+  \State draw the breach flags of history $i$ with at least one breach after the first date
+  \State $S_i\gets\max_{t\in B}|\Delta_t|$ \Comment{over $B_L$ when the look-ahead is used}
+\EndFor
+\State sort $S_{(1)}\le\dots\le S_{(N)}$; $k\gets\lceil (N+1)(1-\alpha)\rceil$
+\State \Return $S_{(k)}$ if $k\le N$ else $+\infty$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Parameters, complexity and implementation}
+\label{sec:method-implementation}
+
+The test of Equations~\eqref{eq:count} and~\eqref{eq:light} has no parameter. The tolerance family has two, the tolerance $\delta$, in the unit of the parameter, and the choice of the one-date look-ahead; the calibration has the size $\alpha$, set to 5\,\% here, and the sample size $N$, 1,000 here. The statistic costs $O(T)$ in time and memory, and the calibration costs $O(NT+N\log N)$. The engine function is \texttt{irrbb.behavioural\_change\_at\_breach(values, dates, breach)} of the validation module for interest rate risk of the package \texttt{riskvalidation} 1.1.0 \citep{riskvalidation2026}. It takes a one-dimensional array of values, a one-dimensional array of strictly increasing dates of type \texttt{datetime64[D]} and a one-dimensional array of booleans of the same length, and raises an error for dates that do not increase, for flags that are not booleans and for arrays of different lengths. It returns a result with the light, the statistic $c$, the number of dates, the number of events, the list of flagged dates and the note ``$c$ change(s) coincide with a breach'', and with no number when there are fewer than two dates. The case C14 of the product calls it on the weighted average maturity of the wholesale deposits, fitted at each of three valuation dates, with the flags of the standardised outlier test. The tolerance family and the calibration are implemented in the experiment scripts of this work (\texttt{experiments/core.py}) and are not part of the engine.

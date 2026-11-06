@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The closed forms of Propositions~\ref{prop:false-flag}, \ref{prop:gaussian} and \ref{prop:conformal} against simulation: the probability that a change falls on a breach date under uniform placement (100,000 placements), the power of the tolerance rule on Gaussian changes (200,000 histories) and the mean false-flag rate of the calibrated tolerance over 500 calibrations of 1,000 histories, with the 2.5 and 97.5 percentiles of the realised rate.}
+\label{tab:theory-checks}
+\begin{tabular}{lcc}
+\toprule
+Quantity & Closed form & Simulation (95\% interval) \\
+\midrule
+\relax Placement: $n=11$, $k=1$, $m=1$ & 0.0909 & 0.0925 (0.0907, 0.0943) \\
+\relax Placement: $n=11$, $k=1$, $m=4$ & 0.3636 & 0.3644 (0.3614, 0.3674) \\
+\relax Placement: $n=11$, $k=2$, $m=2$ & 0.3455 & 0.3460 (0.3430, 0.3489) \\
+\relax Placement: $n=11$, $k=3$, $m=4$ & 0.7879 & 0.7873 (0.7847, 0.7898) \\
+\relax Placement: $n=11$, $k=5$, $m=6$ & 0.9978 & 0.9975 (0.9971, 0.9978) \\
+\relax Gaussian power: $m=1$, $\mu/\sigma=1$ & 0.1701 & 0.1693 \\
+\relax Gaussian power: $m=1$, $\mu/\sigma=2$ & 0.5160 & 0.5151 \\
+\relax Gaussian power: $m=1$, $\mu/\sigma=4$ & 0.9793 & 0.9794 \\
+\relax Gaussian power: $m=3$, $\mu/\sigma=1$ & 0.1138 & 0.1138 \\
+\relax Gaussian power: $m=3$, $\mu/\sigma=2$ & 0.3710 & 0.3690 \\
+\relax Gaussian power: $m=3$, $\mu/\sigma=4$ & 0.9483 & 0.9477 \\
+\relax Gaussian power: $m=6$, $\mu/\sigma=1$ & 0.0913 & 0.0919 \\
+\relax Gaussian power: $m=6$, $\mu/\sigma=2$ & 0.2948 & 0.2969 \\
+\relax Gaussian power: $m=6$, $\mu/\sigma=4$ & 0.9181 & 0.9189 \\
+Calibrated tolerance: mean false-flag rate, 500 calibrations & 0.0500 & 0.0506 (0.0373, 0.0650) \\
+\bottomrule
+\end{tabular}
+\end{table}

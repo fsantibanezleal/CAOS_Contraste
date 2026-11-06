@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Constructed histories with a known answer, the parameter values and breach flags at three valuation dates, the light expected from the definition of the test and the light returned by the engine; the single-date history has one value and one flag.}
+\label{tab:constructed}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllr}
+\toprule
+History & Parameter & Breach flags & Expected & Engine & Flagged changes \\
+\midrule
+parameter held through a breach & $(4, 4, 4)$ & $(1, 1, 1)$ & green & green & 0 \\
+change with no breach & $(4, 4.5, 5)$ & $(0, 0, 0)$ & green & green & 0 \\
+change before the breach & $(4, 4.5, 4.5)$ & $(0, 0, 1)$ & green & green & 0 \\
+change at the breach & $(4, 4, 4.5)$ & $(0, 0, 1)$ & red & red & 1 \\
+breach at the earlier date only & $(4, 4.5, 4.5)$ & $(1, 0, 0)$ & green & green & 0 \\
+two changes at two breaches & $(4, 4.5, 5)$ & $(0, 1, 1)$ & red & red & 2 \\
+change at the first date (no previous date) & $(4, 4, 4)$ & $(1, 0, 0)$ & green & green & 0 \\
+a single date & $(4)$ & $(1)$ & not evaluated & not evaluated & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

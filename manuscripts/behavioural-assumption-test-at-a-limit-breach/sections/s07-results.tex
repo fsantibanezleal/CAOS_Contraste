@@ -1,0 +1,128 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The committed history of case C14}
+\label{sec:res-committed}
+
+The bank of case C14 breaches the standardised outlier test at all three valuation dates: the ratio of the loss of economic value under the worst shock to Tier~1 capital is \cOneFourRatioA{} at 2021-Q4, \cOneFourRatioB{} at 2022-Q2 and \cOneFourRatioC{} at 2022-Q4, against the limit of 0.15 (Table~\ref{tab:c14-history}). The breach flag is therefore one at every date and does not vary, which is the first thing to know about what the test can show on this case. The fitted weighted average maturity of the wholesale deposits is \cOneFourWamA{}, \cOneFourWamB{} and \cOneFourWamC{} years at the three dates. The engine, run on this series with the flags of the outlier test, returns not evaluated at 2021-Q4, where the history has one date, red at 2022-Q2 with one flagged change, and red at 2022-Q4 with two, the changes at 30 June and 31 December 2022; these are the committed rows of the product, reproduced to the last digit by running the function on the committed series and on the fitted series rebuilt from the raw inputs, which differ from the committed ones by \cOneFourRebuiltMaxDiff{} years. The requested core share and the requested core maturity of the same deposits, which the case states and holds at 0.6 and 5 years, are green, and so is the fitted series when its breach flags are set to false. Prediction H1 holds.
+
+\input{tables/c14-history}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{history}
+\caption{The weighted average maturity of the wholesale deposits fitted at each quarter from 2016-Q4 to 2022-Q4 on the last 16 quarters of the bank's deposit cost and of the Treasury tranche yields (left), with the three committed valuation dates marked and the two dates flagged by the proposed test ringed, and the series at those three dates beside the requested core maturity that the case holds fixed (right).}
+\label{fig:history}
+\end{figure}
+
+Figure~\ref{fig:history} places the three dates in the full fitted series. The series has \realFits{} fits; its median absolute change between consecutive fits is \realMedianChange{} years and its largest is \realMaxChange{} years; \realZeroShare{} of the changes are zero, which happens where the solution sits at the 5-year cap of the tranche grid, and the weighted average maturity is at the cap at \realCapShare{} of the dates. The figure shows what Proposition~\ref{prop:degeneracy} states: a fitted series moves at nearly every date, so the red rows reflect the re-estimation and the breach, and not a decision. The two other behavioural tests of the engine, run on the committed inputs, read the same history differently. The stability test of the weights is red at 2021-Q4, with a largest sup-norm distance of \cOneFourStabStatA{} and a change of up to \cOneFourStabYearsA{} years in the weighted average maturity, amber at 2022-Q2 (\cOneFourStabStatB{}) and red at 2022-Q4 (\cOneFourStabStatC{}), so it flags the date at which the proposed test has nothing to say. The comparison of the economic value with and without the behavioural treatment is red at the three dates, with differences of \cOneFourWwStatA{} and \cOneFourWwStatC{} of Tier~1 at the first and the last, and none of them is a hidden breach, since the behavioural measure breaches the outlier test as well as the contractual one. None of the three tests reads the timing of an assumption against the timing of a breach except the proposed one, and on this case none can say whether the bank altered its assumptions, because the behaviour is synthetic.
+
+\subsection{Constructed and enumerated histories}
+\label{sec:res-constructed}
+
+The engine agrees with the definition on all \constructedN{} constructed histories of Table~\ref{tab:constructed}, of which \constructedAgree{} gave the expected light: green for the parameter held through a breach, for the change with no breach, for the change before the breach and for a breach at the earlier date only; red for the change at the breach and for two changes at two breaches; not evaluated for a single date. Prediction H2 asks for more than examples, and the enumeration provides it: on every one of the \gridTotal{} histories of a binary grid of \gridLengths{} dates, each pattern of changes crossed with each pattern of flags (\gridSix{} histories of six dates), and on \randomN{} random histories with ties at a cap, the number of disagreements between the engine and Equation~\eqref{eq:count} is \gridBad{}. The light was red exactly when the count was positive in all of them.
+
+\input{tables/constructed}
+
+Table~\ref{tab:last-digit} shows the convention the test inherits from its definition. A parameter held at 4 years with Gaussian noise of standard deviation $10^{-16}$ added at each date is still green, because the noise is smaller than the spacing of floating-point numbers at 4 and the sum rounds back; noise of \noiseFirstRed{} or more turns the light red at the two breach dates, and the held value recomputed as the sum of 0.1 and 0.2 differs from 0.3 in the last digit and is red too. A parameter that is recomputed at each date through a different order of operations, even if its mathematical value is constant, is flagged, so an implementation of the test on a stated parameter must hold it as the number that was decided and not as the result of a calculation.
+
+\input{tables/last-digit}
+
+\subsection{A stated parameter with planted changes}
+\label{sec:res-stated}
+
+Table~\ref{tab:main-results} gives the comparison in the base cell, with unrelated changes at 0.10 per quarter and a breach prevalence of 0.25, on \statedN{} histories per arm with a mean of \statedMeanM{} breach dates. The proposed test flags \statedAltEngine{} of the histories with a planted change at a breach date (lower end of the interval \statedAltLoEngine{}\,\%), as Proposition~\ref{prop:separation} requires, and \statedNullEngine{} (\statedNullLoEngine{} to \statedNullHiEngine{}\,\%) of the histories whose changes are unrelated to the breaches. The breach-agnostic count flags the same share of the alternative histories and \statedNullAny{} of the null ones, so the conjunction with the breach flag removes about half of the false flags at no cost in detection. The Fisher test flags \statedNullFisher{} of the null histories and \statedAltFisher{} of the alternative ones, the Mann--Whitney test \statedNullMw{} and \statedAltMw{}, and the Welch test \statedNullWelch{} and \statedAltWelch{}: they hold a size far below the nominal 5\,\% and detect a fraction of the planted changes. In the area under the ROC curve the ordering is not the same: the Fisher test (\statedAucFisher{}) and the Mann--Whitney test (\statedAucMw{}) rank the histories slightly better than the count of the proposed test (\statedAucEngine{}), which has only the values of its count to rank with, and the Welch test is lower (\statedAucWelch{}).
+
+\input{tables/main-results}
+
+The false-flag rate of the proposed test over the \statedCells{} cells of Table~\ref{tab:stated-grid} runs from \statedNullMin{} to \statedNullMax{}, at the lowest rate of unrelated changes with the lowest prevalence and at the highest with the highest, so prediction H5, a rate of at most 5\,\%, is refuted in every cell. Equation~\eqref{eq:false-flag}, evaluated with the number of breach dates of the very histories of each cell, lies inside the interval of the measured rate in \bernInside{} of the \bernCells{} cells (prediction H4); the cell outside, $\lambda=0.05$ at prevalence 0.5, has a closed form of \bernOutPred{} and a measured rate of \bernOutObs{}, a difference of \proofGap{} percentage points that is the largest of the grid, and under \bernExtraInside{} of three further seeds of 10,000 histories the closed form is inside the interval. The Fisher and Mann--Whitney tests never exceed \fisherNullMax{} and \mwNullMax{} false flags in any cell. The detection of the Fisher test depends on how many breach dates carry a planted change: with $\pi_m$ at 0.25, 0.5 and 1 it flags \piSweepAFisher{}, \piSweepBFisher{} and \piSweepCFisher{}, the Mann--Whitney test \piSweepAMw{}, \piSweepBMw{} and \piSweepCMw{}, and the Welch test \piSweepAWelch{}, \piSweepBWelch{} and \piSweepCWelch{}, whereas the proposed test flags every history in every cell (\statedAltMinLo{} at the lowest lower bound; prediction H3 holds).
+
+\input{tables/stated-grid}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{false-flag}
+\caption{The false-flag rate of the proposed test on a stated parameter against the mean number of breach dates in the history, for three rates of unrelated changes, with the closed form of Proposition~\ref{prop:false-flag} as lines and the nine cells of the simulation as markers with their 95\% Wilson intervals; the dotted line is a rate of 5\%.}
+\label{fig:false-flag}
+\end{figure}
+
+Figure~\ref{fig:false-flag} shows the agreement of the closed form with the nine cells of the grid and the rise of the rate with the number of breach dates; the rate does not depend on the planted changes, which are absent from the null arm. Figure~\ref{fig:operating-points} plots the detection against the false-flag rate of the five detectors over the same cells. The proposed test and the breach-agnostic count sit on the line of full detection with false-flag rates between \statedNullMin{} and \statedNullAnyMax{}, and the three tests sit near the line of no false flags with detection between \opTestsMin{} and \opTestsMax{}; no detector reaches the corner of full detection at a low false-flag rate, because in a history of a dozen quarters a coincidence and a decision cannot be told apart by the dates alone. The figure does not show the tolerance rule, which is not defined on a stated parameter, where every change is a decision and the size of a change is a matter of governance and not of estimation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.66\textwidth]{operating-points}
+\caption{Detection rate against false-flag rate of five detectors on a stated parameter, one marker for each of the nine cells of the grid of the rate of unrelated changes and the breach prevalence, with the proposed test at full detection and the three published tests near the line of no false flags.}
+\label{fig:operating-points}
+\end{figure}
+
+\subsection{A re-estimated parameter}
+\label{sec:res-fitted}
+
+The simulated banks are block bootstraps of the real rows, and Table~\ref{tab:realism} compares their changes with those of the real fitted series. Their zero-change share (\simZero{}) and their share of dates at the cap (\simCap{}) are close to the real ones, and their largest change, \simMax{} years on average, is larger than the real \realMaxChange{} years; their median change, \simMedian{} years, is smaller than the real \realMedianChange{} years, which is above the 95th percentile of the simulated medians (\simMedianQNineFive{} years). The simulated changes are thus more often tiny and more often large than the real ones, which are steady, and Figure~\ref{fig:changes-ecdf} shows the distributions. The weight of this difference falls on the calibrated tolerance and is reported where it appears.
+
+\input{tables/realism}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{changes-ecdf}
+\caption{The empirical distribution of the absolute change of the fitted weighted average maturity between consecutive dates, for the 22,000 changes of the simulated test banks, the 24 changes of the real fitted series and the 11 changes of its last 12 fits.}
+\label{fig:changes-ecdf}
+\end{figure}
+
+On the null banks, with a mean of \fitMeanM{} breach dates, the proposed test flags \fitNullEngine{} (\fitNullLoEngine{} to \fitNullHiEngine{}\,\%), and the \fitNullZero{} that it does not flag are those in which all the breach dates are ties, since \tieBanks{} of the banks have at least one tie at a breach date, \tieMean{} on average, because the weighted average maturity repeats at the cap. With a 2-year lengthening planted at breach dates it flags \fitAddCEngine{}, and the area under its ROC curve is \fitAucCEngine{} (\fitAucLoCEngine{} to \fitAucHiCEngine{}), the same at every size of the lengthening from 0.5 to 4 years, which is what Proposition~\ref{prop:degeneracy} predicts: the count is the number of breach dates minus the ties, and a planted change adds a change only where the fitted series was tied. Prediction H6, an area of at least 0.70, is refuted. The breach-agnostic count flags \fitNullAny{} of the null banks and has an area of \fitAucCAny{}. The stability test of the engine is red in \fitNullStab{} of the null banks, so a red result from it is no better evidence of an override. The published tests do better on ranking and worse on size: Table~\ref{tab:fitted-power} shows that the Mann--Whitney test flags \fitNullMw{} of the null banks, above its nominal 5\,\%, and \fitAddCMw{} of the banks with a 2-year lengthening, with an area of \fitAucCMw{}; the Welch test flags \fitNullWelch{} and \fitAddCWelch{}; the Fisher test flags \fitNullFisher{} and \fitAddCFisher{}.
+
+\input{tables/fitted-power}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{fitted-power}
+\caption{Detection rate at the calibrated size (left) and area under the ROC curve (right) against the size of a lengthening planted at breach dates, for the proposed test, the calibrated tolerance and three published tests on the simulated banks (lines), with the areas on the real fitted series for the tolerance and the Mann--Whitney test as open markers.}
+\label{fig:fitted-power}
+\end{figure}
+
+Figure~\ref{fig:fitted-power} shows the same results as curves: the proposed test is flat at an area of \fitAucCEngine{} whatever the size of the lengthening, the published tests reach areas between \fitAucDFisher{} and \fitAucDMw{} at 4 years, and the tolerance rule passes them between 0.5 and 1 year and reaches \fitAucDTol{} at 4 years.
+
+The tolerance rule restores the discrimination for overrides larger than the natural changes. Calibrated at 5\,\% on 1,000 separate banks at the breach prevalence of 0.25, its tolerance is \deltaB{} years and it flags \fitNullTol{} of the null banks (\fitNullLoTol{} to \fitNullHiTol{}\,\%), so the size holds (prediction H7). It flags \fitAddATol{}, \fitAddBTol{}, \fitAddCTol{} and \fitAddDTol{} of the banks with a lengthening of 0.5, 1, 2 and 4 years, and its areas are \fitAucATol{}, \fitAucBTol{}, \fitAucCTol{} and \fitAucDTol{}: at 1 year it flags only \fitAddBTol{}, at 2 years \fitAddCTol{} of the overrides, and at 4 years nearly all. The look-ahead variant is within one percentage point of it at every size. On the real fitted series, whose changes never exceed \realMaxChange{} years, the tolerance calibrated on the simulated banks is too large: it flags \realTolNull{} of the null draws, \realTolAddB{} of those with a 1-year lengthening, \realTolAddC{} of those with 2 years and \realTolAddD{} of those with 4 years, while its area is \realTolAucB{} at 1 year and \realTolAucC{} at 2 years. The threshold-free ranking is therefore excellent on the real series and the calibrated threshold is conservative, because the simulated population has larger changes than the real bank; the size is held and the power is lost. On the same draws the proposed test flags \realEngineNull{} of the null draws and has an area of \realEngineAuc{}, and the Mann--Whitney test flags \realMwNull{} of them with an area of \realMwAucC{} at 2 years.
+
+The override that moves the weights toward the longest tranche (Table~\ref{tab:weight-override}) is the case that none of the detectors reads. In \invisShare{} of the histories the planted date finds the fitted weights already on the longest tranche, so that nothing changes; elsewhere the override lengthens the maturity by a fraction of the distance to the cap and shrinks every later change. The proposed test has an area of \wEngineAucLow{} at the smallest share and \wEngineAucHigh{} at the largest, below one half because the override creates ties; the stability test flags \wStabFlagHigh{} of the banks at the largest share with an area of \wStabAucHigh{}; the tolerance rule flags \wTolFlagHigh{} with an area of \wTolAucHigh{}, and the Mann--Whitney test has an area of \wMwAucHigh{}. This override is not detected by any method here, and it is the form that an override toward the cap of a standardised grid takes.
+
+\input{tables/weight-override}
+
+Table~\ref{tab:robustness} reports what happens when the breach prevalence of the bank is not that of the calibration. At the calibration prevalence of 0.25 the tolerance flags \fitNullBTol{} of the null banks; calibrated at the prevalence tested it flags \fitNullATol{} at 0.10 and \fitNullCTol{} at 0.50; calibrated at 0.25 and applied to the other prevalences it flags \fitMisATol{} and \fitMisCTol{} (upper end \fitMisCTolHi{} at 0.50), so the size is exceeded at the high prevalence and prediction H8, a rate of at most 5\,\% at every prevalence, is refuted by the point estimate while the interval includes 5\,\%. A tolerance rule is calibrated for a breach process and not for a bank. For the override one date before the planted breach, the tolerance flags \earlyTol{} of \earlyN{} banks and its look-ahead variant \earlyTolLa{}, a ratio of \earlyRatio{}, so prediction H9, a ratio of at least 1.5, is refuted; the proposed test and the breach-agnostic count flag \earlyEngine{} and \ablEarlyAny{}, which tells nothing about the override because they flag nearly all null banks.
+
+\input{tables/robustness}
+
+\subsection{Checks of the propositions}
+\label{sec:res-theory}
+
+Table~\ref{tab:theory-checks} compares the closed forms with simulation. The probability of Equation~\eqref{eq:hypergeometric} (Figure~\ref{fig:hypergeometric}) lies inside the interval of the simulated placement rate in \hyperInside{} of \hyperCells{} pairs $(k,m)$, and the one outside lies \hyperOutGap{} percentage points from its interval, as expected of \hyperCells{} 95\,\% intervals, which miss about one comparison in twenty. The detection probability of Equation~\eqref{eq:gaussian-power} differs from simulation by at most \gaussWorst{} over the \gaussPoints{} points of Figure~\ref{fig:gaussian-power}. The one-sided Fisher p-value equals the permutation p-value to within \fisherPermMax{} on \fisherPermN{} random histories (Proposition~\ref{prop:association}). The mean false-flag rate of the calibrated tolerance over \confCalibrations{} calibrations of \confNcal{} histories is \confMean{}, against \confTheory{} from Equation~\eqref{eq:conformal}; the realised rate of one calibration ranges from \confLo{} to \confHi{} (2.5th to 97.5th percentile), with a largest value of \confMax{}, and \confShareAbove{} of the calibrations exceed 5\,\%, as the bound on the average allows (Figure~\ref{fig:conformal-validity}).
+
+\input{tables/theory-checks}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{hypergeometric}
+\caption{The probability that at least one change falls on a breach date, from Equation~\eqref{eq:hypergeometric}, against the number of breach dates among 11 dates, for one, two, three and five changes (lines), with the simulated placements as markers and their 95\% Wilson intervals.}
+\label{fig:hypergeometric}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{gaussian-power}
+\caption{The probability that the tolerance rule flags Gaussian changes against the planted shift in units of their standard deviation, for one, three and six breach dates, with the closed form of Equation~\eqref{eq:gaussian-power} as lines and the simulation as open markers; the dotted line is the size of 5\%.}
+\label{fig:gaussian-power}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{conformal-validity}
+\caption{The realised false-flag rate on \confNtest{} fresh null histories of each of \confCalibrations{} independent calibrations of the tolerance on \confNcal{} null histories each, with the size of 5\% and the mean over the calibrations marked.}
+\label{fig:conformal-validity}
+\end{figure}
+
+\subsection{Outcome of the predictions}
+\label{sec:res-hypotheses}
+
+Table~\ref{tab:hypotheses} gives the nine predictions with their measured values: \hypothesesHeld{} held and \hypothesesRefuted{} were refuted. H1 to H4 and H7 held. H5, H6, H8 and H9 were refuted, and each refutation is a result about the limits of the test: its false-flag rate on a stated parameter is not at the conventional size, it does not discriminate on a re-estimated parameter, a calibrated tolerance does not transfer across breach prevalences without a loss of size, and reading one date ahead does not recover an anticipated override. The five that held are the specification of the test and the closed forms that follow from it: the reproduction of the committed rows and of the definition on every history enumerated, the detection of one on a stated parameter, the closed form of the false-flag rate, and the size of the calibrated tolerance together with its detection of large overrides. The four that failed are the predictions that a validator would make by treating the test as a statistical test of a re-estimated parameter, and each failure traces to a proposition: H5 to Proposition~\ref{prop:false-flag}(c), H6 to Proposition~\ref{prop:degeneracy}, H8 to the exchangeability that Proposition~\ref{prop:conformal} requires, and H9 to the single change that a persistent override produces. The outcomes are decided by code from the committed results, with the criteria of Table~\ref{tab:hypotheses}, so that a rerun that changed a rate across a criterion would change the outcome in the table.
+
+\input{tables/hypotheses}
