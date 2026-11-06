@@ -7,7 +7,7 @@
 \providecommand*{\input@path}{}
 \g@addto@macro\input@path{{tables/}}
 \makeatother
-\input{../tables/credit-scoring-numbers}
+\input{tables/credit-scoring-numbers}
 
 A credit score maps the characteristics $x$ of an applicant or a borrower to the probability of default over a stated horizon,
 $\PD(x)=\Prob(Y=1\mid X=x)$, where $Y=1$ marks a default and $X$ the vector of inputs. The same quantity drives the approval
@@ -131,7 +131,7 @@ split lists. The implementation is the module \texttt{pipeline/model/scorecard.p
 judge it are the functions \texttt{disc\_auc}, \texttt{disc\_delong}, \texttt{disc\_ks}, \texttt{pd\_hosmer\_lemeshow},
 \texttt{pd\_spiegelhalter}, \texttt{pd\_brier}, \texttt{pd\_ece} and \texttt{stability\_psi} of \texttt{riskvalidation} 1.1.0.
 
-\input{../tables/credit-scoring-fit}
+\input{tables/credit-scoring-fit}
 
 The scorecard is compared with every other method by the paired DeLong test (Equation~\eqref{eq:cs-delong}), and its acceptance
 criterion has three parts: the binned inputs, fitted on the training slice only, reproduce monotone default rates; the points
@@ -144,7 +144,7 @@ shows the points of the two inputs with the largest information value: the Septe
 spans only \csPointsSpanLimit{} points, so the ranking of the scorecard is carried by the repayment history. The score of a borrower is read directly from the table, which is what makes the
 model auditable line by line.
 
-\input{../tables/credit-scoring-points}
+\input{tables/credit-scoring-points}
 
 \begin{algorithm}[htbp]
 \caption{Fit of the monotone weight-of-evidence scorecard on the training slice}
@@ -602,7 +602,7 @@ rate between each method and the scorecard along the false positive rate (right)
 \label{fig:cs-roc}
 \end{figure}
 
-\input{../tables/credit-scoring-c01-holdout}
+\input{tables/credit-scoring-c01-holdout}
 
 \paragraph{Calibration.}
 The scorecard has a Brier score of \csHoScBrier{}, a Brier skill of \csHoScSkill{} against the trivial forecast, and a
@@ -645,7 +645,7 @@ changes: the explainable boosting machine leads (\csSsEbAuc{}), LightGBM follows
 regression (\csSsPlAuc{}) is no better than the scorecard (\csSsScAuc{}), which is consistent with the low stability of its rule
 set at that size. On the German twin no learned method differs significantly from the scorecard.
 
-\input{../tables/credit-scoring-c01-variants}
+\input{tables/credit-scoring-c01-variants}
 
 \begin{figure}[htbp]
 \centering
@@ -667,7 +667,7 @@ large sample, and less on the small ones. The checks do not say why; correlated 
 and the artifacts do not test that explanation. What follows for use is that the rules of the method should be read as examples
 of the structure the data carry, not as a stable list of risk drivers.
 
-\input{../tables/credit-scoring-checks}
+\input{tables/credit-scoring-checks}
 
 \begin{figure}[htbp]
 \centering
@@ -696,9 +696,9 @@ the scorecard; on the pooled file, with \csCtwoHoldEvP{} holdout bankruptcies, n
 corporate samples a learned method can gain much in AUC and still be the less trustworthy estimate, so the gain must be read
 with the gap.
 
-\input{../tables/credit-scoring-c02-auc}
+\input{tables/credit-scoring-c02-auc}
 
-\input{../tables/credit-scoring-c02-diff}
+\input{tables/credit-scoring-c02-diff}
 
 \begin{figure}[htbp]
 \centering
@@ -726,9 +726,9 @@ do not show whether a model
 fitted on a bank's own book would have behaved so: the loans are guaranteed small-business loans made under a federal program,
 the file carries no delinquency history, balance or rating, and the sample is not the SME book of a bank.
 
-\input{../tables/credit-scoring-c03-auc}
+\input{tables/credit-scoring-c03-auc}
 
-\input{../tables/credit-scoring-c03-vintage}
+\input{tables/credit-scoring-c03-vintage}
 
 \begin{figure}[htbp]
 \centering
@@ -766,9 +766,9 @@ experiment measures what a treatment does when the truth is known by constructio
 differences are means over repetitions of one policy design. What follows for validation is that the accepted-only bias must be
 measured, not assumed, and that no standard treatment should be adopted on its AUC alone.
 
-\input{../tables/credit-scoring-reject}
+\input{tables/credit-scoring-reject}
 
-\input{../tables/credit-scoring-reject-regimes}
+\input{tables/credit-scoring-reject-regimes}
 
 \begin{figure}[htbp]
 \centering

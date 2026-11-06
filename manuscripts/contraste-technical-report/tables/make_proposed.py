@@ -628,7 +628,7 @@ def fit_width(path: pathlib.Path) -> None:
     s = path.read_text(encoding="utf-8")
     if "resizebox" in s:
         return
-    s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\linewidth\\linewidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+    s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
     s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
     path.write_text(s, encoding="utf-8", newline="\n")
 

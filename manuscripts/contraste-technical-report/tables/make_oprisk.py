@@ -86,7 +86,7 @@ def table(path: pathlib.Path, header, rows, **kw):
     out = figkit.table(path, header, fixed, **kw)
     # a table wider than the text is scaled down to the text width, a narrower one keeps its size
     text = out.read_text(encoding="utf-8")
-    text = text.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+    text = text.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
     text = text.replace("\\end{tabular}", "\\end{tabular}}", 1)
     out.write_text(text, encoding="utf-8", newline="\n")
     return out

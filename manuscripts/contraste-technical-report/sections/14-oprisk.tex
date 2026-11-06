@@ -3,7 +3,7 @@
 \section{Methods: operational risk}
 \label{sec:oprisk}
 
-\input{../tables/oprisk-numbers}
+\input{tables/oprisk-numbers}
 
 Operational risk capital covers the losses that the Basel framework classifies in seven Level~1 event types: internal fraud, external
 fraud, employment practices and workplace safety, clients, products and business practices, damage to physical assets, business
@@ -37,7 +37,7 @@ percent quantile of the annual loss exists for each variant, and any estimate fr
 variant is observed in four cells, five or ten years of history with a collection threshold of EUR 10,000 or 20,000, and each
 cell holds \opNRep{} independent histories, \opNHist{} histories in all. \Cref{tab:op-cases} lists the four variants.
 
-\input{../tables/oprisk-cases}
+\input{tables/oprisk-cases}
 
 Two methods of the product are described here. The first is the loss distribution approach together with the standardised
 measurement approach: the frequency and severity laws, the truncated and spliced fits, the aggregation of the annual loss by three
@@ -403,8 +403,8 @@ beyond them, and only the Monte Carlo continues. Across the sixteen cells the re
 truncated lognormal. The true quantile grows from EUR \opTrueQA{} million at $\xi=0.6$ to EUR \opTrueQD{} million at $\xi=1.1$, a factor of \opQRatio{} from a change of the tail index of 0.5. The single loss approximation falls below the Fourier
 quantile by \opSlaRelA{} percent at $\xi=0.6$ and by \opSlaRelD{} percent at $\xi=1.1$; its gap closes as the tail gets heavier, as the approximation theory predicts.
 
-\input{../tables/oprisk-benchmark}
-\input{../tables/oprisk-aggregation}
+\input{tables/oprisk-benchmark}
+\input{tables/oprisk-aggregation}
 
 \begin{figure}[htbp]
 \centering
@@ -426,7 +426,7 @@ shown for comparison only: it differs from the mean-adjusted rung of \cref{tab:o
 rung over the three variants with a finite mean (\opMedMcA{} against \opMedMaA{} at $\xi=0.6$), and it has no capital at $\xi=1.1$. The reading has
 limits: the ratio is conditional on a capital being defined (\cref{tab:op-defined}), and the generator draws from the family the tail rungs assume.
 
-\input{../tables/oprisk-m24-ratio}
+\input{tables/oprisk-m24-ratio}
 
 \begin{figure}[htbp]
 \centering
@@ -443,8 +443,8 @@ percentile range is wide, and the share of histories whose fitted index reaches 
 percent of the histories at $\xi=1.1$ conclude a finite mean that does not exist. A fitted index of one or more leaves the mean-based rungs without a capital, so they are defined on the histories that look light-tailed,
 a selection that makes their medians optimistic where the tail is heavy.
 
-\input{../tables/oprisk-defined}
-\input{../tables/oprisk-tail}
+\input{tables/oprisk-defined}
+\input{tables/oprisk-tail}
 
 \begin{figure}[htbp]
 \centering
@@ -472,7 +472,7 @@ These low medians are not an advantage: they are conditional on the \opNdMaC{}, 
 below the truth in \opUndMaC{}, \opUndCvmC{} and \opUndObreC{} percent of them. The lognormal fitted by the same Cram\'er-von Mises criterion, the control that does not match the generator, understates the capital at every tail index (median
 \opMedClA{} at $\xi=0.6$ to \opMedClD{} at $\xi=1.1$): a robust criterion on a wrong family is still a wrong capital.
 
-\input{../tables/oprisk-m32-ratio}
+\input{tables/oprisk-m32-ratio}
 
 \begin{figure}[htbp]
 \centering
@@ -482,7 +482,7 @@ lognormal control, ten years of history and threshold EUR 20,000, on a logarithm
 \label{fig:op-m32-boxes}
 \end{figure}
 
-\input{../tables/oprisk-grid}
+\input{tables/oprisk-grid}
 
 The committed grid has no contaminated histories, so the case that motivates the robust estimators is shown by the study of the engine, which draws 250 losses above EUR 20,000 from lognormal and spliced generators, with and
 without 3 percent of the losses multiplied by 50, in \opContamN{} histories per scenario (\cref{tab:op-contam}, \cref{tab:op-contam-log}). Under contamination of a lognormal truth the likelihood capital is \opContamMleMedian{} times the truth at the median, the Cram\'er-von Mises capital
@@ -492,8 +492,8 @@ partly, and the fit at 80 percent efficiency, with \opContamGrossObreEighty{}, d
 (\opContamSpliceErrSplice{} against \opContamSpliceErrMle{}) with a spread ten times larger, so robustness protects against gross losses and does not repair a misspecified family. These cells come from 148 to 170 histories and not from
 the 1,000 of the grid, one contamination design and one fit threshold; they carry an uncertainty of order a tenth in the median ratio.
 
-\input{../tables/oprisk-contam}
-\input{../tables/oprisk-contam-log}
+\input{tables/oprisk-contam}
+\input{tables/oprisk-contam-log}
 
 \paragraph{The standardised approach.} The capital of the standardised approach does not follow the tail (\cref{tab:op-sma}, \cref{fig:op-sma}). With the same business indicator in every row, its median is EUR \opOrcMedA{} million at $\xi=0.6$ and
 EUR \opOrcMedD{} million at $\xi=1.1$, a ratio to the true quantile of \opOrcRatioA{} at the lightest tail and \opOrcRatioD{} at the heaviest, with a narrow 5th to 95th percentile range at each (\opOrcRatioLoA{} to \opOrcRatioHiA{} and \opOrcRatioLoD{} to \opOrcRatioHiD{}).
@@ -503,8 +503,8 @@ face of the same formula (\cref{tab:op-ilm}): adding a loss of EUR \opAddedOne{}
 \opIlmMid{} with a loss of EUR \opIlmMidAdded{} million and to \opIlmLast{} with a loss as large as the component of EUR \opAddedLast{} million, and the capital goes from EUR \opOrcZero{} to \opOrcLast{} million. The jump of the multiplier is \opIlmJump{} for the loss of EUR \opIlmJumpAdded{} million,
 above the red tolerance of 0.15. The single loss approximation of the same history moves from EUR \opLdaZero{} to \opLdaOneLoss{} million with the first added loss, and \opLdaLast{} million with the largest, because the added loss enters the fitted tail.
 
-\input{../tables/oprisk-sma}
-\input{../tables/oprisk-ilm}
+\input{tables/oprisk-sma}
+\input{tables/oprisk-ilm}
 
 \begin{figure}[htbp]
 \centering
@@ -519,8 +519,8 @@ no single point drives the capital, though the capital of \opScBase{} million is
 threshold stability tests are green in every variant, with a benchmark metric of \opBenchStat{} against a tolerance of one. The capital stability test is red for all \opCapRed{} of the \opCapTests{} method-and-cell results, because the dispersion of every rung exceeds the
 green and amber limits of 0.25 and 0.50 or its bias exceeds 0.25, and the multiplier response test is red in all four variants. These lights describe the dispersion of capital estimated from a few years of data, and none is a finding about a particular bank.
 
-\input{../tables/oprisk-scenario}
-\input{../tables/oprisk-tests}
+\input{tables/oprisk-scenario}
+\input{tables/oprisk-tests}
 
 \paragraph{What follows.} The loss distribution approach computes the same aggregate loss by three routes, and the routes agree, so the instability that the results show lies in the estimation of the tail and not in the arithmetic of the aggregation.
 Truncation matters: ignoring the collection threshold understates the capital in every history. The splice has the right median and a spread of one to three times the truth; the single loss approximation and the three

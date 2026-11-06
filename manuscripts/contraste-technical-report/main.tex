@@ -9,8 +9,10 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-% A section includes a generated table as \input{../tables/<name>}: TeX finds it through sections/ below, and the content
-% check, which resolves an include from the including file's folder, finds the same file.
+% A section includes a generated table as \input{tables/<name>}, resolved from this folder, as TeX and the content check
+% both resolve a nested include.
+% The loss given default section reads its numbers as \LE{key}; a key the table script did not write prints as ??key.
+\newcommand{\LE}[1]{\ifcsname lgdead:#1\endcsname\csname lgdead:#1\endcsname\else\textbf{??#1}\fi}
 \makeatletter
 \def\input@path{{sections/}}
 \makeatother

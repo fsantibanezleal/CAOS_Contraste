@@ -1,7 +1,7 @@
 % Chapter written by unit TR-12 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
 % Every number of this section is a macro of tables/proposed-numbers.tex, written by tables/make_proposed.py from data/derived
 % (and, for the sequential monitor on the C11 windows, from the installed engine applied to the committed exceedance days).
-\input{../tables/proposed-numbers}
+\input{tables/proposed-numbers}
 \providecommand{\pxfn}[1]{\nolinkurl{#1}}
 
 \section{Methods: the product's own contributions}
@@ -780,7 +780,7 @@ on all but one of \pxOneTests{} counts, the exposure engine agrees with the refe
 indexation charge is more than half of the change in net interest income of the short-indexed variant, the worst case of the dependence band is a quarter above the simple sum, the reverse liquidity stress is solved or refused by rule, and the
 interquartile range of the operational-risk capital is a multiple of the truth.
 
-\input{../tables/proposed-summary}
+\input{tables/proposed-summary}
 
 Figure~\ref{fig:proposed-size} shows the sizes behind the first row: each of the \pxOneTests{} tests of the null family rejects a correct model at a rate close to its 5\,\% level, with a half-width of about 0.7 percentage points, and one point lies above the bound.
 It does not show power, which depends on the planted defect and its severity and is reported in the sections of the defect families; and it shows that a test that holds its size under one null can leave it under another, which is why each rate is tied to its generator.
@@ -795,7 +795,7 @@ Figure~\ref{fig:proposed-band} and Figure~\ref{fig:proposed-oprisk} show the ban
 \label{fig:proposed-size}
 \end{figure}
 
-\input{../tables/proposed-ore}
+\input{tables/proposed-ore}
 
 \begin{figure}[htbp]
 \centering
@@ -816,8 +816,8 @@ flag nearly all of them at a family size of \pxThirteenSize{}\,\% with a null un
 to be replaced. Table~\ref{tab:proposed-lag} and Figure~\ref{fig:proposed-lag} give the lag ladder: the rolling statistic flags \pxThirteenLagFive{}\,\% at a lag of 5 days and \pxThirteenLagTen{}\,\% at 10, against a regulatory zone that reaches \pxThirteenLagPlaForty{}\,\% only at 40 days; what follows is that the complement sees a late scale from a delay of a week, and that it
 does so at a size set by the null generator, so the thresholds must be recalibrated for a desk whose volatility process differs.
 
-\input{../tables/proposed-pla}
-\input{../tables/proposed-lag}
+\input{tables/proposed-pla}
+\input{tables/proposed-lag}
 
 \begin{figure}[htbp]
 \centering
@@ -837,8 +837,8 @@ Table~\ref{tab:proposed-anchored} and Figure~\ref{fig:proposed-anchored} give th
 pooled or ten times larger. The table does not show the width of the interval, which is conservative, and the half-widths printed are Monte Carlo errors of the coverage and not interval widths. Table~\ref{tab:proposed-realk} reads the anchored odds multiplier on the real cohorts: a large multiplier for the lowest grades, unstable across years for the B grade and the lowest grade, so that its size
 is a statement about the equivalence of the two default counts as much as about withdrawal.
 
-\input{../tables/proposed-anchored}
-\input{../tables/proposed-realk}
+\input{tables/proposed-anchored}
+\input{tables/proposed-realk}
 
 \begin{figure}[htbp]
 \centering
@@ -852,9 +852,9 @@ repeated Kupiec test on all days so far is faster (\pxFifteenXFourKupDay{} days 
 average combination detects a 10\,\% error more often than the product. Table~\ref{tab:proposed-c11e} reads the monitor on the exceedance days of the C11 ladder: the e-process flags every model in the 2007 to 2009 window at a median day far below 250, and it flags none in the 64-day window; it does not show power, since the real windows have no known truth, and in the calm window
 it flags fewer models than the light.
 
-\input{../tables/proposed-sequential}
-\input{../tables/proposed-pdgrades}
-\input{../tables/proposed-c11e}
+\input{tables/proposed-sequential}
+\input{tables/proposed-pdgrades}
+\input{tables/proposed-c11e}
 
 \begin{figure}[htbp]
 \centering
@@ -866,8 +866,8 @@ it flags fewer models than the light.
 Table~\ref{tab:proposed-conformal}, Table~\ref{tab:proposed-conformal-cells} and Figure~\ref{fig:proposed-conformal} give the conformal recalibration. The wrapper moves the hit rates of the three models toward the target in the three stress windows and the criterion holds in all \pxSixteenCells{} cells, with a worst loss change of $+\pxSixteenWorstFz\,\%$. The tables do not show that the wrapped models are right: the wrapped historical simulation at the 1\,\% level still fails in two of the three
 windows, one path per window supports every row, and the independence test is not evaluated where no hit occurs.
 
-\input{../tables/proposed-conformal}
-\input{../tables/proposed-conformal-cells}
+\input{tables/proposed-conformal}
+\input{tables/proposed-conformal-cells}
 
 \begin{figure}[htbp]
 \centering

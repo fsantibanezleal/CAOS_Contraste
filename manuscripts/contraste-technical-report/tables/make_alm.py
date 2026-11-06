@@ -122,9 +122,9 @@ def fit_width() -> None:
         if p.name == "alm-numbers.tex":
             continue
         s = p.read_text(encoding="utf-8")
-        if "\\resizebox" in s:
+        if "\\resizebox" in s or "\\fitwidth" in s:
             continue
-        s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+        s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
         s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
         p.write_text(s, encoding="utf-8", newline="\n")
 

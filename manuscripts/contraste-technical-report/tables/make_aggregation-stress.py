@@ -546,7 +546,7 @@ def fit_width() -> None:
         s = p.read_text(encoding="utf-8")
         if BS + "resizebox" in s:
             continue
-        s = s.replace(BS + "begin{tabular}", BS + "resizebox{" + BS + "ifdim" + BS + "width>" + BS + "textwidth" + BS + "textwidth" + BS + "else" + BS + "width" + BS + "fi}{!}{%" + NL + BS + "begin{tabular}", 1)
+        s = s.replace(BS + "begin{tabular}", BS + "fitwidth{%" + NL + BS + "begin{tabular}", 1)
         s = s.replace(BS + "end{tabular}", BS + "end{tabular}}", 1)
         p.write_text(s, encoding="utf-8", newline=NL)
 

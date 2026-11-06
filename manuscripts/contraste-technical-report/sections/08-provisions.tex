@@ -1,6 +1,6 @@
 % Chapter written by unit TR-3 (plans/contraste/manuscripts-plan.md in CAOS_MANAGE).
 % Every number that comes from an artifact is a macro of tables/provisions-numbers.tex, written by tables/make_provisions.py.
-\input{../tables/provisions-numbers}
+\input{tables/provisions-numbers}
 \section{Methods: lifetime PD and expected credit loss}
 \label{sec:provisions}
 
@@ -200,8 +200,8 @@ with $E$ the exposure, $R$ the amount recoverable from collateral and collection
 no-objection, $\mathrm{Prov}_{\mathrm{group}}=\max(\mathrm{Prov}^{\mathrm{ME}},\mathrm{Prov}^{\mathrm{MI}})$, and Banco Andino has no internal method, so the standard applies. Consumer loans follow Circular 2.346 of 2024-03-06 \citep{provisions:cmf2346}, with a probability that depends on the debtor's maximum days past due in the bank,
 whether it holds a residential mortgage in the system and whether it had a debt $30$ days or more past due in the system in the previous three months, in $16$ cells.
 
-\input{../tables/provisions-t-b1}
-\input{../tables/provisions-t-b1check}
+\input{tables/provisions-t-b1}
+\input{tables/provisions-t-b1check}
 
 The parameters are the statutory ones, transcribed cell by cell from the regulator's text and asserted against a fixture, so the choice of value is the regulator's; the case's own inputs are labelled assumptions: a collateral haircut of $20\%$, a recovery capped at $90\%$ for mortgages, an internal probability of an
 individual debtor of $0.8$ times the statutory one, and a guarantor share of $10\%$ covering half of the exposure. The $0.5\%$ minimum applies to the individually assessed normal portfolio, A1 to A6, and to nothing else: $\mathrm{minimum}=0.005\times\mathrm{exposure}$ and the top-up is $\max(0,\mathrm{minimum}-\mathrm{provision})$. The method is a
@@ -236,7 +236,7 @@ Table~\ref{tab:prov-annex9} lists the $\pvAnnexSegments$ segments, from A.1.1 co
 risk in segment A.1.1, and gentlest for housing, $18\%$ against $0.7\%$; it does not show the haircut table for effective guarantees, which the engine does not transcribe. The category of an account in the case follows the facts Annex 9 uses and never a model probability: more than $90$ days past due is doubtful,
 $31$ to $90$ days past due, forborne or on the watch list is normal under special watch, and anything else is normal. The guarantee values are the appraisal times one minus a haircut of $20\%$, an assumption of the case because the Annex 9 haircut table is outside the engine, with real-estate values moved by the house price index of the scenario.
 
-\input{../tables/provisions-t-annex9}
+\input{tables/provisions-t-annex9}
 
 The assumptions are the transcribed tables and the stage map, valid as of Circular 6/2021 and applicable from 2022-06-30; whether the point numbers moved after Circular 1/2025 is not confirmed in the sources. The parameters are the regulator's, with the day conversion and the haircut as the only choices of Contraste. The method is a lookup per account,
 $O(1)$, and $O(A)$ for $A$ accounts. The implementation is \url{riskvalidation.provisions.local_es} 1.1.0, called by the pipeline module \url{pipeline/cases/c07/bde.py}. The acceptance criterion is that the coverage tables are reproduced as transcribed and that the category-to-stage mapping is exposed;
@@ -286,7 +286,7 @@ The network has $\pvNetInputs$ dummy-column inputs, two hidden layers of $\pvNet
 $10^{-4}$, full batch in double precision on one CPU thread, at most $1500$ epochs and a patience of $60$ epochs on the hold-out loss of a seeded random fifth of the loans, and a rate floor of $10^{-10}$; the seed is $4506$ plus the day number of the reporting date. These hyper-parameters are constants of the pipeline module, identical at every date; the sources record no search over them, so how
 they were chosen is not stated. One epoch evaluates the network on the $384$ strata rows and so costs about $384\times\pvNetParams$ multiply-adds, independent of the number of loans; building the two tables is $O(n)$ once. Table~\ref{tab:prov-pch-fit} gives the loans, the split, the epochs run and the final loss at each date.
 
-\input{../tables/provisions-t-pch-fit}
+\input{tables/provisions-t-pch-fit}
 
 The implementation is \url{pipeline/cases/c06/neural.py} (functions \texttt{interval\_statistics}, \texttt{fit\_network}, \texttt{fit\_pch}, \texttt{conditional\_cumulative\_pd}) on \texttt{torch} 2.14.1 for the network, with the curves passed to \url{riskvalidation.provisions.term_structure} 1.1.0 and the weights identified by their hash. The comparison is with the Cox rung
 on the same covariates, time scale and loans, at each of the six dates, on the accounts with at least $12$ quarters of contractual life left, so that the $36$-month curve of every account is observed in the prediction and, up to the follow-up, in the data. The acceptance criterion of the specification is the calibration at $12$, $24$ and $36$ months against the Aalen-Johansen incidence by risk decile, and the
@@ -308,7 +308,7 @@ with the Vasicek acceptance band of the PC-Hazard rung at the $5\%$ level. The C
 \label{fig:prov-curves}
 \end{figure}
 
-\input{../tables/provisions-t-rungs}
+\input{tables/provisions-t-rungs}
 
 Table~\ref{tab:prov-rungs} gives the integrated Brier score and the c-index of the rungs at the six dates. The scores of the four rungs differ in the third decimal at most dates, so the integrated Brier score hardly separates them; the c-index separates them clearly, between \pvCindexCoxMin{} and \pvCindexCoxMax{} for Cox and between \pvCindexPchMin{} and \pvCindexPchMax{} for PC-Hazard. Because both rungs use the same loan covariates, the difference in ranking is the age-dependent
 shape the network adds, and the table does not separate that gain from the covariates. The calibration by decile is in Figure~\ref{fig:prov-deciles}: the points of the two rungs lie near the diagonal at $12$ months and spread at $36$, and the median relative error of the predicted against the Aalen-Johansen cumulative default over the \pvDecPoints{} deciles with an observed default is \pvDecMedPchTwelve, \pvDecMedPchTwentyFour{} and \pvDecMedPchThirtySix\% at $12$, $24$ and $36$ months for PC-Hazard and
@@ -325,7 +325,7 @@ shape the network adds, and the table does not separate that gain from the covar
 \pvIbsBetterMax{} and the mean decile gap smaller by up to \pvGapBetterMax{}. The criterion is therefore met by the rule of more than half of the dates, with a margin of one date over the threshold and with the failures concentrated in the dates whose follow-up contains the crisis; the follow-up differs by date, from \pvFollowShort{} to \pvFollowLong{} months, so the dates are not equally informative, and the table does not show the sampling uncertainty of the
 differences, which the artifacts do not carry.
 
-\input{../tables/provisions-t-s4}
+\input{tables/provisions-t-s4}
 
 \begin{figure}[htbp]
 \centering
@@ -338,7 +338,7 @@ differences, which the artifacts do not carry.
 gross carrying amount in Stage 2, because the baseline factor of that date sits far into the adverse range. At December 2019 and June 2023 no loan is in Stage 2 (\pvNoStageTwo{} dates). The ratio of realised to predicted twelve-month loss, \pvRatioTen{} at December 2010 and \pvRatioTwenty{} at June 2020, shows an allowance far above the losses of the following year at those dates; the table does not show whether the later years
 absorb it, because the test reads twelve months.
 
-\input{../tables/provisions-t-ecl}
+\input{tables/provisions-t-ecl}
 
 \begin{figure}[htbp]
 \centering
@@ -351,13 +351,13 @@ The non-linearity index is positive at \pvNlPositive{} of the six dates, with a 
 there, a finding that the sensitivity test does not carry. Table~\ref{tab:prov-sicr} gives the effectiveness of the Stage 2 flag with its intervals: the ratio of the default rate in Stage 2 to Stage 1 is \pvSicrRatioTen{} at December 2010, green, and at December 2006 it is below one with an interval that contains one, red; at the two dates with no loan in Stage 2 the test is not evaluated. Table~\ref{tab:prov-battery} summarises the battery:
 \pvBatteryRed{} of the \pvBatteryCells{} cells are red, all \pvMigrationRed{} stage-migration tests are red, and the reconciliation identities close at every date, with a largest residual of \pvReconMax{} USD, far inside the tolerance of $10^{-6}$ times the gross carrying amount. The lights are the acceptance gates of the engine and not regulatory thresholds.
 
-\input{../tables/provisions-t-sicr}
-\input{../tables/provisions-t-battery}
+\input{tables/provisions-t-sicr}
+\input{tables/provisions-t-battery}
 
 \paragraph{The three regimes on C07.} Table~\ref{tab:prov-c07} gives the provision of Banco Andino, a synthetic bank of \pvSevenAccounts{} accounts and CLP \pvSevenExposureTn{} trillion of exposure. In the base scenario the CMF B-1 total is \pvSevenBaseB{} CLP billion, the IFRS 9 total \pvSevenBaseI{} (\pvSevenRatioI\% of B-1) and the Annex 9 total \pvSevenBaseD{} (\pvSevenRatioD\%); the regimes diverge by construction, because B-1 reads statutory
 tables, IFRS 9 a probability-weighted lifetime loss and Annex 9 a coverage of the uncovered amount. In the combined severe scenario the totals are \pvSevenSevereB, \pvSevenSevereI{} and \pvSevenSevereD{} CLP billion, growth of \pvSevenSevereGrowthB\%, \pvSevenSevereGrowthI\% and \pvSevenSevereGrowthD\% over the base. B-1 reacts least, since its tables move with the days-past-due bucket of the accounts a scenario moves and with the systematic factor, and IFRS 9 reacts most, so IFRS 9 overtakes B-1 between the two scenarios. The synthetic bank supports the comparison of mechanisms; the table does not show how a real bank would rank, and none of its parameters reflects any bank.
 
-\input{../tables/provisions-t-c07}
+\input{tables/provisions-t-c07}
 
 \begin{figure}[htbp]
 \centering
@@ -370,8 +370,8 @@ Figure~\ref{fig:prov-regimes} shows the same totals. Table~\ref{tab:prov-c07-seg
 the amounts they place in each stage and in the coverage they apply to it. The bridge of Figure~\ref{fig:prov-bridge} explains the base-scenario gap of \pvBridgeTotal{} CLP billion between B-1 and IFRS 9: the measurement basis, bank parameters against the B-1 matrices at twelve months, undiscounted, accounts for \pvBridgeBasis{}; the lifetime loss on Stage 2 adds \pvBridgeLife{}, the scenario weighting \pvBridgeWeight{}, the discounting
 \pvBridgeDisc{} and the overlays \pvBridgeOverlay{}, and the steps sum to \pvBridgeSum{}. The weighted loss exceeds the loss at the mean scenario path by \pvSevenNlBase\% (the index is positive here), the overlays are \pvSevenOverlayShare\% of the allowance, each a separate line, and the Stage 2 default rate is \pvSevenSicrRatio{} times that of Stage 1 in the generator's realised outcomes.
 
-\input{../tables/provisions-t-c07-seg}
-\input{../tables/provisions-t-c07-stage}
+\input{tables/provisions-t-c07-seg}
+\input{tables/provisions-t-c07-stage}
 
 \begin{figure}[htbp]
 \centering

@@ -609,9 +609,9 @@ def numbers(R: dict[str, Any], out: pathlib.Path) -> pathlib.Path:
 def fit_width(path: pathlib.Path) -> None:
     """Wrap the tabular of a table file in a box that shrinks it to the line width when it is wider (never enlarges it)."""
     text = path.read_text(encoding="utf-8")
-    if "\\resizebox" in text:
+    if "\\resizebox" in text or "\\fitwidth" in text:
         return
-    text = text.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\linewidth\\linewidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+    text = text.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
     text = text.replace("\\end{tabular}", "\\end{tabular}}", 1)
     path.write_text(text, encoding="utf-8", newline="\n")
 

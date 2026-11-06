@@ -224,10 +224,14 @@ def subsection(row: dict[str, str]) -> str:
         para.append(f"Its provider, the document served before and besides the real one, is {sentence(row['provider'])}.")
     if row["swap test"] not in ("", "-"):
         para.append(f"The test that every document matches exactly one schema is {tests_text(row['swap test'])}.")
+    props = collect(schema, (ROOT / row["schema file"]).parent) if schema else None
+    if props:
+        n = len(list(expand(props, schema)))
+        para.append(f"Table~\\ref{{tab:contract-{cid}}} lists its {n} top-level "
+                    f"field{'s' if n != 1 else ''} with the type, the constraint and the description the schema states.")
     lines.append(" ".join(para))
     lines.append("")
     if schema:
-        props = collect(schema, (ROOT / row["schema file"]).parent)
         if props:
             lines += ["{\\small", "\\begin{longtable}{p{0.22\\textwidth}p{0.17\\textwidth}p{0.15\\textwidth}p{0.36\\textwidth}}",
                       f"\\caption{{The top-level fields of the contract \\texttt{{{figkit.tex_escape(cid)}}}: the name, the JSON "

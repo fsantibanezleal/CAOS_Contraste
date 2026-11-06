@@ -73,9 +73,9 @@ def fit_width() -> None:
     """Wrap the tabular of every generated table in a box that shrinks it to the text width when it is wider."""
     for f in HERE.glob("ccr-t-*.tex"):
         s = f.read_text(encoding="utf-8")
-        if "\\resizebox" in s:
+        if "\\resizebox" in s or "\\fitwidth" in s:
             continue
-        s = s.replace("\\begin{tabular}", "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%\n\\begin{tabular}", 1)
+        s = s.replace("\\begin{tabular}", "\\fitwidth{%\n\\begin{tabular}", 1)
         s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
         f.write_text(s, encoding="utf-8", newline="\n")
 

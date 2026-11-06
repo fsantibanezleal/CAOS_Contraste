@@ -5,7 +5,7 @@
 \providecommand*{\input@path}{}
 \g@addto@macro\input@path{{tables/}}
 \makeatother
-\input{../tables/credit-capital-numbers}
+\input{tables/credit-capital-numbers}
 \emergencystretch=3em
 \providecommand{\EL}{\mathrm{EL}}
 \providecommand{\ccfn}[1]{\nolinkurl{#1}}
@@ -60,7 +60,7 @@ states the models of a finite portfolio, the measures they share, the validation
 capital to the names. The results of all methods on all loan types follow in \cref{sec:results-credit-capital}, and
 \cref{tab:cc-cases} lists the five loan types with their series, their IRB class and the shape of their portfolio.
 
-\input{../tables/credit-capital-cases}
+\input{tables/credit-capital-cases}
 
 \subsection{The Vasicek loss distribution and the IRB capital requirement}
 \label{sec:m16}
@@ -155,7 +155,7 @@ of the large homogeneous portfolio at the fitted correlation, with the same matu
 \label{fig:cc-irb}
 \end{figure}
 
-\input{../tables/credit-capital-regimes}
+\input{tables/credit-capital-regimes}
 
 \subsubsection{Calibration from yearly loss rates and the tail back-test}
 
@@ -254,7 +254,7 @@ reproduce closed forms to the printed digits (\cref{tab:cc-anchors}): for a defa
 99.9 percent value at risk is \ccAnchorVar{}, the expected shortfall \ccAnchorEs{}, and $0.45\,(\ccAnchorVar{}-0.02)=\ccAnchorK{}$ is the
 IRB capital of the mortgage class.
 
-\input{../tables/credit-capital-anchors}
+\input{tables/credit-capital-anchors}
 
 \subsection{Portfolio loss models, measures, granularity and allocation}
 \label{sec:m17}
@@ -537,7 +537,7 @@ correlation estimators on the simulator.
 
 \subsubsection{The fitted correlation and the IRB capital}
 
-\input{../tables/credit-capital-fit}
+\input{tables/credit-capital-fit}
 
 \Cref{tab:cc-fit} gives the maximum-likelihood fit with its profile interval and the moments fit with its bootstrap interval. The fitted
 asset correlations are low for four of the five series: \ccRhoMlRes{} for residential real estate (95 percent interval \ccRhoMlLoRes{} to
@@ -570,7 +570,7 @@ maximum, and the interval of each loan type is the stretch of its curve above th
 \label{fig:cc-profile}
 \end{figure}
 
-\input{../tables/credit-capital-irb}
+\input{tables/credit-capital-irb}
 
 \Cref{tab:cc-irb} puts the fitted correlation next to the IRB class. The IRB correlations are \ccRhoIrbRes{} for residential mortgages,
 \ccRhoIrbCard{} for qualifying revolving exposures, \ccRhoIrbOth{} for other retail at the fitted default probability, \ccRhoIrbCi{} for
@@ -593,7 +593,7 @@ open squares for the evaluation window 2007 to 2012; the vertical line marks the
 \label{fig:cc-tail}
 \end{figure}
 
-\input{../tables/credit-capital-tail}
+\input{tables/credit-capital-tail}
 
 \Cref{fig:cc-tail} and \cref{tab:cc-tail} place the evaluation years in the distribution fitted before them. Under the fit, the expected
 number of years above the 95, 99 and 99.9 percent quantiles out of \ccEvYears{} is \ccExpNF{}, \ccExpNN{} and \ccExpNNN{}. For residential real
@@ -612,7 +612,7 @@ is wrong.
 
 \subsubsection{The models compared on the illustrative portfolios}
 
-\input{../tables/credit-capital-var}
+\input{tables/credit-capital-var}
 
 \Cref{tab:cc-var} gives the 99.9 percent value at risk of each loan type's portfolio under each model, \cref{tab:cc-es} the expected shortfall,
 and \cref{fig:cc-ladder} the value at risk relative to the large-portfolio value. The one-factor Gaussian copula is above the large
@@ -638,7 +638,7 @@ analytic models carry none. The Student-t copula with 5 degrees of freedom lies 
 \label{fig:cc-ladder}
 \end{figure}
 
-\input{../tables/credit-capital-es}
+\input{tables/credit-capital-es}
 
 \begin{figure}[htbp]
 \centering
@@ -658,13 +658,13 @@ ratio of \ccIsVarRatioMin{} to \ccIsVarRatioMax{} for the value at risk and \ccI
 residential real estate, so a few scenarios carry most of the weight: the variance ratio is a statement about the batch-means error and must be read
 with that share, and the number of scenarios is raised rather than trusted to the mean of the weights.
 
-\input{../tables/credit-capital-mcerr}
+\input{tables/credit-capital-mcerr}
 
-\input{../tables/credit-capital-crp}
+\input{tables/credit-capital-crp}
 
 \subsubsection{Granularity and allocation}
 
-\input{../tables/credit-capital-ga}
+\input{tables/credit-capital-ga}
 
 \Cref{tab:cc-ga} gives the adjustment: \ccGaTopRes{} percent of the exposure for residential real estate, \ccGaTopCard{} for credit cards,
 \ccGaTopOth{} for other consumer, \ccGaTopCi{} for commercial and industrial and \ccGaTopCre{} for commercial real estate at the 99.9 percent
@@ -681,7 +681,7 @@ and falls as $1/n$, as it must. The reference includes no variance of the loss g
 it moves in whole-name steps (the reference of the other-consumer mix is the same for 10 and 20 names). The table does not show that the
 adjustment is accurate for a real portfolio, whose names are not identical.
 
-\input{../tables/credit-capital-ga-n}
+\input{tables/credit-capital-ga-n}
 
 \begin{figure}[htbp]
 \centering
@@ -692,7 +692,7 @@ model, for the credit-card mix (left) and the other-consumer mix (right).}
 \label{fig:cc-granularity}
 \end{figure}
 
-\input{../tables/credit-capital-euler}
+\input{tables/credit-capital-euler}
 
 \Cref{tab:cc-euler} allocates the 99.9 percent capital of the one-factor Gaussian copula to the three groups. The expected-shortfall
 contributions sum to the total to a relative error of at most \ccEulerEsWorst{} over the \ccEulerRows{} additivity checks of the five
@@ -707,7 +707,7 @@ and Student-t rungs have no closed-form anchor.
 
 \subsubsection{The validation tests}
 
-\input{../tables/credit-capital-battery}
+\input{tables/credit-capital-battery}
 
 \Cref{tab:cc-battery} reports the tests on each portfolio. The Monte Carlo value at risk of 5,000 identical names agrees with the
 large-portfolio quantile for commercial and industrial ($z=\ccMcZCi$, $p=\ccMcPCi$), commercial real estate ($z=\ccMcZCre$, $p=\ccMcPCre$)
@@ -721,7 +721,7 @@ these tests validates the choice of the model, the portfolio or the dependence a
 
 \subsubsection{Size and power of the correlation estimators}
 
-\input{../tables/credit-capital-sizepower}
+\input{tables/credit-capital-sizepower}
 
 \begin{figure}[htbp]
 \centering
@@ -746,7 +746,7 @@ correlation of 0.04 and \ccPowMlShortEight{} at 0.08 with 22 years, against \ccP
 downward (the most negative bias is $\ccBiasMoWorstShort$ with 22 years, against $\ccBiasMlWorstShort$ for maximum likelihood) and more dispersed
 (\cref{tab:cc-estacc}), so its interval keeps containing the null correlation when the true one lies above it.
 
-\input{../tables/credit-capital-estacc}
+\input{tables/credit-capital-estacc}
 
 \Cref{tab:cc-estacc} shows the accuracy behind those rates. The maximum-likelihood interval has an empirical coverage between \ccCovMlMinShort{} and
 \ccCovMlMaxShort{} with 22 years and between \ccCovMlMinLong{} and \ccCovMlMaxLong{} with 40 years, around the nominal 0.95 with a Monte Carlo standard
