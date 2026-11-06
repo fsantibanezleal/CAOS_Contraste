@@ -1,7 +1,11 @@
 {
   "kind": "technical-report",
   "title_support": [
-    "tab:results-summary"
+    "tab:results-summary",
+    "fig:results-findings",
+    "tab:vt-size",
+    "fig:vt-power",
+    "tab:proposed-summary"
   ],
   "methods": {
     "M-1": "sec:m1",

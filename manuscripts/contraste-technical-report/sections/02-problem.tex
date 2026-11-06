@@ -2,4 +2,55 @@
 \section{Problem formulation}
 \label{sec:problem}
 
-% TEXT
+\paragraph{A model, its use and the validation question.} A risk model is a map $\hat\theta=f(x;\,\mathcal D_{\mathrm{dev}})$ from an input $x$ (the attributes of
+an obligor, a loan, a trade, a balance sheet or a macroeconomic path) to a quantity $\theta$ that a decision consumes, estimated on development data
+$\mathcal D_{\mathrm{dev}}$. The quantity is a probability of default $\PD$, a loss rate $\LGD$, an exposure $\EAD$, an expected credit loss $\ECL$, a
+quantile $\VaR_q$ or a shortfall $\ES_q$ of a loss distribution, an exposure profile, a change in economic value or a survival period of a funding gap. The use
+of the model is a decision $a(\hat\theta)$ with a cost: a capital charge, a provision, a limit, an approval or a refusal. The validation question is whether the
+decision rests on an estimate that is technically sound, compliant with the rule that applies and appropriate to the use; Contraste states it as three lenses,
+technical robustness, regulatory compliance and appropriate use in decisions (Section~\ref{sec:introduction}).
+
+\paragraph{The tests as decisions under size and power.} A validation test turns a claim about the model into a decision on data $\mathcal D$ that the
+model did not use. It has a statistic $T(\mathcal D)$, a null hypothesis $H_0$ (for a back-test of a grade, that the true default probability is the
+one the model applied), an alternative $H_1$ and a rejection region $R_\alpha$ at a level $\alpha$. Its two error rates are
+\begin{equation}
+  \operatorname{size}(T,\alpha)=\sup_{\vartheta\in H_0}\Prob_\vartheta\bigl(T\in R_\alpha\bigr),\qquad
+  \operatorname{power}(T,\alpha;\,\delta)=\Prob_{\vartheta_\delta}\bigl(T\in R_\alpha\bigr),
+  \label{eq:problem-size-power}
+\end{equation}
+where $\vartheta$ indexes the data-generating process and $\vartheta_\delta\in H_1$ is a process whose defect has severity $\delta$. A test whose size exceeds
+$\alpha$ raises false alarms that cost a validator's time and a bank's credibility; a test whose power is low against a defect that matters passes a model that
+should fail. Both are properties of the test on a class of data, not of the formula alone, and neither is stated by the instruments that prescribe the tests
+\citep{credit-scoring:ecb2019,credit-scoring:bcbswp14}. The product therefore treats every test as an instrument to be calibrated: it estimates the two rates of
+\cref{eq:problem-size-power} on generators whose truth is known, with $B$ independent repetitions each carrying one random stream, so that
+\begin{equation}
+  \widehat{\operatorname{size}}=\frac{1}{B}\sum_{b=1}^{B}\indic\{T_b\in R_\alpha\},\qquad
+  \operatorname{se}=\sqrt{\frac{\widehat{\operatorname{size}}\,(1-\widehat{\operatorname{size}})}{B}},
+  \label{eq:problem-mc}
+\end{equation}
+and each rate is reported with its Monte Carlo standard error \citep{proposed:morris2019} and its Wilson interval \citep{ratings:brown2001}. The light of a test is the
+only place where a convention enters, and it is a function of the p-value or of a metric (\cref{eq:vt-light}); the 5 and 1 percent levels are conventions, not
+regulatory limits.
+
+\paragraph{The estimation problems behind the tests.} The tests judge estimates, and the estimates have their own error. For a family of models with a
+reference estimator $\hat\theta$ and a known truth $\theta^\ast$ on a generator, the product measures the bias $\E[\hat\theta]-\theta^\ast$ and the root mean squared
+error over independent histories, because a model that is unbiased on average can still be useless on the one history a bank has. Where the truth is unknown, as on the real
+outcomes of the credit-scoring cases, the product reports the discrimination and calibration of each model on a locked holdout or an out-of-time cohort, with a
+confidence interval, and compares models by a paired test (the DeLong test of the area under the receiver operating characteristic curve, \citealt{credit-scoring:delong1988}).
+The assumptions of each family are stated where its method is stated: the one-factor Vasicek structure of the capital and rating sections, the Markov structure of
+the transition matrices, the stationarity of the loss processes, and the exchangeability of the calibration and test windows of the conformal methods.
+
+\paragraph{What the product claims and what it does not.} The scope is set by the design document and by its ten non-goals. A passed test is evidence, not
+compliance: Contraste certifies, approves or declares no model compliant with any supervisory rule, and it represents no real bank; the synthetic institution
+Banco Andino and every other synthetic institution is labelled so, and the real balance-sheet aggregates used are public aggregates. The product scores
+nobody and makes no production decision about a person; the HMDA work measures a disparity in public decisions. It gives no investment advice and no forecast of
+a market. It hosts no private data: the bring-your-own-data door runs in the visitor's browser and does not upload. It reproduces no proprietary dataset, and the sources
+that forbid it are linked and never mirrored. It claims no general superiority of machine learning over logistic regression, of deep learning over boosting on tabular credit
+data, or of a neural value-at-risk model over a classical estimator, unless the held-out comparison of the case shows it. It is no real-time risk system, and its governance
+module records the product's own models. It validates generative or agentic models only as a documented practice note, and it declares no affiliation with any institution named in its sources.
+
+\paragraph{The decision the report supports.} Given a model, a case and a battery of tests with measured error rates, the report asks what a reader may conclude. A red
+light on a test whose size is held and whose power against the relevant defect is high is evidence of a defect; a green light on a test with low power is
+weak evidence of soundness; and a light on a test that does not hold its size says little in either direction. The findings register (Section~\ref{sec:results}) turns
+the lights into findings with a severity, and the opinion level of a case follows from a stated rule on the open findings. Each statement of this kind is made with the
+case, the test and the error rate that sustain it.

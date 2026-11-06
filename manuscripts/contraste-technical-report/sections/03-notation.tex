@@ -2,4 +2,60 @@
 \section{Notation}
 \label{sec:notation}
 
-% TEXT
+The method sections were written one family of models at a time, and a symbol that is natural in one family is used with another meaning in the next:
+the letter $\alpha$ is the tail probability of a value at risk in the market section and the level of a test in the validation sections. This section fixes the meaning that a symbol keeps across the report, and the table lists the symbols that two or more sections share. A section that
+needs a symbol in another sense, or a symbol that only it uses, defines it where it first appears, and the definition there prevails; the symbols that carry a
+different meaning in one section are marked in the last column of \cref{tab:notation}.
+
+Four conventions apply to every section. First, probabilities and rates are decimals in the equations and percentages in the text and the tables, with the unit named; a
+rate is a fraction of the exposure it applies to, and a loss is an amount in the currency of the case (United States dollars, euro or Chilean peso, with the unit of thousands or millions
+named in the caption). Second, a hat marks an estimate and a star marks a truth that is known because the data were generated, so that $\hat\theta-\theta^\ast$ is an error that can be
+measured. Third, the index $i$ runs over obligors, loans or models, the index $t$ over days, years or periods, the index $j$ over grades, buckets or segments and the index $b$ over
+the repetitions of a simulation. Fourth, a statistic that is compared with a threshold is written $T$, its p-value $p$, and the light assigned to it follows
+the rule of \cref{eq:vt-light}; the levels $\alpha_{\mathrm{amber}}$ and $\alpha_{\mathrm{red}}$ belong to the policy file of the engine and are conventions.
+
+The default probability, the loss given default and the exposure at default are the three parameters of the credit sections, and their product is the expected loss that the
+provisions and the capital sections build on. The standard normal distribution function $\Phi$ and its inverse enter through the one-factor model of Vasicek, which links the
+ratings, provisions, capital, counterparty and validation sections: an obligor defaults when its asset value falls to $\Phi^{-1}(\PD)$, and the asset value mixes the systematic
+factor $Z$ and an idiosyncratic factor with the weights set by the asset correlation $\rho$. The market, counterparty, banking-book and operational sections add the risk
+measures (value at risk and expected shortfall), the exposure profile and its summaries, the changes in economic value and net interest income, and the tail index of the severity.
+The last group of symbols belongs to the sequential monitors of the proposed methods, where an e-process $E_t$ turns the evidence of each day into a bet whose product is a
+valid test at any stopping time.
+
+The units follow the International System, with the financial units named in each case. Quantities in the tables are rounded for reading; the macros that the text
+reads carry the values of the committed artifacts to the digits the artifact stores, and no rounded value is fed back into a computation.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{2.9cm}}
+\toprule
+Symbol & Meaning & Unit & Main sections \\
+\midrule
+$\PD,\ \LGD,\ \EAD$ & Probability of default over a stated horizon, loss given default as a share of the exposure, and exposure at default & decimal, decimal, currency & \cref{sec:ratings,sec:provisions,sec:lgd-ead,sec:credit-capital} \\
+$\ECL$ & Expected credit loss of a loan or a book under the staging and the horizon of the accounting standard & currency & \cref{sec:provisions} \\
+$\Phi,\ \varphi$ & Standard normal distribution function and density & dimensionless & \cref{sec:ratings,sec:credit-capital,sec:market,sec:ccr} \\
+$Z,\ \varepsilon_i$ & Systematic factor and idiosyncratic factor of obligor $i$ in the one-factor model, both standard normal and independent & dimensionless & \cref{sec:ratings,sec:credit-capital} \\
+$\rho$ & Asset correlation of the one-factor model & decimal in $(0,1)$ & \cref{sec:ratings,sec:credit-capital,sec:validation-tests} \\
+$N,\ D$ & Obligors at the start of a year and defaults during it (a different meaning in \cref{sec:ccr}, where $N$ is the normal distribution function) & count & \cref{sec:ratings,sec:validation-tests} \\
+$q$ & Tail probability or confidence level of a risk measure & decimal & \cref{sec:credit-capital,sec:market,sec:aggregation-stress} \\
+$\VaR_q,\ \ES_q$ & Value at risk and expected shortfall at level $q$ of a loss distribution or a return series & currency or decimal return & \cref{sec:credit-capital,sec:market,sec:aggregation-stress} \\
+$\mathrm{AUC}$ & Area under the receiver operating characteristic curve, the probability that a defaulter is ranked above a non-defaulter & decimal & \cref{sec:credit-scoring,sec:validation-tests} \\
+$\mathrm{EE},\ \mathrm{EEPE},\ \mathrm{CVA}$ & Expected exposure profile, effective expected positive exposure, and credit valuation adjustment of a netting set & currency & \cref{sec:ccr} \\
+$\mathrm{EVE},\ \mathrm{NII}$ & Economic value of equity and net interest income of the banking book, with $\Delta$ for the change under a shock & currency & \cref{sec:alm} \\
+$\xi$ & Tail index of a heavy-tailed severity (the shape of the generalised Pareto family); a value of 1 or more implies an infinite mean & dimensionless & \cref{sec:oprisk,sec:market} \\
+$T,\ p,\ H_0$ & Statistic of a validation test, its p-value and its null hypothesis & as the test defines & \cref{sec:validation-tests,sec:problem} \\
+$\alpha_{\mathrm{amber}},\ \alpha_{\mathrm{red}}$ & Levels of the policy that colour a p-value test & decimal & \cref{sec:validation-tests} \\
+$B$ & Number of independent repetitions of a simulation, each with its own random stream & count & \cref{sec:problem,sec:protocol,sec:validation-tests} \\
+$E_t$ & E-process, a non-negative process with unit start whose expectation under the null is at most one at every stopping time & dimensionless & \cref{sec:proposed} \\
+$\E,\ \Prob,\ \Var,\ \indic$ & Expectation, probability, variance and indicator function & as the argument & all \\
+$\hat\theta,\ \theta^\ast$ & Estimate of a parameter and its true value on a generator of known truth & as the parameter & all \\
+\bottomrule
+\end{tabularx}
+\caption{Symbols that two or more sections of the report share, with the meaning they keep, their unit and the sections that use them; a symbol marked in the meaning column with a different use in another section is redefined there, and the definition in that section prevails.}
+\label{tab:notation}
+\end{table}
+
+\Cref{tab:notation} does not list the symbols of a single method, such as the parameters of the Hull--White model of the counterparty section or the shape functions of the explainable boosting
+machine; each is defined at its first use, in the section that needs it.

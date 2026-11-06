@@ -1,0 +1,39 @@
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{l>{\raggedright\arraybackslash}p{6.2cm}>{\raggedright\arraybackslash}p{8.0cm}}
+\caption{The variants of each case and the leakage-safe split that keeps the evaluation honest, as the design document fixes them before development: what the model is trained on, what it is tested on and what is applied to the evaluation set only.}\label{tab:data-splits}\\
+\toprule
+Case & Variants (the regime each shows) & Leakage-safe split \\
+\midrule
+\endfirsthead
+\toprule
+Case & Variants (the regime each shows) & Leakage-safe split \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+C01 & holdout as is; covariate drift moderate; drift severe; prior shift x1.5; label noise 5\%; small sample (2,000 rows); German twin & locked stratified holdout 30\%, repeated stratified 5-fold CV inside train; shifts applied to the evaluation set only and labelled synthetic perturbations; no OOT (single snapshot), stated \\
+C02 & 1, 2, 3, 4, 5-year files; pooled & within-file holdout; cross-file transfer labelled exploratory (firm overlap unknown) \\
+C03 & test cohorts FY2006-07, 2008-10, 2011-14, 2015-17, 2018-20; model trained through the crisis & OOT by approval fiscal year; the 5-year charge-off target observed only at each cohort's 5-year mark \\
+C04 & CEREP early vs late cohorts; generator calm, stressed, regime switch; cohort vs duration & estimate on earlier cohorts, test on later; estimator error against the known generator \\
+C05 & S\&P 2009 curve to 2010 and to 2011 (every approach of Tasche 2013); the Pluto-Tasche example (0, 2, 1 defaults); Vasicek generator years with 0, 1, 3 defaults & golden tables recomputed from the papers' own inputs; 20,000 generator replications \\
+C06 & reporting dates 2006-12, 2008-12, 2010-12, 2019-12, 2020-06, 2023-06 & train on reporting dates up to T1, test later; vintages by origination; macro as known at the cutoff \\
+C07 & base; recession; consumer arrears shock; house price fall; UF inflation spike; combined severe & scenario conditioning only; synthetic portfolio fixed per seed \\
+C08 & default cohorts 2003-06, 2007-08, 2009-10, 2011-13, 2014-19, 2020-23 & OOT by default date; workouts closed before the training cutoff \\
+C09 & utilisation acceleration levels 0 to 5 & independent simulated development and test replications \\
+C10 & C\&I, CRE, residential, cards, other consumer; simulator correlation grid & fit 1985-2006, evaluate the 2007-2012 tail; simulator exact size and power \\
+C11 & equity 2007-09; equity 2020; rates 2022; FX 2008; mixed 2023; calm 2004-06 & strictly rolling, the forecast for day t uses data to t-1; hyperparameters fixed on a pre-2007 span \\
+C12 & single swap; netting set; CSA MPoR 10d; MPoR 20d; with IM; wrong-way risk & calibrate to curves up to each backtest date \\
+C13 & no deficiency; missing basis; stale volatility; wrong correlation; omitted factor; time misalignment & generator replications \\
+C14 & 2021-Q4, 2022-Q2, 2022-Q4; with and without behavioural NMD; 2016 vs 2024 shocks & call reports dated up to the valuation date only \\
+C15 & long UF; short UF; CPI surprise +2.5 pp; CLP steepener; CLP/CLF offset on and off; floors active & balance sheet and curves as of one stated month \\
+C16 & LCR standard run-off; LiST adverse; LiST extreme; 2023 fast run; HTM losses in CBC; reverse stress & calibrate on pre-2023 data, score on March 2023 \\
+C17 & 5 vs 10 years; tail index 0.6, 0.8, 0.96, 1.1; collection threshold 10k vs 20k & independent simulated histories \\
+C18 & baseline; EBA 2025 adverse; Fed 2026 severely adverse; NGFS disorderly; t-copula aggregation; reverse stress & satellites fitted 1985-2019, validated OOT 2020-2026 \\
+C19 & one variant per published hypothetical portfolio type (count as published) & none: the published loss rate is the answer key \\
+C20 & SGCD seen shocks; SGCD held-out shocks; Fed corporate shift probes; seed sweep; perturbation grid; leakage planted & locked holdout plus synthetic shifts on the evaluation set only \\
+C21 & year pairs 2018-19, 2019-20, 2020-21, 2021-22, 2022-23, 2023-24 & fit on year t, confirm on t+1 \\
+C22 & the null family; defect severity 0 to 5 for each of seven defect families (miscalibration, default clustering, drift, discrimination decay, leakage, broken monotonicity, concentration) & independent seeded repetitions, one random stream each; every rate with its Monte Carlo error \\
+\end{longtable}
+}
