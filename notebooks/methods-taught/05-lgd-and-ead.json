@@ -1,0 +1,10 @@
+{
+  "M-14": [
+    "05-lgd-and-ead/03-the-lgd-ladder-ols-to-tobit.ipynb",
+    "05-lgd-and-ead/04-downturn-lgd-and-the-regulatory-floors.ipynb"
+  ],
+  "M-15": [
+    "05-lgd-and-ead/05-ccf-estimators-on-a-generator-with-known-truth.ipynb",
+    "05-lgd-and-ead/06-ead-backtest-and-the-lgd-and-ead-battery.ipynb"
+  ]
+}
