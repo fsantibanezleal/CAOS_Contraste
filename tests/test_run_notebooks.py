@@ -48,6 +48,11 @@ def product(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr(RUNNER, "ROOT", base)
     monkeypatch.setattr(RUNNER, "NOTEBOOKS", base / "notebooks")
     monkeypatch.setattr(RUNNER, "VENV", tmp_path / "no-venv")
+    # BD-4 (template 0.15.000): the runner now stops with exit 2 when the declared notebook environment does not exist, while this
+    # template test (unchanged in 0.15.000) still relies on the earlier in-process fallback ("no notebook venv to re-run in").
+    # The tests hold the temp root and the package guard, so the runner is told it already runs in its environment.
+    monkeypatch.setattr(RUNNER, "notebook_environment", lambda: Path(sys.prefix))
+    monkeypatch.setattr(RUNNER, "venv_python", lambda directory=None: Path(sys.executable))
     monkeypatch.setattr(RUNNER, "__file__", str(base / "scripts" / "run_notebooks.py"))
     monkeypatch.setattr(RUNNER, "warm_matplotlib", lambda: None)
     for name in ("nbclient", "nbformat"):

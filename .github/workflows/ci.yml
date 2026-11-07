@@ -60,8 +60,12 @@ jobs:
         run: python scripts/check_deploy_place.py
       - name: The notebooks, layout, English and Spanish mirror, levels, anatomy, metadata and cleanliness (static; the execution is a local gate, ADR-0074)
         run: python scripts/check_notebooks.py
+      - name: Current notebook depth, equations, sources, limits and complete tool coverage (static)
+        run: python scripts/check_notebook_depth.py
       - name: The manuscripts, product.json declares the Zenodo technical report (static; the online read is a local release step, ADR-0074)
         run: python scripts/check_manuscripts.py
+      - name: Native manuscript source, complete content floors and declared method/contract coverage
+        run: python scripts/check_manuscript_depth.py
       - name: The tier names stay internal, never in a notebook, a manuscript, the README or the app (CAOS_MANAGE method-tiers rule, section 0)
         run: python scripts/check_internal_names.py
       - name: The README states the repository by areas
@@ -110,28 +114,6 @@ jobs:
         run: pip install jsonschema==4.26.0
       - name: Every product guard rejects a planted defect
         run: pip install pytest==9.1.1 && python -m pytest tests/adversarial -q
-
-  # BEGIN TEMPLATE-ONLY PLANTS
-  template-plants:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - name: Install the existing guard prerequisites
-        run: cd frontend && npm ci
-      - name: Install the existing schema validator
-        run: pip install jsonschema==4.26.0
-      - name: Every template guard rejects a planted defect
-        run: pip install pytest==9.1.1 && python -m pytest tests/template/adversarial -q
-  # END TEMPLATE-ONLY PLANTS
 
   web:
     runs-on: ubuntu-latest

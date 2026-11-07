@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from planting import NODE, NODE_MODULES, copy_node_modules, edit, guard, link_node_modules, unlink_node_modules
+from planting import NODE, NODE_MODULES, edit, guard, link_node_modules, unlink_node_modules
 
 needs_web = pytest.mark.skipif(NODE is None or not (NODE_MODULES / "@fasl-work").is_dir(),
                                reason="needs node and `npm ci` in frontend/")

@@ -4,3 +4,6 @@
 *.svg text eol=lf
 *.png binary
 *.whl binary
+# Immutable historical LaTeX/figure test sources are verified byte-for-byte.
+# Keep original newlines and archival whitespace; authored sources retain the normal policy.
+tests/fixtures/manuscript-depth/softqp-published/** -text -whitespace

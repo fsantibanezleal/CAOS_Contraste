@@ -344,6 +344,11 @@ export function Workbench() {
       source={prov}
       // C04's notes are data the reader needs whole: at 1280 px each takes the height it needs (shell 0.19.5, SHC-101; R5 c05 M1)
       noteFit={selected === 'C04'}
+      // the shell's compact tab rows (0.22.0) give the App its 60% drawing floor (G6, 0.20.0) on the findings views of C13, C20 and C21
+      tabDensity="compact"
+      // the shell's 0.20.0 rail is clamp(232px, 17vw, 320px): at 1280 px a long case or variant name is cut by 4 to 6 px (G5), so the
+      // bounded railWidth API (0.21.0) gives the rail 252 px (the 0.19 width) instead of a CSS override of a shell-reserved class
+      railWidth={252}
       focus
       cases={{
         cases,
