@@ -1,0 +1,10 @@
+{
+ "M-1": [
+  "02-credit-scoring/02-the-leakage-safe-fit-of-the-monotone-scorecard.ipynb",
+  "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb"
+ ],
+ "M-2": [
+  "02-credit-scoring/03-the-validation-battery-on-a-ladder-of-models.ipynb",
+  "02-credit-scoring/06-challengers-against-the-scorecard.ipynb"
+ ]
+}
