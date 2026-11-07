@@ -215,7 +215,8 @@ def main() -> int:
     for name in ("scale080", "scale090", "scale110", "scale125", "shift010", "shift020"):
         a = cache.get(f"xform_{name}")
         f = rules.flags(a)
-        xf[name] = {k: rate(f[k]) for k in ("pla", "ks_alone", "wald_hc3", "abs_spearman", "roll20", "union", "wald_ols")}
+        # every detector the other experiments run, so that a statement about "the detectors" covers all of them
+        xf[name] = {k: rate(f[k]) for k in DETECTORS}
         xf[name]["mean_slope"] = float(col(a, "slope").mean())
         xf[name]["mean_intercept"] = float(col(a, "intercept").mean())
     res["xform"] = xf

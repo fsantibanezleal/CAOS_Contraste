@@ -24,9 +24,10 @@ It says that for a desk whose correct-model statistics are known, a threshold ne
 \label{sec:discussion-failures}
 
 Four results go against the method or limit it.
-The complement does not see a wrong correlation of 0.3 points (the rolling-mean statistic flags 4.5\%, the absolute-value statistic 8.7\%): a wrong correlation changes the sign and the order of the daily moves, which the regulatory zone reads and the complement does not.
+The rank statistics of the complement do not see a wrong correlation of 0.3 points (the rolling-mean statistic flags 4.5\%, the absolute-value statistic 8.7\%): a wrong correlation changes the sign and the order of the daily moves, which the regulatory zone reads and the rank statistics of the complement do not.
+The union of the three statistics does flag this variant in 100.0\% of replications, but only through the Wald statistic, which on these variants adds nothing that the regulatory zone does not already flag (Section~\ref{sec:ablation-components}); so the complement does not replace the zone, and what it adds is the stale volatility and the constant mis-scale.
 The rolling-mean statistic is weak against a one-day misalignment of the series (42.3\%), and the weakness is a property of the 20-day window, since a window of 5 days flags 100.0\% (Table~\ref{tab:ablation}).
-The HC3 covariance has no benefit in the decision, and the ordinary covariance gives slightly more power at the same size.
+The HC3 covariance has no benefit in the decision, and the ordinary covariance gives more power at a held-out size of 1.1\% against 0.9\%.
 And the stated size does not transfer: 4.0\% at a volatility persistence of 0.995, 6.2\% at a volatility dispersion of 0.50 and 99.0\% at a pricing noise of 30\% of the factor profit and loss.
 The last case needs a reading.
 A desk whose pricing and risk models differ by a large idiosyncratic noise has a lower agreement of its two scale paths than a desk with a small noise, and the rank statistics measure agreement; they flag such a desk against a null with a small noise although nothing is deficient in the risk model in the sense of the planted deficiencies.
@@ -37,7 +38,9 @@ Whether a desk with that much noise should pass is a question about the standard
 
 The two sets of detectors are complementary on these desks.
 The regulatory zone flags the missing basis (96.0\%), the wrong correlation (100.0\%), the omitted factor (90.1\%) and the time misalignment (100.0\%), and the rank statistics add the stale volatility that the zone does not flag and raise the omitted-factor rate to 100.0\%; the Wald statistic adds the constant mis-scale that the zone flags in at most 16.2\% of replications up to a 25\% mis-scale.
-The Ljung--Box statistic of the squared residual is a competing route to the stale volatility, with 71.9\% at a lag of 20 days and a size that holds on every alternative null of Table~\ref{tab:alt-nulls} (1.1\% in each row), a robustness that the rank statistics lack.
+The Ljung--Box statistic of the squared residual is a competing route to the stale volatility, with 71.9\% at a lag of 20 days.
+Its 1.1\% in every row of Table~\ref{tab:alt-nulls} is not a robustness that was measured: in this generator the residual $\HPL-\RTPL$ of a desk with no deficiency is the homoskedastic pricing noise alone, drawn in the same order from the same seed in every row, and the Ljung--Box statistic of a squared series does not change when the series is rescaled, so the statistic is the same 1,000 values whatever the volatility persistence, the dispersion or the noise share.
+Whether its size holds when the pricing noise depends on the volatility, as the noise of a real desk may, was not tested.
 Its weakness is the other direction: it does not see the missing basis (1.0\%), and its rate at a lag of 5 days is 26.1\% against 57.6\% for the rolling-mean statistic.
 A union of the rolling-mean and Ljung--Box statistics would trade some size for robustness; it was not evaluated and is left open.
 The practical reading for a desk is a table of the regulatory zone and of the three complement flags together, each flag naming the defect that it can see, so that a desk flagged only by the rolling-mean statistic is read as a scale-timing problem and a desk flagged only by the Wald statistic as a mis-scale.

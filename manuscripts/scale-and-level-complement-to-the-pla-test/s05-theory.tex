@@ -77,7 +77,7 @@ The same argument explains a second feature of the regression component.
 
 \begin{corollary}[Noise in HPL that is independent of RTPL is invisible to the regression]
 \label{cor:noise}
-If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$, the population coefficients are $(a,b)=(0,1)$ whatever the variance of $\varepsilon_t$, and the Wald statistic of Equation~\eqref{eq:wald} keeps its null law.
+If $\HPL_t=\RTPL_t+\varepsilon_t$ with $\E[\varepsilon_t\mid\RTPL_t]=0$, the population coefficients are $(a,b)=(0,1)$ whatever the variance of $\varepsilon_t$, and the Wald statistic of Equation~\eqref{eq:wald} keeps its population coefficients; its null law is unchanged when the added noise only rescales the residual, which is the case of the generator's missing-basis term.
 \end{corollary}
 
 \begin{proof}
@@ -159,5 +159,5 @@ For a fixed lag $L$ and fixed size, the power of the rolling-mean statistic as a
 
 The evidence is the following.
 At $w=1$ the power on the stale desk is 4.5, 25.6 and 76.7\% at lags of 5, 10 and 20 days (the absolute-value Spearman statistic); at $w=5$ it is 91.1, 99.8 and 100\%; and it does not increase from $w=5$ to $w=60$ at any lag tested, falling to 15.4, 61.9 and 94.2\% at $w=60$ (Table~\ref{tab:ablation} and Figure~\ref{fig:window-ablation}).
-The conjecture holds in the conditions of the generator, with a null calibrated for each window; whether the location of the maximum is a fixed fraction of the lag, and how the maximum moves with the persistence $\phi$ of the volatility, is open.
+The evidence is consistent with the conjecture in the conditions of the generator, with a null calibrated for each window, on six windows (1, 5, 10, 20, 40 and 60 days) at which the power saturates at 99.8 to 100\% for lags of 10 and 20 days, so it does not locate the maximum; whether the location of the maximum is a fixed fraction of the lag, and how the maximum moves with the persistence $\phi$ of the volatility, is open.
 It is not used in the method: the window stays at the 20 days fixed in advance.

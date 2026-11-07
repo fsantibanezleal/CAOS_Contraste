@@ -37,10 +37,12 @@ def T(path, header, rows, **kw):
     return figkit.table(path, header, rows, **kw)
 
 
-def shrink(name: str) -> None:
-    """Fit a table to the text width when its natural width exceeds it."""
+def shrink(name: str, small: bool = False) -> None:
+    """Fit a table to the text width when its natural width exceeds it (``small``: also set it in script size)."""
     path = OUT / name
     s = path.read_text(encoding="utf-8")
+    if small:
+        s = s.replace("\\small", "\\scriptsize\\setlength{\\tabcolsep}{3pt}", 1)
     s = s.replace("\\begin{tabular}", "\\resizebox{\\textwidth}{!}{%\n\\begin{tabular}", 1)
     s = s.replace("\\end{tabular}", "\\end{tabular}}", 1)
     path.write_text(s, encoding="utf-8")
@@ -91,12 +93,13 @@ def main() -> None:
     ld = ["pla", "desk", "cc_975", "wald_ols", "ljung_box_sq", "wald_hc3", "abs_spearman", "roll20", "union"]
     short = {"pla": "Zone", "desk": "Desk", "cc_975": "CC 97.5", "wald_ols": "MZ OLS", "ljung_box_sq": "LB sq.", "wald_hc3": "MZ HC3",
              "abs_spearman": "Abs. Sp.", "roll20": "Roll Sp.", "union": "Union"}
-    rows = [[f"{x['lag']}"] + [pct(x[d]["rate"]) for d in ld] for x in R["ladder"]]
-    T(OUT / "lag-ladder.tex", ["Lag (days)"] + [short[d] for d in ld], rows, align="r" + "r" * len(ld), label="tab:lag-ladder",
-                 caption=("Percent of 1,000 replications flagged as the age of the volatility input of the risk model grows from 2 to 80 days "
+    rows = [[f"{x['lag']}"] + [cell(x[d]) for d in ld] for x in R["ladder"]]
+    T(OUT / "lag-ladder.tex", ["Lag (days)"] + [short[d] for d in ld], rows, align="r" + "c" * len(ld), label="tab:lag-ladder", wide=True,
+                 caption=("Percent of 1,000 replications flagged, with the 95\\% Wilson interval, as the age of the volatility input of the risk model grows from 2 to 80 days "
                           "(stale-volatility variant, committed seeds; the 20-day row is the committed variant). Zone is the regulatory zone, "
                           "Desk the desk back-test limit, CC the Christoffersen conditional coverage, MZ the Mincer--Zarnowitz Wald test with "
                           "the OLS or HC3 covariance, LB the Ljung--Box test and Sp. the Spearman statistic."))
+    shrink("lag-ladder.tex", small=True)
 
     # area under the curve --------------------------------------------------------------------------------------------------
     names = {"roll20": "Spearman of 20-day rolling means", "abs_spearman": "Spearman of absolute values", "wald_hc3": "MZ Wald, HC3",
@@ -119,19 +122,20 @@ def main() -> None:
              "no_correction": "No multiplicity correction (1\\% each)", "multi_window": "Rolling means at 5, 10, 20 and 40 days (Bonferroni)",
              "full_plus_pla": "Full complement and regulatory zone"}
     cols = ["stale5", "stale10", "stale20", "stale40", "missing-basis", "wrong-correlation", "omitted-factor", "time-misalignment"]
-    rows = [[label[a["config"]], pct(a["held_out"]["rate"])] + [pct(a["power"][c]["rate"]) for c in cols] for a in R["ablation"]]
+    rows = [[label[a["config"]], cell(a["held_out"])] + [cell(a["power"][c]) for c in cols] for a in R["ablation"]]
     p = T(OUT / "ablation.tex", ["Configuration", "Size", "L5", "L10", "L20", "L40", "Basis", "Corr.", "Factor", "Time"], rows,
-                     align="p{5.6cm}" + "r" * 9, wide=True, label="tab:ablation",
-                     caption=("Ablation of the complement: held-out false-alarm rate (Size) and percent of 1,000 replications flagged on the "
+                     align="p{4.6cm}" + "c" * 9, wide=True, label="tab:ablation",
+                     caption=("Ablation of the complement: held-out false-alarm rate (Size) and percent of 1,000 replications flagged, with the 95\\% Wilson interval, on the "
                               "stale-volatility variant at lags of 5, 10, 20 and 40 days (L5 to L40) and on the missing-basis, wrong-correlation, "
                               "omitted-factor and time-misalignment variants, for the full complement and for each component removed, replaced "
                               "or changed; every configuration is calibrated on the same 10,000 null desk-years at a family size of 1\\% (the "
                               "no-correction row at 1\\% per statistic)."))
-    s = p.read_text(encoding="utf-8").replace("\\small", "\\scriptsize\\setlength{\\tabcolsep}{3pt}")
+    s = p.read_text(encoding="utf-8").replace("\\small", "\\scriptsize\\setlength{\\tabcolsep}{2pt}")
     p.write_text(s, encoding="utf-8")
+    shrink("ablation.tex")
 
     # alternative nulls -----------------------------------------------------------------------------------------------------
-    an = {"baseline": "Calibration null (reference bake)", "phi090": "Volatility persistence 0.90", "phi0995": "Volatility persistence 0.995",
+    an = {"baseline": "No deficiency, case seed 23 (the generator of the calibration null)", "phi090": "Volatility persistence 0.90", "phi0995": "Volatility persistence 0.995",
           "sd020": "Volatility dispersion 0.20", "sd050": "Volatility dispersion 0.50", "res005": "Pricing noise 5\\% of factor P\\&L",
           "res030": "Pricing noise 30\\% of factor P\\&L"}
     ad = ["pla", "wald_hc3", "abs_spearman", "roll20", "union", "ljung_box_sq", "wald_var"]
@@ -147,29 +151,34 @@ def main() -> None:
     # constant mis-scale and level error ------------------------------------------------------------------------------------
     xn = {"scale080": "RTPL times 0.80", "scale090": "RTPL times 0.90", "scale110": "RTPL times 1.10", "scale125": "RTPL times 1.25",
           "shift010": "RTPL shifted by 0.1 sd of HPL", "shift020": "RTPL shifted by 0.2 sd of HPL"}
-    xd = ["pla", "wald_hc3", "abs_spearman", "roll20", "union"]
-    rows = [[xn[k], f"{R['xform'][k]['mean_slope']:.3f}"] + [pct(R["xform"][k][d]["rate"]) for d in xd] for k in xn]
-    T(OUT / "mis-scale.tex", ["Defect planted in the null desk", "Mean slope", "Zone", "MZ HC3", "Abs. Sp.", "Roll Sp.", "Union"], rows,
-                 align="lrrrrrr", label="tab:mis-scale",
-                 caption=("Percent of 1,000 replications flagged when a constant mis-scale or a constant level error is planted in the risk-"
-                          "theoretical P\\&L of the no-deficiency desk (case seed 13), with the mean Mincer--Zarnowitz slope of HPL on RTPL; "
-                          "the rank statistics are unchanged by a positive rescaling, so only the regression component and, for large level "
-                          "errors, the regulatory zone respond."))
+    xd = ["pla", "ks_cal", "wald_ols", "wald_hc3", "wald_var", "ljung_box_sq", "abs_spearman", "roll20", "union"]
+    xh = {"pla": "Zone", "ks_cal": "KS recal.", "wald_ols": "MZ OLS", "wald_hc3": "MZ HC3", "wald_var": "MZ squares", "ljung_box_sq": "LB sq.",
+          "abs_spearman": "Abs. Sp.", "roll20": "Roll Sp.", "union": "Union"}
+    rows = [[xn[k], f"{R['xform'][k]['mean_slope']:.3f}"] + [cell(R["xform"][k][d]) for d in xd] for k in xn]
+    T(OUT / "mis-scale.tex", ["Defect planted in the null desk", "Mean slope"] + [xh[d] for d in xd], rows,
+      align="lr" + "c" * len(xd), label="tab:mis-scale", wide=True,
+      caption=("Percent of 1,000 replications flagged, with the 95\\% Wilson interval, when a constant mis-scale or a constant level error is "
+               "planted in the risk-theoretical P\\&L of the no-deficiency desk (case seed 13), with the mean Mincer--Zarnowitz slope of HPL on RTPL; "
+               "every detector of the main comparison was run on these desks and the columns are the ones that respond (the desk back-test, "
+               "the Christoffersen test and the recalibrated Spearman correlation of the levels flag at most 0.0\\%, 0.8\\% and 1.2\\% in every row). "
+               "The rank statistics are unchanged by a positive rescaling."))
+    shrink("mis-scale.tex", small=True)
 
     # theory: slope and rolling-mean correlation ----------------------------------------------------------------------------
     rt = {r["lag"]: r for r in RT["rows"]}
     rows = []
     for s in R["theory"]["slope_and_rolling_correlation"]:
         lag = s["lag"]
-        rows.append([f"{lag}", f"{s['slope_theory']:.4f}", f"{s['slope_mean']:.4f}", f"{theory.rolling_corr(lag, 20):.4f}",
+        rows.append([f"{lag}", f"{s['slope_theory']:.4f}", f"${rt[lag]['T100000']['slope_mean']:.4f}\\pm{rt[lag]['T100000']['slope_se']:.4f}$",
+                     f"${s['slope_mean']:.4f}\\pm{s['slope_sd'] / 1000 ** 0.5:.4f}$", f"{s['slope_sd']:.4f}", f"{theory.rolling_corr(lag, 20):.4f}",
                      f"${rt[lag]['T100000']['corr_mean']:.4f}\\pm{rt[lag]['T100000']['corr_se']:.4f}$",
                      f"${rt[lag]['T250']['corr_mean']:.4f}\\pm{rt[lag]['T250']['corr_se']:.4f}$", f"${s['roll_pearson_mean']:.4f}\\pm{s['roll_pearson_sd'] / 1000 ** 0.5:.4f}$"])
     p = T(OUT / "theory-slope-corr.tex",
-                     ["Lag", "Slope, closed form", "Slope, C13 mean", "Corr., closed form", "Corr., 100,000-day windows", "Corr., 250-day windows", "Corr., C13 mean"],
-                     rows, align="r" + "c" * 6, wide=True, label="tab:theory-slope-corr",
+                     ["Lag", "Slope, closed form", "Slope, 100,000-day windows", "Slope, C13 mean", "Slope, C13 sd", "Corr., closed form", "Corr., 100,000-day windows", "Corr., 250-day windows", "Corr., C13 mean"],
+                     rows, align="r" + "c" * 9, wide=True, label="tab:theory-slope-corr",
                      caption=("The Mincer--Zarnowitz slope and the Pearson correlation of the 20-day rolling means of the absolute series at each "
                               "lag of the volatility input: the closed forms of Propositions 2 and 3, the mean over 1,000 C13 desk-years of 250 days "
-                              "(with its standard error), and an independent simulation of the noise-free model on windows of 100,000 and of 250 "
+                              "(with its standard error, and for the slope its standard deviation over desk-years), and an independent simulation of the noise-free model on windows of 100,000 and of 250 "
                               "days (mean and standard error over 20 and 4,000 windows)."))
     s = p.read_text(encoding="utf-8").replace("\\small", "\\scriptsize\\setlength{\\tabcolsep}{3pt}")
     p.write_text(s, encoding="utf-8")
@@ -194,8 +203,15 @@ def main() -> None:
 
     # generator and variants ------------------------------------------------------------------------------------------------
     from stats_core import params  # noqa: E402
-    rows = [[d["id"].replace("-", " "), d["intended"] if d["intended"] != "none" else "none planted",
-             ", ".join(f"{p_['name'].replace('_', ' ')} = {p_['value']:g} {p_['unit']}" for p_ in d["parameters"]) or "--"] for d in params.DEFICIENCIES]
+    meant = {"none": "none planted", "spearman": "Spearman correlation of the levels", "ks": "Kolmogorov--Smirnov distance",
+             "either": "either regulatory statistic"}
+    planted = {"basis_sd_share": lambda v: f"basis with {100 * v:g}\\% of the HPL standard deviation",
+               "vol_lag_days": lambda v: f"volatility input {v:g} days old",
+               "correlation_error": lambda v: f"correlation off by {v:g} points",
+               "omitted_loading_share": lambda v: f"omitted factor with {100 * v:g}\\% of the HPL standard deviation",
+               "lag_days": lambda v: f"P\\&L dated {v:g} day off"}
+    rows = [[d["id"].replace("-", " "), meant[d["intended"]],
+             "; ".join(planted[p_["name"]](p_["value"]) for p_ in d["parameters"]) or "--"] for d in params.DEFICIENCIES]
     T(OUT / "variants.tex", ["Variant", "Statistic it is meant to break", "Planted parameter"], rows, align="lll",
                  label="tab:variants",
                  caption=("The six variants of the C13 desk generator: what each plants in the risk model or in the dating of its P\\&L and the "
@@ -211,20 +227,27 @@ def main() -> None:
     lad = {x["lag"]: x for x in R["ladder"]}
     rolls = [lad[l]["roll20"]["rate"] for l in (2, 5, 10, 20, 40, 80)]
     mono = all(a < b + 1e-12 for a, b in zip(rolls, rolls[1:], strict=False))
+    # the outcome of each prediction is computed from its criterion, never typed
+    h1 = stale["union"]["rate"] >= 0.30 and none["union"]["lo"] <= 0.01
+    h2_wc = m["wrong-correlation"]["wald_hc3"]["rate"] >= m["wrong-correlation"]["ks_alone"]["rate"]
+    h2_mb = mb["wald_hc3"]["rate"] >= mb["ks_alone"]["rate"]
+    h2_null = none["wald_hc3"]["lo"] <= 0.01
+    h3 = all(alt[k]["union"]["lo"] <= 0.01 for k in ("phi090", "phi0995", "sd020", "sd050", "res005", "res030"))
+    h5 = R["xform"]["scale090"]["wald_hc3"]["lo"] > R["xform"]["scale090"]["pla"]["hi"]
     rows = [
         ["H1", "At a size of at most 1\\%, the stale-volatility model is flagged in at least 30\\% of replications; refuted below 10\\%",
-         f"union {cell(stale['union'])}\\% at held-out size {cell(none['union'])}\\%; regulatory zone {pct(stale['pla']['rate'])}\\%", "held"],
+         f"union {cell(stale['union'])}\\% at held-out size {cell(none['union'])}\\%; regulatory zone {pct(stale['pla']['rate'])}\\%", "held" if h1 else "failed"],
         ["H2", "The Wald test flags wrong-correlation and missing-basis at least as often as the KS distance alone, and the no-deficiency desk at most at the stated rate",
          f"wrong correlation {pct(m['wrong-correlation']['wald_hc3']['rate'])}\\% against {pct(m['wrong-correlation']['ks_alone']['rate'])}\\%; "
          f"missing basis {pct(mb['wald_hc3']['rate'])}\\% against {pct(mb['ks_alone']['rate'])}\\%; no deficiency {pct(none['wald_hc3']['rate'])}\\%",
-         "held in part"],
+         "held" if (h2_wc and h2_mb and h2_null) else "failed"],
         ["H3", "The false-alarm rate of the union stays at most 1\\% on desks that differ from the calibration null",
          f"{pct(alt['phi0995']['union']['rate'])}\\% (persistence 0.995), {pct(alt['sd050']['union']['rate'])}\\% (dispersion 0.50), "
-         f"{pct(alt['res030']['union']['rate'])}\\% (pricing noise 30\\%)", "failed"],
+         f"{pct(alt['res030']['union']['rate'])}\\% (pricing noise 30\\%)", "held" if h3 else "failed"],
         ["H4", "The flag rate of the rolling-mean statistic rises with the age of the volatility input",
          "rates " + ", ".join(pct(x) for x in rolls) + "\\% at 2, 5, 10, 20, 40 and 80 days", "held" if mono else "failed"],
         ["H5", "The complement flags a constant mis-scale that the regulatory zone does not",
-         f"Wald {pct(R['xform']['scale090']['wald_hc3']['rate'])}\\% against zone {pct(R['xform']['scale090']['pla']['rate'])}\\% at a 10\\% mis-scale", "held"],
+         f"Wald {pct(R['xform']['scale090']['wald_hc3']['rate'])}\\% against zone {pct(R['xform']['scale090']['pla']['rate'])}\\% at a 10\\% mis-scale", "held" if h5 else "failed"],
     ]
     T(OUT / "hypotheses.tex", ["Id", "Prediction", "Measured", "Outcome"], rows, align="llp{5.4cm}l", wide=True,
                  label="tab:hypotheses",
@@ -234,7 +257,7 @@ def main() -> None:
     s = (OUT / "hypotheses.tex").read_text(encoding="utf-8").replace("\\small", "\\scriptsize")
     s = s.replace("llp{5.4cm}l", "lp{4.8cm}p{6.2cm}l")
     (OUT / "hypotheses.tex").write_text(s, encoding="utf-8")
-    for name in ("main-results.tex", "repeats.tex", "alt-nulls.tex", "theory-loo.tex", "theory-slope-corr.tex"):
+    for name in ("main-results.tex", "repeats.tex", "alt-nulls.tex", "theory-loo.tex", "theory-slope-corr.tex", "variants.tex"):
         shrink(name)
     print(f"tables written to {OUT}")
 

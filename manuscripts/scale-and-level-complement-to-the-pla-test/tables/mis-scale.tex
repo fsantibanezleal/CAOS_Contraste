@@ -1,18 +1,19 @@
-\begin{table}[htbp]
+\begin{table*}[htbp]
 \centering
-\small
-\caption{Percent of 1,000 replications flagged when a constant mis-scale or a constant level error is planted in the risk-theoretical P\&L of the no-deficiency desk (case seed 13), with the mean Mincer--Zarnowitz slope of HPL on RTPL; the rank statistics are unchanged by a positive rescaling, so only the regression component and, for large level errors, the regulatory zone respond.}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Percent of 1,000 replications flagged, with the 95\% Wilson interval, when a constant mis-scale or a constant level error is planted in the risk-theoretical P\&L of the no-deficiency desk (case seed 13), with the mean Mincer--Zarnowitz slope of HPL on RTPL; every detector of the main comparison was run on these desks and the columns are the ones that respond (the desk back-test, the Christoffersen test and the recalibrated Spearman correlation of the levels flag at most 0.0\%, 0.8\% and 1.2\% in every row). The rank statistics are unchanged by a positive rescaling.}
 \label{tab:mis-scale}
-\begin{tabular}{lrrrrrr}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrccccccccc}
 \toprule
-Defect planted in the null desk & Mean slope & Zone & MZ HC3 & Abs. Sp. & Roll Sp. & Union \\
+Defect planted in the null desk & Mean slope & Zone & KS recal. & MZ OLS & MZ HC3 & MZ squares & LB sq. & Abs. Sp. & Roll Sp. & Union \\
 \midrule
-RTPL times 0.80 & 1.250 & 16.2 & 100.0 & 1.6 & 1.2 & 100.0 \\
-RTPL times 0.90 & 1.111 & 0.0 & 100.0 & 1.6 & 1.2 & 100.0 \\
-RTPL times 1.10 & 0.909 & 0.0 & 100.0 & 1.6 & 1.2 & 100.0 \\
-RTPL times 1.25 & 0.800 & 8.4 & 100.0 & 1.6 & 1.2 & 100.0 \\
-RTPL shifted by 0.1 sd of HPL & 1.000 & 18.2 & 100.0 & 26.0 & 7.9 & 100.0 \\
-RTPL shifted by 0.2 sd of HPL & 1.000 & 97.3 & 100.0 & 95.2 & 39.4 & 100.0 \\
+RTPL times 0.80 & 1.250 & 16.2 (14.0--18.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 34.3 (31.4--37.3) & 1.6 (1.0--2.6) & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) \\
+RTPL times 0.90 & 1.111 & 0.0 (0.0--0.4) & 34.9 (32.0--37.9) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 11.3 (9.5--13.4) & 1.6 (1.0--2.6) & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) \\
+RTPL times 1.10 & 0.909 & 0.0 (0.0--0.4) & 12.1 (10.2--14.3) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 11.4 (9.6--13.5) & 1.6 (1.0--2.6) & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) \\
+RTPL times 1.25 & 0.800 & 8.4 (6.8--10.3) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 39.6 (36.6--42.7) & 1.6 (1.0--2.6) & 1.2 (0.7--2.1) & 100.0 (99.6--100.0) \\
+RTPL shifted by 0.1 sd of HPL & 1.000 & 18.2 (15.9--20.7) & 97.8 (96.7--98.5) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 2.8 (1.9--4.0) & 1.1 (0.6--2.0) & 26.0 (23.4--28.8) & 7.9 (6.4--9.7) & 100.0 (99.6--100.0) \\
+RTPL shifted by 0.2 sd of HPL & 1.000 & 97.3 (96.1--98.1) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 13.6 (11.6--15.9) & 0.7 (0.3--1.4) & 95.2 (93.7--96.4) & 39.4 (36.4--42.5) & 100.0 (99.6--100.0) \\
 \bottomrule
-\end{tabular}
-\end{table}
+\end{tabular}}
+\end{table*}

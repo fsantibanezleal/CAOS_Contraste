@@ -17,6 +17,7 @@ The Monte Carlo spread of the critical values, a standard deviation of 0.10 perc
 The desks are synthetic: two factors, one volatility process, one deficiency at a time and a window of 250 days.
 No real desk is evaluated, and the results say nothing about the correlations, the distances or the pricing noise of the desks of a bank, nor about how often a real risk model has a stale volatility input.
 A real desk has many factors, jumps in the profit and loss, a pricing noise that depends on the instruments and the market regime, several simultaneous deficiencies, and a back-history that may be shorter than the null the calibration needs.
+No alternative null varies the dependence of the pricing noise on the volatility, so the size of the Ljung--Box statistic and of the Wald test on the squares under such a noise is untested.
 The calibration needs a simulator of the desk's own null.
 A bank that has one can use the complement as specified; a bank that does not would have to build the null from a model of its desk or from historical windows in which the model is known to be sound, and neither route was tested here.
 The proposition on the size requires the desk-year to be exchangeable with the null draws, and the experiments show what the size becomes when it is not.
