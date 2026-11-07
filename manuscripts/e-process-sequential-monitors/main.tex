@@ -9,9 +9,8 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+% Every number the prose quotes, one macro each, written by make_numbers.py from experiments/results_*.json.
+\input{numbers}
 
 \title{E-process sequential monitors for PD calibration and VaR back-tests}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
@@ -24,68 +23,26 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+A validation function reads value-at-risk (VaR) back-tests and default-probability (PD) calibration tests every day or every year, although the tests are valid when read once on a window fixed in advance:
+read daily over 1,000 days, the Kupiec test on the last 250 days rejects a correct 99\,\% VaR in \nNullSizeKupTrail\,\% of the series. The proposed monitors are mixtures of likelihood-ratio e-processes over alternatives fixed before the data, for the VaR exceedance rate, for exceedance clustering,
+for the defaults of each rating grade against its predicted PD, and for batteries of them; each rejects when its process reaches 20, which is an anytime-valid size of 5\,\% by Ville's inequality. The paper proves validity, a growth-rate bound that gives the first-order delay, a bound on the power of any valid monitor at a fixed horizon, the failure of the product combination under dependence,
+and the loss of validity of the PD monitor when the default probability is random. The monitors are run against ten other rules on the same streams, among them the published e-backtest and simulation-calibrated sequential rules, on generators of known truth, on six real market-risk windows and on five cohorts of loan vintages.
+The rate monitor rejects \nNullSizeE\,\% (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%) of correct series read daily, detects a hit rate four times too high at a median of \nSeedsFourMed\ days and three times too high at \nSeedsThreeMed\ days (\nSeedsThreeMedLo\ to \nSeedsThreeMedHi), which is not below the 250-day window; its power cost against one Kupiec reading at day 250
+is \nSeedsThreeCost\ points at three times and \nSeedsFourCost\ at four times, and an upper-side variant has \nSeedsUpThreeMed\ days and \nSeedsUpThreeCost\ points at three times. The PD monitor keeps its size for binomial defaults and rejects \nRhoZeroThreeAvg\,\% of correct histories at an asset correlation of $0.03$.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/s01-introduction}
+\input{sections/s02-related-work}
+\input{sections/s03-problem}
+\input{sections/s04-proposed-method}
+\input{sections/s05-theory}
+\input{sections/s06-experimental-design}
+\input{sections/s07-results}
+\input{sections/s08-ablation}
+\input{sections/s09-discussion}
+\input{sections/s10-limitations}
+\input{sections/s11-reproducibility}
+\input{sections/s12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

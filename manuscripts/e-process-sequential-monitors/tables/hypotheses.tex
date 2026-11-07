@@ -1,0 +1,18 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The hypotheses of the proposed monitors, stated before the experiments, with the measurements that judge them and the outcome of each: size on the generator of known truth, delay and power cost pooled over 20 independent seeds of 2,000 streams, and the refutation clause on the generator and on the two real windows of the case on market risk at the 99\,\% level.}
+\label{tab:hypotheses}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{6.0cm}p{6.6cm}p{2.4cm}}
+\toprule
+Hypothesis, stated before the experiments & Measured & Outcome \\
+\midrule
+\relax Size: the e-process rejects a correct VaR in at most $5\,\%$ plus three standard errors of the streams, read daily over 1,000 days, where the repeated Kupiec rule exceeds that & \relax e-process 2.4\,\%; Kupiec last 250 days 65.7\,\%, all days 31.9\,\%; bound 6.5\,\% & Held \\
+\relax Delay: the median detection day is below the 250-day window, and below the traffic light's, at a hit rate three and four times too high & \relax x3: pooled median 251 [247, 255] (traffic light 250); 45\,\% of seeds below 250. x4: 128 [126, 129] (traffic light 250) & \relax x3: not met; x4: held \\
+\relax Power cost: one Kupiec reading at day 250 has less than 10 points more power than the e-process has by day 250 & \relax x3: 12.4 $\pm$ 0.2 points; x4: 8.5 $\pm$ 0.2 points & \relax x3: not met; x4: held \\
+\relax Upper-side variant of the rate monitor (chosen after the two-sided results, the direction a supervisor penalises): delay below 250 and below the traffic light's, and power cost under 10 points & \relax x3: pooled median 228 [225, 231], cost 6.7 $\pm$ 0.2 points; x4: 109 [108, 110], cost 4.6 $\pm$ 0.1 points & \relax Met at both severities \\
+\relax Refutation clause: the hypothesis is refuted if the delay is not lower than the traffic light's, on the generator and on the equity 2007 to 2009 and foreign-exchange 2008 windows & \relax generator: x3 251 against 250, x4 128 against 250; real windows (models the light flags): median day 24 against 250 and 68 against 250 & \relax Fires at x3; not at x4 or on the real windows \\
+\bottomrule
+\end{tabular}}
+\end{table*}

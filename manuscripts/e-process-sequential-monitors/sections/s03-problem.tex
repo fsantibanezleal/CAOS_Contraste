@@ -1,0 +1,80 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{The monitored quantities and their null hypotheses}
+\label{sec:problem-quantities}
+
+\paragraph{VaR exceedances.}
+A model forecasts, before day $t$, a loss quantile $\VaR_t$ that the loss $L_t$ of day $t$ should exceed with probability $\alpha$ (a decimal, here $0.01$). The hit of day $t$ is the flag
+$I_t=\indic\{L_t>\VaR_t\}$. Let $\mathcal F_t$ be the information available after day $t$. The null hypothesis of correct conditional coverage states that, given everything that happened before the
+day, the probability of a hit is the nominal one,
+\begin{equation}
+H_0^{\mathrm{VaR}}:\quad \Prob\bigl(I_t=1\mid\mathcal F_{t-1}\bigr)=\alpha\quad\text{for every day }t,
+\label{eq:null-var}
+\end{equation}
+which makes the hits independent Bernoulli($\alpha$) variables. The departures a validator looks for are of two kinds: a hit rate $p=m\alpha$ with a multiplier $m>1$ (the VaR understates the risk,
+the case a supervisor penalises) or $m<1$ (the VaR is too conservative), and hits that cluster, where the probability of a hit after a hit is $q>\alpha$ while the hit rate stays $\alpha$.
+
+\paragraph{Defaults against the predicted PD of each grade.}
+A rating system has $G$ grades. At step $t$ (a year, a vintage age or a quarter) grade $g$ holds $n_{t,g}$ obligors, of which $d_{t,g}$ default, and the model predicts the default probability $p_{t,g}\in(0,1)$. The
+null hypothesis of correct calibration states that, given the past, the defaults of a step are binomial with the predicted probability,
+\begin{equation}
+H_0^{\mathrm{PD}}:\quad d_{t,g}\mid\mathcal F_{t-1}\;\sim\;\mathrm{Binomial}\bigl(n_{t,g},\,p_{t,g}\bigr)\quad\text{for every step }t\text{ and grade }g.
+\label{eq:null-pd}
+\end{equation}
+The departure of interest is a multiplicative miscalibration: the true default probability of grade $g$ is $m\,p_{t,g}$ with $m>1$ (the model is optimistic) or $m<1$. The null has no asset correlation: it
+states that the defaults of a step are conditionally independent, which is the assumption of the binomial test of one grade and of the chi-square test across grades. \Cref{sec:theory} shows what happens to
+the monitor when that assumption fails.
+
+\subsection{The monitoring problem}
+\label{sec:problem-monitoring}
+
+A monitor reads the data as they arrive and, after each step, either continues or rejects the null. Its decision is a stopping time $\tau$ with respect to the filtration $(\mathcal F_t)$, the first step at which the monitor rejects, and $\tau=\infty$ when it never does.
+Three properties define a good monitor. The first is the anytime-valid size: the probability under the null that the monitor ever rejects is at most the stated level $a$, however often it is read and
+whenever the analyst stops,
+\begin{equation}
+\Prob_0(\tau<\infty)\le a .
+\label{eq:anytime-size}
+\end{equation}
+The second is the detection delay: under an alternative with a planted departure from step $0$, the distribution of $\tau$, summarised by its median, since a monitor that misses the departure in
+more than half of the streams has an infinite median. The third is the power at a fixed horizon $n$, $\pi(n)=\Prob_1(\tau\le n)$, which is what a fixed-window test is judged on, and the power cost of a monitor is the difference between the power of a fixed-window test read once at $n$ and $\pi(n)$ of the monitor.
+A rule that is read every day also has a size over a finite horizon $T$, $\Prob_0(\tau\le T)$; for a fixed-window test read repeatedly, that size is what the study measures in
+place of the nominal level of one reading.
+
+\subsection{Notation and assumptions}
+\label{sec:problem-notation}
+
+\Cref{tab:notation} lists every symbol used in the paper, with its meaning and its unit, so that a reader can follow the equations of the later sections without searching for a definition. Three assumptions bound the results. The first is that the null of \cref{eq:null-var,eq:null-pd} is the correct description of a
+well-calibrated model: for VaR it means conditional coverage, for PD binomial defaults with no cross-sectional or serial dependence beyond what the predicted probability absorbs. The second is that the
+mixture weights and the alternatives of every monitor are fixed before any outcome is seen, which keeps each process an e-process (\cref{prop:validity}). The third is that the series are observed in time order and
+that a missing observation is an error, not a non-event: the monitors refuse a missing value, because treating a missing day as a day without a hit would bias the evidence against the alternative.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation: each symbol of the paper with its meaning and its unit; all probabilities are decimals, all times are counts of days, steps or years, and the statistics $E_t$ and $\log E_t$ are dimensionless.}
+\label{tab:notation}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.3cm}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$t,\;T,\;n$ & Step index, horizon of a run, horizon of one fixed-window reading (250 days) & Count \\
+$\alpha$ & VaR exceedance probability, the level of the VaR (0.01) & Probability \\
+$I_t$ & Hit flag of day $t$, $\indic\{L_t>\VaR_t\}$ & 0 or 1 \\
+$\mathcal F_t$ & Information available after step $t$ & Sigma-field \\
+$a$ & Size of a monitor (0.05); it rejects at $E_t\ge 1/a=20$ & Probability \\
+$\tau$ & First step at which a monitor rejects ($\infty$ if never) & Count \\
+$m,\;\mathcal M,\;K$ & Multiplier of the null parameter, the grid of multipliers of a monitor, its size & Dimensionless, count \\
+$w_k$ & Mixture weight of the $k$-th alternative, fixed before the data & Dimensionless \\
+$E_t,\;\log E_t$ & E-process of a monitor after step $t$ and its natural logarithm & Dimensionless \\
+$\Lambda_{t}(p)$ & Likelihood ratio of a Bernoulli($p$) hit rate to the null after $t$ days & Dimensionless \\
+$q$ & Probability of a hit the day after a hit & Probability \\
+$G,\;g$ & Number of rating grades, grade index & Count \\
+$n_{t,g},\;d_{t,g}$ & Obligors and defaults of grade $g$ at step $t$ & Count \\
+$p_{t,g},\;\bar p_g$ & Predicted PD of grade $g$ at step $t$, its mean over the steps & Probability \\
+$\rho$ & Asset correlation of the one-factor default model & Dimensionless \\
+$\mathrm{KL}(p\Vert r)$ & Kullback-Leibler divergence of Bernoulli($p$) from Bernoulli($r$) & Nats per observation \\
+$\pi_R(n)$ & Power by day $n$ of rule $R$, the share of streams with a departure it has rejected by $n$ & Probability \\
+\bottomrule
+\end{tabularx}
+\end{table}

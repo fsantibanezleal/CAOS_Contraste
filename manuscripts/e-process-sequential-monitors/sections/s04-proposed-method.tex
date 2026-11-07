@@ -1,0 +1,156 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The idea: a bet against the null at every step}
+\label{sec:method-idea}
+
+A monitor is a gambler who starts with one unit of capital and, before each observation, stakes a fraction of it on a stated alternative against the null. If the null is true, the bet is fair or unfavourable and the
+capital cannot be expected to grow; if the alternative is closer to the truth, the capital grows exponentially. The capital after step $t$ is the e-process $E_t$, and it is a valid measure of evidence against the null at any stopping time: by
+the inequality of \citet{ville1939}, $\Prob_0(\sup_t E_t\ge 1/a)\le a$ (\cref{prop:validity}). The monitor rejects the first time the capital reaches $1/a$ and reports the anytime-valid p-value,
+\begin{equation}
+\tau=\inf\{t\ge1:\;E_t\ge 1/a\},\qquad p_t=\min\Bigl(1,\;\bigl(\max_{s\le t}E_s\bigr)^{-1}\Bigr),
+\label{eq:rule}
+\end{equation}
+which is the smallest size at which the monitor would have rejected by step $t$. With $a=0.05$ the threshold is $20$. The choice of the alternative is the whole design problem. A stake on one
+alternative is the likelihood ratio of that alternative to the null, the sequential probability ratio statistic of \citet{wald1945}; it is the fastest monitor against that alternative and a slow
+one against others. A fixed mixture of stakes over a grid of alternatives, with weights set before any outcome, is again an e-process and detects whichever alternative the data favour at a cost the theory quantifies
+(\cref{prop:growth}). The proposed monitors are mixtures of this kind for four monitored quantities.
+
+\subsection{The VaR hit-rate monitor}
+\label{sec:method-rate}
+
+For the hit stream $I_1,I_2,\dots$ of a VaR at level $\alpha$ and an alternative hit rate $p$, the likelihood ratio of the alternative to the null after $t$ days is
+\begin{equation}
+\Lambda_t(p)=\prod_{s=1}^{t}\Bigl(\frac{p}{\alpha}\Bigr)^{I_s}\Bigl(\frac{1-p}{1-\alpha}\Bigr)^{1-I_s}.
+\label{eq:lr}
+\end{equation}
+The monitor of the hit rate mixes it over a grid $\mathcal M$ of multipliers $m_k$ of the nominal level, $p_k=m_k\alpha$, with weights $w_k$ that sum to one,
+\begin{equation}
+E_t=\sum_{k=1}^{K}w_k\,\Lambda_t(m_k\alpha),\qquad \log E_t=\operatorname*{logsumexp}_{k}\Bigl(\log w_k+\log\Lambda_t(m_k\alpha)\Bigr).
+\label{eq:mixture}
+\end{equation}
+The default grid is $\mathcal M=\{0.25,0.5,1.5,2,3,4,6,10\}$ with equal weights $1/8$: two alternatives below the nominal level, for a model that is too conservative, and six above it, with a ratio between neighbours of at most $10/6\approx1.67$. An alternative with $m_k\alpha\ge1$ is dropped. The one-sided variant keeps the six alternatives above the nominal level, which is the direction a supervisor penalises, and a
+single-alternative variant keeps one multiplier. The statistic is carried in logarithms so that a long series cannot overflow: $\log\Lambda_t$ is a cumulative sum of a
+term that depends only on whether day $s$ was a hit, and the logarithm of the mixture is a stable log-sum-exp. For one alternative the log process is a random walk: each day without a hit adds $\log\frac{1-p}{1-\alpha}<0$ when $p>\alpha$ and each hit adds $\log\frac p\alpha>0$, so a single bet on $3\alpha$
+at $\alpha=0.01$ loses about \nSingleQuietCost\ nats per quiet day and gains about \nSingleHitGain\ nats per hit, and it needs \nSingleHitsNeeded\ hits in 250 days, where 2.5 are expected, before the process crosses $\log 20$. The mixture follows whichever of its alternatives is ahead, which is why its path in \cref{fig:paths} drifts down on a correct model and jumps up on a hit.
+
+\subsection{The hit-clustering monitor}
+\label{sec:method-cluster}
+
+A VaR can have the right hit rate and still be wrong in a way a supervisor cares about, because its hits arrive in runs after a volatility increase that the model failed to follow. The clustering
+monitor bets on first-order Markov alternatives in which a hit follows a hit with probability $q_k=m_k\alpha$ and a hit follows a non-hit with probability $\alpha$. The factor of a day that follows a non-hit is one,
+so the process moves only when yesterday was a hit,
+\begin{equation}
+E_t^{\mathrm{cl}}=\sum_{k=1}^{K}w_k\prod_{s=2}^{t}\Bigl[\Bigl(\frac{q_k}{\alpha}\Bigr)^{I_s}\Bigl(\frac{1-q_k}{1-\alpha}\Bigr)^{1-I_s}\Bigr]^{I_{s-1}},
+\label{eq:cluster}
+\end{equation}
+with the first day carrying no predecessor and contributing one. The default multipliers are $\{3,6,12,25,50\}$ with equal weights, so that $q_k$ runs from $0.03$ to $0.5$ at $\alpha=0.01$. Each factor has conditional mean one under the null,
+because given a hit yesterday the probability of a hit today is $\alpha$, which is the property that makes the product of the factors a martingale (\cref{prop:clustering}). The clustering monitor reacts to hits that follow hits and not to the rate: a stream with the right rate and
+clusters moves it, and a stream with a wrong rate and no clusters does not.
+
+\subsection{The PD monitor by rating grade}
+\label{sec:method-pd}
+
+For grade $g$ the alternative is a multiplicative miscalibration, a true default probability $m\,p_{t,g}$. The log-likelihood ratio of the alternative to the null contributed by step $s$ is
+\begin{equation}
+\ell_{k,g}(s)=d_{s,g}\log m_k+\bigl(n_{s,g}-d_{s,g}\bigr)\log\frac{1-m_kp_{s,g}}{1-p_{s,g}},\qquad E_{t,g}=\sum_{k=1}^{K_g}w_{k,g}\exp\Bigl(\sum_{s\le t}\ell_{k,g}(s)\Bigr).
+\label{eq:pd-lr}
+\end{equation}
+The grid is logarithmic, $m_k=4^{j/8}$ for $j\in\{-8,\dots,-1,1,\dots,8\}$, sixteen points from $1/4$ to $4$ with the null value $m=1$ excluded, and a point with $m_kp_{s,g}\ge1$ for some step is dropped. The weights follow the Jeffreys prior for a
+proportion \citep{jeffreys1946}, $\pi(p)\propto p^{-1/2}(1-p)^{-1/2}$, taken on the logarithmic grid, where it picks up the Jacobian $p$ of the logarithmic scale, and use the mean predicted PD $\bar p_g$ of the grade over the steps, a quantity known before any outcome,
+\begin{equation}
+w_{k,g}\;\propto\;\sqrt{\frac{m_k\bar p_g}{1-m_k\bar p_g}},\qquad \sum_k w_{k,g}=1 .
+\label{eq:pd-weights}
+\end{equation}
+The weights increase with the alternative, because the Jacobian of the logarithmic scale multiplies the density by $p$. A grade with no obligor at a step contributes a factor one. The direction can be restricted to $m>1$, the case a validator is paid to find.
+The predicted PD may be a vector constant over the steps or an array by step and grade, which lets the monitor follow a PD that changes with the age or the vintage of a loan.
+
+\subsection{Combination into a battery}
+\label{sec:method-battery}
+
+The grades combine into one e-process, and several monitors of one portfolio combine into one decision, in one of two ways,
+\begin{equation}
+E_t^{\mathrm{prod}}=\prod_{g=1}^{G}E_{t,g},\qquad E_t^{\mathrm{avg}}=\frac1G\sum_{g=1}^{G}E_{t,g}.
+\label{eq:combine}
+\end{equation}
+The average is an e-process whatever the dependence between the components, because expectation is linear; its price is that a signal in one component is divided by $G$. The product is an e-process only when the components are independent given the past,
+and it lets signals add in the logarithm when many components drift together. For monitors of the same stream, such as the rate monitor and the clustering monitor of one VaR, the average is the combination of the battery (\cref{prop:product}
+shows that the product is not valid there). The null of the battery is the intersection of the component nulls: a rejection says at least one fails, and the component paths say which one moved. The same two rules combine the vintages of a cohort of loans, which share the economy and so are not independent, for which the average is the valid choice, and the monitors of several portfolios that are independent given the past, for which the product concentrates the evidence and is valid.
+
+\subsection{Algorithm, complexity and implementation}
+\label{sec:method-algorithm}
+
+\Cref{alg:var} is the streaming form of the VaR monitor and \cref{alg:pd} the form of the PD monitor with a combination. Both keep one cumulative log-likelihood ratio per alternative, so that the state of a stream of
+hits is $K$ numbers and the cost of one day is $O(K)$; a series of $T$ days costs $O(TK)$ time and the PD monitor of $G$ grades costs $O(TGK)$.
+
+\begin{algorithm}[htbp]
+\caption{Streaming VaR hit-rate monitor with anytime-valid rejection.}
+\label{alg:var}
+\begin{algorithmic}[1]
+\Require VaR level $\alpha$, size $a$, multipliers $m_1,\dots,m_K$ with $m_k\alpha<1$, weights $w_k$, hit stream $I_1,I_2,\dots$
+\State $S_k\gets 0$ for $k=1,\dots,K$; $M\gets 0$; $\tau\gets\infty$
+\For{$t=1,2,\dots$}
+  \For{$k=1,\dots,K$}
+    \State $S_k\gets S_k+I_t\log m_k+(1-I_t)\log\frac{1-m_k\alpha}{1-\alpha}$
+  \EndFor
+  \State $\log E_t\gets\operatorname{logsumexp}_k(\log w_k+S_k)$; $M\gets\max(M,\log E_t)$
+  \If{$\tau=\infty$ \textbf{and} $\log E_t\ge\log(1/a)$} $\tau\gets t$ \Comment{the monitor rejects}
+  \EndIf
+  \State report $\log E_t$ and the anytime-valid p-value $\min(1,e^{-M})$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htbp]
+\caption{PD monitor of $G$ grades with a combination rule.}
+\label{alg:pd}
+\begin{algorithmic}[1]
+\Require size $a$, grades $g=1..G$ with defaults $d_{t,g}$, obligors $n_{t,g}$, predicted PD $p_{t,g}$; multipliers $m_k$; combination rule $c\in\{\text{product},\text{average}\}$
+\For{each grade $g$}
+  \State keep the $m_k$ with $m_k\max_tp_{t,g}<1$; set $w_{k,g}$ by \cref{eq:pd-weights} with the mean predicted PD $\bar p_g$
+\EndFor
+\For{$t=1,2,\dots$}
+  \For{each grade $g$ and alternative $k$}
+    \State $S_{k,g}\gets S_{k,g}+\ell_{k,g}(t)$ by \cref{eq:pd-lr} \Comment{a step with $n_{t,g}=0$ adds nothing}
+    \State $\log E_{t,g}\gets\operatorname{logsumexp}_k(\log w_{k,g}+S_{k,g})$
+  \EndFor
+  \State $\log E_t\gets\sum_g\log E_{t,g}$ if $c$ is product, else $\operatorname{logsumexp}_g\log E_{t,g}-\log G$
+  \If{$\log E_t\ge\log(1/a)$} reject and record $\tau\gets t$ if not yet recorded \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+The implementation is the subpackage \texttt{riskvalidation.validation.sequential} of the engine release 1.1.0: \texttt{var\_hit\_eprocess}, \texttt{var\_hit\_clustering\_eprocess}, \texttt{pd\_grade\_eprocess} and \texttt{eprocess\_battery} return a record that holds the path $\log E_t$, the first crossing, the anytime-valid p-value and a
+mapping to the engine's test result (red when the monitor rejected, green otherwise, not evaluated for an empty series). The functions refuse a missing hit, a value that is not a flag, a fractional or negative count, more defaults than obligors, a predicted PD at 0 or 1, shapes that disagree, a battery whose components differ in length, and a size outside $(0,1)$.
+
+\subsection{Parameters and how they were chosen}
+\label{sec:method-parameters}
+
+\Cref{tab:parameters} lists the parameters of each monitor. They were fixed once, before any run of the experiments reported here, from three considerations: the grid has to cover departures a validator cares about (a hit rate from a quarter to ten times the nominal level), a ratio between neighbours of at most $1.67$ above the nominal level, so that some alternative is within a factor of about $1.3$ of any true multiplier from $1.5$ to $10$, and weights set before any
+outcome, because a weight that depends on the outcome it multiplies breaks the martingale property. The weights of the hit-rate and clustering monitors are equal, which expresses no preference between severities;
+the PD weights follow the Jeffreys prior for the reason given above. The size $a=0.05$ is the level at which the supervisory tests are stated and gives the threshold $20$; the experiments also report the anytime-valid p-value, so that a reader who wants another size can read it.
+
+\subsection{Reading a monitor}
+\label{sec:method-reading}
+
+A monitor returns a record, not a decision. The record holds the whole path $\log E_t$, the first step at which it crossed $\log(1/a)$, the largest value it reached, the anytime-valid p-value of \cref{eq:rule}, the alternatives and their weights that were used, and the number of events (hits or defaults) the stream held. The mapping to the engine's test result colours it red when the monitor rejected and
+green otherwise, with the supremum $\sup_tE_t$ as the statistic, the anytime-valid p-value as the p-value, the final value $E_n$ as the metric, and the size $a$ as the red level; a stream with no observation is not evaluated. The mapping states no compliance claim: a red result is evidence that the null fails and the decision on a model is made elsewhere.
+Two readings of the path are useful. The value of the process is a Bayes factor of the mixture of alternatives against the null, so $E_t=20$ says the data are twenty times more probable under the mixture than under the null, and Ville's inequality says that this reading is also a statement about the frequency of false alarms, which a Bayes factor alone is not. The path also shows how long the evidence has stood above the threshold and how fast it
+accumulated, which a binary flag does not. A rejection does not say which alternative holds; the grid and the weights are recorded so that a reader who wants the severity can compute the posterior weight of each alternative from the cumulative log-likelihood ratios, and the engine's monitors do not report it. A monitor that has rejected can keep running, because the anytime-valid p-value of the path stays valid at every later step.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Parameters of the proposed monitors as implemented in the engine release 1.1.0: the alternatives, the weights, the default direction and the quantity each monitor reads; the size is $a=0.05$ for all of them, a threshold of 20, and all values were fixed before the experiments.}
+\label{tab:parameters}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{2.2cm}}
+\toprule
+Monitor & Alternatives (multipliers of the null parameter) & Weights & Default direction \\
+\midrule
+VaR hit rate & $0.25,\,0.5,\,1.5,\,2,\,3,\,4,\,6,\,10$ times $\alpha$ & Equal, $1/8$ & Two-sided \\
+VaR hit clustering & $P(\text{hit}\mid\text{hit})=3,\,6,\,12,\,25,\,50$ times $\alpha$ & Equal, $1/5$ & Upper \\
+PD by grade & $4^{j/8}$, $j=\pm1,\dots,\pm8$, times the predicted PD & Jeffreys on the log grid, \cref{eq:pd-weights} & Two-sided \\
+Battery & Components as above & Average, or product for independent components & Components' \\
+\bottomrule
+\end{tabularx}
+\end{table}

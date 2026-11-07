@@ -1,0 +1,85 @@
+\section{Related work}
+\label{sec:related-work}
+
+The published methods that bear on the problem fall into five groups: back-tests of value-at-risk, calibration tests of default probabilities, repeated-significance
+and group-sequential tests, e-values and anytime-valid inference, and the e-backtest. \Cref{tab:related} summarises what each group assumes, what it guarantees and where it fails
+for a function that reads the result every day; the subsections characterise them and place the proposed monitors.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{The published methods the study compares or builds on, grouped by approach, with what each assumes, what it guarantees and where it fails when the result is read every day instead of once on a
+window fixed in advance. The last row is the proposed set of monitors.}
+\label{tab:related}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Method & Assumes & Guarantees & Fails where \\
+\midrule
+Proportion-of-failures test \citep{kupiec1995} & Independent hits; one reading at a fixed length & Size at that one reading & Read daily its size grows with the horizon \\
+Independence test \citep{christoffersen1998} & First-order Markov alternative; one reading & Size at one reading; power against clustering & Same repeated-reading inflation \\
+Traffic light \citep{bcbs1996,bcbs2019} & 250 days of hits at 99\,\% & Zones from binomial probabilities & Silent before the window fills; repeated reading leaves the green zone \\
+Group-sequential boundaries \citep{pocock1977,obrien1979,lan1983} & A number and timing of looks fixed in advance & Size over those looks & Looks not planned; no look beyond the plan \\
+Sequential probability ratio test \citep{wald1945} & One alternative & Fastest detection of that alternative & Misses other departures; no mixture over sizes \\
+CUSUM chart \citep{page1954} & One alternative; a threshold from a run length & Delay against the alternative & Threshold is not an anytime size \\
+Betting e-processes \citep{shafer2021,ramdas2023} & A null; alternatives fixed or learned & Size at any stopping time & Power at a fixed horizon below the likelihood-ratio test \\
+E-backtest \citep{wang2022} & VaR hit as an identification function; a betting process learned online & Size at any stopping time for VaR and expected shortfall & No bet on the first days, while the betting process is learned (measured in \cref{sec:results}) \\
+Proposed monitors & Hits or defaults given the past; alternatives fixed before the data & Size at any stopping time for hits, clustering, PD by grade and batteries & Power cost; the PD null has no asset correlation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Back-tests of value-at-risk read once}
+\label{sec:rw-var}
+
+The unconditional coverage test of \citet{kupiec1995} compares the count of exceedances in a window with the count expected at the VaR level through a likelihood ratio
+that is asymptotically chi-square with one degree of freedom, and \citet{christoffersen1998} added the conditional version: a likelihood ratio against a first-order Markov chain that detects
+exceedances that follow exceedances. Duration-based variants test the spacing of the exceedances \citep{christoffersen2004,candelon2011}, and further back-tests are built on the sequence of exceedances
+\citep{pelletier2015}. The conditional autoregressive VaR of \citet{engle2004} comes with a test that asks whether past information predicts an exceedance, and
+\citet{berkowitz2011} assess the size and the power of many such tests on the desk-level profit and loss of a commercial bank, with the conditional autoregressive test performing best overall in
+their Monte Carlo comparison. For joint forecasts of VaR and expected shortfall, \citet{ziegel2020} develop graphical checks of whether one forecast method dominates another under a class of scoring
+functions, with an associated test. The supervisory practice is the traffic light of the Basel Committee: the number of exceedances in 250 days at 99\,\% is mapped to a green, amber or red zone through binomial
+probabilities \citep{bcbs1996}, and it remains the market-risk standard of the current framework \citep{bcbs2019}. All of these are tests of a window of fixed length read once. At 99\,\% over 250 days the expected
+count is 2.5, so the discreteness of the counts and the asymmetry of the zones already make the one-shot test coarse; read daily, the same tests are repeated looks at one stream of hits. None of the tests cited in this
+subsection states a size that survives optional stopping.
+
+\subsection{Calibration tests of default probabilities}
+\label{sec:rw-pd}
+
+The calibration of a rating system is read by grade: the defaults of a cohort against the PD assigned to each grade. The tests in use are a binomial test per grade, a chi-square
+test across grades, an interval for the proportion of defaults from the Jeffreys prior \citep{jeffreys1946}, a traffic-light test on the grades, and the goodness-of-fit test for logistic regression models of
+\citet{hosmer1980} applied to grades of risk. The validation of PD estimates is treated in the studies collected by the Basel Committee \citep{bcbs2005} and by \citet{tasche2008}. The correlation of the defaults of a
+year inside a grade is the reason that tests with an asset correlation exist, and the single-factor model that underlies the ratings-based capital rules supplies the correlated default model used in the experiments below
+\citep{gordy2003}. These tests are read once per cohort or once per year; none of the tests listed here is built to be read at every step of a cohort's life with a size that holds at any step.
+
+\subsection{Repeated significance and group-sequential tests}
+\label{sec:rw-sequential}
+
+Repeating a significance test on accumulating data inflates its size, a point made quantitatively by \citet{armitage1969}; the law of the iterated logarithm, on which \citet{robbins1970} builds sequential
+procedures, implies that the inflation is unbounded as the horizon grows (\cref{prop:repeated}). Two families of procedures restore a size. Group-sequential boundaries spend the size over a fixed number of looks:
+a constant boundary \citep{pocock1977}, a boundary that is strict early and relaxed late \citep{obrien1979}, and a spending function that allows looks at unplanned times within a total
+that is fixed in advance \citep{lan1983}. Sequential probability ratio tests \citep{wald1945} need no number of looks but need one alternative, against which they detect fastest. Change-detection
+charts such as the CUSUM of \citet{page1954} detect a departure of known size quickly and set their threshold by an average run length; nonanticipating estimation of the post-change parameter
+\citep{lorden2005} and e-detectors built from e-processes started at consecutive times \citep{shin2023} extend them to composite alternatives. A simulation-calibrated constant boundary, such as the one used as a comparator below, has a size of
+5\,\% over the horizon it was calibrated for and no guarantee beyond it.
+
+\subsection{E-values, test martingales and anytime-valid inference}
+\label{sec:rw-evalues}
+
+The inequality of \citet{ville1939} bounds the probability that a non-negative supermartingale ever exceeds a level, and it is the basis of tests that remain valid under optional stopping.
+\citet{darling1967} introduced confidence sequences, and \citet{shafer2011} relate test martingales, Bayes factors and p-values. \citet{shafer2021}
+frames testing as betting against the null; \citet{vovk2021} define e-values and their combination rules, and \citet{vovk2021} and \citet{ramdas2023} give the two used here: the average, valid under any dependence, and the product, valid under independence. \citet{grunwald2024} and \citet{koolen2022} derive the bet that maximises the expected growth of the e-process; \citet{howard2021} and \citet{waudbysmith2024} give
+time-uniform confidence sequences and betting estimators for bounded variables; \citet{ramdas2023} and \citet{ramdas2024} survey the field. In applications,
+\citet{johari2022} monitor online experiments continuously with always-valid p-values and confidence intervals that stay valid however long the test is watched, and the prequential
+principle of \citet{dawid1984} supplies the reading of a forecast evaluated sequentially. A mixture over alternatives buys robustness to the unknown size of the departure and
+costs power against any one size; that trade is the object of measurement here.
+
+\subsection{E-backtesting and the place of the proposed monitors}
+\label{sec:rw-ebacktest}
+
+\citet{wang2022} define backtest e-statistics, the functions of the forecast and the realised loss whose expectation does not exceed one under the null, characterise them for
+VaR and expected shortfall, and build e-processes from them with betting processes estimated from the past; their VaR e-statistic is the exceedance indicator divided by the VaR
+tail probability. Their method is model-free and valid at any time, and it is run below as a comparator with their growth-rate betting rule. The proposed monitors differ in three
+ways. They bet on a grid of alternative hit rates fixed before the data, so that no bet has to be learned and the process starts to move on the first exceedance. They add a monitor of
+exceedance clustering, which the e-statistic of \citet{wang2022} does not address. And they extend the construction from VaR hits to the defaults of each rating grade against the predicted PD and to batteries of
+monitors. Among the works cited here we found no e-process for the calibration of default probabilities by grade, which is the gap that the PD monitor addresses; \cref{sec:theory}
+shows where its binomial null limits it.

@@ -1,0 +1,19 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The 18 models of the case on market risk in each of its six windows at the 97.5\,\% level: the number of models each rule flags at some day, and the median first-flag day among the models it flags. The rules are the rate e-process, the e-backtest of Wang, Wang and Ziegel (2022), the Kupiec test once at the end of the window (the eligibility gate), the Kupiec test on all days so far read daily from day 50, and the Basel traffic light, which needs 250 days (a dash where the window is shorter or the level is not the 99\,\% one). No truth is known in these windows.}
+\label{tab:c11-975}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+Window & Days & Expected exceptions & E-process flags & Median day & E-backtest flags & Kupiec at end flags & Kupiec daily flags & Median day & Traffic light flags & Median day \\
+\midrule
+\relax calm-2004-06 & 750 & 18.8 & 3 & 329 & 1 & 7 & 16 & 88 & -- & -- \\
+\relax equity-2007-09 & 504 & 12.6 & 18 & 24 & 18 & 18 & 18 & 50 & -- & -- \\
+\relax fx-2008 & 251 & 6.3 & 7 & 68 & 6 & 6 & 11 & 64 & -- & -- \\
+\relax equity-2020 & 104 & 2.6 & 15 & 25 & 6 & 12 & 15 & 50 & -- & -- \\
+\relax rates-2022 & 249 & 6.2 & 16 & 54 & 10 & 13 & 18 & 50 & -- & -- \\
+\relax mixed-2023 & 64 & 1.6 & 0 & -- & 0 & 0 & 0 & -- & -- & -- \\
+\bottomrule
+\end{tabular}}
+\end{table*}

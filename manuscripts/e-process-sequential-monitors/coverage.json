@@ -1,7 +1,11 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:hypotheses",
+    "tab:pd-results",
+    "tab:pd-correlation",
+    "tab:c11"
   ],
   "claims": {
     "BS-15": "sec:proposed-method"

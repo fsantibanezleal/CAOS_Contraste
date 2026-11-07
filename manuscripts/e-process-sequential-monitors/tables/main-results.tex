@@ -1,0 +1,25 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Every rule read every day on 2,000 streams of 1,000 days from the generator of known truth at a VaR level of 1\,\%: size is the share of correct-model streams rejected at some day, power by day 250 the share of streams with a hit rate three (x3) or four (x4) times too high rejected by day 250, and the median day is the median first-rejection day over all streams (the symbol $>$ marks a median beyond the horizon). Brackets are 95\,\% Wilson intervals for shares and 95\,\% bootstrap intervals for medians. The anytime bound for a size of 5\,\% plus three Monte Carlo standard errors is 6.5\,\%.}
+\label{tab:main-results}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{5.6cm}rrrrr}
+\toprule
+Rule & Size, \% & Power by day 250, \% (x3) & Median day (x3) & Power by day 250, \% (x4) & Median day (x4) \\
+\midrule
+\relax Rate e-process, two-sided (proposed) & \relax 2.4 [1.8, 3.2] & \relax 48.6 [46.5, 50.8] & \relax 259 [237, 273] & \relax 77.8 [76.0, 79.6] & \relax 130 [125, 134] \\
+\relax Rate e-process, upper side (proposed) & \relax 2.5 [1.9, 3.3] & \relax 55.4 [53.2, 57.5] & \relax 232 [221, 240] & \relax 82.5 [80.8, 84.1] & \relax 119 [108, 129] \\
+\relax Single alternative, $3\alpha$ (likelihood-ratio e-process) & \relax 3.6 [2.9, 4.5] & \relax 62.5 [60.4, 64.6] & \relax 182 [176, 202] & \relax 86.1 [84.5, 87.5] & \relax 114 [111, 119] \\
+\relax Rate and clustering e-processes, averaged (proposed) & \relax 1.2 [0.8, 1.8] & \relax 39.6 [37.5, 41.8] & \relax 320 [301, 332] & \relax 73.0 [71.0, 74.9] & \relax 158 [151, 161] \\
+\relax E-backtest of Wang, Wang and Ziegel (2022) & \relax 0.4 [0.2, 0.8] & \relax 22.4 [20.6, 24.3] & \relax 408 [395, 422] & \relax 53.8 [51.6, 55.9] & \relax 237 [231, 246] \\
+\relax Uniform-prior Bayes factor & \relax 0.8 [0.5, 1.3] & \relax 29.8 [27.8, 31.8] & \relax 433 [416, 462] & \relax 61.7 [59.5, 63.8] & \relax 200 [192, 206] \\
+\relax Kupiec, last 250 days, read daily & \relax 65.7 [63.6, 67.7] & \relax 62.4 [60.2, 64.4] & \relax 250 [250, 250] & \relax 87.1 [85.6, 88.5] & \relax 250 [250, 250] \\
+\relax Kupiec, all days so far, read daily & \relax 31.9 [29.9, 34.0] & \relax 79.0 [77.1, 80.7] & \relax 117 [110, 121] & \relax 94.2 [93.0, 95.1] & \relax 68 [66, 70] \\
+\relax Basel traffic light, read daily & \relax 58.8 [56.6, 60.9] & \relax 87.0 [85.5, 88.4] & \relax 250 [250, 250] & \relax 97.2 [96.4, 97.8] & \relax 250 [250, 250] \\
+\relax Kupiec, all days so far, Sidak level & \relax 0.1 [0.0, 0.3] & \relax 14.8 [13.3, 16.4] & \relax 567 [549, 581] & \relax 41.3 [39.2, 43.5] & \relax 286 [279, 302] \\
+\relax Kupiec, all days so far, simulated critical value & \relax 5.3 [4.4, 6.4] & \relax 53.9 [51.8, 56.1] & \relax 239 [230, 245] & \relax 81.5 [79.7, 83.1] & \relax 130 [124, 135] \\
+\relax CUSUM against $3\alpha$, simulated threshold & \relax 5.8 [4.9, 6.9] & \relax 46.0 [43.8, 48.2] & \relax 265 [256, 274] & \relax 76.5 [74.6, 78.3] & \relax 165 [159, 172] \\
+\bottomrule
+\end{tabular}}
+\end{table*}

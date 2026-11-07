@@ -1,0 +1,28 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Internal validity}
+\label{sec:limitations-internal}
+
+The size and the power are measured on generators of known truth in which the hits are independent Bernoulli variables or a first-order Markov chain, and the defaults are binomial or one-factor Vasicek. Real exceedances have volatility clustering of other forms, and the clustering alternatives of the monitor are one of them. The experiments use one VaR level, 1\,\%, one horizon, 1,000 days, one portfolio of five grades with fixed obligor counts and one
+asset-correlation structure with one factor per year common to the grades; the numbers of \cref{tab:main-results} do not transfer to another level or horizon without a rerun, and the theory gives the direction, not the value. The comparators that the product does not carry (the e-backtest, the uniform-prior Bayes factor, the Sidak and simulated boundaries, the CUSUM) are implemented in the experiment code from the published equations and tested: the e-processes have an exact null expectation of one by enumeration (\cref{tab:null-expectation}),
+and the e-backtest bet is checked against the closed form of its source. They are one implementation of each, and only the growth-rate betting rule of \citet{wang2022} estimated on all past days is run, not the alternative betting rules or a rolling window that they also propose. The group-sequential boundaries of Pocock, O'Brien and Fleming and Lan and DeMets are not run as such. The upper-side variant was chosen after the two-sided results were known.
+The medians have a seed-to-seed standard deviation of about \nSeedsThreeSeedSd\ days at three times the nominal level, so a difference of a few days between two runs is noise (\cref{tab:agreement}).
+
+\subsection{External validity}
+\label{sec:limitations-external}
+
+The real windows are six in number and 18 models, which are not 18 independent observations: the models of one window face the same market, and the equity crisis flags all of them under every rule, so it separates no rule from another except by the day. No truth is known in the windows, so the tables say when each rule fires and not whether it was right. The vintages of the small-business loans are guaranteed loans of a federal programme, not the book of a bank; two to four
+vintages per cohort are too few to estimate a power, and the cohorts after 2010 do not test the monitor, because the model over-predicts. The traffic light is read at 99\,\% over 250 days as the Basel framework states; the 97.5\,\% level has no light. The Kenneth French series are derived-only in the product, so the exceedance days are reproducible from the committed documents and the returns are not.
+
+\subsection{Construct validity}
+\label{sec:limitations-construct}
+
+The detection delay is measured from a departure that is present from day 1, which is the planted-defect design; a model that is right for a year and then fails has a delay measured from the failure, and the monitor with its negative drift on correct days has by then a lower starting point than it would have from one. The power cost compares the monitor with one Kupiec reading at day 250, the reading of the hypothesis, and it is the cost against a test that has a different guarantee; the size-matched reading of \cref{tab:size-matched} bounds the part of the cost that any monitor must bear.
+A count of models flagged in a real window is not a power. The median day is reported with the convention that a stream never rejected counts as infinity, so a median beyond the horizon is a finding about the half of the streams missed and not a number. The size is the probability of ever rejecting within the horizon, which is the quantity the guarantee bounds, and it is not an average run length between false alarms, the quantity a change-detection chart reports; the two cannot be compared without a model of how often a correct model is kept running after a false alarm.
+
+\subsection{Scope}
+\label{sec:limitations-scope}
+
+The monitors cover VaR exceedances, hit clustering and the defaults of rating grades against a predicted PD. They do not cover expected shortfall (the e-statistics of \citet{wang2022} do), the dependence of defaults inside a grade (the null of \cref{eq:null-pd} has none), the estimation of the severity of a departure, the multiplicity of monitoring many models or many portfolios at once, or the adjustment of a monitor for a PD that is itself estimated from the data it monitors.
+An e-process for correlated defaults would have to be built on a null with a stated asset correlation, for example a beta-binomial or a Vasicek mixture of the likelihood, with the correlation as an input; the proposition of \cref{sec:theory} shows why the binomial null cannot be used there, and the construction is left open. The engine's monitors read no policy and state no compliance claim: a rejection is evidence, and the decision on a model is a supervisory one. The study also leaves open how a monitor should be restarted after a rejection and how a bank should act on an anytime-valid p-value, which is a question of the risk function's own procedures and not of the statistics.

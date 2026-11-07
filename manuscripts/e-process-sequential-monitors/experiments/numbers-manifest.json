@@ -1,0 +1,4438 @@
+{
+ "nReps": {
+  "value": "2,000",
+  "source": "results_hits.json:meta.reps"
+ },
+ "nCalibrationReps": {
+  "value": "20,000",
+  "source": "results_hits.json:meta.calibration_reps"
+ },
+ "nSeed": {
+  "value": "20261104",
+  "source": "results_hits.json:meta.seed"
+ },
+ "nKupCalCritical": {
+  "value": "7.62",
+  "source": "results_hits.json:meta.critical_values.kupiec_cumulative"
+ },
+ "nCusumCritical": {
+  "value": "4.70",
+  "source": "results_hits.json:meta.critical_values.cusum_m3"
+ },
+ "nBound": {
+  "value": "6.5",
+  "source": "derived: 0.05 + 3 sqrt(0.05 * 0.95 / reps)"
+ },
+ "nTLCount": {
+  "value": "5",
+  "source": "results_hits.json:meta.traffic_light_first_non_green_count"
+ },
+ "nNullSizeE": {
+  "value": "2.4",
+  "source": "results_hits.json:scenarios.null.methods.e_rate.ever"
+ },
+ "nNullSizeEUp": {
+  "value": "2.5",
+  "source": "results_hits.json:scenarios.null.methods.e_rate_upper.ever"
+ },
+ "nNullSizeCluster": {
+  "value": "0.5",
+  "source": "results_hits.json:scenarios.null.methods.e_cluster.ever"
+ },
+ "nNullSizeBattery": {
+  "value": "1.2",
+  "source": "results_hits.json:scenarios.null.methods.e_battery.ever"
+ },
+ "nNullSizeSprt": {
+  "value": "3.6",
+  "source": "results_hits.json:scenarios.null.methods.e_sprt3.ever"
+ },
+ "nNullSizeWwz": {
+  "value": "0.4",
+  "source": "results_hits.json:scenarios.null.methods.e_wwz.ever"
+ },
+ "nNullSizeBeta": {
+  "value": "0.8",
+  "source": "results_hits.json:scenarios.null.methods.e_beta.ever"
+ },
+ "nNullSizeKupTrail": {
+  "value": "65.7",
+  "source": "results_hits.json:scenarios.null.methods.kupiec_trailing.ever"
+ },
+ "nNullSizeKupCum": {
+  "value": "31.9",
+  "source": "results_hits.json:scenarios.null.methods.kupiec_cumulative.ever"
+ },
+ "nNullSizeLight": {
+  "value": "58.8",
+  "source": "results_hits.json:scenarios.null.methods.traffic_light.ever"
+ },
+ "nNullSizeIndep": {
+  "value": "7.9",
+  "source": "results_hits.json:scenarios.null.methods.independence_trailing.ever"
+ },
+ "nNullSizeKupSidak": {
+  "value": "0.1",
+  "source": "results_hits.json:scenarios.null.methods.kupiec_sidak.ever"
+ },
+ "nNullSizeKupCal": {
+  "value": "5.3",
+  "source": "results_hits.json:scenarios.null.methods.kupiec_calibrated.ever"
+ },
+ "nNullSizeCusum": {
+  "value": "5.8",
+  "source": "results_hits.json:scenarios.null.methods.cusum_calibrated.ever"
+ },
+ "nNullSizeELo": {
+  "value": "1.8",
+  "source": "results_hits.json:scenarios.null.methods.e_rate.ever_ci[0]"
+ },
+ "nNullSizeEHi": {
+  "value": "3.2",
+  "source": "results_hits.json:scenarios.null.methods.e_rate.ever_ci[1]"
+ },
+ "nNullByE": {
+  "value": "1.15",
+  "source": "results_hits.json:scenarios.null.methods.e_rate.by"
+ },
+ "nNullByEUp": {
+  "value": "1.75",
+  "source": "results_hits.json:scenarios.null.methods.e_rate_upper.by"
+ },
+ "nKupOneShotNull": {
+  "value": "9.5",
+  "source": "results_hits.json:scenarios.null.methods.kupiec_one_shot.ever"
+ },
+ "nByOneFiveE": {
+  "value": "7.1",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate.by"
+ },
+ "nMedOneFiveE": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate.median_day"
+ },
+ "nEverOneFiveE": {
+  "value": "18.6",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate.ever"
+ },
+ "nByOneFiveEUp": {
+  "value": "8.6",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate_upper.by"
+ },
+ "nMedOneFiveEUp": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate_upper.median_day"
+ },
+ "nEverOneFiveEUp": {
+  "value": "21.6",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate_upper.ever"
+ },
+ "nByOneFiveSprt": {
+  "value": "11.6",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_sprt3.by"
+ },
+ "nMedOneFiveSprt": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_sprt3.median_day"
+ },
+ "nEverOneFiveSprt": {
+  "value": "26.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_sprt3.ever"
+ },
+ "nByOneFiveWwz": {
+  "value": "0.7",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_wwz.by"
+ },
+ "nMedOneFiveWwz": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_wwz.median_day"
+ },
+ "nEverOneFiveWwz": {
+  "value": "10.8",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_wwz.ever"
+ },
+ "nByOneFiveBeta": {
+  "value": "3.8",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_beta.by"
+ },
+ "nMedOneFiveBeta": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_beta.median_day"
+ },
+ "nEverOneFiveBeta": {
+  "value": "6.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_beta.ever"
+ },
+ "nByOneFiveBattery": {
+  "value": "4.1",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_battery.by"
+ },
+ "nMedOneFiveBattery": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_battery.median_day"
+ },
+ "nEverOneFiveBattery": {
+  "value": "13.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_battery.ever"
+ },
+ "nByOneFiveKupTrail": {
+  "value": "11.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_trailing.by"
+ },
+ "nMedOneFiveKupTrail": {
+  "value": "649",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_trailing.median_day"
+ },
+ "nEverOneFiveKupTrail": {
+  "value": "70.3",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_trailing.ever"
+ },
+ "nByOneFiveKupCum": {
+  "value": "30.7",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_cumulative.by"
+ },
+ "nMedOneFiveKupCum": {
+  "value": "688",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_cumulative.median_day"
+ },
+ "nEverOneFiveKupCum": {
+  "value": "59.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_cumulative.ever"
+ },
+ "nByOneFiveLight": {
+  "value": "32.6",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.traffic_light.by"
+ },
+ "nMedOneFiveLight": {
+  "value": "345",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.traffic_light.median_day"
+ },
+ "nEverOneFiveLight": {
+  "value": "93.4",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.traffic_light.ever"
+ },
+ "nByOneFiveKupSidak": {
+  "value": "0.4",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_sidak.by"
+ },
+ "nMedOneFiveKupSidak": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_sidak.median_day"
+ },
+ "nEverOneFiveKupSidak": {
+  "value": "1.8",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_sidak.ever"
+ },
+ "nByOneFiveKupCal": {
+  "value": "7.5",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_calibrated.by"
+ },
+ "nMedOneFiveKupCal": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_calibrated.median_day"
+ },
+ "nEverOneFiveKupCal": {
+  "value": "24.5",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_calibrated.ever"
+ },
+ "nByOneFiveCusum": {
+  "value": "5.1",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.cusum_calibrated.by"
+ },
+ "nMedOneFiveCusum": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.cusum_calibrated.median_day"
+ },
+ "nEverOneFiveCusum": {
+  "value": "33.1",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.cusum_calibrated.ever"
+ },
+ "nMedOneFiveELo": {
+  "value": "--",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate.median_ci[0]"
+ },
+ "nMedOneFiveEHi": {
+  "value": "--",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.e_rate.median_ci[1]"
+ },
+ "nShotOneFive": {
+  "value": "11.2",
+  "source": "results_hits.json:scenarios.rate-x1.5.methods.kupiec_one_shot.ever"
+ },
+ "nByTwoE": {
+  "value": "15.0",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate.by"
+ },
+ "nMedTwoE": {
+  "value": "862",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate.median_day"
+ },
+ "nEverTwoE": {
+  "value": "56.3",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate.ever"
+ },
+ "nByTwoEUp": {
+  "value": "17.8",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate_upper.by"
+ },
+ "nMedTwoEUp": {
+  "value": "759",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate_upper.median_day"
+ },
+ "nEverTwoEUp": {
+  "value": "60.2",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate_upper.ever"
+ },
+ "nByTwoSprt": {
+  "value": "23.1",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_sprt3.by"
+ },
+ "nMedTwoSprt": {
+  "value": "617",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_sprt3.median_day"
+ },
+ "nEverTwoSprt": {
+  "value": "63.2",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_sprt3.ever"
+ },
+ "nByTwoWwz": {
+  "value": "3.5",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_wwz.by"
+ },
+ "nMedTwoWwz": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_wwz.median_day"
+ },
+ "nEverTwoWwz": {
+  "value": "45.7",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_wwz.ever"
+ },
+ "nByTwoBeta": {
+  "value": "8.5",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_beta.by"
+ },
+ "nMedTwoBeta": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_beta.median_day"
+ },
+ "nEverTwoBeta": {
+  "value": "28.8",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_beta.ever"
+ },
+ "nByTwoBattery": {
+  "value": "10.2",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_battery.by"
+ },
+ "nMedTwoBattery": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_battery.median_day"
+ },
+ "nEverTwoBattery": {
+  "value": "47.4",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_battery.ever"
+ },
+ "nByTwoKupTrail": {
+  "value": "23.0",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_trailing.by"
+ },
+ "nMedTwoKupTrail": {
+  "value": "400",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_trailing.median_day"
+ },
+ "nEverTwoKupTrail": {
+  "value": "89.5",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_trailing.ever"
+ },
+ "nByTwoKupCum": {
+  "value": "45.1",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_cumulative.by"
+ },
+ "nMedTwoKupCum": {
+  "value": "292",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_cumulative.median_day"
+ },
+ "nEverTwoKupCum": {
+  "value": "88.3",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_cumulative.ever"
+ },
+ "nByTwoLight": {
+  "value": "55.4",
+  "source": "results_hits.json:scenarios.rate-x2.methods.traffic_light.by"
+ },
+ "nMedTwoLight": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x2.methods.traffic_light.median_day"
+ },
+ "nEverTwoLight": {
+  "value": "98.6",
+  "source": "results_hits.json:scenarios.rate-x2.methods.traffic_light.ever"
+ },
+ "nByTwoKupSidak": {
+  "value": "1.6",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_sidak.by"
+ },
+ "nMedTwoKupSidak": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_sidak.median_day"
+ },
+ "nEverTwoKupSidak": {
+  "value": "18.6",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_sidak.ever"
+ },
+ "nByTwoKupCal": {
+  "value": "16.5",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_calibrated.by"
+ },
+ "nMedTwoKupCal": {
+  "value": "717",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_calibrated.median_day"
+ },
+ "nEverTwoKupCal": {
+  "value": "64.8",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_calibrated.ever"
+ },
+ "nByTwoCusum": {
+  "value": "13.0",
+  "source": "results_hits.json:scenarios.rate-x2.methods.cusum_calibrated.by"
+ },
+ "nMedTwoCusum": {
+  "value": "648",
+  "source": "results_hits.json:scenarios.rate-x2.methods.cusum_calibrated.median_day"
+ },
+ "nEverTwoCusum": {
+  "value": "69.3",
+  "source": "results_hits.json:scenarios.rate-x2.methods.cusum_calibrated.ever"
+ },
+ "nMedTwoELo": {
+  "value": "830",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate.median_ci[0]"
+ },
+ "nMedTwoEHi": {
+  "value": "920",
+  "source": "results_hits.json:scenarios.rate-x2.methods.e_rate.median_ci[1]"
+ },
+ "nShotTwo": {
+  "value": "23.0",
+  "source": "results_hits.json:scenarios.rate-x2.methods.kupiec_one_shot.ever"
+ },
+ "nByThreeE": {
+  "value": "48.6",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.by"
+ },
+ "nMedThreeE": {
+  "value": "259",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.median_day"
+ },
+ "nEverThreeE": {
+  "value": "97.5",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.ever"
+ },
+ "nByThreeEUp": {
+  "value": "55.4",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate_upper.by"
+ },
+ "nMedThreeEUp": {
+  "value": "232",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate_upper.median_day"
+ },
+ "nEverThreeEUp": {
+  "value": "97.9",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate_upper.ever"
+ },
+ "nByThreeSprt": {
+  "value": "62.5",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_sprt3.by"
+ },
+ "nMedThreeSprt": {
+  "value": "182",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_sprt3.median_day"
+ },
+ "nEverThreeSprt": {
+  "value": "98.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_sprt3.ever"
+ },
+ "nByThreeWwz": {
+  "value": "22.4",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_wwz.by"
+ },
+ "nMedThreeWwz": {
+  "value": "408",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_wwz.median_day"
+ },
+ "nEverThreeWwz": {
+  "value": "95.9",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_wwz.ever"
+ },
+ "nByThreeBeta": {
+  "value": "29.8",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_beta.by"
+ },
+ "nMedThreeBeta": {
+  "value": "433",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_beta.median_day"
+ },
+ "nEverThreeBeta": {
+  "value": "89.1",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_beta.ever"
+ },
+ "nByThreeBattery": {
+  "value": "39.6",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_battery.by"
+ },
+ "nMedThreeBattery": {
+  "value": "320",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_battery.median_day"
+ },
+ "nEverThreeBattery": {
+  "value": "95.9",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_battery.ever"
+ },
+ "nByThreeKupTrail": {
+  "value": "62.4",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_trailing.by"
+ },
+ "nMedThreeKupTrail": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_trailing.median_day"
+ },
+ "nEverThreeKupTrail": {
+  "value": "99.7",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_trailing.ever"
+ },
+ "nByThreeKupCum": {
+  "value": "79.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_cumulative.by"
+ },
+ "nMedThreeKupCum": {
+  "value": "117",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_cumulative.median_day"
+ },
+ "nEverThreeKupCum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_cumulative.ever"
+ },
+ "nByThreeLight": {
+  "value": "87.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.traffic_light.by"
+ },
+ "nMedThreeLight": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x3.methods.traffic_light.median_day"
+ },
+ "nEverThreeLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.traffic_light.ever"
+ },
+ "nByThreeKupSidak": {
+  "value": "14.8",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_sidak.by"
+ },
+ "nMedThreeKupSidak": {
+  "value": "567",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_sidak.median_day"
+ },
+ "nEverThreeKupSidak": {
+  "value": "85.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_sidak.ever"
+ },
+ "nByThreeKupCal": {
+  "value": "53.9",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_calibrated.by"
+ },
+ "nMedThreeKupCal": {
+  "value": "239",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_calibrated.median_day"
+ },
+ "nEverThreeKupCal": {
+  "value": "98.4",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_calibrated.ever"
+ },
+ "nByThreeCusum": {
+  "value": "46.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.cusum_calibrated.by"
+ },
+ "nMedThreeCusum": {
+  "value": "265",
+  "source": "results_hits.json:scenarios.rate-x3.methods.cusum_calibrated.median_day"
+ },
+ "nEverThreeCusum": {
+  "value": "98.7",
+  "source": "results_hits.json:scenarios.rate-x3.methods.cusum_calibrated.ever"
+ },
+ "nMedThreeELo": {
+  "value": "237",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.median_ci[0]"
+ },
+ "nMedThreeEHi": {
+  "value": "273",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.median_ci[1]"
+ },
+ "nShotThree": {
+  "value": "62.4",
+  "source": "results_hits.json:scenarios.rate-x3.methods.kupiec_one_shot.ever"
+ },
+ "nByFourE": {
+  "value": "77.8",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.by"
+ },
+ "nMedFourE": {
+  "value": "130",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.median_day"
+ },
+ "nEverFourE": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.ever"
+ },
+ "nByFourEUp": {
+  "value": "82.5",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate_upper.by"
+ },
+ "nMedFourEUp": {
+  "value": "119",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate_upper.median_day"
+ },
+ "nEverFourEUp": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate_upper.ever"
+ },
+ "nByFourSprt": {
+  "value": "86.1",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_sprt3.by"
+ },
+ "nMedFourSprt": {
+  "value": "114",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_sprt3.median_day"
+ },
+ "nEverFourSprt": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_sprt3.ever"
+ },
+ "nByFourWwz": {
+  "value": "53.8",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_wwz.by"
+ },
+ "nMedFourWwz": {
+  "value": "237",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_wwz.median_day"
+ },
+ "nEverFourWwz": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_wwz.ever"
+ },
+ "nByFourBeta": {
+  "value": "61.7",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_beta.by"
+ },
+ "nMedFourBeta": {
+  "value": "200",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_beta.median_day"
+ },
+ "nEverFourBeta": {
+  "value": "99.9",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_beta.ever"
+ },
+ "nByFourBattery": {
+  "value": "73.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_battery.by"
+ },
+ "nMedFourBattery": {
+  "value": "158",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_battery.median_day"
+ },
+ "nEverFourBattery": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_battery.ever"
+ },
+ "nByFourKupTrail": {
+  "value": "87.1",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_trailing.by"
+ },
+ "nMedFourKupTrail": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_trailing.median_day"
+ },
+ "nEverFourKupTrail": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_trailing.ever"
+ },
+ "nByFourKupCum": {
+  "value": "94.2",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_cumulative.by"
+ },
+ "nMedFourKupCum": {
+  "value": "68",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_cumulative.median_day"
+ },
+ "nEverFourKupCum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_cumulative.ever"
+ },
+ "nByFourLight": {
+  "value": "97.2",
+  "source": "results_hits.json:scenarios.rate-x4.methods.traffic_light.by"
+ },
+ "nMedFourLight": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x4.methods.traffic_light.median_day"
+ },
+ "nEverFourLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.traffic_light.ever"
+ },
+ "nByFourKupSidak": {
+  "value": "41.3",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_sidak.by"
+ },
+ "nMedFourKupSidak": {
+  "value": "286",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_sidak.median_day"
+ },
+ "nEverFourKupSidak": {
+  "value": "99.7",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_sidak.ever"
+ },
+ "nByFourKupCal": {
+  "value": "81.5",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_calibrated.by"
+ },
+ "nMedFourKupCal": {
+  "value": "130",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_calibrated.median_day"
+ },
+ "nEverFourKupCal": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_calibrated.ever"
+ },
+ "nByFourCusum": {
+  "value": "76.5",
+  "source": "results_hits.json:scenarios.rate-x4.methods.cusum_calibrated.by"
+ },
+ "nMedFourCusum": {
+  "value": "165",
+  "source": "results_hits.json:scenarios.rate-x4.methods.cusum_calibrated.median_day"
+ },
+ "nEverFourCusum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x4.methods.cusum_calibrated.ever"
+ },
+ "nMedFourELo": {
+  "value": "125",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.median_ci[0]"
+ },
+ "nMedFourEHi": {
+  "value": "134",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.median_ci[1]"
+ },
+ "nShotFour": {
+  "value": "87.1",
+  "source": "results_hits.json:scenarios.rate-x4.methods.kupiec_one_shot.ever"
+ },
+ "nBySixE": {
+  "value": "98.2",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate.by"
+ },
+ "nMedSixE": {
+  "value": "60",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate.median_day"
+ },
+ "nEverSixE": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate.ever"
+ },
+ "nBySixEUp": {
+  "value": "98.8",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate_upper.by"
+ },
+ "nMedSixEUp": {
+  "value": "58",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate_upper.median_day"
+ },
+ "nEverSixEUp": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate_upper.ever"
+ },
+ "nBySixSprt": {
+  "value": "99.3",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_sprt3.by"
+ },
+ "nMedSixSprt": {
+  "value": "62",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_sprt3.median_day"
+ },
+ "nEverSixSprt": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_sprt3.ever"
+ },
+ "nBySixWwz": {
+  "value": "94.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_wwz.by"
+ },
+ "nMedSixWwz": {
+  "value": "129",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_wwz.median_day"
+ },
+ "nEverSixWwz": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_wwz.ever"
+ },
+ "nBySixBeta": {
+  "value": "95.8",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_beta.by"
+ },
+ "nMedSixBeta": {
+  "value": "79",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_beta.median_day"
+ },
+ "nEverSixBeta": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_beta.ever"
+ },
+ "nBySixBattery": {
+  "value": "97.5",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_battery.by"
+ },
+ "nMedSixBattery": {
+  "value": "74",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_battery.median_day"
+ },
+ "nEverSixBattery": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_battery.ever"
+ },
+ "nBySixKupTrail": {
+  "value": "99.4",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_trailing.by"
+ },
+ "nMedSixKupTrail": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_trailing.median_day"
+ },
+ "nEverSixKupTrail": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_trailing.ever"
+ },
+ "nBySixKupCum": {
+  "value": "99.7",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_cumulative.by"
+ },
+ "nMedSixKupCum": {
+  "value": "50",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_cumulative.median_day"
+ },
+ "nEverSixKupCum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_cumulative.ever"
+ },
+ "nBySixLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.traffic_light.by"
+ },
+ "nMedSixLight": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x6.methods.traffic_light.median_day"
+ },
+ "nEverSixLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.traffic_light.ever"
+ },
+ "nBySixKupSidak": {
+  "value": "88.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_sidak.by"
+ },
+ "nMedSixKupSidak": {
+  "value": "132",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_sidak.median_day"
+ },
+ "nEverSixKupSidak": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_sidak.ever"
+ },
+ "nBySixKupCal": {
+  "value": "98.7",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_calibrated.by"
+ },
+ "nMedSixKupCal": {
+  "value": "62",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_calibrated.median_day"
+ },
+ "nEverSixKupCal": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_calibrated.ever"
+ },
+ "nBySixCusum": {
+  "value": "97.8",
+  "source": "results_hits.json:scenarios.rate-x6.methods.cusum_calibrated.by"
+ },
+ "nMedSixCusum": {
+  "value": "94",
+  "source": "results_hits.json:scenarios.rate-x6.methods.cusum_calibrated.median_day"
+ },
+ "nEverSixCusum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x6.methods.cusum_calibrated.ever"
+ },
+ "nMedSixELo": {
+  "value": "58",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate.median_ci[0]"
+ },
+ "nMedSixEHi": {
+  "value": "62",
+  "source": "results_hits.json:scenarios.rate-x6.methods.e_rate.median_ci[1]"
+ },
+ "nShotSix": {
+  "value": "99.4",
+  "source": "results_hits.json:scenarios.rate-x6.methods.kupiec_one_shot.ever"
+ },
+ "nByTenE": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate.by"
+ },
+ "nMedTenE": {
+  "value": "27",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate.median_day"
+ },
+ "nEverTenE": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate.ever"
+ },
+ "nByTenEUp": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate_upper.by"
+ },
+ "nMedTenEUp": {
+  "value": "27",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate_upper.median_day"
+ },
+ "nEverTenEUp": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate_upper.ever"
+ },
+ "nByTenSprt": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_sprt3.by"
+ },
+ "nMedTenSprt": {
+  "value": "36",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_sprt3.median_day"
+ },
+ "nEverTenSprt": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_sprt3.ever"
+ },
+ "nByTenWwz": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_wwz.by"
+ },
+ "nMedTenWwz": {
+  "value": "67",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_wwz.median_day"
+ },
+ "nEverTenWwz": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_wwz.ever"
+ },
+ "nByTenBeta": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_beta.by"
+ },
+ "nMedTenBeta": {
+  "value": "25",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_beta.median_day"
+ },
+ "nEverTenBeta": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_beta.ever"
+ },
+ "nByTenBattery": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_battery.by"
+ },
+ "nMedTenBattery": {
+  "value": "34",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_battery.median_day"
+ },
+ "nEverTenBattery": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_battery.ever"
+ },
+ "nByTenKupTrail": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_trailing.by"
+ },
+ "nMedTenKupTrail": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_trailing.median_day"
+ },
+ "nEverTenKupTrail": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_trailing.ever"
+ },
+ "nByTenKupCum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_cumulative.by"
+ },
+ "nMedTenKupCum": {
+  "value": "50",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_cumulative.median_day"
+ },
+ "nEverTenKupCum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_cumulative.ever"
+ },
+ "nByTenLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.traffic_light.by"
+ },
+ "nMedTenLight": {
+  "value": "250",
+  "source": "results_hits.json:scenarios.rate-x10.methods.traffic_light.median_day"
+ },
+ "nEverTenLight": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.traffic_light.ever"
+ },
+ "nByTenKupSidak": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_sidak.by"
+ },
+ "nMedTenKupSidak": {
+  "value": "57",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_sidak.median_day"
+ },
+ "nEverTenKupSidak": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_sidak.ever"
+ },
+ "nByTenKupCal": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_calibrated.by"
+ },
+ "nMedTenKupCal": {
+  "value": "50",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_calibrated.median_day"
+ },
+ "nEverTenKupCal": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_calibrated.ever"
+ },
+ "nByTenCusum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.cusum_calibrated.by"
+ },
+ "nMedTenCusum": {
+  "value": "49",
+  "source": "results_hits.json:scenarios.rate-x10.methods.cusum_calibrated.median_day"
+ },
+ "nEverTenCusum": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.cusum_calibrated.ever"
+ },
+ "nMedTenELo": {
+  "value": "26",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate.median_ci[0]"
+ },
+ "nMedTenEHi": {
+  "value": "28",
+  "source": "results_hits.json:scenarios.rate-x10.methods.e_rate.median_ci[1]"
+ },
+ "nShotTen": {
+  "value": "100.0",
+  "source": "results_hits.json:scenarios.rate-x10.methods.kupiec_one_shot.ever"
+ },
+ "nCostThreeE": {
+  "value": "13.7",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.power_cost_vs_one_shot.mean"
+ },
+ "nCostThreeESe": {
+  "value": "0.9",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate.power_cost_vs_one_shot.se"
+ },
+ "nCostThreeEUp": {
+  "value": "7.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate_upper.power_cost_vs_one_shot.mean"
+ },
+ "nCostThreeEUpSe": {
+  "value": "0.8",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_rate_upper.power_cost_vs_one_shot.se"
+ },
+ "nCostThreeWwz": {
+  "value": "40.0",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_wwz.power_cost_vs_one_shot.mean"
+ },
+ "nCostThreeWwzSe": {
+  "value": "1.1",
+  "source": "results_hits.json:scenarios.rate-x3.methods.e_wwz.power_cost_vs_one_shot.se"
+ },
+ "nCostFourE": {
+  "value": "9.2",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.power_cost_vs_one_shot.mean"
+ },
+ "nCostFourESe": {
+  "value": "0.7",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate.power_cost_vs_one_shot.se"
+ },
+ "nCostFourEUp": {
+  "value": "4.6",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate_upper.power_cost_vs_one_shot.mean"
+ },
+ "nCostFourEUpSe": {
+  "value": "0.6",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_rate_upper.power_cost_vs_one_shot.se"
+ },
+ "nCostFourWwz": {
+  "value": "33.4",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_wwz.power_cost_vs_one_shot.mean"
+ },
+ "nCostFourWwzSe": {
+  "value": "1.1",
+  "source": "results_hits.json:scenarios.rate-x4.methods.e_wwz.power_cost_vs_one_shot.se"
+ },
+ "nGapThreeWwz": {
+  "value": "149",
+  "source": "derived: results_hits.json:scenarios.rate-x3.methods.e_wwz.median_day - results_hits.json:scenarios.rate-x3.methods.e_rate.median_day"
+ },
+ "nGapFourWwz": {
+  "value": "106",
+  "source": "derived: results_hits.json:scenarios.rate-x4.methods.e_wwz.median_day - results_hits.json:scenarios.rate-x4.methods.e_rate.median_day"
+ },
+ "nCluOneTenthCluster": {
+  "value": "25.4",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.e_cluster.ever"
+ },
+ "nCluOneTenthBattery": {
+  "value": "22.8",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.e_battery.ever"
+ },
+ "nCluOneTenthE": {
+  "value": "4.9",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.e_rate.ever"
+ },
+ "nCluOneTenthIndep": {
+  "value": "57.5",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.independence_trailing.ever"
+ },
+ "nCluOneTenthKupTrail": {
+  "value": "75.4",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.kupiec_trailing.ever"
+ },
+ "nCluOneTenthLight": {
+  "value": "62.8",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.traffic_light.ever"
+ },
+ "nCluOneTenthKupCal": {
+  "value": "9.0",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.kupiec_calibrated.ever"
+ },
+ "nCluOneTenthKupCum": {
+  "value": "42.0",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.kupiec_cumulative.ever"
+ },
+ "nCluMedOneTenthCluster": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.e_cluster.median_day"
+ },
+ "nCluMedOneTenthIndep": {
+  "value": "816",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.independence_trailing.median_day"
+ },
+ "nCluMedOneTenthBattery": {
+  "value": "beyond the horizon",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.e_battery.median_day"
+ },
+ "nCluTwoTenthCluster": {
+  "value": "53.8",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.e_cluster.ever"
+ },
+ "nCluTwoTenthBattery": {
+  "value": "51.6",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.e_battery.ever"
+ },
+ "nCluTwoTenthE": {
+  "value": "6.9",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.e_rate.ever"
+ },
+ "nCluTwoTenthIndep": {
+  "value": "78.6",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.independence_trailing.ever"
+ },
+ "nCluTwoTenthKupTrail": {
+  "value": "83.3",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.kupiec_trailing.ever"
+ },
+ "nCluTwoTenthLight": {
+  "value": "62.4",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.traffic_light.ever"
+ },
+ "nCluTwoTenthKupCal": {
+  "value": "13.4",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.kupiec_calibrated.ever"
+ },
+ "nCluTwoTenthKupCum": {
+  "value": "50.3",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.kupiec_cumulative.ever"
+ },
+ "nCluMedTwoTenthCluster": {
+  "value": "916",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.e_cluster.median_day"
+ },
+ "nCluMedTwoTenthIndep": {
+  "value": "480",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.independence_trailing.median_day"
+ },
+ "nCluMedTwoTenthBattery": {
+  "value": "956",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.e_battery.median_day"
+ },
+ "nCluFourTenthCluster": {
+  "value": "78.2",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.e_cluster.ever"
+ },
+ "nCluFourTenthBattery": {
+  "value": "79.8",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.e_battery.ever"
+ },
+ "nCluFourTenthE": {
+  "value": "18.6",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.e_rate.ever"
+ },
+ "nCluFourTenthIndep": {
+  "value": "91.6",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.independence_trailing.ever"
+ },
+ "nCluFourTenthKupTrail": {
+  "value": "94.9",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.kupiec_trailing.ever"
+ },
+ "nCluFourTenthLight": {
+  "value": "68.3",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.traffic_light.ever"
+ },
+ "nCluFourTenthKupCal": {
+  "value": "31.2",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.kupiec_calibrated.ever"
+ },
+ "nCluFourTenthKupCum": {
+  "value": "70.8",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.kupiec_cumulative.ever"
+ },
+ "nCluMedFourTenthCluster": {
+  "value": "502",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.e_cluster.median_day"
+ },
+ "nCluMedFourTenthIndep": {
+  "value": "303",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.independence_trailing.median_day"
+ },
+ "nCluMedFourTenthBattery": {
+  "value": "502",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.e_battery.median_day"
+ },
+ "nSeedsThreeMed": {
+  "value": "251",
+  "source": "results_x3_seeds.json:factors.x3.pooled_median"
+ },
+ "nSeedsThreeMedLo": {
+  "value": "247",
+  "source": "results_x3_seeds.json:factors.x3.pooled_median_ci[0]"
+ },
+ "nSeedsThreeMedHi": {
+  "value": "255",
+  "source": "results_x3_seeds.json:factors.x3.pooled_median_ci[1]"
+ },
+ "nSeedsThreeSeedMean": {
+  "value": "249.7",
+  "source": "results_x3_seeds.json:factors.x3.seed_median_mean"
+ },
+ "nSeedsThreeSeedSd": {
+  "value": "11.6",
+  "source": "results_x3_seeds.json:factors.x3.seed_median_sd"
+ },
+ "nSeedsThreeBelow": {
+  "value": "45",
+  "source": "results_x3_seeds.json:factors.x3.share_of_seeds_below_window"
+ },
+ "nSeedsThreeCost": {
+  "value": "12.4",
+  "source": "results_x3_seeds.json:factors.x3.pooled_power_cost"
+ },
+ "nSeedsThreeCostSe": {
+  "value": "0.19",
+  "source": "results_x3_seeds.json:factors.x3.pooled_power_cost_se"
+ },
+ "nSeedsThreeLight": {
+  "value": "250",
+  "source": "results_x3_seeds.json:factors.x3.pooled_traffic_light_median"
+ },
+ "nSeedsThreeKupiec": {
+  "value": "62.4",
+  "source": "results_x3_seeds.json:factors.x3.pooled_kupiec_power"
+ },
+ "nSeedsThreeByWindow": {
+  "value": "49.9",
+  "source": "results_x3_seeds.json:factors.x3.pooled_share_by_window"
+ },
+ "nSeedsThreeStrict": {
+  "value": "49.8",
+  "source": "results_x3_seeds.json:factors.x3.pooled_share_below_window_strict"
+ },
+ "nSeedsFourMed": {
+  "value": "128",
+  "source": "results_x3_seeds.json:factors.x4.pooled_median"
+ },
+ "nSeedsFourMedLo": {
+  "value": "126",
+  "source": "results_x3_seeds.json:factors.x4.pooled_median_ci[0]"
+ },
+ "nSeedsFourMedHi": {
+  "value": "129",
+  "source": "results_x3_seeds.json:factors.x4.pooled_median_ci[1]"
+ },
+ "nSeedsFourSeedMean": {
+  "value": "127.7",
+  "source": "results_x3_seeds.json:factors.x4.seed_median_mean"
+ },
+ "nSeedsFourSeedSd": {
+  "value": "2.7",
+  "source": "results_x3_seeds.json:factors.x4.seed_median_sd"
+ },
+ "nSeedsFourBelow": {
+  "value": "100",
+  "source": "results_x3_seeds.json:factors.x4.share_of_seeds_below_window"
+ },
+ "nSeedsFourCost": {
+  "value": "8.5",
+  "source": "results_x3_seeds.json:factors.x4.pooled_power_cost"
+ },
+ "nSeedsFourCostSe": {
+  "value": "0.15",
+  "source": "results_x3_seeds.json:factors.x4.pooled_power_cost_se"
+ },
+ "nSeedsFourLight": {
+  "value": "250",
+  "source": "results_x3_seeds.json:factors.x4.pooled_traffic_light_median"
+ },
+ "nSeedsFourKupiec": {
+  "value": "87.8",
+  "source": "results_x3_seeds.json:factors.x4.pooled_kupiec_power"
+ },
+ "nSeedsFourByWindow": {
+  "value": "79.2",
+  "source": "results_x3_seeds.json:factors.x4.pooled_share_by_window"
+ },
+ "nSeedsFourStrict": {
+  "value": "79.1",
+  "source": "results_x3_seeds.json:factors.x4.pooled_share_below_window_strict"
+ },
+ "nSeedsUpThreeMed": {
+  "value": "228",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_median"
+ },
+ "nSeedsUpThreeMedLo": {
+  "value": "225",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_median_ci[0]"
+ },
+ "nSeedsUpThreeMedHi": {
+  "value": "231",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_median_ci[1]"
+ },
+ "nSeedsUpThreeSeedMean": {
+  "value": "227.8",
+  "source": "results_x3_seeds.json:factors.x3_upper.seed_median_mean"
+ },
+ "nSeedsUpThreeSeedSd": {
+  "value": "6.7",
+  "source": "results_x3_seeds.json:factors.x3_upper.seed_median_sd"
+ },
+ "nSeedsUpThreeBelow": {
+  "value": "100",
+  "source": "results_x3_seeds.json:factors.x3_upper.share_of_seeds_below_window"
+ },
+ "nSeedsUpThreeCost": {
+  "value": "6.7",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_power_cost"
+ },
+ "nSeedsUpThreeCostSe": {
+  "value": "0.17",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_power_cost_se"
+ },
+ "nSeedsUpThreeLight": {
+  "value": "250",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_traffic_light_median"
+ },
+ "nSeedsUpThreeKupiec": {
+  "value": "62.4",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_kupiec_power"
+ },
+ "nSeedsUpThreeByWindow": {
+  "value": "55.6",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_share_by_window"
+ },
+ "nSeedsUpThreeStrict": {
+  "value": "55.3",
+  "source": "results_x3_seeds.json:factors.x3_upper.pooled_share_below_window_strict"
+ },
+ "nSeedsUpFourMed": {
+  "value": "109",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_median"
+ },
+ "nSeedsUpFourMedLo": {
+  "value": "108",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_median_ci[0]"
+ },
+ "nSeedsUpFourMedHi": {
+  "value": "110",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_median_ci[1]"
+ },
+ "nSeedsUpFourSeedMean": {
+  "value": "110.8",
+  "source": "results_x3_seeds.json:factors.x4_upper.seed_median_mean"
+ },
+ "nSeedsUpFourSeedSd": {
+  "value": "4.8",
+  "source": "results_x3_seeds.json:factors.x4_upper.seed_median_sd"
+ },
+ "nSeedsUpFourBelow": {
+  "value": "100",
+  "source": "results_x3_seeds.json:factors.x4_upper.share_of_seeds_below_window"
+ },
+ "nSeedsUpFourCost": {
+  "value": "4.6",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_power_cost"
+ },
+ "nSeedsUpFourCostSe": {
+  "value": "0.13",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_power_cost_se"
+ },
+ "nSeedsUpFourLight": {
+  "value": "250",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_traffic_light_median"
+ },
+ "nSeedsUpFourKupiec": {
+  "value": "87.8",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_kupiec_power"
+ },
+ "nSeedsUpFourByWindow": {
+  "value": "83.2",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_share_by_window"
+ },
+ "nSeedsUpFourStrict": {
+  "value": "82.9",
+  "source": "results_x3_seeds.json:factors.x4_upper.pooled_share_below_window_strict"
+ },
+ "nSeedsCount": {
+  "value": "20",
+  "source": "results_x3_seeds.json:meta.seeds"
+ },
+ "nSeedsPooledN": {
+  "value": "40,000",
+  "source": "results_x3_seeds.json:factors.x3.pooled_n"
+ },
+ "nCommittedReps": {
+  "value": "2,000",
+  "source": "data/derived/C22/other-families.json:outputs.sequential.hits.reps"
+ },
+ "nCommittedSeed": {
+  "value": "42",
+  "source": "data/derived/C22/other-families.json:outputs.sequential.seed"
+ },
+ "nCommittedNullE": {
+  "value": "1.8",
+  "source": "data/derived/C22/other-families.json:...null.e_rate.ever"
+ },
+ "nCommittedMedThree": {
+  "value": "244",
+  "source": "data/derived/C22/other-families.json:...rate-x3.e_rate.median_day"
+ },
+ "nCommittedMedFour": {
+  "value": "129",
+  "source": "data/derived/C22/other-families.json:...rate-x4.e_rate.median_day"
+ },
+ "nCommittedCostThree": {
+  "value": "11.9",
+  "source": "derived: kupiec_one_shot_power - e_rate.by, rate-x3, committed document"
+ },
+ "nCommittedCostFour": {
+  "value": "8.9",
+  "source": "derived: kupiec_one_shot_power - e_rate.by, rate-x4, committed document"
+ },
+ "nHorizonDays": {
+  "value": "5,000",
+  "source": "results_size_horizon.json:days[-1]"
+ },
+ "nHorizonReps": {
+  "value": "2,000",
+  "source": "results_size_horizon.json:meta.reps"
+ },
+ "nHorizonEndE": {
+  "value": "3.4",
+  "source": "results_size_horizon.json:curves.e_rate.share[-1]"
+ },
+ "nHorizonThousandE": {
+  "value": "2.0",
+  "source": "results_size_horizon.json:curves.e_rate.share[day 1000]"
+ },
+ "nHorizonWindowE": {
+  "value": "1.1",
+  "source": "results_size_horizon.json:curves.e_rate.share[day 250]"
+ },
+ "nHorizonEndWwz": {
+  "value": "1.1",
+  "source": "results_size_horizon.json:curves.e_wwz.share[-1]"
+ },
+ "nHorizonThousandWwz": {
+  "value": "0.5",
+  "source": "results_size_horizon.json:curves.e_wwz.share[day 1000]"
+ },
+ "nHorizonWindowWwz": {
+  "value": "0.1",
+  "source": "results_size_horizon.json:curves.e_wwz.share[day 250]"
+ },
+ "nHorizonEndBeta": {
+  "value": "1.5",
+  "source": "results_size_horizon.json:curves.e_beta.share[-1]"
+ },
+ "nHorizonThousandBeta": {
+  "value": "1.5",
+  "source": "results_size_horizon.json:curves.e_beta.share[day 1000]"
+ },
+ "nHorizonWindowBeta": {
+  "value": "1.4",
+  "source": "results_size_horizon.json:curves.e_beta.share[day 250]"
+ },
+ "nHorizonEndKupCum": {
+  "value": "45.2",
+  "source": "results_size_horizon.json:curves.kupiec_cumulative.share[-1]"
+ },
+ "nHorizonThousandKupCum": {
+  "value": "33.8",
+  "source": "results_size_horizon.json:curves.kupiec_cumulative.share[day 1000]"
+ },
+ "nHorizonWindowKupCum": {
+  "value": "24.8",
+  "source": "results_size_horizon.json:curves.kupiec_cumulative.share[day 250]"
+ },
+ "nHorizonEndKupTrail": {
+  "value": "99.8",
+  "source": "results_size_horizon.json:curves.kupiec_trailing.share[-1]"
+ },
+ "nHorizonThousandKupTrail": {
+  "value": "66.8",
+  "source": "results_size_horizon.json:curves.kupiec_trailing.share[day 1000]"
+ },
+ "nHorizonWindowKupTrail": {
+  "value": "9.9",
+  "source": "results_size_horizon.json:curves.kupiec_trailing.share[day 250]"
+ },
+ "nHorizonEndLight": {
+  "value": "99.5",
+  "source": "results_size_horizon.json:curves.traffic_light.share[-1]"
+ },
+ "nHorizonThousandLight": {
+  "value": "57.5",
+  "source": "results_size_horizon.json:curves.traffic_light.share[day 1000]"
+ },
+ "nHorizonWindowLight": {
+  "value": "10.2",
+  "source": "results_size_horizon.json:curves.traffic_light.share[day 250]"
+ },
+ "nHorizonEndKupCal": {
+  "value": "8.8",
+  "source": "results_size_horizon.json:curves.kupiec_calibrated.share[-1]"
+ },
+ "nHorizonThousandKupCal": {
+  "value": "5.3",
+  "source": "results_size_horizon.json:curves.kupiec_calibrated.share[day 1000]"
+ },
+ "nHorizonWindowKupCal": {
+  "value": "1.2",
+  "source": "results_size_horizon.json:curves.kupiec_calibrated.share[day 250]"
+ },
+ "nHorizonEndCusum": {
+  "value": "25.9",
+  "source": "results_size_horizon.json:curves.cusum_calibrated.share[-1]"
+ },
+ "nHorizonThousandCusum": {
+  "value": "4.9",
+  "source": "results_size_horizon.json:curves.cusum_calibrated.share[day 1000]"
+ },
+ "nHorizonWindowCusum": {
+  "value": "0.7",
+  "source": "results_size_horizon.json:curves.cusum_calibrated.share[day 250]"
+ },
+ "nExactKupSize": {
+  "value": "9.5",
+  "source": "results_theory.json:size_matched_power.kupiec_size"
+ },
+ "nExactKupUpperSize": {
+  "value": "1.37",
+  "source": "results_theory.json:size_matched_power.kupiec_upper_size"
+ },
+ "nExactKupMinCount": {
+  "value": "7",
+  "source": "results_theory.json:size_matched_power.kupiec_smallest_rejecting_count"
+ },
+ "nExactESize": {
+  "value": "1.15",
+  "source": "results_theory.json:size_matched_power.e_process_size_by_window"
+ },
+ "nExactOneFiveKup": {
+  "value": "10.8",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.kupiec_power"
+ },
+ "nExactOneFiveKupUp": {
+  "value": "8.5",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.kupiec_upper_power"
+ },
+ "nExactOneFiveNpE": {
+  "value": "7.4",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.np_power_at_e_process_size"
+ },
+ "nExactOneFiveNpKup": {
+  "value": "29.3",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.np_power_at_kupiec_size"
+ },
+ "nExactOneFiveNpFive": {
+  "value": "19.5",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.np_power_at_five_percent"
+ },
+ "nExactTwoKup": {
+  "value": "24.3",
+  "source": "results_theory.json:size_matched_power.factors.x2.kupiec_power"
+ },
+ "nExactTwoKupUp": {
+  "value": "23.6",
+  "source": "results_theory.json:size_matched_power.factors.x2.kupiec_upper_power"
+ },
+ "nExactTwoNpE": {
+  "value": "21.2",
+  "source": "results_theory.json:size_matched_power.factors.x2.np_power_at_e_process_size"
+ },
+ "nExactTwoNpKup": {
+  "value": "52.7",
+  "source": "results_theory.json:size_matched_power.factors.x2.np_power_at_kupiec_size"
+ },
+ "nExactTwoNpFive": {
+  "value": "40.7",
+  "source": "results_theory.json:size_matched_power.factors.x2.np_power_at_five_percent"
+ },
+ "nExactThreeKup": {
+  "value": "62.5",
+  "source": "results_theory.json:size_matched_power.factors.x3.kupiec_power"
+ },
+ "nExactThreeKupUp": {
+  "value": "62.5",
+  "source": "results_theory.json:size_matched_power.factors.x3.kupiec_upper_power"
+ },
+ "nExactThreeNpE": {
+  "value": "59.1",
+  "source": "results_theory.json:size_matched_power.factors.x3.np_power_at_e_process_size"
+ },
+ "nExactThreeNpKup": {
+  "value": "85.0",
+  "source": "results_theory.json:size_matched_power.factors.x3.np_power_at_kupiec_size"
+ },
+ "nExactThreeNpFive": {
+  "value": "77.7",
+  "source": "results_theory.json:size_matched_power.factors.x3.np_power_at_five_percent"
+ },
+ "nExactFourKup": {
+  "value": "87.5",
+  "source": "results_theory.json:size_matched_power.factors.x4.kupiec_power"
+ },
+ "nExactFourKupUp": {
+  "value": "87.5",
+  "source": "results_theory.json:size_matched_power.factors.x4.kupiec_upper_power"
+ },
+ "nExactFourNpE": {
+  "value": "85.5",
+  "source": "results_theory.json:size_matched_power.factors.x4.np_power_at_e_process_size"
+ },
+ "nExactFourNpKup": {
+  "value": "96.6",
+  "source": "results_theory.json:size_matched_power.factors.x4.np_power_at_kupiec_size"
+ },
+ "nExactFourNpFive": {
+  "value": "94.2",
+  "source": "results_theory.json:size_matched_power.factors.x4.np_power_at_five_percent"
+ },
+ "nExactSixKup": {
+  "value": "99.4",
+  "source": "results_theory.json:size_matched_power.factors.x6.kupiec_power"
+ },
+ "nExactSixKupUp": {
+  "value": "99.4",
+  "source": "results_theory.json:size_matched_power.factors.x6.kupiec_upper_power"
+ },
+ "nExactSixNpE": {
+  "value": "99.2",
+  "source": "results_theory.json:size_matched_power.factors.x6.np_power_at_e_process_size"
+ },
+ "nExactSixNpKup": {
+  "value": "99.9",
+  "source": "results_theory.json:size_matched_power.factors.x6.np_power_at_kupiec_size"
+ },
+ "nExactSixNpFive": {
+  "value": "99.8",
+  "source": "results_theory.json:size_matched_power.factors.x6.np_power_at_five_percent"
+ },
+ "nEnumWorst": {
+  "value": "2.9\\times 10^{-14}",
+  "source": "results_theory.json:null_expectation.processes.*.max_abs_departure_from_one"
+ },
+ "nEnumSequences": {
+  "value": "4,096",
+  "source": "results_theory.json:null_expectation.sequences"
+ },
+ "nProductMax": {
+  "value": "494",
+  "source": "results_theory.json:product_counterexample.hits_rate_times_cluster.max_expectation"
+ },
+ "nProductPdProduct": {
+  "value": "2.65",
+  "source": "results_theory.json:product_counterexample.pd_two_identical_grades.expectation_product"
+ },
+ "nProductPdAverage": {
+  "value": "1.00",
+  "source": "results_theory.json:product_counterexample.pd_two_identical_grades.expectation_average"
+ },
+ "nKlOneFive": {
+  "value": "1.09",
+  "source": "results_theory.json:kl.rows[factor=1.5].kl_vs_null (x1000)"
+ },
+ "nKlSprtOneFive": {
+  "value": "2737",
+  "source": "results_theory.json:kl.rows[factor=1.5].sprt_time"
+ },
+ "nKlMixOneFive": {
+  "value": "4636",
+  "source": "results_theory.json:kl.rows[factor=1.5].mixture_time_bound"
+ },
+ "nKlTwo": {
+  "value": "3.91",
+  "source": "results_theory.json:kl.rows[factor=2.0].kl_vs_null (x1000)"
+ },
+ "nKlSprtTwo": {
+  "value": "765",
+  "source": "results_theory.json:kl.rows[factor=2.0].sprt_time"
+ },
+ "nKlMixTwo": {
+  "value": "1297",
+  "source": "results_theory.json:kl.rows[factor=2.0].mixture_time_bound"
+ },
+ "nKlThree": {
+  "value": "13.16",
+  "source": "results_theory.json:kl.rows[factor=3.0].kl_vs_null (x1000)"
+ },
+ "nKlSprtThree": {
+  "value": "228",
+  "source": "results_theory.json:kl.rows[factor=3.0].sprt_time"
+ },
+ "nKlMixThree": {
+  "value": "386",
+  "source": "results_theory.json:kl.rows[factor=3.0].mixture_time_bound"
+ },
+ "nKlFour": {
+  "value": "25.91",
+  "source": "results_theory.json:kl.rows[factor=4.0].kl_vs_null (x1000)"
+ },
+ "nKlSprtFour": {
+  "value": "116",
+  "source": "results_theory.json:kl.rows[factor=4.0].sprt_time"
+ },
+ "nKlMixFour": {
+  "value": "196",
+  "source": "results_theory.json:kl.rows[factor=4.0].mixture_time_bound"
+ },
+ "nKlSix": {
+  "value": "58.79",
+  "source": "results_theory.json:kl.rows[factor=6.0].kl_vs_null (x1000)"
+ },
+ "nKlSprtSix": {
+  "value": "51",
+  "source": "results_theory.json:kl.rows[factor=6.0].sprt_time"
+ },
+ "nKlMixSix": {
+  "value": "86",
+  "source": "results_theory.json:kl.rows[factor=6.0].mixture_time_bound"
+ },
+ "nKlTen": {
+  "value": "144.48",
+  "source": "results_theory.json:kl.rows[factor=10.0].kl_vs_null (x1000)"
+ },
+ "nKlSprtTen": {
+  "value": "21",
+  "source": "results_theory.json:kl.rows[factor=10.0].sprt_time"
+ },
+ "nKlMixTen": {
+  "value": "35",
+  "source": "results_theory.json:kl.rows[factor=10.0].mixture_time_bound"
+ },
+ "nSingleQuietCost": {
+  "value": "0.02",
+  "source": "derived: -ln((1 - 3 alpha) / (1 - alpha)) at alpha = 0.01"
+ },
+ "nSingleHitGain": {
+  "value": "1.1",
+  "source": "derived: ln 3"
+ },
+ "nSingleHitsNeeded": {
+  "value": "8",
+  "source": "derived: least k with k ln 3 - (250 - k) quiet >= ln 20"
+ },
+ "nLogTwenty": {
+  "value": "3.00",
+  "source": "derived: ln 20"
+ },
+ "nLogEight": {
+  "value": "2.08",
+  "source": "derived: ln 8"
+ },
+ "nAbNullFull": {
+  "value": "2.2",
+  "source": "results_ablation.json:hits_grid.null.full.ever"
+ },
+ "nAbByTwoFull": {
+  "value": "17.2",
+  "source": "results_ablation.json:hits_grid.rate-x2.full.by"
+ },
+ "nAbMedTwoFull": {
+  "value": "906",
+  "source": "results_ablation.json:hits_grid.rate-x2.full.median_day"
+ },
+ "nAbEverTwoFull": {
+  "value": "55.8",
+  "source": "results_ablation.json:hits_grid.rate-x2.full.ever"
+ },
+ "nAbByThreeFull": {
+  "value": "52.3",
+  "source": "results_ablation.json:hits_grid.rate-x3.full.by"
+ },
+ "nAbMedThreeFull": {
+  "value": "232",
+  "source": "results_ablation.json:hits_grid.rate-x3.full.median_day"
+ },
+ "nAbEverThreeFull": {
+  "value": "98.3",
+  "source": "results_ablation.json:hits_grid.rate-x3.full.ever"
+ },
+ "nAbByFourFull": {
+  "value": "77.8",
+  "source": "results_ablation.json:hits_grid.rate-x4.full.by"
+ },
+ "nAbMedFourFull": {
+  "value": "128",
+  "source": "results_ablation.json:hits_grid.rate-x4.full.median_day"
+ },
+ "nAbEverFourFull": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.full.ever"
+ },
+ "nAbBySixFull": {
+  "value": "98.3",
+  "source": "results_ablation.json:hits_grid.rate-x6.full.by"
+ },
+ "nAbMedSixFull": {
+  "value": "58",
+  "source": "results_ablation.json:hits_grid.rate-x6.full.median_day"
+ },
+ "nAbEverSixFull": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.full.ever"
+ },
+ "nAbNullUpper": {
+  "value": "2.4",
+  "source": "results_ablation.json:hits_grid.null.upper.ever"
+ },
+ "nAbByTwoUpper": {
+  "value": "20.8",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper.by"
+ },
+ "nAbMedTwoUpper": {
+  "value": "802",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper.median_day"
+ },
+ "nAbEverTwoUpper": {
+  "value": "59.2",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper.ever"
+ },
+ "nAbByThreeUpper": {
+  "value": "57.1",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper.by"
+ },
+ "nAbMedThreeUpper": {
+  "value": "215",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper.median_day"
+ },
+ "nAbEverThreeUpper": {
+  "value": "98.5",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper.ever"
+ },
+ "nAbByFourUpper": {
+  "value": "82.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper.by"
+ },
+ "nAbMedFourUpper": {
+  "value": "108",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper.median_day"
+ },
+ "nAbEverFourUpper": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper.ever"
+ },
+ "nAbBySixUpper": {
+  "value": "99.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper.by"
+ },
+ "nAbMedSixUpper": {
+  "value": "56",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper.median_day"
+ },
+ "nAbEverSixUpper": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper.ever"
+ },
+ "nAbNullUpperLow": {
+  "value": "2.6",
+  "source": "results_ablation.json:hits_grid.null.upper-low.ever"
+ },
+ "nAbByTwoUpperLow": {
+  "value": "21.1",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-low.by"
+ },
+ "nAbMedTwoUpperLow": {
+  "value": "703",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-low.median_day"
+ },
+ "nAbEverTwoUpperLow": {
+  "value": "64.4",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-low.ever"
+ },
+ "nAbByThreeUpperLow": {
+  "value": "57.4",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-low.by"
+ },
+ "nAbMedThreeUpperLow": {
+  "value": "207",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-low.median_day"
+ },
+ "nAbEverThreeUpperLow": {
+  "value": "99.1",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-low.ever"
+ },
+ "nAbByFourUpperLow": {
+  "value": "82.5",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-low.by"
+ },
+ "nAbMedFourUpperLow": {
+  "value": "120",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-low.median_day"
+ },
+ "nAbEverFourUpperLow": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-low.ever"
+ },
+ "nAbBySixUpperLow": {
+  "value": "99.1",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-low.by"
+ },
+ "nAbMedSixUpperLow": {
+  "value": "60",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-low.median_day"
+ },
+ "nAbEverSixUpperLow": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-low.ever"
+ },
+ "nAbNullUpperHigh": {
+  "value": "3.0",
+  "source": "results_ablation.json:hits_grid.null.upper-high.ever"
+ },
+ "nAbByTwoUpperHigh": {
+  "value": "23.6",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-high.by"
+ },
+ "nAbMedTwoUpperHigh": {
+  "value": "882",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-high.median_day"
+ },
+ "nAbEverTwoUpperHigh": {
+  "value": "53.4",
+  "source": "results_ablation.json:hits_grid.rate-x2.upper-high.ever"
+ },
+ "nAbByThreeUpperHigh": {
+  "value": "59.3",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-high.by"
+ },
+ "nAbMedThreeUpperHigh": {
+  "value": "191",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-high.median_day"
+ },
+ "nAbEverThreeUpperHigh": {
+  "value": "97.7",
+  "source": "results_ablation.json:hits_grid.rate-x3.upper-high.ever"
+ },
+ "nAbByFourUpperHigh": {
+  "value": "83.1",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-high.by"
+ },
+ "nAbMedFourUpperHigh": {
+  "value": "104",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-high.median_day"
+ },
+ "nAbEverFourUpperHigh": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.upper-high.ever"
+ },
+ "nAbBySixUpperHigh": {
+  "value": "99.2",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-high.by"
+ },
+ "nAbMedSixUpperHigh": {
+  "value": "50",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-high.median_day"
+ },
+ "nAbEverSixUpperHigh": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.upper-high.ever"
+ },
+ "nAbNullSingleOneFive": {
+  "value": "0.9",
+  "source": "results_ablation.json:hits_grid.null.single-1.5.ever"
+ },
+ "nAbByTwoSingleOneFive": {
+  "value": "2.1",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-1.5.by"
+ },
+ "nAbMedTwoSingleOneFive": {
+  "value": "882",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-1.5.median_day"
+ },
+ "nAbEverTwoSingleOneFive": {
+  "value": "59.5",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-1.5.ever"
+ },
+ "nAbByThreeSingleOneFive": {
+  "value": "18.2",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-1.5.by"
+ },
+ "nAbMedThreeSingleOneFive": {
+  "value": "381",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-1.5.median_day"
+ },
+ "nAbEverThreeSingleOneFive": {
+  "value": "98.9",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-1.5.ever"
+ },
+ "nAbByFourSingleOneFive": {
+  "value": "46.6",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-1.5.by"
+ },
+ "nAbMedFourSingleOneFive": {
+  "value": "261",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-1.5.median_day"
+ },
+ "nAbEverFourSingleOneFive": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-1.5.ever"
+ },
+ "nAbBySixSingleOneFive": {
+  "value": "90.5",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-1.5.by"
+ },
+ "nAbMedSixSingleOneFive": {
+  "value": "154",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-1.5.median_day"
+ },
+ "nAbEverSixSingleOneFive": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-1.5.ever"
+ },
+ "nAbNullSingleTwo": {
+  "value": "2.9",
+  "source": "results_ablation.json:hits_grid.null.single-2.ever"
+ },
+ "nAbByTwoSingleTwo": {
+  "value": "15.4",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-2.by"
+ },
+ "nAbMedTwoSingleTwo": {
+  "value": "599",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-2.median_day"
+ },
+ "nAbEverTwoSingleTwo": {
+  "value": "72.5",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-2.ever"
+ },
+ "nAbByThreeSingleTwo": {
+  "value": "51.9",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-2.by"
+ },
+ "nAbMedThreeSingleTwo": {
+  "value": "245",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-2.median_day"
+ },
+ "nAbEverThreeSingleTwo": {
+  "value": "99.4",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-2.ever"
+ },
+ "nAbByFourSingleTwo": {
+  "value": "78.7",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-2.by"
+ },
+ "nAbMedFourSingleTwo": {
+  "value": "162",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-2.median_day"
+ },
+ "nAbEverFourSingleTwo": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-2.ever"
+ },
+ "nAbBySixSingleTwo": {
+  "value": "98.5",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-2.by"
+ },
+ "nAbMedSixSingleTwo": {
+  "value": "95",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-2.median_day"
+ },
+ "nAbEverSixSingleTwo": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-2.ever"
+ },
+ "nAbNullSingleThree": {
+  "value": "3.3",
+  "source": "results_ablation.json:hits_grid.null.single-3.ever"
+ },
+ "nAbByTwoSingleThree": {
+  "value": "26.5",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-3.by"
+ },
+ "nAbMedTwoSingleThree": {
+  "value": "602",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-3.median_day"
+ },
+ "nAbEverTwoSingleThree": {
+  "value": "63.3",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-3.ever"
+ },
+ "nAbByThreeSingleThree": {
+  "value": "64.0",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-3.by"
+ },
+ "nAbMedThreeSingleThree": {
+  "value": "175",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-3.median_day"
+ },
+ "nAbEverThreeSingleThree": {
+  "value": "98.7",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-3.ever"
+ },
+ "nAbByFourSingleThree": {
+  "value": "86.4",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-3.by"
+ },
+ "nAbMedFourSingleThree": {
+  "value": "110",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-3.median_day"
+ },
+ "nAbEverFourSingleThree": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-3.ever"
+ },
+ "nAbBySixSingleThree": {
+  "value": "99.5",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-3.by"
+ },
+ "nAbMedSixSingleThree": {
+  "value": "60",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-3.median_day"
+ },
+ "nAbEverSixSingleThree": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-3.ever"
+ },
+ "nAbNullSingleFour": {
+  "value": "3.0",
+  "source": "results_ablation.json:hits_grid.null.single-4.ever"
+ },
+ "nAbByTwoSingleFour": {
+  "value": "25.8",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-4.by"
+ },
+ "nAbMedTwoSingleFour": {
+  "value": "beyond the horizon",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-4.median_day"
+ },
+ "nAbEverTwoSingleFour": {
+  "value": "48.1",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-4.ever"
+ },
+ "nAbByThreeSingleFour": {
+  "value": "63.0",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-4.by"
+ },
+ "nAbMedThreeSingleFour": {
+  "value": "167",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-4.median_day"
+ },
+ "nAbEverThreeSingleFour": {
+  "value": "95.9",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-4.ever"
+ },
+ "nAbByFourSingleFour": {
+  "value": "85.2",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-4.by"
+ },
+ "nAbMedFourSingleFour": {
+  "value": "99",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-4.median_day"
+ },
+ "nAbEverFourSingleFour": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-4.ever"
+ },
+ "nAbBySixSingleFour": {
+  "value": "99.4",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-4.by"
+ },
+ "nAbMedSixSingleFour": {
+  "value": "55",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-4.median_day"
+ },
+ "nAbEverSixSingleFour": {
+  "value": "100.0",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-4.ever"
+ },
+ "nAbNullSingleTen": {
+  "value": "2.0",
+  "source": "results_ablation.json:hits_grid.null.single-10.ever"
+ },
+ "nAbByTwoSingleTen": {
+  "value": "14.2",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-10.by"
+ },
+ "nAbMedTwoSingleTen": {
+  "value": "beyond the horizon",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-10.median_day"
+ },
+ "nAbEverTwoSingleTen": {
+  "value": "14.4",
+  "source": "results_ablation.json:hits_grid.rate-x2.single-10.ever"
+ },
+ "nAbByThreeSingleTen": {
+  "value": "38.5",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-10.by"
+ },
+ "nAbMedThreeSingleTen": {
+  "value": "beyond the horizon",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-10.median_day"
+ },
+ "nAbEverThreeSingleTen": {
+  "value": "44.3",
+  "source": "results_ablation.json:hits_grid.rate-x3.single-10.ever"
+ },
+ "nAbByFourSingleTen": {
+  "value": "63.9",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-10.by"
+ },
+ "nAbMedFourSingleTen": {
+  "value": "117",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-10.median_day"
+ },
+ "nAbEverFourSingleTen": {
+  "value": "81.8",
+  "source": "results_ablation.json:hits_grid.rate-x4.single-10.ever"
+ },
+ "nAbBySixSingleTen": {
+  "value": "94.3",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-10.by"
+ },
+ "nAbMedSixSingleTen": {
+  "value": "42",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-10.median_day"
+ },
+ "nAbEverSixSingleTen": {
+  "value": "99.8",
+  "source": "results_ablation.json:hits_grid.rate-x6.single-10.ever"
+ },
+ "nAbBatNullRate": {
+  "value": "1.8",
+  "source": "results_ablation.json:hits_battery.null.rate.ever"
+ },
+ "nAbBatThreeRate": {
+  "value": "97.5",
+  "source": "results_ablation.json:hits_battery.rate-x3.rate.ever"
+ },
+ "nAbBatClTwoRate": {
+  "value": "7.5",
+  "source": "results_ablation.json:hits_battery.cluster-0.2.rate.ever"
+ },
+ "nAbBatClFourRate": {
+  "value": "18.1",
+  "source": "results_ablation.json:hits_battery.cluster-0.4.rate.ever"
+ },
+ "nAbBatNullCluster": {
+  "value": "0.4",
+  "source": "results_ablation.json:hits_battery.null.cluster.ever"
+ },
+ "nAbBatThreeCluster": {
+  "value": "8.6",
+  "source": "results_ablation.json:hits_battery.rate-x3.cluster.ever"
+ },
+ "nAbBatClTwoCluster": {
+  "value": "53.3",
+  "source": "results_ablation.json:hits_battery.cluster-0.2.cluster.ever"
+ },
+ "nAbBatClFourCluster": {
+  "value": "77.2",
+  "source": "results_ablation.json:hits_battery.cluster-0.4.cluster.ever"
+ },
+ "nAbBatNullAverage": {
+  "value": "1.2",
+  "source": "results_ablation.json:hits_battery.null.average.ever"
+ },
+ "nAbBatThreeAverage": {
+  "value": "96.4",
+  "source": "results_ablation.json:hits_battery.rate-x3.average.ever"
+ },
+ "nAbBatClTwoAverage": {
+  "value": "51.6",
+  "source": "results_ablation.json:hits_battery.cluster-0.2.average.ever"
+ },
+ "nAbBatClFourAverage": {
+  "value": "78.8",
+  "source": "results_ablation.json:hits_battery.cluster-0.4.average.ever"
+ },
+ "nAbBatNullUnion": {
+  "value": "1.2",
+  "source": "results_ablation.json:hits_battery.null.union.ever"
+ },
+ "nAbBatThreeUnion": {
+  "value": "96.4",
+  "source": "results_ablation.json:hits_battery.rate-x3.union.ever"
+ },
+ "nAbBatClTwoUnion": {
+  "value": "51.6",
+  "source": "results_ablation.json:hits_battery.cluster-0.2.union.ever"
+ },
+ "nAbBatClFourUnion": {
+  "value": "78.8",
+  "source": "results_ablation.json:hits_battery.cluster-0.4.union.ever"
+ },
+ "nAbBatNullProduct": {
+  "value": "2.5",
+  "source": "results_ablation.json:hits_battery.null.product.ever"
+ },
+ "nAbBatThreeProduct": {
+  "value": "95.5",
+  "source": "results_ablation.json:hits_battery.rate-x3.product.ever"
+ },
+ "nAbBatClTwoProduct": {
+  "value": "48.8",
+  "source": "results_ablation.json:hits_battery.cluster-0.2.product.ever"
+ },
+ "nAbBatClFourProduct": {
+  "value": "79.0",
+  "source": "results_ablation.json:hits_battery.cluster-0.4.product.ever"
+ },
+ "nPdOneProd": {
+  "value": "0.0",
+  "source": "results_ablation.json:pd_combine.all-x1.product.ever"
+ },
+ "nPdOneProdUp": {
+  "value": "0.0",
+  "source": "results_ablation.json:pd_combine.all-x1.product-upper.ever"
+ },
+ "nPdOneAvg": {
+  "value": "0.4",
+  "source": "results_ablation.json:pd_combine.all-x1.average.ever"
+ },
+ "nPdOneAvgUp": {
+  "value": "0.2",
+  "source": "results_ablation.json:pd_combine.all-x1.average-upper.ever"
+ },
+ "nPdOneCoarse": {
+  "value": "0.7",
+  "source": "results_ablation.json:pd_combine.all-x1.average-upper-coarse.ever"
+ },
+ "nPdOneSingle": {
+  "value": "0.9",
+  "source": "results_ablation.json:pd_combine.all-x1.average-upper-single-1.25.ever"
+ },
+ "nPdOneChiOne": {
+  "value": "4.4",
+  "source": "results_ablation.json:pd_combine.all-x1.chi2-one-shot-year-10.ever"
+ },
+ "nPdOneChiEvery": {
+  "value": "20.8",
+  "source": "results_ablation.json:pd_combine.all-x1.chi2-every-year.ever"
+ },
+ "nPdOneZeroFiveProd": {
+  "value": "0.0",
+  "source": "results_ablation.json:pd_combine.all-x1.05.product.ever"
+ },
+ "nPdOneZeroFiveProdUp": {
+  "value": "0.0",
+  "source": "results_ablation.json:pd_combine.all-x1.05.product-upper.ever"
+ },
+ "nPdOneZeroFiveAvg": {
+  "value": "2.9",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average.ever"
+ },
+ "nPdOneZeroFiveAvgUp": {
+  "value": "4.7",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average-upper.ever"
+ },
+ "nPdOneZeroFiveCoarse": {
+  "value": "19.9",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average-upper-coarse.ever"
+ },
+ "nPdOneZeroFiveSingle": {
+  "value": "9.7",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average-upper-single-1.25.ever"
+ },
+ "nPdOneZeroFiveChiOne": {
+  "value": "66.0",
+  "source": "results_ablation.json:pd_combine.all-x1.05.chi2-one-shot-year-10.ever"
+ },
+ "nPdOneZeroFiveChiEvery": {
+  "value": "78.7",
+  "source": "results_ablation.json:pd_combine.all-x1.05.chi2-every-year.ever"
+ },
+ "nPdOneOneProd": {
+  "value": "26.7",
+  "source": "results_ablation.json:pd_combine.all-x1.1.product.ever"
+ },
+ "nPdOneOneProdUp": {
+  "value": "28.4",
+  "source": "results_ablation.json:pd_combine.all-x1.1.product-upper.ever"
+ },
+ "nPdOneOneAvg": {
+  "value": "55.9",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average.ever"
+ },
+ "nPdOneOneAvgUp": {
+  "value": "60.0",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average-upper.ever"
+ },
+ "nPdOneOneCoarse": {
+  "value": "94.5",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average-upper-coarse.ever"
+ },
+ "nPdOneOneSingle": {
+  "value": "60.0",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average-upper-single-1.25.ever"
+ },
+ "nPdOneOneChiOne": {
+  "value": "99.8",
+  "source": "results_ablation.json:pd_combine.all-x1.1.chi2-one-shot-year-10.ever"
+ },
+ "nPdOneOneChiEvery": {
+  "value": "99.8",
+  "source": "results_ablation.json:pd_combine.all-x1.1.chi2-every-year.ever"
+ },
+ "nPdOneTwoFiveProd": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.product.ever"
+ },
+ "nPdOneTwoFiveProdUp": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.product-upper.ever"
+ },
+ "nPdOneTwoFiveAvg": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average.ever"
+ },
+ "nPdOneTwoFiveAvgUp": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average-upper.ever"
+ },
+ "nPdOneTwoFiveCoarse": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average-upper-coarse.ever"
+ },
+ "nPdOneTwoFiveSingle": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average-upper-single-1.25.ever"
+ },
+ "nPdOneTwoFiveChiOne": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.chi2-one-shot-year-10.ever"
+ },
+ "nPdOneTwoFiveChiEvery": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.all-x1.25.chi2-every-year.ever"
+ },
+ "nPdGradeProd": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.product.ever"
+ },
+ "nPdGradeProdUp": {
+  "value": "99.9",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.product-upper.ever"
+ },
+ "nPdGradeAvg": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average.ever"
+ },
+ "nPdGradeAvgUp": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average-upper.ever"
+ },
+ "nPdGradeCoarse": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average-upper-coarse.ever"
+ },
+ "nPdGradeSingle": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average-upper-single-1.25.ever"
+ },
+ "nPdGradeChiOne": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.chi2-one-shot-year-10.ever"
+ },
+ "nPdGradeChiEvery": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.chi2-every-year.ever"
+ },
+ "nPdReps": {
+  "value": "1,000",
+  "source": "results_ablation.json:meta.pd_reps"
+ },
+ "nPdMedYearOneOne": {
+  "value": "5",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average-upper.median_year_among_detected"
+ },
+ "nPdMedYearOneTwoFive": {
+  "value": "1",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average-upper.median_year_among_detected"
+ },
+ "nRhoZeroProd": {
+  "value": "0.0",
+  "source": "results_pd_correlation.json:rows[rho=0.0].e_product.ever"
+ },
+ "nRhoZeroAvg": {
+  "value": "0.6",
+  "source": "results_pd_correlation.json:rows[rho=0.0].e_average.ever"
+ },
+ "nRhoZeroAvgUp": {
+  "value": "0.2",
+  "source": "results_pd_correlation.json:rows[rho=0.0].e_average_upper.ever"
+ },
+ "nRhoZeroChiOne": {
+  "value": "4.2",
+  "source": "results_pd_correlation.json:rows[rho=0.0].chi2_one_shot_year_10.ever"
+ },
+ "nRhoZeroChiEvery": {
+  "value": "20.8",
+  "source": "results_pd_correlation.json:rows[rho=0.0].chi2_every_year.ever"
+ },
+ "nRhoZeroThreeProd": {
+  "value": "88.5",
+  "source": "results_pd_correlation.json:rows[rho=0.03].e_product.ever"
+ },
+ "nRhoZeroThreeAvg": {
+  "value": "91.0",
+  "source": "results_pd_correlation.json:rows[rho=0.03].e_average.ever"
+ },
+ "nRhoZeroThreeAvgUp": {
+  "value": "49.9",
+  "source": "results_pd_correlation.json:rows[rho=0.03].e_average_upper.ever"
+ },
+ "nRhoZeroThreeChiOne": {
+  "value": "73.0",
+  "source": "results_pd_correlation.json:rows[rho=0.03].chi2_one_shot_year_10.ever"
+ },
+ "nRhoZeroThreeChiEvery": {
+  "value": "99.9",
+  "source": "results_pd_correlation.json:rows[rho=0.03].chi2_every_year.ever"
+ },
+ "nRhoOneTwoProd": {
+  "value": "99.9",
+  "source": "results_pd_correlation.json:rows[rho=0.12].e_product.ever"
+ },
+ "nRhoOneTwoAvg": {
+  "value": "100.0",
+  "source": "results_pd_correlation.json:rows[rho=0.12].e_average.ever"
+ },
+ "nRhoOneTwoAvgUp": {
+  "value": "62.3",
+  "source": "results_pd_correlation.json:rows[rho=0.12].e_average_upper.ever"
+ },
+ "nRhoOneTwoChiOne": {
+  "value": "89.1",
+  "source": "results_pd_correlation.json:rows[rho=0.12].chi2_one_shot_year_10.ever"
+ },
+ "nRhoOneTwoChiEvery": {
+  "value": "100.0",
+  "source": "results_pd_correlation.json:rows[rho=0.12].chi2_every_year.ever"
+ },
+ "nRhoTwoFourProd": {
+  "value": "100.0",
+  "source": "results_pd_correlation.json:rows[rho=0.24].e_product.ever"
+ },
+ "nRhoTwoFourAvg": {
+  "value": "100.0",
+  "source": "results_pd_correlation.json:rows[rho=0.24].e_average.ever"
+ },
+ "nRhoTwoFourAvgUp": {
+  "value": "65.1",
+  "source": "results_pd_correlation.json:rows[rho=0.24].e_average_upper.ever"
+ },
+ "nRhoTwoFourChiOne": {
+  "value": "95.4",
+  "source": "results_pd_correlation.json:rows[rho=0.24].chi2_one_shot_year_10.ever"
+ },
+ "nRhoTwoFourChiEvery": {
+  "value": "100.0",
+  "source": "results_pd_correlation.json:rows[rho=0.24].chi2_every_year.ever"
+ },
+ "nRhoReps": {
+  "value": "2,000",
+  "source": "results_pd_correlation.json:meta.reps"
+ },
+ "nCElevenDaysCalm": {
+  "value": "750",
+  "source": "results_c11.json:windows.calm-2004-06.n_days"
+ },
+ "nCElevenCalmNinetyEFlag": {
+  "value": "2",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenCalmNinetyEMed": {
+  "value": "352",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenCalmNinetyEFirst": {
+  "value": "54",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenCalmNinetyEUpFlag": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenCalmNinetyEUpMed": {
+  "value": "54",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenCalmNinetyEUpFirst": {
+  "value": "54",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenCalmNinetyWwzFlag": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenCalmNinetyWwzMed": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenCalmNinetyWwzFirst": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenCalmNinetyKupEndFlag": {
+  "value": "3",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenCalmNinetyKupEndMed": {
+  "value": "750",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenCalmNinetyKupEndFirst": {
+  "value": "750",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenCalmNinetyKupCumFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenCalmNinetyKupCumMed": {
+  "value": "70",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenCalmNinetyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenCalmNinetyKupSidakFlag": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenCalmNinetyKupSidakMed": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenCalmNinetyKupSidakFirst": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenCalmNinetyKupTrailFlag": {
+  "value": "17",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenCalmNinetyKupTrailMed": {
+  "value": "338",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenCalmNinetyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenCalmNinetyLightFlag": {
+  "value": "9",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenCalmNinetyLightMed": {
+  "value": "252",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenCalmNinetyLightFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenCalmNinetyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenCalmNinetyKupiecEndOnlyVsE": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenCalmNinetyLightMissedByE": {
+  "value": "8",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenCalmNinetyEBeforeKupiecEnd": {
+  "value": "2",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenCalmNinetyEAndKupiecEnd": {
+  "value": "2",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenCalmNinetyEAndLight": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenCalmNinetyLightE": {
+  "value": "never",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenCalmNinetyLightDay": {
+  "value": "252",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenCalmSeventyEFlag": {
+  "value": "3",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenCalmSeventyEMed": {
+  "value": "329",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenCalmSeventyEFirst": {
+  "value": "88",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenCalmSeventyEUpFlag": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenCalmSeventyEUpMed": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenCalmSeventyEUpFirst": {
+  "value": "81",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenCalmSeventyWwzFlag": {
+  "value": "1",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenCalmSeventyWwzMed": {
+  "value": "370",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenCalmSeventyWwzFirst": {
+  "value": "370",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenCalmSeventyKupEndFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenCalmSeventyKupEndMed": {
+  "value": "750",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenCalmSeventyKupEndFirst": {
+  "value": "750",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenCalmSeventyKupCumFlag": {
+  "value": "16",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenCalmSeventyKupCumMed": {
+  "value": "88",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenCalmSeventyKupCumFirst": {
+  "value": "70",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenCalmSeventyKupSidakFlag": {
+  "value": "3",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenCalmSeventyKupSidakMed": {
+  "value": "447",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenCalmSeventyKupSidakFirst": {
+  "value": "447",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenCalmSeventyKupTrailFlag": {
+  "value": "17",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenCalmSeventyKupTrailMed": {
+  "value": "338",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenCalmSeventyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenCalmSeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenCalmSeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenCalmSeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenCalmSeventyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenCalmSeventyKupiecEndOnlyVsE": {
+  "value": "4",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenCalmSeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenCalmSeventyEBeforeKupiecEnd": {
+  "value": "3",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenCalmSeventyEAndKupiecEnd": {
+  "value": "3",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenCalmSeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenCalmSeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenCalmSeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.calm-2004-06.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenDaysEquity": {
+  "value": "504",
+  "source": "results_c11.json:windows.equity-2007-09.n_days"
+ },
+ "nCElevenEquityNinetyEFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenEquityNinetyEMed": {
+  "value": "24",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenEquityNinetyEFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenEquityNinetyEUpFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenEquityNinetyEUpMed": {
+  "value": "24",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenEquityNinetyEUpFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenEquityNinetyWwzFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenEquityNinetyWwzMed": {
+  "value": "91",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenEquityNinetyWwzFirst": {
+  "value": "28",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenEquityNinetyKupEndFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenEquityNinetyKupEndMed": {
+  "value": "504",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenEquityNinetyKupEndFirst": {
+  "value": "504",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenEquityNinetyKupCumFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenEquityNinetyKupCumMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenEquityNinetyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenEquityNinetyKupSidakFlag": {
+  "value": "16",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenEquityNinetyKupSidakMed": {
+  "value": "89",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenEquityNinetyKupSidakFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenEquityNinetyKupTrailFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenEquityNinetyKupTrailMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenEquityNinetyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenEquityNinetyLightFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenEquityNinetyLightMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenEquityNinetyLightFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenEquityNinetyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenEquityNinetyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenEquityNinetyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenEquityNinetyEBeforeKupiecEnd": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenEquityNinetyEAndKupiecEnd": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenEquityNinetyEAndLight": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenEquityNinetyLightE": {
+  "value": "24",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenEquityNinetyLightDay": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenEquitySeventyEFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenEquitySeventyEMed": {
+  "value": "24",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenEquitySeventyEFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenEquitySeventyEUpFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenEquitySeventyEUpMed": {
+  "value": "24",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenEquitySeventyEUpFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenEquitySeventyWwzFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenEquitySeventyWwzMed": {
+  "value": "108",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenEquitySeventyWwzFirst": {
+  "value": "31",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenEquitySeventyKupEndFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenEquitySeventyKupEndMed": {
+  "value": "504",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenEquitySeventyKupEndFirst": {
+  "value": "504",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenEquitySeventyKupCumFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenEquitySeventyKupCumMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenEquitySeventyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenEquitySeventyKupSidakFlag": {
+  "value": "16",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenEquitySeventyKupSidakMed": {
+  "value": "139",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenEquitySeventyKupSidakFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenEquitySeventyKupTrailFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenEquitySeventyKupTrailMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenEquitySeventyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenEquitySeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenEquitySeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenEquitySeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenEquitySeventyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenEquitySeventyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenEquitySeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenEquitySeventyEBeforeKupiecEnd": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenEquitySeventyEAndKupiecEnd": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenEquitySeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenEquitySeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenEquitySeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenDaysFx": {
+  "value": "251",
+  "source": "results_c11.json:windows.fx-2008.n_days"
+ },
+ "nCElevenFxNinetyEFlag": {
+  "value": "9",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenFxNinetyEMed": {
+  "value": "68",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenFxNinetyEFirst": {
+  "value": "63",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenFxNinetyEUpFlag": {
+  "value": "9",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenFxNinetyEUpMed": {
+  "value": "66",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenFxNinetyEUpFirst": {
+  "value": "33",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenFxNinetyWwzFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenFxNinetyWwzMed": {
+  "value": "78",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenFxNinetyWwzFirst": {
+  "value": "74",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenFxNinetyKupEndFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenFxNinetyKupEndMed": {
+  "value": "251",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenFxNinetyKupEndFirst": {
+  "value": "251",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenFxNinetyKupCumFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenFxNinetyKupCumMed": {
+  "value": "68",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenFxNinetyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenFxNinetyKupSidakFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenFxNinetyKupSidakMed": {
+  "value": "72",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenFxNinetyKupSidakFirst": {
+  "value": "72",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenFxNinetyKupTrailFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenFxNinetyKupTrailMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenFxNinetyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenFxNinetyLightFlag": {
+  "value": "11",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenFxNinetyLightMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenFxNinetyLightFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenFxNinetyEOnlyVsKupiecEnd": {
+  "value": "2",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenFxNinetyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenFxNinetyLightMissedByE": {
+  "value": "2",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenFxNinetyEBeforeKupiecEnd": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenFxNinetyEAndKupiecEnd": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenFxNinetyEAndLight": {
+  "value": "9",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenFxNinetyLightE": {
+  "value": "68",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenFxNinetyLightDay": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenFxSeventyEFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenFxSeventyEMed": {
+  "value": "68",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenFxSeventyEFirst": {
+  "value": "40",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenFxSeventyEUpFlag": {
+  "value": "7",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenFxSeventyEUpMed": {
+  "value": "68",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenFxSeventyEUpFirst": {
+  "value": "40",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenFxSeventyWwzFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenFxSeventyWwzMed": {
+  "value": "72",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenFxSeventyWwzFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenFxSeventyKupEndFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenFxSeventyKupEndMed": {
+  "value": "251",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenFxSeventyKupEndFirst": {
+  "value": "251",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenFxSeventyKupCumFlag": {
+  "value": "11",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenFxSeventyKupCumMed": {
+  "value": "64",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenFxSeventyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenFxSeventyKupSidakFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenFxSeventyKupSidakMed": {
+  "value": "70",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenFxSeventyKupSidakFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenFxSeventyKupTrailFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenFxSeventyKupTrailMed": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenFxSeventyKupTrailFirst": {
+  "value": "250",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenFxSeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenFxSeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenFxSeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenFxSeventyEOnlyVsKupiecEnd": {
+  "value": "1",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenFxSeventyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenFxSeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenFxSeventyEBeforeKupiecEnd": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenFxSeventyEAndKupiecEnd": {
+  "value": "6",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenFxSeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenFxSeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenFxSeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.fx-2008.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenDaysCovid": {
+  "value": "104",
+  "source": "results_c11.json:windows.equity-2020.n_days"
+ },
+ "nCElevenCovidNinetyEFlag": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenCovidNinetyEMed": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenCovidNinetyEFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenCovidNinetyEUpFlag": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenCovidNinetyEUpMed": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenCovidNinetyEUpFirst": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenCovidNinetyWwzFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenCovidNinetyWwzMed": {
+  "value": "27",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenCovidNinetyWwzFirst": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenCovidNinetyKupEndFlag": {
+  "value": "13",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenCovidNinetyKupEndMed": {
+  "value": "104",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenCovidNinetyKupEndFirst": {
+  "value": "104",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenCovidNinetyKupCumFlag": {
+  "value": "13",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenCovidNinetyKupCumMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenCovidNinetyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenCovidNinetyKupSidakFlag": {
+  "value": "9",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenCovidNinetyKupSidakMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenCovidNinetyKupSidakFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenCovidNinetyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenCovidNinetyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenCovidNinetyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenCovidNinetyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenCovidNinetyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenCovidNinetyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenCovidNinetyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenCovidNinetyKupiecEndOnlyVsE": {
+  "value": "1",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenCovidNinetyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenCovidNinetyEBeforeKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenCovidNinetyEAndKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenCovidNinetyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenCovidNinetyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenCovidNinetyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenCovidSeventyEFlag": {
+  "value": "15",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenCovidSeventyEMed": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenCovidSeventyEFirst": {
+  "value": "21",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenCovidSeventyEUpFlag": {
+  "value": "15",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenCovidSeventyEUpMed": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenCovidSeventyEUpFirst": {
+  "value": "21",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenCovidSeventyWwzFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenCovidSeventyWwzMed": {
+  "value": "27",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenCovidSeventyWwzFirst": {
+  "value": "25",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenCovidSeventyKupEndFlag": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenCovidSeventyKupEndMed": {
+  "value": "104",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenCovidSeventyKupEndFirst": {
+  "value": "104",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenCovidSeventyKupCumFlag": {
+  "value": "15",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenCovidSeventyKupCumMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenCovidSeventyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenCovidSeventyKupSidakFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenCovidSeventyKupSidakMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenCovidSeventyKupSidakFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenCovidSeventyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenCovidSeventyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenCovidSeventyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenCovidSeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenCovidSeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenCovidSeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenCovidSeventyEOnlyVsKupiecEnd": {
+  "value": "3",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenCovidSeventyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenCovidSeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenCovidSeventyEBeforeKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenCovidSeventyEAndKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenCovidSeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenCovidSeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenCovidSeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.equity-2020.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenDaysRates": {
+  "value": "249",
+  "source": "results_c11.json:windows.rates-2022.n_days"
+ },
+ "nCElevenRatesNinetyEFlag": {
+  "value": "8",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenRatesNinetyEMed": {
+  "value": "52",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenRatesNinetyEFirst": {
+  "value": "49",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenRatesNinetyEUpFlag": {
+  "value": "8",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenRatesNinetyEUpMed": {
+  "value": "52",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenRatesNinetyEUpFirst": {
+  "value": "49",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenRatesNinetyWwzFlag": {
+  "value": "3",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenRatesNinetyWwzMed": {
+  "value": "65",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenRatesNinetyWwzFirst": {
+  "value": "65",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenRatesNinetyKupEndFlag": {
+  "value": "8",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenRatesNinetyKupEndMed": {
+  "value": "249",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenRatesNinetyKupEndFirst": {
+  "value": "249",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenRatesNinetyKupCumFlag": {
+  "value": "17",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenRatesNinetyKupCumMed": {
+  "value": "54",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenRatesNinetyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenRatesNinetyKupSidakFlag": {
+  "value": "5",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenRatesNinetyKupSidakMed": {
+  "value": "54",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenRatesNinetyKupSidakFirst": {
+  "value": "54",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenRatesNinetyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenRatesNinetyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenRatesNinetyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenRatesNinetyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenRatesNinetyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenRatesNinetyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenRatesNinetyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenRatesNinetyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenRatesNinetyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenRatesNinetyEBeforeKupiecEnd": {
+  "value": "8",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenRatesNinetyEAndKupiecEnd": {
+  "value": "8",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenRatesNinetyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenRatesNinetyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenRatesNinetyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenRatesSeventyEFlag": {
+  "value": "16",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenRatesSeventyEMed": {
+  "value": "54",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenRatesSeventyEFirst": {
+  "value": "11",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenRatesSeventyEUpFlag": {
+  "value": "17",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenRatesSeventyEUpMed": {
+  "value": "54",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenRatesSeventyEUpFirst": {
+  "value": "11",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenRatesSeventyWwzFlag": {
+  "value": "10",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenRatesSeventyWwzMed": {
+  "value": "130",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenRatesSeventyWwzFirst": {
+  "value": "58",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenRatesSeventyKupEndFlag": {
+  "value": "13",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenRatesSeventyKupEndMed": {
+  "value": "249",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenRatesSeventyKupEndFirst": {
+  "value": "249",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenRatesSeventyKupCumFlag": {
+  "value": "18",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenRatesSeventyKupCumMed": {
+  "value": "50",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenRatesSeventyKupCumFirst": {
+  "value": "50",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenRatesSeventyKupSidakFlag": {
+  "value": "6",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenRatesSeventyKupSidakMed": {
+  "value": "62",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenRatesSeventyKupSidakFirst": {
+  "value": "58",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenRatesSeventyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenRatesSeventyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenRatesSeventyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenRatesSeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenRatesSeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenRatesSeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenRatesSeventyEOnlyVsKupiecEnd": {
+  "value": "4",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenRatesSeventyKupiecEndOnlyVsE": {
+  "value": "1",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenRatesSeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenRatesSeventyEBeforeKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenRatesSeventyEAndKupiecEnd": {
+  "value": "12",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenRatesSeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenRatesSeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenRatesSeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.rates-2022.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenDaysMixed": {
+  "value": "64",
+  "source": "results_c11.json:windows.mixed-2023.n_days"
+ },
+ "nCElevenMixedNinetyEFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate.flagged"
+ },
+ "nCElevenMixedNinetyEMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate.median_day"
+ },
+ "nCElevenMixedNinetyEFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate.first_day"
+ },
+ "nCElevenMixedNinetyEUpFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate_upper.flagged"
+ },
+ "nCElevenMixedNinetyEUpMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate_upper.median_day"
+ },
+ "nCElevenMixedNinetyEUpFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_rate_upper.first_day"
+ },
+ "nCElevenMixedNinetyWwzFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_wwz.flagged"
+ },
+ "nCElevenMixedNinetyWwzMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_wwz.median_day"
+ },
+ "nCElevenMixedNinetyWwzFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.e_wwz.first_day"
+ },
+ "nCElevenMixedNinetyKupEndFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_end.flagged"
+ },
+ "nCElevenMixedNinetyKupEndMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_end.median_day"
+ },
+ "nCElevenMixedNinetyKupEndFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_end.first_day"
+ },
+ "nCElevenMixedNinetyKupCumFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenMixedNinetyKupCumMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenMixedNinetyKupCumFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenMixedNinetyKupSidakFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenMixedNinetyKupSidakMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenMixedNinetyKupSidakFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenMixedNinetyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenMixedNinetyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenMixedNinetyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenMixedNinetyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.traffic_light.flagged"
+ },
+ "nCElevenMixedNinetyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.traffic_light.median_day"
+ },
+ "nCElevenMixedNinetyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.traffic_light.first_day"
+ },
+ "nCElevenMixedNinetyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenMixedNinetyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenMixedNinetyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenMixedNinetyEBeforeKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenMixedNinetyEAndKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenMixedNinetyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.e_and_light"
+ },
+ "nCElevenMixedNinetyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenMixedNinetyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.01.summary.overlap.median_light_day"
+ },
+ "nCElevenMixedSeventyEFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate.flagged"
+ },
+ "nCElevenMixedSeventyEMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate.median_day"
+ },
+ "nCElevenMixedSeventyEFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate.first_day"
+ },
+ "nCElevenMixedSeventyEUpFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate_upper.flagged"
+ },
+ "nCElevenMixedSeventyEUpMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate_upper.median_day"
+ },
+ "nCElevenMixedSeventyEUpFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_rate_upper.first_day"
+ },
+ "nCElevenMixedSeventyWwzFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_wwz.flagged"
+ },
+ "nCElevenMixedSeventyWwzMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_wwz.median_day"
+ },
+ "nCElevenMixedSeventyWwzFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.e_wwz.first_day"
+ },
+ "nCElevenMixedSeventyKupEndFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_end.flagged"
+ },
+ "nCElevenMixedSeventyKupEndMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_end.median_day"
+ },
+ "nCElevenMixedSeventyKupEndFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_end.first_day"
+ },
+ "nCElevenMixedSeventyKupCumFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_cumulative.flagged"
+ },
+ "nCElevenMixedSeventyKupCumMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_cumulative.median_day"
+ },
+ "nCElevenMixedSeventyKupCumFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_cumulative.first_day"
+ },
+ "nCElevenMixedSeventyKupSidakFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_sidak.flagged"
+ },
+ "nCElevenMixedSeventyKupSidakMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_sidak.median_day"
+ },
+ "nCElevenMixedSeventyKupSidakFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_sidak.first_day"
+ },
+ "nCElevenMixedSeventyKupTrailFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_trailing.flagged"
+ },
+ "nCElevenMixedSeventyKupTrailMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_trailing.median_day"
+ },
+ "nCElevenMixedSeventyKupTrailFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.kupiec_trailing.first_day"
+ },
+ "nCElevenMixedSeventyLightFlag": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.traffic_light.flagged"
+ },
+ "nCElevenMixedSeventyLightMed": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.traffic_light.median_day"
+ },
+ "nCElevenMixedSeventyLightFirst": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.traffic_light.first_day"
+ },
+ "nCElevenMixedSeventyEOnlyVsKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.e_only_vs_kupiec_end"
+ },
+ "nCElevenMixedSeventyKupiecEndOnlyVsE": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.kupiec_end_only_vs_e"
+ },
+ "nCElevenMixedSeventyLightMissedByE": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.light_missed_by_e"
+ },
+ "nCElevenMixedSeventyEBeforeKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.e_before_kupiec_end"
+ },
+ "nCElevenMixedSeventyEAndKupiecEnd": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.e_and_kupiec_end"
+ },
+ "nCElevenMixedSeventyEAndLight": {
+  "value": "0",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.e_and_light"
+ },
+ "nCElevenMixedSeventyLightE": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.median_e_day_among_light_flagged"
+ },
+ "nCElevenMixedSeventyLightDay": {
+  "value": "--",
+  "source": "results_c11.json:windows.mixed-2023.levels.0.025.summary.overlap.median_light_day"
+ },
+ "nCElevenModels": {
+  "value": "18",
+  "source": "results_c11.json:windows.equity-2007-09.levels.0.01.summary.n_models"
+ },
+ "nCThreeAvgA": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2006-07.average.rejection_month"
+ },
+ "nCThreeProdA": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2006-07.product.rejection_month"
+ },
+ "nCThreeMaxA": {
+  "value": "11,631.0",
+  "source": "results_c03.json:cohorts.fy2006-07.average.max_log_e"
+ },
+ "nCThreeDTwoZeroZeroSix": {
+  "value": "19,271",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].defaults"
+ },
+ "nCThreePTwoZeroZeroSix": {
+  "value": "7,601",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].predicted_defaults"
+ },
+ "nCThreeNTwoZeroZeroSix": {
+  "value": "86,393",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].n"
+ },
+ "nCThreeDTwoZeroZeroSeven": {
+  "value": "24,310",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].defaults"
+ },
+ "nCThreePTwoZeroZeroSeven": {
+  "value": "7,722",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].predicted_defaults"
+ },
+ "nCThreeNTwoZeroZeroSeven": {
+  "value": "88,134",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].n"
+ },
+ "nCThreeAvgB": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2008-10.average.rejection_month"
+ },
+ "nCThreeProdB": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2008-10.product.rejection_month"
+ },
+ "nCThreeMaxB": {
+  "value": "6,362.5",
+  "source": "results_c03.json:cohorts.fy2008-10.average.max_log_e"
+ },
+ "nCThreeDTwoZeroZeroEight": {
+  "value": "13,088",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].defaults"
+ },
+ "nCThreePTwoZeroZeroEight": {
+  "value": "4,526",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].predicted_defaults"
+ },
+ "nCThreeNTwoZeroZeroEight": {
+  "value": "61,539",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].n"
+ },
+ "nCThreeDTwoZeroZeroNine": {
+  "value": "3,066",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].defaults"
+ },
+ "nCThreePTwoZeroZeroNine": {
+  "value": "2,251",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].predicted_defaults"
+ },
+ "nCThreeNTwoZeroZeroNine": {
+  "value": "36,594",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].n"
+ },
+ "nCThreeDTwoZeroOneZero": {
+  "value": "1,954",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].defaults"
+ },
+ "nCThreePTwoZeroOneZero": {
+  "value": "2,158",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneZero": {
+  "value": "39,890",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].n"
+ },
+ "nCThreeAvgC": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.average.rejection_month"
+ },
+ "nCThreeProdC": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.product.rejection_month"
+ },
+ "nCThreeMaxC": {
+  "value": "-2.5",
+  "source": "results_c03.json:cohorts.fy2011-14.average.max_log_e"
+ },
+ "nCThreeDTwoZeroOneOne": {
+  "value": "1,662",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].defaults"
+ },
+ "nCThreePTwoZeroOneOne": {
+  "value": "2,957",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneOne": {
+  "value": "45,592",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].n"
+ },
+ "nCThreeDTwoZeroOneTwo": {
+  "value": "1,272",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].defaults"
+ },
+ "nCThreePTwoZeroOneTwo": {
+  "value": "2,545",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneTwo": {
+  "value": "38,861",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].n"
+ },
+ "nCThreeDTwoZeroOneThree": {
+  "value": "1,240",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].defaults"
+ },
+ "nCThreePTwoZeroOneThree": {
+  "value": "2,506",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneThree": {
+  "value": "40,400",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].n"
+ },
+ "nCThreeDTwoZeroOneFour": {
+  "value": "1,616",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].defaults"
+ },
+ "nCThreePTwoZeroOneFour": {
+  "value": "2,922",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneFour": {
+  "value": "45,942",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].n"
+ },
+ "nCThreeAvgD": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2015-17.average.rejection_month"
+ },
+ "nCThreeProdD": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2015-17.product.rejection_month"
+ },
+ "nCThreeMaxD": {
+  "value": "-7.3",
+  "source": "results_c03.json:cohorts.fy2015-17.average.max_log_e"
+ },
+ "nCThreeDTwoZeroOneFive": {
+  "value": "2,134",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].defaults"
+ },
+ "nCThreePTwoZeroOneFive": {
+  "value": "4,886",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneFive": {
+  "value": "55,387",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].n"
+ },
+ "nCThreeDTwoZeroOneSix": {
+  "value": "2,194",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].defaults"
+ },
+ "nCThreePTwoZeroOneSix": {
+  "value": "4,742",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneSix": {
+  "value": "56,759",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].n"
+ },
+ "nCThreeDTwoZeroOneSeven": {
+  "value": "2,417",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].defaults"
+ },
+ "nCThreePTwoZeroOneSeven": {
+  "value": "4,508",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneSeven": {
+  "value": "56,057",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].n"
+ },
+ "nCThreeAvgE": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2018-20.average.rejection_month"
+ },
+ "nCThreeProdE": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2018-20.product.rejection_month"
+ },
+ "nCThreeMaxE": {
+  "value": "2.4",
+  "source": "results_c03.json:cohorts.fy2018-20.average.max_log_e"
+ },
+ "nCThreeDTwoZeroOneEight": {
+  "value": "2,526",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].defaults"
+ },
+ "nCThreePTwoZeroOneEight": {
+  "value": "3,616",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneEight": {
+  "value": "54,171",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].n"
+ },
+ "nCThreeDTwoZeroOneNine": {
+  "value": "1,786",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].defaults"
+ },
+ "nCThreePTwoZeroOneNine": {
+  "value": "2,630",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].predicted_defaults"
+ },
+ "nCThreeNTwoZeroOneNine": {
+  "value": "45,664",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].n"
+ },
+ "nCThreeDTwoZeroTwoZero": {
+  "value": "944",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].defaults"
+ },
+ "nCThreePTwoZeroTwoZero": {
+  "value": "2,025",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].predicted_defaults"
+ },
+ "nCThreeNTwoZeroTwoZero": {
+  "value": "36,456",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].n"
+ },
+ "nCThreeRebuilt": {
+  "value": "5",
+  "source": "results_c03.json:cohorts.*.recomputed_equals_committed"
+ },
+ "nRunHits": {
+  "value": "669",
+  "source": "run-times.json:seconds.exp_hits.py"
+ },
+ "nRunAblation": {
+  "value": "316",
+  "source": "run-times.json:seconds.exp_ablation.py"
+ },
+ "nRunSeeds": {
+  "value": "320",
+  "source": "run-times.json:seconds.exp_x3_seeds.py"
+ },
+ "nRunPd": {
+  "value": "163",
+  "source": "run-times.json:seconds.exp_pd_correlation.py"
+ },
+ "nRunCEleven": {
+  "value": "32",
+  "source": "run-times.json:seconds.exp_c11.py"
+ },
+ "nRunCThree": {
+  "value": "56",
+  "source": "run-times.json:seconds.exp_c03.py"
+ },
+ "nRunTheory": {
+  "value": "81",
+  "source": "run-times.json:seconds.exp_theory.py"
+ },
+ "nRunTotal": {
+  "value": "1,637",
+  "source": "run-times.json:total_seconds"
+ },
+ "nPythonVersion": {
+  "value": "3.13.14",
+  "source": "run-times.json:python"
+ }
+}
