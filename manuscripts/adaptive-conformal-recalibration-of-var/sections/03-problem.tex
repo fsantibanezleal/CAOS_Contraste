@@ -1,0 +1,47 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{Forecasts, hits and the quantities to repair}
+\label{sec:problem-setting}
+
+A portfolio has a simple return $y_t$ on trading day $t$, and its loss is $L_t = -y_t$, a positive number on a day of loss. Let $\mathcal{F}_{t-1}$ be the information available before day $t$ opens. A \emph{model} is a map that, for every tail level $a \in (0, \tfrac12]$, returns a one-day value at risk $V_t(a)$ and an expected shortfall $E_t(a)$, both positive losses measured in decimals of the portfolio value, computed from $\mathcal{F}_{t-1}$ only. The pair satisfies $E_t(a) \ge V_t(a)$ and, for every day, $V_t(a)$ is non-increasing in $a$: a smaller tail level asks for a larger loss. For an ideal model, $V_t(a)$ is the $(1-a)$-quantile of the conditional law of $L_t$ and $E_t(a)$ is the mean loss beyond it,
+\begin{equation}
+V_t(a) = \inf\{x : \Prob(L_t \le x \mid \mathcal{F}_{t-1}) \ge 1-a\}, \qquad E_t(a) = \E\bigl[L_t \mid L_t \ge V_t(a), \mathcal{F}_{t-1}\bigr].
+\label{eq:var-es}
+\end{equation}
+The forecaster is asked for the pair at one target level $\alpha$ (here 0.01 and 0.025). Day $t$ is a \emph{hit} when the loss exceeds the forecast,
+\begin{equation}
+e_t(a) = \indic\{L_t > V_t(a)\},
+\label{eq:hit}
+\end{equation}
+and the forecasts are \emph{calibrated} when the hits satisfy two properties in the sense of \citet{christoffersen1998}: unconditional coverage, $\Prob(e_t = 1) = \alpha$, and independence, $e_t$ unpredictable from the past hits. Together they are the statement that $e_t - \alpha$ is a martingale difference with respect to the information that includes the past hits. The ES is judged separately, through a score for which the pair $(V_t(\alpha), E_t(\alpha))$ of \cref{eq:var-es} is the unique minimiser of the expected loss. In the return convention of the engine (returns $y_t = -L_t$, forecasts $v_t = -V_t < 0$ and $\epsilon_t = -E_t < 0$) the score of \citet{pattonziegelchen2019}, a member of the family of \citet{fissler2016}, is
+\begin{equation}
+\mathrm{FZ0}(y_t, v_t, \epsilon_t; \alpha) = -\frac{1}{\alpha\,\epsilon_t}\,\indic\{y_t \le v_t\}\,(v_t - y_t) + \frac{v_t}{\epsilon_t} + \log(-\epsilon_t) - 1,
+\label{eq:fz0}
+\end{equation}
+which is a score: only differences between models are meaningful, and the score of one model can be negative.
+
+\subsection{The recalibration problem}
+\label{sec:problem-recal}
+
+Given a model whose estimator, window and refit schedule are fixed (a constraint of a bank's production environment, where a replacement of the model passes through a model-risk process), find a rule that chooses, on each day $t$, a working level $a_t \in [\ell, u]$ from the past hits only, so that the pair $(V_t(a_t), E_t(a_t))$ is delivered in place of $(V_t(\alpha), E_t(\alpha))$ and the three properties improve: the long-run frequency of hits approaches $\alpha$ under a change of regime, the independence of the hits is not damaged, and the joint score of \cref{eq:fz0} does not worsen by more than a stated tolerance. The tolerance used here is a relative change of the mean score of 5\%, the same figure for every model and window; it is a decision of the product and not a statistical bound. The ES is not recalibrated by a rule of its own: it is whatever the model gives at the working level, and the question of how well it is calibrated after the change is measured by the second Acerbi--Szekely statistic,
+\begin{equation}
+Z_2 = 1 - \frac{1}{T\alpha}\sum_{t=1}^{T} \frac{L_t\, e_t}{E_t},
+\label{eq:z2}
+\end{equation}
+which has expectation zero under a correct pair and is negative when the ES is understated.
+
+\subsection{Assumptions}
+\label{sec:problem-assumptions}
+
+The analysis uses five assumptions, each stated where it enters.
+\begin{enumerate}
+\item The forecasts $V_t(a)$ and $E_t(a)$ use $\mathcal{F}_{t-1}$ only. The wrapper cannot check this; the experiments check it by construction, since every model in the ladder slices its window before day $t$.
+\item For every day, $V_t(\cdot)$ is continuous and strictly decreasing on $[\ell, u]$ with $V_t(a) \to \infty$ as $a \to 0$, so that every level in the band gives a finite VaR. This fails for historical simulation below the reciprocal of its window, where the VaR is flat; the band's lower edge of 0.001 lies in that flat region for a window of 250 days, which the experiments report through the count of days at the band edge.
+\item The loss $L_t$ may follow any process: the identity of \cref{sec:theory} makes no assumption on it. The fixed-point analysis assumes, further, a stationary scale family (\cref{prop:fixed-point}).
+\item The model is evaluated at each day in time order, and a day for which the model gives no usable forecast keeps the forecast of the previous day, as the ladder does; the number of such days is reported (\tenFallback{} days in all, over the \tenIndRunsAll{} wrapped runs).
+\item The hits are observed at the end of each day without delay. A delay of $k$ days in the confirmation of a hit (the case of a bank that books trades late) is out of scope.
+\end{enumerate}
+The notation is collected in \cref{tab:notation}; the symbols of the tests and of the experiments are defined where they appear.
+
+\input{tables/notation}

@@ -1,0 +1,20 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The six windows of case C11: the asset class of the portfolio, the first and last forecast day, the number of forecast days and of observed days of the common calendar, the public series of the portfolio and the role of the window in the evaluation.}
+\label{tab:windows}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llllrrll}
+\toprule
+Window & Class & First forecast day & Last forecast day & Forecast days & Observed days & Series & Role \\
+\midrule
+Equity 2007--09 & equity & 2007-07-02 & 2009-06-30 & 504 & 1,504 & french--daily & stress \\
+Equity 2020 & equity & 2020-02-03 & 2020-06-30 & 104 & 1,104 & french--daily & stress \\
+Rates 2022 & rates & 2022-01-03 & 2022-12-30 & 249 & 1,249 & treasury--par & stress \\
+FX 2008 & fx & 2008-07-01 & 2009-06-30 & 251 & 1,251 & h10--fx & other \\
+Mixed 2023 & mixed & 2023-03-01 & 2023-05-31 & 64 & 1,064 & french--daily, treasury--par, h10--fx & other \\
+Calm 2004--06 & mixed & 2004-01-02 & 2006-12-29 & 750 & 1,746 & french--daily, treasury--par, h10--fx & other \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table*}

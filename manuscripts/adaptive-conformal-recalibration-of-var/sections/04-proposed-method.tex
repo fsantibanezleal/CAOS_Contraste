@@ -1,0 +1,94 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The idea}
+\label{sec:method-idea}
+
+A model that understates the tail on a given day would give the right VaR if it were asked for a smaller tail level. The proposed method searches for that level online. It keeps a working level $a_t$ that starts at the target $\alpha$, asks the unchanged model for $V_t(a_t)$ and $E_t(a_t)$, and moves the level after the day by the one quantity that the day reveals about the model: whether the loss exceeded the forecast. After a hit the level goes down, so the next VaR is deeper; after a quiet day the level goes up by a smaller amount, so the VaR relaxes. If the model is right the hits occur at the rate $\alpha$ and the two movements cancel on average, leaving the level at the target; if it is wrong the level drifts to where they cancel.
+
+The method sits at the end of the production chain of a model. It needs the forecasts of the model at a level of its choice, and the realised loss of each day. It does not refit the model, change its window or read its parameters. This is what distinguishes it from the recalibrations that act on the finished VaR (\cref{sec:experimental-design}), which scale the number the model produced. Acting on the level keeps the VaR and the ES of each day a pair that belongs to one distribution (the model's own, at the working level), which is the property the joint score of \cref{eq:fz0} rewards and the reason why the ES is not given a separate correction.
+
+\subsection{Derivation}
+\label{sec:method-derivation}
+
+Let $G_t(a) = \Prob(L_t > V_t(a) \mid \mathcal{F}_{t-1})$ be the probability of a hit on day $t$ if the model is asked at level $a$. By assumption (\cref{sec:problem-assumptions}) the map $V_t$ is decreasing in $a$, so $G_t$ is non-decreasing in $a$: a larger level gives a smaller VaR and more hits. For a calibrated model $G_t(\alpha) = \alpha$. The level that repairs the coverage solves
+\begin{equation}
+G(a^*) = \alpha,
+\label{eq:root}
+\end{equation}
+where $G$ is the average of $G_t$ over the regime. The root is not known, and each day gives one noisy observation of $G_t(a_t)$, namely the indicator $e_t(a_t)$ of \cref{eq:hit}. A root of an increasing function that is observed through unbiased noisy evaluations is found by the stochastic approximation of \citet{robbins1951}: move the argument against the sign of the residual. With a constant step $\gamma$, that is the update of \citet{gibbs2021} applied to the level of the model,
+\begin{equation}
+\tilde a_{t+1} = a_t + \gamma\,\bigl(\alpha - e_t(a_t)\bigr), \qquad a_{t+1} = \min\{\max\{\tilde a_{t+1}, \ell\}, u\}, \qquad a_1 = \alpha.
+\label{eq:update}
+\end{equation}
+A hit moves the level by $-\gamma(1-\alpha)$ and a quiet day by $+\gamma\alpha$. Over a stretch in which the hits occur at frequency $\alpha$ the sum of the moves is zero, since $\alpha(1-\alpha) - (1-\alpha)\alpha = 0$. The clipping to $[\ell, u]$ is a departure from the update of \citet{gibbs2021}, who let the level leave $(0,1)$ where the prediction set is empty or the whole line; a VaR at a level outside $(0, \tfrac12]$ is not a risk measure, so the level is kept in a band and the effect of the band is accounted for (\cref{prop:identity}).
+
+The method delivers, on day $t$, the pair
+\begin{equation}
+\bigl(V_t^{\mathrm{w}}, E_t^{\mathrm{w}}\bigr) = \bigl(V_t(a_t),\, E_t(a_t)\bigr).
+\label{eq:wrapped-pair}
+\end{equation}
+The ES is the one the model gives at the working level, with no conformal guarantee of its own. A model that returns its VaR only (the Cornish--Fisher expansion and the two CAViaR models without the ES step in the ladder) cannot be wrapped, because \cref{eq:fz0} and \cref{eq:z2} need the ES.
+
+\subsection{Algorithm and parameters}
+\label{sec:method-algorithm}
+
+\Cref{alg:wrapper} gives the procedure as the engine implements it. The model is a function of the day and of the level; the day's information is the returns before it.
+
+\begin{algorithm}[htbp]
+\caption{Adaptive conformal wrapper of a VaR and ES model.}
+\label{alg:wrapper}
+\begin{algorithmic}[1]
+\Require model $(t, a) \mapsto (V_t(a), E_t(a))$, target $\alpha$, step $\gamma \ge 0$, band $[\ell, u]$ with $0 < \ell < \alpha < u \le \tfrac12$, first forecast day $t_0$, last day $T$
+\State $a \gets \alpha$
+\For{$t = t_0, \dots, T$}
+  \State $(V, E) \gets$ model$(t, a)$ \Comment{reads returns before day $t$ only}
+  \State publish $(V, E)$ as the forecast of day $t$
+  \State observe the loss $L_t$; $e \gets \indic\{L_t > V\}$
+  \State $\tilde a \gets a + \gamma(\alpha - e)$
+  \State $a \gets \min\{\max\{\tilde a, \ell\}, u\}$; record whether $a \ne \tilde a$ \Comment{a clipped day}
+\EndFor
+\State \Return the published pairs, the working levels and the number of clipped days
+\end{algorithmic}
+\end{algorithm}
+
+The parameters are the step $\gamma$ and the band. The step is $\gamma = \gammaDefault$, the default of the engine, and the band is $[\ell, u] = [0.001, 0.25]$; both were fixed before any run on a stress window and none was tuned, so that the stress windows are a test and not a selection. The step has a scale: a hit moves the level by about $\gamma$, which at a target of $\alpha = 0.01$ is half of the target after one hit, so two consecutive hits take the working level from 0.01 down to the band edge of 0.001, and about 200 quiet days are needed to bring it back (each adds $\gamma\alpha = 0.00005$). A larger step reacts faster and fluctuates more (\cref{sec:ablation}); a smaller one reacts slowly. The lower edge of the band is a design choice with a consequence for historical simulation: with a window of 250 days the empirical VaR does not change below the level $1/250 = 0.004$, so a level between 0.001 and 0.004 returns the same number as 0.004 for that model (the days at the band edge are counted in the results). The model's refit schedule is unchanged: for the GARCH family and filtered historical simulation the fit and the filter of a day are computed once and shared by every level asked on that day.
+
+\subsection{Complexity and implementation}
+\label{sec:method-implementation}
+
+Each day costs one evaluation of the model at the working level, and a model that is asked at one extra level costs one extra evaluation of its quantile function on a context (fit and filter) that the day computes once. The wrapper adds $O(1)$ work per day beyond that evaluation, and a window of $T$ days costs $T$ evaluations, so the overhead is a small multiple of the run of the unwrapped model; the cost measured for the experiments is in \cref{sec:reproducibility}. The state is the working level and a count of clipped days.
+
+The implementation is the function \texttt{aci\_var\_es} of the module \texttt{riskvalidation.market.conformal} of the engine \texttt{riskvalidation} (release 1.1.0), with the update \texttt{aci\_update}, the scoring function \texttt{forecast\_scores} and the comparison \texttt{aci\_compare}. It is deterministic (no random number is drawn), refuses a non-finite forecast or an ES above the VaR instead of filling it, and with $\gamma = 0$ returns the unwrapped model, which the experiments use as the baseline so that the two runs differ only by the update. The pipeline of Contraste runs it around the forecaster of each ladder model (the same window slice, the same refit schedule and the same hyperparameters, fixed on the span 1995 to 2003), and the unwrapped run is checked against the ladder day by day.
+
+\subsection{Decisions of the implementation and the variants they exclude}
+\label{sec:method-decisions}
+
+Three decisions of the engine shape what the method is, and each excludes a variant that the ablation measures. The first is the clipping of the working level to the band after every update; the unclipped recursion carries the guarantee of \citet{gibbs2021} but delivers, on a long run of hits, a level so small that the VaR of a parametric model is unbounded, and a level above one half, which is not a tail level. The variant with the band widened to $[10^{-5}, 0.5]$ shows how much the band changes the results (\cref{tab:ablation}). The second decision is that the ES is the model's own tail mean at the working level and that no conformal guarantee is claimed for it. Two alternatives were tested: keeping the model's ratio of ES to VaR at the target level and applying it to the recalibrated VaR, and leaving the ES at the target level while only the VaR moves, with the ES set equal to the VaR on the days where it would lie below. The third decision is the treatment of a forecast that cannot be evaluated at the working level: the engine refuses it, and the pipeline repeats the previous day's forecast and counts the day, exactly as the ladder does for its own failures.
+
+The step is one parameter shared by all days. Adaptive choices of the step exist \citep{zaffran2022,gibbs2024,bhatnagar2023} and are heavier to explain to a model validator; the manuscript keeps the single step and reports the sensitivity to it, so that a bank that adopts the wrapper can read the cost of a wrong choice. Likewise the update uses the hit of the day only; the update of \citet{angelopoulos2023} adds an integrator of the past errors and a forecaster of the scores, which are not used here.
+
+\subsection{What the method does and does not promise}
+\label{sec:method-promise}
+
+The method promises that, under the identity of \cref{prop:identity}, the long-run frequency of hits is the target up to a term set by the width of the band, the step and the number of clipped days. It promises nothing about the independence of the hits (\cref{prop:independence}), nothing about the ES, and nothing when the model has no level at which it is right: a model whose quantile function is too thin for the data at every level in the band is repaired up to the band edge and no further (\cref{prop:fixed-point}). A validator who applies it reads four numbers beside the usual back-tests: the share of days at the band edge, the mean working level, the hit rate with its interval, and the change of the mean score against the unwrapped run. The experiments report all four. The promise is also one of average and not of timing: the identity bounds the hit frequency over the whole stretch it is applied to, and says nothing about the frequency over a sub-stretch, so a cluster early in a window can leave the model above the target for a long time while the whole-window frequency is repaired.
+
+\subsection{Behaviour of the working level}
+\label{sec:method-dynamics}
+
+Three consequences of \cref{eq:update} are used in the rest of the manuscript. First, away from the band the level is a running sum of the surprises. Summing \cref{eq:update} over the days $t_0, \dots, t_0 + n - 1$ and writing $c_t = \tilde a_{t+1} - a_{t+1}$ for the amount the band removes on day $t$ (positive at the upper edge, negative at the lower, zero away from both),
+\begin{equation}
+a_{t_0+n} = \alpha + \gamma \sum_{t=t_0}^{t_0+n-1} \bigl(\alpha - e_t\bigr) - \sum_{t=t_0}^{t_0+n-1} c_t,
+\label{eq:telescoped}
+\end{equation}
+so that the hit frequency over the stretch is tied to the displacement of the level and to the total cut. This is the identity behind \cref{prop:identity}. Second, after $k$ consecutive hits with no clipping the level has fallen by
+\begin{equation}
+\Delta_k = -k\,\gamma\,(1 - \alpha),
+\label{eq:cluster-drop}
+\end{equation}
+and it takes $k(1-\alpha)/\alpha$ quiet days to return to its starting point, a figure that equals the length of quiet period of a hit sequence with frequency exactly $\alpha$. With the defaults, one hit at $\alpha = 0.025$ lowers the level by 0.0049 and a stretch of 39 quiet days brings it back. Third, if the data have a stable law and the model's hit probability at level $a$ is $G(a)$, the expected motion of the level is $\alpha - G(a)$ per day, so the level follows the ordinary differential equation
+\begin{equation}
+\frac{\mathrm{d}a}{\mathrm{d}\tau} = \alpha - G(a), \qquad \tau = \gamma t,
+\label{eq:mean-field}
+\end{equation}
+whose rest point is the root of \cref{eq:root} and is stable because $G$ is non-decreasing. The constant step keeps the level in motion around the rest point, with a spread that \cref{prop:fixed-point} computes; a decaying step would remove the spread and the ability to follow a changing regime, which is the trade \citet{angelopoulos2024} analyse. The experiments report the working level through its range over each window and through the number of days it sat at the band edge, because the first two of these consequences are what a reader of a level path (\cref{fig:level-paths}) sees: sharp falls at a cluster of hits and slow recoveries.
