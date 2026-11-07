@@ -127,8 +127,8 @@ export function C22ExperimentsSection({ manifest }: { manifest: CaseManifest }) 
                 return bad.map((s) => `${pick(s.label, l)} (${kind(s)}${pct(l, size(s, AT5), 2)} ${at} ${pct(l, 0.05, 0)}, ${pct(l, size(s, AT1), 2)} ${at} ${pct(l, 0.01, 0)}${s.study?.excess ? stated : ''})`).join('; ');
               };
               return {
-                en: `${sizes.length - bad.length} of the ${sizes.length} tests hold their size at both levels on ${formatNumber(sizes[0]?.n_rep, 'en')} repetitions of data where their null holds at its boundary. ${bad.length ? `Not: ${names('en')}.` : ''}`,
-                es: `${sizes.length - bad.length} de las ${sizes.length} pruebas mantienen su tamaño en ambos niveles en ${formatNumber(sizes[0]?.n_rep, 'es')} repeticiones de datos donde su nula se cumple en su frontera. ${bad.length ? `No: ${names('es')}.` : ''}`,
+                en: `${sizes.length - bad.length} of the ${sizes.length} tests pass the size screen at both levels on ${formatNumber(sizes[0]?.n_rep, 'en')} repetitions of data where their null holds at its boundary; a cell that size does not resolve an excess under about a point, and on 200,000 repetitions per test 12 of the 21 credit-family tests hold their size by the size-and-power paper's definition. ${bad.length ? `Not: ${names('en')}.` : ''}`,
+                es: `${sizes.length - bad.length} de las ${sizes.length} pruebas pasan el filtro de tamaño en ambos niveles en ${formatNumber(sizes[0]?.n_rep, 'es')} repeticiones de datos donde su nula se cumple en su frontera; una celda de ese tamaño no resuelve un exceso menor que cerca de un punto, y con 200.000 repeticiones por prueba 12 de las 21 pruebas de las familias de crédito mantienen su tamaño según la definición del artículo de tamaño y potencia. ${bad.length ? `No: ${names('es')}.` : ''}`,
               };
             })()}
           />
