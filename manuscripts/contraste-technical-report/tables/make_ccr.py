@@ -278,6 +278,12 @@ def table_regulatory() -> None:
     macro("RcCsa", n0(c10["sa_ccr"]["rc"]["amount"]))
     macro("EadCsaImDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]))
     macro("AlphaRcCsa", n0(1.4 * c10["sa_ccr"]["rc"]["amount"]))
+    # with initial margin: C is the variation margin plus the NICA (CRE52.10, CRE52.17), so the multiplier falls below 1
+    macro("MultIm", f"{im['sa_ccr']['multiplier']:.4f}")
+    macro("CIm", n0(im["sa_ccr"]["c"]["amount"]))
+    macro("RcIm", n0(im["sa_ccr"]["rc"]["amount"]))
+    macro("EadMultDiff", n0(c10["sa_ccr"]["ead"]["amount"] - im["sa_ccr"]["ead"]["amount"]
+                            - 1.4 * (c10["sa_ccr"]["rc"]["amount"] - im["sa_ccr"]["rc"]["amount"])))
     mf = {t["trade_id"]: t["maturity_factor"] for t in c10["sa_ccr"]["trades"]}
     macro("MaturityFactorCsa", f"{next(iter(mf.values())):.4f}")
 
