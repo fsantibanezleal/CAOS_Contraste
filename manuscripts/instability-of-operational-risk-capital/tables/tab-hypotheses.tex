@@ -1,17 +1,19 @@
 \begin{table}[htbp]
 \centering\small
-\caption{The six predictions stated before the measurements, the value measured on the 16{,}000 histories, and whether each held. H1 to H4 are the quantitative statements of the measurement; H5 and H6 are the predictions of the theory, with the tolerances fixed before they were compared with the 16 cells.}
+\caption{The three hypotheses stated before the measurements that could fail (H1 to H3), and the four statements of the committed summaries that the analysis reproduces from the per-history data (R1 to R4). H1 was written into the case parameters before the robust rungs were run and is reported with its outcome over the 16 cells and by tail index; H2 and H3 are the predictions of the theory, with tolerances written in the analysis script. R1 to R4 were written into the design after the same 16{,}000 histories had been drawn, so they restate the bake and are not tests that could fail.}
 \label{tab:hypotheses}
 \begin{tabularx}{\textwidth}{lXXl}
 \toprule
-Id & Prediction & Measured & Outcome \\
+Id & Statement & Measured & Outcome \\
 \midrule
-H1 & The interquartile range of the splice capital over the true quantile lies between 1.35 and 3.30 in the 16 cells & 1.3536 to 3.3038 & Held \\
-H2 & Every capital stability row of the six-rung ladder is red & 92 of 92 rows red (156 of 156 with the four robust rungs) & Held \\
-H3 & 27 to 34 percent (whole percent) of the histories at $\xi=0.96$ conclude an infinite mean & 26.8 to 34.4 percent & Held \\
-H4 & 9 to 27 percent (whole percent) of the histories at $\xi=1.1$ conclude a finite mean & 8.8 to 26.8 percent & Held \\
-H5 & The delta-method dispersion of the single loss approximation is within 25 percent of the measured one in every cell & largest relative error 4.7 percent & Held \\
-H6 & The predicted share of histories with $\hat\xi\ge1$ is within 5 points of the measured one in every cell at $\xi=0.96$ and $1.1$ & largest absolute error 4.1 points & Held \\
+H1 & The Cram\'er-von Mises and the optimally bias-robust fits have a smaller interquartile range and a median ratio nearer to 1 than the splice in at least 75 percent of the cells; refuted when either count is under 50 percent & Cram\'er-von Mises: smaller spread in 16 and nearer median in 8 of 16 cells; bias-robust: 16 and 9 of 16. By tail index: held at 0.6 and 0.8; refuted at 0.96 and 1.1 & Inconclusive over the 16 cells \\
+H2 & The delta-method dispersion of the single loss approximation is within 25 percent of the measured one in every cell & largest relative error 4.7 percent & Held \\
+H3 & The predicted share of histories with $\hat\xi\ge1$ is within 5 points of the measured one in every cell at $\xi=0.96$ and $1.1$ & largest absolute error 4.1 points & Held \\
+\midrule
+R1 & The interquartile range of the splice capital over the true quantile lies between 1.35 and 3.30 in the 16 cells & 1.3536 to 3.3038 & Reproduced \\
+R2 & Every capital stability row of the six-rung ladder is red & 92 of 92 rows red (156 of 156 with the four robust rungs) & Reproduced \\
+R3 & 27 to 34 percent (whole percent) of the histories at $\xi=0.96$ conclude an infinite mean & 26.8 to 34.4 percent & Reproduced \\
+R4 & 9 to 27 percent (whole percent) of the histories at $\xi=1.1$ conclude a finite mean & 8.8 to 26.8 percent & Reproduced \\
 \bottomrule
 \end{tabularx}
 \end{table}

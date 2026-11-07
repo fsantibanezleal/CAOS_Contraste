@@ -16,7 +16,14 @@ Computed here (seeds and repetitions in ``SETTINGS``):
   single loss approximation, the predicted interquartile range, the predicted share of histories with a fitted tail index of 1 or
   more, and the history that would bring the interquartile range under the green light of the product;
 * the ablation: for each component of the estimation ladder the paired change on the histories where both rungs are defined;
-* the precision of the measurement itself: the spread of the interquartile range over random subsets of 50 to 1,000 histories.
+* the precision of the measurement itself: the relative standard deviation of the interquartile range of a cell in the full-sample
+  bootstrap (the 2,000 resamples of the cell) and over random subsets of 50 to 500 histories drawn WITH replacement;
+* the hypothesis stated before the bake of the robust rungs (``S3_HYPOTHESIS`` of the case parameters): the counts of the cells in which
+  the Cramer-von Mises and the bias-robust fits have the smaller spread and the smaller bias than the splice, checked against the
+  committed findings F-5 of the four documents;
+* the checks behind the reading of the results: the cell of the largest and smallest splice interquartile range, the pattern of the
+  histories on which the splice and the truncated lognormal are undefined, the single loss approximation on those histories, the
+  agreement of the two mean-corrected rungs on paired histories, and the interquartile range of the theory scaled by the measured median.
 
 Run from the repository root (after ``extract_histories.py``)::
 
@@ -27,6 +34,7 @@ from __future__ import annotations
 import json
 import math
 import pathlib
+import re
 
 import numpy as np
 
@@ -41,6 +49,8 @@ SETTINGS = {
     "level": 0.999, "z95": 1.959963984540054, "factor": 2.0,
     "green_iqr": 0.25,  # the green limit of the product's capital stability light for the interquartile range over the truth
     "pre_stated": {"sd_relative_error": 0.25, "share_absolute_error": 0.05},  # the criteria of the two theory hypotheses
+    # the rule of the hypothesis stated before the bake (data-pipeline/pipeline/cases/c17/params.py S3_HYPOTHESIS, committed 2026-10-29)
+    "robust_hypothesis": {"rungs": ["sla_cvm", "sla_obre"], "against": "lda_splice", "holds_at_share": 0.75, "refuted_below_share": 0.5},
 }
 Z = SETTINGS["z95"]
 ALPHA = SETTINGS["level"]
@@ -72,7 +82,7 @@ def boot_ci(x: np.ndarray, rng: np.random.Generator, resamples: int) -> dict[str
     q25, q50, q75 = np.percentile(s, [25, 50, 75], axis=1)
     below = (s < 1.0).mean(axis=1)
     f = lambda v: [float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))]  # noqa: E731
-    return {"median": f(q50), "iqr": f(q75 - q25), "below_one": f(below)}
+    return {"median": f(q50), "iqr": f(q75 - q25), "below_one": f(below), "iqr_sd": float(np.std(q75 - q25, ddof=1))}
 
 
 def rung_stats(x: np.ndarray, rng: np.random.Generator, resamples: int) -> dict:
@@ -133,7 +143,8 @@ def predicted(xi: float, beta: float, floor: float, lam_floor: float, h: float, 
     sd_green = math.asinh(SETTINGS["green_iqr"] / 2) / z75
     years_green = years * var / sd_green ** 2
     p_ge_one = 1 - norm_cdf((1 - xi) * math.sqrt(k) / (1 + xi))
-    return {"lam_h": lam_h, "beta_h": beta_h, "k": k, "grad_xi": g_xi, "grad_lnbeta": g_b, "grad_lnlambda": g_l,
+    big_l = math.log(lam_h / (1 - ALPHA))
+    return {"lam_h": lam_h, "beta_h": beta_h, "k": k, "L": big_l, "ell": big_l - 1 / xi, "grad_xi": g_xi, "grad_lnbeta": g_b, "grad_lnlambda": g_l,
             "var_fit": var_fit, "var_count": var_count, "sd_log": sd, "iqr": iqr, "years_green": years_green,
             "records_green": years_green * lam_h, "share_xi_hat_at_least_one": p_ge_one,
             "sd_log_xi_hat": (1 + xi) / math.sqrt(k)}
@@ -153,6 +164,8 @@ def main() -> int:
                    ("wrong_family", "sla_cvm", "sla_cvm_lognormal"))
     ab_acc = {name: {"a": [], "b": [], "cells": []} for name, _, _ in comparisons}
     lights = {"green": 0, "amber": 0, "red": 0}
+    rel57: list[np.ndarray] = []
+    robust_doc_counts: dict[str, dict[str, list[int]]] = {}
     lights_by_rung: dict[str, dict[str, int]] = {}
     for vid in VARIANTS:
         h = json.loads((HERE / f"histories-{vid}.json").read_text(encoding="utf-8"))
@@ -168,6 +181,11 @@ def main() -> int:
             if t["test_id"] == "oprisk.capital_stability":
                 lights[t["light"]] += 1
                 lights_by_rung.setdefault(t["model_id"], {"green": 0, "amber": 0, "red": 0})[t["light"]] += 1
+        for f in doc["findings"]:
+            if f["id"] == "F-5":
+                got = re.findall(r"smaller spread in (\d+) of (\d+) cells and the smaller bias in (\d+)", f["title"]["en"])
+                verdicts = re.findall(r"hypothesis (holds|refuted|inconclusive)", f["title"]["en"])
+                robust_doc_counts[vid] = {"counts": [[int(a), int(b), int(c)] for a, b, c in got], "verdicts": verdicts}
         tests_by_cell = {(t["model_id"], t["segment"]): t for t in doc["tests"] if t["test_id"] == "oprisk.capital_stability"}
         for c, dc in zip(h["cells"], doc["outputs"]["cells"], strict=True):
             assert c["id"] == dc["id"]
@@ -211,7 +229,9 @@ def main() -> int:
                 ab_acc[name]["a"].append(arr[a][ok])
                 ab_acc[name]["b"].append(arr[b][ok])
                 ab_acc[name]["cells"].append(f"{vid}:{c['id']}")
-            # the precision of the measurement: spread of the IQR over random subsets (splice and closed-form rungs)
+            # the precision of the measurement: spread of the IQR over random subsets drawn WITH replacement from the defined histories of
+            # the cell (a subset of m histories of the process; without replacement a subset of 500 of 550 shares most of its histories
+            # with every other and its spread is shrunk by the finite-population factor), for the sizes that the cell can supply
             sub = {}
             r2 = np.random.default_rng(SETTINGS["subset_seed"] + len(res["cells"]))
             for r in ("lda_splice", "sla"):
@@ -220,15 +240,24 @@ def main() -> int:
                 for m in SETTINGS["subset_sizes"]:
                     if m > x.size:
                         continue
-                    if m == x.size:
-                        row[str(m)] = {"mean": float(np.subtract(*np.percentile(x, [75, 25]))), "sd": 0.0}
-                        continue
                     vals = []
                     for _ in range(SETTINGS["subset_draws"]):
-                        s = r2.choice(x, size=m, replace=False)
+                        s = r2.choice(x, size=m, replace=True)
                         vals.append(float(np.subtract(*np.percentile(s, [75, 25]))))
                     row[str(m)] = {"mean": float(np.mean(vals)), "sd": float(np.std(vals, ddof=1))}
                 sub[r] = row
+            # the splice undefined: what the single loss approximation does on those histories (the proxy for the unobservable error of the splice there)
+            fail = ~np.isfinite(arr["lda_splice"])
+            lsla = np.abs(np.log(arr["sla"]))
+            cell["splice_undefined"] = {"n_undefined": int(fail.sum()),
+                                        "median_abs_log_sla_undefined": float(np.median(lsla[fail])) if fail.any() else float("nan"),
+                                        "median_abs_log_sla_defined": float(np.median(lsla[~fail]))}
+            # the two mean-corrected rungs on paired histories: they differ by one severity mean
+            ok57 = np.isfinite(arr["sla_mean_corrected"]) & np.isfinite(arr["sla_mean_adjusted"])
+            if ok57.any():
+                rel = np.abs(arr["sla_mean_adjusted"][ok57] / arr["sla_mean_corrected"][ok57] - 1)
+                rel57.append(rel)
+                cell["rung5_vs_rung7"] = {"n_paired": int(ok57.sum()), "median_rel_diff": float(np.median(rel)), "max_rel_diff": float(rel.max())}
             cell["subset_iqr"] = sub
             res["cells"].append(cell)
     # claims of the SDD item, evaluated
@@ -269,6 +298,67 @@ def main() -> int:
             "from_log_sd": float(np.std(la, ddof=1)), "to_log_sd": float(np.std(lb, ddof=1)),
             "delta_log_sd_ci": [float(np.percentile(dsd, 2.5)), float(np.percentile(dsd, 97.5))],
             "from_below": float((xa < 1).mean()), "to_below": float((xb < 1).mean())}
+    # the hypothesis stated before the bake of the robust rungs, with the rule of the case parameters, over the 16 cells and by tail index
+    rh = SETTINGS["robust_hypothesis"]
+
+    def verdict(n: int, spread: int, bias: int) -> str:
+        if n == 0:
+            return "inconclusive"
+        if min(spread, bias) / n < rh["refuted_below_share"]:
+            return "refuted"
+        return "holds" if min(spread, bias) / n >= rh["holds_at_share"] else "inconclusive"
+
+    res["robust_hypothesis"] = {"rule": rh, "by_rung": {}}
+    matches_doc = True
+    for k, rung in enumerate(rh["rungs"]):
+        per_var = {}
+        tot = [0, 0, 0]
+        for vid in VARIANTS:
+            n = sp = bi = 0
+            for c in res["cells"]:
+                if c["variant"] != vid:
+                    continue
+                a, b = c["rungs"][rung], c["rungs"][rh["against"]]
+                if not a["n_defined"] or not b["n_defined"]:
+                    continue
+                n += 1
+                sp += a["iqr"] < b["iqr"]
+                bi += abs(math.log(a["median"])) < abs(math.log(b["median"]))
+            per_var[vid] = {"cells": n, "smaller_spread": sp, "smaller_bias": bi, "verdict": verdict(n, sp, bi)}
+            tot = [tot[0] + n, tot[1] + sp, tot[2] + bi]
+            matches_doc &= robust_doc_counts[vid]["counts"][k] == [sp, n, bi] and robust_doc_counts[vid]["verdicts"][k] == per_var[vid]["verdict"]
+        res["robust_hypothesis"]["by_rung"][rung] = {"cells": tot[0], "smaller_spread": tot[1], "smaller_bias": tot[2], "verdict": verdict(*tot),
+                                                     "by_variant": per_var}
+    res["robust_hypothesis"]["matches_committed_findings"] = bool(matches_doc)
+    # the cells of the smallest and the largest splice interquartile range
+    ext = {}
+    for key, fn in (("min", min), ("max", max)):
+        c = fn(res["cells"], key=lambda c: c["rungs"]["lda_splice"]["iqr"])
+        s_ = c["rungs"]["lda_splice"]
+        ext[key] = {"variant": c["variant"], "tail_index": c["tail_index"], "id": c["id"], "years": c["years"], "threshold_eur": c["threshold_eur"],
+                    "n_defined": s_["n_defined"], "iqr": s_["iqr"], "iqr_ci": s_["ci"]["iqr"]}
+    res["splice_iqr_extremes"] = ext
+    # where the splice and the truncated lognormal are undefined: the higher threshold against the lower one, in the 8 pairs of cells
+    pat = {}
+    for rung in ("lda_splice", "lda_lognormal_truncated"):
+        fewer = more = same = 0
+        for vid in VARIANTS:
+            for yrs in (5, 10):
+                lo = next(c for c in res["cells"] if c["variant"] == vid and c["years"] == yrs and c["threshold_eur"] == 10000)["rungs"][rung]["n_defined"]
+                hi = next(c for c in res["cells"] if c["variant"] == vid and c["years"] == yrs and c["threshold_eur"] == 20000)["rungs"][rung]["n_defined"]
+                fewer += hi < lo
+                more += hi > lo
+                same += hi == lo
+        pat[rung] = {"pairs": 8, "higher_threshold_fewer": fewer, "higher_threshold_more": more, "equal": same}
+    res["undefined_pattern"] = pat
+    su = [c["splice_undefined"] for c in res["cells"] if c["splice_undefined"]["n_undefined"] > 0]
+    res["splice_undefined_proxy"] = {"cells_with_undefined": len(su),
+                                     "cells_sla_further_on_undefined": sum(1 for u in su if u["median_abs_log_sla_undefined"] > u["median_abs_log_sla_defined"])}
+    # the two mean-corrected rungs on paired histories
+    r57 = np.concatenate(rel57) if rel57 else np.array([])
+    res["rung5_vs_rung7"] = {"n_paired": int(r57.size), "cells": len(rel57), "median_rel_diff": float(np.median(r57)), "p95_rel_diff": float(np.percentile(r57, 95)),
+                             "max_rel_diff": float(r57.max()), "n_defined_by_cell": {f"{c['variant']}:{c['id']}": [c["rungs"]["sla_mean_corrected"]["n_defined"],
+                                                                                                                  c["rungs"]["sla_mean_adjusted"]["n_defined"]] for c in res["cells"]}}
     # the theory against the measurement
     th = []
     for c in res["cells"]:
@@ -276,6 +366,7 @@ def main() -> int:
         t = c["theory"]
         th.append({"variant": c["variant"], "id": c["id"], "tail_index": c["tail_index"], "sd_measured": m["log_sd"], "sd_predicted": t["sd_log"],
                    "relative_error": (t["sd_log"] - m["log_sd"]) / m["log_sd"], "iqr_measured": m["iqr"], "iqr_predicted": t["iqr"],
+                   "median_measured": m["median"], "iqr_predicted_scaled": t["iqr"] * m["median"], "ell": t["ell"], "L": t["L"],
                    "share_measured": c["tail_profile"][0]["share_at_least_one"], "share_predicted": t["share_xi_hat_at_least_one"],
                    "share_abs_error": abs(c["tail_profile"][0]["share_at_least_one"] - t["share_xi_hat_at_least_one"]),
                    "years_green": t["years_green"], "records_green": t["records_green"]})
@@ -285,7 +376,8 @@ def main() -> int:
         "max_abs_error_share_near_one": max(r["share_abs_error"] for r in th if r["tail_index"] in (0.96, 1.1)),
         "sd_held": max(abs(r["relative_error"]) for r in th) <= SETTINGS["pre_stated"]["sd_relative_error"],
         "share_held": max(r["share_abs_error"] for r in th if r["tail_index"] in (0.96, 1.1)) <= SETTINGS["pre_stated"]["share_absolute_error"],
-        "mean_relative_error_sd": float(np.mean([r["relative_error"] for r in th]))}
+        "mean_relative_error_sd": float(np.mean([r["relative_error"] for r in th])),
+        "mean_abs_relative_error_sd": float(np.mean([abs(r["relative_error"]) for r in th]))}
     # the shares of the SDD item
     s096 = [c["tail_profile"][0]["share_at_least_one"] for c in res["cells"] if c["tail_index"] == 0.96]
     s11 = [1 - c["tail_profile"][0]["share_at_least_one"] for c in res["cells"] if c["tail_index"] == 1.1]
@@ -297,6 +389,8 @@ def main() -> int:
     print("splice IQR range:", res["splice_iqr_range"])
     print("infinite mean:", res["infinite_mean"])
     print("theory verdict:", res["theory_verdict"])
+    print("robust hypothesis:", {k: {a: b for a, b in v.items() if a != "by_variant"} for k, v in res["robust_hypothesis"]["by_rung"].items()},
+          "matches committed findings:", res["robust_hypothesis"]["matches_committed_findings"])
     return 0
 
 

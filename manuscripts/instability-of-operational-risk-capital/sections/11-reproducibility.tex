@@ -9,5 +9,5 @@ Four commands rebuild every table and figure from the manuscript folder, in this
 \item \texttt{python tables/make\_tables.py} writes the nine tables and the number macros.
 \item \texttt{python figures/make\_figures.py} writes the nine figures as vector PDF.
 \end{enumerate}
-The bibliography is rebuilt with \texttt{experiments/fetch\_references.py}, which fetches each record. The seeds are in \cref{eq:seeds} with $s_0=42$ and in the settings of \texttt{analyse.py}. The bake of the 16{,}000 histories takes about 70 minutes on ten processes; the extraction takes under a minute, the analysis about 20 seconds, the tables and figures a few seconds, and the check of eight histories about 25 seconds on eight processes.
+The bibliography is rebuilt with \texttt{experiments/fetch\_references.py}, which fetches each record. The seeds are in \cref{eq:seeds} with $\varsigma_0=42$ and in the settings of \texttt{analyse.py}. The bake of the 16{,}000 histories takes about 70 minutes on ten processes; the extraction takes under a minute, the analysis about 20 seconds, the tables and figures a few seconds, and the check of eight histories about 25 seconds on eight processes.
 The per-history files total about 2 MB. The document builds with \texttt{pdflatex} and \texttt{bibtex} from the manuscript folder.

@@ -34,7 +34,7 @@ the spread of $r$ is small; the spread is measured by the interquartile range of
 Three questions follow. First, how large are the spread and the bias of $r$ for each rung in each cell, and does any rung pass a stated limit? Second, since the fitted tail index decides whether a mean exists, how often does a history lead to the wrong conclusion about the mean:
 the share of histories with $\hat\xi\ge1$ when $\xi<1$, and with $\hat\xi<1$ when $\xi>1$? Third, what drives the spread, and how much history would a stability limit require? The first two are measurements; the third is answered by the theory of \cref{sec:theory} and checked against the measurements.
 
-The questions are ordered by what a validator can act on. The first sets the size of the problem on a ladder of estimators among which a bank may choose. The second isolates a decision that rests on one parameter and has consequences beyond the capital, because the existence of the mean decides whether an expected shortfall and a mean correction can be computed at all. The third turns the observed dispersion into a quantity the validator can compute for a bank, the length of history. Each is answered by a table of the Results and by a prediction of the Experimental design.
+The questions are ordered by what a validator can act on. The first sets the size of the problem on a ladder of estimators among which a bank may choose. The second isolates a decision that rests on one parameter and has consequences beyond the capital, because the existence of the mean decides whether an expected shortfall and a mean correction can be computed at all. The third turns the observed dispersion into a quantity the validator can compute for a bank, the length of history. Each is answered by a table of the Results, and the third also by hypotheses of the Experimental design.
 
 \subsection{Assumptions and where each comes from}
 \label{sec:problem-assumptions}
@@ -51,7 +51,7 @@ The seeds of different histories are disjoint, so histories are independent draw
 
 \begin{table}[htbp]
 \centering\small
-\caption{Notation: the symbols used for the process, the histories, the estimators and the measurement, with their meaning and unit, collected so that each symbol of every equation has one definition.}
+\caption{Notation: the symbols used for the process, the histories, the estimators, the theory and the measurement, with their meaning and unit, collected so that each symbol of the equations has one definition; a symbol with a hat is an estimate from a history.}
 \label{tab:notation}
 \begin{tabularx}{\textwidth}{lXl}
 \toprule
@@ -70,6 +70,23 @@ $L$ & $\ln\bigl(\lambda_H/(1-\alpha)\bigr)$, the logarithm of the extrapolation 
 $\sigma$ & standard deviation of $\ln r$ & 1 \\
 $\Phi,\ z_p$ & standard normal distribution function and its quantile of order $p$ & 1 \\
 $R,\ B$ & histories per cell and bootstrap resamples & 1 \\
+$F,\ f,\ \theta$ & distribution function, density and parameters of the severity & 1, EUR$^{-1}$, 1 \\
+$\lambda_{\mathrm{obs}},\ \lambda_{\mathrm{full}}$ & recorded rate and rate rescaled to the whole severity, \cref{eq:truncation} & a year$^{-1}$ \\
+$\mathcal{L}$ & log-likelihood of the truncated severity, \cref{eq:truncation} & 1 \\
+$\mathcal{E}$ & estimation rung, a function from a recorded history to a capital & EUR \\
+$\mathcal{F},\ \Delta,\ G$ & discrete Fourier transform, step and number of points of the grid of the truth & 1, EUR, 1 \\
+$y_j,\ j^\ast$ & probability that $Z$ equals $j\Delta$ and the index of the quantile, \cref{eq:fft-truth} & 1 \\
+$\varsigma,\ \varsigma_0$ & seed of a history and base seed, \cref{eq:seeds} & 1 \\
+$v,\ c,\ m$ & variant, cell and index of the history in the seed formula & 1 \\
+$n_{\mathrm{def}},\ n_{\mathrm{fit}}$ & histories on which a rung returns a capital and histories with a fitted tail index & 1 \\
+$\hat q^{\mathrm{mc}},\ \hat q^{\mathrm{ma}},\ \hat\mu$ & mean-corrected and mean-adjusted capital and the fitted severity mean, \cref{eq:mean-corrections} & EUR \\
+$\mathrm{BIC},\ \mathrm{ILM},\ LC,\ \mathrm{ORC}$ & business indicator component, internal loss multiplier, loss component and capital of the standardised approach, \cref{eq:sma} & EUR, 1, EUR, EUR \\
+$\overline{Z}_H$ & average annual recorded loss over the years of the history & EUR \\
+$\hat p,\ z$ & share and normal quantile of the Wilson interval, \cref{eq:wilson} & 1 \\
+$\Sigma$ & asymptotic covariance of the fitted tail index and scale, \cref{eq:mle-cov} & 1 \\
+$A,\ E,\ \ell$ & $A=\lambda_H/(1-\alpha)$ so that $L=\ln A$, $E=A^{\xi}$ and $\ell=L-1/\xi$ & 1 \\
+$g_\xi,\ g_\beta,\ g_\lambda$ & sensitivities of $\ln q$ to the index, the log scale and the log rate, \cref{eq:sensitivities} & 1 \\
+$I^\ast,\ \sigma^\ast,\ T^\ast$ & stability limit on the interquartile range, the dispersion that reaches it and the history that reaches it, \cref{eq:years} & 1, 1, years \\
 \bottomrule
 \end{tabularx}
 \end{table}

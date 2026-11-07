@@ -138,20 +138,88 @@ def macros() -> None:
         mac(f"ab{n}Lo", pc(a["delta_within_ci"][0], 1))
         mac(f"ab{n}Hi", pc(a["delta_within_ci"][1], 1))
         mac(f"ab{n}N", f"{a['n_paired']:,}".replace(",", "{,}"))
+        mac(f"ab{n}Cells", str(a["n_cells"]))
+        if name in ("cvm", "obre"):
+            assert a["delta_within"] < 0, name  # the text says "lowers ... by"
+            mac(f"ab{n}Down", pc(-a["delta_within"], 1))
+            mac(f"ab{n}DownLo", pc(-a["delta_within_ci"][1], 1))
+            mac(f"ab{n}DownHi", pc(-a["delta_within_ci"][0], 1))
     for r, rs in RUNG.items():
         p = R["pooled"][r]
         mac(f"pl{rs}Within", pc(p["share_within_factor"], 1))
         mac(f"pl{rs}Def", pc(p["share_defined"], 0))
         mac(f"pl{rs}Iqr", f2(p["mean_cell_iqr"]))
         mac(f"pl{rs}Med", f2(p["mean_cell_median"]))
-    # the precision of the measurement: relative standard deviation of the IQR over random subsets, pooled over cells
+    # the precision of the measurement: relative standard deviation of the IQR over random subsets drawn with replacement, median over the cells
+    # that have that many defined histories, and the relative standard deviation of the full-sample bootstrap of every cell
+    import statistics
     for rung, rs in (("lda_splice", "Sp"), ("sla", "Sl")):
         for m in R["settings"]["subset_sizes"]:
             rel = [c["subset_iqr"][rung][str(m)]["sd"] / c["subset_iqr"][rung][str(m)]["mean"] for c in CELLS
                    if rung in c["subset_iqr"] and str(m) in c["subset_iqr"][rung] and c["subset_iqr"][rung][str(m)]["mean"] > 0]
             if rel:
-                import statistics
                 mac(f"sub{rs}{SIZE[m]}", pc(statistics.median(rel), 0))
+                mac(f"sub{rs}{SIZE[m]}Cells", str(len(rel)))
+        boot = [c["rungs"][rung]["ci"]["iqr_sd"] / c["rungs"][rung]["iqr"] for c in CELLS]
+        mac(f"boot{rs}Med", pc(statistics.median(boot), 0))
+        mac(f"boot{rs}Min", pc(min(boot), 0))
+        mac(f"boot{rs}Max", pc(max(boot), 0))
+    ext = R["splice_iqr_extremes"]
+    for key, nm in (("min", "Min"), ("max", "Max")):
+        e = ext[key]
+        mac(f"sp{nm}Xi", f"{e['tail_index']:g}")
+        mac(f"sp{nm}Years", str(e["years"]))
+        mac(f"sp{nm}H", f"{e['threshold_eur']:,}".replace(",", "{,}"))
+        mac(f"sp{nm}Lo", f2(e["iqr_ci"][0]))
+        mac(f"sp{nm}Hi", f2(e["iqr_ci"][1]))
+        mac(f"sp{nm}Ndef", str(e["n_defined"]))
+    up = R["undefined_pattern"]
+    mac("spHiFewer", str(up["lda_splice"]["higher_threshold_fewer"]))
+    mac("spHiMore", str(up["lda_splice"]["higher_threshold_more"]))
+    mac("trHiFewer", str(up["lda_lognormal_truncated"]["higher_threshold_fewer"]))
+    mac("trHiMore", str(up["lda_lognormal_truncated"]["higher_threshold_more"]))
+    mac("trHiSame", str(up["lda_lognormal_truncated"]["equal"]))
+    px = R["splice_undefined_proxy"]
+    mac("proxyFurther", str(px["cells_sla_further_on_undefined"]))
+    mac("proxyCells", str(px["cells_with_undefined"]))
+    # the theory: the signed and the absolute mean error, the interquartile range scaled by the measured median
+    mac("thSdMeanAbsErr", pc(R["theory_verdict"]["mean_abs_relative_error_sd"], 1))
+    sc = [t["iqr_predicted_scaled"] / t["iqr_measured"] for t in R["theory_check"]]
+    mac("thIqrScaledMin", f2(min(sc)))
+    mac("thIqrScaledMax", f2(max(sc)))
+    mac("thIqrScaledErr", pc(max(abs(x - 1) for x in sc), 0))
+    meds = [t["median_measured"] for t in R["theory_check"]]
+    mac("slMedMin", f2(min(meds)))
+    mac("slMedMax", f2(max(meds)))
+    ells = [t["ell"] for t in R["theory_check"]]
+    mac("ellMin", f"{min(ells):.1f}")
+    mac("ellMax", f"{max(ells):.1f}")
+    lams = [d["lambda_floor"] for d in R["variants"].values()]
+    mac("lamMin", f"{min(lams):.0f}")
+    mac("lamMax", f"{max(lams):.0f}")
+    mac("lamMean", f"{sum(lams) / len(lams):.0f}")
+    mac("tailOrderLo", f"{1e5 * 0.001 / min(lams) * 1:.1f}")  # 10^-5 units: the smallest rate gives the largest tail probability
+    mac("tailOrderHi", f"{1e5 * 0.001 / max(lams):.1f}")
+    mac("tailOrderMean", f"{1e5 * 0.001 / (sum(lams) / len(lams)):.1f}")
+    # the hypothesis stated before the bake of the robust rungs
+    rh = R["robust_hypothesis"]
+    for rung, nm in (("sla_cvm", "Cvm"), ("sla_obre", "Obre")):
+        b = rh["by_rung"][rung]
+        mac(f"rh{nm}Spread", str(b["smaller_spread"]))
+        mac(f"rh{nm}Bias", str(b["smaller_bias"]))
+        mac(f"rh{nm}BiasShare", f2(b["smaller_bias"] / b["cells"]))
+        for vid, v in b["by_variant"].items():
+            mac(f"rh{nm}Bias{VAR[vid]}", str(v["smaller_bias"]))
+    mac("rhCells", str(rh["by_rung"]["sla_cvm"]["cells"]))
+    mac("rhHolds", pc(rh["rule"]["holds_at_share"], 0))
+    mac("rhRefuted", pc(rh["rule"]["refuted_below_share"], 0))
+    # the two mean-corrected rungs
+    r57 = R["rung5_vs_rung7"]
+    mac("rFiveSevenMed", pc(r57["median_rel_diff"], 1))
+    mac("rFiveSevenPct", pc(r57["p95_rel_diff"], 1))
+    mac("rFiveSevenMax", pc(r57["max_rel_diff"], 1))
+    mac("rFiveSevenCells", str(r57["cells"]))
+    mac("rFiveSevenPairs", f"{r57['n_paired']:,}".replace(",", "{,}"))
     for vid, c in sma_rows():
         if c["id"] == "y10-h20000":
             o = c["sma"]["orc_over_true_quantile"]
@@ -161,8 +229,22 @@ def macros() -> None:
         qd = figkit.doc(f"C17/{vid}.json")["outputs"]["exceedance"]["quantile_999_eur"]
         mac(f"slGap{VAR[vid]}", pc(1 - qd["sla"] / qd["fft"], 1))
         mac(f"panGap{VAR[vid]}", f"{100 * abs(qd['panjer'] / qd['fft'] - 1):.2f}")
+    gap = {}
+    for vid in R["variants"]:
+        qd = figkit.doc(f"C17/{vid}.json")["outputs"]["exceedance"]["quantile_999_eur"]
+        gap[vid] = qd["sla"] / qd["fft"]
+    mac("slBelowGapCells", str(sum(1 for c in CELLS if c["rungs"]["sla"]["median"] < gap[c["variant"]])))
     mac("slBelowCells", str(sum(1 for c in CELLS if c["rungs"]["sla"]["median"] < 1)))
     mac("slMeanMed", f2(R["pooled"]["sla"]["mean_cell_median"]))
+    sb = [c["rungs"]["sla"]["share_below_one"] for c in CELLS]
+    mac("slBelowMin", pc(min(sb), 0))
+    mac("slBelowMax", pc(max(sb), 0))
+    # how much the relative sd of the IQR falls between 50 and 500 histories, per cell that supplies both sizes (the n^(-1/2) reference is sqrt(10))
+    for rung, rs in (("lda_splice", "Sp"), ("sla", "Sl")):
+        d = [c["subset_iqr"][rung]["50"]["sd"] / c["subset_iqr"][rung]["50"]["mean"] / (c["subset_iqr"][rung]["500"]["sd"] / c["subset_iqr"][rung]["500"]["mean"])
+             for c in CELLS if "500" in c["subset_iqr"][rung]]
+        mac(f"drop{rs}", f"{sorted(d)[len(d) // 2] if len(d) % 2 else (sorted(d)[len(d) // 2 - 1] + sorted(d)[len(d) // 2]) / 2:.1f}")
+    mac("sqrtTen", f"{math.sqrt(10):.1f}")
     mac("nFailed", str(sum(c["n_failed"] for c in CELLS)))
     # the worked example of the theory: xi = 0.96, 5 years, threshold EUR 10,000 and the band of indistinguishability
     ex = next(c for c in CELLS if c["variant"] == "xi-0-96" and c["id"] == "y5-h10000")["theory"]
@@ -254,7 +336,7 @@ def tab_rungs() -> None:
             rows.append("\\midrule")
     table("tab-rungs", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The ten estimation rungs over the 16 cells: the share of the 16{,}000 histories on which the rung returns a capital, the mean over cells of the "
           "median ratio to the truth, the range over cells of the interquartile range of the ratio, the share of defined histories within a factor of two of the truth with its Wilson 95 percent interval, "
-          "and the number of cells on which the capital stability test is red.}\n\\label{tab:rungs}\n"
+          "and the number of cells on which the capital stability test is red out of the cells on which the rung returns a capital. The mean-corrected single loss approximation is not computed at the tail index 1.1, whose true mean does not exist, so its row covers the other three tail indices only.}\n\\label{tab:rungs}\n"
           "\\fitwidth{\\begin{tabular}{lrrrrr}\n\\toprule\nRung & Defined (\\%) & Mean median & IQR range over cells & Within factor 2 (\\%) [95\\% CI] & Red cells \\\\\n\\midrule\n"
           + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n")
 
@@ -281,13 +363,13 @@ def tab_theory() -> None:
     for c, t in zip(CELLS, R["theory_check"], strict=True):
         th = c["theory"]
         rows.append(f"{c['tail_index']:g} & {c['years']} & {c['threshold_eur'] // 1000} & {th['k']:.0f} & {f3(t['sd_measured'])} & {f3(t['sd_predicted'])} & {100 * t['relative_error']:+.1f} & "
-                    f"{f2(t['iqr_measured'])} & {f2(t['iqr_predicted'])} & {t['years_green']:.0f} \\\\")
+                    f"{f2(t['iqr_measured'])} & {f2(t['iqr_predicted'])} & {f2(t['iqr_predicted_scaled'])} & {t['years_green']:.0f} \\\\")
         if c["id"] == "y10-h20000" and c["tail_index"] != 1.1:
             rows.append("\\midrule")
     table("tab-theory", "\\begin{table}[htbp]\n\\centering\\scriptsize\n\\caption{The dispersion of the single loss approximation predicted by the delta method at the true parameters against the dispersion measured "
           "over the 1{,}000 histories of each cell: the expected number of recorded losses $k$, the standard deviation of the logarithm of the ratio, measured and predicted, the relative error of the prediction in percent, "
-          "the interquartile range of the ratio, measured and predicted by a lognormal of the predicted dispersion, and the years of history at which the predicted interquartile range reaches 0.25.}\n\\label{tab:theory}\n"
-          "\\fitwidth{\\begin{tabular}{rrrrrrrrrr}\n\\toprule\n$\\xi$ & Years & $H$ (EUR k) & $k$ & $\\mathrm{sd}$ measured & $\\mathrm{sd}$ predicted & Error (\\%) & IQR measured & IQR predicted & Years for 0.25 \\\\\n\\midrule\n"
+          "the interquartile range of the ratio, measured, predicted by a lognormal of the predicted dispersion with median one, and the same prediction multiplied by the measured median of the cell, and the years of history at which the predicted interquartile range reaches 0.25.}\n\\label{tab:theory}\n"
+          "\\fitwidth{\\begin{tabular}{rrrrrrrrrrr}\n\\toprule\n$\\xi$ & Years & $H$ (EUR k) & $k$ & $\\mathrm{sd}$ measured & $\\mathrm{sd}$ predicted & Error (\\%) & IQR measured & IQR predicted & IQR scaled & Years for 0.25 \\\\\n\\midrule\n"
           + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n")
 
 
@@ -307,32 +389,54 @@ def tab_ablation() -> None:
 def tab_lights() -> None:
     rows = []
     for m, d in R["lights"]["by_rung"].items():
-        rows.append(f"{m.replace('-', ' ')} & {d['green']} & {d['amber']} & {d['red']} \\\\")
+        rows.append(f"{LABEL[m.replace('-', '_')]} & {d['green']} & {d['amber']} & {d['red']} \\\\")
     table("tab-lights", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The lights of the capital stability test over the 16 cells for each rung, against the limits of 0.25 and 0.50 on the "
           "interquartile range of the ratio and 0.10 and 0.25 on the absolute bias: the number of cells in which each rung is green, amber and red, from the committed documents.}\n\\label{tab:lights}\n"
           "\\begin{tabular}{lrrr}\n\\toprule\nRung & Green & Amber & Red \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
 
 
+def _variant_outcome(rung: str) -> str:
+    """The verdict of the pre-stated hypothesis for one rung at each tail index, from the same rule as over the 16 cells."""
+    word = {"holds": "held", "refuted": "refuted", "inconclusive": "inconclusive"}
+    groups: dict[str, list[str]] = {}
+    for vid, v in R["robust_hypothesis"]["by_rung"][rung]["by_variant"].items():
+        groups.setdefault(word[v["verdict"]], []).append(f"{R['variants'][vid]['tail_index']:g}")
+    return "; ".join(f"{k} at {' and '.join(v)}" for k, v in groups.items())
+
+
 def tab_hypotheses() -> None:
     inf, tv, L = R["infinite_mean"], R["theory_verdict"], R["lights"]
     lo, hi = R["splice_iqr_range"]
-    rows = [
-        ("H1", "The interquartile range of the splice capital over the true quantile lies between 1.35 and 3.30 in the 16 cells",
-         f"{lo:.4f} to {hi:.4f}", "Held" if round(lo, 2) == 1.35 and round(hi, 2) == 3.30 else "Refuted"),
-        ("H2", "Every capital stability row of the six-rung ladder is red", f"{L['six_rung_red']} of {L['six_rung_rows']} rows red ({L['red']} of {L['total']} with the four robust rungs)",
-         "Held" if L["six_rung_red"] == L["six_rung_rows"] else "Refuted"),
-        ("H3", "27 to 34 percent (whole percent) of the histories at $\\xi=0.96$ conclude an infinite mean", f"{pc(inf['xi_0_96_conclude_infinite'][0])} to {pc(inf['xi_0_96_conclude_infinite'][1])} percent",
-         "Held" if round(100 * inf["xi_0_96_conclude_infinite"][0]) == 27 and round(100 * inf["xi_0_96_conclude_infinite"][1]) == 34 else "Refuted"),
-        ("H4", "9 to 27 percent (whole percent) of the histories at $\\xi=1.1$ conclude a finite mean", f"{pc(inf['xi_1_1_conclude_finite'][0])} to {pc(inf['xi_1_1_conclude_finite'][1])} percent",
-         "Held" if round(100 * inf["xi_1_1_conclude_finite"][0]) == 9 and round(100 * inf["xi_1_1_conclude_finite"][1]) == 27 else "Refuted"),
-        ("H5", "The delta-method dispersion of the single loss approximation is within 25 percent of the measured one in every cell",
-         f"largest relative error {pc(tv['max_relative_error_sd'])} percent", "Held" if tv["sd_held"] else "Refuted"),
-        ("H6", "The predicted share of histories with $\\hat\\xi\\ge1$ is within 5 points of the measured one in every cell at $\\xi=0.96$ and $1.1$",
-         f"largest absolute error {pc(tv['max_abs_error_share_near_one'])} points", "Held" if tv["share_held"] else "Refuted")]
-    body = "\n".join(f"{a} & {b} & {c} & {d} \\\\" for a, b, c, d in rows)
-    table("tab-hypotheses", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The six predictions stated before the measurements, the value measured on the 16{,}000 histories, and whether each held. "
-          "H1 to H4 are the quantitative statements of the measurement; H5 and H6 are the predictions of the theory, with the tolerances fixed before they were compared with the 16 cells.}\n\\label{tab:hypotheses}\n"
-          "\\begin{tabularx}{\\textwidth}{lXXl}\n\\toprule\nId & Prediction & Measured & Outcome \\\\\n\\midrule\n" + body + "\n\\bottomrule\n\\end{tabularx}\n\\end{table}\n")
+    rh = R["robust_hypothesis"]
+    word = {"holds": "Held", "refuted": "Refuted", "inconclusive": "Inconclusive"}
+    cvm, obre = rh["by_rung"]["sla_cvm"], rh["by_rung"]["sla_obre"]
+    n = cvm["cells"]
+    same = _variant_outcome("sla_cvm") == _variant_outcome("sla_obre")
+    by_tail = _variant_outcome("sla_cvm") if same else f"Cram\\'er-von Mises {_variant_outcome('sla_cvm')}; bias-robust {_variant_outcome('sla_obre')}"
+    hyp = [
+        ("H1", "The Cram\\'er-von Mises and the optimally bias-robust fits have a smaller interquartile range and a median ratio nearer to 1 than the splice in at least "
+               f"{pc(rh['rule']['holds_at_share'], 0)} percent of the cells; refuted when either count is under {pc(rh['rule']['refuted_below_share'], 0)} percent",
+         f"Cram\\'er-von Mises: smaller spread in {cvm['smaller_spread']} and nearer median in {cvm['smaller_bias']} of {n} cells; bias-robust: {obre['smaller_spread']} and {obre['smaller_bias']} of {n}. "
+         f"By tail index: {by_tail}", word[cvm["verdict"]] + " over the " + str(n) + " cells" if cvm["verdict"] == obre["verdict"] else "Cram\\'er-von Mises " + word[cvm["verdict"]].lower() + ", bias-robust " + word[obre["verdict"]].lower()),
+        ("H2", f"The delta-method dispersion of the single loss approximation is within {pc(R['settings']['pre_stated']['sd_relative_error'], 0)} percent of the measured one in every cell",
+         f"largest relative error {pc(tv['max_relative_error_sd'])} percent", word["holds" if tv["sd_held"] else "refuted"]),
+        ("H3", f"The predicted share of histories with $\\hat\\xi\\ge1$ is within {pc(R['settings']['pre_stated']['share_absolute_error'], 0)} points of the measured one in every cell at $\\xi=0.96$ and $1.1$",
+         f"largest absolute error {pc(tv['max_abs_error_share_near_one'])} points", word["holds" if tv["share_held"] else "refuted"])]
+    rep = [
+        ("R1", "The interquartile range of the splice capital over the true quantile lies between 1.35 and 3.30 in the 16 cells",
+         f"{lo:.4f} to {hi:.4f}", "Reproduced" if round(lo, 2) == 1.35 and round(hi, 2) == 3.30 else "Not reproduced"),
+        ("R2", "Every capital stability row of the six-rung ladder is red", f"{L['six_rung_red']} of {L['six_rung_rows']} rows red ({L['red']} of {L['total']} with the four robust rungs)",
+         "Reproduced" if L["six_rung_red"] == L["six_rung_rows"] else "Not reproduced"),
+        ("R3", "27 to 34 percent (whole percent) of the histories at $\\xi=0.96$ conclude an infinite mean", f"{pc(inf['xi_0_96_conclude_infinite'][0])} to {pc(inf['xi_0_96_conclude_infinite'][1])} percent",
+         "Reproduced" if round(100 * inf["xi_0_96_conclude_infinite"][0]) == 27 and round(100 * inf["xi_0_96_conclude_infinite"][1]) == 34 else "Not reproduced"),
+        ("R4", "9 to 27 percent (whole percent) of the histories at $\\xi=1.1$ conclude a finite mean", f"{pc(inf['xi_1_1_conclude_finite'][0])} to {pc(inf['xi_1_1_conclude_finite'][1])} percent",
+         "Reproduced" if round(100 * inf["xi_1_1_conclude_finite"][0]) == 9 and round(100 * inf["xi_1_1_conclude_finite"][1]) == 27 else "Not reproduced")]
+    fmt = lambda rows: "\n".join(f"{a} & {b} & {c} & {d} \\\\" for a, b, c, d in rows)  # noqa: E731
+    table("tab-hypotheses", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The three hypotheses stated before the measurements that could fail (H1 to H3), and the four statements of the committed summaries "
+          "that the analysis reproduces from the per-history data (R1 to R4). H1 was written into the case parameters before the robust rungs were run and is reported with its outcome over the 16 cells and by tail index; "
+          "H2 and H3 are the predictions of the theory, with tolerances written in the analysis script. R1 to R4 were written into the design after the same 16{,}000 histories had been drawn, so they restate the bake and "
+          "are not tests that could fail.}\n\\label{tab:hypotheses}\n"
+          "\\begin{tabularx}{\\textwidth}{lXXl}\n\\toprule\nId & Statement & Measured & Outcome \\\\\n\\midrule\n" + fmt(hyp) + "\n\\midrule\n" + fmt(rep) + "\n\\bottomrule\n\\end{tabularx}\n\\end{table}\n")
 
 
 def sma_rows() -> list[tuple[str, dict]]:
