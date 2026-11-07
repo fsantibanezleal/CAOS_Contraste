@@ -1,0 +1,139 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The truth and the precision of the measurement}
+\label{sec:res-truth}
+
+The true 99.9 percent quantile of the annual loss grows from EUR \truthA{} million at $\xi=\xiA{}$ to EUR \truthB{}, \truthC{} and \truthD{} million at 0.8, 0.96 and 1.1, a factor of about 60 for a change of the tail index of 0.5 (\cref{tab:truth}). The three computations of the truth agree: the Panjer value differs from the Fourier value by at most \panGapD{} percent and the Monte Carlo of ten million years lies within three standard errors of it in every variant.
+The measurement is itself an estimate over a finite number of histories. \Cref{fig:precision} shows the relative standard deviation of the interquartile range over random subsets of the histories of a cell, median over the cells: for the splice it is \subSpFifty{} percent with 50 histories, \subSpHundred{} percent with 100, \subSpTwoFifty{} percent with 250 and \subSpFiveHundred{} percent with 500, and for the single loss approximation \subSlFifty{}, \subSlHundred{}, \subSlTwoFifty{} and \subSlFiveHundred{} percent.
+The curves follow the $n^{-1/2}$ reference, so the 1{,}000 histories of a cell give the interquartile range of the splice to a relative standard deviation of about five percent (\subSpFiveHundred{} percent at 500 histories divided by $\sqrt2$), which the intervals of \cref{tab:main-results} reflect.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{precision-vs-histories.pdf}
+\caption{Relative standard deviation of the measured interquartile range of the capital ratio over 400 random subsets of 50 to 500 of the 1{,}000 histories of a cell, median over the 16 cells, for the splice and the single loss approximation; the grey line is the $n^{-1/2}$ reference scaled to the first point.}
+\label{fig:precision}
+\end{figure}
+
+\subsection{The main comparison}
+\label{sec:res-main}
+
+\Cref{tab:main-results} gives, for each of the 16 cells, the splice and the single loss approximation as multiples of the true quantile, with 95 percent bootstrap intervals over the 1{,}000 histories. The splice is defined on \cSpDTaNdef{} to \cSpATaNdef{} of the 1{,}000 histories of a cell, and \cref{fig:iqr-by-cell} plots its interquartile range, with the interval, against the tail index for the four cells. The interquartile range of the splice capital lies between \spIqrMin{} and \spIqrMax{} times the true quantile:
+the smallest value is at $\xi=0.6$ with 10 years and a threshold of EUR 20,000, where the interval is \cSpATbIqrLo{} to \cSpATbIqrHi{}, and the largest is at $\xi=0.96$ with 5 years and EUR 20,000. The same table shows a median ratio between \cSpDFaMed{} and \cSpCTbMed{} for the splice, so the splice both understates the truth in the typical history and disperses by a multiple of it.
+For the single loss approximation, which is defined on every history, the interquartile range is between \cSlATaIqr{} and \cSlDFbIqr{}, roughly half of the splice's, and the share of histories below the truth is 50 to 63 percent.
+
+\input{tables/tab-main-results}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{iqr-by-cell.pdf}
+\caption{Interquartile range of the capital divided by the true quantile against the true tail index for the splice (left) and the single loss approximation (right), in the four combinations of history length and collection threshold, with 95 percent bootstrap intervals over 1{,}000 histories; the dotted line is the green limit 0.25 of the product.}
+\label{fig:iqr-by-cell}
+\end{figure}
+
+\Cref{fig:ecdf} shows the distribution of the ratio itself for four rungs in the cell of 10 years and EUR 20,000. The curves are wide on a logarithmic axis: at $\xi=0.96$ the 5th and the 95th percentiles of the splice ratio are \cSpCTbPlo{} and \cSpCTbPhi{}, a factor of more than one hundred, and the share of histories within a factor of two of the truth is only \plSpWithin{} percent for the splice over all cells, against \plSlWithin{} for the single loss approximation and \plScWithin{} for the scenario combination.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ecdf-ratio.pdf}
+\caption{Cumulative share of the 1{,}000 histories of the cell of 10 years and threshold EUR 20,000 whose capital divided by the true quantile is at most the abscissa, for the truncated lognormal, the splice, the single loss approximation and the scenario combination, at the four tail indices; a curve ends below one where the rung is undefined on the remaining histories, and the vertical line marks the truth.}
+\label{fig:ecdf}
+\end{figure}
+
+\subsection{The ladder}
+\label{sec:res-ladder}
+
+\Cref{tab:rungs} summarises the ten rungs over the 16 cells and \cref{fig:iqr-by-rung} plots their interquartile ranges at the shortest and the longest history. No rung is stable. The lognormal that ignores the threshold has a very small interquartile range, \plLgIqr{} on average, because its error is systematic: its median capital is \cLgATbMed{} of the truth at $\xi=0.6$ and \cLgDTbMed{} at $\xi=1.1$,
+and practically no history (\plLgWithin{} percent) falls within a factor of two of the truth. The truncated lognormal removes part of that bias, and is defined on only \plTrDef{} percent of the histories, \cTrDTaNdef{} of the 1{,}000 at $\xi=1.1$ with 10 years and EUR 10,000. The scenario combination has a mean interquartile range of \plScIqr{}, comparable with the mean-adjusted fits (\plMaIqr{}, \plObIqr{} and \plCvIqr{} for the maximum likelihood, bias-robust and Cram\'er-von Mises fits), and the highest share within a factor of two, \plScWithin{} percent, but its prior is the expert's true severity quantile of the generator, rounded to two significant figures, so it measures what an informative prior is worth and not an estimate from data.
+
+\input{tables/tab-rungs}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{iqr-by-rung.pdf}
+\caption{Interquartile range of the capital divided by the true quantile by estimation rung and tail index, in the cell of 5 years and threshold EUR 10,000 (left) and in the cell of 10 years and threshold EUR 20,000 (right), with 95 percent bootstrap intervals; the dotted line is the green limit 0.25 of the product.}
+\label{fig:iqr-by-rung}
+\end{figure}
+
+\Cref{tab:lights} counts the lights of the capital stability test: every rung is red in every cell where it is defined, \redTotal{} of \redTotal{} rows, and \redSix{} of \rowsSix{} on the six-rung ladder. The test combines the interquartile range and the bias, so a rung may be red for either reason; the lognormals, which understate the truth by a large margin, fail on bias, and the splice, the single loss approximation and the scenario combination fail on dispersion.
+
+\input{tables/tab-lights}
+
+\subsection{Bias}
+\label{sec:res-bias}
+
+\Cref{fig:median} plots the median ratio, averaged over the four cells of each tail index. The single loss approximation has a mean median of \plSlMed{}, below one in \slBelowCells{} of the 16 cells, and it approaches one as the tail gets heavier; this follows the gap of the approximation at the true parameters, \slGapA{} percent at $\xi=0.6$ and \slGapD{} percent at $\xi=1.1$ (\cref{sec:theory-conditions}).
+The splice has a mean median of \plSpMed{}, further from one at every tail index, and the scenario combination overshoots, with \plScMed{}. The median is a statement about the typical history and says nothing about a single bank, whose ratio is spread as in \cref{fig:ecdf}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{median-by-xi.pdf}
+\caption{Median capital divided by the true quantile against the true tail index for five rungs, averaged over the four cells of each index in which the rung is defined; the horizontal line marks the truth at one.}
+\label{fig:median}
+\end{figure}
+
+The bias of the splice and of the scenario combination is not a defect of estimation alone. The splice conditions on a fit that succeeds, and the scenario combination takes its tail from the prior, so each has a different relation to the truth than the single loss approximation, whose target is the closed form of the tail.
+
+\subsection{Histories on which a rung is undefined}
+\label{sec:res-undefined}
+
+The engine refuses a fit it cannot make, and the refusal is counted. The splice is defined on \plSpDef{} percent of the 16{,}000 histories and the scenario combination on \plScDef{} percent, and the number varies by cell from \cSpDTaNdef{} of 1{,}000 (splice, $\xi=1.1$, 10 years, EUR 10,000) to 996. The truncated lognormal and the splice fail most often where the tail is heaviest, and more often at the lower threshold, because the maximum likelihood fit of a lognormal to Pareto-like data can run to a degenerate maximum.
+The statistics of these rungs are conditional on the fit succeeding, and the conditioning flatters them: a history on which the fit fails is exactly one in which the capital would have been furthest from the truth. The single loss approximation is defined on every history and its dispersion is unconditional.
+
+The count of undefined histories is itself a result for a validator. A method that returns a capital on fewer than half of the histories of a bank-like process at the heavy tails cannot be applied to a given bank without a fallback, and a fallback changes the statistics reported here.
+
+\subsection{The wrong conclusion about the mean}
+\label{sec:res-mean}
+
+\Cref{tab:tail-index} and \cref{fig:infinite} report the tail index fitted above the collection threshold. At $\xi=0.96$ the share of histories with $\hat\xi\ge1$ is between \infLo{} and \infHi{} percent over the four cells: roughly one history in three concludes that the mean does not exist when it does. At $\xi=1.1$ the share that concludes a finite mean is between \finLo{} and \finHi{} percent.
+The median fitted index at $\xi=0.96$ and 5 years is \cXiCFaMed{}, within the error of the true value, so the wrong conclusion is a property of the spread of the fit and not of a bias. Fitting above two, four and eight times the threshold leaves fewer exceedances and moves the share toward one half (columns $2H$ to $8H$ of \cref{tab:tail-index}), which is the behaviour a threshold-stability plot shows and why the plot cannot settle the question at these sample sizes.
+
+\input{tables/tab-tail-index}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{infinite-mean-share.pdf}
+\caption{Share of histories whose fitted tail index is one or more against the threshold of the tail fit, from the collection threshold $H$ to eight times it, for true tail indices 0.96 (left) and 1.1 (right) in the four cells, with Wilson 95 percent intervals; stars mark the share predicted at $H$ by the normal approximation of the theory.}
+\label{fig:infinite}
+\end{figure}
+
+In no cell of the design is the share of false infinite-mean conclusions at 0.96 below \infLo{} percent, so there is no combination of the lengths and thresholds studied in which a validator can rule out the wrong side of the boundary.
+
+\subsection{The theory against the measurement}
+\label{sec:res-theory}
+
+\Cref{tab:theory} and \cref{fig:theory} set the delta-method dispersion of \cref{eq:dispersion} against the measured standard deviation of the logarithm of the ratio of the single loss approximation. The prediction is within \thSdMaxErr{} percent in every cell and its mean error over cells is \thSdMeanErr{} percent, well inside the tolerance of \preSd{} percent of H5.
+The interquartile range predicted from the lognormal approximation of the ratio is less accurate: it exceeds the measured one in \thIqrOver{} of the 16 cells, by \thIqrMean{} percent on average and up to \thIqrMaxErr{} percent, because the distribution of the logarithm of the ratio is more peaked than a normal one. The share of histories with $\hat\xi\ge1$ predicted by \cref{eq:misclassification} is within \thShareMaxErr{} points of the measured share in the cells at 0.96 and 1.1, inside the tolerance of \preShare{} points of H6, and it is slightly above the measured share in most cells, as the right panel of \cref{fig:theory} shows.
+The same formula gives the history that would bring the interquartile range to 0.25 (\cref{fig:years}): \yrsMin{} years at the lightest tail and shortest threshold and \yrsMax{} years at $\xi=1.1$ with a threshold of EUR 20,000, an order of magnitude more than the 5 or 10 years of a bank.
+
+\input{tables/tab-theory}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{theory-vs-measured.pdf}
+\caption{Measured against predicted standard deviation of the logarithm of the capital ratio of the single loss approximation in the 16 cells, with lines at equality and at plus and minus 25 percent (left), and measured against predicted share of histories with a fitted tail index of one or more at indices 0.96 and 1.1 (right).}
+\label{fig:theory}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{years-for-green.pdf}
+\caption{Years of history at which the predicted interquartile range of the single loss approximation reaches the green limit 0.25 of the product, against the true tail index for the two collection thresholds, on a logarithmic axis; the dotted lines mark the 5 and 10 years of the experiment.}
+\label{fig:years}
+\end{figure}
+
+\subsection{The standardised approach}
+\label{sec:res-sma}
+
+\Cref{tab:sma} gives the capital of the standardised approach as a multiple of the true quantile. It is stable across histories relative to its own level, because it depends on the losses only through the average annual loss and enters the multiplier with the exponent 0.8, and it does not track the tail: its median is \smaA{} times the true quantile at $\xi=0.6$, \smaB{} at 0.8, \smaC{} at 0.96 and \smaD{} at 1.1 in the cell of 10 years and EUR 20,000.
+The approach is not calibrated to the 99.9 percent quantile of any bank, so the ratio is a comparison and not an error; it shows that the standardised capital is neither a conservative nor an aggressive proxy for the quantile of this process, but a quantity that does not move with the tail that the quantile follows.
+
+\input{tables/tab-sma}
+
+\subsection{Whether each hypothesis held}
+\label{sec:res-hypotheses}
+
+\Cref{tab:hypotheses} lists the six predictions of \cref{sec:ed-hypotheses} with the measured values. All six held. H1 holds at two decimals, with a range of \spIqrMin{} to \spIqrMax{}; the bootstrap interval of the smallest cell, \cSpATbIqrLo{} to \cSpATbIqrHi{}, shows that the endpoints of the range are themselves uncertain by tenths of the truth. H2 holds on the six-rung ladder and on the four additional rungs.
+H3 and H4 hold with the ranges \infLo{} to \infHi{} and \finLo{} to \finHi{} percent, which round to the stated 27 to 34 and 9 to 27 at the whole percent. H5 and H6 hold with the errors in the table. The agreement of the delta-method dispersion with the measurement is closer than the sampling noise of the measurement in several cells, so the data cannot separate the prediction from a slightly different formula; the evidence is that the formula is adequate for the purpose of finding the history needed, not that it is exact.
+
+\input{tables/tab-hypotheses}

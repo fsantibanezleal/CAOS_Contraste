@@ -1,0 +1,120 @@
+\section{Theory}
+\label{sec:theory}
+
+The measurement of \cref{sec:results} reports a dispersion. The theory explains it for the rung whose estimator has a closed form, the single loss approximation of \cref{eq:sla}, and gives two consequences that can be tested: the dispersion predicted at the true parameters of each cell, and the share of histories that conclude the wrong thing about the mean.
+Results marked as propositions are derived under the assumptions below; the finite-sample behaviour that the derivation does not cover is stated as a conjecture with its evidence.
+
+\subsection{Assumptions}
+\label{sec:theory-assumptions}
+
+\begin{assumption}
+\label{as:model}
+The recorded losses of a history are $n$ independent draws from a generalised Pareto distribution with tail index $\xi>-\tfrac12$, scale $\beta_H$ and location $H$, and the number of recorded losses is Poisson with mean $k=\lambda_H T$, independent of the amounts.
+\end{assumption}
+
+\Cref{as:model} holds for the generator of this work: a generalised Pareto distribution of location $u_0$, truncated from below at $H\ge u_0$, is again generalised Pareto with the same index, location $H$ and scale $\beta_H=\beta+\xi(H-u_0)$, and the recorded rate is $\lambda_H=\lambda(1+\xi(H-u_0)/\beta)^{-1/\xi}$. It does not hold for a real bank, whose severity is not exactly Pareto above the threshold.
+The estimator is the maximum likelihood fit $(\hat\xi,\hat\beta_H)$ of the recorded excesses over $H$ with the recorded rate $\hat\lambda_H=N/T$, inserted in \cref{eq:sla}. Write $A=\lambda_H/(1-\alpha)$, $L=\ln A$, $E=A^{\xi}$ and $q=H+(\beta_H/\xi)(E-1)$ for the value of \cref{eq:sla} at the true parameters.
+
+\begin{lemma}[Smith, 1987; Drees, Ferreira and de Haan, 2004]
+\label{lem:mle}
+Under \cref{as:model}, as $k\to\infty$, $\sqrt k\,\bigl(\hat\xi-\xi,\ \hat\beta_H/\beta_H-1\bigr)$ converges in distribution to a bivariate normal law with mean zero and covariance
+\begin{equation}
+\Sigma=(1+\xi)\begin{pmatrix}1+\xi&-1\\-1&2\end{pmatrix}.
+\label{eq:mle-cov}
+\end{equation}
+\end{lemma}
+
+The lemma is the standard result for the maximum likelihood estimator of the generalised Pareto parameters, valid for $\xi>-\tfrac12$ and therefore through $\xi=1$ \citep{smith1987,drees2004}; it is a known result and we do not prove it. In particular $\Var(\hat\xi)\approx(1+\xi)^2/k$, so at $\xi=0.96$ with $k=\exK{}$ recorded losses the standard deviation of the fitted index is $(1+\xi)/\sqrt k=\exSdXi{}$.
+
+\subsection{The dispersion of the capital}
+\label{sec:theory-dispersion}
+
+\begin{proposition}[Dispersion of the single loss approximation]
+\label{prop:dispersion}
+Under \cref{as:model}, $\sqrt k\,(\ln\hat q_\alpha-\ln q)$ converges in distribution to a normal law with mean zero and variance
+\begin{equation}
+k\sigma^2=g_\xi^{2}\,(1+\xi)^2-2\,g_\xi g_\beta\,(1+\xi)+2\,g_\beta^{2}\,(1+\xi)+g_\lambda^{2},
+\label{eq:dispersion}
+\end{equation}
+where the sensitivities of the logarithm of the capital to the index, to the logarithm of the scale and to the logarithm of the rate are
+\begin{equation}
+g_\xi=\frac{\beta_H}{q}\Bigl[\frac{E\ln A}{\xi}-\frac{E-1}{\xi^2}\Bigr],\qquad g_\beta=\frac{\beta_H(E-1)}{\xi\,q},\qquad g_\lambda=\frac{\beta_H E}{q}.
+\label{eq:sensitivities}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The capital is the smooth function $q(\xi,\beta_H,\lambda_H)=H+(\beta_H/\xi)\bigl((\lambda_H/(1-\alpha))^{\xi}-1\bigr)$. Differentiating $\ln q$ gives $\partial_\xi\ln q=g_\xi$, $\partial_{\ln\beta}\ln q=g_\beta$ and $\partial_{\ln\lambda}\ln q=g_\lambda$: the last follows from $\partial_\lambda\bigl(A^{\xi}\bigr)=\xi A^{\xi}/\lambda$, which makes $\lambda\,\partial_\lambda q=\beta_H E$. By \cref{lem:mle} and the identity $\ln\hat\beta_H-\ln\beta_H=(\hat\beta_H/\beta_H-1)+o_p(k^{-1/2})$, the pair $(\hat\xi,\ln\hat\beta_H)$ is asymptotically normal with covariance $\Sigma/k$. The count $N$ is Poisson with mean $k$, so $\sqrt k(\ln\hat\lambda_H-\ln\lambda_H)\to\mathcal N(0,1)$, and it is independent of the amounts. The delta method applied to $\ln q$ gives a normal limit with variance $(g_\xi,g_\beta)\Sigma(g_\xi,g_\beta)^{\top}/k+g_\lambda^2/k$, which expands to \cref{eq:dispersion}.
+\end{proof}
+
+\begin{corollary}[Leading order]
+\label{cor:leading}
+If $H\ll q$ and $E\gg1$, as at the level 0.999 with hundreds of recorded losses, then $g_\beta\to1$, $g_\xi\to L-1/\xi$ and $g_\lambda\to\xi$, and
+\begin{equation}
+k\sigma^2\approx(1+\xi)\Bigl[(1+\xi)\,\ell^{2}-2\,\ell+2\Bigr]+\xi^{2},\qquad \ell=L-\frac1\xi .
+\label{eq:leading}
+\end{equation}
+The dispersion of the logarithm of the capital is of order $(1+\xi)\,\ell/\sqrt k$: it grows with the logarithm of the extrapolation factor $\lambda_H/(1-\alpha)$, that is, with the level, and it falls as $k^{-1/2}$, that is, as the inverse square root of the number of recorded losses.
+\end{corollary}
+
+For the generator at $\xi=0.96$, $\lambda_H=73.4$ and $T=5$, one has $L=\ln(\exLam{}/0.001)=\exL{}$, $\ell=\exEll{}$ and $k=\exK{}$, and \cref{eq:leading} gives $\sigma\approx\exSigmaLead{}$, a dispersion of the logarithm of the capital of almost one natural unit: the capital is multiplied or divided by $e^{\sigma}=\exFactor{}$ at one standard deviation. \Cref{tab:theory} evaluates the exact \cref{eq:dispersion} in the 16 cells and compares it with the measurement.
+
+\begin{corollary}[History needed for a stability limit]
+\label{cor:history}
+If $\ln\hat q-\ln q$ is approximately normal with standard deviation $\sigma$ and the median of the ratio is one, the interquartile range of the ratio is $I=2\sinh(z_{0.75}\sigma)$ with $z_{0.75}=0.6745$. The limit $I^\ast$ is reached when $\sigma^\ast=\operatorname{arsinh}(I^\ast/2)/z_{0.75}$, and since $\sigma^2$ falls as $1/T$,
+\begin{equation}
+T^\ast=T\,\frac{\sigma^2}{\sigma^{\ast2}},\qquad \sigma^\ast=\frac{\operatorname{arsinh}(I^\ast/2)}{z_{0.75}},
+\label{eq:years}
+\end{equation}
+which for the green limit $I^\ast=0.25$ of the product gives $\sigma^\ast=\sigmaStar{}$.
+\end{corollary}
+
+\subsection{Scale invariance and the currency}
+\label{sec:theory-invariance}
+
+\begin{proposition}[The dispersion is a property of $(\xi,k,L)$]
+\label{prop:invariance}
+Let the excesses over $H$ be generalised Pareto with index $\xi$ and scale $\beta_H$. The distribution of $(\hat q-H)/(q-H)$ depends on $\beta_H$ neither through the currency nor through the size of the bank: it depends only on $\xi$, on the number $k$ of recorded losses and on the extrapolation factor $A=\lambda_H/(1-\alpha)$.
+\end{proposition}
+
+\begin{proof}
+The maximum likelihood estimators are equivariant under a change of unit: if every excess is multiplied by $c>0$, $\hat\xi$ is unchanged and $\hat\beta_H$ is multiplied by $c$. The excess of the capital over $H$ in \cref{eq:sla} is proportional to $\hat\beta_H/\hat\xi$, so it is multiplied by $c$, as is the true excess $q-H$, and the ratio is unchanged. The count enters through $\hat\lambda_H$ only, whose law depends on $k$ and not on the units.
+\end{proof}
+
+The proposition says that the currency and the units play no role, and that a bank with twice the rate of losses and the same tail index differs from another only through $k$ and $A$: its dispersion falls as $k^{-1/2}$ while $L$ grows only with the logarithm of the rate, so size helps, but slowly.
+
+\subsection{The wrong conclusion about the mean}
+\label{sec:theory-mean}
+
+\begin{proposition}[Share of histories that conclude an infinite mean]
+\label{prop:mean}
+Under \cref{as:model}, as $k\to\infty$ with $\xi$ fixed,
+\begin{equation}
+\Prob(\hat\xi\ge1)\to\Phi\!\Bigl(-\frac{(1-\xi)\sqrt k}{1+\xi}\Bigr)\quad\text{for }\xi\neq1,\qquad\Prob(\hat\xi\ge1)\to\tfrac12\ \text{ for }\xi=1 .
+\label{eq:misclassification}
+\end{equation}
+At a finite $k$ the normal approximation $\Phi\bigl(-(1-\xi)\sqrt k/(1+\xi)\bigr)$ is the predicted share, and the indices for which a history cannot decide whether the mean exists, in the sense that the true index lies within $z_{0.975}$ standard deviations of the boundary, are those with $|1-\xi|<z_{0.975}(1+\xi)/\sqrt k$.
+\end{proposition}
+
+\begin{proof}
+By \cref{lem:mle}, $\sqrt k(\hat\xi-\xi)/(1+\xi)\to\mathcal N(0,1)$. The event $\hat\xi\ge1$ is $\sqrt k(\hat\xi-\xi)/(1+\xi)\ge\sqrt k(1-\xi)/(1+\xi)$, and the limit follows. For $\xi=1$ the right-hand side is zero and the probability tends to one half.
+\end{proof}
+
+For $\xi=0.96$ and $k=\exK{}$ the indistinguishability band is $|1-\xi|<\exBandC{}$, so the index $0.96$ and the boundary of one cannot be told apart by the maximum likelihood fit of a five-year history; at $k=\exKEleven{}$ (ten years at $\xi=1.1$, threshold EUR 10,000) the band is $\exBandD{}$. The proposition does not say that the fitted index is unbiased in samples of this size.
+
+The proposition has a practical reading. The share is a decreasing function of $\sqrt k$ for any index below one and an increasing function of it for any index above one, so a longer history sharpens the conclusion about the mean only for a process whose index is clearly on one side of the boundary; for a process near the boundary, the case that matters for a validator because the capital is the most sensitive there, the share stays near one half whatever the history.
+The same quantity gives the length of history that would separate an index from the boundary with a stated confidence: it is the $k$ at which the band of indistinguishability shrinks below the distance of the index from one.
+
+\subsection{Conditions under which the results hold}
+\label{sec:theory-conditions}
+
+Four conditions bound the propositions. First, $k$ must be large enough for the normal approximation; here $k$ ranges from \kMin{} to \kMax{}, and the approximation of the share is checked, not assumed, in \cref{sec:results}. Second, the family must be correct: the propositions apply to the family of the generator, and outside \cref{as:model} they do not apply; a misspecified fit adds a bias that they do not contain. Third, the single loss approximation targets $q$ only asymptotically in the level:
+its value at the true parameters is below the Fourier quantile by \slGapA{}, \slGapB{}, \slGapC{} and \slGapD{} percent at the four tail indices, so the estimator is biased at $\xi=0.6$ even with infinite data, a bias the theory of dispersion does not contain and the measurement shows in the median ratio. Fourth, the limit $T^\ast$ of \cref{cor:history} assumes the same normal approximation and a stationary process.
+
+\begin{conjecture}
+\label{conj:bias}
+In samples of the size of the experiment the median of $\hat q/q$ is below one for the single loss approximation, by more than the asymptotic bias of the approximation at the true parameters accounts for.
+\end{conjecture}
+
+The evidence is the median ratio of the single loss approximation, below one in \slBelowCells{} of the 16 cells, with a mean over cells of \slMeanMed{}; the finite-sample behaviour of the maximum likelihood estimates of the generalised Pareto parameters was compared with other estimators by \citet{hosking1987}, and a bias of the fitted index translates into a bias of the capital through the sensitivity $g_\xi$.
+We do not prove the conjecture; \cref{prop:dispersion} gives the spread around the median and not the median.

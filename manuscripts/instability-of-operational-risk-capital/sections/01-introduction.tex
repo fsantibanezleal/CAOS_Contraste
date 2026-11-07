@@ -1,0 +1,53 @@
+\section{Introduction}
+\label{sec:introduction}
+
+The head of operational risk of a bank owns a number that nobody can check. The economic capital and the internal capital adequacy
+assessment of the bank rest on the 99.9 percent quantile of the annual operational loss, and the loss distribution approach estimates it from a
+few years of internal losses recorded above a collection threshold \citep{shevchenko2010,cruz2015}. The regulator has already given up
+on the same exercise as a Pillar~1 model: the Basel Committee removed the advanced measurement approach because ``the AMA's inherent
+complexity, and the lack of comparability arising from a wide range of internal modelling practices, have exacerbated variability in
+risk-weighted asset calculations'' \citep{bcbsd355}, and the final standard replaced the approaches by one standardised formula
+\citep{bcbsd424,ope25}. The loss distribution approach nevertheless remains the model of economic capital and the object that a
+validator is asked to judge \citep{bcbs196}.
+
+The shape of the data explains why the judgement is hard. In the 2008 Loss Data Collection Exercise, 119 of the 121 participating banks submitted 10.6 million
+internal losses worth EUR 59.6 billion; the 171,882 losses of EUR 20,000 or more were 1.6 percent of the count and 90 percent of the amount,
+and the twenty largest losses alone were 29.5 percent of the total \citep{bcbs160}. A quantile at the level 0.999 read from five years of such
+data is a quantile of a few dozen large losses, extrapolated by a tail model far beyond the largest observation. Its estimator inherits the instability of the tail index that governs the extrapolation. A validator can recompute the number and can test the fit of the
+severity, but cannot say how wrong the number is, because the true quantile of a bank is never observed.
+
+\paragraph{The gap.} The published literature on the loss distribution approach supplies the estimators, the aggregation algorithms and the warnings.
+Aggregation by recursion and by Fourier transform is exact on a discretised severity \citep{panjer1981,shevchenko2010}; the truncation at the collection threshold biases the capital if it is
+ignored \citep{mignola2007,cope2009}; tails of infinite mean break the usual risk calculus \citep{neslehova2006,chavez2006}; maximum likelihood is fragile and robust estimators are recommended
+\citep{opdyke2012}; and the standardised approach has been criticised for insensitivity and instability \citep{peters2016,mignola2016}. What these sources do not report is a measurement:
+the dispersion of the capital of each estimator over independent histories, against a quantile that is known, on the same data for all
+estimators. The reasons given by the Basel Committee for dropping the advanced approach are complexity and lack of comparability
+\citep{bcbsd355}, not a measured error. The academic critique argues the instability of the standardised approach by analysis and by examples
+\citep{peters2016}. In the sources surveyed in
+\cref{sec:related-work} we found no study that measures how the 99.9 percent capital of the loss distribution approach disperses against a known truth over independent
+histories; that absence is a statement about the sources we searched, not a proof of absence.
+
+\paragraph{What we do.} We propose a measurement protocol and apply it. The protocol draws losses from a generator whose annual loss distribution is known, computes the true 99.9 percent
+quantile once by three independent aggregations, and then draws 1{,}000 independent histories on disjoint seeds in each cell of a design with four tail indices (0.6, 0.8, 0.96 and 1.1),
+two history lengths (5 and 10 years) and two collection thresholds (EUR 10,000 and 20,000). Each history goes through a ladder of ten estimation rungs and through the standardised approach,
+all computed by one engine \citep{shevchenko2010}, and each capital is divided by the true quantile. The protocol reports, per rung and per cell, the median of the ratio, its interquartile range,
+the share of histories that understate the truth, the number of histories on which the rung returns a capital at all, and the share of histories whose fitted tail index reaches one,
+that is, that would conclude that the mean does not exist. Each statistic carries a bootstrap or Wilson interval over the histories \citep{efron1979,wilson1927}.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item A measurement protocol for the instability of the operational-risk capital on independent histories of known truth, with its metrics, its seeds and its stopping rule for the number of histories (\cref{sec:proposed-method}).
+\item A measurement on \nHist{} histories: the interquartile range of the splice capital is \spIqrMin{} to \spIqrMax{} times the true quantile, the capital stability test is red for every rung in every cell (\redTotal{} of \redTotal{} rows, of which \redSix{} of \rowsSix{} on the six-rung ladder),
+and the share of histories that conclude an infinite mean at tail index 0.96 is \infLo{} to \infHi{} percent (\cref{sec:results}).
+\item A delta-method theory of the single loss approximation fitted by maximum likelihood to a generalised Pareto tail, which predicts the measured dispersion within \thSdMaxErr{} percent in the 16 cells, predicts the share of false infinite-mean conclusions within \thShareMaxErr{} points, and gives the history length that would bring the dispersion under a stated limit (\cref{sec:theory}).
+\item An ablation that measures what each estimation component contributes on the same histories, including components that do not help, such as the minimum Cram\'er-von Mises fit of the tail (\cref{sec:ablation}).
+\end{enumerate}
+
+\paragraph{Main result.} More data does not make the number stable at the horizons a bank has. Doubling the history from 5 to 10 years reduces the dispersion of the single loss approximation by the factor $\sqrt2$ that the theory gives and no more, and the history
+needed to reach an interquartile range of 0.25 times the truth is \yrsMin{} to \yrsMax{} years across the cells. The standardised approach is stable across histories relative to its own level, with an interquartile range of \smaIqrA{}, \smaIqrB{}, \smaIqrC{} and \smaIqrD{} times the true quantile at the four tail indices, because it depends on the losses only through their ten-year average, and it does not track the truth: its median capital is \smaA{}, \smaB{}, \smaC{} and \smaD{} times the true quantile at the four tail indices, in that order (\cref{sec:results}).
+
+\paragraph{Scope.} The bank is synthetic and its severity belongs to the generalised Pareto family that the tail estimators assume, which favours them; the lights of the capital stability test are internal limits of the product and not regulatory thresholds. The numbers say nothing about the capital of any real bank,
+and \cref{sec:limitations} states what the design cannot show.
+
+\paragraph{Structure.} \Cref{sec:related-work} places the protocol among the published methods, \cref{sec:problem} states the problem and the notation, \cref{sec:proposed-method} describes the protocol and its algorithm, \cref{sec:theory} derives the dispersion and the misclassification share,
+\cref{sec:experimental-design} states the hypotheses and the design, \cref{sec:results} reports the main comparison, \cref{sec:ablation} the ablation, and \cref{sec:discussion,sec:limitations,sec:reproducibility,sec:conclusions} close the work.

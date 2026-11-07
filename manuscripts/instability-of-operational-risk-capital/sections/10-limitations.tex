@@ -1,0 +1,32 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{External validity}
+\label{sec:lim-external}
+
+The bank is synthetic. Its frequency and severity are calibrated to the median statistics of the 2008 Loss Data Collection Exercise, which are medians of per-bank statistics and are not the statistics of any bank, so the numbers of this work say nothing about the capital of a real bank \citep{bcbs160}. The process has one unit of measure, a Poisson frequency, an independent and identically distributed severity, no recoveries, no dependence between losses and a fixed size of EUR 50 billion in assets;
+real banks have several units of measure whose capitals are aggregated, overdispersed counts, and severities that are not exactly Pareto above any threshold. The severity belongs to the family that the tail estimators assume, which favours them: the error measured here is the error of a correctly specified estimator, and a misspecified family would add a bias that the design does not measure, as the control lognormal indicates.
+The scenario combination uses the true severity quantiles of the generator, rounded, as the expert's scenario points, so its performance is that of an accurate expert.
+
+\subsection{Internal validity}
+\label{sec:lim-internal}
+
+The estimators are those of one engine, \texttt{riskvalidation} 1.1.0. A defect of the engine would be a defect of every rung that calls it; the engine reproduces a published benchmark of the Poisson-lognormal aggregate loss, and the true quantile of each variant is confirmed by three independent aggregations, but the fits themselves are not checked against a second implementation here.
+The mean-corrected single loss approximation has a form that is quoted in the literature and was not confirmed against a primary text, and the robust fits and the mean-adjusted approximation follow secondary sources, so those rungs are labelled as such in the product and are reported for comparison. The per-history capitals are stored at six significant digits; the statistics recomputed from them differ from the committed percentiles by at most $\chkRatio$ in relative terms, and the shares below one by at most \chkShare{}, which is one history in a thousand whose ratio rounds across one.
+The reproduction of the pipeline was checked on the first eight histories of one cell and on the percentiles of all 16, not on the 16{,}000 histories redrawn, which would take about as long as the original bake.
+
+\subsection{Construct validity}
+\label{sec:lim-construct}
+
+The ratio of a capital to the true quantile of the generator measures the error of an estimator of that quantile. It is a measure of the instability of the estimate and is not a measure of the adequacy of the capital for the bank, whose losses do not come from the generator. The lights of the capital stability test are internal limits of the product, set at 0.25 and 0.50 for the interquartile range and 0.10 and 0.25 for the bias, and not regulatory thresholds; under a different limit the lights would change, though the measured dispersions would not.
+The share within a factor of two of the truth is a convenient summary and not a loss function of the bank. The standardised approach is not calibrated to the 99.9 percent quantile of any bank, so its ratio to the truth is a comparison and not an error.
+
+The ratio is also asymmetric in its consequences: a capital twice the truth costs a bank in funding and a capital half the truth costs it in solvency, and the summary treats both as one factor of two.
+
+\subsection{Scope of the survey of the literature}
+\label{sec:lim-literature}
+
+The statement that no study measures the dispersion of the loss distribution approach capital against a known truth over independent histories is a statement about the sources surveyed in \cref{sec:related-work}, which are the published studies of the method, its regulation and the statistics of extreme quantiles that we found and read; it is not a proof of absence, and a study outside those sources may have run such a measurement.
+The theory is asymptotic in the number of recorded losses and rests on \cref{as:model}; the finite-sample bias of the median ratio is stated as a conjecture and is not proved. The measurement covers four tail indices, two lengths and two thresholds; it does not cover other levels of the quantile, which the theory says would change the dispersion through $L$, nor other frequencies.
+
+The survey is selective in a second sense: it covers the estimators that the engine implements and the standard references of extreme value theory, and it does not cover Bayesian estimators with informative priors beyond the one credibility rung, nor machine-learning estimators of extreme quantiles, which the product does not implement.

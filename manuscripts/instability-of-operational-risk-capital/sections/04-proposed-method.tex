@@ -1,0 +1,128 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+\subsection{The idea}
+\label{sec:pm-idea}
+
+The capital of a bank is an estimate of a quantile, and the only way to measure the error of an estimate is to know what it estimates. The proposed protocol makes the truth known by construction. A generator draws loss histories from a compound Poisson process whose annual loss distribution
+is computed, once, to a precision that is itself checked three ways. Many independent histories are then drawn, each is shown to every estimator exactly as a bank would see it (only the losses above the collection threshold, a few years long), and each capital is divided by the truth. The distribution of
+that ratio over histories is the instability of the estimator: its centre is the bias and its spread is the dispersion that a validator would see across banks with the same process and the same history length. The protocol also records, per estimator, on how many histories it returns a number at all, because an estimator that is
+undefined on a third of the histories is conditional on success, and the share of histories whose fitted tail index leads to the wrong conclusion about the existence of the mean.
+
+\subsection{The true quantile}
+\label{sec:pm-truth}
+
+For each tail index the true capital $q_\alpha$ of \cref{eq:annual-loss} is computed by the engine on a fine grid and checked by two other computations. The Fourier computation discretises the severity at the central points of a grid of step $\Delta$, pads it with zeros to guard against the wrap-around of a heavy tail, applies the probability
+generating function of the Poisson count to its discrete transform and inverts,
+\begin{equation}
+h=\mathcal{F}^{-1}\Bigl[\exp\bigl(\lambda(\mathcal{F}[f_{\mathrm{pad}}]-1)\bigr)\Bigr]_{0,\dots,G-1},\qquad q_\alpha=n^\ast\Delta,\quad n^\ast=\min\Bigl\{n:\sum_{j\le n}h_j\ge\alpha\Bigr\},
+\label{eq:fft-truth}
+\end{equation}
+where $f_{\mathrm{pad}}$ is the padded vector of severity masses, $\mathcal{F}$ the discrete Fourier transform, $G=2^{21}$ the number of grid points of the truth and $h_j$ the probability that $Z$ equals $j\Delta$ \citep{shevchenko2010}. The Panjer recursion \citep{panjer1981} on a coarser grid must agree with it within 0.1 percent,
+and a Monte Carlo of $10^{7}$ simulated years of the generator, with seed 17, must agree within three standard errors of its order statistic; \cref{tab:truth} gives the true quantile of each variant and the distance of the Monte Carlo check in standard errors. If any of the three disagrees, no history of that variant is scored.
+No mean is computed for a tail index of one or more.
+
+\subsection{Independent histories}
+\label{sec:pm-histories}
+
+A history is a pure function of its seed: Poisson counts for $T$ years, then the severities by the inverse distribution function of the engine, then the labels of date, event type and business line. The bank records the losses at or above $H$ and nothing below; every fit, rate and annual total of the estimators reads only the recorded losses.
+The seed of the $k$-th history of cell $c$ of variant $v$ is
+\begin{equation}
+s_{v,c,k}=s_0\cdot 10^{5}+10^{3}+10^{3}\,(4v+c)+k,\qquad v,c\in\{0,\dots,3\},\ k\in\{0,\dots,R-1\},\quad s_0=42,
+\label{eq:seeds}
+\end{equation}
+which makes the 16 seed ranges of $R=1{,}000$ histories disjoint, so histories are independent draws of the process and reproducible one by one. A history with fewer than 20 recorded losses is a failed replication; none occurred in the 16 cells.
+
+The labels play no role in the estimators, which treat the bank as one unit of measure. They exist because every history passes the loss-event contract of the product before any estimate, so that its rows are valid records with a date, an event type and a business line and the threshold of the cell is enforced by the contract and not by the estimator. The design makes two kinds of dependence impossible by construction: histories of different cells never share a seed, and the three random streams of a history, the counts, the amounts and the labels, are spawned from its seed so that the amounts never depend on the labels.
+
+\subsection{The estimation ladder}
+\label{sec:pm-ladder}
+
+Each recorded history goes through ten estimation rungs, all computed by the same engine, \texttt{riskvalidation} 1.1.0. The first six are the ladder of the loss distribution approach: (1) a Poisson-lognormal model that ignores the threshold and fits the recorded losses as if they were complete, aggregated by a Monte Carlo of 200,000 years; (2) the lognormal truncated at $H$, whose frequency is rescaled,
+\begin{equation}
+\lambda_{\mathrm{full}}=\frac{\lambda_{\mathrm{obs}}}{1-F(H)},\qquad \ell(\theta)=\sum_{i=1}^{n}\ln f(x_i;\theta)-n\ln\bigl(1-F(H;\theta)\bigr),
+\label{eq:truncation}
+\end{equation}
+aggregated by the Panjer recursion \citep{mignola2007,cope2009}; (3) a lognormal body and generalised Pareto tail spliced at EUR 100,000, whose tail is fitted by the profile reduction of \citet{grimshaw1993}, aggregated by the Fourier computation; (4) the single loss approximation on a truncated generalised Pareto fit,
+\begin{equation}
+\hat q_\alpha=H+\frac{\hat\beta_H}{\hat\xi}\Bigl[\Bigl(\frac{\hat\lambda_H}{1-\alpha}\Bigr)^{\hat\xi}-1\Bigr],
+\label{eq:sla}
+\end{equation}
+with $\hat\lambda_H$ the recorded rate and $(\hat\xi,\hat\beta_H)$ the maximum likelihood estimates on the recorded excesses over $H$ \citep{embrechts1997,degen2010}; (5) the same with a mean correction, whose form is quoted in the literature and was not confirmed against a primary text, so the rung is reported for comparison and is undefined at a fitted index of one or more;
+(6) the splice whose tail is replaced by the Bayesian credibility Pareto tail, with a Gamma prior on the Pareto shape built from an expert's eight scenario points and no loss of any history \citep{shevchenko2006,shevchenko2011}. Four further rungs complete the ladder: the mean-adjusted single loss approximation on the maximum likelihood fit, the same on the minimum Cram\'er-von Mises fit
+and on the optimally bias-robust fit at an efficiency of 0.95 \citep{opdyke2012,hampel1986}, and the lognormal fitted by minimum Cram\'er-von Mises distance as a control whose family does not match the generator.
+
+The standardised approach is computed beside the ladder. Its capital is
+\begin{equation}
+\mathrm{ORC}=\mathrm{BIC}\times\mathrm{ILM},\qquad \mathrm{ILM}=\ln\Bigl(e-1+\bigl(LC/\mathrm{BIC}\bigr)^{0.8}\Bigr),\qquad LC=15\,\overline{\ell},
+\label{eq:sma}
+\end{equation}
+with $\overline{\ell}$ the average annual recorded loss over the years available (at least five), and $\mathrm{BIC}$ the business indicator component of the synthetic bank, EUR 180 million \citep{ope25}. The capital of the approach is not calibrated to the 99.9 percent quantile of any bank; its ratio to the truth is a comparison, not a claim of equivalence.
+
+The order of the rungs is the order in which a practitioner adds components. The first ignores the threshold, the second models it, the third adds a tail, the fourth replaces the aggregation by the closed-form approximation fitted above the collection threshold, the fifth corrects it for the mean, and the sixth adds information from outside the history. The ablation of \cref{sec:ablation} is the paired difference between neighbouring rungs, so each component is measured against the one before it on the same histories.
+
+\subsection{The metrics}
+\label{sec:pm-metrics}
+
+For each rung, tail index and cell the protocol reports, over the $n_{\mathrm{def}}$ histories on which the rung is defined, the median of the ratio of \cref{eq:ratio}, the interquartile range, the share of histories below the truth and the share within a factor of two of it,
+\begin{equation}
+\begin{gathered}
+I=p_{75}(r)-p_{25}(r),\qquad b=p_{50}(r)-1,\\
+s=\frac{1}{n_{\mathrm{def}}}\sum_h\indic[r_h<1],\qquad w=\frac{1}{n_{\mathrm{def}}}\sum_h\indic\bigl[\tfrac12\le r_h\le2\bigr],
+\end{gathered}
+\label{eq:metrics}
+\end{equation}
+with the percentiles $p_{25}$, $p_{50}$ and $p_{75}$ computed by linear interpolation between order statistics \citep{hyndman1996}, and the lights of the capital stability test of the product: green when $I\le0.25$ and $|b|\le0.10$, amber when $I\le0.50$ and $|b|\le0.25$, red otherwise. These limits are internal limits of the product and not regulatory thresholds.
+The share of histories that reach the wrong conclusion about the mean is, with $\hat\xi_h$ the index fitted above the collection threshold,
+\begin{equation}
+\hat\pi=\frac{1}{n_{\mathrm{fit}}}\sum_h\indic[\hat\xi_h\ge1],
+\label{eq:pi}
+\end{equation}
+read as the share that would conclude an infinite mean when $\xi<1$, and as one minus the share that concludes a finite mean when $\xi>1$. The index is also fitted above two, four and eight times the threshold, the profile that a threshold-stability plot shows.
+
+Only the median and the interquartile range are used as location and scale because the ratio is skewed to the right with a long upper tail, so that a mean or a variance would be dominated by a few histories; the interquartile range is also free of units, which makes it comparable across tail indices whose true quantiles differ by a factor of about 60. The shares are counts of histories and carry exact interval estimates, and the standard deviation of the logarithm of the ratio is kept for the single loss approximation because it is the quantity that the delta method of \cref{sec:theory} predicts.
+
+\subsection{The uncertainty of the measurement}
+\label{sec:pm-uncertainty}
+
+Each statistic of \cref{eq:metrics} is a function of the $n_{\mathrm{def}}$ ratios of a cell. Its 95 percent interval is the percentile bootstrap interval over histories with $B=2{,}000$ resamples \citep{efron1979,diciccio1996}, the $2.5$th and $97.5$th percentiles of the statistic over the resampled sets, and a share has the Wilson score interval
+\begin{equation}
+\frac{\hat p+z^2/(2n)\pm z\sqrt{\hat p(1-\hat p)/n+z^2/(4n^2)}}{1+z^2/n},\qquad z=z_{0.975},
+\label{eq:wilson}
+\end{equation}
+\citep{wilson1927}. The precision of the measurement itself is reported as the standard deviation of the interquartile range over random subsets of 50 to 1{,}000 histories, which gives the number of histories after which the measurement stops moving (\cref{sec:results}).
+
+Two properties of this choice matter. The bootstrap resamples histories, which are independent by construction, so the usual requirement of independent units holds exactly. The intervals are for the statistics of a cell and not for a prediction about a new bank, which would add the variation between banks of the same process, already contained in the spread of the ratio that the statistic measures. The interval of a median or of an interquartile range of a skewed ratio is asymmetric around the estimate, which is why the tables give both endpoints and not a half-width.
+
+\subsection{The algorithm}
+\label{sec:pm-algorithm}
+
+\Cref{alg:protocol} states the protocol for one estimator and one cell; the experiment repeats it for every rung, tail index, history length and threshold.
+
+\begin{algorithm}[htbp]
+\caption{Measurement of the instability of a capital estimator against a known truth}
+\label{alg:protocol}
+\begin{algorithmic}[1]
+\Require process $(\lambda,\xi,\beta,u_0)$, years $T$, collection threshold $H$, first seed $s$, number of histories $R$, estimator $\mathcal{E}$, level $\alpha$, resamples $B$
+\State compute $q_\alpha$ by the Fourier transform of \cref{eq:fft-truth}; stop unless the Panjer recursion agrees within 0.1 percent and the Monte Carlo within three standard errors
+\For{$h=0,\dots,R-1$}
+\State draw the history of seed $s+h$ for $T$ years; keep the losses at or above $H$ and the recorded annual counts
+\State fit the rung on the recorded losses; if the engine refuses the fit or a needed quantity does not exist, record no capital and the reason, never a placeholder
+\State $r_h\leftarrow\hat q_h/q_\alpha$ and, when the tail index is fitted, $\hat\xi_h$
+\EndFor
+\State compute $I$, $b$, $s$, $w$ and $\hat\pi$ of \cref{eq:metrics,eq:pi} over the histories with a capital
+\State resample the histories $B$ times to obtain the bootstrap intervals, and the Wilson intervals of the shares
+\State \Return the statistics with their intervals, the number of histories with a capital and the reasons counted for the others
+\end{algorithmic}
+\end{algorithm}
+
+The algorithm has three properties on which the experiment relies. It is conditional only through step 4: a history on which the engine refuses the fit is counted and the reason is recorded, so that the number of defined histories is an output, and the ablation compares rungs on the paired histories where both are defined for that reason. It is deterministic given the seeds, since steps 3 to 5 are pure functions of the seed and the estimator, so the same call returns the same capitals to the last digit, which the reproduction check of \cref{sec:reproducibility} uses.
+And it separates the estimator from the protocol: any function from a recorded history to a capital can be inserted at step 4, which is how a new estimator would be tested against the ten rungs on the same histories and the same truth.
+
+\subsection{Parameters, complexity and implementation}
+\label{sec:pm-implementation}
+
+The parameters are the level 0.999, the floor of EUR 10,000, the two thresholds, the two lengths, the splice threshold of EUR 100,000, the efficiency 0.95 of the bias-robust fit, a bootstrap of 100 draws for the scenario prior and $R=1{,}000$ histories per cell; the precision that this number of histories gives is measured in \cref{sec:results}.
+The cost of one history is dominated by the aggregation of the rungs that use a grid, $O(G\log G)$ for the Fourier computation and $O(G^2)$ for the Panjer recursion on $G=4{,}096$ points, and by the fits; the protocol itself is linear in $R$ and in $B$. The estimators are in the package \texttt{riskvalidation} 1.1.0; the generator, the truth and the replication are the modules \texttt{generator}, \texttt{truth} and \texttt{replicate} of the pipeline of the product, and the analysis of this document is in \texttt{experiments/analyse.py}.
+
+None of the parameters is tuned on the results: the grid of tail indices, lengths and thresholds was fixed by the design of the product before the histories were drawn, and the same 16 cells serve every rung.
