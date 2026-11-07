@@ -11,6 +11,8 @@ import json
 import pathlib
 import sys
 
+import numpy as np
+
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_shared"))
 import figkit  # noqa: E402
@@ -44,6 +46,17 @@ def ci(rate: float, lo: float, hi: float, d: int = 1) -> str:
     return f"{pc(rate, d)} ({pc(lo, d)}, {pc(hi, d)})"
 
 
+def auc_s(u: dict) -> str:
+    """An area under the ROC curve with its bootstrap interval."""
+    return f"{u['auc']:.3f} ({u['lo']:.3f}, {u['hi']:.3f})"
+
+
+def sci(x: float) -> str:
+    """A number in the form ``$1.2\\times10^{6}$``."""
+    m, e = f"{x:.1e}".split("e")
+    return f"${m}\\times10^{{{int(e)}}}$"
+
+
 def stated(lam: float, prev: float, pi_m: float = 0.5) -> dict:
     return next(c for c in R2["cells"] if abs(c["lam"] - lam) < 1e-9 and abs(c["prevalence"] - prev) < 1e-9 and abs(c["pi_m"] - pi_m) < 1e-9)
 
@@ -51,10 +64,11 @@ def stated(lam: float, prev: float, pi_m: float = 0.5) -> dict:
 BASE = stated(0.10, 0.25)
 FIT = R3["matched"]["0.25"]
 FIT_REAL = R3["real_series"]["0.25"]
-DET_STATED = ("engine", "any_change", "fisher", "mannwhitney", "welch")
+DET_STATED = ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach")
 NAME = {"engine": "Proposed test", "any_change": "Any change", "fisher": "Fisher exact test", "mannwhitney": "Mann--Whitney test",
         "welch": "Welch test", "stability": "Weight stability (engine)", "tolerance": "Calibrated tolerance",
-        "tolerance_lookahead": "Calibrated tolerance, look-ahead"}
+        "tolerance_lookahead": "Calibrated tolerance, look-ahead", "shift": "Level-shift test (supremum t)",
+        "shift_at_breach": "Level-shift test, break on a breach date"}
 
 
 _DIGITS = dict(zip("0123456789", ("Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine")))
@@ -74,7 +88,7 @@ def write_numbers() -> None:
 
 
 #: the tables wider than the text, scaled to its width (the others keep their natural size)
-FIT_WIDTH = ("main-results", "stated-grid", "fitted-power", "weight-override", "ablation", "robustness", "c14-history", "constructed", "realism")
+FIT_WIDTH = ("main-results", "weight-override-auc", "anticipation", "stated-grid", "fitted-power", "weight-override", "ablation", "robustness", "c14-history", "constructed", "realism")
 
 
 def T(path, header, rows, **kw):
@@ -107,13 +121,13 @@ def hypotheses_rows() -> list[list]:
         and ser["requested core maturity"]["light"] == "green" and pr["vd-2021-q4"]["rerun_light"] == "not_evaluated" \
         and pr["vd-2022-q2"]["rerun_statistic"] == 1.0 and pr["vd-2022-q4"]["rerun_statistic"] == 2.0
     rows.append(["H1", "The test is not evaluated at 2021-Q4, red at 2022-Q2 with one change and red at 2022-Q4 with two; the held core share and core maturity are not flagged",
-                 "all three committed rows and the two held parameters reproduced by the engine on the committed series", "3 of 3 rows; 2 of 2 held parameters" if h1 else "differs",
+                 "all three stored rows and the two held parameters reproduced by the engine on the stored series", "3 of 3 rows; 2 of 2 held parameters" if h1 else "differs",
                  "held" if h1 else "refuted"])
     # H2
     cons = R1["constructed"]
     ex = R1["exhaustive"]
     h2 = all(c["agree"] for c in cons) and ex["grid_disagreements"] == 0 and ex["random_disagreements"] == 0 and R1["committed"]["control_no_breach"]["light"] == "green"
-    rows.append(["H2", "Green for a parameter held through a breach, for a change with no breach and for a change before the breach; red for a change at the breach; the committed series with its breach flags set to false is green",
+    rows.append(["H2", "Green for a parameter held through a breach, for a change with no breach and for a change before the breach; red for a change at the breach; the stored series with its breach flags set to false is green",
                  "all constructed histories, every history of a binary grid, 20,000 random histories and the control agree with the closed-form count",
                  f"{sum(c['agree'] for c in cons)} of {len(cons)} histories; {ex['grid_disagreements'] + ex['random_disagreements']} disagreements in {ex['grid_total'] + ex['random_histories']:,}",
                  "held" if h2 else "refuted"])
@@ -121,7 +135,7 @@ def hypotheses_rows() -> list[list]:
     lows = [c["rates"]["alt"]["engine"]["lo"] for c in R2["cells"]]
     h3 = min(lows) >= 0.99
     rows.append(["H3", "On a stated parameter the test flags every history in which an assumption was changed at a breach date",
-                 "detection of at least 99\\% in every cell (refuted below 95\\%)", f"lowest lower bound {pc(min(lows))}\\% over {len(lows)} cells", "held" if h3 else "refuted"])
+                 "lower end of the 95\\% interval of the detection at least 99\\% in every cell", f"lowest lower bound {pc(min(lows))}\\% over {len(lows)} cells", "held" if h3 else "refuted"])
     # H4
     rows4 = R4["bernoulli_vs_experiment_2"]["rows"]
     inside = sum(r["lo"] <= r["predicted"] <= r["hi"] for r in rows4)
@@ -137,7 +151,7 @@ def hypotheses_rows() -> list[list]:
     # H6
     a = FIT["auc_add"]["2.0"]["engine"]
     rows.append(["H6", "On a re-estimated parameter the test separates a 2-year override at breach dates from none",
-                 "area under the ROC curve at least 0.70 (refuted below 0.60)", f"{a['auc']:.3f} ({a['lo']:.3f}, {a['hi']:.3f})", "held" if a["auc"] >= 0.7 else "refuted"])
+                 "area under the ROC curve at least 0.70", f"{a['auc']:.3f} ({a['lo']:.3f}, {a['hi']:.3f})", "held" if a["auc"] >= 0.7 else "refuted"])
     # H7
     n_cal = FIT["null"]["tolerance"]
     d4 = FIT["add"]["4.0"]["tolerance"]
@@ -147,14 +161,20 @@ def hypotheses_rows() -> list[list]:
     # H8
     mm = R3["mismatched"]
     worst = max(mm[p]["null"]["tolerance"]["rate"] for p in mm)
+    w = mm["0.5"]["null"]["tolerance"]
     rows.append(["H8", "The tolerance calibrated at breach prevalence 0.25 keeps its size at prevalences 0.10 and 0.50",
-                 "false-flag rate at most 5\\% at every prevalence", f"{pc(min(mm[p]['null']['tolerance']['rate'] for p in mm))} to {pc(worst)}\\%", "held" if worst <= 0.05 else "refuted"])
-    # H9
-    e = FIT["early"]["rates"]
+                 "point estimate of the false-flag rate at most 5\\% at every prevalence",
+                 f"{pc(min(mm[p]['null']['tolerance']['rate'] for p in mm))} to {pc(worst)}\\% (at 0.50, 95\\% interval {pc(w['lo'])} to {pc(w['hi'])}\\%)", "held" if worst <= 0.05 else "refuted"])
+    # H9: the override made at the date before a breach spell begins, decided at 4 years
+    e = FIT["early"]["rates"]["4.0"]
     ratio = e["tolerance_lookahead"]["rate"] / e["tolerance"]["rate"]
-    rows.append(["H9", "A one-date look-ahead recovers overrides made one date before the breach",
-                 "detection at least 1.5 times that of the same-date rule", f"{pc(e['tolerance_lookahead']['rate'])}\\% against {pc(e['tolerance']['rate'])}\\% (ratio {ratio:.2f})", "held" if ratio >= 1.5 else "refuted"])
+    rows.append(["H9", "A one-date look-ahead recovers a 4-year override made at the date before a breach begins",
+                 "detection at least 1.5 times that of the same-date rule", f"{pc(e['tolerance_lookahead']['rate'])}\\% against {pc(e['tolerance']['rate'])}\\% (ratio {ratio:.1f})", "held" if ratio >= 1.5 else "refuted"])
     return rows
+
+
+#: the predictions formulated after a first run of the re-estimated experiment had been inspected (Section "Predictions")
+POST_HOC = ("H6", "H7", "H8", "H9")
 
 
 def table_hypotheses() -> None:
@@ -162,11 +182,12 @@ def table_hypotheses() -> None:
     path = OUT / "hypotheses.tex"
     lines = ["\\begin{table}[htbp]", "\\centering", "\\footnotesize",
              "\\caption{The nine predictions tested, with the criterion that decides each, the value measured by the experiments of this work and the outcome; "
-             "the experiments are on the committed history of case C14, on constructed and enumerated histories and on 4,000 simulated histories per cell.}",
+             "the experiments are on the stored history of case C14, on constructed and enumerated histories and on 4,000 simulated histories per cell. "
+             "A dagger marks a prediction formulated after a first run of the re-estimated experiment had been inspected (Section~\\ref{sec:design-hypotheses}).}",
              "\\label{tab:hypotheses}", "\\begin{tabular}{@{}l p{4.6cm} p{3.2cm} p{3.1cm} l@{}}", "\\toprule",
              "ID & Prediction & Criterion & Measured & Outcome \\\\", "\\midrule"]
     for r in rows:
-        lines.append(" & ".join(r) + " \\\\")
+        lines.append(" & ".join([r[0] + ("$^\\dagger$" if r[0] in POST_HOC else "")] + r[1:]) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}", "\\end{table}", ""]
     path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
     for r in rows:
@@ -188,9 +209,9 @@ def table_c14() -> None:
                      f"{ser['weighted average maturity of the fitted portfolio']['values'][k]:.3f}",
                      pr[v]["rerun_light"].replace("_", " ") + ("" if pr[v]["rerun_statistic"] is None else f" ({pr[v]['rerun_statistic']:.0f})"),
                      cmp_[v]["stability_light"], cmp_[v]["with_without_light"]])
-    T(OUT / "c14-history.tex", ["Date", "EVE risk measure / Tier 1", "Breach", "Fitted WAM (years)", "Proposed test (flagged changes)", "Weight stability", "EVE with and without"],
-      rows, caption="The committed history of case C14, the wholesale deposits of the bank at three valuation dates: the standardised outlier ratio and its breach flag, the fitted "
-      "weighted average maturity (WAM), the proposed test on the history up to each date, and the two other behavioural tests of the engine rerun on the committed inputs.",
+    T(OUT / "c14-history.tex", ["Date", "Outlier ratio, behavioural treatment", "Breach", "Fitted WAM (years)", "Proposed test (flagged changes)", "Weight stability", "EVE with and without"],
+      rows, caption="The stored history of case C14, the wholesale deposits of the bank at three valuation dates: the standardised outlier ratio and its breach flag, the fitted "
+      "weighted average maturity (WAM), the proposed test on the history up to each date, and the two other behavioural tests of the engine rerun on the stored inputs.",
       label="tab:c14-history", align="lrlrlll")
     reg("c14RatioA", f"{c['outlier_ratios'][0]:.3f}", "results_reproduction.json committed.outlier_ratios[0]")
     reg("c14RatioB", f"{c['outlier_ratios'][1]:.3f}", "results_reproduction.json committed.outlier_ratios[1]")
@@ -246,11 +267,11 @@ def table_constructed() -> None:
 
 def table_main() -> None:
     rows = []
-    for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "tolerance", "tolerance_lookahead", "stability"):
+    for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach", "tolerance", "tolerance_lookahead", "stability"):
         row = [NAME[det]]
         if det in DET_STATED:
             n, a = BASE["rates"]["null"][det], BASE["rates"]["alt"][det]
-            row += [ci(n["rate"], n["lo"], n["hi"]), ci(a["rate"], a["lo"], a["hi"]), f"{BASE['auc'][det]['auc']:.3f}"]
+            row += [ci(n["rate"], n["lo"], n["hi"]), ci(a["rate"], a["lo"], a["hi"]), auc_s(BASE["auc"][det])]
         else:
             row += ["--", "--", "--"]
         fn = FIT["null"][det]
@@ -259,13 +280,13 @@ def table_main() -> None:
             row += ["--", "--"]
         else:
             fa, fu = FIT["add"]["2.0"][det], FIT["auc_add"]["2.0"][det]
-            row += [ci(fa["rate"], fa["lo"], fa["hi"]), f"{fu['auc']:.3f}"]
+            row += [ci(fa["rate"], fa["lo"], fa["hi"]), auc_s(fu)]
         rows.append(row)
-    T(OUT / "main-results.tex", ["Detector", "False flags (\\%)", "Detection (\\%)", "AUC", "False flags (\\%)", "Detection of +2 years (\\%)", "AUC"],
+    T(OUT / "main-results.tex", ["Detector", "False flags (\\%)", "Detection (\\%)", "AUC (95\\% interval)", "False flags (\\%)", "Detection of +2 years (\\%)", "AUC (95\\% interval)"],
       rows, groups=[("Stated parameter", 3), ("Re-estimated parameter", 3)], caption="The proposed test and the comparators run on the same histories: on a stated parameter (4,000 histories per arm, changes unrelated to the breach at 0.10 per quarter, breach "
       "prevalence 0.25) and on a re-estimated parameter (2,000 banks, breach prevalence 0.25, a 2-year lengthening planted at breach dates); false-flag and detection rates with 95\\% Wilson intervals, "
-      "and the area under the ROC curve; the tolerance is calibrated at 5\\% on 1,000 separate banks.", label="tab:main-results", align="lcccccc", wide=True)
-    for det, key in (("engine", "Engine"), ("any_change", "Any"), ("fisher", "Fisher"), ("mannwhitney", "Mw"), ("welch", "Welch")):
+      "and the area under the ROC curve with its bootstrap interval; the tolerance and the two level-shift tests are calibrated at 5\\% on 1,000 separate histories of each population.", label="tab:main-results", align="lcccccc", wide=True)
+    for det, key in (("engine", "Engine"), ("any_change", "Any"), ("fisher", "Fisher"), ("mannwhitney", "Mw"), ("welch", "Welch"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
         n, a = BASE["rates"]["null"][det], BASE["rates"]["alt"][det]
         reg(f"statedNull{key}", pc(n["rate"]) + "\\%", f"results_stated.json cell(lam=0.10,prev=0.25).rates.null.{det}.rate")
         reg(f"statedNullLo{key}", pc(n["lo"]), f"results_stated.json cell(lam=0.10,prev=0.25).rates.null.{det}.lo")
@@ -273,8 +294,17 @@ def table_main() -> None:
         reg(f"statedAlt{key}", pc(a["rate"]) + "\\%", f"results_stated.json cell(lam=0.10,prev=0.25).rates.alt.{det}.rate")
         reg(f"statedAltLo{key}", pc(a["lo"]), f"results_stated.json cell(lam=0.10,prev=0.25).rates.alt.{det}.lo")
         reg(f"statedAuc{key}", f"{BASE['auc'][det]['auc']:.3f}", f"results_stated.json cell(lam=0.10,prev=0.25).auc.{det}.auc")
+        reg(f"statedAucLo{key}", f"{BASE['auc'][det]['lo']:.3f}", f"results_stated.json cell(lam=0.10,prev=0.25).auc.{det}.lo")
+        reg(f"statedAucHi{key}", f"{BASE['auc'][det]['hi']:.3f}", f"results_stated.json cell(lam=0.10,prev=0.25).auc.{det}.hi")
+    reg("statedShiftDelta", sci(BASE["shift_delta"]["shift"]), "results_stated.json cell(lam=0.10,prev=0.25).shift_delta.shift")
+    reg("statedShiftBDelta", sci(BASE["shift_delta"]["shift_at_breach"]), "results_stated.json cell(lam=0.10,prev=0.25).shift_delta.shift_at_breach")
+    # the order of the areas at the breach prevalence 0.5 (the three rates of unrelated changes)
+    for lam, ls in ((0.05, "A"), (0.10, "B"), (0.20, "C")):
+        c = stated(lam, 0.5)
+        for det, dk in (("engine", "Engine"), ("fisher", "Fisher"), ("mannwhitney", "Mw")):
+            reg(f"halfAuc{ls}{dk}", f"{c['auc'][det]['auc']:.3f}", f"results_stated.json cell(lam={lam},prev=0.5).auc.{det}.auc")
     for det, key in (("engine", "Engine"), ("any_change", "Any"), ("fisher", "Fisher"), ("mannwhitney", "Mw"), ("welch", "Welch"), ("stability", "Stab"),
-                     ("tolerance", "Tol"), ("tolerance_lookahead", "TolLa")):
+                     ("tolerance", "Tol"), ("tolerance_lookahead", "TolLa"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
         n = FIT["null"][det]
         reg(f"fitNull{key}", pc(n["rate"]) + "\\%", f"results_fitted.json matched.0.25.null.{det}.rate")
         reg(f"fitNullLo{key}", pc(n["lo"]), f"results_fitted.json matched.0.25.null.{det}.lo")
@@ -334,7 +364,7 @@ def table_stated_grid() -> None:
 
 def table_fitted() -> None:
     rows = []
-    for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "tolerance", "tolerance_lookahead"):
+    for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach", "tolerance", "tolerance_lookahead"):
         for src, lab in ((FIT, "simulated"), (FIT_REAL, "real series")):
             row = [NAME[det], lab, pc(src["null"][det]["rate"])]
             for y in ("0.5", "1.0", "2.0", "4.0"):
@@ -353,6 +383,16 @@ def table_fitted() -> None:
     reg("realEngineAuc", f"{rs['auc_add']['2.0']['engine']['auc']:.2f}", "results_fitted.json real_series.0.25.auc_add.2.0.engine.auc")
     reg("realMwNull", pc(rs["null"]["mannwhitney"]["rate"]) + "\\%", "results_fitted.json real_series.0.25.null.mannwhitney.rate")
     reg("realMwAucC", f"{rs['auc_add']['2.0']['mannwhitney']['auc']:.2f}", "results_fitted.json real_series.0.25.auc_add.2.0.mannwhitney.auc")
+    for det, key in (("welch", "Welch"), ("fisher", "Fisher"), ("stability", "Stab")):
+        n = rs["null"][det]
+        reg(f"realNull{key}", pc(n["rate"]) + "\\%", f"results_fitted.json real_series.0.25.null.{det}.rate")
+        reg(f"realNullLo{key}", pc(n["lo"]), f"results_fitted.json real_series.0.25.null.{det}.lo")
+        reg(f"realNullHi{key}", pc(n["hi"]), f"results_fitted.json real_series.0.25.null.{det}.hi")
+    for det, key in (("stability", "Stab"), ("tolerance", "Tol"), ("mannwhitney", "Mw")):
+        u = rs["auc"]["0.4"][det]
+        reg(f"realWAuc{key}", f"{u['auc']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{det}.auc")
+        reg(f"realWAucLo{key}", f"{u['lo']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{det}.lo")
+        reg(f"realWAucHi{key}", f"{u['hi']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{det}.hi")
     ti = R3["ties_at_breach_dates"]
     reg("tieBanks", pc(ti["share_banks_with_a_tie"]) + "\\%", "results_fitted.json ties_at_breach_dates.share_banks_with_a_tie")
     reg("tieMean", f"{ti['mean_ties']:.2f}", "results_fitted.json ties_at_breach_dates.mean_ties")
@@ -376,33 +416,60 @@ def table_fitted() -> None:
         reg(f"fitNull{key}Tol", pc(R3["matched"][prev]["null"]["tolerance"]["rate"]) + "\\%", f"results_fitted.json matched.{prev}.null.tolerance.rate")
         reg(f"fitMis{key}Tol", pc(R3["mismatched"][prev]["null"]["tolerance"]["rate"]) + "\\%", f"results_fitted.json mismatched.{prev}.null.tolerance.rate")
         reg(f"fitMis{key}TolHi", pc(R3["mismatched"][prev]["null"]["tolerance"]["hi"]) + "\\%", f"results_fitted.json mismatched.{prev}.null.tolerance.hi")
-    ea = FIT["early"]["rates"]
-    reg("earlyTol", pc(ea["tolerance"]["rate"]) + "\\%", "results_fitted.json matched.0.25.early.rates.tolerance.rate")
-    reg("earlyTolLa", pc(ea["tolerance_lookahead"]["rate"]) + "\\%", "results_fitted.json matched.0.25.early.rates.tolerance_lookahead.rate")
-    reg("earlyEngine", pc(ea["engine"]["rate"]) + "\\%", "results_fitted.json matched.0.25.early.rates.engine.rate")
-    reg("earlyN", f"{FIT['early']['n']:,}", "results_fitted.json matched.0.25.early.n")
+        reg(f"fitMis{key}TolLo", pc(R3["mismatched"][prev]["null"]["tolerance"]["lo"]), f"results_fitted.json mismatched.{prev}.null.tolerance.lo")
+    table_early()
+
+
+def table_early() -> None:
+    """The override made at the date before a breach spell begins: the detection of each detector on the banks that have such a date, beside the false-flag rate of the same banks."""
+    e = FIT["early"]
+    rows = []
+    for det in ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach", "tolerance", "tolerance_lookahead"):
+        n, r2, r4, u4 = e["null"][det], e["rates"]["2.0"][det], e["rates"]["4.0"][det], e["auc"]["4.0"][det]
+        rows.append([NAME[det], ci(n["rate"], n["lo"], n["hi"]), ci(r2["rate"], r2["lo"], r2["hi"]), ci(r4["rate"], r4["lo"], r4["hi"]), auc_s(u4)])
+    T(OUT / "anticipation.tex", ["Detector", "False flags (\\%)", "Detection of +2 years (\\%)", "Detection of +4 years (\\%)", "AUC of +4 years (95\\% interval)"], rows,
+      caption=f"An override made at the date before a breach begins, on the {e['n']:,} of the 2,000 simulated banks (breach prevalence 0.25) that have such a date: at each date that precedes the first date of a breach spell "
+      "an addition of 2 or 4 years to the fitted maturity is made with probability 0.5 (at least once), from that date on. False-flag rate of the same banks without the override, detection with 95\\% Wilson intervals, "
+      "and the area under the ROC curve at 4 years; the two tolerance rules and the two level-shift tests are calibrated at 5\\% on the 1,000 calibration banks.", label="tab:anticipation", align="lcccc", wide=True)
+    reg("earlyN", f"{e['n']:,}", "results_fitted.json matched.0.25.early.n")
+    for y, ys in (("2.0", "Two"), ("4.0", "Four")):
+        r = e["rates"][y]
+        for det, key in (("engine", "Engine"), ("any_change", "Any"), ("tolerance", "Tol"), ("tolerance_lookahead", "TolLa"), ("shift", "Shift"), ("shift_at_breach", "ShiftB"), ("mannwhitney", "Mw")):
+            reg(f"early{key}{ys}", pc(r[det]["rate"]) + "\\%", f"results_fitted.json matched.0.25.early.rates.{y}.{det}.rate")
+        reg(f"earlyRatio{ys}", f"{r['tolerance_lookahead']['rate'] / r['tolerance']['rate']:.1f}", f"results_fitted.json matched.0.25.early.rates.{y} (tolerance_lookahead / tolerance)")
+    for det, key in (("tolerance", "Tol"), ("tolerance_lookahead", "TolLa"), ("engine", "Engine"), ("shift_at_breach", "ShiftB")):
+        reg(f"earlyNull{key}", pc(e["null"][det]["rate"]) + "\\%", f"results_fitted.json matched.0.25.early.null.{det}.rate")
+    reg("earlyAucFourTolLa", f"{e['auc']['4.0']['tolerance_lookahead']['auc']:.3f}", "results_fitted.json matched.0.25.early.auc.4.0.tolerance_lookahead.auc")
+    reg("earlyAucFourShift", f"{e['auc']['4.0']['shift']['auc']:.3f}", "results_fitted.json matched.0.25.early.auc.4.0.shift.auc")
+    reg("earlyAucFourTol", f"{e['auc']['4.0']['tolerance']['auc']:.3f}", "results_fitted.json matched.0.25.early.auc.4.0.tolerance.auc")
 
 
 def table_weights() -> None:
-    rows = []
-    for prev in ("0.25",):
-        c = R3["matched"][prev]
-        for s in ("0.05", "0.1", "0.2", "0.4"):
-            a, u = c["alt"][s], c["auc"][s]
-            rows.append([s, pc(a["invisible_share"]), pc(a["engine"]["rate"]), f"{u['engine']['auc']:.3f}", pc(a["stability"]["rate"]), f"{u['stability']['auc']:.3f}",
-                         pc(a["tolerance"]["rate"]), f"{u['tolerance']['auc']:.3f}", f"{u['mannwhitney']['auc']:.3f}"])
-    T(OUT / "weight-override.tex", ["Share $s$", "Invisible (\\%)", "Engine flags (\\%)", "Engine AUC", "Stability flags (\\%)", "Stability AUC", "Tolerance flags (\\%)", "Tolerance AUC", "Mann--Whitney AUC"], rows,
-      caption="An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the "
-      "weights unchanged because they already sit on that tranche, and the flag rate and area under the ROC curve of the detectors that can read it.", label="tab:weight-override", align="rrrrrrrrr", wide=True)
+    dets = ("engine", "stability", "tolerance", "fisher", "mannwhitney", "welch", "shift")
+    rows, rows_auc = [], []
     c = R3["matched"]["0.25"]
+    for s in ("0.05", "0.1", "0.2", "0.4"):
+        a, u = c["alt"][s], c["auc"][s]
+        rows.append([s, pc(a["invisible_share"])] + [pc(a[d]["rate"]) for d in dets])
+        rows_auc.append([s] + [auc_s(u[d]) for d in dets])
+    nulls = ["null", "--"] + [pc(c["null"][d]["rate"]) for d in dets]
+    rows.append(nulls)
+    heads = ["Proposed", "Stability", "Tolerance", "Fisher", "Mann--Whitney", "Welch", "Level shift"]
+    T(OUT / "weight-override.tex", ["Share $s$", "Invisible (\\%)"] + heads, rows,
+      caption="An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the "
+      "weights unchanged because they already sit on that tranche, and the percentage of banks flagged by each detector for each share of the weight moved per planted date; the last row is the rate on the banks without an override.",
+      label="tab:weight-override", align="rrrrrrrrr", wide=True)
+    T(OUT / "weight-override-auc.tex", ["Share $s$"] + heads, rows_auc,
+      caption="The same override: the area under the ROC curve of each detector against the banks without an override, with its 95\\% bootstrap interval.", label="tab:weight-override-auc", align="rcccccccc", wide=True)
     reg("invisShare", pc(c["alt"]["0.4"]["invisible_share"]) + "\\%", "results_fitted.json matched.0.25.alt.0.4.invisible_share")
-    reg("wEngineAucLow", f"{c['auc']['0.05']['engine']['auc']:.3f}", "results_fitted.json matched.0.25.auc.0.05.engine.auc")
-    reg("wEngineAucHigh", f"{c['auc']['0.4']['engine']['auc']:.3f}", "results_fitted.json matched.0.25.auc.0.4.engine.auc")
-    reg("wTolFlagHigh", pc(c["alt"]["0.4"]["tolerance"]["rate"]) + "\\%", "results_fitted.json matched.0.25.alt.0.4.tolerance.rate")
-    reg("wTolAucHigh", f"{c['auc']['0.4']['tolerance']['auc']:.3f}", "results_fitted.json matched.0.25.auc.0.4.tolerance.auc")
-    reg("wMwAucHigh", f"{c['auc']['0.4']['mannwhitney']['auc']:.3f}", "results_fitted.json matched.0.25.auc.0.4.mannwhitney.auc")
-    reg("wStabFlagHigh", pc(c["alt"]["0.4"]["stability"]["rate"]) + "\\%", "results_fitted.json matched.0.25.alt.0.4.stability.rate")
-    reg("wStabAucHigh", f"{c['auc']['0.4']['stability']['auc']:.3f}", "results_fitted.json matched.0.25.auc.0.4.stability.auc")
+    for s, ss in (("0.05", "Low"), ("0.4", "High")):
+        for d, dk in (("engine", "Engine"), ("tolerance", "Tol"), ("mannwhitney", "Mw"), ("stability", "Stab"), ("welch", "Welch"), ("fisher", "Fisher"), ("shift", "Shift")):
+            u = c["auc"][s][d]
+            reg(f"w{dk}Auc{ss}", f"{u['auc']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.auc")
+            reg(f"w{dk}AucLo{ss}", f"{u['lo']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.lo")
+            reg(f"w{dk}AucHi{ss}", f"{u['hi']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.hi")
+    for d, dk in (("tolerance", "Tol"), ("stability", "Stab"), ("mannwhitney", "Mw"), ("welch", "Welch")):
+        reg(f"w{dk}FlagHigh", pc(c["alt"]["0.4"][d]["rate"]) + "\\%", f"results_fitted.json matched.0.25.alt.0.4.{d}.rate")
 
 
 def table_ablation() -> None:
@@ -412,7 +479,9 @@ def table_ablation() -> None:
             ("Exact change replaced by a calibrated tolerance", "tolerance"),
             ("Calibrated tolerance with a one-date look-ahead", "tolerance_lookahead"),
             ("Counting replaced by an association test (Fisher)", "fisher"),
-            ("Counting replaced by a rank test of the size of the changes (Mann--Whitney)", "mannwhitney")]
+            ("Counting replaced by a rank test of the size of the changes (Mann--Whitney)", "mannwhitney"),
+            ("Counting replaced by a test for a shift in the level, whatever the breach flags", "shift"),
+            ("Counting replaced by a test for a shift in the level that falls on a breach date", "shift_at_breach")]
     for lab, det in spec:
         row = [lab]
         if det in DET_STATED:
@@ -422,15 +491,15 @@ def table_ablation() -> None:
             row += ["--", "--", "--"]
         fn, fa, fu = FIT["null"][det], FIT["add"]["2.0"][det], FIT["auc_add"]["2.0"][det]
         row += [pc(fn["rate"]), pc(fa["rate"]), f"{fu['auc']:.3f}"]
-        row.append(pc(FIT["early"]["rates"][det]["rate"]))
+        row.append(pc(FIT["early"]["rates"]["4.0"][det]["rate"]))
         rows.append(row)
-    T(OUT / "ablation.tex", ["Variant of the method", "False flags (\\%)", "Detection (\\%)", "AUC", "False flags (\\%)", "Detection (\\%)", "AUC", "Early override (\\%)"], rows,
+    T(OUT / "ablation.tex", ["Variant of the method", "False flags (\\%)", "Detection (\\%)", "AUC", "False flags (\\%)", "Detection (\\%)", "AUC", "Override before the breach (\\%)"], rows,
       groups=[("Stated parameter", 3), ("Re-estimated parameter", 3), ("Detection", 1)],
       caption="Ablation of the proposed test: each row removes or replaces one component (the conjunction with the breach flag, the exact inequality as the definition of a change, the same-date rule, the counting statistic) "
-      "and reports the false-flag rate, the detection rate and the area under the ROC curve on the stated parameter and, for a 2-year lengthening, on the fitted parameter, and the detection of a 2-year lengthening made one date before the breach.",
+      "and reports the false-flag rate, the detection rate and the area under the ROC curve on the stated parameter and, for a 2-year lengthening, on the fitted parameter, and the detection of a 4-year lengthening made at the date before a breach begins.",
       label="tab:ablation", align="lccccccc", wide=True)
     reg("ablAnyStatedNull", pc(BASE["rates"]["null"]["any_change"]["rate"]) + "\\%", "results_stated.json base.null.any_change")
-    reg("ablEarlyAny", pc(FIT["early"]["rates"]["any_change"]["rate"]) + "\\%", "results_fitted.json matched.0.25.early.rates.any_change.rate")
+
 
 
 def table_robust() -> None:
@@ -463,7 +532,14 @@ def table_realism() -> None:
     reg("simZero", pc(r["simulated_mean"]["share_zero_change"]) + "\\%", "results_fitted.json realism.simulated_mean.share_zero_change")
     reg("simCap", pc(r["simulated_mean"]["share_at_cap"]) + "\\%", "results_fitted.json realism.simulated_mean.share_at_cap")
     reg("realMedianLast", f"{r['real_last_12']['median_abs_change']:.2f}", "results_fitted.json realism.real_last_12.median_abs_change")
-    reg("realMaxLast", f"{r['real_last_12']['max_abs_change']:.2f}", "results_fitted.json realism.real_last_12.max_abs_change")
+    reg("realMaxLast", f"{r['real_last_12']['max_abs_change']:.3f}", "results_fitted.json realism.real_last_12.max_abs_change")
+    reg("realZeroAll", pc(r["real_all_25"]["share_zero_change"]) + "\\%", "results_fitted.json realism.real_all_25.share_zero_change")
+    reg("realZeroLast", pc(r["real_last_12"]["share_zero_change"]) + "\\%", "results_fitted.json realism.real_last_12.share_zero_change")
+    reg("realCapAll", pc(r["real_all_25"]["share_at_cap"]) + "\\%", "results_fitted.json realism.real_all_25.share_at_cap")
+    reg("realCapLast", pc(r["real_last_12"]["share_at_cap"]) + "\\%", "results_fitted.json realism.real_last_12.share_at_cap")
+    reg("simSd", f"{r['simulated_mean']['sd_level']:.2f}", "results_fitted.json realism.simulated_mean.sd_level")
+    reg("realSdAll", f"{r['real_all_25']['sd_level']:.2f}", "results_fitted.json realism.real_all_25.sd_level")
+    reg("realSdLast", f"{r['real_last_12']['sd_level']:.2f}", "results_fitted.json realism.real_last_12.sd_level")
 
 
 def table_theory() -> None:
@@ -480,7 +556,7 @@ def table_theory() -> None:
     rows.append(["Calibrated tolerance: mean false-flag rate, 500 calibrations", f"{cf['theoretical_mean']:.4f}", f"{cf['mean_rate']:.4f} ({cf['q025']:.4f}, {cf['q975']:.4f})"])
     T(OUT / "theory-checks.tex", ["Quantity", "Closed form", "Simulation (95\\% interval)"], rows,
       caption="The closed forms of Propositions~\\ref{prop:false-flag}, \\ref{prop:gaussian} and \\ref{prop:conformal} against simulation: the probability that a change falls on a breach date under uniform placement (100,000 placements), "
-      "the power of the tolerance rule on Gaussian changes (200,000 histories) and the mean false-flag rate of the calibrated tolerance over 500 calibrations of 1,000 histories, with the 2.5 and 97.5 percentiles of the realised rate.",
+      "the power of the tolerance rule on Gaussian changes (200,000 histories) and the mean false-flag rate of the calibrated tolerance over 500 calibrations of 1,000 maxima of three Gaussian changes, with the 2.5 and 97.5 percentiles of the realised rate.",
       label="tab:theory-checks", align="lcc", digits=4)
     inside = sum(r["lo"] - 1e-12 <= r["formula"] <= r["hi"] + 1e-12 for r in hyp)
     reg("hyperInside", str(inside), "results_theory.json hypergeometric.rows")
@@ -491,7 +567,11 @@ def table_theory() -> None:
     reg("fisherPermMax", f"{R4['fisher_is_permutation']['max_abs_difference']:.0e}", "results_theory.json fisher_is_permutation.max_abs_difference")
     reg("fisherPermN", f"{R4['fisher_is_permutation']['histories']:,}", "results_theory.json fisher_is_permutation.histories")
     reg("confMean", pc(cf["mean_rate"], 2) + "\\%", "results_theory.json conformal.mean_rate")
-    reg("confTheory", pc(cf["theoretical_mean"], 2) + "\\%", "results_theory.json conformal.theoretical_mean")
+    reg("confTheory", pc(cf["theoretical_mean"], 3) + "\\%", "results_theory.json conformal.theoretical_mean")
+    sd = float(np.std(cf["rates"], ddof=1))
+    reg("confSd", pc(sd, 2) + "\\%", "results_theory.json conformal.rates (standard deviation over the calibrations)")
+    reg("confSe", pc(sd / len(cf["rates"]) ** 0.5, 3) + "\\%", "results_theory.json conformal.rates (standard error of the mean over the calibrations)")
+    reg("confZ", f"{(cf['mean_rate'] - cf['theoretical_mean']) / (sd / len(cf['rates']) ** 0.5):.2f}", "results_theory.json conformal (mean minus bound, in standard errors)")
     reg("confLo", pc(cf["q025"]) + "\\%", "results_theory.json conformal.q025")
     reg("confHi", pc(cf["q975"]) + "\\%", "results_theory.json conformal.q975")
     reg("confMax", pc(cf["max_rate"]) + "\\%", "results_theory.json conformal.max_rate")
@@ -525,8 +605,6 @@ def extra_numbers() -> None:
     tests = [c["rates"]["alt"][d]["rate"] for c in grid for d in ("fisher", "mannwhitney", "welch")]
     reg("opTestsMin", pc(min(tests)) + "\\%", "results_stated.json cells[pi_m=0.5].rates.alt.{fisher,mannwhitney,welch}.rate (min)")
     reg("opTestsMax", pc(max(tests)) + "\\%", "results_stated.json cells[pi_m=0.5].rates.alt.{fisher,mannwhitney,welch}.rate (max)")
-    e = R3["matched"]["0.25"]["early"]["rates"]
-    reg("earlyRatio", f"{e['tolerance_lookahead']['rate'] / e['tolerance']['rate']:.2f}", "results_fitted.json matched.0.25.early.rates (tolerance_lookahead / tolerance)")
     out = [r for r in R4["hypergeometric"]["rows"] if not (r["lo"] - 1e-12 <= r["formula"] <= r["hi"] + 1e-12)]
     gap = max(max(r["formula"] - r["hi"], r["lo"] - r["formula"]) for r in out) if out else 0.0
     reg("hyperOutGap", f"{100.0 * gap:.3f}", "results_theory.json hypergeometric.rows (distance of the closed form from the interval, percentage points)")

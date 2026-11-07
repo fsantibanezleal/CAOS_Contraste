@@ -1,22 +1,24 @@
 \begin{table*}[htbp]
 \centering
 \footnotesize
-\caption{The proposed test and the comparators run on the same histories: on a stated parameter (4,000 histories per arm, changes unrelated to the breach at 0.10 per quarter, breach prevalence 0.25) and on a re-estimated parameter (2,000 banks, breach prevalence 0.25, a 2-year lengthening planted at breach dates); false-flag and detection rates with 95\% Wilson intervals, and the area under the ROC curve; the tolerance is calibrated at 5\% on 1,000 separate banks.}
+\caption{The proposed test and the comparators run on the same histories: on a stated parameter (4,000 histories per arm, changes unrelated to the breach at 0.10 per quarter, breach prevalence 0.25) and on a re-estimated parameter (2,000 banks, breach prevalence 0.25, a 2-year lengthening planted at breach dates); false-flag and detection rates with 95\% Wilson intervals, and the area under the ROC curve with its bootstrap interval; the tolerance and the two level-shift tests are calibrated at 5\% on 1,000 separate histories of each population.}
 \label{tab:main-results}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
 \multicolumn{1}{l}{} & \multicolumn{3}{c}{Stated parameter} & \multicolumn{3}{c}{Re-estimated parameter} \\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-Detector & False flags (\%) & Detection (\%) & AUC & False flags (\%) & Detection of +2 years (\%) & AUC \\
+Detector & False flags (\%) & Detection (\%) & AUC (95\% interval) & False flags (\%) & Detection of +2 years (\%) & AUC (95\% interval) \\
 \midrule
-Proposed test & 34.8 (33.4, 36.3) & 100.0 (99.9, 100.0) & 0.908 & 82.2 (80.5, 83.9) & 100.0 (99.8, 100.0) & 0.579 \\
-Any change & 68.8 (67.3, 70.2) & 100.0 (99.9, 100.0) & 0.863 & 92.5 (91.3, 93.6) & 100.0 (99.8, 100.0) & 0.536 \\
-Fisher exact test & 0.1 (0.1, 0.3) & 13.2 (12.2, 14.3) & 0.922 & 2.1 (1.5, 2.8) & 4.1 (3.3, 5.1) & 0.596 \\
-Mann--Whitney test & 2.6 (2.1, 3.1) & 48.0 (46.5, 49.6) & 0.914 & 7.2 (6.2, 8.5) & 31.4 (29.5, 33.5) & 0.796 \\
-Welch test & 0.3 (0.2, 0.6) & 26.8 (25.5, 28.2) & 0.761 & 6.0 (5.1, 7.2) & 28.9 (27.0, 30.9) & 0.696 \\
-Calibrated tolerance & -- & -- & -- & 3.9 (3.1, 4.8) & 18.0 (16.4, 19.7) & 0.937 \\
-Calibrated tolerance, look-ahead & -- & -- & -- & 4.5 (3.6, 5.4) & 17.2 (15.6, 18.9) & 0.925 \\
+Proposed test & 34.8 (33.4, 36.3) & 100.0 (99.9, 100.0) & 0.908 (0.902, 0.913) & 82.2 (80.5, 83.9) & 100.0 (99.8, 100.0) & 0.579 (0.561, 0.595) \\
+Any change & 68.8 (67.3, 70.2) & 100.0 (99.9, 100.0) & 0.863 (0.856, 0.871) & 92.5 (91.3, 93.6) & 100.0 (99.8, 100.0) & 0.536 (0.519, 0.554) \\
+Fisher exact test & 0.1 (0.1, 0.3) & 13.2 (12.2, 14.3) & 0.922 (0.916, 0.927) & 2.1 (1.5, 2.8) & 4.1 (3.3, 5.1) & 0.596 (0.577, 0.610) \\
+Mann--Whitney test & 2.6 (2.1, 3.1) & 48.0 (46.5, 49.6) & 0.914 (0.908, 0.922) & 7.2 (6.2, 8.5) & 31.4 (29.5, 33.5) & 0.796 (0.783, 0.810) \\
+Welch test & 0.3 (0.2, 0.6) & 26.8 (25.5, 28.2) & 0.761 (0.751, 0.772) & 6.0 (5.1, 7.2) & 28.9 (27.0, 30.9) & 0.696 (0.679, 0.712) \\
+Level-shift test (supremum t) & 4.0 (3.4, 4.7) & 5.8 (5.1, 6.5) & 0.796 (0.786, 0.808) & 5.9 (5.0, 7.1) & 8.4 (7.3, 9.7) & 0.756 (0.739, 0.771) \\
+Level-shift test, break on a breach date & 4.1 (3.6, 4.8) & 6.8 (6.1, 7.6) & 0.824 (0.815, 0.832) & 6.2 (5.2, 7.3) & 25.1 (23.2, 27.0) & 0.782 (0.770, 0.797) \\
+Calibrated tolerance & -- & -- & -- & 3.9 (3.1, 4.8) & 18.0 (16.4, 19.7) & 0.937 (0.928, 0.946) \\
+Calibrated tolerance, look-ahead & -- & -- & -- & 4.5 (3.6, 5.4) & 17.2 (15.6, 18.9) & 0.925 (0.916, 0.935) \\
 Weight stability (engine) & -- & -- & -- & 49.8 (47.6, 52.0) & -- & -- \\
 \bottomrule
 \end{tabular}}

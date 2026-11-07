@@ -2,9 +2,10 @@
   "kind": "manuscript",
   "title_support": [
     "tab:main-results",
+    "tab:stated-grid",
+    "tab:fitted-power",
     "tab:constructed",
     "tab:c14-history",
-    "tab:fitted-power",
     "fig:operating-points"
   ],
   "claims": {

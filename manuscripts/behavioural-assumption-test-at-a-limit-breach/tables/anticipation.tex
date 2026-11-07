@@ -1,0 +1,22 @@
+\begin{table*}[htbp]
+\centering
+\footnotesize
+\caption{An override made at the date before a breach begins, on the 1,534 of the 2,000 simulated banks (breach prevalence 0.25) that have such a date: at each date that precedes the first date of a breach spell an addition of 2 or 4 years to the fitted maturity is made with probability 0.5 (at least once), from that date on. False-flag rate of the same banks without the override, detection with 95\% Wilson intervals, and the area under the ROC curve at 4 years; the two tolerance rules and the two level-shift tests are calibrated at 5\% on the 1,000 calibration banks.}
+\label{tab:anticipation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+Detector & False flags (\%) & Detection of +2 years (\%) & Detection of +4 years (\%) & AUC of +4 years (95\% interval) \\
+\midrule
+Proposed test & 81.9 (79.9, 83.8) & 81.9 (79.9, 83.8) & 81.9 (79.9, 83.7) & 0.499 (0.478, 0.520) \\
+Any change & 92.6 (91.1, 93.8) & 99.2 (98.6, 99.6) & 99.2 (98.6, 99.6) & 0.513 (0.488, 0.531) \\
+Fisher exact test & 2.1 (1.5, 2.9) & 1.0 (0.6, 1.6) & 1.0 (0.6, 1.6) & 0.483 (0.464, 0.499) \\
+Mann--Whitney test & 6.8 (5.7, 8.2) & 2.5 (1.9, 3.5) & 2.1 (1.5, 2.9) & 0.441 (0.419, 0.462) \\
+Welch test & 5.9 (4.8, 7.2) & 1.1 (0.7, 1.8) & 0.6 (0.3, 1.1) & 0.421 (0.402, 0.441) \\
+Level-shift test (supremum t) & 6.4 (5.3, 7.7) & 23.5 (21.5, 25.7) & 39.0 (36.6, 41.4) & 0.811 (0.796, 0.825) \\
+Level-shift test, break on a breach date & 5.5 (4.5, 6.8) & 2.2 (1.6, 3.1) & 1.5 (1.0, 2.2) & 0.518 (0.503, 0.534) \\
+Calibrated tolerance & 3.7 (2.8, 4.7) & 3.7 (2.8, 4.7) & 3.7 (2.8, 4.7) & 0.500 (0.480, 0.520) \\
+Calibrated tolerance, look-ahead & 4.6 (3.6, 5.7) & 11.1 (9.6, 12.8) & 91.0 (89.5, 92.3) & 0.949 (0.941, 0.958) \\
+\bottomrule
+\end{tabular}}
+\end{table*}

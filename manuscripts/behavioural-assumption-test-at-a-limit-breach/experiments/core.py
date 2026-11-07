@@ -137,6 +137,19 @@ def plant_dates(rng: np.random.Generator, b: np.ndarray, prob: float) -> np.ndar
     return mask
 
 
+def plant_dates_before_spell(rng: np.random.Generator, b: np.ndarray, prob: float) -> np.ndarray:
+    """The dates that precede the first date of a breach spell (``b`` is 0 at the date and 1 at the next one), each with probability ``prob``, at least one
+    when any exists: the dates at which an assumption is changed in anticipation of a breach. None of them is a breach date. A boolean mask of the dates."""
+    cand = np.flatnonzero(~b[:-1] & b[1:])
+    mask = np.zeros(b.size, dtype=bool)
+    if cand.size == 0:
+        return mask
+    mask[cand[rng.random(cand.size) < prob]] = True
+    if not mask.any():
+        mask[rng.choice(cand)] = True
+    return mask
+
+
 def overlay_weights(w: np.ndarray, planted: np.ndarray, share: float) -> np.ndarray:
     """A persistent override of the fitted replicating portfolio toward the longest tranche: from each planted date on the
     weights used are ``(1 - s) w + s e_J`` with ``s`` the cumulative share ``min(1, share * planted-so-far)``."""
@@ -188,6 +201,37 @@ def peak_at_breach(theta: np.ndarray, b: np.ndarray, lookahead: bool = False) ->
     return float(d[flag].max()) if flag.any() else 0.0
 
 
+#: the shortest segment, in dates, on each side of a candidate break of ``shift_statistic``
+SHIFT_MIN_SEGMENT = 3
+
+
+def shift_statistic(theta: np.ndarray) -> tuple[float, int]:
+    """The one-sided supremum-t statistic of a single upward shift in the level of a series (the Quandt-Andrews family of tests of a break at an unknown date):
+    for each first date ``tau`` of a new regime (at least ``SHIFT_MIN_SEGMENT`` dates on each side) the difference of the means after and before, divided by its
+    standard error under the pooled variance of the two segments; returns the largest value and the date at which it is reached (0 and -1 when the series is too
+    short for two segments)."""
+    th = np.asarray(theta, dtype=float)
+    n = th.size
+    if n < 2 * SHIFT_MIN_SEGMENT:
+        return 0.0, -1
+    best, at = -np.inf, SHIFT_MIN_SEGMENT
+    for tau in range(SHIFT_MIN_SEGMENT, n - SHIFT_MIN_SEGMENT + 1):
+        x, y = th[:tau], th[tau:]
+        ssr = float(((x - x.mean()) ** 2).sum() + ((y - y.mean()) ** 2).sum())
+        s2 = max(ssr / (n - 2), 1e-12)
+        t = (y.mean() - x.mean()) / math.sqrt(s2 * (1.0 / x.size + 1.0 / y.size))
+        if t > best:
+            best, at = t, tau
+    return float(best), int(at)
+
+
+def shift_scores(theta: np.ndarray, b: np.ndarray) -> tuple[float, float]:
+    """The statistic of the shift test and of the rule "a shift is found and its estimated break date is a breach date" (the statistic when that date is a
+    breach date, 0 otherwise); the second is the break-then-coincide comparator of the proposed test."""
+    stat, at = shift_statistic(theta)
+    return stat, (stat if at >= 0 and bool(b[at]) else 0.0)
+
+
 def scores(theta: np.ndarray, b: np.ndarray, w: np.ndarray | None = None) -> dict[str, float]:
     """Every detector's statistic on one history. ``engine_count`` is the engine's statistic, ``peak`` and ``peak_lookahead`` the largest change at a
     breach date, ``any_change`` the number of changes whatever the breach flags; ``fisher_p``, ``mannwhitney_p`` and ``welch_p`` are the one-sided
@@ -201,6 +245,7 @@ def scores(theta: np.ndarray, b: np.ndarray, w: np.ndarray | None = None) -> dic
     out["peak"] = peak_at_breach(theta, b)
     out["peak_lookahead"] = peak_at_breach(theta, b, lookahead=True)
     out["any_change"] = float(chg.sum())
+    out["shift"], out["shift_at_breach"] = shift_scores(theta, b)
     tab = [[int((chg & bb).sum()), int((chg & ~bb).sum())], [int((~chg & bb).sum()), int((~chg & ~bb).sum())]]
     out["fisher_p"] = float(stats.fisher_exact(tab, alternative="greater")[1])
     mw = wp = 1.0
@@ -266,15 +311,16 @@ def p_coincidence_hypergeometric(n_dates: int, n_changes: int, n_breaches: int) 
 #: the size of the published tests, and the red limit of the engine's stability test (``gap_red`` of ``irrbb.nmd_parameter_stability``)
 ALPHA = 0.05
 STABILITY_RED = 0.25
-DETECTORS = ("engine", "any_change", "fisher", "mannwhitney", "welch", "stability", "tolerance", "tolerance_lookahead")
+DETECTORS = ("engine", "any_change", "fisher", "mannwhitney", "welch", "stability", "tolerance", "tolerance_lookahead", "shift", "shift_at_breach")
 LABEL = {"engine": "Proposed test (exact change at a breach)", "any_change": "Any change, whatever the breach flags",
          "fisher": "Fisher exact test, change against breach", "mannwhitney": "Mann-Whitney test of the size of the changes",
          "welch": "Welch test of the signed changes", "stability": "Stability of the weights (engine)",
-         "tolerance": "Tolerance on the change at a breach", "tolerance_lookahead": "Tolerance with a one-date look-ahead"}
+         "tolerance": "Tolerance on the change at a breach", "tolerance_lookahead": "Tolerance with a one-date look-ahead",
+         "shift": "Test for a shift in the level, whatever the breach flags", "shift_at_breach": "Test for a shift in the level that falls on a breach date"}
 
 
 def flag(sc: dict[str, float], name: str, delta: float | None = None) -> bool:
-    """Whether a detector flags the history whose statistics are ``sc`` (``delta`` is the tolerance of the two tolerance rules)."""
+    """Whether a detector flags the history whose statistics are ``sc`` (``delta`` is the tolerance of the two tolerance rules and the critical value of the two shift rules)."""
     if name == "engine":
         return sc["engine_count"] >= 1.0
     if name == "any_change":
@@ -287,6 +333,8 @@ def flag(sc: dict[str, float], name: str, delta: float | None = None) -> bool:
         return sc["peak"] > delta
     if name == "tolerance_lookahead":
         return sc["peak_lookahead"] > delta
+    if name in ("shift", "shift_at_breach"):
+        return sc[name] > delta
     raise KeyError(name)
 
 
@@ -304,4 +352,6 @@ def roc_score(sc: dict[str, float], name: str) -> float:
         return sc["peak"]
     if name == "tolerance_lookahead":
         return sc["peak_lookahead"]
+    if name in ("shift", "shift_at_breach"):
+        return sc[name]
     raise KeyError(name)

@@ -112,3 +112,46 @@ def test_scores_agree_with_the_engine_count():
         theta = np.round(rng.normal(3, 1, t), 1)
         b = rng.random(t) < 0.4
         assert core.scores(theta, b)["engine_count"] == core.closed_form_count(theta, b)
+
+
+def test_the_anticipatory_dates_precede_a_breach_spell_and_are_never_breach_dates():
+    rng = np.random.default_rng(5)
+    for _ in range(300):
+        b = core.breach_chain(rng, core.T_DEFAULT, 0.25)
+        mask = core.plant_dates_before_spell(rng, b, 0.5)
+        starts = np.flatnonzero(~b[:-1] & b[1:])
+        assert mask.any() == (starts.size > 0)
+        assert not (mask & b).any()
+        assert set(np.flatnonzero(mask)) <= set(starts)
+    # no spell that starts after the first date: nothing to anticipate
+    assert not core.plant_dates_before_spell(rng, np.array([True, True, False, False]), 1.0).any()
+    # probability one plants every date before a spell
+    b = np.array([False, True, False, False, True, True])
+    assert list(np.flatnonzero(core.plant_dates_before_spell(rng, b, 1.0))) == [0, 3]
+
+
+def test_the_shift_statistic_finds_an_upward_level_shift_at_its_date():
+    rng = np.random.default_rng(2)
+    th = np.concatenate([4.0 + 0.1 * rng.normal(size=6), 6.0 + 0.1 * rng.normal(size=6)])
+    stat, at = core.shift_statistic(th)
+    assert at == 6 and stat > 10.0
+    # a downward shift is not an upward one
+    assert core.shift_statistic(-th)[0] < 0.0
+    # a constant series has no shift, and a segment is never shorter than the minimum
+    assert core.shift_statistic(np.full(12, 3.0))[0] == 0.0
+    assert core.SHIFT_MIN_SEGMENT <= core.shift_statistic(np.arange(12.0))[1] <= 12 - core.SHIFT_MIN_SEGMENT
+
+
+def test_the_break_then_coincide_rule_needs_the_break_date_to_be_a_breach_date():
+    th = np.concatenate([np.full(6, 4.0), np.full(6, 6.0)]) + 1e-3 * np.arange(12)
+    on = np.zeros(12, dtype=bool)
+    on[6] = True
+    off = np.zeros(12, dtype=bool)
+    off[7] = True
+    s_on, s_off = core.shift_scores(th, on), core.shift_scores(th, off)
+    assert s_on[0] == s_off[0] > 0.0
+    assert s_on[1] == s_on[0] and s_off[1] == 0.0
+    sc = core.scores(th, on)
+    assert core.flag(sc, "shift", 1.0) and core.flag(sc, "shift_at_breach", 1.0) and not core.flag(core.scores(th, off), "shift_at_breach", 1.0)
+    assert core.roc_score(sc, "shift") == sc["shift"]
+

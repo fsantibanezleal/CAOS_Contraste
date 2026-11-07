@@ -2,7 +2,8 @@
 
     python manuscripts/behavioural-assumption-test-at-a-limit-breach/number_sources.py [--unused]
 
-Exit 1 when the prose uses a macro that ``numbers.tex`` does not define (a number that would have to be typed by hand).
+Exit 1 when the prose uses a macro that ``numbers.tex`` does not define (a number that would have to be typed by hand), or when a source file holds a control
+character other than a line ending or a tab (a carriage return inside a line turns ``\\randomN`` into ``andomN`` in the typeset text).
 """
 from __future__ import annotations
 
@@ -34,6 +35,17 @@ def definitions() -> dict[str, tuple[str, str]]:
     return defs
 
 
+def control_characters() -> list[str]:
+    """The ``file:line`` of every control character in the TeX sources other than a tab and a line ending (LF or CRLF)."""
+    bad = []
+    files = [ROOT / "main.tex"] + sorted((ROOT / "sections").glob("*.tex")) + sorted((ROOT / "tables").glob("*.tex"))
+    for f in files:
+        for n, line in enumerate(f.read_bytes().replace(b"\r\n", b"\n").split(b"\n"), 1):
+            if any(c < 0x20 and c != 0x09 for c in line):
+                bad.append(f"{f.relative_to(ROOT).as_posix()}:{n}")
+    return bad
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--unused", action="store_true", help="also list the macros no section uses")
@@ -54,7 +66,9 @@ def main() -> int:
         for k in sorted(set(defs) - set(used)):
             print(f"| `{k}` | {defs[k][0]} | (not used) | {defs[k][1]} |")
     print(f"\nmacros used: {len(rows)}; defined: {len(defs)}; used but undefined: {len(missing)} {missing}")
-    return 1 if missing else 0
+    bad = control_characters()
+    print(f"control characters in the sources: {len(bad)} {bad}")
+    return 1 if missing or bad else 0
 
 
 if __name__ == "__main__":

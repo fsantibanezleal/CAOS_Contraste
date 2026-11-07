@@ -5,7 +5,9 @@
 A history of 12 quarters has a breach chain (stationary prevalence ``p``, persistence 0.8), a stated parameter with changes that have nothing to do with
 the breach (a rate ``lam`` per quarter), and, in the alternative arm, a lengthening at each breach date with probability ``pi_m`` (at least one). Both arms share
 the breach chain and the innocent changes (paired). Every history has at least one breach after its first date. 5 blocks of ``--per-block`` histories per
-cell; the seeds are ``[SEED, cell, block, history]``. Writes ``results_stated.json``.
+cell; the seeds are ``[SEED, cell, block, history]``. The two tests of a shift in the level (break at an unknown date, with and without the requirement that the
+break date be a breach date) are calibrated at 5% by the conformal quantile of their statistic on ``N_CAL`` null histories of the cell that no test history shares
+(seeds ``[SEED, cell, 1000, history]``). Writes ``results_stated.json``.
 """
 from __future__ import annotations
 
@@ -26,12 +28,28 @@ PREVS = (0.10, 0.25, 0.50)
 PI_M = 0.5
 SWEEP_PI = (0.25, 0.5, 1.0)
 BASE = (0.10, 0.25)
-STATED_DETECTORS = ("engine", "any_change", "fisher", "mannwhitney", "welch")
+STATED_DETECTORS = ("engine", "any_change", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach")
+SHIFT_DETECTORS = ("shift", "shift_at_breach")
+N_CAL = 1000
+
+
+def shift_deltas(cell: int, lam: float, prev: float) -> dict[str, float]:
+    """The critical values of the two shift tests: the conformal quantile at 5% of their statistic on null histories of the cell."""
+    stats = {d: [] for d in SHIFT_DETECTORS}
+    for i in range(N_CAL):
+        rng = np.random.default_rng([SEED, cell, 1000, i])
+        b = core.breach_chain(rng, core.T_DEFAULT, prev)
+        draws = core.stated_draws(rng, core.T_DEFAULT, lam)
+        s, sb = core.shift_scores(core.stated_history(draws, None), b)
+        stats["shift"].append(s)
+        stats["shift_at_breach"].append(sb)
+    return {d: core.conformal_threshold(np.array(v), core.ALPHA) for d, v in stats.items()}
 
 
 def run_cell(cell: int, lam: float, prev: float, pi_m: float, per_block: int) -> dict:
     flags = {arm: {d: [0] * BLOCKS for d in STATED_DETECTORS} for arm in ("null", "alt")}
-    raw = {arm: {d: [] for d in ("engine", "fisher", "mannwhitney", "welch", "any_change")} for arm in ("null", "alt")}
+    raw = {arm: {d: [] for d in ("engine", "fisher", "mannwhitney", "welch", "any_change") + SHIFT_DETECTORS} for arm in ("null", "alt")}
+    delta = shift_deltas(cell, lam, prev)
     n_breach, coincide_null = [], 0
     for blk in range(BLOCKS):
         for i in range(per_block):
@@ -43,13 +61,15 @@ def run_cell(cell: int, lam: float, prev: float, pi_m: float, per_block: int) ->
             for arm, th in (("null", core.stated_history(draws, None)), ("alt", core.stated_history(draws, plant))):
                 sc = core.scores(th, b)
                 for d in STATED_DETECTORS:
-                    flags[arm][d][blk] += int(core.flag(sc, d))
+                    flags[arm][d][blk] += int(core.flag(sc, d, delta.get(d)))
                 raw[arm]["engine"].append(sc["engine_count"])
                 raw[arm]["any_change"].append(sc["any_change"])
+                for d in SHIFT_DETECTORS:
+                    raw[arm][d].append(sc[d])
                 for d in ("fisher", "mannwhitney", "welch"):
                     raw[arm][d].append(-sc[d + "_p"])
     n = per_block * BLOCKS
-    out = {"lam": lam, "prevalence": prev, "pi_m": pi_m, "n_per_arm": n, "blocks": BLOCKS, "mean_breach_dates": float(np.mean(n_breach)), "rates": {}}
+    out = {"lam": lam, "prevalence": prev, "pi_m": pi_m, "n_per_arm": n, "blocks": BLOCKS, "mean_breach_dates": float(np.mean(n_breach)), "shift_delta": delta, "rates": {}}
     rng = np.random.default_rng([SEED, cell, 999])
     for arm in ("null", "alt"):
         out["rates"][arm] = {}
@@ -59,7 +79,7 @@ def run_cell(cell: int, lam: float, prev: float, pi_m: float, per_block: int) ->
             per = [x / per_block for x in flags[arm][d]]
             out["rates"][arm][d] = {"k": k, "rate": p, "lo": lo, "hi": hi, "block_sd": float(np.std(per, ddof=1))}
     out["auc"] = {}
-    for d in ("engine", "fisher", "mannwhitney", "welch", "any_change"):
+    for d in ("engine", "fisher", "mannwhitney", "welch", "any_change") + SHIFT_DETECTORS:
         a, lo, hi = core.auc_ci(np.array(raw["null"][d]), np.array(raw["alt"][d]), rng)
         out["auc"][d] = {"auc": a, "lo": lo, "hi": hi}
     return out

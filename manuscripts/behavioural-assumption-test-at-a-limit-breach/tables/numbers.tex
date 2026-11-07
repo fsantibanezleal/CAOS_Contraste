@@ -69,6 +69,10 @@
 \newcommand{\statedAltLoEngine}{99.9}
 % results_stated.json cell(lam=0.10,prev=0.25).auc.engine.auc
 \newcommand{\statedAucEngine}{0.908}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.engine.lo
+\newcommand{\statedAucLoEngine}{0.902}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.engine.hi
+\newcommand{\statedAucHiEngine}{0.913}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.any_change.rate
 \newcommand{\statedNullAny}{68.8\%}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.any_change.lo
@@ -81,6 +85,10 @@
 \newcommand{\statedAltLoAny}{99.9}
 % results_stated.json cell(lam=0.10,prev=0.25).auc.any_change.auc
 \newcommand{\statedAucAny}{0.863}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.any_change.lo
+\newcommand{\statedAucLoAny}{0.856}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.any_change.hi
+\newcommand{\statedAucHiAny}{0.871}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.fisher.rate
 \newcommand{\statedNullFisher}{0.1\%}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.fisher.lo
@@ -93,6 +101,10 @@
 \newcommand{\statedAltLoFisher}{12.2}
 % results_stated.json cell(lam=0.10,prev=0.25).auc.fisher.auc
 \newcommand{\statedAucFisher}{0.922}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.fisher.lo
+\newcommand{\statedAucLoFisher}{0.916}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.fisher.hi
+\newcommand{\statedAucHiFisher}{0.927}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.mannwhitney.rate
 \newcommand{\statedNullMw}{2.6\%}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.mannwhitney.lo
@@ -105,6 +117,10 @@
 \newcommand{\statedAltLoMw}{46.5}
 % results_stated.json cell(lam=0.10,prev=0.25).auc.mannwhitney.auc
 \newcommand{\statedAucMw}{0.914}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.mannwhitney.lo
+\newcommand{\statedAucLoMw}{0.908}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.mannwhitney.hi
+\newcommand{\statedAucHiMw}{0.922}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.welch.rate
 \newcommand{\statedNullWelch}{0.3\%}
 % results_stated.json cell(lam=0.10,prev=0.25).rates.null.welch.lo
@@ -117,6 +133,64 @@
 \newcommand{\statedAltLoWelch}{25.5}
 % results_stated.json cell(lam=0.10,prev=0.25).auc.welch.auc
 \newcommand{\statedAucWelch}{0.761}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.welch.lo
+\newcommand{\statedAucLoWelch}{0.751}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.welch.hi
+\newcommand{\statedAucHiWelch}{0.772}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift.rate
+\newcommand{\statedNullShift}{4.0\%}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift.lo
+\newcommand{\statedNullLoShift}{3.4}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift.hi
+\newcommand{\statedNullHiShift}{4.7}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.alt.shift.rate
+\newcommand{\statedAltShift}{5.8\%}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.alt.shift.lo
+\newcommand{\statedAltLoShift}{5.1}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift.auc
+\newcommand{\statedAucShift}{0.796}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift.lo
+\newcommand{\statedAucLoShift}{0.786}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift.hi
+\newcommand{\statedAucHiShift}{0.808}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift_at_breach.rate
+\newcommand{\statedNullShiftB}{4.1\%}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift_at_breach.lo
+\newcommand{\statedNullLoShiftB}{3.6}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.null.shift_at_breach.hi
+\newcommand{\statedNullHiShiftB}{4.8}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.alt.shift_at_breach.rate
+\newcommand{\statedAltShiftB}{6.8\%}
+% results_stated.json cell(lam=0.10,prev=0.25).rates.alt.shift_at_breach.lo
+\newcommand{\statedAltLoShiftB}{6.1}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift_at_breach.auc
+\newcommand{\statedAucShiftB}{0.824}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift_at_breach.lo
+\newcommand{\statedAucLoShiftB}{0.815}
+% results_stated.json cell(lam=0.10,prev=0.25).auc.shift_at_breach.hi
+\newcommand{\statedAucHiShiftB}{0.832}
+% results_stated.json cell(lam=0.10,prev=0.25).shift_delta.shift
+\newcommand{\statedShiftDelta}{$1.2\times10^{6}$}
+% results_stated.json cell(lam=0.10,prev=0.25).shift_delta.shift_at_breach
+\newcommand{\statedShiftBDelta}{$5.6\times10^{5}$}
+% results_stated.json cell(lam=0.05,prev=0.5).auc.engine.auc
+\newcommand{\halfAucAEngine}{0.960}
+% results_stated.json cell(lam=0.05,prev=0.5).auc.fisher.auc
+\newcommand{\halfAucAFisher}{0.937}
+% results_stated.json cell(lam=0.05,prev=0.5).auc.mannwhitney.auc
+\newcommand{\halfAucAMw}{0.930}
+% results_stated.json cell(lam=0.1,prev=0.5).auc.engine.auc
+\newcommand{\halfAucBEngine}{0.923}
+% results_stated.json cell(lam=0.1,prev=0.5).auc.fisher.auc
+\newcommand{\halfAucBFisher}{0.899}
+% results_stated.json cell(lam=0.1,prev=0.5).auc.mannwhitney.auc
+\newcommand{\halfAucBMw}{0.890}
+% results_stated.json cell(lam=0.2,prev=0.5).auc.engine.auc
+\newcommand{\halfAucCEngine}{0.856}
+% results_stated.json cell(lam=0.2,prev=0.5).auc.fisher.auc
+\newcommand{\halfAucCFisher}{0.840}
+% results_stated.json cell(lam=0.2,prev=0.5).auc.mannwhitney.auc
+\newcommand{\halfAucCMw}{0.849}
 % results_fitted.json matched.0.25.null.engine.rate
 \newcommand{\fitNullEngine}{82.2\%}
 % results_fitted.json matched.0.25.null.engine.lo
@@ -389,6 +463,82 @@
 \newcommand{\fitAucLoDTolLa}{0.991}
 % results_fitted.json matched.0.25.auc_add.4.0.tolerance_lookahead.hi
 \newcommand{\fitAucHiDTolLa}{0.996}
+% results_fitted.json matched.0.25.null.shift.rate
+\newcommand{\fitNullShift}{5.9\%}
+% results_fitted.json matched.0.25.null.shift.lo
+\newcommand{\fitNullLoShift}{5.0}
+% results_fitted.json matched.0.25.null.shift.hi
+\newcommand{\fitNullHiShift}{7.1}
+% results_fitted.json matched.0.25.add.0.5.shift.rate
+\newcommand{\fitAddAShift}{6.8\%}
+% results_fitted.json matched.0.25.auc_add.0.5.shift.auc
+\newcommand{\fitAucAShift}{0.653}
+% results_fitted.json matched.0.25.auc_add.0.5.shift.lo
+\newcommand{\fitAucLoAShift}{0.637}
+% results_fitted.json matched.0.25.auc_add.0.5.shift.hi
+\newcommand{\fitAucHiAShift}{0.671}
+% results_fitted.json matched.0.25.add.1.0.shift.rate
+\newcommand{\fitAddBShift}{6.2\%}
+% results_fitted.json matched.0.25.auc_add.1.0.shift.auc
+\newcommand{\fitAucBShift}{0.707}
+% results_fitted.json matched.0.25.auc_add.1.0.shift.lo
+\newcommand{\fitAucLoBShift}{0.691}
+% results_fitted.json matched.0.25.auc_add.1.0.shift.hi
+\newcommand{\fitAucHiBShift}{0.722}
+% results_fitted.json matched.0.25.add.2.0.shift.rate
+\newcommand{\fitAddCShift}{8.4\%}
+% results_fitted.json matched.0.25.auc_add.2.0.shift.auc
+\newcommand{\fitAucCShift}{0.756}
+% results_fitted.json matched.0.25.auc_add.2.0.shift.lo
+\newcommand{\fitAucLoCShift}{0.739}
+% results_fitted.json matched.0.25.auc_add.2.0.shift.hi
+\newcommand{\fitAucHiCShift}{0.771}
+% results_fitted.json matched.0.25.add.4.0.shift.rate
+\newcommand{\fitAddDShift}{13.1\%}
+% results_fitted.json matched.0.25.auc_add.4.0.shift.auc
+\newcommand{\fitAucDShift}{0.794}
+% results_fitted.json matched.0.25.auc_add.4.0.shift.lo
+\newcommand{\fitAucLoDShift}{0.780}
+% results_fitted.json matched.0.25.auc_add.4.0.shift.hi
+\newcommand{\fitAucHiDShift}{0.807}
+% results_fitted.json matched.0.25.null.shift_at_breach.rate
+\newcommand{\fitNullShiftB}{6.2\%}
+% results_fitted.json matched.0.25.null.shift_at_breach.lo
+\newcommand{\fitNullLoShiftB}{5.2}
+% results_fitted.json matched.0.25.null.shift_at_breach.hi
+\newcommand{\fitNullHiShiftB}{7.3}
+% results_fitted.json matched.0.25.add.0.5.shift_at_breach.rate
+\newcommand{\fitAddAShiftB}{14.1\%}
+% results_fitted.json matched.0.25.auc_add.0.5.shift_at_breach.auc
+\newcommand{\fitAucAShiftB}{0.659}
+% results_fitted.json matched.0.25.auc_add.0.5.shift_at_breach.lo
+\newcommand{\fitAucLoAShiftB}{0.644}
+% results_fitted.json matched.0.25.auc_add.0.5.shift_at_breach.hi
+\newcommand{\fitAucHiAShiftB}{0.673}
+% results_fitted.json matched.0.25.add.1.0.shift_at_breach.rate
+\newcommand{\fitAddBShiftB}{18.1\%}
+% results_fitted.json matched.0.25.auc_add.1.0.shift_at_breach.auc
+\newcommand{\fitAucBShiftB}{0.727}
+% results_fitted.json matched.0.25.auc_add.1.0.shift_at_breach.lo
+\newcommand{\fitAucLoBShiftB}{0.712}
+% results_fitted.json matched.0.25.auc_add.1.0.shift_at_breach.hi
+\newcommand{\fitAucHiBShiftB}{0.740}
+% results_fitted.json matched.0.25.add.2.0.shift_at_breach.rate
+\newcommand{\fitAddCShiftB}{25.1\%}
+% results_fitted.json matched.0.25.auc_add.2.0.shift_at_breach.auc
+\newcommand{\fitAucCShiftB}{0.782}
+% results_fitted.json matched.0.25.auc_add.2.0.shift_at_breach.lo
+\newcommand{\fitAucLoCShiftB}{0.770}
+% results_fitted.json matched.0.25.auc_add.2.0.shift_at_breach.hi
+\newcommand{\fitAucHiCShiftB}{0.797}
+% results_fitted.json matched.0.25.add.4.0.shift_at_breach.rate
+\newcommand{\fitAddDShiftB}{32.9\%}
+% results_fitted.json matched.0.25.auc_add.4.0.shift_at_breach.auc
+\newcommand{\fitAucDShiftB}{0.827}
+% results_fitted.json matched.0.25.auc_add.4.0.shift_at_breach.lo
+\newcommand{\fitAucLoDShiftB}{0.815}
+% results_fitted.json matched.0.25.auc_add.4.0.shift_at_breach.hi
+\newcommand{\fitAucHiDShiftB}{0.839}
 % results_stated.json cells[].rates.null.engine.rate (min)
 \newcommand{\statedNullMin}{17.0\%}
 % results_stated.json cells[].rates.null.engine.rate (max)
@@ -465,6 +615,42 @@
 \newcommand{\realMwNull}{4.4\%}
 % results_fitted.json real_series.0.25.auc_add.2.0.mannwhitney.auc
 \newcommand{\realMwAucC}{0.82}
+% results_fitted.json real_series.0.25.null.welch.rate
+\newcommand{\realNullWelch}{11.7\%}
+% results_fitted.json real_series.0.25.null.welch.lo
+\newcommand{\realNullLoWelch}{10.3}
+% results_fitted.json real_series.0.25.null.welch.hi
+\newcommand{\realNullHiWelch}{13.1}
+% results_fitted.json real_series.0.25.null.fisher.rate
+\newcommand{\realNullFisher}{0.0\%}
+% results_fitted.json real_series.0.25.null.fisher.lo
+\newcommand{\realNullLoFisher}{0.0}
+% results_fitted.json real_series.0.25.null.fisher.hi
+\newcommand{\realNullHiFisher}{0.2}
+% results_fitted.json real_series.0.25.null.stability.rate
+\newcommand{\realNullStab}{0.0\%}
+% results_fitted.json real_series.0.25.null.stability.lo
+\newcommand{\realNullLoStab}{0.0}
+% results_fitted.json real_series.0.25.null.stability.hi
+\newcommand{\realNullHiStab}{0.2}
+% results_fitted.json real_series.0.25.auc.0.4.stability.auc
+\newcommand{\realWAucStab}{0.626}
+% results_fitted.json real_series.0.25.auc.0.4.stability.lo
+\newcommand{\realWAucLoStab}{0.609}
+% results_fitted.json real_series.0.25.auc.0.4.stability.hi
+\newcommand{\realWAucHiStab}{0.644}
+% results_fitted.json real_series.0.25.auc.0.4.tolerance.auc
+\newcommand{\realWAucTol}{0.614}
+% results_fitted.json real_series.0.25.auc.0.4.tolerance.lo
+\newcommand{\realWAucLoTol}{0.597}
+% results_fitted.json real_series.0.25.auc.0.4.tolerance.hi
+\newcommand{\realWAucHiTol}{0.630}
+% results_fitted.json real_series.0.25.auc.0.4.mannwhitney.auc
+\newcommand{\realWAucMw}{0.562}
+% results_fitted.json real_series.0.25.auc.0.4.mannwhitney.lo
+\newcommand{\realWAucLoMw}{0.544}
+% results_fitted.json real_series.0.25.auc.0.4.mannwhitney.hi
+\newcommand{\realWAucHiMw}{0.580}
 % results_fitted.json ties_at_breach_dates.share_banks_with_a_tie
 \newcommand{\tieBanks}{40.0\%}
 % results_fitted.json ties_at_breach_dates.mean_ties
@@ -515,6 +701,8 @@
 \newcommand{\fitMisATol}{3.4\%}
 % results_fitted.json mismatched.0.1.null.tolerance.hi
 \newcommand{\fitMisATolHi}{4.3\%}
+% results_fitted.json mismatched.0.1.null.tolerance.lo
+\newcommand{\fitMisATolLo}{2.7}
 % results_fitted.json matched.0.25.null.fisher.rate
 \newcommand{\fitNullBFisher}{2.1\%}
 % results_fitted.json matched.0.25.null.mannwhitney.rate
@@ -531,6 +719,8 @@
 \newcommand{\fitMisBTol}{3.9\%}
 % results_fitted.json mismatched.0.25.null.tolerance.hi
 \newcommand{\fitMisBTolHi}{4.8\%}
+% results_fitted.json mismatched.0.25.null.tolerance.lo
+\newcommand{\fitMisBTolLo}{3.1}
 % results_fitted.json matched.0.5.null.fisher.rate
 \newcommand{\fitNullCFisher}{1.5\%}
 % results_fitted.json matched.0.5.null.mannwhitney.rate
@@ -547,34 +737,152 @@
 \newcommand{\fitMisCTol}{5.5\%}
 % results_fitted.json mismatched.0.5.null.tolerance.hi
 \newcommand{\fitMisCTolHi}{6.6\%}
-% results_fitted.json matched.0.25.early.rates.tolerance.rate
-\newcommand{\earlyTol}{14.5\%}
-% results_fitted.json matched.0.25.early.rates.tolerance_lookahead.rate
-\newcommand{\earlyTolLa}{17.4\%}
-% results_fitted.json matched.0.25.early.rates.engine.rate
-\newcommand{\earlyEngine}{93.9\%}
+% results_fitted.json mismatched.0.5.null.tolerance.lo
+\newcommand{\fitMisCTolLo}{4.6}
 % results_fitted.json matched.0.25.early.n
-\newcommand{\earlyN}{1,851}
+\newcommand{\earlyN}{1,534}
+% results_fitted.json matched.0.25.early.rates.2.0.engine.rate
+\newcommand{\earlyEngineTwo}{81.9\%}
+% results_fitted.json matched.0.25.early.rates.2.0.any_change.rate
+\newcommand{\earlyAnyTwo}{99.2\%}
+% results_fitted.json matched.0.25.early.rates.2.0.tolerance.rate
+\newcommand{\earlyTolTwo}{3.7\%}
+% results_fitted.json matched.0.25.early.rates.2.0.tolerance_lookahead.rate
+\newcommand{\earlyTolLaTwo}{11.1\%}
+% results_fitted.json matched.0.25.early.rates.2.0.shift.rate
+\newcommand{\earlyShiftTwo}{23.5\%}
+% results_fitted.json matched.0.25.early.rates.2.0.shift_at_breach.rate
+\newcommand{\earlyShiftBTwo}{2.2\%}
+% results_fitted.json matched.0.25.early.rates.2.0.mannwhitney.rate
+\newcommand{\earlyMwTwo}{2.5\%}
+% results_fitted.json matched.0.25.early.rates.2.0 (tolerance_lookahead / tolerance)
+\newcommand{\earlyRatioTwo}{3.0}
+% results_fitted.json matched.0.25.early.rates.4.0.engine.rate
+\newcommand{\earlyEngineFour}{81.9\%}
+% results_fitted.json matched.0.25.early.rates.4.0.any_change.rate
+\newcommand{\earlyAnyFour}{99.2\%}
+% results_fitted.json matched.0.25.early.rates.4.0.tolerance.rate
+\newcommand{\earlyTolFour}{3.7\%}
+% results_fitted.json matched.0.25.early.rates.4.0.tolerance_lookahead.rate
+\newcommand{\earlyTolLaFour}{91.0\%}
+% results_fitted.json matched.0.25.early.rates.4.0.shift.rate
+\newcommand{\earlyShiftFour}{39.0\%}
+% results_fitted.json matched.0.25.early.rates.4.0.shift_at_breach.rate
+\newcommand{\earlyShiftBFour}{1.5\%}
+% results_fitted.json matched.0.25.early.rates.4.0.mannwhitney.rate
+\newcommand{\earlyMwFour}{2.1\%}
+% results_fitted.json matched.0.25.early.rates.4.0 (tolerance_lookahead / tolerance)
+\newcommand{\earlyRatioFour}{24.9}
+% results_fitted.json matched.0.25.early.null.tolerance.rate
+\newcommand{\earlyNullTol}{3.7\%}
+% results_fitted.json matched.0.25.early.null.tolerance_lookahead.rate
+\newcommand{\earlyNullTolLa}{4.6\%}
+% results_fitted.json matched.0.25.early.null.engine.rate
+\newcommand{\earlyNullEngine}{81.9\%}
+% results_fitted.json matched.0.25.early.null.shift_at_breach.rate
+\newcommand{\earlyNullShiftB}{5.5\%}
+% results_fitted.json matched.0.25.early.auc.4.0.tolerance_lookahead.auc
+\newcommand{\earlyAucFourTolLa}{0.949}
+% results_fitted.json matched.0.25.early.auc.4.0.shift.auc
+\newcommand{\earlyAucFourShift}{0.811}
+% results_fitted.json matched.0.25.early.auc.4.0.tolerance.auc
+\newcommand{\earlyAucFourTol}{0.500}
 % results_fitted.json matched.0.25.alt.0.4.invisible_share
 \newcommand{\invisShare}{22.1\%}
 % results_fitted.json matched.0.25.auc.0.05.engine.auc
 \newcommand{\wEngineAucLow}{0.506}
+% results_fitted.json matched.0.25.auc.0.05.engine.lo
+\newcommand{\wEngineAucLoLow}{0.488}
+% results_fitted.json matched.0.25.auc.0.05.engine.hi
+\newcommand{\wEngineAucHiLow}{0.523}
+% results_fitted.json matched.0.25.auc.0.05.tolerance.auc
+\newcommand{\wTolAucLow}{0.498}
+% results_fitted.json matched.0.25.auc.0.05.tolerance.lo
+\newcommand{\wTolAucLoLow}{0.481}
+% results_fitted.json matched.0.25.auc.0.05.tolerance.hi
+\newcommand{\wTolAucHiLow}{0.517}
+% results_fitted.json matched.0.25.auc.0.05.mannwhitney.auc
+\newcommand{\wMwAucLow}{0.519}
+% results_fitted.json matched.0.25.auc.0.05.mannwhitney.lo
+\newcommand{\wMwAucLoLow}{0.504}
+% results_fitted.json matched.0.25.auc.0.05.mannwhitney.hi
+\newcommand{\wMwAucHiLow}{0.539}
+% results_fitted.json matched.0.25.auc.0.05.stability.auc
+\newcommand{\wStabAucLow}{0.483}
+% results_fitted.json matched.0.25.auc.0.05.stability.lo
+\newcommand{\wStabAucLoLow}{0.465}
+% results_fitted.json matched.0.25.auc.0.05.stability.hi
+\newcommand{\wStabAucHiLow}{0.503}
+% results_fitted.json matched.0.25.auc.0.05.welch.auc
+\newcommand{\wWelchAucLow}{0.518}
+% results_fitted.json matched.0.25.auc.0.05.welch.lo
+\newcommand{\wWelchAucLoLow}{0.500}
+% results_fitted.json matched.0.25.auc.0.05.welch.hi
+\newcommand{\wWelchAucHiLow}{0.534}
+% results_fitted.json matched.0.25.auc.0.05.fisher.auc
+\newcommand{\wFisherAucLow}{0.505}
+% results_fitted.json matched.0.25.auc.0.05.fisher.lo
+\newcommand{\wFisherAucLoLow}{0.490}
+% results_fitted.json matched.0.25.auc.0.05.fisher.hi
+\newcommand{\wFisherAucHiLow}{0.521}
+% results_fitted.json matched.0.25.auc.0.05.shift.auc
+\newcommand{\wShiftAucLow}{0.520}
+% results_fitted.json matched.0.25.auc.0.05.shift.lo
+\newcommand{\wShiftAucLoLow}{0.503}
+% results_fitted.json matched.0.25.auc.0.05.shift.hi
+\newcommand{\wShiftAucHiLow}{0.537}
 % results_fitted.json matched.0.25.auc.0.4.engine.auc
 \newcommand{\wEngineAucHigh}{0.457}
-% results_fitted.json matched.0.25.alt.0.4.tolerance.rate
-\newcommand{\wTolFlagHigh}{2.5\%}
+% results_fitted.json matched.0.25.auc.0.4.engine.lo
+\newcommand{\wEngineAucLoHigh}{0.440}
+% results_fitted.json matched.0.25.auc.0.4.engine.hi
+\newcommand{\wEngineAucHiHigh}{0.476}
 % results_fitted.json matched.0.25.auc.0.4.tolerance.auc
 \newcommand{\wTolAucHigh}{0.564}
+% results_fitted.json matched.0.25.auc.0.4.tolerance.lo
+\newcommand{\wTolAucLoHigh}{0.547}
+% results_fitted.json matched.0.25.auc.0.4.tolerance.hi
+\newcommand{\wTolAucHiHigh}{0.581}
 % results_fitted.json matched.0.25.auc.0.4.mannwhitney.auc
 \newcommand{\wMwAucHigh}{0.604}
-% results_fitted.json matched.0.25.alt.0.4.stability.rate
-\newcommand{\wStabFlagHigh}{43.2\%}
+% results_fitted.json matched.0.25.auc.0.4.mannwhitney.lo
+\newcommand{\wMwAucLoHigh}{0.587}
+% results_fitted.json matched.0.25.auc.0.4.mannwhitney.hi
+\newcommand{\wMwAucHiHigh}{0.620}
 % results_fitted.json matched.0.25.auc.0.4.stability.auc
 \newcommand{\wStabAucHigh}{0.437}
+% results_fitted.json matched.0.25.auc.0.4.stability.lo
+\newcommand{\wStabAucLoHigh}{0.416}
+% results_fitted.json matched.0.25.auc.0.4.stability.hi
+\newcommand{\wStabAucHiHigh}{0.451}
+% results_fitted.json matched.0.25.auc.0.4.welch.auc
+\newcommand{\wWelchAucHigh}{0.575}
+% results_fitted.json matched.0.25.auc.0.4.welch.lo
+\newcommand{\wWelchAucLoHigh}{0.557}
+% results_fitted.json matched.0.25.auc.0.4.welch.hi
+\newcommand{\wWelchAucHiHigh}{0.593}
+% results_fitted.json matched.0.25.auc.0.4.fisher.auc
+\newcommand{\wFisherAucHigh}{0.559}
+% results_fitted.json matched.0.25.auc.0.4.fisher.lo
+\newcommand{\wFisherAucLoHigh}{0.543}
+% results_fitted.json matched.0.25.auc.0.4.fisher.hi
+\newcommand{\wFisherAucHiHigh}{0.574}
+% results_fitted.json matched.0.25.auc.0.4.shift.auc
+\newcommand{\wShiftAucHigh}{0.631}
+% results_fitted.json matched.0.25.auc.0.4.shift.lo
+\newcommand{\wShiftAucLoHigh}{0.615}
+% results_fitted.json matched.0.25.auc.0.4.shift.hi
+\newcommand{\wShiftAucHiHigh}{0.648}
+% results_fitted.json matched.0.25.alt.0.4.tolerance.rate
+\newcommand{\wTolFlagHigh}{2.5\%}
+% results_fitted.json matched.0.25.alt.0.4.stability.rate
+\newcommand{\wStabFlagHigh}{43.2\%}
+% results_fitted.json matched.0.25.alt.0.4.mannwhitney.rate
+\newcommand{\wMwFlagHigh}{14.5\%}
+% results_fitted.json matched.0.25.alt.0.4.welch.rate
+\newcommand{\wWelchFlagHigh}{12.8\%}
 % results_stated.json base.null.any_change
 \newcommand{\ablAnyStatedNull}{68.8\%}
-% results_fitted.json matched.0.25.early.rates.any_change.rate
-\newcommand{\ablEarlyAny}{100.0\%}
 % results_fitted.json realism.simulated_mean.median_abs_change
 \newcommand{\simMedian}{0.14}
 % results_fitted.json realism.simulated_q95.median_abs_change
@@ -590,7 +898,21 @@
 % results_fitted.json realism.real_last_12.median_abs_change
 \newcommand{\realMedianLast}{0.44}
 % results_fitted.json realism.real_last_12.max_abs_change
-\newcommand{\realMaxLast}{0.84}
+\newcommand{\realMaxLast}{0.843}
+% results_fitted.json realism.real_all_25.share_zero_change
+\newcommand{\realZeroAll}{16.7\%}
+% results_fitted.json realism.real_last_12.share_zero_change
+\newcommand{\realZeroLast}{0.0\%}
+% results_fitted.json realism.real_all_25.share_at_cap
+\newcommand{\realCapAll}{24.0\%}
+% results_fitted.json realism.real_last_12.share_at_cap
+\newcommand{\realCapLast}{8.3\%}
+% results_fitted.json realism.simulated_mean.sd_level
+\newcommand{\simSd}{0.71}
+% results_fitted.json realism.real_all_25.sd_level
+\newcommand{\realSdAll}{1.20}
+% results_fitted.json realism.real_last_12.sd_level
+\newcommand{\realSdLast}{0.94}
 % results_theory.json hypergeometric.rows
 \newcommand{\hyperInside}{15}
 % results_theory.json hypergeometric.rows
@@ -606,7 +928,13 @@
 % results_theory.json conformal.mean_rate
 \newcommand{\confMean}{5.06\%}
 % results_theory.json conformal.theoretical_mean
-\newcommand{\confTheory}{5.00\%}
+\newcommand{\confTheory}{4.995\%}
+% results_theory.json conformal.rates (standard deviation over the calibrations)
+\newcommand{\confSd}{0.73\%}
+% results_theory.json conformal.rates (standard error of the mean over the calibrations)
+\newcommand{\confSe}{0.033\%}
+% results_theory.json conformal (mean minus bound, in standard errors)
+\newcommand{\confZ}{1.97}
 % results_theory.json conformal.q025
 \newcommand{\confLo}{3.7\%}
 % results_theory.json conformal.q975
@@ -648,11 +976,11 @@
 % tables/hypotheses.tex (decided by make_tables.py from the results)
 \newcommand{\outcomeHEight}{refuted}
 % tables/hypotheses.tex (decided by make_tables.py from the results)
-\newcommand{\outcomeHNine}{refuted}
+\newcommand{\outcomeHNine}{held}
 % tables/hypotheses.tex
-\newcommand{\hypothesesHeld}{5}
+\newcommand{\hypothesesHeld}{6}
 % tables/hypotheses.tex
-\newcommand{\hypothesesRefuted}{4}
+\newcommand{\hypothesesRefuted}{3}
 % results_reproduction.json exhaustive.seed
 \newcommand{\seedRepro}{20261104}
 % results_stated.json seed
@@ -683,8 +1011,6 @@
 \newcommand{\opTestsMin}{8.8\%}
 % results_stated.json cells[pi_m=0.5].rates.alt.{fisher,mannwhitney,welch}.rate (max)
 \newcommand{\opTestsMax}{57.4\%}
-% results_fitted.json matched.0.25.early.rates (tolerance_lookahead / tolerance)
-\newcommand{\earlyRatio}{1.20}
 % results_theory.json hypergeometric.rows (distance of the closed form from the interval, percentage points)
 \newcommand{\hyperOutGap}{0.006}
 % results_theory.json tolerance_closed_forms.rows[].points
