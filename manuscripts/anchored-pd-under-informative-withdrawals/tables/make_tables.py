@@ -12,7 +12,7 @@ and writes into ``tables/``:
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/anchored-pd-under-informative-withdrawals/tables/make_tables.py
+    python manuscripts/anchored-pd-under-informative-withdrawals/tables/make_tables.py
 """
 from __future__ import annotations
 
@@ -35,7 +35,8 @@ TR = ("industry", "unfollowed", "followed", "identified", "band", "anchored")
 TR_NAME = {"industry": "Removed ($k=1$)", "unfollowed": "Kept ($k=0$)", "followed": "Followed (oracle)",
            "identified": "Manski band", "band": "Anchored $k$ band only", "anchored": "Anchored interval"}
 INF = (0.0, 1.0, 3.0, 9.0, 19.0)
-CAP_LABEL = {"1": "exact", "1.3": "1.3 times", "u1.0-1.6": "1.0 to 1.6 by year", "u1.0-4.0": "1.0 to 4.0 by year"}
+CAP_LABEL = {"1": "exact", "1.3": "1.3 times", "u1.0-1.6": "1.0 to 1.6 by year", "u1.0-4.0": "1.0 to 4.0 by year",
+             "d1.6-7.0": "1.6 to 7.0 times the observed defaults, by year"}
 DES = {"fy": "first-year cohort", "pool": "five cohorts pooled", "x10": "ten times the cohort"}
 
 NUMS: dict[str, tuple[str, str]] = {}
@@ -175,8 +176,8 @@ def main() -> None:
         num(f"dur.{ik(r['informative'])}.bias", spct(r["rel_bias"][B]), src)
         num(f"dur.{ik(r['informative'])}.abias", pct(abs(r["rel_bias"][B])), src)
         num(f"dur.{ik(r['informative'])}.bse", pct(r["rel_bias_mcse"][B]), src)
-        num(f"dur.{ik(r['informative'])}.cov", pct(r["coverage"][B], 0), src)
-        num(f"dur.{ik(r['informative'])}.cse", pct(r["mcse"][B], 0), src)
+        num(f"dur.{ik(r['informative'])}.cov", pct(r["coverage"][B]), src)
+        num(f"dur.{ik(r['informative'])}.cse", pct(r["mcse"][B]), src)
     for s in stab["data"]:
         base = f"stab.{ik(s['informative'])}.c{s['capture']}.{s['grade']}"
         src = f"experiments/results/stability.json informative {s['informative']:g} capture {s['capture']} grade {s['grade']}"
@@ -275,11 +276,11 @@ def main() -> None:
           "\\texttt{ms-bs14:\\allowbreak informative=9:x3}, \\texttt{:x30}"],
          ["Mismatch ladder", "$\\iota\\in\\{3,9\\}$; the second source counts 0.5, 0.7, 0.8, 0.9, 1.1 or 1.3 times the defaults",
           f"{reps:,}", "the grid's draws of $\\iota$"],
-         ["Stability", "$\\iota\\in\\{3,9\\}$; second source exact, counting 1.3 times the defaults, or a multiple drawn each year from 1.0 to 1.6 or from 1.0 to 4.0; BB, B, CCC to C", f"{reps:,}",
+         ["Stability", "$\\iota\\in\\{3,9\\}$; second source exact, counting 1.3 times the defaults, a multiple of them drawn each year from 1.0 to 1.6 or from 1.0 to 4.0, or a multiple of the observed defaults drawn each year from 1.6 to 7.0; BB, B, CCC to C", f"{reps:,}",
           "\\texttt{ms-bs14:\\allowbreak stability:\\allowbreak informative=$\\iota$}"],
-         ["Duration estimator", "$\\iota\\in\\{0,1,3,9,19\\}$; five-year paths, withdrawals as right censoring",
-          f"{dur['data'][0]['reps']} ({dur['data'][0]['n_boot']} bootstrap replicates)",
-          "\\texttt{ms-bs14:\\allowbreak duration:\\allowbreak informative=$\\iota$}"],
+         ["Duration estimator", "$\\iota\\in\\{0,1,3,9,19\\}$; the grid's five-year paths, withdrawals as right censoring",
+          f"{dur['data'][0]['reps']:,} ({dur['data'][0]['n_boot']} bootstrap replicates)",
+          "the grid's, \\texttt{ms-bs14:\\allowbreak informative=$\\iota$}"],
          ["Product's committed study", "$\\iota\\in\\{0,1,3,9\\}$; first-year, pooled, 70\\% capture, ten-fold",
           str(wd["outputs"]["bounds_verdict"]["reps"]), "\\texttt{withdrawals-bounds:\\allowbreak informative=$\\iota$}"]],
         caption="Design of the known-truth studies: the factor levels, the repetitions per cell and the seed key from which each cell's "
@@ -296,14 +297,15 @@ def main() -> None:
                          f"{100 * tt['width'][B]:.2f}",
                          "--" if t == "identified" else f"${100 * tt['rel_bias'][B]:+.1f}\\pm{100 * tt['rel_bias_mcse'][B]:.1f}$"])
     d9 = next(r for r in dur["data"] if r["informative"] == 9.0)
-    rows.append(["five-year paths", "Duration estimator (censoring)", cell(d9["coverage"][B], d9["mcse"][B], 0), "--",
+    rows.append(["five-year paths", "Duration estimator (censoring)", cell(d9["coverage"][B], d9["mcse"][B]), "--",
                  f"${100 * d9['rel_bias'][B]:+.1f}\\pm{100 * d9['rel_bias_mcse'][B]:.1f}$"])
     tbl(
         out / "tab-main-results.tex",
         ["Design", "Treatment", "Coverage (\\%)", "Width (pp)", "Bias (\\%)"], rows,
         caption=f"Coverage of the true one-year PD of grade B ({num('truthB', pct(cells[('fy', 9.0)]['truth'][B], 2), 'x')}\\%) at informativeness 9, by design and treatment: "
                 f"coverage with its Monte Carlo standard error over {reps:,} repetitions, mean width of the 95\\% interval in percentage points, and relative "
-                "bias of the point estimate with its standard error; the duration estimator row uses 100 repetitions and a resampling bootstrap on five-year paths.",
+                f"bias of the point estimate with its standard error; the duration estimator row is read on the same draws, {dur['data'][0]['reps']:,} "
+                f"repetitions, with a resampling bootstrap of {dur['data'][0]['n_boot']} replicates on five-year paths.",
         label="tab:main-results", align="llrrr", wide=False)
 
     # coverage grid
@@ -341,19 +343,21 @@ def main() -> None:
 
     # hypotheses
     v = wd["outputs"]["bounds_verdict"]
-    h1 = [cells[(d, i)]["treatments"]["anchored"]["coverage"][B] for d in ("fy", "pool") for i in (1.0, 3.0, 9.0)]
-    h1.append(cells[("x10", 9.0)]["treatments"]["anchored"]["coverage"][B])
-    num("h1.min", pct(min(h1)), S_GRID + " anchored coverage, minimum over the designs and iota 1, 3, 9")
+    h1 = [cells[(d, i)]["treatments"]["anchored"]["coverage"][B] for d in ("fy", "pool", "x10") for i in (1.0, 3.0, 9.0)]
+    num("h1.min", pct(min(h1)), S_GRID + " anchored coverage, minimum over the three designs and iota 1, 3, 9")
     h1_19 = cells[("pool", 19.0)]["treatments"]["anchored"]["coverage"][B]
     rows = [
         ["H1", "anchored coverage at $\\iota=1,3,9$", f"{pct(min(h1))} to {pct(max(h1))}", "at least 90", "holds"],
         ["H2", "removed and kept coverage at $\\iota=9$",
          "; ".join(f"{DES[d]} {pct(cells[(d, 9.0)]['treatments']['industry']['coverage'][B], 0)}/{pct(cells[(d, 9.0)]['treatments']['unfollowed']['coverage'][B], 0)}"
                    for d in ("fy", "pool", "x10")), "under 50",
-         "holds in two of three designs"],
-        ["H2'", "followed (oracle) coverage at $\\iota=9$",
+         "fails in the first-year cohort, holds in the other two"],
+        ["H2'", "followed (oracle) coverage at $\\iota=9$, reported apart as the product fixes it",
          "; ".join(f"{pct(cells[(d, 9.0)]['treatments']['followed']['coverage'][B], 0)}" for d in ("fy", "pool", "x10")), "under 50", "fails in all three"],
-        ["H3", "anchored minus best existing coverage at $\\iota=9$",
+        ["H3", "anchored minus the best of the other treatments, the Manski band included, at $\\iota=9$",
+         "; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed', 'identified'))):+.1f}"
+                   for d in ("fy", "pool", "x10")), "above 0", "fails"],
+        ["H3 sub", "the same against removed, kept and followed only",
          "; ".join(f"{100 * (cells[(d, 9.0)]['treatments']['anchored']['coverage'][B] - max(cells[(d, 9.0)]['treatments'][t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed'))):+.1f}"
                    for d in ("fy", "pool", "x10")), "above 0", "holds"],
         ["H4", "share of cohorts whose band holds the pooled $k$, S\\&P grade B and CCC to C",
@@ -365,8 +369,58 @@ def main() -> None:
     tbl(
         out / "tab-hypotheses.tex", ["Id", "Quantity", "Measured (\\%, or $k$)", "Criterion", "Outcome"], rows,
         caption="The predictions stated before the experiments and their outcome: the quantity each measures, the value measured in the first-year, "
-                "pooled and ten-fold designs (in that order where three are given), the criterion, and whether it held at the repetitions of the grid.",
-        label="tab:hypotheses", align="lp{4.6cm}p{4.2cm}p{1.8cm}p{2.4cm}")
+                "pooled and ten-fold designs (in that order where three are given), the criterion, and "
+                "whether it held at the repetitions of the grid. H3 as worded fails; its sub-row gives the comparison with the single-answer treatments only.",
+        label="tab:hypotheses", align="lp{4.4cm}p{4.2cm}p{1.6cm}p{2.8cm}")
+    # what the anchored interval buys against the Manski band: its width, and the coverage difference (H3)
+    for d in ("fy", "pool", "x10"):
+        tt = cells[(d, 9.0)]["treatments"]
+        num(f"wr.{d}.i9", f"{tt['identified']['width'][B] / tt['anchored']['width'][B]:.1f}",
+            S_GRID + f" {d} informative 9: Manski band width over anchored width")
+        num(f"h3.man.{d}", f"{100 * (tt['anchored']['coverage'][B] - tt['identified']['coverage'][B]):+.1f}",
+            S_GRID + f" {d} informative 9: anchored coverage minus Manski coverage (points)")
+        num(f"h3.single.{d}", f"{100 * (tt['anchored']['coverage'][B] - max(tt[t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed'))):+.1f}",
+            S_GRID + f" {d} informative 9: anchored coverage minus the best of removed, kept, followed (points)")
+    # the ratio of the default page's rate to the transition page's rate, S&P grade B, by cohort
+    ratios = []
+    for c in next(g for g in sp["withdrawal_bounds"]["grades"] if g["grade"] == "B")["cohorts"]:
+        if c["defaults"] and c["anchor_defaults"] is not None and c["anchor_cohort"]:
+            n_c = c["defaults"] + c["survivors"] + c["withdrawn"]
+            ratios.append((c["anchor_defaults"] / c["anchor_cohort"]) / (c["defaults"] / n_c))
+    rsrc = "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+    ratios.sort()
+    num("ratio.B.n", str(len(ratios)), rsrc)
+    num("ratio.B.min", f"{ratios[0]:.1f}", rsrc)
+    num("ratio.B.max", f"{ratios[-1]:.1f}", rsrc)
+    num("ratio.B.median", f"{ratios[len(ratios) // 2]:.1f}", rsrc)
+    num("ratio.B.above4", str(sum(1 for r in ratios if r > 4.0)), rsrc)
+    num("real.sp.first", sp["cohorts"][0]["label"], "data/derived/C04/sp.json outputs.cohorts[0].label")
+    num("real.fitch.first", fi["cohorts"][0]["label"], "data/derived/C04/fitch.json outputs.cohorts[0].label")
+    # run times, measured by experiments/extended_study.py
+    rt = json.loads((RES / "run-times.json").read_text(encoding="utf-8"))
+    rsrc = "experiments/results/run-times.json"
+    studies = rt["studies"]
+    for name in ("grid", "stability", "scale", "duration"):
+        num(f"rt.{name}", f"{studies[name]['elapsed_seconds'] / 60.0:.1f}", f"{rsrc} studies.{name}.elapsed_seconds / 60")
+    num("rt.max", f"{max(studies[n]['elapsed_seconds'] for n in ('grid', 'stability', 'scale', 'duration')) / 60.0:.1f}", rsrc)
+    num("rt.call.median", f"{studies['timing']['withdrawal_bounds_ms_median']:.1f}", rsrc + " studies.timing.withdrawal_bounds_ms_median")
+    num("rt.call.p95", f"{studies['timing']['withdrawal_bounds_ms_p95']:.1f}", rsrc + " studies.timing.withdrawal_bounds_ms_p95")
+    num("rt.eval.median", f"{studies['timing']['evaluate_six_treatments_ms_median']:.1f}", rsrc + " studies.timing.evaluate_six_treatments_ms_median")
+    num("rt.calls", str(studies["timing"]["calls"]), rsrc + " studies.timing.calls")
+    mach = rt["machine"]
+    num("rt.cpus", str(mach["logical_cpus"]), rsrc + " machine.logical_cpus")
+    num("rt.cpu", mach["processor"].replace(",", ""), rsrc + " machine.processor")
+    num("rt.python", mach["python"], rsrc + " machine.python")
+    num("rt.numpy", mach["numpy"], rsrc + " machine.numpy")
+    num("rt.scipy", mach["scipy"], rsrc + " machine.scipy")
+    num("rt.engine", mach["riskvalidation"], rsrc + " machine.riskvalidation")
+    rows = [[{"grid": "Coverage grid and mismatch ladder", "stability": "Stability study", "scale": "Cohort-size ladder",
+              "duration": "Duration estimator"}[n], f"{studies[n]['reps']:,}", f"{studies[n]['elapsed_seconds'] / 60.0:.1f}"]
+            for n in ("grid", "stability", "scale", "duration")]
+    tbl(out / "tab-runtimes.tex", ["Study", "Repetitions", "Elapsed (min)"], rows,
+        caption="Elapsed time of each study of this paper, measured by the script that runs it, in one run on the machine of the record, one study at a time "
+                "(Section~\\ref{sec:reproducibility} states the machine and the versions).",
+        label="tab:runtimes", align="lrr")
     num("h2.fy.ind", pct(cells[("fy", 9.0)]["treatments"]["industry"]["coverage"][B], 1), S_GRID)
     num("h1.pool19", pct(h1_19), S_GRID + " pooled informative 19 anchored")
 
@@ -420,7 +474,11 @@ def main() -> None:
         ["Informativeness", "Capture", "Grade", "Cohorts holding pooled $k$ (\\%)", "Repetitions stable (\\%)", "Median pooled $k$"], rows,
         caption=f"Stability criterion on known truth: over {reps:,} repetitions of five annual cohorts, the mean share of cohorts whose anchored $k$ band "
                 "contains the pooled anchored $k$ with its standard error, the share of repetitions that reach the 80\\% criterion, and the median pooled "
-                "anchored $k$, for an exact second source and one counting 70\\% of the defaults.",
+                "anchored $k$, at informativeness 3 and 9 for five second sources: exact; counting 1.3 times the defaults every year; a multiple of the "
+                "defaults drawn each year from 1.0 to 1.6 and from 1.0 to 4.0; and a multiple of the defaults the transition page observes drawn each year "
+                "from 1.6 to 7.0, the range of the observed ratio. Where fewer than "
+                f"{reps:,} repetitions have a share (a grade without a usable cohort), the figures are over the repetitions defined: "
+                f"{min(s['defined'] for s in stab['data']):,} at fewest.",
         label="tab:stability", align="lllp{2.6cm}p{2.3cm}r", size=bs + "footnotesize")
 
     # real data

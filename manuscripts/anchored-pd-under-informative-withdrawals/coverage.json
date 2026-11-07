@@ -3,6 +3,7 @@
   "title_support": [
     "tab:main-results",
     "tab:real",
+    "tab:stability",
     "fig:stability"
   ],
   "claims": {

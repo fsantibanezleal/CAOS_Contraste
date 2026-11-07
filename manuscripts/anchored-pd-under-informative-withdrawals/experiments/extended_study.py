@@ -33,17 +33,25 @@ Five studies, written to ``experiments/results/``:
     treatment lies on the correct side, on the wrong side, or across the threshold.
 ``duration.json``
     the continuous-time duration estimator that treats withdrawals as independent right censoring (Lando and Skodeberg
-    2002): relative bias of grade B's PD and coverage of its resampling bootstrap interval.
+    2002): relative bias of grade B's PD and coverage of its resampling bootstrap interval. It runs on the draws of the
+    coverage grid: the same seed key (``ms-bs14:informative=<iota>``), the same child streams and the same number of
+    repetitions; the paths it reads are the grid's observed paths, and only the bootstrap draws come from a second
+    stream of their own.
+``run-times.json``
+    the elapsed seconds of every study that was run, the cost of one call of the method on a cohort, and the machine and
+    library versions, all measured by this script (``--only timing`` measures the cost of the call alone).
 
-A study at the default repetitions takes about 20 minutes on the machine of the record; ``--reps``, ``--reps-scale``
-and ``--reps-duration`` shorten it.
+A study at the default repetitions is timed in ``run-times.json``; ``--reps``, ``--reps-scale`` and ``--reps-duration``
+shorten it.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import math
+import os
 import pathlib
+import platform
 import sys
 import time
 import warnings
@@ -78,10 +86,13 @@ TREATMENTS = ("industry", "unfollowed", "followed", "identified", "band", "ancho
 WITHDRAWAL_RATE, WINDOW = 0.06, 1.0
 STABILITY_GRADES = (4, 5, 6)           # BB, B, CCC to C
 STABILITY_AT = (3.0, 9.0)              # the informativeness values the stability study is run at
-#: the second source of the stability study: exact, 1.3 times the defaults every year, a multiple drawn from 1.0 to 1.6
-#: or from 1.0 to 4.0 each year (the default page's rate of S&P's grade B is 1.6 to 7.0 times the transition page's
-#: share of defaults over the cohort, by cohort); (capture, label)
-STABILITY_CAPTURES: tuple[tuple[Any, str], ...] = ((1.0, "1"), (1.3, "1.3"), ((1.0, 1.6), "u1.0-1.6"), ((1.0, 4.0), "u1.0-4.0"))
+#: the second source of the stability study: exact, 1.3 times the defaults every year, a multiple of the followed
+#: cohort's defaults drawn from 1.0 to 1.6 or from 1.0 to 4.0 each year, and a multiple of the defaults the transition
+#: page observes drawn each year from 1.6 to 7.0, the range of the ratio of the default page's rate to the transition
+#: page's rate of S&P's grade B over its 25 cohorts with defaults (data/derived/C04/sp.json, grade B, 1.62 to 7.00);
+#: (capture, label). A capture ``("d", lo, hi)`` scales the observed defaults D, the scale of that ratio.
+STABILITY_CAPTURES: tuple[tuple[Any, str], ...] = ((1.0, "1"), (1.3, "1.3"), ((1.0, 1.6), "u1.0-1.6"), ((1.0, 4.0), "u1.0-4.0"),
+                                                   (("d", 1.6, 7.0), "d1.6-7.0"))
 
 
 def seed_of(key: str) -> int:
@@ -122,9 +133,14 @@ def draw(latent: Any, observed: Any, child: np.random.SeedSequence) -> tuple[lis
     return steps, follow
 
 
-def make_anchor(followed: np.ndarray, n: np.ndarray, capture: Any, rng: np.random.Generator) -> np.ndarray:
+def make_anchor(followed: np.ndarray, n: np.ndarray, capture: Any, rng: np.random.Generator,
+                observed: np.ndarray | None = None) -> np.ndarray:
     """The second source's count: the true defaults thinned (capture below 1: it counts a share of them) or inflated
-    (above 1: it counts the defaults and, besides, a Poisson number of other events at (capture - 1) times them)."""
+    (above 1: it counts the defaults and, besides, a Poisson number of other events at (capture - 1) times them). A
+    capture ``("d", lo, hi)`` is a multiple drawn from lo to hi of the defaults the transition page observes (rounded,
+    at most the cohort)."""
+    if isinstance(capture, tuple) and capture[0] == "d":
+        return np.minimum(np.round(float(rng.uniform(capture[1], capture[2])) * observed), n)
     if isinstance(capture, tuple):
         capture = float(rng.uniform(capture[0], capture[1]))
     if capture == 1.0:
@@ -232,7 +248,7 @@ def stability_record(steps: list[dict[str, Any]], follow: list[np.ndarray], capt
         dcol = c[:G, M - 1]
         sv = c[:G].sum(axis=1) - dcol
         n = dcol + sv + wd[:G]
-        an = make_anchor(fo, n, capture, rng)
+        an = make_anchor(fo, n, capture, rng, observed=dcol)
         for g in STABILITY_GRADES:
             if n[g] <= 0 or wd[g] <= 0:
                 continue
@@ -357,31 +373,78 @@ def study_scale(q: np.ndarray, ob: list[int], reps: dict[int, int]) -> list[dict
 
 
 def study_duration(q: np.ndarray, ob: list[int], reps: int, n_boot: int) -> list[dict]:
-    """The duration estimator, withdrawals read as independent right censoring, on the five-year observed paths."""
+    """The duration estimator, withdrawals read as independent right censoring, on the grid's draws: the seed key, the
+    child streams and the repetitions of the coverage grid (the five-year observed paths of each repetition are the ones
+    whose annual steps the grid reads). The bootstrap draws come from a second stream of their own."""
     latent = fam._paths(q, ob)
     truth = np.asarray(latent.truth()["pd_by_grade"]["1"], float)
     out: list[dict] = []
-    for k in (0.0, 1.0, 3.0, 9.0, 19.0):
+    for k in INFORMATIVE:
         observed = fam._paths(q, ob, withdrawal_rate=WITHDRAWAL_RATE, informative=k, window=WINDOW)
-        key = f"ms-bs14:duration:informative={k:g}"
+        key = f"ms-bs14:informative={k:g}"
         seed = seed_of(key)
+        kids, kids2 = (np.random.SeedSequence(seed + j).spawn(reps) for j in (0, 1))
         est = np.full((reps, G), np.nan)
         cover = np.zeros((reps, G), bool)
-        for i, ch in enumerate(np.random.SeedSequence(seed).spawn(reps)):
-            rng = np.random.default_rng(ch)
-            d = observed.draw(rng)
+        for i in range(reps):
+            d = observed.draw(np.random.default_rng(kids[i]))
             est[i] = expm(duration_generator(d["segments"], M)["generator"])[:G, M - 1]
             b = pd_bootstrap(d["segments"], M, method="resample", horizon=1.0, n_boot=n_boot, level=LEVEL,
-                             seed=int(rng.integers(0, 2**63 - 1)))
+                             seed=int(np.random.default_rng(kids2[i]).integers(0, 2**63 - 1)))
             cover[i] = (np.asarray(b["lower"])[:G] <= truth) & (truth <= np.asarray(b["upper"])[:G])
         rel = est / truth - 1.0
         cov = cover.mean(axis=0)
-        out.append({"informative": k, "reps": reps, "n_boot": n_boot, "seed_key": key, "seed": seed, "truth": rl(truth),
+        out.append({"informative": k, "reps": reps, "n_boot": n_boot, "seed_key": key, "seed": seed,
+                    "same_draws_as": "coverage-grid.json", "truth": rl(truth),
                     "rel_bias": rl(np.nanmean(rel, axis=0)),
                     "rel_bias_mcse": rl(np.nanstd(rel, axis=0, ddof=1) / math.sqrt(reps)),
                     "coverage": rl(cov), "mcse": rl(np.sqrt(cov * (1 - cov) / reps))})
         log(f"duration: informative {k:g} done ({reps} repetitions, {n_boot} bootstrap replicates)")
     return out
+
+
+def study_timing(q: np.ndarray, ob: list[int], calls: int) -> dict[str, Any]:
+    """The cost of one call of the method on a cohort of seven grades (``withdrawal_bounds`` with the anchor, the
+    Jeffreys limits of the three single-answer treatments and the evaluation of the six treatments), over the first
+    annual cohorts of ``calls`` draws at informativeness 9; the median and the 95th percentile, in milliseconds."""
+    latent = fam._paths(q, ob)
+    observed = fam._paths(q, ob, withdrawal_rate=WITHDRAWAL_RATE, informative=9.0, window=WINDOW)
+    kids = np.random.SeedSequence(seed_of("ms-bs14:timing")).spawn(calls)
+    cohorts = []
+    for ch in kids:
+        steps, follow = draw(latent, observed, ch)
+        cohorts.append((steps[0]["counts"], np.asarray(steps[0]["withdrawn"], float), follow[0]))
+    bounds_ms, full_ms = [], []
+    for c0, w0, f0 in cohorts:
+        t = time.perf_counter()
+        withdrawal_bounds(c0, w0, anchor_defaults=f0, level=LEVEL)
+        bounds_ms.append(1000.0 * (time.perf_counter() - t))
+        t = time.perf_counter()
+        evaluate(c0, w0, f0, f0)
+        full_ms.append(1000.0 * (time.perf_counter() - t))
+    return {"calls": calls,
+            "withdrawal_bounds_ms_median": round(float(np.median(bounds_ms)), 3),
+            "withdrawal_bounds_ms_p95": round(float(np.quantile(bounds_ms, 0.95)), 3),
+            "evaluate_six_treatments_ms_median": round(float(np.median(full_ms)), 3),
+            "evaluate_six_treatments_ms_p95": round(float(np.quantile(full_ms, 0.95)), 3)}
+
+
+def machine() -> dict[str, Any]:
+    """The machine and the library versions the times were measured on."""
+    import scipy
+    return {"platform": platform.platform(), "processor": platform.processor(), "logical_cpus": os.cpu_count(),
+            "python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__,
+            "riskvalidation": riskvalidation.__version__}
+
+
+def record_time(name: str, seconds: float, extra: dict[str, Any]) -> None:
+    """Merge one study's elapsed time (and, for ``timing``, the cost of a call) into ``run-times.json``."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / "run-times.json"
+    doc = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"studies": {}}
+    doc["machine"] = machine()
+    doc["studies"][name] = {"elapsed_seconds": round(seconds, 1), **extra}
+    path.write_text(json.dumps(doc, indent=1, sort_keys=True) + chr(10), encoding="utf-8")
 
 
 def write(name: str, payload: Any, header: dict[str, Any]) -> None:
@@ -396,9 +459,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--reps", type=int, default=1000, help="repetitions of the grid, capture, stability, decision and ten-fold studies")
     ap.add_argument("--reps-scale", type=int, default=500, help="repetitions of the 3 and 30 times cohorts")
-    ap.add_argument("--reps-duration", type=int, default=100, help="repetitions of the duration estimator study")
+    ap.add_argument("--reps-duration", type=int, default=1000, help="repetitions of the duration estimator study")
     ap.add_argument("--n-boot", type=int, default=200, help="bootstrap replicates per repetition (duration estimator)")
-    ap.add_argument("--only", choices=("grid", "stability", "scale", "duration"), help="run one study")
+    ap.add_argument("--only", choices=("grid", "stability", "scale", "duration", "timing"), help="run one study")
+    ap.add_argument("--timing-calls", type=int, default=200, help="calls of the method timed by the timing study")
     ap.add_argument("--out", type=pathlib.Path, default=None, help="output folder (default experiments/results)")
     a = ap.parse_args()
     q, ob = load_generator()
@@ -408,17 +472,29 @@ def main() -> None:
     if a.out is not None:
         global OUT
         OUT = a.out
+    t0 = time.perf_counter()
     if a.only in (None, "grid"):
         grid, capture_cells = study_grid(q, ob, a.reps)
         write("coverage-grid.json", grid, {**header, "reps": a.reps})
         write("capture-ladder.json", capture_cells, {**header, "reps": a.reps})
+        record_time("grid", time.perf_counter() - t0, {"reps": a.reps, "writes": ["coverage-grid.json", "capture-ladder.json"]})
+        t0 = time.perf_counter()
     if a.only in (None, "stability"):
         write("stability.json", study_stability(q, ob, a.reps), {**header, "reps": a.reps, "stability_share": bnd.STABILITY_SHARE})
+        record_time("stability", time.perf_counter() - t0, {"reps": a.reps})
+        t0 = time.perf_counter()
     if a.only in (None, "scale"):
         cells = study_scale(q, ob, {3: a.reps_scale, 10: a.reps, 30: a.reps_scale})
         write("scale-ladder.json", cells, header)
+        record_time("scale", time.perf_counter() - t0, {"reps": a.reps, "reps_scale": a.reps_scale})
+        t0 = time.perf_counter()
     if a.only in (None, "duration"):
         write("duration.json", study_duration(q, ob, a.reps_duration, a.n_boot), header)
+        record_time("duration", time.perf_counter() - t0, {"reps": a.reps_duration, "n_boot": a.n_boot})
+        t0 = time.perf_counter()
+    if a.only in (None, "timing"):
+        cost = study_timing(q, ob, a.timing_calls)
+        record_time("timing", time.perf_counter() - t0, cost)
 
 
 if __name__ == "__main__":

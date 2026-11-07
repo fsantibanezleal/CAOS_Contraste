@@ -8788,43 +8788,43 @@
 "source": "experiments/results/scale-ladder.json x30 informative 9 treatments.anchored decisions.by_treatment.industry.-0.30.wrong"
 },
 "dur.i0.abias": {
-"text": "0.5",
+"text": "0.1",
 "source": "experiments/results/duration.json informative 0"
 },
 "dur.i0.bias": {
-"text": "-0.5",
+"text": "-0.1",
 "source": "experiments/results/duration.json informative 0"
 },
 "dur.i0.bse": {
-"text": "1.1",
+"text": "0.3",
 "source": "experiments/results/duration.json informative 0"
 },
 "dur.i0.cov": {
-"text": "93",
+"text": "95.1",
 "source": "experiments/results/duration.json informative 0"
 },
 "dur.i0.cse": {
-"text": "3",
+"text": "0.7",
 "source": "experiments/results/duration.json informative 0"
 },
 "dur.i1.abias": {
-"text": "4.6",
+"text": "4.7",
 "source": "experiments/results/duration.json informative 1"
 },
 "dur.i1.bias": {
-"text": "-4.6",
+"text": "-4.7",
 "source": "experiments/results/duration.json informative 1"
 },
 "dur.i1.bse": {
-"text": "1.0",
+"text": "0.3",
 "source": "experiments/results/duration.json informative 1"
 },
 "dur.i1.cov": {
-"text": "92",
+"text": "91.5",
 "source": "experiments/results/duration.json informative 1"
 },
 "dur.i1.cse": {
-"text": "3",
+"text": "0.9",
 "source": "experiments/results/duration.json informative 1"
 },
 "dur.i19.abias": {
@@ -8836,55 +8836,55 @@
 "source": "experiments/results/duration.json informative 19"
 },
 "dur.i19.bse": {
-"text": "0.6",
+"text": "0.2",
 "source": "experiments/results/duration.json informative 19"
 },
 "dur.i19.cov": {
-"text": "0",
+"text": "0.0",
 "source": "experiments/results/duration.json informative 19"
 },
 "dur.i19.cse": {
-"text": "0",
+"text": "0.0",
 "source": "experiments/results/duration.json informative 19"
 },
 "dur.i3.abias": {
-"text": "13.9",
+"text": "14.3",
 "source": "experiments/results/duration.json informative 3"
 },
 "dur.i3.bias": {
-"text": "-13.9",
+"text": "-14.3",
 "source": "experiments/results/duration.json informative 3"
 },
 "dur.i3.bse": {
-"text": "0.9",
+"text": "0.3",
 "source": "experiments/results/duration.json informative 3"
 },
 "dur.i3.cov": {
-"text": "71",
+"text": "67.2",
 "source": "experiments/results/duration.json informative 3"
 },
 "dur.i3.cse": {
-"text": "5",
+"text": "1.5",
 "source": "experiments/results/duration.json informative 3"
 },
 "dur.i9.abias": {
-"text": "37.7",
+"text": "36.8",
 "source": "experiments/results/duration.json informative 9"
 },
 "dur.i9.bias": {
-"text": "-37.7",
+"text": "-36.8",
 "source": "experiments/results/duration.json informative 9"
 },
 "dur.i9.bse": {
-"text": "0.7",
+"text": "0.3",
 "source": "experiments/results/duration.json informative 9"
 },
 "dur.i9.cov": {
-"text": "1",
+"text": "3.0",
 "source": "experiments/results/duration.json informative 9"
 },
 "dur.i9.cse": {
-"text": "1",
+"text": "0.5",
 "source": "experiments/results/duration.json informative 9"
 },
 "fitch.empty.first": {
@@ -8905,7 +8905,7 @@
 },
 "h1.min": {
 "text": "98.5",
-"source": "experiments/results/coverage-grid.json anchored coverage, minimum over the designs and iota 1, 3, 9"
+"source": "experiments/results/coverage-grid.json anchored coverage, minimum over the three designs and iota 1, 3, 9"
 },
 "h1.pool19": {
 "text": "91.5",
@@ -8914,6 +8914,30 @@
 "h2.fy.ind": {
 "text": "86.8",
 "source": "experiments/results/coverage-grid.json"
+},
+"h3.man.fy": {
+"text": "+0.0",
+"source": "experiments/results/coverage-grid.json fy informative 9: anchored coverage minus Manski coverage (points)"
+},
+"h3.man.pool": {
+"text": "-0.8",
+"source": "experiments/results/coverage-grid.json pool informative 9: anchored coverage minus Manski coverage (points)"
+},
+"h3.man.x10": {
+"text": "+0.0",
+"source": "experiments/results/coverage-grid.json x10 informative 9: anchored coverage minus Manski coverage (points)"
+},
+"h3.single.fy": {
+"text": "+3.7",
+"source": "experiments/results/coverage-grid.json fy informative 9: anchored coverage minus the best of removed, kept, followed (points)"
+},
+"h3.single.pool": {
+"text": "+23.9",
+"source": "experiments/results/coverage-grid.json pool informative 9: anchored coverage minus the best of removed, kept, followed (points)"
+},
+"h3.single.x10": {
+"text": "+4.2",
+"source": "experiments/results/coverage-grid.json x10 informative 9: anchored coverage minus the best of removed, kept, followed (points)"
 },
 "kmed.fy.i0": {
 "text": "0.0",
@@ -9062,6 +9086,26 @@
 "obligorsB": {
 "text": "1,391",
 "source": "data/derived/C04/withdrawals.json outputs.generator.obligors[5]"
+},
+"ratio.B.above4": {
+"text": "5",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.B.max": {
+"text": "7.0",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.B.median": {
+"text": "2.7",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.B.min": {
+"text": "1.6",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.B.n": {
+"text": "25",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
 },
 "real.fitch.A.A": {
 "text": "10",
@@ -9586,6 +9630,10 @@
 "real.fitch.cohorts": {
 "text": "24",
 "source": "data/derived/C04/fitch.json outputs.cohorts"
+},
+"real.fitch.first": {
+"text": "2002",
+"source": "data/derived/C04/fitch.json outputs.cohorts[0].label"
 },
 "real.sp.A.A": {
 "text": "16",
@@ -10175,12 +10223,16 @@
 "text": "26",
 "source": "data/derived/C04/sp.json outputs.cohorts"
 },
+"real.sp.first": {
+"text": "2000",
+"source": "data/derived/C04/sp.json outputs.cohorts[0].label"
+},
 "reps": {
 "text": "1,000",
 "source": "experiments/results/coverage-grid.json"
 },
 "reps.duration": {
-"text": "100",
+"text": "1000",
 "source": "experiments/results/duration.json"
 },
 "reps.scale": {
@@ -10194,6 +10246,66 @@
 "rho.hi.fy.i9": {
 "text": "1.21",
 "source": "experiments/results/coverage-grid.json first_year informative 9 industry rel_bias: 2 - rho = 1 - bias"
+},
+"rt.call.median": {
+"text": "5.8",
+"source": "experiments/results/run-times.json studies.timing.withdrawal_bounds_ms_median"
+},
+"rt.call.p95": {
+"text": "9.9",
+"source": "experiments/results/run-times.json studies.timing.withdrawal_bounds_ms_p95"
+},
+"rt.calls": {
+"text": "200",
+"source": "experiments/results/run-times.json studies.timing.calls"
+},
+"rt.cpu": {
+"text": "Intel64 Family 6 Model 183 Stepping 1 GenuineIntel",
+"source": "experiments/results/run-times.json machine.processor"
+},
+"rt.cpus": {
+"text": "32",
+"source": "experiments/results/run-times.json machine.logical_cpus"
+},
+"rt.duration": {
+"text": "30.6",
+"source": "experiments/results/run-times.json studies.duration.elapsed_seconds / 60"
+},
+"rt.engine": {
+"text": "1.1.0",
+"source": "experiments/results/run-times.json machine.riskvalidation"
+},
+"rt.eval.median": {
+"text": "8.6",
+"source": "experiments/results/run-times.json studies.timing.evaluate_six_treatments_ms_median"
+},
+"rt.grid": {
+"text": "4.1",
+"source": "experiments/results/run-times.json studies.grid.elapsed_seconds / 60"
+},
+"rt.max": {
+"text": "30.6",
+"source": "experiments/results/run-times.json"
+},
+"rt.numpy": {
+"text": "2.4.6",
+"source": "experiments/results/run-times.json machine.numpy"
+},
+"rt.python": {
+"text": "3.13.14",
+"source": "experiments/results/run-times.json machine.python"
+},
+"rt.scale": {
+"text": "7.9",
+"source": "experiments/results/run-times.json studies.scale.elapsed_seconds / 60"
+},
+"rt.scipy": {
+"text": "1.18.1",
+"source": "experiments/results/run-times.json machine.scipy"
+},
+"rt.stability": {
+"text": "7.5",
+"source": "experiments/results/run-times.json studies.stability.elapsed_seconds / 60"
 },
 "se.fy.i0.anchored": {
 "text": "0.5",
@@ -10675,6 +10787,38 @@
 "text": "100.0",
 "source": "experiments/results/stability.json informative 3 capture 1 grade CCC-C"
 },
+"stab.i3.cd1.6-7.0.B.k": {
+"text": "108.3",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+},
+"stab.i3.cd1.6-7.0.B.share": {
+"text": "53.8",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+},
+"stab.i3.cd1.6-7.0.B.stable": {
+"text": "20.6",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+},
+"stab.i3.cd1.6-7.0.BB.k": {
+"text": "62.2",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
+},
+"stab.i3.cd1.6-7.0.BB.share": {
+"text": "88.6",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
+},
+"stab.i3.cd1.6-7.0.BB.stable": {
+"text": "80.5",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
+},
+"stab.i3.cd1.6-7.0.CCC-C.share": {
+"text": "96.0",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade CCC-C"
+},
+"stab.i3.cd1.6-7.0.CCC-C.stable": {
+"text": "93.5",
+"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade CCC-C"
+},
 "stab.i3.cu1.0-1.6.B.k": {
 "text": "8.0",
 "source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade B"
@@ -10818,6 +10962,42 @@
 "stab.i9.c1.CCC-C.stable": {
 "text": "100.0",
 "source": "experiments/results/stability.json informative 9 capture 1 grade CCC-C"
+},
+"stab.i9.cd1.6-7.0.B.k": {
+"text": "75.9",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+},
+"stab.i9.cd1.6-7.0.B.share": {
+"text": "62.2",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+},
+"stab.i9.cd1.6-7.0.B.stable": {
+"text": "35.9",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+},
+"stab.i9.cd1.6-7.0.BB.k": {
+"text": "58.2",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+},
+"stab.i9.cd1.6-7.0.BB.share": {
+"text": "94.7",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+},
+"stab.i9.cd1.6-7.0.BB.stable": {
+"text": "88.9",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+},
+"stab.i9.cd1.6-7.0.CCC-C.k": {
+"text": "218.8",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
+},
+"stab.i9.cd1.6-7.0.CCC-C.share": {
+"text": "82.9",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
+},
+"stab.i9.cd1.6-7.0.CCC-C.stable": {
+"text": "67.7",
+"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
 },
 "stab.i9.cu1.0-1.6.B.k": {
 "text": "12.9",
@@ -11366,5 +11546,17 @@
 "withdrawal.rate": {
 "text": "6",
 "source": "data/derived/C04/withdrawals.json outputs.rungs[0].withdrawal_rate"
+},
+"wr.fy.i9": {
+"text": "3.8",
+"source": "experiments/results/coverage-grid.json fy informative 9: Manski band width over anchored width"
+},
+"wr.pool.i9": {
+"text": "7.1",
+"source": "experiments/results/coverage-grid.json pool informative 9: Manski band width over anchored width"
+},
+"wr.x10.i9": {
+"text": "9.3",
+"source": "experiments/results/coverage-grid.json x10 informative 9: Manski band width over anchored width"
 }
 }

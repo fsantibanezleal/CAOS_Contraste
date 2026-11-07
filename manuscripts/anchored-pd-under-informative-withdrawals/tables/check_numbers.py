@@ -3,7 +3,7 @@ the table of the numbers the prose quotes (key, text, section file and source) t
 
 Run from the repository root after ``make_tables.py``::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/anchored-pd-under-informative-withdrawals/tables/check_numbers.py
+    python manuscripts/anchored-pd-under-informative-withdrawals/tables/check_numbers.py
 
 Exit code 0 when every key is defined, 1 otherwise (an undefined key is silently empty in LaTeX).
 """

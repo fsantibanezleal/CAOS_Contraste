@@ -5,7 +5,7 @@ under ``experiments/results/``; the curve of the first figure is computed with t
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/anchored-pd-under-informative-withdrawals/figures/make_figures.py
+    python manuscripts/anchored-pd-under-informative-withdrawals/figures/make_figures.py
 """
 from __future__ import annotations
 
@@ -161,22 +161,23 @@ def fig_forest(sp: dict, fi: dict) -> None:
 def fig_stability(stab: list, sp: dict) -> None:
     grades = ("BB", "B", "CCC-C")
     sh = {(s["informative"], s["capture"], s["grade"]): s for s in stab}
-    fig, ax = plt.subplots(figsize=(5.8, 3.0))
-    width = 0.16
+    fig, ax = plt.subplots(figsize=(5.8, 3.6))
+    width = 0.135
     groups = ((r"known truth, $\iota=9$, exact source", lambda gr: 100 * sh[(9.0, "1", gr)]["mean_share"], "0.15", None),
               (r"known truth, $\iota=9$, source at 1.3 times", lambda gr: 100 * sh[(9.0, "1.3", gr)]["mean_share"], "0.5", "//"),
               (r"known truth, $\iota=9$, multiple 1.0 to 1.6 by year", lambda gr: 100 * sh[(9.0, "u1.0-1.6", gr)]["mean_share"], "0.75", "xx"),
               (r"known truth, $\iota=9$, multiple 1.0 to 4.0 by year", lambda gr: 100 * sh[(9.0, "u1.0-4.0", gr)]["mean_share"], "0.6", "oo"),
+              (r"known truth, $\iota=9$, 1.6 to 7.0 times the observed defaults by year", lambda gr: 100 * sh[(9.0, "d1.6-7.0", gr)]["mean_share"], "0.4", ".."),
               ("real S&P cohorts", lambda gr: 100 * grade(sp, gr)["stability"]["share_cohorts_containing_pooled_k"], "white", "\\\\"))
     for j, (name, fn, colr, hatch) in enumerate(groups):
-        ax.bar(np.arange(3) + (j - 2.0) * width, [fn(g) for g in grades], width, label=name, color=colr, edgecolor="0.1",
+        ax.bar(np.arange(3) + (j - 2.5) * width, [fn(g) for g in grades], width, label=name, color=colr, edgecolor="0.1",
                hatch=hatch, lw=0.6)
     ax.axhline(80, color="0.3", lw=0.8, ls=":")
-    ax.text(-0.45, 81.5, "criterion 80%", fontsize=7, ha="left", color="0.3")
+    ax.text(0.5, 81.5, "criterion 80%", fontsize=7, ha="center", color="0.3")
     ax.set_xticks(range(3), ["BB", "B", "CCC to C"])
-    ax.set_ylabel("cohorts whose $k$ band holds the pooled $k$ (%)")
-    ax.set_ylim(0, 150)
-    ax.legend(frameon=False, fontsize=6.5, loc="upper center", ncol=2)
+    ax.set_ylabel("cohorts holding the pooled $k$ (%)")
+    ax.set_ylim(0, 112)
+    ax.legend(frameon=False, fontsize=6.5, loc="upper center", ncol=1, bbox_to_anchor=(0.5, -0.12))
     figkit.save(fig, HERE, "fig-stability")
 
 
