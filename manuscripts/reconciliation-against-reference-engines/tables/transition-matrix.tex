@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The engine's cohort and Aalen--Johansen estimators against \texttt{transitionMatrix} 0.5.1 on 30 seeded panels of 600 entities with withdrawals: the largest element-wise difference for each convention, and the two differences that the package's own code explains.}
+\label{tab:transition-matrix}
+\begin{tabular}{p{6.3cm}p{2.8cm}p{5.2cm}}
+\toprule
+Comparison & Largest difference & Outcome \\
+\midrule
+Cohort, withdrawals kept as a state, per period & $0$ & agree \\
+Cohort, withdrawals kept as a state, pooled & $0$ & agree \\
+Cohort, withdrawals excluded, per period & $2.2\times10^{-16}$ & agree \\
+Cohort, withdrawals excluded, pooled & $2.2\times10^{-16}$ & agree \\
+Last record of the last entity, package unguarded & 0.0013 to 0.0016 & gap: the package counts the last migration twice \\
+Same, engine counts corrected by that migration & $0$ & explained \\
+Aalen--Johansen increment on the four-obligor example & 0.0833 & gap: risk set counted after the exit (3 against 4) \\
+\bottomrule
+\end{tabular}
+\end{table}

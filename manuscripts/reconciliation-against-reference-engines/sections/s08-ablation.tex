@@ -1,0 +1,23 @@
+\section{Ablation}
+\label{sec:ablation}
+
+The protocol has parts that can be taken away one at a time: the unit of the gap, the test of the explanation, the independent route, the pair-aware error, the family-wise bound, the diagnostic run, the equivalence margin and the scope list. Two tables measure what each contributes. Table~\ref{tab:ablation} takes apart the acceptance rule of the Monte Carlo reconciliation on the paired runs of Section~\ref{sec:results-power}, and Table~\ref{tab:ablation-protocol} lists the contribution of every part of the protocol with the measurement that shows it.
+
+\subsection{The parts of the acceptance rule}
+\label{sec:ablation-rule}
+
+The refinement of Section~\ref{sec:proposed-refine} has two changes to the product's rule, and the rows of Table~\ref{tab:ablation} take each away in turn.
+
+\input{tables/ablation}
+
+Without the pair-aware errors, the rule keeps the bound of $3.18$ and uses the errors that treat the paths as independent. Its size falls to \nSizeSidakNetting\,\% and its power against a $2\,\%$ volatility error from \nPowerRefineSigmaTwo\,\% to \nPowerSidakSigmaTwo\,\%: the overstated errors cost three quarters of the detections at small defects, and they leave the rule blind to a defect that the refinement sees in 
+PowerRefineSigmaTwo\,\% of the runs. Without the family-wise bound the rule keeps the pair-aware errors and the bound of two. Its power is \nPowerPairSigmaTwo\,\% at the $2\,\%$ defect, but its size is \nSizePairNetting\,\%, so more than half of the pairs of runs of one model would be called different; the bound of $3.18$ is what turns a sensitive statistic into one that can be trusted when it passes. Without either, which is the product's rule, the size is \nSizeProdNetting\,\% and the power \nPowerProdSigmaTwo\,\%: the two errors partly cancel, but only for this case, because the overstatement depends on the pair correlation of the exposure at each date and the inflation on the number of comparisons, and neither is a constant of the rule.
+
+The three components of the rule contribute unequally. Reading the 33 dates alone gives a size of \nSizeDatesNetting\,\% and a power of \nPowerDatesSigmaTwo\,\% at the small defect, close to the whole rule. The EEPE alone has a size of \nSizeEepeNetting\,\%, above the nominal, because its error is estimated from 20 batches, and a power of \nPowerEepeSigmaTwo\,\%. The CVA alone is the weakest: its error treats the paths as independent while the pair correlation of the CVA is $\nRhoCva$, so its standardised difference has a spread of \nSdCvaNetting\ and the comparison rejects \nPowerCvaSigmaTwo\,\% of the small defects. With pair-aware errors the CVA comparison would have the spread that Proposition~\ref{prop:antithetic} gives it: the product's CVA row in the rule is, at the bound of two, a check that cannot fail for a defect below five percent.
+
+\subsection{The parts of the protocol}
+\label{sec:ablation-protocol}
+
+\input{tables/ablation-protocol}
+
+The independent route is the part with the clearest contribution. Of the \nPlantedDefects\ planted defects, a reference that reuses the engine's helper sees \nPlantedCone, a same-library reference with the parameters written from the definition sees \nPlantedCtwo, and the independent route sees \nPlantedCthree; the three it misses are the relative errors of $10^{-10}$ and below, which are under its tolerance by construction. The test of the explanation turns a gap into a result: of the \nScaledGapsExact\ cells of Tables 9 to 12 of Pluto and Tasche that miss with the exact bounds, \nScaledGapsResolved\ agree when the printed bounds are scaled, so they are rounding of the paper's inputs and not defects of the engine, and \nScaledGapsLeft\ stay unexplained. The unit of the gap separates the numbers that miss by one unit of the last digit, which a rounding explains, from those that miss by a different computation. The diagnostic run with a zero minimum transfer amount removes \nMtaShareTen\,\% of the largest standardised difference of the 10-day variant and \nMtaShareTwenty\,\% of the 20-day variant, locating a part of the gap in the margining schedule; it does not locate the rest. The equivalence margin turns a pass into a quantity: the same pass that the rule reports as agreement supports equivalence within \nSingleEquivalence\,\% of the EEPE for the single swap, and the scope list lists the comparison that no run could make against a reference that implements the same model, the wrong-way variant against ORE.

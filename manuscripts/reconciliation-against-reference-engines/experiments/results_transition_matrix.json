@@ -1,0 +1,26 @@
+{
+ "riskvalidation": "1.1.0",
+ "transitionMatrix": "0.5.1",
+ "panels": 30,
+ "entities": 600,
+ "elements_compared": 7350,
+ "tolerance": 1e-12,
+ "state_period_max_abs_diff": 0.0,
+ "state_pooled_max_abs_diff": 0.0,
+ "exclude_period_max_abs_diff": 2.220446049250313e-16,
+ "exclude_pooled_max_abs_diff": 2.220446049250313e-16,
+ "last_record_double_count": {
+  "min_gap_without_sentinel": 0.0012987012987012991,
+  "max_gap_without_sentinel": 0.0015822784810126667,
+  "max_gap_after_correction": 0.0,
+  "max_gap_with_sentinel": 0.0
+ },
+ "aalen_johansen": {
+  "engine": 0.25,
+  "package": 0.3333333333333333,
+  "difference": 0.08333333333333331,
+  "at_risk_before_exit": 4,
+  "at_risk_after_exit": 3
+ },
+ "all_within_tolerance": true
+}

@@ -1,0 +1,15 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The engine against ORE on new seeds: the number of seeds on which the product's rule passes, the mean standardised difference over seeds and dates with the product's and the pair-aware errors, the mean EEPE and CVA differences, and the largest difference at the product's seed 42 rerun here.}
+\label{tab:ore-replicates}
+\begin{tabular}{p{3.1cm}rlrrrrrr}
+\toprule
+Variant & Seeds & Rule passed (95\% interval, \%) & Mean $z$ & Mean $z$, pair-aware & Mean EEPE $z$ & Mean CVA $z$ & Median largest $\lvert z\rvert$ & Largest $\lvert z\rvert$ at seed 42 \\
+\midrule
+Single swap & 24 & 22 (74--98) & +0.10 & +0.20 & +0.29 & +0.12 & 1.36 & 0.78 \\
+Netting set & 24 & 22 (74--98) & +0.10 & +0.20 & +0.29 & +0.12 & 1.38 & 0.72 \\
+CSA, 10 days & 8 & 0 (0--32) & -2.18 & -2.90 & -0.12 & -14.57 & 10.82 & 9.93 \\
+\bottomrule
+\end{tabular}
+\end{table*}

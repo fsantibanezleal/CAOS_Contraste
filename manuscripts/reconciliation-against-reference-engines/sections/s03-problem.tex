@@ -1,0 +1,91 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{Quantities, engine and reference}
+\label{sec:problem-units}
+
+A validation engine $\mathcal{E}$ computes a finite set of quantities $\{q_u\}_{u\in\mathcal{U}}$ from inputs $\theta_u$. A quantity is a printed estimate of a default probability, the $p$-value of a test, the price of an option under a model, or the expected exposure of a swap portfolio at a date. A reference $\mathcal{R}_u$ is a second source of the same quantity from the same inputs. The inputs are shared: the same obligors and defaults, the same curve, the same model parameters. What differs is the implementation that turns the inputs into the quantity, and that difference is what a reconciliation exposes.
+
+The references fall into four classes by what they are. A printed answer $\pi_u$ is a number a paper publishes for the inputs it prints, with $d_u$ decimals. An independent route is a second computation of the same mathematical definition that shares no function with the engine, so that a defect in a shared function cannot hide. A closed-form library is a published implementation of an analytic formula, such as QuantLib's Hull--White bond option. A Monte Carlo reference engine is a second simulation of the same model, such as ORE, whose output is an estimate $\hat{O}_u$ with a standard error $s_{O,u}$, as the engine's own output $\hat{E}_u$ is an estimate with a standard error $s_{E,u}$. The classes differ in what a disagreement can mean, and the rules of Section~\ref{sec:proposed-method} differ accordingly.
+
+\subsection{What a reconciliation must return}
+\label{sec:problem-outputs}
+
+For each unit $u$ the reconciliation returns four things. The first is an outcome $v_u\in\{\text{agree},\text{gap},\text{not run}\}$ produced by a rule fixed before the comparison. The second is the gap itself in a unit the reader can interpret: units of the last printed digit for a printed answer, an absolute difference for an independent route, a relative difference for a closed form, combined standard errors for a Monte Carlo reference. The third is an explanation for every gap, which is either a test that supports it or the label \emph{unexplained}; an explanation that is asserted and not tested is labelled as recorded. The fourth is the scope: the units that have no reference of the required class, each listed with the reason, so that the reader does not take silence for agreement.
+
+The outcome has a cost. A rule can accept an engine that is wrong, or reject an engine that is right. The first error is a missed defect and the second a false alarm, and for a rule that compares noisy estimates their probabilities are not zero. A reconciliation that reports only the outcome of its rule, without those two probabilities, leaves the reader to guess whether a pass is evidence.
+
+\subsection{Size and power of an acceptance rule}
+\label{sec:problem-size}
+
+Let $\mathcal{S}$ be the statistic vector of one comparison and $R$ a rule that maps it to accept or reject. The size of $R$ is
+\begin{equation}
+\alpha(R)=\Prob\big(R\text{ rejects}\mid\mathcal{E}\text{ and the reference implement the same model}\big),
+\label{eq:size-def}
+\end{equation}
+and the power of $R$ against a defect $\delta$ of the engine, where $\delta$ is a stated change of a parameter or of a convention, is
+\begin{equation}
+\beta_\delta(R)=\Prob\big(R\text{ rejects}\mid\mathcal{E}\text{ carries the defect }\delta\big).
+\label{eq:power-def}
+\end{equation}
+For a printed answer, the digit rule has size zero under the assumption below and a power that depends on the unit of the print. For an independent route the rule is a tolerance, and size and power are properties of its arithmetic. For a Monte Carlo reference the statistic is random, size and power are probabilities over the draws of both runs, and they have to be measured or derived.
+
+The two probabilities together say what an acceptance is worth. An acceptance is evidence that the engine is right only if it is less likely when the engine is wrong than when it is right, and the ratio of the two likelihoods is
+\begin{equation}
+\Lambda_\delta(R)\ =\ \frac{\Prob(R\text{ accepts}\mid\delta)}{\Prob(R\text{ accepts}\mid\text{no defect})}\ =\ \frac{1-\beta_\delta(R)}{1-\alpha(R)},
+\label{eq:lr-pass}
+\end{equation}
+which is $0.21$ for a rule of size $0.05$ and power $0.8$ against $\delta$, and one for a rule that rejects at random. A rule with a large size and a small power has a ratio near one against every defect it was not built to see, and its acceptance tells the reader little. The ratio is defined against a stated defect: a rule has a different ratio against each kind and size of defect, and a reconciliation that reports one number for its power is reporting it against one defect.
+
+\subsection{Assumptions}
+\label{sec:problem-assumptions}
+
+Five assumptions bound what an outcome means.
+\begin{assumption}[Printed value]\label{as:print}
+A printed value $\pi$ is the value of the paper's own computation rounded to $d$ decimals. If the paper computed from inputs that it had itself rounded, the printed value carries the propagated rounding of those inputs.
+\end{assumption}
+\begin{assumption}[Same model]\label{as:model}
+The reference implements the same mathematical model as the engine, with the same parameters and conventions. Where it does not, as with the wrong-way example of ORE, there is no reconciliation and the unit is listed as not run.
+\end{assumption}
+\begin{assumption}[Independent noise]\label{as:noise}
+The two Monte Carlo runs use independent random numbers, so the covariance of their errors is zero and the standard error of a difference is $\sqrt{s_E^2+s_O^2}$.
+\end{assumption}
+\begin{assumption}[Dates fixed in advance]\label{as:dates}
+The report dates and the functionals compared (the expected exposure at each date, the effective expected positive exposure and the valuation adjustment) are fixed before the runs. The number of comparisons in the family is therefore $K=n_{\text{dates}}+2$.
+\end{assumption}
+\begin{assumption}[Rounding of the engine]\label{as:float}
+The engine's floating-point arithmetic is double precision, so a deterministic quantity is computed with a relative error of the order of $10^{-16}$ times a condition number, far below the tolerances of Section~\ref{sec:proposed-method}.
+\end{assumption}
+
+\subsection{Notation}
+\label{sec:problem-notation}
+
+Table~\ref{tab:notation} collects the symbols used from here on; each is defined again at its first use. Three conventions apply throughout. A difference between the two sides of a comparison is always the reference minus the engine, so that a positive standardised difference means that the reference is larger; this is the sign of the product's documents, in which ORE is the reference. Money is in United States dollars and times are in years on the 30/360 axis that the exposure case uses, with the margin period of risk stated in business days. A hat marks an estimate from simulation and carries a standard error, $\widehat{\mathrm{EE}}$ with $s$, while a symbol without a hat is a deterministic quantity or the expectation that the estimate approaches.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation used in the formulation, the method and the theory, with the object each symbol denotes and the section that defines it; the symbols of the Monte Carlo reconciliation refer to the expected-exposure profile of the swap book of the C12 case.}
+\label{tab:notation}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}X l@{}}
+\toprule
+Symbol & Meaning & Section \\
+\midrule
+$\pi,\ r,\ d$ & printed value, recomputed value, number of printed decimals & \ref{sec:proposed-printed} \\
+$g$ & gap in units of the last printed digit, $g=(r-\pi)\,10^{d}$ & \ref{sec:proposed-printed} \\
+$p_{\mathcal{E}},\ p_{\mathcal{R}},\ \tau$ & engine $p$-value, independent-route $p$-value, tolerance & \ref{sec:proposed-routes} \\
+$n,\ D,\ x$ & obligors, defaults, applied default probability & \ref{sec:proposed-routes} \\
+$V,\ X,\ N$ & netting-set value, exposure $\max(V,0)$, numeraire (bank account) & \ref{sec:proposed-engine} \\
+$P(0,t)$ & discount factor to date $t$ & \ref{sec:proposed-engine} \\
+$\mathrm{EE}_k,\ s_k$ & expected exposure at report date $t_k$ and its standard error & \ref{sec:proposed-engine} \\
+$\mathrm{EEPE},\ \mathrm{CVA}$ & effective expected positive exposure; credit valuation adjustment & \ref{sec:proposed-engine} \\
+$z_k$ & standardised difference at date $t_k$ & \ref{sec:proposed-engine} \\
+$K,\ c$ & number of comparisons; acceptance bound & \ref{sec:proposed-engine} \\
+$\alpha,\ \beta_\delta$ & size of a rule; power against a defect $\delta$ & \ref{sec:problem-size} \\
+$\Lambda_\delta$ & likelihood ratio of an acceptance against the defect $\delta$ & \ref{sec:problem-size} \\
+$\rho$ & correlation of the two paths of an antithetic pair & \ref{sec:theory-antithetic} \\
+$\lambda$ & standardised size of a systematic gap, $\lambda=\Delta/s$ & \ref{sec:theory-power} \\
+$\eta_\sigma$ & elasticity of a price to the volatility & \ref{sec:theory-gate} \\
+\bottomrule
+\end{tabularx}
+\end{table}

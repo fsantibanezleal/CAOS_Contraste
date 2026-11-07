@@ -1,0 +1,25 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Internal validity}
+\label{sec:limits-internal}
+
+The measurement of the size and power of the rules uses a second run of the engine in the place of ORE, so the truth is known. That is its strength and its limit: the reference has the same pair structure and the same sampling variance as the engine's own runs, and ORE's differ. The repeated runs against ORE check the part that matters most, the pair correlation of ORE ($\nOrePairRho$ against $\nPyPairRho$ for the engine, averaged over dates and seeds), and the spread of the pair-aware standardised difference against ORE (\nSdPairOre\ at the median date, for the netting set) is below one, so the pair-aware errors are not exactly calibrated for the real pair of engines. The sizes of Table~\ref{tab:rule-size-power} are therefore sizes for two runs of one engine, and the size against ORE, whose model is the same only up to the differences of implementation that the reconciliation is meant to find, is not measurable by this design.
+
+The defects planted are three: a volatility error, a mean-reversion error and a measure error. They are chosen because they are errors of kind that an exposure engine can carry and because their size is known; the power against other defects, such as a wrong day-count convention, a misplaced fixing or a mistake in the collateral schedule, is not measured, and Proposition~\ref{prop:power} says only that it is a function of the gap in standard errors. The repetitions are \nCritReps\ for the size and power and \nOreRepsNet\ for the repeated runs with ORE; the Wilson intervals report the Monte Carlo uncertainty of the rates, and the seeds are fixed, so a different set of seeds would move the rates within those intervals.
+
+The tally of the printed-answer reconciliation depends on the conventions that decide what counts as a printed number: a cell, a row, or a table, and whether the multiplier $k$ of the scaled bounds is a number of the paper. The tally used here is the notebook's. The explanation of a gap that is only recorded was not retested, and a recorded explanation can be wrong; the test of the rounding of the scaled bounds is the one explanation that is retested and it leaves \nScaledLeft\ cells unexplained.
+
+\subsection{External validity}
+\label{sec:limits-external}
+
+The exposure case is one synthetic book of four swaps on one curve, and the size and power of the rules hold for it. The antithetic structure of the exposure of a swap at a date, which makes the independent-path error an overstatement of the factor of Proposition~\ref{prop:antithetic}, is a property of payoffs that are monotone in the driving variate; a book with options, barriers or several risk factors would have a different pair correlation at each date, and the rule's size and power would change with it. The measure of the correlation per date, which takes minutes, is the check that a reconciliation of another book should run before it relies on a bound.
+
+The printed papers are five, all in credit risk, and the digit rule has the properties of Proposition~\ref{prop:rounding} for any paper that prints rounded values; a paper that prints truncated values, or that prints a value computed in single precision, would need another rule. The closed forms compared are two instruments of one model. The reference engines are two, ORE and QuantLib, in one version each, on one operating system; a different version could differ, and the result of a reconciliation is a statement about the pair of versions run. The cohort estimator is compared with one library on seeded panels of one size and one withdrawal rate.
+
+\subsection{Construct validity and scope}
+\label{sec:limits-construct}
+
+A reconciliation measures agreement with the reference, and the agreement is evidence of correctness to the extent the reference is independent and correct. The reference engines are open implementations used in practice, not proofs: ORE's linear Gauss--Markov model with the Hull--White parameters is a different parameterisation of the same short-rate dynamics, and the two engines can share a modelling choice and be wrong together. The protocol does not test whether the model is the right one for a bank's book; that is conceptual soundness, outside the scope of a reconciliation.
+
+The scope list of the protocol lists what is not run, and this work adds nothing to it: the wrong-way variant has no ORE reconciliation, because ORE's wrong-way example is a different model, and the first-to-default form of bilateral valuation adjustment and a link of the hazard to an outside variable are not implemented in the engine, so no reference exists for them. The explanation of the part of the collateralised gap that the zero minimum transfer amount does not remove is open; one hypothesis, that ORE's remargining schedule and sticky close-out differ from the engine's in a way that depends on the exposure, was not tested. Nothing here claims the engine to be validated beyond the reconciliations that were run.

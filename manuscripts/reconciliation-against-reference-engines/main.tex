@@ -9,11 +9,10 @@
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
 
 \input{../_shared/preamble}
-\makeatletter
-\def\input@path{{sections/}}
-\makeatother
+% Every number the prose quotes, one macro each, written by make_numbers.py from experiments/results_*.json.
+\input{numbers}
 
-\title{Reconciling a model-validation engine against reference engines and printed answers}
+\title{Reconciling a model-validation engine against reference engines and printed answers: measured agreement, listed gaps and the size and power of the acceptance rule}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,68 +23,21 @@
 \headerblock
 
 \begin{abstract}
-% ABSTRACT
+A validation function checks its own engine by reconciling it with something else: a table printed in a paper, a second computation of the same definition, a closed form in a library, or a Monte Carlo reference engine. The reconciliation ends in an outcome, whose worth depends on what the reference shares with the engine and, for a random difference, on the size and power of the rule that reads it; both are seldom measured. A protocol is proposed with one rule per class of reference, gaps reported in the unit of the print with a tested explanation, an equivalence margin and a detectable gap beside every pass, and a list of what is not claimed; six propositions state what each rule can establish. On the validation engine of a bank's risk-model validation, \nPrintedAgree\ of \nPrintedN\ printed numbers of five papers agree to the digit and \nMissTested\ of the \nMissTotal\ gaps are explained by a tested rounding; the design document's count of 413 numbers reproduces only without two tables. Tail probabilities equal two independent recomputations to $\nGridJeffMax$, which see a planted error from $10^{-9}$ that a reuse of the engine's call never shows; closed forms match QuantLib on \nClosedWithin\ of \nClosedCases\ cases, and one printed constant of Hull and White misses its digit. The exposure of an uncollateralised swap book agrees with ORE within about \nSingleEquivalence\,\% of its effective value; collateralised variants differ by up to \nCsaTenMaxZ\ combined standard errors and fail on \nReplCsaFail\ of \nReplCsaN\ new seeds. The acceptance rule used against ORE rejects two runs of one model in \nSizeProdNetting\,\% of repetitions (the spread of its statistic is \nSdNetting, not one) and detects a $2\,\%$ volatility error in \nPowerProdSigmaTwo\,\%; pair-aware errors with a family-wise bound give \nSizeRefineNetting\,\% and \nPowerRefineSigmaTwo\,\%. One synthetic book, one engine and one version of each reference are covered.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:introduction}
-
-% TEXT
-
-\section{Related work}
-\label{sec:related-work}
-
-% TEXT
-
-\section{Problem formulation}
-\label{sec:problem}
-
-% TEXT
-
-\section{Proposed method}
-\label{sec:proposed-method}
-
-% TEXT
-
-\section{Theory}
-\label{sec:theory}
-
-% TEXT
-
-\section{Experimental design}
-\label{sec:experimental-design}
-
-% TEXT
-
-\section{Results}
-\label{sec:results}
-
-% TEXT
-
-\section{Ablation}
-\label{sec:ablation}
-
-% TEXT
-
-\section{Discussion}
-\label{sec:discussion}
-
-% TEXT
-
-\section{Limitations}
-\label{sec:limitations}
-
-% TEXT
-
-\section{Reproducibility}
-\label{sec:reproducibility}
-
-% TEXT
-
-\section{Conclusions}
-\label{sec:conclusions}
-
-% TEXT
+\input{sections/s01-introduction}
+\input{sections/s02-related-work}
+\input{sections/s03-problem}
+\input{sections/s04-proposed-method}
+\input{sections/s05-theory}
+\input{sections/s06-experimental-design}
+\input{sections/s07-results}
+\input{sections/s08-ablation}
+\input{sections/s09-discussion}
+\input{sections/s10-limitations}
+\input{sections/s11-reproducibility}
+\input{sections/s12-conclusions}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

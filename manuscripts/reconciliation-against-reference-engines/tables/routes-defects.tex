@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Largest difference between the defective engine's binomial p-value and three kinds of reference on the grid of 36 cases, for a tail convention moved by one and for a relative error planted inside SciPy; a defect is flagged when the difference exceeds the tolerance of $10^{-9}$.}
+\label{tab:routes-defects}
+\begin{tabular}{p{4.6cm}lllll}
+\toprule
+Planted defect & Size & C1 reuse & C2 same library & C3 independent & Flagged by \\
+\midrule
+Tail convention of the binomial helper moved by one & n/a & $0$ & $3.1\times10^{-1}$ & $3.1\times10^{-1}$ & C2 and C3 \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-12}$ & $0$ & $0$ & $1.0\times10^{-12}$ & none \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-11}$ & $0$ & $0$ & $1.0\times10^{-11}$ & none \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-10}$ & $0$ & $0$ & $1.0\times10^{-10}$ & none \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-9}$ & $0$ & $0$ & $1.0\times10^{-9}$ & C3 \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-8}$ & $0$ & $0$ & $1.0\times10^{-8}$ & C3 \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-6}$ & $0$ & $0$ & $1.0\times10^{-6}$ & C3 \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-4}$ & $0$ & $0$ & $1.0\times10^{-4}$ & C3 \\
+\relax Relative error $\epsilon$ in SciPy & $1\times10^{-3}$ & $0$ & $0$ & $9.9\times10^{-4}$ & C3 \\
+\bottomrule
+\end{tabular}
+\end{table}

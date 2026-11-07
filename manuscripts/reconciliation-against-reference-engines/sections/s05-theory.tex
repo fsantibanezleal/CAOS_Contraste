@@ -1,0 +1,102 @@
+\section{Theory}
+\label{sec:theory}
+
+The propositions of this section state what each rule of the protocol can and cannot establish, under the assumptions of Section~\ref{sec:problem-assumptions}. They are elementary on purpose: each is a statement about a rule that a validation function runs, and each is checked against a measurement in Section~\ref{sec:results}. The proofs are given in full.
+
+\subsection{Rounding and the digit rule}
+\label{sec:theory-rounding}
+
+\begin{proposition}[Digit rule]\label{prop:rounding}
+Let $q$ be the exact value of the quantity a paper reports, printed as $\pi=\operatorname{round}_d(q)$, and let the engine return $r=q+\epsilon_{\mathrm{fl}}$ with $\lvert\epsilon_{\mathrm{fl}}\rvert\ll 10^{-d}$.
+\begin{enumerate}
+\item[(a)] The digit rule~\eqref{eq:digit} accepts the engine. If the engine carries a defect of $\gamma$ units of the last printed digit, $r=q+\gamma\,10^{-d}$, and the residual $u=(q-\pi)\,10^{d}$ of the rounding is uniform on $[-\tfrac12,\tfrac12]$, the rule rejects with probability $\min(1,\lvert\gamma\rvert)$.
+\item[(b)] If the paper computed $\pi=\operatorname{round}_d(f(\tilde{x}))$ from inputs $\tilde{x}_i=\operatorname{round}_{d_i}(x_i)$ that it had printed and used in place of $x_i$, and $f$ is continuously differentiable with $\lvert\partial_i f\rvert\le L_i$ on the box of half-widths $\tfrac12 10^{-d_i}$ around $x$, then an exact engine that recomputes $f(x)$ satisfies
+\begin{equation}
+\lvert r-\pi\rvert\ \le\ \tfrac12\,10^{-d}+\sum_i L_i\,\tfrac12\,10^{-d_i},
+\label{eq:rounding-bound}
+\end{equation}
+and an engine that recomputes $f(\tilde{x})$ from the printed inputs satisfies the digit rule.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(a) With $\gamma=0$, $\lvert r-\pi\rvert=\lvert q-\pi\rvert+\lvert\epsilon_{\mathrm{fl}}\rvert\le\tfrac12 10^{-d}+\lvert\epsilon_{\mathrm{fl}}\rvert$, which the slack of $10^{-9}$ in the product's rule absorbs for the tables considered. With a defect, $(r-\pi)10^{d}=u+\gamma$. For $0\le\gamma\le1$ the event $\lvert u+\gamma\rvert\le\tfrac12$ is $u\in[-\tfrac12,\tfrac12-\gamma]$, of probability $1-\gamma$; the case $\gamma<0$ is symmetric and $\lvert\gamma\rvert\ge1$ rejects for every $u$. (b) By the mean value theorem $\lvert f(\tilde{x})-f(x)\rvert\le\sum_i L_i\lvert\tilde{x}_i-x_i\rvert\le\sum_i L_i\tfrac12 10^{-d_i}$, and $\lvert\pi-f(\tilde{x})\rvert\le\tfrac12 10^{-d}$ by rounding, so the triangle inequality gives the bound. An engine that evaluates $f(\tilde{x})$ differs from the paper's number only by the final rounding. \qedhere
+\end{proof}
+
+The first part says what the digit rule costs: a defect of half a unit of the last digit goes unnoticed in half of the cells, and a defect of one unit in none, so a table of many cells detects a systematic defect of a fraction of a unit through the cells that happen to round the wrong way. The second part is the test of an explanation: a gap beyond the digit rule and within the bound~\eqref{eq:rounding-bound} is compatible with rounded inputs, and the recomputation from the printed inputs confirms or refutes it.
+
+\subsection{Reuse and independence}
+\label{sec:theory-reuse}
+
+\begin{proposition}[A reference that reuses the engine's function cannot fail]\label{prop:reuse}
+Let the engine compute $q_{\mathcal{E}}(x)=h\bigl(s(x)\bigr)$, where $s$ is a library function and $h$ the engine's own wrapper (the choice of parameters and of the tail), and let a defect replace $s$ by $s_\epsilon=s+\epsilon e$ for any perturbation $e$. Compare three references: the reuse $R_1(x)=h(s(x))$ evaluated by the same code path as the engine; the same library with the wrapper $h^{*}$ written from the definition, $R_2(x)=h^{*}(s(x))$; and an independent route $R_3(x)=q(x)+\eta(x)$ that calls neither $s$ nor $h$, with $\lvert\eta\rvert\le\eta_{\max}$. Then, for every $x$ and every $\epsilon$:
+\begin{enumerate}
+\item[(i)] $q_{\mathcal{E}}-R_1\equiv0$;
+\item[(ii)] $q_{\mathcal{E}}-R_2=h(s_\epsilon)-h^{*}(s_\epsilon)$, which does not depend on the defect of $s$ when $h=h^{*}$ and equals the wrapper's discrepancy otherwise;
+\item[(iii)] $\lvert q_{\mathcal{E}}-R_3\rvert\ge\lvert h(s_\epsilon)-h(s)\rvert-\eta_{\max}$, so a defect with $\lvert h(s_\epsilon)-h(s)\rvert>\tau+\eta_{\max}$ is flagged by the tolerance $\tau$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(i) and (ii) follow by substitution, because the defective $s_\epsilon$ is the function that both the engine and the reference call. For (iii), $q_{\mathcal{E}}=h(s_\epsilon)$, $R_3=h(s)+\eta$ when the definition's value is $q=h(s)$, and the reverse triangle inequality gives the bound. \qedhere
+\end{proof}
+
+The proposition is the reason the notebook of the product does not compare the engine's $p$-values with SciPy's own distribution functions: the difference could only be zero. It also says which defects a same-library check does see: those of the wrapper (the case $R_2$ against a changed tail convention) and not those of the library. Section~\ref{sec:results} plants both kinds and measures the three references.
+
+\subsection{Size of a simultaneous rule}
+\label{sec:theory-size}
+
+\begin{proposition}[Size of the maximum rule]\label{prop:size}
+Let $z=(z_1,\dots,z_K)$ be a centred Gaussian vector with unit variances and any correlation matrix, and let $R_c$ accept if $\max_k\lvert z_k\rvert\le c$. Then
+\begin{equation}
+1-\bigl(2\Phi(c)-1\bigr)\ \le\ \alpha(R_c)\ \le\ 1-\bigl(2\Phi(c)-1\bigr)^{K},
+\label{eq:size-bounds}
+\end{equation}
+both bounds are attained (the first by perfectly correlated comparisons, the second by independent ones), and the bound that gives $\alpha(R_c)\le\alpha_0$ for every correlation is $c_K$ of Equation~\eqref{eq:sidak}.
+\end{proposition}
+\begin{proof}
+The acceptance probability is $\Prob(\bigcap_k\{\lvert z_k\rvert\le c\})$. It cannot exceed the probability of any one event, $2\Phi(c)-1$, which gives the lower bound on the size, and it is attained when all $z_k$ are equal. By Sidak's inequality for the multivariate normal \citep{sidak1967}, $\Prob(\bigcap_k\{\lvert z_k\rvert\le c\})\ge\prod_k\Prob(\lvert z_k\rvert\le c)=(2\Phi(c)-1)^{K}$, which gives the upper bound on the size, with equality for independent $z_k$. Setting $(2\Phi(c)-1)^{K}=1-\alpha_0$ and solving for $c$ gives $c_K$. \qedhere
+\end{proof}
+
+For the product's rule, $c=2$ and $K=35$ (33 dates, the EEPE and the CVA), the size lies between $4.55\,\%$ and $80.4\,\%$, and the bound for which it cannot exceed $5\,\%$ is $c_{35}=3.18$. Where in the interval the size falls depends on the correlation of the comparisons, which is high across dates of one simulation and different for the scalar functionals, and on whether the standard errors are correct, which the next proposition addresses.
+
+\subsection{Antithetic pairs and the calibration of the standard error}
+\label{sec:theory-antithetic}
+
+\begin{proposition}[Pair-aware and independent-path standard errors]\label{prop:antithetic}
+Let $2m$ paths form $m$ independent pairs, each pair with correlation $\rho$ between its paths and common variance $\sigma^2$, and let $\bar{x}$ be the mean of the $2m$ values. Then $\Var(\bar{x})=\sigma^{2}(1+\rho)/(2m)$, the independent-path estimator $s_{\mathrm{ind}}^2=\hat\sigma^2/(2m)$ has expectation $\sigma^2/(2m)$ and overstates the variance by the factor $1/(1+\rho)$, and the pair-aware estimator of Equation~\eqref{eq:pair-se} is unbiased for $\Var(\bar{x})$. If the engine and the reference share the pair correlation $\rho$, the standardised difference of two independent runs of the same model, formed with the independent-path errors, has variance $1+\rho$.
+\end{proposition}
+\begin{proof}
+For one pair, $y=\tfrac12(x_1+x_2)$ has variance $\tfrac14(2\sigma^2+2\rho\sigma^2)=\tfrac12\sigma^2(1+\rho)$, and $\bar{x}$ is the mean of $m$ independent such pairs, so $\Var(\bar{x})=\sigma^2(1+\rho)/(2m)$. The sample variance of the $2m$ values estimates $\sigma^2$ whatever the pairing, which gives the expectation of $s_{\mathrm{ind}}^2$. The sample variance of the $m$ pair means is unbiased for $\Var(y)=\tfrac12\sigma^2(1+\rho)$, and dividing by $m$ gives $\Var(\bar{x})$. For two independent runs, $\Var(\bar{x}_O-\bar{x}_{\mathcal{E}})=(1+\rho)(\sigma_O^2/2m_O+\sigma_{\mathcal{E}}^2/2m_{\mathcal{E}})$ while the denominator of $z$ has expectation $\sigma_O^2/2m_O+\sigma_{\mathcal{E}}^2/2m_{\mathcal{E}}$. \qedhere
+\end{proof}
+
+The antithetic pairs of an exposure simulation have a strongly negative $\rho$ at the later dates, where the exposure is a monotone function of the driving normal variate, so the independent-path error is a large overstatement. The consequence is that the rule of the product is conservative per comparison, by a factor that varies with the date, while its family of $K$ comparisons inflates the size. The two errors partly cancel, and the cancellation is an accident of the case, not a property of the rule. Section~\ref{sec:results} measures $\rho$ at each date and the resulting spread of $z$.
+
+\subsection{Power and the smallest detectable gap}
+\label{sec:theory-power}
+
+\begin{proposition}[Power at one comparison]\label{prop:power}
+Let $z_k\sim N(\lambda_k,1)$, where $\lambda_k=\Delta_k/s_k$ is a systematic gap $\Delta_k$ in units of the combined standard error. The probability that the comparison at date $t_k$ exceeds the bound $c$ is
+\begin{equation}
+\Prob\bigl(\lvert z_k\rvert>c\bigr)\ =\ 1-\Phi(c-\lambda_k)+\Phi(-c-\lambda_k)\ \ge\ 1-\Phi(c-\lvert\lambda_k\rvert),
+\label{eq:power-one}
+\end{equation}
+and the rule $R_c$ rejects with at least this probability. The gap detected with probability $1-\beta$ at one comparison is at least $\Delta_{1-\beta}=(c+\Phi^{-1}(1-\beta))\,s$.
+\end{proposition}
+\begin{proof}
+$z_k-\lambda_k$ is standard normal, so $\Prob(z_k>c)=1-\Phi(c-\lambda_k)$ and $\Prob(z_k<-c)=\Phi(-c-\lambda_k)$; the inequality drops the second term when $\lambda_k>0$ and the first when $\lambda_k<0$. The family rule rejects whenever one comparison does. Setting $1-\Phi(c-\lambda)=1-\beta$ gives $\lambda=c+\Phi^{-1}(1-\beta)$. \qedhere
+\end{proof}
+
+At the bound $c=2$ and power $0.8$ the detectable gap is $2.84$ standard errors, and at $c=3.18$ it is $4.02$. A gap equal to one combined standard error is rejected at one comparison with probability $0.159$ at $c=2$ and $0.015$ at $c=3.18$. The standard error is therefore the unit in which a reconciliation can be said to resolve a difference, and a pass at $K=35$ comparisons says that the engines agree to within a few standard errors, not that they agree. With the pair-aware error the standard error shrinks by the factor $\sqrt{1+\rho}$ and so does the detectable gap.
+
+\subsection{The relative gate and the elasticity}
+\label{sec:theory-gate}
+
+\begin{proposition}[Detection threshold of a relative gate]\label{prop:gate}
+Let $V(\sigma)$ be a closed-form price with elasticity $\eta_\sigma=\partial\ln V/\partial\ln\sigma$ at the true volatility, let the engine carry a relative volatility error $\delta$, and let the library return the price at the true volatility. The relative difference of Equation~\eqref{eq:closed-rel} is $\varepsilon=\lvert\eta_\sigma\rvert\,\delta+O(\delta^2)$, so the gate $\varepsilon_{\max}$ flags the error if and only if, to first order, $\delta>\varepsilon_{\max}/\lvert\eta_\sigma\rvert$.
+\end{proposition}
+\begin{proof}
+$V(\sigma(1+\delta))=V(\sigma)\exp\bigl(\eta_\sigma\ln(1+\delta)+O(\delta^2)\bigr)=V(\sigma)\bigl(1+\eta_\sigma\delta+O(\delta^2)\bigr)$, so $\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert/\lvert V_{\mathcal{Q}}\rvert=\lvert\eta_\sigma\rvert\delta+O(\delta^2)$. \qedhere
+\end{proof}
+
+A relative gate of $10^{-6}$ is not a statement about the volatility alone: it detects a volatility error of $10^{-6}$ in a quantity of elasticity near one and of $3\times10^{-5}$ in one of elasticity $0.03$, such as a deep in-the-money option. The gate says nothing for a quantity whose elasticity is zero.
+
+Two consequences follow for the design of the comparison. A gate on a price detects errors in the parameters in proportion to the elasticities of the price to each of them, so a comparison that uses one instrument checks the parameters that instrument is sensitive to: the payer swaption of the case is sensitive to the volatility with an elasticity near one and the deep in-the-money bond call is almost insensitive, and a grid of instruments is needed to cover the parameters. And when the price itself is near zero, the relative difference of two computations that agree to the absolute tolerance of their own root-finding grows without bound as the price falls, which is why the protocol adds an absolute floor to the gate; the deep out-of-the-money receiver swaption of the grid is the case that shows it.

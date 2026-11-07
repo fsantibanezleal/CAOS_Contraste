@@ -1,0 +1,21 @@
+{
+ "seconds": {
+  "exp_printed.py": 3.6,
+  "exp_routes.py": 131.5,
+  "exp_closedforms.py": 27.7,
+  "exp_committed.py": 19.4,
+  "exp_pairs.py": 104.5,
+  "exp_transition_matrix.py": 18.8,
+  "exp_criterion.py": 1810.1,
+  "exp_ore_replicates.py netting-set": 425.2,
+  "exp_ore_replicates.py single-swap": 336.8,
+  "exp_ore_replicates.py csa-mpor-10d": 1087.9
+ },
+ "python": "3.13.14",
+ "platform": "Windows-11-10.0.26300-SP0",
+ "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+ "logical_processors": 32,
+ "criterion_workers": 10,
+ "ore_workers": 4,
+ "mismatches": []
+}

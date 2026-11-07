@@ -1,0 +1,165 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+The proposed method is a reconciliation protocol with one rule per class of reference, a common report, and a measurement of the rule that has a random statistic. The idea is that a reconciliation is only as informative as the reference is independent of the engine and the rule is known to fail when the engine is wrong. The protocol therefore does four things for every unit: it fixes the rule and its bound before the comparison, it states what a pass is evidence of, it lists every gap with the test of its explanation, and it lists the units that have no reference. The protocol is implemented in the Contraste product for the Hull--White exposure engine, the calibration tests, the transition-matrix estimators and the low-default bounds of the \texttt{riskvalidation} engine, release 1.1.0; the rules for printed answers, independent routes and closed forms are those the product applies, and the refinement of the acceptance statistic of Section~\ref{sec:proposed-refine} is evaluated in this work and is not applied in the committed documents.
+
+\subsection{Four classes of reference and what a pass shows}
+\label{sec:proposed-classes}
+
+The protocol distinguishes the references by the claim that a pass supports, because the same agreement of numbers supports different claims depending on what the two computations share.
+
+\begin{description}
+\item[Printed answer (class P).] The engine, fed the inputs a paper prints, returns the numbers the paper prints. A pass shows that the engine implements the paper's formulas with the paper's conventions. It does not show that the paper is right, and it does not show the engine right outside the printed inputs.
+\item[Independent route (class I).] A second computation of the same definition that calls none of the functions the engine calls. A pass shows that the engine's output equals the mathematical definition to the tolerance, including the parts that sit inside a shared library. A comparison with the engine's own call is not in this class; Proposition~\ref{prop:reuse} shows that it cannot fail.
+\item[Closed form in a library (class F).] A published analytic formula implemented by another code base, or the analytic identity of the model. A pass shows agreement of two implementations of one formula; the formula's validity for the market is outside it.
+\item[Monte Carlo reference engine (class M).] A second simulation of the same model. A pass shows that the difference of the two estimates is small compared with their sampling error. It is evidence of equality only to the extent the sampling error is small and the rule has power (Section~\ref{sec:theory-power}).
+\end{description}
+
+A fifth entry, the scope list, is not a class: it is the list of units that no available reference reaches, with the reason. The product lists the wrong-way variant against ORE, whose example is a different model, and the cohort transition estimator against the \texttt{transitionMatrix} library, whose comparison the engine's own tests carry and the product's notebooks do not rerun.
+
+\subsection{Printed answers: the digit rule and the gap in units}
+\label{sec:proposed-printed}
+
+A recomputed value $r$ agrees with a printed value $\pi$ that carries $d$ decimals when it lies within half a unit of the last printed digit,
+\begin{equation}
+\lvert r-\pi\rvert\ \le\ \tfrac12\,10^{-d}.
+\label{eq:digit}
+\end{equation}
+The product adds $10^{-9}$ to the right-hand side for the binary representation of the decimal, which is smaller than any printed unit. The gap that the rule does not accept is reported in the unit of the print,
+\begin{equation}
+g\ =\ (r-\pi)\,10^{d},
+\label{eq:unitgap}
+\end{equation}
+so that a miss of $0.6$ is a print that rounded the other way and a miss of $12$ is a different computation. Reading the gap in units is what lets the report separate the two without a judgement about the quantity.
+
+Where the paper computed a table from numbers it had already printed rounded, as the scaled bounds of Pluto and Tasche are computed from the unscaled ones, an agreement within Equation~\eqref{eq:digit} is not to be expected, and the protocol tests that explanation instead of asserting it. If the printed quantity is $\pi=f(\tilde{x})$ with $\tilde{x}_i$ the printed inputs, the test recomputes $f(\tilde{x})$ from the printed inputs and applies Equation~\eqref{eq:digit} to it; the gap that survives is the part not explained by rounding. Proposition~\ref{prop:rounding} gives the size of the gap that rounding can explain.
+
+\subsection{Independent routes for tail probabilities}
+\label{sec:proposed-routes}
+
+The engine's Jeffreys test returns $p_{\mathcal{E}}=F_{\mathrm{Beta}(a,b)}(x)$ with $a=D+\tfrac12$, $b=n-D+\tfrac12$, by a SciPy call, and its binomial test returns $P(\mathrm{Bin}(n,x)\ge D)$ by another. The protocol computes the same two probabilities by routes that call neither function. For the Jeffreys test the Beta density has a singularity at $0$ when $D=0$; the substitution $y=x\,u^{2}$ turns the integral into a smooth one,
+\begin{equation}
+p_{\mathcal{R}}^{J}\ =\ \frac{2\,x^{a}}{B(a,b)}\int_0^1 u^{2D}\,(1-x\,u^{2})^{b-1}\,\mathrm{d}u,
+\label{eq:jeffreys-quad}
+\end{equation}
+which a Gauss--Legendre rule of 400 nodes integrates, with the Beta function written through \texttt{math.lgamma}. For the binomial test the route is the exact sum in rational arithmetic,
+\begin{equation}
+p_{\mathcal{R}}^{B}\ =\ 1-\sum_{k=0}^{D-1}\binom{n}{k}\,x^{k}(1-x)^{n-k},
+\label{eq:binomial-exact}
+\end{equation}
+with $x$ taken as the exact rational value of the floating-point number and a single rounding at the end. The rule is a tolerance on the largest absolute difference over the grid of cases,
+\begin{equation}
+\max_{i}\ \bigl\lvert p_{\mathcal{E}}(n_i,D_i,x_i)-p_{\mathcal{R}}(n_i,D_i,x_i)\bigr\rvert\ \le\ \tau,\qquad \tau=10^{-9}.
+\label{eq:route-tol}
+\end{equation}
+The grid of the product has 36 cases: $n\in\{50,500,5000\}$, $D\in\{0,1,3,10\}$ and $x\in\{0.001,0.01,0.05\}$. The tolerance is far above the double-precision error of the routes and far below any decision a validation takes from a $p$-value, so a defect smaller than $\tau$ is irrelevant and a defect larger than $\tau$ is flagged.
+
+\subsection{Closed forms against a library}
+\label{sec:proposed-closed}
+
+The engine's closed forms for the price $V_{\mathcal{E}}$ of a European option on a discount bond and of a European swaption under the one-factor Hull--White model are compared with QuantLib's \texttt{HullWhite.discountBondOption} and \texttt{JamshidianSwaptionEngine} on the same curve and parameters, by the relative difference,
+\begin{equation}
+\varepsilon\ =\ \frac{\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert}{\lvert V_{\mathcal{Q}}\rvert}\ \le\ \varepsilon_{\max},\qquad \varepsilon_{\max}=10^{-6},
+\label{eq:closed-rel}
+\end{equation}
+the gate that QuantLib's own root-finding tolerance allows. A relative gate has no scale for a price near zero; the results of Section~\ref{sec:results} show the one case of a grid at which this matters, and the protocol therefore adds an absolute floor, $\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert\le\varepsilon_{\max}\lvert V_{\mathcal{Q}}\rvert+10^{-9}N$, with $N$ the notional.
+
+Two choices make the comparison one of the formulas and not of the inputs. The curve is built once, as zero rates linear in the rate and continuously compounded, and handed to both implementations, so that a difference of interpolation does not enter; and the parameters of the model, the mean reversion $a$ and the volatility $\sigma$, are the same numbers. The comparison is not run at one point only. The protocol draws parameter sets from a stated distribution with a fixed seed (mean reversion, volatility, expiry, maturity, strike or fixed rate) so that a relative difference that holds at one expiry and fails at another is found, and it reports the distribution of $\varepsilon$ over the draws, not its value at the favourable case. A failure of the gate is reported with the parameters that produced it and with the elasticity of the price to the volatility, which says whether the gate could have detected an error of a given size there (Proposition~\ref{prop:gate}).
+
+\subsection{A Monte Carlo reference engine}
+\label{sec:proposed-engine}
+
+The exposure of a netting set at a future date is the positive part of its value, $X(t)=\max(V(t),0)$. The engine simulates the short rate on a grid, values every swap at every point, and reports the expected exposure in the forward measure,
+\begin{equation}
+\mathrm{EE}(t_k)\ =\ \frac{1}{P(0,t_k)}\ \E\!\left[\frac{X(t_k)}{N(t_k)}\right],
+\label{eq:ee}
+\end{equation}
+estimated by the mean over $m$ paths with the standard error $s_k=\hat{\sigma}_k/\sqrt{m}$. Two scalar functionals follow from the profile. The effective expected positive exposure is the time average over the first year of the running maximum of the profile, $\mathrm{eEE}(t_k)=\max_{j\le k}\mathrm{EE}(t_j)$,
+\begin{equation}
+\mathrm{EEPE}\ =\ \sum_{t_k\le 1}\mathrm{eEE}(t_k)\,\Delta t_k ,
+\label{eq:eepe}
+\end{equation}
+and the unilateral valuation adjustment is
+\begin{equation}
+\mathrm{CVA}\ =\ \mathrm{LGD}\sum_{k=1}^{33}\bigl[S(t_{k-1})-S(t_k)\bigr]\ \E\!\left[\frac{X(t_k)}{N(t_k)}\right],
+\label{eq:cva}
+\end{equation}
+with $S$ the counterparty survival curve. The comparison with ORE standardises the difference of the two estimates at each date by the combined standard error,
+\begin{equation}
+z_k\ =\ \frac{\widehat{\mathrm{EE}}^{\mathrm{ORE}}(t_k)-\widehat{\mathrm{EE}}^{\mathcal{E}}(t_k)}{\sqrt{s_{\mathrm{ORE},k}^{2}+s_{\mathcal{E},k}^{2}}},\qquad k=1,\dots,33,
+\label{eq:z}
+\end{equation}
+and defines $z_{\mathrm{EEPE}}$ and $z_{\mathrm{CVA}}$ in the same way, with the batch error of 20 antithetic batches for the EEPE and the path error for the CVA. The product's rule accepts the engine when all $K=35$ standardised differences are within the bound $c=2$,
+\begin{equation}
+\max\bigl\{\lvert z_1\rvert,\dots,\lvert z_{33}\rvert,\lvert z_{\mathrm{EEPE}}\rvert,\lvert z_{\mathrm{CVA}}\rvert\bigr\}\ \le\ c .
+\label{eq:rule}
+\end{equation}
+For the collateralised variants the protocol adds a diagnostic run with the minimum transfer amount set to zero in both engines, which separates the margining dynamics (ORE calls margin on its own schedule between the report dates) from the exposure model. For the initial-margin variant ORE keeps no per-path margin in its outputs, so the error of its post-margin profile is the engine's scaled to ORE's sample count and stated as such.
+
+\subsection{A refinement of the acceptance statistic}
+\label{sec:proposed-refine}
+
+The statistic of Equation~\eqref{eq:z} treats the paths of each run as independent. Both runs use antithetic pairs, so the standard error is overstated by the factor $1/\sqrt{1+\rho}$ derived in Proposition~\ref{prop:antithetic}, and the bound $c=2$ is applied to a family of $K=35$ comparisons, for which the size is not $4.55\,\%$ (Proposition~\ref{prop:size}). The evaluated refinement replaces both. The pair-aware standard error averages the two paths of each pair before the variance is taken: with $m$ pairs and $y_i=\tfrac12(x_i+x_{i+m})$,
+\begin{equation}
+s^{\mathrm{pair}}\ =\ \frac{1}{\sqrt{m}}\ \Bigl[\tfrac{1}{m-1}\sum_{i=1}^{m}\bigl(y_i-\bar{y}\bigr)^{2}\Bigr]^{1/2},
+\label{eq:pair-se}
+\end{equation}
+and the bound is the one that keeps the family-wise size at $\alpha$ for $K$ independent comparisons,
+\begin{equation}
+c_K\ =\ \Phi^{-1}\!\Bigl(\tfrac12\bigl[1+(1-\alpha)^{1/K}\bigr]\Bigr),\qquad c_{35}=3.18\ \text{ at }\alpha=0.05 .
+\label{eq:sidak}
+\end{equation}
+The refinement changes the standard-error estimator and the bound of the reconciliation code and nothing else, and Sections~\ref{sec:results} and~\ref{sec:ablation} measure its effect on size and power.
+
+Two remarks bound what the refinement claims. The bound $c_K$ assumes independent comparisons; the dates of one simulation are strongly dependent, and by Proposition~\ref{prop:size} the size then lies below $\alpha$, so the bound is conservative and its size is not $\alpha$ exactly, which the measurement of Section~\ref{sec:results-power} shows. A Bonferroni bound, $\Phi^{-1}(1-\alpha/(2K))$, is $3.19$ at $K=35$ and differs little from $c_K$, so the choice between the two is immaterial at this $K$. The pair-aware error is unbiased for the variance of the mean when the pairs are independent, as the antithetic construction makes them; it needs the pairing of the draws, which the engine's simulation exposes (path $i$ and path $i+P/2$) and ORE's output keeps (adjacent samples), and it cannot be computed for a reference whose pairing is hidden. For the EEPE, whose error is estimated from 20 batches that each hold whole antithetic blocks, the batch error is already pair-aware, and the refinement leaves it as it is.
+
+\subsection{The report: gaps, equivalence and scope}
+\label{sec:proposed-report}
+
+A reconciliation reports for every unit the outcome and the gap, and for every gap the explanation. It also reports what the agreement supports. For a Monte Carlo reference with a difference $D$ and combined standard error $s$, two one-sided tests at the $5\,\%$ level establish equivalence within the margin
+\begin{equation}
+\Delta_{\mathrm{eq}}\ =\ \lvert D\rvert+z_{0.95}\,s,\qquad z_{0.95}=1.645 ,
+\label{eq:equivalence}
+\end{equation}
+which the protocol reports as a share of the engine's value: the smallest symmetric margin at which the two engines can be called equivalent. The smallest relative gap that the rule detects with probability $0.8$ is reported beside it (Section~\ref{sec:theory-power}). Both numbers say how much a pass is worth, which the outcome alone does not.
+
+The report of one reconciliation is a table with one row per unit. The row holds the class of the reference, the quantity compared and the number of comparisons, the rule and its bound, the gap with its unit, the outcome, the explanation with its status (tested, recorded or none), and, for a Monte Carlo reference, the equivalence margin and the detectable gap. A gap enters the report with the cell that produced it, as the product's documents list every printed cell with the recomputed value and the gap, and not as a count. A unit that the protocol could not run is a row with the outcome \emph{not run} and the reason, so that the report is complete over the units of the engine that have a reference class in principle. The two numbers of the last column are computed from quantities the comparison already has, the difference, its standard error and the bound, and cost nothing to report.
+
+\subsection{Algorithms, complexity and implementation}
+\label{sec:proposed-impl}
+
+Algorithms~\ref{alg:printed} and~\ref{alg:engine} give the two procedures that are not a single comparison: the reconciliation of a printed table, with the test of the rounding explanation, and the reconciliation against a Monte Carlo reference engine.
+
+\begin{algorithm}[htbp]
+\caption{Reconcile a printed table with the engine and test the rounding explanation.}
+\label{alg:printed}
+\begin{algorithmic}[1]
+\Require printed cells $\{(\pi_j,d_j)\}$, the inputs the paper prints, the engine function $f$
+\For{each cell $j$}
+  \State $r_j \gets f(\text{inputs})$ \Comment{recompute from the committed inputs}
+  \State $g_j \gets (r_j-\pi_j)\,10^{d_j}$ \Comment{Equation~\eqref{eq:unitgap}}
+  \State $v_j \gets \text{agree}$ if $\lvert g_j\rvert\le\tfrac12$ (Equation~\eqref{eq:digit}), else \text{gap}
+\EndFor
+\For{each gap cell whose quantity is computed from other printed cells $\tilde{x}$}
+  \State $\tilde{r}_j \gets f(\tilde{x})$ \Comment{the paper's route: rounded inputs}
+  \State record whether $\lvert\tilde{r}_j-\pi_j\rvert\le\tfrac12 10^{-d_j}$; the gap is explained by rounding if so
+\EndFor
+\State list every gap with its cell, $g_j$, and the explanation (tested, recorded or none)
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htbp]
+\caption{Reconcile the exposure engine with a Monte Carlo reference engine.}
+\label{alg:engine}
+\begin{algorithmic}[1]
+\Require curve, model parameters $(a,\sigma)$, swap book, report dates $t_1,\dots,t_{33}$, seeds, bound $c$
+\State run the engine with $m_{\mathcal{E}}$ paths and the reference with $m_{O}$ samples, independent seeds
+\State compute $\mathrm{EE}_k$, $s_k$ on both sides, $\mathrm{EEPE}$ and $\mathrm{CVA}$ with their errors
+\State form $z_1,\dots,z_{33},z_{\mathrm{EEPE}},z_{\mathrm{CVA}}$ (Equation~\eqref{eq:z}); use pair-aware errors (Equation~\eqref{eq:pair-se}) in the refinement
+\State accept if $\max\lvert z\rvert\le c$ ($c=2$ for the product's rule, $c=c_{35}$ for the refinement)
+\If{rejected and the variant is collateralised} \State repeat both runs with the minimum transfer amount set to zero \EndIf
+\State report $z_k$, the outcome, $\Delta_{\mathrm{eq}}$ (Equation~\eqref{eq:equivalence}) and the minimum detectable gap
+\end{algorithmic}
+\end{algorithm}
+
+The cost of a printed-table reconciliation is the cost of the engine calls, a few hundred evaluations of closed-form estimators, below one second. The independent routes cost $O(400\,D)$ operations for the quadrature and $O(D)$ big-integer terms for the exact sum, the latter dominated by the size of the rational numbers when $n$ is large. The exposure reconciliation costs one simulation of the engine, $O(m\,S\,G)$ for $m$ paths, $S$ swaps and $G$ grid points, plus one run of the reference. The implementation is in the product's pipeline (\texttt{c12/reconcile.py}, \texttt{c12/ore.py}) and in notebooks of the ratings and calibration topic; the experiments of this work call the same functions.

@@ -1,0 +1,141 @@
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:main-results} gives the main comparison, one row per reference class and, for the Monte Carlo reference, one row per variant of the exposure case; the subsections that follow read it by class, and Table~\ref{tab:outcomes} closes the section with the outcome on each hypothesis.
+
+\input{tables/main-results}
+
+\subsection{Printed answers}
+\label{sec:results-printed}
+
+Of the \nPrintedN\ printed numbers of the five papers, \nPrintedAgree\ (\nPrintedShare\,\%) agree with the engine to the printed digit, \nPrintedRecAgree\ of the \nPrintedRecN\ that are recomputed from the committed inputs and \nPrintedReadAgree\ of the \nPrintedReadN\ that are read as the committed documents record them (Table~\ref{tab:printed}). The \nMissTotal\ numbers that miss are not scattered: Figure~\ref{fig:printed-gaps} shows each source with the size of its gaps in units of the last printed digit. The largest gaps among the recomputed cells are in Tasche's Table 9 (\nTableNineMaxUnits\ units), his Table 6 (\nTableSixMaxUnits) and Pluto and Tasche's Table 12 (\nTwelveMaxUnits); the multi-period Tables 13 and 14 of Pluto and Tasche have \nTfourteenAgree\ of \nTfourteenN\ cells within the digit rule, and Schuermann and Hanson's \nSHN\ numbers all agree. By the size of the gap, \nBinHalf\ numbers are within half a unit, \nBinOne\ more within one unit, \nBinTwo\ more within two, and \nBinBeyond\ lie beyond two units. Relaxing the digit rule to one, two and five units raises the agreeing count to \nAgreeOneUnit, \nAgreeTwoUnits\ and \nAgreeFiveUnits, which shows how much of the disagreement is the rounding convention and how much is a different computation.
+
+\input{tables/printed}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.96\textwidth]{printed-gaps}
+\caption{Absolute gap between the engine and each printed number, in units of the last printed digit and on a logarithmic axis, for each of the twelve source groups; filled circles are recomputed here, squares are read as the committed documents record them, and the vertical lines mark the digit rule of half a unit, one unit and two units.}
+\label{fig:printed-gaps}
+\end{figure}
+
+The design document quotes \nSddN\ printed numbers and \nSddAgree\ agreeing. Those two counts are reproduced exactly, \nWithoutN\ and \nWithoutAgree, when the three groups of Tasche's Tables 8 and 9 (the case-3 forecasts of 2010 and 2011 and the 2009 likelihood ratios) are left out of the tally; with them the count is \nPrintedN\ and \nPrintedAgree, the one the product's notebook prints. The first hypothesis is therefore not met as stated, because its counts differ from the full tally; the recomputation of which numbers it counts is the contribution of this paragraph, and the choice between the two tallies belongs to the design document.
+
+The explanation of the gaps (Table~\ref{tab:miss-categories}) is a mixture. A rounding explanation is tested here for the scaled bounds: Pluto and Tasche scale the bounds of their Tables 4 and 8, which they print rounded, and scaling the printed bounds in place of the exact ones raises the agreeing cells of Tables 9 to 12 from \nScaledExact\ to \nScaledPrinted\ of \nScaledN\ (Table~\ref{tab:explain-scaled}); the remaining \nScaledLeft\ cells are not explained by rounding. The one miss of Table 4 at a confidence level of $75\,\%$ is explained by the level of the print: the exact bound is $\nFourAtSeventyFive\,\%$ at $0.75$ and $\nFourAtSeventySixThree\,\%$ at $0.763$, and every level from $\nFourLevelLow$ to $\nFourLevelHigh$ prints as the paper's $0.65$. Beyond these \nMissTested\ tested explanations, \nMissRecorded\ gaps carry an explanation recorded in the committed documents and not retested here (\nMissTol\ within a tolerance the engine documents for the table, \nMissAbove\ cells of Table 8 printed at or above the exact bound, \nMissMC\ Monte Carlo prints of Tables 13 and 14, and the one printed generator), and \nMissNone\ have none: \nMissNoneIn\ within one unit and \nMissNoneOut\ beyond it.
+
+\input{tables/explain-scaled}
+\input{tables/miss-categories}
+
+The printed values of the Appendix of Hull and White are the second hypothesis of the printed class. The engine reproduces \nWWAgree\ of the \nWWN\ printed numbers to the digit. The exception is the second calibration constant: the printed $a(t_2^{*})=-7.8509$ against the recomputed $\nWWAtwo$, a gap of \nWWAtwoUnits\ units; a plain bisection written independently of the engine agrees with the engine to $\nWWBisection$ on both constants, so the difference belongs to the paper's arithmetic or its rounding and not to the engine.
+
+\subsection{Independent routes and the reuse trap}
+\label{sec:results-routes}
+
+On the grid of \nGridCases\ cases, the engine's Jeffreys $p$-values differ from the quadrature of the Beta density by at most $\nGridJeffMax$ and its binomial $p$-values from the exact rational sum by at most $\nGridBinMax$, so all \nGridWithin\ comparisons are within the tolerance of $10^{-9}$ (Figure~\ref{fig:routes}, left). On \nRandomCases\ cases drawn with a fixed seed the largest differences are $\nRandomJeffMax$ and $\nRandomBinMax$ and all \nRandomWithin\ of \nRandomComparisons\ comparisons are within the tolerance. A comparison with the engine's own SciPy call gives a difference of exactly $\nSameCallGap$ on every case, as Proposition~\ref{prop:reuse} requires. The second hypothesis holds.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{routes}
+\caption{Left: absolute difference between the engine's $p$-values and the two independent routes on the 36 cases of the grid, on a logarithmic axis with the tolerance of $10^{-9}$. Right: largest difference of the defective binomial test to the three kinds of reference as a relative error is planted inside the SciPy function; the reuse and same-library references stay at zero.}
+\label{fig:routes}
+\end{figure}
+
+Planting defects separates the references (Table~\ref{tab:routes-defects}, Figure~\ref{fig:routes}, right). Moving the tail convention of the binomial helper by one gives a difference of $\nTailGap$ between the defective engine and either the same SciPy function with the parameters written from the definition (C2) or the independent route (C3); the reuse of the engine's helper (C1) gives zero. A relative error planted inside SciPy itself is invisible to C1 and C2 at every size from $10^{-12}$ to $10^{-3}$, whose differences are exactly zero, and the independent route sees it as a difference equal to the planted error: an error of $10^{-9}$ is flagged, because the difference is $\nEpsNineGap$, and errors of $10^{-10}$ and below are not. The independent route is therefore as sharp as its own arithmetic, about $\nGridJeffMax$ for the Jeffreys quadrature, and the library-level defects that a same-library comparison cannot show are the ones it shows.
+
+\input{tables/routes-defects}
+
+\subsection{Closed forms and the transition-matrix library}
+\label{sec:results-closed}
+
+The four closed-form cases of the product agree with QuantLib: the bond call and put to the last bit (a relative difference of exactly $0$) and the payer and receiver swaptions to $\nSwaptionPayer$ and $\nSwaptionReceiver$ (Figure~\ref{fig:closed-forms}, left, and Table~\ref{tab:main-results}). On \nClosedCases\ cases of a seeded grid of mean reversion, volatility, expiry, maturity and strike, the median relative difference is $\nClosedMedian$ and \nClosedWithin\ of the cases are within the gate of $10^{-6}$. The one case beyond the gate, a receiver swaption, differs by $\nClosedMax$ relative, which is an absolute difference of $\nClosedWorstAbs$ USD on a price of \nClosedWorstPrice\ USD for a notional of one million: the option is deep out of the money and the relative gate has no scale there. The fourth hypothesis holds on the cases of the product and fails the relative gate in one of \nClosedCases, which the absolute floor of Section~\ref{sec:proposed-closed} accepts.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{closed-forms}
+\caption{Left: relative difference between the engine's closed forms and QuantLib on the seeded grid, by instrument, on a logarithmic axis with the gate of $10^{-6}$. Right: relative difference to QuantLib as a relative error is planted in the engine's volatility, for a payer swaption of elasticity to volatility near one and for a deep in-the-money bond call of elasticity near $0.03$.}
+\label{fig:closed-forms}
+\end{figure}
+
+The sensitivity of the gate follows Proposition~\ref{prop:gate}. The measured elasticities to volatility are \nElasticitySwaption\ for the swaption and \nElasticityBond\ for the bond call, so the gate flags a volatility error of $\nDetectSwaption$ in the first and of $\nDetectBond$ in the second; the planted errors confirm it (Figure~\ref{fig:closed-forms}, right): an error of $10^{-6}$ is flagged on the swaption and not on the bond call, whose relative difference is $\nBondAtMillionth$.
+
+The cohort estimators of the engine, compared with \texttt{transitionMatrix} \nTMVersion\ on \nTMPanels\ seeded panels (Table~\ref{tab:transition-matrix}), agree to $\nTMMaxDiff$ over \nTMElements\ matrix elements once the conventions of the package are aligned: the withdrawals kept as a state or excluded, per period or pooled. Two differences remain, and each is explained by the package's code. The package counts the last migration of its last entity twice, which moves its matrix by $\nTMDoubleMin$ to $\nTMDoubleMax$; adding that one migration to the engine's counts reproduces the package's matrix to $\nTMDoubleFixed$. And the package's Aalen--Johansen increment divides by the risk set after the exit, giving $\nTMAJPackage$ where the engine gives $\nTMAJEngine$ on a four-obligor example.
+
+\input{tables/transition-matrix}
+
+\subsection{The Monte Carlo reference on the product's draws}
+\label{sec:results-committed}
+
+On the product's draws (seed 42 for both engines), the single swap and the netting set pass the rule: no report date is beyond two combined standard errors, the largest $\lvert z\rvert$ is \nSingleMaxZ\ and \nNettingMaxZ, and the EEPE and CVA differences are \nSingleEepeZ\ and \nSingleCvaZ\ (single swap) and \nNettingEepeZ\ and \nNettingCvaZ\ (netting set) combined standard errors (Table~\ref{tab:committed-ore}, Figure~\ref{fig:z-profiles}). The third hypothesis holds on those draws. The three collateralised variants do not: the 10-day variant has \nCsaTenBeyond\ of 33 dates beyond two, a largest $\lvert z\rvert$ of \nCsaTenMaxZ\ and a CVA difference of \nCsaTenCvaZ\ combined standard errors; the 20-day variant \nCsaTwentyBeyond\ dates, \nCsaTwentyMaxZ\ and \nCsaTwentyCvaZ; and the variant with initial margin \nImBeyond\ date beyond two in the expected exposure, the last report date at 9.5 years, with a $\lvert z\rvert$ of \nImMaxZ, and a mean dynamic initial margin of ORE at \nImRatio\ of the engine's, with all \nImDimBeyond\ dates of the margin beyond two (largest \nImDimMaxZ). These are the gaps the sixth hypothesis lists, and the measured values match its figures of $9.9$, $7.1$ and $11.7$, $15.9$ and $9.9$, and $0.88$.
+
+\input{tables/committed-ore}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{z-profiles}
+\caption{Standardised difference z between ORE and the engine at the 33 report dates for the five exposure variants on the product's draws, with the band of two combined standard errors shaded; the uncollateralised variants stay inside the band, the collateralised ones leave it from two to three years on and again at the last date, and the initial-margin variant leaves it only at the last report date of 9.5 years.}
+\label{fig:z-profiles}
+\end{figure}
+
+For the collateralised variants the diagnostic run with a zero minimum transfer amount in both engines lowers the largest $\lvert z\rvert$ from \nCsaTenMaxZ\ to \nCsaTenMtaZ\ (10 days) and from \nCsaTwentyMaxZ\ to \nCsaTwentyMtaZ\ (20 days). It does not remove the gap, so the minimum transfer amount explains part of it and the remainder is not explained, which the product's case page also leaves open.
+
+What the passes show is bounded by the standard errors (Table~\ref{tab:committed-ore}, last two columns). The EEPE difference of the single swap supports equivalence within $\nSingleEquivalence\,\%$ of its value at the $5\,\%$ level and the rule detects a systematic gap of $\nSingleDetectable\,\%$ with probability $0.8$; for the netting set the two numbers are $\nNettingEquivalence\,\%$ and $\nNettingDetectable\,\%$. The agreement is an agreement to about two percent of the effective exposure, not an equality.
+
+\subsection{The same comparison on new seeds}
+\label{sec:results-seeds}
+
+Rerunning the comparison with ORE on new seeds (Table~\ref{tab:ore-replicates}, Figure~\ref{fig:ore-replicates}) shows whether the product's outcomes are properties of the engines or of the draws. The rule passes on \nReplNetPass\ of \nReplNetN\ seeds for the netting set (Wilson interval \nReplNetLo\ to \nReplNetHi\,\%) and on \nReplSinPass\ of \nReplSinN\ for the single swap (\nReplSinLo\ to \nReplSinHi\,\%); rerunning the product's seed 42 reproduces the committed standardised differences of the four variants to within \nSeedFortyTwoGap\ at every date (largest $\lvert z\rvert$ of \nSeedFortyTwoNetting\ for the netting set against \nNettingMaxZ\ committed). The mean over seeds and dates of $z$ is \nReplNetMeanZ\ and \nReplSinMeanZ\ with the product's errors and \nReplNetMeanZPair\ and \nReplSinMeanZPair\ with the pair-aware ones, so the two engines have no systematic gap larger than a fraction of a combined standard error, in the direction of ORE above the engine. The collateralised 10-day variant fails the rule on \nReplCsaFail\ of \nReplCsaN\ seeds, with a mean largest $\lvert z\rvert$ of \nReplCsaMaxZ\ and a mean CVA difference of \nReplCsaCvaZ\ combined standard errors: the gap of the product's draw is a property of the two engines, not of the draw.
+
+\input{tables/ore-replicates}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{ore-replicates}
+\caption{Mean over the seeds of the standardised difference between ORE and the engine at each report date, for the netting set, the single swap and the 10-day collateralised variant, with the product's standard errors and with pair-aware ones; the shaded band is the acceptance bound of two.}
+\label{fig:ore-replicates}
+\end{figure}
+
+The predictions fixed before these runs are reported in Table~\ref{tab:outcomes}: R1 to R5 are \nPredRone, \nPredRtwo, \nPredRthree, \nPredRfour\ and \nPredRfive.
+
+\subsection{Calibration of the standard error}
+\label{sec:results-calibration}
+
+Two runs of the same model should give a standardised difference of unit variance. They do not when the standard errors treat the paths as independent (Table~\ref{tab:calibration}, Figure~\ref{fig:pairs}). The standard deviation of $z$ over \nCritReps\ paired runs has a median over the report dates of \nSdSingle\ for the single swap and \nSdNetting\ for the netting set, falling from \nSdFirst\ at the first date to \nSdLast\ at the last; for the CVA it is \nSdCvaSingle\ and \nSdCvaNetting. The correlation of the two paths of an antithetic pair is $\nRhoFirst$ at the first date and $\nRhoLast$ at the last, and the spread that Proposition~\ref{prop:antithetic} predicts from it, $\sqrt{1+\rho}$, matches the measured spread at every date with a mean absolute deviation of \nSdDeviation. With pair-aware errors the median spread is \nSdSinglePair\ and \nSdNettingPair. The EEPE, whose error is already a batch error over antithetic blocks, is calibrated: its spread is \nSdEepeSingle\ and \nSdEepeNetting. Figure~\ref{fig:null-z} draws the pooled standardised difference of the product's errors against the standard normal density: it is narrower, with little mass beyond two, which is why a bound of two applied to one date rejects rarely and why the rule's size comes from the number of comparisons and not from any one of them.
+
+\input{tables/calibration}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pairs}
+\caption{Left: correlation between the two paths of an antithetic pair of the discounted exposure at each report date, for the single swap and the netting set, averaged over 40 simulations. Right: standard deviation over the paired runs of the standardised difference at each date with the product's errors, with the value $\sqrt{1+\rho}$ predicted from the pair correlation and with pair-aware errors.}
+\label{fig:pairs}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{null-z}
+\caption{Histogram of the standardised difference of two runs of the same model on the netting set, pooled over the 33 dates and the paired runs, with the product's standard errors, against the standard normal density; the distribution is narrower than the normal because the errors overstate the variance of antithetic means.}
+\label{fig:null-z}
+\end{figure}
+
+\subsection{Size and power of the acceptance rule}
+\label{sec:results-power}
+
+Table~\ref{tab:rule-size-power} and Figure~\ref{fig:power} give the rejection rates of the ten rules. The product's rule rejects two runs of the same model in \nSizeProdSingle\,\% of the repetitions for the single swap and \nSizeProdNetting\,\% for the netting set, above the nominal $5\,\%$ and well below the $80.4\,\%$ that Proposition~\ref{prop:size} allows for independent comparisons. The rate is the result of two errors of opposite sign: each date's error is overstated, and the family has thirty-five comparisons. Taking the errors alone away, with pair-aware errors and the bound of two, gives a size of \nSizePairNetting\,\%; the bound of $3.18$ with the product's errors gives \nSizeSidakNetting\,\% and almost no power against a small volatility defect; the two changes together, the refinement of Section~\ref{sec:proposed-refine}, give \nSizeRefineSingle\,\% and \nSizeRefineNetting\,\%, which is the nominal size.
+
+\input{tables/rule-size-power}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{power}
+\caption{Rejection rate of five of the ten rules over the paired runs under the null and under six planted conditions, for the single swap and the netting set, with the Wilson 95 percent interval shaded; the dotted line marks the nominal size of 5 percent, and the product's rule and the refinement are the two curves that reject every defect of 5 percent or more.}
+\label{fig:power}
+\end{figure}
+
+The power of the refinement against a volatility raised by $2\,\%$ is \nPowerRefineSigmaTwo\,\% on the netting set, against \nPowerProdSigmaTwo\,\% for the product's rule at a size of \nSizeProdNetting\,\%; at $5\,\%$ both reject in every repetition. A mean reversion raised by half is rejected in every repetition by both. The measure error, which reports the discounted expected exposure where the forward-measure one is meant, is rejected by every rule that reads the profile, and the EEPE alone misses it in \nMeasureEepeMiss\,\% of the repetitions: its error comes from the profile only through the effective maximum, and the CVA, computed from the discounted exposure, is unchanged by it. The fixed tolerances show what the standard error is worth: a tolerance of $1\,\%$ of the peak has a size of \nSizeFixedOneNetting\,\% and one of $2\,\%$ has a power of \nPowerFixedTwoSigmaTwo\,\% against the $2\,\%$ volatility error, where the refinement has \nPowerRefineSigmaTwo\,\%.
+
+\subsection{The hypotheses}
+\label{sec:results-hypotheses}
+
+Table~\ref{tab:outcomes} sets each hypothesis of Table~\ref{tab:hypotheses} against the measurements of this section. Three are met as quoted: the independent routes (H2), the Monte Carlo reference on the uncollateralised variants (H3), and the gaps of the collateralised variants (H6). The closed forms (H4) are met on the four cases of the product and on \nClosedWithin\ of \nClosedCases\ further cases, the one case beyond the gate being a price near zero where a relative gate has no scale. The printed values of the Hull and White appendix (H5) are met for \nWWAgree\ of \nWWN\ numbers. The count of printed numbers (H1) is not met as stated, because the counts the design document quotes belong to a tally that leaves out two tables of Tasche, while the count of the full tally is \nPrintedAgree\ of \nPrintedN. Of the five predictions fixed before the repeated runs, R1 is \nPredRone, R2 \nPredRtwo, R3 \nPredRthree, R4 \nPredRfour\ and R5 \nPredRfive. The collateralised gaps (H6) are the one result that remains a disagreement of the engine with a reference: the minimum transfer amount explains part of it and the rest is open.
+
+\input{tables/outcomes}
