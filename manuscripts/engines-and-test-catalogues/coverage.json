@@ -1,7 +1,9 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:ecb-conformance",
+    "tab:ecb-coverage"
   ],
   "claims": {
     "BS-6": "sec:proposed-method"

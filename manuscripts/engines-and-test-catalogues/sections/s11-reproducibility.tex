@@ -1,0 +1,17 @@
+\section{Reproducibility}
+\label{sec:reproducibility}
+
+The source code, the committed data and the computational outputs are in the repository \texttt{github.com/fsantibanezleal/CAOS\_Contraste}, under \texttt{manuscripts/engines-and-test-catalogues}; the engine is the package \texttt{riskvalidation} release \inventoryVersion{} on PyPI, installed with its market, machine-learning and stress extras, together with NumPy, SciPy, statsmodels, QuantLib and Matplotlib~\citep{harris2020,virtanen2020,seabold2010,hunter2007}. The committed artifacts read by the experiments are the documents under \texttt{data/derived} of the credit-card, portfolio-capital and interest-rate-risk cases, each with its provenance and the engine release that wrote it.
+
+Five scripts under \texttt{experiments} produce the results, each writing a JSON file next to it, and two scripts under the manuscript folder write the tables and figures:
+\begin{itemize}
+\item \texttt{run\_ecb.py} writes \texttt{results\_ecb.json}: the differential tests of the five ECB statistics (seed 20261105) and the Jeffreys comparison on the credit-card holdout;
+\item \texttt{run\_portfolio.py} writes \texttt{results\_portfolio.json}: the anchors, the independent simulator (seeds 910001 onward), the regeneration of the committed rung, the grids, the re-run cell (seed 20261106) and the importance sampler (seeds 777000 and 888000 onward);
+\item \texttt{run\_irrbb.py} writes \texttt{results\_irrbb.json}: the worked example, the shock transcription and the QuantLib present values;
+\item \texttt{run\_catalogue.py} writes \texttt{results\_catalogue.json}: the registry, the ECB coverage, the scan of the installed sources and the survey of the package index, which is cached and kept with \texttt{--offline};
+\item \texttt{run\_ablation.py} writes \texttt{results\_ablation.json}: the planted defects and the five layers (seed 20261107);
+\item \texttt{make\_tables.py} and \texttt{make\_figures.py} write every table, every figure and the file \texttt{tables/numbers.tex}, which defines one macro for each number quoted in the prose, so that the text carries no number typed by hand; \texttt{number\_sources.py} lists each macro with the sections that use it and its source.
+\end{itemize}
+Each script is run from the repository root with the interpreter of the environment (\texttt{python manuscripts/engines-and-test-catalogues/experiments/run\_ecb.py}, and likewise for the others), and the document is built with two passes of \texttt{pdflatex} around \texttt{bibtex}. The regeneration of the committed rung takes \regenSeconds{} seconds on the machine that produced the results; the ablation repeats it for every defective engine and is the longest script. The seeds are listed above, the number of repetitions in Section~\ref{sec:experimental-design}, and the survey carries its date, so a rerun of the survey on another day may find other package versions and is not expected to reproduce its counts.
+
+The identifiers of the computations in this paper are the names of the committed scripts and of the keys of their JSON outputs; the macros of \texttt{numbers.tex} are each preceded by a comment that names the key from which the number comes. No external data are downloaded by the analyses except the package metadata of the survey.

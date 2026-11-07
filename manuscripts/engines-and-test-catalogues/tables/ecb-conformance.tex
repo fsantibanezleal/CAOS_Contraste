@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The five ECB statistics of the engine against an independent transcription of the instructions written with loops, the math module and tanh-sinh quadrature, on seeded random inputs; the Jeffreys difference is the accuracy of the quadrature.}
+\label{tab:ecb-conformance}
+\begin{tabular}{lrrr}
+\toprule
+Test & Random inputs & Largest absolute difference & Mean absolute difference \\
+\midrule
+Jeffreys test & 500 & $4.4\times 10^{-11}$ & $1.6\times 10^{-12}$ \\
+AUC against development AUC & 500 & $2.1\times 10^{-15}$ & $2.0\times 10^{-16}$ \\
+Matrix weighted bandwidth & 500 & $2.2\times 10^{-16}$ & $4.8\times 10^{-18}$ \\
+Migration z-tests (every cell) & 500 & $2.2\times 10^{-16}$ & $1.0\times 10^{-16}$ \\
+Concentration in grades & 500 & $7.1\times 10^{-15}$ & $4.7\times 10^{-16}$ \\
+\bottomrule
+\end{tabular}
+\end{table}

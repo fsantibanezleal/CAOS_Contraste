@@ -1,0 +1,35 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{Objects and the question}
+
+Let an engine be a finite set of functions $\mathcal{F}=\{f_1,\dots,f_m\}$, each mapping a typed input $x$ to an output $f_j(x)$ that is a number, a vector, a distribution function or a result record. A test of the validator's catalogue is one such function whose output is a statistic $S$, optionally a $p$-value $p$, and a decision. A \emph{reference} for $f_j$ is a second map $g_j$ that computes the same quantity by a route that shares no code, and no author's reading, with $f_j$: an analytic expression, a number printed in a primary source, a transcription of a written specification, an independent library, or a simulator whose data are generated with a known truth $\theta^{\star}$. The question the paper asks of each implemented component is how far $f_j$ departs from its references, measured as
+\begin{equation}
+  \Delta_j(x)=\bigl|f_j(x)-g_j(x)\bigr|,\qquad
+  \Delta_j^{\max}=\max_{x\in\mathcal{X}_j}\Delta_j(x),
+  \label{eq:discrepancy}
+\end{equation}
+over a set of inputs $\mathcal{X}_j$ that is either a committed artifact of the product (real data, or a fixed illustrative book) or a seeded random draw whose generator and seed are stated. When $f_j$ is itself random, as the Monte Carlo sampler of a copula is, \eqref{eq:discrepancy} is replaced by a comparison of the means of $R$ independent runs of each route,
+\begin{equation}
+  z_j=\frac{\bar f_j-\bar g_j}{\sqrt{s_f^2/R+s_g^2/R}},
+  \label{eq:zdiff}
+\end{equation}
+where $\bar f_j,\bar g_j$ and $s_f,s_g$ are the sample means and standard deviations over the runs. A second question concerns the references themselves: which of them find a defect of a given kind if one is present in $\mathcal{F}$. Let $\mathcal{L}=\{A,B,C,D,E\}$ be a set of verification layers, each a set of checks that fail when a reference disagrees with $\mathcal{F}$ beyond a tolerance. For a defect $\mu$ planted in $\mathcal{F}$, the layer $L$ detects $\mu$ when at least one of its checks fails on the defective engine, and the quantity of interest is the detection matrix $d(\mu,L)\in\{0,1\}$ over a set of planted defects (Section~\ref{sec:ablation}).
+
+\subsection{The statistics under test}
+
+Four families of functions are under test. The first is the five ECB statistics of the PD validation (Table~\ref{tab:ecb-coverage}); their inputs are the counts $(N,D)$ and the applied probability of default of a grade, the scores and the default flags of an evaluation sample, a migration count matrix, and two grade frequency vectors. The second is the portfolio engine: its inputs are a book of names with exposure, probability of default, loss given default and a factor loading, and a seed; its outputs are loss samples, probability functions on a grid, and the risk measures $\mathrm{VaR}_q$ and $\mathrm{ES}_q$ of a loss $L$,
+\begin{equation}
+  \mathrm{VaR}_q(L)=\inf\{\ell:\Pr(L\le\ell)\ge q\},\qquad
+  \mathrm{ES}_q(L)=\frac{1}{1-q}\int_q^1\mathrm{VaR}_u(L)\,\mathrm{d}u,
+  \label{eq:varES}
+\end{equation}
+with the economic capital $\mathrm{VaR}_q(L)-\mathbb{E}[L]$. The third is the IRRBB engine, whose inputs are the net cash flows of a time grid of buckets, a zero curve and a shock; its output is the economic value of equity and its change under the shock. The fourth is the catalogue itself, the registry that lists every test with its identifier, family, null hypothesis, reference and decision rule.
+
+\subsection{Assumptions and what is outside the problem}
+
+Four assumptions bound the measurements. First, the references are taken as correct when they are an analytic identity, a printed number or a mature library, and the comparison measures agreement, not truth: two routes that share a wrong premise agree. Second, the inputs are the committed artifacts of the product, whose provenance is recorded (a real holdout of credit-card clients, a constructed illustrative loan book that is never a bank's, the committed outputs of a synthetic bank) or seeded draws; no result concerns a particular bank's model. Third, a tolerance is a number chosen by the author of the check (for example $10^{-9}$ for a deterministic quantity) and is stated wherever it is used; it is not a regulatory threshold. Fourth, the catalogue is a set of tests with policy-dependent colours, and the paper never evaluates whether a colour is the right one for a bank.
+
+The problem excludes three things. It does not ask whether the engine's models describe any real portfolio: the fitted probabilities and correlations of the book are inputs, and a book's loss distribution is a property of the book. It does not ask whether the supervisory instructions are the right instructions. And it does not ask for a proof of the absence of defects: every reference is a necessary condition, so a defect that all references share, or that lies outside $\mathcal{X}_j$, is invisible, a point the ablation of Section~\ref{sec:ablation} makes quantitative.
+
+\input{tables/notation}

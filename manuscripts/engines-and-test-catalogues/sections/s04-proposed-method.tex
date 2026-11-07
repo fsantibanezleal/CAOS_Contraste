@@ -1,0 +1,121 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+The proposed method has two parts that are described in turn: the engine, which is a registry of tests with one result record and a set of calculators, and a protocol that holds each component of the engine to references outside it. The symbols are those of Table~\ref{tab:notation}.
+
+\subsection{The registry and the result record}
+
+Every test of the catalogue is a pure function that returns one record. The record carries the test identifier, the family, the statistic $S$, the $p$-value when the decision is a $p$-value, the null hypothesis and the alternative in words, the primary source that defines the test, the sample sizes, a fingerprint of the inputs, and a colour. The colour is not a property of the test. It is assigned by a policy, a versioned set of significance levels $\alpha_{\mathrm{amber}}$ and $\alpha_{\mathrm{red}}$ that the institution can replace, so that for a test oriented to reject when the risk-relevant failure occurs,
+\begin{equation}
+  \mathrm{light}(p)=\begin{cases}
+    \text{red}, & p<\alpha_{\mathrm{red}},\\
+    \text{amber}, & \alpha_{\mathrm{red}}\le p<\alpha_{\mathrm{amber}},\\
+    \text{green}, & p\ge\alpha_{\mathrm{amber}},
+  \end{cases}
+  \label{eq:light}
+\end{equation}
+and a descriptive measure that has no threshold in the default policy carries no colour. A test registers itself once, at import, under its identifier, with its reference and its decision kind; a second registration of the same identifier by a different function raises an error. The registry at release \inventoryVersion{} lists \testsTotal{} tests (Table~\ref{tab:catalogue}). The calculators are not registered tests: the reference engines, the portfolio engine and the IRRBB engine are modules of functions that the committed cases call and that the tests call in turn.
+
+\subsection{The five statistics of the ECB reporting instructions}
+
+For a rating grade with $N$ obligors and $D$ defaults in the observation year and an applied probability of default $\mathrm{PD}$, the Jeffreys test of the instructions is the posterior probability, under the prior $\mathrm{Beta}(\tfrac12,\tfrac12)$, that the true probability lies below the applied one:
+\begin{equation}
+  p_{\mathrm{J}}=I_{\mathrm{PD}}\!\left(D+\tfrac12,\;N-D+\tfrac12\right),
+  \label{eq:jeffreys}
+\end{equation}
+with $I_x(a,b)$ the regularised incomplete Beta function; a small $p_{\mathrm{J}}$ signals an underestimated probability. The portfolio test uses the obligor-weighted mean of the grade probabilities as $\mathrm{PD}$. For discrimination, with $A$ the defaulters and $B$ the non-defaulters of an evaluation sample, $u_{ab}$ equal to $1$, $\tfrac12$ or $0$ as the defaulter is ranked worse than, equal to or better than the non-defaulter, and $V_{10,a}=\frac1{|B|}\sum_b u_{ab}$, $V_{01,b}=\frac1{|A|}\sum_a u_{ab}$, the area is $\widehat{\mathrm{AUC}}=\frac1{|A|}\sum_a V_{10,a}$ and the test of the area against the area at development is
+\begin{equation}
+  s^2=\frac{\widehat{\mathrm{var}}(V_{10})}{|A|}+\frac{\widehat{\mathrm{var}}(V_{01})}{|B|},\qquad
+  S=\frac{\mathrm{AUC}_{\mathrm{init}}-\widehat{\mathrm{AUC}}}{s},\qquad
+  p=1-\Phi(S),
+  \label{eq:auc}
+\end{equation}
+with the development area treated as known. For stability, with $K$ non-default grades, $N_i$ obligors in grade $i$ at the start of the year and $p_{ij}=N_{ij}/N_i$ the migration frequencies, the matrix weighted bandwidth of upward migrations (higher index is worse) is
+\begin{equation}
+  \mathrm{MWB}_{\uparrow}=\frac{\sum_{i<K}\sum_{j>i}|i-j|\,N_i\,p_{ij}}{\sum_{i<K}\max(|i-K|,|i-1|)\,N_i\sum_{j>i}p_{ij}},
+  \label{eq:mwb}
+\end{equation}
+and the lower bandwidth swaps the index ranges. The migration z-test compares every off-diagonal frequency with its neighbour one cell nearer the diagonal, $j'=j+1$ below the diagonal and $j'=j-1$ above it,
+\begin{equation}
+  z_{ij}=\frac{p_{ij'}-p_{ij}}{\sqrt{\bigl[p_{ij}(1-p_{ij})+p_{ij'}(1-p_{ij'})+2\,p_{ij}\,p_{ij'}\bigr]/N_i}},\qquad p_{ij}^{\mathrm{val}}=\Phi(z_{ij}),
+  \label{eq:migration}
+\end{equation}
+and the engine adds, to the cell $p$-values that the instructions fix, the Holm adjustment across cells, which the instructions leave unspecified. The concentration test uses the coefficient of variation of the grade frequencies $R_i$ and the Herfindahl index derived from it,
+\begin{equation}
+  \mathrm{CV}=\sqrt{K\sum_i\bigl(R_i-\tfrac1K\bigr)^2},\qquad
+  \mathrm{HI}=1+\frac{\ln\bigl((\mathrm{CV}^2+1)/K\bigr)}{\ln K},\qquad
+  p=1-\Phi\!\left(\frac{\sqrt{K-1}\,(\mathrm{CV}_{\mathrm{cur}}-\mathrm{CV}_{\mathrm{init}})}{\sqrt{\mathrm{CV}_{\mathrm{cur}}^2\,(\tfrac12+\mathrm{CV}_{\mathrm{cur}}^2)}}\right),
+  \label{eq:hhi}
+\end{equation}
+where the last expression is Miller's normal approximation as the instructions cite it. The five tests are registered as \texttt{pd.jeffreys}, \texttt{disc.auc\_vs\_initial}, \texttt{rating.mwb}, \texttt{rating.migration\_ztests} and \texttt{rating.hhi}.
+
+\subsection{The portfolio engine}
+
+For a book of names $i=1,\dots,n$ with exposure $\mathrm{EAD}_i$, loss given default $\mathrm{LGD}_i$ and default probability $\mathrm{PD}_i$ the one-factor Gaussian copula defines the default indicator of name $i$ as $\mathbf 1\{\sqrt{\rho}\,Z+\sqrt{1-\rho}\,\varepsilon_i<\Phi^{-1}(\mathrm{PD}_i)\}$ with $Z,\varepsilon_i$ independent standard normal, and the portfolio loss is $L=\sum_i\mathrm{EAD}_i\mathrm{LGD}_i\mathbf 1\{\cdot\}$. The sampler draws scenarios in chunks from a seeded generator, so that the sample is a function of the seed and the chunk size. For a large homogeneous portfolio the loss rate has the distribution function and capital
+\begin{equation}
+  \Pr(L/\mathrm{EAD}\le x)=\Phi\!\left(\frac{\sqrt{1-\rho}\,\Phi^{-1}(x)-\Phi^{-1}(\mathrm{PD})}{\sqrt{\rho}}\right),\qquad
+  K=\mathrm{LGD}\left[\Phi\!\left(\frac{\Phi^{-1}(\mathrm{PD})+\sqrt{R}\,\Phi^{-1}(q)}{\sqrt{1-R}}\right)-\mathrm{PD}\right],
+  \label{eq:lhp}
+\end{equation}
+with $R$ the regulatory correlation of the asset class and $q=0.999$. The actuarial model draws the number of defaults of name $i$ from a Poisson law with mean $p_iS$ where the common factor $S$ is Gamma with mean one and variance $\sigma^2$, and the loss of name $i$ is the integer $\nu_i$ of loss units. Its probability generating function in one sector is $G(z)=\bigl(c-\sigma^2Q(z)\bigr)^{-1/\sigma^2}$ with $Q(z)=\sum_j\mu_jz^j$, $\mu_j=\sum_{i:\nu_i=j}p_i$ and $c=1+\sigma^2\mu$, $\mu=\sum_jp_j$. Writing $g_m=\Pr(X=m)$ and differentiating $\ln G$ gives the recursion that Section~\ref{sec:theory} derives,
+\begin{equation}
+  g_0=c^{-1/\sigma^2},\qquad g_m=\frac{1}{c\,m}\sum_{j=1}^{\min(m,J)}\mu_j\bigl[\sigma^2(m-j)+j\bigr]g_{m-j},
+  \label{eq:crp}
+\end{equation}
+and the engine's stable form is checked against it. The granularity factor of Gordy and L\"utkebohmert is $\delta=(\alpha_q-1)\bigl(\xi+(1-\xi)/\alpha_q\bigr)$ with $\alpha_q$ a Gamma quantile. The Euler contributions of the groups to the expected shortfall are
+\begin{equation}
+  \mathrm{RC}_g=\frac{1}{1-q}\sum_{s}w_s\,L_{g,s},\qquad \sum_g\mathrm{RC}_g=\widehat{\mathrm{ES}}_q,
+  \label{eq:euler}
+\end{equation}
+with $w_s$ the Acerbi--Tasche weights of the sample, and the importance sampler shifts the factor and tilts the default probabilities so that the weighted indicator of a rare loss is unbiased.
+
+\subsection{The IRRBB engine}
+
+The six shocks of the standard are functions of the bucket mid-point $t$ in years, with $\alpha_{\mathrm{s}}(t)=e^{-t/x}$, $x=4$, and the sizes $\Delta_{\mathrm{par}},\Delta_{\mathrm{sh}},\Delta_{\mathrm{lg}}$ of the currency:
+\begin{align}
+  \Delta_{\mathrm{short}}(t)&=\pm\Delta_{\mathrm{sh}}\alpha_{\mathrm{s}}(t),\qquad \Delta_{\mathrm{par}}(t)=\pm\Delta_{\mathrm{par}},\nonumber\\
+  \Delta_{\mathrm{steep}}(t)&=-0.65\,\Delta_{\mathrm{sh}}\alpha_{\mathrm{s}}(t)+0.9\,\Delta_{\mathrm{lg}}\bigl(1-\alpha_{\mathrm{s}}(t)\bigr),\label{eq:shocks}\\
+  \Delta_{\mathrm{flat}}(t)&=0.8\,\Delta_{\mathrm{sh}}\alpha_{\mathrm{s}}(t)-0.6\,\Delta_{\mathrm{lg}}\bigl(1-\alpha_{\mathrm{s}}(t)\bigr).\nonumber
+\end{align}
+The economic value of equity of a currency is $\mathrm{EVE}=\sum_k\mathrm{CF}_k\,e^{-r_kt_k}$ with the shocked rate $r_k=r_k^0+\Delta_s(t_k)/10^4$, and the loss-positive change is $\Delta\mathrm{EVE}=\mathrm{EVE}^0-\mathrm{EVE}^s$. The Chilean rule treats the unit of account (UF) as a second currency with its own sizes and combines the change of the peso leg and of the UF leg, offsetting half of the gain leg when the two have opposite signs.
+
+Three further rules complete the engine. The sizes $(\Delta_{\mathrm{par}},\Delta_{\mathrm{sh}},\Delta_{\mathrm{lg}})$ are data and not code: the engine holds the table of the 2024 calibration and of the 2016 calibration for the 21 currencies of the standard and the table of the Chilean regulation, which has a peso row of $300/400/200$ basis points and a UF row of $200/250/150$, and it refuses a currency without an entry unless the caller supplies a size with a bilingual label and a method, so that a size is never invented and an estimate is always marked as one. The post-shock rate is floored by $r_k^{\mathrm{s}}=\max\bigl(r_k^0+\Delta_s(t_k)/10^4,\;\min(\varphi,r_k^0)\bigr)$, where $\varphi$ is the floor of the currency (zero for the peso and $-2$ per cent for the UF), so that a floor never lifts a rate above its pre-shock value. And the risk measure over currencies and shocks counts only losses: for the matrix $\Delta\mathrm{EVE}_{s,c}$ of the loss-positive changes of the six shocks and the currencies with material exposure,
+\begin{equation}
+  \mathrm{EVE}_{\mathrm{risk}}=\max\Bigl(0,\;\max_{s}\sum_{c}\max\bigl(\Delta\mathrm{EVE}_{s,c},0\bigr)\Bigr),
+  \label{eq:everisk}
+\end{equation}
+so that a gain in one currency never offsets a loss in another. For the pair of the peso change $\Delta_{\mathrm{P}}$ and the UF change $\Delta_{\mathrm{U}}$ the Chilean combination with an offset share $\kappa=\tfrac12$ is $\max(\Delta_{\mathrm{P}}+\kappa\Delta_{\mathrm{U}},0)$ when the peso leg is the loss and the UF leg the gain, $\max(\kappa\Delta_{\mathrm{P}}+\Delta_{\mathrm{U}},0)$ in the opposite case, and $\max(\Delta_{\mathrm{P}},0)+\max(\Delta_{\mathrm{U}},0)$ when the two have the same sign.
+
+\subsection{The verification protocol}
+
+The protocol is the method this paper proposes for holding the components above to references. For each component it names the references in five kinds, and it records a tolerance and a seed before the comparison is run (Algorithm~\ref{alg:reconcile}).
+
+\begin{algorithm}[htbp]
+\caption{Reconcile a component of the engine to references outside it. The inputs are a component $f$, a list of references with their kind, and for each reference its input set, tolerance and seed; the output is a list of outcomes and a detection record for each planted defect.}
+\label{alg:reconcile}
+\begin{algorithmic}[1]
+\For{each reference $g$ of $f$}
+  \State fix the input set $\mathcal{X}$ (a committed artifact or a seeded draw) and the tolerance $\tau$ before any run
+  \If{$f$ is deterministic}
+    \State $\Delta^{\max}\gets\max_{x\in\mathcal{X}}|f(x)-g(x)|$; record the pass if $\Delta^{\max}\le\tau$
+  \Else
+    \State run $R$ independent seeds of $f$ and of $g$; compute $z$ by \eqref{eq:zdiff}; record the pass if $|z|\le c$
+  \EndIf
+\EndFor
+\For{each defect $\mu$ in a set of planted defects}
+  \State replace one function of $\mathcal{F}$ by its defective wrapper; run every layer; record $d(\mu,L)$; restore the function
+\EndFor
+\State check that every layer passes on the unmodified engine (no false alarm) and again after the last restore
+\end{algorithmic}
+\end{algorithm}
+
+The five kinds of reference are the analytic anchor, the published test vector, the transcription of a written specification, the seeded regeneration of a committed result, and the independent implementation, and a sixth, the simulator with a known truth, applies to estimators. A reference is chosen so that its failure modes differ from those of the component: the transcription of a statistic uses loops and a quadrature where the engine uses vectorised code and a library distribution function; the independent simulator draws its own normals; the present value uses QuantLib's compounding algebra where the engine uses the exponential. The implementation of the protocol is the set of five committed experiment scripts under the manuscript's \texttt{experiments} folder (Section~\ref{sec:reproducibility}), which call the engine and the product's generators and never retype a reference value except where the reference is a printed number, which is stated in the script with its source.
+
+\subsection{The five layers and the detection record}
+
+The protocol groups its references into five layers, because the question of the ablation is not whether the engine passes but which kind of reference notices which kind of defect. Layer $A$ holds the analytic anchors: the large-portfolio distribution function against the integral of its density, the capital formula, the closed forms of Proposition~\ref{prop:crp} and the printed granularity factor. Layer $B$ holds the published vectors and the transcription of the ECB statistics. Layer $C$ regenerates a committed seeded result with the released engine and compares it with the file. Layer $D$ runs the correlation estimator on data generated with a known truth and checks its coverage and bias. Layer $E$ compares the engine with a second implementation, an independent simulator, an independent recursion and QuantLib, at reduced size. A defect $\mu$ is a wrapper that replaces one engine function by a function that is wrong in a stated way, and the record of the protocol is the matrix $d(\mu,L)$ of Section~\ref{sec:problem} together with two summaries. The number of defects that change a result and are found by at least one layer is $\sum_{\mu}\mathbf 1\{\max_Ld(\mu,L)=1\}$, and the unique detections of a layer are
+\begin{equation}
+  u(L)=\sum_{\mu}d(\mu,L)\prod_{L'\ne L}\bigl(1-d(\mu,L')\bigr),
+  \label{eq:unique}
+\end{equation}
+the number of defects that only the layer $L$ finds. A layer with $u(L)=0$ is redundant for the defects tried, and the layers are not interchangeable when $u(L)\ge1$ for every $L$, which is the statement of Hypothesis~H8. Two conditions make the record interpretable. The engine as released must give $d(\emptyset,L)=0$ for every layer, before the first defect and after the last restore, otherwise a detection could be caused by the state of the experiment and not by the defect. And a defect that changes the sample path of the sampler without changing its distribution is labelled equivalent and kept out of the count of real defects, because a layer that signals it is a regression check and the label records that the signal is not about correctness. The tolerance of each check is fixed before the run and is stated beside the check in the script, so that the record cannot be tuned to a result: between $10^{-12}$ and $10^{-8}$ for the deterministic checks according to the quantity (Section~ef{sec:experimental-design}), a relative $10^{-8}$ for the regenerated rung, and a bound on $|z|$ for the stochastic comparisons.
