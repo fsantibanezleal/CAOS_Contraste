@@ -39,6 +39,10 @@
   "source": "data/derived/C21/pair-*.json: lowest share among the green pairs",
   "value": "0.1871"
  },
+ "CmFairGreenOverNull": {
+  "source": "data/derived/C21/pair-*.json lowest green share over the largest null mean share of the plants, rounded down to one decimal",
+  "value": "3.4"
+ },
  "CmFairMax": {
   "source": "data/derived/C21/pair-*.json: situation_testing metric, maximum",
   "value": "0.2629"
@@ -3274,6 +3278,10 @@
  "SiNormalPredTwentySmall": {
   "source": "experiments/results/situation.json: normal approximation from the mean and standard deviation of the null share, n 400, cut 0.2",
   "value": "0.001"
+ },
+ "SiNullMeanMax": {
+  "source": "experiments/results/situation.json and situation_indep.json: largest null mean share over the four cells with no planted gap or bias",
+  "value": "0.055"
  },
  "SiQNinetyFiveLargeA": {
   "source": "experiments/results/situation.json: n 1000, gap 0.1",

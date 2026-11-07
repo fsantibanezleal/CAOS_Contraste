@@ -405,6 +405,9 @@ def committed_macros() -> None:
     green = sorted(s for s, light in zip(shares, lights) if light == "green")
     put("CmFairGreenLo", f"{green[0]:.4f}", "data/derived/C21/pair-*.json: lowest share among the green pairs")
     put("CmFairGreenHi", f"{green[-1]:.4f}", "data/derived/C21/pair-*.json: highest share among the green pairs")
+    null_means = [c["mean_share"] for c in (*SITUATION["cells"], *SITUATION_INDEP["cells"]) if c.get("gap", c.get("bias")) == 0.0]
+    put("SiNullMeanMax", f3(max(null_means)), "experiments/results/situation.json and situation_indep.json: largest null mean share over the four cells with no planted gap or bias")
+    put("CmFairGreenOverNull", f"{math.floor(10 * green[0] / max(null_means)) / 10:.1f}", "data/derived/C21/pair-*.json lowest green share over the largest null mean share of the plants, rounded down to one decimal")
     put("CmFairQMin", thousands(min(qs)), "data/derived/C21/pair-*.json: smallest number of complainants")
     put("CmFairQMax", thousands(max(qs)), "data/derived/C21/pair-*.json: largest number of complainants")
     # the p-values recomputed with the engine function from the committed counts
@@ -475,7 +478,7 @@ def hypotheses() -> list[list[str]]:
                  "refuted" if abs(l0["rules"]["cut_0.1"]["rate"] - s0["rules"]["cut_0.1"]["rate"]) > 2 * se_diff(l0["rules"]["cut_0.1"], s0["rules"]["cut_0.1"]) else "held"])
     i4, i4t = sit_indep_cell(400, 0.0), sit_cell(400, 0.0)
     se = lambda a, b: (a["se"] ** 2 + b["se"] ** 2) ** 0.5  # noqa: E731
-    differ = all(abs(i4["rules"][k]["rate"] - i4t["rules"][k]["rate"]) > 2 * se(i4["rules"][k], i4t["rules"][k]) for k in ("cut_0.1", "cut_0.2"))
+    differ = any(abs(i4["rules"][k]["rate"] - i4t["rules"][k]["rate"]) > 2 * se(i4["rules"][k], i4t["rules"][k]) for k in ("cut_0.1", "cut_0.2"))
     rows.append(["H3e", "The size of the cuts 0.10 and 0.20 at 400 applicants is the same on a second planted design with independent attributes",
                  f"cut 0.10: {i4t['rules']['cut_0.1']['rate']:.3f} and {i4['rules']['cut_0.1']['rate']:.3f}; cut 0.20: {i4t['rules']['cut_0.2']['rate']:.3f} and "
                  f"{i4['rules']['cut_0.2']['rate']:.3f}", "refuted" if differ else "held"])
@@ -486,7 +489,8 @@ def hypothesis_table(rows: list[list[str]]) -> None:
     from make_tables import table
 
     table("hypotheses", ["Id", "Statement", "Measured", "Outcome"], rows,
-          caption="The predictions, written as bounds from the small-design results of the product's notebook, each with the value the experiments measured and whether it held: "
+          caption="The predictions: H1a, H1b, H2a, H2b and H3a restate as bounds the small-design results of the product's notebook, and H2c and H3b to H3e were formulated "
+                  "with the experiments; each with the value the experiments measured and whether it held: "
                   "held, held in part, or refuted; the bound used is 0.05 plus two Monte Carlo standard errors of the rate, and a difference of two rates is real when it "
                   "exceeds twice the standard error of the difference.",
           label="tab:hypotheses", align=">{\\raggedright\\arraybackslash}p{0.8cm}>{\\raggedright\\arraybackslash}p{6.6cm}>{\\raggedright\\arraybackslash}p{4.2cm}>{\\raggedright\\arraybackslash}p{1.8cm}")
