@@ -47,3 +47,18 @@ def test_rerun_agrees_with_the_committed_c22_size():
         assert cmp["intervals_overlap"], rule
         assert abs(cmp["z"]) < 1.96, rule
         assert cmp["committed"]["k"] == _committed()[rule]["rejections"]
+
+
+def test_engine_rerun_on_the_c22_design_reproduces_the_committed_counts():
+    """The rerun itself: the engine function, called on the C22 design with the committed seed, gives the committed counts."""
+    out = json.loads((cc.HERE / "c22_size_check.json").read_text(encoding="utf-8"))
+    rerun = cc.size(1500, 0.05, out["reps"], np.random.default_rng(out["seed"]))
+    for rule in ("p<0.05", "p<0.01"):
+        assert rerun[rule]["k"] == out["c22_vs_rerun"][rule]["rerun"]["k"], rule
+    assert (rerun["p<0.05"]["k"], rerun["p<0.01"]["k"]) == (135, 23)
+
+
+def test_output_records_the_measured_run_time():
+    """The run time the manuscript reports is read from the committed output, not typed."""
+    out = json.loads((cc.HERE / "c22_size_check.json").read_text(encoding="utf-8"))
+    assert isinstance(out["run_seconds"], float) and 0 < out["run_seconds"] < 600

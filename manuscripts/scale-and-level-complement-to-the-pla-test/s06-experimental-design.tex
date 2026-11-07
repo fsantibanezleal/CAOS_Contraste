@@ -82,7 +82,7 @@ C22 runs the size and power of the engine's tests that return a p-value, across 
 The size of the complement is checked instead on the ten held-out blocks of the null, on Gaussian draws and on the six alternative nulls above.
 What the C22 documents do allow is a check of one comparator.
 They hold the size of the Christoffersen conditional-coverage test, the one used here, on independent hits, and the script \path{experiments/c22_size_check.py} reads that committed size and reruns the same engine function on the same design (1,500 days, hit probability 5\%, 2,000 replications, its own seed); Table~\ref{tab:c22-check} gives the two sizes, which agree.
-The p-value rule of that test is above its nominal size on 1,500 days and below it on the 250 days at 2.5\% of the desk back-test, which is why the comparator is run here with a critical value read from the calibration null, as every other detector is, and not with its p-value.
+At the 5\% rule, the p-value of that test rejects more often than its nominal size on 1,500 days (6.7\%, with a 95\% interval of 5.6 to 7.8\%), and at both rules it rejects less often on the 250 days at 2.5\% of the desk back-test (3.5\% and 0.3\%). The critical value read from the calibration null, which this paper uses for the comparator as for every other detector, avoids both errors (0.8\% held out).
 
 \input{tables/c22-check}
 The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve and the seed of the C22 size check.

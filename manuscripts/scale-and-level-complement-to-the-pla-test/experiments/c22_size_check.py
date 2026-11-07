@@ -14,10 +14,14 @@ The C22 case of the product validates the size and power of the engine's tests t
 
     python manuscripts/scale-and-level-complement-to-the-pla-test/experiments/c22_size_check.py [--reps 2000] [--seed 20261107]
 
-The output is ``c22_size_check.json`` beside this file. Run time: a few seconds. Nothing here draws a random number except through
-``--seed``.
+The output is ``c22_size_check.json`` beside this file; its ``run_seconds`` is the measured wall time of the script, imports
+included, which the manuscript reports. Nothing here draws a random number except through ``--seed``.
 """
 from __future__ import annotations
+
+import time
+
+_T0 = time.perf_counter()  # the run time written to the output starts before the heavy imports
 
 import argparse
 import json
@@ -93,9 +97,10 @@ def main() -> None:
     here = size(250, 0.025, a.reps, rng)
     res = json.loads((HERE / "results.json").read_text(encoding="utf-8"))
     cal = res["main"]["none"]["cc_975"]
-    result = {"seed": a.seed, "reps": a.reps, "c22_design": {"days": 1500, "hit_probability": 0.05},
+    result = {"seed": a.seed, "reps": a.reps, "run_seconds": None, "c22_design": {"days": 1500, "hit_probability": 0.05},
               "c22_vs_rerun": compare, "manuscript_design_p_value_rule": here,
               "manuscript_calibrated_rule_held_out": {"k": cal["k"], "n": cal["n"], "rate": cal["rate"], "lo": cal["lo"], "hi": cal["hi"]}}
+    result["run_seconds"] = round(time.perf_counter() - _T0, 1)
     OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import pathlib
 import sys
+from decimal import ROUND_HALF_UP, Decimal
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "_shared"))
@@ -86,7 +87,8 @@ def split(items: list, sizes: tuple[int, ...]) -> list[list]:
 
 
 def pct(x: float, d: int = 1) -> str:
-    return f"{100 * x:.{d}f}"
+    """Percent with ``d`` decimals, a half rounded up (6.65 prints 6.7 and 1.25 prints 1.3), so that every cell follows one rule."""
+    return str(Decimal(repr(100 * x)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP))
 
 
 def cell(r: dict) -> str:
@@ -131,6 +133,20 @@ def c22_table() -> None:
                "calibration null. The rerun agrees with the committed document (differences of $z=" + f"{com['p<0.05']['z']:.2f}$ and ${com['p<0.01']['z']:.2f}$"
                " for the two rules)."))
     footnote_size("c22-check.tex")
+
+
+def write_macros() -> None:
+    """Numbers that the Reproducibility section quotes from the committed outputs: the measured run time of the C22 script and the
+    sizes of the three result files (``tables/macros.tex``, input by ``main.tex``)."""
+    exp = HERE / "experiments"
+    seconds = json.loads((exp / "c22_size_check.json").read_text(encoding="utf-8"))["run_seconds"]
+    kb = {name: (exp / f"{name}.json").stat().st_size / 1000 for name in ("results", "results_theory", "c22_size_check")}
+    lines = ["% written by make_tables.py from the committed outputs; do not edit",
+             f"\\newcommand{{\\ccheckSeconds}}{{{seconds:g}}}",
+             f"\\newcommand{{\\resultsKB}}{{{kb['results']:.0f}}}",
+             f"\\newcommand{{\\theoryKB}}{{{kb['results_theory']:.1f}}}",
+             f"\\newcommand{{\\ccheckKB}}{{{kb['c22_size_check']:.1f}}}"]
+    (OUT / "macros.tex").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
 
 
 def main() -> None:
@@ -239,12 +255,16 @@ def main() -> None:
     xh = {"pla": "Zone", "ks_cal": "KS recal.", "wald_ols": "MZ OLS", "wald_hc3": "MZ HC3", "wald_var": "MZ squares", "ljung_box_sq": "LB sq.",
           "abs_spearman": "Abs. Sp.", "roll20": "Roll Sp.", "union": "Union"}
     mat = [[f"{R['xform'][k]['mean_slope']:.3f}"] + [cell2(R["xform"][k][d]) for d in xd] for k in xn]
+    # the ceilings and the equality named in the caption are read from the results, never typed
+    ceil = {d: pct(max(R["xform"][k][d]["rate"] for k in xn)) for d in ("desk", "cc_975", "spearman_cal")}
+    ks_eq = all(R["xform"][k]["ks_alone"]["k"] == R["xform"][k]["pla"]["k"] for k in xn)
     panels(OUT / "mis-scale.tex", "tab:mis-scale",
            ("Percent of 1,000 replications flagged, over the 95\\% Wilson interval, when a constant mis-scale or a constant level error is "
             "planted in the risk-theoretical P\\&L of the no-deficiency desk (case seed 13), with the mean Mincer--Zarnowitz slope of HPL on RTPL. "
-            "The columns are the detectors that respond to a mis-scale or a level error and the two rank statistics of the complement; the "
-            "Kolmogorov--Smirnov distance alone equals the zone in every row, and the desk back-test, the Christoffersen test and the recalibrated "
-            "Spearman correlation of the levels flag at most 0.0\\%, 0.8\\% and 1.2\\% in every row. "
+            "The columns are the detectors that respond to a mis-scale or a level error and the two rank statistics of the complement; "
+            + ("the Kolmogorov--Smirnov distance alone equals the zone in every row, and " if ks_eq else "")
+            + f"the desk back-test, the Christoffersen test and the recalibrated Spearman correlation of the levels flag at most "
+            f"{ceil['desk']}\\%, {ceil['cc_975']}\\% and {ceil['spearman_cal']}\\% in every row. "
             "The rank statistics are unchanged by a positive rescaling. The detectors are set in two panels."),
            ["Defect planted in the null desk"], "p{2.9cm}", [[xn[k]] for k in xn],
            [(["Mean|slope"] + [xh[d] for d in xd[:4]], [row[:5] for row in mat]), ([xh[d] for d in xd[4:]], [row[5:] for row in mat])])
@@ -345,6 +365,7 @@ def main() -> None:
     for name in ("hypotheses.tex", "auc.tex", "theory-loo.tex", "theory-size.tex", "variants.tex"):
         footnote_size(name)
     c22_table()
+    write_macros()
     print(f"tables written to {OUT}")
 
 

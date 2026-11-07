@@ -1,6 +1,7 @@
 {
   "seed": 20261107,
   "reps": 2000,
+  "run_seconds": 6.9,
   "c22_design": {
     "days": 1500,
     "hit_probability": 0.05
