@@ -29,6 +29,7 @@ describe('the Spanish views of C13', () => {
     expect(FINDINGS_MIN_HEIGHT).toBe('min(70vh, 36rem)');
     // the floor is the stylesheet's, below 900 px only: at 1280 the box fills the instrument (R2b c14 M1)
     expect(view(<C13FindingsView sel={defaultSel(data)} />)).not.toBe('');
-    expect(view(<C13FindingsView sel={defaultSel(data)} />)).toContain('Deficiencia conocida');
+    // the Findings view keeps the synthetic label in its card and no known-deficiency banner (the rail names the variant)
+    expect(view(<C13FindingsView sel={defaultSel(data)} />)).toContain('Datos sintéticos');
   });
 });

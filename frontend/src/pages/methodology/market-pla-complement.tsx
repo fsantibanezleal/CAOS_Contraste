@@ -4,11 +4,12 @@
 // (notebooks/en/07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb), whose numbers are the notebook's printed
 // outputs; the per-variant table reads the committed C13 documents (data/derived/C13/<variant>.json, block pla_complement), which
 // carry the product's measurement on 1,000 replications per variant. Every display equation carries a caption that defines its
-// symbols. The registry mounts it as one tab of the market group.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+// symbols. The figure draws the table of the variants beside it. The registry mounts it as one tab of the market group.
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '07-market-risk/08-a-scale-and-level-complement-to-the-pla-test.ipynb';
@@ -42,6 +43,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="classical"
       title={{ en: 'A scale-and-level complement to the PLA test', es: 'Un complemento de escala y nivel para la prueba PLA' }}
       refs={['mar32', 'mincerzarnowitz1969', 'mackinnonwhite1985']}
     >
@@ -82,6 +84,31 @@ function Body() {
         en={<>Along the age of the volatility (100 desk-years at each lag in the notebook) the zone stays at zero from a lag of 5 days to one of 40, and the complement flags 0.23 of the desk-years at 5 days, 0.84 at 10 and all of them from 20 days on; in the committed run the rolling statistic at 1% per statistic flags 57.6% at 5 days, 97.5% at 10, 99.9% at 20 and 100.0% at 40. A volatility a week old is hard to tell from the noise of one year of data, and the complement says so instead of claiming it.</>}
         es={<>A lo largo de la edad de la volatilidad (100 años de mesa por cada rezago en el notebook) la zona se queda en cero desde un rezago de 5 días hasta uno de 40, y el complemento marca 0,23 de los años de mesa a 5 días, 0,84 a 10 y todos desde 20 días; en la corrida versionada el estadístico móvil al 1 % por estadístico marca 57,6 % a 5 días, 97,5 % a 10, 99,9 % a 20 y 100,0 % a 40. Una volatilidad de una semana es difícil de distinguir del ruido de un año de datos, y el complemento lo dice en vez de afirmarlo.</>}
       />
+      <Figure
+        caption={t(
+          'The share of 1,000 desk-years of each planted variant that the regulatory zone (amber or red), the rolling-scale statistic and the union of the three statistics at 1% flag (the table above): the complement catches the volatility that is 20 days old where the zone sees nothing, and the exact model stays near the 1% size.',
+          'La parte de 1.000 años de mesa de cada variante sembrada que marcan la zona regulatoria (ámbar o roja), el estadístico de escala móvil y la unión de los tres estadísticos al 1 % (la tabla de arriba): el complemento detecta la volatilidad de 20 días de atraso donde la zona no ve nada, y el modelo exacto queda cerca del tamaño de 1 %.',
+        )}
+      >
+        <GroupedBars
+          groups={[
+            { en: 'Exact|model', es: 'Modelo|exacto' },
+            { en: 'Missing|basis', es: 'Base|omitida' },
+            { en: 'Volatility|20 days old', es: 'Volatilidad|20 días atraso' },
+            { en: 'Wrong|correlation', es: 'Correlación|errónea' },
+            { en: 'Omitted|factor', es: 'Factor|omitido' },
+            { en: 'One-day|misalignment', es: 'Desfase|de un día' },
+          ]}
+          series={[
+            { id: 'zone', label: { en: 'Regulatory zone', es: 'Zona regulatoria' }, token: '--color-magenta', values: [0, 96, 0, 100, 90.1, 100] },
+            { id: 'rolling', label: { en: 'Rolling statistic', es: 'Estadístico móvil' }, token: '--color-accent', values: [1.2, 99.9, 99.9, 4.5, 98.7, 42.3] },
+            { id: 'union', label: { en: 'Union, 1%', es: 'Unión, 1 %' }, token: '--color-good', values: [0.9, 100, 99.9, 100, 100, 100] },
+          ]}
+          axis={{ min: 0, max: 100, decimals: 1, percent: true, tickDecimals: 0, title: { en: 'Desk-years flagged', es: 'Años de mesa marcados' } }}
+          reference={{ value: 1, label: { en: 'Size', es: 'Tamaño' } }}
+          label={{ en: 'Grouped bars of the share of desk-years flagged by the regulatory zone, the rolling statistic and their union in six variants, against the 1 percent size', es: 'Barras agrupadas de la parte de años de mesa marcados por la zona regulatoria, el estadístico móvil y su unión en seis variantes, contra el tamaño de 1 por ciento' }}
+        />
+      </Figure>
       <h3>{t('Where it fails', 'Dónde falla')}</h3>
       <P
         en={<>The rolling statistic is weak against a one-day time misalignment (42.3%, where the regulatory zone flags 100%) and against a wrong correlation (4.5%, where the zone flags 100%): the complement is a supplement to the zone, not a replacement, and the union with the zone flags 100% on the five planted variants. The Wald statistic does not see a missing basis (0.9%, against 86.7% for the Kolmogorov-Smirnov statistic alone), for a structural reason: the basis noise sits in HPL and is independent of RTPL, so the regression of HPL on RTPL keeps an intercept of 0 and a slope of 1; ρ<sub>abs</sub> is the statistic that sees it (100%). The Wald statistic also flags the stale volatility only weakly (14.2%), because a stale volatility leaves the average slope close to one. Below a lag of about ten days the complement loses power (0.23 at 5 days), which is the limit of one year of data. The secondary clause of the research brief, that the Wald statistic would flag the planted deficiencies the Kolmogorov-Smirnov statistic flags, is in part not supported.</>}

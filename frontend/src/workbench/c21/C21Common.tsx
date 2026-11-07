@@ -81,25 +81,26 @@ export function C21FindingsView({ sel }: { sel: C21Sel | null }) {
   const legal = legalOf(sel);
   // with findings, the sentences sit under the evidence so the two cards take the height of the group; with none, they stay in the head
   const none = sel.data.variant.findings.length === 0;
+  // the label sits inside the findings card, not as a band above the cards, so it is drawn view (gate G6, 60 % on the App)
+  const head = (
+    <div data-block="legal-head">
+      <NoLegalClaim legal={legal} />
+      {none ? <LegalSentences legal={legal} /> : null}
+    </div>
+  );
   return (
-    <>
-      <div className="ct-stack-natural" data-block="legal-head">
-        <NoLegalClaim legal={legal} />
-        {none ? <LegalSentences legal={legal} /> : null}
-      </div>
-      <ViewsRow>
-        <FindingsCard variant={sel.data.variant} />
-        <FindingsEvidenceCard
-          variant={sel.data.variant}
-          footer={
-            <>
-              <LegalSentences legal={legal} />
-              <p className="ct-note">{pick({ en: 'The tests the engine returned sit under the view they belong to; a test that did not run shows its reason there.', es: 'Las pruebas que devolvió el motor están bajo la vista a la que pertenecen; una prueba que no corrió muestra allí su razón.' }, lang)}</p>
-            </>
-          }
-        />
-      </ViewsRow>
-    </>
+    <ViewsRow>
+      <FindingsCard variant={sel.data.variant} head={head} />
+      <FindingsEvidenceCard
+        variant={sel.data.variant}
+        footer={
+          <>
+            <LegalSentences legal={legal} />
+            <p className="ct-note">{pick({ en: 'The tests the engine returned sit under the view they belong to; a test that did not run shows its reason there.', es: 'Las pruebas que devolvió el motor están bajo la vista a la que pertenecen; una prueba que no corrió muestra allí su razón.' }, lang)}</p>
+          </>
+        }
+      />
+    </ViewsRow>
   );
 }
 

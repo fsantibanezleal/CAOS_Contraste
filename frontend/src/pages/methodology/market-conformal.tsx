@@ -5,11 +5,12 @@
 // (notebooks/en/07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb), whose numbers are read from the committed
 // C11 documents and from the generator of the engine's study (seed 20261030); the numbers of the tables are the notebook's
 // printed outputs, which the C11 documents reproduce. Every display equation carries a caption that defines its symbols. The
-// registry mounts it as one tab of the market group.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+// figure draws the table of the phases of the crisis beside it. The registry mounts it as one tab of the market group.
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '07-market-risk/09-adaptive-conformal-recalibration-of-the-var.ipynb';
@@ -43,6 +44,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="classical"
       title={{ en: 'Adaptive conformal recalibration of the VaR', es: 'Recalibración conforme adaptativa del VaR' }}
       refs={['gibbscandes2021', 'kupiec1995', 'christoffersen1998', 'patton2019']}
     >
@@ -104,6 +106,30 @@ function Body() {
           [t('GARCH-t, unwrapped / wrapped', 'GARCH-t, sin envolver / envuelto'), t('1.78% / 1.33%', '1,78 % / 1,33 %'), t('1.90% / 1.13%', '1,90 % / 1,13 %'), t('1.55% / 0.88%', '1,55 % / 0,88 %')],
         ]}
       />
+      <Figure
+        caption={t(
+          'The true probability that a forecast is hit, by phase of the crisis, for HS-250 and GARCH-t unwrapped and wrapped (thirty paths of the generator with a known VaR, seed 20261030; the table above), against the 1% target: the wrapper brings the ramp and the plateau toward the target and, in the decay, takes both models under it.',
+          'La probabilidad verdadera de que un pronóstico sea superado, por fase de la crisis, para HS-250 y GARCH-t sin envolver y envueltos (treinta trayectorias del generador de VaR conocido, semilla 20261030; la tabla de arriba), contra el objetivo de 1 %: el envoltorio acerca la subida y la meseta al objetivo y, en el decaimiento, deja ambos modelos bajo él.',
+        )}
+      >
+        <GroupedBars
+          groups={[
+            { en: 'HS-250|ramp', es: 'HS-250|subida' },
+            { en: 'HS-250|plateau', es: 'HS-250|meseta' },
+            { en: 'HS-250|decay', es: 'HS-250|decaimiento' },
+            { en: 'GARCH-t|ramp', es: 'GARCH-t|subida' },
+            { en: 'GARCH-t|plateau', es: 'GARCH-t|meseta' },
+            { en: 'GARCH-t|decay', es: 'GARCH-t|decaimiento' },
+          ]}
+          series={[
+            { id: 'unwrapped', label: { en: 'Unwrapped', es: 'Sin envolver' }, token: '--color-magenta', values: [3.43, 2.25, 0.79, 1.78, 1.9, 1.55] },
+            { id: 'wrapped', label: { en: 'Wrapped', es: 'Envuelto' }, token: '--color-good', values: [1.9, 1.25, 0.57, 1.33, 1.13, 0.88] },
+          ]}
+          axis={{ min: 0, max: 4, decimals: 2, percent: true, tickDecimals: 0, title: { en: 'Probability of a hit', es: 'Probabilidad de ser superado' } }}
+          reference={{ value: 1, label: { en: 'Target', es: 'Objetivo' } }}
+          label={{ en: 'Grouped bars of the true probability of a hit by phase of the crisis, unwrapped and wrapped, for two models, against the 1 percent target', es: 'Barras agrupadas de la probabilidad verdadera de ser superado por fase de la crisis, sin envolver y envuelto, para dos modelos, contra el objetivo de 1 por ciento' }}
+        />
+      </Figure>
       <P
         en={<>The wrapper corrects the level a model gets wrong on average and does not tell the phases apart. In the decay both models fall below the 1% target, because the level recovers by only 0.005 points a day and a crisis level is kept for months after the crisis; there it makes an already conservative model more conservative. The wrapped HS-250 still fails equity 2020 at both levels: the wrapper narrows a crash it does not see coming, it does not remove it. On the first generator path HS-250 wrapped still has 10 exceptions in 500 days (Kupiec p 0.048) and a true hit probability of 2.27% against 3.66% unwrapped, above the target, and no step brings it to the target: 3.08%, 2.83%, 2.27%, 2.08% and 2.32% at steps of 0.001, 0.002, 0.005, 0.01 and 0.02. The engine page adds that the wrapper repairs coverage, not clustering, and that in the crash-decay scenario, a 100-day window dominated by a transient, the wrapped HS-250 pass rate is only 0.60 at 1% and 0.73 at 2.5%.</>}
         es={<>El envoltorio corrige el nivel que un modelo yerra en promedio y no distingue las fases. En el decaimiento los dos modelos caen bajo el objetivo de 1 %, porque el nivel se recupera solo 0,005 puntos por día y un nivel de crisis se conserva durante meses tras la crisis; allí vuelve más conservador a un modelo que ya lo era. HS-250 envuelto sigue fallando la renta variable 2020 en ambos niveles: el envoltorio estrecha una caída que no ve venir, no la elimina. En la primera trayectoria del generador HS-250 envuelto aún tiene 10 excepciones en 500 días (p de Kupiec 0,048) y una probabilidad verdadera de ser superado de 2,27 % contra 3,66 % sin envolver, sobre el objetivo, y ningún paso lo lleva al objetivo: 3,08 %, 2,83 %, 2,27 %, 2,08 % y 2,32 % con pasos de 0,001, 0,002, 0,005, 0,01 y 0,02. La página del motor agrega que el envoltorio repara la cobertura, no el agrupamiento, y que en el escenario de caída con decaimiento, una ventana de 100 días dominada por un transitorio, la tasa de aprobación de HS-250 envuelto es solo 0,60 al 1 % y 0,73 al 2,5 %.</>}

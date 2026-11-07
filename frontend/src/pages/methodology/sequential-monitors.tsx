@@ -5,11 +5,12 @@
 // The numbers are the notebook's, which read the committed documents of C22 (data/derived/C22/other-families.json, the study
 // of 2,000 series per scenario), C11 and C03, not the engine page's own run, whose seed and tables differ (for instance 12.2
 // points of power cost at three times the hit rate there, 11.9 here). Every display equation carries a caption that defines
-// its symbols. The registry mounts it as one tab of the tests group.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+// its symbols. The second equation is the grade monitor of riskvalidation 1.1.0 (validation/sequential/pd_grades.py, its module text), and the figure draws the size column of the table beside it. The registry mounts it as one tab of the market group, beside the VaR recalibration and the PLA complement.
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb';
@@ -43,6 +44,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="classical"
       title={{ en: 'Sequential monitors that keep their size', es: 'Monitores secuenciales que mantienen su tamaño' }}
       refs={['ramdas2023', 'wang2022ebacktesting', 'kupiec1995', 'christoffersen1998', 'bcbs22', 'mar32']}
     >
@@ -57,6 +59,10 @@ function Body() {
       <P
         en={<>The same construction gives the other monitors: a first-order Markov alternative for a hit after a hit (P(hit given hit) = mα, with m = 3, 6, 12, 25, 50); for the defaults of a grade, a multiplicative miscalibration mp of the predicted PD p on a 16-point grid between 1/4 and 4, the grades combined by the product (independent grades) or by the average, which is an e-process whatever the dependence, at a cost in power when one grade carries the signal; and a battery that averages monitors of the same steps. The mixture weights are fixed before any outcome, which keeps the process an e-process. Each monitor is registered in the test catalogue with its own null hypothesis and returns the engine&apos;s result record, red when the monitor rejected.</>}
         es={<>La misma construcción da los demás monitores: una alternativa markoviana de primer orden para una excepción tras una excepción (P(excepción dada una excepción) = mα, con m = 3, 6, 12, 25, 50); para los incumplimientos de un grado, una descalibración multiplicativa mp de la PD predicha p en una grilla de 16 puntos entre 1/4 y 4, con los grados combinados por el producto (grados independientes) o por el promedio, que es un proceso e sea cual sea la dependencia, con un costo en potencia cuando un grado lleva la señal; y una batería que promedia monitores de los mismos pasos. Los pesos de la mezcla se fijan antes de todo resultado, lo que mantiene al proceso como proceso e. Cada monitor está registrado en el catálogo de pruebas con su propia hipótesis nula y devuelve el registro de resultado del motor, rojo cuando el monitor rechazó.</>}
+      />
+      <Equation
+        tex={String.raw`\log \mathrm{LR}_k(s) = d_s \log m_k + (n_s - d_s)\log\frac{1 - m_k p_g}{1 - p_g}, \qquad E_{t,g} = \sum_{k} w_k \exp\Big(\sum_{s \le t}\log \mathrm{LR}_k(s)\Big), \qquad E_t^{\mathrm{prod}} = \prod_{g} E_{t,g}, \quad E_t^{\mathrm{avg}} = \frac{1}{G}\sum_{g} E_{t,g}`}
+        caption={<T en={<>The monitor of the defaults of a grade: n<sub>s</sub> the obligors of the grade at step s and d<sub>s</sub> those that default, p<sub>g</sub> the predicted PD of grade g, m<sub>k</sub> one of the 16 multipliers of the grid between 1/4 and 4 (1 excluded) that bets on a true PD of m<sub>k</sub> p<sub>g</sub>, w<sub>k</sub> the mixture weights fixed before any outcome (proportional to the square root of m<sub>k</sub> p<sub>g</sub> over 1 minus m<sub>k</sub> p<sub>g</sub>, the Jeffreys density on the log grid), LR<sub>k</sub> the likelihood ratio of that alternative to the null of a binomial with the predicted PD, and G the number of grades. The grades combine by the product, which is an e-process when their defaults are independent given the past, or by the average, which is one with no assumption on the dependence (riskvalidation 1.1.0, <Ref>validation/sequential/pd_grades.py</Ref>).</>} es={<>El monitor de los incumplimientos de un grado: n<sub>s</sub> los deudores del grado en el paso s y d<sub>s</sub> los que incumplen, p<sub>g</sub> la PD predicha del grado g, m<sub>k</sub> uno de los 16 multiplicadores de la grilla entre 1/4 y 4 (sin el 1) que apuesta a una PD verdadera de m<sub>k</sub> p<sub>g</sub>, w<sub>k</sub> los pesos de la mezcla fijados antes de todo resultado (proporcionales a la raíz de m<sub>k</sub> p<sub>g</sub> sobre 1 menos m<sub>k</sub> p<sub>g</sub>, la densidad de Jeffreys en la grilla logarítmica), LR<sub>k</sub> la razón de verosimilitud de esa alternativa a la nula de una binomial con la PD predicha, y G el número de grados. Los grados se combinan por el producto, que es un proceso e cuando sus incumplimientos son independientes dado el pasado, o por el promedio, que lo es sin supuesto sobre la dependencia (riskvalidation 1.1.0, <Ref>validation/sequential/pd_grades.py</Ref>).</>} />}
       />
       <h3>{t('What it is compared against and what it measured', 'Con qué se compara y qué midió')}</h3>
       <P
@@ -83,6 +89,27 @@ function Body() {
         en={<>On the real windows of case C11, with the 18 models of the ladder at 1%: in equity 2007 to 2009 (504 days) the e-process flags all 18 at a median of day 24 and the traffic light all 18 at day 250, the first day it can speak; in the euro in 2008 (251 days) the e-process flags 9 models at a median of day 68 and the light 11 at day 250. In the case C03 vintages of SBA loans (the vintages of a cohort are the grades and the ages of 12 to 60 months the steps, the upper direction, the average over vintages) the cohorts of 2006 to 2007 and 2008 to 2010 are rejected at the first age, 12 months, with a log E that reaches 11,631 and 6,363; the cohorts of 2011 to 2014 and 2015 to 2017, which the model over-predicts, fall far below zero and are never rejected, and the 2018 to 2020 cohort peaks at a log E of 2.4, under the threshold of 3.0 (log 20).</>}
         es={<>En las ventanas reales del caso C11, con los 18 modelos de la escalera al 1 %: en la renta variable 2007 a 2009 (504 días) el proceso e marca los 18 en una mediana del día 24 y el semáforo los 18 el día 250, el primer día en que puede hablar; en el euro en 2008 (251 días) el proceso e marca 9 modelos en una mediana del día 68 y el semáforo 11 el día 250. En las cosechas de préstamos SBA del caso C03 (las cosechas de una cohorte son los grados y las edades de 12 a 60 meses los pasos, la dirección superior, el promedio entre cosechas) las cohortes de 2006 a 2007 y de 2008 a 2010 se rechazan en la primera edad, 12 meses, con un log E que llega a 11.631 y 6.363; las cohortes de 2011 a 2014 y de 2015 a 2017, que el modelo sobrepredice, caen muy bajo cero y nunca se rechazan, y la cohorte de 2018 a 2020 alcanza un máximo de log E de 2,4, bajo el umbral de 3,0 (log 20).</>}
       />
+      <Figure
+        caption={t(
+          'The share of correct VaRs each rule rejects within 1,000 days when it is read every day (the size column of the table above), against the 6.5% bound (5% plus three standard errors): the e-process and the battery stay far under it, the fixed-window tests read every day do not.',
+          'La parte de los VaR correctos que cada regla rechaza en 1.000 días cuando se lee cada día (la columna de tamaño de la tabla de arriba), contra la cota de 6,5 % (5 % más tres errores estándar): el proceso e y la batería quedan muy bajo ella, las pruebas de ventana fija leídas cada día no.',
+        )}
+      >
+        <GroupedBars
+          groups={[
+            { en: 'E-process|of the rate', es: 'Proceso e|de la tasa' },
+            { en: 'Battery', es: 'Batería' },
+            { en: 'Kupiec|250 days', es: 'Kupiec|250 días' },
+            { en: 'Kupiec|all days', es: 'Kupiec|todos los días' },
+            { en: 'Traffic|light', es: 'Semáforo' },
+            { en: 'Independence|250 days', es: 'Independencia|250 días' },
+          ]}
+          series={[{ id: 'size', label: { en: 'Share of correct VaRs rejected', es: 'Parte de VaR correctos rechazados' }, token: '--color-accent', values: [1.8, 1.3, 66.5, 33.8, 58.7, 7.6] }]}
+          axis={{ min: 0, max: 80, decimals: 1, tickDecimals: 0, percent: true, title: { en: 'Rejected within 1,000 days', es: 'Rechazados en 1.000 días' } }}
+          reference={{ value: 6.5, label: { en: 'Size bound', es: 'Cota de tamaño' } }}
+          label={{ en: 'Bars of the share of correct VaRs that six rules reject within 1,000 days, against the 6.5 percent size bound', es: 'Barras de la parte de VaR correctos que seis reglas rechazan en 1.000 días, contra la cota de tamaño de 6,5 por ciento' }}
+        />
+      </Figure>
       <h3>{t('Where it fails', 'Dónde falla')}</h3>
       <Callout variant="honest" title={t('The claim as stated fails on power', 'La afirmación tal como se enunció falla en potencia')}>
         <T
@@ -104,7 +131,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'sequential-monitors',
-  group: 'tests',
+  group: 'market',
   order: 210,
   title: { en: 'Sequential monitors', es: 'Monitores secuenciales' },
   Body,

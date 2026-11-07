@@ -41,6 +41,16 @@ export function KnownBanner({ o }: { o: C13Outputs }) {
   );
 }
 
+/** The synthetic label of the generated desk P&L: said on its own where the view keeps no known-deficiency banner. */
+export function SyntheticNotice({ o }: { o: C13Outputs }) {
+  const lang = useShellLang();
+  return (
+    <p className="ct-note" data-synthetic="true">
+      {pick(o.generator.notice, lang)}
+    </p>
+  );
+}
+
 /** The convention of the C13 numbers: decimals of the desk notional, not of a portfolio value (R3 c14 m8). */
 export const C13_CONVENTION: Bi = {
   en: 'VaR is a positive loss and the HPL and RTPL are signed P&L, all as decimals of the desk notional: a VaR of 1\u00a0% means a loss of 1\u00a0% of the notional.',
@@ -65,12 +75,13 @@ export const FINDINGS_MIN_HEIGHT = 'min(70vh, 36rem)';
 export function C13FindingsView({ sel }: { sel: C13Sel | null }) {
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
+  // the known deficiency, its mechanism and the test meant to catch it are not said again above the card: the rail names the variant and
+  // every other view's foot carries the whole banner. The synthetic notice stays, inside the card, so it is drawn view (gate G6, 60 %)
   return (
     <div className="ct-stack" data-caos-flow="" data-block="c13-findings">
-      <KnownBanner o={o} />
       <div className="ct-c13-findings">
         <ViewsRow>
-          <FindingsCard variant={sel.data.variant} />
+          <FindingsCard variant={sel.data.variant} head={<SyntheticNotice o={o} />} />
         </ViewsRow>
       </div>
     </div>

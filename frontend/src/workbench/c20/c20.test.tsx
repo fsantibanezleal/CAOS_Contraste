@@ -264,6 +264,15 @@ describe('the C20 instrument', () => {
     expect(markup).toContain('data-label="decision-flip"');
   });
 
+  it('the findings keep the dataset card sentence once, inside their card and not as a band above it (gate G6, 60 % on the App)', () => {
+    const markup = html(<C20FindingsView sel={sShock} />);
+    const card = markup.indexOf('<figure');
+    expect(card).toBeGreaterThanOrEqual(0);
+    expect(markup.match(/data-notice="sgcd"/g)?.length).toBe(1);
+    expect(markup.indexOf('data-notice="sgcd"')).toBeGreaterThan(card);
+    expect(markup).toContain(PROHIBITED);
+  });
+
   it('the variants table gives one row per kind with its headline, and the SGCD notice once', () => {
     const variants = [shock, shift, seeds, pert, leak].map((v) => ({ id: v.variant_id, title: { en: v.variant_id, es: v.variant_id }, v: v as unknown as VariantArtifact<S['c20Outputs']> }));
     const markup = html(<C20VariantsTable variants={variants} onPick={() => undefined} current={shock.variant_id} />);

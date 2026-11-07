@@ -327,7 +327,6 @@ export function Methodology() {
               { id: 'scorecards', label: t('Scorecards', 'Tarjetas de puntuación'), content: <Scorecards /> },
               { id: 'glass-box', label: t('Glass-box models', 'Modelos de caja de vidrio'), content: <GlassBox /> },
               { id: 'boosting', label: t('Boosting and TabPFN', 'Potenciación y TabPFN'), content: <Boosting /> },
-              { id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> },
               ...registered('models', lang),
             ],
           },
@@ -344,7 +343,14 @@ export function Methodology() {
             ],
           },
           ...(registered('loss', lang).length > 0
-            ? [{ id: 'loss', label: t('Expected loss, severity and exposure', 'Pérdida esperada, severidad y exposición'), tabs: registered('loss', lang) }]
+            ? [
+                {
+                  id: 'loss',
+                  label: t('Expected loss, severity and exposure', 'Pérdida esperada, severidad y exposición'),
+                  // the migration matrices are the lifetime PD's input, so they open this group (ADR-0071 rule 5: at most six peers in a row)
+                  tabs: [{ id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> }, ...registered('loss', lang)],
+                },
+              ]
             : []),
           ...(registered('capital', lang).length > 0
             ? [{ id: 'capital', label: t('Capital models', 'Modelos de capital'), tabs: registered('capital', lang) }]

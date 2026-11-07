@@ -1,6 +1,7 @@
 // C06's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section shows
 // a value that moves with its controls). The Findings card and the fixture notice are shared with C07.
 import { BarChart, Callout, PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import type { ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
@@ -72,7 +73,7 @@ export function FixtureNotice({ variant }: { variant: VariantArtifact }) {
 }
 
 /** What the validation found, with the evidence each finding cites; an empty list is said, not drawn as an empty table. */
-export function FindingsCard({ variant }: { variant: VariantArtifact }) {
+export function FindingsCard({ variant, head }: { variant: VariantArtifact; head?: ReactNode }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const order = ['S1', 'S2', 'S3', 'S4'];
@@ -87,6 +88,9 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
       note={{ en: 'Each finding cites the tests behind it or a stated design limit.', es: 'Cada hallazgo cita las pruebas que lo respaldan o un límite de diseño declarado.' }}
     >
       <FixtureNotice variant={variant} />
+      {/* a notice the view must keep (a dataset card's sentence, a legal or synthetic label) sits in the card, so it counts as drawn view
+          and not as a band above the cards (gate G6, 60% on the App route) */}
+      {head}
       {findings.length === 0 ? (
         <p className="ct-note" data-state="unavailable">
           {pick({ en: 'No finding is recorded in this variant.', es: 'Esta variante no registra hallazgos.' }, lang)}

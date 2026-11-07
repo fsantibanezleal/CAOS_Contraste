@@ -102,15 +102,11 @@ export function NotInVariant({ sel, title, needs }: { sel: C20Sel | null; title:
 
 export function C20FindingsView({ sel }: { sel: C20Sel | null }) {
   if (!sel) return <Pending />;
+  // the dataset card's sentence sits inside the card, not as a band above the cards, so it is drawn view (gate G6, 60 % on the App)
   return (
-    <>
-      <div className="ct-stack-natural">
-        <SgcdNotice sel={sel} />
-      </div>
-      <ViewsRow>
-        <FindingsCard variant={sel.data.variant} />
-      </ViewsRow>
-    </>
+    <ViewsRow>
+      <FindingsCard variant={sel.data.variant} head={<SgcdNotice sel={sel} />} />
+    </ViewsRow>
   );
 }
 

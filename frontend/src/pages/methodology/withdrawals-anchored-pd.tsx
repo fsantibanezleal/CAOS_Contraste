@@ -5,11 +5,12 @@
 // topic (notebooks/en/03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb), whose numbers, on S&P's
 // pooled counts and on the generator of the case, are the notebook's printed outputs, which the committed C04 documents
 // (data/derived/C04/sp.json and withdrawals.json) reproduce. Every display equation carries a caption that defines its symbols.
-// The registry mounts it as one tab of the tests group, beside the transitions tab it extends.
-import { Callout, Cite, DocSection } from '@fasl-work/caos-app-shell';
+// The figure draws the coverage table beside it. The registry mounts it as one tab of the loss group (the PD it anchors feeds the expected loss).
+import { Callout, Cite, DocSection, Figure } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { Equation, P, Ref, T, useT } from '../../content/bi';
 import type { MethodologySection } from '../methodologyRegistry';
+import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
 const NB_PATH = '03-ratings-and-calibration/12-an-anchored-pd-under-informative-withdrawals.ipynb';
@@ -43,6 +44,7 @@ function Body() {
   return (
     <DocSection
       area="method"
+      kind="classical"
       title={{ en: 'An anchored PD under informative withdrawals', es: 'Una PD anclada con retiros informativos' }}
       refs={['manski1989', 'cro2020', 'schuermannhanson2004', 'ebagl201716', 'brown2001', 'cerep']}
     >
@@ -81,6 +83,30 @@ function Body() {
         en={<>The claim, fixed before any run, has three parts. The anchored interval covers the true PD in at least 90% of the draws at k = 1, 3 and 9: it does, in every design above. The existing treatments cover it in under 50% at k = 9: this holds only where the sample is large enough for the bias to outgrow the noise (pooled cohorts, ten times the cohort); in the first-year cohort of the case&apos;s size the removed and kept intervals still cover 84% and 83.5%, because the understatement of 23% to 28% is smaller than the sampling interval, so the clause as written is refuted at the size of the case. The third part is the stability of the anchored k across years, below.</>}
         es={<>La afirmación, fijada antes de toda corrida, tiene tres partes. El intervalo anclado cubre la PD verdadera en al menos 90 % de los sorteos con k = 1, 3 y 9: lo hace, en cada diseño de arriba. Los tratamientos existentes la cubren en menos de 50 % con k = 9: esto se cumple solo donde la muestra es lo bastante grande para que el sesgo supere al ruido (cohortes agrupadas, diez veces la cohorte); en la cohorte del primer año del tamaño del caso los intervalos de eliminados y mantenidos aún cubren 84 % y 83,5 %, porque la subestimación de 23 % a 28 % es menor que el intervalo de muestreo, así que la cláusula tal como está escrita se refuta al tamaño del caso. La tercera parte es la estabilidad del k anclado entre años, abajo.</>}
       />
+      <Figure
+        caption={t(
+          'The coverage of the true one-year PD of grade B by the interval of each treatment, in the four designs of the study (200 draws each, withdrawal informative at k = 9) and the 90% the claim asks of the anchored interval: the existing treatments fall far below it where the sample is large, the anchored interval stays above it.',
+          'La cobertura de la PD verdadera a un año del grado B por el intervalo de cada tratamiento, en los cuatro diseños del estudio (200 sorteos cada uno, retiro informativo en k = 9) y el 90 % que la afirmación pide al intervalo anclado: los tratamientos existentes quedan muy por debajo donde la muestra es grande, el intervalo anclado queda sobre él.',
+        )}
+      >
+        <GroupedBars
+          groups={[
+            { en: 'First-year|cohort', es: 'Cohorte del|primer año' },
+            { en: 'Five cohorts|pooled', es: 'Cinco cohortes|agrupadas' },
+            { en: 'Second source|70% of defaults', es: 'Segunda fuente|70 % de incump.' },
+            { en: 'First-year|ten times larger', es: 'Primer año|diez veces mayor' },
+          ]}
+          series={[
+            { id: 'removed', label: { en: 'Removed', es: 'Eliminados' }, token: '--color-accent', values: [0.84, 0.11, 0.84, 0.215] },
+            { id: 'kept', label: { en: 'Kept', es: 'Mantenidos' }, token: '--color-magenta', values: [0.835, 0.03, 0.835, 0.075] },
+            { id: 'followed', label: { en: 'Followed', es: 'Seguidos' }, token: '--color-warn', values: [0.95, 0.74, 0.95, 0.935] },
+            { id: 'anchored', label: { en: 'Anchored', es: 'Anclado' }, token: '--color-good', values: [1, 0.98, 0.995, 1] },
+          ]}
+          axis={{ min: 0, max: 1, decimals: 2, title: { en: 'Coverage of the true PD', es: 'Cobertura de la PD verdadera' } }}
+          reference={{ value: 0.9, label: { en: 'The claim asks', es: 'La afirmación pide' } }}
+          label={{ en: 'Grouped bars of the coverage of the true PD by four treatments in four designs, against the 90 percent the claim asks', es: 'Barras agrupadas de la cobertura de la PD verdadera por cuatro tratamientos en cuatro diseños, frente al 90 por ciento que pide la afirmación' }}
+        />
+      </Figure>
       <h3>{t('Where it fails', 'Dónde falla')}</h3>
       <Callout variant="honest" title={t('The stability clause fails', 'La cláusula de estabilidad falla')}>
         <T
@@ -102,7 +128,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'withdrawals-anchored-pd',
-  group: 'tests',
+  group: 'loss',
   order: 200,
   title: { en: 'PD under informative withdrawals', es: 'PD con retiros informativos' },
   Body,
