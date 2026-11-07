@@ -88,7 +88,7 @@ def write_numbers() -> None:
 
 
 #: the tables wider than the text, scaled to its width (the others keep their natural size)
-FIT_WIDTH = ("main-results", "weight-override-auc", "anticipation", "stated-grid", "fitted-power", "weight-override", "ablation", "robustness", "c14-history", "constructed", "realism")
+FIT_WIDTH = ("main-results", "weight-override-auc", "anticipation", "stated-grid", "fitted-power", "weight-override", "ablation", "robustness", "robustness-shift", "c14-history", "constructed", "realism")
 
 
 def T(path, header, rows, **kw):
@@ -388,7 +388,7 @@ def table_fitted() -> None:
         reg(f"realNull{key}", pc(n["rate"]) + "\\%", f"results_fitted.json real_series.0.25.null.{det}.rate")
         reg(f"realNullLo{key}", pc(n["lo"]), f"results_fitted.json real_series.0.25.null.{det}.lo")
         reg(f"realNullHi{key}", pc(n["hi"]), f"results_fitted.json real_series.0.25.null.{det}.hi")
-    for det, key in (("stability", "Stab"), ("tolerance", "Tol"), ("mannwhitney", "Mw")):
+    for det, key in (("stability", "Stab"), ("tolerance", "Tol"), ("mannwhitney", "Mw"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
         u = rs["auc"]["0.4"][det]
         reg(f"realWAuc{key}", f"{u['auc']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{det}.auc")
         reg(f"realWAucLo{key}", f"{u['lo']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{det}.lo")
@@ -415,8 +415,16 @@ def table_fitted() -> None:
             reg(f"fitNull{key}{dk}", pc(R3["matched"][prev]["null"][det]["rate"]) + "\\%", f"results_fitted.json matched.{prev}.null.{det}.rate")
         reg(f"fitNull{key}Tol", pc(R3["matched"][prev]["null"]["tolerance"]["rate"]) + "\\%", f"results_fitted.json matched.{prev}.null.tolerance.rate")
         reg(f"fitMis{key}Tol", pc(R3["mismatched"][prev]["null"]["tolerance"]["rate"]) + "\\%", f"results_fitted.json mismatched.{prev}.null.tolerance.rate")
-        reg(f"fitMis{key}TolHi", pc(R3["mismatched"][prev]["null"]["tolerance"]["hi"]) + "\\%", f"results_fitted.json mismatched.{prev}.null.tolerance.hi")
+        reg(f"fitMis{key}TolHi", pc(R3["mismatched"][prev]["null"]["tolerance"]["hi"]), f"results_fitted.json mismatched.{prev}.null.tolerance.hi")
         reg(f"fitMis{key}TolLo", pc(R3["mismatched"][prev]["null"]["tolerance"]["lo"]), f"results_fitted.json mismatched.{prev}.null.tolerance.lo")
+        for det, dk in (("tolerance_lookahead", "TolLa"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
+            n = R3["mismatched"][prev]["null"][det]
+            reg(f"fitMis{key}{dk}", pc(n["rate"]) + "\\%", f"results_fitted.json mismatched.{prev}.null.{det}.rate")
+            reg(f"fitMis{key}{dk}Lo", pc(n["lo"]), f"results_fitted.json mismatched.{prev}.null.{det}.lo")
+            reg(f"fitMis{key}{dk}Hi", pc(n["hi"]), f"results_fitted.json mismatched.{prev}.null.{det}.hi")
+        for det, dk in (("shift", "Shift"), ("shift_at_breach", "ShiftB")):
+            n = R3["matched"][prev]["null"][det]
+            reg(f"fitNull{key}{dk}", pc(n["rate"]) + "\\%", f"results_fitted.json matched.{prev}.null.{det}.rate")
     table_early()
 
 
@@ -429,7 +437,7 @@ def table_early() -> None:
         rows.append([NAME[det], ci(n["rate"], n["lo"], n["hi"]), ci(r2["rate"], r2["lo"], r2["hi"]), ci(r4["rate"], r4["lo"], r4["hi"]), auc_s(u4)])
     T(OUT / "anticipation.tex", ["Detector", "False flags (\\%)", "Detection of +2 years (\\%)", "Detection of +4 years (\\%)", "AUC of +4 years (95\\% interval)"], rows,
       caption=f"An override made at the date before a breach begins, on the {e['n']:,} of the 2,000 simulated banks (breach prevalence 0.25) that have such a date: at each date that precedes the first date of a breach spell "
-      "an addition of 2 or 4 years to the fitted maturity is made with probability 0.5 (at least once), from that date on. False-flag rate of the same banks without the override, detection with 95\\% Wilson intervals, "
+      "an addition of 2 or 4 years to the fitted maturity is made with probability 0.5 (at least once), from that date on; the first date of the history is never one. False-flag rate of the same banks without the override, detection with 95\\% Wilson intervals, "
       "and the area under the ROC curve at 4 years; the two tolerance rules and the two level-shift tests are calibrated at 5\\% on the 1,000 calibration banks.", label="tab:anticipation", align="lcccc", wide=True)
     reg("earlyN", f"{e['n']:,}", "results_fitted.json matched.0.25.early.n")
     for y, ys in (("2.0", "Two"), ("4.0", "Four")):
@@ -445,7 +453,7 @@ def table_early() -> None:
 
 
 def table_weights() -> None:
-    dets = ("engine", "stability", "tolerance", "fisher", "mannwhitney", "welch", "shift")
+    dets = ("engine", "stability", "tolerance", "fisher", "mannwhitney", "welch", "shift", "shift_at_breach")
     rows, rows_auc = [], []
     c = R3["matched"]["0.25"]
     for s in ("0.05", "0.1", "0.2", "0.4"):
@@ -454,20 +462,34 @@ def table_weights() -> None:
         rows_auc.append([s] + [auc_s(u[d]) for d in dets])
     nulls = ["null", "--"] + [pc(c["null"][d]["rate"]) for d in dets]
     rows.append(nulls)
-    heads = ["Proposed", "Stability", "Tolerance", "Fisher", "Mann--Whitney", "Welch", "Level shift"]
+    heads = ["Proposed", "Stability", "Tolerance", "Fisher", "Mann--Whitney", "Welch", "Level shift", "Break on a breach date"]
     T(OUT / "weight-override.tex", ["Share $s$", "Invisible (\\%)"] + heads, rows,
       caption="An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the "
       "weights unchanged because they already sit on that tranche, and the percentage of banks flagged by each detector for each share of the weight moved per planted date; the last row is the rate on the banks without an override.",
-      label="tab:weight-override", align="rrrrrrrrr", wide=True)
+      label="tab:weight-override", align="rrrrrrrrrr", wide=True)
     T(OUT / "weight-override-auc.tex", ["Share $s$"] + heads, rows_auc,
-      caption="The same override: the area under the ROC curve of each detector against the banks without an override, with its 95\\% bootstrap interval.", label="tab:weight-override-auc", align="rcccccccc", wide=True)
+      caption="The same override: the area under the ROC curve of each detector against the banks without an override, with its 95\\% bootstrap interval.", label="tab:weight-override-auc", align="rccccccccc", wide=True)
     reg("invisShare", pc(c["alt"]["0.4"]["invisible_share"]) + "\\%", "results_fitted.json matched.0.25.alt.0.4.invisible_share")
     for s, ss in (("0.05", "Low"), ("0.4", "High")):
-        for d, dk in (("engine", "Engine"), ("tolerance", "Tol"), ("mannwhitney", "Mw"), ("stability", "Stab"), ("welch", "Welch"), ("fisher", "Fisher"), ("shift", "Shift")):
+        for d, dk in (("engine", "Engine"), ("tolerance", "Tol"), ("mannwhitney", "Mw"), ("stability", "Stab"), ("welch", "Welch"), ("fisher", "Fisher"), ("shift", "Shift"), ("shift_at_breach", "ShiftB")):
             u = c["auc"][s][d]
             reg(f"w{dk}Auc{ss}", f"{u['auc']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.auc")
             reg(f"w{dk}AucLo{ss}", f"{u['lo']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.lo")
             reg(f"w{dk}AucHi{ss}", f"{u['hi']:.3f}", f"results_fitted.json matched.0.25.auc.{s}.{d}.hi")
+    # the largest area among the detectors at the largest share, on the simulated banks and on the real series: the text names the detector, and the
+    # assertions keep the name true to the data
+    top = max(dets, key=lambda d: c["auc"]["0.4"][d]["auc"])
+    assert top == "shift_at_breach", top
+    reg("wTopAuc", f"{c['auc']['0.4'][top]['auc']:.3f}", f"results_fitted.json matched.0.25.auc.0.4.{top}.auc (the largest over the detectors; shift_at_breach)")
+    reg("wTopAucLo", f"{c['auc']['0.4'][top]['lo']:.3f}", f"results_fitted.json matched.0.25.auc.0.4.{top}.lo")
+    reg("wTopAucHi", f"{c['auc']['0.4'][top]['hi']:.3f}", f"results_fitted.json matched.0.25.auc.0.4.{top}.hi")
+    rtop = max(dets[1:], key=lambda d: FIT_REAL["auc"]["0.4"][d]["auc"])
+    assert rtop == "shift", rtop
+    reg("wRealTopAuc", f"{FIT_REAL['auc']['0.4'][rtop]['auc']:.3f}", f"results_fitted.json real_series.0.25.auc.0.4.{rtop}.auc (the largest over the detectors with a statistic on the series; shift)")
+    reg("wTopFlag", pc(c["alt"]["0.4"][top]["rate"]) + "\\%", f"results_fitted.json matched.0.25.alt.0.4.{top}.rate")
+    reg("wTopNull", pc(c["null"][top]["rate"]) + "\\%", f"results_fitted.json matched.0.25.null.{top}.rate")
+    reg("wRealTopFlag", pc(FIT_REAL["alt"]["0.4"][rtop]["rate"]) + "\\%", f"results_fitted.json real_series.0.25.alt.0.4.{rtop}.rate")
+    reg("wRealTopNull", pc(FIT_REAL["null"][rtop]["rate"]) + "\\%", f"results_fitted.json real_series.0.25.null.{rtop}.rate")
     for d, dk in (("tolerance", "Tol"), ("stability", "Stab"), ("mannwhitney", "Mw"), ("welch", "Welch")):
         reg(f"w{dk}FlagHigh", pc(c["alt"]["0.4"][d]["rate"]) + "\\%", f"results_fitted.json matched.0.25.alt.0.4.{d}.rate")
 
@@ -514,6 +536,21 @@ def table_robust() -> None:
       groups=[("Tolerance false flags (\\%)", 2), ("Other detectors, false flags (\\%)", 4)], lead=3,
       caption="False-flag rates on 2,000 held-out simulated banks at three breach prevalences: the tolerance rule calibrated on 1,000 banks at the prevalence tested and at 0.25 with 95\\% Wilson intervals, "
       "and the published tests at their nominal 5\\% size together with the red limit of the weight stability test.", label="tab:robustness", align="rrrccrrrr", wide=True)
+
+
+def table_robust_shift() -> None:
+    """The transfer across breach prevalences of the rules that the first robustness table leaves out: the look-ahead tolerance and the two level-shift rules."""
+    rows = []
+    for prev in ("0.1", "0.25", "0.5"):
+        m, mm = R3["matched"][prev]["null"], R3["mismatched"][prev]["null"]
+        row = [prev]
+        for det in ("tolerance_lookahead", "shift", "shift_at_breach"):
+            row += [ci(m[det]["rate"], m[det]["lo"], m[det]["hi"]), ci(mm[det]["rate"], mm[det]["lo"], mm[det]["hi"])]
+        rows.append(row)
+    T(OUT / "robustness-shift.tex", ["Prevalence", "Here", "At 0.25", "Here", "At 0.25", "Here", "At 0.25"], rows,
+      groups=[("Tolerance, look-ahead", 2), ("Level-shift test", 2), ("Level-shift test, break on a breach date", 2)],
+      caption="False-flag rates (\\%, 95\\% Wilson intervals) of the look-ahead tolerance and the two level-shift rules on the 2,000 held-out simulated banks at three breach prevalences, "
+      "each calibrated at 5\\% on 1,000 banks at the prevalence tested (here) and at 0.25 (at 0.25).", label="tab:robustness-shift", align="rcccccc", wide=True)
 
 
 def table_realism() -> None:
@@ -662,6 +699,7 @@ def main() -> None:
     table_weights()
     table_ablation()
     table_robust()
+    table_robust_shift()
     table_realism()
     table_theory()
     table_hypotheses()

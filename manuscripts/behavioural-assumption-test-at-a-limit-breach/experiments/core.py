@@ -139,8 +139,10 @@ def plant_dates(rng: np.random.Generator, b: np.ndarray, prob: float) -> np.ndar
 
 def plant_dates_before_spell(rng: np.random.Generator, b: np.ndarray, prob: float) -> np.ndarray:
     """The dates that precede the first date of a breach spell (``b`` is 0 at the date and 1 at the next one), each with probability ``prob``, at least one
-    when any exists: the dates at which an assumption is changed in anticipation of a breach. None of them is a breach date. A boolean mask of the dates."""
+    when any exists: the dates at which an assumption is changed in anticipation of a breach. None of them is a breach date, and none is the first date (an addition
+    from the first date on is a constant, which no detector can tell from the history without it). A boolean mask of the dates."""
     cand = np.flatnonzero(~b[:-1] & b[1:])
+    cand = cand[cand >= 1]
     mask = np.zeros(b.size, dtype=bool)
     if cand.size == 0:
         return mask

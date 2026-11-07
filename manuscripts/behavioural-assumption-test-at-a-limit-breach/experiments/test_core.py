@@ -120,6 +120,7 @@ def test_the_anticipatory_dates_precede_a_breach_spell_and_are_never_breach_date
         b = core.breach_chain(rng, core.T_DEFAULT, 0.25)
         mask = core.plant_dates_before_spell(rng, b, 0.5)
         starts = np.flatnonzero(~b[:-1] & b[1:])
+        starts = starts[starts >= 1]
         assert mask.any() == (starts.size > 0)
         assert not (mask & b).any()
         assert set(np.flatnonzero(mask)) <= set(starts)
@@ -127,7 +128,11 @@ def test_the_anticipatory_dates_precede_a_breach_spell_and_are_never_breach_date
     assert not core.plant_dates_before_spell(rng, np.array([True, True, False, False]), 1.0).any()
     # probability one plants every date before a spell
     b = np.array([False, True, False, False, True, True])
-    assert list(np.flatnonzero(core.plant_dates_before_spell(rng, b, 1.0))) == [0, 3]
+    assert list(np.flatnonzero(core.plant_dates_before_spell(rng, b, 1.0))) == [3]
+    # date 0 is never planted: an addition from the first date on is a constant, not a change, so a history whose only candidate is the first date has none
+    assert not core.plant_dates_before_spell(rng, np.array([False, True, True, True]), 1.0).any()
+    for _ in range(300):
+        assert not core.plant_dates_before_spell(rng, core.breach_chain(rng, core.T_DEFAULT, 0.25), 1.0)[0]
 
 
 def test_the_shift_statistic_finds_an_upward_level_shift_at_its_date():

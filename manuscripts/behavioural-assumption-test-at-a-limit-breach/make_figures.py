@@ -138,16 +138,19 @@ def fig_operating_points() -> None:
 def fig_fitted_power() -> None:
     import matplotlib.pyplot as plt
 
-    fig, axes = plt.subplots(1, 2, figsize=(6.8, 2.9), sharex=True)
+    fig, axes = plt.subplots(1, 2, figsize=(6.8, 3.5), sharex=True)
     ys = ("0.5", "1.0", "2.0", "4.0")
     xs = [float(y) for y in ys]
-    dets = ("engine", "tolerance", "mannwhitney", "welch", "fisher")
-    names = {"engine": "proposed test", "tolerance": "calibrated tolerance", "mannwhitney": "Mann--Whitney", "welch": "Welch", "fisher": "Fisher exact"}
+    dets = ("engine", "tolerance", "mannwhitney", "welch", "fisher", "shift", "shift_at_breach")
+    names = {"engine": "proposed test", "tolerance": "calibrated tolerance", "mannwhitney": "Mann--Whitney", "welch": "Welch", "fisher": "Fisher exact",
+             "shift": "level-shift test", "shift_at_breach": "level-shift test, break on a breach date"}
+    # figkit holds six styles; the seventh detector takes a marker and a dash pattern of its own
+    styles = list(S) + [{"color": "0.25", "linestyle": (0, (3, 1, 1, 1, 1, 1)), "marker": "P"}]
     for j, det in enumerate(dets):
-        st = S[j]
+        st = styles[j]
         axes[0].plot(xs, [R3["matched"]["0.25"]["add"][y][det]["rate"] for y in ys], color=st["color"], ls=st["linestyle"], marker=st["marker"], label=names[det])
         axes[1].plot(xs, [R3["matched"]["0.25"]["auc_add"][y][det]["auc"] for y in ys], color=st["color"], ls=st["linestyle"], marker=st["marker"])
-        if det in ("tolerance", "mannwhitney"):
+        if det in ("tolerance", "mannwhitney", "shift", "shift_at_breach"):
             axes[1].plot(xs, [R3["real_series"]["0.25"]["auc_add"][y][det]["auc"] for y in ys], color=st["color"], ls="none", marker=st["marker"], mfc="none", ms=7)
     axes[0].set_ylabel("Detection rate at the calibrated size")
     axes[1].set_ylabel("Area under the ROC curve")
@@ -156,8 +159,8 @@ def fig_fitted_power() -> None:
         ax.set_xlabel("Lengthening planted at breach dates (years)")
         ax.set_xscale("log", base=2)
         ax.set_xticks(xs, [f"{x:g}" for x in xs])
-    axes[0].legend(fontsize=6.5, loc="upper left")
-    fig.tight_layout()
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=4, fontsize=6.5, frameon=False)
+    fig.tight_layout(rect=(0, 0.17, 1, 1))
     figkit.save(fig, OUT, "fitted-power")
 
 

@@ -9,7 +9,7 @@ whose 12 consecutive 16-quarter fits are the engine's ``replicating_portfolio``.
 weights used are ``(1 - s) w + s e_J`` with the cumulative share ``s`` a multiple of 0.05, 0.10, 0.20 or 0.40 of the number of overrides so far, toward the longest tranche.
 The tolerance of the tolerance rules is the conformal quantile at 5% of the largest change at a breach date over the calibration banks of the same prevalence.
 A second kind of override adds 0.5, 1, 2 or 4 years to the fitted maturity from each planted date on; a further arm plants an addition of 2 or 4 years at the date
-that precedes the first date of a breach spell (a date that is not itself a breach date; each such date with probability 0.5, at least one); a further experiment
+that precedes the first date of a breach spell (a date after the first that is not itself a breach date; each such date with probability 0.5, at least one); a further experiment
 plants on the real fitted series of the bank (its last 12 fits). The two tests of a shift in the level of the fitted series (a break at an unknown date, and the same
 with the requirement that the estimated break date be a breach date) are calibrated at 5% on the same calibration banks as the tolerance.
 Writes ``results_fitted.json``; the per-bank weights are cached under ``--cache`` (temp root), never committed.
@@ -193,7 +193,7 @@ def summarise(rows: list[dict], deltas: dict, blocks: list[int] | None, per_bloc
                 cell["add"][y][det] = {"k": k, "rate": p, "lo": lo, "hi": hi}
                 a_, alo, ahi = core.auc_ci(np.array([core.roc_score(x, det) for x in null]), np.array([core.roc_score(x, det) for x in alt]), rng_of(det), reps=300)
                 cell["auc_add"][y][det] = {"auc": a_, "lo": alo, "hi": ahi}
-        if "early" in rows[0][prev]:
+        if any("early" in r[prev] for r in rows):
             # the banks with a date that precedes a breach spell: the null banks among them, and the detection of the anticipatory addition of each size
             sub = [r for r in rows if "early" in r[prev]]
             cell["early"] = {"n": len(sub), "null": {}, "rates": {}, "auc": {}}

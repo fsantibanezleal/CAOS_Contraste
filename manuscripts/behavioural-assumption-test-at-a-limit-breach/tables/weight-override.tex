@@ -4,15 +4,15 @@
 \caption{An override that moves the replicating-portfolio weights toward the longest tranche at breach dates (breach prevalence 0.25, 2,000 banks): the share of histories in which the override leaves the weights unchanged because they already sit on that tranche, and the percentage of banks flagged by each detector for each share of the weight moved per planted date; the last row is the rate on the banks without an override.}
 \label{tab:weight-override}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{rrrrrrrrr}
+\begin{tabular}{rrrrrrrrrr}
 \toprule
-Share $s$ & Invisible (\%) & Proposed & Stability & Tolerance & Fisher & Mann--Whitney & Welch & Level shift \\
+Share $s$ & Invisible (\%) & Proposed & Stability & Tolerance & Fisher & Mann--Whitney & Welch & Level shift & Break on a breach date \\
 \midrule
-0.05 & 22.1 & 83.4 & 47.6 & 3.2 & 2.1 & 8.6 & 7.6 & 5.5 \\
-0.1 & 22.1 & 83.4 & 45.4 & 2.5 & 2.1 & 9.3 & 9.5 & 5.3 \\
-0.2 & 22.1 & 83.0 & 40.6 & 2.4 & 2.5 & 12.3 & 13.2 & 5.1 \\
-0.4 & 22.1 & 81.5 & 43.2 & 2.5 & 4.9 & 14.5 & 12.8 & 6.6 \\
-null & -- & 82.2 & 49.8 & 3.9 & 2.1 & 7.2 & 6.0 & 5.9 \\
+0.05 & 22.1 & 83.4 & 47.6 & 3.2 & 2.1 & 8.6 & 7.6 & 5.5 & 6.7 \\
+0.1 & 22.1 & 83.4 & 45.4 & 2.5 & 2.1 & 9.3 & 9.5 & 5.3 & 7.3 \\
+0.2 & 22.1 & 83.0 & 40.6 & 2.4 & 2.5 & 12.3 & 13.2 & 5.1 & 8.8 \\
+0.4 & 22.1 & 81.5 & 43.2 & 2.5 & 4.9 & 14.5 & 12.8 & 6.6 & 15.0 \\
+null & -- & 82.2 & 49.8 & 3.9 & 2.1 & 7.2 & 6.0 & 5.9 & 6.2 \\
 \bottomrule
 \end{tabular}}
 \end{table*}

@@ -651,6 +651,18 @@
 \newcommand{\realWAucLoMw}{0.544}
 % results_fitted.json real_series.0.25.auc.0.4.mannwhitney.hi
 \newcommand{\realWAucHiMw}{0.580}
+% results_fitted.json real_series.0.25.auc.0.4.shift.auc
+\newcommand{\realWAucShift}{0.801}
+% results_fitted.json real_series.0.25.auc.0.4.shift.lo
+\newcommand{\realWAucLoShift}{0.785}
+% results_fitted.json real_series.0.25.auc.0.4.shift.hi
+\newcommand{\realWAucHiShift}{0.818}
+% results_fitted.json real_series.0.25.auc.0.4.shift_at_breach.auc
+\newcommand{\realWAucShiftB}{0.662}
+% results_fitted.json real_series.0.25.auc.0.4.shift_at_breach.lo
+\newcommand{\realWAucLoShiftB}{0.647}
+% results_fitted.json real_series.0.25.auc.0.4.shift_at_breach.hi
+\newcommand{\realWAucHiShiftB}{0.678}
 % results_fitted.json ties_at_breach_dates.share_banks_with_a_tie
 \newcommand{\tieBanks}{40.0\%}
 % results_fitted.json ties_at_breach_dates.mean_ties
@@ -700,9 +712,31 @@
 % results_fitted.json mismatched.0.1.null.tolerance.rate
 \newcommand{\fitMisATol}{3.4\%}
 % results_fitted.json mismatched.0.1.null.tolerance.hi
-\newcommand{\fitMisATolHi}{4.3\%}
+\newcommand{\fitMisATolHi}{4.3}
 % results_fitted.json mismatched.0.1.null.tolerance.lo
 \newcommand{\fitMisATolLo}{2.7}
+% results_fitted.json mismatched.0.1.null.tolerance_lookahead.rate
+\newcommand{\fitMisATolLa}{4.0\%}
+% results_fitted.json mismatched.0.1.null.tolerance_lookahead.lo
+\newcommand{\fitMisATolLaLo}{3.3}
+% results_fitted.json mismatched.0.1.null.tolerance_lookahead.hi
+\newcommand{\fitMisATolLaHi}{5.0}
+% results_fitted.json mismatched.0.1.null.shift.rate
+\newcommand{\fitMisAShift}{5.9\%}
+% results_fitted.json mismatched.0.1.null.shift.lo
+\newcommand{\fitMisAShiftLo}{5.0}
+% results_fitted.json mismatched.0.1.null.shift.hi
+\newcommand{\fitMisAShiftHi}{7.1}
+% results_fitted.json mismatched.0.1.null.shift_at_breach.rate
+\newcommand{\fitMisAShiftB}{4.6\%}
+% results_fitted.json mismatched.0.1.null.shift_at_breach.lo
+\newcommand{\fitMisAShiftBLo}{3.8}
+% results_fitted.json mismatched.0.1.null.shift_at_breach.hi
+\newcommand{\fitMisAShiftBHi}{5.6}
+% results_fitted.json matched.0.1.null.shift.rate
+\newcommand{\fitNullAShift}{5.9\%}
+% results_fitted.json matched.0.1.null.shift_at_breach.rate
+\newcommand{\fitNullAShiftB}{4.8\%}
 % results_fitted.json matched.0.25.null.fisher.rate
 \newcommand{\fitNullBFisher}{2.1\%}
 % results_fitted.json matched.0.25.null.mannwhitney.rate
@@ -718,9 +752,31 @@
 % results_fitted.json mismatched.0.25.null.tolerance.rate
 \newcommand{\fitMisBTol}{3.9\%}
 % results_fitted.json mismatched.0.25.null.tolerance.hi
-\newcommand{\fitMisBTolHi}{4.8\%}
+\newcommand{\fitMisBTolHi}{4.8}
 % results_fitted.json mismatched.0.25.null.tolerance.lo
 \newcommand{\fitMisBTolLo}{3.1}
+% results_fitted.json mismatched.0.25.null.tolerance_lookahead.rate
+\newcommand{\fitMisBTolLa}{4.5\%}
+% results_fitted.json mismatched.0.25.null.tolerance_lookahead.lo
+\newcommand{\fitMisBTolLaLo}{3.6}
+% results_fitted.json mismatched.0.25.null.tolerance_lookahead.hi
+\newcommand{\fitMisBTolLaHi}{5.4}
+% results_fitted.json mismatched.0.25.null.shift.rate
+\newcommand{\fitMisBShift}{5.9\%}
+% results_fitted.json mismatched.0.25.null.shift.lo
+\newcommand{\fitMisBShiftLo}{5.0}
+% results_fitted.json mismatched.0.25.null.shift.hi
+\newcommand{\fitMisBShiftHi}{7.1}
+% results_fitted.json mismatched.0.25.null.shift_at_breach.rate
+\newcommand{\fitMisBShiftB}{6.2\%}
+% results_fitted.json mismatched.0.25.null.shift_at_breach.lo
+\newcommand{\fitMisBShiftBLo}{5.2}
+% results_fitted.json mismatched.0.25.null.shift_at_breach.hi
+\newcommand{\fitMisBShiftBHi}{7.3}
+% results_fitted.json matched.0.25.null.shift.rate
+\newcommand{\fitNullBShift}{5.9\%}
+% results_fitted.json matched.0.25.null.shift_at_breach.rate
+\newcommand{\fitNullBShiftB}{6.2\%}
 % results_fitted.json matched.0.5.null.fisher.rate
 \newcommand{\fitNullCFisher}{1.5\%}
 % results_fitted.json matched.0.5.null.mannwhitney.rate
@@ -736,55 +792,77 @@
 % results_fitted.json mismatched.0.5.null.tolerance.rate
 \newcommand{\fitMisCTol}{5.5\%}
 % results_fitted.json mismatched.0.5.null.tolerance.hi
-\newcommand{\fitMisCTolHi}{6.6\%}
+\newcommand{\fitMisCTolHi}{6.6}
 % results_fitted.json mismatched.0.5.null.tolerance.lo
 \newcommand{\fitMisCTolLo}{4.6}
+% results_fitted.json mismatched.0.5.null.tolerance_lookahead.rate
+\newcommand{\fitMisCTolLa}{6.1\%}
+% results_fitted.json mismatched.0.5.null.tolerance_lookahead.lo
+\newcommand{\fitMisCTolLaLo}{5.1}
+% results_fitted.json mismatched.0.5.null.tolerance_lookahead.hi
+\newcommand{\fitMisCTolLaHi}{7.2}
+% results_fitted.json mismatched.0.5.null.shift.rate
+\newcommand{\fitMisCShift}{5.9\%}
+% results_fitted.json mismatched.0.5.null.shift.lo
+\newcommand{\fitMisCShiftLo}{5.0}
+% results_fitted.json mismatched.0.5.null.shift.hi
+\newcommand{\fitMisCShiftHi}{7.1}
+% results_fitted.json mismatched.0.5.null.shift_at_breach.rate
+\newcommand{\fitMisCShiftB}{7.8\%}
+% results_fitted.json mismatched.0.5.null.shift_at_breach.lo
+\newcommand{\fitMisCShiftBLo}{6.7}
+% results_fitted.json mismatched.0.5.null.shift_at_breach.hi
+\newcommand{\fitMisCShiftBHi}{9.1}
+% results_fitted.json matched.0.5.null.shift.rate
+\newcommand{\fitNullCShift}{5.9\%}
+% results_fitted.json matched.0.5.null.shift_at_breach.rate
+\newcommand{\fitNullCShiftB}{4.9\%}
 % results_fitted.json matched.0.25.early.n
-\newcommand{\earlyN}{1,534}
+\newcommand{\earlyN}{1,425}
 % results_fitted.json matched.0.25.early.rates.2.0.engine.rate
-\newcommand{\earlyEngineTwo}{81.9\%}
+\newcommand{\earlyEngineTwo}{82.0\%}
 % results_fitted.json matched.0.25.early.rates.2.0.any_change.rate
-\newcommand{\earlyAnyTwo}{99.2\%}
+\newcommand{\earlyAnyTwo}{100.0\%}
 % results_fitted.json matched.0.25.early.rates.2.0.tolerance.rate
-\newcommand{\earlyTolTwo}{3.7\%}
+\newcommand{\earlyTolTwo}{3.6\%}
 % results_fitted.json matched.0.25.early.rates.2.0.tolerance_lookahead.rate
-\newcommand{\earlyTolLaTwo}{11.1\%}
+\newcommand{\earlyTolLaTwo}{11.6\%}
 % results_fitted.json matched.0.25.early.rates.2.0.shift.rate
-\newcommand{\earlyShiftTwo}{23.5\%}
+\newcommand{\earlyShiftTwo}{25.1\%}
 % results_fitted.json matched.0.25.early.rates.2.0.shift_at_breach.rate
-\newcommand{\earlyShiftBTwo}{2.2\%}
+\newcommand{\earlyShiftBTwo}{1.7\%}
 % results_fitted.json matched.0.25.early.rates.2.0.mannwhitney.rate
-\newcommand{\earlyMwTwo}{2.5\%}
+\newcommand{\earlyMwTwo}{2.0\%}
 % results_fitted.json matched.0.25.early.rates.2.0 (tolerance_lookahead / tolerance)
-\newcommand{\earlyRatioTwo}{3.0}
+\newcommand{\earlyRatioTwo}{3.3}
 % results_fitted.json matched.0.25.early.rates.4.0.engine.rate
 \newcommand{\earlyEngineFour}{81.9\%}
 % results_fitted.json matched.0.25.early.rates.4.0.any_change.rate
-\newcommand{\earlyAnyFour}{99.2\%}
+\newcommand{\earlyAnyFour}{100.0\%}
 % results_fitted.json matched.0.25.early.rates.4.0.tolerance.rate
-\newcommand{\earlyTolFour}{3.7\%}
+\newcommand{\earlyTolFour}{3.6\%}
 % results_fitted.json matched.0.25.early.rates.4.0.tolerance_lookahead.rate
-\newcommand{\earlyTolLaFour}{91.0\%}
+\newcommand{\earlyTolLaFour}{98.6\%}
 % results_fitted.json matched.0.25.early.rates.4.0.shift.rate
-\newcommand{\earlyShiftFour}{39.0\%}
+\newcommand{\earlyShiftFour}{42.0\%}
 % results_fitted.json matched.0.25.early.rates.4.0.shift_at_breach.rate
-\newcommand{\earlyShiftBFour}{1.5\%}
+\newcommand{\earlyShiftBFour}{0.9\%}
 % results_fitted.json matched.0.25.early.rates.4.0.mannwhitney.rate
-\newcommand{\earlyMwFour}{2.1\%}
+\newcommand{\earlyMwFour}{1.5\%}
 % results_fitted.json matched.0.25.early.rates.4.0 (tolerance_lookahead / tolerance)
-\newcommand{\earlyRatioFour}{24.9}
+\newcommand{\earlyRatioFour}{27.5}
 % results_fitted.json matched.0.25.early.null.tolerance.rate
-\newcommand{\earlyNullTol}{3.7\%}
+\newcommand{\earlyNullTol}{3.6\%}
 % results_fitted.json matched.0.25.early.null.tolerance_lookahead.rate
 \newcommand{\earlyNullTolLa}{4.6\%}
 % results_fitted.json matched.0.25.early.null.engine.rate
-\newcommand{\earlyNullEngine}{81.9\%}
+\newcommand{\earlyNullEngine}{82.0\%}
 % results_fitted.json matched.0.25.early.null.shift_at_breach.rate
-\newcommand{\earlyNullShiftB}{5.5\%}
+\newcommand{\earlyNullShiftB}{5.3\%}
 % results_fitted.json matched.0.25.early.auc.4.0.tolerance_lookahead.auc
-\newcommand{\earlyAucFourTolLa}{0.949}
+\newcommand{\earlyAucFourTolLa}{0.990}
 % results_fitted.json matched.0.25.early.auc.4.0.shift.auc
-\newcommand{\earlyAucFourShift}{0.811}
+\newcommand{\earlyAucFourShift}{0.837}
 % results_fitted.json matched.0.25.early.auc.4.0.tolerance.auc
 \newcommand{\earlyAucFourTol}{0.500}
 % results_fitted.json matched.0.25.alt.0.4.invisible_share
@@ -831,6 +909,12 @@
 \newcommand{\wShiftAucLoLow}{0.503}
 % results_fitted.json matched.0.25.auc.0.05.shift.hi
 \newcommand{\wShiftAucHiLow}{0.537}
+% results_fitted.json matched.0.25.auc.0.05.shift_at_breach.auc
+\newcommand{\wShiftBAucLow}{0.519}
+% results_fitted.json matched.0.25.auc.0.05.shift_at_breach.lo
+\newcommand{\wShiftBAucLoLow}{0.504}
+% results_fitted.json matched.0.25.auc.0.05.shift_at_breach.hi
+\newcommand{\wShiftBAucHiLow}{0.533}
 % results_fitted.json matched.0.25.auc.0.4.engine.auc
 \newcommand{\wEngineAucHigh}{0.457}
 % results_fitted.json matched.0.25.auc.0.4.engine.lo
@@ -873,6 +957,28 @@
 \newcommand{\wShiftAucLoHigh}{0.615}
 % results_fitted.json matched.0.25.auc.0.4.shift.hi
 \newcommand{\wShiftAucHiHigh}{0.648}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.auc
+\newcommand{\wShiftBAucHigh}{0.651}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.lo
+\newcommand{\wShiftBAucLoHigh}{0.637}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.hi
+\newcommand{\wShiftBAucHiHigh}{0.664}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.auc (the largest over the detectors; shift_at_breach)
+\newcommand{\wTopAuc}{0.651}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.lo
+\newcommand{\wTopAucLo}{0.637}
+% results_fitted.json matched.0.25.auc.0.4.shift_at_breach.hi
+\newcommand{\wTopAucHi}{0.664}
+% results_fitted.json real_series.0.25.auc.0.4.shift.auc (the largest over the detectors with a statistic on the series; shift)
+\newcommand{\wRealTopAuc}{0.801}
+% results_fitted.json matched.0.25.alt.0.4.shift_at_breach.rate
+\newcommand{\wTopFlag}{15.0\%}
+% results_fitted.json matched.0.25.null.shift_at_breach.rate
+\newcommand{\wTopNull}{6.2\%}
+% results_fitted.json real_series.0.25.alt.0.4.shift.rate
+\newcommand{\wRealTopFlag}{9.0\%}
+% results_fitted.json real_series.0.25.null.shift.rate
+\newcommand{\wRealTopNull}{0.0\%}
 % results_fitted.json matched.0.25.alt.0.4.tolerance.rate
 \newcommand{\wTolFlagHigh}{2.5\%}
 % results_fitted.json matched.0.25.alt.0.4.stability.rate

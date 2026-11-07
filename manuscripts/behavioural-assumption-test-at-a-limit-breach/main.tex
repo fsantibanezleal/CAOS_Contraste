@@ -24,13 +24,13 @@
 \headerblock
 
 \begin{abstract}
-The review of the failure of Silicon Valley Bank found that it changed the assumed duration of its deposits when an interest rate risk limit was breached; no published procedure turns that into a check.
+The review of the failure of Silicon Valley Bank found that it changed the assumed duration of its deposits when an interest rate risk limit was breached; no published procedure checks for that.
 We state a test that counts the dates at which a behavioural parameter changed during a breach, with a tolerance extension, and prove eight propositions.
-On a stated parameter it flags \statedAltEngine{} of histories with a change at a breach date and \statedNullEngine{} (\statedNullLoEngine{} to \statedNullHiEngine{}\,\%) of those with unrelated changes, as $1-(1-\lambda)^m$ predicts; the Fisher, Mann--Whitney and Welch tests detect \statedAltFisher{}, \statedAltMw{} and \statedAltWelch{}.
+On a stated parameter it flags \statedAltEngine{} of histories with a change at a breach date and \statedNullEngine{} with unrelated changes, as $1-(1-\lambda)^m$ predicts; the Fisher, Mann--Whitney and Welch tests detect \statedAltFisher{}, \statedAltMw{} and \statedAltWelch{}.
 On a re-estimated parameter it flags \fitNullEngine{} of null banks and ranks a 2-year lengthening at an ROC area of \fitAucCEngine{} (\fitAucLoCEngine{} to \fitAucHiCEngine{}).
 A tolerance calibrated at 5\,\% holds \fitNullTol{} false flags and ranks it at \fitAucCTol{}, but detects \fitAddCTol{} of 2-year and \fitAddDTol{} of 4-year lengthenings; a break test required to fall on a breach date detects \fitAddCShiftB{} and \fitAddDShiftB{} at \fitNullShiftB{} false flags.
-Calibrated at one prevalence and applied at another, the tolerance flags \fitMisCTol{} (\fitMisCTolLo{} to \fitMisCTolHi{}\,\%) of null banks, within a calibration's spread; an override of the weights is detected weakly at best (area at most \wShiftAucHigh{}).
-Three of nine predictions failed: the 5\,\% size on stated parameters, an area of 0.70 on re-estimated ones, and the 5\,\% size of the tolerance at another prevalence.
+Calibrated at one prevalence, applied at another, the tolerance flags \fitMisCTol{} (\fitMisCTolLo{} to \fitMisCTolHi{}\,\%) of null banks, within a calibration's spread, and the break test \fitMisCShiftB{}, outside it. An override of the weights is detected weakly on simulated banks (area at most \wTopAuc{}) and moderately on the real series (\wRealTopAuc{}, level shift).
+Three of nine predictions failed: the 5\,\% size on stated parameters, an area of 0.70 on re-estimated ones, and the tolerance's 5\,\% size at another prevalence.
 The bank's behaviour is synthetic: no result concerns what it did.
 \end{abstract}
 
