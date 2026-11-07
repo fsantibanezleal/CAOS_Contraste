@@ -1523,6 +1523,10 @@
   "source": "experiments/results/shift.json: eval 500, shift 0.0",
   "value": "0.011"
  },
+ "ShPermCUpper": {
+  "source": "experiments/results/shift.json: 0.05 plus two exact-null standard errors at 500 rows",
+  "value": "0.072"
+ },
  "ShPermExcessFull": {
   "source": "experiments/results/shift.json: pooled size minus the exact size of the p-value grid, 199 draws",
   "value": "0.009"
@@ -1534,6 +1538,14 @@
  "ShPermExcessThirtyNine": {
   "source": "experiments/results/shift.json: pooled size minus the exact size of the p-value grid, 39 draws",
   "value": "0.011"
+ },
+ "ShPermExcessZExactMax": {
+  "source": "experiments/results/shift.json: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), maximum",
+  "value": "2.9"
+ },
+ "ShPermExcessZExactMin": {
+  "source": "experiments/results/shift.json: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), minimum",
+  "value": "1.8"
  },
  "ShPermExcessZMax": {
   "source": "experiments/results/shift.json: that excess in standard errors, maximum",
@@ -2828,12 +2840,12 @@
   "value": "2,000"
  },
  "SiInRhoLarge": {
-  "source": "experiments/results/situation_indep.json: average correlation implied by the design effect, (DE - 1) / (Q - 1), n 1000",
-  "value": "0.028"
+  "source": "experiments/results/situation_indep.json: average correlation of eq:design-effect solved with the null mean share, n 1000",
+  "value": "0.026"
  },
  "SiInRhoSmall": {
-  "source": "experiments/results/situation_indep.json: average correlation implied by the design effect, (DE - 1) / (Q - 1), n 400",
-  "value": "0.074"
+  "source": "experiments/results/situation_indep.json: average correlation of eq:design-effect solved with the null mean share, n 400",
+  "value": "0.068"
  },
  "SiInSdShareLargeA": {
   "source": "experiments/results/situation_indep.json: n 1000, bias 0.1",
@@ -3672,12 +3684,12 @@
   "value": "1,000"
  },
  "SiRhoLarge": {
-  "source": "experiments/results/situation.json: average correlation implied by the design effect, (DE - 1) / (Q - 1), n 1000",
-  "value": "0.010"
+  "source": "experiments/results/situation.json: average correlation of eq:design-effect solved with the null mean share, n 1000",
+  "value": "0.018"
  },
  "SiRhoSmall": {
-  "source": "experiments/results/situation.json: average correlation implied by the design effect, (DE - 1) / (Q - 1), n 400",
-  "value": "0.048"
+  "source": "experiments/results/situation.json: average correlation of eq:design-effect solved with the null mean share, n 400",
+  "value": "0.060"
  },
  "SiSdShareLargeA": {
   "source": "experiments/results/situation.json: n 1000, gap 0.1",
@@ -4078,6 +4090,34 @@
  "SiSeCutTwentySmallZ": {
   "source": "experiments/results/situation.json: n 400, gap 0.0, cut_0.2",
   "value": "0.004"
+ },
+ "TimeCovMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of coverage, minutes",
+  "value": "1.3"
+ },
+ "TimeCpus": {
+  "source": "experiments/results/timings.json: logical cores of the machine of the cold runs",
+  "value": "32"
+ },
+ "TimeExactSec": {
+  "source": "experiments/results/timings.json: wall time of exact_theory.py, seconds",
+  "value": "43"
+ },
+ "TimeShiftMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of shift, minutes",
+  "value": "9.9"
+ },
+ "TimeSitInMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of situation_indep, minutes",
+  "value": "0.7"
+ },
+ "TimeSitMin": {
+  "source": "experiments/results/timings.json: wall time of the cold run of situation, minutes",
+  "value": "1.0"
+ },
+ "TimeWorkers": {
+  "source": "experiments/results/timings.json: worker processes of the cold runs",
+  "value": "24"
  },
  "VarRatioA": {
   "source": "exact.json: variance ratio n=200, m=50",

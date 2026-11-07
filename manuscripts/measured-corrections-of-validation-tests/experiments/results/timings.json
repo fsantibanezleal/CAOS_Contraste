@@ -1,0 +1,32 @@
+{
+ "coverage": {
+  "cpu_count": 32,
+  "seconds": 77.0,
+  "units": 35,
+  "workers": 24
+ },
+ "exact": {
+  "cpu_count": 32,
+  "seconds": 42.7,
+  "units": 1,
+  "workers": 1
+ },
+ "shift": {
+  "cpu_count": 32,
+  "seconds": 592.4,
+  "units": 4000,
+  "workers": 24
+ },
+ "situation": {
+  "cpu_count": 32,
+  "seconds": 57.1,
+  "units": 5200,
+  "workers": 24
+ },
+ "situation_indep": {
+  "cpu_count": 32,
+  "seconds": 40.0,
+  "units": 6400,
+  "workers": 24
+ }
+}

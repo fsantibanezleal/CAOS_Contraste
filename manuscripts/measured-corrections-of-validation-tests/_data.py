@@ -54,8 +54,20 @@ def r3(x: float) -> str:
 
 
 def pm(rate: dict, digits: int = 3) -> str:
-    """A rate with its standard error as a LaTeX math string, the form ``figkit.table`` passes through."""
-    return f"${rate['rate']:.{digits}f} \\pm {rate['se']:.{digits}f}$"
+    """A rate with its standard error as a LaTeX math string, the form ``figkit.table`` passes through.
+
+    A rate of 0 or 1 has a sample standard error of zero, which is not the uncertainty of the rate: it is printed as its count with the
+    one-sided 95 percent bound of the rule of three, 3 / R. A rate below 0.005 is printed with four decimals.
+    """
+    reps = int(rate["reps"])
+    hits = int(round(rate["rate"] * reps))
+    count = f"{reps:,}".replace(",", "{,}")
+    if hits == 0:
+        return f"$0 \\text{{ of }} {count}\\ (<{3.0 / reps:.4f})$"
+    if hits == reps:
+        return f"${count} \\text{{ of }} {count}\\ (>{1.0 - 3.0 / reps:.4f})$"
+    d = 4 if rate["rate"] < 0.005 else digits
+    return f"${rate['rate']:.{d}f} \\pm {rate['se']:.{d}f}$"
 
 
 def jload(path: pathlib.Path) -> dict:

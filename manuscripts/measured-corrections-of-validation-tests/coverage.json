@@ -4,7 +4,8 @@
     "tab:main-results",
     "tab:exact-size",
     "tab:shift-eval-size",
-    "tab:situation-designs"
+    "tab:situation-designs",
+    "tab:situation-ablation"
   ],
   "claims": {
     "BS-10": "sec:proposed-method"

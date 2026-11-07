@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\caption{The predictions stated before the experiments, each with the value the experiments measured and whether it held: held, held in part, or refuted; the bound used is 0.05 plus two Monte Carlo standard errors of the rate.}
+\caption{The predictions, written as bounds from the small-design results of the product's notebook, each with the value the experiments measured and whether it held: held, held in part, or refuted; the bound used is 0.05 plus two Monte Carlo standard errors of the rate, and a difference of two rates is real when it exceeds twice the standard error of the difference.}
 \label{tab:hypotheses}
 \fitwidth{\begin{tabular}{>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{6.6cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{1.8cm}}
 \toprule
@@ -11,11 +11,11 @@ H1a & \relax The binomial coverage test rejects in at least 0.15 of exchangeable
 H1b & The Beta-Binomial test rejects in at most 0.05 plus two standard errors at every ratio of the grid, and its exact size is at most 0.05 & largest simulated 0.054, largest exact 0.0499 & held \\
 H2a & A fixed drop of 0.05 AUC points fires above 0.05 plus two standard errors on shift-free replications; a fixed drop of 0.10 does so at the smallest design & cut 0.05: 0.125 to 0.254 over four sizes; cut 0.10 at 125 rows: 0.098 & held \\
 H2b & The permutation reference with 199 draws rejects in at most 0.05 plus two standard errors without shift, at every evaluation size & 0.048 to 0.062 & held \\
-H2c & The permutation reference detects a planted shift less often than the fixed cut 0.05 in every cell, and the difference narrows as the evaluation sample grows & shift 2: gap 0.392 at 125 rows, 0.123 at 1,000 rows & held \\
+H2c & The permutation reference detects a planted shift less often than the fixed cut 0.05 in every cell, and the difference at shift 2 falls at each larger evaluation size & shift 2: gap 0.392 at 125 rows, 0.123 at 1,000 rows & held \\
 H3a & With 400 applicants and thirty neighbours the amber cut 0.20 fires in at most 0.05 plus two standard errors of the replications without bias and the cut 0.10 above it & cut 0.20: 0.014; cut 0.10: 0.114 & held \\
 H3b & The cut 0.20 detects the planted gap of 0.8 in at least 0.95 of the replications & 1.000 & held \\
-H3c & The cut 0.20 costs no power against the cut 0.10 at the planted gaps 0.2 and 0.4 & gap 0.4: 0.968 against 1.000; gap 0.2: 0.410 against 0.743 & refuted \\
-H3d & The size of the cut 0.10 measured at 400 applicants carries over to 1,000 applicants & 0.114 at 400, 0.018 at 1,000 & refuted \\
+H3c & The cut 0.20 costs no power against the cut 0.10 at the planted gaps 0.2 and 0.4 (a cost is a deficit beyond twice the standard error of the difference) & gap 0.4: 0.968 against 1.000; gap 0.2: 0.410 against 0.743 & refuted \\
+H3d & The size of the cut 0.10 measured at 400 applicants carries over to 1,000 applicants (the two sizes differ by at most twice the standard error of their difference) & 0.114 at 400, 0.018 at 1,000 & refuted \\
 H3e & The size of the cuts 0.10 and 0.20 at 400 applicants is the same on a second planted design with independent attributes & cut 0.10: 0.114 and 0.195; cut 0.20: 0.014 and 0.035 & refuted \\
 \bottomrule
 \end{tabular}}

@@ -50,11 +50,11 @@ and the light is read from it with the thresholds of \cref{eq:light}. A draw who
 \label{alg:resilience}
 \begin{algorithmic}[1]
 \Require model $f$, development rows $(X_d,y_d)$ with $n_d\ge 2n_e$, evaluation rows $(X_e,y_e)$, share $s$, draws $R$, seed
-\State $\sigma\gets$ cross-fitted resemblance score of the evaluation rows against the development rows
-\State $W\gets$ the $\lceil s\,n_e\rceil$ evaluation rows of highest $\sigma$; $D\gets\operatorname{AUC}(f;\text{all})-\operatorname{AUC}(f;W)$
+\State $u\gets$ cross-fitted resemblance score of the evaluation rows against the development rows
+\State $W\gets$ the $\lceil s\,n_e\rceil$ evaluation rows of highest $u$; $D\gets\operatorname{AUC}(f;\text{all})-\operatorname{AUC}(f;W)$
 \For{$r=1,\dots,R$}
-  \State draw a random subset $E_r$ of $n_e$ development rows; $G_r\gets$ the other development rows
-  \State $\sigma_r\gets$ cross-fitted resemblance score of $E_r$ against $G_r$; $W_r\gets$ the worst share $s$ of $E_r$
+  \State draw a random subset $E_r$ of $n_e$ development rows; $H_r\gets$ the other development rows
+  \State $u_r\gets$ cross-fitted resemblance score of $E_r$ against $H_r$; $W_r\gets$ the worst share $s$ of $E_r$
   \If{$W_r$ holds one class} skip the draw \Else{} $D_r\gets\operatorname{AUC}(f;E_r)-\operatorname{AUC}(f;W_r)$ \EndIf
 \EndFor
 \State \Return $D$, $p_{\mathrm{perm}}$ of \cref{eq:perm-p}, the null mean and the 95th percentile of the $D_r$
@@ -68,12 +68,12 @@ The share $S$ of \cref{eq:share} has a null mean that depends on the constructio
 \Var(S)=\frac{\theta_0(1-\theta_0)}{Q}\bigl[1+(Q-1)\bar\rho\bigr],\qquad \mathrm{DE}=\frac{Q\,\Var(S)}{\theta(1-\theta)},
 \label{eq:design-effect}
 \end{equation}
-where $\mathrm{DE}$ is the design effect, the variance of the share relative to that of $Q$ independent decisions made at level $\theta$. The light does not model $\bar\rho$. It sets the cut $c_0$ on a grid $\mathcal{G}$ by measurement: for a plant of the size of the portfolio and the null gap, the cut is the smallest value of the grid whose measured size does not exceed the bound,
+where $\mathrm{DE}$ is the design effect, the variance of the share relative to that of $Q$ independent decisions made at the level $\theta$ (the null mean $\theta_0$ of the share is a property of the design and differs from the level $\theta$). Solving the first equation for the correlation gives $\bar\rho=\bigl[Q\Var(S)/(\theta_0(1-\theta_0))-1\bigr]/(Q-1)$, in which the null mean $\theta_0$ and not the level appears; the average correlations quoted in \cref{sec:theory} are computed with this expression from the measured mean and variance of the share. The light does not model $\bar\rho$. It sets the cut $c_0$ on a grid $\mathcal{G}$ by measurement: for a plant of the size of the portfolio and the null gap, the cut is the smallest value of the grid whose measured size does not exceed the bound,
 \begin{equation}
-c_0=\min\Bigl\{c\in\mathcal{G}:\ \hat r_0(c)\le\theta+2\,\widehat{\mathrm{se}}\bigl(\hat r_0(c)\bigr)\Bigr\},
+c_0=\min\Bigl\{\kappa\in\mathcal{G}:\ \hat r_0(\kappa)\le\theta+2\,\widehat{\mathrm{se}}\bigl(\hat r_0(\kappa)\bigr)\Bigr\},
 \label{eq:cut-rule}
 \end{equation}
-where $\hat r_0(c)$ is the rejection rate of the rule $S\ge c$ over the null replications and $\widehat{\mathrm{se}}$ its Monte Carlo standard error. The power at a planted gap is then reported beside the cut. The engine's cut is $0.20$; the grid that the experiments use contains it and the former cut $0.10$. The light is amber when $S\ge c_0$ and never red, because the cut is a convention and no regulatory threshold applies to it.
+where $\hat r_0(\kappa)$ is the rejection rate of the rule $S\ge\kappa$ over the null replications and $\widehat{\mathrm{se}}$ its Monte Carlo standard error. The power at a planted gap is then reported beside the cut. The engine's cut is $0.20$; the grid that the experiments use contains it and the former cut $0.10$. The light is amber when $S\ge c_0$ and never red, because the cut is a convention and no regulatory threshold applies to it.
 
 \subsection{The measurement protocol}
 

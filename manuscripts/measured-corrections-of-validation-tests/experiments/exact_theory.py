@@ -20,6 +20,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common  # noqa: E402
 
 import argparse  # noqa: E402
+import time  # noqa: E402
 import math  # noqa: E402
 
 import numpy as np  # noqa: E402
@@ -107,11 +108,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=pathlib.Path, default=common.RESULTS)
     a = parser.parse_args()
+    started = time.perf_counter()
     out = {"meta": {"experiment": "exact", "versions": common.versions(), "level": common.LEVEL,
                     "conformal_alpha": common.CONFORMAL_ALPHA, "nodes": NODES, "target": TARGET},
            "size_curves": size_curves(), "variance_ratio": variance_ratio(), "power_curves": power_curves(),
            "granularity": granularity()}
     path = common.write_result(a.out, "exact.json", out)
+    common.record_timing(a.out, "exact", time.perf_counter() - started, 1, 1)
     print("wrote", path.name)
     return 0
 

@@ -26,6 +26,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common  # noqa: E402  (sets the thread environment before numpy loads)
 
 import argparse  # noqa: E402
+import time  # noqa: E402
 import math  # noqa: E402
 from concurrent.futures import ProcessPoolExecutor  # noqa: E402
 
@@ -155,10 +156,13 @@ def main() -> int:
         else:
             todo.append((index, key, (n, m, b, reps, index)))
     if todo:
+        started = time.perf_counter()
         with ProcessPoolExecutor(max_workers=a.workers) as pool:
             for (index, key, _), result in zip(todo, pool.map(run_cell, [t[2] for t in todo])):
                 common.save_cell(folder, key, result)
                 done[index] = result
+        if not done.keys() - {t[0] for t in todo}:  # a cold run: every cell was computed here
+            common.record_timing(a.out, "coverage", time.perf_counter() - started, a.workers, len(todo))
     results = [done[i] for i in sorted(done)]
     out = {"meta": {"experiment": "coverage", "versions": common.versions(), "reps": reps, "base_seed": common.BASE_SEED,
                     "level": common.LEVEL, "conformal_alpha": common.CONFORMAL_ALPHA},

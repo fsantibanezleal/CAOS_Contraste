@@ -83,6 +83,14 @@ def coverage_macros() -> None:
     put("CovTotalReps", thousands(sum(c["reps"] for c in COVERAGE["cells"])), f"{src}: replications over all cells")
     put("CovReps", thousands(COVERAGE["meta"]["reps"]), f"{src}: replications per cell")
     ver = COVERAGE["meta"]["versions"]
+    tm = json.loads((D.RESULTS / "timings.json").read_text(encoding="utf-8"))
+    tsrc = "experiments/results/timings.json"
+    for key, nm in (("coverage", "Cov"), ("shift", "Shift"), ("situation", "Sit"), ("situation_indep", "SitIn")):
+        put(f"Time{nm}Min", f"{tm[key]['seconds'] / 60.0:.1f}", f"{tsrc}: wall time of the cold run of {key}, minutes")
+    put("TimeExactSec", f"{tm['exact']['seconds']:.0f}", f"{tsrc}: wall time of exact_theory.py, seconds")
+    put("TimeWorkers", str(tm["shift"]["workers"]), f"{tsrc}: worker processes of the cold runs")
+    put("TimeCpus", str(tm["shift"]["cpu_count"]), f"{tsrc}: logical cores of the machine of the cold runs")
+    assert len({tm[k]["workers"] for k in ("coverage", "shift", "situation", "situation_indep")}) == 1
     put("EnvEngine", ver["riskvalidation"], f"{src}: meta.versions.riskvalidation")
     put("EnvNumpy", ver["numpy"], f"{src}: meta.versions.numpy")
     put("EnvScipy", ver["scipy"], f"{src}: meta.versions.scipy")
@@ -220,6 +228,16 @@ def shift_macros() -> None:
         ex = (exact_r["max_null_draws_above_observed"] + 1) / (r + 1)
         excess[nm] = (pooled - ex, (pooled - ex) / se_p)
         put(f"ShPermExcess{nm}", f3(pooled - ex), f"{src}: pooled size minus the exact size of the p-value grid, {r} draws")
+    zx = []
+    for r_, nm in ((39, "ThirtyNine"), (99, "NinetyNine"), (199, "Full")):
+        cells0 = [c for c in SHIFT["cells"] if c["shift"] == 0.0]
+        exact_r = next(g for g in EXACT["granularity"] if g["draws"] == r_)
+        ex = (exact_r["max_null_draws_above_observed"] + 1) / (r_ + 1)
+        se_ex = math.sqrt(sum(ex * (1 - ex) / c["n"] for c in cells0)) / len(cells0)
+        zx.append(excess[nm][0] / se_ex)
+    put("ShPermExcessZExactMin", f"{min(zx):.1f}", f"{src}: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), minimum")
+    put("ShPermExcessZExactMax", f"{max(zx):.1f}", f"{src}: that excess in standard errors of the exact null rate sqrt(p (1 - p) / n), maximum")
+    put("ShPermCUpper", f3(THETA + 2 * math.sqrt(THETA * (1 - THETA) / shift_cell(500, 0.0)["n"])), f"{src}: 0.05 plus two exact-null standard errors at 500 rows")
     put("ShPermExcessZMin", f"{min(v[1] for v in excess.values()):.1f}", f"{src}: that excess in standard errors, minimum")
     put("ShPermExcessZMax", f"{max(v[1] for v in excess.values()):.1f}", f"{src}: that excess in standard errors, maximum")
 
@@ -229,6 +247,13 @@ RULE_SI = {"cut_0.05": "CutFive", "cut_0.075": "CutSevenFive", "cut_0.1": "CutTe
            "cut_0.25": "CutTwentyFive", "cut_0.3": "CutThirty", "count_binomial": "CountBin", "bonferroni_any": "Bonf"}
 N_CODE = {400: "Small", 1000: "Large"}
 GAP_CODE = {0.0: "Z", 0.1: "A", 0.2: "B", 0.4: "C", 0.8: "D"}
+
+
+def rho_bar(c: dict) -> float:
+    """The average correlation of the complainant indicators: Var(S) = t0 (1 - t0) [1 + (Q - 1) rho] / Q solved for rho, with t0 the null mean
+    share of the cell (not the level 0.05, which the design effect of the result files uses)."""
+    q, t0, var = c["mean_complainants"], c["mean_share"], c["sd_share"] ** 2
+    return (q * var / (t0 * (1.0 - t0)) - 1.0) / (q - 1.0)
 
 
 def situation_macros() -> None:
@@ -269,8 +294,7 @@ def situation_macros() -> None:
     put("SiMarkovTen", f3(THETA / 0.10), "Proposition 6: Markov bound at the cut 0.10")
     for n_val, n in N_CODE.items():
         c = sit_cell(n_val, 0.0)
-        put(f"SiRho{n}", f3((c["design_effect"] - 1.0) / (c["mean_complainants"] - 1.0)),
-            f"{src}: average correlation implied by the design effect, (DE - 1) / (Q - 1), n {n_val}")
+        put(f"SiRho{n}", f3(rho_bar(c)), f"{src}: average correlation of eq:design-effect solved with the null mean share, n {n_val}")
     put("SiIndepSd", f3(math.sqrt(THETA * (1 - THETA) / sit_cell(400, 0.0)["mean_complainants"])), "the standard deviation of a share of independent complainants, n 400")
 
 
@@ -293,8 +317,7 @@ def situation_indep_macros() -> None:
         put(f"SiInComplainants{n}{g}", f"{c['mean_complainants']:.0f}", tagsrc)
     for n_val, n in N_CODE.items():
         c = sit_indep_cell(n_val, 0.0)
-        put(f"SiInRho{n}", f3((c["design_effect"] - 1.0) / (c["mean_complainants"] - 1.0)),
-            f"{src}: average correlation implied by the design effect, (DE - 1) / (Q - 1), n {n_val}")
+        put(f"SiInRho{n}", f3(rho_bar(c)), f"{src}: average correlation of eq:design-effect solved with the null mean share, n {n_val}")
     eng = "CAOS_RiskValidation docs/fairness/06_validation-tests.md l.77 (recorded by the engine's size-and-power suite, 4,000 repetitions)"
     put("EngSiSizeTwenty", "0.0395", eng + ": size of the cut 0.20")
     put("EngSiSeTwenty", "0.0031", eng + ": standard error of the size of the cut 0.20")
@@ -309,7 +332,7 @@ SHIFT_ZERO_SD = {c["n_eval"]: c["sd_drop"] for c in SHIFT["cells"] if c["shift"]
 
 
 def notebook_macros() -> None:
-    """The small-design measurements of the product's level-4 notebook, read from the saved outputs of its cells."""
+    """The small-design measurements of the product's notebook "Measured size and power of the corrected tests", read from the saved outputs of its cells."""
     import re
 
     nb = D.jload(figkit.ROOT / "notebooks" / "en" / "13-ml-and-ai-risk" / "09-measured-size-and-power-of-the-corrected-tests.ipynb")
@@ -425,9 +448,11 @@ def hypotheses() -> list[list[str]]:
                  f"{min(c['rules']['perm_199']['rate'] for c in SHIFT['cells'] if c['shift'] == 0.0):.3f} to "
                  f"{max(c['rules']['perm_199']['rate'] for c in SHIFT['cells'] if c['shift'] == 0.0):.3f}", "held" if perm_ok else "refuted"])
     cost = all(c["rules"]["perm_199"]["rate"] < c["rules"]["fixed_0.05"]["rate"] for c in SHIFT["cells"] if c["shift"] > 0)
-    rows.append(["H2c", "The permutation reference detects a planted shift less often than the fixed cut 0.05 in every cell, and the difference narrows as the evaluation sample grows",
+    gaps2 = [shift_cell(e, 2.0)["rules"]["fixed_0.05"]["rate"] - shift_cell(e, 2.0)["rules"]["perm_199"]["rate"] for e in (125, 250, 500, 1000)]
+    narrows = all(a > b for a, b in zip(gaps2, gaps2[1:]))
+    rows.append(["H2c", "The permutation reference detects a planted shift less often than the fixed cut 0.05 in every cell, and the difference at shift 2 falls at each larger evaluation size",
                  f"shift 2: gap {shift_cell(125, 2.0)['rules']['fixed_0.05']['rate'] - shift_cell(125, 2.0)['rules']['perm_199']['rate']:.3f} at 125 rows, "
-                 f"{shift_cell(1000, 2.0)['rules']['fixed_0.05']['rate'] - shift_cell(1000, 2.0)['rules']['perm_199']['rate']:.3f} at 1,000 rows", "held" if cost else "refuted"])
+                 f"{shift_cell(1000, 2.0)['rules']['fixed_0.05']['rate'] - shift_cell(1000, 2.0)['rules']['perm_199']['rate']:.3f} at 1,000 rows", "held" if (cost and narrows) else "refuted"])
     # H3: situation
     s0, s8 = sit_cell(400, 0.0), sit_cell(400, 0.8)
     ok20 = s0["rules"]["cut_0.2"]["rate"] <= THETA + 2 * s0["rules"]["cut_0.2"]["se"]
@@ -439,13 +464,15 @@ def hypotheses() -> list[list[str]]:
                  f"{s8['rules']['cut_0.2']['rate']:.3f}", "held" if pw else "refuted"])
     s4 = sit_cell(400, 0.4)
     s2 = sit_cell(400, 0.2)
-    rows.append(["H3c", "The cut 0.20 costs no power against the cut 0.10 at the planted gaps 0.2 and 0.4",
+    se_diff = lambda a, b: (a["se"] ** 2 + b["se"] ** 2) ** 0.5  # noqa: E731
+    costs = [c["rules"]["cut_0.1"]["rate"] - c["rules"]["cut_0.2"]["rate"] > 2 * se_diff(c["rules"]["cut_0.1"], c["rules"]["cut_0.2"]) for c in (s2, s4)]
+    rows.append(["H3c", "The cut 0.20 costs no power against the cut 0.10 at the planted gaps 0.2 and 0.4 (a cost is a deficit beyond twice the standard error of the difference)",
                  f"gap 0.4: {s4['rules']['cut_0.2']['rate']:.3f} against {s4['rules']['cut_0.1']['rate']:.3f}; gap 0.2: {s2['rules']['cut_0.2']['rate']:.3f} against {s2['rules']['cut_0.1']['rate']:.3f}",
-                 "refuted" if s2["rules"]["cut_0.2"]["rate"] < s2["rules"]["cut_0.1"]["rate"] - 0.05 else "held"])
+                 "refuted" if any(costs) else "held"])
     l0 = sit_cell(1000, 0.0)
-    rows.append(["H3d", "The size of the cut 0.10 measured at 400 applicants carries over to 1,000 applicants",
+    rows.append(["H3d", "The size of the cut 0.10 measured at 400 applicants carries over to 1,000 applicants (the two sizes differ by at most twice the standard error of their difference)",
                  f"{s0['rules']['cut_0.1']['rate']:.3f} at 400, {l0['rules']['cut_0.1']['rate']:.3f} at 1,000",
-                 "refuted" if l0["rules"]["cut_0.1"]["rate"] < THETA - 2 * l0["rules"]["cut_0.1"]["se"] else "held"])
+                 "refuted" if abs(l0["rules"]["cut_0.1"]["rate"] - s0["rules"]["cut_0.1"]["rate"]) > 2 * se_diff(l0["rules"]["cut_0.1"], s0["rules"]["cut_0.1"]) else "held"])
     i4, i4t = sit_indep_cell(400, 0.0), sit_cell(400, 0.0)
     se = lambda a, b: (a["se"] ** 2 + b["se"] ** 2) ** 0.5  # noqa: E731
     differ = all(abs(i4["rules"][k]["rate"] - i4t["rules"][k]["rate"]) > 2 * se(i4["rules"][k], i4t["rules"][k]) for k in ("cut_0.1", "cut_0.2"))
@@ -459,8 +486,9 @@ def hypothesis_table(rows: list[list[str]]) -> None:
     from make_tables import table
 
     table("hypotheses", ["Id", "Statement", "Measured", "Outcome"], rows,
-          caption="The predictions stated before the experiments, each with the value the experiments measured and whether it held: held, held in part, or refuted; the "
-                  "bound used is 0.05 plus two Monte Carlo standard errors of the rate.",
+          caption="The predictions, written as bounds from the small-design results of the product's notebook, each with the value the experiments measured and whether it held: "
+                  "held, held in part, or refuted; the bound used is 0.05 plus two Monte Carlo standard errors of the rate, and a difference of two rates is real when it "
+                  "exceeds twice the standard error of the difference.",
           label="tab:hypotheses", align=">{\\raggedright\\arraybackslash}p{0.8cm}>{\\raggedright\\arraybackslash}p{6.6cm}>{\\raggedright\\arraybackslash}p{4.2cm}>{\\raggedright\\arraybackslash}p{1.8cm}")
 
 

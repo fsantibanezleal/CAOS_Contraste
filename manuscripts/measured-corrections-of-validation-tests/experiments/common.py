@@ -73,6 +73,20 @@ def write_result(out: pathlib.Path, name: str, value: Any) -> pathlib.Path:
     return path
 
 
+def record_timing(out: pathlib.Path, experiment: str, seconds: float, workers: int, units: int) -> pathlib.Path:
+    """Add the wall time of one cold run (an empty cache, every unit computed) to ``timings.json`` beside the results.
+
+    The file is outside the deterministic outputs: a wall time differs between runs, and the byte-for-byte reproduction
+    claim is about the other files. The worker count is the one the run used.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+    path = out / "timings.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    data[experiment] = {"seconds": round(seconds, 1), "workers": workers, "units": units, "cpu_count": os.cpu_count()}
+    path.write_text(json.dumps(data, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    return path
+
+
 def versions() -> dict[str, str]:
     import importlib.metadata as md
 

@@ -73,7 +73,8 @@ def main_results() -> None:
     table("main_results", ["Test", "Rule", "Size (no defect)", "Power (planted defect)", "Defect"], rows,
           caption="The rejection rate of each rule on data without a defect (size, level 0.05) and with a planted defect (power), each with its Monte Carlo "
                   "standard error, for the three tests: the coverage test at three window ratios, the resilience test with 500 evaluation rows and the situation "
-                  "light with 400 applicants.",
+                  "light with 400 applicants; a rate of 0 or of 1 is printed as its count with the one-sided 95 percent bound $3/R$ of the rule of three, because its "
+                  "sample standard error is zero.",
           label="tab:main-results", align="llccl", wide=False)
 
 
@@ -81,14 +82,14 @@ def main_results() -> None:
 def exact_size() -> None:
     rows = []
     for n in exp_coverage.SIZE_NS:
-        for r in (0.1, 0.5, 1.0, 2.0, 4.0, 8.0):
+        for r in exp_coverage.SIZE_RATIOS:
             m = int(round(r * n))
             c = cov_cell(n, m, 1.0)
-            rows.append([f"{n:,}", f"{m:,}", f"{m / n:.1f}", f"{c['exact']['bin']:.4f}", f"{c['normal_approx_binomial']:.4f}", pm(c["rates"]["bin"]),
+            rows.append([f"{n:,}", f"{m:,}", f"{m / n:g}", f"{c['exact']['bin']:.4f}", f"{c['normal_approx_binomial']:.4f}", pm(c["rates"]["bin"]),
                          f"{c['exact']['bb']:.4f}", pm(c["rates"]["bb"])])
     table("exact_size", ["$n$", "$m$", "$m/n$", "Binomial, exact", "Binomial, normal", "Binomial, simulated", "Beta-Binomial, exact", "Beta-Binomial, simulated"], rows,
           caption="The size of the binomial and of the Beta-Binomial coverage test at level 0.05 for calibration windows of 200, 1,000 and 5,000 rows and test windows "
-                  "from 0.1 to 8 times as long: the exact sum of the Beta-Binomial law, the normal approximation of the binomial size, and the engine's functions on "
+                  "from 0.1 to 8 times as long (every cell of the size grid): the exact sum of the Beta-Binomial law, the normal approximation of the binomial size, and the engine's functions on "
                   f"{exp_coverage.REPS:,} seeded replications with the standard error.",
           label="tab:exact-size", align="rrrccccc", wide=False)
 
@@ -226,27 +227,45 @@ def committed() -> dict:
 # ---------------------------------------------------------------------------------------------------------------------
 def notation() -> None:
     rows = [
-        ["$\\alpha$", "miscoverage of the conformal set, 0.10", "dimensionless"],
+        ["$\\alpha$", "miscoverage of the conformal set, 0.10; the target coverage is $1-\\alpha$", "dimensionless"],
         ["$n$", "calibration rows of the conformal set", "rows"],
         ["$m$", "test rows whose coverage is read", "rows"],
         ["$k$", "rank of the conformal quantile, $\\lceil (n+1)(1-\\alpha)\\rceil$", "dimensionless"],
-        ["$C$", "number of test rows whose set holds the true label", "rows"],
+        ["$\\mu$", "mean of the coverage of the set, $k/(n+1)$", "dimensionless"],
+        ["$C$, $c$", "random and observed number of test rows whose set holds the true label", "rows"],
+        ["$z_j$", "indicator that the set holds the true label of test row $j$", "0 or 1"],
         ["$V$", "coverage of the set given the calibration rows", "dimensionless"],
-        ["$\\mu_0$", "target coverage $1-\\alpha$", "dimensionless"],
+        ["$\\rho_{n,m}$", "variance factor of the covered count over the binomial variance, $(m+n+1)/(n+2)$", "dimensionless"],
+        ["$\\lambda$", "limit of the ratio $m/n$ in Proposition 4", "dimensionless"],
         ["$b$", "shape of the drift of the test scores, $\\Prob(\\text{coverage})=q^b$", "dimensionless"],
+        ["$p_{\\mathrm{BB}}$, $p_{\\mathrm{Bin}}$", "two-sided p-value of the covered count under the Beta-Binomial and the binomial law", "dimensionless"],
+        ["$n_{\\mathrm{eval}}$, $n_e$", "evaluation rows of the resilience test", "rows"],
+        ["$n_d$", "development rows of the resilience test", "rows"],
         ["$\\delta_s$", "shift of the covariates of the shifted rows", "standard deviations"],
-        ["$s$", "share of the evaluation rows in the worst subsample, 0.25", "dimensionless"],
-        ["$D$", "AUC drop on the worst subsample, $\\mathrm{AUC}_{\\mathrm{all}}-\\mathrm{AUC}_{\\mathrm{worst}}$", "AUC points"],
-        ["$R$", "permutation draws of the reference", "draws"],
+        ["$s$", "share of the evaluation rows in the worst subsample $W$, 0.25", "dimensionless"],
+        ["$W$", "worst subsample: the share $s$ of the evaluation rows with the highest resemblance score $u$", "rows"],
+        ["$D$, $D_r$", "AUC drop on the worst subsample, observed and in the $r$-th draw of the reference", "AUC points"],
+        ["$R$, $r$", "number of permutation draws of the reference, and the index of a draw", "draws"],
+        ["$p_{\\mathrm{perm}}$", "permutation p-value, $(1+\\#\\{r:D_r\\ge D\\})/(1+R)$", "dimensionless"],
+        ["$\\mu_D$, $\\sigma_n$", "mean and standard deviation of the drop $D$ under the null at $n$ evaluation rows", "AUC points"],
+        ["$\\kappa$, $c_0$", "a cut applied to the AUC drop or to the share $S$; the amber cut of the share", "AUC points or share"],
         ["$\\gamma$", "gap of the group-dependent decision cut-off", "log-odds"],
+        ["$\\beta$", "excess probability of a negative decision of the protected group on the second design", "dimensionless"],
         ["$k_{\\mathrm{nn}}$", "neighbours of each complainant in each group, 30", "rows"],
+        ["$Q$", "complainants of the protected group", "rows"],
         ["$S$", "share of significant complainants", "dimensionless"],
-        ["$c_0$", "amber cut point of the share", "dimensionless"],
+        ["$\\theta_0$", "null mean of the share $S$; it differs from the level $\\theta$", "dimensionless"],
+        ["$\\bar\\rho$", "average pairwise correlation of the indicators of significance", "dimensionless"],
+        ["$\\mathrm{DE}$", "design effect, $Q\\,\\Var(S)/(\\theta(1-\\theta))$", "dimensionless"],
+        ["$\\mathcal{G}$", "grid of candidate cuts of the share", "share"],
         ["$\\theta$", "level of every test, 0.05", "dimensionless"],
+        ["$z_{q}$", "standard normal quantile $\\Phi^{-1}(q)$", "dimensionless"],
+        ["$\\phi$, $\\mathcal{P}_0$, $\\mathcal{P}_\\eta$", "decision rule; null family; family with a defect of severity $\\eta$", "dimensionless"],
+        ["$\\hat r$, $\\widehat{\\mathrm{se}}$", "rejection rate of a rule over its replications and its Monte Carlo standard error", "dimensionless"],
     ]
     table("notation", ["Symbol", "Meaning", "Unit"], rows,
           caption="The notation of the manuscript: the symbols of the coverage test, the resilience test and the situation-testing light, their meaning and their unit; a symbol "
-                  "that two sections share has the same meaning in both.",
+                  "that two sections share has the same meaning in both, and a symbol with two meanings is listed once for each.",
           label="tab:notation", align="lll")
 
 

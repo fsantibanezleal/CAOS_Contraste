@@ -187,15 +187,20 @@ def committed_p() -> None:
     bi = [-math.log10(t["extras"]["p_value_binomial"]) for t in rows]
     y = np.arange(len(rows))
     fig, ax = plt.subplots(figsize=(6.2, 3.1))
-    ax.barh(y - 0.2, bb, height=0.4, color="0.25", label="Beta-Binomial (sets the light)")
-    ax.barh(y + 0.2, bi, height=0.4, color="0.7", label="binomial (shown beside it)")
+    clip = 8.0  # the axis stops at p = 1e-8 so that the windows whose light is decided near the levels stay visible
+    ax.barh(y - 0.2, np.minimum(bb, clip), height=0.4, color="0.25", label="Beta-Binomial (sets the light)")
+    ax.barh(y + 0.2, np.minimum(bi, clip), height=0.4, color="0.7", label="binomial (shown beside it)")
+    for yy, vals, off in ((y, bb, -0.2), (y, bi, 0.2)):
+        for yi, v in zip(yy, vals):
+            ax.text(min(v, clip) + 0.1, yi + off, f"{v:.1f}" + (" (cut)" if v > clip else ""), va="center", fontsize=6)
+    ax.set_xlim(0, clip + 2.2)
     for x0, ls in ((-math.log10(0.05), "--"), (-math.log10(0.01), "-.")):
         ax.axvline(x0, color="0.0", linewidth=0.8, linestyle=ls)
     ax.set_yticks(y)
     ax.set_yticklabels(names, fontsize=7)
     ax.invert_yaxis()
     ax.set_xlabel("$-\\log_{10}$ of the p-value (dashed: 0.05, dash-dotted: 0.01)")
-    ax.legend(fontsize=7, loc="lower right")
+    ax.legend(fontsize=7, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, frameon=False)
     figkit.save(fig, OUT, "committed_p")
 
 

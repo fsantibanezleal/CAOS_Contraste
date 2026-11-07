@@ -29,6 +29,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common  # noqa: E402
 
 import argparse  # noqa: E402
+import time  # noqa: E402
 from concurrent.futures import ProcessPoolExecutor  # noqa: E402
 
 import numpy as np  # noqa: E402
@@ -82,9 +83,12 @@ def main() -> int:
     jobs = [(n, g, i) for n in NS for g in GAPS for i in range(reps_of(g))
             if common.load_cell(folder, f"n{n}-g{g}-r{i}") is None]
     if jobs:
+        started = time.perf_counter()
         with ProcessPoolExecutor(max_workers=a.workers) as pool:
             for job, res in zip(jobs, pool.map(one_replication, jobs, chunksize=8)):
                 common.save_cell(folder, f"n{job[0]}-g{job[1]}-r{job[2]}", res)
+        if len(jobs) == sum(reps_of(g) for n in NS for g in GAPS):  # a cold run: every replication was computed here
+            common.record_timing(a.out, "situation", time.perf_counter() - started, a.workers, len(jobs))
     cells = []
     for n in NS:
         for g in GAPS:

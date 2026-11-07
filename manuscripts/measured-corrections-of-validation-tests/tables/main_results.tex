@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\caption{The rejection rate of each rule on data without a defect (size, level 0.05) and with a planted defect (power), each with its Monte Carlo standard error, for the three tests: the coverage test at three window ratios, the resilience test with 500 evaluation rows and the situation light with 400 applicants.}
+\caption{The rejection rate of each rule on data without a defect (size, level 0.05) and with a planted defect (power), each with its Monte Carlo standard error, for the three tests: the coverage test at three window ratios, the resilience test with 500 evaluation rows and the situation light with 400 applicants; a rate of 0 or of 1 is printed as its count with the one-sided 95 percent bound $3/R$ of the rule of three, because its sample standard error is zero.}
 \label{tab:main-results}
 \fitwidth{\begin{tabular}{llccl}
 \toprule
@@ -17,7 +17,7 @@ Resilience & fixed drop above 0.05 & $0.175 \pm 0.019$ & $0.925 \pm 0.013$ & shi
 Resilience & fixed drop above 0.10 & $0.048 \pm 0.011$ & $0.703 \pm 0.023$ & shift 2 \\
 Resilience & variance z rule & $0.065 \pm 0.012$ & $0.723 \pm 0.022$ & shift 2 \\
 Resilience & permutation reference, 199 draws & $0.062 \pm 0.012$ & $0.680 \pm 0.023$ & shift 2 \\
-Situation & share cut 0.10 & $0.114 \pm 0.010$ & $1.000 \pm 0.000$ & gap 0.4 \\
+Situation & share cut 0.10 & $0.114 \pm 0.010$ & $400 \text{ of } 400\ (>0.9925)$ & gap 0.4 \\
 Situation & share cut 0.20 & $0.014 \pm 0.004$ & $0.968 \pm 0.009$ & gap 0.4 \\
 \bottomrule
 \end{tabular}}
