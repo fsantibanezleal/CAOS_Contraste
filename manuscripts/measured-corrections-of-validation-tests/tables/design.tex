@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The four experiments: the engine function each one calls, the seeded generator and the grid of settings it runs, the number of cells and the replications of each cell; every rate of the results carries the standard error of its replications.}
+\label{tab:design}
+\fitwidth{\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{5.6cm}r>{\raggedright\arraybackslash}p{2.8cm}}
+\toprule
+Experiment & Engine function & Data and grid & Cells & Replications per cell \\
+\midrule
+Coverage test & \texttt{conformal\_}\allowbreak\texttt{coverage} & \relax uniform scores, calibration $n$ in 200, 1,000, 5,000; $m/n$ from 0.1 to 8 & 35 & 4,000 \\
+Resilience test & \texttt{shift\_}\allowbreak\texttt{development\_}\allowbreak\texttt{reference} & \texttt{CovariateShiftPlant}, evaluation 125 to 1,000, shift 0 to 3 & 10 & 400 \\
+Situation light & \texttt{situation\_}\allowbreak\texttt{test} & \texttt{ThresholdBiasPlant}, 400 and 1,000 applicants, gap 0 to 0.8, $k=30$ & 10 & 1,000 (gap 0), 400 (others) \\
+Situation light, second design & \texttt{situation\_}\allowbreak\texttt{test} & \relax two independent uniform attributes, 400 and 1,000 applicants, bias 0 to 0.4, $k=30$ & 8 & 2,000 (bias 0), 400 (others) \\
+\bottomrule
+\end{tabular}}
+\end{table}

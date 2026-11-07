@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The rejection rate of each rule on data without a defect (size, level 0.05) and with a planted defect (power), each with its Monte Carlo standard error, for the three tests: the coverage test at three window ratios, the resilience test with 500 evaluation rows and the situation light with 400 applicants.}
+\label{tab:main-results}
+\fitwidth{\begin{tabular}{llccl}
+\toprule
+Test & Rule & Size (no defect) & Power (planted defect) & Defect \\
+\midrule
+Coverage & \relax binomial p-value, $m/n = 0.1$ & $0.057 \pm 0.004$ & $0.292 \pm 0.007$ & \relax shape $b=1.10$ \\
+Coverage & \relax Beta-Binomial p-value, $m/n = 0.1$ & $0.045 \pm 0.003$ & $0.248 \pm 0.007$ & \relax shape $b=1.10$ \\
+Coverage & \relax binomial p-value, $m/n = 1$ & $0.157 \pm 0.006$ & $0.372 \pm 0.008$ & \relax shape $b=1.10$ \\
+Coverage & \relax Beta-Binomial p-value, $m/n = 1$ & $0.051 \pm 0.003$ & $0.190 \pm 0.006$ & \relax shape $b=1.10$ \\
+Coverage & \relax binomial p-value, $m/n = 4$ & $0.361 \pm 0.008$ & $0.532 \pm 0.008$ & \relax shape $b=1.10$ \\
+Coverage & \relax Beta-Binomial p-value, $m/n = 4$ & $0.048 \pm 0.003$ & $0.162 \pm 0.006$ & \relax shape $b=1.10$ \\
+Resilience & fixed drop above 0.05 & $0.175 \pm 0.019$ & $0.925 \pm 0.013$ & shift 2 \\
+Resilience & fixed drop above 0.10 & $0.048 \pm 0.011$ & $0.703 \pm 0.023$ & shift 2 \\
+Resilience & variance z rule & $0.065 \pm 0.012$ & $0.723 \pm 0.022$ & shift 2 \\
+Resilience & permutation reference, 199 draws & $0.062 \pm 0.012$ & $0.680 \pm 0.023$ & shift 2 \\
+Situation & share cut 0.10 & $0.114 \pm 0.010$ & $1.000 \pm 0.000$ & gap 0.4 \\
+Situation & share cut 0.20 & $0.014 \pm 0.004$ & $0.968 \pm 0.009$ & gap 0.4 \\
+\bottomrule
+\end{tabular}}
+\end{table}

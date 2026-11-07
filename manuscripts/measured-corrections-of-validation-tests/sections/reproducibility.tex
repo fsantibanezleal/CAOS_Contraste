@@ -1,0 +1,21 @@
+The code, the committed results and the data are in the repository of the product, in the manuscript folder that holds this source. The experiments call the engine \texttt{riskvalidation} release \EnvEngine{} with \texttt{numpy} \EnvNumpy{} and \texttt{scipy} \EnvScipy{}; the engine is published on the Python Package Index and installs with \texttt{pip install riskvalidation}. The experiments need no external data. The repository and the inputs that the evidence reads are the following.
+\begin{itemize}
+\item The repository: \url{https://github.com/fsantibanezleal/CAOS_Contraste}.
+\item The coverage evidence: \url{data/derived/C20/fed-shift.json}.
+\item The fairness evidence: the six files \url{data/derived/C21/pair-*.json}.
+\item The small-design figures of the predictions, read from the saved outputs of notebook 09 in the folder \url{notebooks/en/13-ml-and-ai-risk}.
+\end{itemize}
+
+Every table, figure and number rebuilds from the repository root with the commands below, in which \texttt{FOLDER} stands for the manuscript folder. The environment variable \texttt{CAOS\_TEMP\_ROOT} names a temporary folder for the per-cell caches, or each script takes \texttt{--cache}; the compact results that the manuscript reads are committed in the subfolder \texttt{experiments/results}.
+\begin{verbatim}
+python manuscripts/FOLDER/experiments/exact_theory.py
+python manuscripts/FOLDER/experiments/exp_coverage.py
+python manuscripts/FOLDER/experiments/exp_shift.py
+python manuscripts/FOLDER/experiments/exp_situation.py
+python manuscripts/FOLDER/experiments/exp_situation_indep.py
+python manuscripts/FOLDER/make_tables.py
+python manuscripts/FOLDER/make_numbers.py
+python manuscripts/FOLDER/make_figures.py
+python -m pytest manuscripts/FOLDER/experiments
+\end{verbatim}
+The root seed of every random stream is \RootSeed{}, and a replication has its own stream built from the experiment, the cell and the replication index, so the experiments are deterministic and independent of the number of worker processes. A second run from an empty cache reproduces the committed results of the first four experiments byte for byte. On 24 worker processes the resilience experiment, the longest, runs in about 14 minutes, and each of the others in under four minutes. The tests of the experiment scripts check the vectorised p-values against the engine function and against \texttt{scipy}, the exact sizes against their guarantees, the variance factor of \cref{prop:variance} against the summed law, and the seed reproducibility of a replication.

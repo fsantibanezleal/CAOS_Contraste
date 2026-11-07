@@ -1,7 +1,10 @@
 {
   "kind": "manuscript",
   "title_support": [
-    "tab:main-results"
+    "tab:main-results",
+    "tab:exact-size",
+    "tab:shift-eval-size",
+    "tab:situation-designs"
   ],
   "claims": {
     "BS-10": "sec:proposed-method"

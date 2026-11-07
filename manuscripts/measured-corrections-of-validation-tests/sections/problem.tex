@@ -1,0 +1,42 @@
+The problem is to state, for a validation test and for a correction of it, the probability that each raises an alarm when the model is sound and when it has a planted defect, and to choose among the rules on those probabilities. The symbols are collected in \cref{tab:notation}.
+
+\input{tables/notation}
+
+\subsection{A validation test as a decision rule}
+
+A validation rule maps a sample $\mathcal{D}$ to a decision $\phi(\mathcal{D})\in\{0,1\}$, where 1 is an alarm. Let $\mathcal{P}_0$ be a family of data-generating processes in which the model is sound (the null) and $\mathcal{P}_\eta$ a family in which a defect of severity $\eta>0$ has been planted. The size and the power of the rule are
+\begin{equation}
+\operatorname{size}(\phi)=\sup_{P\in\mathcal{P}_0}\Prob_P\bigl[\phi(\mathcal{D})=1\bigr],\qquad
+\operatorname{power}_\eta(\phi)=\Prob_{P_\eta}\bigl[\phi(\mathcal{D})=1\bigr].
+\label{eq:size-power}
+\end{equation}
+A rule is valid at level $\theta$ when $\operatorname{size}(\phi)\le\theta$. All tests of this manuscript are read at the level $\theta=0.05$. When $\mathcal{P}_0$ holds one process at one sample size, the supremum is the rejection probability at that size; when the sample size varies, a rule has a size at every size of the sample, and the size at one need not be the size at another.
+
+A correction of a rule is a second rule $\phi'$ for the same question. The error rate that the correction removes is the difference $\operatorname{size}(\phi)-\operatorname{size}(\phi')$ and its cost is the difference $\operatorname{power}_\eta(\phi)-\operatorname{power}_\eta(\phi')$. A correction that lowers the size by the amount that the power falls is not a correction at all but a shift of the cut point along the same operating curve. The question of the manuscript is therefore twofold: how large is the size of each rule, and does the corrected rule have more power than the original rule would have if its cut point were moved until its size equalled that of the corrected rule.
+
+\subsection{The three tests}
+
+\paragraph{The coverage test.} A split-conformal set is built from $n$ calibration scores $s_1,\dots,s_n$. For a miscoverage $\alpha$ the quantile is the order statistic $\hat q=s_{(k)}$ with the rank
+\begin{equation}
+k=\lceil (n+1)(1-\alpha)\rceil,
+\label{eq:rank}
+\end{equation}
+and a test row is covered when its score does not exceed $\hat q$. On a window of $m$ test rows the validation reads the covered count $C\in\{0,\dots,m\}$ and asks whether the coverage of the set is $1-\alpha$. The assumption is exchangeability of the calibration and the test scores, with continuous scores so that ties have probability zero. The null is that assumption; the defect is a drift of the test scores toward values that the set does not cover.
+
+\paragraph{The resilience test.} A model is fitted on development rows and scored on $n_{\mathrm{eval}}$ evaluation rows. A resemblance score of each evaluation row to the development rows ranks the evaluation rows, and the worst subsample $W$ is the share $s$ of rows that resemble the development rows least. The statistic is the drop of discrimination
+\begin{equation}
+D=\operatorname{AUC}(\text{all evaluation rows})-\operatorname{AUC}(W).
+\label{eq:drop}
+\end{equation}
+The null is that evaluation and development rows are exchangeable; the defect is a shift of a fraction of the evaluation rows in the covariates, in a region where the model ranks badly. Under the null $D$ is not centred on zero.
+
+\paragraph{The situation-testing light.} For each of the $Q$ complainants of the protected group, the test finds the $k_{\mathrm{nn}}$ nearest protected rows and the $k_{\mathrm{nn}}$ nearest rows of the other groups in the attribute space, computes the shares $\hat p_c$ and $\hat p_t$ of negative decisions in the two groups, and calls the complainant significant when the lower bound of a one-sided Wald interval for $\hat p_c-\hat p_t$ exceeds zero at the level $\theta$. The statistic is the share of significant complainants,
+\begin{equation}
+S=\frac{1}{Q}\sum_{i=1}^{Q}\indic\{\text{complainant } i \text{ is significant}\},
+\label{eq:share}
+\end{equation}
+and the light is amber when $S$ reaches a cut point $c_0$. The null is that the protected group is treated as the others are, so that the decision does not depend on the group at equal attributes; the defect is a lower decision cut-off for the protected group, of size $\gamma$ in log-odds, or a higher probability of a negative decision for it.
+
+\subsection{Assumptions and the scope of the measurement}
+
+Four assumptions bound what the manuscript claims. First, the generators are known: the truth of every replication is planted, so that a rejection is a false alarm or a detection without ambiguity. Second, a rate is measured at the settings that the experiment fixes, the sample sizes, the share of the shifted rows and the number of neighbours; it is not extrapolated beyond them, and where the text states a trend it states the range over which it was observed. Third, the size is measured under the null of each generator, which is one null among the many that a bank's data could realise; the coverage test is an exception, because its null law is exact under exchangeability for every continuous score distribution, and it is computed by summation. Fourth, the committed documents of the product are used as evidence of what the corrected rules do on the product's own data, and never as a measurement of an error rate, because their truth is not planted.

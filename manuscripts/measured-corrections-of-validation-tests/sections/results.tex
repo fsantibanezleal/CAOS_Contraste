@@ -1,0 +1,122 @@
+The results are reported test by test, then on the committed evidence of the product, and finally against the predictions of \cref{tab:hypotheses}. \Cref{tab:main-results} is the main comparison: for each test, the rule it replaces and the correction, the rejection rate on data without a defect and on data with a planted one, with the Monte Carlo standard error of every rate.
+
+\input{tables/main_results}
+
+\subsection{The coverage test}
+
+\paragraph{Size.} At a test window a tenth of the calibration window the binomial test is close to its level, with \CovSinBinA{} (standard error \CovSeBinA{}) at $(n,m)=(20000,2000)$, and the Beta-Binomial test is at \CovSinBBA{} (\CovSeBBA{}). The two diverge as the window grows. At equal windows, $(n,m)=(2000,2000)$, the binomial test rejects an exchangeable window in \CovSinBinB{} of the replications (\CovSeBinB{}) and the Beta-Binomial test in \CovSinBBB{} (\CovSeBBB{}); at a test window four times the calibration window, $(1000,4000)$, the binomial test rejects in \CovSinBinC{} (\CovSeBinC{}) and the Beta-Binomial test in \CovSinBBC{} (\CovSeBBC{}). The exact sizes, summed over the rejection regions, are \CovExBinB{} and \CovExBBB{} at equal windows and \CovExBinC{} and \CovExBBC{} at four times; the simulated and exact sizes agree to within the Monte Carlo error. Over the \CovGridCells{} window pairs of the grid (three calibration sizes and seven window ratios) the simulated size of the binomial test lies in \CovSimBinMinOne{} to \CovSimBinMaxOne{} at equal windows and in \CovSimBinMinFour{} to \CovSimBinMaxFour{} at four times the calibration window, and the Beta-Binomial test never exceeds \CovBBMaxRate{}; \CovBBOverBound{} cells have a rate above $0.05$ plus two standard errors, and its exact size never exceeds \CovBBMaxExact{}. Among the \CovMcCompare{} comparisons of a simulated size with the exact size of the same rule, the largest difference is \CovMcExactMaxZ{} standard errors. The engine's function and the vectorised tables used for the variants disagree on \CovEngineMismatches{} replications of \CovTotalReps{}.
+
+\Cref{tab:exact-size} gives every cell, and \cref{fig:coverage-size} shows the exact size and the normal approximation of \cref{prop:binomial-size} as curves and the simulated rates as points with two-standard-error bars. The simulated points of the three calibration sizes fall on the one curve of the ratio $m/n$ on the logarithmic axis, which says that the size of the binomial test is a function of the ratio and, for the sizes of this grid, almost not of $n$ alone; the Beta-Binomial points lie on the line of the level, below it at the smallest windows where the discreteness of the law makes the test conservative (exact sizes \CovExBBMinTenth{} to \CovExBBMaxTenth{} at a tenth of the calibration window).
+
+\input{tables/exact_size}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{coverage_size}
+\caption{Rejection rate of the binomial and of the Beta-Binomial coverage test at the level 0.05 on exchangeable data, against the ratio of the test window to the calibration window; curves are the exact size and the normal approximation of the binomial test for 1,000 calibration rows, and points are the simulated rates for 200, 1,000 and 5,000 rows with two-standard-error bars over 4,000 replications.}
+\label{fig:coverage-size}
+\end{figure}
+
+\paragraph{The rejection regions.} The size excess has a direct reading in terms of the coverage. At $n=m=1000$ the binomial test accepts an empirical coverage between \RegionBinLo{} and \RegionBinHi{}, and the Beta-Binomial test between \RegionBBLo{} and \RegionBBHi{}: the exact law of the count is wider than the binomial law, and the corrected test accepts a band of coverages that the binomial test would call a failure. \Cref{fig:rejection-regions} draws the two p-values as functions of the coverage, with the level 0.05 as a horizontal line; the binomial p-value falls below the level on the shoulders of the Beta-Binomial one.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{rejection_regions}
+\caption{The binomial and the Beta-Binomial two-sided p-value of a covered count as a function of the empirical coverage of a test window of 1,000 rows against a calibration window of 1,000 rows and the target 0.90, on a logarithmic axis, with the level 0.05 as the dotted line; the Beta-Binomial p-value stays above the level over a wider range of coverages.}
+\label{fig:rejection-regions}
+\end{figure}
+
+\paragraph{Power.} With a drift of the test scores of shape $b=1.10$ the binomial test rejects in \CovPowBinBTen{} of the replications at equal windows and \CovPowBinCTen{} at four times the calibration window, against \CovPowBBBTen{} and \CovPowBBCTen{} for the Beta-Binomial test. The correction looks like a loss of power by that comparison, and \cref{fig:coverage-power} shows why the comparison is not meaningful: when the power is plotted against the coverage lost, the binomial test starts at its size excess (\CovSinBinB{} and \CovSinBinC{} at no loss) and rises on a curve that lies above the Beta-Binomial one by about the size excess, and the binomial test with the cut calibrated to the exact size 0.05 lies on the Beta-Binomial curve. At $b=1.10$ the calibrated binomial test rejects in \CovPowOracleBTen{} and \CovPowOracleCTen{} of the replications at the two windows, within \ExPowGapMax{} (exact) of the Beta-Binomial test over every window pair and drift shape of the exact power curves, as \cref{conj:power} states. The power that the binomial test appears to have in excess of the Beta-Binomial test is its size.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{coverage_power}
+\caption{Power of the binomial, the Beta-Binomial and the size-calibrated binomial coverage test against the coverage lost to the planted drift (0.90 minus the mean coverage), for equal windows of 2,000 rows (left) and for 1,000 calibration rows and 4,000 test rows (right); curves are exact, and points with two-standard-error bars are simulated over 4,000 replications.}
+\label{fig:coverage-power}
+\end{figure}
+
+\subsection{The committed coverage evidence}
+
+\Cref{tab:committed-conformal} lists the five conformal coverage rows of the committed shift variant of the credit model, with both p-values the engine returns, and \cref{fig:committed-p} draws the two p-values side by side on a logarithmic scale. The calibration window holds \CmNcal{} rows and each test window \CmBaseM{} rows (\CmPoolM{} for the pooled window), so the ratio $m/n$ is about 2.1, a ratio at which the binomial test has a size of about 0.25 (\cref{tab:exact-size}). At the baseline window, whose coverage is \CmBaseCov{}, both tests accept (p-values \CmBaseBB{} and \CmBaseBin{}) and the light is \CmBaseLight{}. At the windows shifted by 0.25 and by 0.5 times the size of the Federal Reserve higher-risk shift the coverage falls to \CmQuarterCov{} and \CmHalfCov{} and both p-values are far below $0.01$ (\CmQuarterBB{} and \CmHalfBB{} for the Beta-Binomial test), so the lights are \CmQuarterLight{} and \CmHalfLight{} whichever p-value is read; the pooled window is also \CmPoolLight{} (\CmPoolBB{}). The window shifted by the full size has the coverage \CmOneCov{}, which is below the target by 0.02: the Beta-Binomial p-value is \CmOneBB{}, so the light is \CmOneLight{}, whereas the binomial p-value of the same count is \CmOneBin{}, below the red level 0.01, and a rule that read the binomial p-value would have set the light to red. This is the one window of five whose light the correction changes, and it changes it in the direction the size calculation predicts: after a calibration on \CmNcal{} rows, a coverage of \CmOneCov{} on \CmOneM{} rows is a count that the exact law of exchangeable data produces with a probability of \CmOneBB{} (the p-value), and that the binomial law, which ignores the randomness of the calibration quantile, calls \CmOneBin{} likely. Recomputing every committed p-value from its covered count with the engine function reproduces the committed value to \CmRecomputeDiff{} in the base-10 logarithm.
+
+\input{tables/committed_conformal}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{committed_p}
+\caption{Minus the base-10 logarithm of the Beta-Binomial and of the binomial p-value of each committed conformal coverage window of the credit-model shift case, with the levels 0.05 (dashed) and 0.01 (dash-dotted); the two p-values agree on four windows and differ by two orders of magnitude on the window of full Federal Reserve shift.}
+\label{fig:committed-p}
+\end{figure}
+
+\subsection{The resilience test}
+
+\paragraph{The null drop.} Without shift the AUC drop on the worst quarter is not centred on zero. At 500 evaluation rows its mean is \ShMeanDropCZ{}, its standard deviation \ShSdDropCZ{} and its 95th percentile \ShQNinetyFiveCZ{}, so a fixed cut of 0.05 is exceeded by \ShRateFixedFiveCZ{} of the null drops and a cut of 0.10 by \ShRateFixedTenCZ{}. \Cref{fig:shift-drops} shows the two histograms of the drops at shift 0 and shift 2. The mean of the drops that the permutation reference draws is \ShNullMeanCZ{}, close to the mean \ShMeanDropCZ{} of the observed null drops, which is what an exchangeable reference should give; the p-value reads the observed drop against the upper tail of the reference, and the rates below show that the tail is correct to the accuracy of the experiment.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{shift_drops}
+\caption{Histograms of the AUC drop on the worst quarter of 500 evaluation rows over 400 replications without shift (left) and with a planted shift of two standard deviations (right), with the fixed cuts 0.05 and 0.10 and the mean of the null drops of the permutation reference as vertical lines.}
+\label{fig:shift-drops}
+\end{figure}
+
+\paragraph{Size and power at 500 rows.} The fixed cut 0.05 raises a false alarm in \ShRateFixedFiveCZ{} of the shift-free replications (standard error \ShSeFixedFiveCZ{}) and the fixed cut 0.10 in \ShRateFixedTenCZ{} (\ShSeFixedTenCZ{}); the z rule gives \ShRateZruleCZ{} (\ShSeZruleCZ{}) and the permutation reference with 199 draws \ShRatePermCZ{} (\ShSePermCZ{}). At the planted shift of two standard deviations the four rules reject in \ShRateFixedFiveCT{}, \ShRateFixedTenCT{}, \ShRateZruleCT{} and \ShRatePermCT{} of the replications. The permutation reference therefore detects a planted shift less often than the fixed cut 0.05 in every cell with a shift, by at least \ShPermPowerGapMin{}, and the larger part of the difference is the false alarms of the cut. A fixed cut set at the 95th percentile of the null drops of the same cell, \ShOracleCut{} at 500 rows, has by construction the size \ShOracleRateZ{} and the power \ShOracleRateT{} at shift 2. Of the difference \ShFixedPermDiffT{} in power between the fixed cut 0.05 and the reference at shift 2, the calibrated cut also gives up \ShFixedOracleDiffT{}, and the reference gives up a further \ShOracleDiffT{}, at a standard error of \ShOracleDiffSe{}; the calibrated cut needs a simulation of the null that a validation team does not have.
+
+\paragraph{The size of a fixed cut depends on the evaluation sample.} \Cref{tab:shift-eval-size} and \cref{fig:shift-eval-size} give the four rules at the four evaluation sizes. The fixed cut 0.05 raises a false alarm in \ShRateFixedFiveAZ{}, \ShRateFixedFiveBZ{}, \ShRateFixedFiveCZ{} and \ShRateFixedFiveDZ{} of the replications at 125, 250, 500 and 1,000 rows, and the cut 0.10 in \ShRateFixedTenAZ{}, \ShRateFixedTenBZ{}, \ShRateFixedTenCZ{} and \ShRateFixedTenDZ{}: the size falls as the evaluation sample grows, because the spread of the null drop falls, and the cut that would have size 0.05 (the 95th percentile of the null drops) is \ShQNinetyFiveAZ{}, \ShQNinetyFiveBZ{}, \ShQNinetyFiveCZ{} and \ShQNinetyFiveDZ{}. The cut 0.10 is close to calibrated at 500 rows and oversized at 125 rows, and a team that tuned it at 500 rows would carry a size of \ShRateFixedTenAZ{} to the smaller design. The permutation reference with 199 draws stays between \ShRatePermAZ{} and \ShRatePermCZ{} at every size, and the z rule between \ShRateZruleBZ{} and \ShRateZruleCZ{}.
+
+The power of the permutation reference at shift 2 is \ShRatePermAT{}, \ShRatePermBT{}, \ShRatePermCT{} and \ShRatePermDT{} over the four sizes and the power of the fixed cut 0.05 is \ShRateFixedFiveAT{}, \ShRateFixedFiveBT{}, \ShRateFixedFiveCT{} and \ShRateFixedFiveDT{}; the difference is \ShPowGapAT{}, \ShPowGapBT{}, \ShPowGapCT{} and \ShPowGapDT{}, so it narrows as the evaluation sample grows. The z rule has less power than the reference at 125 and 250 rows (\ShRateZruleAT{} and \ShRateZruleBT{} against \ShRatePermAT{} and \ShRatePermBT{}) and more at 500 and 1,000 rows (\ShRateZruleCT{} and \ShRateZruleDT{} against \ShRatePermCT{} and \ShRatePermDT{}).
+
+\input{tables/shift_eval_size}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{shift_eval_size}
+\caption{Size at shift 0 (left) and power at a planted shift of two standard deviations (right) of four rules of the resilience test, the fixed cuts 0.05 and 0.10, the variance z rule and the permutation reference with 199 draws, against the number of evaluation rows, with two-standard-error bars over 400 replications per cell.}
+\label{fig:shift-eval-size}
+\end{figure}
+
+\paragraph{The number of draws.} The permutation reference with 19 draws never rejects: the smallest attainable p-value is \GranSmallestNineteen{}, which is not below $0.05$, and the measured rate is \ShRatePermNineteenCZ{} at every size and shift. With 39, 99 and 199 draws the pooled sizes over the four evaluation sizes are \ShPermPooledThirtyNine{}, \ShPermPooledNinetyNine{} and \ShPermPooledFull{}, with standard errors of about \ShPermPooledSeFull{}, against the exact sizes \GranExactThirtyNine{}, \GranExactNinetyNine{} and \GranExactFull{} that \cref{prop:permutation} gives for an exchangeable reference; the measured sizes lie above the exact ones by \ShPermExcessThirtyNine{}, \ShPermExcessNinetyNine{} and \ShPermExcessFull{}, between \ShPermExcessZMin{} and \ShPermExcessZMax{} standard errors, and always with the same sign. The excess is small and consistent, and is the order that the approximate exchangeability of the engine's construction (a pseudo-development set of $n_d-n_e$ rows) would produce. The power rises with the number of draws, from \ShRatePermThirtyNineCT{} with 39 to \ShRatePermNinetyNineCT{} with 99 and \ShRatePermCT{} with 199 at 500 rows and shift 2 (\cref{fig:shift-draws}). The red light of the engine needs a p-value below $0.01$, which a reference with fewer than \RedMinDraws{} draws cannot give.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{shift_draws}
+\caption{Rejection rate of the permutation reference at the level 0.05 as a function of its number of draws, at 500 evaluation rows and planted shifts of 0, 1, 2 and 3 standard deviations, with two-standard-error bars over 400 replications; the dotted line is the level 0.05.}
+\label{fig:shift-draws}
+\end{figure}
+
+\paragraph{The committed resilience row.} The committed resilience row of the credit-model shift case has \CmResN{} evaluation rows, a worst share of 0.10 and the observed drop \CmResDrop{}. The \CmResDraws{} draws of the reference have a mean of \CmResNullMean{} and a 95th percentile of \CmResNullP{}, and none of them reaches the observed drop, so the p-value is the smallest the reference can give, \CmResP{}, and the light is red. A fixed cut of 0.05 would also have fired; the reference differs in that it says how far the drop is from what a shift-free sample of the same size gives.
+
+\subsection{The situation-testing light}
+
+\paragraph{The null law of the share.} With 400 applicants on the threshold-bias plant the protected group has about \SiComplainantsSmallZ{} complainants, the share of significant complainants has a mean of \SiMeanShareSmallZ{} and a standard deviation of \SiSdShareSmallZ{} without bias, and the design effect of \cref{eq:design-effect} is \SiDesignSmallZ{}; with 1,000 applicants the complainants number \SiComplainantsLargeZ{}, the mean share is \SiMeanShareLargeZ{}, the standard deviation \SiSdShareLargeZ{} and the design effect \SiDesignLargeZ{}. Independent complainants at the level 0.05 would give a standard deviation of \SiIndepSd{} at 200 complainants. \Cref{fig:situation-null-share} shows the two null histograms with the cuts 0.10 and 0.20: the distribution is right-skewed, with a tail that reaches above 0.10 at 400 applicants and almost not at 1,000.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{situation_null_share}
+\caption{Histograms of the share of significant complainants without bias for 400 applicants over 1,000 replications (left) and 1,000 applicants over 1,000 replications (right), on the threshold-bias plant, with the amber cuts 0.10 and 0.20 as vertical lines; the right tail beyond 0.10 shrinks sharply as the number of applicants grows.}
+\label{fig:situation-null-share}
+\end{figure}
+
+\paragraph{Size and power of the cuts.} With 400 applicants the cut 0.10 fires in \SiRateCutTenSmallZ{} of the null replications (standard error \SiSeCutTenSmallZ{}) and the cut 0.20 in \SiRateCutTwentySmallZ{} (\SiSeCutTwentySmallZ{}). At the planted gap 0.4 they detect the bias in \SiRateCutTenSmallC{} and \SiRateCutTwentySmallC{} of the replications and at the gap 0.8 in every replication. At the small gaps the cut 0.20 has less power: \SiRateCutTwentySmallB{} against \SiRateCutTenSmallB{} at the gap 0.2, and \SiRateCutTwentySmallA{} against \SiRateCutTenSmallA{} at the gap 0.1 (\cref{tab:situation-ablation}). With 1,000 applicants the cut 0.10 fires in \SiRateCutTenLargeZ{} of the null replications and the cut 0.20 in \SiRateCutTwentyLargeZ{}; the cut 0.20 detects the gap 0.2 in \SiRateCutTwentyLargeB{} of the replications. \Cref{fig:situation-cuts} shows the rates of the seven cuts at each gap: the curves of the null and of the planted gaps cross, so that every cut is a choice of a point on a trade between size and power that depends on the number of applicants.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{situation_cuts}
+\caption{Rejection rate of the share cut as a function of the cut for 400 applicants (left) and 1,000 applicants (right) and the planted gaps 0, 0.1, 0.2, 0.4 and 0.8, over 1,000 replications at gap 0 and 400 at the others; the vertical dotted line is the engine's cut 0.20 and the horizontal dotted line the level 0.05.}
+\label{fig:situation-cuts}
+\end{figure}
+
+\paragraph{A second data-generating process.} On the design of the engine's own size-and-power suite, with attributes that are independent of the decision, the null law of the share is different (\cref{tab:situation-designs}). At 400 applicants the cut 0.10 fires in \SiInRateCutTenSmallZ{} of the null replications (\SiInSeCutTenSmallZ{}) and the cut 0.20 in \SiInRateCutTwentySmallZ{} (\SiInSeCutTwentySmallZ{}), against \SiRateCutTenSmallZ{} and \SiRateCutTwentySmallZ{} on the threshold-bias plant. The engine's suite records a size of \EngSiSizeTwenty{} (standard error \EngSiSeTwenty{}) for the cut 0.20 and \EngSiSizeTen{} for the former cut 0.10 at 400 applicants and 30 neighbours on that design, and the values measured here, \SiInRateCutTwentySmallZ{} and \SiInRateCutTenSmallZ{}, reproduce them. At 1,000 applicants the sizes on the second design are \SiInRateCutTenLargeZ{} and \SiInRateCutTwentyLargeZ{}. The two designs differ in the size of the same cut by a factor of about two at 400 applicants, and the size of a cut at one number of applicants does not carry to another on either design. The cut chosen by \cref{eq:cut-rule} on the grid of the experiments is therefore \SiChosenThrSmall{} on the threshold-bias plant at 400 applicants (size \SiRateCutFifteenSmallZ{}, standard error \SiSeCutFifteenSmallZ{}) and \SiChosenIndSmall{} on the second design, where the cut 0.15 has size \SiInRateCutFifteenSmallZ{}.
+
+\input{tables/situation_designs}
+
+\paragraph{The other rules.} The one-sided binomial test of the count, which treats the complainants as independent, has size \SiRateCountBinSmallZ{} at 400 applicants on the threshold-bias plant and \SiInRateCountBinSmallZ{} on the second design, three to five times the level; the rule that rejects when one complainant is significant at the Bonferroni level has size \SiRateBonfSmallZ{} and \SiInRateBonfSmallZ{} and detects the gap 0.2 in \SiRateBonfSmallB{} of the replications, more than the share cut 0.20 (\SiRateCutTwentySmallB{}) and less than the share cut 0.10 (\SiRateCutTenSmallB{}).
+
+\subsection{The committed fairness evidence}
+
+\Cref{tab:committed-fair} lists the situation-testing row of each of the six committed year pairs of the mortgage decisions of Delaware. The number of complainants is between \CmFairQMin{} and \CmFairQMax{}, an order of magnitude or more above the \SiComplainantsSmallZ{} and \SiComplainantsLargeZ{} of the plants, and the shares of significant complainants are between \CmFairMin{} and \CmFairMax{}. With the amber cut 0.20, \CmFairAmber{} pairs are amber and \CmFairGreen{} are green; with the former cut 0.10 all \CmFairAboveTen{} pairs, whose share exceeds it, would be amber, and the row would not discriminate between the pairs. The two green pairs have shares of \CmFairGreenLo{} and \CmFairGreenHi{}, just below the cut. The cut 0.20 was measured at 400 applicants, and the null share narrows as the complainants become more numerous (\cref{tab:situation-designs}), so at the committed size a null share at 0.20 is rarer than the measured size suggests; how much rarer is not measured here.
+
+\input{tables/committed_fair}
+
+\subsection{The predictions}
+
+\Cref{tab:hypotheses} gives the outcome of each prediction. \HypHeld{} of the \HypTotal{} held: the binomial test rejects far above the level at equal windows and at four times the calibration window (H1a), the Beta-Binomial test holds the level on the whole grid (H1b), the fixed cut 0.05 fires above the level without shift and the cut 0.10 at the smallest design (H2a), the reference holds the level (H2b) and detects less than the fixed cut, by a margin that narrows with the sample (H2c), the cut 0.20 holds the level at 400 applicants and the cut 0.10 does not (H3a), and the cut 0.20 detects the largest planted gap (H3b). Of the rest, \HypRefuted{} were refuted. The cut 0.20 does lose power against the cut 0.10 at the small gaps (H3c): \SiRateCutTwentySmallB{} against \SiRateCutTenSmallB{} at the gap 0.2. The size of the cut 0.10 measured at 400 applicants does not carry to 1,000 applicants (H3d): \SiRateCutTenSmallZ{} at 400 and \SiRateCutTenLargeZ{} at 1,000. And the sizes are not the same on a second design (H3e): \SiRateCutTenSmallZ{} and \SiInRateCutTenSmallZ{} for the cut 0.10, \SiRateCutTwentySmallZ{} and \SiInRateCutTwentySmallZ{} for the cut 0.20. \HypPartial{} are held in part. The refuted ones all concern the situation light, which says that the corrections of the two other tests are on firmer ground than the cut of the third.

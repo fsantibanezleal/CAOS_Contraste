@@ -1,0 +1,91 @@
+This section derives, for each test, the law of the statistic under the null and the size of each rule where that law is known. Propositions~\ref{prop:law} and~\ref{prop:variance} restate results that are published for the coverage of a split-conformal set and its Beta-Binomial count \citep{vovk2012,angelopoulos2021}; they are proved here so that the derivation of the sizes that follow is complete, and the proofs are short. The sizes of the binomial test, of the Beta-Binomial test and of a permutation test (Propositions~\ref{prop:validity} to~\ref{prop:permutation}) and the bound on the situation-testing share (\cref{prop:share}) are the statements that the corrections rest on.
+
+\subsection{The law of the covered count}
+
+\begin{proposition}[Law of the covered count]
+\label{prop:law}
+Let $s_1,\dots,s_n$ and $t_1,\dots,t_m$ be exchangeable real scores with probability zero of a tie, let $k\le n$ be the rank of \cref{eq:rank}, and let $C=\#\{j:t_j\le s_{(k)}\}$. Then
+\[
+\Prob(C=c)=\frac{\binom{k-1+c}{c}\binom{n-k+m-c}{m-c}}{\binom{n+m}{m}},\qquad c=0,\dots,m,
+\]
+which is the Beta-Binomial law of \cref{eq:pmf}. If the scores are independent and identically distributed, the coverage $V=F(s_{(k)})$ of the set given the calibration rows has the Beta law with parameters $k$ and $n+1-k$, and $C$ given $V$ is binomial with $m$ trials and success probability $V$.
+\end{proposition}
+\begin{proof}
+Order the $n+m$ scores. Because the scores are exchangeable and distinct, every one of the $\binom{n+m}{m}$ arrangements of the labels (calibration or test) in the sorted order is equally likely. The count $C$ equals $c$ if and only if exactly $c$ test labels precede the $k$-th calibration label. The first $k+c-1$ positions then hold $k-1$ calibration and $c$ test labels in any order, which can be done in $\binom{k-1+c}{c}$ ways; position $k+c$ holds a calibration label; and the remaining $n-k$ calibration and $m-c$ test labels fill the other positions in any order, in $\binom{n-k+m-c}{m-c}$ ways. Dividing by $\binom{n+m}{m}$ gives the stated probability. Writing the binomial coefficients with Gamma functions turns it into $\binom{m}{c}B(c+k,m-c+n+1-k)/B(k,n+1-k)$. For the second statement, $F(s_{(k)})$ is the $k$-th order statistic of $n$ independent uniform variables, which has the Beta law stated, and the indicators of the test rows are independent Bernoulli variables with success probability $V$ given the calibration rows.
+\end{proof}
+
+The proof uses only the exchangeability of the $n+m$ scores and the absence of ties, so the law holds for every continuous distribution of the scores. If the scores are discrete, ties make the set cover more rows than the continuous law allows, and the test is not exact; \cref{sec:limitations} states this limit.
+
+\begin{proposition}[Mean and variance of the covered count]
+\label{prop:variance}
+Under the assumptions of \cref{prop:law}, with $\mu=k/(n+1)$,
+\[
+\E[C]=m\mu,\qquad \Var(C)=m\mu(1-\mu)\,\frac{m+n+1}{n+2}.
+\]
+The variance exceeds the binomial variance $m\mu(1-\mu)$ by the factor $\rho_{n,m}=(m+n+1)/(n+2)$, which equals one only for $m=1$.
+\end{proposition}
+\begin{proof}
+With $V\sim\mathrm{Beta}(k,n+1-k)$ one has $\E V=\mu$ and $\Var V=\mu(1-\mu)/(n+2)$, so $\E[V(1-V)]=\mu(1-\mu)(n+1)/(n+2)$. The law of total variance gives $\Var(C)=m\,\E[V(1-V)]+m^2\Var V=m\mu(1-\mu)\bigl[(n+1)+m\bigr]/(n+2)$.
+\end{proof}
+
+The factor $\rho_{n,m}$ is the whole difference between the two laws at the second order. At the \VarRatioPairs{} window pairs for which \texttt{exact\_theory.py} compares the closed form with the variance of the law summed over all counts, the largest absolute difference is \VarRatioMaxErr{}, and the ratios themselves are \VarRatioA{} for $(n,m)=(200,50)$, \VarRatioB{} for $(200,800)$, \VarRatioC{} for $(1000,1000)$, \VarRatioD{} for $(1000,4000)$ and \VarRatioE{} for $(5000,40000)$. A binomial test that ignores the factor reads the observed count against a spread that is too narrow by $\sqrt{\rho_{n,m}}$.
+
+\subsection{The size of the two coverage tests}
+
+\begin{proposition}[Validity and exact size of the minimum-likelihood p-value]
+\label{prop:validity}
+Let $C$ have any law $\pi$ on $\{0,\dots,m\}$ and let $p(c)=\sum_{c':\pi(c')\le\pi(c)}\pi(c')$. Then $\Prob_\pi[p(C)\le t]\le t$ for every $t\in[0,1]$. The p-value $p_{\mathrm{BB}}$ of \cref{eq:pvalue}, which enlarges every sum by the counts within a relative tolerance of $10^{-7}$ of the tie, satisfies $p_{\mathrm{BB}}\ge p$, hence has the same bound.
+\end{proposition}
+\begin{proof}
+If $\{c:p(c)\le t\}$ is empty there is nothing to prove. Otherwise let $c^\ast$ be a count of largest probability in that set. For every $c$ in the set $\pi(c)\le\pi(c^\ast)$, so the set is contained in $\{c':\pi(c')\le\pi(c^\ast)\}$ and its mass is at most $p(c^\ast)\le t$. Because $p_{\mathrm{BB}}\ge p$ pointwise, the event $\{p_{\mathrm{BB}}\le t\}$ is contained in $\{p\le t\}$.
+\end{proof}
+
+By \cref{prop:validity} the Beta-Binomial test is valid at every level and every pair $(n,m)$ under the assumptions of \cref{prop:law}. Its exact size is the mass of the rejection region, \cref{eq:exact-size}. The discreteness of the law can make the exact size smaller than the level: the table of exact sizes (\cref{tab:exact-size}) gives \CovExBBMinTenth{} to \CovExBBMaxTenth{} when the test window is a tenth of the calibration window, and approaches the level as the window grows. Over the \CovGridCells{} window pairs of the grid the largest exact size is \CovBBMaxExact{}.
+
+\begin{proposition}[Size of the binomial test]
+\label{prop:binomial-size}
+Let $n\to\infty$ and $m\to\infty$ with $m/n\to r\in[0,\infty)$, and let the binomial test of the coverage $1-\alpha$ reject when the normal statistic $|C-m(1-\alpha)|/\sqrt{m\alpha(1-\alpha)}$ exceeds $z=\Phi^{-1}(1-\theta/2)$. Under the assumptions of \cref{prop:law} its size converges to $2\,\Phi\bigl(-z/\sqrt{1+r}\bigr)$. The limit equals $\theta$ if and only if $r=0$, and it tends to one as $r\to\infty$.
+\end{proposition}
+\begin{proof}
+Condition on $V$: the count is binomial, so $(C-mV)/\sqrt{mV(1-V)}$ is asymptotically standard normal as $m\to\infty$. The coverage $V$ is asymptotically normal with mean $\mu$ and variance $\mu(1-\mu)/(n+2)$, by the central limit theorem for the Beta law. Combining the two, $C$ is asymptotically normal with mean $m\mu$ and variance $m\mu(1-\mu)(1+m/(n+2))$, consistent with \cref{prop:variance}. The offset $m(\mu-(1-\alpha))$ is at most $m/(n+1)\to r$ in counts, which is negligible against the standard deviation of order $\sqrt m$. The statistic therefore converges to a normal variable of variance $1+r$, and the probability that its absolute value exceeds $z$ is the stated limit. The limit is $\theta$ at $r=0$ and increases with $r$.
+\end{proof}
+
+The limit gives \LimBinTenth{}, \LimBinOne{}, \LimBinFour{} and \LimBinEight{} at $r=0.1$, $1$, $4$ and $8$ for $\theta=0.05$. The same normal approximation with the finite-sample factor of \cref{prop:variance}, $2\Phi(-z/\sqrt{\rho_{n,m}})$, differs from the exact size of the binomial test, summed over its rejection region, by at most \CovNormalMaxErr{} on the grid; the largest differences are at the smallest windows, where the discreteness of the law matters. The values are in \cref{tab:exact-size} and \cref{fig:coverage-size}.
+
+A consequence concerns power. Both tests reject when the count is far from the centre of its law, and the two centres, $m\mu$ and $m(1-\alpha)$, differ by at most $m/(n+1)$ counts, which is small against the spread. The binomial test is wider in the sense that its rejection region is larger than the Beta-Binomial one, and its extra rejections are the extra size. We state this as a conjecture, with the evidence for it.
+
+\begin{remark}[Conjecture: the extra power of the binomial test is its extra size]
+\label{conj:power}
+For every drift of the coverage, the power of the binomial test with its cut calibrated to the exact size $\theta$ is within a small constant of the power of the Beta-Binomial test. Evidence: over \ExPowGapCells{} exact power computations (\ExPowPairs{} window pairs and \ExPowShapes{} drift shapes, by integration over the Beta law of the coverage with \ExPowNodes{} quantiles) the largest absolute difference between the two powers is \ExPowGapMax{}; at the drift $b=1.10$ the exact powers of the Beta-Binomial test and of the size-calibrated binomial test are \ExPowBBBTen{} and \ExPowOracleBTen{} at equal windows, and \ExPowBBCTen{} and \ExPowOracleCTen{} at a test window four times the calibration window. The conjecture is not proved, and the conditions under which it fails are not known.
+\end{remark}
+
+\subsection{The permutation reference}
+
+\begin{proposition}[Validity and granularity of the permutation p-value]
+\label{prop:permutation}
+Let $D_0,D_1,\dots,D_R$ be exchangeable and almost surely distinct, and let $p=(1+\#\{r\ge1:D_r\ge D_0\})/(R+1)$. Then $p$ is uniform on $\{1/(R+1),\dots,1\}$, and for a level $\theta$ the probability that $p<\theta$ is $(\lceil\theta(R+1)\rceil-1)/(R+1)$. With ties the p-value is conservative. A rule that rejects when $p<\theta$ can reject only if $R+1>1/\theta$.
+\end{proposition}
+\begin{proof}
+The rank of $D_0$ among the $R+1$ values is uniform on $\{1,\dots,R+1\}$ by exchangeability, and $p=(R+2-\text{rank})/(R+1)$ takes each value $j/(R+1)$ with probability $1/(R+1)$. The number of values $j/(R+1)$ below $\theta$ is $\lceil\theta(R+1)\rceil-1$. A tie increases $\#\{r:D_r\ge D_0\}$ and hence $p$.
+\end{proof}
+
+For $\theta=0.05$ the exact sizes are \GranExactNineteen{}, \GranExactThirtyNine{}, \GranExactNinetyNine{} and \GranExactFull{} at $R=19$, $39$, $99$ and $199$; with $R=19$ the smallest attainable p-value is \GranSmallestNineteen{}, which does not fall below $0.05$, so the rule cannot reject. The condition of exchangeability needs care in the engine's construction: the pseudo-development set has $n_d-n_e$ rows against the $n_d$ rows of the real development set, so the exchangeability is approximate, and the rates measured in \cref{sec:results} test how approximate it is.
+
+A fixed cut has no such guarantee. Writing $\mu_0$ and $\sigma_n$ for the mean and the standard deviation of the drop $D$ under the null at $n_{\mathrm{eval}}=n$ evaluation rows, a cut $c$ has size close to $1-\Phi((c-\mu_0)/\sigma_n)$ when $D$ is nearly normal. The cut that has size $\theta$ is $\mu_0+z_\theta\sigma_n$, and it changes with $n$. We state the scale of $\sigma_n$ as a second conjecture.
+
+\begin{remark}[Conjecture: the null drop scales with the inverse square root of the evaluation sample]
+\label{conj:scale}
+$\sigma_n\sqrt{n}$ is approximately constant in $n$ for a fixed model, share and plant. Evidence: the standard deviation of the drop without shift, multiplied by the square root of the number of evaluation rows, lies between \ShSdScaleMin{} and \ShSdScaleMax{} over the four sizes 125, 250, 500 and 1,000 (\cref{tab:shift-eval-size}). If the conjecture holds, the size of any fixed cut above $\mu_0$ falls to zero as the evaluation sample grows, and the cut that has size $\theta$ falls with it; a cut calibrated at one size is too lax or too strict at another.
+\end{remark}
+
+\subsection{The share of significant complainants}
+
+\begin{proposition}[Bounds on the size of a cut on the share]
+\label{prop:share}
+Let $S\in[0,1]$ be the share of significant complainants with null mean $\E S=\theta_0$, and let $c\in(0,1]$. Then $\Prob(S\ge c)\le\theta_0/c$, and for every $c$ there is a law of $S$ with mean $\theta_0$ that attains the bound. If the $Q$ indicators have the common marginal $\theta_0$ and the common pairwise correlation $\bar\rho$, then $\Var(S)=\theta_0(1-\theta_0)\bigl[1+(Q-1)\bar\rho\bigr]/Q$, which does not tend to zero with $Q$ when $\bar\rho>0$.
+\end{proposition}
+\begin{proof}
+The first bound is Markov's inequality. The law that puts mass $\theta_0/c$ on $S=c$ and the rest on $S=0$ has mean $\theta_0$ and $\Prob(S\ge c)=\theta_0/c$. For the variance, $\Var(\sum_iI_i)=Q\theta_0(1-\theta_0)+Q(Q-1)\bar\rho\,\theta_0(1-\theta_0)$, and $\Var(S)$ is that variance divided by $Q^2$; the limit as $Q\to\infty$ is $\bar\rho\,\theta_0(1-\theta_0)$.
+\end{proof}
+
+From the null mean alone, therefore, a cut at $0.20$ can have a size as large as $\theta_0/0.20$, which is \SiMarkovTwenty{} for $\theta_0=0.05$, and a cut at $0.10$ a size as large as \SiMarkovTen{}; the only cut with a guaranteed size of $0.05$ is $c=1$. The measured sizes are far below these bounds, which says that the dependence among the complainants is moderate, and far above what independent complainants would give, which says that it is not negligible. The measured design effects imply an average correlation of the indicators of \SiRhoSmall{} at 400 applicants and \SiRhoLarge{} at 1,000 applicants on the threshold-bias plant, and \SiInRhoSmall{} and \SiInRhoLarge{} on the plant with independent attributes (\cref{tab:situation-designs}). The size of a cut therefore has to be measured on a plant that has the neighbour structure of the data to which the light will be applied, and it is not transferable by a formula.

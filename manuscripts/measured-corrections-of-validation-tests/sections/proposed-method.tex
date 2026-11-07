@@ -1,0 +1,119 @@
+The proposed method has four parts: a coverage test whose null is the Beta-Binomial law of the covered count, a resilience test whose reference is a permutation distribution built from development rows, a situation-testing light whose amber cut is set from a measured size and power, and a protocol that measures the rejection rate of each rule and of the rule it replaces on the same seeded draws. The first three are corrections of rules that the validation practice states; the fourth is the measurement that makes the size and the power of each rule visible. The parts share one design principle: a decision rule is accepted only with the error rates it has at the sample sizes in which it is used, stated with their Monte Carlo uncertainty.
+
+\subsection{The idea}
+
+Each of the three published rules compares a statistic with a reference that is correct only under an extra condition. The binomial coverage test is correct if the coverage of the set is the nominal $1-\alpha$ exactly, which holds in the limit of an infinite calibration sample. The fixed AUC-drop cut is correct if the drop under the null lies below the cut, which holds when the worst subsample is not selected by a feature of the rows and the sample is large enough for the drop to concentrate near zero. The amber cut on the share of significant complainants is correct if the complainants are independent, which holds when they share no neighbours. In each case the correction replaces the extra condition by the law that the rows actually have: the law of the covered count given the calibration size, the law of the drop given the selection of the worst subsample, and the measured law of the share given the neighbour structure of the data. Where that law is known in closed form the correction is exact. Where it is not, the correction measures it, with a Monte Carlo procedure whose error is stated.
+
+\subsection{The coverage test}
+
+Under exchangeability the covered count $C$ of $m$ test rows given the calibration rank $k$ of \cref{eq:rank} follows the Beta-Binomial law,
+\begin{equation}
+\Prob(C=c)=\binom{m}{c}\frac{B(c+k,\;m-c+n+1-k)}{B(k,\;n+1-k)},\qquad c=0,\dots,m,
+\label{eq:pmf}
+\end{equation}
+with $B$ the Beta function. The law is the mixture of a binomial count with the Beta-distributed coverage $V$ of the set given the calibration rows, and \cref{prop:law} proves it. The two-sided p-value of an observed count $c$ is the mass of the counts that are no more likely than $c$,
+\begin{equation}
+p_{\mathrm{BB}}(c)=\sum_{c'=0}^{m}\Prob(C=c')\,\indic\bigl\{\Prob(C=c')\le(1+10^{-7})\,\Prob(C=c)\bigr\},
+\label{eq:pvalue}
+\end{equation}
+the minimum-likelihood rule that the exact binomial test of the standard statistical libraries uses; the relative tolerance only absorbs the floating-point error of ties. The binomial p-value $p_{\mathrm{Bin}}(c)$ replaces \cref{eq:pmf} by the binomial law with the success probability $1-\alpha$. The light of the test is read from the Beta-Binomial p-value alone,
+\begin{equation}
+\text{light}(c)=\begin{cases}\text{red}&p_{\mathrm{BB}}(c)<0.01,\\ \text{amber}&0.01\le p_{\mathrm{BB}}(c)<0.05,\\ \text{green}&p_{\mathrm{BB}}(c)\ge 0.05,\end{cases}
+\label{eq:light}
+\end{equation}
+and the binomial p-value is kept beside it as a diagnostic, so that a reader who prefers the published rule sees both numbers. When the rank exceeds the calibration size the set holds every label, the coverage is one by construction, and the p-value is undefined. \Cref{alg:coverage} states the test.
+
+\begin{algorithm}[htbp]
+\caption{Coverage test of a split-conformal set with the Beta-Binomial law.}
+\label{alg:coverage}
+\begin{algorithmic}[1]
+\Require calibration size $n$, miscoverage $\alpha$, test indicators $z_1,\dots,z_m\in\{0,1\}$ (1 if the set holds the true label), levels $0.05$ and $0.01$
+\State $k\gets\lceil (n+1)(1-\alpha)\rceil$ on the exact decimal of $\alpha$
+\If{$k>n$} \Return coverage $1$, p-value undefined \EndIf
+\State $c\gets\sum_j z_j$; compute $\Prob(C=c')$ for $c'=0,\dots,m$ by \cref{eq:pmf}
+\State $p_{\mathrm{BB}}\gets$ \cref{eq:pvalue}; $p_{\mathrm{Bin}}\gets$ the same sum under $\mathrm{Bin}(m,1-\alpha)$
+\State \Return coverage $c/m$, $p_{\mathrm{BB}}$, $p_{\mathrm{Bin}}$ and the light of \cref{eq:light}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{The resilience test}
+
+The raw drop $D$ of \cref{eq:drop} is positive under the null because the worst subsample is a region of the feature space defined by a resemblance score, and the AUC on a restricted range is lower than on the full range. The correction builds the null law of $D$ from rows that are known to be unshifted. With $R$ draws, each draw takes a random subset of the development rows of the size of the evaluation set as a pseudo-evaluation set and the remaining development rows as the pseudo-development set, refits the resemblance score exactly as it is fitted for the real evaluation rows (cross-fitted, five folds, pseudo-development rows as class 0 and pseudo-evaluation rows as class 1), takes the worst share $s$ by that score and computes the drop $D_r$ with the same model. The p-value is
+\begin{equation}
+p_{\mathrm{perm}}=\frac{1+\#\{r:D_r\ge D\}}{1+R},
+\label{eq:perm-p}
+\end{equation}
+and the light is read from it with the thresholds of \cref{eq:light}. A draw whose worst subsample holds a single class has no AUC and is left out; $R$ then counts the draws that remain. The reference needs the development labels and at least twice as many development rows as evaluation rows; without them it returns no p-value, and the test reports the raw drop with a statement that no reference could be built. The default is $R=199$, a convention that \cref{sec:results} puts to the test, because with $R=19$ the smallest p-value is $0.05$ and a rule that rejects below 0.05 can never reject. \Cref{alg:resilience} states the procedure.
+
+\begin{algorithm}[htbp]
+\caption{Resilience test with a development-only permutation reference.}
+\label{alg:resilience}
+\begin{algorithmic}[1]
+\Require model $f$, development rows $(X_d,y_d)$ with $n_d\ge 2n_e$, evaluation rows $(X_e,y_e)$, share $s$, draws $R$, seed
+\State $\sigma\gets$ cross-fitted resemblance score of the evaluation rows against the development rows
+\State $W\gets$ the $\lceil s\,n_e\rceil$ evaluation rows of highest $\sigma$; $D\gets\operatorname{AUC}(f;\text{all})-\operatorname{AUC}(f;W)$
+\For{$r=1,\dots,R$}
+  \State draw a random subset $E_r$ of $n_e$ development rows; $G_r\gets$ the other development rows
+  \State $\sigma_r\gets$ cross-fitted resemblance score of $E_r$ against $G_r$; $W_r\gets$ the worst share $s$ of $E_r$
+  \If{$W_r$ holds one class} skip the draw \Else{} $D_r\gets\operatorname{AUC}(f;E_r)-\operatorname{AUC}(f;W_r)$ \EndIf
+\EndFor
+\State \Return $D$, $p_{\mathrm{perm}}$ of \cref{eq:perm-p}, the null mean and the 95th percentile of the $D_r$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{The situation-testing light}
+
+The share $S$ of \cref{eq:share} has a null mean that depends on the construction of the neighbours and a null variance that the independence of the complainants would not predict. Writing $X=QS$ for the count of significant complainants, and assuming that each complainant is significant with the marginal probability $\theta_0$ and that the pairwise correlation of two indicators has an average $\bar\rho$,
+\begin{equation}
+\Var(S)=\frac{\theta_0(1-\theta_0)}{Q}\bigl[1+(Q-1)\bar\rho\bigr],\qquad \mathrm{DE}=\frac{Q\,\Var(S)}{\theta(1-\theta)},
+\label{eq:design-effect}
+\end{equation}
+where $\mathrm{DE}$ is the design effect, the variance of the share relative to that of $Q$ independent decisions made at level $\theta$. The light does not model $\bar\rho$. It sets the cut $c_0$ on a grid $\mathcal{G}$ by measurement: for a plant of the size of the portfolio and the null gap, the cut is the smallest value of the grid whose measured size does not exceed the bound,
+\begin{equation}
+c_0=\min\Bigl\{c\in\mathcal{G}:\ \hat r_0(c)\le\theta+2\,\widehat{\mathrm{se}}\bigl(\hat r_0(c)\bigr)\Bigr\},
+\label{eq:cut-rule}
+\end{equation}
+where $\hat r_0(c)$ is the rejection rate of the rule $S\ge c$ over the null replications and $\widehat{\mathrm{se}}$ its Monte Carlo standard error. The power at a planted gap is then reported beside the cut. The engine's cut is $0.20$; the grid that the experiments use contains it and the former cut $0.10$. The light is amber when $S\ge c_0$ and never red, because the cut is a convention and no regulatory threshold applies to it.
+
+\subsection{The measurement protocol}
+
+For a rule $\phi$ and a cell of settings (a sample size and a planted severity) the protocol draws $R$ replications on disjoint seeds, applies the rule to each, and reports the rate and its standard error,
+\begin{equation}
+\hat r=\frac{1}{R}\sum_{j=1}^{R}\phi(\mathcal{D}_j),\qquad \widehat{\mathrm{se}}=\sqrt{\frac{\hat r(1-\hat r)}{R}}.
+\label{eq:rate}
+\end{equation}
+Every rule is applied to the same replications, so that a difference between two rules is a difference on paired data. Where the null law is known, the exact size is the sum of the law over the rejection region $\mathcal{R}$,
+\begin{equation}
+\operatorname{size}=\sum_{c\in\mathcal{R}}\Prob(C=c),
+\label{eq:exact-size}
+\end{equation}
+and the simulated rate is checked against it in units of its standard error. Because every rule is applied to the same draw, the comparison of a rule with its correction is paired, and a cell reports for each rule its size under the null setting and its power at each planted severity. A correction is judged against two references: the rule it replaces, and the same rule with its cut moved until its size equals that of the correction, which separates the error a correction removes from the power it gives up. \Cref{alg:protocol} states the protocol.
+
+\begin{algorithm}[htbp]
+\caption{Measurement of the size and the power of a rule and of its correction.}
+\label{alg:protocol}
+\begin{algorithmic}[1]
+\Require rules $\phi_1,\dots,\phi_J$, a plant with a null and a planted severity, a grid of cells, replications $R$, a root seed
+\For{each cell $(n,\eta)$ of the grid}
+  \For{$j=1,\dots,R$}
+    \State draw $\mathcal{D}_j$ from the plant with the stream $\mathrm{SeedSequence}([\text{root},\text{experiment},n,\eta,j])$
+    \State apply every rule to the same $\mathcal{D}_j$ and store the decisions
+  \EndFor
+  \State report for each rule $\hat r$ and $\widehat{\mathrm{se}}$ of \cref{eq:rate}
+  \State \textbf{if} the null law is known \textbf{then} compute the exact size of \cref{eq:exact-size} and the standard-error distance
+\EndFor
+\State compare each correction with its original on size, power, and the original with its cut calibrated to the correction's size
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Assumptions and the failure of each correction}
+
+Each correction is exact or approximately valid under stated conditions, and fails visibly when they are violated. The coverage test needs exchangeability of the calibration and test scores and continuous scores. If the scores are discrete, the covered count is stochastically larger than \cref{eq:pmf} allows, and the test rejects a correct set more often than its p-value says; if the calibration and the test rows are serially dependent, the variance of the count is larger than the law allows, in the way that the variance factor of \cref{prop:variance} is larger than one for the randomness of the quantile. The test also needs the calibration size $n$ that the quantile came from; a wrong $n$ shifts the size in a direction that depends on the error, which \cref{sec:ablation} measures.
+
+The resilience reference needs the development rows to be exchangeable with the evaluation rows under the null and the model to be the same on both. It cannot be built without development labels or with fewer than twice as many development rows as evaluation rows, and it then returns no p-value; the engine reports that no reference could be built instead of a number. Its null draws use a pseudo-development set smaller than the real one, so exchangeability holds only approximately, and the experiments measure how much the size departs from the exact size of the p-value grid. The situation light measures its cut on a plant, so it is valid for portfolios whose size and neighbour structure the plant reproduces, and a portfolio of another size or structure needs its own measurement. In each case the engine states the condition and returns its light only when the condition is met, and the measurement protocol of \cref{alg:protocol} is the means to check it on a plant that violates the condition on purpose.
+
+\subsection{Parameters, complexity and implementation}
+
+The parameters and their values are the following. The level of every test is $\theta=0.05$ and the red level is $0.01$. The conformal miscoverage is $\alpha=0.10$. The resilience test takes the worst share $s=0.25$ in the experiments (the committed run of the product uses $0.10$), $R=199$ draws and five folds. The situation test takes $k_{\mathrm{nn}}=30$ neighbours, the level $0.05$, the range normalisation of the attributes and the ceteris-paribus comparator. The choices of $R$, $s$ and $k_{\mathrm{nn}}$ are conventions, and the experiments report how the rates depend on $R$ (\cref{sec:ablation}) and on the sample size.
+
+The computational cost of the coverage test is $O(m)$ for the count and $O(m)$ for the law and the p-value. The resilience reference costs $R$ times the cost of five fits of a regularised logistic model on $n_d$ rows plus the scoring of $n_e$ rows. The situation test costs $O(Q(n_p+n_o)d)$ for the $d$ attributes and the $n_p$ protected and $n_o$ other rows, because the distance from each complainant to every row is computed. The three corrections are implemented in the engine release 1.1.0 of the product, in the functions \texttt{conformal\_coverage} of \texttt{riskvalidation.ml.conformal} (both p-values, with \texttt{p\_value} for the Beta-Binomial one and \texttt{p\_value\_binomial} for the binomial one), \texttt{shift\_development\_reference} of \texttt{riskvalidation.ml.robustness} and \texttt{situation\_test} of \texttt{riskvalidation.fairness.situation}; the amber cut is a policy value of the light of the fairness battery. The experiments call these functions and never a copy of them; the vectorised p-value tables used to evaluate many variants on the same counts are checked against the engine function (\CovEngineMismatches{} mismatches over \CovTotalReps{} replications).

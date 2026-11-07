@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The notation of the manuscript: the symbols of the coverage test, the resilience test and the situation-testing light, their meaning and their unit; a symbol that two sections share has the same meaning in both.}
+\label{tab:notation}
+\fitwidth{\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+$\alpha$ & miscoverage of the conformal set, 0.10 & dimensionless \\
+$n$ & calibration rows of the conformal set & rows \\
+$m$ & test rows whose coverage is read & rows \\
+$k$ & \relax rank of the conformal quantile, $\lceil (n+1)(1-\alpha)\rceil$ & dimensionless \\
+$C$ & number of test rows whose set holds the true label & rows \\
+$V$ & coverage of the set given the calibration rows & dimensionless \\
+$\mu_0$ & \relax target coverage $1-\alpha$ & dimensionless \\
+$b$ & \relax shape of the drift of the test scores, $\Prob(\text{coverage})=q^b$ & dimensionless \\
+$\delta_s$ & shift of the covariates of the shifted rows & standard deviations \\
+$s$ & share of the evaluation rows in the worst subsample, 0.25 & dimensionless \\
+$D$ & \relax AUC drop on the worst subsample, $\mathrm{AUC}_{\mathrm{all}}-\mathrm{AUC}_{\mathrm{worst}}$ & AUC points \\
+$R$ & permutation draws of the reference & draws \\
+$\gamma$ & gap of the group-dependent decision cut-off & log-odds \\
+$k_{\mathrm{nn}}$ & neighbours of each complainant in each group, 30 & rows \\
+$S$ & share of significant complainants & dimensionless \\
+$c_0$ & amber cut point of the share & dimensionless \\
+$\theta$ & level of every test, 0.05 & dimensionless \\
+\bottomrule
+\end{tabular}}
+\end{table}
