@@ -20,6 +20,9 @@ R = json.loads((HERE.parent / "experiments" / "results.json").read_text(encoding
 CELLS = R["cells"]
 VAR = {"xi-0-6": "A", "xi-0-8": "B", "xi-0-96": "C", "xi-1-1": "D"}
 CELL = {"y5-h10000": "Fa", "y5-h20000": "Fb", "y10-h10000": "Ta", "y10-h20000": "Tb"}
+MC = "sla_mean_corrected"  # the comparison rung: its form is not confirmed against a primary text, so it is kept out of every headline count
+MC_LIGHT = MC.replace("_", "-")
+MC_NOTE = "Comparison only, in no count of the text (form not confirmed)"
 RUNG = {"lda_lognormal": "Lg", "lda_lognormal_truncated": "Tr", "lda_splice": "Sp", "sla": "Sl", "sla_mean_corrected": "Mc", "scenario": "Sc",
         "sla_mean_adjusted": "Ma", "sla_cvm": "Cv", "sla_obre": "Ob", "sla_cvm_lognormal": "Cl"}
 LABEL = {"lda_lognormal": "Lognormal, threshold ignored", "lda_lognormal_truncated": "Truncated lognormal", "lda_splice": "Lognormal-GPD splice",
@@ -109,10 +112,23 @@ def macros() -> None:
     lo, hi = R["splice_iqr_range"]
     mac("spIqrMin", f2(lo))
     mac("spIqrMax", f2(hi))
+    # The mean-corrected rung (rung 5) is a comparison row: its form is not confirmed against a primary text, so no headline count includes it.
+    # The headline counts are those of the other nine rungs; the counts with it are kept under their own names.
     L = R["lights"]
-    mac("redTotal", str(L["total"]))
-    mac("redSix", str(L["six_rung_red"]))
+    mcl = L["by_rung"][MC_LIGHT]
+    mc_rows, mc_red = sum(mcl.values()), mcl["red"]
+    assert L["green"] == 0 and L["amber"] == 0, "the text says that no row is green or amber"
+    assert L["red"] == L["total"] and mc_red == mc_rows
+    mac("redTotal", str(L["red"] - mc_red))  # red rows of the nine rungs; every row of them is red (asserted above for all rows)
+    mac("rowsTotal", str(L["total"] - mc_rows))
+    mac("redFive", str(L["six_rung_red"] - mc_red))  # the five rungs of the six-rung ladder other than the mean-corrected one
+    mac("rowsFive", str(L["six_rung_rows"] - mc_rows))
+    mac("redSix", str(L["six_rung_red"]))  # the six-rung ladder of the design's statement R2, with the mean-corrected rung
     mac("rowsSix", str(L["six_rung_rows"]))
+    mac("redAll", str(L["red"]))
+    mac("rowsAll", str(L["total"]))
+    mac("redMc", str(mc_red))
+    mac("rowsMc", str(mc_rows))
     inf = R["infinite_mean"]
     mac("infLo", pc(inf["xi_0_96_conclude_infinite"][0], 1))
     mac("infHi", pc(inf["xi_0_96_conclude_infinite"][1], 1))
@@ -235,6 +251,18 @@ def macros() -> None:
         gap[vid] = qd["sla"] / qd["fft"]
     mac("slBelowGapCells", str(sum(1 for c in CELLS if c["rungs"]["sla"]["median"] < gap[c["variant"]])))
     mac("slBelowCells", str(sum(1 for c in CELLS if c["rungs"]["sla"]["median"] < 1)))
+    # the shortfall of the median splits in two parts: the gap of the approximation at the true parameters (asymptotic, no estimation) and the
+    # rest, which is the finite-sample part; both in points of the true quantile
+    for vid in R["variants"]:
+        ms = [c["rungs"]["sla"]["median"] for c in CELLS if c["variant"] == vid]
+        mac(f"slShortLo{VAR[vid]}", f"{100 * (1 - max(ms)):.1f}")
+        mac(f"slShortHi{VAR[vid]}", f"{100 * (1 - min(ms)):.1f}")
+        mac(f"slBeyondLo{VAR[vid]}", f"{100 * (gap[vid] - max(ms)):.1f}")
+        mac(f"slBeyondHi{VAR[vid]}", f"{100 * (gap[vid] - min(ms)):.1f}")
+    beyond = [gap[c["variant"]] - c["rungs"]["sla"]["median"] for c in CELLS if c["rungs"]["sla"]["median"] < gap[c["variant"]]]
+    mac("slBeyondMin", f"{100 * min(beyond):.1f}")
+    mac("slBeyondMax", f"{100 * max(beyond):.1f}")
+    mac("slAboveGapCells", str(len(CELLS) - len(beyond)))
     mac("slMeanMed", f2(R["pooled"]["sla"]["mean_cell_median"]))
     sb = [c["rungs"]["sla"]["share_below_one"] for c in CELLS]
     mac("slBelowMin", pc(min(sb), 0))
@@ -325,18 +353,25 @@ def tab_main() -> None:
 
 
 def tab_rungs() -> None:
-    rows = []
-    for r in RUNG:
+    def row(r: str) -> str:
         p = R["pooled"][r]
         iq = [c["rungs"][r]["iqr"] for c in CELLS if c["rungs"][r]["n_defined"]]
         lo, hi = p["share_within_factor_ci"]
-        rows.append(f"{LABEL[r]} & {pc(p['share_defined'], 0)} & {f2(p['mean_cell_median'])} & {f2(min(iq))} to {f2(max(iq))} & {pc(p['share_within_factor'], 1)} [{pc(lo, 1)}, {pc(hi, 1)}] & "
-                    f"{R['lights']['by_rung'][r.replace('_', '-')]['red']} of {sum(R['lights']['by_rung'][r.replace('_', '-')].values())} \\\\")
+        lt = R["lights"]["by_rung"][r.replace("_", "-")]
+        return (f"{LABEL[r]} & {pc(p['share_defined'], 0)} & {f2(p['mean_cell_median'])} & {f2(min(iq))} to {f2(max(iq))} & {pc(p['share_within_factor'], 1)} [{pc(lo, 1)}, {pc(hi, 1)}] & "
+                f"{lt['red']} of {sum(lt.values())} \\\\")
+    rows = []
+    for r in RUNG:
+        if r == MC:
+            continue
+        rows.append(row(r))
         if r == "scenario":
             rows.append("\\midrule")
-    table("tab-rungs", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The ten estimation rungs over the 16 cells: the share of the 16{,}000 histories on which the rung returns a capital, the mean over cells of the "
+    rows += ["\\midrule", f"\\multicolumn{{6}}{{l}}{{\\emph{{{MC_NOTE}}}}} \\\\", row(MC)]
+    table("tab-rungs", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The estimation rungs over the 16 cells: the share of the 16{,}000 histories on which the rung returns a capital, the mean over cells of the "
           "median ratio to the truth, the range over cells of the interquartile range of the ratio, the share of defined histories within a factor of two of the truth with its Wilson 95 percent interval, "
-          "and the number of cells on which the capital stability test is red out of the cells on which the rung returns a capital. The mean-corrected single loss approximation is not computed at the tail index 1.1, whose true mean does not exist, so its row covers the other three tail indices only.}\n\\label{tab:rungs}\n"
+          "and the number of cells on which the capital stability test is red out of the cells on which the rung returns a capital. The mean-corrected single loss approximation, in the last row, is a comparison "
+          "only: its form is not confirmed against a primary text, and no count of the text includes it. It is not computed at the tail index 1.1, whose true mean does not exist, so its row covers the other three tail indices only.}\n\\label{tab:rungs}\n"
           "\\fitwidth{\\begin{tabular}{lrrrrr}\n\\toprule\nRung & Defined (\\%) & Mean median & IQR range over cells & Within factor 2 (\\%) [95\\% CI] & Red cells \\\\\n\\midrule\n"
           + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n")
 
@@ -374,24 +409,30 @@ def tab_theory() -> None:
 
 
 def tab_ablation() -> None:
-    rows = []
-    for name, a in R["ablation"].items():
+    def row(name: str, a: dict) -> str:
         pairs = f"{a['n_paired']:,}".replace(",", "{,}")
-        rows.append(f"{ABL[name]} & {LABEL[a['from']]} to {LABEL[a['to']]} & {pairs} & {pc(a['from_within'], 1)} & {pc(a['to_within'], 1)} & "
-                    f"{100 * a['delta_within']:+.1f} [{100 * a['delta_within_ci'][0]:+.1f}, {100 * a['delta_within_ci'][1]:+.1f}] & {f2(a['from_log_sd'])} to {f2(a['to_log_sd'])} \\\\")
+        return (f"{ABL[name]} & {LABEL[a['from']]} to {LABEL[a['to']]} & {pairs} & {pc(a['from_within'], 1)} & {pc(a['to_within'], 1)} & "
+                f"{100 * a['delta_within']:+.1f} [{100 * a['delta_within_ci'][0]:+.1f}, {100 * a['delta_within_ci'][1]:+.1f}] & {f2(a['from_log_sd'])} to {f2(a['to_log_sd'])} \\\\")
+    rows = [row(name, a) for name, a in R["ablation"].items() if a["to"] != MC]
+    mc_rows = [row(name, a) for name, a in R["ablation"].items() if a["to"] == MC]
+    assert len(mc_rows) == 1, "one comparison of the mean-corrected rung"
+    mc_cells = next(a["n_cells"] for a in R["ablation"].values() if a["to"] == MC)
+    rows += ["\\midrule", f"\\multicolumn{{7}}{{l}}{{\\emph{{{MC_NOTE}}}}} \\\\"] + mc_rows
     table("tab-ablation", "\\begin{table}[htbp]\n\\centering\\scriptsize\n\\caption{The ablation of the estimation ladder: for each component, the paired comparison on the histories of the 16 cells where both rungs return a capital, "
           "the share of those histories within a factor of two of the truth before and after, the change in percentage points with its 95 percent bootstrap interval over the paired histories, and the standard deviation of the "
-          "logarithm of the ratio before and after.}\n\\label{tab:ablation}\n"
+          f"logarithm of the ratio before and after. The last row is a comparison only, on the {mc_cells} cells where the mean-corrected rung is computed: its form is not confirmed against a primary text, "
+          "so it is not read as a component of the ladder.}\n\\label{tab:ablation}\n"
           "\\fitwidth{\\begin{tabular}{llrrrrr}\n\\toprule\nComponent & Rungs compared & Pairs & Before (\\%) & After (\\%) & Change (points) [95\\% CI] & $\\mathrm{sd}$ of $\\ln$ ratio \\\\\n\\midrule\n"
           + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n")
 
 
 def tab_lights() -> None:
-    rows = []
-    for m, d in R["lights"]["by_rung"].items():
-        rows.append(f"{LABEL[m.replace('-', '_')]} & {d['green']} & {d['amber']} & {d['red']} \\\\")
+    rows = [f"{LABEL[m.replace('-', '_')]} & {d['green']} & {d['amber']} & {d['red']} \\\\" for m, d in R["lights"]["by_rung"].items() if m != MC_LIGHT]
+    d = R["lights"]["by_rung"][MC_LIGHT]
+    rows += ["\\midrule", f"\\multicolumn{{4}}{{l}}{{\\emph{{{MC_NOTE}}}}} \\\\", f"{LABEL[MC]} & {d['green']} & {d['amber']} & {d['red']} \\\\"]
     table("tab-lights", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The lights of the capital stability test over the 16 cells for each rung, against the limits of 0.25 and 0.50 on the "
-          "interquartile range of the ratio and 0.10 and 0.25 on the absolute bias: the number of cells in which each rung is green, amber and red, from the committed documents.}\n\\label{tab:lights}\n"
+          "interquartile range of the ratio and 0.10 and 0.25 on the absolute bias: the number of cells in which each rung is green, amber and red, from the committed documents. "
+          f"The last row, the mean-corrected single loss approximation, is a comparison only and is in no count of the text; it is computed on {sum(d.values())} cells.}}\n\\label{{tab:lights}}\n"
           "\\begin{tabular}{lrrr}\n\\toprule\nRung & Green & Amber & Red \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
 
 
@@ -406,6 +447,7 @@ def _variant_outcome(rung: str) -> str:
 
 def tab_hypotheses() -> None:
     inf, tv, L = R["infinite_mean"], R["theory_verdict"], R["lights"]
+    mc_rows, mc_red = sum(L["by_rung"][MC_LIGHT].values()), L["by_rung"][MC_LIGHT]["red"]
     lo, hi = R["splice_iqr_range"]
     rh = R["robust_hypothesis"]
     word = {"holds": "Held", "refuted": "Refuted", "inconclusive": "Inconclusive"}
@@ -425,16 +467,18 @@ def tab_hypotheses() -> None:
     rep = [
         ("R1", "The interquartile range of the splice capital over the true quantile lies between 1.35 and 3.30 in the 16 cells",
          f"{lo:.4f} to {hi:.4f}", "Reproduced" if round(lo, 2) == 1.35 and round(hi, 2) == 3.30 else "Not reproduced"),
-        ("R2", "Every capital stability row of the six-rung ladder is red", f"{L['six_rung_red']} of {L['six_rung_rows']} rows red ({L['red']} of {L['total']} with the four robust rungs)",
+        ("R2", "Every capital stability row of the six-rung ladder is red", f"{L['six_rung_red'] - mc_red} of {L['six_rung_rows'] - mc_rows} rows red on the five rungs other than the mean-corrected one, and {mc_red} of {mc_rows} on that one "
+         f"(comparison only); {L['red'] - mc_red} of {L['total'] - mc_rows} with the four robust rungs and without it",
          "Reproduced" if L["six_rung_red"] == L["six_rung_rows"] else "Not reproduced"),
         ("R3", "27 to 34 percent (whole percent) of the histories at $\\xi=0.96$ conclude an infinite mean", f"{pc(inf['xi_0_96_conclude_infinite'][0])} to {pc(inf['xi_0_96_conclude_infinite'][1])} percent",
          "Reproduced" if round(100 * inf["xi_0_96_conclude_infinite"][0]) == 27 and round(100 * inf["xi_0_96_conclude_infinite"][1]) == 34 else "Not reproduced"),
         ("R4", "9 to 27 percent (whole percent) of the histories at $\\xi=1.1$ conclude a finite mean", f"{pc(inf['xi_1_1_conclude_finite'][0])} to {pc(inf['xi_1_1_conclude_finite'][1])} percent",
          "Reproduced" if round(100 * inf["xi_1_1_conclude_finite"][0]) == 9 and round(100 * inf["xi_1_1_conclude_finite"][1]) == 27 else "Not reproduced")]
     fmt = lambda rows: "\n".join(f"{a} & {b} & {c} & {d} \\\\" for a, b, c, d in rows)  # noqa: E731
-    table("tab-hypotheses", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The three hypotheses stated before the measurements that could fail (H1 to H3), and the four statements of the committed summaries "
-          "that the analysis reproduces from the per-history data (R1 to R4). H1 was written into the case parameters before the robust rungs were run and is reported with its outcome over the 16 cells and by tail index; "
-          "H2 and H3 are the predictions of the theory, with tolerances written in the analysis script. R1 to R4 were written into the design after the same 16{,}000 histories had been drawn, so they restate the bake and "
+    table("tab-hypotheses", "\\begin{table}[htbp]\n\\centering\\small\n\\caption{The three hypotheses (H1, committed with the code of the robust rungs on 29 October 2026, before the re-bake of 1 November 2026 that ran them on the 16{,}000 histories; "
+          "H2 and H3, the predictions of the theory, whose tolerances the record cannot date), and the four statements of the committed summaries "
+          "that the analysis reproduces from the per-history data (R1 to R4). H1 is reported with its outcome over the 16 cells and by tail index; "
+          "the tolerances of H2 and H3 are written in the analysis script. R1 to R4 were written into the design after the same 16{,}000 histories had been drawn, so they restate the bake and "
           "are not tests that could fail.}\n\\label{tab:hypotheses}\n"
           "\\begin{tabularx}{\\textwidth}{lXXl}\n\\toprule\nId & Statement & Measured & Outcome \\\\\n\\midrule\n" + fmt(hyp) + "\n\\midrule\n" + fmt(rep) + "\n\\bottomrule\n\\end{tabularx}\n\\end{table}\n")
 

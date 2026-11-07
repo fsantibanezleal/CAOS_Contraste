@@ -209,7 +209,8 @@ def fig_precision() -> None:
 def fig_ablation() -> None:
     import matplotlib.pyplot as plt
 
-    names = list(R["ablation"])
+    # the comparison with the mean-corrected rung (form not confirmed against a primary text) is in the table only, never plotted as a component
+    names = [n for n, a in R["ablation"].items() if a["to"] != "sla_mean_corrected"]
     fig, ax = plt.subplots(figsize=(5.4, 3.2))
     d = np.array([100 * R["ablation"][n]["delta_within"] for n in names])
     lo = d - np.array([100 * R["ablation"][n]["delta_within_ci"][0] for n in names])

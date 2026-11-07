@@ -27,11 +27,11 @@
 A bank that estimates its 99.9 percent operational-risk capital from five or ten years of internal losses cannot say how far it is
 from the true quantile, which is never observed. We measure that distance on a generator with a known annual loss distribution:
 a compound Poisson sum of generalised Pareto losses calibrated to the 2008 Loss Data Collection Exercise, at four tail indices (0.6 to 1.1),
-two history lengths and two collection thresholds, with \nPer{} independent histories in each of \nCells{} cells. Ten estimation rungs and
+two history lengths and two collection thresholds, with \nPer{} independent histories in each of \nCells{} cells. Ten estimation rungs (nine counted below) and
 the standardised approach are run by one engine on the same histories and divided by the true quantile. The interquartile range of the
 splice capital is \spIqrMin{} (95 percent interval \spMinLo{} to \spMinHi{}) to \spIqrMax{} (\spMaxLo{} to \spMaxHi{}) times the
 truth; the capital stability test is red in all \redTotal{} rung-by-cell rows; and \infLo{} to \infHi{} percent of the histories at tail index 0.96
-conclude an infinite mean that does not exist, while \finLo{} to \finHi{} percent at 1.1 conclude a finite one. The hypothesis stated
+conclude an infinite mean that does not exist, while \finLo{} to \finHi{} percent at 1.1 conclude a finite one. The hypothesis written
 before the robust fits were run, that they beat the splice in spread and in bias, is inconclusive over the 16 cells and refuted at tail
 indices 0.96 and 1.1. A delta-method theory predicts the dispersion of the single loss approximation within \thSdMaxErr{} percent and puts the
 history needed for the stability limit at \yrsMin{} to \yrsMax{} years. The synthetic severity belongs to the family the estimators assume, which favours them.

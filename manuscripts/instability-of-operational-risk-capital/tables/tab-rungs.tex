@@ -1,6 +1,6 @@
 \begin{table}[htbp]
 \centering\small
-\caption{The ten estimation rungs over the 16 cells: the share of the 16{,}000 histories on which the rung returns a capital, the mean over cells of the median ratio to the truth, the range over cells of the interquartile range of the ratio, the share of defined histories within a factor of two of the truth with its Wilson 95 percent interval, and the number of cells on which the capital stability test is red out of the cells on which the rung returns a capital. The mean-corrected single loss approximation is not computed at the tail index 1.1, whose true mean does not exist, so its row covers the other three tail indices only.}
+\caption{The estimation rungs over the 16 cells: the share of the 16{,}000 histories on which the rung returns a capital, the mean over cells of the median ratio to the truth, the range over cells of the interquartile range of the ratio, the share of defined histories within a factor of two of the truth with its Wilson 95 percent interval, and the number of cells on which the capital stability test is red out of the cells on which the rung returns a capital. The mean-corrected single loss approximation, in the last row, is a comparison only: its form is not confirmed against a primary text, and no count of the text includes it. It is not computed at the tail index 1.1, whose true mean does not exist, so its row covers the other three tail indices only.}
 \label{tab:rungs}
 \fitwidth{\begin{tabular}{lrrrrr}
 \toprule
@@ -10,13 +10,15 @@ Lognormal, threshold ignored & 100 & 0.06 & 0.00 to 0.03 & 0.0 [0.0, 0.0] & 16 o
 Truncated lognormal & 74 & 0.20 & 0.05 to 0.35 & 14.8 [14.2, 15.5] & 16 of 16 \\
 Lognormal-GPD splice & 67 & 0.76 & 1.35 to 3.30 & 34.0 [33.1, 34.9] & 16 of 16 \\
 Single loss approximation & 100 & 0.91 & 0.69 to 1.78 & 57.2 [56.4, 57.9] & 16 of 16 \\
-Single loss approximation, mean correction & 66 & 0.85 & 0.56 to 1.32 & 65.5 [64.5, 66.4] & 12 of 12 \\
 Scenario combination & 68 & 1.18 & 0.51 to 1.23 & 82.3 [81.6, 83.0] & 16 of 16 \\
 \midrule
 Mean-adjusted single loss approximation & 71 & 0.70 & 0.12 to 1.31 & 61.6 [60.7, 62.5] & 16 of 16 \\
 Cram\'er-von Mises GPD & 70 & 0.65 & 0.13 to 1.85 & 46.8 [45.9, 47.8] & 16 of 16 \\
 Optimally bias-robust GPD & 70 & 0.71 & 0.12 to 1.48 & 59.6 [58.7, 60.5] & 16 of 16 \\
 Cram\'er-von Mises lognormal & 72 & 0.13 & 0.06 to 0.26 & 8.3 [7.8, 8.8] & 16 of 16 \\
+\midrule
+\multicolumn{6}{l}{\emph{Comparison only, in no count of the text (form not confirmed)}} \\
+Single loss approximation, mean correction & 66 & 0.85 & 0.56 to 1.32 & 65.5 [64.5, 66.4] & 12 of 12 \\
 \bottomrule
 \end{tabular}}
 \end{table}
