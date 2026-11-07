@@ -2,33 +2,33 @@
 \centering
 \setlength{\tabcolsep}{3pt}
 \footnotesize
-\caption{The size of the tests of the catalogue on data whose null holds at its boundary, from 4,000 independent repetitions: the rejection rate at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection probability where the test has one. The size bound at 5 percent is 6.06 percent and at 1 percent 1.49 percent.}
+\caption{The size of the tests of the catalogue on data whose null holds at its boundary, from 4,000 independent repetitions: the rejection rate in percent at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection probability at each level where the test has one. A test with an exact probability holds its size when that probability does not exceed the level; any other test holds it when its rate is within the bound, which is 6.06 percent at 5 percent and 1.49 percent at 1 percent.}
 \label{tab:vt-size}
-\begin{tabular}{lp{4.4cm}rrr}
+\begin{tabular}{lp{3.1cm}rrrr}
 \toprule
-Test & Null scenario & Size at 5\% (\%) & Size at 1\% (\%) & Exact at 5\% (\%) \\
+Test & Null scenario & Size 5\% & Size 1\% & Exact 5\% & Exact 1\% \\
 \midrule
-Binomial & 1,000 obligors, PD 1\%, independent & $4.55\pm0.33$ & $0.60\pm0.12$ & 4.79 \\
-Jeffreys & 1,000 obligors, PD 1\%, independent & $3.90\pm0.31$ & $1.12\pm0.17$ & 4.79 \\
-Vasicek-corrected binomial & 1,000 obligors, PD 1\%, correlation 12\% assumed and true & $4.70\pm0.33$ & $0.78\pm0.14$ & 4.98 \\
-Chi-square over grades & seven grades, 5 to 32 expected defaults each & $5.30\pm0.35$ & $1.27\pm0.18$ & -- \\
-Default profile & seven grades; Monte Carlo p-value of 2,000 draws & $3.70\pm0.30$ & $0.83\pm0.14$ & -- \\
-Hosmer-Lemeshow & 5,000 obligors, mean PD 5\%, PDs given (G = 10) & $4.60\pm0.33$ & $0.97\pm0.16$ & -- \\
-Spiegelhalter & 5,000 obligors, mean PD 5\% & $5.40\pm0.36$ & $1.30\pm0.18$ & -- \\
-Normal, several years & five independent years of 1,000 obligors at PD 3\% & $8.38\pm0.44$ & $4.05\pm0.31$ & -- \\
-Traffic lights & five independent years, the printed tie rule & $3.65\pm0.30$ & $0.35\pm0.09$ & 3.79 \\
-AUC against development & 150 defaulters, 4,850 survivors, AUC 0.80, development AUC known & $3.40\pm0.29$ & $0.60\pm0.12$ & -- \\
-DeLong & two scores of equal AUC 0.80, correlation 0.5 & $5.38\pm0.36$ & $1.20\pm0.17$ & -- \\
-PSI & two samples of 1,000, ten population deciles & $5.25\pm0.35$ & $0.88\pm0.15$ & -- \\
-CSI & two samples of 1,000, ten population deciles & $4.90\pm0.34$ & $0.75\pm0.14$ & -- \\
-Chi-square homogeneity & two samples of 1,000, ten population deciles & $4.88\pm0.34$ & $1.03\pm0.16$ & -- \\
-Kolmogorov-Smirnov & two samples of 1,000 & $4.62\pm0.33$ & $0.90\pm0.15$ & -- \\
-Migration z-tests & seven grades, 500 obligors each, one cell at the boundary & $0.18\pm0.07$ & $0.05\pm0.04$ & -- \\
-Concentration (ECB) & ten grades, 5,000 obligors, the initial distribution unchanged & $0.00\pm0.00$ & $0.00\pm0.00$ & -- \\
-Time homogeneity & five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain & $4.72\pm0.34$ & $0.90\pm0.15$ & -- \\
-Markov order & five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain & $6.05\pm0.38$ & $1.47\pm0.19$ & -- \\
-Matrix against reference & the first year's counts against the chain's own one-year matrix & $3.70\pm0.30$ & $0.53\pm0.11$ & -- \\
-Momentum & the same paths: no momentum (c = 0) & $4.45\pm0.33$ & $1.03\pm0.16$ & -- \\
+Binomial & 1,000 obligors, PD 1\%, independent & $4.55\pm0.33$ & $0.60\pm0.12$ & 4.79 & 0.69 \\
+Jeffreys & 1,000 obligors, PD 1\%, independent & $3.90\pm0.31$ & $1.12\pm0.17$ & 4.79 & 1.38 \\
+Vasicek-corrected binomial & 1,000 obligors, PD 1\%, correlation 12\% assumed and true & $4.70\pm0.33$ & $0.78\pm0.14$ & 4.98 & 0.96 \\
+Chi-square over grades & seven grades, 5 to 32 expected defaults each & $5.30\pm0.35$ & $1.27\pm0.18$ & -- & -- \\
+Default profile & seven grades; Monte Carlo p-value of 2,000 draws & $3.70\pm0.30$ & $0.83\pm0.14$ & -- & -- \\
+Hosmer-Lemeshow & 5,000 obligors, mean PD 5\%, PDs given (G = 10) & $4.60\pm0.33$ & $0.97\pm0.16$ & -- & -- \\
+Spiegelhalter & 5,000 obligors, mean PD 5\% & $5.40\pm0.36$ & $1.30\pm0.18$ & -- & -- \\
+Normal, several years & five independent years of 1,000 obligors at PD 3\% & $8.38\pm0.44$ & $4.05\pm0.31$ & -- & -- \\
+Traffic lights & five independent years, the printed tie rule & $3.65\pm0.30$ & $0.35\pm0.09$ & 3.79 & 0.74 \\
+AUC against development & 150 defaulters, 4,850 survivors, AUC 0.80, development AUC known & $3.40\pm0.29$ & $0.60\pm0.12$ & -- & -- \\
+DeLong & two scores of equal AUC 0.80, correlation 0.5 & $5.38\pm0.36$ & $1.20\pm0.17$ & -- & -- \\
+PSI & two samples of 1,000, ten population deciles & $5.25\pm0.35$ & $0.88\pm0.15$ & -- & -- \\
+CSI & two samples of 1,000, ten population deciles & $4.90\pm0.34$ & $0.75\pm0.14$ & -- & -- \\
+Chi-square homogeneity & two samples of 1,000, ten population deciles & $4.88\pm0.34$ & $1.03\pm0.16$ & -- & -- \\
+Kolmogorov-Smirnov & two samples of 1,000 & $4.62\pm0.33$ & $0.90\pm0.15$ & -- & -- \\
+Migration z-tests & seven grades, 500 obligors each, one cell at the boundary & $0.18\pm0.07$ & $0.05\pm0.04$ & -- & -- \\
+Concentration (ECB) & ten grades, 5,000 obligors, the initial distribution unchanged & $0.00\pm0.00$ & $0.00\pm0.00$ & -- & -- \\
+Time homogeneity & five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain & $4.72\pm0.34$ & $0.90\pm0.15$ & -- & -- \\
+Markov order & five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain & $6.05\pm0.38$ & $1.47\pm0.19$ & -- & -- \\
+Matrix against reference & the first year's counts against the chain's own one-year matrix & $3.70\pm0.30$ & $0.53\pm0.11$ & -- & -- \\
+Momentum & the same paths: no momentum (c = 0) & $4.45\pm0.33$ & $1.03\pm0.16$ & -- & -- \\
 \bottomrule
 \end{tabular}
 \end{table}

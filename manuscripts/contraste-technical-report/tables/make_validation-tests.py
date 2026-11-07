@@ -274,6 +274,7 @@ def table_published(G: dict) -> list[dict]:
     macro("vtYnMeanZ", f"{sum(c['z'] for c in inner) / len(inner):+.2f}".replace("+", "$+$"), "mean z of the Yurdakul-Naranjo cells strictly between 0 and 1")
     macro("vtYnInner", len(inner), "Yurdakul-Naranjo cells strictly between 0 and 1")
     per_rule = len(yn["cells"]) // 3
+    macro("vtYnIndep", per_rule, "Yurdakul-Naranjo independent runs: the three rules share the draws of each (row, shift) run")
     macro("vtYnSeOfMean", f"{1 / math.sqrt(per_rule):.2f}", "1/sqrt(cells per rule): the standard error of a mean z of 0 over one rule's independent cells")
     emit(OUT / "validation-tests-published.tex",
                  ["Published study", "Test or rule", "Published runs", "Cells", "Agree", "Largest $|z|$", "Mean $z$"], rows,
@@ -305,7 +306,9 @@ def table_size() -> None:
     for s in wanted:
         lab = TEST_LABEL.get(s["test_id"], s["test_id"])
         ex = s["exact"]["p<0.05"] if s.get("exact") else None
-        rows.append([lab, s["scenario"]["en"], rate_cell(r05(s)), rate_cell(s["rates"]["p<0.01"]), "--" if ex is None else pct(ex)])
+        ex1 = s["exact"]["p<0.01"] if s.get("exact") else None
+        rows.append([lab, s["scenario"]["en"], rate_cell(r05(s)), rate_cell(s["rates"]["p<0.01"]), "--" if ex is None else pct(ex),
+                     "--" if ex1 is None else pct(ex1)])
     b5, b1 = d["outputs"]["size_bounds"]["p<0.05"], d["outputs"]["size_bounds"]["p<0.01"]
     macro("vtBoundFive", pct(b5, 2), "data/derived/C22/null.json outputs.size_bounds[p<0.05]")
     macro("vtBoundOne", pct(b1, 2), "outputs.size_bounds[p<0.01]")
@@ -327,6 +330,9 @@ def table_size() -> None:
     macro("vtTlUpperSize", pct(r05(idx["pd.traffic_lights@upper"])["rate"], 2), "null.json pd.traffic_lights@upper")
     macro("vtBinomExact", pct(idx["pd.binomial@null"]["exact"]["p<0.05"], 2), "null.json exact")
     macro("vtJeffreysExact", pct(idx["pd.jeffreys@null"]["exact"]["p<0.05"], 2), "null.json exact")
+    macro("vtJeffreysExactOne", pct(idx["pd.jeffreys@null"]["exact"]["p<0.01"], 2), "null.json pd.jeffreys@null exact p<0.01")
+    macro("vtJeffreysSimOne", rate_cell(idx["pd.jeffreys@null"]["rates"]["p<0.01"]), "null.json pd.jeffreys@null rates p<0.01")
+    macro("vtChiNull", pct(r05(idx["pd.chi2_grades@null"])["rate"], 2), "null.json pd.chi2_grades@null")
     macro("vtVasicekExact", pct(idx["pd.binomial_vasicek@null"]["exact"]["p<0.05"], 2), "null.json exact")
     macro("vtChiThin", pct(r05(idx["pd.chi2_grades@thin"])["rate"], 2), "null.json pd.chi2_grades@thin")
     macro("vtPsiSmallRule", pct(r05(idx["stability.psi@n100"])["rate"], 2), "null.json stability.psi@n100 (benchmark at 5%)")
@@ -336,11 +342,12 @@ def table_size() -> None:
     macro("vtAucEmpSe", f"{est['empirical_se']:.4f}", "outputs.estimators.auc.empirical_se")
     macro("vtAucModelSe", f"{est['model_se']:.4f}", "outputs.estimators.auc.model_se")
     macro("vtAucExactSe", f"{est['exact_se']:.4f}", "outputs.estimators.auc.exact_se")
-    emit(OUT / "validation-tests-size.tex", ["Test", "Null scenario", "Size at 5\\% (\\%)", "Size at 1\\% (\\%)", "Exact at 5\\% (\\%)"], rows,
+    emit(OUT / "validation-tests-size.tex", ["Test", "Null scenario", "Size 5\\%", "Size 1\\%", "Exact 5\\%", "Exact 1\\%"], rows,
                  caption=(f"The size of the tests of the catalogue on data whose null holds at its boundary, from {wanted[0]['n_rep']:,} independent "
-                          "repetitions: the rejection rate at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection "
-                          f"probability where the test has one. The size bound at 5 percent is {pct(b5, 2)} percent and at 1 percent {pct(b1, 2)} percent."),
-                 label="tab:vt-size", align="lp{4.4cm}rrr")
+                          "repetitions: the rejection rate in percent at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection "
+                          f"probability at each level where the test has one. A test with an exact probability holds its size when that probability does not exceed the "
+                          f"level; any other test holds it when its rate is within the bound, which is {pct(b5, 2)} percent at 5 percent and {pct(b1, 2)} percent at 1 percent."),
+                 label="tab:vt-size", align="lp{3.1cm}rrrr")
 
 
 def table_settings() -> None:
@@ -360,9 +367,10 @@ def table_settings() -> None:
     for a, b, lab, ta, tb in pairs:
         rows.append([lab, ta, rate_cell(r05(idx[a])), tb, rate_cell(r05(idx[b]))])
     emit(OUT / "validation-tests-settings.tex", ["Test", "Setting A", "Size A (\\%)", "Setting B", "Size B (\\%)"], rows,
-                 caption=("Five choices of definition that change the size of a test, each measured on one generator: the degrees of freedom of the "
+                 caption=("Five choices of definition, each measured on one generator: the degrees of freedom of the "
                           "Hosmer-Lemeshow statistic, the tie rule of the traffic-lights colours, the expected defaults of the thinnest grade, the "
-                          "treatment of the development AUC, and the variance used when it is estimated. Rates at the 5 percent level, in percent, with their standard error."),
+                          "treatment of the development AUC, and the variance used when it is estimated. Four of them change the size of the test; the thinnest "
+                          "grade leaves it within Monte Carlo error. Rates at the 5 percent level, in percent, with their standard error."),
                  label="tab:vt-settings", align="p{2.8cm}p{2.4cm}rp{2.8cm}r")
 
 
@@ -392,8 +400,8 @@ def table_miscal() -> None:
     emit(OUT / "validation-tests-miscal.tex", ["Test", "$\\kappa=1$", "1.1", "1.25", "1.5", "2", "3"], rows,
                  caption=("The power of the calibration tests at the 5 percent level, in percent with the Monte Carlo standard error, when every "
                           "grade's true default probability is the probability applied multiplied by the factor $\\kappa$ in the column heading "
-                          "(the first column, $\\kappa=1$, is the null). The Vasicek-corrected binomial test is run at the correlation of the generator "
-                          "assumed and true."),
+                          "(the first column, $\\kappa=1$, is the null). The defaults of the generator are independent; the Vasicek-corrected binomial test "
+                          "assumes an asset correlation of 12 percent."),
                  label="tab:vt-miscal", align="lrrrrrr")
     macro("vtExactCmpN", len(cmp), "miscalibration.json simulations with an exact probability")
 
@@ -420,6 +428,7 @@ def table_cluster() -> None:
     macro("vtClNormal0", pct(r05(idx["pd.normal_multiperiod@rho0"])["rate"], 1), "clustering.json pd.normal_multiperiod@rho0")
     macro("vtClNormal20", pct(r05(idx["pd.normal_multiperiod@rho0.2"])["rate"], 1), "clustering.json pd.normal_multiperiod@rho0.2")
     macro("vtClTl20", pct(r05(idx["pd.traffic_lights@rho0.2"])["rate"], 1), "clustering.json pd.traffic_lights@rho0.2")
+    macro("vtClTlMax", pct(max(r05(idx[f"pd.traffic_lights@{r}"])["rate"] for r in rhos[1:]), 1), "clustering.json pd.traffic_lights, largest rate over rho > 0")
     macro("vtClReps", f"{idx['pd.binomial@rho0']['n_rep']:,}".replace(",", "{,}"), "clustering.json n_rep")
     cmpn = [s for s in d["outputs"]["simulations"] if s.get("exact")]
     macro("vtClAgreeN", sum(all(s["agrees"].values()) for s in cmpn), "clustering.json exact comparisons that agree")
@@ -427,7 +436,9 @@ def table_cluster() -> None:
     emit(OUT / "validation-tests-cluster.tex", ["Test", "$\\rho=0$", "0.02", "0.05", "0.10", "0.15", "0.20"], rows,
                  caption=("The rejection rate at the 5 percent level, in percent with the Monte Carlo standard error, of the calibration tests when the "
                           "forecast probability of default is right and the defaults are correlated through the one-factor model with the asset correlation "
-                          "$\\rho$ in the column heading; the last row is the exact rejection probability of the binomial test."),
+                          "$\\rho$ in the column heading; the last row is the exact rejection probability of the binomial test. The Vasicek-corrected binomial test "
+                          "assumes an asset correlation of 12 percent in every column. The five-year panel (normal and traffic-lights tests) also carries a "
+                          "factor correlation of 0.2 between years whenever $\\rho>0$."),
                  label="tab:vt-cluster", align="lrrrrrr")
 
 
@@ -615,6 +626,7 @@ def table_c20(D: dict[str, dict]) -> None:
     macro("vtCtwentyRed", tot["red"], "C20 variants: ml.* rows with a red light")
     macro("vtCtwentyAmber", tot["amber"], "C20 variants: ml.* rows with an amber light")
     macro("vtCtwentyGreen", tot["green"], "C20 variants: ml.* rows with a green light")
+    macro("vtCtwentyNotEval", tot["not_evaluated"], "C20 variants: ml.* rows not evaluated")
     emit(OUT / "validation-tests-c20-lights.tex",
                  ["Variant", "Tests run", "Green", "Amber", "Red", "Not eval.", "Flipped (\\%)"], rows,
                  caption=("The lights of the machine-learning tests of case C20 in each of its six variants: the tests that ran, the number of rows with each "
