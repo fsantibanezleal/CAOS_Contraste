@@ -36,7 +36,7 @@ TR_NAME = {"industry": "Removed ($k=1$)", "unfollowed": "Kept ($k=0$)", "followe
            "identified": "Manski band", "band": "Anchored $k$ band only", "anchored": "Anchored interval"}
 INF = (0.0, 1.0, 3.0, 9.0, 19.0)
 CAP_LABEL = {"1": "exact", "1.3": "1.3 times", "u1.0-1.6": "1.0 to 1.6 by year", "u1.0-4.0": "1.0 to 4.0 by year",
-             "d1.6-7.0": "1.6 to 7.0 times the observed defaults, by year"}
+             "dobs": "observed ratio range of the grade, by year"}
 DES = {"fy": "first-year cohort", "pool": "five cohorts pooled", "x10": "ten times the cohort"}
 
 NUMS: dict[str, tuple[str, str]] = {}
@@ -121,7 +121,7 @@ def main() -> None:
 
     num("reps", f"{reps:,}", S_GRID)
     num("reps.scale", f"{scale_cells[(3, 9.0)]['reps']:,}", S_SCALE)
-    num("reps.duration", str(dur["data"][0]["reps"]), "experiments/results/duration.json")
+    num("reps.duration", f"{dur['data'][0]['reps']:,}", "experiments/results/duration.json")
     num("boot.duration", str(dur["data"][0]["n_boot"]), "experiments/results/duration.json")
     num("truthB", pct(cells[("fy", 9.0)]["truth"][B], 2), "data/derived/C04/withdrawals.json outputs.generator.pd_1y[5]")
     gen = wd["outputs"]["generator"]
@@ -183,6 +183,7 @@ def main() -> None:
         src = f"experiments/results/stability.json informative {s['informative']:g} capture {s['capture']} grade {s['grade']}"
         num(f"{base}.share", pct(s["mean_share"]), src)
         num(f"{base}.stable", pct(s["share_stable_at_80"]), src)
+        num(f"{base}.defined", f"{s['defined']:,}", src)
         if s["median_pooled_k"] is not None:
             num(f"{base}.k", f"{s['median_pooled_k']:.1f}", src)
 
@@ -276,7 +277,7 @@ def main() -> None:
           "\\texttt{ms-bs14:\\allowbreak informative=9:x3}, \\texttt{:x30}"],
          ["Mismatch ladder", "$\\iota\\in\\{3,9\\}$; the second source counts 0.5, 0.7, 0.8, 0.9, 1.1 or 1.3 times the defaults",
           f"{reps:,}", "the grid's draws of $\\iota$"],
-         ["Stability", "$\\iota\\in\\{3,9\\}$; second source exact, counting 1.3 times the defaults, a multiple of them drawn each year from 1.0 to 1.6 or from 1.0 to 4.0, or a multiple of the observed defaults drawn each year from 1.6 to 7.0; BB, B, CCC to C", f"{reps:,}",
+         ["Stability", "$\\iota\\in\\{3,9\\}$; second source exact, counting 1.3 times the defaults, a multiple of them drawn each year from 1.0 to 1.6 or from 1.0 to 4.0, or a multiple of the observed defaults drawn each year from the range of the grade's own observed ratio; BB, B, CCC to C", f"{reps:,}",
           "\\texttt{ms-bs14:\\allowbreak stability:\\allowbreak informative=$\\iota$}"],
          ["Duration estimator", "$\\iota\\in\\{0,1,3,9,19\\}$; the grid's five-year paths, withdrawals as right censoring",
           f"{dur['data'][0]['reps']:,} ({dur['data'][0]['n_boot']} bootstrap replicates)",
@@ -381,19 +382,26 @@ def main() -> None:
             S_GRID + f" {d} informative 9: anchored coverage minus Manski coverage (points)")
         num(f"h3.single.{d}", f"{100 * (tt['anchored']['coverage'][B] - max(tt[t]['coverage'][B] for t in ('industry', 'unfollowed', 'followed'))):+.1f}",
             S_GRID + f" {d} informative 9: anchored coverage minus the best of removed, kept, followed (points)")
-    # the ratio of the default page's rate to the transition page's rate, S&P grade B, by cohort
-    ratios = []
-    for c in next(g for g in sp["withdrawal_bounds"]["grades"] if g["grade"] == "B")["cohorts"]:
-        if c["defaults"] and c["anchor_defaults"] is not None and c["anchor_cohort"]:
-            n_c = c["defaults"] + c["survivors"] + c["withdrawn"]
-            ratios.append((c["anchor_defaults"] / c["anchor_cohort"]) / (c["defaults"] / n_c))
-    rsrc = "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
-    ratios.sort()
-    num("ratio.B.n", str(len(ratios)), rsrc)
-    num("ratio.B.min", f"{ratios[0]:.1f}", rsrc)
-    num("ratio.B.max", f"{ratios[-1]:.1f}", rsrc)
-    num("ratio.B.median", f"{ratios[len(ratios) // 2]:.1f}", rsrc)
-    num("ratio.B.above4", str(sum(1 for r in ratios if r > 4.0)), rsrc)
+    # the ratio of the default page's rate to the transition page's rate, by cohort, for the three grades of the stability study
+    for gname in ("BB", "B", "CCC-C"):
+        ratios = []
+        for c in next(g for g in sp["withdrawal_bounds"]["grades"] if g["grade"] == gname)["cohorts"]:
+            if c["defaults"] and c["anchor_defaults"] is not None and c["anchor_cohort"]:
+                n_c = c["defaults"] + c["survivors"] + c["withdrawn"]
+                ratios.append((c["anchor_defaults"] / c["anchor_cohort"]) / (c["defaults"] / n_c))
+        rsrc = f"data/derived/C04/sp.json outputs.withdrawal_bounds.grades[{gname}].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+        ratios.sort()
+        rng_ = stab["observed_ratio_range"][gname]
+        ssrc = f"experiments/results/stability.json observed_ratio_range[{gname}]"
+        assert abs(rng_[0] - ratios[0]) < 1e-4 and abs(rng_[1] - ratios[-1]) < 1e-4, "the stability study's range is not the cohorts' range"
+        num(f"ratio.{gname}.n", str(len(ratios)), rsrc)
+        num(f"ratio.{gname}.min", f"{ratios[0]:.1f}", rsrc)
+        num(f"ratio.{gname}.max", f"{ratios[-1]:.1f}", rsrc)
+        num(f"ratio.{gname}.median", f"{ratios[len(ratios) // 2] if len(ratios) % 2 else (ratios[len(ratios) // 2 - 1] + ratios[len(ratios) // 2]) / 2:.1f}", rsrc)
+        num(f"ratio.{gname}.mean", f"{sum(ratios) / len(ratios):.1f}", rsrc)
+        num(f"ratio.{gname}.above4", str(sum(1 for r in ratios if r > 4.0)), rsrc)
+        num(f"ratio.{gname}.draw.mean", f"{(rng_[0] + rng_[1]) / 2:.1f}", ssrc + " (mean and median of a uniform draw: the midpoint)")
+        num(f"ratio.{gname}.draw.above4", pct((rng_[1] - 4.0) / (rng_[1] - rng_[0]), 0) if rng_[1] > 4.0 else "0", ssrc + " (share of the uniform draw above 4.0)")
     num("real.sp.first", sp["cohorts"][0]["label"], "data/derived/C04/sp.json outputs.cohorts[0].label")
     num("real.fitch.first", fi["cohorts"][0]["label"], "data/derived/C04/fitch.json outputs.cohorts[0].label")
     # run times, measured by experiments/extended_study.py
@@ -415,7 +423,7 @@ def main() -> None:
     num("rt.scipy", mach["scipy"], rsrc + " machine.scipy")
     num("rt.engine", mach["riskvalidation"], rsrc + " machine.riskvalidation")
     rows = [[{"grid": "Coverage grid and mismatch ladder", "stability": "Stability study", "scale": "Cohort-size ladder",
-              "duration": "Duration estimator"}[n], f"{studies[n]['reps']:,}", f"{studies[n]['elapsed_seconds'] / 60.0:.1f}"]
+              "duration": "Duration estimator"}[n], (f"{studies[n]['reps']:,} and {studies[n]['reps_scale']:,}" if n == "scale" else f"{studies[n]['reps']:,}"), f"{studies[n]['elapsed_seconds'] / 60.0:.1f}"]
             for n in ("grid", "stability", "scale", "duration")]
     tbl(out / "tab-runtimes.tex", ["Study", "Repetitions", "Elapsed (min)"], rows,
         caption="Elapsed time of each study of this paper, measured by the script that runs it, in one run on the machine of the record, one study at a time "
@@ -463,23 +471,37 @@ def main() -> None:
                 "relative bias of the anchored point and the median anchored odds ratio, the realised one being the exact-source row.",
         label="tab:capture", align="lrrrrr")
 
-    # stability
-    rows = []
-    for s in stab["data"]:
-        rows.append([f"$\\iota={s['informative']:g}$", CAP_LABEL[s["capture"]], GRADE_TEX.get(s["grade"], s["grade"]),
-                     cell(s["mean_share"], s["mean_share_mcse"]), cell(s["share_stable_at_80"]),
-                     f"{s['median_pooled_k']:.1f}" if s["median_pooled_k"] is not None else "--"])
-    tbl(
-        out / "tab-stability.tex",
-        ["Informativeness", "Capture", "Grade", "Cohorts holding pooled $k$ (\\%)", "Repetitions stable (\\%)", "Median pooled $k$"], rows,
-        caption=f"Stability criterion on known truth: over {reps:,} repetitions of five annual cohorts, the mean share of cohorts whose anchored $k$ band "
-                "contains the pooled anchored $k$ with its standard error, the share of repetitions that reach the 80\\% criterion, and the median pooled "
-                "anchored $k$, at informativeness 3 and 9 for five second sources: exact; counting 1.3 times the defaults every year; a multiple of the "
+    # stability: one panel per informativeness, at footnote size, inside the text block
+    panels = []
+    for iota in sorted({s_["informative"] for s_ in stab["data"]}):
+        rows = []
+        prev = None
+        for s_ in (x for x in stab["data"] if x["informative"] == iota):
+            rows.append([CAP_LABEL[s_["capture"]] if s_["capture"] != prev else "", GRADE_TEX.get(s_["grade"], s_["grade"]),
+                         cell(s_["mean_share"], s_["mean_share_mcse"]), cell(s_["share_stable_at_80"]),
+                         f"{s_['median_pooled_k']:.1f}" if s_["median_pooled_k"] is not None else "--"])
+            prev = s_["capture"]
+        panels.append((iota, rows))
+    nd = {g: stab["observed_ratio_range"][g] for g in ("BB", "B", "CCC-C")}
+    cap_text = (f"Stability criterion on known truth: over {reps:,} repetitions of five annual cohorts, the mean share of cohorts whose anchored $k$ band "
+                r"contains the pooled anchored $k$ with its standard error, the share of repetitions that reach the 80\% criterion, and the median pooled "
+                "anchored $k$, at informativeness 3 (panel a) and 9 (panel b) for five second sources: exact; counting 1.3 times the defaults every year; a multiple of the "
                 "defaults drawn each year from 1.0 to 1.6 and from 1.0 to 4.0; and a multiple of the defaults the transition page observes drawn each year "
-                "from 1.6 to 7.0, the range of the observed ratio. Where fewer than "
+                "from the range of the grade's own observed ratio of the default page's rate to the transition page's rate, uniform on "
+                f"{nd['BB'][0]:.2f} to {nd['BB'][1]:.2f} for BB, {nd['B'][0]:.2f} to {nd['B'][1]:.2f} for B and {nd['CCC-C'][0]:.2f} to {nd['CCC-C'][1]:.2f} for CCC to C. "
+                "A dash is a median pooled $k$ that is undefined: the pooled $k$ is infinite in every repetition, because the second source "
+                "counts more defaults than the cohorts' defaults and withdrawals together. Where fewer than "
                 f"{reps:,} repetitions have a share (a grade without a usable cohort), the figures are over the repetitions defined: "
-                f"{min(s['defined'] for s in stab['data']):,} at fewest.",
-        label="tab:stability", align="lllp{2.6cm}p{2.3cm}r", size=bs + "footnotesize")
+                f"{min(s_['defined'] for s_ in stab['data']):,} at fewest.")
+    head = ["Capture", "Grade", r"Cohorts holding pooled $k$ (\%)", r"Repetitions stable (\%)", "Median pooled $k$"]
+    lines = [r"\begin{table}[htbp]", r"\centering", r"\footnotesize", r"\caption{" + cap_text + "}", r"\label{tab:stability}"]
+    for i, (iota, rows) in enumerate(panels):
+        lines += [r"\textbf{(" + "ab"[i] + r") Informativeness $\iota=" + f"{iota:g}" + "$}" + bs + "par" + bs + "smallskip",
+                  r"\begin{tabular}{p{4.2cm}lp{2.4cm}p{2.0cm}r}", r"\toprule", " & ".join(head) + r" \\", r"\midrule"]
+        lines += [" & ".join(r) + r" \\" for r in rows]
+        lines += [r"\bottomrule", r"\end{tabular}"] + ([r"\medskip", ""] if i + 1 < len(panels) else [])
+    lines += [r"\end{table}", ""]
+    (out / "tab-stability.tex").write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
     # real data
     rows = []

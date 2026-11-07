@@ -26,8 +26,9 @@ Five studies, written to ``experiments/results/``:
 ``stability.json``
     on known truth, the share of the five annual cohorts whose anchored k band contains the pooled anchored k (the
     stability criterion applied to the real cohorts), with the second source exact, counting 1.3 times the defaults in
-    every year, and counting a multiple drawn each year from 1.0 to 1.6 or from 1.0 to 4.0 (a definition gap that
-    changes from year to year); informative 3 and 9; BB, B and CCC to C.
+    every year, counting a multiple drawn each year from 1.0 to 1.6 or from 1.0 to 4.0 (a definition gap that
+    changes from year to year), and counting a multiple of the observed defaults drawn each year from the range of the
+    grade's own observed ratio; informative 3 and 9; BB, B and CCC to C.
 ``decisions`` (inside every cell of the coverage grid and of the scale ladder)
     the decision taken at a threshold t = truth (1 + delta): the share of repetitions in which the interval of each
     treatment lies on the correct side, on the wrong side, or across the threshold.
@@ -35,8 +36,8 @@ Five studies, written to ``experiments/results/``:
     the continuous-time duration estimator that treats withdrawals as independent right censoring (Lando and Skodeberg
     2002): relative bias of grade B's PD and coverage of its resampling bootstrap interval. It runs on the draws of the
     coverage grid: the same seed key (``ms-bs14:informative=<iota>``), the same child streams and the same number of
-    repetitions; the paths it reads are the grid's observed paths, and only the bootstrap draws come from a second
-    stream of their own.
+    repetitions; the paths it reads are the grid's observed paths, and only the bootstrap draws come from the grid's
+    second stream (the one its anchor draws use).
 ``run-times.json``
     the elapsed seconds of every study that was run, the cost of one call of the method on a cohort, and the machine and
     library versions, all measured by this script (``--only timing`` measures the cost of the call alone).
@@ -85,14 +86,29 @@ DELTAS = (-0.3, -0.15, 0.15, 0.3)
 TREATMENTS = ("industry", "unfollowed", "followed", "identified", "band", "anchored")
 WITHDRAWAL_RATE, WINDOW = 0.06, 1.0
 STABILITY_GRADES = (4, 5, 6)           # BB, B, CCC to C
+OWN_RANGE: dict[int, tuple[float, float]] = {}   # filled by main for the stability study
 STABILITY_AT = (3.0, 9.0)              # the informativeness values the stability study is run at
 #: the second source of the stability study: exact, 1.3 times the defaults every year, a multiple of the followed
 #: cohort's defaults drawn from 1.0 to 1.6 or from 1.0 to 4.0 each year, and a multiple of the defaults the transition
-#: page observes drawn each year from 1.6 to 7.0, the range of the ratio of the default page's rate to the transition
-#: page's rate of S&P's grade B over its 25 cohorts with defaults (data/derived/C04/sp.json, grade B, 1.62 to 7.00);
-#: (capture, label). A capture ``("d", lo, hi)`` scales the observed defaults D, the scale of that ratio.
+#: page observes drawn each year, for each grade, from the range of that grade's own observed ratio of the default
+#: page's rate to the transition page's rate over its cohorts with defaults (data/derived/C04/sp.json; see
+#: ``observed_ratio_ranges``); (capture, label). A capture ``("d",)`` scales the observed defaults D, the scale of that ratio.
 STABILITY_CAPTURES: tuple[tuple[Any, str], ...] = ((1.0, "1"), (1.3, "1.3"), ((1.0, 1.6), "u1.0-1.6"), ((1.0, 4.0), "u1.0-4.0"),
-                                                   (("d", 1.6, 7.0), "d1.6-7.0"))
+                                                   (("d",), "dobs"))
+
+
+def observed_ratio_ranges() -> dict[int, tuple[float, float]]:
+    """For each grade of the stability study, the minimum and maximum of the observed ratio (A/N_a)/(D/N) of S&P's
+    cohorts with defaults (the default page's rate over the transition page's rate), read from the committed output."""
+    sp = json.loads((ROOT / "data" / "derived" / "C04" / "sp.json").read_text(encoding="utf-8"))["outputs"]
+    grades = {g["grade"]: g for g in sp["withdrawal_bounds"]["grades"]}
+    out: dict[int, tuple[float, float]] = {}
+    for g in STABILITY_GRADES:
+        ratios = [(c["anchor_defaults"] / c["anchor_cohort"]) / (c["defaults"] / (c["defaults"] + c["survivors"] + c["withdrawn"]))
+                  for c in grades[GRADES[g]]["cohorts"]
+                  if c["defaults"] and c["anchor_defaults"] is not None and c["anchor_cohort"]]
+        out[g] = (min(ratios), max(ratios))
+    return out
 
 
 def seed_of(key: str) -> int:
@@ -137,10 +153,12 @@ def make_anchor(followed: np.ndarray, n: np.ndarray, capture: Any, rng: np.rando
                 observed: np.ndarray | None = None) -> np.ndarray:
     """The second source's count: the true defaults thinned (capture below 1: it counts a share of them) or inflated
     (above 1: it counts the defaults and, besides, a Poisson number of other events at (capture - 1) times them). A
-    capture ``("d", lo, hi)`` is a multiple drawn from lo to hi of the defaults the transition page observes (rounded,
-    at most the cohort)."""
+    capture ``("d",)`` is, for each grade, a multiple drawn from the range of that grade's own observed ratio
+    (``observed_ratio_ranges``) of the defaults the transition page observes (rounded, at most the cohort)."""
     if isinstance(capture, tuple) and capture[0] == "d":
-        return np.minimum(np.round(float(rng.uniform(capture[1], capture[2])) * observed), n)
+        lo = np.array([OWN_RANGE.get(g, (1.0, 1.0))[0] for g in range(len(observed))])
+        hi = np.array([OWN_RANGE.get(g, (1.0, 1.0))[1] for g in range(len(observed))])
+        return np.minimum(np.round(rng.uniform(lo, hi) * observed), n)
     if isinstance(capture, tuple):
         capture = float(rng.uniform(capture[0], capture[1]))
     if capture == 1.0:
@@ -480,7 +498,10 @@ def main() -> None:
         record_time("grid", time.perf_counter() - t0, {"reps": a.reps, "writes": ["coverage-grid.json", "capture-ladder.json"]})
         t0 = time.perf_counter()
     if a.only in (None, "stability"):
-        write("stability.json", study_stability(q, ob, a.reps), {**header, "reps": a.reps, "stability_share": bnd.STABILITY_SHARE})
+        OWN_RANGE.update(observed_ratio_ranges())
+        write("stability.json", study_stability(q, ob, a.reps),
+              {**header, "reps": a.reps, "stability_share": bnd.STABILITY_SHARE,
+               "observed_ratio_range": {GRADES[g]: [round(lo, 5), round(hi, 5)] for g, (lo, hi) in OWN_RANGE.items()}})
         record_time("stability", time.perf_counter() - t0, {"reps": a.reps})
         t0 = time.perf_counter()
     if a.only in (None, "scale"):

@@ -167,13 +167,12 @@ def fig_stability(stab: list, sp: dict) -> None:
               (r"known truth, $\iota=9$, source at 1.3 times", lambda gr: 100 * sh[(9.0, "1.3", gr)]["mean_share"], "0.5", "//"),
               (r"known truth, $\iota=9$, multiple 1.0 to 1.6 by year", lambda gr: 100 * sh[(9.0, "u1.0-1.6", gr)]["mean_share"], "0.75", "xx"),
               (r"known truth, $\iota=9$, multiple 1.0 to 4.0 by year", lambda gr: 100 * sh[(9.0, "u1.0-4.0", gr)]["mean_share"], "0.6", "oo"),
-              (r"known truth, $\iota=9$, 1.6 to 7.0 times the observed defaults by year", lambda gr: 100 * sh[(9.0, "d1.6-7.0", gr)]["mean_share"], "0.4", ".."),
+              (r"known truth, $\iota=9$, multiple of observed defaults, grade's own ratio range, by year", lambda gr: 100 * sh[(9.0, "dobs", gr)]["mean_share"], "0.4", ".."),
               ("real S&P cohorts", lambda gr: 100 * grade(sp, gr)["stability"]["share_cohorts_containing_pooled_k"], "white", "\\\\"))
     for j, (name, fn, colr, hatch) in enumerate(groups):
         ax.bar(np.arange(3) + (j - 2.5) * width, [fn(g) for g in grades], width, label=name, color=colr, edgecolor="0.1",
                hatch=hatch, lw=0.6)
-    ax.axhline(80, color="0.3", lw=0.8, ls=":")
-    ax.text(0.5, 81.5, "criterion 80%", fontsize=7, ha="center", color="0.3")
+    ax.axhline(80, color="0.3", lw=0.8, ls=":", label="criterion: 80% of the cohorts")
     ax.set_xticks(range(3), ["BB", "B", "CCC to C"])
     ax.set_ylabel("cohorts holding the pooled $k$ (%)")
     ax.set_ylim(0, 112)

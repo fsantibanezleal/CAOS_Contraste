@@ -90,10 +90,24 @@ mcse.nominal,0.7,06-design.tex,binomial standard error of a coverage of 0.95 at 
 mcse.nominal200,1.5,06-design.tex,binomial standard error of a coverage of 0.95 at 200 repetitions
 obligorsB,"1,391",06-design.tex,data/derived/C04/withdrawals.json outputs.generator.obligors[5]
 ratio.B.above4,5,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
-ratio.B.max,7.0,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.B.draw.above4,56,07-results.tex,experiments/results/stability.json observed_ratio_range[B] (share of the uniform draw above 4.0)
+ratio.B.draw.mean,4.3,07-results.tex,experiments/results/stability.json observed_ratio_range[B] (mean and median of a uniform draw: the midpoint)
+ratio.B.max,7.0,07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.B.mean,2.9,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
 ratio.B.median,2.7,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
-ratio.B.min,1.6,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.B.min,1.6,07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
 ratio.B.n,25,07-results.tex;10-limitations.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.BB.max,5.0,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.BB.median,1.6,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.BB.min,1.0,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.BB.n,16,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.above4,17,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.draw.mean,5.9,07-results.tex,experiments/results/stability.json observed_ratio_range[CCC-C] (mean and median of a uniform draw: the midpoint)
+ratio.CCC-C.max,9.8,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.mean,5.4,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.median,5.1,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.min,2.1,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
+ratio.CCC-C.n,26,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults
 real.fitch.B.contain,7,07-results.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[B]
 real.fitch.B.usable,10,07-results.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[B]
 real.fitch.BB.k,24.7,07-results.tex;09-discussion.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[BB]
@@ -138,12 +152,12 @@ real.sp.CCC-C.khi,46.4,01-introduction.tex;07-results.tex,data/derived/C04/sp.js
 real.sp.CCC-C.klo,29.2,01-introduction.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
 real.sp.CCC-C.pdanc,27.43,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
 real.sp.CCC-C.pdind,8.07,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
-real.sp.CCC-C.share,64,07-results.tex;12-conclusions.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.share,64,07-results.tex;09-discussion.tex;12-conclusions.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
 real.sp.CCC-C.usable,25,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
 real.sp.cohorts,26,04-method.tex;06-design.tex;07-results.tex,data/derived/C04/sp.json outputs.cohorts
 real.sp.first,2000,06-design.tex,data/derived/C04/sp.json outputs.cohorts[0].label
 reps,"1,000",01-introduction.tex;04-method.tex;06-design.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json
-reps.duration,1000,07-results.tex;10-limitations.tex,experiments/results/duration.json
+reps.duration,"1,000",07-results.tex;10-limitations.tex,experiments/results/duration.json
 rho.fy.i9,0.79,05-theory.tex;07-results.tex;09-discussion.tex,experiments/results/coverage-grid.json first_year informative 9 industry rel_bias: rho = 1 + bias
 rho.hi.fy.i9,1.21,05-theory.tex;07-results.tex,experiments/results/coverage-grid.json first_year informative 9 industry rel_bias: 2 - rho = 1 - bias
 rt.call.median,5.8,04-method.tex,experiments/results/run-times.json studies.timing.withdrawal_bounds_ms_median
@@ -163,13 +177,18 @@ se.pool.i9.anchored,0.3,07-results.tex,experiments/results/coverage-grid.json po
 se.pool.i9.industry,1.1,07-results.tex;main.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.industry
 se.pool.i9.unfollowed,0.7,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.unfollowed
 stab.i3.c1.B.share,100.0,07-results.tex,experiments/results/stability.json informative 3 capture 1 grade B
+stab.i3.cdobs.CCC-C.defined,367,07-results.tex,experiments/results/stability.json informative 3 capture dobs grade CCC-C
 stab.i3.cu1.0-4.0.B.share,64.5,07-results.tex,experiments/results/stability.json informative 3 capture u1.0-4.0 grade B
 stab.i9.c1.3.B.share,98.2,07-results.tex,experiments/results/stability.json informative 9 capture 1.3 grade B
 stab.i9.c1.B.share,99.5,01-introduction.tex;07-results.tex;09-discussion.tex,experiments/results/stability.json informative 9 capture 1 grade B
-stab.i9.cd1.6-7.0.B.share,62.2,07-results.tex;09-discussion.tex,experiments/results/stability.json informative 9 capture d1.6-7.0 grade B
-stab.i9.cd1.6-7.0.B.stable,35.9,07-results.tex,experiments/results/stability.json informative 9 capture d1.6-7.0 grade B
-stab.i9.cd1.6-7.0.BB.share,94.7,07-results.tex,experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB
-stab.i9.cd1.6-7.0.CCC-C.share,82.9,07-results.tex,experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C
+stab.i9.cdobs.B.k,76.2,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade B
+stab.i9.cdobs.B.share,61.2,07-results.tex;09-discussion.tex;main.tex,experiments/results/stability.json informative 9 capture dobs grade B
+stab.i9.cdobs.B.stable,33.5,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade B
+stab.i9.cdobs.BB.share,97.2,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade BB
+stab.i9.cdobs.BB.stable,95.6,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade BB
+stab.i9.cdobs.CCC-C.defined,766,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade CCC-C
+stab.i9.cdobs.CCC-C.share,89.7,07-results.tex;09-discussion.tex;main.tex,experiments/results/stability.json informative 9 capture dobs grade CCC-C
+stab.i9.cdobs.CCC-C.stable,83.9,07-results.tex,experiments/results/stability.json informative 9 capture dobs grade CCC-C
 stab.i9.cu1.0-1.6.B.share,96.6,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-1.6 grade B
 stab.i9.cu1.0-4.0.B.share,64.7,07-results.tex;09-discussion.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade B
 stab.i9.cu1.0-4.0.BB.share,86.9,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade BB
@@ -200,6 +219,6 @@ w.x10.i9.identified,6.63,07-results.tex,experiments/results/scale-ladder.json x1
 w.x30.i9.anchored,0.41,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.anchored
 w.x30.i9.identified,6.39,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.identified
 withdrawal.rate,6,06-design.tex;10-limitations.tex,data/derived/C04/withdrawals.json outputs.rungs[0].withdrawal_rate
-wr.fy.i9,3.8,07-results.tex;09-discussion.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json fy informative 9: Manski band width over anchored width
+wr.fy.i9,3.8,01-introduction.tex;07-results.tex;09-discussion.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json fy informative 9: Manski band width over anchored width
 wr.pool.i9,7.1,07-results.tex,experiments/results/coverage-grid.json pool informative 9: Manski band width over anchored width
-wr.x10.i9,9.3,07-results.tex;09-discussion.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json x10 informative 9: Manski band width over anchored width
+wr.x10.i9,9.3,01-introduction.tex;07-results.tex;09-discussion.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json x10 informative 9: Manski band width over anchored width

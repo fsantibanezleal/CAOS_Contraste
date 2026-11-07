@@ -9091,8 +9091,20 @@
 "text": "5",
 "source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
 },
+"ratio.B.draw.above4": {
+"text": "56",
+"source": "experiments/results/stability.json observed_ratio_range[B] (share of the uniform draw above 4.0)"
+},
+"ratio.B.draw.mean": {
+"text": "4.3",
+"source": "experiments/results/stability.json observed_ratio_range[B] (mean and median of a uniform draw: the midpoint)"
+},
 "ratio.B.max": {
 "text": "7.0",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.B.mean": {
+"text": "2.9",
 "source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
 },
 "ratio.B.median": {
@@ -9106,6 +9118,70 @@
 "ratio.B.n": {
 "text": "25",
 "source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.above4": {
+"text": "1",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.draw.above4": {
+"text": "25",
+"source": "experiments/results/stability.json observed_ratio_range[BB] (share of the uniform draw above 4.0)"
+},
+"ratio.BB.draw.mean": {
+"text": "3.0",
+"source": "experiments/results/stability.json observed_ratio_range[BB] (mean and median of a uniform draw: the midpoint)"
+},
+"ratio.BB.max": {
+"text": "5.0",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.mean": {
+"text": "2.0",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.median": {
+"text": "1.6",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.min": {
+"text": "1.0",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.BB.n": {
+"text": "16",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.above4": {
+"text": "17",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.draw.above4": {
+"text": "75",
+"source": "experiments/results/stability.json observed_ratio_range[CCC-C] (share of the uniform draw above 4.0)"
+},
+"ratio.CCC-C.draw.mean": {
+"text": "5.9",
+"source": "experiments/results/stability.json observed_ratio_range[CCC-C] (mean and median of a uniform draw: the midpoint)"
+},
+"ratio.CCC-C.max": {
+"text": "9.8",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.mean": {
+"text": "5.4",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.median": {
+"text": "5.1",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.min": {
+"text": "2.1",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
+},
+"ratio.CCC-C.n": {
+"text": "26",
+"source": "data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C].cohorts: (anchor_defaults/anchor_cohort)/(defaults/N) over the cohorts with defaults"
 },
 "real.fitch.A.A": {
 "text": "10",
@@ -10232,7 +10308,7 @@
 "source": "experiments/results/coverage-grid.json"
 },
 "reps.duration": {
-"text": "1000",
+"text": "1,000",
 "source": "experiments/results/duration.json"
 },
 "reps.scale": {
@@ -10304,7 +10380,7 @@
 "source": "experiments/results/run-times.json machine.scipy"
 },
 "rt.stability": {
-"text": "7.5",
+"text": "11.4",
 "source": "experiments/results/run-times.json studies.stability.elapsed_seconds / 60"
 },
 "se.fy.i0.anchored": {
@@ -10715,6 +10791,10 @@
 "text": "0.0",
 "source": "experiments/results/scale-ladder.json x30 informative 9 treatments.unfollowed"
 },
+"stab.i3.c1.3.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1.3 grade B"
+},
 "stab.i3.c1.3.B.k": {
 "text": "8.0",
 "source": "experiments/results/stability.json informative 3 capture 1.3 grade B"
@@ -10726,6 +10806,10 @@
 "stab.i3.c1.3.B.stable": {
 "text": "100.0",
 "source": "experiments/results/stability.json informative 3 capture 1.3 grade B"
+},
+"stab.i3.c1.3.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1.3 grade BB"
 },
 "stab.i3.c1.3.BB.k": {
 "text": "7.5",
@@ -10739,6 +10823,10 @@
 "text": "99.5",
 "source": "experiments/results/stability.json informative 3 capture 1.3 grade BB"
 },
+"stab.i3.c1.3.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1.3 grade CCC-C"
+},
 "stab.i3.c1.3.CCC-C.k": {
 "text": "11.4",
 "source": "experiments/results/stability.json informative 3 capture 1.3 grade CCC-C"
@@ -10750,6 +10838,10 @@
 "stab.i3.c1.3.CCC-C.stable": {
 "text": "100.0",
 "source": "experiments/results/stability.json informative 3 capture 1.3 grade CCC-C"
+},
+"stab.i3.c1.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1 grade B"
 },
 "stab.i3.c1.B.k": {
 "text": "2.2",
@@ -10763,6 +10855,10 @@
 "text": "100.0",
 "source": "experiments/results/stability.json informative 3 capture 1 grade B"
 },
+"stab.i3.c1.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1 grade BB"
+},
 "stab.i3.c1.BB.k": {
 "text": "1.8",
 "source": "experiments/results/stability.json informative 3 capture 1 grade BB"
@@ -10774,6 +10870,10 @@
 "stab.i3.c1.BB.stable": {
 "text": "99.9",
 "source": "experiments/results/stability.json informative 3 capture 1 grade BB"
+},
+"stab.i3.c1.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture 1 grade CCC-C"
 },
 "stab.i3.c1.CCC-C.k": {
 "text": "1.8",
@@ -10787,37 +10887,53 @@
 "text": "100.0",
 "source": "experiments/results/stability.json informative 3 capture 1 grade CCC-C"
 },
-"stab.i3.cd1.6-7.0.B.k": {
-"text": "108.3",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+"stab.i3.cdobs.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture dobs grade B"
 },
-"stab.i3.cd1.6-7.0.B.share": {
+"stab.i3.cdobs.B.k": {
+"text": "111.3",
+"source": "experiments/results/stability.json informative 3 capture dobs grade B"
+},
+"stab.i3.cdobs.B.share": {
 "text": "53.8",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+"source": "experiments/results/stability.json informative 3 capture dobs grade B"
 },
-"stab.i3.cd1.6-7.0.B.stable": {
-"text": "20.6",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade B"
+"stab.i3.cdobs.B.stable": {
+"text": "21.1",
+"source": "experiments/results/stability.json informative 3 capture dobs grade B"
 },
-"stab.i3.cd1.6-7.0.BB.k": {
-"text": "62.2",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
+"stab.i3.cdobs.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture dobs grade BB"
 },
-"stab.i3.cd1.6-7.0.BB.share": {
-"text": "88.6",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
+"stab.i3.cdobs.BB.k": {
+"text": "34.6",
+"source": "experiments/results/stability.json informative 3 capture dobs grade BB"
 },
-"stab.i3.cd1.6-7.0.BB.stable": {
-"text": "80.5",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade BB"
-},
-"stab.i3.cd1.6-7.0.CCC-C.share": {
-"text": "96.0",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade CCC-C"
-},
-"stab.i3.cd1.6-7.0.CCC-C.stable": {
+"stab.i3.cdobs.BB.share": {
 "text": "93.5",
-"source": "experiments/results/stability.json informative 3 capture d1.6-7.0 grade CCC-C"
+"source": "experiments/results/stability.json informative 3 capture dobs grade BB"
+},
+"stab.i3.cdobs.BB.stable": {
+"text": "89.4",
+"source": "experiments/results/stability.json informative 3 capture dobs grade BB"
+},
+"stab.i3.cdobs.CCC-C.defined": {
+"text": "367",
+"source": "experiments/results/stability.json informative 3 capture dobs grade CCC-C"
+},
+"stab.i3.cdobs.CCC-C.share": {
+"text": "99.2",
+"source": "experiments/results/stability.json informative 3 capture dobs grade CCC-C"
+},
+"stab.i3.cdobs.CCC-C.stable": {
+"text": "98.9",
+"source": "experiments/results/stability.json informative 3 capture dobs grade CCC-C"
+},
+"stab.i3.cu1.0-1.6.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade B"
 },
 "stab.i3.cu1.0-1.6.B.k": {
 "text": "8.0",
@@ -10831,6 +10947,10 @@
 "text": "99.6",
 "source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade B"
 },
+"stab.i3.cu1.0-1.6.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade BB"
+},
 "stab.i3.cu1.0-1.6.BB.k": {
 "text": "7.3",
 "source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade BB"
@@ -10842,6 +10962,10 @@
 "stab.i3.cu1.0-1.6.BB.stable": {
 "text": "99.2",
 "source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade BB"
+},
+"stab.i3.cu1.0-1.6.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade CCC-C"
 },
 "stab.i3.cu1.0-1.6.CCC-C.k": {
 "text": "11.2",
@@ -10855,6 +10979,10 @@
 "text": "99.4",
 "source": "experiments/results/stability.json informative 3 capture u1.0-1.6 grade CCC-C"
 },
+"stab.i3.cu1.0-4.0.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade B"
+},
 "stab.i3.cu1.0-4.0.B.k": {
 "text": "40.8",
 "source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade B"
@@ -10866,6 +10994,10 @@
 "stab.i3.cu1.0-4.0.B.stable": {
 "text": "39.4",
 "source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade B"
+},
+"stab.i3.cu1.0-4.0.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade BB"
 },
 "stab.i3.cu1.0-4.0.BB.k": {
 "text": "31.0",
@@ -10879,6 +11011,10 @@
 "text": "83.3",
 "source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade BB"
 },
+"stab.i3.cu1.0-4.0.CCC-C.defined": {
+"text": "973",
+"source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade CCC-C"
+},
 "stab.i3.cu1.0-4.0.CCC-C.k": {
 "text": "72.6",
 "source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade CCC-C"
@@ -10890,6 +11026,10 @@
 "stab.i3.cu1.0-4.0.CCC-C.stable": {
 "text": "63.1",
 "source": "experiments/results/stability.json informative 3 capture u1.0-4.0 grade CCC-C"
+},
+"stab.i9.c1.3.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1.3 grade B"
 },
 "stab.i9.c1.3.B.k": {
 "text": "12.8",
@@ -10903,6 +11043,10 @@
 "text": "99.6",
 "source": "experiments/results/stability.json informative 9 capture 1.3 grade B"
 },
+"stab.i9.c1.3.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1.3 grade BB"
+},
 "stab.i9.c1.3.BB.k": {
 "text": "12.5",
 "source": "experiments/results/stability.json informative 9 capture 1.3 grade BB"
@@ -10914,6 +11058,10 @@
 "stab.i9.c1.3.BB.stable": {
 "text": "98.4",
 "source": "experiments/results/stability.json informative 9 capture 1.3 grade BB"
+},
+"stab.i9.c1.3.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1.3 grade CCC-C"
 },
 "stab.i9.c1.3.CCC-C.k": {
 "text": "14.1",
@@ -10927,6 +11075,10 @@
 "text": "100.0",
 "source": "experiments/results/stability.json informative 9 capture 1.3 grade CCC-C"
 },
+"stab.i9.c1.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1 grade B"
+},
 "stab.i9.c1.B.k": {
 "text": "5.8",
 "source": "experiments/results/stability.json informative 9 capture 1 grade B"
@@ -10938,6 +11090,10 @@
 "stab.i9.c1.B.stable": {
 "text": "100.0",
 "source": "experiments/results/stability.json informative 9 capture 1 grade B"
+},
+"stab.i9.c1.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1 grade BB"
 },
 "stab.i9.c1.BB.k": {
 "text": "5.8",
@@ -10951,6 +11107,10 @@
 "text": "99.8",
 "source": "experiments/results/stability.json informative 9 capture 1 grade BB"
 },
+"stab.i9.c1.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture 1 grade CCC-C"
+},
 "stab.i9.c1.CCC-C.k": {
 "text": "4.4",
 "source": "experiments/results/stability.json informative 9 capture 1 grade CCC-C"
@@ -10963,41 +11123,57 @@
 "text": "100.0",
 "source": "experiments/results/stability.json informative 9 capture 1 grade CCC-C"
 },
-"stab.i9.cd1.6-7.0.B.k": {
-"text": "75.9",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+"stab.i9.cdobs.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture dobs grade B"
 },
-"stab.i9.cd1.6-7.0.B.share": {
-"text": "62.2",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+"stab.i9.cdobs.B.k": {
+"text": "76.2",
+"source": "experiments/results/stability.json informative 9 capture dobs grade B"
 },
-"stab.i9.cd1.6-7.0.B.stable": {
-"text": "35.9",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade B"
+"stab.i9.cdobs.B.share": {
+"text": "61.2",
+"source": "experiments/results/stability.json informative 9 capture dobs grade B"
 },
-"stab.i9.cd1.6-7.0.BB.k": {
-"text": "58.2",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+"stab.i9.cdobs.B.stable": {
+"text": "33.5",
+"source": "experiments/results/stability.json informative 9 capture dobs grade B"
 },
-"stab.i9.cd1.6-7.0.BB.share": {
-"text": "94.7",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+"stab.i9.cdobs.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture dobs grade BB"
 },
-"stab.i9.cd1.6-7.0.BB.stable": {
-"text": "88.9",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade BB"
+"stab.i9.cdobs.BB.k": {
+"text": "33.6",
+"source": "experiments/results/stability.json informative 9 capture dobs grade BB"
 },
-"stab.i9.cd1.6-7.0.CCC-C.k": {
-"text": "218.8",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
+"stab.i9.cdobs.BB.share": {
+"text": "97.2",
+"source": "experiments/results/stability.json informative 9 capture dobs grade BB"
 },
-"stab.i9.cd1.6-7.0.CCC-C.share": {
-"text": "82.9",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
+"stab.i9.cdobs.BB.stable": {
+"text": "95.6",
+"source": "experiments/results/stability.json informative 9 capture dobs grade BB"
 },
-"stab.i9.cd1.6-7.0.CCC-C.stable": {
-"text": "67.7",
-"source": "experiments/results/stability.json informative 9 capture d1.6-7.0 grade CCC-C"
+"stab.i9.cdobs.CCC-C.defined": {
+"text": "766",
+"source": "experiments/results/stability.json informative 9 capture dobs grade CCC-C"
+},
+"stab.i9.cdobs.CCC-C.k": {
+"text": "221.4",
+"source": "experiments/results/stability.json informative 9 capture dobs grade CCC-C"
+},
+"stab.i9.cdobs.CCC-C.share": {
+"text": "89.7",
+"source": "experiments/results/stability.json informative 9 capture dobs grade CCC-C"
+},
+"stab.i9.cdobs.CCC-C.stable": {
+"text": "83.9",
+"source": "experiments/results/stability.json informative 9 capture dobs grade CCC-C"
+},
+"stab.i9.cu1.0-1.6.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade B"
 },
 "stab.i9.cu1.0-1.6.B.k": {
 "text": "12.9",
@@ -11011,6 +11187,10 @@
 "text": "98.6",
 "source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade B"
 },
+"stab.i9.cu1.0-1.6.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade BB"
+},
 "stab.i9.cu1.0-1.6.BB.k": {
 "text": "12.6",
 "source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade BB"
@@ -11022,6 +11202,10 @@
 "stab.i9.cu1.0-1.6.BB.stable": {
 "text": "97.3",
 "source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade BB"
+},
+"stab.i9.cu1.0-1.6.CCC-C.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade CCC-C"
 },
 "stab.i9.cu1.0-1.6.CCC-C.k": {
 "text": "13.8",
@@ -11035,6 +11219,10 @@
 "text": "99.5",
 "source": "experiments/results/stability.json informative 9 capture u1.0-1.6 grade CCC-C"
 },
+"stab.i9.cu1.0-4.0.B.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade B"
+},
 "stab.i9.cu1.0-4.0.B.k": {
 "text": "49.8",
 "source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade B"
@@ -11047,6 +11235,10 @@
 "text": "41.1",
 "source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade B"
 },
+"stab.i9.cu1.0-4.0.BB.defined": {
+"text": "1,000",
+"source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade BB"
+},
 "stab.i9.cu1.0-4.0.BB.k": {
 "text": "42.1",
 "source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade BB"
@@ -11058,6 +11250,10 @@
 "stab.i9.cu1.0-4.0.BB.stable": {
 "text": "72.5",
 "source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade BB"
+},
+"stab.i9.cu1.0-4.0.CCC-C.defined": {
+"text": "991",
+"source": "experiments/results/stability.json informative 9 capture u1.0-4.0 grade CCC-C"
 },
 "stab.i9.cu1.0-4.0.CCC-C.k": {
 "text": "103.2",
