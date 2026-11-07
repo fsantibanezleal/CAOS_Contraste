@@ -17,6 +17,7 @@ import pathlib
 import numpy as np
 import QuantLib as ql
 
+import runstats
 import riskvalidation
 from riskvalidation.irrbb import eve_nii, shocks, slotting
 
@@ -94,8 +95,10 @@ def variants() -> dict:
 
 
 def main() -> None:
+    t0 = runstats.start()
     result = {"riskvalidation": riskvalidation.__version__, "quantlib": ql.__version__ if hasattr(ql, "__version__") else ql.QuantLib.__version__ if hasattr(ql, "QuantLib") else "unknown",
               "worked_example": worked_example(), "variants": variants()}
+    result["run"] = runstats.stats(t0)
     (HERE / "results_irrbb.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
     print(json.dumps(result["worked_example"], indent=1))
     print({k: v for k, v in result["variants"].items() if k != "rows"})

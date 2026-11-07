@@ -38,10 +38,10 @@
   ]
  },
  "ecb": {
-  "sections": 14,
+  "sections": 17,
   "implemented": 5,
   "related_only": 1,
-  "absent": 8,
+  "absent": 11,
   "rows": [
    {
     "section": "2.5.2",
@@ -92,6 +92,12 @@
     "related_id": null
    },
    {
+    "section": "2.6.4",
+    "statistic": "LGD qualitative tools: assignment process, portfolio distribution, defaulted portfolios",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
     "section": "2.7.2.1",
     "statistic": "ELBE back-testing: paired t-test",
     "engine_id": null,
@@ -100,6 +106,12 @@
    {
     "section": "2.8.2.1",
     "statistic": "LGD in-default back-testing: paired t-test",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.2",
+    "statistic": "CCF qualitative tools, back-testing portfolio: assignment process, EAD approach",
     "engine_id": null,
     "related_id": null
    },
@@ -118,6 +130,12 @@
    {
     "section": "2.9.4.1",
     "statistic": "CCF generalised AUC",
+    "engine_id": null,
+    "related_id": null
+   },
+   {
+    "section": "2.9.5",
+    "statistic": "CCF qualitative tools, application portfolio: assignment process, distribution, EAD",
     "engine_id": null,
     "related_id": null
    },
@@ -521,5 +539,11 @@
     }
    }
   ]
+ },
+ "run": {
+  "seconds": 621,
+  "peak_working_set_mb": 139,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
  }
 }

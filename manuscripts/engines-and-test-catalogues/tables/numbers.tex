@@ -10,13 +10,13 @@
 % results_catalogue.json inventory.by_decision
 \newcommand{\metricTests}{92}
 % results_catalogue.json ecb.sections
-\newcommand{\ecbSections}{14}
+\newcommand{\ecbSections}{17}
 % results_catalogue.json ecb.implemented
 \newcommand{\ecbImpl}{5}
 % results_catalogue.json ecb.related_only
 \newcommand{\ecbRelated}{1}
 % results_catalogue.json ecb.absent
-\newcommand{\ecbAbsent}{8}
+\newcommand{\ecbAbsent}{11}
 % results_catalogue.json installed_scan.distributions
 \newcommand{\distScanned}{106}
 % results_catalogue.json installed_scan.python_files
@@ -34,7 +34,7 @@
 % results_catalogue.json survey rows not found
 \newcommand{\pypiMissing}{3}
 % results_catalogue.json survey rows not found
-\newcommand{\pypiMissingNames}{	exttt{creditmetrics}, 	exttt{creditrisk}, 	exttt{pycreditrisk}}
+\newcommand{\pypiMissingNames}{\texttt{creditmetrics}, \texttt{creditrisk}, \texttt{pycreditrisk}}
 % results_ecb.json part_a
 \newcommand{\ecbInputs}{500}
 % results_ecb.json part_a, largest of the five
@@ -123,6 +123,10 @@
 \newcommand{\crpIndMax}{\ensuremath{3.1\times 10^{-17}}}
 % results_portfolio.json anchors.crp_independent
 \newcommand{\crpIndPanjer}{\ensuremath{3.1\times 10^{-17}}}
+% results_portfolio.json anchors.crp_independent.max_rel_diff_stable
+\newcommand{\crpIndRel}{\ensuremath{4.6\times 10^{-15}}}
+% results_portfolio.json anchors.crp_independent.n_positive
+\newcommand{\crpIndPositive}{1,415}
 % results_portfolio.json anchors.crp_independent
 \newcommand{\crpCompared}{12,729}
 % results_portfolio.json anchors.granularity
@@ -147,8 +151,8 @@
 \newcommand{\mcVarNinetyNineIndSd}{12,728}
 % results_portfolio.json mc.quantities.var99.z_difference
 \newcommand{\mcVarNinetyNineZ}{+0.35}
-% results_portfolio.json mc.quantities.var99 (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent
-\newcommand{\mcMddVarNinetyNine}{0.84}
+% results_portfolio.json mc.quantities.var99 (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3
+\newcommand{\mcMddVarNinetyNine}{0.95}
 % results_portfolio.json mc.quantities.es99
 \newcommand{\mcEsNinetyNineEng}{2,576,013}
 % results_portfolio.json mc.quantities.es99
@@ -159,8 +163,8 @@
 \newcommand{\mcEsNinetyNineIndSd}{18,338}
 % results_portfolio.json mc.quantities.es99.z_difference
 \newcommand{\mcEsNinetyNineZ}{+0.44}
-% results_portfolio.json mc.quantities.es99 (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent
-\newcommand{\mcMddEsNinetyNine}{1.00}
+% results_portfolio.json mc.quantities.es99 (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3
+\newcommand{\mcMddEsNinetyNine}{1.13}
 % results_portfolio.json mc.quantities.var999
 \newcommand{\mcVarNinetyNineNineEng}{3,193,200}
 % results_portfolio.json mc.quantities.var999
@@ -171,8 +175,8 @@
 \newcommand{\mcVarNinetyNineNineIndSd}{31,119}
 % results_portfolio.json mc.quantities.var999.z_difference
 \newcommand{\mcVarNinetyNineNineZ}{+0.44}
-% results_portfolio.json mc.quantities.var999 (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent
-\newcommand{\mcMddVarNinetyNineNine}{1.33}
+% results_portfolio.json mc.quantities.var999 (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3
+\newcommand{\mcMddVarNinetyNineNine}{1.50}
 % results_portfolio.json mc.quantities.es999
 \newcommand{\mcEsNinetyNineNineEng}{3,698,878}
 % results_portfolio.json mc.quantities.es999
@@ -183,8 +187,8 @@
 \newcommand{\mcEsNinetyNineNineIndSd}{48,512}
 % results_portfolio.json mc.quantities.es999.z_difference
 \newcommand{\mcEsNinetyNineNineZ}{-0.01}
-% results_portfolio.json mc.quantities.es999 (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent
-\newcommand{\mcMddEsNinetyNineNine}{1.93}
+% results_portfolio.json mc.quantities.es999 (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3
+\newcommand{\mcMddEsNinetyNineNine}{2.17}
 % results_portfolio.json mc.quantities.mean
 \newcommand{\mcMeanEng}{410,175}
 % results_portfolio.json mc.quantities.mean
@@ -195,8 +199,8 @@
 \newcommand{\mcMeanIndSd}{1,264}
 % results_portfolio.json mc.quantities.mean.z_difference
 \newcommand{\mcMeanZ}{+0.86}
-% results_portfolio.json mc.quantities.mean (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent
-\newcommand{\mcMddMean}{0.40}
+% results_portfolio.json mc.quantities.mean (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3
+\newcommand{\mcMddMean}{0.45}
 % results_portfolio.json mc.expected_loss_exact
 \newcommand{\mcElExact}{409,721}
 % results_portfolio.json regeneration.max_rel_diff
@@ -208,7 +212,7 @@
 % results_portfolio.json regeneration
 \newcommand{\regenChunk}{16,741}
 % results_portfolio.json regeneration.seconds
-\newcommand{\regenSeconds}{20}
+\newcommand{\regenSeconds}{40}
 % results_portfolio.json grids
 \newcommand{\gridMlCells}{24}
 % results_portfolio.json grids |z coverage| > 2.576
@@ -237,6 +241,18 @@
 \newcommand{\gridMomWorstZ}{-27.07}
 % results_portfolio.json grids (mean coverage)
 \newcommand{\gridMomMeanCov}{0.817}
+% results_portfolio.json grids (ML coverage below 0.95)
+\newcommand{\gridMlBelow}{16}
+% results_portfolio.json grids (ML bias below zero)
+\newcommand{\gridMlNegBias}{24}
+% results_portfolio.json grids (most negative ML bias)
+\newcommand{\gridMlBiasMin}{-0.0162}
+% results_portfolio.json grids (least negative ML bias)
+\newcommand{\gridMlBiasMax}{-0.0004}
+% results_portfolio.json grids (cells times replications)
+\newcommand{\gridMlPooledReps}{9,600}
+% results_portfolio.json grids (pooled ML coverage against 0.95 over all replications, valid only if the cells are independent)
+\newcommand{\gridMlPooledZ}{-3.7}
 % results_portfolio.json grids (24 cells times 0.01)
 \newcommand{\gridChance}{0.24}
 % results_portfolio.json grids
@@ -290,9 +306,9 @@
 % results_portfolio.json is_euler
 \newcommand{\isMean}{0.00106}
 % results_portfolio.json is_euler
-\newcommand{\isSd}{0.00001}
-% results_portfolio.json is_euler.z_difference
-\newcommand{\isZ}{-1.06}
+\newcommand{\isSd}{\ensuremath{6.9\times 10^{-6}}}
+% results_portfolio.json is_euler.z_difference, sign reversed: the file holds plain minus importance sampler; the text reports engine (importance sampler) minus reference (plain)
+\newcommand{\isZ}{+1.06}
 % results_portfolio.json is_euler.variance_ratio
 \newcommand{\isRatio}{146}
 % results_portfolio.json is_euler.euler_rel_gap
@@ -365,6 +381,30 @@
 \newcommand{\ablOnly}{8}
 % results_ablation.json real defects detected by no layer
 \newcommand{\ablNone}{0}
+% results_ablation.json real defects detected by layer A and by no other layer
+\newcommand{\ablAUnique}{2}
+% results_ablation.json real defects detected by layer B and by no other layer
+\newcommand{\ablBUnique}{3}
+% results_ablation.json real defects detected by layer C and by no other layer
+\newcommand{\ablCUnique}{1}
+% results_ablation.json real defects detected by layer D and by no other layer
+\newcommand{\ablDUnique}{1}
+% results_ablation.json real defects detected by layer E and by no other layer
+\newcommand{\ablEUnique}{1}
+% results_ablation.json layers with at least one unique detection among the real defects
+\newcommand{\ablHEight}{held}
+% results_ablation.json layers with at least one unique detection
+\newcommand{\ablLayersWithUnique}{5}
+% results_ablation.json retries (a layer that raised an exception and was run again)
+\newcommand{\ablRetriesCommitted}{0}
+% results_ablation_reproduction.json reruns
+\newcommand{\ablReruns}{2}
+% results_ablation_reproduction.json reproduced
+\newcommand{\ablReproduced}{2}
+% results_ablation_reproduction.json per_run retries, committed run and reruns
+\newcommand{\ablRerunRetries}{0}
+% results_ablation_reproduction.json
+\newcommand{\ablRerunSentence}{The detection matrix of the committed ablation was reproduced cell for cell by 2 of 2 reruns written with \texttt{--out} and compared by \texttt{compare\_ablation\_runs.py}; in the committed run and the reruns together a layer was run again after an exception 0 times.}
 % results_ablation.json m01
 \newcommand{\ablDetOne}{B}
 % results_ablation.json m02
@@ -399,17 +439,73 @@
 \newcommand{\effScen}{200,000}
 % results_ablation_effect.json relative_change.var99, absolute value in percent
 \newcommand{\effChangeVarNinetyNine}{1.5}
-% results_portfolio.json mc.quantities.var99 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E
-\newcommand{\effMddVarNinetyNine}{3.4}
 % results_ablation_effect.json relative_change.es99, absolute value in percent
 \newcommand{\effChangeEsNinetyNine}{1.9}
-% results_portfolio.json mc.quantities.es99 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E
-\newcommand{\effMddEsNinetyNine}{4.1}
 % results_ablation_effect.json relative_change.var999, absolute value in percent
 \newcommand{\effChangeVarNinetyNineNine}{2.3}
-% results_portfolio.json mc.quantities.var999 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E
-\newcommand{\effMddVarNinetyNineNine}{5.4}
 % results_ablation_effect.json relative_change.es999, absolute value in percent
 \newcommand{\effChangeEsNinetyNineNine}{2.3}
-% results_portfolio.json mc.quantities.es999 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E
-\newcommand{\effMddEsNinetyNineNine}{7.9}
+% results_portfolio.json mc.quantities.var99 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E, at its cutoff of 4 standard errors
+\newcommand{\effMddVarNinetyNine}{4.9}
+% results_ablation_effect.json fullsize_comparison.replications
+\newcommand{\fsReps}{10}
+% results_ablation_effect.json fullsize_comparison.scenarios_each
+\newcommand{\fsScen}{200,000}
+% results_ablation_effect.json fullsize_comparison.quantities.var99.z_defect_minus_independent
+\newcommand{\fsZVarNinetyNine}{-4.9}
+% results_ablation_effect.json fullsize_comparison.quantities.var99.relative_shift, absolute value in percent
+\newcommand{\fsShiftVarNinetyNine}{1.3}
+% results_ablation_effect.json fullsize_comparison.quantities.es99.z_defect_minus_independent
+\newcommand{\fsZEsNinetyNine}{-5.0}
+% results_ablation_effect.json fullsize_comparison.quantities.es99.relative_shift, absolute value in percent
+\newcommand{\fsShiftEsNinetyNine}{1.4}
+% results_ablation_effect.json fullsize_comparison.quantities.var999.z_defect_minus_independent
+\newcommand{\fsZVarNinetyNineNine}{-3.7}
+% results_ablation_effect.json fullsize_comparison.quantities.var999.relative_shift, absolute value in percent
+\newcommand{\fsShiftVarNinetyNineNine}{1.5}
+% results_ablation_effect.json fullsize_comparison.quantities.es999.z_defect_minus_independent
+\newcommand{\fsZEsNinetyNineNine}{-2.7}
+% results_ablation_effect.json fullsize_comparison.quantities.es999.relative_shift, absolute value in percent
+\newcommand{\fsShiftEsNinetyNineNine}{1.6}
+% results_ablation_effect.json fullsize_comparison, measures with |z| above the cutoff of 3
+\newcommand{\fsFlagged}{3}
+% results_ecb.json run.seconds, in minutes when at least two minutes
+\newcommand{\runEcbSeconds}{30}
+% results_ecb.json run.seconds
+\newcommand{\runEcbUnit}{seconds}
+% results_ecb.json run.peak_working_set_mb
+\newcommand{\runEcbMb}{139}
+% results_irrbb.json run.seconds, in minutes when at least two minutes
+\newcommand{\runIrrbbSeconds}{0}
+% results_irrbb.json run.seconds
+\newcommand{\runIrrbbUnit}{seconds}
+% results_irrbb.json run.peak_working_set_mb
+\newcommand{\runIrrbbMb}{127}
+% results_catalogue.json run.seconds, in minutes when at least two minutes
+\newcommand{\runCatalogueSeconds}{10}
+% results_catalogue.json run.seconds
+\newcommand{\runCatalogueUnit}{minutes}
+% results_catalogue.json run.peak_working_set_mb
+\newcommand{\runCatalogueMb}{139}
+% results_portfolio.json run.seconds, in minutes when at least two minutes
+\newcommand{\runPortfolioSeconds}{35}
+% results_portfolio.json run.seconds
+\newcommand{\runPortfolioUnit}{minutes}
+% results_portfolio.json run.peak_working_set_mb
+\newcommand{\runPortfolioMb}{1,129}
+% results_ablation.json run.seconds, in minutes when at least two minutes
+\newcommand{\runAblationSeconds}{21}
+% results_ablation.json run.seconds
+\newcommand{\runAblationUnit}{minutes}
+% results_ablation.json run.peak_working_set_mb
+\newcommand{\runAblationMb}{423}
+% results_ablation_effect.json run.seconds, in minutes when at least two minutes
+\newcommand{\runEffectSeconds}{3}
+% results_ablation_effect.json run.seconds
+\newcommand{\runEffectUnit}{minutes}
+% results_ablation_effect.json run.peak_working_set_mb
+\newcommand{\runEffectMb}{211}
+% results_ecb.json run.python
+\newcommand{\runPython}{3.13.14}
+% largest peak_working_set_mb of the six result files
+\newcommand{\runPeakMax}{1,129}

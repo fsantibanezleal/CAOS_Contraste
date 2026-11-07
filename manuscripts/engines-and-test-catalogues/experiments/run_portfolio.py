@@ -12,6 +12,7 @@ contributions.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import pathlib
@@ -20,6 +21,7 @@ import time
 import numpy as np
 from scipy import integrate, stats
 
+import runstats
 import riskvalidation
 from riskvalidation.engines.vasicek import conditional_pd, lhp_cdf, lhp_pdf
 from riskvalidation.portfolio import copula, creditrisk_plus as cr, granularity as gr, importance as imp, euler
@@ -94,7 +96,9 @@ def anchors(ci: dict, cards: dict) -> dict:
         g[m] = np.sum(mu_j[jj] * (sigma2 * (m - jj) + jj) * g[m - jj]) / (c * m)
     alt = cr.pmf_panjer(inp, n_max)
     k = min(g.size, pmf.size, alt.size)
+    pos = g[:k] > 0  # the relative difference is taken where the independent probability is positive
     res["crp_independent"] = {"max_abs_diff_stable": float(np.abs(g[:k] - pmf[:k]).max()),
+                              "max_rel_diff_stable": float((np.abs(g[:k] - pmf[:k])[pos] / g[:k][pos]).max()), "n_positive": int(pos.sum()),
                               "max_abs_diff_panjer": float(np.abs(g[:k] - alt[:k]).max()),
                               "max_abs_diff_stable_vs_panjer": float(np.abs(pmf[:k] - alt[:k]).max()), "n_compared": k}
 
@@ -230,15 +234,24 @@ def is_and_euler(ci: dict) -> dict:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", default="", help="comma-separated parts to recompute and merge into the committed file (default: all parts)")
+    a = ap.parse_args()
+    only = [x for x in a.only.split(",") if x]
+    t_run = runstats.start()
     ci, cards, g22 = read("C10", "commercial-industrial"), read("C10", "credit-cards"), read("C10", "grid-22")
-    result = {"riskvalidation": riskvalidation.__version__}
+    path = HERE / "results_portfolio.json"
+    result = json.loads(path.read_text(encoding="utf-8")) if only else {"riskvalidation": riskvalidation.__version__}
     for name, fn in (("anchors", lambda: anchors(ci, cards)), ("mc", lambda: mc_comparison(ci)),
                      ("regeneration", lambda: regeneration(ci)), ("grids", grids), ("cell", lambda: cell_rerun(g22)),
                      ("is_euler", lambda: is_and_euler(ci))):
+        if only and name not in only:
+            continue
         t0 = time.time()
         result[name] = fn()
         print(name, f"{time.time() - t0:.0f}s")
-    (HERE / "results_portfolio.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+    result["run" if not only else "run_partial"] = runstats.stats(t_run)
+    path.write_text(json.dumps(result, indent=1), encoding="utf-8", newline="\n")
     print(json.dumps({k: v for k, v in result.items() if k not in ("grids",)}, indent=1)[:6000])
 
 

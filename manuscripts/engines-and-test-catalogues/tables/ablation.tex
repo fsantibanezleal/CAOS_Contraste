@@ -3,22 +3,22 @@
 \small
 \caption{Defects planted one at a time in the released engine and the verification layers that detect each: A analytic anchors, B published vectors and the ECB transcription, C regeneration of the committed rung, D known-truth simulator, E cross-implementation; x marks a detection.}
 \label{tab:ablation}
-\begin{tabular}{llcccccc}
+\begin{tabular}{lp{6.4cm}cccccc}
 \toprule
 Id & Defect planted in the engine & Equivalent & A & B & C & D & E \\
 \midrule
-M01 & granularity delta scaled by 1.02 & no & . & x & . & . & . \\
-M02 & large-portfolio distribution function with the correlation scaled by 1.05 & no & x & . & . & . & . \\
-M03 & copula sampler drawn with the next seed (statistically equivalent) & yes & . & . & x & . & . \\
-M04 & copula loadings scaled by 0.97 (correlation 6 percent low) & no & . & . & x & . & . \\
-M05 & CreditRisk+ recursion shifted by one loss unit & no & x & . & . & . & x \\
-M06 & Jeffreys prior Beta(1, 1) in place of Beta(1/2, 1/2) & no & . & x & . & . & . \\
-M07 & concentration statistic with sqrt(K) in place of sqrt(K-1) & no & . & x & . & . & . \\
-M08 & flattener long coefficient 0.65 in place of 0.60 & no & . & x & . & . & x \\
-M09 & present value with annual compounding in place of continuous & no & . & . & . & . & x \\
-M10 & maximum-likelihood correlation scaled by 0.7 & no & . & . & . & x & . \\
-M11 & large-portfolio capital scaled by 1.01 & no & x & . & . & . & . \\
-M12 & copula sampler ignores the committed chunk size (statistically equivalent) & yes & . & . & x & . & . \\
+P01 & granularity delta scaled by 1.02 & no & . & x & . & . & . \\
+P02 & large-portfolio distribution function with the correlation scaled by 1.05 & no & x & . & . & . & . \\
+P03 & copula sampler drawn with the next seed (statistically equivalent) & yes & . & . & x & . & . \\
+P04 & copula loadings scaled by 0.97 (correlation 6 percent low) & no & . & . & x & . & . \\
+P05 & CreditRisk+ recursion shifted by one loss unit & no & x & . & . & . & x \\
+P06 & Jeffreys prior Beta(1, 1) in place of Beta(1/2, 1/2) & no & . & x & . & . & . \\
+P07 & concentration statistic with sqrt(K) in place of sqrt(K-1) & no & . & x & . & . & . \\
+P08 & flattener long coefficient 0.65 in place of 0.60 & no & . & x & . & . & x \\
+P09 & present value with annual compounding in place of continuous & no & . & . & . & . & x \\
+P10 & maximum-likelihood correlation scaled by 0.7 & no & . & . & . & x & . \\
+P11 & large-portfolio capital scaled by 1.01 & no & x & . & . & . & . \\
+P12 & copula sampler ignores the committed chunk size (statistically equivalent) & yes & . & . & x & . & . \\
  & Detections of the defects that change a result &  & 3 & 4 & 1 & 1 & 3 \\
 \bottomrule
 \end{tabular}

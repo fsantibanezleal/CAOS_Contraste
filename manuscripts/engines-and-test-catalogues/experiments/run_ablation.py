@@ -11,9 +11,11 @@ cross-implementation (independent Monte Carlo, independent Panjer recursion, Qua
 from __future__ import annotations
 
 import dataclasses
+import gc
 import json
 import math
 import pathlib
+import argparse
 import sys
 import time
 
@@ -26,6 +28,7 @@ sys.path.insert(0, str(HERE))
 import run_ecb as ecb  # noqa: E402
 import run_irrbb as irr  # noqa: E402
 import run_portfolio as prt  # noqa: E402
+import runstats  # noqa: E402
 
 from riskvalidation.engines import vasicek
 from riskvalidation.irrbb import eve_nii, shocks, slotting
@@ -252,48 +255,74 @@ def mutants():
     return spec
 
 
+class LayerRunError(RuntimeError):
+    """A layer failed to run (an exception that is not a failed check), or the released engine was detected.  Never a detection."""
+
+
+RETRIED: dict[str, str] = {}
+"""The exception type of each layer that raised once and passed on its retry in the last ``run_layers`` call (reported, never counted)."""
 RAISED: dict[str, str] = {}
-"""The exception type of each layer that raised in the last ``run_layers`` call (a layer that raises on a defective engine has detected it;
-a layer that raises on the released engine is an error of the run and stops it)."""
+"""The exception type of each layer whose run failed in the last ``run_layers`` call; non-empty only just before ``LayerRunError``."""
+RETRY_LOG: list[dict] = []
+"""Every retry of the whole run: the label of the engine state, the layer and the exception type; written to the results file."""
 
 
-def run_layers() -> dict[str, bool]:
+def run_layers(layers=None, retries: int = 2, pause: float = 5.0, label: str = "") -> dict[str, bool]:
+    """Run every layer; a layer detects a defect only when its checks report it (``not all(checks)``).
+
+    Any exception is a failed run, not a finding: the layer is retried ``retries`` times after ``pause`` seconds and a garbage
+    collection (a ``MemoryError`` is a state of the machine, not a property of the planted defect); when it persists the run stops
+    with ``LayerRunError`` and no result is written.
+    """
+    layers = LAYERS if layers is None else layers
     out = {}
     RAISED.clear()
-    for k, (_, fn) in LAYERS.items():
-        try:
-            out[k] = not all(fn())  # True: a check failed, the layer detects
-        except Exception as exc:  # a layer that raises on a defective engine has detected it
-            out[k] = True
-            RAISED[k] = type(exc).__name__
+    RETRIED.clear()
+    for k, (_, fn) in layers.items():
+        for attempt in range(retries + 1):
+            try:
+                out[k] = not all(fn())  # True: a check failed, the layer detects
+                break
+            except Exception as exc:  # not a detection: a failed run
+                name = type(exc).__name__
+                gc.collect()
+                if attempt == retries:
+                    RAISED[k] = name
+                    raise LayerRunError(f"{label or 'engine'}: layer {k} raised {name} on {retries + 1} attempts: {exc}") from exc
+                RETRIED[k] = name
+                RETRY_LOG.append({"state": label, "layer": k, "exception": name})
+                time.sleep(pause)
     return out
 
 
-def require_clean(label: str) -> None:
-    """The released engine must neither raise nor be detected: an exception there is an error of the run, never a detection."""
-    if RAISED:
-        raise RuntimeError(f"{label}: layers raised on the released engine: {dict(RAISED)}")
+def require_clean(label: str, det: dict[str, bool]) -> None:
+    """The released engine must be detected by no layer (the false-alarm check); a detection there is an error of the run."""
+    if any(det.values()):
+        raise LayerRunError(f"{label}: layers flagged the released engine: {det}")
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", default=str(HERE / "results_ablation.json"), help="results file (default: the committed one)")
+    out_path = pathlib.Path(ap.parse_args().out)
     t0 = time.time()
-    base = run_layers()
-    require_clean("baseline")
+    base = run_layers(label="baseline")
+    require_clean("baseline", base)
     print("baseline detections (must all be False):", base, f"{time.time() - t0:.0f}s")
     rows = []
     for mid, desc, equiv, (mod, name, fn), (rmod, rname, rfn) in mutants():
         setattr(mod, name, fn)
         try:
-            det = run_layers()
+            det = run_layers(label=mid)
         finally:
             setattr(rmod, rname, rfn)
-        rows.append({"id": mid, "defect": desc, "equivalent": equiv, "detected_by": det, "raised": dict(RAISED)})
+        rows.append({"id": mid, "defect": desc, "equivalent": equiv, "detected_by": det, "retried": dict(RETRIED)})
         print(mid, det, f"{time.time() - t0:.0f}s", flush=True)
-    after = run_layers()
-    require_clean("after restore")
+    after = run_layers(label="after restore")
+    require_clean("after restore", after)
     result = {"baseline_false_alarms": base, "after_restore": after, "layers": {k: v[0] for k, v in LAYERS.items()},
-              "mutants": rows, "seed": SEED}
-    (HERE / "results_ablation.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+              "mutants": rows, "seed": SEED, "retries": RETRY_LOG, "run": runstats.stats(t0)}
+    out_path.write_text(json.dumps(result, indent=1), encoding="utf-8", newline="\n")
     print("after restore:", after)
 
 

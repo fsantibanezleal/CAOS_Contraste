@@ -20,6 +20,7 @@ import numpy as np
 from scipy import stats
 from statsmodels.stats.proportion import proportion_confint
 
+import runstats
 import riskvalidation
 from riskvalidation.validation import discrimination as rv_disc
 from riskvalidation.validation import rating_system as rv_rs
@@ -232,7 +233,9 @@ def part_b() -> dict:
 
 
 def main() -> None:
+    t0 = runstats.start()
     result = {"riskvalidation": riskvalidation.__version__, "seed": SEED, "part_a": part_a(), "part_b": part_b()}
+    result["run"] = runstats.stats(t0)
     (HERE / "results_ecb.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
     for k, v in result["part_a"].items():
         print(k, v)

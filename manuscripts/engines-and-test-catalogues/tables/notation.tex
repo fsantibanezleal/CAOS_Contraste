@@ -3,7 +3,7 @@
 \small
 \caption{Notation used in the problem formulation, the proposed method and the theory, with the unit of each symbol; further symbols are defined where they first appear in an equation.}
 \label{tab:notation}
-\begin{tabular}{lll}
+\begin{tabular}{lp{8.2cm}l}
 \toprule
 Symbol & Meaning & Unit \\
 \midrule
@@ -12,12 +12,14 @@ $\rho$ & asset correlation of the one-factor model & decimal \\
 $N$, $D$ & obligors and defaults of a grade in the observation year & count \\
 $S$ & statistic of a validation test & varies \\
 $\Phi$ & standard normal distribution function & -- \\
-$\delta$, $\xi$ & granularity adjustment factor and the share of the idiosyncratic LGD variance & decimal \\
-$\sigma^2$ & variance of the Gamma systematic factor of CreditRisk+ & decimal \\
-$\nu_i$ & loss of name \$i\$ in units of the loss unit & integer \\
-$t_k$, $r_k$ & mid-point of time bucket \$k\$ and its continuously compounded zero rate & years, decimal \\
-$\mathrm{CF}_k$ & net cash flow of bucket \$k\$ & money \\
-$\Delta_s(t)$ & shock \$s\$ in basis points at time \$t\$ & basis points \\
+$\delta$, $\xi$, $\gamma$ & \relax granularity adjustment factor; precision of the Gamma systematic factor (variance $1/\xi$); LGD-variance parameter, $\mathrm{V}[\mathrm{LGD}]=\gamma\,\mathrm{E}[\mathrm{LGD}](1-\mathrm{E}[\mathrm{LGD}])$ & decimal \\
+$\sigma^2$ & \relax variance of the common factor $Y$ of CreditRisk+ & decimal \\
+$\nu_i$, $M_i$ & \relax loss of name $i$ in units of the loss unit; Poisson count of defaults of name $i$ & integer, count \\
+$Y$ & common Gamma factor of CreditRisk+, mean one & decimal \\
+$\vartheta$ & shift that a planted defect adds to the mean of a stochastic component & as the component \\
+$t_k$, $r_k$ & \relax mid-point of time bucket $k$ and its continuously compounded zero rate & years, decimal \\
+$\mathrm{CF}_k$ & \relax net cash flow of bucket $k$ & money \\
+$\Delta_s(t)$ & \relax shock $s$ in basis points at time $t$ & basis points \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -3,23 +3,26 @@
 \small
 \caption{Statistics that the ECB 2019 instructions for reporting IRB credit-risk validation results fix, with the registered test of the engine that implements each as specified, the one related test that departs from the specification, and the statistics the engine does not implement.}
 \label{tab:ecb-coverage}
-\begin{tabular}{llll}
+\begin{tabular}{lp{5.4cm}p{4.4cm}l}
 \toprule
 Section & Statistic fixed by the instructions & Engine id & Status \\
 \midrule
 2.5.2 & PD qualitative tools: process statistics and override rates & \texttt{--} & not implemented \\
-2.5.3.1 & PD back-testing: Jeffreys test & \texttt{pd.jeffreys} & as specified \\
-2.5.4.1 & PD discriminatory power: AUC against the AUC at development & \texttt{disc.auc\_vs\_initial} & as specified \\
-2.5.5.1 & PD stability: matrix weighted bandwidth & \texttt{rating.mwb} & as specified \\
-2.5.5.2 & PD stability: migration matrix z-tests & \texttt{rating.migration\_ztests} & as specified \\
-2.5.5.3 & PD stability: concentration in rating grades (Herfindahl) & \texttt{rating.hhi} & as specified \\
-2.6.2.1 & LGD back-testing: one-sample paired t-test, one-sided, 12 segments & \texttt{lgd\_ead.lgd\_calibration\_by\_segment} & related, two-sided \\
+2.5.3.1 & PD back-testing: Jeffreys test & \texttt{pd.\allowbreak{}jeffreys} & as specified \\
+2.5.4.1 & PD discriminatory power: AUC against the AUC at development & \texttt{disc.\allowbreak{}auc\_\allowbreak{}vs\_\allowbreak{}initial} & as specified \\
+2.5.5.1 & PD stability: matrix weighted bandwidth & \texttt{rating.\allowbreak{}mwb} & as specified \\
+2.5.5.2 & PD stability: migration matrix z-tests & \texttt{rating.\allowbreak{}migration\_\allowbreak{}ztests} & as specified \\
+2.5.5.3 & PD stability: concentration in rating grades (Herfindahl) & \texttt{rating.\allowbreak{}hhi} & as specified \\
+2.6.2.1 & LGD back-testing: one-sample paired t-test, one-sided, 12 segments & \texttt{lgd\_\allowbreak{}ead.\allowbreak{}lgd\_\allowbreak{}calibration\_\allowbreak{}by\_\allowbreak{}segment} & related, two-sided \\
 2.6.3.1 & LGD discriminatory power: generalised AUC & \texttt{--} & not implemented \\
+2.6.4 & LGD qualitative tools: assignment process, portfolio distribution, defaulted portfolios & \texttt{--} & not implemented \\
 2.7.2.1 & ELBE back-testing: paired t-test & \texttt{--} & not implemented \\
 2.8.2.1 & LGD in-default back-testing: paired t-test & \texttt{--} & not implemented \\
+2.9.2 & CCF qualitative tools, back-testing portfolio: assignment process, EAD approach & \texttt{--} & not implemented \\
 2.9.3.1 & CCF back-testing: paired t-test & \texttt{--} & not implemented \\
 2.9.3.2 & EAD back-testing & \texttt{--} & not implemented \\
 2.9.4.1 & CCF generalised AUC & \texttt{--} & not implemented \\
+2.9.5 & CCF qualitative tools, application portfolio: assignment process, distribution, EAD & \texttt{--} & not implemented \\
 2.10 & Slotting: slot back-testing, tenor check, migrations & \texttt{--} & not implemented \\
 \bottomrule
 \end{tabular}

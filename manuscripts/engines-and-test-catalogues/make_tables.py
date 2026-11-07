@@ -27,6 +27,9 @@ def load(name: str) -> dict:
 CAT, ECB, PRT, IRR, ABL = (load(n) for n in ("results_catalogue.json", "results_ecb.json", "results_portfolio.json",
                                              "results_irrbb.json", "results_ablation.json"))
 NUMS: dict[str, tuple[str, str]] = {}
+H3_CUTOFF = 3.0  # |z| <= 3: the acceptance criterion of Hypothesis H3 for each stochastic comparison
+LAYER_E_CUTOFF = 4.0  # layer E of the ablation rejects when the mean difference is at least 4 standard errors (run_ablation.py layer_e)
+POWER_Z = 0.8416  # standard normal quantile of a power of 0.8
 
 
 def sci(x: float, d: int = 1) -> str:
@@ -72,7 +75,7 @@ put("holdN", f"{hold['n']:,}", "data/derived/C01/holdout.json outputs.n")
 put("holdD", f"{hold['defaults']:,}", "data/derived/C01/holdout.json outputs.defaults")
 missing = [r["name"] for r in sv["rows"] if r["status"] != "found"]
 put("pypiMissing", f"{len(missing)}", "results_catalogue.json survey rows not found")
-put("pypiMissingNames", ", ".join("\texttt{" + m + "}" for m in missing), "results_catalogue.json survey rows not found")
+put("pypiMissingNames", ", ".join("\\texttt{" + m + "}" for m in missing), "results_catalogue.json survey rows not found")
 pa = ECB["part_a"]
 src = "results_ecb.json"
 put("ecbInputs", f"{pa['pd.jeffreys']['n_inputs']}", src + " part_a")
@@ -122,6 +125,8 @@ put("crpSigma", f(cf["sigma2"], 4), src + " anchors.crp_closed_form.sigma2")
 ci_ = an["crp_independent"]
 put("crpIndMax", sci(ci_["max_abs_diff_stable"]), src + " anchors.crp_independent")
 put("crpIndPanjer", sci(ci_["max_abs_diff_panjer"]), src + " anchors.crp_independent")
+put("crpIndRel", sci(ci_["max_rel_diff_stable"]), src + " anchors.crp_independent.max_rel_diff_stable")
+put("crpIndPositive", f"{ci_['n_positive']:,}", src + " anchors.crp_independent.n_positive")
 put("crpCompared", f"{ci_['n_compared']:,}", src + " anchors.crp_independent")
 put("gaDelta", f(an["granularity"]["delta"], 4), src + " anchors.granularity")
 put("gaSpread", sci(an["granularity"]["rel_spread"]), src + " anchors.granularity")
@@ -136,8 +141,8 @@ for nm, tag in (("var99", "VarNinetyNine"), ("es99", "EsNinetyNine"), ("var999",
     put(f"mc{tag}Ind", f"{q['independent_mean']:,.0f}", src + f" mc.quantities.{nm}")
     put(f"mc{tag}IndSd", f"{q['independent_sd']:,.0f}", src + f" mc.quantities.{nm}")
     put(f"mc{tag}Z", f"{q['z_difference']:+.2f}", src + f" mc.quantities.{nm}.z_difference")
-    put(f"mcMdd{tag}", f"{100 * (2.576 + 0.8416) * math.sqrt((q['engine_sd'] ** 2 + q['independent_sd'] ** 2) / mc['replications']) / q['independent_mean']:.2f}",
-        src + f" mc.quantities.{nm} (2.576 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent")
+    put(f"mcMdd{tag}", f"{100 * (H3_CUTOFF + POWER_Z) * math.sqrt((q['engine_sd'] ** 2 + q['independent_sd'] ** 2) / mc['replications']) / q['independent_mean']:.2f}",
+        src + f" mc.quantities.{nm} (3 + 0.8416) sqrt((sd_e^2 + sd_i^2) / R) / independent mean, in percent; 3 is the cutoff of H3")
 put("mcElExact", f"{mc['expected_loss_exact']:,.0f}", src + " mc.expected_loss_exact")
 put("regenRel", sci(rg["max_rel_diff"]), src + " regeneration.max_rel_diff")
 put("regenN", f"{rg['n_scenarios']:,}", src + " regeneration")
@@ -156,6 +161,15 @@ for kind, tag in (("maximum-likelihood", "Ml"), ("moments", "Mom")):
     put(f"grid{tag}WorstYears", wy, src + " grids (lowest coverage)")
     put(f"grid{tag}WorstZ", f"{wc[kind]['z_coverage']:+.2f}", src + " grids (lowest coverage)")
     put(f"grid{tag}MeanCov", f(sum(c[kind]["coverage"] for _, c in cells) / len(cells)), src + " grids (mean coverage)")
+below = [c for _, c in cells if c["maximum-likelihood"]["coverage"] < 0.95]
+put("gridMlBelow", f"{len(below)}", src + " grids (ML coverage below 0.95)")
+put("gridMlNegBias", f"{sum(c['maximum-likelihood']['bias'] < 0 for _, c in cells)}", src + " grids (ML bias below zero)")
+put("gridMlBiasMin", f"{min(c['maximum-likelihood']['bias'] for _, c in cells):+.4f}", src + " grids (most negative ML bias)")
+put("gridMlBiasMax", f"{max(c['maximum-likelihood']['bias'] for _, c in cells):+.4f}", src + " grids (least negative ML bias)")
+_n = sum(gd[y]["n_replications"] * len(gd[y]["cells"]) for y in ("22", "40"))
+_cov = sum(c["maximum-likelihood"]["coverage"] * gd[y]["n_replications"] for y in ("22", "40") for c in gd[y]["cells"]) / _n
+put("gridMlPooledReps", f"{_n:,}", src + " grids (cells times replications)")
+put("gridMlPooledZ", f"{(_cov - 0.95) / math.sqrt(0.95 * 0.05 / _n):+.1f}", src + " grids (pooled ML coverage against 0.95 over all replications, valid only if the cells are independent)")
 put("gridChance", f"{len(cells) * 0.01:.2f}", src + " grids (24 cells times 0.01)")
 put("gridReps", f"{gd['22']['n_replications']}", src + " grids")
 put("gridBandHalf", f(band * math.sqrt(0.95 * 0.05 / gd["22"]["n_replications"])), src + " grids (2.576 sqrt(0.95 0.05 / 400))")
@@ -176,8 +190,8 @@ put("isThreshold", f"{ie['threshold']:,.0f}", src + " is_euler.threshold")
 put("isPlainMean", f(ie["plain_mean"], 5), src + " is_euler")
 put("isPlainSd", f(ie["plain_sd"], 5), src + " is_euler")
 put("isMean", f(ie["is_mean"], 5), src + " is_euler")
-put("isSd", f(ie["is_sd"], 5), src + " is_euler")
-put("isZ", f"{ie['z_difference']:+.2f}", src + " is_euler.z_difference")
+put("isSd", sci(ie["is_sd"]), src + " is_euler")
+put("isZ", f"{-ie['z_difference']:+.2f}", src + " is_euler.z_difference, sign reversed: the file holds plain minus importance sampler; the text reports engine (importance sampler) minus reference (plain)")
 put("isRatio", f"{ie['variance_ratio']:.0f}", src + " is_euler.variance_ratio")
 put("eulerGap", f"{ie['euler_rel_gap']:.1f}", src + " is_euler.euler_rel_gap")
 put("eulerEs", f"{ie['es']:,.0f}", src + " is_euler.es")
@@ -214,6 +228,20 @@ for k in "ABCDE":
 put("ablAny", f"{sum(any(m['detected_by'].values()) for m in real)}", src + " real defects detected by at least one layer")
 put("ablOnly", f"{sum(sum(m['detected_by'].values()) == 1 for m in real)}", src + " real defects detected by exactly one layer")
 put("ablNone", f"{sum(not any(m['detected_by'].values()) for m in real)}", src + " real defects detected by no layer")
+uniq = {k: sum(m["detected_by"][k] and sum(m["detected_by"].values()) == 1 for m in real) for k in "ABCDE"}
+for k in "ABCDE":
+    put(f"abl{k}Unique", f"{uniq[k]}", src + f" real defects detected by layer {k} and by no other layer")
+put("ablHEight", "held" if all(v >= 1 for v in uniq.values()) else "was refuted", src + " layers with at least one unique detection among the real defects")
+put("ablLayersWithUnique", f"{sum(v >= 1 for v in uniq.values())}", src + " layers with at least one unique detection")
+put("ablRetriesCommitted", f"{len(ABL.get('retries', []))}", src + " retries (a layer that raised an exception and was run again)")
+REP = load("results_ablation_reproduction.json")
+put("ablReruns", f"{REP['reruns']}", "results_ablation_reproduction.json reruns")
+put("ablReproduced", f"{REP['reproduced']}", "results_ablation_reproduction.json reproduced")
+put("ablRerunRetries", f"{sum(r['retries'] for r in REP['per_run'])}", "results_ablation_reproduction.json per_run retries, committed run and reruns")
+put("ablRerunSentence",
+    f"The detection matrix of the committed ablation was reproduced cell for cell by {REP['reproduced']} of {REP['reruns']} reruns written with \\texttt{{--out}} and compared by "
+    f"\\texttt{{compare\\_ablation\\_runs.py}}; in the committed run and the reruns together a layer was run again after an exception {sum(r['retries'] for r in REP['per_run'])} times.",
+    "results_ablation_reproduction.json")
 WORDS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"]
 for i, m in enumerate(mut):
     put(f"ablDet{WORDS[i]}", ",".join(k for k in "ABCDE" if m["detected_by"][k]) or "none", src + f" {m['id']}")
@@ -228,11 +256,42 @@ put("effScen", f"{EFF['scenarios_each']:,}", src + " scenarios_each")
 SCALE = math.sqrt((mc["replications"] * mc["scenarios_each"]) / (3 * 40_000))
 for nm, tag in (("var99", "VarNinetyNine"), ("es99", "EsNinetyNine"), ("var999", "VarNinetyNineNine"), ("es999", "EsNinetyNineNine")):
     put(f"effChange{tag}", f"{abs(100 * EFF['relative_change'][nm]):.1f}", src + f" relative_change.{nm}, absolute value in percent")
-    q = mc["quantities"][nm]
-    put(f"effMdd{tag}", f"{100 * (2.576 + 0.8416) * SCALE * math.sqrt((q['engine_sd'] ** 2 + q['independent_sd'] ** 2) / mc['replications']) / q['independent_mean']:.1f}",
-        "results_portfolio.json mc.quantities." + nm + " scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E")
+q = mc["quantities"]["var99"]
+put("effMddVarNinetyNine", f"{100 * (LAYER_E_CUTOFF + POWER_Z) * SCALE * math.sqrt((q['engine_sd'] ** 2 + q['independent_sd'] ** 2) / mc['replications']) / q['independent_mean']:.1f}",
+    "results_portfolio.json mc.quantities.var99 scaled by sqrt((10 x 200000) / (3 x 40000)), the size of layer E, at its cutoff of 4 standard errors")
+FS = EFF["fullsize_comparison"]
+put("fsReps", f"{FS['replications']}", src + " fullsize_comparison.replications")
+put("fsScen", f"{FS['scenarios_each']:,}", src + " fullsize_comparison.scenarios_each")
+for nm, tag in (("var99", "VarNinetyNine"), ("es99", "EsNinetyNine"), ("var999", "VarNinetyNineNine"), ("es999", "EsNinetyNineNine")):
+    put(f"fsZ{tag}", f"{FS['quantities'][nm]['z_defect_minus_independent']:+.1f}", src + f" fullsize_comparison.quantities.{nm}.z_defect_minus_independent")
+    put(f"fsShift{tag}", f"{abs(100 * FS['quantities'][nm]['relative_shift']):.1f}", src + f" fullsize_comparison.quantities.{nm}.relative_shift, absolute value in percent")
+put("fsFlagged", f"{sum(abs(v['z_defect_minus_independent']) > H3_CUTOFF for v in FS['quantities'].values())}", src + " fullsize_comparison, measures with |z| above the cutoff of 3")
+
+RUNS = [("run_ecb.py", "results_ecb.json", "Ecb", "run"), ("run_irrbb.py", "results_irrbb.json", "Irrbb", "run"),
+        ("run_catalogue.py", "results_catalogue.json", "Catalogue", "run"), ("run_portfolio.py", "results_portfolio.json", "Portfolio", "run"),
+        ("run_ablation.py", "results_ablation.json", "Ablation", "run"), ("run_ablation_effect.py", "results_ablation_effect.json", "Effect", "run")]
+RUN = {}
+for script, fname, tag, key in RUNS:
+    r = load(fname)[key]
+    RUN[script] = r
+    put(f"run{tag}Seconds", f"{r['seconds'] / 60:.0f}" if r["seconds"] >= 120 else f"{r['seconds']}", fname + f" {key}.seconds, in minutes when at least two minutes")
+    put(f"run{tag}Unit", "minutes" if r["seconds"] >= 120 else "seconds", fname + f" {key}.seconds")
+    put(f"run{tag}Mb", f"{r['peak_working_set_mb']:,}", fname + f" {key}.peak_working_set_mb")
+put("runPython", RUN["run_ecb.py"]["python"], "results_ecb.json run.python")
+put("runPeakMax", f"{max(r['peak_working_set_mb'] for r in RUN.values()):,}", "largest peak_working_set_mb of the six result files")
 
 # ------------------------------------------------------------------------------------------------------- tables
+def table_runs() -> None:
+    rows = []
+    for script, fname, tag, key in RUNS:
+        r = RUN[script]
+        t = f"{r['seconds'] / 60:.0f} min" if r["seconds"] >= 120 else f"{r['seconds']} s"
+        rows.append(("\\texttt{" + figkit.tex_escape(script) + "}", "\\texttt{" + figkit.tex_escape(fname) + "}", t, f"{r['peak_working_set_mb']:,}"))
+    figkit.table(OUT / "runs.tex", ["Script", "Writes", "Wall time", "Peak memory (MB)"], rows,
+                 caption="Wall time and peak resident memory of one run of each experiment script, as recorded in the \\texttt{run} field of its results file, on the machine described in Section~\\ref{sec:reproducibility}.",
+                 label="tab:runs", align="llrr", digits=0)
+
+
 def table_catalogue() -> None:
     rows = [(k.replace("_", "-"), v) for k, v in inv["by_family"].items()]
     half = (len(rows) + 1) // 2
@@ -248,11 +307,11 @@ def table_ecb() -> None:
     rows = []
     for r in ecbc["rows"]:
         status = "as specified" if r["engine_id"] else ("related, two-sided" if r["related_id"] else "not implemented")
-        rows.append((r["section"], figkit.tex_escape(r["statistic"]), "\\texttt{" + figkit.tex_escape(r["engine_id"] or r["related_id"] or "--") + "}", status))
+        rows.append((r["section"], figkit.tex_escape(r["statistic"]), "\\texttt{" + figkit.tex_escape(r["engine_id"] or r["related_id"] or "--").replace("\\_", "\\_\\allowbreak{}").replace(".", ".\\allowbreak{}") + "}", status))
     figkit.table(OUT / "ecb-coverage.tex", ["Section", "Statistic fixed by the instructions", "Engine id", "Status"], rows,
                  caption="Statistics that the ECB 2019 instructions for reporting IRB credit-risk validation results fix, with the registered test of the engine that "
                          "implements each as specified, the one related test that departs from the specification, and the statistics the engine does not implement.",
-                 label="tab:ecb-coverage", align="llll")
+                 label="tab:ecb-coverage", align="lp{5.4cm}p{4.4cm}l")
 
 
 def table_conformance() -> None:
@@ -265,7 +324,7 @@ def table_conformance() -> None:
     figkit.table(OUT / "ecb-conformance.tex", ["Test", "Random inputs", "Largest absolute difference", "Mean absolute difference"], rows,
                  caption="The five ECB statistics of the engine against an independent transcription of the instructions written with loops, the math module and "
                          "tanh-sinh quadrature, on seeded random inputs; the Jeffreys difference is the accuracy of the quadrature.",
-                 label="tab:ecb-conformance", align="lrrr", digits=0)
+                 label="tab:ecb-conformance", align="l>{\\raggedleft\\arraybackslash}p{2.4cm}>{\\raggedleft\\arraybackslash}p{2.9cm}>{\\raggedleft\\arraybackslash}p{2.9cm}", digits=0)
 
 
 def table_toolkits() -> None:
@@ -278,7 +337,7 @@ def table_toolkits() -> None:
     figkit.table(OUT / "toolkits.tex", ["Vocabulary", "Installed packages with a match", "Which", "PyPI texts with a match", "Which"], rows,
                  caption=f"Where the catalogue's vocabulary appears in the Python sources of {scan['distributions']} installed distributions and in the PyPI summary and "
                          f"description of {sv['found']} toolkits read on {sv['date']}; a match is a word, not an implementation of the specified test.",
-                 label="tab:toolkits", align="lrlrl", digits=0)
+                 label="tab:toolkits", align="p{2.9cm}>{\\raggedleft\\arraybackslash}p{2.2cm}p{3.1cm}>{\\raggedleft\\arraybackslash}p{2.2cm}p{3.1cm}", digits=0)
 
 
 def inv_tokens():
@@ -288,12 +347,12 @@ def inv_tokens():
 def table_ablation() -> None:
     rows = []
     for m in mut:
-        rows.append((m["id"].replace("m", "M"), figkit.tex_escape(m["defect"]), "yes" if m["equivalent"] else "no") + tuple("x" if m["detected_by"][k] else "." for k in "ABCDE"))
+        rows.append((m["id"].replace("m", "P"), figkit.tex_escape(m["defect"]), "yes" if m["equivalent"] else "no") + tuple("x" if m["detected_by"][k] else "." for k in "ABCDE"))
     rows.append(("", "Detections of the defects that change a result", "") + tuple(str(sum(m["detected_by"][k] for m in real)) for k in "ABCDE"))
     figkit.table(OUT / "ablation.tex", ["Id", "Defect planted in the engine", "Equivalent", "A", "B", "C", "D", "E"], rows,
                  caption="Defects planted one at a time in the released engine and the verification layers that detect each: A analytic anchors, B published vectors and the "
                          "ECB transcription, C regeneration of the committed rung, D known-truth simulator, E cross-implementation; x marks a detection.",
-                 label="tab:ablation", align="llcccccc", digits=0)
+                 label="tab:ablation", align="lp{6.4cm}cccccc", digits=0)
 
 
 def table_main() -> None:
@@ -312,10 +371,10 @@ def table_main() -> None:
         ("Gaussian copula, 99\\% ES", f"{mc['replications']} runs of {mc['scenarios_each']:,}", f"{q['es99']['engine_mean']:,.0f} $\\pm$ {q['es99']['engine_sd']:,.0f}",
          f"independent {q['es99']['independent_mean']:,.0f} $\\pm$ {q['es99']['independent_sd']:,.0f}", f"z {q['es99']['z_difference']:+.2f}"),
         ("Committed seeded rung", f"{rg['n_scenarios']:,} scenarios, eight values", "relative difference " + tex_sci_cell(rg["max_rel_diff"]), "committed file", "held"),
-        ("Importance sampler", f"{ie['replications']} seeds, P(L at or above 99.9\\% VaR)", f"{ie['is_mean']:.5f} $\\pm$ {ie['is_sd']:.5f}", f"plain {ie['plain_mean']:.5f} $\\pm$ {ie['plain_sd']:.5f}",
-         f"z {ie['z_difference']:+.2f}, variance ratio {ie['variance_ratio']:.0f}"),
-        ("Correlation estimator, 24 cells", "coverage of the 95\\% interval, maximum likelihood", f"{PRT['grids']['22']['cells'][5]['maximum-likelihood']['coverage']:.3f} at 0.12, 22 years",
-         f"band $\\pm${figkit.fmt(2.576 * math.sqrt(0.95 * 0.05 / gd['22']['n_replications']))}", f"{NUMS['gridMlFail'][0]} of {NUMS['gridMlCells'][0]} cells outside"),
+        ("Importance sampler", f"{ie['replications']} seeds, P(L at or above 99.9\\% VaR)", f"{ie['is_mean']:.5f} $\\pm$ {tex_sci_cell(ie['is_sd'])}", f"plain {ie['plain_mean']:.5f} $\\pm$ {ie['plain_sd']:.5f}",
+         f"z {-ie['z_difference']:+.2f}, variance ratio {ie['variance_ratio']:.0f}"),
+        ("Correlation estimator, 24 cells", "coverage of the 95\\% interval, maximum likelihood", f"mean {NUMS['gridMlMeanCov'][0]}, lowest {NUMS['gridMlWorstCov'][0]}",
+         f"band $\\pm${figkit.fmt(2.576 * math.sqrt(0.95 * 0.05 / gd['22']['n_replications']))}", f"{NUMS['gridMlFail'][0]} of {NUMS['gridMlCells'][0]} cells outside; {NUMS['gridMlBelow'][0]} below 0.95"),
         ("Correlation estimator, 24 cells", "coverage, moments", f"mean {NUMS['gridMomMeanCov'][0]}", "same band", f"{NUMS['gridMomFail'][0]} of {NUMS['gridMomCells'][0]} cells outside"),
         ("IRRBB shock shapes", "SRP31.92 example, flattener", f"{we['flattener']['engine']:.2f} bp", "printed $-1.6$ bp", f"deviation {we['flattener']['abs_dev']:.3f} bp"),
         ("IRRBB present values", f"{va['n_legs_shocks']} leg and shock pairs, six variants", "relative difference " + tex_sci_cell(va["max_rel_ql"]), "QuantLib", "held"),
@@ -324,7 +383,7 @@ def table_main() -> None:
     figkit.table(OUT / "main-results.tex", ["Component", "Quantity", "Engine", "Reference", "Outcome"], rows,
                  caption="Main comparison: each component of the engine against the independent reference run on the same input, with the repetition uncertainty (plus or minus one "
                          "standard deviation) where the quantity is random; z is the difference of the two means over its standard error.",
-                 label="tab:main-results", align="p{3.1cm}p{3.6cm}p{2.9cm}p{3.2cm}p{2.5cm}", wide=False)
+                 label="tab:main-results", align="p{2.8cm}p{3.2cm}p{2.7cm}p{2.9cm}p{2.3cm}", wide=False)
 
 
 def table_grid() -> None:
@@ -345,18 +404,22 @@ def table_notation() -> None:
             ("$N$, $D$", "obligors and defaults of a grade in the observation year", "count"),
             ("$S$", "statistic of a validation test", "varies"),
             ("$\\Phi$", "standard normal distribution function", "--"),
-            ("$\\delta$, $\\xi$", "granularity adjustment factor and the share of the idiosyncratic LGD variance", "decimal"),
-            ("$\\sigma^2$", "variance of the Gamma systematic factor of CreditRisk+", "decimal"),
-            ("$\\nu_i$", "loss of name $i$ in units of the loss unit", "integer"),
+            ("$\\delta$, $\\xi$, $\\gamma$", "granularity adjustment factor; precision of the Gamma systematic factor (variance $1/\\xi$); LGD-variance parameter, $\\mathrm{V}[\\mathrm{LGD}]=\\gamma\\,\\mathrm{E}[\\mathrm{LGD}](1-\\mathrm{E}[\\mathrm{LGD}])$", "decimal"),
+            ("$\\sigma^2$", "variance of the common factor $Y$ of CreditRisk+", "decimal"),
+            ("$\\nu_i$, $M_i$", "loss of name $i$ in units of the loss unit; Poisson count of defaults of name $i$", "integer, count"),
+            ("$Y$", "common Gamma factor of CreditRisk+, mean one", "decimal"),
+            ("$\\vartheta$", "shift that a planted defect adds to the mean of a stochastic component", "as the component"),
             ("$t_k$, $r_k$", "mid-point of time bucket $k$ and its continuously compounded zero rate", "years, decimal"),
             ("$\\mathrm{CF}_k$", "net cash flow of bucket $k$", "money"),
             ("$\\Delta_s(t)$", "shock $s$ in basis points at time $t$", "basis points")]
+    # figkit.table escapes a cell that does not start with a command or a dollar sign; a meaning that carries math starts with \relax
+    rows = [(a, ("\\relax " + b) if "$" in b else b, c) for a, b, c in rows]
     figkit.table(OUT / "notation.tex", ["Symbol", "Meaning", "Unit"], rows,
                  caption="Notation used in the problem formulation, the proposed method and the theory, with the unit of each symbol; further symbols are defined where they first appear in an equation.",
-                 label="tab:notation", align="lll")
+                 label="tab:notation", align="lp{8.2cm}l")
 
 
-for fn in (table_catalogue, table_ecb, table_conformance, table_toolkits, table_ablation, table_main, table_grid, table_notation):
+for fn in (table_runs, table_catalogue, table_ecb, table_conformance, table_toolkits, table_ablation, table_main, table_grid, table_notation):
     fn()
 lines = ["% Generated by make_tables.py from experiments/results_*.json; do not edit."]
 for k, (v, s) in NUMS.items():

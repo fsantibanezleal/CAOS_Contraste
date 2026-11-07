@@ -21,6 +21,7 @@ import sys
 import urllib.error
 import urllib.request
 
+import runstats
 import riskvalidation
 import riskvalidation.validation  # noqa: F401  (registers every test)
 from riskvalidation.core import registry
@@ -28,7 +29,10 @@ from riskvalidation.core import registry
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE / "results_catalogue.json"
 
-#: ECB (2019) sections whose statistic the instructions fix, with the registered id that implements it as specified (None: absent)
+#: ECB (2019) sections whose statistic the instructions fix, with the registered id that implements it as specified (None: absent).
+#: The section list is the author's reading of the table of contents and the headings of the instructions (sections 2.5 to 2.10): one
+#: row for each statistic section and one for each group of qualitative validation tools (2.5.2, 2.6.4, 2.9.2, 2.9.5) or of the slotting
+#: section (2.10); the sections 2.4 (general information) and 2.1 to 2.3 fix no statistic.
 ECB = [
     ("2.5.2", "PD qualitative tools: process statistics and override rates", None),
     ("2.5.3.1", "PD back-testing: Jeffreys test", "pd.jeffreys"),
@@ -38,11 +42,14 @@ ECB = [
     ("2.5.5.3", "PD stability: concentration in rating grades (Herfindahl)", "rating.hhi"),
     ("2.6.2.1", "LGD back-testing: one-sample paired t-test, one-sided, 12 segments", None),
     ("2.6.3.1", "LGD discriminatory power: generalised AUC", None),
+    ("2.6.4", "LGD qualitative tools: assignment process, portfolio distribution, defaulted portfolios", None),
     ("2.7.2.1", "ELBE back-testing: paired t-test", None),
     ("2.8.2.1", "LGD in-default back-testing: paired t-test", None),
+    ("2.9.2", "CCF qualitative tools, back-testing portfolio: assignment process, EAD approach", None),
     ("2.9.3.1", "CCF back-testing: paired t-test", None),
     ("2.9.3.2", "EAD back-testing", None),
     ("2.9.4.1", "CCF generalised AUC", None),
+    ("2.9.5", "CCF qualitative tools, application portfolio: assignment process, distribution, EAD", None),
     ("2.10", "Slotting: slot back-testing, tenor check, migrations", None),
 ]
 RELATED = {"2.6.2.1": "lgd_ead.lgd_calibration_by_segment"}  # a paired t, two-sided, not the ECB's one-sided 12-segment test
@@ -145,13 +152,22 @@ def survey() -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--offline", action="store_true")
+    ap.add_argument("--ecb-only", action="store_true",
+                    help="recompute the registry inventory and the ECB coverage and keep the installed-source scan and the survey of the committed file")
     a = ap.parse_args()
+    t_run = runstats.start()
     old = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
+    if a.ecb_only:
+        old.update({"inventory": inventory(), "ecb": ecb_coverage()})
+        OUT.write_text(json.dumps(old, indent=1), encoding="utf-8")
+        print({k: v for k, v in old["ecb"].items() if k != "rows"})
+        return
     result = {"inventory": inventory(), "ecb": ecb_coverage(), "installed_scan": scan_installed()}
     if a.offline and "survey" in old:
         result["survey"] = old["survey"]
     else:
         result["survey"] = survey()
+    result["run"] = runstats.stats(t_run)
     OUT.write_text(json.dumps(result, indent=1), encoding="utf-8")
     print(json.dumps(result["inventory"], indent=1))
     print({k: v for k, v in result["ecb"].items() if k != "rows"})

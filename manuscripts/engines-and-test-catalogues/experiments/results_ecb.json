@@ -756,5 +756,11 @@
     "sm_jeffreys_flag_005": false
    }
   ]
+ },
+ "run": {
+  "seconds": 30,
+  "peak_working_set_mb": 139,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
  }
 }

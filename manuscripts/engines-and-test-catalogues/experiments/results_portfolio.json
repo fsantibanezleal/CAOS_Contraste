@@ -33,6 +33,8 @@
   },
   "crp_independent": {
    "max_abs_diff_stable": 3.122502256758253e-17,
+   "max_rel_diff_stable": 4.632198856178663e-15,
+   "n_positive": 1415,
    "max_abs_diff_panjer": 3.122502256758253e-17,
    "max_abs_diff_stable_vs_panjer": 1.5612511283791264e-17,
    "n_compared": 12729
@@ -99,7 +101,7 @@
   "chunk": 16741,
   "max_rel_diff": 2.9068561272170066e-09,
   "values_compared": 8,
-  "seconds": 20.044328212738037,
+  "seconds": 40.252055168151855,
   "baked_by": "1.1.0"
  },
  "grids": {
@@ -519,5 +521,11 @@
    "evaluated": false,
    "reason": "the exponential twist of dossier 04 H.7 is derived for the normal copula; no Student-t twist is specified, so the rung did not run and no number stands in for it"
   }
+ },
+ "run": {
+  "seconds": 2090,
+  "peak_working_set_mb": 1129,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
  }
 }

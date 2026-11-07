@@ -130,7 +130,7 @@ def fig_ablation() -> None:
     fig, ax = plt.subplots(figsize=(4.6, 3.8))
     ax.imshow(1 - 0.75 * m, cmap="gray", vmin=0, vmax=1, aspect="auto")
     ax.set_xticks(range(5), list("ABCDE"))
-    ax.set_yticks(range(len(mut)), [x["id"].replace("m", "M") + (" (equivalent)" if x["equivalent"] else "") for x in mut], fontsize=7)
+    ax.set_yticks(range(len(mut)), [x["id"].replace("m", "P") + (" (equivalent)" if x["equivalent"] else "") for x in mut], fontsize=7)
     ax.set_xticks(np.arange(-0.5, 5), minor=True)
     ax.set_yticks(np.arange(-0.5, len(mut)), minor=True)
     ax.grid(which="minor", color="white", lw=1.2)

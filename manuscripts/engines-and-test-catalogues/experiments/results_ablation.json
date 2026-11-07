@@ -32,7 +32,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m02",
@@ -45,7 +45,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m03",
@@ -58,7 +58,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m04",
@@ -71,7 +71,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m05",
@@ -84,7 +84,7 @@
     "D": false,
     "E": true
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m06",
@@ -97,7 +97,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m07",
@@ -110,7 +110,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m08",
@@ -123,7 +123,7 @@
     "D": false,
     "E": true
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m09",
@@ -136,7 +136,7 @@
     "D": false,
     "E": true
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m10",
@@ -149,7 +149,7 @@
     "D": true,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m11",
@@ -162,7 +162,7 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   },
   {
    "id": "m12",
@@ -175,8 +175,15 @@
     "D": false,
     "E": false
    },
-   "raised": {}
+   "retried": {}
   }
  ],
- "seed": 20261107
+ "seed": 20261107,
+ "retries": [],
+ "run": {
+  "seconds": 1281,
+  "peak_working_set_mb": 423,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
 }

@@ -2,8 +2,9 @@
   "kind": "manuscript",
   "title_support": [
     "tab:main-results",
+    "tab:ecb-coverage",
     "tab:ecb-conformance",
-    "tab:ecb-coverage"
+    "tab:ablation"
   ],
   "claims": {
     "BS-6": "sec:proposed-method"

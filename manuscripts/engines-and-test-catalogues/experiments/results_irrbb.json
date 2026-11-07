@@ -1023,5 +1023,11 @@
     "measure_max_used": 93816.37238685713
    }
   ]
+ },
+ "run": {
+  "seconds": 0,
+  "peak_working_set_mb": 127,
+  "python": "3.13.14",
+  "platform": "Windows-11-10.0.26300-SP0"
  }
 }

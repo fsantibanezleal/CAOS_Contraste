@@ -13,7 +13,7 @@
 % One macro per number quoted in the prose, written by make_tables.py from the committed results.
 \input{tables/numbers}
 
-\title{Five ECB validation statistics, a credit-portfolio engine and an IRRBB engine in one open package, reconciled to references outside it}
+\title{Holding an open validation engine to outside references: five ECB statistics, a credit-portfolio engine, an IRRBB engine and twelve planted defects}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -24,13 +24,14 @@
 \headerblock
 
 \begin{abstract}
-Validators of bank risk models need tests that supervisors recognise, reference calculations to compare a bank's numbers with, and evidence that the tests and references are themselves correct.
-We describe an open engine that holds \testsTotal{} registered tests, five of the \ecbSections{} statistics of the European Central Bank's instructions for reporting the validation of internal credit models, a copula and CreditRisk+ portfolio engine, and an engine for interest rate risk in the banking book, and a protocol that holds each component to references that share none of its code.
-The five ECB statistics agree with an independent transcription of the instructions within \ecbAllMax{} on \ecbInputs{} random inputs each; the Jeffreys test differs from the exact binomial test in \disagreeFive{} of \cCells{} grades of eight credit-card models at the 5\,\% level.
-The portfolio engine matches four analytic anchors, an independent simulator (largest $|z|$ below one over \mcReps{} runs of \mcScen{} scenarios), an independent recursion and its committed one-million-scenario rung to a relative \regenRel{}; its interest rate engine matches QuantLib to a relative \irrQlMax{} on \irrLegs{} leg and shock pairs.
-Not every hypothesis held: \ecbAbsent{} of the \ecbSections{} ECB statistics are not implemented, and the maximum-likelihood interval of the asset correlation falls outside the binomial band in \gridMlFail{} of \gridMlCells{} simulator cells.
-Planting \ablMutants{} defects shows that the five verification layers are not interchangeable: \ablAny{} of \ablReal{} defects that change a result are found, \ablOnly{} by one layer only.
-The claim that no open toolkit offers these tests is checked only against \pypiFound{} package descriptions and \distScanned{} installed distributions.
+Validators of bank risk models need tests that supervisors recognise, reference calculations to compare with, and evidence that both are correct.
+We describe an open engine with \testsTotal{} registered tests, five of the \ecbSections{} ECB statistics for validating internal credit models, a copula and CreditRisk+ portfolio engine, an interest rate risk engine for the banking book, and a protocol that holds each component to references outside it; two references share the engine's arithmetic.
+The five ECB statistics agree with an independent transcription of the instructions within \ecbAllMax{} on \ecbInputs{} random inputs each; the Jeffreys test differs from the exact binomial test in \disagreeFive{} of \cCells{} grades at the 5\,\% level.
+The portfolio engine matches four analytic anchors, an independent simulator (largest $|z|$ below one in \mcReps{} runs of \mcScen{} scenarios), an independent recursion and its committed one-million-scenario rung (relative \regenRel{}); the interest rate engine matches QuantLib (relative \irrQlMax{}, \irrLegs{} leg and shock pairs).
+Not every hypothesis held: \ecbAbsent{} of the \ecbSections{} ECB statistics are not implemented, and the maximum-likelihood interval of the asset correlation covers below nominal in \gridMlBelow{} of \gridMlCells{} simulator cells, outside the binomial band in \gridMlFail{}.
+Planting \ablMutants{} defects shows that the five verification layers are not interchangeable: \ablAny{} of \ablReal{} real defects are found, \ablOnly{} by one layer only.
+The hypotheses were not pre-registered.
+That no open toolkit offers these tests is checked only against \pypiFound{} package descriptions and \distScanned{} installed distributions.
 \end{abstract}
 
 \input{sections/s01-introduction}
