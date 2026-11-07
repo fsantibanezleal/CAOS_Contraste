@@ -315,6 +315,11 @@ INTERNAL = [
     (re.compile(r"\bSDD\b"), "the design document"),
     (re.compile(r"\s*\(U\d+-[A-Z]\d*\)"), ""),
     (re.compile(r"\s*\bU\d+-[A-Z]\d*\b"), ""),
+    # references to the research notes and the plan are process vocabulary: the cited section goes, the content stays
+    (re.compile(r"\s*\(dossier \d+ [A-Z]\.\d+(?: and [A-Z]\.\d+)?(?:, row \d+)?\)(?=[:,;.])"), ""),
+    (re.compile(r"\s*[;,]?\s*\bdossier \d+ (?:[A-Z]|l)\.\d+(?: and [A-Z]\.\d+)?(?:, row \d+)?(?:\s*[;:]\s*)?"), ""),
+    (re.compile(r"\bthe dossier UNVERIFIED list"), "the list of unverified items"),
+    (re.compile(r"\bthe verdict of the plan's hypothesis"), "the outcome of the hypothesis"),
 ]
 
 
@@ -325,6 +330,8 @@ def producer_text(owner: str) -> str:
     out = re.sub(r"implemented by U\d+-[A-Z]\d* in ", "implemented in ", out)
     out = re.sub(r"(\w) U\d+-[A-Z]\d*( in)", r"\1\2", out)
     out = re.sub(r"\bU\d+-[A-Z]\d*\b", "", out)
+    out = re.sub(r"\breleased v(\d)", r"release \1", out)  # an engine release number, not a document version
+    out = re.sub(r"\breleased in engine v(\d)", r"released in engine \1", out)
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
@@ -369,7 +376,7 @@ def subsection(row: dict[str, str]) -> str:
     para = []
     if desc:
         para.append(sentence(desc.rstrip(".")) + ".")
-    para.append(f"The contract is at version {figkit.tex_escape(row['version'])} and its status in the catalog is "
+    para.append(f"The contract carries schema {figkit.tex_escape(row['version'])} and its status in the catalog is "
                 f"\\emph{{{figkit.tex_escape(row['status'])}}}.")
     para.append(f"Its producer is \\texttt{{{figkit.tex_escape(producer_text(row['owner']))}}}, and its schema file is "
                 f"\\texttt{{{figkit.tex_escape(row['schema file'])}}}" +
@@ -402,9 +409,13 @@ def subsection(row: dict[str, str]) -> str:
             for name, spec in expand(props, schema):
                 d = describe(name, spec, schema)
                 d = (d[:220] + " ...") if len(d) > 220 else d
+                # A field named after the dossier or the verdict of an output is an identifier of the schema, not talk
+                # about the document: the row carries the voice checker's sanctioned marker.
+                mark = " % voice-ok: schema field name, an identifier of the contract" if re.search(
+                    r"dossier|verdict", name, re.I) else ""
                 lines.append(f"\\texttt{{{figkit.tex_escape(name)}}} & {figkit.tex_escape(kind_of(spec))} & "
                              f"{figkit.tex_escape(unit_of(name, spec, schema, d))} & "
-                             f"{figkit.tex_escape(range_of(spec))} & {sentence(d) or '-'} \\\\")
+                             f"{figkit.tex_escape(range_of(spec))} & {sentence(d) or '-'} \\\\{mark}")
             lines += ["\\bottomrule", "\\end{longtable}", "}", ""]
     return "\n".join(lines)
 

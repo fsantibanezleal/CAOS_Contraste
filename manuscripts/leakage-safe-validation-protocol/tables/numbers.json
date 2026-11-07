@@ -5183,75 +5183,75 @@
   "text": "three",
   "source": "make_artifacts.hypotheses"
  },
- "verdict.H1": {
+ "outcome.H1": {
   "text": "held",
   "source": "make_artifacts.hypotheses H1"
  },
- "verdict.H1.ev": {
+ "outcome.H1.ev": {
   "text": "7 of 7 cells",
   "source": "make_artifacts.hypotheses H1"
  },
- "verdict.H2": {
+ "outcome.H2": {
   "text": "not held",
   "source": "make_artifacts.hypotheses H2"
  },
- "verdict.H2.ev": {
+ "outcome.H2.ev": {
   "text": "syn: 5 of 5, small: 5 of 5, tw: 3 of 5, prod: 1 of 1",
   "source": "make_artifacts.hypotheses H2"
  },
- "verdict.H3": {
+ "outcome.H3": {
   "text": "held",
   "source": "make_artifacts.hypotheses H3"
  },
- "verdict.H3.ev": {
+ "outcome.H3.ev": {
   "text": "12 of 12 cells",
   "source": "make_artifacts.hypotheses H3"
  },
- "verdict.H4": {
+ "outcome.H4": {
   "text": "held",
   "source": "make_artifacts.hypotheses H4"
  },
- "verdict.H4.ev": {
+ "outcome.H4.ev": {
   "text": "7 of 7 cells",
   "source": "make_artifacts.hypotheses H4"
  },
- "verdict.H5": {
+ "outcome.H5": {
   "text": "held",
   "source": "make_artifacts.hypotheses H5"
  },
- "verdict.H5.ev": {
+ "outcome.H5.ev": {
   "text": "15 of 15 leaks, false alarms 0\\%",
   "source": "make_artifacts.hypotheses H5"
  },
- "verdict.H6": {
+ "outcome.H6": {
   "text": "held",
   "source": "make_artifacts.hypotheses H6"
  },
- "verdict.H6.ev": {
+ "outcome.H6.ev": {
   "text": "AUC test power 99.0\\% at s = 0.5; CSI power 14.2\\% and single-feature flag 0.0\\% at s = 1",
   "source": "make_artifacts.hypotheses H6"
  },
- "verdict.H7": {
+ "outcome.H7": {
   "text": "held",
   "source": "make_artifacts.hypotheses H7"
  },
- "verdict.H7.ev": {
+ "outcome.H7.ev": {
   "text": "largest absolute z 1.8 over seven levels",
   "source": "make_artifacts.hypotheses H7"
  },
- "verdict.H8": {
+ "outcome.H8": {
   "text": "not held",
   "source": "make_artifacts.hypotheses H8"
  },
- "verdict.H8.ev": {
+ "outcome.H8.ev": {
   "text": "random gap below 1 point in 10 of 10 cohort and rung cells; out-of-time gap at least 2 points in 8 of 10",
   "source": "make_artifacts.hypotheses H8"
  },
- "verdict.H9": {
+ "outcome.H9": {
   "text": "not held",
   "source": "make_artifacts.hypotheses H9"
  },
- "verdict.H9.ev": {
+ "outcome.H9.ev": {
   "text": "outside-fold bias positive in 5 of 6 and inside-fold bias null in 5 of 6 pairs of data set and model",
   "source": "make_artifacts.hypotheses H9"
  },

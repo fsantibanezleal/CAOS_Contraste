@@ -484,8 +484,8 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     put("h.held.word", words[nh], "make_artifacts.hypotheses")
     put("h.notheld.word", words[9 - nh], "make_artifacts.hypotheses")
     for k, (ok, ev) in res.items():
-        put(f"verdict.{k}", "held" if ok else "not held", f"make_artifacts.hypotheses {k}")
-        put(f"verdict.{k}.ev", ev, f"make_artifacts.hypotheses {k}")
+        put(f"outcome.{k}", "held" if ok else "not held", f"make_artifacts.hypotheses {k}")
+        put(f"outcome.{k}.ev", ev, f"make_artifacts.hypotheses {k}")
     txt = {
         "H1": "The proposed protocol's holdout AUC is unbiased for the fitted model's true AUC (the 95\\% interval of the bias contains 0) and its 95\\% interval covers (the Wilson interval of the coverage contains 0.95); refuted if either fails in any cell (two models on three data sets, and the product's scorecard).",
         "H2": "A step that reads holdout labels (WoE, screen, or the whole fit) inflates the AUC (the 95\\% interval of the bias excludes 0 from above); refuted if any such cell does not, over the steps of each model (WoE scorecard, logit, product's scorecard) in every data set.",
