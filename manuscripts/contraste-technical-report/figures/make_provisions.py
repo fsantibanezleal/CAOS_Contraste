@@ -83,14 +83,14 @@ def decile_calibration() -> None:
 def pch_vs_cox() -> None:
     import matplotlib.pyplot as plt
 
-    ibs, gap = [], []
+    pbs, gap = [], []
     for d in DATES:
         p = next(x for x in figkit.doc(f"C06/models-rd-{d}.json")["model"] if x["id"] == "L3-pch")
         ev = p["details"]["evaluation"]
-        ibs.append(ev["integrated_brier"]["pch"] - ev["integrated_brier"]["cox"])
+        pbs.append(ev["integrated_brier"]["pch"] - ev["integrated_brier"]["cox"])
         gap.append(ev["mean_abs_decile_gap_aalen_johansen"]["pch_mean"] - ev["mean_abs_decile_gap_aalen_johansen"]["cox_mean"])
     fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.9))
-    for a, vals, title in ((ax[0], ibs, "(a) Integrated Brier score"), (ax[1], gap, "(b) Mean absolute decile gap")):
+    for a, vals, title in ((ax[0], pbs, "(a) Pooled Brier score"), (ax[1], gap, "(b) Mean absolute decile gap")):
         a.bar(range(6), vals, color=["0.75" if x < 0 else "0.25" for x in vals], edgecolor="k", linewidth=0.5)
         a.axhline(0, color="k", linewidth=0.8)
         a.set_xticks(range(6))

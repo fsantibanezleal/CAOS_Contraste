@@ -45,7 +45,7 @@ years whose five-year mark is observed in case C03; the value peaks at the loans
 
 Figure~\ref{fig:prov-vintages} shows the observed five-year charge-off share by approval year: it peaks at \pvVintageHigh\% for the loans
 approved in the fiscal year \pvVintageHighYear{} and is \pvVintageLow\% for those of \pvVintageLowYear{}. It does not show a model; it
-bounds the movement a through-the-cycle default probability has to be converted into a point-in-time one. The five methods below
+shows how far a through-the-cycle default probability must move to become a point-in-time one. The five methods below
 build the chain in the order a provision is computed. The lifetime default probability rungs and the neural discrete-time survival model
 supply the probability of default by period; the expected credit loss engine turns those curves, with loss severity, exposure,
 discounting and scenario weights, into an allowance by stage; the Chilean and Spanish methods compute the same portfolio's allowance from
@@ -90,26 +90,46 @@ covariates. With the baseline cumulative hazard $H_0$ estimated with Breslow tie
 \end{equation}
 and the Kaplan-Meier rung gives $1-\hat S(a+k)/\hat S(a)$ in the same role. The observed side of every comparison is the Kaplan-Meier cumulative default of the accounts
 followed from the reporting date, with prepayment and maturity as censoring, and the Aalen-Johansen cumulative incidence, which treats prepayment as a competing exit
-\citep{provisions:fine1999}; the two coincide only when prepayment is rare.
+\citep{ratings:aalen1978}, the estimator whose regression counterpart for the subdistribution is that of \citet{provisions:fine1999}; the two observed curves coincide only when prepayment is rare.
 
 The assumptions are the standard ones of each family: independent loans, a hazard that depends on the covariates only through the stated terms, and, for the Cox rung,
 proportional hazards. A further assumption is a stated limit of the case: every rung treats prepayment as censoring, so each estimates the cause-specific default hazard and the term
 structure carries no prepayment attrition; the engine function \texttt{competing\_risks} exists but the case does not call it. The covariates are the loan size in four bands, the term in four bands, twelve sector groups
-(eleven dummy columns) and a revolver flag, which give $18$ dummy columns and $384$ strata ($4\times4\times12\times2$, \url{panel.py} line 43). The discrete-time hazard uses nine age bands with edges at
+(eleven dummy columns) and a revolver flag, which give $18$ dummy columns and $384$ strata ($4\times4\times12\times2$, the constant \texttt{N\_STRATA} of \url{pipeline/cases/c06/panel.py}). The discrete-time hazard uses nine age bands with edges at
 $2$, $4$, $6$, $8$, $12$, $16$, $24$ and $40$ quarters of loan age, the unemployment rate, the real GDP growth and the prime rate with a lag of one quarter, standardised on the training
 quarters and limited to the training range widened by $25\%$ of the range on each side, so that a hazard is never extrapolated beyond the support of its training quarters
-(\url{ladder.py} lines 28 to 35). It has \pvDthCoef{} coefficients and the Cox model \pvCoxCoef{}. A rung with fewer than $200$ loans or $30$ defaults is reported as not evaluated and never fitted. The three
+(the constants \texttt{AGE\_EDGES} and \texttt{SUPPORT\_MARGIN} of \url{pipeline/cases/c06/ladder.py}). It has \pvDthCoef{} coefficients and the Cox model \pvCoxCoef{}. A rung with fewer than $200$ loans or $30$ defaults is reported as not evaluated and never fitted. The three
 macroeconomic scenarios are the baseline and severely adverse paths of the Federal Reserve 2026 supervisory scenarios, transposed in shape to each reporting date by adding their
 change from the jump-off quarter to the last value known at the date, and an adverse path that is the midpoint of the two; beyond $13$ quarters a path reverts linearly to the baseline over
 $12$ quarters. The weights are \pvScenWeights{} for the three scenarios, policy parameters of the case and not the Federal Reserve's.
 
 The cost of each fit is linear in the data it reads: the Kaplan-Meier estimate sorts the $n$ loans once, $O(n\log n)$; the discrete-time hazard is an iteratively reweighted least squares fit on $C$ cells with $p$ coefficients, $O(Cp^{2})$ per
-iteration, where $C=\pvDthCells$ cells stand for the $\pvDthLoans$ loans kept at December 2010; the Cox fit costs $O(np^{2})$ per Newton iteration with the Breslow ties. The implementation is
+iteration, where $C=\pvDthCells$ cells stand for the $\pvDthLoans$ loans approved by December 2010 (of the $\pvCleanLoans$ loans of the cleaned file, a count shared by every date); the Cox fit costs $O(np^{2})$ per Newton iteration with the Breslow ties. The implementation is
 the module \url{pipeline/cases/c06/ladder.py} of the data pipeline (functions \texttt{fit\_km}, \texttt{fit\_hazard}, \texttt{fit\_cox}, \texttt{build\_cells}) on \texttt{statsmodels} 0.15.0,
 and the curves pass through \url{riskvalidation.provisions.term_structure} 1.1.0. The rungs are compared with each other and against the observed
 cumulative default, with the acceptance criterion the specification states: the cumulative probability of default is monotone, the calibration at $12$, $24$ and $36$ months agrees with the Aalen-Johansen
-incidence by risk decile, and the c-index and the integrated Brier score are reported for the rungs that rank loans. Table~\ref{tab:prov-rungs} gives the scores of the four rungs at the six dates and
-Section~\ref{sec:results-provisions} reads them. The parameters are not tuned per date: the loan covariates, the age bands, the lag and the support margin are constants of the module.
+incidence by risk decile, and the c-index and the pooled Brier score (defined with the PC-Hazard comparison below, a measure of pooled calibration) are reported for the rungs that rank loans. Algorithm~\ref{alg:prov-ladder} states the fit at one reporting date. Table~\ref{tab:prov-rungs} gives the scores of the four rungs at the six dates and
+Section~\ref{sec:results-provisions} reads them. The parameters are not tuned per date: the loan covariates, the age bands, the lag and the support margin are constants of the module, identical at every date.
+
+\begin{algorithm}[htbp]
+\caption{Fit of the Kaplan-Meier, discrete-time hazard and Cox rungs at a reporting date $R$ of case C06.}
+\label{alg:prov-ladder}
+\begin{algorithmic}[1]
+\Require cleaned loans with approval date, term, amount, sector, revolver flag, exit kind and exit date; the reporting date $R$; the macroeconomic history and the three scenario paths
+\State observe the loans as known at $R$: select those approved on or before $R$; read only dates on or before $R$; the age at the end of observation is the age at default or payment, or the age at $R$ capped at the term; the end is a default, a payment, a maturity or open (censored)
+\State \textbf{if} fewer than $200$ loans or $30$ defaults are selected \textbf{then} report every rung as not evaluated and stop
+\State Kaplan-Meier: estimate $\hat S$ on the age in months of the selected loans, defaults as events, every other end as censoring
+\State Cox: map each loan to its $18$ dummy columns, drop constant columns, fit the proportional hazards model with Breslow ties and read $H_0$
+\State cells: count, for every stratum, age quarter and calendar quarter up to $R$, the loans at risk (a part quarter for a censored loan, a full one for a default) and the defaults; add them up by stratum, age band and calendar quarter
+\State discrete-time hazard: standardise the lagged macroeconomic variables on the training quarters, keep the training range widened by $25\%$ of the range on each side as the support, and fit the binomial logit of Equation~\ref{eq:prov-dth} on the cells
+\For{each account in the book at $R$ and each scenario}
+  \State Kaplan-Meier and Cox: the cumulative probability of default over the horizon from Equation~\ref{eq:prov-cox} and its Kaplan-Meier counterpart
+  \State discrete-time hazard: clip the macroeconomic path to the support, compute the quarterly hazard path, and convert it with \texttt{from\_hazard} into the survival, marginal and cumulative curves of Equation~\ref{eq:prov-identities}
+\EndFor
+\State score the four rungs against the Kaplan-Meier and Aalen-Johansen cumulative default of the accounts followed from $R$ (pooled Brier score, c-index of the $12$-month probability, calibration by risk decile at $12$, $24$ and $36$ months)
+\Ensure the curves of each rung, the status of each rung with the reason when it is not evaluated, and the scores
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{IFRS 9 expected credit loss engine}
 \label{sec:m11}
@@ -125,7 +145,7 @@ DF_i(t)&=(1+r_i)^{-\delta(t)/12},\quad \delta(t)=m_t-\tfrac12\Delta_t,
 where $q^{D}(t)$ is the default incidence of period $t$ (Equation~\ref{eq:prov-identities}), $\LGD(t)\in[0,1]$ the loss given default as a fraction of $\EAD(t)$, the exposure at default in money, $r_i$ the original effective interest rate per year,
 $m_t$ the end month of period $t$ and $\Delta_t$ its length in months, so that $\delta(t)$ is the mid-period convention. The horizon is $12$ months for a loan in Stage 1 and the remaining
 contractual life, capped at $120$ months, for a loan in Stage 2. Discounting is to the reporting date at the original rate, never to the default date (IFRS 9 B5.5.44). The mid-period convention is a model setting and not a requirement of the standard: the engine
-reproduces the discount factors $\pvWxDfOne$ and $\pvWxDfTwo$ at a rate of $6\%$ for months $3$ and $6$, and a golden loss of $\pvWxGoldenEcl$ for two periods of default incidence $0.01$, a loss given default of $0.4$ and an exposure of $100{,}000$.
+reproduces the discount factors $\pvWxDfOne$ and $\pvWxDfTwo$ at a rate of $6\%$ for months $3$ and $6$ and, undiscounted (a rate of zero) for two periods ending at months $6$ and $12$ with default incidence $0.01$ each, a loss given default of $0.4$ and an exposure of $100{,}000$, a golden loss of $\pvWxGoldenEcl$.
 
 The standard requires more than one scenario when the loss is non-linear in the macroeconomic path, and the allowance is the probability-weighted loss,
 \begin{equation}
@@ -169,7 +189,7 @@ $r=\mathrm{closing}-(\mathrm{opening}+\sum_j\mathrm{movement}_j)$ is at most $10
 \end{algorithm}
 
 Every assumption below is a policy parameter or an assumption of the case and is labelled as such. Probability of default, loss given default, exposure and discount rate are supplied by the caller. The multiplier schedule is $4.0$ up to an origination probability of
-$0.01$, $2.5$ up to $0.05$ and $1.5$ up to $0.5$ in case C06 (up to $0.99$ in case C07), the absolute floor is $0.005$ and the threefold ratio is $3.0$; the probation after a cure is $0$ months in C06, whose file has no cure dates and whose dates are a year apart, and $6$ months in C07. No loan in the SBA file has a
+$0.01$, $2.5$ up to $0.05$ and $1.5$ up to $0.5$ in case C06 (up to $0.99$ in case C07), the absolute floor is $0.005$ and the threefold ratio is $3.0$; the probation after a cure is $0$ months in C06, whose file has no cure dates, and $6$ months in C07. No loan in the SBA file has a
 delinquency history, so the thirty-day backstop never fires in C06. The loss given default of C06 is a charge-off severity proxy by term band, an upper bound because the file has no recovery after charge-off, and the exposure is a level-payment annuity at the effective rate because the file has no balance. The
 period is $3$ months and the asset correlation $\rho=\pvLossRho$, the value of the worked example. In C07 the three weighting scenarios are $z=+1,0,-2$ with weights $0.25,0.50,0.25$ around current conditions, each variant adds its own shift to the factor, and the shock of the first year decays with a half-life of $4$ quarters afterwards.
 
@@ -190,8 +210,7 @@ and a loss given default, both read from tables of the regulator,
 PE=PI\cdot PDI,\qquad \mathrm{Provision}_{\mathrm{debtor}}=(EAP-EA)\,PI\,PDI+EA\,PI_{\mathrm{aval}}\,PDI_{\mathrm{aval}},
 \label{eq:prov-b1}
 \end{equation}
-where $PI$ is the probability of default and $PDI$ the loss given default of the debtor's category, $PE$ the provision factor, $EAP$ the exposure subject to provisions (loans and contingent credits less collateral at realisable value) and $EA$ the guaranteed part, which takes the guarantor's category and is never deducted from
-the exposure. All parameters are decimals in the engine; the tables print per cent. Table~\ref{tab:prov-b1} gives the ten individual categories as the engine holds them, A1 to A6 for normal debtors and B1 to B4 for substandard debtors. For debtors in default, the expected loss rate is
+where $PI$ is the probability of default and $PDI$ the loss given default of the debtor's category, $PE$ the provision factor, $EAP$ the exposure subject to provisions (loans and contingent credits less collateral at realisable value) and $EA$ the guaranteed part, which is not deducted from $EAP$ in the debtor's own term: it is split off, as the first term of Equation~\ref{eq:prov-b1} shows, and provisioned at the guarantor's $PI$ and $PDI$. All parameters are decimals in the engine; the tables print per cent. Table~\ref{tab:prov-b1} gives the ten individual categories as the engine holds them, A1 to A6 for normal debtors and B1 to B4 for substandard debtors. For debtors in default, the expected loss rate is
 \begin{equation}
 TPE=\frac{E-R}{E},\qquad \mathrm{Provision}=E\cdot PP(TPE),
 \label{eq:prov-b1-default}
@@ -232,8 +251,7 @@ has no transcribed coverage, so the account is reported as not evaluated and nev
 
 Annex 9 is a supervisory alternative, not the only route: an entity may use internal methodologies for its collective estimates, subject to validation, or compare them against the Annex 9 coverage by segment (point 65, as restated by Circular 1/2025), so the tables below are the coverage a bank without such a model applies and the coverage against which one with such a model may compare. The engine holds every coefficient as a decimal of the uncovered amount, while the regulation and the tables of this report print per cent; no coefficient is computed, so the engine adds no estimation error and a wrong value could only come from a transcription error, which the cell-by-cell assertion against the fixture is there to catch.
 
-Table~\ref{tab:prov-annex9} lists the $\pvAnnexSegments$ segments, from A.1.1 construction and real-estate development to B.3 other purposes, with the coverage the engine returns at the bucket reached at $120$, $220$, $300$, $400$, $500$, $600$ and $700$ days. The table shows that the percentages are steepest for development finance, $30\%$ for special watch against $1.9\%$ for normal
-risk in segment A.1.1, and gentlest for housing, $18\%$ against $0.7\%$; it does not show the haircut table for effective guarantees, which the engine does not transcribe. The category of an account in the case follows the facts Annex 9 uses and never a model probability: more than $90$ days past due is doubtful,
+Table~\ref{tab:prov-annex9} lists the $\pvAnnexSegments$ segments, from A.1.1 construction and real-estate development to B.3 other purposes, with the coverage the engine returns at the bucket reached at $120$, $220$, $300$, $400$, $500$, $600$ and $700$ days. The special-watch percentage is highest for development finance (A.1.1, $30\%$, with $70$ to $100\%$ for doubtful risk) and lowest for the segments A.1.3 and A.2.1 ($9.6\%$), and the normal-risk percentage runs from $0.6\%$ (A.1.3 and A.2.1) to $2.0\%$ (A.1.2), against $1.9\%$ for A.1.1. Housing (B.1.1 to B.1.3) has a low normal-risk percentage, $0.7\%$, but $18\%$ for special watch, a step of about $26$ times, the largest of the table. The table does not show the haircut table for effective guarantees, which the engine does not transcribe. The category of an account in the case follows the facts Annex 9 uses and never a model probability: more than $90$ days past due is doubtful,
 $31$ to $90$ days past due, forborne or on the watch list is normal under special watch, and anything else is normal. The guarantee values are the appraisal times one minus a haircut of $20\%$, an assumption of the case because the Annex 9 haircut table is outside the engine, with real-estate values moved by the house price index of the scenario.
 
 \input{tables/provisions-t-annex9}
@@ -262,7 +280,7 @@ with $j(t)$ the interval holding age $t$; the second expression is the lifetime 
 \label{eq:prov-pch-likelihood}
 \end{equation}
 where $\rho_j(t)$ is the time the loan spent in interval $j$, $\theta$ the network weights, and in the second form $d_{s,j}$ and $\rho_{s,j}$ are the defaults and the months of exposure of stratum $s$ in interval $j$. This is the Poisson likelihood of the interval counts. The data therefore enter only through
-two tables of the strata by intervals, the defaults and the exposure, so the training is exact, full batch and deterministic, and costs the same on $1.7$ million loans as on a few thousand. The loss minimised is the negative of Equation~\ref{eq:prov-pch-likelihood} per default.
+two tables of the strata by intervals, the defaults and the exposure, so the training is exact, full batch and deterministic, and costs the same on $1.7$ million loans as on a few thousand. The loss minimised is the negative of Equation~\ref{eq:prov-pch-likelihood} per default, and Algorithm~\ref{alg:prov-pch} states the training.
 
 \begin{algorithm}[htbp]
 \caption{Training of the PC-Hazard network at a reporting date.}
@@ -283,14 +301,13 @@ two tables of the strata by intervals, the defaults and the exposure, so the tra
 
 The assumptions are a hazard constant within each three-month interval, independent loans, and, as in the Cox rung, prepayment and maturity as censoring. The rung stands on the same information as the Cox rung, the loan covariates and the age in months, and trained on the loans known at the reporting date; what it adds is the shape, with no proportional hazards and a free age profile per stratum.
 The network has $\pvNetInputs$ dummy-column inputs, two hidden layers of $\pvNetHidden$ ReLU units and $\pvNetOutputs$ softplus outputs, one positive rate per month for each of the $60$ intervals, which cover $15$ years, so it has $18\cdot32+32+32\cdot32+32+32\cdot60+60=\pvNetParams$ weights. The training uses Adam with a learning rate of $0.01$ and a weight decay of
-$10^{-4}$, full batch in double precision on one CPU thread, at most $1500$ epochs and a patience of $60$ epochs on the hold-out loss of a seeded random fifth of the loans, and a rate floor of $10^{-10}$; the seed is $4506$ plus the day number of the reporting date. These hyper-parameters are constants of the pipeline module, identical at every date; the sources record no search over them, so how
-they were chosen is not stated. One epoch evaluates the network on the $384$ strata rows and so costs about $384\times\pvNetParams$ multiply-adds, independent of the number of loans; building the two tables is $O(n)$ once. Table~\ref{tab:prov-pch-fit} gives the loans, the split, the epochs run and the final loss at each date.
+$10^{-4}$, full batch in double precision on one CPU thread, at most $1500$ epochs and a patience of $60$ epochs on the hold-out loss of a seeded random fifth of the loans, and a rate floor of $10^{-10}$; the seed is $4506$ plus the day number of the reporting date. These hyper-parameters are constants of the pipeline module, identical at every date and not fitted to any date: no search over the width, the learning rate or the patience was run, and no sensitivity of the verdict of this subsection to them is reported, so that verdict holds for these settings only. One epoch evaluates the network on the $384$ strata rows and so costs about $384\times\pvNetParams$ multiply-adds, independent of the number of loans; building the two tables is $O(n)$ once. Table~\ref{tab:prov-pch-fit} gives the loans, the split, the epochs run and the final loss at each date.
 
 \input{tables/provisions-t-pch-fit}
 
 The implementation is \url{pipeline/cases/c06/neural.py} (functions \texttt{interval\_statistics}, \texttt{fit\_network}, \texttt{fit\_pch}, \texttt{conditional\_cumulative\_pd}) on \texttt{torch} 2.14.1 for the network, with the curves passed to \url{riskvalidation.provisions.term_structure} 1.1.0 and the weights identified by their hash. The comparison is with the Cox rung
 on the same covariates, time scale and loans, at each of the six dates, on the accounts with at least $12$ quarters of contractual life left, so that the $36$-month curve of every account is observed in the prediction and, up to the follow-up, in the data. The acceptance criterion of the specification is the calibration at $12$, $24$ and $36$ months against the Aalen-Johansen incidence by risk decile, and the
-c-index and the integrated Brier score beside Cox. The integrated Brier score is the mean over the observed horizons $k\in\{6,12,\dots,36\}$ of $\hat F(k)\,(1-\bar F(k))^{2}+(1-\hat F(k))\,\bar F(k)^{2}$, with $\bar F$ the predicted and $\hat F$ the observed cumulative default, computed from aggregates. A prediction was stated before the computation: the rung has a lower integrated Brier score and a smaller mean absolute decile
+c-index and the pooled Brier score beside Cox. The pooled Brier score is the mean over the observed horizons $k\in\{6,12,\dots,36\}$ of $\hat F(k)\,(1-\bar F(k))^{2}+(1-\hat F(k))\,\bar F(k)^{2}$, with $\bar F$ the predicted and $\hat F$ the observed cumulative default, each pooled over the accounts. It is the Brier term of one pooled prediction against one pooled observation, not the integrated Brier score of the survival literature, which scores each subject with censoring weights. Algebraically $\hat F(1-\bar F)^{2}+(1-\hat F)\bar F^{2}=\hat F(1-\hat F)+(\hat F-\bar F)^{2}$: a term that is the same for every rung plus the squared gap between the pooled predicted and observed cumulative default. The pooled Brier score therefore measures calibration in the large and carries no information on ranking, which the c-index reports. A prediction was stated before the computation: the rung has a lower pooled Brier score and a smaller mean absolute decile
 gap against Aalen-Johansen, averaged over $12$, $24$ and $36$ months, at more than half of the dates where both are observed, and it is refuted when this holds at half of them or fewer; the c-index is reported beside, outside the criterion. The result is in Section~\ref{sec:results-provisions}.
 
 \subsection{Results}
@@ -310,9 +327,8 @@ with the Vasicek acceptance band of the PC-Hazard rung at the $5\%$ level. The C
 
 \input{tables/provisions-t-rungs}
 
-Table~\ref{tab:prov-rungs} gives the integrated Brier score and the c-index of the rungs at the six dates. The scores of the four rungs differ in the third decimal at most dates, so the integrated Brier score hardly separates them; the c-index separates them clearly, between \pvCindexCoxMin{} and \pvCindexCoxMax{} for Cox and between \pvCindexPchMin{} and \pvCindexPchMax{} for PC-Hazard. Because both rungs use the same loan covariates, the difference in ranking is the age-dependent
-shape the network adds, and the table does not separate that gain from the covariates. The calibration by decile is in Figure~\ref{fig:prov-deciles}: the points of the two rungs lie near the diagonal at $12$ months and spread at $36$, and the median relative error of the predicted against the Aalen-Johansen cumulative default over the \pvDecPoints{} deciles with an observed default is \pvDecMedPchTwelve, \pvDecMedPchTwentyFour{} and \pvDecMedPchThirtySix\% at $12$, $24$ and $36$ months for PC-Hazard and
-\pvDecMedCoxTwelve, \pvDecMedCoxTwentyFour{} and \pvDecMedCoxThirtySix\% for Cox; deciles with no observed default are not on the logarithmic axes and relative errors are inflated in the lowest-risk deciles.
+Table~\ref{tab:prov-rungs} gives the pooled Brier score and the c-index of the rungs at the six dates. The scores of the four rungs differ in the third decimal at most dates, which follows from what the score is: the squared gap between the pooled predicted and observed cumulative default plus a term common to all rungs. The c-index separates the rungs clearly, between \pvCindexCoxMin{} and \pvCindexCoxMax{} for Cox and between \pvCindexPchMin{} and \pvCindexPchMax{} for PC-Hazard; no interval of the c-index is available, so the size of the separation is read against the range over the six dates only. Because both rungs use the same loan covariates, the difference in ranking comes from the stratum interactions and the free age profile that the network adds, and the table does not separate these two. The calibration by decile is in Figure~\ref{fig:prov-deciles}. The median relative error of the predicted against the Aalen-Johansen cumulative default, over \pvDecPointsMin{} to \pvDecPointsMax{} deciles with an observed default pooled over the six dates (the count depends on the rung and the horizon), is \pvDecMedPchTwelve, \pvDecMedPchTwentyFour{} and \pvDecMedPchThirtySix\% at $12$, $24$ and $36$ months for PC-Hazard and
+\pvDecMedCoxTwelve, \pvDecMedCoxTwentyFour{} and \pvDecMedCoxThirtySix\% for Cox. The median error does not fall with the horizon for either rung, and it is lower for PC-Hazard than for Cox at every horizon; deciles with no observed default are not on the logarithmic axes and relative errors are inflated in the lowest-risk deciles.
 
 \begin{figure}[htbp]
 \centering
@@ -321,16 +337,15 @@ shape the network adds, and the table does not separate that gain from the covar
 \label{fig:prov-deciles}
 \end{figure}
 
-\paragraph{PC-Hazard beside Cox.} Table~\ref{tab:prov-s4} and Figure~\ref{fig:prov-pchcox} apply the criterion. The prediction holds at \pvDatesHold{} of the \pvDatesTotal{} dates, \pvHoldDates{}, and fails at \pvFailDates{}, the two dates before and during the crisis, where the integrated Brier score of PC-Hazard is above Cox by up to \pvIbsWorseMax{}. At the dates where it holds the integrated Brier score is lower by up to
-\pvIbsBetterMax{} and the mean decile gap smaller by up to \pvGapBetterMax{}. The criterion is therefore met by the rule of more than half of the dates, with a margin of one date over the threshold and with the failures concentrated in the dates whose follow-up contains the crisis; the follow-up differs by date, from \pvFollowShort{} to \pvFollowLong{} months, so the dates are not equally informative, and the table does not show the sampling uncertainty of the
-differences, which the artifacts do not carry.
+\paragraph{PC-Hazard beside Cox.} Table~\ref{tab:prov-s4} and Figure~\ref{fig:prov-pchcox} apply the criterion. The prediction holds at \pvDatesHold{} of the \pvDatesTotal{} dates, \pvHoldDates{}, and fails at \pvFailDates{}, the two dates before and during the crisis, where the pooled Brier score of PC-Hazard is above Cox by up to \pvPbsWorseMax{}. At the dates where it holds the pooled Brier score is lower by up to
+\pvPbsBetterMax{} and the mean decile gap smaller by up to \pvGapBetterMax{}. The criterion is therefore met by the rule of more than half of the dates, with a margin of one date over the threshold and with the failures concentrated in the dates whose follow-up contains the crisis. Each date counts as a win or a loss by the sign of the difference, without a significance test: the committed artifacts of case C06 hold the pooled predictions and the decile tables and not the loan-level scores that a bootstrap over loans needs, so the sampling uncertainty of the differences above, of the c-index and of the median decile errors is not given, and the verdict that the prediction holds is a count of dates and not a tested difference. The follow-up differs by date, from \pvFollowShort{} to \pvFollowLong{} months, so the dates are not equally informative. The first clause of the prediction, a lower pooled Brier score, is a criterion of pooled calibration only.
 
 \input{tables/provisions-t-s4}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.98\textwidth]{provisions-pch-vs-cox.pdf}
-\caption{Difference between the PC-Hazard and Cox rungs at the six reporting dates of case C06, in the integrated Brier score (a) and in the mean absolute decile gap against Aalen-Johansen (b); a negative bar means the PC-Hazard rung is better, and the bars above zero mark the dates where the prediction failed.}
+\caption{Difference between the PC-Hazard and Cox rungs at the six reporting dates of case C06, in the pooled Brier score (a) and in the mean absolute decile gap against Aalen-Johansen (b); a negative bar means the PC-Hazard rung is better, and the bars above zero mark the dates where the prediction failed.}
 \label{fig:prov-pchcox}
 \end{figure}
 
@@ -368,7 +383,7 @@ tables, IFRS 9 a probability-weighted lifetime loss and Annex 9 a coverage of th
 
 Figure~\ref{fig:prov-regimes} shows the same totals. Table~\ref{tab:prov-c07-seg} and Table~\ref{tab:prov-c07-stage} locate the gaps. By segment, IFRS 9 exceeds B-1 only in the low-risk mortgages, and Annex 9 is zero there; by stage, the coverage of Stage 2 is \pvSevenStageTwoI\% under IFRS 9 and \pvSevenStageTwoD\% under the Annex 9 special-watch category, and of Stage 3 \pvSevenStageThreeI\% and \pvSevenStageThreeD\%, so the two stage-based regimes differ in
 the amounts they place in each stage and in the coverage they apply to it. The bridge of Figure~\ref{fig:prov-bridge} explains the base-scenario gap of \pvBridgeTotal{} CLP billion between B-1 and IFRS 9: the measurement basis, bank parameters against the B-1 matrices at twelve months, undiscounted, accounts for \pvBridgeBasis{}; the lifetime loss on Stage 2 adds \pvBridgeLife{}, the scenario weighting \pvBridgeWeight{}, the discounting
-\pvBridgeDisc{} and the overlays \pvBridgeOverlay{}, and the steps sum to \pvBridgeSum{}. The weighted loss exceeds the loss at the mean scenario path by \pvSevenNlBase\% (the index is positive here), the overlays are \pvSevenOverlayShare\% of the allowance, each a separate line, and the Stage 2 default rate is \pvSevenSicrRatio{} times that of Stage 1 in the generator's realised outcomes.
+\pvBridgeDisc{} (positive because discounting the Stage 3 recoveries, which the loss takes from the exposure, outweighs discounting the Stage 1 and 2 losses) and the overlays \pvBridgeOverlay{}, and the steps sum to \pvBridgeSum{}. The weighted loss exceeds the loss at the mean scenario path by \pvSevenNlBase\% (the index is positive here), the overlays are \pvSevenOverlayShare\% of the allowance, each a separate line, and the Stage 2 default rate is \pvSevenSicrRatio{} times that of Stage 1 in the generator's realised outcomes.
 
 \input{tables/provisions-t-c07-seg}
 \input{tables/provisions-t-c07-stage}
