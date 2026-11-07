@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{The back-tests on wrapped runs whose model misjudges the scale by the ratio $c$ ($c = 1$: a correct model), 4,000 independent runs of 500 days per row. The true hit probability is the mean over the days of the probability that the loss exceeds the VaR at that day's level; the count s.d. is the standard deviation of the hit count of the wrapped runs against the binomial one at that probability. Kupiec rejection is the share of runs with a p-value below 0.05 for the unwrapped runs (U), the wrapped runs (W) and independent Bernoulli hits drawn at the wrapped true probability (iid, the reference the test assumes); pass is the share with Kupiec and conditional coverage both at least 0.05.}
+\label{tab:dispersion}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrr}
+\toprule
+Level (\%) & Scale ratio $c$ & True hit probability (\%) U / W & Count s.d. W / binomial & Kupiec rejection (\%) U / W / iid & Pass (\%) U / W / iid \\
+\midrule
+1 & 0.75 & 0.32 / 0.57 & 1.17 / 1.69 & 32.9 / 10.3 / 17.5 & 46.3 / 87.5 / 76.0 \\
+1 & 1 & 1.00 / 1.01 & 1.05 / 2.23 & 6.5 / 0.1 / 7.0 & 92.6 / 99.8 / 91.8 \\
+1 & 1.25 & 2.16 / 1.36 & 1.20 / 2.59 & 63.2 / 2.3 / 14.3 & 36.7 / 97.5 / 85.5 \\
+1 & 1.5 & 3.75 / 1.80 & 1.64 / 2.97 & 98.8 / 34.3 / 40.0 & 1.2 / 65.6 / 59.7 \\
+1 & 2 & 7.67 / 3.09 & 2.75 / 3.87 & 100.0 / 99.3 / 94.4 & 0.0 / 0.7 / 5.6 \\
+2.5 & 0.75 & 0.93 / 1.60 & 1.78 / 2.80 & 80.4 / 20.2 / 32.3 & 17.9 / 78.0 / 66.4 \\
+2.5 & 1 & 2.50 / 2.51 & 1.55 / 3.50 & 6.2 / 0.0 / 6.7 & 92.9 / 99.5 / 92.5 \\
+2.5 & 1.25 & 4.74 / 3.05 & 1.25 / 3.85 & 80.0 / 0.0 / 15.4 & 19.8 / 99.6 / 83.9 \\
+2.5 & 1.5 & 7.36 / 3.41 & 1.38 / 4.06 & 99.9 / 4.9 / 26.8 & 0.1 / 93.9 / 72.4 \\
+2.5 & 2 & 12.75 / 4.61 & 2.63 / 4.69 & 100.0 / 92.0 / 77.0 & 0.0 / 7.9 / 22.5 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

@@ -87,6 +87,7 @@ WORKS = {
     "cfr217204": ("url", "https://www.ecfr.gov/current/title-12/chapter-II/subchapter-A/part-217/subpart-F/section-217.204",
                   "12 CFR 217.204, Measure for market risk (Table 1: multiplication factors based on results of backtesting)|"
                   "Board of Governors of the Federal Reserve System|2025"),
+    "acerbiszekely2014": ("manual", "", ""),
     "bcbsmar33": ("url", "https://www.bis.org/basel_framework/chapter/MAR/33.htm",
                   "Basel Framework, market risk, chapter MAR33: internal models approach, capital requirements|Basel Committee on Banking Supervision|2020"),
 }
@@ -102,6 +103,42 @@ def get(url: str, accept: str | None = None) -> bytes:
             last = exc
             time.sleep(2)
     raise RuntimeError(f"{url}: {last}")
+
+
+#: Fields corrected from the works' own records where Crossref's author list is incomplete (checked on OpenAlex and RePEc, 2026-11-07), and
+#: the one work without a DOI (Risk, December 2014; the page range was not confirmed on a primary source and is left out).
+OVERRIDES = {
+    "christoffersenpelletier2004": {"author": "Christoffersen, Peter and Pelletier, Denis"},
+    "kuester2006": {"author": "Kuester, Keith and Mittnik, Stefan and Paolella, Marc S.", "year": "2006"},
+    "hansen2011": {"author": "Hansen, Peter R. and Lunde, Asger and Nason, James M."},
+    "vovk2005": {"@type": "book", "author": "Vovk, Vladimir and Gammerman, Alex and Shafer, Glenn", "publisher": "Springer"},
+    "boudoukh1998": {"author": "Boudoukh, Jacob and Richardson, Matthew P. and Whitelaw, Robert F.", "journal": "Risk"},
+}
+MANUAL = {
+    "acerbiszekely2014": (
+        "@article{acerbiszekely2014,\n  author = {Acerbi, Carlo and Sz{\\'e}kely, Bal{\\'a}zs},\n  title = {Back-testing Expected Shortfall},\n"
+        "  journal = {Risk},\n  year = {2014},\n  month = dec,\n"
+        "  url = {https://www.risk.net/risk-management/2381658/back-testing-expected-shortfall}\n}\n"),
+}
+
+
+def override(raw: str, fields: dict) -> str:
+    """Replace or add the given fields of one BibTeX entry (balanced braces)."""
+    for name, value in fields.items():
+        if name == "@type":
+            raw = re.sub(r"^\s*@\w+", "@" + value, raw.strip(), count=1) + "\n"
+            continue
+        m = re.search(r"(?<![A-Za-z])" + name + r"\s*=\s*\{", raw, re.I)
+        if m:
+            depth, i = 1, m.end()
+            while depth:
+                depth += {"{": 1, "}": -1}.get(raw[i], 0)
+                i += 1
+            raw = raw[:m.start()] + f"{name}={{{value}}}" + raw[i:]
+        else:
+            k = raw.rstrip().rfind("}")
+            raw = raw[:k].rstrip().rstrip(",") + f",\n  {name} = {{{value}}}\n}}\n"
+    return raw
 
 
 def clean(text: str) -> str:
@@ -132,6 +169,8 @@ def cited() -> set[str]:
 
 
 def entry(key: str, kind: str, ident: str, words: str) -> str:
+    if kind == "manual":
+        return MANUAL[key]
     if kind == "doi":
         raw = clean(get("https://doi.org/" + ident, "application/x-bibtex").decode("utf-8"))
         title = re.search(r"[,{ ]title\s*=\s*\{(.+?)\}\s*[,}]", raw, re.S)
@@ -168,7 +207,7 @@ def main() -> int:
         return 1
     out = ["% The works this manuscript cites, written by fetch_references.py from the publishers' records (DOI), the arXiv API and the Basel Committee's pages.\n"]
     for key in sorted(keys):
-        out.append(entry(key, *WORKS[key]))
+        out.append(override(entry(key, *WORKS[key]), OVERRIDES.get(key, {})))
     (HERE / "references.bib").write_text("\n".join(out), encoding="utf-8", newline="\n")
     print(f"wrote references.bib with {len(keys)} works; listed but not cited: {sorted(set(WORKS) - keys)}")
     return 0

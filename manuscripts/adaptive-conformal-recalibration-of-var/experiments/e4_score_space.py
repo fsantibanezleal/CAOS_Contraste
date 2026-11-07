@@ -107,8 +107,7 @@ def main() -> int:
                 for name, (th, nclip) in variants.items():
                     v, e = r9(th * var), (r9(th * es) if has_es else es)
                     if has_es:
-                        e = np.minimum(e, v)
-                    if has_es:
+                        e = np.maximum(e, v)               # positive-loss convention: ES at least the VaR (rounding only), as in e5
                         s = common.scores(loss, v, e, alpha)
                     else:
                         from riskvalidation.validation import market as vm

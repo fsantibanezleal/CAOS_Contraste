@@ -3,7 +3,7 @@
   "title_support": [
     "tab:main-results",
     "tab:hypotheses",
-    "tab:ladder-context"
+    "tab:dispersion"
   ],
   "claims": {
     "BS-16": "sec:proposed-method"

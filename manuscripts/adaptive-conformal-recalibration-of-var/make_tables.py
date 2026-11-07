@@ -173,6 +173,40 @@ def generators():
               "and wrapped (W); and the median relative FZ0 change of the level wrapper.", label="tab:generators")
 
 
+def dispersion():
+    """The size of the tests on wrapped runs (experiment 7, part B) and the dispersion of the hit rate in the control scenario (part A)."""
+    E7 = common.load("e7_dispersion.json")
+    B = {(r["alpha"], r["scale"], r["method"]): r for r in E7["B"]["rows"]}
+    rows = []
+    for a in common.LEVELS:
+        for c in E7["B"]["scales"]:
+            u, w = B[(a, c, "unwrapped")], B[(a, c, "aci")]
+            ref = w["bernoulli_reference"]["tests"]
+            rows.append([f"{100 * a:g}", f"{c:g}", f"{100 * u['true_hit_prob']:.2f} / {100 * w['true_hit_prob']:.2f}", f"{w['count_sd']:.2f} / {w['binom_count_sd']:.2f}",
+                         f"{100 * u['tests']['kupiec_reject']:.1f} / {100 * w['tests']['kupiec_reject']:.1f} / {100 * ref['kupiec_reject']:.1f}",
+                         f"{100 * u['tests']['pass']:.1f} / {100 * w['tests']['pass']:.1f} / {100 * ref['pass']:.1f}"])
+    T("dispersion", ["Level (\\%)", "Scale ratio $c$", "True hit probability (\\%) U / W", "Count s.d. W / binomial", "Kupiec rejection (\\%) U / W / iid",
+                     "Pass (\\%) U / W / iid"], rows, align="lrrrrr",
+      caption=f"The back-tests on wrapped runs whose model misjudges the scale by the ratio $c$ ($c = 1$: a correct model), {E7['B']['reps']:,} independent runs of "
+              f"{E7['B']['days']} days per row. The true hit probability is the mean over the days of the probability that the loss exceeds the VaR at that day's level; "
+              "the count s.d. is the standard deviation of the hit count of the wrapped runs against the binomial one at that probability. Kupiec rejection is the share of "
+              "runs with a p-value below 0.05 for the unwrapped runs (U), the wrapped runs (W) and independent Bernoulli hits drawn at the wrapped true probability "
+              "(iid, the reference the test assumes); pass is the share with Kupiec and conditional coverage both at least 0.05.", label="tab:dispersion")
+    nm = {"hs-250": "HS-250", "garch-t": "GARCH-t", "fhs": "FHS"}
+    A = {(r["scenario"], r["model"], r["alpha"], r["method"]): r for r in E7["A"]["rows"]}
+    rows = []
+    for m in common.WRAPPED3:
+        for a in common.LEVELS:
+            u, w = A[("no-shift", m, a, "unwrapped")], A[("no-shift", m, a, "aci")]
+            rows.append([nm[m], f"{100 * a:g}", f"{100 * u['hit_mean']:.2f} / {100 * w['hit_mean']:.2f}", f"{100 * u['hit_sd']:.2f} / {100 * w['hit_sd']:.2f} / {100 * u['binom_sd']:.2f}",
+                         f"{u['pass_rate']:.2f} / {w['pass_rate']:.2f} / {A[('no-shift', m, a, 'rolling')]['pass_rate']:.2f} / {A[('no-shift', m, a, 'tracker')]['pass_rate']:.2f}"])
+    T("dispersion-null", ["Model", "Level (\\%)", "Mean hit rate (\\%) U / W", "Hit-rate s.d. (points) U / W / binomial", "Pass rate U / W / rolling / tracker"], rows,
+      align="llrrr",
+      caption="The control scenario (no shift, 500 days, 100 replications): the mean hit rate, the standard deviation of the hit rate across replications of the unwrapped "
+              "(U) and wrapped (W) model against the binomial standard deviation at the unwrapped mean rate, and the pass rate of the unwrapped model and of three "
+              "recalibrations.", label="tab:dispersion-null")
+
+
 def scale_sweep():
     rows = []
     for r in E6["C"]["rows"]:
@@ -222,6 +256,6 @@ def notation():
 
 
 if __name__ == "__main__":
-    for f in (main_results, hypotheses, ladder, comparators, ablation, generators, scale_sweep, cluster, windows, notation):
+    for f in (main_results, hypotheses, ladder, comparators, ablation, generators, dispersion, scale_sweep, cluster, windows, notation):
         f()
         print("wrote", f.__name__)

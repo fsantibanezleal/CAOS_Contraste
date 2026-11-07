@@ -101,7 +101,11 @@ put("tenMeanFz", signed_pct(st.mean(r["fz0_change"] for r in R)))
 put("tenMeanZtwoUnw", f"{st.mean(r['unwrapped']['z2'] for r in R):.2f}")
 put("tenMeanZtwoAci", f"{st.mean(r['wrapped']['z2'] for r in R):.2f}")
 fail = [k for k, g in gain.items() if g < 1]
-put("tenNoGainCells", ", ".join(f"{k[0]} at {pct(k[1])}\\%" for k in fail) if fail else "none")
+DISP_MODEL = {"hs-250": "HS-250", "hs-500": "HS-500", "awhs": "the age-weighted historical simulation", "dn-rolling": "the delta-normal model",
+              "ewma": "the EWMA model", "garch-t": "GARCH-t", "gjr-t": "GJR-t", "egarch-t": "EGARCH-t", "fhs": "FHS", "evt-mf": "the conditional extreme-value model"}
+DISP_WIN = {"equity-2007-09": "the financial crisis window", "equity-2020": "the pandemic window", "rates-2022": "the rates window"}
+DISP_SCEN = {"no-shift": "the control scenario with no shift", "crisis-persistent": "the persistent crisis", "crash-decay": "the decaying crash", "drift-up": "the upward drift"}
+put("tenNoGainCells", ", ".join(f"{DISP_MODEL[k[0]]} at the {100 * k[1]:g}\\% level" for k in fail) if fail else "none")
 put("tenClipTotal", sum(r["n_clipped"] for r in R))
 put("tenClipMax", max(r["n_clipped"] for r in R))
 put("tenFallback", sum(r["n_fallback_days"] for r in E2["rows"]))
@@ -158,6 +162,12 @@ for meth, tag in (("unwrapped", "Unw"), ("rolling", "Roll"), ("tracker", "Trk"),
             put(f"cmp{tag}{scope}FzWorst", signed_pct(max(fz)))
             put(f"cmp{tag}{scope}FzOver", sum(1 for x in fz if x > 0.05))
             put(f"cmp{tag}{scope}FzN", len(fz))
+_rw = max((r for r in pooled("rolling", TEN) if "fz0_change" in r), key=lambda r: r["fz0_change"])
+put("cmpRollWorstModel", DISP_MODEL[_rw["model"]])
+put("cmpRollWorstWin", DISP_WIN[_rw["window"]])
+put("cmpRollWorstLevel", f"{100 * _rw['alpha']:g}")
+put("cmpRollWorstBase", f"{U[(_rw['window'], _rw['model'], _rw['alpha'])]['scores']['fz0_mean']:.3f}")
+put("cmpRollWorstScaleMax", f"{_rw['theta_max']:.1f}")
 rows = pooled("rolling", None)
 put("cmpAllNoEs", sum(1 for r in rows if not r["has_es"]))
 put("eqnRollWindow", E4["constants"]["window"])
@@ -227,7 +237,7 @@ put("genErrWorseCells", len(worse))
 put("genErrWorseDen", len(E5["scenarios"]) * 4)
 low = min(((st.mean(x["passes"] for x in G[(s, m, a, "aci")]), s, m, a) for s in shift for m in common.WRAPPED3 for a in common.LEVELS))
 put("genLowestAciPass", f"{low[0]:.2f}")
-put("genLowestAciScen", low[1])
+put("genLowestAciScen", DISP_SCEN[low[1]])
 ind_drop = max(st.mean(x["independence_ok"] for x in G[(s, m, a, "unwrapped")]) - st.mean(x["independence_ok"] for x in G[(s, m, a, "aci")])
                for s in E5["scenarios"] for m in common.WRAPPED3 for a in common.LEVELS)
 put("genIndDropMax", f"{ind_drop:.2f}")
@@ -264,6 +274,10 @@ for r in E6["C"]["rows"]:
         put(f"thCHitUnit{k}", f"{100 * r['hit_rate']:.2f}")
         put(f"thCMeanUnit{k}", f"{r['level_mean']:.4f}")
     put(f"thCCmax{LV[r['alpha']]}", f"{r['c_max']:.2f}")
+from scipy import stats as _stats  # noqa: E402
+
+for _a in common.LEVELS:                                          # c_min = nu(u) / nu(alpha), the upper edge of the band (unit-variance t5)
+    put(f"thCCmin{LV[_a]}", f"{_stats.t.isf(common.LEVEL_MAX, 5.0) / _stats.t.isf(_a, 5.0):.3f}")
 put("thCIdGap", f"{max(r['identity_gap'] for r in E6['C']['rows']):.1e}")
 for r in E6["C"]["rows"]:
     if r["scale_ratio"] == 1.5:
@@ -276,6 +290,64 @@ put("thCSdRatioMax", f"{max(rat):.2f}")
 for r in E6["D"]["rows"]:
     if r["scale_ratio"] == 2.0 and r["alpha"] == 0.01:
         put("thDRatioNu" + {3: "Three", 5: "Five", 10: "Ten", 30: "Thirty"}[int(r["nu"])], f"{r['es_ratio']:.3f}")
+# ---- experiment 7: the dispersion of the hit count and the size of the tests on wrapped runs
+E7 = common.load("e7_dispersion.json")
+SC = {0.75: "SevenFive", 1.0: "One", 1.25: "OneTwoFive", 1.5: "OneFive", 2.0: "Two"}
+for r in E7["A"]["rows"]:
+    k = f"{SCEN[r['scenario']]}{MODEL[r['model']]}{LV[r['alpha']]}{METH[r['method']]}"
+    put(f"dispSd{k}", f"{100 * r['hit_sd']:.2f}")
+    put(f"dispBin{k}", f"{100 * r['binom_sd']:.2f}")
+    put(f"dispRatio{k}", f"{r['ratio']:.2f}")
+for me in ("aci", "rolling", "tracker", "unwrapped"):
+    rs = [r["ratio"] for r in E7["A"]["rows"] if r["method"] == me]
+    put(f"dispRatio{METH[me]}Min", f"{min(rs):.2f}")
+    put(f"dispRatio{METH[me]}Max", f"{max(rs):.2f}")
+    put(f"dispRatio{METH[me]}Below", sum(x < 1 for x in rs))
+    put(f"dispRatio{METH[me]}N", len(rs))
+nulls = [r for r in E7["A"]["rows"] if r["scenario"] == "no-shift"]
+for me in ("aci", "rolling", "tracker", "unwrapped"):
+    rs = [r["pass_rate"] for r in nulls if r["method"] == me]
+    put(f"dispNullPass{METH[me]}Min", f"{min(rs):.2f}")
+    put(f"dispNullPass{METH[me]}Max", f"{max(rs):.2f}")
+for r in E7["B"]["rows"]:
+    k = f"{LV[r['alpha']]}{SC[r['scale']]}{METH[r['method']]}"
+    put(f"dispB{k}TrueP", f"{100 * r['true_hit_prob']:.2f}")
+    put(f"dispB{k}CntSd", f"{r['count_sd']:.2f}")
+    put(f"dispB{k}BinSd", f"{r['binom_count_sd']:.2f}")
+    put(f"dispB{k}Ratio", f"{r['sd_ratio']:.2f}")
+    put(f"dispB{k}KupRej", pct(r["tests"]["kupiec_reject"]))
+    put(f"dispB{k}CcRej", pct(r["tests"]["cc_reject"]))
+    put(f"dispB{k}Pass", pct(r["tests"]["pass"]))
+    put(f"dispB{k}Wilson", pct(r["wilson_contains_truth"]))
+    if "bernoulli_reference" in r:
+        put(f"dispB{k}RefKupRej", pct(r["bernoulli_reference"]["tests"]["kupiec_reject"]))
+        put(f"dispB{k}RefCcRej", pct(r["bernoulli_reference"]["tests"]["cc_reject"]))
+        put(f"dispB{k}RefPass", pct(r["bernoulli_reference"]["tests"]["pass"]))
+put("dispBReps", E7["B"]["reps"])
+put("dispBDays", E7["B"]["days"])
+wil = [r["wilson_contains_truth"] for r in E7["B"]["rows"]]
+put("dispWilsonMin", pct(min(wil)))
+put("dispWilsonMax", pct(max(wil)))
+C7 = E7["C"]
+put("dispCCells", C7["cells"])
+put("dispCUnwExact", C7["unwrapped_exact"])
+put("dispCWrapExact", C7["wrapped_exact_binomial"])
+put("dispCWrapCal", C7["wrapped_calibrated"])
+put("dispCUnwAsy", C7["unwrapped_asymptotic_kupiec"])
+put("dispCWrapAsy", C7["wrapped_asymptotic_kupiec"])
+put("dispCFlips", len(C7["flips"]))
+put("dispCHoneCells", C7["h1"]["cells"])
+put("dispCHoneUnw", C7["h1"]["unwrapped_exact"])
+put("dispCHoneWrap", C7["h1"]["wrapped_calibrated"])
+put("dispCHoneGain", C7["h1"]["gain_cells"])
+put("dispCHoneGainCal", C7["h1"]["gain_cells_calibrated"])
+_lost = [k for k, g in C7["h1"]["gain"].items() if g[1] - g[0] >= 1 and g[2] < 1]
+put("dispCHoneLost", ", ".join(f"{DISP_MODEL[k.split('|')[0]]} at the {100 * float(k.split('|')[1]):g}\\% level" for k in _lost) if _lost else "none")
+put("dispCNullReps", C7["null_reps"])
+for key, v in C7["null"].items():
+    w, a = key.split("|")
+    put(f"dispCNullSd{WIN[w]}{LV[float(a)]}", f"{v['null_count_sd']:.2f}")
+    put(f"dispCBinSd{WIN[w]}{LV[float(a)]}", f"{v['binom_count_sd']:.2f}")
 put("seedBase", common.SEED_BOOT)
 
 out = HERE / "tables" / "numbers.tex"

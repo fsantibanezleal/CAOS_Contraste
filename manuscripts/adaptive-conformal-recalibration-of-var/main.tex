@@ -15,7 +15,7 @@
 % Every number quoted in the text is a macro generated from the experiment outputs (make_numbers.py).
 \input{tables/numbers}
 
-\title{Adaptive conformal recalibration of value at risk in market stress windows: a test on ten models of an eighteen-model ladder}
+\title{Adaptive conformal recalibration of value at risk in market stress windows: hit rates move towards the target on ten models, and the back-tests accept the wrapped runs too easily}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -26,12 +26,13 @@
 \headerblock
 
 \begin{abstract}
-A bank's value-at-risk model that understates the tail in a crisis shows it as a cluster of exceedances, and none of the eighteen models of a market-risk ladder passes the Kupiec and conditional coverage tests in the 2007 to 2009 window at the 1\% or the 2.5\% level.
-We test a wrapper that leaves the model untouched and moves its working tail level after each day by a fixed step times the difference between the target and the exceedance indicator, inside a band, delivering the model's own value at risk and expected shortfall at that level.
-On ten level-parametric models in three stress windows the wrapped models pass \tenPassAci{} of \tenRuns{} cells against \tenPassUnw{} unwrapped, with no independence failure introduced and a change of the mean Fissler--Ziegel score of at most \tenWorstFz\% (95\% bootstrap intervals in the text); the stated prediction for three of them holds in all \hypCells{} cells.
-On known-truth generators the pass rate of historical simulation in a persistent crisis rises from \genPassCrisisHsTwoFiftyOneUnw{} (95\% Wilson interval \genCiLoUnw{} to \genCiHiUnw{}) to \genPassCrisisHsTwoFiftyOneAci{} (\genCiLoAci{} to \genCiHiAci{}).
-We prove that the coverage guarantee of the update is vacuous at the length of a stress window, that it carries no independence, and that the band limits the repairable scale error (a ratio of \thCCmaxOne{} at 1\% for a Student-$t$ model with five degrees of freedom).
-The expected shortfall stays understated, the delta-normal model gains no window at 1\%, and a rolling split-conformal scale passes as many cells while a quantile tracker with a larger step passes more, both at a cost in the score.
+None of the eighteen value-at-risk models of a market-risk ladder passes the Kupiec and conditional coverage tests in the 2007 to 2009 window at the 1\% or the 2.5\% level.
+We test a wrapper that leaves the model untouched and moves its working tail level each day by a fixed step times the gap between the target and the exceedance indicator, inside a band.
+On ten models in three stress windows the mean distance of the hit rate from its target falls from \tenHitDevUnw{} to \tenHitDevAci{} points, the score changes by at most \tenWorstFz\%, and the wrapped models pass \tenPassAci{} of \tenRuns{} cells against \tenPassUnw{}.
+These counts are inflated: the update makes the hit count less variable than a binomial count, so a correct wrapped model passes in \dispNullPassAciMin{} to \dispNullPassAciMax{} of replications against \dispNullPassUnwMin{} to \dispNullPassUnwMax{} unwrapped. With each count tested against its own null the wrapped models pass \dispCWrapCal{} cells against \dispCUnwExact{}, and the prediction stated for three models holds in \dispCHoneGainCal{} of its \hypCells{} cells, not all of them.
+On known-truth generators the wrapped hit rate is closer to the target in every shifted cell.
+The coverage guarantee is vacuous at the length of a stress window, and the band limits the repairable scale error (a ratio of \thCCmaxOne{} at 1\% for a Student-$t$ model).
+The expected shortfall stays understated, the delta-normal model gains no window at 1\%, and a rolling split-conformal scale passes as many cells with \cmpRollTenFzOver{} over the score tolerance.
 \end{abstract}
 
 \input{sections/01-introduction}
