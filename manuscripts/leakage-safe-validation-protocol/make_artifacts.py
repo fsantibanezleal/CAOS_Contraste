@@ -404,6 +404,7 @@ def split_table() -> None:
 
 def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     S, Sm, T = e1["syn"]["summary"], e1["small"]["summary"], e1["tw"]["summary"]
+    P = e1["prod"]["summary"]
 
     def ci0(v):
         return abs(v["auc_bias"]) <= 1.96 * v["auc_bias_se"]
@@ -413,12 +414,22 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
 
     h1 = [ci0(ds[f"{m}/none"]) and ds[f"{m}/none"]["coverage_lo"] <= 0.95 <= ds[f"{m}/none"]["coverage_hi"]
           for ds in (S, Sm, T) for m in ("woe", "linear")]
-    h2_leaks = ["woe_full", "screen_full", "fit_full"]
-    h2 = {name: [pos(ds[f"woe/{lk}"]) for lk in h2_leaks] for name, ds in (("syn", S), ("small", Sm), ("tw", T))}
+    h1 += [ci0(P["product/none"]) and P["product/none"]["coverage_lo"] <= 0.95 <= P["product/none"]["coverage_hi"]]
+    # every cell of the paper in which a step reads holdout labels: each model over the cells it has
+    h2_cells = {"woe": ["woe_full", "screen_full", "fit_full"], "linear": ["screen_full", "fit_full"]}
+    h2 = {name: [pos(ds[f"{m}/{lk}"]) for m, lks in h2_cells.items() for lk in lks]
+          for name, ds in (("syn", S), ("small", Sm), ("tw", T))}
+    h2["prod"] = [pos(P["product/fit_full"])]
     h3 = [abs(ds[f"{m}/{lk}"]["auc_bias"]) < 0.005 for ds in (S, Sm, T) for m, lk in (("woe", "impute_full"), ("woe", "bin_full"),
                                                                                  ("linear", "impute_full"), ("linear", "scale_full"))]
     h4 = [pos(ds[f"{m}/cal_test"]) and ds[f"{m}/cal_test"]["brier_bias"] + 1.96 * ds[f"{m}/cal_test"]["brier_bias_se"] < 0
           for ds in (S, Sm, T) for m in ("woe", "linear")]
+    h4 += [pos(P["product/cal_test"]) and P["product/cal_test"]["brier_bias"] + 1.96 * P["product/cal_test"]["brier_bias_se"] < 0]
+    put("h1.cells", str(len(h1)), "make_artifacts.hypotheses H1: cells scored (two models on three data sets and the product's scorecard)")
+    put("h1.ok", str(sum(h1)), "make_artifacts.hypotheses H1: cells that satisfy the rule")
+    put("h4.cells", str(len(h4)), "make_artifacts.hypotheses H4: cells scored")
+    put("h2.cells.tw", str(len(h2["tw"])), "make_artifacts.hypotheses H2: label-reading cells on the card holders")
+    put("h2.ok.tw", str(sum(h2["tw"])), "make_artifacts.hypotheses H2: label-reading cells on the card holders whose bias interval is above 0")
     mt = e2["matrix"]["pass_rates"]
     detect_any = {k: v["any_gate_fails"] for k, v in mt.items() if not k.endswith("/none")}
     false_alarm = {k: v["any_gate_fails"] for k, v in mt.items() if k.endswith("/none")}
@@ -445,13 +456,19 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     put("c03.mingap", f"{100 * c03min:.2f}", "data/derived/C03/fy*.json outputs.rung_comparison[P1-scorecard].calibration_gap_5y, smallest absolute value x 100")
     h9pos = [pos(ds[f"{m}/cv_pre"]) for ds in (S, Sm, T) for m in ("woe", "linear")]
     h9null = [ci0(ds[f"{m}/cv_in"]) for ds in (S, Sm, T) for m in ("woe", "linear")]
+    zin = abs(S["linear/cv_in"]["auc_bias"]) / S["linear/cv_in"]["auc_bias_se"]
+    put("h9.in.z", f"{zin:.2f}", "experiments/results/e1_synthetic.json summary[linear/cv_in] |auc_bias| / auc_bias_se")
+    put("h9.in.chance", f"{100 * (1 - 0.95 ** len(h9null)):.0f}", "100 x (1 - 0.95^n) for the n inside-fold cells: probability that at least one 95% interval excludes a true zero")
+    put("h9.in.bias", sg(S["linear/cv_in"]["auc_bias"], 4), "experiments/results/e1_synthetic.json summary[linear/cv_in] auc_bias")
+    put("h9.in.ci", f"{1.96 * S['linear/cv_in']['auc_bias_se']:.4f}", "experiments/results/e1_synthetic.json summary[linear/cv_in] auc_bias_se x 1.96")
+    put("h9.in.n", str(len(h9null)), "number of inside-fold cells (two models on three data sets)")
     h9 = all(h9pos) and all(h9null)
     put("h9.pos", str(sum(h9pos)), "pairs of data set and model with the outside-fold bias interval above 0, of six")
     put("h9.null", str(sum(h9null)), "pairs of data set and model with the inside-fold bias interval containing 0, of six")
     put("h9.failcells", str(12 - sum(h9pos) - sum(h9null)), "cells of the twelve that fail")
     sel = e5["loglog_fit_p40"]
     res = {"H1": (all(h1), f"{sum(h1)} of {len(h1)} cells"), "H2": (all(all(v) for v in h2.values()),
-           ", ".join(f"{k}: {sum(v)} of 3" for k, v in h2.items())), "H3": (all(h3), f"{sum(h3)} of {len(h3)} cells"),
+           ", ".join(f"{k}: {sum(v)} of {len(v)}" for k, v in h2.items())), "H3": (all(h3), f"{sum(h3)} of {len(h3)} cells"),
            "H4": (all(h4), f"{sum(h4)} of {len(h4)} cells"), "H5": (all(v >= 0.999 for v in detect_any.values()) and max(false_alarm.values()) == 0,
            f"{sum(1 for v in detect_any.values() if v >= 0.999)} of {len(detect_any)} leaks, false alarms {100 * max(false_alarm.values()):.0f}\\%"),
            "H6": (h6, f"AUC test power {ratio(lv['0.5']['auc_test']['rate'])}\\% at s = 0.5; CSI power {ratio(lv['1.0']['csi_test']['rate'])}\\% and single-feature flag {ratio(lv['1.0']['single_feature_flag']['rate'])}\\% at s = 1"),
@@ -470,10 +487,10 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
         put(f"verdict.{k}", "held" if ok else "not held", f"make_artifacts.hypotheses {k}")
         put(f"verdict.{k}.ev", ev, f"make_artifacts.hypotheses {k}")
     txt = {
-        "H1": "The proposed protocol's holdout AUC is unbiased for the fitted model's true AUC (the 95\\% interval of the bias contains 0) and its 95\\% interval covers (the Wilson interval of the coverage contains 0.95); refuted if either fails in any cell.",
-        "H2": "A step that reads holdout labels (WoE, screen, or the whole fit) inflates the AUC (the 95\\% interval of the bias excludes 0 from above); refuted if any of the three does not in a data set.",
+        "H1": "The proposed protocol's holdout AUC is unbiased for the fitted model's true AUC (the 95\\% interval of the bias contains 0) and its 95\\% interval covers (the Wilson interval of the coverage contains 0.95); refuted if either fails in any cell (two models on three data sets, and the product's scorecard).",
+        "H2": "A step that reads holdout labels (WoE, screen, or the whole fit) inflates the AUC (the 95\\% interval of the bias excludes 0 from above); refuted if any such cell does not, over the steps of each model (WoE scorecard, logit, product's scorecard) in every data set.",
         "H3": "A step that reads only holdout inputs (imputation, scaling, bin edges) leaves the estimate within 0.005 of the truth.",
-        "H4": "A calibration map fitted on the holdout biases the AUC and the Brier score optimistically (positive AUC bias, negative Brier bias, intervals excluding 0).",
+        "H4": "A calibration map fitted on the holdout biases the AUC and the Brier score optimistically (positive AUC bias, negative Brier bias, intervals excluding 0), for two models on three data sets and for the product's scorecard.",
         "H5": "At least one of the three gates fails on every leak planted in the fitting path, in every draw, and none fails on the proposed protocol.",
         "H6": "A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\\% at s = 0.5) and not by the CSI of the leaked feature (power at most 20\\% at s = 1) or the single-feature screen (at most 2\\% at s = 1).",
         "H7": "The closed forms of Proposition 4 reproduce the generator's exact development and decision-time AUC and the simulated means within three standard errors.",
@@ -484,7 +501,9 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     rows = [[tag.get(k, k), txt[k], res[k][1], "held" if res[k][0] else "not held"] for k in txt]
     table(TAB / "tab-hypotheses.tex", ["Id", "Prediction", "Evidence", "Outcome"], rows,
                  caption=("The nine predictions of the experimental design, each with the quantity that decides it and its outcome, computed by the table "
-                          "script from every cell that the paper reports. The predictions were written in the table script together with the outputs "
+                          "script from the cells of the paper that the prediction names: H1, H2 and H4 on the two models and three data sets and on the product's "
+                          "own scorecard, H3 and H9 on the two models and three data sets, H5 on the planted leaks of the compact pipeline, H6 and H7 on the "
+                          "levels of the planted leak, and H8 on the scorecard and the gradient-boosting rung over five cohorts. The predictions were written in the table script together with the outputs "
                           "that decide them; none was registered before the runs. A dagger marks the two whose thresholds were set with the "
                           "committed values of the cases C22 and C03 already known (Section~\\ref{sec:experimental-design}). A prediction that fails is "
                           "reported as not held."),
@@ -608,7 +627,12 @@ def derived_numbers() -> None:
     x1, n1, x2, n2 = c22null["rate"] * c22null["n"], c22null["n"], e3n["rate"] * e3reps, e3reps
     pp = (x1 + x2) / (n1 + n2)
     zz2 = (x1 / n1 - x2 / n2) / math.sqrt(pp * (1 - pp) * (1 / n1 + 1 / n2))
-    put("c22.null.diff", f"{100 * (x1 / n1 - x2 / n2):.1f}", "C22 null rate minus the e3 null rate of the test against development, points")
+    put("c22.null.diff", f"{100 * (x1 / n1 - x2 / n2):.2f}", "C22 null rate minus the e3 null rate of the test against development, points")
+    put("c22.null.rate", f"{100 * c22null['rate']:.2f}", "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] rate at 5%")
+    put("c22.null.x", f"{c22null['rejections']}", "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] rejections")
+    put("c22.null.n", f"{c22null['n']:,}", "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] n")
+    put("c22.null.lo", ratio(c22null["wilson_low"]), "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] wilson_low")
+    put("c22.null.hi", ratio(c22null["wilson_high"]), "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] wilson_high")
     put("c22.null.z", f"{zz2:.1f}", "pooled two-proportion z of the C22 and e3 null rates")
     put("c22.null.p", f"{math.erfc(zz2 / math.sqrt(2)):.3f}", "two-sided p of the pooled two-proportion z")
     put("e3.s0.0.auc_lo", ratio(e3n["lo"]), "experiments/results/e3_planted_leak.json levels[0.0].auc_test.lo")
