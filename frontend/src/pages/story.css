@@ -1,0 +1,70 @@
+/* The guided story (SHOW-1): one stage and one docked panel per step, on the shell's StoryFrame. The stage keeps the band of the
+   callouts above the drawing; the drawing fills the rest. Colour carries state and focus only; a state is also written. */
+.contraste-story { min-width: 0; }
+/* base defect BD-7 (shell 0.23.0): the story layout takes its panel's content height as its flex basis, so a panel taller than the
+   stage shrinks the stepper under its tabs (G5 "tab row cuts its tabs"). The header and the stepper keep their height; the layout, which
+   scrolls its panel, absorbs the difference. */
+.contraste-story .caos-story-header, .contraste-story .caos-story-stepper { flex-shrink: 0; }
+/* the drawing is laid over the stage, so its measured size never feeds back into the height of the stage (a stage that sizes itself
+   from its own drawing shrank the stepper by 5 px, G5) */
+.story-stage-box { position: relative; width: 100%; height: 100%; min-height: 0; overflow: hidden; }
+.story-callouts { height: 100%; pointer-events: none; }
+.story-drawing { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; padding-top: var(--story-band, 86px); }
+.story-view { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; min-height: 0; }
+.story-view > svg { display: block; flex: 0 0 auto; max-width: 100%; }
+.story-view svg:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+.story-view [role="button"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.story-state-box { display: grid; place-items: center; height: 100%; padding: 1rem; }
+
+.story-scrub { display: flex; flex: 1 1 auto; align-items: center; gap: .6rem; min-height: 40px; max-height: 40px; padding: 0 .75rem; font-size: .8rem; color: var(--color-fg-subtle); font-variant-numeric: tabular-nums; }
+.story-scrub strong { min-width: 6.4rem; color: var(--color-fg); }
+.story-scrub input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--color-accent); }
+.story-scrub-n { white-space: nowrap; }
+.story-controls-row { display: flex; align-items: center; min-width: 0; min-height: 40px; max-height: 40px; padding-left: .5rem; }
+.story-controls-row .story-scrub { flex: 1 1 0; min-width: 0; padding-left: .5rem; }
+.story-play { min-height: 30px; padding: .2rem .7rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface-2); color: var(--color-fg); font: inherit; font-size: .78rem; white-space: nowrap; }
+.story-play[aria-pressed="true"] { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-soft); }
+.story-play:disabled { opacity: .55; }
+
+.story-panel-body { display: grid; align-content: start; gap: .65rem; min-width: 0; }
+.story-window { display: flex; align-items: center; gap: .5rem; font-size: .76rem; color: var(--color-fg-subtle); }
+.story-window select { flex: 1 1 auto; min-width: 0; min-height: 2rem; padding: .2rem .4rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-2); color: var(--color-fg); font: inherit; font-size: .8rem; }
+.story-evidence { display: grid; align-content: start; gap: .5rem; min-width: 0; }
+.story-evidence h2 { margin: 0; font-size: 1.05rem; }
+.story-evidence h3 { display: flex; align-items: center; gap: .4rem; margin: .2rem 0 0; font-size: .8rem; letter-spacing: .02em; color: var(--color-fg-subtle); }
+.story-evidence p { margin: 0; color: var(--color-fg-subtle); font-size: .84rem; }
+.story-evidence strong { color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.story-evidence ul { margin: 0; padding-left: 1rem; font-size: .82rem; }
+.story-source { color: var(--color-fg-faint); font-size: .72rem; line-height: 1.4; }
+.story-source a { color: var(--color-accent); }
+.story-note { color: var(--color-fg-subtle); font-size: .8rem; }
+.story-more { color: var(--color-fg-faint); list-style: none; }
+
+.story-chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+.story-item { display: inline-flex; align-items: center; gap: .4rem; min-height: 1.9rem; padding: .2rem .55rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface-2); color: var(--color-fg-subtle); font: inherit; font-size: .76rem; cursor: pointer; }
+.story-item[data-linked-selected="true"] { color: var(--color-fg); border-color: var(--color-accent); background: var(--color-accent-soft); box-shadow: 0 0 0 1px var(--color-accent); }
+.story-item-n { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--color-fg); }
+.story-models { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; max-height: 40vh; overflow: auto; }
+.story-models .story-item { width: 100%; border-radius: 6px; justify-content: flex-start; }
+.story-item-name { flex: 1 1 auto; text-align: left; min-width: 0; }
+.story-zone { min-width: 3.2rem; text-align: right; font-weight: 650; font-size: .72rem; }
+.story-zone.ok { color: var(--color-good); }
+.story-zone.warn { color: var(--color-warn); }
+.story-zone.bad { color: var(--color-bad); }
+.story-entries { color: var(--color-fg-subtle); }
+.story-finding { display: grid; gap: .1rem; width: 100%; padding: .25rem .4rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--color-fg); font: inherit; font-size: .8rem; text-align: left; cursor: pointer; }
+.story-finding[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.story-sev { font-size: .7rem; font-weight: 700; letter-spacing: .02em; color: var(--color-fg-subtle); }
+.story-sev[data-severity="S1"] { color: var(--color-bad); }
+.story-sev[data-severity="S2"] { color: var(--color-warn); }
+.story-element ul { list-style: none; padding-left: 0; display: grid; gap: .25rem; }
+.story-element small { display: block; padding-left: .4rem; color: var(--color-fg-faint); font-size: .7rem; }
+.story-table { width: 100%; border-collapse: collapse; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.story-table th, .story-table td { padding: .2rem .3rem; border-bottom: 1px solid var(--color-border); text-align: left; }
+.story-state { padding: 1rem; color: var(--color-fg-subtle); }
+
+@media (max-width: 760px) {
+  .story-scrub strong { min-width: 5rem; }
+  .story-scrub-n { display: none; }
+  .story-models { max-height: 9rem; }
+}

@@ -23,7 +23,8 @@ const root = join(here, '..', '..');
 const product = JSON.parse(readFileSync(join(root, 'product.json'), 'utf8'));
 
 const KINDS = ['workbench', 'surface'];
-const SHOWCASE_ROUTES = '/app,/introduction,/methodology,/implementation,/experiments,/benchmark,/story/context,/story/phase,/story/decision,/story/method';
+// The story routes are the product's own five steps (SHOW-1; base defect BD-1: the template ships the routes of its example case).
+const SHOWCASE_ROUTES = '/app,/introduction,/methodology,/implementation,/experiments,/benchmark,/story/inventory,/story/backtest,/story/crisis,/story/recalibrate,/story/decide';
 const MIN_REASON_WORDS = 8;
 const PLACEHOLDER = /^(?:tbd|tba|tbc|todo|fixme|xxx|lorem|ipsum|placeholder|n\/a|na|none|unknown)$/i;
 const NOT_APPLICABLE = /^not applicable:\s*(.+)$/i;

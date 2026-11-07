@@ -11,6 +11,7 @@
     "build": "tsc --noEmit && vite build && node scripts/materialize-routes.mjs",
     "preview": "node scripts/serve.mjs",
     "test": "node --test scripts/codegen-compatibility.test.mjs && vitest run",
+    "story:check": "node scripts/check_story_mode.mjs",
     "gate": "node scripts/gate.mjs",
     "capture": "node scripts/capture.mjs",
     "gen:contracts": "node scripts/gen-contract-types.mjs",

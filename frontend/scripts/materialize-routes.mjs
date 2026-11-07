@@ -13,7 +13,9 @@ if (!existsSync(index)) {
   console.error('[materialize-routes] dist/index.html is missing: run vite build first');
   process.exit(1);
 }
-const routes = STANDARD_ROUTES.map((r) => r.path).filter((p) => p !== '/');
+// the five story steps are deep links too (ADR-0070, ADR-0082 rule 3)
+const STORY_ROUTES = ['/story/inventory', '/story/backtest', '/story/crisis', '/story/recalibrate', '/story/decide'];
+const routes = [...STANDARD_ROUTES.map((r) => r.path).filter((p) => p !== '/'), ...STORY_ROUTES];
 for (const route of routes) {
   const dir = join(dist, route.replace(/^\//, ''));
   mkdirSync(dir, { recursive: true });

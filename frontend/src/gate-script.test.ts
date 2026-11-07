@@ -182,7 +182,7 @@ describe('the gate runner by the App kind (WB-014, WB-015)', () => {
   });
 
   it('requires all documented and story routes when a custom route list is supplied', () => {
-    const complete = '/app,/introduction,/methodology,/implementation,/experiments,/benchmark,/story/context,/story/phase,/story/decision,/story/method';
+    const complete = '/app,/introduction,/methodology,/implementation,/experiments,/benchmark,/story/inventory,/story/backtest,/story/crisis,/story/recalibrate,/story/decide';
     expect(run({ extra: ['--routes', complete] }).args).toContain('--require-showcase');
     expect(run({ extra: ['--routes', '/,/app'] }).args).toBeNull();
     expect(run({ product: { app: 'surface' }, extra: ['--app-route', '/console', '--routes', '/,/console'] }).args).toBeNull();

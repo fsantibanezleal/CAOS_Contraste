@@ -5,6 +5,7 @@
 // sub-tabs (problem, principles, math with its glossary, pipeline, honesty, how to read the App, the six pages).
 import { Callout, Cite, DocPage, DocSection, ExecutiveView, Figure, Glossary, InlineMath, SubTabs, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import { OverviewFigure } from '../architecture/figures';
 import { Equation, L, P, T, useT } from '../content/bi';
 import executive from '../../../content/executive.json';
@@ -160,6 +161,10 @@ function Technical() {
           en="Every view carries two badges: its lane (live, recomputed in your browser; replay, read from a committed artifact) and its data (real, synthetic or published). A view still showing an earlier selection says so while it recomputes. A case that is planned and not built yet is listed with a planned mark, can be selected, and says in every group that it is not available yet, with the reason."
           es="Cada vista lleva dos insignias: su carril (en vivo, recalculado en el navegador; reproducción, leído de un artefacto versionado) y sus datos (reales, sintéticos o publicados). Una vista que todavía muestra una selección anterior lo indica mientras recalcula. Un caso planificado y aún no construido aparece en la lista con una marca de planificado, se puede seleccionar y dice en cada grupo que aún no está disponible, con la razón."
         />
+        <p>
+          <Link to="/story/inventory">{t('Open the guided story', 'Abrir el recorrido guiado')}</Link>
+          {t(': five steps from the inventory of the bank to the choice of a VaR model, each a finding with its number, with the same documents as the App.', ': cinco pasos desde el inventario del banco hasta la elección de un modelo de VaR, cada uno un hallazgo con su número, con los mismos documentos que la App.')}
+        </p>
       </DocSection>
       <DocSection title={{ en: 'The six pages', es: 'Las seis páginas' }} noRefsReason={{ en: 'Describes this site.', es: 'Describe este sitio.' }}>
         <L
