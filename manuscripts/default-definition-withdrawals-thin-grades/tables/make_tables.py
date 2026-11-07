@@ -174,6 +174,7 @@ def definitions() -> None:
     # Fitch on the years in which the transition page's default column is populated
     put("fiPopYears", str(len(FIP["kept_years"])), "experiments/definitions.json fitch_populated_years.kept_years, number")
     put("fiPopDropped", f"{FIP['dropped_years'][0]} to {FIP['dropped_years'][-1]}", "experiments/definitions.json fitch_populated_years.dropped_years, first and last")
+    put("fiPopSeed", str(FIP["seed"]), "experiments/definitions.json fitch_populated_years.seed")
     put("fiPopDroppedN", str(len(FIP["dropped_years"])), "fitch_populated_years.dropped_years, number")
     put("fiPopLraDtwoCcc", pc(FIP["point"]["d2"]["lra"][C_]), "fitch_populated_years.point.d2.lra[6]")
     put("fiPopLraDfourCcc", pc(FIP["point"]["d4"]["lra"][C_]), "fitch_populated_years.point.d4.lra[6]")
@@ -372,7 +373,8 @@ def conjecture_and_extra() -> None:
                 r = rung(k)[arm + "_y1"]
                 z = (r["rel_bias"][g] - first_order(arm, k)) / r["rel_bias_mcse"][g]
                 zs[(g, arm, k)] = z
-                cells.append(f"${z:.1f}$" if abs(z) < 3 else f"$\\mathbf{{{z:.1f}}}$")
+                zr = round(z, 1) + 0.0  # no negative zero
+                cells.append(f"${zr:.1f}$" if abs(z) < 3 else f"$\\mathbf{{{zr:.1f}}}$")
             rows.append([gname, aname] + cells)
     write("conjecture", ["Grade", "Treatment"] + [f"$k={k:g}$" for k in ks], rows,
           caption="Standardised difference $z$ between the measured first-cohort relative bias and the first-order formula "
@@ -419,18 +421,20 @@ def conjecture_and_extra() -> None:
         d = dur[k]
         rows.append([f"{k:g}",
                      pm(100 * r["removed"]["rel_bias"][B_], 100 * r["removed"]["rel_bias_mcse"][B_]),
+                     pm(100 * r["kept"]["rel_bias"][B_], 100 * r["kept"]["rel_bias_mcse"][B_]),
                      pm(100 * r["followed"]["rel_bias"][B_], 100 * r["followed"]["rel_bias_mcse"][B_]),
                      pm(100 * d["rel_bias"][B_], 100 * d["rel_bias_mcse"][B_]),
                      pm(100 * r["removed"]["rel_bias"][C_], 100 * r["removed"]["rel_bias_mcse"][C_]),
+                     pm(100 * r["kept"]["rel_bias"][C_], 100 * r["kept"]["rel_bias_mcse"][C_]),
                      pm(100 * d["rel_bias"][C_], 100 * d["rel_bias_mcse"][C_]),
                      m(100 * r["removed"]["share_zero"][0], 1), m(100 * d["share_zero"][0], 1)])
-    write("duration", ["$k$", "B removed", "B followed", "B duration", "CCC-C removed", "CCC-C duration",
+    write("duration", ["$k$", "B removed", "B kept", "B followed", "B duration", "CCC-C removed", "CCC-C kept", "CCC-C duration",
                        "AAA zero, removed (\\%)", "AAA zero, duration (\\%)"], rows,
           caption="The duration estimator, which treats a withdrawal as a censoring of the continuous-time path, against "
-                  "the pooled cohort treatments on the same @REPS@ paired draws: relative bias (percent, mean $\\pm$ Monte "
+                  "the pooled cohort treatments (removed, kept, followed) on the same @REPS@ paired draws: relative bias (percent, mean $\\pm$ Monte "
                   "Carlo standard error) for grades B and CCC to C, and the share of repetitions in which the estimated PD "
                   "of AAA is exactly zero.",
-          label="tab:duration", align="rrrrrrrr")
+          label="tab:duration", align="rrrrrrrrrr")
     # the further transition tests
     names = {"rating.markov_order": ("ord", "test of the Markov order"), "rating.momentum": ("mom", "momentum test"),
              "rating.migration_ztests": ("zt", "monotonicity z-tests")}

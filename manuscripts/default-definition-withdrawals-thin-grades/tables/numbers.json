@@ -323,6 +323,10 @@
   "value": "2006 to 2014",
   "source": "experiments/definitions.json fitch_populated_years.dropped_years, first and last"
  },
+ "fiPopSeed": {
+  "value": "20261106",
+  "source": "experiments/definitions.json fitch_populated_years.seed"
+ },
  "fiPopDroppedN": {
   "value": "9",
   "source": "fitch_populated_years.dropped_years, number"
