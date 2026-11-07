@@ -71,7 +71,7 @@ frames testing as betting against the null; \citet{vovk2021} define e-values and
 time-uniform confidence sequences and betting estimators for bounded variables; \citet{ramdas2023} and \citet{ramdas2024} survey the field. In applications,
 \citet{johari2022} monitor online experiments continuously with always-valid p-values and confidence intervals that stay valid however long the test is watched, and the prequential
 principle of \citet{dawid1984} supplies the reading of a forecast evaluated sequentially. A mixture over alternatives buys robustness to the unknown size of the departure and
-costs power against any one size; that trade is the object of measurement here.
+costs power against any one size; that trade is the object of measurement here. The closest e-value work on calibration is that of \citet{arnold2023}, who propose e-values for testing the probabilistic calibration of forecasts, valid under optional stopping and competitive in power with tests that cannot be read sequentially, and that of \citet{henzi2022}, who construct e-values for the difference of the scores of two competing probability forecasts of binary events, also valid under optional stopping. The first tests the calibration of a forecast distribution and the second compares two forecasts; neither tests the defaults of a rating grade against its stated PD, the object of the monitor proposed here.
 
 \subsection{E-backtesting and the place of the proposed monitors}
 \label{sec:rw-ebacktest}
@@ -81,5 +81,5 @@ VaR and expected shortfall, and build e-processes from them with betting process
 tail probability. Their method is model-free and valid at any time, and it is run below as a comparator with their growth-rate betting rule. The proposed monitors differ in three
 ways. They bet on a grid of alternative hit rates fixed before the data, so that no bet has to be learned and the process starts to move on the first exceedance. They add a monitor of
 exceedance clustering, which the e-statistic of \citet{wang2022} does not address. And they extend the construction from VaR hits to the defaults of each rating grade against the predicted PD and to batteries of
-monitors. Among the works cited here we found no e-process for the calibration of default probabilities by grade, which is the gap that the PD monitor addresses; \cref{sec:theory}
+monitors. Among the works cited here we found no e-process for the defaults of each rating grade against its predicted PD with a multiplicative miscalibration as the alternative and batteries of grades, which is the gap that the PD monitor addresses; \cref{sec:theory}
 shows where its binomial null limits it.

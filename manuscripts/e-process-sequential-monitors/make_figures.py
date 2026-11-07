@@ -38,6 +38,8 @@ AB = load("results_ablation.json")
 PC = load("results_pd_correlation.json")
 C11 = load("results_c11.json")
 C03 = load("results_c03.json")
+MT = load("results_matched.json")
+PDC = load("results_pd_comparators.json")
 FACTORS = [(1.5, "rate-x1.5"), (2.0, "rate-x2"), (3.0, "rate-x3"), (4.0, "rate-x4"), (6.0, "rate-x6"), (10.0, "rate-x10")]
 
 
@@ -172,23 +174,28 @@ def fig_pd() -> None:
     import matplotlib.pyplot as plt
 
     figkit.style()
-    fig, axes = plt.subplots(1, 2, figsize=(6.8, 2.8), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(6.8, 4.0), constrained_layout=True)
     p = AB["pd_combine"]
     cols = [("all-x1", 1.0), ("all-x1.05", 1.05), ("all-x1.1", 1.1), ("all-x1.25", 1.25)]
     keys = [("product", "Product"), ("average", "Average"), ("average-upper", "Average, upper"), ("average-upper-coarse", "Average, upper, 4 alternatives"),
             ("chi2-one-shot-year-10", "Chi-square at year 10"), ("chi2-every-year", "Chi-square every year")]
     for i, (k, name) in enumerate(keys):
         axes[0].plot([f for _, f in cols], [100 * p[c][k]["ever"] for c, _ in cols], label=name, **S[i % len(S)])
+    eq = PDC["equal_size_chi2"]["scenarios"]
+    axes[0].plot([f for _, f in cols], [100 * eq[c]["chi2_sim"]["ever"] for c, _ in cols], label="Chi-square, simulated critical value (5 % size)", **S[len(keys) % len(S)])
     axes[0].set_xlabel("Every true PD divided by the predicted PD")
     axes[0].set_ylabel("Rejected within 10 years, %")
     axes[0].axhline(5, color="0.0", linestyle="--", linewidth=0.7)
-    axes[0].legend(frameon=False, fontsize=6.5, loc="center right")
+    axes[0].legend(frameon=False, fontsize=6, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
     rows = PC["rows"]
     rho = [r["rho"] for r in rows]
     for i, (k, name) in enumerate((("e_product", "Product"), ("e_average", "Average"), ("e_average_upper", "Average, upper"),
                                    ("chi2_one_shot_year_10", "Chi-square at year 10"), ("chi2_every_year", "Chi-square every year"))):
         axes[1].plot(rho, [100 * r[k]["ever"] for r in rows], label=name, **S[i % len(S)])
+    for j, (k, name) in enumerate((("vasicek_true", "Vasicek binomial, true correlation"), ("vasicek_assumed", "Vasicek binomial, correlation 0.12 assumed"))):
+        axes[1].plot(rho, [100 * PDC["correlation"][i][k]["every_year"]["ever"] for i in range(len(rho))], label=name, **S[(5 + j) % len(S)])
     axes[1].axhline(5, color="0.0", linestyle="--", linewidth=0.7)
+    axes[1].legend(frameon=False, fontsize=6, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
     axes[1].set_xlabel(r"Asset correlation $\rho$ (predicted PD correct)")
     axes[1].set_ylabel("Rejected within 10 years, %")
     figkit.save(fig, OUT, "pd-books")
@@ -269,7 +276,8 @@ def fig_theory() -> None:
     ax.plot(f, [r["sprt_time"] for r in kl], label=r"$\log 20/\mathrm{KL}$ (log-optimal bet)", **S[1])
     ax.plot(f, [r["mixture_time_bound"] for r in kl], label=r"$(\log 20+\log 8)/\mathrm{KL}$ (mixture of 8)", **S[2])
     mp = {1.5: "rate-x1.5", 2.0: "rate-x2", 3.0: "rate-x3", 4.0: "rate-x4", 6.0: "rate-x6", 10.0: "rate-x10"}
-    ax.plot(f, [sc(mp[v])["e_sprt3"]["median_day"] or 1000 for v in f], label=r"Measured median, $3\alpha$ alternative", **S[0])
+    mt = {1.5: "x1.5", 2.0: "x2", 3.0: "x3", 4.0: "x4", 6.0: "x6", 10.0: "x10"}
+    ax.plot(f, [MT["factors"][mt[v]]["median_day"] or 1000 for v in f], label="Measured median, matched single alternative", **S[0])
     ax.plot(f, [sc(mp[v])["e_rate"]["median_day"] or 1000 for v in f], label="Measured median, mixture", **S[3])
     ax.axhline(250, color="0.0", linestyle="--", linewidth=0.7)
     ax.set_xscale("log")

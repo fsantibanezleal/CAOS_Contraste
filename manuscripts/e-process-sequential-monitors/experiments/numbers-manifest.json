@@ -1089,11 +1089,11 @@
  },
  "nGapThreeWwz": {
   "value": "149",
-  "source": "derived: results_hits.json:scenarios.rate-x3.methods.e_wwz.median_day - results_hits.json:scenarios.rate-x3.methods.e_rate.median_day"
+  "source": "derived: printed results_hits.json:scenarios.rate-x3.methods.e_wwz.median_day - printed results_hits.json:scenarios.rate-x3.methods.e_rate.median_day"
  },
  "nGapFourWwz": {
-  "value": "106",
-  "source": "derived: results_hits.json:scenarios.rate-x4.methods.e_wwz.median_day - results_hits.json:scenarios.rate-x4.methods.e_rate.median_day"
+  "value": "107",
+  "source": "derived: printed results_hits.json:scenarios.rate-x4.methods.e_wwz.median_day - printed results_hits.json:scenarios.rate-x4.methods.e_rate.median_day"
  },
  "nCluOneTenthCluster": {
   "value": "25.4",
@@ -1139,6 +1139,10 @@
   "value": "beyond the horizon",
   "source": "results_hits.json:scenarios.cluster-0.1.methods.e_battery.median_day"
  },
+ "nCluMedOneTenthLight": {
+  "value": "729",
+  "source": "results_hits.json:scenarios.cluster-0.1.methods.traffic_light.median_day"
+ },
  "nCluTwoTenthCluster": {
   "value": "53.8",
   "source": "results_hits.json:scenarios.cluster-0.2.methods.e_cluster.ever"
@@ -1183,6 +1187,10 @@
   "value": "956",
   "source": "results_hits.json:scenarios.cluster-0.2.methods.e_battery.median_day"
  },
+ "nCluMedTwoTenthLight": {
+  "value": "748",
+  "source": "results_hits.json:scenarios.cluster-0.2.methods.traffic_light.median_day"
+ },
  "nCluFourTenthCluster": {
   "value": "78.2",
   "source": "results_hits.json:scenarios.cluster-0.4.methods.e_cluster.ever"
@@ -1226,6 +1234,10 @@
  "nCluMedFourTenthBattery": {
   "value": "502",
   "source": "results_hits.json:scenarios.cluster-0.4.methods.e_battery.median_day"
+ },
+ "nCluMedFourTenthLight": {
+  "value": "622",
+  "source": "results_hits.json:scenarios.cluster-0.4.methods.traffic_light.median_day"
  },
  "nSeedsThreeMed": {
   "value": "251",
@@ -1447,6 +1459,10 @@
   "value": "129",
   "source": "data/derived/C22/other-families.json:...rate-x4.e_rate.median_day"
  },
+ "nCommittedCluMedFourTenthLight": {
+  "value": "670",
+  "source": "data/derived/C22/other-families.json:...cluster-0.4.traffic_light.median_day"
+ },
  "nCommittedCostThree": {
   "value": "11.9",
   "source": "derived: kupiec_one_shot_power - e_rate.by, rate-x3, committed document"
@@ -1572,8 +1588,136 @@
   "source": "results_theory.json:size_matched_power.kupiec_smallest_rejecting_count"
  },
  "nExactESize": {
-  "value": "1.15",
+  "value": "1.25",
   "source": "results_theory.json:size_matched_power.e_process_size_by_window"
+ },
+ "nExactESizeMc": {
+  "value": "1.15",
+  "source": "results_theory.json:meta.e_process_size_monte_carlo"
+ },
+ "nExactEUpSize": {
+  "value": "1.80",
+  "source": "results_theory.json:exact_spending.rate_upper.by_250"
+ },
+ "nExactEThousand": {
+  "value": "2.11",
+  "source": "results_theory.json:exact_spending.rate_two_sided.by_1000"
+ },
+ "nExactSingleThreeSize": {
+  "value": "2.18",
+  "source": "results_theory.json:size_matched_power.single_3_size_by_window"
+ },
+ "nExactSingleThreeNp": {
+  "value": "66.6",
+  "source": "results_theory.json:size_matched_power.single_3_np_power_at_3"
+ },
+ "nExactOneShotKup": {
+  "value": "9.48",
+  "source": "results_theory.json:one_shot_sizes.kupiec"
+ },
+ "nExactOneShotLight": {
+  "value": "10.78",
+  "source": "results_theory.json:one_shot_sizes.traffic_light"
+ },
+ "nProductRejectDayTen": {
+  "value": "3.5",
+  "source": "results_theory.json:product_counterexample.hits_rate_times_cluster.reject_probability_by_day_10"
+ },
+ "nMatchedOneFiveMed": {
+  "value": "beyond the horizon",
+  "source": "results_matched.json:factors.x1.5.median_day"
+ },
+ "nMatchedOneFiveMedLo": {
+  "value": "--",
+  "source": "results_matched.json:factors.x1.5.median_ci[0]"
+ },
+ "nMatchedOneFiveMedHi": {
+  "value": "--",
+  "source": "results_matched.json:factors.x1.5.median_ci[1]"
+ },
+ "nMatchedOneFiveBy": {
+  "value": "0.4",
+  "source": "results_matched.json:factors.x1.5.by"
+ },
+ "nMatchedTwoMed": {
+  "value": "600",
+  "source": "results_matched.json:factors.x2.median_day"
+ },
+ "nMatchedTwoMedLo": {
+  "value": "584",
+  "source": "results_matched.json:factors.x2.median_ci[0]"
+ },
+ "nMatchedTwoMedHi": {
+  "value": "636",
+  "source": "results_matched.json:factors.x2.median_ci[1]"
+ },
+ "nMatchedTwoBy": {
+  "value": "13.8",
+  "source": "results_matched.json:factors.x2.by"
+ },
+ "nMatchedThreeMed": {
+  "value": "182",
+  "source": "results_matched.json:factors.x3.median_day"
+ },
+ "nMatchedThreeMedLo": {
+  "value": "177",
+  "source": "results_matched.json:factors.x3.median_ci[0]"
+ },
+ "nMatchedThreeMedHi": {
+  "value": "203",
+  "source": "results_matched.json:factors.x3.median_ci[1]"
+ },
+ "nMatchedThreeBy": {
+  "value": "62.5",
+  "source": "results_matched.json:factors.x3.by"
+ },
+ "nMatchedFourMed": {
+  "value": "102",
+  "source": "results_matched.json:factors.x4.median_day"
+ },
+ "nMatchedFourMedLo": {
+  "value": "95",
+  "source": "results_matched.json:factors.x4.median_ci[0]"
+ },
+ "nMatchedFourMedHi": {
+  "value": "108",
+  "source": "results_matched.json:factors.x4.median_ci[1]"
+ },
+ "nMatchedFourBy": {
+  "value": "86.1",
+  "source": "results_matched.json:factors.x4.by"
+ },
+ "nMatchedSixMed": {
+  "value": "45",
+  "source": "results_matched.json:factors.x6.median_day"
+ },
+ "nMatchedSixMedLo": {
+  "value": "44",
+  "source": "results_matched.json:factors.x6.median_ci[0]"
+ },
+ "nMatchedSixMedHi": {
+  "value": "46",
+  "source": "results_matched.json:factors.x6.median_ci[1]"
+ },
+ "nMatchedSixBy": {
+  "value": "98.5",
+  "source": "results_matched.json:factors.x6.by"
+ },
+ "nMatchedTenMed": {
+  "value": "17",
+  "source": "results_matched.json:factors.x10.median_day"
+ },
+ "nMatchedTenMedLo": {
+  "value": "16",
+  "source": "results_matched.json:factors.x10.median_ci[0]"
+ },
+ "nMatchedTenMedHi": {
+  "value": "18",
+  "source": "results_matched.json:factors.x10.median_ci[1]"
+ },
+ "nMatchedTenBy": {
+  "value": "100.0",
+  "source": "results_matched.json:factors.x10.by"
  },
  "nExactOneFiveKup": {
   "value": "10.8",
@@ -1584,8 +1728,12 @@
   "source": "results_theory.json:size_matched_power.factors.x1.5.kupiec_upper_power"
  },
  "nExactOneFiveNpE": {
-  "value": "7.4",
+  "value": "7.9",
   "source": "results_theory.json:size_matched_power.factors.x1.5.np_power_at_e_process_size"
+ },
+ "nExactOneFiveNpEUp": {
+  "value": "9.9",
+  "source": "results_theory.json:size_matched_power.factors.x1.5.np_power_at_upper_size"
  },
  "nExactOneFiveNpKup": {
   "value": "29.3",
@@ -1604,8 +1752,12 @@
   "source": "results_theory.json:size_matched_power.factors.x2.kupiec_upper_power"
  },
  "nExactTwoNpE": {
-  "value": "21.2",
+  "value": "22.4",
   "source": "results_theory.json:size_matched_power.factors.x2.np_power_at_e_process_size"
+ },
+ "nExactTwoNpEUp": {
+  "value": "26.0",
+  "source": "results_theory.json:size_matched_power.factors.x2.np_power_at_upper_size"
  },
  "nExactTwoNpKup": {
   "value": "52.7",
@@ -1624,8 +1776,12 @@
   "source": "results_theory.json:size_matched_power.factors.x3.kupiec_upper_power"
  },
  "nExactThreeNpE": {
-  "value": "59.1",
+  "value": "60.7",
   "source": "results_theory.json:size_matched_power.factors.x3.np_power_at_e_process_size"
+ },
+ "nExactThreeNpEUp": {
+  "value": "64.7",
+  "source": "results_theory.json:size_matched_power.factors.x3.np_power_at_upper_size"
  },
  "nExactThreeNpKup": {
   "value": "85.0",
@@ -1644,8 +1800,12 @@
   "source": "results_theory.json:size_matched_power.factors.x4.kupiec_upper_power"
  },
  "nExactFourNpE": {
-  "value": "85.5",
+  "value": "86.4",
   "source": "results_theory.json:size_matched_power.factors.x4.np_power_at_e_process_size"
+ },
+ "nExactFourNpEUp": {
+  "value": "88.5",
+  "source": "results_theory.json:size_matched_power.factors.x4.np_power_at_upper_size"
  },
  "nExactFourNpKup": {
   "value": "96.6",
@@ -1664,8 +1824,12 @@
   "source": "results_theory.json:size_matched_power.factors.x6.kupiec_upper_power"
  },
  "nExactSixNpE": {
-  "value": "99.2",
+  "value": "99.3",
   "source": "results_theory.json:size_matched_power.factors.x6.np_power_at_e_process_size"
+ },
+ "nExactSixNpEUp": {
+  "value": "99.4",
+  "source": "results_theory.json:size_matched_power.factors.x6.np_power_at_upper_size"
  },
  "nExactSixNpKup": {
   "value": "99.9",
@@ -2590,6 +2754,462 @@
  "nRhoReps": {
   "value": "2,000",
   "source": "results_pd_correlation.json:meta.reps"
+ },
+ "nPdcZeroBinEvery": {
+  "value": "3.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].binomial.every_year.ever"
+ },
+ "nPdcZeroBinOnce": {
+  "value": "3.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].binomial.once.ever"
+ },
+ "nPdcZeroJefEvery": {
+  "value": "4.1",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].jeffreys.every_year.ever"
+ },
+ "nPdcZeroJefOnce": {
+  "value": "3.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].jeffreys.once.ever"
+ },
+ "nPdcZeroVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].vasicek_assumed.every_year.ever"
+ },
+ "nPdcZeroVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].vasicek_assumed.once.ever"
+ },
+ "nPdcZeroVasTrueEvery": {
+  "value": "3.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].vasicek_true.every_year.ever"
+ },
+ "nPdcZeroVasTrueOnce": {
+  "value": "3.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].vasicek_true.once.ever"
+ },
+ "nPdcZeroChiSim": {
+  "value": "4.4",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].chi2_sim.ever"
+ },
+ "nPdcZeroChiMatched": {
+  "value": "0.3",
+  "source": "results_pd_comparators.json:correlation[rho=0.0].chi2_matched.ever"
+ },
+ "nPdcZeroThreeBinEvery": {
+  "value": "95.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].binomial.every_year.ever"
+ },
+ "nPdcZeroThreeBinOnce": {
+  "value": "32.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].binomial.once.ever"
+ },
+ "nPdcZeroThreeJefEvery": {
+  "value": "95.3",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].jeffreys.every_year.ever"
+ },
+ "nPdcZeroThreeJefOnce": {
+  "value": "32.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].jeffreys.once.ever"
+ },
+ "nPdcZeroThreeVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].vasicek_assumed.every_year.ever"
+ },
+ "nPdcZeroThreeVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].vasicek_assumed.once.ever"
+ },
+ "nPdcZeroThreeVasTrueEvery": {
+  "value": "1.4",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].vasicek_true.every_year.ever"
+ },
+ "nPdcZeroThreeVasTrueOnce": {
+  "value": "1.7",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].vasicek_true.once.ever"
+ },
+ "nPdcZeroThreeChiSim": {
+  "value": "99.2",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].chi2_sim.ever"
+ },
+ "nPdcZeroThreeChiMatched": {
+  "value": "97.9",
+  "source": "results_pd_comparators.json:correlation[rho=0.03].chi2_matched.ever"
+ },
+ "nPdcOneTwoBinEvery": {
+  "value": "96.7",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].binomial.every_year.ever"
+ },
+ "nPdcOneTwoBinOnce": {
+  "value": "30.9",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].binomial.once.ever"
+ },
+ "nPdcOneTwoJefEvery": {
+  "value": "96.8",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].jeffreys.every_year.ever"
+ },
+ "nPdcOneTwoJefOnce": {
+  "value": "31.2",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].jeffreys.once.ever"
+ },
+ "nPdcOneTwoVasAssumedEvery": {
+  "value": "2.4",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].vasicek_assumed.every_year.ever"
+ },
+ "nPdcOneTwoVasAssumedOnce": {
+  "value": "1.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].vasicek_assumed.once.ever"
+ },
+ "nPdcOneTwoVasTrueEvery": {
+  "value": "2.4",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].vasicek_true.every_year.ever"
+ },
+ "nPdcOneTwoVasTrueOnce": {
+  "value": "1.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].vasicek_true.once.ever"
+ },
+ "nPdcOneTwoChiSim": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].chi2_sim.ever"
+ },
+ "nPdcOneTwoChiMatched": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.12].chi2_matched.ever"
+ },
+ "nPdcTwoFourBinEvery": {
+  "value": "96.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].binomial.every_year.ever"
+ },
+ "nPdcTwoFourBinOnce": {
+  "value": "33.2",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].binomial.once.ever"
+ },
+ "nPdcTwoFourJefEvery": {
+  "value": "96.7",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].jeffreys.every_year.ever"
+ },
+ "nPdcTwoFourJefOnce": {
+  "value": "33.5",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].jeffreys.once.ever"
+ },
+ "nPdcTwoFourVasAssumedEvery": {
+  "value": "12.4",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].vasicek_assumed.every_year.ever"
+ },
+ "nPdcTwoFourVasAssumedOnce": {
+  "value": "5.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].vasicek_assumed.once.ever"
+ },
+ "nPdcTwoFourVasTrueEvery": {
+  "value": "1.8",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].vasicek_true.every_year.ever"
+ },
+ "nPdcTwoFourVasTrueOnce": {
+  "value": "1.6",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].vasicek_true.once.ever"
+ },
+ "nPdcTwoFourChiSim": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].chi2_sim.ever"
+ },
+ "nPdcTwoFourChiMatched": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:correlation[rho=0.24].chi2_matched.ever"
+ },
+ "nPdcMatchedSize": {
+  "value": "0.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.matched_size (the average e-process size, results_ablation.json)"
+ },
+ "nPdcCalReps": {
+  "value": "50,000",
+  "source": "results_pd_comparators.json:meta.calibration_reps"
+ },
+ "nPdcAssumedRho": {
+  "value": "0.12",
+  "source": "results_pd_comparators.json:meta.assumed_rho"
+ },
+ "nPdcBonferroniEvery": {
+  "value": "0.001",
+  "source": "results_pd_comparators.json:meta.bonferroni_every_year"
+ },
+ "nPdcOneChiSim": {
+  "value": "4.1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_sim.ever"
+ },
+ "nPdcOneChiSimBy": {
+  "value": "2.1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_sim.by3"
+ },
+ "nPdcOneChiSimYear": {
+  "value": "3",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_sim.median_year_among_detected"
+ },
+ "nPdcOneChiMatched": {
+  "value": "0.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_matched.ever"
+ },
+ "nPdcOneChiMatchedBy": {
+  "value": "0.2",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_matched.by3"
+ },
+ "nPdcOneChiMatchedYear": {
+  "value": "4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.chi2_matched.median_year_among_detected"
+ },
+ "nPdcOneBinEvery": {
+  "value": "2.6",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.binomial.every_year.ever"
+ },
+ "nPdcOneBinOnce": {
+  "value": "4.1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.binomial.once.ever"
+ },
+ "nPdcOneJefEvery": {
+  "value": "3.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.jeffreys.every_year.ever"
+ },
+ "nPdcOneJefOnce": {
+  "value": "4.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.jeffreys.once.ever"
+ },
+ "nPdcOneVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.vasicek_assumed.every_year.ever"
+ },
+ "nPdcOneVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.vasicek_assumed.once.ever"
+ },
+ "nPdcOneAvgBy": {
+  "value": "0.4",
+  "source": "results_ablation.json:pd_combine.all-x1.average.by3"
+ },
+ "nPdcOneAvgYear": {
+  "value": "1",
+  "source": "results_ablation.json:pd_combine.all-x1.average.median_year_among_detected"
+ },
+ "nPdcOneZeroFiveChiSim": {
+  "value": "53.2",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_sim.ever"
+ },
+ "nPdcOneZeroFiveChiSimBy": {
+  "value": "15.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_sim.by3"
+ },
+ "nPdcOneZeroFiveChiSimYear": {
+  "value": "6",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_sim.median_year_among_detected"
+ },
+ "nPdcOneZeroFiveChiMatched": {
+  "value": "23.2",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_matched.ever"
+ },
+ "nPdcOneZeroFiveChiMatchedBy": {
+  "value": "2.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_matched.by3"
+ },
+ "nPdcOneZeroFiveChiMatchedYear": {
+  "value": "7",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.chi2_matched.median_year_among_detected"
+ },
+ "nPdcOneZeroFiveBinEvery": {
+  "value": "15.7",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.binomial.every_year.ever"
+ },
+ "nPdcOneZeroFiveBinOnce": {
+  "value": "10.9",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.binomial.once.ever"
+ },
+ "nPdcOneZeroFiveJefEvery": {
+  "value": "16.9",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.jeffreys.every_year.ever"
+ },
+ "nPdcOneZeroFiveJefOnce": {
+  "value": "11.3",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.jeffreys.once.ever"
+ },
+ "nPdcOneZeroFiveVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.vasicek_assumed.every_year.ever"
+ },
+ "nPdcOneZeroFiveVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.05.vasicek_assumed.once.ever"
+ },
+ "nPdcOneZeroFiveAvgBy": {
+  "value": "0.8",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average.by3"
+ },
+ "nPdcOneZeroFiveAvgYear": {
+  "value": "4",
+  "source": "results_ablation.json:pd_combine.all-x1.05.average.median_year_among_detected"
+ },
+ "nPdcOneOneChiSim": {
+  "value": "99.8",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_sim.ever"
+ },
+ "nPdcOneOneChiSimBy": {
+  "value": "60.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_sim.by3"
+ },
+ "nPdcOneOneChiSimYear": {
+  "value": "3",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_sim.median_year_among_detected"
+ },
+ "nPdcOneOneChiMatched": {
+  "value": "98.8",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_matched.ever"
+ },
+ "nPdcOneOneChiMatchedBy": {
+  "value": "29.3",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_matched.by3"
+ },
+ "nPdcOneOneChiMatchedYear": {
+  "value": "5",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.chi2_matched.median_year_among_detected"
+ },
+ "nPdcOneOneBinEvery": {
+  "value": "55.5",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.binomial.every_year.ever"
+ },
+ "nPdcOneOneBinOnce": {
+  "value": "31.5",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.binomial.once.ever"
+ },
+ "nPdcOneOneJefEvery": {
+  "value": "59.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.jeffreys.every_year.ever"
+ },
+ "nPdcOneOneJefOnce": {
+  "value": "34.4",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.jeffreys.once.ever"
+ },
+ "nPdcOneOneVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.vasicek_assumed.every_year.ever"
+ },
+ "nPdcOneOneVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.1.vasicek_assumed.once.ever"
+ },
+ "nPdcOneOneAvgBy": {
+  "value": "13.8",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average.by3"
+ },
+ "nPdcOneOneAvgYear": {
+  "value": "6",
+  "source": "results_ablation.json:pd_combine.all-x1.1.average.median_year_among_detected"
+ },
+ "nPdcOneTwoFiveChiSim": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_sim.ever"
+ },
+ "nPdcOneTwoFiveChiSimBy": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_sim.by3"
+ },
+ "nPdcOneTwoFiveChiSimYear": {
+  "value": "1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_sim.median_year_among_detected"
+ },
+ "nPdcOneTwoFiveChiMatched": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_matched.ever"
+ },
+ "nPdcOneTwoFiveChiMatchedBy": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_matched.by3"
+ },
+ "nPdcOneTwoFiveChiMatchedYear": {
+  "value": "1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.chi2_matched.median_year_among_detected"
+ },
+ "nPdcOneTwoFiveBinEvery": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.binomial.every_year.ever"
+ },
+ "nPdcOneTwoFiveBinOnce": {
+  "value": "96.6",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.binomial.once.ever"
+ },
+ "nPdcOneTwoFiveJefEvery": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.jeffreys.every_year.ever"
+ },
+ "nPdcOneTwoFiveJefOnce": {
+  "value": "97.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.jeffreys.once.ever"
+ },
+ "nPdcOneTwoFiveVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.vasicek_assumed.every_year.ever"
+ },
+ "nPdcOneTwoFiveVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.all-x1.25.vasicek_assumed.once.ever"
+ },
+ "nPdcOneTwoFiveAvgBy": {
+  "value": "99.7",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average.by3"
+ },
+ "nPdcOneTwoFiveAvgYear": {
+  "value": "2",
+  "source": "results_ablation.json:pd_combine.all-x1.25.average.median_year_among_detected"
+ },
+ "nPdcGradeChiSim": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_sim.ever"
+ },
+ "nPdcGradeChiSimBy": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_sim.by3"
+ },
+ "nPdcGradeChiSimYear": {
+  "value": "1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_sim.median_year_among_detected"
+ },
+ "nPdcGradeChiMatched": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_matched.ever"
+ },
+ "nPdcGradeChiMatchedBy": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_matched.by3"
+ },
+ "nPdcGradeChiMatchedYear": {
+  "value": "1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.chi2_matched.median_year_among_detected"
+ },
+ "nPdcGradeBinEvery": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.binomial.every_year.ever"
+ },
+ "nPdcGradeBinOnce": {
+  "value": "97.1",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.binomial.once.ever"
+ },
+ "nPdcGradeJefEvery": {
+  "value": "100.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.jeffreys.every_year.ever"
+ },
+ "nPdcGradeJefOnce": {
+  "value": "97.7",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.jeffreys.once.ever"
+ },
+ "nPdcGradeVasAssumedEvery": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.vasicek_assumed.every_year.ever"
+ },
+ "nPdcGradeVasAssumedOnce": {
+  "value": "0.0",
+  "source": "results_pd_comparators.json:equal_size_chi2.scenarios.grade5-x1.3.vasicek_assumed.once.ever"
+ },
+ "nPdcGradeAvgBy": {
+  "value": "100.0",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average.by3"
+ },
+ "nPdcGradeAvgYear": {
+  "value": "1",
+  "source": "results_ablation.json:pd_combine.grade5-x1.3.average.median_year_among_detected"
  },
  "nCElevenDaysCalm": {
   "value": "750",
@@ -4175,6 +4795,14 @@
   "value": "7,601",
   "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].predicted_defaults"
  },
+ "nCThreeVTwoZeroZeroSix": {
+  "value": "6423.2",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].max_log_e"
+ },
+ "nCThreeRejTwoZeroZeroSix": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].rejection_month"
+ },
  "nCThreeNTwoZeroZeroSix": {
   "value": "86,393",
   "source": "results_c03.json:cohorts.fy2006-07.vintages[2006].n"
@@ -4186,6 +4814,14 @@
  "nCThreePTwoZeroZeroSeven": {
   "value": "7,722",
   "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].predicted_defaults"
+ },
+ "nCThreeVTwoZeroZeroSeven": {
+  "value": "11631.7",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].max_log_e"
+ },
+ "nCThreeRejTwoZeroZeroSeven": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2006-07.vintages[2007].rejection_month"
  },
  "nCThreeNTwoZeroZeroSeven": {
   "value": "88,134",
@@ -4211,6 +4847,14 @@
   "value": "4,526",
   "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].predicted_defaults"
  },
+ "nCThreeVTwoZeroZeroEight": {
+  "value": "6363.6",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].max_log_e"
+ },
+ "nCThreeRejTwoZeroZeroEight": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].rejection_month"
+ },
  "nCThreeNTwoZeroZeroEight": {
   "value": "61,539",
   "source": "results_c03.json:cohorts.fy2008-10.vintages[2008].n"
@@ -4223,6 +4867,14 @@
   "value": "2,251",
   "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].predicted_defaults"
  },
+ "nCThreeVTwoZeroZeroNine": {
+  "value": "366.4",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].max_log_e"
+ },
+ "nCThreeRejTwoZeroZeroNine": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].rejection_month"
+ },
  "nCThreeNTwoZeroZeroNine": {
   "value": "36,594",
   "source": "results_c03.json:cohorts.fy2008-10.vintages[2009].n"
@@ -4234,6 +4886,14 @@
  "nCThreePTwoZeroOneZero": {
   "value": "2,158",
   "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].predicted_defaults"
+ },
+ "nCThreeVTwoZeroOneZero": {
+  "value": "42.5",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneZero": {
+  "value": "24",
+  "source": "results_c03.json:cohorts.fy2008-10.vintages[2010].rejection_month"
  },
  "nCThreeNTwoZeroOneZero": {
   "value": "39,890",
@@ -4259,6 +4919,14 @@
   "value": "2,957",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneOne": {
+  "value": "-3.4",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneOne": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].rejection_month"
+ },
  "nCThreeNTwoZeroOneOne": {
   "value": "45,592",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2011].n"
@@ -4270,6 +4938,14 @@
  "nCThreePTwoZeroOneTwo": {
   "value": "2,545",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].predicted_defaults"
+ },
+ "nCThreeVTwoZeroOneTwo": {
+  "value": "-5.2",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneTwo": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2012].rejection_month"
  },
  "nCThreeNTwoZeroOneTwo": {
   "value": "38,861",
@@ -4283,6 +4959,14 @@
   "value": "2,506",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneThree": {
+  "value": "-3.1",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneThree": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].rejection_month"
+ },
  "nCThreeNTwoZeroOneThree": {
   "value": "40,400",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2013].n"
@@ -4294,6 +4978,14 @@
  "nCThreePTwoZeroOneFour": {
   "value": "2,922",
   "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].predicted_defaults"
+ },
+ "nCThreeVTwoZeroOneFour": {
+  "value": "-1.3",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneFour": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2011-14.vintages[2014].rejection_month"
  },
  "nCThreeNTwoZeroOneFour": {
   "value": "45,942",
@@ -4319,6 +5011,14 @@
   "value": "4,886",
   "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneFive": {
+  "value": "-7.6",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneFive": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].rejection_month"
+ },
  "nCThreeNTwoZeroOneFive": {
   "value": "55,387",
   "source": "results_c03.json:cohorts.fy2015-17.vintages[2015].n"
@@ -4331,6 +5031,14 @@
   "value": "4,742",
   "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneSix": {
+  "value": "-7.2",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneSix": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].rejection_month"
+ },
  "nCThreeNTwoZeroOneSix": {
   "value": "56,759",
   "source": "results_c03.json:cohorts.fy2015-17.vintages[2016].n"
@@ -4342,6 +5050,14 @@
  "nCThreePTwoZeroOneSeven": {
   "value": "4,508",
   "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].predicted_defaults"
+ },
+ "nCThreeVTwoZeroOneSeven": {
+  "value": "-7.2",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneSeven": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2015-17.vintages[2017].rejection_month"
  },
  "nCThreeNTwoZeroOneSeven": {
   "value": "56,057",
@@ -4367,6 +5083,14 @@
   "value": "3,616",
   "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneEight": {
+  "value": "3.5",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneEight": {
+  "value": "12",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].rejection_month"
+ },
  "nCThreeNTwoZeroOneEight": {
   "value": "54,171",
   "source": "results_c03.json:cohorts.fy2018-20.vintages[2018].n"
@@ -4379,6 +5103,14 @@
   "value": "2,630",
   "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].predicted_defaults"
  },
+ "nCThreeVTwoZeroOneNine": {
+  "value": "-2.9",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].max_log_e"
+ },
+ "nCThreeRejTwoZeroOneNine": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].rejection_month"
+ },
  "nCThreeNTwoZeroOneNine": {
   "value": "45,664",
   "source": "results_c03.json:cohorts.fy2018-20.vintages[2019].n"
@@ -4390,6 +5122,14 @@
  "nCThreePTwoZeroTwoZero": {
   "value": "2,025",
   "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].predicted_defaults"
+ },
+ "nCThreeVTwoZeroTwoZero": {
+  "value": "-6.3",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].max_log_e"
+ },
+ "nCThreeRejTwoZeroTwoZero": {
+  "value": "never",
+  "source": "results_c03.json:cohorts.fy2018-20.vintages[2020].rejection_month"
  },
  "nCThreeNTwoZeroTwoZero": {
   "value": "36,456",
@@ -4424,11 +5164,19 @@
   "source": "run-times.json:seconds.exp_c03.py"
  },
  "nRunTheory": {
-  "value": "81",
+  "value": "16",
   "source": "run-times.json:seconds.exp_theory.py"
  },
+ "nRunMatched": {
+  "value": "43",
+  "source": "run-times.json:seconds.exp_matched.py"
+ },
+ "nRunPdComparators": {
+  "value": "95",
+  "source": "run-times.json:seconds.exp_pd_comparators.py"
+ },
  "nRunTotal": {
-  "value": "1,637",
+  "value": "1,710",
   "source": "run-times.json:total_seconds"
  },
  "nPythonVersion": {

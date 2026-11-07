@@ -14,6 +14,10 @@
    (its rejection region under the null, by enumeration of the Binomial(250, alpha) counts), the exact randomised
    Neyman-Pearson power at the size of the Kupiec test and at the size the e-process spends by day 250 (read from
    ``results_hits.json``), which bounds every test of that size, the e-process included.
+5. ``exact_spending``: the exact null probability that the rate monitor (two-sided and upper) and the single alternative at
+   three times alpha have rejected by day 250 and by day 1,000, by dynamic programming over (t, S_t) (the process depends on
+   the stream only through them); it replaces the Monte Carlo share of 2,000 streams as the size the power bound is taken at.
+6. ``one_shot_sizes``: the exact size at day 250 of the Kupiec test and of the traffic light (the binomial tails).
 
     python manuscripts/e-process-sequential-monitors/experiments/exp_theory.py
 """
@@ -87,8 +91,10 @@ def product_counterexample() -> dict:
             r = pd_grade_eprocess(np.array([[d, d]], dtype=float), np.full((1, 2), float(n_obl)), np.array([p, p]), combine=combine)
             vals.append(float(np.exp(r.log_e[-1])))
         res[combine] = float(probs @ np.array(vals))
+    ever = (cm.engine_paths(h, alpha) + cm.engine_cluster_paths(h, alpha) >= cm.CROSS).any(axis=1)
     return {"hits_rate_times_cluster": {"alpha": alpha, "T": t, "expectation_by_t": [float(x) for x in e_prod],
-                                         "max_expectation": float(e_prod.max())},
+                                         "max_expectation": float(e_prod.max()),
+                                         "reject_probability_by_day_10": float(pr @ ever)},
             "pd_two_identical_grades": {"obligors": n_obl, "pd": p, "expectation_product": res["product"],
                                         "expectation_average": res["average"]}}
 
@@ -110,7 +116,26 @@ def kl_block() -> dict:
     return {"alpha": alpha, "threshold_log": thr, "grid": list(GRID), "rows": rows}
 
 
-def exact_size_power(n: int, alpha: float, factors: tuple[float, ...], e_size_by_window: float) -> dict:
+def exact_spending() -> dict:
+    """Exact null rejection probability by day 250 and by day 1,000 of the engine's rate monitors and of the single alternative."""
+    out = {}
+    for name, kw in (("rate_two_sided", {}), ("rate_upper", {"direction": "upper"}), ("single_3", {"multipliers": [3.0]})):
+        r = cm.exact_rejection_probability(cm.ALPHA, cm.HORIZON, cm.engine_multipliers(cm.ALPHA, **kw))
+        out[name] = {"multipliers": cm.engine_multipliers(cm.ALPHA, **kw), "by_250": r[cm.WINDOW - 1], "by_1000": r[-1]}
+    return out
+
+
+def one_shot_sizes(n: int, alpha: float) -> dict:
+    """Exact size at day ``n`` of the Kupiec test (two-sided) and of the traffic light (non-green count)."""
+    ks = np.arange(n + 1)
+    pm0 = stats.binom.pmf(ks, n, alpha)
+    kup = float(pm0[stats.chi2.sf(cm.kupiec_lr(ks.astype(float), np.full(n + 1, float(n)), alpha), 1) < cm.LEVEL].sum())
+    k_min = cm.traffic_light_days(np.zeros((1, n + 50), dtype=bool), window=n)[1]
+    return {"n": n, "alpha": alpha, "kupiec": kup, "traffic_light": float(stats.binom.sf(k_min - 1, n, alpha)),
+            "traffic_light_first_non_green_count": int(k_min)}
+
+
+def exact_size_power(n: int, alpha: float, factors: tuple[float, ...], e_size_by_window: float, single3_size: float, upper_size: float) -> dict:
     ks = np.arange(n + 1)
     pm0 = stats.binom.pmf(ks, n, alpha)
     lr = cm.kupiec_lr(ks.astype(float), np.full(n + 1, float(n)), alpha)
@@ -120,7 +145,7 @@ def exact_size_power(n: int, alpha: float, factors: tuple[float, ...], e_size_by
     upper_region = kup_region & (ks > n * alpha)
     out: dict = {"n": n, "alpha": alpha, "kupiec_size": kup_size, "kupiec_upper_size": float(pm0[upper_region].sum()),
                  "kupiec_smallest_rejecting_count": int(ks[upper_region].min()), "e_process_size_by_window": e_size_by_window,
-                 "factors": {}}
+                 "single_3_size_by_window": single3_size, "e_process_upper_size_by_window": upper_size, "factors": {}}
 
     def np_power(p1: float, size: float) -> float:
         """Randomised Neyman-Pearson power of the most powerful test of Bin(n, alpha) against Bin(n, p1) at ``size``."""
@@ -146,7 +171,10 @@ def exact_size_power(n: int, alpha: float, factors: tuple[float, ...], e_size_by
             "np_power_at_kupiec_size": np_power(p1, kup_size),
             "np_power_at_e_process_size": np_power(p1, e_size_by_window),
             "np_power_at_five_percent": np_power(p1, cm.LEVEL),
+            "np_power_at_single_3_size": np_power(p1, single3_size),
+            "np_power_at_upper_size": np_power(p1, upper_size),
         }
+    out["single_3_np_power_at_3"] = out["factors"]["x3"]["np_power_at_single_3_size"]
     return out
 
 
@@ -156,14 +184,19 @@ def main() -> int:
     ap.add_argument("--out", type=pathlib.Path, default=HERE / "results_theory.json")
     args = ap.parse_args()
     hits = json.loads(args.hits.read_text(encoding="utf-8"))
-    e_size_250 = hits["scenarios"]["null"]["methods"]["e_rate"]["by"]
+    e_size_mc = hits["scenarios"]["null"]["methods"]["e_rate"]["by"]
+    spending = exact_spending()
+    e_size_250 = spending["rate_two_sided"]["by_250"]
     result = {
         "meta": {"engine_version": metadata.version("riskvalidation"), "script": "experiments/exp_theory.py",
-                 "e_process_size_source": "results_hits.json scenarios.null.methods.e_rate.by"},
+                 "e_process_size_source": "exact_spending.rate_two_sided.by_250 (dynamic programming)",
+                 "e_process_size_monte_carlo": e_size_mc, "e_process_size_monte_carlo_source": "results_hits.json scenarios.null.methods.e_rate.by"},
         "null_expectation": null_expectation(),
         "product_counterexample": product_counterexample(),
         "kl": kl_block(),
-        "size_matched_power": exact_size_power(cm.WINDOW, cm.ALPHA, FACTORS, e_size_250),
+        "exact_spending": spending,
+        "one_shot_sizes": one_shot_sizes(cm.WINDOW, cm.ALPHA),
+        "size_matched_power": exact_size_power(cm.WINDOW, cm.ALPHA, FACTORS, e_size_250, spending["single_3"]["by_250"], spending["rate_upper"]["by_250"]),
     }
     args.out.write_text(json.dumps(result, indent=1), encoding="utf-8")
     ne = result["null_expectation"]["processes"]

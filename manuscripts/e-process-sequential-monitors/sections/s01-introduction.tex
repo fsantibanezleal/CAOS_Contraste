@@ -20,7 +20,7 @@ is read and whenever the analyst stops \citep{shafer2011,shafer2021,ramdas2023,g
 with a betting rule that learns the size of the departure from the data.
 
 Two gaps remain for a validation function. The first is the calibration of probabilities of default by rating grade: the tests in use are read at the end of a
-cohort's life, and we found no use of e-processes for them among the works cited here. The second is the combination of several monitors of one portfolio into one anytime-valid decision, where
+cohort's life. E-values for the calibration of forecasts exist \citep{arnold2023}, and so do e-values for the comparison of two probability forecasts \citep{henzi2022}, but we found no e-process for the defaults of each rating grade against its predicted PD, with a multiplicative miscalibration as the alternative and batteries of grades, among the works cited here. The second is the combination of several monitors of one portfolio into one anytime-valid decision, where
 the combination rule decides whether the guarantee survives \citep{vovk2021,ramdas2023}. We address both and measure what the guarantee costs.
 
 The proposed method is a set of four monitors, each a mixture of likelihood-ratio e-processes over a grid of alternatives fixed before any outcome is seen: a monitor of the
@@ -40,16 +40,15 @@ loss of validity of the PD monitor when the default probability of a year is ran
 \item An experiment in which the monitors are run against ten other rules on the same streams: the Kupiec test on a growing and on a sliding window, the traffic light,
 Christoffersen's independence test, a Sidak-corrected Kupiec test, a Kupiec test and a CUSUM chart whose thresholds are calibrated by simulation to the same size, the published
 e-backtest, and two e-processes of the textbook kind (\cref{sec:experimental-design,sec:results}).
-\item The measured outcome of the hypotheses stated before the experiments: the size and the delay hold at a hit rate four times too high and above, the delay
-at a hit rate three times too high is \nSeedsThreeMed\ days against the window of 250 (\cref{tab:x3-seeds}), the power cost is \nSeedsThreeCost\ points at that severity, and the PD monitor loses its size once defaults share a systematic factor
-(\cref{tab:hypotheses,tab:pd-correlation}).
+\item The measured outcome of the hypotheses stated before the experiments. The size holds, and the delay and the power cost hold at a hit rate four times too high and above. The delay and the power-cost hypotheses fail at three times the nominal rate: the delay is \nSeedsThreeMed\ days against the window of 250 (\cref{tab:x3-seeds}) and the power cost is \nSeedsThreeCost\ points against the 10 allowed. The PD monitor loses its size once defaults share a systematic factor, and at an equal size it detects a miscalibration of the PD later than a chi-square rule does, where the engine's Vasicek-corrected binomial test with the right correlation keeps its size
+(\cref{tab:hypotheses,tab:pd-correlation,tab:pd-comparators,tab:pd-equal-size}).
 \end{enumerate}
 
 The main result is a trade. Read every day over 1,000 days, the rate e-process rejects a correct model in \nNullSizeE\,\% of \nReps\ series (95\,\% interval \nNullSizeELo\ to \nNullSizeEHi\,\%)
 where the repeated Kupiec test and the traffic light reject in \nNullSizeKupCum\ to \nNullSizeKupTrail\,\%, and it detects a hit rate four times too high at a median of
 \nMedFourE\ days, inside the 250-day window that the traffic light needs before it can speak at all. The price is power at a fixed horizon: by day 250 it detects a hit rate
 three times too high in \nByThreeE\,\% of the series against \nShotThree\,\% for one Kupiec reading. A one-sided monitor of the direction a supervisor penalises cuts that cost to \nCostThreeEUp\ points in the same run
-(\cref{sec:ablation}).
+(\cref{sec:ablation}); that variant was chosen after the two-sided results were known and needs a prospective confirmation (\cref{sec:discussion-negative}).
 
 \Cref{sec:related-work} places the work among the published methods, \cref{sec:problem} states the problem, \cref{sec:proposed-method} the monitors and \cref{sec:theory} their theory.
 \Cref{sec:experimental-design} sets the hypotheses and the protocol, \cref{sec:results,sec:ablation} give the measurements, and \cref{sec:discussion,sec:limitations}

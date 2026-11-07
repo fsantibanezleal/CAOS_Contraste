@@ -25,8 +25,9 @@ def load(name: str) -> dict:
     return json.loads((EXP / name).read_text(encoding="utf-8"))
 
 
-H, SH, X3, AB, PC, C11, C03, TH = (load(f"results_{n}.json") for n in
-                                    ("hits", "size_horizon", "x3_seeds", "ablation", "pd_correlation", "c11", "c03", "theory"))
+H, SH, X3, AB, PC, C11, C03, TH, MT, PDC = (load(f"results_{n}.json") for n in
+                                            ("hits", "size_horizon", "x3_seeds", "ablation", "pd_correlation", "c11", "c03", "theory", "matched",
+                                             "pd_comparators"))
 C22 = json.loads((figkit.DERIVED / "C22" / "other-families.json").read_text(encoding="utf-8"))["outputs"]["sequential"]
 
 REG: dict[str, tuple[str, str]] = {}
@@ -115,8 +116,9 @@ def build() -> None:
             put(f"Cost{tag}{nm}Se", c["se"], hsrc(sid, key, "power_cost_vs_one_shot") + ".se", 1, pct=True)
 
     for tag, sid in (("Three", "rate-x3"), ("Four", "rate-x4")):
-        gap = hs(sid, "e_wwz", "median_day") - hs(sid, "e_rate", "median_day")
-        put(f"Gap{tag}Wwz", gap, f"derived: {hsrc(sid, 'e_wwz', 'median_day')} - {hsrc(sid, 'e_rate', 'median_day')}", 0)
+        # the gap of the two medians as they are printed, so that the text reads "237 against 130" and "107 days"
+        gap = int(f"{hs(sid, 'e_wwz', 'median_day'):.0f}") - int(f"{hs(sid, 'e_rate', 'median_day'):.0f}")
+        put(f"Gap{tag}Wwz", gap, f"derived: printed {hsrc(sid, 'e_wwz', 'median_day')} - printed {hsrc(sid, 'e_rate', 'median_day')}", 0)
 
     # clustering
     for tag, sid in (("OneTenth", "cluster-0.1"), ("TwoTenth", "cluster-0.2"), ("FourTenth", "cluster-0.4")):
@@ -126,6 +128,7 @@ def build() -> None:
         med_hits(f"CluMed{tag}Cluster", sid, "e_cluster")
         med_hits(f"CluMed{tag}Indep", sid, "independence_trailing")
         med_hits(f"CluMed{tag}Battery", sid, "e_battery")
+        med_hits(f"CluMed{tag}Light", sid, "traffic_light")
 
     # seeds
     for pre, tag, name in (("Seeds", "Three", "x3"), ("Seeds", "Four", "x4"), ("SeedsUp", "Three", "x3_upper"), ("SeedsUp", "Four", "x4_upper")):
@@ -155,6 +158,8 @@ def build() -> None:
     put("CommittedNullE", cs("null", "e_rate")["ever"], "data/derived/C22/other-families.json:...null.e_rate.ever", 1, pct=True)
     put("CommittedMedThree", cs("rate-x3", "e_rate")["median_day"], "data/derived/C22/other-families.json:...rate-x3.e_rate.median_day", 0)
     put("CommittedMedFour", cs("rate-x4", "e_rate")["median_day"], "data/derived/C22/other-families.json:...rate-x4.e_rate.median_day", 0)
+    put("CommittedCluMedFourTenthLight", cs("cluster-0.4", "traffic_light")["median_day"],
+        "data/derived/C22/other-families.json:...cluster-0.4.traffic_light.median_day", 0)
     cc = cs("rate-x3", "kupiec_one_shot_power") - cs("rate-x3", "e_rate")["by"]
     put("CommittedCostThree", cc, "derived: kupiec_one_shot_power - e_rate.by, rate-x3, committed document", 1, pct=True)
     cc4 = cs("rate-x4", "kupiec_one_shot_power") - cs("rate-x4", "e_rate")["by"]
@@ -179,11 +184,32 @@ def build() -> None:
     put("ExactKupUpperSize", sm["kupiec_upper_size"], "results_theory.json:size_matched_power.kupiec_upper_size", 2, pct=True)
     put("ExactKupMinCount", sm["kupiec_smallest_rejecting_count"], "results_theory.json:size_matched_power.kupiec_smallest_rejecting_count")
     put("ExactESize", sm["e_process_size_by_window"], "results_theory.json:size_matched_power.e_process_size_by_window", 2, pct=True)
+    put("ExactESizeMc", TH["meta"]["e_process_size_monte_carlo"], "results_theory.json:meta.e_process_size_monte_carlo", 2, pct=True)
+    sp = TH["exact_spending"]
+    put("ExactEUpSize", sp["rate_upper"]["by_250"], "results_theory.json:exact_spending.rate_upper.by_250", 2, pct=True)
+    put("ExactEThousand", sp["rate_two_sided"]["by_1000"], "results_theory.json:exact_spending.rate_two_sided.by_1000", 2, pct=True)
+    put("ExactSingleThreeSize", sm["single_3_size_by_window"], "results_theory.json:size_matched_power.single_3_size_by_window", 2, pct=True)
+    put("ExactSingleThreeNp", sm["single_3_np_power_at_3"], "results_theory.json:size_matched_power.single_3_np_power_at_3", 1, pct=True)
+    os_ = TH["one_shot_sizes"]
+    put("ExactOneShotKup", os_["kupiec"], "results_theory.json:one_shot_sizes.kupiec", 2, pct=True)
+    put("ExactOneShotLight", os_["traffic_light"], "results_theory.json:one_shot_sizes.traffic_light", 2, pct=True)
+    put("ProductRejectDayTen", TH["product_counterexample"]["hits_rate_times_cluster"]["reject_probability_by_day_10"],
+        "results_theory.json:product_counterexample.hits_rate_times_cluster.reject_probability_by_day_10", 1, pct=True)
+    # the single alternative matched to the severity, at every severity of the ladder
+    for tag, f in (("OneFive", "x1.5"), ("Two", "x2"), ("Three", "x3"), ("Four", "x4"), ("Six", "x6"), ("Ten", "x10")):
+        r = MT["factors"][f]
+        v = r["median_day"]
+        put(f"Matched{tag}Med", "beyond the horizon" if v is None else f"{v:.0f}", f"results_matched.json:factors.{f}.median_day")
+        lo, hi = r["median_ci"]
+        put(f"Matched{tag}MedLo", "--" if lo is None else f"{lo:.0f}", f"results_matched.json:factors.{f}.median_ci[0]")
+        put(f"Matched{tag}MedHi", "--" if hi is None else f"{hi:.0f}", f"results_matched.json:factors.{f}.median_ci[1]")
+        put(f"Matched{tag}By", r["by"], f"results_matched.json:factors.{f}.by", 1, pct=True)
     for tag, f in (("OneFive", "x1.5"), ("Two", "x2"), ("Three", "x3"), ("Four", "x4"), ("Six", "x6")):
         r = sm["factors"][f]
         put(f"Exact{tag}Kup", r["kupiec_power"], f"results_theory.json:size_matched_power.factors.{f}.kupiec_power", 1, pct=True)
         put(f"Exact{tag}KupUp", r["kupiec_upper_power"], f"results_theory.json:size_matched_power.factors.{f}.kupiec_upper_power", 1, pct=True)
         put(f"Exact{tag}NpE", r["np_power_at_e_process_size"], f"results_theory.json:size_matched_power.factors.{f}.np_power_at_e_process_size", 1, pct=True)
+        put(f"Exact{tag}NpEUp", r["np_power_at_upper_size"], f"results_theory.json:size_matched_power.factors.{f}.np_power_at_upper_size", 1, pct=True)
         put(f"Exact{tag}NpKup", r["np_power_at_kupiec_size"], f"results_theory.json:size_matched_power.factors.{f}.np_power_at_kupiec_size", 1, pct=True)
         put(f"Exact{tag}NpFive", r["np_power_at_five_percent"], f"results_theory.json:size_matched_power.factors.{f}.np_power_at_five_percent", 1, pct=True)
 
@@ -246,6 +272,36 @@ def build() -> None:
             put(f"Rho{tag}{nm}", r[key]["ever"], f"results_pd_correlation.json:rows[rho={r['rho']}].{key}.ever", 1, pct=True)
     put("RhoReps", PC["meta"]["reps"], "results_pd_correlation.json:meta.reps", thousands=True)
 
+    # the product's own PD tests and the chi-square rule of equal size, on the same histories
+    rule_tag = {"binomial": "Bin", "jeffreys": "Jef", "vasicek_assumed": "VasAssumed", "vasicek_true": "VasTrue"}
+    for r in PDC["correlation"]:
+        tag = {0.0: "Zero", 0.03: "ZeroThree", 0.12: "OneTwo", 0.24: "TwoFour"}[r["rho"]]
+        for k, nm in rule_tag.items():
+            for rd, rn in (("every_year", "Every"), ("once", "Once")):
+                put(f"Pdc{tag}{nm}{rn}", r[k][rd]["ever"], f"results_pd_comparators.json:correlation[rho={r['rho']}].{k}.{rd}.ever", 1, pct=True)
+        put(f"Pdc{tag}ChiSim", r["chi2_sim"]["ever"], f"results_pd_comparators.json:correlation[rho={r['rho']}].chi2_sim.ever", 1, pct=True)
+        put(f"Pdc{tag}ChiMatched", r["chi2_matched"]["ever"], f"results_pd_comparators.json:correlation[rho={r['rho']}].chi2_matched.ever", 1, pct=True)
+    eq = PDC["equal_size_chi2"]
+    put("PdcMatchedSize", eq["matched_size"], "results_pd_comparators.json:equal_size_chi2.matched_size (the average e-process size, results_ablation.json)", 1, pct=True)
+    put("PdcCalReps", PDC["meta"]["calibration_reps"], "results_pd_comparators.json:meta.calibration_reps", thousands=True)
+    put("PdcAssumedRho", PDC["meta"]["assumed_rho"], "results_pd_comparators.json:meta.assumed_rho", 2)
+    put("PdcBonferroniEvery", PDC["meta"]["bonferroni_every_year"], "results_pd_comparators.json:meta.bonferroni_every_year", 3)
+    for sid, tag in (("all-x1", "One"), ("all-x1.05", "OneZeroFive"), ("all-x1.1", "OneOne"), ("all-x1.25", "OneTwoFive"), ("grade5-x1.3", "Grade")):
+        v = eq["scenarios"][sid]
+        for k, nm in (("chi2_sim", "ChiSim"), ("chi2_matched", "ChiMatched")):
+            put(f"Pdc{tag}{nm}", v[k]["ever"], f"results_pd_comparators.json:equal_size_chi2.scenarios.{sid}.{k}.ever", 1, pct=True)
+            put(f"Pdc{tag}{nm}By", v[k]["by3"], f"results_pd_comparators.json:equal_size_chi2.scenarios.{sid}.{k}.by3", 1, pct=True)
+            my = v[k]["median_year_among_detected"]
+            put(f"Pdc{tag}{nm}Year", "--" if my is None else f"{my:.0f}", f"results_pd_comparators.json:equal_size_chi2.scenarios.{sid}.{k}.median_year_among_detected")
+        for k, nm in rule_tag.items():
+            if k in v:
+                put(f"Pdc{tag}{nm}Every", v[k]["every_year"]["ever"], f"results_pd_comparators.json:equal_size_chi2.scenarios.{sid}.{k}.every_year.ever", 1, pct=True)
+                put(f"Pdc{tag}{nm}Once", v[k]["once"]["ever"], f"results_pd_comparators.json:equal_size_chi2.scenarios.{sid}.{k}.once.ever", 1, pct=True)
+        pa = AB["pd_combine"][sid]["average"]
+        put(f"Pdc{tag}AvgBy", pa["by3"], f"results_ablation.json:pd_combine.{sid}.average.by3", 1, pct=True)
+        my = pa["median_year_among_detected"]
+        put(f"Pdc{tag}AvgYear", "--" if my is None else f"{my:.0f}", f"results_ablation.json:pd_combine.{sid}.average.median_year_among_detected")
+
     # real data
     for w, tag in (("calm-2004-06", "Calm"), ("equity-2007-09", "Equity"), ("fx-2008", "Fx"), ("equity-2020", "Covid"), ("rates-2022", "Rates"),
                    ("mixed-2023", "Mixed")):
@@ -279,6 +335,9 @@ def build() -> None:
         for v in c["vintages"]:
             put(f"CThreeD{yw(v['fiscal_year'])}", v["defaults"], f"results_c03.json:cohorts.{stem}.vintages[{v['fiscal_year']}].defaults", thousands=True)
             put(f"CThreeP{yw(v['fiscal_year'])}", v["predicted_defaults"], f"results_c03.json:cohorts.{stem}.vintages[{v['fiscal_year']}].predicted_defaults", thousands=True)
+            put(f"CThreeV{yw(v['fiscal_year'])}", v["max_log_e"], f"results_c03.json:cohorts.{stem}.vintages[{v['fiscal_year']}].max_log_e", 1)
+            put(f"CThreeRej{yw(v['fiscal_year'])}", "never" if v["rejection_month"] is None else str(v["rejection_month"]),
+                f"results_c03.json:cohorts.{stem}.vintages[{v['fiscal_year']}].rejection_month")
             put(f"CThreeN{yw(v['fiscal_year'])}", v["n"], f"results_c03.json:cohorts.{stem}.vintages[{v['fiscal_year']}].n", thousands=True)
     put("CThreeRebuilt", sum(c["recomputed_equals_committed"] for c in C03["cohorts"].values()), "results_c03.json:cohorts.*.recomputed_equals_committed")
 
@@ -293,7 +352,8 @@ def run_times() -> None:
         rt = json.loads(path.read_text(encoding="utf-8"))
     secs = rt["seconds"]
     for name, script in (("Hits", "exp_hits.py"), ("Ablation", "exp_ablation.py"), ("Seeds", "exp_x3_seeds.py"), ("Pd", "exp_pd_correlation.py"),
-                         ("CEleven", "exp_c11.py"), ("CThree", "exp_c03.py"), ("Theory", "exp_theory.py")):
+                         ("CEleven", "exp_c11.py"), ("CThree", "exp_c03.py"), ("Theory", "exp_theory.py"), ("Matched", "exp_matched.py"),
+                         ("PdComparators", "exp_pd_comparators.py")):
         v = secs.get(script)
         put(f"Run{name}", "NA" if v is None else f"{v:,.0f}", f"run-times.json:seconds.{script}")
     tot = rt["total_seconds"]

@@ -46,7 +46,7 @@ E_t^{\mathrm{cl}}=\sum_{k=1}^{K}w_k\prod_{s=2}^{t}\Bigl[\Bigl(\frac{q_k}{\alpha}
 \end{equation}
 with the first day carrying no predecessor and contributing one. The default multipliers are $\{3,6,12,25,50\}$ with equal weights, so that $q_k$ runs from $0.03$ to $0.5$ at $\alpha=0.01$. Each factor has conditional mean one under the null,
 because given a hit yesterday the probability of a hit today is $\alpha$, which is the property that makes the product of the factors a martingale (\cref{prop:clustering}). The clustering monitor reacts to hits that follow hits and not to the rate: a stream with the right rate and
-clusters moves it, and a stream with a wrong rate and no clusters does not.
+clusters moves it, and a stream with a wrong rate and no clusters moves it only through the hits that follow hits by chance: at three times the rate it rejects \nAbBatThreeCluster\,\% of the streams against \nAbBatNullCluster\,\% at the right rate (\cref{tab:ablation-battery}).
 
 \subsection{The PD monitor by rating grade}
 \label{sec:method-pd}
@@ -57,7 +57,7 @@ For grade $g$ the alternative is a multiplicative miscalibration, a true default
 \label{eq:pd-lr}
 \end{equation}
 The grid is logarithmic, $m_k=4^{j/8}$ for $j\in\{-8,\dots,-1,1,\dots,8\}$, sixteen points from $1/4$ to $4$ with the null value $m=1$ excluded, and a point with $m_kp_{s,g}\ge1$ for some step is dropped. The weights follow the Jeffreys prior for a
-proportion \citep{jeffreys1946}, $\pi(p)\propto p^{-1/2}(1-p)^{-1/2}$, taken on the logarithmic grid, where it picks up the Jacobian $p$ of the logarithmic scale, and use the mean predicted PD $\bar p_g$ of the grade over the steps, a quantity known before any outcome,
+proportion \citep{jeffreys1946}, $\pi(p)\propto p^{-1/2}(1-p)^{-1/2}$, taken on the logarithmic grid, where it picks up the Jacobian $p$ of the logarithmic scale, and use the mean predicted PD $\bar p_g$ of the grade over all the steps, a quantity that is known before any outcome only when the whole predicted path $p_{s,g}$ is fixed before the first outcome of the history,
 \begin{equation}
 w_{k,g}\;\propto\;\sqrt{\frac{m_k\bar p_g}{1-m_k\bar p_g}},\qquad \sum_k w_{k,g}=1 .
 \label{eq:pd-weights}
@@ -74,8 +74,8 @@ E_t^{\mathrm{prod}}=\prod_{g=1}^{G}E_{t,g},\qquad E_t^{\mathrm{avg}}=\frac1G\sum
 \label{eq:combine}
 \end{equation}
 The average is an e-process whatever the dependence between the components, because expectation is linear; its price is that a signal in one component is divided by $G$. The product is an e-process only when the components are independent given the past,
-and it lets signals add in the logarithm when many components drift together. For monitors of the same stream, such as the rate monitor and the clustering monitor of one VaR, the average is the combination of the battery (\cref{prop:product}
-shows that the product is not valid there). The null of the battery is the intersection of the component nulls: a rejection says at least one fails, and the component paths say which one moved. The same two rules combine the vintages of a cohort of loans, which share the economy and so are not independent, for which the average is the valid choice, and the monitors of several portfolios that are independent given the past, for which the product concentrates the evidence and is valid.
+and it lets signals add in the logarithm when many components drift together. For monitors of the same stream, such as the rate monitor and the clustering monitor of one VaR, the average is the combination of the battery (\cref{prop:product} and \cref{tab:null-expectation}
+show that the product is not valid there). The null of the battery is the intersection of the component nulls: a rejection says at least one fails, and the component paths say which one moved. The same two rules combine the vintages of a cohort of loans, which share the economy and so are not independent, for which the average is the valid choice, and the monitors of several portfolios that are independent given the past, for which the product concentrates the evidence and is valid.
 
 \subsection{Algorithm, complexity and implementation}
 \label{sec:method-algorithm}

@@ -32,6 +32,8 @@ PC = load("results_pd_correlation.json")
 C11 = load("results_c11.json")
 C03 = load("results_c03.json")
 TH = load("results_theory.json")
+MT = load("results_matched.json")
+PDC = load("results_pd_comparators.json")
 C22 = json.loads((figkit.DERIVED / "C22" / "other-families.json").read_text(encoding="utf-8"))["outputs"]["sequential"]
 
 
@@ -153,43 +155,69 @@ def t_hypotheses() -> None:
     d3 = x3["pooled_median_ci"][1] < 250 and x3["pooled_median"] < x3["pooled_traffic_light_median"]
     d4 = x4["pooled_median_ci"][1] < 250 and x4["pooled_median"] < x4["pooled_traffic_light_median"]
     c3, c4 = x3["pooled_power_cost"] < 0.10, x4["pooled_power_cost"] < 0.10
-    real_ok = all(float(C11_E[w]) < float(C11_L[w]) for w in ("equity-2007-09", "fx-2008"))
-    fires3 = not (x3["pooled_median"] < x3["pooled_traffic_light_median"])
+    # the refutation clause as the design states it: the real windows only (the equity 2007 to 2009 and the foreign-exchange 2008 windows)
+    real_fires = not all(float(C11_E[w]) < float(C11_L[w]) for w in ("equity-2007-09", "fx-2008"))
+    holds_as_stated = size_ok and d3 and d4 and c3 and c4 and not real_fires
+    rho3 = next(r for r in PC["rows"] if r["rho"] == 0.03)
+    over = rho3["e_average"]["ever"] > bound and rho3["e_product"]["ever"] > bound
+    eq = PDC["equal_size_chi2"]["scenarios"]
+    abl = AB["pd_combine"]
+    chi_more = all(eq[c]["chi2_sim"]["ever"] > abl[c]["average"]["ever"] for c in ("all-x1.05", "all-x1.1"))
+    u_ok = (u3["pooled_median_ci"][1] < 250 and u3["pooled_power_cost"] < 0.10 and u4["pooled_median_ci"][1] < 250 and u4["pooled_power_cost"] < 0.10)
+
+    def span(text: str) -> list[str]:
+        return ["\\multicolumn{3}{l}{\\textit{" + text + "}}"]
+
     rows = [
-        [raw("Size: the e-process rejects a correct VaR in at most $5\\,\\%$ plus three standard errors of the streams, read daily over 1,000 days, "
+        span("Stated before the experiments"),
+        [raw("Size (H1): the e-process rejects a correct VaR in at most $5\\,\\%$ plus three standard errors of the streams, read daily over 1,000 days, "
              "where the repeated Kupiec rule exceeds that"),
          raw(f"e-process {pc(null['e_rate']['ever'])}\\,\\%; Kupiec last 250 days {pc(null['kupiec_trailing']['ever'])}\\,\\%, all days "
              f"{pc(null['kupiec_cumulative']['ever'])}\\,\\%; bound {pc(bound)}\\,\\%"), verdict_word(size_ok)],
-        [raw("Delay: the median detection day is below the 250-day window, and below the traffic light's, at a hit rate three and four times too high"),
+        [raw("Delay (H2): the median detection day is below the 250-day window, and below the traffic light's, at a hit rate three and four times too high"),
          raw(f"x3: pooled median {x3['pooled_median']:.0f} [{x3['pooled_median_ci'][0]:.0f}, {x3['pooled_median_ci'][1]:.0f}] "
              f"(traffic light {x3['pooled_traffic_light_median']:.0f}); {pc(x3['share_of_seeds_below_window'], 0)}\\,\\% of seeds below 250. "
              f"x4: {x4['pooled_median']:.0f} [{x4['pooled_median_ci'][0]:.0f}, {x4['pooled_median_ci'][1]:.0f}] (traffic light {x4['pooled_traffic_light_median']:.0f})"),
          raw(f"x3: {verdict_word(d3).lower()}; x4: {verdict_word(d4).lower()}")],
-        [raw("Power cost: one Kupiec reading at day 250 has less than 10 points more power than the e-process has by day 250"),
+        [raw("Power cost (H3): one Kupiec reading at day 250 has less than 10 points more power than the e-process has by day 250"),
          raw(f"x3: {100 * x3['pooled_power_cost']:.1f} $\\pm$ {100 * x3['pooled_power_cost_se']:.1f} points; "
              f"x4: {100 * x4['pooled_power_cost']:.1f} $\\pm$ {100 * x4['pooled_power_cost_se']:.1f} points"),
          raw(f"x3: {verdict_word(c3).lower()}; x4: {verdict_word(c4).lower()}")],
+        [raw("Refutation clause (R), as the design states it: the hypothesis is refuted if the delay is not lower than the traffic light's on the equity "
+             "2007 to 2009 and foreign-exchange 2008 windows"),
+         raw(f"real windows (models the light flags): median day {C11_E['equity-2007-09']} against {C11_L['equity-2007-09']} and "
+             f"{C11_E['fx-2008']} against {C11_L['fx-2008']}. The same comparison on the generator, which this study adds, is the delay criterion of H2 "
+             f"(x3 {x3['pooled_median']:.0f} against {x3['pooled_traffic_light_median']:.0f})"),
+         raw("Fires" if real_fires else "Does not fire")],
+        [raw("PD prediction (from the documentation of the engine): the PD monitor over-rejects a correct PD when the defaults of a year are correlated, "
+             "because its null is binomial"),
+         raw(f"asset correlation 0.03: product {pc(rho3['e_product']['ever'])}\\,\\%, average {pc(rho3['e_average']['ever'])}\\,\\% of the histories"),
+         raw("Confirmed" if over else "Not confirmed")],
+        [raw("Overall, the hypotheses H1 to H3 and R as stated"),
+         raw("H2 and H3 fail at three times the nominal rate; H1 holds; R does not fire"),
+         raw("Holds" if holds_as_stated else "Does not hold as stated")],
+        span("Not stated before the experiments (chosen or run after the results)"),
         [raw("Upper-side variant of the rate monitor (chosen after the two-sided results, the direction a supervisor penalises): delay below 250 and below the traffic light's, "
              "and power cost under 10 points"),
          raw(f"x3: pooled median {u3['pooled_median']:.0f} [{u3['pooled_median_ci'][0]:.0f}, {u3['pooled_median_ci'][1]:.0f}], cost "
              f"{100 * u3['pooled_power_cost']:.1f} $\\pm$ {100 * u3['pooled_power_cost_se']:.1f} points; "
              f"x4: {u4['pooled_median']:.0f} [{u4['pooled_median_ci'][0]:.0f}, {u4['pooled_median_ci'][1]:.0f}], cost "
              f"{100 * u4['pooled_power_cost']:.1f} $\\pm$ {100 * u4['pooled_power_cost_se']:.1f} points"),
-         raw("Met at both severities" if (u3["pooled_median_ci"][1] < 250 and u3["pooled_power_cost"] < 0.10 and u4["pooled_median_ci"][1] < 250
-                                          and u4["pooled_power_cost"] < 0.10) else "Not met at both")],
-        [raw("Refutation clause: the hypothesis is refuted if the delay is not lower than the traffic light's, on the generator and on the equity "
-             "2007 to 2009 and foreign-exchange 2008 windows"),
-         raw(f"generator: x3 {x3['pooled_median']:.0f} against {x3['pooled_traffic_light_median']:.0f}, x4 {x4['pooled_median']:.0f} against "
-             f"{x4['pooled_traffic_light_median']:.0f}; real windows (models the light flags): median day {C11_E['equity-2007-09']} against "
-             f"{C11_L['equity-2007-09']} and {C11_E['fx-2008']} against {C11_L['fx-2008']}"),
-         raw(("Fires at x3" if fires3 else "Does not fire at x3") + ("; not at x4 or on the real windows" if (d4 and real_ok) else "; also at x4 or on a real window"))],
+         raw("Met at both severities; needs a prospective confirmation" if u_ok else "Not met at both severities")],
+        [raw("PD question (run after the results): are the defaults of five grades detected earlier than by the chi-square test across grades read every year, "
+             "when the chi-square rule is given the same size?"),
+         raw(f"PD $\\times 1.05$: chi-square {pc(eq['all-x1.05']['chi2_sim']['ever'])}\\,\\% at a size of 5\\,\\% and {pc(eq['all-x1.05']['chi2_matched']['ever'])}\\,\\% at the "
+             f"size of the e-process, average e-process {pc(abl['all-x1.05']['average']['ever'])}\\,\\%; "
+             f"$\\times 1.1$: {pc(eq['all-x1.1']['chi2_sim']['ever'])}, {pc(eq['all-x1.1']['chi2_matched']['ever'])} and {pc(abl['all-x1.1']['average']['ever'])}\\,\\%"),
+         raw("No: the chi-square rule detects more" if chi_more else "Yes")],
     ]
     figkit.table(
-        OUT / "hypotheses.tex", ["Hypothesis, stated before the experiments", "Measured", "Outcome"], rows, align="p{6.0cm}p{6.6cm}p{2.4cm}",
+        OUT / "hypotheses.tex", ["Hypothesis", "Measured", "Outcome"], rows, align="p{6.0cm}p{6.6cm}p{2.4cm}",
         wide=True, label="tab:hypotheses",
-        caption=("The hypotheses of the proposed monitors, stated before the experiments, with the measurements that judge them and the outcome of each: "
-                 "size on the generator of known truth, delay and power cost pooled over 20 independent seeds of 2,000 streams, and the refutation "
-                 "clause on the generator and on the two real windows of the case on market risk at the 99\\,\\% level."))
+        caption=("The hypotheses of the proposed monitors with the measurements that judge them and the outcome of each. The first block was stated before the experiments: "
+                 "size on the generator of known truth, delay and power cost pooled over 20 independent seeds of 2,000 streams, the refutation clause on the two real windows "
+                 "of the case on market risk at the 99\\,\\% level, and the prediction for the PD monitor, followed by the outcome of the hypothesis as a whole. "
+                 "The second block was chosen or run after the results were known and is not a test of a pre-stated hypothesis."))
 
 
 def c11_light_days() -> tuple[dict, dict]:
@@ -221,7 +249,7 @@ def t_size_matched() -> None:
         caption=(f"Exact power at day 250 and a VaR level of 1\\,\\% (expected count 2.5): the Kupiec test has a size of {pc(sm['kupiec_size'])}\\,\\% "
                  f"two-sided, of which {pc(sm['kupiec_upper_size'], 2)}\\,\\% lies in the upper tail that rejects an understated VaR (it rejects from "
                  f"{sm['kupiec_smallest_rejecting_count']} exceptions); the most powerful test, randomised, at the size {pc(sm['e_process_size_by_window'], 2)}\\,\\% "
-                 "that the rate e-process spends by day 250 on correct models bounds every test of that size; the last two columns are the "
+                 "that the rate e-process spends by day 250 on correct models (computed exactly) bounds every test of that size; the last two columns are the "
                  "measured shares of the e-processes on the generator."))
 
 
@@ -363,16 +391,18 @@ def t_theory_delay() -> None:
     mp = {1.5: "rate-x1.5", 2.0: "rate-x2", 3.0: "rate-x3", 4.0: "rate-x4", 6.0: "rate-x6", 10.0: "rate-x10"}
     for r in kl:
         s = sc(mp[r["factor"]])
+        mt = MT["factors"]["x" + f"{r['factor']:g}"]
         rows.append([raw(f"{r['factor']:g}"), f"{1000 * r['kl_vs_null']:.2f}", f"{r['sprt_time']:.0f}", f"{r['mixture_time_bound']:.0f}",
-                     med(s["e_sprt3"]), med(s["e_rate"])])
+                     med(mt), med(s["e_rate"])])
     figkit.table(
         OUT / "theory-delay.tex",
-        ["Hit-rate factor $m$", "$1000\\,\\mathrm{KL}(m\\alpha\\|\\alpha)$", "Time $\\log 20/\\mathrm{KL}$", "Time with the mixture penalty", "Measured median, $3\\alpha$ alternative",
+        ["Hit-rate factor $m$", "$1000\\,\\mathrm{KL}(m\\alpha\\|\\alpha)$", "Time $\\log 20/\\mathrm{KL}$", "Time with the mixture penalty", "Measured median, matched single alternative",
          "Measured median, mixture"],
         rows, align="rrrrrr", wide=True, label="tab:theory-delay",
         caption=("The first-order delay of the e-process at a VaR level of 1\\,\\%: the Kullback-Leibler divergence per day of the true hit rate from the null, in thousandths "
                  "of a nat, the number of days a log-optimal bet needs to reach the threshold $\\log 20$, the same with the penalty $\\log K$ of a mixture of $K=8$ "
-                 "alternatives, and the measured median first-rejection days (95\\,\\% bootstrap intervals) of the single-alternative and of the mixture e-process. "
+                 "alternatives, and the measured median first-rejection days (95\\,\\% bootstrap intervals) of the single-alternative e-process whose alternative is the true hit rate "
+                 "(matched at every factor) and of the mixture e-process, on the same 2,000 streams. "
                  "Where the median exceeds the 1,000-day horizon the symbol $>$ is printed."))
 
 
@@ -413,6 +443,55 @@ def t_agreement() -> None:
                  "error of two independent runs of 2,000 streams (about one point at the middle of the range)."))
 
 
+def pdci(m: dict) -> str:
+    lo, hi = m["ever_ci"]
+    return raw(f"{pc(m['ever'])} [{pc(lo)}, {pc(hi)}]")
+
+
+def t_pd_comparators() -> None:
+    rows = []
+    for r in PDC["correlation"]:
+        pe = next(x for x in PC["rows"] if x["rho"] == r["rho"])
+        rows.append([raw(f"{r['rho']:.2f}"), pci(pe["e_average"]), pdci(r["binomial"]["every_year"]), pdci(r["jeffreys"]["every_year"]),
+                     pdci(r["vasicek_assumed"]["every_year"]), pdci(r["vasicek_true"]["every_year"]), pdci(r["vasicek_true"]["once"]),
+                     pdci(r["chi2_sim"])])
+    m = PDC["meta"]
+    figkit.table(
+        OUT / "pd-comparators.tex",
+        ["$\\rho$", "Average e-process", "Binomial per grade", "Jeffreys per grade", "Vasicek, $0.12$ assumed",
+         "Vasicek, true $\\rho$", "Vasicek, true $\\rho$, read once", "Chi-square, simulated critical value"],
+        rows, align="p{0.8cm}" + ">{\\raggedleft\\arraybackslash}p{1.9cm}" * 7, wide=True, label="tab:pd-comparators",
+        caption=(f"The PD e-process and the PD tests of the engine on the same {m['reps']:,} histories as \\cref{{tab:pd-correlation}} (predicted PD equal to the true PD, defaults of a year sharing "
+                 "a systematic factor of asset correlation $\\rho$): share of histories rejected at some year, in percent with 95\\,\\% Wilson intervals. "
+                 "The per-grade tests (the exact binomial test, the Jeffreys test, and the binomial test under the Vasicek one-factor mixture with the correlation assumed or the "
+                 f"true one) are one-sided; read every year they reject when any of the 5 grades in any of the 10 years has a p-value below ${m['bonferroni_every_year']:.3f}$ "
+                 f"(a Bonferroni split of 5\\,\\% over the 50 grade-years), and read once when any grade at year 10 is below $0.01$. The chi-square rule reads the statistic across grades every year "
+                 f"against one critical value set by simulation on {m['calibration_reps']:,} correct histories to a size of 5\\,\\% over the ten years."))
+
+
+def t_pd_equal_size() -> None:
+    eq = PDC["equal_size_chi2"]
+    names = {"all-x1": "1 (size)", "all-x1.05": "1.05", "all-x1.1": "1.1", "all-x1.25": "1.25", "grade5-x1.3": "10\\% grade only, 1.3"}
+    rows = []
+    for sid, lab in names.items():
+        a, v = AB["pd_combine"][sid]["average"], eq["scenarios"][sid]
+        def trio(m: dict) -> str:
+            return raw(f"{pc(m['ever'])} / {pc(m['by3'])} / {day_s(m['median_year_among_detected'])}")
+
+        cells = [raw(lab), trio(a), trio(v["chi2_sim"]), trio(v["chi2_matched"]),
+                 raw(pc(v["binomial"]["every_year"]["ever"])), raw(pc(v["vasicek_assumed"]["every_year"]["ever"]))]
+        rows.append(cells)
+    figkit.table(
+        OUT / "pd-equal-size.tex",
+        ["PD scaling", "Average e-process", "Chi-square, 5\\,\\% size", "Chi-square, size of the e-process", "Binomial per grade, ever", "Vasicek, $0.12$ assumed, ever"],
+        rows, align="p{2.4cm}" + ">{\\raggedleft\\arraybackslash}p{2.6cm}" * 5, wide=True, label="tab:pd-equal-size",
+        caption=(f"Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, "
+                 f"at a size of 5\\,\\% and at the size the average e-process measured ({pc(eq['matched_size'])}\\,\\%), on {AB['meta']['pd_reps']:,} histories per row (the histories of "
+                 "\\cref{tab:pd-results}, no asset correlation). The first three rule columns give three numbers separated by slashes: the share of histories rejected within ten years (\\%), "
+                 "the share rejected by year 3 (\\%) and the median year of rejection among the histories rejected. The last two columns give the share rejected within ten years (\\%) by the engine's "
+                 "binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years."))
+
+
 def fit(path: pathlib.Path) -> None:
     """Scale a table that is wider than the text block to the line width (graphicx ``\\resizebox``); the numbers are untouched."""
     text = path.read_text(encoding="utf-8")
@@ -429,7 +508,7 @@ def main() -> None:
     t_pd_results()
     t_c11("0.01", "tab:c11", "c11.tex", "99\\,\\%")
     t_c11("0.025", "tab:c11-975", "c11-975.tex", "97.5\\,\\%")
-    t_c03(); t_pd_correlation(); t_theory_delay(); t_null_expectation(); t_agreement()
+    t_c03(); t_pd_correlation(); t_theory_delay(); t_null_expectation(); t_agreement(); t_pd_comparators(); t_pd_equal_size()
     for tex in sorted(OUT.glob("*.tex")):
         fit(tex)
     print("tables written:", len(list(OUT.glob("*.tex"))))

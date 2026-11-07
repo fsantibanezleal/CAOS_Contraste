@@ -244,3 +244,57 @@ def draw_hits(seed: int, tag: int, reps: int, *, t: int = HORIZON, alpha: float 
     gen = VarHits(t=t, alpha=alpha, with_var=False, **kw)
     rng = np.random.default_rng(np.random.SeedSequence([seed, tag]))
     return np.array([gen.draw(rng)["hits"] for _ in range(reps)])
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# exact computations that replace a Monte Carlo share
+
+def engine_multipliers(p: float, **kw: Any) -> list[float]:
+    """The multipliers the engine's rate monitor uses for ``kw`` (the grid after the alternatives with ``m p >= 1`` are
+    dropped), read from the monitor's own record so that no grid is retyped here."""
+    from riskvalidation.validation.sequential import var_hit_eprocess
+
+    return [float(x) for x in var_hit_eprocess(np.zeros(2), p, **kw).extras["multipliers"]]
+
+
+def exact_rejection_probability(p: float, days: int, multipliers: list[float], cross: float = CROSS) -> list[float]:
+    """The exact null probability ``P0(tau <= t)`` for ``t = 1..days`` that the equal-weight mixture of likelihood ratios
+    over ``multipliers`` reaches ``cross`` (in log units), by dynamic programming over the number of hits ``S_t``.
+
+    Under the null the hits are independent Bernoulli(``p``), and ``log E_t`` is a function of ``(t, S_t)`` alone, so the
+    probability of every path that has not yet crossed is carried as a vector over ``S``; a state whose ``log E`` is at or
+    above ``cross`` leaves the vector and is added to the rejected mass."""
+    m = np.asarray(multipliers, dtype=float)
+    q = m * p
+    if (q >= 1.0).any():
+        raise ValueError("every alternative must have a hit rate below one")
+    log_hit, log_quiet = np.log(q / p), np.log((1.0 - q) / (1.0 - p))
+    log_w = -math.log(m.size)
+    alive = np.array([1.0])
+    rejected, out = 0.0, []
+    for t in range(1, days + 1):
+        nxt = np.zeros(t + 1)
+        nxt[:-1] += alive * (1.0 - p)
+        nxt[1:] += alive * p
+        s = np.arange(t + 1, dtype=float)
+        log_e = special.logsumexp(log_w + s[:, None] * log_hit[None, :] + (t - s)[:, None] * log_quiet[None, :], axis=1)
+        hit = log_e >= cross
+        rejected += float(nxt[hit].sum())
+        nxt[hit] = 0.0
+        alive = nxt
+        out.append(rejected)
+    return out
+
+
+def chi2_across_grades(d: np.ndarray, n: np.ndarray, pd: np.ndarray) -> np.ndarray:
+    """The chi-square statistic across grades on the cumulative counts, per history and year: ``d`` is
+    (histories, years, grades), ``n`` and ``pd`` as in the engine's monitors (``n`` by year and grade, ``pd`` by grade)."""
+    cum_d = np.cumsum(d, axis=1)
+    cum_n = np.cumsum(np.broadcast_to(n, d.shape), axis=1)
+    return (((cum_d - cum_n * pd) ** 2) / (cum_n * pd * (1.0 - pd))).sum(axis=2)
+
+
+def constant_critical_value(stat: np.ndarray, size: float) -> float:
+    """The constant critical value on a per-year statistic whose maximum over the years exceeds it in at most ``size`` of
+    the (null) histories ``stat`` (histories, years): the same simulated boundary as the Kupiec comparator."""
+    return float(np.quantile(stat.max(axis=1), 1.0 - size, method="higher"))

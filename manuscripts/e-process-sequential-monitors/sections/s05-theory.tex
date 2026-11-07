@@ -30,7 +30,7 @@ It also holds for a monitor that a person stops by hand at a time chosen after l
 
 \begin{proposition}[Validity of the clustering and PD monitors]
 \label{prop:clustering}
-Under the null of \cref{eq:null-var}, $E^{\mathrm{cl}}_t$ of \cref{eq:cluster} is a non-negative martingale with $E_0^{\mathrm{cl}}=1$. Under the null of \cref{eq:null-pd}, $E_{t,g}$ of \cref{eq:pd-lr} is a non-negative martingale with $E_{0,g}=1$ for every grade, and \cref{eq:ville} holds for both.
+Under the null of \cref{eq:null-var}, $E^{\mathrm{cl}}_t$ of \cref{eq:cluster} is a non-negative martingale with $E_0^{\mathrm{cl}}=1$. Under the null of \cref{eq:null-pd}, with the whole predicted path $p_{s,g}$ of the grade fixed before the first outcome of the history (the weights of \cref{eq:pd-weights} and the alternatives that are dropped depend on the mean and the maximum of that path), $E_{t,g}$ of \cref{eq:pd-lr} is a non-negative martingale with $E_{0,g}=1$ for every grade, and \cref{eq:ville} holds for both.
 \end{proposition}
 \begin{proof}
 For the clustering factor, a day that follows a non-hit contributes one. If yesterday was a hit, the factor of today is $q/\alpha$ with probability $\alpha$ and $(1-q)/(1-\alpha)$ with probability $1-\alpha$, because the null fixes the conditional probability of a hit at $\alpha$ whatever the past; the mean is one. For the PD factor, with $r=m(1-p)/(1-mp)$ the factor of a step is $\bigl((1-mp)/(1-p)\bigr)^{n}r^{d}$, and for $d\sim\mathrm{Binomial}(n,p)$ one has $\E[r^d]=(1-p+pr)^n=\bigl((1-p)/(1-mp)\bigr)^n$, so the mean of the factor is one. Mixtures with fixed weights preserve the martingale property, and \cref{eq:ville} follows as in \cref{prop:validity}.
@@ -42,14 +42,14 @@ For the clustering factor, a day that follows a non-hit contributes one. If yest
 \begin{proposition}[Combination of e-processes]
 \label{prop:product}
 Let $E^1_t,\dots,E^G_t$ be e-processes. Their average is an e-process whatever their dependence. Their product is an e-process if, given $\mathcal F_{t-1}$, the factors of step $t$ are independent. The product of two e-processes that are functions of the same
-observation is an e-process only if each is constant: if $E^1=E^2=E$ and $E$ has mean one, then $\E[E^1E^2]=1+\Var(E)$.
+observation is not an e-process in general: if $E^1=E^2=E$ and $E$ has mean one, then $\E[E^1E^2]=1+\Var(E)$, which exceeds one unless $E$ is constant. For particular pairs the product can have a mean of at most one: with $X$ a Bernoulli$(1/2)$ variable, $E^1=2\,\indic\{X=1\}$ and $E^2=2\,\indic\{X=0\}$ each have mean one and their product is zero.
 \end{proposition}
 \begin{proof}
-Expectation is linear, so $\E[\tfrac1G\sum_gE^g_t\mid\mathcal F_{t-1}]\le\tfrac1G\sum_gE^g_{t-1}$. For independent factors, the conditional expectation of the product is the product of the conditional expectations, each at most one. If $E^1=E^2=E$ then $\E[E^2]=\Var(E)+\E[E]^2=1+\Var(E)$.
+Expectation is linear, so $\E[\tfrac1G\sum_gE^g_t\mid\mathcal F_{t-1}]\le\tfrac1G\sum_gE^g_{t-1}$. For independent factors, the conditional expectation of the product is the product of the conditional expectations, each at most one. If $E^1=E^2=E$ then $\E[E^2]=\Var(E)+\E[E]^2=1+\Var(E)$. In the last example $E^1E^2=0$ and $\E[E^1]=\E[E^2]=2\cdot\tfrac12=1$, so the failure of the product is a property of the pair and not of every pair, which is why no general rule for the product can be stated for components that read the same observation.
 \end{proof}
 
 The third statement is the reason the battery of the two VaR monitors averages. Two computations in the experiments show its size. For two grades with identical defaults (perfect dependence), three obligors per grade and a PD of $0.3$, the exact expectation of the
-product e-process after one step is \nProductPdProduct\ and that of the average is \nProductPdAverage. For the rate and clustering monitors read on one stream of $10$ days at $\alpha=0.2$, the exact expectation of their product reaches \nProductMax\ (\cref{tab:null-expectation}), so a product on one stream would reject almost every correct model.
+product e-process after one step is \nProductPdProduct\ and that of the average is \nProductPdAverage. For the rate and clustering monitors read on one stream of $10$ days at $\alpha=0.2$, the exact expectation of their product reaches \nProductMax\ (\cref{tab:null-expectation}), so the product is not an e-process: its null expectation, which an e-process keeps at one, is hundreds of times too large. The expectation is carried by rare paths, and the probability that the product reaches the threshold 20 within the $10$ days is only \nProductRejectDayTen\,\% in this enumeration, so what is lost is the guarantee and not, in this case, the size; \cref{sec:ablation-battery} measures the size of the product on the generator.
 The enumeration of all \nEnumSequences\ hit sequences of $12$ days confirms the martingale property of the valid processes: the largest departure of their expectation from one is $\nEnumWorst$, floating-point error.
 
 \input{tables/null-expectation}
@@ -74,7 +74,7 @@ Let the hits be independent Bernoulli($p$) with $p\ne\alpha$ and write $\mathrm{
 Part (iii) says no e-process grows faster in expectation than the likelihood ratio of the true alternative, and (ii) says the mixture loses at most $\log K$ in the exponent, plus the mismatch $\mathrm{KL}(p\Vert p_k)$ of the closest alternative.
 Together they give the first-order delay: the expected log of the process reaches $\log(1/a)$ after about $\log(1/a)/\mathrm{KL}(p\Vert\alpha)$ days for the matched likelihood ratio and after at most $(\log(1/a)+\log K)/g^\ast$ days for the mixture, where $g^\ast$ is the best growth rate of \cref{eq:growth}.
 At $\alpha=0.01$ and a hit rate three times the nominal, $\mathrm{KL}(0.03\Vert0.01)=\nKlThree\times10^{-3}$ nats per day, so the matched bet needs about \nKlSprtThree\ days and the mixture of eight alternatives about \nKlMixThree\ days; at four times the nominal they need \nKlSprtFour\ and \nKlMixFour\ days
-(\cref{tab:theory-delay}). These are first-order times for the expected log; the median first passage differs from them because a hit adds a jump to the path. The measured medians of \cref{sec:results} lie below the first-order times: \nMedThreeSprt\ days against \nKlSprtThree\ for the matched bet and \nMedThreeE\ days against \nKlMixThree\ for the mixture at three times the nominal rate, and they keep the order the theory predicts.
+(\cref{tab:theory-delay}). These are first-order times for the expected log; the median first passage differs from them because a hit adds a jump to the path. The measured medians of \cref{sec:results} lie below the first-order times: \nMatchedThreeMed\ days against \nKlSprtThree\ for the matched bet and \nMedThreeE\ days against \nKlMixThree\ for the mixture at three times the nominal rate. The matched bet is measured at each factor (\cref{tab:theory-delay}), and at every factor from 2 to 10 it is faster than the mixture, the order the theory predicts for a bet whose alternative is the truth.
 
 \subsection{Power at a fixed horizon}
 \label{sec:theory-power}
@@ -87,7 +87,7 @@ Let a monitor have a size $s_n=\Prob_0(\tau\le n)$ by day $n$ and let $\beta_n(s
 The event $\{\tau\le n\}$ is determined by the first $n$ hits, so it is a randomisation-free test of size $s_n$ of the null against the alternative. The power of every such test is at most that of the most powerful one.
 \end{proof}
 
-The proposition is the structural reason for the power cost. A monitor that is valid at every time has spent only part of its size by day $n$: at $\alpha=0.01$ and $n=250$ the rate e-process has rejected \nNullByE\,\% of the correct series by day 250, so no monitor with that spending can have more than \nExactThreeNpE\,\% power at a hit rate three times the nominal, against
+The proposition is the structural reason for the power cost. A monitor that is valid at every time has spent only part of its size by day $n$: at $\alpha=0.01$ and $n=250$ the rate e-process has rejected \nExactESize\,\% of the correct series by day 250 (exact, by dynamic programming over the day and the number of hits, on which the process depends alone), so no monitor with that spending can have more than \nExactThreeNpE\,\% power at a hit rate three times the nominal, against
 \nExactThreeKupUp\,\% for the upper tail of the Kupiec test, which spends \nExactKupUpperSize\,\% of its size there (\cref{tab:size-matched}). The gap between the two powers is the cost of validity at later days, and a monitor can only narrow it by spending more of its size early, at the expense of the later days.
 
 \subsection{Where the guarantees stop}
@@ -102,7 +102,7 @@ $1-(1-s_w)^{\lfloor T/w\rfloor}$.
 By the law of the iterated logarithm, $\limsup_tZ_t/\sqrt{2\log\log t}=1$ almost surely, so $|Z_t|$ exceeds any constant infinitely often; the Kupiec statistic equals $Z_t^2$ up to a vanishing term. For a window of length $w$, the non-overlapping windows $[(j-1)w+1,jw]$ are independent and each is rejected with probability $s_w$, so the probability that none of $\lfloor T/w\rfloor$ of them rejects is $(1-s_w)^{\lfloor T/w\rfloor}$.
 \end{proof}
 
-The proposition explains the growth of the repeated-test curves of \cref{fig:size-horizon}: the Kupiec test on the last 250 days and the traffic light, whose one-shot sizes are \nHorizonWindowKupTrail\,\% and \nHorizonWindowLight\,\% by day 250, reject \nHorizonEndKupTrail\,\% and \nHorizonEndLight\,\% of correct series by day \nHorizonDays.
+The proposition explains the growth of the repeated-test curves of \cref{fig:size-horizon}: the Kupiec test on the last 250 days and the traffic light, whose one-shot sizes are \nExactOneShotKup\,\% and \nExactOneShotLight\,\% at day 250 (exact binomial tails), reject \nHorizonEndKupTrail\,\% and \nHorizonEndLight\,\% of correct series by day \nHorizonDays.
 It also shows that a boundary calibrated by simulation to a size of 5\,\% over 1,000 days is not a guarantee beyond 1,000 days.
 
 \begin{proposition}[Loss of validity of the PD monitor when the default probability is random]

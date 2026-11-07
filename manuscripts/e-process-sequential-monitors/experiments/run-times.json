@@ -6,9 +6,11 @@
   "exp_pd_correlation.py": 163.0,
   "exp_c11.py": 31.9,
   "exp_c03.py": 55.7,
-  "exp_theory.py": 80.9
+  "exp_theory.py": 15.6,
+  "exp_matched.py": 43.1,
+  "exp_pd_comparators.py": 95.0
  },
- "total_seconds": 1637.3,
+ "total_seconds": 1710.1,
  "python": "3.13.14",
  "platform": "Windows-11-10.0.26300-SP0",
  "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel"
