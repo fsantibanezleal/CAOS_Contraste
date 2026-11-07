@@ -100,3 +100,19 @@ def test_transition_matrix_agreement():
     d = load("results_transition_matrix.json")
     assert d["all_within_tolerance"] and d["riskvalidation"] == "1.1.0" and d["transitionMatrix"] == "0.5.1"
     assert d["last_record_double_count"]["max_gap_after_correction"] == 0.0 and d["aalen_johansen"]["difference"] > 0.08
+
+
+def test_maxt_repeats_the_criterion_run_and_keeps_its_intervals():
+    d, c = load("results_maxt.json"), load("results_criterion.json")
+    assert d["reps"] == c["reps"] and d["seed_base"] == c["seed_base"]
+    assert d["reproduces_criterion_counts"]
+    for key, cell in d["table"].items():
+        for rule in ("product", "pair+sidak"):
+            assert cell[rule]["rejected"] == c["table"][key][rule]["rejected"], (key, rule)
+        for rule in d["rules"]:
+            r = cell[rule]
+            assert 0.0 <= r["lo"] <= r["rate"] <= r["hi"] <= 1.0 and r["rejected"] == round(r["rate"] * d["reps"])
+    for v in d["variants"]:
+        for kind in ("product", "pair"):
+            for bound in d["bounds"][v][kind].values():
+                assert 2.0 < bound < 8.0, (v, kind, bound)     # between the single-comparison bound and a loose family bound

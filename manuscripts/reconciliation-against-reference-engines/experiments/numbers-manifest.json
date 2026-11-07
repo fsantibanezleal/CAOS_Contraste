@@ -31,6 +31,14 @@
   "value": "3.2\\times10^{-8}",
   "source": "results_closedforms.json:part3.plants[1e-6]"
  },
+ "nClosedBondPrice": {
+  "value": "2.1\\times10^{-12}",
+  "source": "results_closedforms.json:part2.worst (the bond call)"
+ },
+ "nClosedBondRel": {
+  "value": "5.5\\times10^{-7}",
+  "source": "results_closedforms.json:part2.worst (the bond call)"
+ },
  "nClosedCases": {
   "value": "297",
   "source": "results_closedforms.json:part2.cases"
@@ -123,6 +131,10 @@
   "value": "1.25",
   "source": "results_closedforms.json:part3.elasticity_swaption"
  },
+ "nEpsNineExcess": {
+  "value": "8.3\\times10^{-17}",
+  "source": "results_routes.json:defect_relative[1e-9].C3_binomial minus the tolerance"
+ },
  "nEpsNineGap": {
   "value": "1.0\\times10^{-9}",
   "source": "results_routes.json:defect_relative[1e-9].C3_binomial"
@@ -159,6 +171,26 @@
   "value": "72",
   "source": "results_routes.json:part1.within_tol_grid"
  },
+ "nHWa": {
+  "value": "0.1675",
+  "source": "data/derived/C12/netting-set.json:outputs.calibration_used.a"
+ },
+ "nHWaSe": {
+  "value": "0.0784",
+  "source": "data/derived/C12/netting-set.json:outputs.calibration_used.a_se"
+ },
+ "nHWobs": {
+  "value": "8{,}939",
+  "source": "data/derived/C12/netting-set.json:outputs.calibration_used.n_obs"
+ },
+ "nHWsigma": {
+  "value": "0.00880",
+  "source": "data/derived/C12/netting-set.json:outputs.calibration_used.sigma"
+ },
+ "nHWsigmaSe": {
+  "value": "0.0000658",
+  "source": "data/derived/C12/netting-set.json:outputs.calibration_used.sigma_se"
+ },
  "nHardware": {
   "value": "32 logical processors, Windows-11-10.0.26300-SP0",
   "source": "run-times.json:platform"
@@ -183,12 +215,48 @@
   "value": "0.88",
   "source": "results_committed.json:variants.with-im.dim"
  },
+ "nMaxtMeasureNetting": {
+  "value": "100.0",
+  "source": "results_maxt.json:table.netting-set|measure.pair+maxT.rate"
+ },
+ "nMaxtPairBoundHigh": {
+  "value": "3.10",
+  "source": "results_maxt.json:bounds.*.pair"
+ },
+ "nMaxtPairBoundLow": {
+  "value": "3.07",
+  "source": "results_maxt.json:bounds.*.pair"
+ },
+ "nMaxtPowerPairFiveNetting": {
+  "value": "100.0",
+  "source": "results_maxt.json:table.netting-set|sigma+5%.pair+maxT.rate"
+ },
+ "nMaxtProdBoundHigh": {
+  "value": "2.36",
+  "source": "results_maxt.json:bounds.*.product"
+ },
+ "nMaxtProdBoundLow": {
+  "value": "2.25",
+  "source": "results_maxt.json:bounds.*.product"
+ },
+ "nMaxtReproduces": {
+  "value": "held",
+  "source": "results_maxt.json:reproduces_criterion_counts"
+ },
+ "nMaxtReps": {
+  "value": "400",
+  "source": "results_maxt.json:reps"
+ },
  "nMeasureEepeMiss": {
   "value": "42",
   "source": "results_criterion.json:table.netting-set|measure.eepe.rate"
  },
  "nMissAbove": {
   "value": "12",
+  "source": "results_printed.json:miss_categories"
+ },
+ "nMissLevel": {
+  "value": "1",
   "source": "results_printed.json:miss_categories"
  },
  "nMissMC": {
@@ -211,8 +279,16 @@
   "value": "3",
   "source": "results_printed.json:miss_categories"
  },
+ "nMissRecOther": {
+  "value": "45",
+  "source": "results_printed.json:miss_categories"
+ },
  "nMissRecorded": {
   "value": "93",
+  "source": "results_printed.json:miss_categories"
+ },
+ "nMissRound": {
+  "value": "24",
   "source": "results_printed.json:miss_categories"
  },
  "nMissTested": {
@@ -255,6 +331,10 @@
   "value": "0.72",
   "source": "results_committed.json:variants.netting-set"
  },
+ "nNullZReps": {
+  "value": "150",
+  "source": "results_criterion.json:calibration.netting-set.z_null (rows stored)"
+ },
  "nOrePairRho": {
   "value": "-0.66",
   "source": "results_ore_netting-set.json:replicates.pair_correlation_ore_mean"
@@ -266,10 +346,6 @@
  "nOreRepsNet": {
   "value": "24",
   "source": "results_ore_netting-set.json:summary.reps"
- },
- "nOreSecondsCommitted": {
-  "value": "51",
-  "source": "data/derived/C12/netting-set.json:outputs.ore_reconciliation.run_seconds"
  },
  "nOreSecondsMean": {
   "value": "59",
@@ -315,6 +391,58 @@
   "value": "10.2",
   "source": "results_criterion.json:table.netting-set|sigma+2%.fixed 2%.rate"
  },
+ "nPowerFixedTwoSigmaTwoSingle": {
+  "value": "35.8",
+  "source": "results_criterion.json:table.single-swap|sigma+2%.fixed 2%.rate"
+ },
+ "nPowerMaxtSigmaTwo": {
+  "value": "55.0",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.maxT.rate"
+ },
+ "nPowerMaxtSigmaTwoHi": {
+  "value": "59.8",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.maxT.hi"
+ },
+ "nPowerMaxtSigmaTwoLo": {
+  "value": "50.1",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.maxT.lo"
+ },
+ "nPowerOneExact": {
+  "value": "0.160",
+  "source": "analytic: 1 - Phi(c - 1) + Phi(-c - 1) at c = 2"
+ },
+ "nPowerOneLower": {
+  "value": "0.159",
+  "source": "analytic: 1 - Phi(c - 1) at c = 2"
+ },
+ "nPowerOneSidakLower": {
+  "value": "0.015",
+  "source": "analytic: 1 - Phi(c_35 - 1)"
+ },
+ "nPowerPairMaxtSigmaTwo": {
+  "value": "81.2",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.pair+maxT.rate"
+ },
+ "nPowerPairMaxtSigmaTwoHi": {
+  "value": "84.8",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.pair+maxT.hi"
+ },
+ "nPowerPairMaxtSigmaTwoLo": {
+  "value": "77.1",
+  "source": "results_maxt.json:table.netting-set|sigma+2%.pair+maxT.lo"
+ },
+ "nPowerPairMaxtSigmaTwoSingle": {
+  "value": "80.2",
+  "source": "results_maxt.json:table.single-swap|sigma+2%.pair+maxT.rate"
+ },
+ "nPowerPairMaxtSigmaTwoSingleHi": {
+  "value": "83.9",
+  "source": "results_maxt.json:table.single-swap|sigma+2%.pair+maxT.hi"
+ },
+ "nPowerPairMaxtSigmaTwoSingleLo": {
+  "value": "76.1",
+  "source": "results_maxt.json:table.single-swap|sigma+2%.pair+maxT.lo"
+ },
  "nPowerPairSigmaTwo": {
   "value": "99.8",
   "source": "results_criterion.json:table.netting-set|sigma+2%.pair.rate"
@@ -323,13 +451,49 @@
   "value": "75.0",
   "source": "results_criterion.json:table.netting-set|sigma+2%.product.rate"
  },
+ "nPowerProdSigmaTwoHi": {
+  "value": "79.0",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.product.hi"
+ },
+ "nPowerProdSigmaTwoLo": {
+  "value": "70.5",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.product.lo"
+ },
  "nPowerRefineSigmaTwo": {
   "value": "76.5",
   "source": "results_criterion.json:table.netting-set|sigma+2%.pair+sidak.rate"
  },
+ "nPowerRefineSigmaTwoHi": {
+  "value": "80.4",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.pair+sidak.hi"
+ },
+ "nPowerRefineSigmaTwoLo": {
+  "value": "72.1",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.pair+sidak.lo"
+ },
  "nPowerSidakSigmaTwo": {
   "value": "18.5",
   "source": "results_criterion.json:table.netting-set|sigma+2%.sidak.rate"
+ },
+ "nPowerSidakSigmaTwoHi": {
+  "value": "22.6",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.sidak.hi"
+ },
+ "nPowerSidakSigmaTwoLo": {
+  "value": "15.0",
+  "source": "results_criterion.json:table.netting-set|sigma+2%.sidak.lo"
+ },
+ "nPredMone": {
+  "value": "held",
+  "source": "predictions.md M1 against results_maxt.json"
+ },
+ "nPredMthree": {
+  "value": "held",
+  "source": "predictions.md M3 against results_maxt.json"
+ },
+ "nPredMtwo": {
+  "value": "held",
+  "source": "predictions.md M2 against results_maxt.json"
  },
  "nPredRfive": {
   "value": "held",
@@ -603,6 +767,10 @@
   "value": "0.72",
   "source": "results_ore_seed42_netting-set.json:replicates[0].max_abs_z"
  },
+ "nSharedMeanGap": {
+  "value": "0.000",
+  "source": "results_ore_netting-set.json and results_ore_single-swap.json:summary.mean_z_by_date[23:]"
+ },
  "nSingleCvaZ": {
   "value": "0.37",
   "source": "results_committed.json:variants.single-swap.cva.z"
@@ -631,25 +799,117 @@
   "value": "6.2",
   "source": "results_criterion.json:table.netting-set|null.eepe.rate"
  },
+ "nSizeEepeNettingHi": {
+  "value": "9.1",
+  "source": "results_criterion.json:table.netting-set|null.eepe.hi"
+ },
+ "nSizeEepeNettingLo": {
+  "value": "4.3",
+  "source": "results_criterion.json:table.netting-set|null.eepe.lo"
+ },
  "nSizeFixedOneNetting": {
   "value": "30.8",
   "source": "results_criterion.json:table.netting-set|null.fixed 1%.rate"
+ },
+ "nSizeFixedOneSingle": {
+  "value": "60.0",
+  "source": "results_criterion.json:table.single-swap|null.fixed 1%.rate"
+ },
+ "nSizeMaxtNetting": {
+  "value": "5.5",
+  "source": "results_maxt.json:table.netting-set|null.maxT.rate"
+ },
+ "nSizeMaxtNettingHi": {
+  "value": "8.2",
+  "source": "results_maxt.json:table.netting-set|null.maxT.hi"
+ },
+ "nSizeMaxtNettingLo": {
+  "value": "3.7",
+  "source": "results_maxt.json:table.netting-set|null.maxT.lo"
+ },
+ "nSizeMaxtSingle": {
+  "value": "5.8",
+  "source": "results_maxt.json:table.single-swap|null.maxT.rate"
+ },
+ "nSizeMaxtSingleHi": {
+  "value": "8.5",
+  "source": "results_maxt.json:table.single-swap|null.maxT.hi"
+ },
+ "nSizeMaxtSingleLo": {
+  "value": "3.9",
+  "source": "results_maxt.json:table.single-swap|null.maxT.lo"
+ },
+ "nSizePairMaxtNetting": {
+  "value": "4.8",
+  "source": "results_maxt.json:table.netting-set|null.pair+maxT.rate"
+ },
+ "nSizePairMaxtNettingHi": {
+  "value": "7.3",
+  "source": "results_maxt.json:table.netting-set|null.pair+maxT.hi"
+ },
+ "nSizePairMaxtNettingLo": {
+  "value": "3.1",
+  "source": "results_maxt.json:table.netting-set|null.pair+maxT.lo"
+ },
+ "nSizePairMaxtSingle": {
+  "value": "4.5",
+  "source": "results_maxt.json:table.single-swap|null.pair+maxT.rate"
+ },
+ "nSizePairMaxtSingleHi": {
+  "value": "7.0",
+  "source": "results_maxt.json:table.single-swap|null.pair+maxT.hi"
+ },
+ "nSizePairMaxtSingleLo": {
+  "value": "2.9",
+  "source": "results_maxt.json:table.single-swap|null.pair+maxT.lo"
  },
  "nSizePairNetting": {
   "value": "56.0",
   "source": "results_criterion.json:table.netting-set|null.pair.rate"
  },
+ "nSizePairNettingHi": {
+  "value": "60.8",
+  "source": "results_criterion.json:table.netting-set|null.pair.hi"
+ },
+ "nSizePairNettingLo": {
+  "value": "51.1",
+  "source": "results_criterion.json:table.netting-set|null.pair.lo"
+ },
  "nSizeProdNetting": {
   "value": "12.5",
   "source": "results_criterion.json:table.netting-set|null.product.rate"
+ },
+ "nSizeProdNettingHi": {
+  "value": "16.1",
+  "source": "results_criterion.json:table.netting-set|null.product.hi"
+ },
+ "nSizeProdNettingLo": {
+  "value": "9.6",
+  "source": "results_criterion.json:table.netting-set|null.product.lo"
  },
  "nSizeProdSingle": {
   "value": "10.5",
   "source": "results_criterion.json:table.single-swap|null.product.rate"
  },
+ "nSizeProdSingleHi": {
+  "value": "13.9",
+  "source": "results_criterion.json:table.single-swap|null.product.hi"
+ },
+ "nSizeProdSingleLo": {
+  "value": "7.9",
+  "source": "results_criterion.json:table.single-swap|null.product.lo"
+ },
  "nSizeRefineNetting": {
   "value": "3.8",
   "source": "results_criterion.json:table.netting-set|null.pair+sidak.rate"
+ },
+ "nSizeRefineNettingHi": {
+  "value": "6.1",
+  "source": "results_criterion.json:table.netting-set|null.pair+sidak.hi"
+ },
+ "nSizeRefineNettingLo": {
+  "value": "2.3",
+  "source": "results_criterion.json:table.netting-set|null.pair+sidak.lo"
  },
  "nSizeRefineSingle": {
   "value": "4.5",
@@ -735,6 +995,18 @@
   "value": "1{,}810",
   "source": "run-times.json:seconds.exp_criterion.py"
  },
+ "nTimeCriterionMin": {
+  "value": "30",
+  "source": "run-times.json:seconds.exp_criterion.py"
+ },
+ "nTimeMaxt": {
+  "value": "1{,}505",
+  "source": "results_maxt.json:seconds"
+ },
+ "nTimeMaxtMin": {
+  "value": "25",
+  "source": "results_maxt.json:seconds"
+ },
  "nTimeOreCsa": {
   "value": "1{,}088",
   "source": "run-times.json:seconds.exp_ore_replicates.py csa-mpor-10d"
@@ -763,6 +1035,10 @@
   "value": "19",
   "source": "run-times.json:seconds.exp_transition_matrix.py"
  },
+ "nTtestSize": {
+  "value": "6.0",
+  "source": "analytic: P(|t_19| > 2), the size of a two-standard-error rule on an error from 20 batches"
+ },
  "nTwelveMaxUnits": {
   "value": "9.5",
   "source": "results_printed.json:by_group.Pluto Table 12"
@@ -786,6 +1062,10 @@
  "nWWN": {
   "value": "9",
   "source": "results_printed.json:wrong_way_appendix.n"
+ },
+ "nWWTestTol": {
+  "value": "2.0\\times10^{-4}",
+  "source": "CAOS_RiskValidation tests/ccr/test_ccr_cva.py:122 (atol 2e-4)"
  },
  "nWithoutAgree": {
   "value": "296",

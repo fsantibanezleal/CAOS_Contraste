@@ -1,9 +1,11 @@
 \begin{table}[htbp]
 \centering
-\small
-\caption{Main comparison: every reference class against the engine, with the number compared, the result with its size, and the outcome of the rule fixed for the class; $z$ is the standardised difference of ORE and the engine on the product's draws, and the three collateralised rows are the reported gaps.}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Main comparison of every reference class against the engine. Panel A: the number compared, the result with its size, and the outcome of the rule fixed for the class; these rows are deterministic computations. Panel B: the five exposure variants against ORE, where $z$ is the standardised difference of ORE and the engine, the EEPE difference is shown as a share of the engine's value with its combined standard error, and the equivalence margin is the smallest symmetric margin supported at the 5 percent level by two one-sided tests; the three collateralised rows are the reported gaps.}
 \label{tab:main-results}
-\begin{tabular}{p{3.9cm}p{3.2cm}p{5.6cm}l}
+\textbf{A. Deterministic references: no sampling uncertainty}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.0cm}@{}}
 \toprule
 Reference (class) & Compared & Result & Outcome \\
 \midrule
@@ -13,12 +15,20 @@ Independent routes (I) & \relax 1200 $p$-values, seeded draw & \relax largest di
 Closed forms in QuantLib (F) & 4 cases of the product & \relax largest relative difference $9.5\times10^{-8}$, gate $10^{-6}$ & agree \\
 Closed forms in QuantLib (F) & 297 seeded cases & \relax 296 within the gate; largest $1.6\times10^{-6}$ & one case beyond \\
 \relax Cohort estimators in \texttt{transitionMatrix} (F) & 7,350 matrix elements, 30 panels & \relax largest difference $2.2\times10^{-16}$ & agree, two findings \\
-Appendix of Hull and White 2012 (P) & 9 printed numbers & 8 agree to the digit; one at 1.32 units & agree within two units \\
-Exposure of the single swap (M) & 33 dates, EEPE, CVA & \relax 0 dates beyond 2; largest $\lvert z\rvert$ 0.78; EEPE $z$ +0.30, CVA $z$ +0.37 & agree \\
-Exposure of the netting set (M) & 33 dates, EEPE, CVA & \relax 0 dates beyond 2; largest $\lvert z\rvert$ 0.72; EEPE $z$ +0.31, CVA $z$ +0.40 & agree \\
-Exposure under a CSA, 10 days (M) & 33 dates, EEPE, CVA & \relax 16 dates beyond 2; largest $\lvert z\rvert$ 9.93; EEPE $z$ -1.55, CVA $z$ -15.89 & gap \\
-Exposure under a CSA, 20 days (M) & 33 dates, EEPE, CVA & \relax 12 dates beyond 2; largest $\lvert z\rvert$ 7.09; EEPE $z$ -2.20, CVA $z$ -9.88 & gap \\
-Exposure under a CSA with initial margin (M) & 33 dates, EEPE, CVA & \relax 1 dates beyond 2; largest $\lvert z\rvert$ 11.74; EEPE $z$ -0.71, CVA $z$ -1.40 & gap \\
+Appendix of Hull and White 2012 (P) & 9 printed numbers & 8 agree to the digit; one at 1.32 units & 8 of 9 agree; one gap \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
+\par\medskip
+\textbf{B. Monte Carlo reference (M), exposure of the swap book against ORE on the product's draws}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedleft\arraybackslash}p{1.2cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.1cm}>{\raggedleft\arraybackslash}p{1.1cm}>{\raggedleft\arraybackslash}p{2.2cm}>{\raggedleft\arraybackslash}p{1.7cm}>{\raggedright\arraybackslash}p{1.4cm}@{}}
+\toprule
+Variant & Dates beyond 2 & \relax Largest $\lvert z\rvert$ & \relax EEPE $z$ & \relax CVA $z$ & EEPE difference, \% of the engine (standard error) & EEPE equivalence margin, \% & Outcome \\
+\midrule
+Single swap & \relax 0 of 33 & \relax 0.78 & \relax +0.30 & \relax +0.37 & \relax +0.3 (1.0) & \relax 1.9 & agree \\
+Netting set & \relax 0 of 33 & \relax 0.72 & \relax +0.31 & \relax +0.40 & \relax +0.3 (1.1) & \relax 2.1 & agree \\
+CSA, 10 days & \relax 16 of 33 & \relax 9.93 & \relax -1.55 & \relax -15.89 & \relax -1.1 (0.7) & \relax 2.3 & gap \\
+CSA, 20 days & \relax 12 of 33 & \relax 7.09 & \relax -2.20 & \relax -9.88 & \relax -1.6 (0.7) & \relax 2.7 & gap \\
+CSA, 10 days, initial margin & \relax 1 of 33 & \relax 11.74 & \relax -0.71 & \relax -1.40 & \relax -7.0 (9.8) & \relax 23.1 & gap \\
+\bottomrule
+\end{tabularx}
 \end{table}

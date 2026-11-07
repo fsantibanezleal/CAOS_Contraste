@@ -1,22 +1,46 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\small
-\caption{Rejection rate in percent, with its Wilson 95 percent interval, of ten acceptance rules over 400 paired runs of the engine and a reference of the same model: the size on the single swap and on the netting set, and the power on the netting set against a volatility raised by 2 and 5 percent, a mean reversion raised by 50 percent, and a measure error.}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Rejection rate in percent, with its Wilson 95 percent interval, of twelve acceptance rules over 400 paired runs of the engine and a reference of the same model. The first ten rules are those of the calibration run; the two maximum-T rules take their bound from the covariance of the 35 differences estimated on the other half of the repetitions, over the same 400 pairs of runs.}
 \label{tab:rule-size-power}
-\begin{tabular}{p{4.6cm}llllll}
+\textbf{A. Size on the single swap and on the netting set, and power against a volatility raised by 2 \%}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{2.9cm}>{\centering\arraybackslash}p{2.9cm}>{\centering\arraybackslash}p{2.9cm}@{}}
 \toprule
-Rule & Size, single & Size, netting & Vol. +2 \% & Vol. +5 \% & Rev. +50 \% & Measure \\
+Rule & Size, single swap & Size, netting set & Vol. +2 \% \\
 \midrule
-Product rule (dates, EEPE, CVA; bound 2) & 10.5 [7.9, 13.9] & 12.5 [9.6, 16.1] & 75.0 [70.5, 79.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Product errors, bound 3.18 & 0.2 [0.0, 1.4] & 0.2 [0.0, 1.4] & 18.5 [15.0, 22.6] & 99.0 [97.5, 99.6] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Pair-aware errors, bound 2 & 56.0 [51.1, 60.8] & 56.0 [51.1, 60.8] & 99.8 [98.6, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Pair-aware errors, bound 3.18 & 4.5 [2.9, 7.0] & 3.8 [2.3, 6.1] & 76.5 [72.1, 80.4] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Dates only (bound 2) & 6.8 [4.7, 9.6] & 9.5 [7.0, 12.8] & 68.2 [63.5, 72.6] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-EEPE only (bound 2) & 6.2 [4.3, 9.1] & 6.2 [4.3, 9.1] & 52.5 [47.6, 57.3] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 58.5 [53.6, 63.2] \\
-CVA only (bound 2) & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 0.2 [0.0, 1.4] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 0.0 [0.0, 1.0] \\
-Fixed tolerance 1 \% of the peak & 60.0 [55.1, 64.7] & 30.8 [26.4, 35.4] & 92.5 [89.5, 94.7] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Fixed tolerance 2 \% of the peak & 1.0 [0.4, 2.5] & 0.0 [0.0, 1.0] & 10.2 [7.6, 13.6] & 99.5 [98.2, 99.9] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
-Fixed tolerance 5 \% of the peak & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Product rule, bound 2 & 10.5 [7.9, 13.9] & 12.5 [9.6, 16.1] & 75.0 [70.5, 79.0] \\
+Product errors, bound 3.18 & 0.2 [0.0, 1.4] & 0.2 [0.0, 1.4] & 18.5 [15.0, 22.6] \\
+Pair-aware errors, bound 2 & 56.0 [51.1, 60.8] & 56.0 [51.1, 60.8] & 99.8 [98.6, 100.0] \\
+Pair-aware errors, bound 3.18 & 4.5 [2.9, 7.0] & 3.8 [2.3, 6.1] & 76.5 [72.1, 80.4] \\
+Dates only, bound 2 & 6.8 [4.7, 9.6] & 9.5 [7.0, 12.8] & 68.2 [63.5, 72.6] \\
+EEPE only, bound 2 & 6.2 [4.3, 9.1] & 6.2 [4.3, 9.1] & 52.5 [47.6, 57.3] \\
+CVA only, bound 2 & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 0.2 [0.0, 1.4] \\
+Fixed tolerance, 1 \% of the peak & 60.0 [55.1, 64.7] & 30.8 [26.4, 35.4] & 92.5 [89.5, 94.7] \\
+Fixed tolerance, 2 \% of the peak & 1.0 [0.4, 2.5] & 0.0 [0.0, 1.0] & 10.2 [7.6, 13.6] \\
+Fixed tolerance, 5 \% of the peak & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] & 0.0 [0.0, 1.0] \\
+Product errors, maximum-T bound & 5.8 [3.9, 8.5] & 5.5 [3.7, 8.2] & 55.0 [50.1, 59.8] \\
+Pair-aware errors, maximum-T bound & 4.5 [2.9, 7.0] & 4.8 [3.1, 7.3] & 81.2 [77.1, 84.8] \\
 \bottomrule
-\end{tabular}
-\end{table*}
+\end{tabularx}
+\par\medskip
+\textbf{B. Power on the netting set against a volatility raised by 5 \%, a mean reversion raised by 50 \%, and a measure error}\par\smallskip
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{2.9cm}>{\centering\arraybackslash}p{2.9cm}>{\centering\arraybackslash}p{2.9cm}@{}}
+\toprule
+Rule & Vol. +5 \% & Rev. +50 \% & Measure \\
+\midrule
+Product rule, bound 2 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Product errors, bound 3.18 & 99.0 [97.5, 99.6] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Pair-aware errors, bound 2 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Pair-aware errors, bound 3.18 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Dates only, bound 2 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+EEPE only, bound 2 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 58.5 [53.6, 63.2] \\
+CVA only, bound 2 & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 0.0 [0.0, 1.0] \\
+Fixed tolerance, 1 \% of the peak & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Fixed tolerance, 2 \% of the peak & 99.5 [98.2, 99.9] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Fixed tolerance, 5 \% of the peak & 0.0 [0.0, 1.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Product errors, maximum-T bound & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+Pair-aware errors, maximum-T bound & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] & 100.0 [99.0, 100.0] \\
+\bottomrule
+\end{tabularx}
+\end{table}

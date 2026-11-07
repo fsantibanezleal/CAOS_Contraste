@@ -52,7 +52,7 @@ with $x$ taken as the exact rational value of the floating-point number and a si
 \max_{i}\ \bigl\lvert p_{\mathcal{E}}(n_i,D_i,x_i)-p_{\mathcal{R}}(n_i,D_i,x_i)\bigr\rvert\ \le\ \tau,\qquad \tau=10^{-9}.
 \label{eq:route-tol}
 \end{equation}
-The grid of the product has 36 cases: $n\in\{50,500,5000\}$, $D\in\{0,1,3,10\}$ and $x\in\{0.001,0.01,0.05\}$. The tolerance is far above the double-precision error of the routes and far below any decision a validation takes from a $p$-value, so a defect smaller than $\tau$ is irrelevant and a defect larger than $\tau$ is flagged.
+The grid of the product has 36 cases: $n$ of 50, 500 and 5000, $D$ of 0, 1, 3 and 10, and $x$ of 0.001, 0.01 and 0.05. The tolerance is far above the double-precision error of the routes and far below any decision a validation takes from a $p$-value, so a defect smaller than $\tau$ is irrelevant and a defect larger than $\tau$ is flagged.
 
 \subsection{Closed forms against a library}
 \label{sec:proposed-closed}
@@ -62,7 +62,7 @@ The engine's closed forms for the price $V_{\mathcal{E}}$ of a European option o
 \varepsilon\ =\ \frac{\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert}{\lvert V_{\mathcal{Q}}\rvert}\ \le\ \varepsilon_{\max},\qquad \varepsilon_{\max}=10^{-6},
 \label{eq:closed-rel}
 \end{equation}
-the gate that QuantLib's own root-finding tolerance allows. A relative gate has no scale for a price near zero; the results of Section~\ref{sec:results} show the one case of a grid at which this matters, and the protocol therefore adds an absolute floor, $\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert\le\varepsilon_{\max}\lvert V_{\mathcal{Q}}\rvert+10^{-9}N$, with $N$ the notional.
+the gate that the design document states. A relative gate has no scale for a price near zero, and the results of Section~\ref{sec:results} show the one case of a grid at which this matters. The rule under which the fourth hypothesis is judged is the relative gate alone, fixed before the grid was run. As a proposal drawn from that case, and not as part of the rule that was tested, a protocol would add an absolute floor, $\lvert V_{\mathcal{E}}-V_{\mathcal{Q}}\rvert\le\varepsilon_{\max}\lvert V_{\mathcal{Q}}\rvert+10^{-9}N$, with $N$ the notional; the grid has no second case on which to test the floor.
 
 Two choices make the comparison one of the formulas and not of the inputs. The curve is built once, as zero rates linear in the rate and continuously compounded, and handed to both implementations, so that a difference of interpolation does not enter; and the parameters of the model, the mean reversion $a$ and the volatility $\sigma$, are the same numbers. The comparison is not run at one point only. The protocol draws parameter sets from a stated distribution with a fixed seed (mean reversion, volatility, expiry, maturity, strike or fixed rate) so that a relative difference that holds at one expiry and fails at another is found, and it reports the distribution of $\varepsilon$ over the draws, not its value at the favourable case. A failure of the gate is reported with the parameters that produced it and with the elasticity of the price to the volatility, which says whether the gate could have detected an error of a given size there (Proposition~\ref{prop:gate}).
 

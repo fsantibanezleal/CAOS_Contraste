@@ -1,9 +1,10 @@
 \begin{table}[htbp]
 \centering
-\small
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \caption{Largest difference between the defective engine's binomial p-value and three kinds of reference on the grid of 36 cases, for a tail convention moved by one and for a relative error planted inside SciPy; a defect is flagged when the difference exceeds the tolerance of $10^{-9}$.}
 \label{tab:routes-defects}
-\begin{tabular}{p{4.6cm}lllll}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.2cm}@{}}
 \toprule
 Planted defect & Size & C1 reuse & C2 same library & C3 independent & Flagged by \\
 \midrule
@@ -17,5 +18,5 @@ Tail convention of the binomial helper moved by one & n/a & $0$ & $3.1\times10^{
 \relax Relative error $\epsilon$ in SciPy & $1\times10^{-4}$ & $0$ & $0$ & $1.0\times10^{-4}$ & C3 \\
 \relax Relative error $\epsilon$ in SciPy & $1\times10^{-3}$ & $0$ & $0$ & $9.9\times10^{-4}$ & C3 \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

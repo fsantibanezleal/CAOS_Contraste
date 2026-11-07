@@ -1,9 +1,10 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\small
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \caption{Contribution of each part of the protocol, measured by what the reconciliation reports with the part and without it: the unit of the gap, the tested explanation, the independent route, the pair-aware error, the family-wise bound, the diagnostic run, the equivalence margin and the scope list.}
 \label{tab:ablation-protocol}
-\begin{tabular}{p{3.6cm}p{4.2cm}p{4.0cm}p{3.0cm}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.8cm}@{}}
 \toprule
 Part of the protocol & Measurement & With the part & Without it \\
 \midrule
@@ -16,5 +17,5 @@ Diagnostic with a zero minimum transfer amount & largest standardised difference
 Equivalence margin and detectable gap & what a pass on the single swap EEPE supports & equivalent within 1.9 percent; gap of 2.8 percent detectable & agreement, no size \\
 Scope list & comparisons listed as not run & wrong-way variant against ORE & silence \\
 \bottomrule
-\end{tabular}
-\end{table*}
+\end{tabularx}
+\end{table}

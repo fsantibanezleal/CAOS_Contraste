@@ -63,6 +63,7 @@ def main() -> None:
     net, sin, csa = (load(f"results_ore_{v}.json") for v in ("netting-set", "single-swap", "csa-mpor-10d"))
     s42 = {v: load(f"results_ore_seed42_{v}.json")["replicates"][0] for v in ("single-swap", "netting-set", "csa-mpor-10d", "csa-mpor-20d")}
     rtimes = load("run-times.json")
+    mt = load("results_maxt.json")
 
     # ------------------------------------------------------------------ printed answers
     t = pr["totals"]
@@ -154,6 +155,9 @@ def main() -> None:
     put("nClosedWorstAbs", abs(w["engine"] - w["quantlib"]), "results_closedforms.json:part2.worst[0]", "s")
     put("nClosedWorstPrice", w["quantlib"], "results_closedforms.json:part2.worst[0].quantlib", "f1")
     put("nClosedWorstShare", 100 * w["quantlib"] / 1_000_000.0, "results_closedforms.json:part2.worst[0].quantlib / notional", "f4")
+    wb = next(x for x in p2["worst"] if x["kind"] == "bond_call")
+    put("nClosedBondPrice", wb["quantlib"], "results_closedforms.json:part2.worst (the bond call)", "s")
+    put("nClosedBondRel", wb["relative_difference"], "results_closedforms.json:part2.worst (the bond call)", "s")
     put("nSwaptionPayer", cf["part1"]["swaption_payer"]["relative_difference"], "results_closedforms.json:part1.swaption_payer", "s")
     put("nSwaptionReceiver", cf["part1"]["swaption_receiver"]["relative_difference"], "results_closedforms.json:part1.swaption_receiver", "s")
     put("nElasticitySwaption", p3["elasticity_swaption"], "results_closedforms.json:part3.elasticity_swaption", "f2")
@@ -196,8 +200,6 @@ def main() -> None:
     put("nImDimBeyond", im["dim"]["n_beyond_two"], "results_committed.json:variants.with-im.dim")
     put("nImDimMaxZ", im["dim"]["max_abs_z"], "results_committed.json:variants.with-im.dim", "f1")
     put("nRebuildGap", max(x["max_abs_ee_gap"] for x in cm_["rebuild"].values()), "results_committed.json:rebuild", "s")
-    put("nOreSecondsCommitted", json.loads((DERIVED / "C12" / "netting-set.json").read_text(encoding="utf-8"))["outputs"]["ore_reconciliation"]["run_seconds"],
-        "data/derived/C12/netting-set.json:outputs.ore_reconciliation.run_seconds", "f0")
     put("nMtaShareTen", 1 - v["csa-mpor-10d"]["mta0_max_z"] / v["csa-mpor-10d"]["max_abs_z"], "results_committed.json", "p0")
     put("nMtaShareTwenty", 1 - v["csa-mpor-20d"]["mta0_max_z"] / v["csa-mpor-20d"]["max_abs_z"], "results_committed.json", "p0")
 
@@ -272,6 +274,66 @@ def main() -> None:
         put(name, T[key][rule]["rate"], f"results_criterion.json:table.{key}.{rule}.rate", "p1")
     put("nMeasureEepeMiss", 1.0 - T["netting-set|measure"]["eepe"]["rate"], "results_criterion.json:table.netting-set|measure.eepe.rate", "p0")
 
+    # Wilson intervals of the rates that the abstract and the discussion quote
+    def ci(name: str, key: str, rule: str) -> None:
+        cell = T[key][rule]
+        put(f"{name}Lo", cell["lo"], f"results_criterion.json:table.{key}.{rule}.lo", "p1")
+        put(f"{name}Hi", cell["hi"], f"results_criterion.json:table.{key}.{rule}.hi", "p1")
+
+    for name, key, rule in (("nSizeProdNetting", "netting-set|null", "product"), ("nSizeProdSingle", "single-swap|null", "product"),
+                            ("nPowerProdSigmaTwo", "netting-set|sigma+2%", "product"), ("nSizeRefineNetting", "netting-set|null", "pair+sidak"),
+                            ("nPowerRefineSigmaTwo", "netting-set|sigma+2%", "pair+sidak"), ("nSizeEepeNetting", "netting-set|null", "eepe"),
+                            ("nSizePairNetting", "netting-set|null", "pair"), ("nPowerSidakSigmaTwo", "netting-set|sigma+2%", "sidak")):
+        ci(name, key, rule)
+    put("nSizeFixedOneSingle", T["single-swap|null"]["fixed 1%"]["rate"], "results_criterion.json:table.single-swap|null.fixed 1%.rate", "p1")
+    put("nPowerFixedTwoSigmaTwoSingle", T["single-swap|sigma+2%"]["fixed 2%"]["rate"], "results_criterion.json:table.single-swap|sigma+2%.fixed 2%.rate", "p1")
+    put("nNullZReps", len(cn_["z_null"]), "results_criterion.json:calibration.netting-set.z_null (rows stored)")
+
+    # the maximum-T comparator (exp_maxt.py)
+    MT = mt["table"]
+    put("nMaxtReps", mt["reps"], "results_maxt.json:reps")
+    put("nMaxtReproduces", held(mt["reproduces_criterion_counts"]), "results_maxt.json:reproduces_criterion_counts", "t")
+    for name, key, rule in (("nSizeMaxtSingle", "single-swap|null", "maxT"), ("nSizeMaxtNetting", "netting-set|null", "maxT"), ("nSizePairMaxtSingle", "single-swap|null", "pair+maxT"),
+                            ("nSizePairMaxtNetting", "netting-set|null", "pair+maxT"), ("nPowerMaxtSigmaTwo", "netting-set|sigma+2%", "maxT"),
+                            ("nPowerPairMaxtSigmaTwo", "netting-set|sigma+2%", "pair+maxT"), ("nPowerPairMaxtSigmaTwoSingle", "single-swap|sigma+2%", "pair+maxT")):
+        put(name, MT[key][rule]["rate"], f"results_maxt.json:table.{key}.{rule}.rate", "p1")
+        put(name + "Lo", MT[key][rule]["lo"], f"results_maxt.json:table.{key}.{rule}.lo", "p1")
+        put(name + "Hi", MT[key][rule]["hi"], f"results_maxt.json:table.{key}.{rule}.hi", "p1")
+    pair_bounds = [b for v in mt["bounds"].values() for b in v["pair"].values()]
+    prod_bounds = [b for v in mt["bounds"].values() for b in v["product"].values()]
+    put("nMaxtPairBoundLow", min(pair_bounds), "results_maxt.json:bounds.*.pair", "f2")
+    put("nMaxtPairBoundHigh", max(pair_bounds), "results_maxt.json:bounds.*.pair", "f2")
+    put("nMaxtProdBoundLow", min(prod_bounds), "results_maxt.json:bounds.*.product", "f2")
+    put("nMaxtProdBoundHigh", max(prod_bounds), "results_maxt.json:bounds.*.product", "f2")
+    put("nMaxtPowerPairFiveNetting", MT["netting-set|sigma+5%"]["pair+maxT"]["rate"], "results_maxt.json:table.netting-set|sigma+5%.pair+maxT.rate", "p1")
+    put("nMaxtMeasureNetting", MT["netting-set|measure"]["pair+maxT"]["rate"], "results_maxt.json:table.netting-set|measure.pair+maxT.rate", "p1")
+    in_band = all(0.03 <= MT[f"{v}|null"][rule]["rate"] <= 0.08 for v in ("single-swap", "netting-set") for rule in ("maxT", "pair+maxT"))
+    put("nPredMone", held(in_band), "predictions.md M1 against results_maxt.json", "t")
+    put("nPredMtwo", held(MT["netting-set|sigma+2%"]["pair+maxT"]["rate"] >= MT["netting-set|sigma+2%"]["pair+sidak"]["rate"]), "predictions.md M2 against results_maxt.json", "t")
+    put("nPredMthree", held(MT["netting-set|sigma+2%"]["maxT"]["rate"] < MT["netting-set|sigma+2%"]["pair+maxT"]["rate"]), "predictions.md M3 against results_maxt.json", "t")
+
+    # analytic constants of the theory section and small numbers of the discussion
+    from scipy import stats
+
+    put("nPowerOneLower", 1 - stats.norm.cdf(2 - 1), "analytic: 1 - Phi(c - 1) at c = 2", "f3")
+    put("nPowerOneSidakLower", 1 - stats.norm.cdf(cr["sidak_bound"] - 1), "analytic: 1 - Phi(c_35 - 1)", "f3")
+    put("nPowerOneExact", 1 - stats.norm.cdf(2 - 1) + stats.norm.cdf(-2 - 1), "analytic: 1 - Phi(c - 1) + Phi(-c - 1) at c = 2", "f3")
+    put("nTtestSize", 2 * stats.t.sf(2.0, 19), "analytic: P(|t_19| > 2), the size of a two-standard-error rule on an error from 20 batches", "p1")
+    c9 = next(r for r in rt["defect_relative"] if r["eps"] == 1e-9)["C3_binomial"]
+    put("nEpsNineExcess", c9 - 1e-9, "results_routes.json:defect_relative[1e-9].C3_binomial minus the tolerance", "s")
+    put("nMissRound", c["rounded printed inputs (tested)"], "results_printed.json:miss_categories")
+    put("nMissLevel", c["confidence level of the print (tested)"], "results_printed.json:miss_categories")
+    put("nMissRecOther", rec - c["documented tolerance (recorded)"], "results_printed.json:miss_categories")
+    put("nWWTestTol", 2e-4, "CAOS_RiskValidation tests/ccr/test_ccr_cva.py:122 (atol 2e-4)", "s")
+    put("nSharedMeanGap", max(abs(a - b) for a, b in zip(net["summary"]["mean_z_by_date"][23:], sin["summary"]["mean_z_by_date"][23:], strict=True)),
+        "results_ore_netting-set.json and results_ore_single-swap.json:summary.mean_z_by_date[23:]", "f3")
+    cal = json.loads((DERIVED / "C12" / "netting-set.json").read_text(encoding="utf-8"))["outputs"]["calibration_used"]
+    put("nHWa", cal["a"], "data/derived/C12/netting-set.json:outputs.calibration_used.a", "f4")
+    put("nHWaSe", cal["a_se"], "data/derived/C12/netting-set.json:outputs.calibration_used.a_se", "f4")
+    put("nHWsigma", cal["sigma"], "data/derived/C12/netting-set.json:outputs.calibration_used.sigma", "f5")
+    put("nHWsigmaSe", cal["sigma_se"], "data/derived/C12/netting-set.json:outputs.calibration_used.sigma_se", "f7")
+    put("nHWobs", cal["n_obs"], "data/derived/C12/netting-set.json:outputs.calibration_used.n_obs")
+
     # ------------------------------------------------------------------ run times
     sec = rtimes["seconds"]
     for name, key in (("nTimePrinted", "exp_printed.py"), ("nTimeRoutes", "exp_routes.py"), ("nTimeClosed", "exp_closedforms.py"), ("nTimeCommitted", "exp_committed.py"),
@@ -279,6 +341,9 @@ def main() -> None:
                       ("nTimeOreSingle", "exp_ore_replicates.py single-swap"), ("nTimeOreCsa", "exp_ore_replicates.py csa-mpor-10d"), ("nTimeTM", "exp_transition_matrix.py")):
         put(name, sec[key], f"run-times.json:seconds.{key}", "i")
     put("nWorkers", rtimes["criterion_workers"], "run-times.json:criterion_workers")
+    put("nTimeMaxt", mt["seconds"], "results_maxt.json:seconds", "i")
+    put("nTimeMaxtMin", mt["seconds"] / 60.0, "results_maxt.json:seconds", "f0")
+    put("nTimeCriterionMin", sec["exp_criterion.py"] / 60.0, "run-times.json:seconds.exp_criterion.py", "f0")
     put("nHardware", f"{rtimes['logical_processors']} logical processors, {rtimes['platform']}", "run-times.json:platform", "t")
     put("nOreSecondsMean", statistics.mean([net["summary"]["mean_ore_seconds"], sin["summary"]["mean_ore_seconds"]]), "results_ore_*.json:summary.mean_ore_seconds", "f0")
 
