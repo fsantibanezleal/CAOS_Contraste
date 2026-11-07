@@ -1,0 +1,25 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Bias of the holdout AUC (with its 95\% half-width) and coverage of the 95\% interval in percent for the WoE scorecard on planted data of 800 rows (300 repetitions), on the 2,500-row subsamples of the 30,000 card holders of C01 (150 repetitions, 10,000 rows set aside per repetition as the reference), and for the product's own optbinning scorecard on planted data (90 repetitions; only the variants that call the product's fit appear).}
+\label{tab:other-data}
+\fitwidth{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Validation procedure & Small sample bias & Cov. & Card holders bias & Cov. & Product scorecard bias & Cov. \\
+\midrule
+proposed protocol & $+0.003\pm0.004$ & 95 & $+0.002\pm0.004$ & 93 & $+0.001\pm0.004$ & 93 \\
+imputation on all rows & $+0.003\pm0.004$ & 95 & $+0.002\pm0.004$ & 93 & -- & -- \\
+bin edges on all rows & $+0.001\pm0.004$ & 93 & $+0.002\pm0.004$ & 94 & -- & -- \\
+WoE with holdout labels & $+0.036\pm0.004$ & 72 & $+0.015\pm0.004$ & 88 & -- & -- \\
+screen with holdout labels & $+0.019\pm0.004$ & 89 & $+0.003\pm0.004$ & 93 & -- & -- \\
+everything fitted on training and holdout & $+0.057\pm0.004$ & 54 & $+0.019\pm0.004$ & 85 & $+0.039\pm0.004$ & 36 \\
+configuration chosen on the holdout & $+0.016\pm0.004$ & 91 & $+0.004\pm0.004$ & 94 & -- & -- \\
+calibration map fitted on the holdout & $+0.036\pm0.004$ & 80 & $+0.020\pm0.004$ & 81 & $+0.016\pm0.004$ & 81 \\
+calibration slice overlapping the holdout & $+0.012\pm0.004$ & 93 & $+0.007\pm0.004$ & 91 & -- & -- \\
+five-fold, preprocessing inside the folds & $+0.000\pm0.003$ & -- & $+0.001\pm0.003$ & -- & -- & -- \\
+five-fold, preprocessing before the folds & $+0.148\pm0.002$ & -- & $+0.016\pm0.003$ & -- & -- & -- \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

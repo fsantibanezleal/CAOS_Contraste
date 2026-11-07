@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Bias of five-fold cross-validated AUC against the mean reference AUC of the fold models for the WoE scorecard on planted data (five informative inputs, the rest noise), 100 repetitions per row, with the preprocessing fitted inside each training fold or on all development rows before the folds; the 95\% half-widths are over repetitions.}
+\label{tab:cv-scaling}
+\fitwidth{%
+\begin{tabular}{rrrr}
+\toprule
+Development rows & Inputs & Preprocessing inside the folds & Preprocessing before the folds \\
+\midrule
+400 & 40 & $+0.005\pm0.007$ & $+0.194\pm0.005$ \\
+800 & 40 & $-0.004\pm0.005$ & $+0.106\pm0.003$ \\
+1,600 & 40 & $+0.002\pm0.003$ & $+0.060\pm0.002$ \\
+3,200 & 40 & $0.000\pm0.002$ & $+0.031\pm0.002$ \\
+6,400 & 40 & $+0.000\pm0.002$ & $+0.016\pm0.001$ \\
+1,600 & 10 & $+0.001\pm0.003$ & $+0.044\pm0.002$ \\
+1,600 & 20 & $+0.000\pm0.003$ & $+0.054\pm0.003$ \\
+1,600 & 80 & $0.000\pm0.003$ & $+0.065\pm0.002$ \\
+1,600 & 160 & $+0.001\pm0.003$ & $+0.068\pm0.002$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

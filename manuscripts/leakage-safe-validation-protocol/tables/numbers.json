@@ -1,0 +1,4994 @@
+{
+ "syn.reps": {
+  "text": "300",
+  "source": "experiments/results/e1_synthetic.json reps"
+ },
+ "syn.n": {
+  "text": "2,500",
+  "source": "experiments/results/e1_synthetic.json n_total"
+ },
+ "syn.oracle": {
+  "text": "50,000",
+  "source": "experiments/results/e1_synthetic.json n_oracle"
+ },
+ "syn.p": {
+  "text": "40",
+  "source": "experiments/results/e1_synthetic.json p"
+ },
+ "syn.seed": {
+  "text": "20261104",
+  "source": "experiments/results/e1_synthetic.json base_seed"
+ },
+ "syn.w.none.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_bias"
+ },
+ "syn.w.none.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_bias"
+ },
+ "syn.w.none.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_bias_se x 1.96"
+ },
+ "syn.w.none.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_rmse"
+ },
+ "syn.w.none.est": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_est"
+ },
+ "syn.w.none.orc": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].auc_oracle"
+ },
+ "syn.w.none.cov": {
+  "text": "95.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].coverage"
+ },
+ "syn.w.none.covlo": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].coverage_lo"
+ },
+ "syn.w.none.covhi": {
+  "text": "97.2",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].coverage_hi"
+ },
+ "syn.w.none.brier": {
+  "text": "$-$0.0001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].brier_bias"
+ },
+ "syn.w.none.ece": {
+  "text": "+0.0148",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].ece_bias"
+ },
+ "syn.w.imp.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_bias"
+ },
+ "syn.w.imp.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_bias"
+ },
+ "syn.w.imp.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_bias_se x 1.96"
+ },
+ "syn.w.imp.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_rmse"
+ },
+ "syn.w.imp.est": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_est"
+ },
+ "syn.w.imp.orc": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].auc_oracle"
+ },
+ "syn.w.imp.cov": {
+  "text": "95.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].coverage"
+ },
+ "syn.w.imp.covlo": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].coverage_lo"
+ },
+ "syn.w.imp.covhi": {
+  "text": "97.2",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].coverage_hi"
+ },
+ "syn.w.imp.brier": {
+  "text": "0.0000",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].brier_bias"
+ },
+ "syn.w.imp.ece": {
+  "text": "+0.0145",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].ece_bias"
+ },
+ "syn.w.bin.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_bias"
+ },
+ "syn.w.bin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_bias"
+ },
+ "syn.w.bin.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_bias_se x 1.96"
+ },
+ "syn.w.bin.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_rmse"
+ },
+ "syn.w.bin.est": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_est"
+ },
+ "syn.w.bin.orc": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].auc_oracle"
+ },
+ "syn.w.bin.cov": {
+  "text": "96.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].coverage"
+ },
+ "syn.w.bin.covlo": {
+  "text": "93.6",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].coverage_lo"
+ },
+ "syn.w.bin.covhi": {
+  "text": "97.9",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].coverage_hi"
+ },
+ "syn.w.bin.brier": {
+  "text": "+0.0001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].brier_bias"
+ },
+ "syn.w.bin.ece": {
+  "text": "+0.0147",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].ece_bias"
+ },
+ "syn.w.woe.bias": {
+  "text": "+0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_bias"
+ },
+ "syn.w.woe.abias": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_bias"
+ },
+ "syn.w.woe.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_bias_se x 1.96"
+ },
+ "syn.w.woe.rmse": {
+  "text": "0.026",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_rmse"
+ },
+ "syn.w.woe.est": {
+  "text": "0.787",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_est"
+ },
+ "syn.w.woe.orc": {
+  "text": "0.769",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].auc_oracle"
+ },
+ "syn.w.woe.cov": {
+  "text": "78.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].coverage"
+ },
+ "syn.w.woe.covlo": {
+  "text": "73.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].coverage_lo"
+ },
+ "syn.w.woe.covhi": {
+  "text": "82.6",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].coverage_hi"
+ },
+ "syn.w.woe.brier": {
+  "text": "$-$0.0062",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].brier_bias"
+ },
+ "syn.w.woe.ece": {
+  "text": "+0.0126",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].ece_bias"
+ },
+ "syn.w.scr.bias": {
+  "text": "+0.004",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_bias"
+ },
+ "syn.w.scr.abias": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_bias"
+ },
+ "syn.w.scr.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_bias_se x 1.96"
+ },
+ "syn.w.scr.rmse": {
+  "text": "0.019",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_rmse"
+ },
+ "syn.w.scr.est": {
+  "text": "0.767",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_est"
+ },
+ "syn.w.scr.orc": {
+  "text": "0.763",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].auc_oracle"
+ },
+ "syn.w.scr.cov": {
+  "text": "94.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].coverage"
+ },
+ "syn.w.scr.covlo": {
+  "text": "91.1",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].coverage_lo"
+ },
+ "syn.w.scr.covhi": {
+  "text": "96.4",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].coverage_hi"
+ },
+ "syn.w.scr.brier": {
+  "text": "$-$0.0016",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].brier_bias"
+ },
+ "syn.w.scr.ece": {
+  "text": "+0.0132",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].ece_bias"
+ },
+ "syn.w.fit.bias": {
+  "text": "+0.025",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_bias"
+ },
+ "syn.w.fit.abias": {
+  "text": "0.025",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_bias"
+ },
+ "syn.w.fit.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_bias_se x 1.96"
+ },
+ "syn.w.fit.rmse": {
+  "text": "0.032",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_rmse"
+ },
+ "syn.w.fit.est": {
+  "text": "0.795",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_est"
+ },
+ "syn.w.fit.orc": {
+  "text": "0.770",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].auc_oracle"
+ },
+ "syn.w.fit.cov": {
+  "text": "66.7",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].coverage"
+ },
+ "syn.w.fit.covlo": {
+  "text": "61.2",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].coverage_lo"
+ },
+ "syn.w.fit.covhi": {
+  "text": "71.8",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].coverage_hi"
+ },
+ "syn.w.fit.brier": {
+  "text": "$-$0.0088",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].brier_bias"
+ },
+ "syn.w.fit.ece": {
+  "text": "+0.0113",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].ece_bias"
+ },
+ "syn.w.sel.bias": {
+  "text": "+0.005",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_bias"
+ },
+ "syn.w.sel.abias": {
+  "text": "0.005",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_bias"
+ },
+ "syn.w.sel.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_bias_se x 1.96"
+ },
+ "syn.w.sel.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_rmse"
+ },
+ "syn.w.sel.est": {
+  "text": "0.767",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_est"
+ },
+ "syn.w.sel.orc": {
+  "text": "0.762",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].auc_oracle"
+ },
+ "syn.w.sel.cov": {
+  "text": "96.0",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].coverage"
+ },
+ "syn.w.sel.covlo": {
+  "text": "93.1",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].coverage_lo"
+ },
+ "syn.w.sel.covhi": {
+  "text": "97.7",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].coverage_hi"
+ },
+ "syn.w.sel.brier": {
+  "text": "$-$0.0018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].brier_bias"
+ },
+ "syn.w.sel.ece": {
+  "text": "+0.0127",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].ece_bias"
+ },
+ "syn.w.caltest.bias": {
+  "text": "+0.016",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_bias"
+ },
+ "syn.w.caltest.abias": {
+  "text": "0.016",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_bias"
+ },
+ "syn.w.caltest.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_bias_se x 1.96"
+ },
+ "syn.w.caltest.rmse": {
+  "text": "0.023",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_rmse"
+ },
+ "syn.w.caltest.est": {
+  "text": "0.780",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_est"
+ },
+ "syn.w.caltest.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].auc_oracle"
+ },
+ "syn.w.caltest.cov": {
+  "text": "88.0",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].coverage"
+ },
+ "syn.w.caltest.covlo": {
+  "text": "83.8",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].coverage_lo"
+ },
+ "syn.w.caltest.covhi": {
+  "text": "91.2",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].coverage_hi"
+ },
+ "syn.w.caltest.brier": {
+  "text": "$-$0.0081",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].brier_bias"
+ },
+ "syn.w.caltest.ece": {
+  "text": "$-$0.0055",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].ece_bias"
+ },
+ "syn.w.calov.bias": {
+  "text": "+0.004",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_bias"
+ },
+ "syn.w.calov.abias": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_bias"
+ },
+ "syn.w.calov.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_bias_se x 1.96"
+ },
+ "syn.w.calov.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_rmse"
+ },
+ "syn.w.calov.est": {
+  "text": "0.767",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_est"
+ },
+ "syn.w.calov.orc": {
+  "text": "0.763",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].auc_oracle"
+ },
+ "syn.w.calov.cov": {
+  "text": "94.3",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].coverage"
+ },
+ "syn.w.calov.covlo": {
+  "text": "91.1",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].coverage_lo"
+ },
+ "syn.w.calov.covhi": {
+  "text": "96.4",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].coverage_hi"
+ },
+ "syn.w.calov.brier": {
+  "text": "$-$0.0022",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].brier_bias"
+ },
+ "syn.w.calov.ece": {
+  "text": "+0.0113",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].ece_bias"
+ },
+ "syn.w.cvin.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_bias"
+ },
+ "syn.w.cvin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_bias"
+ },
+ "syn.w.cvin.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_bias_se x 1.96"
+ },
+ "syn.w.cvin.rmse": {
+  "text": "0.015",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_rmse"
+ },
+ "syn.w.cvin.est": {
+  "text": "0.756",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_est"
+ },
+ "syn.w.cvin.orc": {
+  "text": "0.757",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_in].auc_oracle"
+ },
+ "syn.w.cvpre.bias": {
+  "text": "+0.054",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_bias"
+ },
+ "syn.w.cvpre.abias": {
+  "text": "0.054",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_bias"
+ },
+ "syn.w.cvpre.ci": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_bias_se x 1.96"
+ },
+ "syn.w.cvpre.rmse": {
+  "text": "0.055",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_rmse"
+ },
+ "syn.w.cvpre.est": {
+  "text": "0.818",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_est"
+ },
+ "syn.w.cvpre.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cv_pre].auc_oracle"
+ },
+ "syn.l.none.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_bias"
+ },
+ "syn.l.none.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_bias"
+ },
+ "syn.l.none.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_bias_se x 1.96"
+ },
+ "syn.l.none.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_rmse"
+ },
+ "syn.l.none.est": {
+  "text": "0.787",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_est"
+ },
+ "syn.l.none.orc": {
+  "text": "0.788",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].auc_oracle"
+ },
+ "syn.l.none.cov": {
+  "text": "94.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].coverage"
+ },
+ "syn.l.none.covlo": {
+  "text": "91.5",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].coverage_lo"
+ },
+ "syn.l.none.covhi": {
+  "text": "96.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].coverage_hi"
+ },
+ "syn.l.none.brier": {
+  "text": "+0.0002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].brier_bias"
+ },
+ "syn.l.none.ece": {
+  "text": "+0.0150",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].ece_bias"
+ },
+ "syn.l.imp.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_bias"
+ },
+ "syn.l.imp.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_bias"
+ },
+ "syn.l.imp.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_bias_se x 1.96"
+ },
+ "syn.l.imp.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_rmse"
+ },
+ "syn.l.imp.est": {
+  "text": "0.787",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_est"
+ },
+ "syn.l.imp.orc": {
+  "text": "0.788",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].auc_oracle"
+ },
+ "syn.l.imp.cov": {
+  "text": "94.3",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].coverage"
+ },
+ "syn.l.imp.covlo": {
+  "text": "91.1",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].coverage_lo"
+ },
+ "syn.l.imp.covhi": {
+  "text": "96.4",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].coverage_hi"
+ },
+ "syn.l.imp.brier": {
+  "text": "+0.0002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].brier_bias"
+ },
+ "syn.l.imp.ece": {
+  "text": "+0.0142",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].ece_bias"
+ },
+ "syn.l.scale.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_bias"
+ },
+ "syn.l.scale.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_bias"
+ },
+ "syn.l.scale.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_bias_se x 1.96"
+ },
+ "syn.l.scale.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_rmse"
+ },
+ "syn.l.scale.est": {
+  "text": "0.787",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_est"
+ },
+ "syn.l.scale.orc": {
+  "text": "0.788",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].auc_oracle"
+ },
+ "syn.l.scale.cov": {
+  "text": "95.0",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].coverage"
+ },
+ "syn.l.scale.covlo": {
+  "text": "91.9",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].coverage_lo"
+ },
+ "syn.l.scale.covhi": {
+  "text": "96.9",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].coverage_hi"
+ },
+ "syn.l.scale.brier": {
+  "text": "+0.0002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].brier_bias"
+ },
+ "syn.l.scale.ece": {
+  "text": "+0.0149",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].ece_bias"
+ },
+ "syn.l.scr.bias": {
+  "text": "+0.004",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_bias"
+ },
+ "syn.l.scr.abias": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_bias"
+ },
+ "syn.l.scr.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_bias_se x 1.96"
+ },
+ "syn.l.scr.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_rmse"
+ },
+ "syn.l.scr.est": {
+  "text": "0.793",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_est"
+ },
+ "syn.l.scr.orc": {
+  "text": "0.789",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].auc_oracle"
+ },
+ "syn.l.scr.cov": {
+  "text": "93.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].coverage"
+ },
+ "syn.l.scr.covlo": {
+  "text": "90.3",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].coverage_lo"
+ },
+ "syn.l.scr.covhi": {
+  "text": "95.9",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].coverage_hi"
+ },
+ "syn.l.scr.brier": {
+  "text": "$-$0.0017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].brier_bias"
+ },
+ "syn.l.scr.ece": {
+  "text": "+0.0130",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].ece_bias"
+ },
+ "syn.l.fit.bias": {
+  "text": "+0.009",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_bias"
+ },
+ "syn.l.fit.abias": {
+  "text": "0.009",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_bias"
+ },
+ "syn.l.fit.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_bias_se x 1.96"
+ },
+ "syn.l.fit.rmse": {
+  "text": "0.019",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_rmse"
+ },
+ "syn.l.fit.est": {
+  "text": "0.799",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_est"
+ },
+ "syn.l.fit.orc": {
+  "text": "0.790",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].auc_oracle"
+ },
+ "syn.l.fit.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].coverage"
+ },
+ "syn.l.fit.covlo": {
+  "text": "89.1",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].coverage_lo"
+ },
+ "syn.l.fit.covhi": {
+  "text": "95.1",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].coverage_hi"
+ },
+ "syn.l.fit.brier": {
+  "text": "$-$0.0034",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].brier_bias"
+ },
+ "syn.l.fit.ece": {
+  "text": "+0.0118",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].ece_bias"
+ },
+ "syn.l.sel.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_bias"
+ },
+ "syn.l.sel.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_bias"
+ },
+ "syn.l.sel.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_bias_se x 1.96"
+ },
+ "syn.l.sel.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_rmse"
+ },
+ "syn.l.sel.est": {
+  "text": "0.787",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_est"
+ },
+ "syn.l.sel.orc": {
+  "text": "0.788",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].auc_oracle"
+ },
+ "syn.l.sel.cov": {
+  "text": "95.0",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].coverage"
+ },
+ "syn.l.sel.covlo": {
+  "text": "91.9",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].coverage_lo"
+ },
+ "syn.l.sel.covhi": {
+  "text": "96.9",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].coverage_hi"
+ },
+ "syn.l.sel.brier": {
+  "text": "+0.0002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].brier_bias"
+ },
+ "syn.l.sel.ece": {
+  "text": "+0.0150",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].ece_bias"
+ },
+ "syn.l.caltest.bias": {
+  "text": "+0.014",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_bias"
+ },
+ "syn.l.caltest.abias": {
+  "text": "0.014",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_bias"
+ },
+ "syn.l.caltest.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_bias_se x 1.96"
+ },
+ "syn.l.caltest.rmse": {
+  "text": "0.021",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_rmse"
+ },
+ "syn.l.caltest.est": {
+  "text": "0.804",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_est"
+ },
+ "syn.l.caltest.orc": {
+  "text": "0.790",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].auc_oracle"
+ },
+ "syn.l.caltest.cov": {
+  "text": "87.0",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].coverage"
+ },
+ "syn.l.caltest.covlo": {
+  "text": "82.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].coverage_lo"
+ },
+ "syn.l.caltest.covhi": {
+  "text": "90.3",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].coverage_hi"
+ },
+ "syn.l.caltest.brier": {
+  "text": "$-$0.0079",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].brier_bias"
+ },
+ "syn.l.caltest.ece": {
+  "text": "$-$0.0063",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].ece_bias"
+ },
+ "syn.l.calov.bias": {
+  "text": "+0.003",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_bias"
+ },
+ "syn.l.calov.abias": {
+  "text": "0.003",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_bias"
+ },
+ "syn.l.calov.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_bias_se x 1.96"
+ },
+ "syn.l.calov.rmse": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_rmse"
+ },
+ "syn.l.calov.est": {
+  "text": "0.792",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_est"
+ },
+ "syn.l.calov.orc": {
+  "text": "0.789",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].auc_oracle"
+ },
+ "syn.l.calov.cov": {
+  "text": "96.0",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].coverage"
+ },
+ "syn.l.calov.covlo": {
+  "text": "93.1",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].coverage_lo"
+ },
+ "syn.l.calov.covhi": {
+  "text": "97.7",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].coverage_hi"
+ },
+ "syn.l.calov.brier": {
+  "text": "$-$0.0019",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].brier_bias"
+ },
+ "syn.l.calov.ece": {
+  "text": "+0.0109",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].ece_bias"
+ },
+ "syn.l.cvin.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_bias"
+ },
+ "syn.l.cvin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_bias"
+ },
+ "syn.l.cvin.ci": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_bias_se x 1.96"
+ },
+ "syn.l.cvin.rmse": {
+  "text": "0.012",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_rmse"
+ },
+ "syn.l.cvin.est": {
+  "text": "0.792",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_est"
+ },
+ "syn.l.cvin.orc": {
+  "text": "0.794",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_in].auc_oracle"
+ },
+ "syn.l.cvpre.bias": {
+  "text": "+0.005",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_bias"
+ },
+ "syn.l.cvpre.abias": {
+  "text": "0.005",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_bias"
+ },
+ "syn.l.cvpre.ci": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_bias_se x 1.96"
+ },
+ "syn.l.cvpre.rmse": {
+  "text": "0.013",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_rmse"
+ },
+ "syn.l.cvpre.est": {
+  "text": "0.799",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_est"
+ },
+ "syn.l.cvpre.orc": {
+  "text": "0.795",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cv_pre].auc_oracle"
+ },
+ "small.reps": {
+  "text": "300",
+  "source": "experiments/results/e1_synthetic-small.json reps"
+ },
+ "small.n": {
+  "text": "800",
+  "source": "experiments/results/e1_synthetic-small.json n_total"
+ },
+ "small.oracle": {
+  "text": "50,000",
+  "source": "experiments/results/e1_synthetic-small.json n_oracle"
+ },
+ "small.p": {
+  "text": "40",
+  "source": "experiments/results/e1_synthetic-small.json p"
+ },
+ "small.seed": {
+  "text": "20261105",
+  "source": "experiments/results/e1_synthetic-small.json base_seed"
+ },
+ "small.w.none.bias": {
+  "text": "+0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_bias"
+ },
+ "small.w.none.abias": {
+  "text": "0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_bias"
+ },
+ "small.w.none.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_bias_se x 1.96"
+ },
+ "small.w.none.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_rmse"
+ },
+ "small.w.none.est": {
+  "text": "0.719",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_est"
+ },
+ "small.w.none.orc": {
+  "text": "0.715",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].auc_oracle"
+ },
+ "small.w.none.cov": {
+  "text": "95.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].coverage"
+ },
+ "small.w.none.covlo": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].coverage_lo"
+ },
+ "small.w.none.covhi": {
+  "text": "97.2",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].coverage_hi"
+ },
+ "small.w.none.brier": {
+  "text": "$-$0.0019",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].brier_bias"
+ },
+ "small.w.none.ece": {
+  "text": "+0.0277",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].ece_bias"
+ },
+ "small.w.imp.bias": {
+  "text": "+0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_bias"
+ },
+ "small.w.imp.abias": {
+  "text": "0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_bias"
+ },
+ "small.w.imp.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_bias_se x 1.96"
+ },
+ "small.w.imp.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_rmse"
+ },
+ "small.w.imp.est": {
+  "text": "0.719",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_est"
+ },
+ "small.w.imp.orc": {
+  "text": "0.716",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].auc_oracle"
+ },
+ "small.w.imp.cov": {
+  "text": "95.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].coverage"
+ },
+ "small.w.imp.covlo": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].coverage_lo"
+ },
+ "small.w.imp.covhi": {
+  "text": "97.2",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].coverage_hi"
+ },
+ "small.w.imp.brier": {
+  "text": "$-$0.0019",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].brier_bias"
+ },
+ "small.w.imp.ece": {
+  "text": "+0.0277",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].ece_bias"
+ },
+ "small.w.bin.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_bias"
+ },
+ "small.w.bin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_bias"
+ },
+ "small.w.bin.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_bias_se x 1.96"
+ },
+ "small.w.bin.rmse": {
+  "text": "0.035",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_rmse"
+ },
+ "small.w.bin.est": {
+  "text": "0.716",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_est"
+ },
+ "small.w.bin.orc": {
+  "text": "0.715",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].auc_oracle"
+ },
+ "small.w.bin.cov": {
+  "text": "93.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].coverage"
+ },
+ "small.w.bin.covlo": {
+  "text": "89.5",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].coverage_lo"
+ },
+ "small.w.bin.covhi": {
+  "text": "95.4",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].coverage_hi"
+ },
+ "small.w.bin.brier": {
+  "text": "$-$0.0006",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].brier_bias"
+ },
+ "small.w.bin.ece": {
+  "text": "+0.0300",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].ece_bias"
+ },
+ "small.w.woe.bias": {
+  "text": "+0.036",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_bias"
+ },
+ "small.w.woe.abias": {
+  "text": "0.036",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_bias"
+ },
+ "small.w.woe.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_bias_se x 1.96"
+ },
+ "small.w.woe.rmse": {
+  "text": "0.051",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_rmse"
+ },
+ "small.w.woe.est": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_est"
+ },
+ "small.w.woe.orc": {
+  "text": "0.728",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].auc_oracle"
+ },
+ "small.w.woe.cov": {
+  "text": "72.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].coverage"
+ },
+ "small.w.woe.covlo": {
+  "text": "67.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].coverage_lo"
+ },
+ "small.w.woe.covhi": {
+  "text": "77.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].coverage_hi"
+ },
+ "small.w.woe.brier": {
+  "text": "$-$0.0120",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].brier_bias"
+ },
+ "small.w.woe.ece": {
+  "text": "+0.0211",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].ece_bias"
+ },
+ "small.w.scr.bias": {
+  "text": "+0.019",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_bias"
+ },
+ "small.w.scr.abias": {
+  "text": "0.019",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_bias"
+ },
+ "small.w.scr.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_bias_se x 1.96"
+ },
+ "small.w.scr.rmse": {
+  "text": "0.039",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_rmse"
+ },
+ "small.w.scr.est": {
+  "text": "0.738",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_est"
+ },
+ "small.w.scr.orc": {
+  "text": "0.719",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].auc_oracle"
+ },
+ "small.w.scr.cov": {
+  "text": "89.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].coverage"
+ },
+ "small.w.scr.covlo": {
+  "text": "85.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].coverage_lo"
+ },
+ "small.w.scr.covhi": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].coverage_hi"
+ },
+ "small.w.scr.brier": {
+  "text": "$-$0.0064",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].brier_bias"
+ },
+ "small.w.scr.ece": {
+  "text": "+0.0254",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].ece_bias"
+ },
+ "small.w.fit.bias": {
+  "text": "+0.057",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_bias"
+ },
+ "small.w.fit.abias": {
+  "text": "0.057",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_bias"
+ },
+ "small.w.fit.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_bias_se x 1.96"
+ },
+ "small.w.fit.rmse": {
+  "text": "0.069",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_rmse"
+ },
+ "small.w.fit.est": {
+  "text": "0.790",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_est"
+ },
+ "small.w.fit.orc": {
+  "text": "0.733",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].auc_oracle"
+ },
+ "small.w.fit.cov": {
+  "text": "54.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].coverage"
+ },
+ "small.w.fit.covlo": {
+  "text": "48.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].coverage_lo"
+ },
+ "small.w.fit.covhi": {
+  "text": "59.6",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].coverage_hi"
+ },
+ "small.w.fit.brier": {
+  "text": "$-$0.0193",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].brier_bias"
+ },
+ "small.w.fit.ece": {
+  "text": "+0.0220",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].ece_bias"
+ },
+ "small.w.sel.bias": {
+  "text": "+0.016",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_bias"
+ },
+ "small.w.sel.abias": {
+  "text": "0.016",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_bias"
+ },
+ "small.w.sel.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_bias_se x 1.96"
+ },
+ "small.w.sel.rmse": {
+  "text": "0.037",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_rmse"
+ },
+ "small.w.sel.est": {
+  "text": "0.732",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_est"
+ },
+ "small.w.sel.orc": {
+  "text": "0.716",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].auc_oracle"
+ },
+ "small.w.sel.cov": {
+  "text": "91.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].coverage"
+ },
+ "small.w.sel.covlo": {
+  "text": "87.6",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].coverage_lo"
+ },
+ "small.w.sel.covhi": {
+  "text": "94.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].coverage_hi"
+ },
+ "small.w.sel.brier": {
+  "text": "$-$0.0049",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].brier_bias"
+ },
+ "small.w.sel.ece": {
+  "text": "+0.0251",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].ece_bias"
+ },
+ "small.w.caltest.bias": {
+  "text": "+0.036",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_bias"
+ },
+ "small.w.caltest.abias": {
+  "text": "0.036",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_bias"
+ },
+ "small.w.caltest.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_bias_se x 1.96"
+ },
+ "small.w.caltest.rmse": {
+  "text": "0.048",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_rmse"
+ },
+ "small.w.caltest.est": {
+  "text": "0.756",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_est"
+ },
+ "small.w.caltest.orc": {
+  "text": "0.720",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].auc_oracle"
+ },
+ "small.w.caltest.cov": {
+  "text": "79.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].coverage"
+ },
+ "small.w.caltest.covlo": {
+  "text": "74.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].coverage_lo"
+ },
+ "small.w.caltest.covhi": {
+  "text": "83.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].coverage_hi"
+ },
+ "small.w.caltest.brier": {
+  "text": "$-$0.0173",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].brier_bias"
+ },
+ "small.w.caltest.ece": {
+  "text": "+0.0021",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].ece_bias"
+ },
+ "small.w.calov.bias": {
+  "text": "+0.012",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_bias"
+ },
+ "small.w.calov.abias": {
+  "text": "0.012",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_bias"
+ },
+ "small.w.calov.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_bias_se x 1.96"
+ },
+ "small.w.calov.rmse": {
+  "text": "0.036",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_rmse"
+ },
+ "small.w.calov.est": {
+  "text": "0.729",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_est"
+ },
+ "small.w.calov.orc": {
+  "text": "0.718",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].auc_oracle"
+ },
+ "small.w.calov.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].coverage"
+ },
+ "small.w.calov.covlo": {
+  "text": "89.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].coverage_lo"
+ },
+ "small.w.calov.covhi": {
+  "text": "95.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].coverage_hi"
+ },
+ "small.w.calov.brier": {
+  "text": "$-$0.0060",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].brier_bias"
+ },
+ "small.w.calov.ece": {
+  "text": "+0.0235",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].ece_bias"
+ },
+ "small.w.cvin.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_bias"
+ },
+ "small.w.cvin.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_bias"
+ },
+ "small.w.cvin.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_bias_se x 1.96"
+ },
+ "small.w.cvin.rmse": {
+  "text": "0.027",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_rmse"
+ },
+ "small.w.cvin.est": {
+  "text": "0.694",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_est"
+ },
+ "small.w.cvin.orc": {
+  "text": "0.694",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_in].auc_oracle"
+ },
+ "small.w.cvpre.bias": {
+  "text": "+0.148",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_bias"
+ },
+ "small.w.cvpre.abias": {
+  "text": "0.148",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_bias"
+ },
+ "small.w.cvpre.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_bias_se x 1.96"
+ },
+ "small.w.cvpre.rmse": {
+  "text": "0.149",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_rmse"
+ },
+ "small.w.cvpre.est": {
+  "text": "0.858",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_est"
+ },
+ "small.w.cvpre.orc": {
+  "text": "0.710",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cv_pre].auc_oracle"
+ },
+ "small.l.none.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_bias"
+ },
+ "small.l.none.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_bias"
+ },
+ "small.l.none.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_bias_se x 1.96"
+ },
+ "small.l.none.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_rmse"
+ },
+ "small.l.none.est": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_est"
+ },
+ "small.l.none.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].auc_oracle"
+ },
+ "small.l.none.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].coverage"
+ },
+ "small.l.none.covlo": {
+  "text": "89.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].coverage_lo"
+ },
+ "small.l.none.covhi": {
+  "text": "95.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].coverage_hi"
+ },
+ "small.l.none.brier": {
+  "text": "$-$0.0007",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].brier_bias"
+ },
+ "small.l.none.ece": {
+  "text": "+0.0268",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].ece_bias"
+ },
+ "small.l.imp.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_bias"
+ },
+ "small.l.imp.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_bias"
+ },
+ "small.l.imp.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_bias_se x 1.96"
+ },
+ "small.l.imp.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_rmse"
+ },
+ "small.l.imp.est": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_est"
+ },
+ "small.l.imp.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].auc_oracle"
+ },
+ "small.l.imp.cov": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].coverage"
+ },
+ "small.l.imp.covlo": {
+  "text": "88.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].coverage_lo"
+ },
+ "small.l.imp.covhi": {
+  "text": "94.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].coverage_hi"
+ },
+ "small.l.imp.brier": {
+  "text": "$-$0.0008",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].brier_bias"
+ },
+ "small.l.imp.ece": {
+  "text": "+0.0263",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].ece_bias"
+ },
+ "small.l.scale.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_bias"
+ },
+ "small.l.scale.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_bias"
+ },
+ "small.l.scale.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_bias_se x 1.96"
+ },
+ "small.l.scale.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_rmse"
+ },
+ "small.l.scale.est": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_est"
+ },
+ "small.l.scale.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].auc_oracle"
+ },
+ "small.l.scale.cov": {
+  "text": "93.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].coverage"
+ },
+ "small.l.scale.covlo": {
+  "text": "89.5",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].coverage_lo"
+ },
+ "small.l.scale.covhi": {
+  "text": "95.4",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].coverage_hi"
+ },
+ "small.l.scale.brier": {
+  "text": "$-$0.0008",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].brier_bias"
+ },
+ "small.l.scale.ece": {
+  "text": "+0.0268",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].ece_bias"
+ },
+ "small.l.scr.bias": {
+  "text": "+0.015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_bias"
+ },
+ "small.l.scr.abias": {
+  "text": "0.015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_bias"
+ },
+ "small.l.scr.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_bias_se x 1.96"
+ },
+ "small.l.scr.rmse": {
+  "text": "0.035",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_rmse"
+ },
+ "small.l.scr.est": {
+  "text": "0.784",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_est"
+ },
+ "small.l.scr.orc": {
+  "text": "0.769",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].auc_oracle"
+ },
+ "small.l.scr.cov": {
+  "text": "89.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].coverage"
+ },
+ "small.l.scr.covlo": {
+  "text": "85.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].coverage_lo"
+ },
+ "small.l.scr.covhi": {
+  "text": "92.3",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].coverage_hi"
+ },
+ "small.l.scr.brier": {
+  "text": "$-$0.0062",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].brier_bias"
+ },
+ "small.l.scr.ece": {
+  "text": "+0.0231",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].ece_bias"
+ },
+ "small.l.fit.bias": {
+  "text": "+0.028",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_bias"
+ },
+ "small.l.fit.abias": {
+  "text": "0.028",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_bias"
+ },
+ "small.l.fit.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_bias_se x 1.96"
+ },
+ "small.l.fit.rmse": {
+  "text": "0.043",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_rmse"
+ },
+ "small.l.fit.est": {
+  "text": "0.802",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_est"
+ },
+ "small.l.fit.orc": {
+  "text": "0.773",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].auc_oracle"
+ },
+ "small.l.fit.cov": {
+  "text": "79.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].coverage"
+ },
+ "small.l.fit.covlo": {
+  "text": "74.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].coverage_lo"
+ },
+ "small.l.fit.covhi": {
+  "text": "83.8",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].coverage_hi"
+ },
+ "small.l.fit.brier": {
+  "text": "$-$0.0113",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].brier_bias"
+ },
+ "small.l.fit.ece": {
+  "text": "+0.0202",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].ece_bias"
+ },
+ "small.l.sel.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_bias"
+ },
+ "small.l.sel.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_bias"
+ },
+ "small.l.sel.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_bias_se x 1.96"
+ },
+ "small.l.sel.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_rmse"
+ },
+ "small.l.sel.est": {
+  "text": "0.765",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_est"
+ },
+ "small.l.sel.orc": {
+  "text": "0.764",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].auc_oracle"
+ },
+ "small.l.sel.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].coverage"
+ },
+ "small.l.sel.covlo": {
+  "text": "89.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].coverage_lo"
+ },
+ "small.l.sel.covhi": {
+  "text": "95.1",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].coverage_hi"
+ },
+ "small.l.sel.brier": {
+  "text": "$-$0.0008",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].brier_bias"
+ },
+ "small.l.sel.ece": {
+  "text": "+0.0264",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].ece_bias"
+ },
+ "small.l.caltest.bias": {
+  "text": "+0.030",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_bias"
+ },
+ "small.l.caltest.abias": {
+  "text": "0.030",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_bias"
+ },
+ "small.l.caltest.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_bias_se x 1.96"
+ },
+ "small.l.caltest.rmse": {
+  "text": "0.044",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_rmse"
+ },
+ "small.l.caltest.est": {
+  "text": "0.799",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_est"
+ },
+ "small.l.caltest.orc": {
+  "text": "0.768",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].auc_oracle"
+ },
+ "small.l.caltest.cov": {
+  "text": "79.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].coverage"
+ },
+ "small.l.caltest.covlo": {
+  "text": "74.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].coverage_lo"
+ },
+ "small.l.caltest.covhi": {
+  "text": "83.2",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].coverage_hi"
+ },
+ "small.l.caltest.brier": {
+  "text": "$-$0.0172",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].brier_bias"
+ },
+ "small.l.caltest.ece": {
+  "text": "$-$0.0025",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].ece_bias"
+ },
+ "small.l.calov.bias": {
+  "text": "+0.008",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_bias"
+ },
+ "small.l.calov.abias": {
+  "text": "0.008",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_bias"
+ },
+ "small.l.calov.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_bias_se x 1.96"
+ },
+ "small.l.calov.rmse": {
+  "text": "0.034",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_rmse"
+ },
+ "small.l.calov.est": {
+  "text": "0.774",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_est"
+ },
+ "small.l.calov.orc": {
+  "text": "0.766",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].auc_oracle"
+ },
+ "small.l.calov.cov": {
+  "text": "91.0",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].coverage"
+ },
+ "small.l.calov.covlo": {
+  "text": "87.2",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].coverage_lo"
+ },
+ "small.l.calov.covhi": {
+  "text": "93.7",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].coverage_hi"
+ },
+ "small.l.calov.brier": {
+  "text": "$-$0.0051",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].brier_bias"
+ },
+ "small.l.calov.ece": {
+  "text": "+0.0229",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].ece_bias"
+ },
+ "small.l.cvin.bias": {
+  "text": "$-$0.001",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_bias"
+ },
+ "small.l.cvin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_bias"
+ },
+ "small.l.cvin.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_bias_se x 1.96"
+ },
+ "small.l.cvin.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_rmse"
+ },
+ "small.l.cvin.est": {
+  "text": "0.777",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_est"
+ },
+ "small.l.cvin.orc": {
+  "text": "0.778",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_in].auc_oracle"
+ },
+ "small.l.cvpre.bias": {
+  "text": "+0.017",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_bias"
+ },
+ "small.l.cvpre.abias": {
+  "text": "0.017",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_bias"
+ },
+ "small.l.cvpre.ci": {
+  "text": "0.002",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_bias_se x 1.96"
+ },
+ "small.l.cvpre.rmse": {
+  "text": "0.028",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_rmse"
+ },
+ "small.l.cvpre.est": {
+  "text": "0.798",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_est"
+ },
+ "small.l.cvpre.orc": {
+  "text": "0.781",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cv_pre].auc_oracle"
+ },
+ "tw.reps": {
+  "text": "150",
+  "source": "experiments/results/e1_taiwan.json reps"
+ },
+ "tw.n": {
+  "text": "2,500",
+  "source": "experiments/results/e1_taiwan.json n_total"
+ },
+ "tw.oracle": {
+  "text": "10,000",
+  "source": "experiments/results/e1_taiwan.json n_oracle"
+ },
+ "tw.p": {
+  "text": "20",
+  "source": "experiments/results/e1_taiwan.json p"
+ },
+ "tw.seed": {
+  "text": "20261106",
+  "source": "experiments/results/e1_taiwan.json base_seed"
+ },
+ "tw.w.none.bias": {
+  "text": "+0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_bias"
+ },
+ "tw.w.none.abias": {
+  "text": "0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_bias"
+ },
+ "tw.w.none.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_bias_se x 1.96"
+ },
+ "tw.w.none.rmse": {
+  "text": "0.023",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_rmse"
+ },
+ "tw.w.none.est": {
+  "text": "0.750",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_est"
+ },
+ "tw.w.none.orc": {
+  "text": "0.749",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].auc_oracle"
+ },
+ "tw.w.none.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].coverage"
+ },
+ "tw.w.none.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].coverage_lo"
+ },
+ "tw.w.none.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].coverage_hi"
+ },
+ "tw.w.none.brier": {
+  "text": "$-$0.0015",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].brier_bias"
+ },
+ "tw.w.none.ece": {
+  "text": "+0.0118",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].ece_bias"
+ },
+ "tw.w.imp.bias": {
+  "text": "+0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_bias"
+ },
+ "tw.w.imp.abias": {
+  "text": "0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_bias"
+ },
+ "tw.w.imp.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_bias_se x 1.96"
+ },
+ "tw.w.imp.rmse": {
+  "text": "0.023",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_rmse"
+ },
+ "tw.w.imp.est": {
+  "text": "0.750",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_est"
+ },
+ "tw.w.imp.orc": {
+  "text": "0.749",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].auc_oracle"
+ },
+ "tw.w.imp.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].coverage"
+ },
+ "tw.w.imp.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].coverage_lo"
+ },
+ "tw.w.imp.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].coverage_hi"
+ },
+ "tw.w.imp.brier": {
+  "text": "$-$0.0015",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].brier_bias"
+ },
+ "tw.w.imp.ece": {
+  "text": "+0.0118",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].ece_bias"
+ },
+ "tw.w.bin.bias": {
+  "text": "+0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_bias"
+ },
+ "tw.w.bin.abias": {
+  "text": "0.002",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_bias"
+ },
+ "tw.w.bin.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_bias_se x 1.96"
+ },
+ "tw.w.bin.rmse": {
+  "text": "0.023",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_rmse"
+ },
+ "tw.w.bin.est": {
+  "text": "0.752",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_est"
+ },
+ "tw.w.bin.orc": {
+  "text": "0.750",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].auc_oracle"
+ },
+ "tw.w.bin.cov": {
+  "text": "94.0",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].coverage"
+ },
+ "tw.w.bin.covlo": {
+  "text": "89.0",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].coverage_lo"
+ },
+ "tw.w.bin.covhi": {
+  "text": "96.8",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].coverage_hi"
+ },
+ "tw.w.bin.brier": {
+  "text": "$-$0.0016",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].brier_bias"
+ },
+ "tw.w.bin.ece": {
+  "text": "+0.0132",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].ece_bias"
+ },
+ "tw.w.woe.bias": {
+  "text": "+0.015",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_bias"
+ },
+ "tw.w.woe.abias": {
+  "text": "0.015",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_bias"
+ },
+ "tw.w.woe.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_bias_se x 1.96"
+ },
+ "tw.w.woe.rmse": {
+  "text": "0.027",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_rmse"
+ },
+ "tw.w.woe.est": {
+  "text": "0.767",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_est"
+ },
+ "tw.w.woe.orc": {
+  "text": "0.752",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].auc_oracle"
+ },
+ "tw.w.woe.cov": {
+  "text": "88.0",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].coverage"
+ },
+ "tw.w.woe.covlo": {
+  "text": "81.8",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].coverage_lo"
+ },
+ "tw.w.woe.covhi": {
+  "text": "92.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].coverage_hi"
+ },
+ "tw.w.woe.brier": {
+  "text": "$-$0.0039",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].brier_bias"
+ },
+ "tw.w.woe.ece": {
+  "text": "+0.0112",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].ece_bias"
+ },
+ "tw.w.scr.bias": {
+  "text": "+0.003",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_bias"
+ },
+ "tw.w.scr.abias": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_bias"
+ },
+ "tw.w.scr.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_bias_se x 1.96"
+ },
+ "tw.w.scr.rmse": {
+  "text": "0.022",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_rmse"
+ },
+ "tw.w.scr.est": {
+  "text": "0.752",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_est"
+ },
+ "tw.w.scr.orc": {
+  "text": "0.749",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].auc_oracle"
+ },
+ "tw.w.scr.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].coverage"
+ },
+ "tw.w.scr.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].coverage_lo"
+ },
+ "tw.w.scr.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].coverage_hi"
+ },
+ "tw.w.scr.brier": {
+  "text": "$-$0.0019",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].brier_bias"
+ },
+ "tw.w.scr.ece": {
+  "text": "+0.0122",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].ece_bias"
+ },
+ "tw.w.fit.bias": {
+  "text": "+0.019",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_bias"
+ },
+ "tw.w.fit.abias": {
+  "text": "0.019",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_bias"
+ },
+ "tw.w.fit.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_bias_se x 1.96"
+ },
+ "tw.w.fit.rmse": {
+  "text": "0.029",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_rmse"
+ },
+ "tw.w.fit.est": {
+  "text": "0.773",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_est"
+ },
+ "tw.w.fit.orc": {
+  "text": "0.754",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].auc_oracle"
+ },
+ "tw.w.fit.cov": {
+  "text": "85.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].coverage"
+ },
+ "tw.w.fit.covlo": {
+  "text": "78.8",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].coverage_lo"
+ },
+ "tw.w.fit.covhi": {
+  "text": "90.1",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].coverage_hi"
+ },
+ "tw.w.fit.brier": {
+  "text": "$-$0.0050",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].brier_bias"
+ },
+ "tw.w.fit.ece": {
+  "text": "+0.0101",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].ece_bias"
+ },
+ "tw.w.sel.bias": {
+  "text": "+0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_bias"
+ },
+ "tw.w.sel.abias": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_bias"
+ },
+ "tw.w.sel.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_bias_se x 1.96"
+ },
+ "tw.w.sel.rmse": {
+  "text": "0.024",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_rmse"
+ },
+ "tw.w.sel.est": {
+  "text": "0.753",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_est"
+ },
+ "tw.w.sel.orc": {
+  "text": "0.749",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].auc_oracle"
+ },
+ "tw.w.sel.cov": {
+  "text": "94.0",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].coverage"
+ },
+ "tw.w.sel.covlo": {
+  "text": "89.0",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].coverage_lo"
+ },
+ "tw.w.sel.covhi": {
+  "text": "96.8",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].coverage_hi"
+ },
+ "tw.w.sel.brier": {
+  "text": "$-$0.0020",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].brier_bias"
+ },
+ "tw.w.sel.ece": {
+  "text": "+0.0113",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].ece_bias"
+ },
+ "tw.w.caltest.bias": {
+  "text": "+0.020",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_bias"
+ },
+ "tw.w.caltest.abias": {
+  "text": "0.020",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_bias"
+ },
+ "tw.w.caltest.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_bias_se x 1.96"
+ },
+ "tw.w.caltest.rmse": {
+  "text": "0.030",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_rmse"
+ },
+ "tw.w.caltest.est": {
+  "text": "0.772",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_est"
+ },
+ "tw.w.caltest.orc": {
+  "text": "0.752",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].auc_oracle"
+ },
+ "tw.w.caltest.cov": {
+  "text": "81.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].coverage"
+ },
+ "tw.w.caltest.covlo": {
+  "text": "74.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].coverage_lo"
+ },
+ "tw.w.caltest.covhi": {
+  "text": "86.8",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].coverage_hi"
+ },
+ "tw.w.caltest.brier": {
+  "text": "$-$0.0084",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].brier_bias"
+ },
+ "tw.w.caltest.ece": {
+  "text": "$-$0.0042",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].ece_bias"
+ },
+ "tw.w.calov.bias": {
+  "text": "+0.007",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_bias"
+ },
+ "tw.w.calov.abias": {
+  "text": "0.007",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_bias"
+ },
+ "tw.w.calov.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_bias_se x 1.96"
+ },
+ "tw.w.calov.rmse": {
+  "text": "0.024",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_rmse"
+ },
+ "tw.w.calov.est": {
+  "text": "0.757",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_est"
+ },
+ "tw.w.calov.orc": {
+  "text": "0.750",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].auc_oracle"
+ },
+ "tw.w.calov.cov": {
+  "text": "91.3",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].coverage"
+ },
+ "tw.w.calov.covlo": {
+  "text": "85.7",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].coverage_lo"
+ },
+ "tw.w.calov.covhi": {
+  "text": "94.9",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].coverage_hi"
+ },
+ "tw.w.calov.brier": {
+  "text": "$-$0.0034",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].brier_bias"
+ },
+ "tw.w.calov.ece": {
+  "text": "+0.0092",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].ece_bias"
+ },
+ "tw.w.cvin.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_bias"
+ },
+ "tw.w.cvin.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_bias"
+ },
+ "tw.w.cvin.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_bias_se x 1.96"
+ },
+ "tw.w.cvin.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_rmse"
+ },
+ "tw.w.cvin.est": {
+  "text": "0.754",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_est"
+ },
+ "tw.w.cvin.orc": {
+  "text": "0.753",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_in].auc_oracle"
+ },
+ "tw.w.cvpre.bias": {
+  "text": "+0.016",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_bias"
+ },
+ "tw.w.cvpre.abias": {
+  "text": "0.016",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_bias"
+ },
+ "tw.w.cvpre.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_bias_se x 1.96"
+ },
+ "tw.w.cvpre.rmse": {
+  "text": "0.023",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_rmse"
+ },
+ "tw.w.cvpre.est": {
+  "text": "0.770",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_est"
+ },
+ "tw.w.cvpre.orc": {
+  "text": "0.754",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cv_pre].auc_oracle"
+ },
+ "tw.l.none.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_bias"
+ },
+ "tw.l.none.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_bias"
+ },
+ "tw.l.none.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_bias_se x 1.96"
+ },
+ "tw.l.none.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_rmse"
+ },
+ "tw.l.none.est": {
+  "text": "0.713",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_est"
+ },
+ "tw.l.none.orc": {
+  "text": "0.712",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].auc_oracle"
+ },
+ "tw.l.none.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].coverage"
+ },
+ "tw.l.none.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].coverage_lo"
+ },
+ "tw.l.none.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].coverage_hi"
+ },
+ "tw.l.none.brier": {
+  "text": "$-$0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].brier_bias"
+ },
+ "tw.l.none.ece": {
+  "text": "+0.0142",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].ece_bias"
+ },
+ "tw.l.imp.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_bias"
+ },
+ "tw.l.imp.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_bias"
+ },
+ "tw.l.imp.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_bias_se x 1.96"
+ },
+ "tw.l.imp.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_rmse"
+ },
+ "tw.l.imp.est": {
+  "text": "0.713",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_est"
+ },
+ "tw.l.imp.orc": {
+  "text": "0.712",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].auc_oracle"
+ },
+ "tw.l.imp.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].coverage"
+ },
+ "tw.l.imp.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].coverage_lo"
+ },
+ "tw.l.imp.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].coverage_hi"
+ },
+ "tw.l.imp.brier": {
+  "text": "$-$0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].brier_bias"
+ },
+ "tw.l.imp.ece": {
+  "text": "+0.0142",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].ece_bias"
+ },
+ "tw.l.scale.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_bias"
+ },
+ "tw.l.scale.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_bias"
+ },
+ "tw.l.scale.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_bias_se x 1.96"
+ },
+ "tw.l.scale.rmse": {
+  "text": "0.024",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_rmse"
+ },
+ "tw.l.scale.est": {
+  "text": "0.713",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_est"
+ },
+ "tw.l.scale.orc": {
+  "text": "0.712",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].auc_oracle"
+ },
+ "tw.l.scale.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].coverage"
+ },
+ "tw.l.scale.covlo": {
+  "text": "88.2",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].coverage_lo"
+ },
+ "tw.l.scale.covhi": {
+  "text": "96.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].coverage_hi"
+ },
+ "tw.l.scale.brier": {
+  "text": "$-$0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].brier_bias"
+ },
+ "tw.l.scale.ece": {
+  "text": "+0.0141",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].ece_bias"
+ },
+ "tw.l.scr.bias": {
+  "text": "+0.003",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_bias"
+ },
+ "tw.l.scr.abias": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_bias"
+ },
+ "tw.l.scr.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_bias_se x 1.96"
+ },
+ "tw.l.scr.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_rmse"
+ },
+ "tw.l.scr.est": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_est"
+ },
+ "tw.l.scr.orc": {
+  "text": "0.713",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].auc_oracle"
+ },
+ "tw.l.scr.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].coverage"
+ },
+ "tw.l.scr.covlo": {
+  "text": "87.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].coverage_lo"
+ },
+ "tw.l.scr.covhi": {
+  "text": "95.9",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].coverage_hi"
+ },
+ "tw.l.scr.brier": {
+  "text": "$-$0.0014",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].brier_bias"
+ },
+ "tw.l.scr.ece": {
+  "text": "+0.0138",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].ece_bias"
+ },
+ "tw.l.fit.bias": {
+  "text": "+0.009",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_bias"
+ },
+ "tw.l.fit.abias": {
+  "text": "0.009",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_bias"
+ },
+ "tw.l.fit.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_bias_se x 1.96"
+ },
+ "tw.l.fit.rmse": {
+  "text": "0.026",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_rmse"
+ },
+ "tw.l.fit.est": {
+  "text": "0.724",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_est"
+ },
+ "tw.l.fit.orc": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].auc_oracle"
+ },
+ "tw.l.fit.cov": {
+  "text": "90.7",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].coverage"
+ },
+ "tw.l.fit.covlo": {
+  "text": "84.9",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].coverage_lo"
+ },
+ "tw.l.fit.covhi": {
+  "text": "94.4",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].coverage_hi"
+ },
+ "tw.l.fit.brier": {
+  "text": "$-$0.0028",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].brier_bias"
+ },
+ "tw.l.fit.ece": {
+  "text": "+0.0124",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].ece_bias"
+ },
+ "tw.l.sel.bias": {
+  "text": "+0.002",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_bias"
+ },
+ "tw.l.sel.abias": {
+  "text": "0.002",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_bias"
+ },
+ "tw.l.sel.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_bias_se x 1.96"
+ },
+ "tw.l.sel.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_rmse"
+ },
+ "tw.l.sel.est": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_est"
+ },
+ "tw.l.sel.orc": {
+  "text": "0.713",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].auc_oracle"
+ },
+ "tw.l.sel.cov": {
+  "text": "92.7",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].coverage"
+ },
+ "tw.l.sel.covlo": {
+  "text": "87.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].coverage_lo"
+ },
+ "tw.l.sel.covhi": {
+  "text": "95.9",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].coverage_hi"
+ },
+ "tw.l.sel.brier": {
+  "text": "$-$0.0013",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].brier_bias"
+ },
+ "tw.l.sel.ece": {
+  "text": "+0.0145",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].ece_bias"
+ },
+ "tw.l.caltest.bias": {
+  "text": "+0.023",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_bias"
+ },
+ "tw.l.caltest.abias": {
+  "text": "0.023",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_bias"
+ },
+ "tw.l.caltest.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_bias_se x 1.96"
+ },
+ "tw.l.caltest.rmse": {
+  "text": "0.032",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_rmse"
+ },
+ "tw.l.caltest.est": {
+  "text": "0.737",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_est"
+ },
+ "tw.l.caltest.orc": {
+  "text": "0.714",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].auc_oracle"
+ },
+ "tw.l.caltest.cov": {
+  "text": "85.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].coverage"
+ },
+ "tw.l.caltest.covlo": {
+  "text": "78.8",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].coverage_lo"
+ },
+ "tw.l.caltest.covhi": {
+  "text": "90.1",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].coverage_hi"
+ },
+ "tw.l.caltest.brier": {
+  "text": "$-$0.0079",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].brier_bias"
+ },
+ "tw.l.caltest.ece": {
+  "text": "$-$0.0014",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].ece_bias"
+ },
+ "tw.l.calov.bias": {
+  "text": "+0.006",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_bias"
+ },
+ "tw.l.calov.abias": {
+  "text": "0.006",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_bias"
+ },
+ "tw.l.calov.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_bias_se x 1.96"
+ },
+ "tw.l.calov.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_rmse"
+ },
+ "tw.l.calov.est": {
+  "text": "0.719",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_est"
+ },
+ "tw.l.calov.orc": {
+  "text": "0.714",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].auc_oracle"
+ },
+ "tw.l.calov.cov": {
+  "text": "91.3",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].coverage"
+ },
+ "tw.l.calov.covlo": {
+  "text": "85.7",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].coverage_lo"
+ },
+ "tw.l.calov.covhi": {
+  "text": "94.9",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].coverage_hi"
+ },
+ "tw.l.calov.brier": {
+  "text": "$-$0.0029",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].brier_bias"
+ },
+ "tw.l.calov.ece": {
+  "text": "+0.0114",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].ece_bias"
+ },
+ "tw.l.cvin.bias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_bias"
+ },
+ "tw.l.cvin.abias": {
+  "text": "0.000",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_bias"
+ },
+ "tw.l.cvin.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_bias_se x 1.96"
+ },
+ "tw.l.cvin.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_rmse"
+ },
+ "tw.l.cvin.est": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_est"
+ },
+ "tw.l.cvin.orc": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_in].auc_oracle"
+ },
+ "tw.l.cvpre.bias": {
+  "text": "+0.002",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_bias"
+ },
+ "tw.l.cvpre.abias": {
+  "text": "0.002",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_bias"
+ },
+ "tw.l.cvpre.ci": {
+  "text": "0.003",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_bias_se x 1.96"
+ },
+ "tw.l.cvpre.rmse": {
+  "text": "0.018",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_rmse"
+ },
+ "tw.l.cvpre.est": {
+  "text": "0.717",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_est"
+ },
+ "tw.l.cvpre.orc": {
+  "text": "0.715",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cv_pre].auc_oracle"
+ },
+ "prod.reps": {
+  "text": "90",
+  "source": "experiments/results/e1_product.json reps"
+ },
+ "prod.n": {
+  "text": "2,500",
+  "source": "experiments/results/e1_product.json n_total"
+ },
+ "prod.oracle": {
+  "text": "50,000",
+  "source": "experiments/results/e1_product.json n_oracle"
+ },
+ "prod.p": {
+  "text": "12",
+  "source": "experiments/results/e1_product.json p"
+ },
+ "prod.seed": {
+  "text": "20261107",
+  "source": "experiments/results/e1_product.json base_seed"
+ },
+ "prod.p.none.bias": {
+  "text": "+0.001",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_bias"
+ },
+ "prod.p.none.abias": {
+  "text": "0.001",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_bias"
+ },
+ "prod.p.none.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_bias_se x 1.96"
+ },
+ "prod.p.none.rmse": {
+  "text": "0.021",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_rmse"
+ },
+ "prod.p.none.est": {
+  "text": "0.772",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_est"
+ },
+ "prod.p.none.orc": {
+  "text": "0.771",
+  "source": "experiments/results/e1_product.json summary[product/none].auc_oracle"
+ },
+ "prod.p.none.cov": {
+  "text": "93.3",
+  "source": "experiments/results/e1_product.json summary[product/none].coverage"
+ },
+ "prod.p.none.covlo": {
+  "text": "86.2",
+  "source": "experiments/results/e1_product.json summary[product/none].coverage_lo"
+ },
+ "prod.p.none.covhi": {
+  "text": "96.9",
+  "source": "experiments/results/e1_product.json summary[product/none].coverage_hi"
+ },
+ "prod.p.none.brier": {
+  "text": "$-$0.0003",
+  "source": "experiments/results/e1_product.json summary[product/none].brier_bias"
+ },
+ "prod.p.none.ece": {
+  "text": "+0.0136",
+  "source": "experiments/results/e1_product.json summary[product/none].ece_bias"
+ },
+ "prod.p.fit.bias": {
+  "text": "+0.039",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_bias"
+ },
+ "prod.p.fit.abias": {
+  "text": "0.039",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_bias"
+ },
+ "prod.p.fit.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_bias_se x 1.96"
+ },
+ "prod.p.fit.rmse": {
+  "text": "0.043",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_rmse"
+ },
+ "prod.p.fit.est": {
+  "text": "0.818",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_est"
+ },
+ "prod.p.fit.orc": {
+  "text": "0.779",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].auc_oracle"
+ },
+ "prod.p.fit.cov": {
+  "text": "35.6",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].coverage"
+ },
+ "prod.p.fit.covlo": {
+  "text": "26.4",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].coverage_lo"
+ },
+ "prod.p.fit.covhi": {
+  "text": "45.8",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].coverage_hi"
+ },
+ "prod.p.fit.brier": {
+  "text": "$-$0.0136",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].brier_bias"
+ },
+ "prod.p.fit.ece": {
+  "text": "+0.0105",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].ece_bias"
+ },
+ "prod.p.caltest.bias": {
+  "text": "+0.016",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_bias"
+ },
+ "prod.p.caltest.abias": {
+  "text": "0.016",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_bias"
+ },
+ "prod.p.caltest.ci": {
+  "text": "0.004",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_bias_se x 1.96"
+ },
+ "prod.p.caltest.rmse": {
+  "text": "0.025",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_rmse"
+ },
+ "prod.p.caltest.est": {
+  "text": "0.789",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_est"
+ },
+ "prod.p.caltest.orc": {
+  "text": "0.774",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].auc_oracle"
+ },
+ "prod.p.caltest.cov": {
+  "text": "81.1",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].coverage"
+ },
+ "prod.p.caltest.covlo": {
+  "text": "71.8",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].coverage_lo"
+ },
+ "prod.p.caltest.covhi": {
+  "text": "87.9",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].coverage_hi"
+ },
+ "prod.p.caltest.brier": {
+  "text": "$-$0.0080",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].brier_bias"
+ },
+ "prod.p.caltest.ece": {
+  "text": "$-$0.0058",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].ece_bias"
+ },
+ "syn.train": {
+  "text": "1,400",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "syn.cal": {
+  "text": "350",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "syn.hold": {
+  "text": "750",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "small.train": {
+  "text": "448",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "small.cal": {
+  "text": "112",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "small.hold": {
+  "text": "240",
+  "source": "leaklab.stratified_slices on a planted sample"
+ },
+ "e2.reps": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json reps"
+ },
+ "e2.n": {
+  "text": "1,500",
+  "source": "experiments/results/e2_matrix.json n"
+ },
+ "e2.w.none.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/none].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.none.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/none].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.none.G3": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/none].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.none.any": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/none].any_gate_fails"
+ },
+ "e2.w.none.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/none].non_vacuous"
+ },
+ "e2.w.imp.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/impute_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.imp.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/impute_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.imp.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/impute_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.imp.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/impute_full].any_gate_fails"
+ },
+ "e2.w.imp.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/impute_full].non_vacuous"
+ },
+ "e2.w.bin.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/bin_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.bin.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/bin_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.bin.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/bin_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.bin.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/bin_full].any_gate_fails"
+ },
+ "e2.w.bin.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/bin_full].non_vacuous"
+ },
+ "e2.w.woe.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/woe_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.woe.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/woe_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.woe.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/woe_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.woe.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/woe_full].any_gate_fails"
+ },
+ "e2.w.woe.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/woe_full].non_vacuous"
+ },
+ "e2.w.scr.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/screen_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.scr.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/screen_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.scr.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/screen_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.scr.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/screen_full].any_gate_fails"
+ },
+ "e2.w.scr.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/screen_full].non_vacuous"
+ },
+ "e2.w.fit.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/fit_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.fit.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/fit_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.fit.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/fit_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.fit.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/fit_full].any_gate_fails"
+ },
+ "e2.w.fit.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/fit_full].non_vacuous"
+ },
+ "e2.w.sel.G1": {
+  "text": "92",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/select_test].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.sel.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/select_test].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.sel.G3": {
+  "text": "91",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/select_test].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.sel.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/select_test].any_gate_fails"
+ },
+ "e2.w.sel.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/select_test].non_vacuous"
+ },
+ "e2.w.caltest.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_test].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.caltest.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_test].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.caltest.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_test].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.caltest.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_test].any_gate_fails"
+ },
+ "e2.w.caltest.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_test].non_vacuous"
+ },
+ "e2.w.calov.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_overlap].G1 (detection = 1 - pass rate)"
+ },
+ "e2.w.calov.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_overlap].G2 (detection = 1 - pass rate)"
+ },
+ "e2.w.calov.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_overlap].G3 (detection = 1 - pass rate)"
+ },
+ "e2.w.calov.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_overlap].any_gate_fails"
+ },
+ "e2.w.calov.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[woe/cal_overlap].non_vacuous"
+ },
+ "e2.l.none.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/none].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.none.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/none].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.none.G3": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/none].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.none.any": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/none].any_gate_fails"
+ },
+ "e2.l.none.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/none].non_vacuous"
+ },
+ "e2.l.imp.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/impute_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.imp.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/impute_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.imp.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/impute_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.imp.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/impute_full].any_gate_fails"
+ },
+ "e2.l.imp.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/impute_full].non_vacuous"
+ },
+ "e2.l.scale.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/scale_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.scale.G2": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/scale_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.scale.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/scale_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.scale.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/scale_full].any_gate_fails"
+ },
+ "e2.l.scale.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/scale_full].non_vacuous"
+ },
+ "e2.l.scr.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/screen_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.scr.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/screen_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.scr.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/screen_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.scr.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/screen_full].any_gate_fails"
+ },
+ "e2.l.scr.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/screen_full].non_vacuous"
+ },
+ "e2.l.fit.G1": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/fit_full].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.fit.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/fit_full].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.fit.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/fit_full].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.fit.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/fit_full].any_gate_fails"
+ },
+ "e2.l.fit.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/fit_full].non_vacuous"
+ },
+ "e2.l.sel.G1": {
+  "text": "50",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/select_test].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.sel.G2": {
+  "text": "99",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/select_test].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.sel.G3": {
+  "text": "48",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/select_test].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.sel.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/select_test].any_gate_fails"
+ },
+ "e2.l.sel.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/select_test].non_vacuous"
+ },
+ "e2.l.caltest.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_test].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.caltest.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_test].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.caltest.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_test].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.caltest.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_test].any_gate_fails"
+ },
+ "e2.l.caltest.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_test].non_vacuous"
+ },
+ "e2.l.calov.G1": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_overlap].G1 (detection = 1 - pass rate)"
+ },
+ "e2.l.calov.G2": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_overlap].G2 (detection = 1 - pass rate)"
+ },
+ "e2.l.calov.G3": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_overlap].G3 (detection = 1 - pass rate)"
+ },
+ "e2.l.calov.any": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_overlap].any_gate_fails"
+ },
+ "e2.l.calov.nv": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json pass_rates[linear/cal_overlap].non_vacuous"
+ },
+ "e2.draws.w.1": {
+  "text": "90.5",
+  "source": "experiments/results/e2_draws.json detection_by_draws[woe][1]"
+ },
+ "e2.draws.w.2": {
+  "text": "99.0",
+  "source": "experiments/results/e2_draws.json detection_by_draws[woe][2]"
+ },
+ "e2.draws.w.3": {
+  "text": "100.0",
+  "source": "experiments/results/e2_draws.json detection_by_draws[woe][3]"
+ },
+ "e2.draws.w.5": {
+  "text": "100.0",
+  "source": "experiments/results/e2_draws.json detection_by_draws[woe][5]"
+ },
+ "e2.draws.l.1": {
+  "text": "52.5",
+  "source": "experiments/results/e2_draws.json detection_by_draws[linear][1]"
+ },
+ "e2.draws.l.2": {
+  "text": "72.5",
+  "source": "experiments/results/e2_draws.json detection_by_draws[linear][2]"
+ },
+ "e2.draws.l.3": {
+  "text": "86.0",
+  "source": "experiments/results/e2_draws.json detection_by_draws[linear][3]"
+ },
+ "e2.draws.l.5": {
+  "text": "97.0",
+  "source": "experiments/results/e2_draws.json detection_by_draws[linear][5]"
+ },
+ "e2.draws.reps": {
+  "text": "200",
+  "source": "experiments/results/e2_draws.json reps"
+ },
+ "e2.ladder.protocol.changed": {
+  "text": "0",
+  "source": "experiments/results/e2_ladder.json conditions[protocol].rungs_changed"
+ },
+ "e2.ladder.protocol.rungs": {
+  "text": "7",
+  "source": "experiments/results/e2_ladder.json conditions[protocol].rungs"
+ },
+ "e2.ladder.fit_on_train_and_holdout.changed": {
+  "text": "7",
+  "source": "experiments/results/e2_ladder.json conditions[fit_on_train_and_holdout].rungs_changed"
+ },
+ "e2.ladder.fit_on_train_and_holdout.rungs": {
+  "text": "7",
+  "source": "experiments/results/e2_ladder.json conditions[fit_on_train_and_holdout].rungs"
+ },
+ "e2.ladder.calibration_on_holdout.changed": {
+  "text": "2",
+  "source": "experiments/results/e2_ladder.json conditions[calibration_on_holdout].rungs_changed"
+ },
+ "e2.ladder.calibration_on_holdout.rungs": {
+  "text": "7",
+  "source": "experiments/results/e2_ladder.json conditions[calibration_on_holdout].rungs"
+ },
+ "e2.ladder.n": {
+  "text": "2,400",
+  "source": "experiments/results/e2_ladder.json n"
+ },
+ "e2.ladder.seconds": {
+  "text": "130",
+  "source": "experiments/results/e2_ladder.json seconds (the three conditions, one machine)"
+ },
+ "e2.ladder.hold": {
+  "text": "720",
+  "source": "experiments/results/e2_ladder.json holdout_n"
+ },
+ "e3.reps": {
+  "text": "500",
+  "source": "experiments/results/e3_planted_leak.json reps"
+ },
+ "e3.s0.0.dev": {
+  "text": "0.692",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].dev_auc.mean"
+ },
+ "e3.s0.0.devcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].closed_form.dev_auc"
+ },
+ "e3.s0.0.cur": {
+  "text": "0.692",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].cur_auc.mean"
+ },
+ "e3.s0.0.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].closed_form.cur_auc"
+ },
+ "e3.s0.0.feat": {
+  "text": "0.500",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].closed_form.feature_auc"
+ },
+ "e3.s0.0.infl": {
+  "text": "0.000",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].closed_form dev_auc - cur_auc"
+ },
+ "e3.s0.0.auc_test": {
+  "text": "2.4",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].auc_test.rate"
+ },
+ "e3.s0.0.csi_test": {
+  "text": "5.6",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].csi_test.rate"
+ },
+ "e3.s0.0.single_feature_flag": {
+  "text": "0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].single_feature_flag.rate"
+ },
+ "e3.s0.0.resemblance_flag": {
+  "text": "6.6",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].resemblance_flag.rate"
+ },
+ "e3.s0.0.psi": {
+  "text": "0.0035",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].psi.mean"
+ },
+ "e3.s0.0.psipop": {
+  "text": "0.0000",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].engine_truth.feature_population_psi"
+ },
+ "e3.s0.0.zdev": {
+  "text": "0.7",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0] (simulated mean - closed form) / se"
+ },
+ "e3.s0.0.zcur": {
+  "text": "0.8",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0] (simulated mean - closed form) / se"
+ },
+ "e3.s0.25.dev": {
+  "text": "0.734",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].dev_auc.mean"
+ },
+ "e3.s0.25.devcf": {
+  "text": "0.734",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].closed_form.dev_auc"
+ },
+ "e3.s0.25.cur": {
+  "text": "0.692",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].cur_auc.mean"
+ },
+ "e3.s0.25.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].closed_form.cur_auc"
+ },
+ "e3.s0.25.feat": {
+  "text": "0.570",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].closed_form.feature_auc"
+ },
+ "e3.s0.25.infl": {
+  "text": "0.043",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].closed_form dev_auc - cur_auc"
+ },
+ "e3.s0.25.auc_test": {
+  "text": "62.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].auc_test.rate"
+ },
+ "e3.s0.25.csi_test": {
+  "text": "5.4",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].csi_test.rate"
+ },
+ "e3.s0.25.single_feature_flag": {
+  "text": "0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].single_feature_flag.rate"
+ },
+ "e3.s0.25.resemblance_flag": {
+  "text": "6.6",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].resemblance_flag.rate"
+ },
+ "e3.s0.25.psi": {
+  "text": "0.0038",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].psi.mean"
+ },
+ "e3.s0.25.psipop": {
+  "text": "0.0001",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25].engine_truth.feature_population_psi"
+ },
+ "e3.s0.25.zdev": {
+  "text": "0.1",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25] (simulated mean - closed form) / se"
+ },
+ "e3.s0.25.zcur": {
+  "text": "0.3",
+  "source": "experiments/results/e3_planted_leak.json levels[0.25] (simulated mean - closed form) / se"
+ },
+ "e3.s0.5.dev": {
+  "text": "0.772",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].dev_auc.mean"
+ },
+ "e3.s0.5.devcf": {
+  "text": "0.773",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].closed_form.dev_auc"
+ },
+ "e3.s0.5.cur": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].cur_auc.mean"
+ },
+ "e3.s0.5.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].closed_form.cur_auc"
+ },
+ "e3.s0.5.feat": {
+  "text": "0.638",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].closed_form.feature_auc"
+ },
+ "e3.s0.5.infl": {
+  "text": "0.082",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].closed_form dev_auc - cur_auc"
+ },
+ "e3.s0.5.auc_test": {
+  "text": "99.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].auc_test.rate"
+ },
+ "e3.s0.5.csi_test": {
+  "text": "7.2",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].csi_test.rate"
+ },
+ "e3.s0.5.single_feature_flag": {
+  "text": "0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].single_feature_flag.rate"
+ },
+ "e3.s0.5.resemblance_flag": {
+  "text": "13.2",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].resemblance_flag.rate"
+ },
+ "e3.s0.5.psi": {
+  "text": "0.0039",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].psi.mean"
+ },
+ "e3.s0.5.psipop": {
+  "text": "0.0002",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5].engine_truth.feature_population_psi"
+ },
+ "e3.s0.5.zdev": {
+  "text": "-1.1",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5] (simulated mean - closed form) / se"
+ },
+ "e3.s0.5.zcur": {
+  "text": "-1.0",
+  "source": "experiments/results/e3_planted_leak.json levels[0.5] (simulated mean - closed form) / se"
+ },
+ "e3.s1.0.dev": {
+  "text": "0.841",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].dev_auc.mean"
+ },
+ "e3.s1.0.devcf": {
+  "text": "0.841",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].closed_form.dev_auc"
+ },
+ "e3.s1.0.cur": {
+  "text": "0.693",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].cur_auc.mean"
+ },
+ "e3.s1.0.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].closed_form.cur_auc"
+ },
+ "e3.s1.0.feat": {
+  "text": "0.760",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].closed_form.feature_auc"
+ },
+ "e3.s1.0.infl": {
+  "text": "0.150",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].closed_form dev_auc - cur_auc"
+ },
+ "e3.s1.0.auc_test": {
+  "text": "100.0",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].auc_test.rate"
+ },
+ "e3.s1.0.csi_test": {
+  "text": "14.2",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].csi_test.rate"
+ },
+ "e3.s1.0.single_feature_flag": {
+  "text": "0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].single_feature_flag.rate"
+ },
+ "e3.s1.0.resemblance_flag": {
+  "text": "31.6",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].resemblance_flag.rate"
+ },
+ "e3.s1.0.psi": {
+  "text": "0.0046",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].psi.mean"
+ },
+ "e3.s1.0.psipop": {
+  "text": "0.0010",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0].engine_truth.feature_population_psi"
+ },
+ "e3.s1.0.zdev": {
+  "text": "-0.7",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0] (simulated mean - closed form) / se"
+ },
+ "e3.s1.0.zcur": {
+  "text": "1.8",
+  "source": "experiments/results/e3_planted_leak.json levels[1.0] (simulated mean - closed form) / se"
+ },
+ "e3.s1.5.dev": {
+  "text": "0.894",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].dev_auc.mean"
+ },
+ "e3.s1.5.devcf": {
+  "text": "0.894",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].closed_form.dev_auc"
+ },
+ "e3.s1.5.cur": {
+  "text": "0.692",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].cur_auc.mean"
+ },
+ "e3.s1.5.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].closed_form.cur_auc"
+ },
+ "e3.s1.5.feat": {
+  "text": "0.856",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].closed_form.feature_auc"
+ },
+ "e3.s1.5.infl": {
+  "text": "0.203",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].closed_form dev_auc - cur_auc"
+ },
+ "e3.s1.5.auc_test": {
+  "text": "100.0",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].auc_test.rate"
+ },
+ "e3.s1.5.csi_test": {
+  "text": "35.6",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].csi_test.rate"
+ },
+ "e3.s1.5.single_feature_flag": {
+  "text": "0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].single_feature_flag.rate"
+ },
+ "e3.s1.5.resemblance_flag": {
+  "text": "51.6",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].resemblance_flag.rate"
+ },
+ "e3.s1.5.psi": {
+  "text": "0.0062",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].psi.mean"
+ },
+ "e3.s1.5.psipop": {
+  "text": "0.0024",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5].engine_truth.feature_population_psi"
+ },
+ "e3.s1.5.zdev": {
+  "text": "-0.2",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5] (simulated mean - closed form) / se"
+ },
+ "e3.s1.5.zcur": {
+  "text": "0.3",
+  "source": "experiments/results/e3_planted_leak.json levels[1.5] (simulated mean - closed form) / se"
+ },
+ "e3.s2.0.dev": {
+  "text": "0.933",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].dev_auc.mean"
+ },
+ "e3.s2.0.devcf": {
+  "text": "0.933",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].closed_form.dev_auc"
+ },
+ "e3.s2.0.cur": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].cur_auc.mean"
+ },
+ "e3.s2.0.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].closed_form.cur_auc"
+ },
+ "e3.s2.0.feat": {
+  "text": "0.921",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].closed_form.feature_auc"
+ },
+ "e3.s2.0.infl": {
+  "text": "0.242",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].closed_form dev_auc - cur_auc"
+ },
+ "e3.s2.0.auc_test": {
+  "text": "100.0",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].auc_test.rate"
+ },
+ "e3.s2.0.csi_test": {
+  "text": "60.0",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].csi_test.rate"
+ },
+ "e3.s2.0.single_feature_flag": {
+  "text": "0.2",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].single_feature_flag.rate"
+ },
+ "e3.s2.0.resemblance_flag": {
+  "text": "61.4",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].resemblance_flag.rate"
+ },
+ "e3.s2.0.psi": {
+  "text": "0.0078",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].psi.mean"
+ },
+ "e3.s2.0.psipop": {
+  "text": "0.0042",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0].engine_truth.feature_population_psi"
+ },
+ "e3.s2.0.zdev": {
+  "text": "0.6",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0] (simulated mean - closed form) / se"
+ },
+ "e3.s2.0.zcur": {
+  "text": "-0.6",
+  "source": "experiments/results/e3_planted_leak.json levels[2.0] (simulated mean - closed form) / se"
+ },
+ "e3.s3.0.dev": {
+  "text": "0.977",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].dev_auc.mean"
+ },
+ "e3.s3.0.devcf": {
+  "text": "0.977",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].closed_form.dev_auc"
+ },
+ "e3.s3.0.cur": {
+  "text": "0.692",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].cur_auc.mean"
+ },
+ "e3.s3.0.curcf": {
+  "text": "0.691",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].closed_form.cur_auc"
+ },
+ "e3.s3.0.feat": {
+  "text": "0.983",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].closed_form.feature_auc"
+ },
+ "e3.s3.0.infl": {
+  "text": "0.286",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].closed_form dev_auc - cur_auc"
+ },
+ "e3.s3.0.auc_test": {
+  "text": "100.0",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].auc_test.rate"
+ },
+ "e3.s3.0.csi_test": {
+  "text": "84.6",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].csi_test.rate"
+ },
+ "e3.s3.0.single_feature_flag": {
+  "text": "100.0",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].single_feature_flag.rate"
+ },
+ "e3.s3.0.resemblance_flag": {
+  "text": "73.6",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].resemblance_flag.rate"
+ },
+ "e3.s3.0.psi": {
+  "text": "0.0103",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].psi.mean"
+ },
+ "e3.s3.0.psipop": {
+  "text": "0.0066",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0].engine_truth.feature_population_psi"
+ },
+ "e3.s3.0.zdev": {
+  "text": "-0.0",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0] (simulated mean - closed form) / se"
+ },
+ "e3.s3.0.zcur": {
+  "text": "0.3",
+  "source": "experiments/results/e3_planted_leak.json levels[3.0] (simulated mean - closed form) / se"
+ },
+ "th.det.1.sim": {
+  "text": "90.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[1].simulated"
+ },
+ "th.det.1.exact": {
+  "text": "90.1",
+  "source": "experiments/results/theory_checks.json detection.by_m[1].exact"
+ },
+ "th.det.1.approx": {
+  "text": "90.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[1].approx"
+ },
+ "th.det.2.sim": {
+  "text": "99.1",
+  "source": "experiments/results/theory_checks.json detection.by_m[2].simulated"
+ },
+ "th.det.2.exact": {
+  "text": "99.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[2].exact"
+ },
+ "th.det.2.approx": {
+  "text": "99.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[2].approx"
+ },
+ "th.det.3.sim": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[3].simulated"
+ },
+ "th.det.3.exact": {
+  "text": "99.9",
+  "source": "experiments/results/theory_checks.json detection.by_m[3].exact"
+ },
+ "th.det.3.approx": {
+  "text": "99.9",
+  "source": "experiments/results/theory_checks.json detection.by_m[3].approx"
+ },
+ "th.det.5.sim": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[5].simulated"
+ },
+ "th.det.5.exact": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[5].exact"
+ },
+ "th.det.5.approx": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[5].approx"
+ },
+ "th.det.10.sim": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[10].simulated"
+ },
+ "th.det.10.exact": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[10].exact"
+ },
+ "th.det.10.approx": {
+  "text": "100.0",
+  "source": "experiments/results/theory_checks.json detection.by_m[10].approx"
+ },
+ "th.det.trials": {
+  "text": "10,000",
+  "source": "experiments/results/theory_checks.json detection.trials"
+ },
+ "th.det.ntrain": {
+  "text": "1,050",
+  "source": "experiments/results/theory_checks.json detection.n_train"
+ },
+ "th.det.nout": {
+  "text": "450",
+  "source": "experiments/results/theory_checks.json detection.n_out"
+ },
+ "th.max.2.bound": {
+  "text": "1.18",
+  "source": "experiments/results/theory_checks.json max_bound[2].bound"
+ },
+ "th.max.2.r0.0": {
+  "text": "0.56",
+  "source": "experiments/results/theory_checks.json max_bound[2][rho=0.0]"
+ },
+ "th.max.2.r0.5": {
+  "text": "0.41",
+  "source": "experiments/results/theory_checks.json max_bound[2][rho=0.5]"
+ },
+ "th.max.2.r0.9": {
+  "text": "0.17",
+  "source": "experiments/results/theory_checks.json max_bound[2][rho=0.9]"
+ },
+ "th.max.4.bound": {
+  "text": "1.67",
+  "source": "experiments/results/theory_checks.json max_bound[4].bound"
+ },
+ "th.max.4.r0.0": {
+  "text": "1.03",
+  "source": "experiments/results/theory_checks.json max_bound[4][rho=0.0]"
+ },
+ "th.max.4.r0.5": {
+  "text": "0.73",
+  "source": "experiments/results/theory_checks.json max_bound[4][rho=0.5]"
+ },
+ "th.max.4.r0.9": {
+  "text": "0.32",
+  "source": "experiments/results/theory_checks.json max_bound[4][rho=0.9]"
+ },
+ "th.max.8.bound": {
+  "text": "2.04",
+  "source": "experiments/results/theory_checks.json max_bound[8].bound"
+ },
+ "th.max.8.r0.0": {
+  "text": "1.42",
+  "source": "experiments/results/theory_checks.json max_bound[8][rho=0.0]"
+ },
+ "th.max.8.r0.5": {
+  "text": "1.01",
+  "source": "experiments/results/theory_checks.json max_bound[8][rho=0.5]"
+ },
+ "th.max.8.r0.9": {
+  "text": "0.46",
+  "source": "experiments/results/theory_checks.json max_bound[8][rho=0.9]"
+ },
+ "th.max.16.bound": {
+  "text": "2.35",
+  "source": "experiments/results/theory_checks.json max_bound[16].bound"
+ },
+ "th.max.16.r0.0": {
+  "text": "1.77",
+  "source": "experiments/results/theory_checks.json max_bound[16][rho=0.0]"
+ },
+ "th.max.16.r0.5": {
+  "text": "1.25",
+  "source": "experiments/results/theory_checks.json max_bound[16][rho=0.5]"
+ },
+ "th.max.16.r0.9": {
+  "text": "0.55",
+  "source": "experiments/results/theory_checks.json max_bound[16][rho=0.9]"
+ },
+ "th.max.64.bound": {
+  "text": "2.88",
+  "source": "experiments/results/theory_checks.json max_bound[64].bound"
+ },
+ "th.max.64.r0.0": {
+  "text": "2.35",
+  "source": "experiments/results/theory_checks.json max_bound[64][rho=0.0]"
+ },
+ "th.max.64.r0.5": {
+  "text": "1.65",
+  "source": "experiments/results/theory_checks.json max_bound[64][rho=0.5]"
+ },
+ "th.max.64.r0.9": {
+  "text": "0.73",
+  "source": "experiments/results/theory_checks.json max_bound[64][rho=0.9]"
+ },
+ "th.psi.0.25.engine_psi": {
+  "text": "0.0001",
+  "source": "experiments/results/theory_checks.json psi[0.25].engine_psi"
+ },
+ "th.psi.0.25.binned_chi2_form": {
+  "text": "0.0001",
+  "source": "experiments/results/theory_checks.json psi[0.25].binned_chi2_form"
+ },
+ "th.psi.0.25.continuous_form": {
+  "text": "0.0001",
+  "source": "experiments/results/theory_checks.json psi[0.25].continuous_form"
+ },
+ "th.psi.0.5.engine_psi": {
+  "text": "0.0002",
+  "source": "experiments/results/theory_checks.json psi[0.5].engine_psi"
+ },
+ "th.psi.0.5.binned_chi2_form": {
+  "text": "0.0002",
+  "source": "experiments/results/theory_checks.json psi[0.5].binned_chi2_form"
+ },
+ "th.psi.0.5.continuous_form": {
+  "text": "0.0003",
+  "source": "experiments/results/theory_checks.json psi[0.5].continuous_form"
+ },
+ "th.psi.1.0.engine_psi": {
+  "text": "0.0010",
+  "source": "experiments/results/theory_checks.json psi[1.0].engine_psi"
+ },
+ "th.psi.1.0.binned_chi2_form": {
+  "text": "0.0010",
+  "source": "experiments/results/theory_checks.json psi[1.0].binned_chi2_form"
+ },
+ "th.psi.1.0.continuous_form": {
+  "text": "0.0015",
+  "source": "experiments/results/theory_checks.json psi[1.0].continuous_form"
+ },
+ "th.psi.1.5.engine_psi": {
+  "text": "0.0024",
+  "source": "experiments/results/theory_checks.json psi[1.5].engine_psi"
+ },
+ "th.psi.1.5.binned_chi2_form": {
+  "text": "0.0026",
+  "source": "experiments/results/theory_checks.json psi[1.5].binned_chi2_form"
+ },
+ "th.psi.1.5.continuous_form": {
+  "text": "0.0076",
+  "source": "experiments/results/theory_checks.json psi[1.5].continuous_form"
+ },
+ "th.psi.2.0.engine_psi": {
+  "text": "0.0042",
+  "source": "experiments/results/theory_checks.json psi[2.0].engine_psi"
+ },
+ "th.psi.2.0.binned_chi2_form": {
+  "text": "0.0045",
+  "source": "experiments/results/theory_checks.json psi[2.0].binned_chi2_form"
+ },
+ "th.psi.2.0.continuous_form": {
+  "text": "0.0482",
+  "source": "experiments/results/theory_checks.json psi[2.0].continuous_form"
+ },
+ "th.psi.3.0.engine_psi": {
+  "text": "0.0066",
+  "source": "experiments/results/theory_checks.json psi[3.0].engine_psi"
+ },
+ "th.psi.3.0.binned_chi2_form": {
+  "text": "0.0074",
+  "source": "experiments/results/theory_checks.json psi[3.0].binned_chi2_form"
+ },
+ "th.psi.3.0.continuous_form": {
+  "text": "7.2919",
+  "source": "experiments/results/theory_checks.json psi[3.0].continuous_form"
+ },
+ "th.psi.null": {
+  "text": "0.0036",
+  "source": "experiments/results/theory_checks.json psi.null_expectation_10_bins"
+ },
+ "th.opt.0.5.dev": {
+  "text": "0.785",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[0.5].dev"
+ },
+ "th.opt.0.5.cur": {
+  "text": "0.736",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[0.5].cur"
+ },
+ "th.opt.0.5.clean": {
+  "text": "0.760",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[0.5].clean"
+ },
+ "th.opt.1.0.dev": {
+  "text": "0.841",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[1.0].dev"
+ },
+ "th.opt.1.0.cur": {
+  "text": "0.691",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[1.0].cur"
+ },
+ "th.opt.1.0.clean": {
+  "text": "0.760",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[1.0].clean"
+ },
+ "th.opt.2.0.dev": {
+  "text": "0.943",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[2.0].dev"
+ },
+ "th.opt.2.0.cur": {
+  "text": "0.624",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[2.0].cur"
+ },
+ "th.opt.2.0.clean": {
+  "text": "0.760",
+  "source": "experiments/results/theory_checks.json leak_auc.optimal_weights[2.0].clean"
+ },
+ "e4.2006-07.window": {
+  "text": "330,682",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].window_loans"
+ },
+ "e4.2006-07.hold": {
+  "text": "60,000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].random_holdout_rows"
+ },
+ "e4.2006-07.oot": {
+  "text": "174,527",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].oot_rows"
+ },
+ "e4.2006-07.lastfy": {
+  "text": "2000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].window[1]"
+ },
+ "e4.2006-07.cutoff": {
+  "text": "2005-09-30",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].cutoff"
+ },
+ "e4.2006-07.rate_random": {
+  "text": "7.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].random_rate"
+ },
+ "e4.2006-07.rate_oot": {
+  "text": "25.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].oot_rate"
+ },
+ "e4.2006-07.sc.random_auc": {
+  "text": "0.780",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].random_auc"
+ },
+ "e4.2006-07.sc.oot_auc": {
+  "text": "0.825",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].oot_auc"
+ },
+ "e4.2006-07.sc.random_brier": {
+  "text": "0.059",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].random_brier"
+ },
+ "e4.2006-07.sc.oot_brier": {
+  "text": "0.187",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].oot_brier"
+ },
+ "e4.2006-07.sc.random_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2006-07.sc.arandom_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2006-07.sc.oot_gap": {
+  "text": "+16.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2006-07.sc.aoot_gap": {
+  "text": "16.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2006-07.sc.dauc": {
+  "text": "-0.045",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P1-scorecard] random_auc - oot_auc"
+ },
+ "e4.2006-07.gbm.random_auc": {
+  "text": "0.799",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].random_auc"
+ },
+ "e4.2006-07.gbm.oot_auc": {
+  "text": "0.797",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].oot_auc"
+ },
+ "e4.2006-07.gbm.random_brier": {
+  "text": "0.057",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].random_brier"
+ },
+ "e4.2006-07.gbm.oot_brier": {
+  "text": "0.179",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].oot_brier"
+ },
+ "e4.2006-07.gbm.random_gap": {
+  "text": "+0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2006-07.gbm.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2006-07.gbm.oot_gap": {
+  "text": "+13.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2006-07.gbm.aoot_gap": {
+  "text": "13.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2006-07.gbm.dauc": {
+  "text": "0.002",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07].rungs[P4-lightgbm] random_auc - oot_auc"
+ },
+ "e4.2006-07.tv": {
+  "text": "8.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2006-07] |oot_gap - random_gap| / 2 (lower bound on the total variation distance, points)"
+ },
+ "e4.2008-10.window": {
+  "text": "413,083",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].window_loans"
+ },
+ "e4.2008-10.hold": {
+  "text": "60,000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].random_holdout_rows"
+ },
+ "e4.2008-10.oot": {
+  "text": "138,023",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].oot_rows"
+ },
+ "e4.2008-10.lastfy": {
+  "text": "2002",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].window[1]"
+ },
+ "e4.2008-10.cutoff": {
+  "text": "2007-09-30",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].cutoff"
+ },
+ "e4.2008-10.rate_random": {
+  "text": "6.9",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].random_rate"
+ },
+ "e4.2008-10.rate_oot": {
+  "text": "13.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].oot_rate"
+ },
+ "e4.2008-10.sc.random_auc": {
+  "text": "0.786",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].random_auc"
+ },
+ "e4.2008-10.sc.oot_auc": {
+  "text": "0.815",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].oot_auc"
+ },
+ "e4.2008-10.sc.random_brier": {
+  "text": "0.059",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].random_brier"
+ },
+ "e4.2008-10.sc.oot_brier": {
+  "text": "0.106",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].oot_brier"
+ },
+ "e4.2008-10.sc.random_gap": {
+  "text": "+0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2008-10.sc.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2008-10.sc.oot_gap": {
+  "text": "+6.6",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2008-10.sc.aoot_gap": {
+  "text": "6.6",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2008-10.sc.dauc": {
+  "text": "-0.029",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P1-scorecard] random_auc - oot_auc"
+ },
+ "e4.2008-10.gbm.random_auc": {
+  "text": "0.809",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].random_auc"
+ },
+ "e4.2008-10.gbm.oot_auc": {
+  "text": "0.832",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].oot_auc"
+ },
+ "e4.2008-10.gbm.random_brier": {
+  "text": "0.056",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].random_brier"
+ },
+ "e4.2008-10.gbm.oot_brier": {
+  "text": "0.103",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].oot_brier"
+ },
+ "e4.2008-10.gbm.random_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2008-10.gbm.arandom_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2008-10.gbm.oot_gap": {
+  "text": "+5.7",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2008-10.gbm.aoot_gap": {
+  "text": "5.7",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2008-10.gbm.dauc": {
+  "text": "-0.023",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10].rungs[P4-lightgbm] random_auc - oot_auc"
+ },
+ "e4.2008-10.tv": {
+  "text": "3.3",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2008-10] |oot_gap - random_gap| / 2 (lower bound on the total variation distance, points)"
+ },
+ "e4.2011-14.window": {
+  "text": "627,594",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].window_loans"
+ },
+ "e4.2011-14.hold": {
+  "text": "60,000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].random_holdout_rows"
+ },
+ "e4.2011-14.oot": {
+  "text": "170,795",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].oot_rows"
+ },
+ "e4.2011-14.lastfy": {
+  "text": "2005",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].window[1]"
+ },
+ "e4.2011-14.cutoff": {
+  "text": "2010-09-30",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].cutoff"
+ },
+ "e4.2011-14.rate_random": {
+  "text": "8.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].random_rate"
+ },
+ "e4.2011-14.rate_oot": {
+  "text": "3.4",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].oot_rate"
+ },
+ "e4.2011-14.sc.random_auc": {
+  "text": "0.805",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].random_auc"
+ },
+ "e4.2011-14.sc.oot_auc": {
+  "text": "0.817",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].oot_auc"
+ },
+ "e4.2011-14.sc.random_brier": {
+  "text": "0.065",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].random_brier"
+ },
+ "e4.2011-14.sc.oot_brier": {
+  "text": "0.032",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].oot_brier"
+ },
+ "e4.2011-14.sc.random_gap": {
+  "text": "$-$0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2011-14.sc.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2011-14.sc.oot_gap": {
+  "text": "$-$3.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2011-14.sc.aoot_gap": {
+  "text": "3.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2011-14.sc.dauc": {
+  "text": "-0.012",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P1-scorecard] random_auc - oot_auc"
+ },
+ "e4.2011-14.gbm.random_auc": {
+  "text": "0.842",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].random_auc"
+ },
+ "e4.2011-14.gbm.oot_auc": {
+  "text": "0.873",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].oot_auc"
+ },
+ "e4.2011-14.gbm.random_brier": {
+  "text": "0.062",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].random_brier"
+ },
+ "e4.2011-14.gbm.oot_brier": {
+  "text": "0.031",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].oot_brier"
+ },
+ "e4.2011-14.gbm.random_gap": {
+  "text": "$-$0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2011-14.gbm.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2011-14.gbm.oot_gap": {
+  "text": "$-$1.7",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2011-14.gbm.aoot_gap": {
+  "text": "1.7",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2011-14.gbm.dauc": {
+  "text": "-0.032",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14].rungs[P4-lightgbm] random_auc - oot_auc"
+ },
+ "e4.2011-14.tv": {
+  "text": "1.4",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2011-14] |oot_gap - random_gap| / 2 (lower bound on the total variation distance, points)"
+ },
+ "e4.2015-17.window": {
+  "text": "900,254",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].window_loans"
+ },
+ "e4.2015-17.hold": {
+  "text": "60,000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].random_holdout_rows"
+ },
+ "e4.2015-17.oot": {
+  "text": "168,203",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].oot_rows"
+ },
+ "e4.2015-17.lastfy": {
+  "text": "2009",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].window[1]"
+ },
+ "e4.2015-17.cutoff": {
+  "text": "2014-09-30",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].cutoff"
+ },
+ "e4.2015-17.rate_random": {
+  "text": "12.4",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].random_rate"
+ },
+ "e4.2015-17.rate_oot": {
+  "text": "4.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].oot_rate"
+ },
+ "e4.2015-17.sc.random_auc": {
+  "text": "0.820",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].random_auc"
+ },
+ "e4.2015-17.sc.oot_auc": {
+  "text": "0.793",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].oot_auc"
+ },
+ "e4.2015-17.sc.random_brier": {
+  "text": "0.089",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].random_brier"
+ },
+ "e4.2015-17.sc.oot_brier": {
+  "text": "0.040",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].oot_brier"
+ },
+ "e4.2015-17.sc.random_gap": {
+  "text": "+0.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2015-17.sc.arandom_gap": {
+  "text": "0.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2015-17.sc.oot_gap": {
+  "text": "$-$4.4",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2015-17.sc.aoot_gap": {
+  "text": "4.4",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2015-17.sc.dauc": {
+  "text": "0.026",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P1-scorecard] random_auc - oot_auc"
+ },
+ "e4.2015-17.gbm.random_auc": {
+  "text": "0.841",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].random_auc"
+ },
+ "e4.2015-17.gbm.oot_auc": {
+  "text": "0.837",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].oot_auc"
+ },
+ "e4.2015-17.gbm.random_brier": {
+  "text": "0.086",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].random_brier"
+ },
+ "e4.2015-17.gbm.oot_brier": {
+  "text": "0.039",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].oot_brier"
+ },
+ "e4.2015-17.gbm.random_gap": {
+  "text": "+0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2015-17.gbm.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2015-17.gbm.oot_gap": {
+  "text": "$-$3.8",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2015-17.gbm.aoot_gap": {
+  "text": "3.8",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2015-17.gbm.dauc": {
+  "text": "0.005",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17].rungs[P4-lightgbm] random_auc - oot_auc"
+ },
+ "e4.2015-17.tv": {
+  "text": "2.3",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2015-17] |oot_gap - random_gap| / 2 (lower bound on the total variation distance, points)"
+ },
+ "e4.2018-20.window": {
+  "text": "1,024,597",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].window_loans"
+ },
+ "e4.2018-20.hold": {
+  "text": "60,000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].random_holdout_rows"
+ },
+ "e4.2018-20.oot": {
+  "text": "136,291",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].oot_rows"
+ },
+ "e4.2018-20.lastfy": {
+  "text": "2012",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].window[1]"
+ },
+ "e4.2018-20.cutoff": {
+  "text": "2017-09-30",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].cutoff"
+ },
+ "e4.2018-20.rate_random": {
+  "text": "11.3",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].random_rate"
+ },
+ "e4.2018-20.rate_oot": {
+  "text": "3.9",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].oot_rate"
+ },
+ "e4.2018-20.sc.random_auc": {
+  "text": "0.826",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].random_auc"
+ },
+ "e4.2018-20.sc.oot_auc": {
+  "text": "0.826",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].oot_auc"
+ },
+ "e4.2018-20.sc.random_brier": {
+  "text": "0.082",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].random_brier"
+ },
+ "e4.2018-20.sc.oot_brier": {
+  "text": "0.039",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].oot_brier"
+ },
+ "e4.2018-20.sc.random_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2018-20.sc.arandom_gap": {
+  "text": "0.0",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].random_gap x 100 (points)"
+ },
+ "e4.2018-20.sc.oot_gap": {
+  "text": "$-$2.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2018-20.sc.aoot_gap": {
+  "text": "2.2",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard].oot_gap x 100 (points)"
+ },
+ "e4.2018-20.sc.dauc": {
+  "text": "-0.000",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P1-scorecard] random_auc - oot_auc"
+ },
+ "e4.2018-20.gbm.random_auc": {
+  "text": "0.847",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].random_auc"
+ },
+ "e4.2018-20.gbm.oot_auc": {
+  "text": "0.830",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].oot_auc"
+ },
+ "e4.2018-20.gbm.random_brier": {
+  "text": "0.080",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].random_brier"
+ },
+ "e4.2018-20.gbm.oot_brier": {
+  "text": "0.038",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].oot_brier"
+ },
+ "e4.2018-20.gbm.random_gap": {
+  "text": "+0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2018-20.gbm.arandom_gap": {
+  "text": "0.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].random_gap x 100 (points)"
+ },
+ "e4.2018-20.gbm.oot_gap": {
+  "text": "$-$1.6",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2018-20.gbm.aoot_gap": {
+  "text": "1.6",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm].oot_gap x 100 (points)"
+ },
+ "e4.2018-20.gbm.dauc": {
+  "text": "0.016",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20].rungs[P4-lightgbm] random_auc - oot_auc"
+ },
+ "e4.2018-20.tv": {
+  "text": "1.1",
+  "source": "experiments/results/e4_out_of_time.json cohorts[FY2018-20] |oot_gap - random_gap| / 2 (lower bound on the total variation distance, points)"
+ },
+ "e4.2006_07.repauc": {
+  "text": "0.825",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2006-07].committed_scorecard_auc"
+ },
+ "e4.2006_07.rundiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2006-07] |committed - run|"
+ },
+ "e4.2008_10.repauc": {
+  "text": "0.815",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2008-10].committed_scorecard_auc"
+ },
+ "e4.2008_10.rundiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2008-10] |committed - run|"
+ },
+ "e4.2011_14.repauc": {
+  "text": "0.817",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2011-14].committed_scorecard_auc"
+ },
+ "e4.2011_14.rundiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2011-14] |committed - run|"
+ },
+ "e4.2015_17.repauc": {
+  "text": "0.793",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2015-17].committed_scorecard_auc"
+ },
+ "e4.2015_17.rundiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2015-17] |committed - run|"
+ },
+ "e4.2018_20.repauc": {
+  "text": "0.826",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2018-20].committed_scorecard_auc"
+ },
+ "e4.2018_20.rundiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction[FY2018-20] |committed - run|"
+ },
+ "e4.holdse": {
+  "text": "0.20",
+  "source": "experiments/results/e4_out_of_time.json random_holdout_cap: largest binomial standard error of a rate, 100 x 0.5 / sqrt(rows), points"
+ },
+ "e4.maxrepdiff": {
+  "text": "0.0000",
+  "source": "experiments/results/e4_out_of_time.json reproduction, maximum |committed - run| of the scorecard AUC"
+ },
+ "e5.exp": {
+  "text": "0.88",
+  "source": "experiments/results/e5_cv_scaling.json loglog_fit_p40.exponent (absolute value)"
+ },
+ "e5.expse": {
+  "text": "0.01",
+  "source": "experiments/results/e5_cv_scaling.json loglog_fit_p40.exponent_se"
+ },
+ "e5.reps": {
+  "text": "100",
+  "source": "experiments/results/e5_cv_scaling.json reps"
+ },
+ "e5.n400.p40.out": {
+  "text": "+0.194",
+  "source": "experiments/results/e5_cv_scaling.json cells n=400 p=40 outside.bias"
+ },
+ "e5.n400.p40.in": {
+  "text": "+0.005",
+  "source": "experiments/results/e5_cv_scaling.json cells n=400 p=40 inside.bias"
+ },
+ "e5.n800.p40.out": {
+  "text": "+0.106",
+  "source": "experiments/results/e5_cv_scaling.json cells n=800 p=40 outside.bias"
+ },
+ "e5.n800.p40.in": {
+  "text": "$-$0.004",
+  "source": "experiments/results/e5_cv_scaling.json cells n=800 p=40 inside.bias"
+ },
+ "e5.n1600.p40.out": {
+  "text": "+0.060",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=40 outside.bias"
+ },
+ "e5.n1600.p40.in": {
+  "text": "+0.002",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=40 inside.bias"
+ },
+ "e5.n3200.p40.out": {
+  "text": "+0.031",
+  "source": "experiments/results/e5_cv_scaling.json cells n=3200 p=40 outside.bias"
+ },
+ "e5.n3200.p40.in": {
+  "text": "0.000",
+  "source": "experiments/results/e5_cv_scaling.json cells n=3200 p=40 inside.bias"
+ },
+ "e5.n6400.p40.out": {
+  "text": "+0.016",
+  "source": "experiments/results/e5_cv_scaling.json cells n=6400 p=40 outside.bias"
+ },
+ "e5.n6400.p40.in": {
+  "text": "0.000",
+  "source": "experiments/results/e5_cv_scaling.json cells n=6400 p=40 inside.bias"
+ },
+ "e5.n1600.p10.out": {
+  "text": "+0.044",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=10 outside.bias"
+ },
+ "e5.n1600.p10.in": {
+  "text": "+0.001",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=10 inside.bias"
+ },
+ "e5.n1600.p20.out": {
+  "text": "+0.054",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=20 outside.bias"
+ },
+ "e5.n1600.p20.in": {
+  "text": "0.000",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=20 inside.bias"
+ },
+ "e5.n1600.p80.out": {
+  "text": "+0.065",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=80 outside.bias"
+ },
+ "e5.n1600.p80.in": {
+  "text": "0.000",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=80 inside.bias"
+ },
+ "e5.n1600.p160.out": {
+  "text": "+0.068",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=160 outside.bias"
+ },
+ "e5.n1600.p160.in": {
+  "text": "+0.001",
+  "source": "experiments/results/e5_cv_scaling.json cells n=1600 p=160 inside.bias"
+ },
+ "c01.train": {
+  "text": "16,800",
+  "source": "data/derived/C01/models-taiwan.json fit.split.train.n"
+ },
+ "c01.cal": {
+  "text": "4,200",
+  "source": "data/derived/C01/models-taiwan.json fit.split.calibration.n"
+ },
+ "c01.hold": {
+  "text": "9,000",
+  "source": "data/derived/C01/models-taiwan.json fit.split.holdout.n"
+ },
+ "c01.holdev": {
+  "text": "1,991",
+  "source": "data/derived/C01/models-taiwan.json fit.split.holdout.defaults"
+ },
+ "c01.rate": {
+  "text": "22.1",
+  "source": "data/derived/C01/models-taiwan.json fit.split.holdout.default_rate"
+ },
+ "c02.h1.hold": {
+  "text": "1,773",
+  "source": "data/derived/C02/h1.json outputs.split.holdout_rows"
+ },
+ "c02.h1.ev": {
+  "text": "123",
+  "source": "data/derived/C02/h1.json outputs.split.holdout_events"
+ },
+ "c02.h2.hold": {
+  "text": "2,938",
+  "source": "data/derived/C02/h2.json outputs.split.holdout_rows"
+ },
+ "c02.h2.ev": {
+  "text": "155",
+  "source": "data/derived/C02/h2.json outputs.split.holdout_events"
+ },
+ "c02.h3.hold": {
+  "text": "3,151",
+  "source": "data/derived/C02/h3.json outputs.split.holdout_rows"
+ },
+ "c02.h3.ev": {
+  "text": "149",
+  "source": "data/derived/C02/h3.json outputs.split.holdout_events"
+ },
+ "c02.h4.hold": {
+  "text": "3,052",
+  "source": "data/derived/C02/h4.json outputs.split.holdout_rows"
+ },
+ "c02.h4.ev": {
+  "text": "120",
+  "source": "data/derived/C02/h4.json outputs.split.holdout_events"
+ },
+ "c02.h5.hold": {
+  "text": "2,109",
+  "source": "data/derived/C02/h5.json outputs.split.holdout_rows"
+ },
+ "c02.h5.ev": {
+  "text": "81",
+  "source": "data/derived/C02/h5.json outputs.split.holdout_events"
+ },
+ "c03.2006-07.nloans": {
+  "text": "330,682",
+  "source": "data/derived/C03/fy2006-07.json outputs.training.n_loans"
+ },
+ "c03.2006-07.events": {
+  "text": "23,320",
+  "source": "data/derived/C03/fy2006-07.json outputs.training.n_events"
+ },
+ "c03.2006-07.last": {
+  "text": "2000",
+  "source": "data/derived/C03/fy2006-07.json outputs.training.last_fy"
+ },
+ "c03.2006-07.cutoff": {
+  "text": "2005-09-30",
+  "source": "data/derived/C03/fy2006-07.json outputs.training.cutoff_date"
+ },
+ "c03.2008-10.nloans": {
+  "text": "413,083",
+  "source": "data/derived/C03/fy2008-10.json outputs.training.n_loans"
+ },
+ "c03.2008-10.events": {
+  "text": "28,393",
+  "source": "data/derived/C03/fy2008-10.json outputs.training.n_events"
+ },
+ "c03.2008-10.last": {
+  "text": "2002",
+  "source": "data/derived/C03/fy2008-10.json outputs.training.last_fy"
+ },
+ "c03.2008-10.cutoff": {
+  "text": "2007-09-30",
+  "source": "data/derived/C03/fy2008-10.json outputs.training.cutoff_date"
+ },
+ "c03.2011-14.nloans": {
+  "text": "627,594",
+  "source": "data/derived/C03/fy2011-14.json outputs.training.n_loans"
+ },
+ "c03.2011-14.events": {
+  "text": "50,614",
+  "source": "data/derived/C03/fy2011-14.json outputs.training.n_events"
+ },
+ "c03.2011-14.last": {
+  "text": "2005",
+  "source": "data/derived/C03/fy2011-14.json outputs.training.last_fy"
+ },
+ "c03.2011-14.cutoff": {
+  "text": "2010-09-30",
+  "source": "data/derived/C03/fy2011-14.json outputs.training.cutoff_date"
+ },
+ "c03.2015-17.nloans": {
+  "text": "900,254",
+  "source": "data/derived/C03/fy2015-17.json outputs.training.n_loans"
+ },
+ "c03.2015-17.events": {
+  "text": "110,349",
+  "source": "data/derived/C03/fy2015-17.json outputs.training.n_events"
+ },
+ "c03.2015-17.last": {
+  "text": "2009",
+  "source": "data/derived/C03/fy2015-17.json outputs.training.last_fy"
+ },
+ "c03.2015-17.cutoff": {
+  "text": "2014-09-30",
+  "source": "data/derived/C03/fy2015-17.json outputs.training.cutoff_date"
+ },
+ "c03.2018-20.nloans": {
+  "text": "1,024,597",
+  "source": "data/derived/C03/fy2018-20.json outputs.training.n_loans"
+ },
+ "c03.2018-20.events": {
+  "text": "115,237",
+  "source": "data/derived/C03/fy2018-20.json outputs.training.n_events"
+ },
+ "c03.2018-20.last": {
+  "text": "2012",
+  "source": "data/derived/C03/fy2018-20.json outputs.training.last_fy"
+ },
+ "c03.2018-20.cutoff": {
+  "text": "2017-09-30",
+  "source": "data/derived/C03/fy2018-20.json outputs.training.cutoff_date"
+ },
+ "syn.share": {
+  "text": "27.8",
+  "source": "mean of the planted outcome on 400,000 rows (seed 7), leaklab.planted"
+ },
+ "syn.orcse": {
+  "text": "0.0026",
+  "source": "Hanley and McNeil standard error of the reference AUC 0.762 on 50,000 rows with event share 0.278"
+ },
+ "small.orcse": {
+  "text": "0.0027",
+  "source": "Hanley and McNeil standard error of the reference AUC 0.715 on 50,000 rows with event share 0.278"
+ },
+ "tw.orcse": {
+  "text": "0.0064",
+  "source": "Hanley and McNeil standard error of the reference AUC 0.749 on 10,000 rows with event share 0.221"
+ },
+ "prod.orcse": {
+  "text": "0.0025",
+  "source": "Hanley and McNeil standard error of the reference AUC 0.771 on 50,000 rows with event share 0.278"
+ },
+ "e2.fa.upper": {
+  "text": "3.7",
+  "source": "Wilson 95% upper bound of 0 false alarms in 100 draws (experiments/results/e2_matrix.json reps)"
+ },
+ "e2.draws.se": {
+  "text": "3.5",
+  "source": "largest binomial standard error of a detection rate in 200 draws, points"
+ },
+ "e2.draws.pred.w.1": {
+  "text": "87.5",
+  "source": "Proposition 6: 1 - K^(-d) with K = 8, d = 1"
+ },
+ "e2.draws.pred.w.2": {
+  "text": "98.4",
+  "source": "Proposition 6: 1 - K^(-d) with K = 8, d = 2"
+ },
+ "e2.draws.pred.w.3": {
+  "text": "99.8",
+  "source": "Proposition 6: 1 - K^(-d) with K = 8, d = 3"
+ },
+ "e2.draws.pred.w.5": {
+  "text": "100.0",
+  "source": "Proposition 6: 1 - K^(-d) with K = 8, d = 5"
+ },
+ "e2.draws.pred.l.1": {
+  "text": "50.0",
+  "source": "Proposition 6: 1 - K^(-d) with K = 2, d = 1"
+ },
+ "e2.draws.pred.l.2": {
+  "text": "75.0",
+  "source": "Proposition 6: 1 - K^(-d) with K = 2, d = 2"
+ },
+ "e2.draws.pred.l.3": {
+  "text": "87.5",
+  "source": "Proposition 6: 1 - K^(-d) with K = 2, d = 3"
+ },
+ "e2.draws.pred.l.5": {
+  "text": "96.9",
+  "source": "Proposition 6: 1 - K^(-d) with K = 2, d = 5"
+ },
+ "th.det.zmax": {
+  "text": "2.1",
+  "source": "largest |simulated - exact| / sqrt(exact (1 - exact) / trials) over m, experiments/results/theory_checks.json detection"
+ },
+ "c22.auc.0": {
+  "text": "4.7",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.0": {
+  "text": "4.7",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l0] rate at 5%, 2000 repetitions"
+ },
+ "c22.auc.0.25": {
+  "text": "63.5",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0.25] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.0.25": {
+  "text": "6.0",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l0.25] rate at 5%, 2000 repetitions"
+ },
+ "c22.auc.0.5": {
+  "text": "98.9",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l0.5] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.0.5": {
+  "text": "7.8",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l0.5] rate at 5%, 2000 repetitions"
+ },
+ "c22.auc.1": {
+  "text": "100.0",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l1] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.1": {
+  "text": "14.6",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l1] rate at 5%, 2000 repetitions"
+ },
+ "c22.auc.1.5": {
+  "text": "100.0",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l1.5] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.1.5": {
+  "text": "33.4",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l1.5] rate at 5%, 2000 repetitions"
+ },
+ "c22.auc.2": {
+  "text": "100.0",
+  "source": "data/derived/C22/leakage.json simulations[disc.auc_vs_initial@l2] rate at 5%, 2000 repetitions"
+ },
+ "c22.csi.2": {
+  "text": "58.1",
+  "source": "data/derived/C22/leakage.json simulations[stability.csi@l2] rate at 5%, 2000 repetitions"
+ },
+ "c22.reps": {
+  "text": "2,000",
+  "source": "data/derived/C22/leakage.json simulations[0] n"
+ },
+ "e3.zmax": {
+  "text": "1.8",
+  "source": "experiments/results/e3_planted_leak.json: largest |simulated mean AUC - closed form| / standard error over the seven levels, development and decision time"
+ },
+ "run.e1syn": {
+  "text": "1,225",
+  "source": "experiments/results/e1_synthetic.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e1small": {
+  "text": "1,000",
+  "source": "experiments/results/e1_synthetic-small.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e1tw": {
+  "text": "186",
+  "source": "experiments/results/e1_taiwan.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e1prod": {
+  "text": "142",
+  "source": "experiments/results/e1_product.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e2matrix": {
+  "text": "866",
+  "source": "experiments/results/e2_matrix.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e2draws": {
+  "text": "118",
+  "source": "experiments/results/e2_draws.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e3": {
+  "text": "141",
+  "source": "experiments/results/e3_planted_leak.json seconds (wall clock, one machine with 32 logical processors)"
+ },
+ "run.e4max": {
+  "text": "4,328",
+  "source": "experiments/results/e4_out_of_time.json cohorts[*].seconds, the longest cohort (cohorts run in parallel)"
+ },
+ "h5.detected": {
+  "text": "15",
+  "source": "experiments/results/e2_matrix.json leaks with any_gate_fails = 1"
+ },
+ "h5.total": {
+  "text": "15",
+  "source": "experiments/results/e2_matrix.json leak rows"
+ },
+ "h5.minany": {
+  "text": "100",
+  "source": "experiments/results/e2_matrix.json minimum any_gate_fails over leaks"
+ },
+ "h5.false": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json maximum any_gate_fails on the protocol"
+ },
+ "verdict.H1": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H1"
+ },
+ "verdict.H1.ev": {
+  "text": "6 of 6 cells",
+  "source": "make_artifacts.hypotheses H1"
+ },
+ "verdict.H2": {
+  "text": "not held",
+  "source": "make_artifacts.hypotheses H2"
+ },
+ "verdict.H2.ev": {
+  "text": "syn: 3 of 3, small: 3 of 3, tw: 2 of 3",
+  "source": "make_artifacts.hypotheses H2"
+ },
+ "verdict.H3": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H3"
+ },
+ "verdict.H3.ev": {
+  "text": "12 of 12 cells",
+  "source": "make_artifacts.hypotheses H3"
+ },
+ "verdict.H4": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H4"
+ },
+ "verdict.H4.ev": {
+  "text": "6 of 6 cells",
+  "source": "make_artifacts.hypotheses H4"
+ },
+ "verdict.H5": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H5"
+ },
+ "verdict.H5.ev": {
+  "text": "15 of 15 leaks, false alarms 0\\%",
+  "source": "make_artifacts.hypotheses H5"
+ },
+ "verdict.H6": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H6"
+ },
+ "verdict.H6.ev": {
+  "text": "AUC test power 99.0\\% at s = 0.5; CSI power 14.2\\% and single-feature flag 0.0\\% at s = 1",
+  "source": "make_artifacts.hypotheses H6"
+ },
+ "verdict.H7": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H7"
+ },
+ "verdict.H7.ev": {
+  "text": "largest absolute z 1.8 over seven levels",
+  "source": "make_artifacts.hypotheses H7"
+ },
+ "verdict.H8": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H8"
+ },
+ "verdict.H8.ev": {
+  "text": "random gap below 1 point in 5 of 5 cohorts; out-of-time gap at least 2 points in 5 of 5",
+  "source": "make_artifacts.hypotheses H8"
+ },
+ "verdict.H9": {
+  "text": "held",
+  "source": "make_artifacts.hypotheses H9"
+ },
+ "verdict.H9.ev": {
+  "text": "outside-fold bias positive, inside-fold bias null",
+  "source": "make_artifacts.hypotheses H9"
+ },
+ "abl.G1.full": {
+  "text": "9",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1.never": {
+  "text": "4",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1.mean": {
+  "text": "69.5",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G2.full": {
+  "text": "10",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2.never": {
+  "text": "4",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2.mean": {
+  "text": "73.3",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G3.full": {
+  "text": "13",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G3.never": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G3.mean": {
+  "text": "95.9",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G3.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G1G2.full": {
+  "text": "14",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2.never": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2.mean": {
+  "text": "99.9",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G1G3.full": {
+  "text": "14",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G3.never": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G3.mean": {
+  "text": "98.0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G3.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G2G3.full": {
+  "text": "15",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2G3.never": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2G3.mean": {
+  "text": "100.0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G2G3.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ },
+ "abl.G1G2G3.full": {
+  "text": "15",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2G3.never": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2G3.mean": {
+  "text": "100.0",
+  "source": "experiments/results/e2_matrix.json pass_rates[*].subsets"
+ },
+ "abl.G1G2G3.fa": {
+  "text": "0",
+  "source": "experiments/results/e2_matrix.json pass_rates[none].subsets"
+ }
+}

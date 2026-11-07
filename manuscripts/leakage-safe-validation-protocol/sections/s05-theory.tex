@@ -1,0 +1,102 @@
+\section{Theory}
+\label{sec:theory}
+
+The propositions of this section state why the protocol should work and under which conditions; each is checked numerically in Section~\ref{sec:results}, and the conditions under which it fails are stated with it. Proposition~\ref{prop:unbiased} says what the holdout estimate is when no step read the holdout. Propositions~\ref{prop:detection} and~\ref{prop:discrete} say with what probability the third gate detects a leak through a quantile edge and through a discrete choice. Proposition~\ref{prop:selection} bounds the optimism of a choice made on the holdout. Propositions~\ref{prop:leakauc} and~\ref{prop:psi} describe a leak that exists only in development and explain what the stability index sees of it. The scaling of the cross-validation bias is stated as a conjecture.
+
+\subsection{The holdout estimate when no step read the holdout}
+
+\begin{proposition}[Unbiasedness]
+\label{prop:unbiased}
+Let $\theta=\mathcal A(D_R)$ with $R\cap H=\emptyset$, and let the rows of $H$ be an independent sample from the population, independent of $D_R$, with $n_1\ge1$ events and $n_0\ge1$ non-events. Then, conditionally on $\theta$ and on the labels of $H$, the holdout statistic of equation~\eqref{eq:auchat} satisfies $\E[\hat A_H\mid\theta,y_H]=A^{\ast}(\theta)$. If $s^2$ is the DeLong estimator of the variance of $\hat A_H$, then $(\hat A_H-A^{\ast}(\theta))/s$ converges in distribution to $\mathcal N(0,1)$ as $n_1,n_0\to\infty$, and the interval $\hat A_H\pm1.96\,s$ has asymptotic coverage $0.95$.
+\end{proposition}
+\begin{proof}
+Given $\theta$, the score function $S_\theta$ is fixed. Given the labels of $H$, the inputs of the events are independent draws from the distribution of $X$ given $y=1$ and those of the non-events from that given $y=0$, independent of each other. For one event $i$ and one non-event $j$ the kernel $\psi_{ij}=\indic\{S_\theta(x_i)>S_\theta(x_j)\}+\frac12\indic\{S_\theta(x_i)=S_\theta(x_j)\}$ has expectation $A^{\ast}(\theta)$ by equation~\eqref{eq:aucstar}. The statistic $\hat A_H$ is the average of $\psi_{ij}$ over the $n_1n_0$ pairs, so its conditional expectation is $A^{\ast}(\theta)$. It is a two-sample $U$-statistic with a bounded kernel, whose asymptotic normality and whose consistent variance estimator by structural components are the results behind the DeLong interval \citep{delong1988,hanley1982}.
+\end{proof}
+The proposition fails exactly when $R\cap H\neq\emptyset$: then $\theta$ is a function of the rows of $H$, the pairs are no longer independent of $S_\theta$, and the conditional expectation of the statistic is no longer $A^{\ast}(\theta)$. The sign of the resulting bias is not determined by the proposition; for a procedure that adapts to the rows it reads, it is positive, and Section~\ref{sec:results} measures its size for nine ways of reading the holdout. The proposition also fails when assumption A1 fails: a holdout from a later vintage estimates the performance on that vintage, not on the population of the training rows.
+
+\subsection{Detection by the outside-information gate}
+
+\begin{proposition}[Detection of a leak through a quantile edge]
+\label{prop:detection}
+Let a step fit the quantile edge at level $q$ of $N$ pooled, continuous, exchangeable values, with $(N-1)q$ not an integer, by linear interpolation between the order statistics of ranks $k-1$ and $k$ with $k=\lfloor(N-1)q\rfloor+2$, and let this edge be read from a pool that contains $m$ outside rows. Let the third gate send these $m$ rows above the maximum of the pool, the $m$ rows being a uniformly random subset of the $N$ pooled rows. Then the edge changes unless every moved row has rank above $k$ in the pool, and
+\begin{equation}
+\begin{split}
+\Prob(\text{gate detects})&=1-\frac{\binom{N-k}{m}}{\binom{N}{m}}\\
+&\ge\ 1-(1-q)^m .
+\end{split}
+\label{eq:detect}
+\end{equation}
+\end{proposition}
+\begin{proof}
+The order statistic of rank $j\le N-m$ of the perturbed pool is the $j$-th smallest of the $N-m$ rows that were not moved. It equals the original order statistic of rank $j$ if and only if no moved row has original rank at most $j$. The edge is a function of the order statistics of ranks $k-1$ and $k$, so it is unchanged if no moved row has rank at most $k$; if a moved row has rank $r\le k$, every order statistic of rank $j\ge r$ is replaced by a strictly larger value, in particular the one of rank $k$, and its weight in the interpolation, $(N-1)q-\lfloor(N-1)q\rfloor$, is positive, so the edge changes. The moved set is a uniformly random $m$-subset of the ranks, so the probability that all its elements lie among the $N-k$ ranks above $k$ is $\binom{N-k}{m}/\binom{N}{m}=\prod_{j=0}^{m-1}\frac{N-k-j}{N-j}$. Each factor is at most $\frac{N-k}{N}$, and $k\ge(N-1)q+1$ gives $\frac{N-k}{N}\le\frac{(N-1)(1-q)}{N}<1-q$.
+\end{proof}
+For the pool of the experiments, $N=\nv{th.det.ntrain}+\nv{th.det.nout}$ pools the training rows and the holdout rows and $q=0.9$, so that $k=1351$, the probability that one moved row is detected is $\nv{th.det.1.exact}\%$ and that two are detected is $\nv{th.det.2.exact}\%$. The gate that moves the whole holdout, $m=|H|=450$, misses with a probability below $10^{-400}$, so that the detection of a leak through a step that fits an edge on pooled rows does not depend on the gate but on whether the step reads the rows at all. A step that fits a median or a mean has the same property with $q=\frac12$ or, for a mean, with certainty.
+
+\subsection{Optimism of a choice made on the holdout}
+
+\begin{proposition}[Selection on the holdout]
+\label{prop:selection}
+Let $K$ configurations have true values $a_k=A^{\ast}(\theta_k)$ and holdout estimates $\hat A_k=a_k+Z_k$, where each $Z_k$ is sub-Gaussian with variance proxy $\sigma^2$, that is $\E e^{\lambda Z_k}\le e^{\lambda^2\sigma^2/2}$. Let $\hat k=\arg\max_k\hat A_k$. Then
+\begin{equation}
+\E\bigl[\hat A_{\hat k}-a_{\hat k}\bigr]\ \le\ \sigma\sqrt{2\ln K}.
+\label{eq:selectbound}
+\end{equation}
+For the Mann-Whitney statistic of equation~\eqref{eq:auchat} one may take $\sigma^2=1/(4\min(n_1,n_0))$.
+\end{proposition}
+\begin{proof}
+$\hat A_{\hat k}-a_{\hat k}=Z_{\hat k}\le\max_kZ_k$. For $\lambda>0$, Jensen's inequality gives $\E\max_kZ_k\le\frac1\lambda\ln\E\sum_ke^{\lambda Z_k}\le\frac{\ln K}{\lambda}+\frac{\lambda\sigma^2}{2}$, and the choice $\lambda=\sqrt{2\ln K}/\sigma$ gives the bound. The statistic $\hat A_H$ is a two-sample $U$-statistic with a kernel in $[0,1]$; Hoeffding's representation as an average of means of $\min(n_1,n_0)$ independent pairs gives $\Prob(\hat A_H-\E\hat A_H\ge t)\le e^{-2\min(n_1,n_0)t^2}$ \citep{hoeffding1963,boucheron2013}.
+\end{proof}
+The bound is for the worst case, in which the estimates are independent. Configurations of one pipeline are strongly dependent, and the maximum of $K$ standard normal variables with pairwise correlation $\rho$ has a mean of $\nv{th.max.8.r0.0}$ for $K=8$ at $\rho=0$, $\nv{th.max.8.r0.5}$ at $\rho=0.5$ and $\nv{th.max.8.r0.9}$ at $\rho=0.9$, in units of $\sigma$, against the bound $\nv{th.max.8.bound}$ (simulation with 20,000 draws per cell, the correlation induced by a common factor). The optimism of a choice made on the holdout is therefore small when the configurations are similar and grows with $\sqrt{\ln K}$ when they are not, which is the pattern of Section~\ref{sec:results}.
+
+\subsection{A leak that exists only in development}
+
+The planted leak of the engine's generator is the case in which a feature carries the outcome in development and is noise at decision time. Let the score be $S=w_1G+w_2F$, where $G\sim\mathcal N(d\,y,1)$ is the genuine feature and $F$ an independent feature that is $\mathcal N(s\,y,1)$ in development and $\mathcal N(0,1)$ at decision time.
+
+\begin{proposition}[AUC of a score with a planted leak]
+\label{prop:leakauc}
+In development, and at decision time, the AUC of $S$ is
+\begin{equation}
+\AUC_{\mathrm{dev}}=\Phi\!\left(\frac{w_1d+w_2s}{\sqrt{2(w_1^2+w_2^2)}}\right),\qquad
+\AUC_{\mathrm{cur}}=\Phi\!\left(\frac{w_1d}{\sqrt{2(w_1^2+w_2^2)}}\right),
+\label{eq:leakauc}
+\end{equation}
+where $\Phi$ is the standard normal distribution function. The development AUC is largest for $w\propto(d,s)$, where it equals $\Phi\bigl(\sqrt{(d^2+s^2)/2}\bigr)$, and the decision-time AUC of that score is $\Phi\bigl(d^2/\sqrt{2(d^2+s^2)}\bigr)$, which is below the AUC $\Phi(d/\sqrt2)$ of the genuine feature alone whenever $s>0$. For equal weights, $\AUC_{\mathrm{dev}}=\Phi((d+s)/2)$ and $\AUC_{\mathrm{cur}}=\Phi(d/2)$.
+\end{proposition}
+\begin{proof}
+The score difference $S_1-S_0$ between a defaulter and a survivor is normal with mean $w_1d+w_2s$ in development, $w_1d$ at decision time, and variance $2(w_1^2+w_2^2)$, so the AUC $\Prob(S_1-S_0>0)$ is $\Phi(\mu/\sqrt{2(w_1^2+w_2^2)})$ with the mean $\mu$ of the case. By the Cauchy-Schwarz inequality $w_1d+w_2s\le\sqrt{d^2+s^2}\sqrt{w_1^2+w_2^2}$, with equality at $w\propto(d,s)$, which gives the maximum; substituting $w_1/\sqrt{w_1^2+w_2^2}=d/\sqrt{d^2+s^2}$ gives the decision-time AUC. The AUC of the genuine feature alone is the case $w_2=0$. The comparison follows from $d/\sqrt{d^2+s^2}<1$.
+\end{proof}
+At $d=1$ and $s=1$ with equal weights, the development AUC is $\Phi(1)=\nv{e3.s1.0.devcf}$ and the decision-time AUC $\Phi(\tfrac12)=\nv{e3.s1.0.curcf}$: the leak inflates the development AUC by $\nv{e3.s1.0.infl}$, and the model is worse at decision time than the genuine feature alone, whose AUC is $\Phi(1/\sqrt2)=\nv{th.opt.1.0.clean}$. The test that compares the current AUC with its development value sees the whole gap. The index that compares the distribution of the leaked feature between development and a reference sees a much smaller quantity.
+
+\begin{proposition}[Stability index of the leaked feature]
+\label{prop:psi}
+Let the leaked feature be $\mathcal N(0,1)$ for survivors and $\mathcal N(s,1)$ for the share $\pi$ of defaulters, and let the reference sample be $\mathcal N(0,1)$. For a binning with reference probabilities $p_b$ and defaulter probabilities $r_b=\Phi(e_b-s)-\Phi(e_{b-1}-s)$, the population stability index of the mixture is
+\begin{equation}
+\mathrm{PSI}=\pi^2\sum_b\frac{(r_b-p_b)^2}{p_b}+O(\pi^3),\qquad\text{and, for fine bins, }\ \mathrm{PSI}\approx\pi^2\bigl(e^{s^2}-1\bigr).
+\label{eq:psi}
+\end{equation}
+\end{proposition}
+\begin{proof}
+The mixture has bin probabilities $m_b=p_b+\pi(r_b-p_b)$. With $x_b=\pi(r_b-p_b)/p_b$ the index is $\sum_b(m_b-p_b)\ln(m_b/p_b)=\sum_bp_bx_b\ln(1+x_b)=\sum_bp_b\bigl(x_b^2-\tfrac12x_b^3+\dots\bigr)$, and the quadratic term is the first term of~\eqref{eq:psi}. For fine bins $\sum_b(r_b-p_b)^2/p_b$ tends to the chi-square divergence between $\mathcal N(s,1)$ and $\mathcal N(0,1)$, which is $e^{s^2}-1$.
+\end{proof}
+The index of two samples of 5,000 rows each, binned in ten deciles, has an expectation of $(B-1)(1/5000+1/5000)=\nv{th.psi.null}$ when the two samples agree \citep{yurdakul2020}. With the generator's share $\pi=0.03$ the second-order form gives $\nv{th.psi.1.0.binned_chi2_form}$ at $s=1$, below that level: the leak is invisible to the index. The binned form is within 11\% of the exact index of the engine at every $s$ up to 3 (\nv{th.psi.3.0.binned_chi2_form} against \nv{th.psi.3.0.engine_psi} at $s=3$); the continuous form is within 13\% up to $s=0.5$ and diverges beyond it (\nv{th.psi.3.0.continuous_form} at $s=3$), because the decile grid cannot resolve the tails that the exponential describes. The simulated index under no leak has a mean of \nv{e3.s0.0.psi}, which agrees with the expectation.
+
+\subsection{Detection of a discrete choice by repeated perturbation}
+
+The gates of the protocol perturb the holdout once by default, and a leak that consists in choosing among a few configurations on the holdout leaves a discrete trace in the fitted parameters: the parameters change only when the perturbed holdout makes another configuration the best one. The next proposition gives the detection probability of that trace as a function of the number of perturbation draws.
+
+\begin{proposition}[Detection of a discrete choice]
+\label{prop:discrete}
+Let a leak consist in choosing one of $K$ configurations by the highest score on $H$, and let the perturbation of $H$ be such that the choice that would be made on the perturbed holdout is uniformly distributed on the $K$ configurations, independently across $d$ independent perturbation draws. Then the third gate fails, for the base choice, with probability $1-K^{-d}$.
+\end{proposition}
+\begin{proof}
+A draw does not change the choice with probability $1/K$, because the perturbed choice is uniform and equals the base choice with that probability. The draws are independent, so the choice survives all $d$ draws with probability $K^{-d}$.
+\end{proof}
+Uniformity is the condition. When the labels of $H$ are redrawn at random the scores of the configurations on $H$ are exchangeable if the configurations are similar models, and the proposition applies; when one configuration dominates for structural reasons, the perturbed choice equals the base choice more often than $1/K$ and the detection is lower than the proposition states. The measurement of Section~\ref{sec:results} is the check.
+
+\subsection{Scaling of the bias of cross-validation with preprocessing outside the folds}
+
+\begin{conjecture}[Scaling of the cross-validation bias]
+\label{conj:cv}
+For a scorecard whose binning, weight of evidence and screening of the best $k$ of $p$ inputs are fitted on all development rows before the folds, the bias of the five-fold AUC against the AUC of the fold models has the form $b(n,p)\approx c(p)\,n^{-\alpha}$ with $\alpha$ between $0.8$ and $1$, and $c(p)$ increasing and concave in $p$.
+\end{conjecture}
+The heuristic is that the optimism of an in-sample AUC grows with the effective number of fitted parameters divided by $n$, which gives $\alpha=1$, and that the screening of the best ten inputs among $p$ adds an optimism that grows with $p$ but saturates once the ten best noise inputs are essentially the extreme order statistics. The evidence is Table~\ref{tab:cv-scaling}: a log-log regression over $n=400$ to $6{,}400$ at $p=40$ gives a slope of $-\nv{e5.exp}\pm\nv{e5.expse}$ (standard error), and at $n=1{,}600$ the bias moves from \nv{e5.n1600.p10.out} at 10 inputs to \nv{e5.n1600.p160.out} at 160. The slope is below one in magnitude by more than ten standard errors, so the conjecture is stated with $\alpha<1$; the concavity in $p$ is read from five points and is weak evidence. The conjecture is not proved, and it is stated for the scorecard of the experiments, whose informative inputs are five of $p$.

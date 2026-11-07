@@ -1,0 +1,28 @@
+{
+ "n": 2400,
+ "holdout_n": 720,
+ "conditions": {
+  "protocol": {
+   "rungs": 7,
+   "rungs_changed": 0,
+   "calibration_disjoint_from_holdout": true,
+   "train_disjoint_from_holdout": true,
+   "seconds": 54.4
+  },
+  "fit_on_train_and_holdout": {
+   "rungs": 7,
+   "rungs_changed": 7,
+   "calibration_disjoint_from_holdout": true,
+   "train_disjoint_from_holdout": false,
+   "seconds": 38.8
+  },
+  "calibration_on_holdout": {
+   "rungs": 7,
+   "rungs_changed": 2,
+   "calibration_disjoint_from_holdout": false,
+   "train_disjoint_from_holdout": true,
+   "seconds": 32.8
+  }
+ },
+ "seconds": 130.0
+}

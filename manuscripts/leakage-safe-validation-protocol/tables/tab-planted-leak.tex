@@ -1,0 +1,21 @@
+\begin{table*}[htbp]
+\centering
+\small
+\caption{The leak planted by the engine generator (150 defaulters and 4,850 survivors per sample, 500 repetitions per level): simulated mean AUC in development and at decision time beside the closed forms of Proposition 4, and the percentage of repetitions in which each detector rejects at 5\%: the AUC-against-development test, the characteristic stability index of the leaked feature, the resemblance AUC and the single-feature AUC screen at its default threshold of 0.95.}
+\label{tab:planted-leak}
+\fitwidth{%
+\begin{tabular}{rrrrrrrrr}
+\toprule
+Leak $s$ & Dev. AUC sim. & Dev. AUC Prop. & Current AUC sim. & Current AUC Prop. & AUC test power & CSI power & Resemblance power & Single-feature flag \\
+\midrule
+0 & 0.692 & 0.691 & 0.692 & 0.691 & 2.4 & 5.6 & 6.6 & 0.0 \\
+0.25 & 0.734 & 0.734 & 0.692 & 0.691 & 62.0 & 5.4 & 6.6 & 0.0 \\
+0.5 & 0.772 & 0.773 & 0.691 & 0.691 & 99.0 & 7.2 & 13.2 & 0.0 \\
+1 & 0.841 & 0.841 & 0.693 & 0.691 & 100.0 & 14.2 & 31.6 & 0.0 \\
+1.5 & 0.894 & 0.894 & 0.692 & 0.691 & 100.0 & 35.6 & 51.6 & 0.0 \\
+2 & 0.933 & 0.933 & 0.691 & 0.691 & 100.0 & 60.0 & 61.4 & 0.2 \\
+3 & 0.977 & 0.977 & 0.692 & 0.691 & 100.0 & 84.6 & 73.6 & 100.0 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
