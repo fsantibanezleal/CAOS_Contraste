@@ -163,6 +163,8 @@ for kind, tag in (("maximum-likelihood", "Ml"), ("moments", "Mom")):
     put(f"grid{tag}MeanCov", f(sum(c[kind]["coverage"] for _, c in cells) / len(cells)), src + " grids (mean coverage)")
 below = [c for _, c in cells if c["maximum-likelihood"]["coverage"] < 0.95]
 put("gridMlBelow", f"{len(below)}", src + " grids (ML coverage below 0.95)")
+put("gridMlEqual", f"{sum(abs(c['maximum-likelihood']['coverage'] - 0.95) < 1e-9 for _, c in cells)}", src + " grids (ML coverage equal to 0.95)")
+put("gridMlAbove", f"{sum(c['maximum-likelihood']['coverage'] > 0.95 + 1e-9 for _, c in cells)}", src + " grids (ML coverage above 0.95)")
 put("gridMlNegBias", f"{sum(c['maximum-likelihood']['bias'] < 0 for _, c in cells)}", src + " grids (ML bias below zero)")
 put("gridMlBiasMin", f"{min(c['maximum-likelihood']['bias'] for _, c in cells):+.4f}", src + " grids (most negative ML bias)")
 put("gridMlBiasMax", f"{max(c['maximum-likelihood']['bias'] for _, c in cells):+.4f}", src + " grids (least negative ML bias)")
@@ -264,7 +266,7 @@ put("fsReps", f"{FS['replications']}", src + " fullsize_comparison.replications"
 put("fsScen", f"{FS['scenarios_each']:,}", src + " fullsize_comparison.scenarios_each")
 for nm, tag in (("var99", "VarNinetyNine"), ("es99", "EsNinetyNine"), ("var999", "VarNinetyNineNine"), ("es999", "EsNinetyNineNine")):
     put(f"fsZ{tag}", f"{FS['quantities'][nm]['z_defect_minus_independent']:+.1f}", src + f" fullsize_comparison.quantities.{nm}.z_defect_minus_independent")
-    put(f"fsShift{tag}", f"{abs(100 * FS['quantities'][nm]['relative_shift']):.1f}", src + f" fullsize_comparison.quantities.{nm}.relative_shift, absolute value in percent")
+    put(f"fsShift{tag}", f"{100 * FS['quantities'][nm]['relative_shift']:.1f}".replace("-", "\\ensuremath{-}"), src + f" fullsize_comparison.quantities.{nm}.relative_shift, in percent")
 put("fsFlagged", f"{sum(abs(v['z_defect_minus_independent']) > H3_CUTOFF for v in FS['quantities'].values())}", src + " fullsize_comparison, measures with |z| above the cutoff of 3")
 
 RUNS = [("run_ecb.py", "results_ecb.json", "Ecb", "run"), ("run_irrbb.py", "results_irrbb.json", "Irrbb", "run"),
@@ -285,7 +287,7 @@ def table_runs() -> None:
     rows = []
     for script, fname, tag, key in RUNS:
         r = RUN[script]
-        t = f"{r['seconds'] / 60:.0f} min" if r["seconds"] >= 120 else f"{r['seconds']} s"
+        t = f"{r['seconds'] / 60:.0f} min" if r["seconds"] >= 120 else (f"{r['seconds']} s" if r["seconds"] >= 1 else "under 1 s")
         rows.append(("\\texttt{" + figkit.tex_escape(script) + "}", "\\texttt{" + figkit.tex_escape(fname) + "}", t, f"{r['peak_working_set_mb']:,}"))
     figkit.table(OUT / "runs.tex", ["Script", "Writes", "Wall time", "Peak memory (MB)"], rows,
                  caption="Wall time and peak resident memory of one run of each experiment script, as recorded in the \\texttt{run} field of its results file, on the machine described in Section~\\ref{sec:reproducibility}.",
