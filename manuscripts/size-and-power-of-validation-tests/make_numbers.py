@@ -95,9 +95,32 @@ def build() -> None:
 
     # ---- size
     size = {r["test"]: r for r in A.size_table()}
-    nh = sum(r["holds"] for r in size.values())
-    reg("nHold", str(nh), nh, "holds() of the 21 @null rows")
-    reg("nNotHold", str(21 - nh), 21 - nh, "21 minus holds")
+    cv = A.committed_verdict_vs_pooled()
+    nh = sum(r["pool_definition"] for r in cv)
+    reg("nHold", str(nh), nh, "the definition of holding a size applied to the pool of the 50 blocks (200,000 repetitions): exact value, else Wilson lower limit not above the level")
+    reg("nNotHold", str(21 - nh), 21 - nh, "21 minus the above")
+    nhr = sum(r["cell_rule"] for r in cv)
+    reg("nHoldCellRule", str(nhr), nhr, "Algorithm 1 (holds()) of the 21 @null rows of the committed cells (4,000 repetitions)")
+    reg("nNotHoldCellRule", str(21 - nhr), 21 - nhr, "21 minus the above")
+    nhd = sum(r["cell_definition"] for r in cv)
+    reg("nHoldCellDef", str(nhd), nhd, "the definition applied to the committed cells")
+    reg("nNotHoldCellDef", str(21 - nhd), 21 - nhd, "21 minus the above")
+    nhp = sum(r["pool_rule"] for r in cv)
+    reg("nHoldPoolRule", str(nhp), nhp, "Algorithm 1 applied to the pool of the 50 blocks")
+    reg("nNotHoldPoolRule", str(21 - nhp), 21 - nhp, "21 minus the above")
+    reg("boundFivePool", pc(A.bound(0.05, 200000), 2), A.bound(0.05, 200000), "Algorithm 1 bound at 200,000 repetitions, level 5%")
+    reg("boundOnePool", pc(A.bound(0.01, 200000), 2), A.bound(0.01, 200000), "same, level 1%")
+    for R, nm in ((4000, "Four"), (200000, "TwoHundredK")):
+        reg(f"detIntFive{nm}", pc(A.interval_detectable(0.05, R), 2), 0, f"excess over 5% that puts the Wilson interval wholly above the level with probability 0.8, R={R}")
+        reg(f"detIntOne{nm}", pc(A.interval_detectable(0.01, R), 2), 0, f"same over 1%, R={R}")
+        reg(f"flagInt{nm}", pc(A.interval_flag_probability(0.05, 0.05, R) + A.interval_flag_probability(0.01, 0.01, R), 1), 0,
+            f"P(interval wholly above the level at 5% or 1%) of one test of size equal to its level (sum of the two levels), R={R}")
+    reg("intRateFiveFour", pc(A.interval_kmin(0.05, 4000) / 4000, 2), 0, "smallest rate at 5% whose Wilson interval lies wholly above the level, R=4000")
+    reg("intRateFiveTwoHundredK", pc(A.interval_kmin(0.05, 200000) / 200000, 2), 0, "same, R=200000")
+    reg("expFalseAboveExt", fx(25 * (A.interval_flag_probability(0.05, 0.05, 4000) + A.interval_flag_probability(0.01, 0.01, 4000)), 1), 0,
+        "expected number of the 25 studies of the extension with an interval wholly above the level if every study had exactly its level")
+    reg("expFalseAbove", fx(21 * (A.interval_flag_probability(0.05, 0.05, 200000) + A.interval_flag_probability(0.01, 0.01, 200000)), 1), 0,
+        "expected number of the 21 tests whose interval at 200,000 repetitions lies wholly above the level if every test had exactly its level")
     reg("boundFive", pc(A.bound(0.05, 4000), 2), A.bound(0.05, 4000), "alpha + z_0.999 sqrt(alpha(1-alpha)/4000)")
     reg("boundOne", pc(A.bound(0.01, 4000), 2), A.bound(0.01, 4000), "same at alpha 0.01")
     reg("boundFiveBig", pc(A.bound(0.05, 20000), 2), A.bound(0.05, 20000), "same at 20,000 repetitions")
@@ -121,6 +144,11 @@ def build() -> None:
     reg("matFive", pc(size["rating.matrix_reference"]["p<0.05"]["rate"], 2), size["rating.matrix_reference"]["p<0.05"]["rate"], "null.json")
     reg("ordFive", pc(size["rating.markov_order"]["p<0.05"]["rate"], 2), size["rating.markov_order"]["p<0.05"]["rate"], "null.json")
     reg("timeFive", pc(size["rating.time_homogeneity"]["p<0.05"]["rate"], 2), size["rating.time_homogeneity"]["p<0.05"]["rate"], "null.json")
+    reg("ordLoFive", pc(size["rating.markov_order"]["p<0.05"]["lo"], 2), 0, "committed cell Wilson low at 5%")
+    reg("ordHiFive", pc(size["rating.markov_order"]["p<0.05"]["hi"], 2), 0, "committed cell Wilson high at 5%")
+    reg("ordOne", pc(size["rating.markov_order"]["p<0.01"]["rate"], 2), 0, "committed cell rate at 1%")
+    reg("ordLoOne", pc(size["rating.markov_order"]["p<0.01"]["lo"], 2), 0, "committed cell Wilson low at 1%")
+    reg("ordHiOne", pc(size["rating.markov_order"]["p<0.01"]["hi"], 2), 0, "committed cell Wilson high at 1%")
     reg("ordTwentyK", pc(rate("null", "rating.markov_order@null-20000")["rate"], 2),
         rate("null", "rating.markov_order@null-20000")["rate"], "null.json rating.markov_order@null-20000")
     reg("ordTwentyKLo", pc(rate("null", "rating.markov_order@null-20000")["wilson_low"], 2), 0, "same, Wilson low")
@@ -300,6 +328,8 @@ def build() -> None:
     # jeffreys at 1% detection by one cell
     kmin = math.floor(A.bound(0.01, 4000) * 4000) + 1
     reg("jeffDetect", pc(float(stats.binom.sf(kmin - 1, 4000, j["exact"]["p<0.01"])), 1), 0, "P(rate > bound) at R=4000 with true size = exact Jeffreys size at 1%")
+    reg("jeffDetectInt", pc(A.interval_flag_probability(j["exact"]["p<0.01"], 0.01, 4000), 1), 0,
+        "P(Wilson interval wholly above 1%) in one cell of 4,000 repetitions with true size = exact Jeffreys size at 1%")
     # ---- reproduction of the committed cells, seeds
     rp = A.result("reproduce.json")
     reg("nReproduced", str(rp["equal"]), 0, "reproduce.json")
@@ -308,6 +338,7 @@ def build() -> None:
     rs = A.seed_replication()
     reg("seedMinutes", str(round(A.result("seed_replication.json")["seconds"] / 60)), 0, "seed_replication.json seconds / 60")
     reg("reproSeconds", str(round(rp["seconds"])), 0, "reproduce.json seconds")
+    reg("instrMinutes", f"{ins['seconds'] / 60:.1f}", 0, "instrument.json seconds / 60 (the third experiment, one process)")
     reg("nBlocks", str(rs["blocks"]), 0, "seed_replication.json")
     reg("nRepsPooled", i(rs["blocks"] * rs["n_rep"]), 0, "blocks times repetitions")
     ratios = []
@@ -323,13 +354,21 @@ def build() -> None:
     reg("nWithin", str(len(grp["within"])), 0, "tests whose pooled rate is at most the level at both levels")
     reg("nOver", str(len(grp["over"])), 0, "tests whose pooled Wilson lower limit exceeds the level at one level")
     reg("nNeither", str(len(grp["neither"])), 0, "the others")
-    cv = A.committed_verdict_vs_pooled()
-    nag = sum(r["agree"] for r in cv)
-    reg("nVerdictAgree", str(nag), 0, "committed verdict equals pooled verdict")
+    nag = sum(r["agree_definition"] for r in cv)
+    reg("nVerdictAgree", str(nag), 0, "judgement of the committed cell equals the judgement of the pool, both by the definition")
     reg("nVerdictDisagree", str(21 - nag), 0, "21 minus the above")
-    pooled_over_exc = {t: max(rs["tests"][t][lv]["pooled"] - A.ALPHA[lv] for lv in A.LEVELS) for t in A.TEST_ORDER}
+    nagr = sum(r["agree_rule"] for r in cv)
+    reg("nVerdictAgreeRule", str(nagr), 0, "the same by Algorithm 1 at both sizes")
+    reg("nVerdictDisagreeRule", str(21 - nagr), 0, "21 minus the above")
+    missed = [r["test"] for r in cv if r["cell_definition"] and not r["pool_definition"]]
+    reg("nMissedByCell", str(len(missed)), 0, "tests that the definition places above the level on the pool and that the committed cell does not show: " + ", ".join(missed))
+    only_def = [r["test"] for r in cv if r["pool_rule"] and not r["pool_definition"]]
+    reg("nPoolDefOnly", str(len(only_def)), 0, "tests that the definition places above the level on the pool and Algorithm 1 does not: " + ", ".join(only_def))
+    # the excess of a test is read at the level(s) at which its pooled Wilson interval lies above the level
+    pooled_over_exc = {t: max(rs["tests"][t][lv]["pooled"] - A.ALPHA[lv] for lv in A.LEVELS if rs["tests"][t][lv]["pooled_lo"] > A.ALPHA[lv])
+                       for t in grp["over"]}
     small = [t for t in grp["over"] if t not in ("pd.jeffreys", "pd.normal_multiperiod")]
-    reg("smallExcMax", pc(max(pooled_over_exc[t] for t in small), 2), 0, "largest pooled excess over the level among the over tests other than Jeffreys and normal")
+    reg("smallExcMax", pc(max(pooled_over_exc[t] for t in small), 2), 0, "largest pooled excess, at the level where the pooled interval is above it, among the over tests other than Jeffreys and normal")
     reg("smallExcMin", pc(min(pooled_over_exc[t] for t in small), 2), 0, "smallest pooled excess among them")
     reg("nSmallOver", str(len(small)), 0, "over tests other than Jeffreys and normal")
     for t, nm in (("stability.psi", "Psi"), ("pd.hosmer_lemeshow", "Hl"), ("pd.spiegelhalter", "Spi"), ("rating.markov_order", "Ord"),
@@ -338,6 +377,11 @@ def build() -> None:
     reg("pooledCsi", pc(rs["tests"]["stability.csi"]["p<0.05"]["pooled"], 2), 0, "pooled rate at 5%, stability.csi")
     reg("pooledHlOne", pc(rs["tests"]["pd.hosmer_lemeshow"]["p<0.01"]["pooled"], 2), 0, "pooled rate at 1% Hosmer-Lemeshow")
     reg("pooledNorm", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled"], 2), 0, "pooled normal at 5%")
+    reg("pooledNormLo", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled_lo"], 2), 0, "Wilson low of the pooled normal rate at 5%")
+    reg("pooledNormHi", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled_hi"], 2), 0, "Wilson high of the pooled normal rate at 5%")
+    reg("pooledDelLo", pc(rs["tests"]["disc.delong"]["p<0.05"]["pooled_lo"], 3), 0, "Wilson low of the pooled DeLong rate at 5%")
+    reg("pooledCsiLoOne", pc(rs["tests"]["stability.csi"]["p<0.01"]["pooled_lo"], 3), 0, "Wilson low of the pooled characteristic stability index rate at 1%")
+    reg("pooledCsiOne", pc(rs["tests"]["stability.csi"]["p<0.01"]["pooled"], 2), 0, "pooled rate at 1%, stability.csi")
     reg("pooledJeffOne", pc(rs["tests"]["pd.jeffreys"]["p<0.01"]["pooled"], 2), 0, "pooled Jeffreys at 1%")
     reg("pooledBinOne", pc(rs["tests"]["pd.binomial"]["p<0.01"]["pooled"], 2), 0, "pooled binomial at 1%")
     reg("pooledMigFive", pc(rs["tests"]["rating.migration_ztests"]["p<0.05"]["pooled"], 2), 0, "pooled migration at 5%")
@@ -348,24 +392,38 @@ def build() -> None:
     for R, nm in (("1000", "Thousand"), ("2000", "TwoK"), ("4000", "Four"), ("20000", "TwentyK")):
         reg(f"flWithinBound{nm}", pc(fl[R]["within_bound"], 2), 0, f"share of cells of {R} repetitions flagged by the bound rule, tests within the level")
         reg(f"flWithinNaive{nm}", pc(fl[R]["within_naive"], 1), 0, "same by the naive rule")
+        reg(f"flWithinInt{nm}", pc(fl[R]["within_interval"], 2), 0, "same by the interval rule (the definition)")
+        reg(f"flOverInt{nm}", pc(fl[R]["over_interval"], 1), 0, "same for the tests above the level by the interval rule")
         reg(f"flOverBound{nm}", pc(fl[R]["over_bound"], 1), 0, "same for the tests above the level")
         reg(f"flOverNaive{nm}", pc(fl[R]["over_naive"], 1), 0, "same by the naive rule")
     # ---- extension
     ext = A.extension_table()
     reg("nStudies", str(len(ext)), 0, "studies of the null variant with a study block")
     reg("nExtTests", str(len({e['test'] for e in ext})), 0, "distinct tests among them")
-    tests_hold = {}
+    tests_hold, tests_rule = {}, {}
     for e in ext:
-        tests_hold[e["test"]] = tests_hold.get(e["test"], True) and e["holds"]
-    reg("nExtHold", str(sum(tests_hold.values())), 0, "tests all of whose studies hold their size")
-    reg("nStudiesHold", str(sum(e["holds"] for e in ext)), 0, "studies that hold their size")
+        tests_hold[e["test"]] = tests_hold.get(e["test"], True) and e["holds_definition"]
+        tests_rule[e["test"]] = tests_rule.get(e["test"], True) and e["holds"]
+    reg("nExtHold", str(sum(tests_hold.values())), 0, "tests all of whose studies hold their size by the definition (4,000 repetitions)")
+    reg("nExtNotHold", str(len(tests_hold) - sum(tests_hold.values())), 0, "the others")
+    reg("nStudiesHold", str(sum(e["holds_definition"] for e in ext)), 0, "studies that hold their size by the definition")
+    reg("nStudiesNotHold", str(len(ext) - sum(e["holds_definition"] for e in ext)), 0, "the others")
+    reg("nExtHoldRule", str(sum(tests_rule.values())), 0, "tests all of whose studies hold their size by Algorithm 1")
+    reg("nStudiesHoldRule", str(sum(e["holds"] for e in ext)), 0, "studies that hold their size by Algorithm 1")
     pw = sorted(e["power5"] for e in ext)
     reg("extPowMin", pc(pw[0], 0), 0, "weakest power at 5% of the 25 studies")
     reg("extPowMax", pc(pw[-1], 0), 0, "strongest")
     reg("extPowMed", pc(float(np.median(pw)), 1), 0, "median")
     reg("extAboveBar", str(sum(1 for x in pw if x >= 0.8)), 0, "studies with power at least 0.8")
     reg("extBelowHalf", str(sum(1 for x in pw if x < 0.5)), 0, "studies with power below 0.5")
-    bad = [e for e in ext if not e["holds"]]
+    for e in ext:
+        if e["test"] == "lgd_ead.lgd_calibration_over_time":
+            reg("lgdTimeOne", pc(e["size1"], 2), 0, "LGD calibration over time, size at 1%")
+        if e["test"] == "portfolio.mc_convergence":
+            reg("mcConvFive", pc(e["size5"], 2), 0, "Monte Carlo quantile convergence, size at 5%")
+        if e["test"] == "market.du_escanciano_unconditional":
+            reg("duUncondFive", pc(e["size5"], 2), 0, "Du-Escanciano unconditional, size at 5%")
+    bad = [e for e in ext if not e["holds"]]       # the two that Algorithm 1 flags
     for e in bad:
         if e["test"] == "market.christoffersen_independence":
             reg("chrIndFive", pc(e["size5"], 1), 0, "Christoffersen independence size at 5%")

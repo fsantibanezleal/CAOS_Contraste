@@ -41,16 +41,20 @@ def wilson_err(rows, level="p<0.05"):
 
 
 def size_forest() -> None:
-    fig, axes = new(1, 2, 6.4, 5.4, sharey=True)
+    fig, axes = new(1, 2, 6.4, 6.4, sharey=True)
     tbl = A.size_table()
+    rep = A.seed_replication()["tests"]
+    cv = {r["test"]: r for r in A.committed_verdict_vs_pooled()}
     ys = np.arange(len(tbl))[::-1]
     for ax, lv in zip(axes, A.LEVELS):
         a = A.ALPHA[lv]
         for y, r in zip(ys, tbl):
             x = r[lv]
-            filled = r["holds"]
-            ax.errorbar(100 * x["rate"], y, xerr=[[100 * (x["rate"] - x["lo"])], [100 * (x["hi"] - x["rate"])]], fmt="o", ms=3.5,
-                        color="0.1", mfc="0.1" if filled else "white", capsize=1.5, lw=0.9)
+            ax.errorbar(100 * x["rate"], y + 0.17, xerr=[[100 * (x["rate"] - x["lo"])], [100 * (x["hi"] - x["rate"])]], fmt="o", ms=3.2,
+                        color="0.1", mfc="0.1" if cv[r["test"]]["cell_definition"] else "white", capsize=1.5, lw=0.9)
+            q = rep[r["test"]][lv]
+            ax.errorbar(100 * q["pooled"], y - 0.17, xerr=[[100 * (q["pooled"] - q["pooled_lo"])], [100 * (q["pooled_hi"] - q["pooled"])]],
+                        fmt="s", ms=3.0, color="0.45", mfc="0.45" if cv[r["test"]]["pool_definition"] else "white", capsize=1.0, lw=0.8)
             if r["exact"]:
                 ax.plot(100 * r["exact"][lv], y, marker="x", color="0.35", ms=5, ls="none")
         ax.axvline(100 * a, color="0.3", lw=0.9)
@@ -230,7 +234,8 @@ def resolution() -> None:
     fig, axes = new(1, 2, 6.4, 2.9)
     Rs = np.geomspace(500, 300000, 40)
     for lv, ls in ((0.05, "-"), (0.01, "--")):
-        axes[0].plot(Rs, [100 * make_numbers.detectable(lv, int(R)) for R in Rs], color="0.1", ls=ls, label=f"level {int(lv * 100)}%")
+        axes[0].plot(Rs, [100 * make_numbers.detectable(lv, int(R)) for R in Rs], color="0.1", ls=ls, label=f"screen, level {int(lv * 100)}%")
+        axes[0].plot(Rs, [100 * A.interval_detectable(lv, int(R)) for R in Rs], color="0.55", ls=ls, label=f"definition, level {int(lv * 100)}%")
     axes[0].set_xscale("log")
     axes[0].set_yscale("log")
     axes[0].set_xlabel("repetitions in the cell")
@@ -288,7 +293,7 @@ def extension() -> None:
     fig, axes = new(1, 2, 6.6, 5.6, sharey=True)
     ys = np.arange(len(ext))[::-1]
     for y, e in zip(ys, ext):
-        axes[0].plot(100 * e["size5"], y, "o", color="0.1", mfc="0.1" if e["holds"] else "white", ms=3.5)
+        axes[0].plot(100 * e["size5"], y, "o", color="0.1", mfc="0.1" if e["holds_definition"] else "white", ms=3.5)
         axes[1].errorbar(100 * e["power5"], y, xerr=[[100 * (e["power5"] - e["power5_lo"])], [100 * (e["power5_hi"] - e["power5"])]], fmt="o",
                          color="0.1", ms=3.5, capsize=1.2, lw=0.8)
     axes[0].axvline(5, color="0.3", lw=0.9)

@@ -19,6 +19,7 @@ Writes ``results/instrument.json``.
 from __future__ import annotations
 
 import math
+import time
 
 import numpy as np
 from scipy import stats
@@ -48,6 +49,7 @@ def agreement_failure_probability(p_true: float, p_nominal: float, n_rep: int) -
 
 
 def main() -> int:
+    t0 = time.time()
     out: dict = {"engine": "riskvalidation 1.1.0", "z_bound": Z_BOUND, "z_agree": Z_AGREE}
     # Part A
     flag = {}
@@ -85,6 +87,7 @@ def main() -> int:
         sim_rows.append({"factor": f, "blocks": blocks, "flagged": flagged, "share_flagged": flagged / blocks,
                          "mean_rate": float(np.mean(rates)), "p_nominal": p_nominal})
     out["agreement_simulated"] = sim_rows
+    out["seconds"] = round(time.time() - t0, 1)
     common.write_json("instrument.json", out)
     print("flag probability per test at 4000:", per_test["4000"], "family of 21:", out["flag_probability_family_21"]["4000"])
     for r in pb:

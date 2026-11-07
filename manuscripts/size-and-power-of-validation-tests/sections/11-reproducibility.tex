@@ -14,7 +14,7 @@ python make_tables.py
 python make_figures.py
 python fetch_references.py
 \end{verbatim}
-The first reruns the 21 committed null cells with their seeds and takes \reproSeconds{} seconds on six worker processes; the second measures each test in 50 further blocks of 4,000 repetitions and takes \seedMinutes{} minutes; the third computes the exact probabilities of the instrument and 600 simulated blocks and takes a few minutes.
+The first reruns the 21 committed null cells with their seeds and takes \reproSeconds{} seconds on six worker processes; the second measures each test in 50 further blocks of 4,000 repetitions and takes \seedMinutes{} minutes; the third computes the exact probabilities of the instrument and 600 simulated blocks and takes \instrMinutes{} minutes in one process.
 Their outputs are the JSON files of \texttt{experiments/results}, each under 250 kilobytes.
 The next three scripts regenerate the numbers file, the tables and the vector figures from the documents and the results, and the last writes the bibliography from the publishers' records of the works that the text cites.
 The document is built with \texttt{pdflatex}, \texttt{bibtex} and two further passes of \texttt{pdflatex} from the manuscript folder.

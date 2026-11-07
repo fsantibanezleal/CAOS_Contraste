@@ -63,19 +63,29 @@ def design() -> None:
           label="tab:design", align="llllrrr", font=FOOT, wide=True)
 
 
+def yn(b: bool) -> str:
+    """A judgement cell: a test that does not hold its size is set in bold."""
+    return "yes" if b else r"\textbf{no}"
+
+
 def main_results() -> None:
+    cv = {r["test"]: r for r in A.committed_verdict_vs_pooled()}
     rows = []
     for r in A.size_table():
         e = r["exact"]
+        c = cv[r["test"]]
         rows.append([r["name"], f"{pc(r['p<0.05']['rate'], 2)} {PM} {pc(r['p<0.05']['se'], 2)}", ci(r["p<0.05"]["lo"], r["p<0.05"]["hi"]),
                      f"{pc(r['p<0.01']['rate'], 2)} {PM} {pc(r['p<0.01']['se'], 2)}", ci(r["p<0.01"]["lo"], r["p<0.01"]["hi"]),
-                     f"{pc(e['p<0.05'], 2)} / {pc(e['p<0.01'], 2)}" if e else "--", "yes" if r["holds"] else r"\textbf{no}"])
+                     f"{pc(e['p<0.05'], 2)} / {pc(e['p<0.01'], 2)}" if e else "--", yn(c["cell_rule"]), yn(c["cell_definition"]),
+                     yn(c["pool_definition"])])
     write("main-results", ["Test", rf"Size at 5{PCT} ({PM} SE)", rf"Wilson 95{PCT}", rf"Size at 1{PCT} ({PM} SE)", rf"Wilson 95{PCT}",
-                           rf"Exact 5{PCT} / 1{PCT}", "Holds"], rows,
+                           rf"Exact 5{PCT} / 1{PCT}", "Screen, 4,000", "Holds, 4,000", "Holds, 200,000"], rows,
           caption=r"Measured size, in percent, of the 21 credit-family tests on a generator where each test's null holds at its boundary "
-                  r"(4,000 repetitions), with the Monte Carlo standard error, the Wilson 95\% interval, the exact rejection probability where the "
-                  r"test has one, and whether the test holds its size at both levels (exact value where it exists, the one-sided bound otherwise).",
-          label="tab:main-results", align="lrlrlcc", font=FOOT, wide=True)
+                  r"(4,000 repetitions), with the Monte Carlo standard error, the Wilson 95\% interval and the exact rejection probability where the "
+                  r"test has one; then three judgements: the screen of Algorithm 1 on the cell of 4,000 repetitions, the definition of holding a size on the same "
+                  r"cell, and the definition on the pool of 50 further blocks (200,000 repetitions, \cref{tab:seed-replication}). By the definition a test "
+                  r"holds its size unless its exact rejection probability, or the Wilson interval of its rate, lies above the level at 5\% or at 1\%.",
+          label="tab:main-results", align="lrlrlcccc", font=FOOT, wide=True)
 
 
 def power_summary() -> None:
@@ -93,9 +103,9 @@ def power_summary() -> None:
             hi = f"{s['x_high']:.3g}" if s["x_high"] is not None else ">" + xs[-1]
             reach = f"{s['x']:.3g} [{s['x_low']:.3g}, {hi}]"
         rows.append([A.NAME[t], f"{unit} ({xs[0]} to {xs[-1]})", *pw, reach])
-    write("power-summary", ["Test", "Defect and ladder", "S1", "S2", "S3", "S4", "S5", "S6", rf"Setting at 80{PCT} power [95{PCT}]"], rows,
-          caption=r"Measured power at 5\%, in percent, of the 17 tests with a power curve at the six settings S1 to S6 of the ladder of the "
-                  r"defect planted for each (2,000 repetitions per setting), and the setting at which the interpolated curve first reaches 80\% "
+    write("power-summary", ["Test", "Defect and ladder (severity 0 to 5)", "0", "1", "2", "3", "4", "5", rf"Setting at 80{PCT} power [95{PCT}]"], rows,
+          caption=r"Measured power at 5\%, in percent, of the 17 tests with a power curve at the six severities 0 to 5 of the ladder of the "
+                  r"defect planted for each (2,000 repetitions per severity), and the setting of the ladder at which the interpolated curve first reaches 80\% "
                   r"with the interval given by the Wilson limits of the points.",
           label="tab:power-summary", align="llrrrrrrl", font=FOOT, wide=True)
 
@@ -139,12 +149,15 @@ def seed_replication() -> None:
         rows.append([A.NAME[t], pc(size[t]["p<0.05"]["rate"], 2), f"{pc(a['pooled'], 2)} {ci(a['pooled_lo'], a['pooled_hi'])}",
                      f"{pc(a['sd_blocks'], 2)} / {pc(a['se_binomial'], 2)}", pc(a["flag_bound_4000"], 0) + " / " + pc(a["flag_naive_4000"], 0),
                      pc(size[t]["p<0.01"]["rate"], 2), f"{pc(b['pooled'], 2)} {ci(b['pooled_lo'], b['pooled_hi'])}",
-                     "yes" if cv[t]["committed_holds"] else "no", "yes" if cv[t]["pooled_holds"] else "no"])
+                     f"{'yes' if cv[t]['cell_rule'] else 'no'} / {'yes' if cv[t]['pool_rule'] else 'no'}",
+                     f"{yn(cv[t]['cell_definition'])} / {yn(cv[t]['pool_definition'])}"])
     write("seed-replication", ["Test", rf"Cell 5{PCT}", rf"Pooled 5{PCT} [Wilson]", "SD / SE of blocks", rf"Flagged: bound / naive ({PCT})",
-                               rf"Cell 1{PCT}", rf"Pooled 1{PCT} [Wilson]", "Cell holds", "Pooled holds"], rows,
+                               rf"Cell 1{PCT}", rf"Pooled 1{PCT} [Wilson]", "Screen: cell / pool", "Definition: cell / pool"], rows,
           caption=r"Fifty independent blocks of 4,000 repetitions (200,000 in all) for each of the 21 tests: the committed cell, the pooled rate with its "
                   r"Wilson interval, the standard deviation of the block rates beside the binomial standard error at 5\%, the share of blocks flagged by "
-                  r"the one-sided bound and by the rule that a rate above the level is oversized, and the judgement of the committed cell and of the pool.",
+                  r"the one-sided bound and by the rule that a rate above the level is oversized, and the judgement of the committed cell and of the pool by "
+                  r"the screen of Algorithm 1 and by the definition of holding a size (a test does not hold its size when its exact rejection probability, or the Wilson interval "
+                  r"of its rate, lies above the level at 5\% or at 1\%).",
           label="tab:seed-replication", align="lrlcrrlcc", font=FOOT, wide=True)
 
 
@@ -171,11 +184,11 @@ def ext_label(e) -> str:
 def extension() -> None:
     rows = []
     for e in A.extension_table():
-        rows.append([ext_label(e), pc(e["size5"], 2), pc(e["size1"], 2), "yes" if e["holds"] else r"\textbf{no}",
+        rows.append([ext_label(e), pc(e["size5"], 2), pc(e["size1"], 2), yn(e["holds_definition"]),
                      f"{pc(e['power5'], 1)} {PM} {pc(e['power5_se'], 1)}"])
     write("extension", ["Study", rf"Size at 5{PCT}", rf"Size at 1{PCT}", "Holds", rf"Power at 5{PCT} {PM} SE"], rows,
           caption=r"The 25 named studies of the 21 tests outside the credit families: the measured size at 5\% and 1\% (4,000 repetitions) on the null "
-                  r"of each study, whether both sizes lie within the one-sided bound, and the power at 5\% against the one alternative the study states "
+                  r"of each study, whether the study holds its size by the definition (no Wilson interval wholly above the level), and the power at 5\% against the one alternative the study states "
                   r"(2,000 repetitions), in percent.",
           label="tab:extension", align="p{7.4cm}rrcr", font=FOOT, wide=False)
 
@@ -198,19 +211,22 @@ def resolution() -> None:
     rows = []
     fl = A.flag_rates_by_repetitions()
     for R, label in ((1000, "1,000"), (2000, "2,000"), (4000, "4,000"), (20000, "20,000"), (200000, "200,000")):
-        row = [label, pc(make_numbers.detectable(0.05, R), 2), pc(make_numbers.detectable(0.01, R), 2)]
+        row = [label, pc(make_numbers.detectable(0.05, R), 2), pc(make_numbers.detectable(0.01, R), 2),
+               pc(A.interval_detectable(0.05, R), 2), pc(A.interval_detectable(0.01, R), 2)]
         if str(R) in fl:
             f = fl[str(R)]
-            row += [pc(f["within_naive"], 1), pc(f["within_bound"], 2), pc(f["over_naive"], 1), pc(f["over_bound"], 1)]
+            row += [pc(f["within_naive"], 1), pc(f["within_bound"], 2), pc(f["within_interval"], 2), pc(f["over_naive"], 1), pc(f["over_bound"], 1),
+                    pc(f["over_interval"], 1)]
         else:
-            row += ["--"] * 4
+            row += ["--"] * 6
         rows.append(row)
-    write("resolution", ["Repetitions", rf"Excess seen at 5{PCT}", rf"Excess seen at 1{PCT}", "Within: naive", "Within: bound",
-                         "Above: naive", "Above: bound"], rows,
-          caption=r"Resolution of a size measurement by the number of repetitions: the excess over the level that the one-sided bound detects with "
-                  r"probability 0.8 (percentage points), and the share of cells flagged by the naive rule and by the bound among the 10 tests whose pooled "
-                  r"size is within the level and among the 9 whose pooled size is above it (percent).",
-          label="tab:resolution", align="lrrrrrr", font=FOOT, wide=False)
+    write("resolution", ["Repetitions", rf"Screen sees, 5{PCT}", rf"Screen sees, 1{PCT}", rf"Definition sees, 5{PCT}", rf"Definition sees, 1{PCT}",
+                         "Within: naive", "Within: screen", "Within: definition", "Above: naive", "Above: screen", "Above: definition"], rows,
+          caption=r"Resolution of a size measurement by the number of repetitions: the excess over the level (percentage points) that the one-sided bound "
+                  r"of the screen and the Wilson interval of the definition detect with probability 0.8, and the share of cells (percent) flagged by the naive "
+                  r"rule, the screen and the definition among the 10 tests whose pooled size is within the level and among the 9 whose pooled size is "
+                  r"above it.",
+          label="tab:resolution", align="lrrrrrrrrrr", font=FOOT, wide=True)
 
 
 def main() -> int:

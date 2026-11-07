@@ -16,8 +16,8 @@ Component & Replaced by & Measure & With & Without \\
 Wilson interval & normal approximation & coverage of the 95\,\% interval at a true rate of 0.1\,\% in 4,000 repetitions & \covWilsonThousandth\,\% & \covWaldThousandth\,\% \\
 Wilson interval & normal approximation & exact values inside the interval, of \nExactNondeg{} comparisons & \ivWilsonNd{} & \ivWaldNd{} \\
 Wilson interval & normal approximation & upper limit for a rate of 0 in 4,000 repetitions (the concentration test) & \hhiWilsonHi\,\% & 0\,\% \\
-One-sided bound & rate above the level & share of cells flagged, tests within the level, 4,000 repetitions & \flWithinBoundFour\,\% & \flWithinNaiveFour\,\% \\
-One-sided bound & rate above the level & share of cells flagged, tests above the level, 4,000 repetitions & \flOverBoundFour\,\% & \flOverNaiveFour\,\% \\
+Screen and definition & rate above the level & share of cells flagged, tests within the level, 4,000 repetitions & \flWithinBoundFour\,\% (screen), \flWithinIntFour\,\% (definition) & \flWithinNaiveFour\,\% \\
+Screen and definition & rate above the level & share of cells flagged, tests above the level, 4,000 repetitions & \flOverBoundFour\,\% (screen), \flOverIntFour\,\% (definition) & \flOverNaiveFour\,\% \\
 Exact value beside the rate & simulation alone & probability of detecting a generator whose PD is 5\,\% too high & \agFailFivePercent\,\% & none \\
 Exact value beside the rate & simulation alone & Jeffreys test at 1\,\%: excess over the level seen by one cell & decided (\jeffExactOne\,\%) & \jeffDetect\,\% \\
 4,000 repetitions & 1,000 & excess over 5\,\% seen with probability 0.8 (points) & \detFiveFour & \detFiveThousand \\
@@ -34,6 +34,7 @@ Above a true rate of 1\,\% the intervals differ by about one point of coverage a
 Below it they separate.
 At a true rate of 0.1\,\%, where the size of a conservative test sits, the normal approximation covers \covWaldThousandth\,\%, the Wilson interval \covWilsonThousandth\,\%, the Clopper--Pearson and Jeffreys intervals \covCPThousandth\,\% and the Agresti--Coull interval \covACThousandth\,\%, so that the poor coverage of the normal approximation at small proportions that \citet{brown2001} describe is reproduced at the rates of this measurement.
 On the committed rows that carry an exact value, the five intervals contain the exact probability in \ivWaldNd{} to \ivWilsonNd{} of the \nExactNondeg{} comparisons that are not at the edge of the unit interval, against the \nExactNondeg{} times 0.95 that nominal coverage would give; the shortfall is small, consistent with the spread of $z$ above one, and it does not separate the methods.
+Over all \nExactCmp{} comparisons, including those whose exact value is at the edge of the unit interval, the Wilson, Jeffreys, Agresti--Coull and Clopper--Pearson intervals contain the exact value in \ivWilsonAll{}, \ivJefAll{}, \ivACAll{} and \ivCPAll{}, and the normal approximation in \ivWaldAll{}, because its interval has zero width at a rate of 0 or 1 and so excludes an exact value that is not exactly 0 or 1.
 The practical difference is at a rate of zero.
 The concentration test rejects in none of 4,000 repetitions, and the normal-approximation interval of that result has zero width, a claim of no uncertainty, while the Wilson interval has an upper limit of \hhiWilsonHi\,\%.
 The Wilson interval is therefore adequate everywhere the measurement needs it, and necessary only for the conservative tests; the choice among the score, exact and Jeffreys intervals changes no judgement.
@@ -50,10 +51,12 @@ The Wilson interval is therefore adequate everywhere the measurement needs it, a
 \subsection{The rule that judges a size}
 \label{sec:ab-bound}
 
-The one-sided bound of \eqref{eq:bound} is compared with the rule that a rate above the level is oversized, on the fifty blocks of every test, grouped by the pooled size of the test (\cref{tab:resolution} and \cref{fig:resolution}).
-Among the \nWithin{} tests whose pooled size is within the level, the naive rule flags \flWithinNaiveFour\,\% of the cells of 4,000 repetitions, \flWithinNaiveThousand\,\% of the cells of 1,000 and \flWithinNaiveTwentyK\,\% of those of 20,000, because a test whose size equals its level exceeds it in about half of its cells, whatever the number of repetitions; the bound flags \flWithinBoundFour\,\% at 4,000 and \flWithinBoundThousand\,\% at 1,000, which is the false flag probability of \cref{prop:false-flag}.
-Among the \nOver{} tests whose pooled size is above the level, the naive rule flags \flOverNaiveFour\,\% of the cells and the bound \flOverBoundFour\,\%, and at 20,000 repetitions \flOverNaiveTwentyK\,\% and \flOverBoundTwentyK\,\%.
-The bound pays for its specificity with sensitivity, and the price is the resolution of \cref{prop:resolution}, not a flaw of the rule: seven of the nine tests above the level exceed it by less than a third of a point.
+The one-sided bound of \eqref{eq:bound}, the screen, and the interval of the definition are compared with the rule that a rate above the level is oversized, on the fifty blocks of every test, grouped by the pooled size of the test (\cref{tab:resolution} and \cref{fig:resolution}).
+The group within the level holds conservative tests, whose rate falls away from the level as the cells grow, and tests whose size equals the level, which exceed it in about half of their cells whatever the number of repetitions.
+Among the \nWithin{} tests whose pooled size is within the level, the naive rule flags \flWithinNaiveFour\,\% of the cells of 4,000 repetitions, \flWithinNaiveThousand\,\% of the cells of 1,000 and \flWithinNaiveTwentyK\,\% of those of 20,000; the share falls with the repetitions because the conservative tests stop exceeding their level, and it would stay at one half for tests at the level.
+The screen flags \flWithinBoundFour\,\% at 4,000 and \flWithinBoundThousand\,\% at 1,000, which is the false flag probability of \cref{prop:false-flag}, and the definition flags \flWithinIntFour\,\% at 4,000 and \flWithinIntThousand\,\% at 1,000, its higher but still small false flag probability.
+Among the \nOver{} tests whose pooled size is above the level, the naive rule flags \flOverNaiveFour\,\% of the cells, the screen \flOverBoundFour\,\% and the definition \flOverIntFour\,\%, and at 20,000 repetitions \flOverNaiveTwentyK\,\%, \flOverBoundTwentyK\,\% and \flOverIntTwentyK\,\%.
+The two rules pay for their specificity with sensitivity, the screen more than the definition, and the price is the resolution of \cref{prop:resolution}, not a flaw of the rules: seven of the nine tests above the level exceed it by less than a third of a point.
 A reader who needs to see them needs more repetitions, and the naive rule offers no way to know that it has seen them.
 
 \input{tables/resolution}
@@ -61,7 +64,7 @@ A reader who needs to see them needs more repetitions, and the naive rule offers
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{resolution}
-\caption{Left: the excess over the level that the one-sided bound detects with probability 0.8 against the number of repetitions of the cell, at the levels 5\% and 1\%; right: the share of cells flagged as oversized by the bound and by the naive rule among the tests within the level and among the tests above it.}
+\caption{Left: the excess over the level that the one-sided bound of the screen (black) and the Wilson interval of the definition (grey) detect with probability 0.8 against the number of repetitions of the cell, at the levels 5\% (solid) and 1\% (dashed); right: the share of cells flagged as oversized by the screen and by the naive rule among the tests within the level and among the tests above it.}
 \label{fig:resolution}
 \end{figure}
 
@@ -81,4 +84,4 @@ The number of repetitions sets the resolution.
 \Cref{tab:resolution} gives the excess over the level that the bound sees with probability 0.8: \detFiveThousand{} points at 5\,\% for 1,000 repetitions, \detFiveFour{} for 4,000, \detFiveTwentyK{} for 20,000 and \detFiveTwoHundredK{} for 200,000, and \detOneThousand{}, \detOneFour{}, \detOneTwentyK{} and \detOneTwoHundredK{} points at 1\,\%.
 The false flag probability of a test per cell is \flagThousand\,\% at 1,000 repetitions, \flagTest\,\% at 4,000 and \flagTwentyK\,\% at 20,000, so more repetitions buy resolution without costing specificity.
 The cost is linear in the repetitions: the 200,000 repetitions per test of the replication, for the 21 tests, took \seedMinutes{} minutes on 24 worker processes.
-Four thousand repetitions per size cell is a reasonable default for a first measurement, because it makes the standard error of a rate at 5\,\% about 0.3 points; it is not enough to certify a size, and the replication shows that a result of ``holds'' at 4,000 is a statement of no excess larger than about a point. A user who needs a size known to a tenth of a point must run 200,000 repetitions, and a user who needs only to exclude an excess of three points can run 1,000.
+Four thousand repetitions per size cell is a reasonable default for a first measurement, because it makes the standard error of a rate at 5\,\% about 0.3 points; it is not enough to certify a size, and the replication shows that a result of ``holds'' at 4,000 is a statement of no excess larger than about a point (\detIntFiveFour{} by the definition, \detFiveFour{} by the screen). A user who needs a size known to a tenth of a point must run 200,000 repetitions, and a user who needs only to exclude an excess of three points can run 1,000.

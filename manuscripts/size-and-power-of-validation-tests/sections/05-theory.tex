@@ -8,7 +8,8 @@ The first is general (\cref{sec:th-error,sec:th-monotone}); the second is a set 
 \label{sec:th-error}
 
 The size judgement of \cref{sec:pm-judgement} can fail in two ways: it can flag a correct test, and it can miss an oversized one.
-The first probability is controlled by the quantile of the bound, the second by the number of repetitions.
+The first probability is controlled by the quantile of the rule, the second by the number of repetitions.
+The propositions are stated for the screen, whose bound has the quantile $z_{0.999}$; they hold for the definition with the quantile $z_{0.975}$ of its lower Wilson limit in place of it, to the first order in $\nrep^{-1/2}$, and the numbers for both are given after each.
 
 \begin{proposition}[False flags]
 \label{prop:false-flag}
@@ -28,6 +29,8 @@ The statement on $m$ tests is the union bound, and the product form is the indep
 
 At $\nrep=\nNullReps{}$ the exact values are $\gamma=\flagFive\,\%$ at 5\,\% and $\flagOne\,\%$ at 1\,\%, so a correct test is flagged with probability at most $\flagTest\,\%$, and among the 21 tests of the battery with probability about $\flagFamily\,\%$ if the tests are independent and at most $\flagUnion\,\%$ in any case.
 The convergence to 0.001 is slow because the binomial is discrete: the values at $\nrep=1{,}000$ and $20{,}000$ are $\flagThousand\,\%$ and $\flagTwentyK\,\%$ per test.
+The definition is less tolerant: a test whose true size equals the level has a lower Wilson limit above it with probability at most $\flagIntFour\,\%$ over the two levels in a cell of $\nrep=\nNullReps{}$ and $\flagIntTwoHundredK\,\%$ in $\nrep=\nRepsPooled{}$ (exact binomial sums), so that among the 21 tests at most about $\expFalseAbove$ would be shown above their level at $\nrep=\nRepsPooled{}$ if every test had exactly its level.
+The count of tests that do not hold their size is read with that expectation, and the seven tests that the screen also flags are beyond it (\cref{sec:rs-seeds}).
 
 \begin{proposition}[Resolution]
 \label{prop:resolution}
@@ -42,9 +45,9 @@ so the excess that it detects with probability $\pi$ is $\delta_\nrep(\lev)\appr
 Standardise $K$ under $\Bin(\nrep,\lev+\delta)$ at the threshold $\nrep\,b_\nrep(\lev)$ and use the normal approximation; solving $\Phi(\cdot)=\pi$ for $\delta$ and replacing the variance at $\lev+\delta$ by the variance at $\lev$ gives the approximation.
 \end{proof}
 
-With $\pi=0.8$, $z_{0.999}+z_{0.8}=3.93$ and the excess at $\nrep=\nNullReps{}$ is $\detFiveFour\,$ points at 5\,\% and $\detOneFour\,$ points at 1\,\% (exact binomial values; \cref{tab:resolution}).
+With $\pi=0.8$, $z_{0.999}+z_{0.8}=3.93$ and the excess that the screen sees at $\nrep=\nNullReps{}$ is $\detFiveFour\,$ points at 5\,\% and $\detOneFour\,$ points at 1\,\%; with $z_{0.975}+z_{0.8}=2.80$ the excess that the definition sees is $\detIntFiveFour\,$ points at 5\,\% and $\detIntOneFour\,$ points at 1\,\% (exact binomial values; \cref{tab:resolution}).
 The consequence is a limit on the statement ``the test holds its size'': it means that no excess larger than about $\delta_\nrep(\lev)$ is present, and it does not exclude a smaller one.
-An excess of $0.2$ points at 5\,\% needs about $200{,}000$ repetitions to be seen with probability 0.8.
+At $\nrep=\nRepsPooled{}$ the excess seen is $\detFiveTwoHundredK\,$ points at 5\,\% by the screen and $\detIntFiveTwoHundredK\,$ points by the definition.
 
 \subsection{Monotone power of the count tests}
 \label{sec:th-monotone}
@@ -97,7 +100,7 @@ Expanding $(a-e)\ln(a/e)=(a-e)^2/e+O(|a-e|^3)$ shows that the index is, to first
 \end{proof}
 
 For $B=10$ and $n=m=100$ the false alarm rate of the 0.10 band is $\Prob(\chi^2_9>5)=\psiTheoryHundred\,\%$, against $\psiHundred\,\%$ measured, and at $n=m=400$ it is $\psiTheoryFourHundred\,\%$.
-A fixed band therefore has a false alarm rate that falls with the samples and a power that is a step function of the size of the shift, which is why it is blind to every shift whose population index lies below the band, whatever the sample size.
+A fixed band therefore has a false alarm rate that falls with the samples and a power that is a step function of the size of the shift, which is why, in large samples, it is blind to every shift whose population index lies below the band.
 
 \begin{proposition}[A bounded statistic]
 \label{prop:hhi}
@@ -108,7 +111,7 @@ Setting the derivative of $\ln S$ to zero gives $1/(c-c_0)-1/c-c/(\tfrac12+c^2)=
 \end{proof}
 
 For ten grades and $c_0=0.6$, $c^*=1.36$ and $S(c^*)=\hhiPeak<z_{0.95}=\zCrit$: no current distribution can be rejected at 5\,\%, and even the concentration of every obligor in one grade gives $S=\hhiAllIn$, a p-value of $\hhiAllInP$.
-Because $S(c^*)$ grows with $\sqrt{K-1}$, the test can reject at 5\,\% only with at least \hhiKMinSix{} grades at $c_0=0.6$ and \hhiKMinThree{} grades at $c_0=0.3$.
+Because $S(c^*)$ grows with $\sqrt{K-1}$, the test can reject at 5\,\% only with at least \hhiKMinSix{} grades at $c_0=0.6$ and \hhiKMinThree{} grades at $c_0=0.3$, so that ``cannot reject with ten grades'' is a statement about an initial coefficient of variation of 0.6 and not about every initial value.
 
 \begin{proposition}[A reference that is an estimate]
 \label{prop:reference}

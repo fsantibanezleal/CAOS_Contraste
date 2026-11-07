@@ -3,9 +3,17 @@ results of the experiments (``experiments/results``). ``make_numbers.py``, ``mak
 this module; nothing in the text is typed by hand.
 
 Conventions. A "credit-family test" is one of the 21 tests of the five credit families (calibration, discrimination, stability,
-rating system, transitions) whose key ends in ``@null`` in the null variant. A rate is judged by the rule of the measurement:
-by its exact rejection probability where the test has one, and otherwise by the one-sided Monte Carlo bound
-``alpha + z_{0.999} sqrt(alpha (1 - alpha) / R)``.
+rating system, transitions) whose key ends in ``@null`` in the null variant.
+
+One definition of "holds its size" is used for every count of the manuscript (``holds_definition``): a test holds its size on a
+body of evidence when the evidence does not show its rejection probability at the boundary of its null above the level at
+either level, that is, its exact rejection probability is at most the level where the test has one, and otherwise the lower
+limit of the Wilson 95% interval of its simulated rate is at most the level. A test whose interval lies wholly above the level
+at one level does not hold its size.
+
+Algorithm 1 of the manuscript (``holds``) is the screening rule of the measurement, with a wider tolerance: exact value where
+there is one, otherwise the one-sided bound ``alpha + z_{0.999} sqrt(alpha (1 - alpha) / R)``. It is reported beside the
+definition, never instead of it.
 """
 from __future__ import annotations
 
@@ -84,12 +92,24 @@ def holds(row: dict[str, Any]) -> bool:
     return all(row["rates"][lv]["rate"] <= bound(ALPHA[lv], row["rates"][lv]["n"]) for lv in LEVELS)
 
 
+def holds_definition(row: dict[str, Any]) -> bool:
+    """The definition of the manuscript for a committed cell: the evidence does not show the size above the level at either
+    level (exact value where there is one, else the Wilson lower limit of the cell's rate)."""
+    if row.get("exact"):
+        return all(row["exact"][lv] <= ALPHA[lv] + 1e-12 for lv in LEVELS)
+    return all(row["rates"][lv]["wilson_low"] <= ALPHA[lv] for lv in LEVELS)
+
+
 def wilson(k: int, n: int, z: float = 1.959963984540054) -> tuple[float, float]:
+    """The Wilson score interval; the limit is exactly 0 at k = 0 and exactly 1 at k = n (in exact arithmetic the interval is
+    [0, x] and [x, 1] there, and a floating-point residue of 1e-19 would place an exact value of 0 or 1 outside it)."""
     p = k / n
     den = 1 + z * z / n
     c = (p + z * z / (2 * n)) / den
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
-    return max(0.0, c - h), min(1.0, c + h)
+    lo = 0.0 if k == 0 else max(0.0, c - h)
+    hi = 1.0 if k == n else min(1.0, c + h)
+    return lo, hi
 
 
 def wald(k: int, n: int, z: float = 1.959963984540054) -> tuple[float, float]:
@@ -160,12 +180,13 @@ def size_table() -> list[dict[str, Any]]:
     for t in TEST_ORDER:
         r = null[t]
         row = {"test": t, "name": NAME[t], "family": FAMILY[t], "n": r["n_rep"], "seed": r["seed"], "holds": holds(r),
-               "exact": r.get("exact"), "key": r["key"]}
+               "holds_definition": holds_definition(r), "exact": r.get("exact"), "key": r["key"]}
         for lv in LEVELS:
             x = r["rates"][lv]
             row[lv] = {"rate": x["rate"], "se": x["se"], "lo": x["wilson_low"], "hi": x["wilson_high"], "k": x["rejections"],
                        "bound": bound(ALPHA[lv], x["n"]),
                        "exceeds_bound": x["rate"] > bound(ALPHA[lv], x["n"]),
+                       "interval_above": x["wilson_low"] > ALPHA[lv],
                        "above_level": x["rate"] > ALPHA[lv]}
         out.append(row)
     return out
@@ -212,6 +233,36 @@ def interval_on_exact_rows() -> dict[str, dict[str, int]]:
 
 def interval_coverage_grid(n: int = 4000, ps=(0.001, 0.005, 0.01, 0.05, 0.1, 0.5)) -> dict[str, dict[str, float]]:
     return {name: {f"{p:g}": coverage(f, p, n) for p in ps} for name, f in INTERVALS.items()}
+
+
+def interval_kmin(alpha: float, n: int) -> int:
+    """The smallest rejection count whose Wilson interval lies wholly above the level ``alpha`` in ``n`` repetitions."""
+    lo, hi = 0, n
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if wilson(mid, n)[0] > alpha:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+def interval_flag_probability(true_p: float, alpha: float, n: int) -> float:
+    """P(the Wilson interval of the rate lies wholly above ``alpha``) when the true rejection probability is ``true_p``."""
+    return float(stats.binom.sf(interval_kmin(alpha, n) - 1, n, true_p))
+
+
+def interval_detectable(alpha: float, n: int, power: float = 0.8) -> float:
+    """The excess over ``alpha`` that makes the Wilson interval lie wholly above ``alpha`` with probability ``power``."""
+    kmin = interval_kmin(alpha, n)
+    lo, hi = alpha, alpha + 0.2
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        if stats.binom.sf(kmin - 1, n, mid) >= power:
+            hi = mid
+        else:
+            lo = mid
+    return hi - alpha
 
 
 def curves(variant: str, measures: str = "power") -> dict[tuple[str, str], list[dict[str, Any]]]:
@@ -341,6 +392,7 @@ def extension_table() -> list[dict[str, Any]]:
             "size5": x5["rate"], "size1": x1["rate"], "size_rule": r["rates"][rule]["rate"],
             "size_rule_bound": bound(0.05, r["rates"][rule]["n"]),
             "holds": all(r["rates"][lv]["rate"] <= bound(ALPHA[lv], r["rates"][lv]["n"]) for lv in LEVELS),
+            "holds_definition": all(r["rates"][lv]["wilson_low"] <= ALPHA[lv] for lv in LEVELS),
             "power5": a["rates"]["p<0.05"]["rate"], "power5_lo": a["rates"]["p<0.05"]["wilson_low"],
             "power5_hi": a["rates"]["p<0.05"]["wilson_high"], "power5_se": a["rates"]["p<0.05"]["se"],
             "power_rule": a["rates"][rule]["rate"],
@@ -379,30 +431,42 @@ def seed_replication() -> dict[str, Any]:
     return out
 
 
+def pooled_holds_definition(test: str, exact: dict[str, float] | None, rep: dict[str, Any]) -> bool:
+    """The definition applied to the pool of the replication: the exact value where there is one, else the Wilson lower
+    limit of the pooled rate at each level."""
+    if exact:
+        return all(exact[lv] <= ALPHA[lv] + 1e-12 for lv in LEVELS)
+    return all(rep[test][lv]["pooled_lo"] <= ALPHA[lv] for lv in LEVELS)
+
+
 def committed_verdict_vs_pooled() -> list[dict[str, Any]]:
-    """For each credit-family test the verdict of the committed cell, the verdict of the pooled replication, and the verdict
-    of the pooled replication by the same rule (exact where there is an exact value)."""
+    """For each credit-family test: the judgement of the committed cell and of the pool of the replication by the definition
+    (``*_definition``) and by Algorithm 1 (``*_rule``: the one-sided bound on the pooled rate, the exact value where there is
+    one)."""
     rep = seed_replication()["tests"]
     size = {r["test"]: r for r in size_table()}
     out = []
     for t in TEST_ORDER:
         s = size[t]
-        pooled_holds = True
+        pooled_rule = True
         for lv in LEVELS:
             p = rep[t][lv]
             if s["exact"]:
                 ok = s["exact"][lv] <= ALPHA[lv] + 1e-12
             else:
                 ok = p["pooled"] <= bound(ALPHA[lv], p["pooled_n"])
-            pooled_holds = pooled_holds and ok
-        out.append({"test": t, "committed_holds": s["holds"], "pooled_holds": pooled_holds,
-                    "flag_bound_blocks": max(rep[t][lv]["flag_bound_4000"] for lv in LEVELS),
-                    "agree": s["holds"] == pooled_holds})
+            pooled_rule = pooled_rule and ok
+        pooled_def = pooled_holds_definition(t, s["exact"], rep)
+        out.append({"test": t, "cell_rule": s["holds"], "pool_rule": pooled_rule, "agree_rule": s["holds"] == pooled_rule,
+                    "cell_definition": s["holds_definition"], "pool_definition": pooled_def,
+                    "agree_definition": s["holds_definition"] == pooled_def,
+                    "flag_bound_blocks": max(rep[t][lv]["flag_bound_4000"] for lv in LEVELS)})
     return out
 
 
 def flag_rates_by_repetitions() -> dict[str, dict[str, float]]:
-    """Share of cells flagged by the bound rule and by the naive rule (rate above the level), at each repetition number, over
+    """Share of cells flagged by the bound rule (the screen), by the interval rule (the definition: the Wilson interval wholly above
+    the level) and by the naive rule (rate above the level), at each repetition number, over
     the tests whose pooled size lies within the level (true size at most alpha) and over those whose pooled size lies above
     the level by more than the pooled Monte Carlo bound (clearly oversized). Slices of 1,000 repetitions are valid cells of
     1,000; consecutive slices of one block pool to cells of 2,000, whole blocks are cells of 4,000, five blocks cells of
@@ -422,7 +486,7 @@ def flag_rates_by_repetitions() -> dict[str, dict[str, float]]:
             over.append(t)
     for R in (1000, 2000, 4000, 20000):
         for group_name, group in (("within", within), ("over", over)):
-            flags_b = flags_n = cells = 0
+            flags_b = flags_n = flags_i = cells = 0
             for t in group:
                 blocks = d["cells"][f"{t}@null"]
                 for lv, tag in (("p<0.05", "0.05"), ("p<0.01", "0.01")):
@@ -440,16 +504,19 @@ def flag_rates_by_repetitions() -> dict[str, dict[str, float]]:
                     n_cells = len(blocks) // m
                     ks = {tag: [sum(sum(per_level[tag][j * m + q]) for q in range(m)) for j in range(n_cells)] for tag in per_level}
                 for c in range(n_cells):
-                    fb = fn = False
+                    fb = fn = fi = False
                     for tag, a in (("0.05", 0.05), ("0.01", 0.01)):
                         r = ks[tag][c] / R
                         fb = fb or r > bound(a, R)
                         fn = fn or r > a
+                        fi = fi or wilson(ks[tag][c], R)[0] > a
                     flags_b += fb
                     flags_n += fn
+                    flags_i += fi
                     cells += 1
             out.setdefault(str(R), {})[group_name + "_bound"] = flags_b / cells if cells else float("nan")
             out[str(R)][group_name + "_naive"] = flags_n / cells if cells else float("nan")
+            out[str(R)][group_name + "_interval"] = flags_i / cells if cells else float("nan")
             out[str(R)][group_name + "_cells"] = cells
             out[str(R)][group_name + "_tests"] = len(group)
     return out

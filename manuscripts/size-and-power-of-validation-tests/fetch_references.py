@@ -33,8 +33,14 @@ WORKS = {
     "neymanpearson1933": ("doi", "10.1098/rsta.1933.0009", "efficient tests"),
     "pearson1900": ("doi", "10.1080/14786440009463897", "criterion"),
     "sidak1967": ("doi", "10.1080/01621459.1967.10482935", "confidence regions"),
-    "holm1979": ("url", "https://www.jstor.org/stable/4615733",
-                 "A simple sequentially rejective multiple test procedure|Sture Holm|1979"),
+    "holm1979": ("manual", "holm1979", ""),
+    "acerbi2014": ("manual", "acerbi2014", ""),
+    "smirnov1948": ("doi", "10.1214/aoms/1177730256", "goodness of fit"),
+    "mcneil2000": ("doi", "10.1016/S0927-5398(00)00012-8", "tail-related"),
+    "christoffersen2004": ("doi", "10.1093/jjfinec/nbh004", "duration"),
+    "du2017": ("doi", "10.1287/mnsc.2015.2342", "backtesting expected shortfall"),
+    "engle2004": ("doi", "10.1198/073500104000000370", "caviar"),
+    "haaf2004": ("doi", "10.21314/jor.2004.097", "credit risk"),
     "benjamini1995": ("doi", "10.1111/j.2517-6161.1995.tb02031.x", "false discovery"),
     "hosmer1980": ("doi", "10.1080/03610928008827941", "goodness"),
     "hosmer1997": ("doi", "10.1002/(SICI)1097-0258(19970515)16:9<965::AID-SIM509>3.0.CO;2-O", "goodness-of-fit"),
@@ -46,7 +52,6 @@ WORKS = {
     "delong1988": ("doi", "10.2307/2531595", "receiver operating"),
     "demler2012": ("doi", "10.1002/sim.5328", "delong"),
     "yurdakul2020": ("doi", "10.21314/JRMV.2020.227", "population stability"),
-    "massey1951": ("doi", "10.1080/01621459.1951.10500769", "kolmogorov"),
     "andersongoodman1957": ("doi", "10.1214/aoms/1177707039", "markov"),
     "tasche2013": ("doi", "10.21314/JCR.2013.169", "probability-of-default"),
     "tasche2008": ("arxiv", "physics/0606071", "validation"),
@@ -71,6 +76,29 @@ WORKS = {
     "ecb2025guide": ("url", "https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.supervisory_guide202507.en.pdf",
                      "ECB Guide to internal models|European Central Bank|2025"),
 }
+
+
+#: Works whose record cannot be fetched from the publisher: the fields are written here with the page that was read for each,
+#: and the report of the unit names what could not be confirmed on a primary source.
+MANUAL = {
+    # OpenAlex lists journal, volume and pages (https://api.openalex.org/works?search=A+simple+sequentially+rejective+multiple+test+procedure);
+    # the JSTOR page answers 200 to a script but shows no record, and Crossref holds no record of the DOI.
+    "holm1979": {"type": "article", "author": "Holm, Sture", "title": "A simple sequentially rejective multiple test procedure",
+                 "journal": "Scandinavian Journal of Statistics", "volume": "6", "pages": "65--70", "year": "1979",
+                 "doi": "10.2307/4615733", "url": "https://www.jstor.org/stable/4615733"},
+    # The engine documentation (CAOS_RiskValidation docs/market/README.md) cites "Acerbi and Szekely (2014), Risk, December" and records that the
+    # article is gated and was not retrieved; no page or DOI is known to this unit.
+    "acerbi2014": {"type": "article", "author": r"Acerbi, C. and Sz{\'e}kely, B.","title": "Backtesting expected shortfall",
+                   "journal": "Risk", "year": "2014", "month": "December"},
+}
+
+#: Corrections of a publisher's record, each checked to apply: (key, text in the record, text that replaces it, the source of the correction).
+CORRECTIONS = [
+    ("hosmer1980", "Lemesbow", "Lemeshow", "Crossref prints a misspelling of the second author's name; the same author is Lemeshow in hosmer1997 and paul2013"),
+    ("paul2013", "year={2012}", "year={2013}", "the issue (volume 32, number 1) is dated 2013 in the Europe PMC record of doi 10.1002/sim.5525; 2012 is the online date"),
+    ("christoffersen2004", "author={Christoffersen, P.}", "author={Christoffersen, Peter and Pelletier, Denis}",
+     "the record lists the first author only; the engine documentation (docs/market/07_backtests.md) gives Christoffersen and Pelletier for this DOI"),
+]
 
 
 def get(url: str, accept: str | None = None) -> bytes:
@@ -112,6 +140,11 @@ def cited() -> set[str]:
 
 
 def entry(key: str, kind: str, ident: str, words: str) -> str:
+    if kind == "manual":
+        f = dict(MANUAL[ident])
+        typ = f.pop("type")
+        body = ",\n".join(f"  {k} = {{{v}}}" for k, v in f.items())
+        return f"@{typ}{{{key},\n{body}\n}}\n"
     if kind == "doi":
         try:
             raw = clean(get("https://doi.org/" + ident, "application/x-bibtex").decode("utf-8"))
@@ -130,6 +163,11 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
             if not names:
                 raise RuntimeError(f"{key}: neither the publisher nor Crossref gives an author or an editor for {ident}")
             raw = raw[:-1].rstrip().rstrip(",") + f",\n  editor = {{{names}}}\n}}"
+        for k, old, new, _why in CORRECTIONS:
+            if k == key:
+                if old not in raw:
+                    raise RuntimeError(f"{key}: the record no longer contains {old!r}; the correction is obsolete")
+                raw = raw.replace(old, new)
         return raw + "\n"
     if kind == "arxiv":
         xml = get("http://export.arxiv.org/api/query?id_list=" + ident).decode("utf-8")

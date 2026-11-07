@@ -164,12 +164,84 @@
   "source": "mean of z over the non-degenerate exact comparisons"
  },
  "nHold": {
-  "value": "19",
-  "source": "holds() of the 21 @null rows"
+  "value": "12",
+  "source": "the definition of holding a size applied to the pool of the 50 blocks (200,000 repetitions): exact value, else Wilson lower limit not above the level"
  },
  "nNotHold": {
+  "value": "9",
+  "source": "21 minus the above"
+ },
+ "nHoldCellRule": {
+  "value": "19",
+  "source": "Algorithm 1 (holds()) of the 21 @null rows of the committed cells (4,000 repetitions)"
+ },
+ "nNotHoldCellRule": {
   "value": "2",
-  "source": "21 minus holds"
+  "source": "21 minus the above"
+ },
+ "nHoldCellDef": {
+  "value": "18",
+  "source": "the definition applied to the committed cells"
+ },
+ "nNotHoldCellDef": {
+  "value": "3",
+  "source": "21 minus the above"
+ },
+ "nHoldPoolRule": {
+  "value": "14",
+  "source": "Algorithm 1 applied to the pool of the 50 blocks"
+ },
+ "nNotHoldPoolRule": {
+  "value": "7",
+  "source": "21 minus the above"
+ },
+ "boundFivePool": {
+  "value": "5.15",
+  "source": "Algorithm 1 bound at 200,000 repetitions, level 5%"
+ },
+ "boundOnePool": {
+  "value": "1.07",
+  "source": "same, level 1%"
+ },
+ "detIntFiveFour": {
+  "value": "1.00",
+  "source": "excess over 5% that puts the Wilson interval wholly above the level with probability 0.8, R=4000"
+ },
+ "detIntOneFour": {
+  "value": "0.47",
+  "source": "same over 1%, R=4000"
+ },
+ "flagIntFour": {
+  "value": "5.2",
+  "source": "P(interval wholly above the level at 5% or 1%) of one test of size equal to its level (sum of the two levels), R=4000"
+ },
+ "detIntFiveTwoHundredK": {
+  "value": "0.14",
+  "source": "excess over 5% that puts the Wilson interval wholly above the level with probability 0.8, R=200000"
+ },
+ "detIntOneTwoHundredK": {
+  "value": "0.06",
+  "source": "same over 1%, R=200000"
+ },
+ "flagIntTwoHundredK": {
+  "value": "5.0",
+  "source": "P(interval wholly above the level at 5% or 1%) of one test of size equal to its level (sum of the two levels), R=200000"
+ },
+ "intRateFiveFour": {
+  "value": "5.70",
+  "source": "smallest rate at 5% whose Wilson interval lies wholly above the level, R=4000"
+ },
+ "intRateFiveTwoHundredK": {
+  "value": "5.10",
+  "source": "same, R=200000"
+ },
+ "expFalseAboveExt": {
+  "value": "1.3",
+  "source": "expected number of the 25 studies of the extension with an interval wholly above the level if every study had exactly its level"
+ },
+ "expFalseAbove": {
+  "value": "1.1",
+  "source": "expected number of the 21 tests whose interval at 200,000 repetitions lies wholly above the level if every test had exactly its level"
  },
  "boundFive": {
   "value": "6.06",
@@ -250,6 +322,26 @@
  "timeFive": {
   "value": "4.72",
   "source": "null.json"
+ },
+ "ordLoFive": {
+  "value": "5.35",
+  "source": "committed cell Wilson low at 5%"
+ },
+ "ordHiFive": {
+  "value": "6.83",
+  "source": "committed cell Wilson high at 5%"
+ },
+ "ordOne": {
+  "value": "1.47",
+  "source": "committed cell rate at 1%"
+ },
+ "ordLoOne": {
+  "value": "1.15",
+  "source": "committed cell Wilson low at 1%"
+ },
+ "ordHiOne": {
+  "value": "1.90",
+  "source": "committed cell Wilson high at 1%"
  },
  "ordTwentyK": {
   "value": "5.05",
@@ -776,7 +868,7 @@
   "source": "same, the 63 non-degenerate comparisons"
  },
  "ivWilsonAll": {
-  "value": "69",
+  "value": "87",
   "source": "exact value inside the 95% interval, all 94 comparisons"
  },
  "ivWilsonNd": {
@@ -975,6 +1067,10 @@
   "value": "28.1",
   "source": "P(rate > bound) at R=4000 with true size = exact Jeffreys size at 1%"
  },
+ "jeffDetectInt": {
+  "value": "64.2",
+  "source": "P(Wilson interval wholly above 1%) in one cell of 4,000 repetitions with true size = exact Jeffreys size at 1%"
+ },
  "nReproduced": {
   "value": "21",
   "source": "reproduce.json"
@@ -990,6 +1086,10 @@
  "reproSeconds": {
   "value": "67",
   "source": "reproduce.json seconds"
+ },
+ "instrMinutes": {
+  "value": "3.4",
+  "source": "instrument.json seconds / 60 (the third experiment, one process)"
  },
  "nBlocks": {
   "value": "50",
@@ -1024,19 +1124,35 @@
   "source": "the others"
  },
  "nVerdictAgree": {
-  "value": "16",
-  "source": "committed verdict equals pooled verdict"
+  "value": "15",
+  "source": "judgement of the committed cell equals the judgement of the pool, both by the definition"
  },
  "nVerdictDisagree": {
+  "value": "6",
+  "source": "21 minus the above"
+ },
+ "nVerdictAgreeRule": {
+  "value": "16",
+  "source": "the same by Algorithm 1 at both sizes"
+ },
+ "nVerdictDisagreeRule": {
   "value": "5",
   "source": "21 minus the above"
  },
+ "nMissedByCell": {
+  "value": "6",
+  "source": "tests that the definition places above the level on the pool and that the committed cell does not show: pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter, disc.delong, stability.psi, stability.csi"
+ },
+ "nPoolDefOnly": {
+  "value": "2",
+  "source": "tests that the definition places above the level on the pool and Algorithm 1 does not: disc.delong, stability.csi"
+ },
  "smallExcMax": {
   "value": "0.29",
-  "source": "largest pooled excess over the level among the over tests other than Jeffreys and normal"
+  "source": "largest pooled excess, at the level where the pooled interval is above it, among the over tests other than Jeffreys and normal"
  },
  "smallExcMin": {
-  "value": "0.09",
+  "value": "0.05",
   "source": "smallest pooled excess among them"
  },
  "nSmallOver": {
@@ -1079,6 +1195,26 @@
   "value": "7.99",
   "source": "pooled normal at 5%"
  },
+ "pooledNormLo": {
+  "value": "7.87",
+  "source": "Wilson low of the pooled normal rate at 5%"
+ },
+ "pooledNormHi": {
+  "value": "8.11",
+  "source": "Wilson high of the pooled normal rate at 5%"
+ },
+ "pooledDelLo": {
+  "value": "5.034",
+  "source": "Wilson low of the pooled DeLong rate at 5%"
+ },
+ "pooledCsiLoOne": {
+  "value": "1.003",
+  "source": "Wilson low of the pooled characteristic stability index rate at 1%"
+ },
+ "pooledCsiOne": {
+  "value": "1.05",
+  "source": "pooled rate at 1%, stability.csi"
+ },
  "pooledJeffOne": {
   "value": "1.38",
   "source": "pooled Jeffreys at 1%"
@@ -1111,6 +1247,14 @@
   "value": "22.7",
   "source": "same by the naive rule"
  },
+ "flWithinIntThousand": {
+  "value": "1.10",
+  "source": "same by the interval rule (the definition)"
+ },
+ "flOverIntThousand": {
+  "value": "21.7",
+  "source": "same for the tests above the level by the interval rule"
+ },
  "flOverBoundThousand": {
   "value": "13.0",
   "source": "same for the tests above the level"
@@ -1126,6 +1270,14 @@
  "flWithinNaiveTwoK": {
   "value": "19.4",
   "source": "same by the naive rule"
+ },
+ "flWithinIntTwoK": {
+  "value": "0.90",
+  "source": "same by the interval rule (the definition)"
+ },
+ "flOverIntTwoK": {
+  "value": "27.4",
+  "source": "same for the tests above the level by the interval rule"
  },
  "flOverBoundTwoK": {
   "value": "13.7",
@@ -1143,6 +1295,14 @@
   "value": "14.0",
   "source": "same by the naive rule"
  },
+ "flWithinIntFour": {
+  "value": "1.60",
+  "source": "same by the interval rule (the definition)"
+ },
+ "flOverIntFour": {
+  "value": "33.3",
+  "source": "same for the tests above the level by the interval rule"
+ },
  "flOverBoundFour": {
   "value": "16.4",
   "source": "same for the tests above the level"
@@ -1158,6 +1318,14 @@
  "flWithinNaiveTwentyK": {
   "value": "10.0",
   "source": "same by the naive rule"
+ },
+ "flWithinIntTwentyK": {
+  "value": "0.00",
+  "source": "same by the interval rule (the definition)"
+ },
+ "flOverIntTwentyK": {
+  "value": "62.2",
+  "source": "same for the tests above the level by the interval rule"
  },
  "flOverBoundTwentyK": {
   "value": "38.9",
@@ -1176,12 +1344,28 @@
   "source": "distinct tests among them"
  },
  "nExtHold": {
-  "value": "19",
-  "source": "tests all of whose studies hold their size"
+  "value": "16",
+  "source": "tests all of whose studies hold their size by the definition (4,000 repetitions)"
+ },
+ "nExtNotHold": {
+  "value": "5",
+  "source": "the others"
  },
  "nStudiesHold": {
+  "value": "20",
+  "source": "studies that hold their size by the definition"
+ },
+ "nStudiesNotHold": {
+  "value": "5",
+  "source": "the others"
+ },
+ "nExtHoldRule": {
+  "value": "19",
+  "source": "tests all of whose studies hold their size by Algorithm 1"
+ },
+ "nStudiesHoldRule": {
   "value": "23",
-  "source": "studies that hold their size"
+  "source": "studies that hold their size by Algorithm 1"
  },
  "extPowMin": {
   "value": "14",
@@ -1202,6 +1386,18 @@
  "extBelowHalf": {
   "value": "4",
   "source": "studies with power below 0.5"
+ },
+ "lgdTimeOne": {
+  "value": "1.47",
+  "source": "LGD calibration over time, size at 1%"
+ },
+ "mcConvFive": {
+  "value": "5.88",
+  "source": "Monte Carlo quantile convergence, size at 5%"
+ },
+ "duUncondFive": {
+  "value": "5.78",
+  "source": "Du-Escanciano unconditional, size at 5%"
  },
  "chrIndFive": {
   "value": "5.7",

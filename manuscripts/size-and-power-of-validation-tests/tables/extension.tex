@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption{The 25 named studies of the 21 tests outside the credit families: the measured size at 5\% and 1\% (4,000 repetitions) on the null of each study, whether both sizes lie within the one-sided bound, and the power at 5\% against the one alternative the study states (2,000 repetitions), in percent.}
+\caption{The 25 named studies of the 21 tests outside the credit families: the measured size at 5\% and 1\% (4,000 repetitions) on the null of each study, whether the study holds its size by the definition (no Wilson interval wholly above the level), and the power at 5\% against the one alternative the study states (2,000 repetitions), in percent.}
 \label{tab:extension}
 \fitwidth{\begin{tabular}{p{7.4cm}rrcr}
 \toprule
@@ -10,12 +10,12 @@ Study & Size at 5\% & Size at 1\% & Holds & Power at 5\% $\pm$ SE \\
 PFE exceedance back-test, PFE at 95\%, 1,000 dates & 5.25 & 1.23 & yes & 72.5 $\pm$ 1.0 \\
 IFRS 9 stage-migration back-test, three stages, 4,000, 1,500 and 500 accounts & 4.75 & 1.10 & yes & 74.9 $\pm$ 1.0 \\
 LGD calibration by segment, one segment, 250 workouts & 4.67 & 0.78 & yes & 82.4 $\pm$ 0.9 \\
-LGD calibration over time, five default years, 60 workouts each & 5.12 & 1.47 & yes & 57.6 $\pm$ 1.1 \\
+LGD calibration over time, five default years, 60 workouts each & 5.12 & 1.47 & \textbf{no} & 57.6 $\pm$ 1.1 \\
 Downturn LGD coverage, 150 downturn workouts, estimate 0.45 & 5.42 & 1.25 & yes & 67.1 $\pm$ 1.1 \\
 McNeil--Frey residual test, 2,500 days at 5\%, 125 exceedances expected & 3.57 & 0.43 & yes & 93.2 $\pm$ 0.6 \\
 Tail back-test (LHP quantile), 60 years at the 95\% level & 3.57 & 1.15 & yes & 30.1 $\pm$ 1.0 \\
 Tail back-test (LHP quantile), 250 years at the 99\% level & 4.20 & 0.35 & yes & 96.0 $\pm$ 0.4 \\
-Monte Carlo quantile convergence, 20,000 scenarios, the 99\% quantile of the LHP loss rate & 5.88 & 1.32 & yes & 74.6 $\pm$ 1.0 \\
+Monte Carlo quantile convergence, 20,000 scenarios, the 99\% quantile of the LHP loss rate & 5.88 & 1.32 & \textbf{no} & 74.6 $\pm$ 1.0 \\
 CreditRisk+ recursion against Monte Carlo, 2,000 scenarios, 400 obligors in five exposure bands & 3.02 & 0.73 & yes & 55.8 $\pm$ 1.1 \\
 Two-proportion z (fairness), 2,000 applicants, two groups & 5.47 & 0.92 & yes & 99.0 $\pm$ 0.2 \\
 Fisher exact (fairness), 2,000 applicants, two groups & 4.52 & 1.05 & yes & 98.6 $\pm$ 0.3 \\
@@ -24,7 +24,7 @@ Christoffersen independence, 1,500 days at 5\% & 5.67 & 1.52 & \textbf{no} & 87.
 Christoffersen conditional coverage, 1,500 days at 5\% & 6.90 & 1.43 & \textbf{no} & 81.2 $\pm$ 0.9 \\
 Duration test, 400 days at 5\% & 3.92 & 0.00 & yes & 59.7 $\pm$ 1.1 \\
 Acerbi--Sz\'ekely ES test, 250 days at 2.5\% & 4.92 & 1.20 & yes & 89.4 $\pm$ 0.7 \\
-Du--Escanciano, unconditional, 2,000 days at 10\% & 5.78 & 1.38 & yes & 56.5 $\pm$ 1.1 \\
+Du--Escanciano, unconditional, 2,000 days at 10\% & 5.78 & 1.38 & \textbf{no} & 56.5 $\pm$ 1.1 \\
 Du--Escanciano, conditional, 2,000 days at 10\% & 4.85 & 1.10 & yes & 73.2 $\pm$ 1.0 \\
 Dynamic quantile test, 1,500 days at 5\% & 4.00 & 0.00 & yes & 71.0 $\pm$ 1.0 \\
 Dynamic quantile test, 250 days at 1\% & 4.42 & 0.00 & yes & 14.0 $\pm$ 0.8 \\

@@ -5,18 +5,27 @@
 \label{sec:rs-size}
 
 \Cref{tab:main-results} gives the size of each test at the boundary of its null, and \cref{fig:size-forest} draws it against the level and the bound.
-Of the \nTests{} tests, \nHold{} hold their size at 5\,\% and 1\,\% by the rule of \cref{alg:judgement}.
-The Jeffreys test of the default probability is the first of the two that do not.
-Its simulated rate at 1\,\% is \jeffSimOne\,\%, inside the bound of \boundOne\,\%, but its exact size at 1\,\% for 1,000 obligors at a probability of default of 1\,\% is \jeffExactOne\,\%: the posterior probability of the Jeffreys prior is a Bayesian quantity, and as a frequentist test of a discrete count its size moves with the number of obligors.
-The simulation could not have shown the excess, since a cell of \nNullReps{} repetitions flags a true size of \jeffExactOne\,\% at 1\,\% with probability only \jeffDetect\,\%, and the exact value, placed beside the rate, is what decides.
-The second is the normal test over five years, which rejects \normFive\,\% of the correct models at 5\,\% (Wilson interval \normLoFive\,\% to \normHiFive\,\%) and \normOne\,\% at 1\,\%, against bounds of \boundFive\,\% and \boundOne\,\%.
+Three counts answer how many of the \nTests{} tests hold their size, and they differ because the evidence differs, not because the tests do.
+On the committed cells of \nNullReps{} repetitions, the screen of \cref{alg:judgement} passes \nHoldCellRule{} tests and the definition of \cref{def:holds} shows \nHoldCellDef{} holding.
+On the pool of the replication of \cref{sec:rs-seeds}, \nRepsPooled{} repetitions per test, the screen passes \nHoldPoolRule{} and the definition shows \nHold{} holding.
+The paper reports the last: on the best evidence it has, \nHold{} of the \nTests{} tests hold their size and \nNotHold{} do not.
+The counts fall as the evidence grows for two reasons.
+The first is the number of repetitions: the definition sees an excess of \detIntFiveFour{} points at 5\,\% in a cell of \nNullReps{} repetitions and of \detIntFiveTwoHundredK{} points in the pool, so the pool shows excesses that a cell cannot.
+The second is the tolerance of the screen, which at any number of repetitions accepts a larger excess than the definition does: at \nRepsPooled{} repetitions and the 5\,\% level it passes a rate of up to \boundFivePool\,\%, while the definition shows an excess from a rate of \intRateFiveTwoHundredK\,\%.
+That is why \nPoolDefOnly{} tests, DeLong's test (\pooledDel\,\% at 5\,\%) and the characteristic stability index (\pooledCsiOne\,\% at 1\,\%), are shown above their level by the definition and pass the screen.
+The tolerance has a reason, the false flag probability of \cref{prop:false-flag}, and a price: the definition expects at most \expFalseAbove{} of the 21 tests to be shown above their level by chance if every test had exactly its level, so DeLong's test and the characteristic stability index, whose lower interval limits clear the level by the least (\pooledDelLo\,\% against 5\,\% and \pooledCsiLoOne\,\% against 1\,\%), are the least certain of the nine, and the seven that the screen also flags are not explained by chance.
+The nine tests that do not hold their size on the pool are the Jeffreys test, the normal test over five years, the chi-square test over grades, Hosmer--Lemeshow, Spiegelhalter, the population stability index, the Markov-order test, DeLong's test and the characteristic stability index (\cref{tab:seed-replication}).
+Two of them exceed their level by more than a fraction of a point.
+The Jeffreys test of the default probability has a simulated rate at 1\,\% of \jeffSimOne\,\% in the committed cell, inside the bound of \boundOne\,\%, but its exact size at 1\,\% for 1,000 obligors at a probability of default of 1\,\% is \jeffExactOne\,\%: the posterior probability of the Jeffreys prior is a Bayesian quantity, and as a frequentist test of a discrete count its size moves with the number of obligors.
+A cell of \nNullReps{} repetitions shows a true size of \jeffExactOne\,\% at 1\,\% with probability only \jeffDetect\,\% by the screen and \jeffDetectInt\,\% by the definition, and the exact value, placed beside the rate, is what decides.
+The normal test over five years rejects \normFive\,\% of the correct models at 5\,\% in the committed cell (Wilson interval \normLoFive\,\% to \normHiFive\,\%) and \normOne\,\% at 1\,\%, against bounds of \boundFive\,\% and \boundOne\,\%, and \pooledNorm\,\% at 5\,\% in the pool (interval \pooledNormLo\,\% to \pooledNormHi\,\%).
 
 \input{tables/main-results}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{size_forest}
-\caption{Measured size of the 21 credit-family tests at the 5\% level (left) and the 1\% level (right) in 4,000 repetitions: the rate with its Wilson 95\% interval, the level (solid line), the one-sided bound (dashed line), the exact rejection probability where it exists (cross), and open markers for the tests that do not hold their size.}
+\caption{Measured size of the 21 credit-family tests at the 5\% level (left) and the 1\% level (right): the rate of the committed cell of 4,000 repetitions (circle) and the pooled rate of 200,000 repetitions (grey square), each with its Wilson 95\% interval, the level (solid line), the bound of the screen at 4,000 repetitions (dashed line), the exact rejection probability where it exists (cross), and open markers for the tests that do not hold their size on that evidence by \cref{def:holds}.}
 \label{fig:size-forest}
 \end{figure}
 
@@ -24,7 +33,9 @@ The other tests spread around their level and below it.
 At 5\,\%, \nConsFive{} tests are conservative, with the whole Wilson interval below the level: the Jeffreys test at 5\,\% (exact \jeffExactFive\,\%), the default-profile test (\profileFive\,\%), the traffic-lights test (exact \tlLowerExact\,\%), the AUC test against the development AUC (\aucNullFive\,\%), the matrix test against a reference (\matFive\,\%), the migration z-tests (\migFive\,\%) and the concentration test (\hhiFive\,\%).
 Two of these are conservative for a reason that is a property of the test and not of the sample: the migration z-tests control 42 cells at once with Holm's procedure, and the concentration statistic is bounded (\cref{prop:hhi}).
 The binomial test is conservative because its count is discrete: its exact size at 5\,\% is \binExactFive\,\% and the simulated rate \binSimFive\,\% agrees with it.
-The Markov-order test sits next to its bound, with \ordFive\,\% against \boundFive\,\%, a margin of \markovBoundMargin\ points; it is one of the tests whose judgement changes between the committed cell and the pool of the replication of \cref{sec:rs-seeds}, and a run of 20,000 repetitions gives \ordTwentyK\,\% with interval \ordTwentyKLo\,\% to \ordTwentyKHi\,\%.
+The Markov-order test shows how the two rules part on one cell.
+Its rate is \ordFive\,\% at 5\,\% against the bound of \boundFive\,\%, a margin of \markovBoundMargin\ points, so the screen passes it; but its Wilson interval, \ordLoFive\,\% to \ordHiFive\,\%, lies wholly above 5\,\%, and at 1\,\% its rate of \ordOne\,\% has an interval of \ordLoOne\,\% to \ordHiOne\,\%, wholly above 1\,\%, so by the definition it does not hold its size.
+A run of 20,000 repetitions gives \ordTwentyK\,\% at 5\,\% with interval \ordTwentyKLo\,\% to \ordTwentyKHi\,\%, and the pool of the replication of \cref{sec:rs-seeds} \pooledOrd\,\%.
 \Cref{fig:p-histograms} shows the p-values behind the rates: the binomial test has gaps where no count falls, the normal test piles its mass at small p-values, and the concentration test has all its mass at one, which is what a test that cannot reject looks like.
 
 \begin{figure}[htbp]
@@ -132,7 +143,7 @@ No power curve falls by more than 3.29 combined standard errors between neighbou
 
 The reruns of the published studies are in \cref{tab:reproductions} and \cref{fig:reproductions}.
 The rerun agrees with \wpAgree{} of the \wpTotal{} cells of the normal and traffic-lights tests of the Basel Committee at \wpRuns{} runs; the one cell that does not, the traffic-lights test in the scenario labelled DV\_LV at the 0.1\,\% level, is printed as \wpOffPub\,\% and measured as \wpOffMeas\,\%.
-It agrees with \ynAgree{} of the \ynTotal{} cells of the stability study at \ynRuns{} runs; the harness sits slightly above the printed rates, with a mean $z$ of $+\ynMeanZ$ over the \ynInterior{} cells whose printed rate is strictly between 0 and 1, and every qualitative finding of the paper reproduces.
+It agrees with \ynAgree{} of the \ynTotal{} cells of the stability study at \ynRuns{} runs; the harness sits slightly above the printed rates, with a mean $z$ of $+\ynMeanZ$ over the \ynInterior{} cells whose printed rate is strictly between 0 and 1.
 The nested-model rate of the DeLong test is \demlerMeasured\,\% in \demlerRuns{} runs against the printed \demlerPublished\,\%.
 Every one of the \nReproTotal{} committed null cells reproduces exactly: the counts of rejections, at both levels, and the number of undefined results equal the committed ones when the cell is rerun from its configuration and its seed.
 The estimators that the harness also measures agree: the AUC of 4,000 binormal samples has a normal interval that covers \aucCover\,\% of the time (Monte Carlo standard error \aucCoverMcse\,\%), and the standard error of the ECB formula differs from the empirical one by $\aucSeRel\,\%$.
@@ -151,9 +162,10 @@ The estimators that the harness also measures agree: the AUC of 4,000 binormal s
 
 \Cref{tab:seed-replication} and \cref{fig:seed-spread} report the \nBlocks{} independent blocks of each test.
 The Monte Carlo standard error is calibrated: the standard deviation of the block rates over the binomial standard error, $\kappa$ of \eqref{eq:kappa}, has a mean of \sdRatioMean{} over tests and levels, with a range from \sdRatioMin{} to \sdRatioMax{}, as fifty blocks allow.
-The pooled sizes sort the tests into three groups: \nWithin{} lie within the level, \nOver{} lie above it with the lower Wilson limit of the pooled rate above the level at one level, and \nNeither{} are in neither.
-Among the \nOver{} are the two tests that the committed cells flag, and \nSmallOver{} others whose excess is small: the stability index at \pooledPsi\,\% at 5\,\%, Hosmer--Lemeshow at \pooledHl\,\% (and \pooledHlOne\,\% at 1\,\%), the Spiegelhalter test, the Markov-order test and the chi-square test over grades (respectively \pooledSpi\,\%, \pooledOrd\,\% and \pooledChi\,\%), DeLong at \pooledDel\,\% and the characteristic stability index at \pooledCsi\,\%; the excesses range from \smallExcMin{} to \smallExcMax{} points, below what a cell of \nNullReps{} repetitions can resolve.
-The judgement of the committed cell equals that of the pool for \nVerdictAgree{} of the \nTests{} tests and differs for \nVerdictDisagree{}.
+The pooled sizes sort the tests into three groups: \nWithin{} lie within the level (the pooled rate does not exceed it at either level), \nOver{} lie above it (the lower Wilson limit of the pooled rate exceeds the level at one level), and \nNeither{} are in neither, with a pooled rate slightly above the level at one level and an interval that includes it (the chi-square test of homogeneity and the downward-momentum test).
+The tests of the third group hold their size by \cref{def:holds}, so that the tests of the first and third groups, \nHold{} in all, hold their size on the pool and the \nOver{} of the second do not.
+Among the \nOver{} are the two tests that the committed cells flag by the screen, and \nSmallOver{} others whose excess, at the level that places them above, is small: the stability index at \pooledPsi\,\% at 5\,\%, Hosmer--Lemeshow at \pooledHl\,\% (and \pooledHlOne\,\% at 1\,\%), the Spiegelhalter test, the Markov-order test and the chi-square test over grades (respectively \pooledSpi\,\%, \pooledOrd\,\% and \pooledChi\,\% at 5\,\%), DeLong at \pooledDel\,\% at 5\,\% and the characteristic stability index at \pooledCsiOne\,\% at 1\,\% (its 5\,\% rate, \pooledCsi\,\%, has an interval that includes the level); the excesses range from \smallExcMin{} to \smallExcMax{} points, below what a cell of \nNullReps{} repetitions can resolve (\detIntFiveFour{} points at 5\,\%).
+The judgement of the committed cell equals that of the pool, both by \cref{def:holds}, for \nVerdictAgree{} of the \nTests{} tests and differs for \nVerdictDisagree{}, the tests that the pool shows above their level and the cell does not; by the screen the figures are \nVerdictAgreeRule{} and \nVerdictDisagreeRule{}.
 The normal test pools to \pooledNorm\,\% and the Jeffreys test to \pooledJeffOne\,\% at 1\,\%, the exact value.
 
 \input{tables/seed-replication}
@@ -170,8 +182,10 @@ The normal test pools to \pooledNorm\,\% and the Jeffreys test to \pooledJeffOne
 
 The engine registers \nExtTests{} further p-value tests of counterparty credit risk, provisioning, loss given default, market risk, portfolio credit risk, fairness and machine learning, which it measures through \nStudies{} named studies, each with a generator of the null and one stated alternative.
 \Cref{tab:extension} and \cref{fig:extension} give the size of each at 4,000 repetitions and its power against its one alternative at 2,000.
-Of the \nExtTests{} tests, \nExtHold{} hold their size at both levels, and \nStudiesHold{} of the \nStudies{} studies.
-The two that do not are the independence test and the conditional-coverage test of Christoffersen, at the series length of 1,500 days at 5\,\%: the independence test rejects \chrIndFive\,\% at 5\,\% and \chrIndOne\,\% at 1\,\%, and the conditional-coverage test \chrCcFive\,\% at 5\,\%.
+By \cref{def:holds} on cells of \nNullReps{} repetitions, \nExtHold{} of the \nExtTests{} tests hold their size at both levels, and \nStudiesHold{} of the \nStudies{} studies; the screen passes \nExtHoldRule{} tests and \nStudiesHoldRule{} studies.
+The \nStudiesNotHold{} studies that do not hold are the independence test and the conditional-coverage test of Christoffersen, at the series length of 1,500 days at 5\,\% (the independence test rejects \chrIndFive\,\% at 5\,\% and \chrIndOne\,\% at 1\,\%, and the conditional-coverage test \chrCcFive\,\% at 5\,\%), the calibration of the loss given default over time (\lgdTimeOne\,\% at 1\,\%), the convergence of the Monte Carlo quantile, whose excess the engine documents (\mcConvFive\,\% at 5\,\%), and the unconditional test of Du and Escanciano (\duUncondFive\,\% at 5\,\%).
+These are single cells without a replication, so each judgement carries the resolution of \detIntFiveFour{} points, and at most about \expFalseAboveExt{} of the 25 studies would be shown above their level by chance if every study had exactly its level.
+Among these tests are the residual test of \citet{mcneil2000}, the duration test of \citet{christoffersen2004}, the expected-shortfall tests of \citet{acerbi2014} and \citet{du2017}, the dynamic quantile test of \citet{engle2004}, and the recursion for CreditRisk+ \citep{haaf2004} that the study compares with a Monte Carlo run.
 At 5\,\%, \nExtCons{} studies are conservative, with the whole interval below the level.
 Against its stated alternative the power at 5\,\% runs from \extPowMin\,\% to \extPowMax\,\% with a median of \extPowMed\,\%; \extAboveBar{} studies reach 80\,\% and \extBelowHalf{} detect their alternative less than half of the time.
 These alternatives are the engine's choices, one departure for each test, and the powers are not comparable across tests.
@@ -190,9 +204,9 @@ These alternatives are the engine's choices, one departure for each test, and th
 
 \Cref{tab:outcomes} reports the eight predictions of \cref{tab:predictions} against their criteria.
 Five held and three are refuted.
-P2 is refuted: \nNotHold{} of the \nTests{} tests are oversized.
+P2 is refuted: \nNotHoldCellDef{} of the \nTests{} tests do not hold their size on the committed cells and \nNotHold{} do not on the pool.
 P7 is refuted: the judgement of one cell of \nNullReps{} repetitions differs from that of the pool for \nVerdictDisagree{} tests.
-P8 is refuted: \nNoReach{} of the \nPowerTests{} power curves do not reach 80\,\% on their ladder. The three refutations have three different causes. P2 fails because of two tests with two different mechanisms, a Bayesian posterior used as a frequentist test of a discrete count and an aggregate over five years whose oversizing the simulation of the Basel Committee also shows. P7 fails because the resolution of a cell is coarser than the excesses that seven tests have. P8 fails because four tests do not respond to the defect planted for them within the ladder, which is a statement about the pair of test and ladder.
+P8 is refuted: \nNoReach{} of the \nPowerTests{} power curves do not reach 80\,\% on their ladder. The three refutations have three different causes. P2 fails because of \nNotHold{} tests on the pool: two with the largest excess and two different mechanisms, a Bayesian posterior used as a frequentist test of a discrete count and an aggregate over five years whose oversizing the simulation of the Basel Committee also shows, and \nSmallOver{} more with small excesses, of which the Markov-order test is already shown by the committed cell. P7 fails because the resolution of a cell is coarser than the excesses that \nVerdictDisagree{} tests have, of \smallExcMin{} to \smallExcMax{} points. P8 fails because four tests do not respond to the defect planted for them within the ladder, which is a statement about the pair of test and ladder.
 
 \begin{table}[htbp]
 \centering
@@ -204,12 +218,12 @@ P8 is refuted: \nNoReach{} of the \nPowerTests{} power curves do not reach 80\,\
 ID & Criterion & Measured & Outcome \\
 \midrule
 P1 & 21 sizes, 17 curves, every rate with its error & \nSims{} simulations, \nRates{} rates, all with standard error and Wilson interval; 4 transition tests with a size only & held \\
-P2 & 21 of 21 tests hold their size & \nHold{} of 21 hold; Jeffreys at 1\,\% (exact \jeffExactOne\,\%) and the normal test over five years (\normFive\,\%) do not & refuted \\
+P2 & 21 of 21 tests hold their size, by \cref{def:holds} & \nHoldCellDef{} of 21 hold on the cells of 4,000 repetitions (\nHoldCellRule{} pass the screen) and \nHold{} on the pool of 200,000; Jeffreys at 1\,\% (exact \jeffExactOne\,\%) and the normal test over five years (\normFive\,\%) do not hold on either & refuted \\
 P3 & all exact comparisons agree & \nAgree{} of \nExactCmp{}, largest $|z|$ \zMaxAbs & held \\
 P4 & at least 143 of 144, 48 of 54, and the nested-model rate & \wpAgree{} of \wpTotal{}, \ynAgree{} of \ynTotal{}, \demlerMeasured\,\% against \demlerPublished\,\% & held \\
 P5 & no fall of more than 3.29 combined standard errors & \nMonoViol{} of \nMonoPairs{} pairs & held \\
 P6 & every committed count reproduces & \nReproduced{} of \nReproTotal{} cells exact & held \\
-P7 & one cell and the pool judge every test alike & \nVerdictAgree{} of 21 agree & refuted \\
+P7 & one cell and the pool judge every test alike, by \cref{def:holds} & \nVerdictAgree{} of 21 agree (\nVerdictAgreeRule{} by the screen) & refuted \\
 P8 & every power curve reaches 80\,\% & \nReach{} of \nPowerTests{} reach it & refuted \\
 \bottomrule
 \end{tabular}}

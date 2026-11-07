@@ -19,7 +19,7 @@ A migration generator draws transition counts from a matrix whose cells fall geo
 A grade-frequency generator draws the counts of ten grades, and a rating-path generator draws the paths of a continuous-time Markov chain of five grades and default with 1,000 obligors per grade and five annual snapshots.
 Every generator records its configuration and its truth in the artifact, so that a reader can redraw any simulation from the document alone; the measurement uses \nGens{} configurations in all.
 
-The null of a test is the generator at the boundary of its null hypothesis with its assumptions met: for example, the PD applied equals the true PD of 1\,\% for 1,000 obligors with independent defaults for the count tests, five annual cohorts of 1,000 obligors at 3\,\% for the multi-year tests, two samples of 1,000 from one population for the stability tests, and the one cell at the boundary of the monotonicity null for the migration z-tests.
+The null of a test is the generator at the boundary of its null hypothesis with its assumptions met: for example, the PD applied equals the true PD of 1\,\% for 1,000 obligors with independent defaults for the binomial and Jeffreys tests (the Vasicek-corrected test has a true and an assumed asset correlation of 12\,\%), five annual cohorts of 1,000 obligors at 3\,\% for the multi-year tests, two samples of 1,000 from one population for the stability tests, and the one cell at the boundary of the monotonicity null for the migration z-tests.
 A defect is one parameter of a generator moved away from the null along a ladder of six severities: \cref{tab:design} lists the seven defects and their units.
 
 \input{tables/design}
@@ -79,33 +79,41 @@ The exact value is placed beside the rate in \nExactRows{} rows of the measureme
 \label{sec:pm-judgement}
 
 Under the null at its boundary, an exact test with a continuous statistic has rejection probability $\lev$, and a conservative or discrete test has at most $\lev$, so a measured size is judged one-sided.
-With $z_{0.999}=\zBound$, a test holds its size at $\nrep$ repetitions when
+Two rules judge it, and they differ in their tolerance.
+The \emph{definition} (\cref{def:holds}) is the judgement of the paper: with an exact probability $p$ the evidence shows an excess when $p>\lev$, and with a simulated rate when the lower Wilson limit $\ell$ of \eqref{eq:se-wilson} exceeds $\lev$, which happens when the rate exceeds the level by about $z_{0.975}$ standard errors.
+The \emph{screen} is the rule that the pipeline of the measurement applies to every cell of every family.
+With $z_{0.999}=\zBound$, a rate passes the screen at $\nrep$ repetitions when
 \begin{equation}
 \hat\rej\;\le\; b_\nrep(\lev)=\lev+z_{0.999}\sqrt{\frac{\lev(1-\lev)}{\nrep}},
 \label{eq:bound}
 \end{equation}
-which is \boundFive\,\% at $\lev=5\,\%$ and \boundOne\,\% at $1\,\%$ for $\nrep=\nNullReps{}$.
-Where an exact probability exists it replaces the bound, since it carries no Monte Carlo error: the test holds its size when its exact rejection probability does not exceed the level.
+which is \boundFive\,\% at $\lev=5\,\%$ and \boundOne\,\% at $1\,\%$ for $\nrep=\nNullReps{}$, and \boundFivePool\,\% and \boundOnePool\,\% for $\nrep=\nRepsPooled{}$.
+Where an exact probability exists it replaces both rules, since it carries no Monte Carlo error.
+The screen asks for an excess shown at the 99.9\,\% one-sided level, the definition at 97.5\,\%, so the screen tolerates a larger excess at any number of repetitions: at $\nrep=\nNullReps{}$ and $\lev=5\,\%$ the definition is met from a rate of \intRateFiveFour\,\%, the screen from \boundFive\,\%, and at $\nrep=\nRepsPooled{}$ from \intRateFiveTwoHundredK\,\% and \boundFivePool\,\%.
+The tolerance is a choice, and the reason for it is the false flag probability of \cref{prop:false-flag}: judged on a battery of 21 tests at two levels, the screen flags a correct battery with a probability of at most \flagUnion\,\% in cells of \nNullReps{} repetitions, whereas the definition expects at most \expFalseAbove{} of the 21 tests to be shown above their level by chance alone at \nRepsPooled{} repetitions if every test had exactly its level (\cref{sec:th-error}).
+The definition is the claim that the paper makes about a test; the screen is the record of the committed cells, and both are reported.
 Against an exact value $p$, the simulated rate is judged two-sided,
 \begin{equation}
 |\hat\rej-p|\;\le\;3.29\sqrt{\frac{p(1-p)}{\nrep}},
 \label{eq:agree}
 \end{equation}
 which a correct generator, harness and test pass with probability 0.999 per comparison.
-The two rules answer different questions, and \cref{alg:judgement} states how they combine: the bound asks whether the simulation can exclude an excess over the level, the agreement check asks whether the instrument reproduces a value that is known.
+The rules answer different questions, and \cref{alg:judgement} states how they combine: the definition and the screen ask whether the evidence shows an excess over the level, the agreement check asks whether the instrument reproduces a value that is known.
 
 \begin{algorithm}[htbp]
-\caption{Judging the size of one test at one level $\lev$ from its null cell.}
+\caption{Judging the size of one test at one level $\lev$ from its null cell: the definition of holding a size and the screen.}
 \label{alg:judgement}
 \begin{algorithmic}[1]
-\Require rate $\hat\rej$ in $\nrep$ repetitions, level $\lev$, exact probability $p$ or none
+\Require rate $\hat\rej$ in $\nrep$ repetitions with Wilson interval $[\ell,u]$, level $\lev$, exact probability $p$ or none
 \If{an exact probability $p$ exists}
   \State check the agreement \eqref{eq:agree}; if it fails, stop and report the generator as inconsistent with the exact value
-  \State \Return \textsc{holds} if $p\le\lev$, otherwise \textsc{oversized}
+  \State $\text{shown}\gets(p>\lev)$; $\ \text{flagged}\gets(p>\lev)$
 \Else
-  \State \Return \textsc{holds} if $\hat\rej\le b_\nrep(\lev)$ by \eqref{eq:bound}, otherwise \textsc{oversized}
+  \State $\text{shown}\gets(\ell>\lev)$ \Comment{the definition}
+  \State $\text{flagged}\gets(\hat\rej>b_\nrep(\lev))$ by \eqref{eq:bound} \Comment{the screen}
 \EndIf
-\State a test holds its size when it is \textsc{holds} at both levels
+\State \Return (shown, flagged)
+\State the test holds its size (\cref{def:holds}) when shown is false at both levels, and passes the screen when flagged is false at both levels
 \end{algorithmic}
 \end{algorithm}
 

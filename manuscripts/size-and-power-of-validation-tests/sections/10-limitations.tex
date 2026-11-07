@@ -5,11 +5,13 @@
 \label{sec:li-internal}
 
 The rates are estimates, and each carries its Monte Carlo error; the conclusions that follow from them are limited by it.
-A cell of \nNullReps{} repetitions resolves an excess over the level of about \detFiveFour{} points at 5\,\% and \detOneFour{} points at 1\,\%, so the statement that a test holds its size is a statement about excesses larger than that, and the replication shows that \nVerdictDisagree{} of the \nTests{} tests are judged differently by the pool of \nRepsPooled{} repetitions.
+A cell of \nNullReps{} repetitions resolves an excess over the level of about \detIntFiveFour{} points at 5\,\% and \detIntOneFour{} points at 1\,\% (\detFiveFour{} and \detOneFour{} for the screen), so the statement that a test holds its size on a cell is a statement about excesses larger than that, and the replication shows that \nVerdictDisagree{} of the \nTests{} tests are judged differently by the pool of \nRepsPooled{} repetitions.
+The pool resolves \detIntFiveTwoHundredK{} points at 5\,\%, so the count of \nHold{} is also a count on an evidence of that resolution, and a test within it may be shown above its level by more repetitions.
 A power point of \nPowerReps{} repetitions has a standard error of up to 1.1 points, and the interval of $\hat\sev_{0.8}$ ignores the dependence between neighbouring points.
 The agreement check of \eqref{eq:agree} is run on the three count tests and the traffic-lights test only, and it does not see an error of 2\,\% in a probability of default, which it flags with probability \agFailTwoPercent\,\%; a generator error smaller than that would pass.
 The exact probabilities exist for four tests of the 21, so for the other 17 the generator is checked by the reruns of published studies, which cover three studies and a fraction of the tests, and by the exact values of the tests that share a generator with them.
-The judgement of a battery of 21 tests at two levels is not corrected for multiplicity: if the tests were independent and correct, about \flagFamily\,\% of batteries would flag at least one, and at most \flagUnion\,\% in any case.
+The judgement of a battery of 21 tests at two levels is not corrected for multiplicity: if the tests were independent and correct, about \flagFamily\,\% of batteries would flag at least one by the screen, and at most \flagUnion\,\% in any case, and the definition would show at most about \expFalseAbove{} of the 21 above their level at \nRepsPooled{} repetitions if every test had exactly its level, so that the two tests it adds to those of the screen are the least certain of the nine.
+The size of eighteen tests is measured at one null configuration and is a lower bound on the size of the test (\cref{sec:pf-estimands}).
 The 5\,\% and 1\,\% levels are measured on the same samples, so their rates are not independent.
 
 \subsection{External validity}
