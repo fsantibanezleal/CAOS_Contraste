@@ -639,7 +639,7 @@ are the methods Contraste proposes (the plan `plans/contraste/method-tiers-sdd-p
 | BS-13 | beyond | Proposed method: a scale-and-level complement to the FRTB PLA test (C13) | at a size of at most 1 %, the stale-volatility model flagged in at least 30 % of replications; refuted below 10 % | `tests/c13/`; engine `market` tests |
 | BS-14 | beyond | Proposed method: an anchored tipping-point PD under informative rating withdrawals (C04) | the anchored interval covers the true PD in at least 90 % of 200 repetitions at k = 9, the existing treatments under 50 %; refuted if not better or if the anchored k is unstable | `tests/test_c04.py`; engine `transitions` tests |
 | BS-15 | beyond | Proposed method: e-process sequential monitors for calibration and back-tests (C22, C11, C03) | size held at 5 % under optional stopping where the repeated Kupiec rule exceeds it, median delay below the 250-day window at severity 3 or more, power cost under 10 points; refuted if the delay is not lower | `tests/test_c22.py`, `tests/c11/`; engine `validation.sequential` tests |
-| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 17-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09 | `tests/c11/`; engine `market` tests |
+| BS-16 | beyond | Proposed method: adaptive conformal recalibration of VaR against the 18-model ladder (C11) | HS-250, GARCH-t and FHS wrapped pass in at least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09 | `tests/c11/`; engine `market` tests |
 
 ## Cases
 
@@ -966,8 +966,9 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   side with `n_cal` and `k`; the resilience row carries its 199 draws and the null summary), `data/derived/C21/pair-2018-19.json` (the
   situation-testing row with its cut point), `docs/design/features/c20/requirements.md` (CT-2009), `tests/c20/test_c20_documents.py`.
   Beyond: the dossier prescribes "a binomial test on coverage indicators" (dossier 06 C.7 l.1025-1026) and PiML's worst-subsample resilience
-  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511) give the coverage guarantee, not the size
-  of a validation test built on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
+  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511, section 3.3 and appendix C) give the coverage guarantee
+  and the Beta-Binomial law of the empirical coverage on a validation window, as a diagnostic, but neither a test built on
+  it nor its size on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
   worst-subsample rule, the size and power page of the engine) live in the coordination and engine repositories and are not reproduced by the
   notebook, whose simulations are smaller (1,500, 60 and 200 replications); the measurement shows the direction and the order of magnitude,
   not those figures.
@@ -1029,7 +1030,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   https://arxiv.org/abs/2210.01948). Hypothesis: the size holds at 5 % under optional stopping where the repeated Kupiec rule exceeds it, and
   the median detection delay is below the 250-day window at severity 3 or more, at a power cost under 10 points; refuted if the delay is not
   lower than the traffic light's. Evidence: written with the result.
-- **BS-16** Adaptive conformal recalibration of VaR against the 17-model ladder (C11).
+- **BS-16** Adaptive conformal recalibration of VaR against the 18-model ladder (C11).
   Method: adaptive conformal inference on each model's level (Gibbs and Candes, https://arxiv.org/abs/2106.00170), wrapped against unwrapped
   on Kupiec, conditional coverage, Acerbi-Szekely Z2 and FZ0 in the stress windows. Hypothesis: HS-250, GARCH-t and FHS wrapped pass in at
   least one more stress window without worsening FZ0 by more than 5 %; refuted if the wrapper fails independence in 2007-09. The French
