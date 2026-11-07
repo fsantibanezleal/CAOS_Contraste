@@ -23,3 +23,27 @@ samples, seed 5000 + r for both, r = 0 to 23 for the uncollateralised variants a
 * **R4.** For the 10-day CSA variant, the rule fails in every one of the 8 repetitions, and the mean over repetitions of the largest
   |z| exceeds 5 (the committed gap of 9.9 combined standard errors is not a property of one draw).
 * **R5.** For the 10-day CSA variant, the CVA z is below -5 in at least 7 of the 8 repetitions (the committed value is -15.9).
+
+## Amendments after the review of 7 November 2026
+
+Nothing above this line was changed. The review found two things about this file, and one comparison was added.
+
+* **R2 was written after a pilot.** The context paragraph above records that a pilot of `exp_criterion.py` had already shown a
+  spread near 0.6 for two runs of the engine before R1 to R5 were written. R2 therefore restates that result for a second pair
+  of engines (the engine and ORE) and tests whether it transfers; it is not a blind prediction.
+* **The order of the commit cannot show when the predictions were fixed.** The file and every `results_ore_*.json` entered the
+  repository in one commit. Only the modification times of the files order them, and they are consistent with the predictions
+  coming first.
+
+Predictions for `exp_maxt.py`, written on 7 November 2026 after the review and before that script was run for the first time. The
+script repeats the 400 paired runs of `exp_criterion.py` with the same seeds on five of its seven conditions and adds two rules:
+the largest of the 35 standardised differences against the 95 % point of the largest absolute value of a Gaussian vector with the
+covariance of the 35 differences under the null, estimated on the other half of the repetitions (the maximum-T bound).
+
+* **M1.** With the product's errors the maximum-T rule has a size between 3 % and 8 % on both variants, and with pair-aware errors
+  the same.
+* **M2.** The maximum-T rule with pair-aware errors rejects a 2 % volatility error on the netting set in at least as many
+  repetitions as the pair-aware rule at the bound 3.18 (76.5 %), because the 35 comparisons are strongly dependent and the bound
+  3.18 is conservative for them.
+* **M3.** The maximum-T rule with the product's errors rejects a 2 % volatility error in fewer repetitions than the one with
+  pair-aware errors, because the product's errors overstate the sampling error.
