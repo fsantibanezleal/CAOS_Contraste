@@ -171,6 +171,14 @@
   "value": "9",
   "source": "21 minus the above"
  },
+ "nHoldOneConfig": {
+  "value": "10",
+  "source": "tests that hold by the definition on the pool among the 18 whose null has nuisance parameters (every test but the three single-count tests), measured at one null configuration"
+ },
+ "nCompositeNull": {
+  "value": "18",
+  "source": "tests whose null has nuisance parameters: 21 minus the three single-count tests"
+ },
  "nHoldCellRule": {
   "value": "19",
   "source": "Algorithm 1 (holds()) of the 21 @null rows of the committed cells (4,000 repetitions)"
@@ -262,6 +270,10 @@
  "jeffExactFive": {
   "value": "4.79",
   "source": "null.json pd.jeffreys@null exact p<0.05"
+ },
+ "jeffExcOne": {
+  "value": "0.38",
+  "source": "exact size of the Jeffreys test at 1% minus the level, in points"
  },
  "jeffSimOne": {
   "value": "1.12",
@@ -1143,6 +1155,10 @@
   "value": "6",
   "source": "tests that the definition places above the level on the pool and that the committed cell does not show: pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter, disc.delong, stability.psi, stability.csi"
  },
+ "nMissedByCellRule": {
+  "value": "7",
+  "source": "tests that the definition places above the level on the pool and that the committed cell passes by the screen: pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter, disc.delong, stability.psi, stability.csi, rating.markov_order"
+ },
  "nPoolDefOnly": {
   "value": "2",
   "source": "tests that the definition places above the level on the pool and Algorithm 1 does not: disc.delong, stability.csi"
@@ -1194,6 +1210,10 @@
  "pooledNorm": {
   "value": "7.99",
   "source": "pooled normal at 5%"
+ },
+ "pooledNormExc": {
+  "value": "2.99",
+  "source": "pooled normal rate at 5% minus the level, in points"
  },
  "pooledNormLo": {
   "value": "7.87",
@@ -1430,6 +1450,10 @@
  "nExtCons": {
   "value": "8",
   "source": "studies of the extension whose Wilson interval at 5% lies wholly below 5%"
+ },
+ "expFalseAboveFour": {
+  "value": "1.1",
+  "source": "expected number of the 21 tests whose interval at 4,000 repetitions lies wholly above the level if every test had exactly its level"
  },
  "flagUnion": {
   "value": "6.6",

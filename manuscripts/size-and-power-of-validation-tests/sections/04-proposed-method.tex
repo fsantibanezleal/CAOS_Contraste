@@ -90,7 +90,7 @@ With $z_{0.999}=\zBound$, a rate passes the screen at $\nrep$ repetitions when
 which is \boundFive\,\% at $\lev=5\,\%$ and \boundOne\,\% at $1\,\%$ for $\nrep=\nNullReps{}$, and \boundFivePool\,\% and \boundOnePool\,\% for $\nrep=\nRepsPooled{}$.
 Where an exact probability exists it replaces both rules, since it carries no Monte Carlo error.
 The screen asks for an excess shown at the 99.9\,\% one-sided level, the definition at 97.5\,\%, so the screen tolerates a larger excess at any number of repetitions: at $\nrep=\nNullReps{}$ and $\lev=5\,\%$ the definition is met from a rate of \intRateFiveFour\,\%, the screen from \boundFive\,\%, and at $\nrep=\nRepsPooled{}$ from \intRateFiveTwoHundredK\,\% and \boundFivePool\,\%.
-The tolerance is a choice, and the reason for it is the false flag probability of \cref{prop:false-flag}: judged on a battery of 21 tests at two levels, the screen flags a correct battery with a probability of at most \flagUnion\,\% in cells of \nNullReps{} repetitions, whereas the definition expects at most \expFalseAbove{} of the 21 tests to be shown above their level by chance alone at \nRepsPooled{} repetitions if every test had exactly its level (\cref{sec:th-error}).
+The tolerance is a choice, and the reason for it is the false flag probability of \cref{prop:false-flag}: judged on a battery of 21 tests at two levels, the screen flags a correct battery with a probability of at most \flagUnion\,\% in cells of \nNullReps{} repetitions, whereas the definition expects at most \expFalseAboveFour{} of the 21 tests to be shown above their level by chance alone at the same \nNullReps{} repetitions, and \expFalseAbove{} at \nRepsPooled{} repetitions, if every test had exactly its level (\cref{sec:th-error}).
 The definition is the claim that the paper makes about a test; the screen is the record of the committed cells, and both are reported.
 Against an exact value $p$, the simulated rate is judged two-sided,
 \begin{equation}
@@ -112,8 +112,8 @@ The rules answer different questions, and \cref{alg:judgement} states how they c
   \State $\text{shown}\gets(\ell>\lev)$ \Comment{the definition}
   \State $\text{flagged}\gets(\hat\rej>b_\nrep(\lev))$ by \eqref{eq:bound} \Comment{the screen}
 \EndIf
-\State \Return (shown, flagged)
 \State the test holds its size (\cref{def:holds}) when shown is false at both levels, and passes the screen when flagged is false at both levels
+\State \Return (shown, flagged)
 \end{algorithmic}
 \end{algorithm}
 

@@ -99,6 +99,10 @@ def build() -> None:
     nh = sum(r["pool_definition"] for r in cv)
     reg("nHold", str(nh), nh, "the definition of holding a size applied to the pool of the 50 blocks (200,000 repetitions): exact value, else Wilson lower limit not above the level")
     reg("nNotHold", str(21 - nh), 21 - nh, "21 minus the above")
+    single = ("pd.binomial", "pd.jeffreys", "pd.binomial_vasicek")
+    nhc = sum(r["pool_definition"] for r in cv if r["test"] not in single)
+    reg("nHoldOneConfig", str(nhc), nhc, "tests that hold by the definition on the pool among the 18 whose null has nuisance parameters (every test but the three single-count tests), measured at one null configuration")
+    reg("nCompositeNull", str(len(cv) - len(single)), len(cv) - len(single), "tests whose null has nuisance parameters: 21 minus the three single-count tests")
     nhr = sum(r["cell_rule"] for r in cv)
     reg("nHoldCellRule", str(nhr), nhr, "Algorithm 1 (holds()) of the 21 @null rows of the committed cells (4,000 repetitions)")
     reg("nNotHoldCellRule", str(21 - nhr), 21 - nhr, "21 minus the above")
@@ -127,6 +131,7 @@ def build() -> None:
     j = size["pd.jeffreys"]
     reg("jeffExactOne", pc(j["exact"]["p<0.01"], 2), j["exact"]["p<0.01"], "null.json pd.jeffreys@null exact p<0.01")
     reg("jeffExactFive", pc(j["exact"]["p<0.05"], 2), j["exact"]["p<0.05"], "null.json pd.jeffreys@null exact p<0.05")
+    reg("jeffExcOne", pc(j["exact"]["p<0.01"] - 0.01, 2), 0, "exact size of the Jeffreys test at 1% minus the level, in points")
     reg("jeffSimOne", pc(j["p<0.01"]["rate"], 2), j["p<0.01"]["rate"], "null.json pd.jeffreys@null rate p<0.01")
     reg("jeffSimFive", pc(j["p<0.05"]["rate"], 2), j["p<0.05"]["rate"], "null.json pd.jeffreys@null rate p<0.05")
     b = size["pd.binomial"]
@@ -362,6 +367,8 @@ def build() -> None:
     reg("nVerdictDisagreeRule", str(21 - nagr), 0, "21 minus the above")
     missed = [r["test"] for r in cv if r["cell_definition"] and not r["pool_definition"]]
     reg("nMissedByCell", str(len(missed)), 0, "tests that the definition places above the level on the pool and that the committed cell does not show: " + ", ".join(missed))
+    missed_rule = [r["test"] for r in cv if not r["pool_definition"] and r["cell_rule"]]
+    reg("nMissedByCellRule", str(len(missed_rule)), 0, "tests that the definition places above the level on the pool and that the committed cell passes by the screen: " + ", ".join(missed_rule))
     only_def = [r["test"] for r in cv if r["pool_rule"] and not r["pool_definition"]]
     reg("nPoolDefOnly", str(len(only_def)), 0, "tests that the definition places above the level on the pool and Algorithm 1 does not: " + ", ".join(only_def))
     # the excess of a test is read at the level(s) at which its pooled Wilson interval lies above the level
@@ -377,6 +384,7 @@ def build() -> None:
     reg("pooledCsi", pc(rs["tests"]["stability.csi"]["p<0.05"]["pooled"], 2), 0, "pooled rate at 5%, stability.csi")
     reg("pooledHlOne", pc(rs["tests"]["pd.hosmer_lemeshow"]["p<0.01"]["pooled"], 2), 0, "pooled rate at 1% Hosmer-Lemeshow")
     reg("pooledNorm", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled"], 2), 0, "pooled normal at 5%")
+    reg("pooledNormExc", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled"] - 0.05, 2), 0, "pooled normal rate at 5% minus the level, in points")
     reg("pooledNormLo", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled_lo"], 2), 0, "Wilson low of the pooled normal rate at 5%")
     reg("pooledNormHi", pc(rs["tests"]["pd.normal_multiperiod"]["p<0.05"]["pooled_hi"], 2), 0, "Wilson high of the pooled normal rate at 5%")
     reg("pooledDelLo", pc(rs["tests"]["disc.delong"]["p<0.05"]["pooled_lo"], 3), 0, "Wilson low of the pooled DeLong rate at 5%")
@@ -441,6 +449,8 @@ def build() -> None:
     ext_cons = [r for r in A.doc("null")["outputs"]["simulations"] if r.get("study") and r["rates"]["p<0.05"]["wilson_high"] < 0.05]
     reg("nExtCons", str(len(ext_cons)), 0, "studies of the extension whose Wilson interval at 5% lies wholly below 5%")
     fg = ins["flag_probability"]["4000"]
+    reg("expFalseAboveFour", fx(21 * (A.interval_flag_probability(0.05, 0.05, 4000) + A.interval_flag_probability(0.01, 0.01, 4000)), 1), 0,
+        "expected number of the 21 tests whose interval at 4,000 repetitions lies wholly above the level if every test had exactly its level")
     reg("flagUnion", pc(21 * (fg["0.05"] + fg["0.01"]), 1), 0, "21 tests times the sum of the two exact flag probabilities at R=4000")
     reg("binLimitRhoFive", pc(A.binomial_size_limit(0.01, 0.05), 1), 0, "Phi(Phi^-1(pi)(1 - sqrt(1-rho))/sqrt(rho)), pi=0.01, rho=0.05")
     reg("binLimitRhoTen", pc(A.binomial_size_limit(0.01, 0.10), 1), 0, "same, rho=0.10")

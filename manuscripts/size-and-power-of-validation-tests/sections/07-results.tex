@@ -5,17 +5,17 @@
 \label{sec:rs-size}
 
 \Cref{tab:main-results} gives the size of each test at the boundary of its null, and \cref{fig:size-forest} draws it against the level and the bound.
-Three counts answer how many of the \nTests{} tests hold their size, and they differ because the evidence differs, not because the tests do.
+Three counts answer how many of the \nTests{} tests hold their size, and they differ because the evidence and the rule differ, not because the tests do.
 On the committed cells of \nNullReps{} repetitions, the screen of \cref{alg:judgement} passes \nHoldCellRule{} tests and the definition of \cref{def:holds} shows \nHoldCellDef{} holding.
 On the pool of the replication of \cref{sec:rs-seeds}, \nRepsPooled{} repetitions per test, the screen passes \nHoldPoolRule{} and the definition shows \nHold{} holding.
 The paper reports the last: on the best evidence it has, \nHold{} of the \nTests{} tests hold their size and \nNotHold{} do not.
-The counts fall as the evidence grows for two reasons.
-The first is the number of repetitions: the definition sees an excess of \detIntFiveFour{} points at 5\,\% in a cell of \nNullReps{} repetitions and of \detIntFiveTwoHundredK{} points in the pool, so the pool shows excesses that a cell cannot.
+The counts fall as the evidence grows and when the definition replaces the screen, for two reasons.
+The first is the number of repetitions: the definition sees, with probability 0.8, an excess of \detIntFiveFour{} points at 5\,\% in a cell of \nNullReps{} repetitions and of \detIntFiveTwoHundredK{} points in the pool, so the pool shows excesses that a cell cannot.
 The second is the tolerance of the screen, which at any number of repetitions accepts a larger excess than the definition does: at \nRepsPooled{} repetitions and the 5\,\% level it passes a rate of up to \boundFivePool\,\%, while the definition shows an excess from a rate of \intRateFiveTwoHundredK\,\%.
 That is why \nPoolDefOnly{} tests, DeLong's test (\pooledDel\,\% at 5\,\%) and the characteristic stability index (\pooledCsiOne\,\% at 1\,\%), are shown above their level by the definition and pass the screen.
 The tolerance has a reason, the false flag probability of \cref{prop:false-flag}, and a price: the definition expects at most \expFalseAbove{} of the 21 tests to be shown above their level by chance if every test had exactly its level, so DeLong's test and the characteristic stability index, whose lower interval limits clear the level by the least (\pooledDelLo\,\% against 5\,\% and \pooledCsiLoOne\,\% against 1\,\%), are the least certain of the nine, and the seven that the screen also flags are not explained by chance.
 The nine tests that do not hold their size on the pool are the Jeffreys test, the normal test over five years, the chi-square test over grades, Hosmer--Lemeshow, Spiegelhalter, the population stability index, the Markov-order test, DeLong's test and the characteristic stability index (\cref{tab:seed-replication}).
-Two of them exceed their level by more than a fraction of a point.
+Two of them exceed their level by more than the other seven: the Jeffreys test by \jeffExcOne{} points at 1\,\% (its exact size is \jeffExactOne\,\%) and the normal test over five years by \pooledNormExc{} points at 5\,\% (its pooled rate is \pooledNorm\,\%).
 The Jeffreys test of the default probability has a simulated rate at 1\,\% of \jeffSimOne\,\% in the committed cell, inside the bound of \boundOne\,\%, but its exact size at 1\,\% for 1,000 obligors at a probability of default of 1\,\% is \jeffExactOne\,\%: the posterior probability of the Jeffreys prior is a Bayesian quantity, and as a frequentist test of a discrete count its size moves with the number of obligors.
 A cell of \nNullReps{} repetitions shows a true size of \jeffExactOne\,\% at 1\,\% with probability only \jeffDetect\,\% by the screen and \jeffDetectInt\,\% by the definition, and the exact value, placed beside the rate, is what decides.
 The normal test over five years rejects \normFive\,\% of the correct models at 5\,\% in the committed cell (Wilson interval \normLoFive\,\% to \normHiFive\,\%) and \normOne\,\% at 1\,\%, against bounds of \boundFive\,\% and \boundOne\,\%, and \pooledNorm\,\% at 5\,\% in the pool (interval \pooledNormLo\,\% to \pooledNormHi\,\%).
@@ -195,7 +195,7 @@ These alternatives are the engine's choices, one departure for each test, and th
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{extension}
-\caption{Size at 5\% (left, with the level as a solid line and the one-sided bound as a dashed line) and power at 5\% against the one alternative that each study states (right, with Wilson 95\% intervals and a dotted line at 80\%) for the 25 studies of the 21 tests outside the credit families.}
+\caption{Size at 5\% (left, with the level as a solid line and the one-sided bound as a dashed line) and power at 5\% against the one alternative that each study states (right, with Wilson 95\% intervals and a dotted line at 80\%) for the 25 studies of the 21 tests outside the credit families; open markers mark the studies that do not hold their size by \cref{def:holds}.}
 \label{fig:extension}
 \end{figure}
 
