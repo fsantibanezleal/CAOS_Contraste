@@ -130,7 +130,9 @@ def _rates(h: np.ndarray, alpha: float) -> dict:
     pv = pvalues(h, alpha)
     ok = ~np.isnan(pv["cc"])
     n = h.shape[0]
-    return {"kupiec_reject": float(np.sum(ok & (pv["kupiec"] < common.PASS_P)) / n), "cc_reject": float(np.sum(ok & (pv["cc"] < common.PASS_P)) / n),
+    # the Kupiec p-value exists for a run with no hit (the engine returns it), so its rejection share is taken over all runs; the conditional
+    # coverage p-value does not exist there, and a run without it does not pass
+    return {"kupiec_reject": float(np.mean(pv["kupiec"] < common.PASS_P)), "cc_reject": float(np.sum(ok & (pv["cc"] < common.PASS_P)) / n),
             "pass": float(np.sum(ok & (pv["kupiec"] >= common.PASS_P) & (pv["cc"] >= common.PASS_P)) / n), "undefined": float(np.mean(~ok))}
 
 

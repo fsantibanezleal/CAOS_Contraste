@@ -2,7 +2,7 @@
 
     python manuscripts/adaptive-conformal-recalibration-of-var/experiments/check_e4_baseline.py
 
-The unwrapped baseline of experiment 4 is the model's own VaR and ES. Its mean FZ0, hit count and p-values must equal those of the
+The unwrapped baseline of experiment 4 is the model's own VaR and ES. Its mean FZ0, hit count and Kupiec, independence and conditional coverage p-values must equal those of the
 unwrapped runs of experiment 2 for every window, model and level the two share (the ten level-parametric models), and the mean FZ0
 must equal ``fz0_mean`` of the committed C11 window document. A baseline that differs means the ES was altered on the way (the
 defect of the first version: ``np.minimum(es, var)`` on positive losses replaced the ES by the VaR). Exit code 0 when every shared
@@ -17,6 +17,14 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common  # noqa: E402
 
 TOL = 1e-6
+PVALUES = ("kupiec_p", "independence_p", "cc_p")
+
+
+def _p_differs(a, b) -> bool:
+    """True when two p-values differ: one is undefined (None) and the other is not, or they differ by more than ``TOL``."""
+    if a is None or b is None:
+        return (a is None) != (b is None)
+    return abs(a - b) > TOL
 
 
 def main() -> int:
@@ -30,7 +38,7 @@ def main() -> int:
         checked += 1
         a, b = r["unwrapped"], e4[k]["scores"]
         d = abs(a["fz0_mean"] - b["fz0_mean"])
-        if d > TOL or a["n_hits"] != b["n_hits"]:
+        if d > TOL or a["n_hits"] != b["n_hits"] or any(_p_differs(a[p], b[p]) for p in PVALUES):
             bad.append((k, a["fz0_mean"], b["fz0_mean"]))
     committed_bad = []
     for w in common.WINDOWS:

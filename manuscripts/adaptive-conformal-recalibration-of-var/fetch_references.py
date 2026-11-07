@@ -112,7 +112,8 @@ OVERRIDES = {
     "kuester2006": {"author": "Kuester, Keith and Mittnik, Stefan and Paolella, Marc S.", "year": "2006"},
     "hansen2011": {"author": "Hansen, Peter R. and Lunde, Asger and Nason, James M."},
     "vovk2005": {"@type": "book", "author": "Vovk, Vladimir and Gammerman, Alex and Shafer, Glenn", "publisher": "Springer"},
-    "boudoukh1998": {"author": "Boudoukh, Jacob and Richardson, Matthew P. and Whitelaw, Robert F.", "journal": "Risk"},
+    "boudoukh1998": {"@type": "misc", "author": "Boudoukh, Jacob and Richardson, Matthew P. and Whitelaw, Robert F.", "publisher": "Social Science Research Network",
+                     "howpublished": "SSRN working paper"},  # the DOI is the SSRN record (Crossref type posted-content), not the journal article
 }
 MANUAL = {
     "acerbiszekely2014": (

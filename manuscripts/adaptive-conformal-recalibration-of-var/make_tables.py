@@ -190,8 +190,8 @@ def dispersion():
       caption=f"The back-tests on wrapped runs whose model misjudges the scale by the ratio $c$ ($c = 1$: a correct model), {E7['B']['reps']:,} independent runs of "
               f"{E7['B']['days']} days per row. The true hit probability is the mean over the days of the probability that the loss exceeds the VaR at that day's level; "
               "the count s.d. is the standard deviation of the hit count of the wrapped runs against the binomial one at that probability. Kupiec rejection is the share of "
-              "runs with a p-value below 0.05 for the unwrapped runs (U), the wrapped runs (W) and independent Bernoulli hits drawn at the wrapped true probability "
-              "(iid, the reference the test assumes); pass is the share with Kupiec and conditional coverage both at least 0.05.", label="tab:dispersion")
+              "runs with a Kupiec p-value below 0.05 (a run with no hit has one, and it rejects) for the unwrapped runs (U), the wrapped runs (W) and independent Bernoulli hits drawn at the wrapped true probability "
+              "(iid, the reference the test assumes); pass is the share with Kupiec and conditional coverage both at least 0.05 (a run with no hit has no conditional coverage p-value and does not pass).", label="tab:dispersion")
     nm = {"hs-250": "HS-250", "garch-t": "GARCH-t", "fhs": "FHS"}
     A = {(r["scenario"], r["model"], r["alpha"], r["method"]): r for r in E7["A"]["rows"]}
     rows = []

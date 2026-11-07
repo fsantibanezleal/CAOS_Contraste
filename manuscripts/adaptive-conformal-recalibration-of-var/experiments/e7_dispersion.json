@@ -1267,7 +1267,7 @@
     "sd_ratio": 1.0116522744205227,
     "tests": {
      "cc_reject": 0.00275,
-     "kupiec_reject": 0.32875,
+     "kupiec_reject": 0.534,
      "pass": 0.46325,
      "undefined": 0.20525
     },
@@ -1280,7 +1280,7 @@
      "count_sd": 1.682325341495711,
      "tests": {
       "cc_reject": 0.00575,
-      "kupiec_reject": 0.175,
+      "kupiec_reject": 0.234,
       "pass": 0.76025,
       "undefined": 0.059
      }
@@ -1295,7 +1295,7 @@
     "sd_ratio": 0.695625145102876,
     "tests": {
      "cc_reject": 0.00525,
-     "kupiec_reject": 0.103,
+     "kupiec_reject": 0.12,
      "pass": 0.87475,
      "undefined": 0.017
     },
@@ -1314,7 +1314,7 @@
     "sd_ratio": 1.0045420288808766,
     "tests": {
      "cc_reject": 0.00975,
-     "kupiec_reject": 0.06475,
+     "kupiec_reject": 0.07075,
      "pass": 0.92625,
      "undefined": 0.006
     },
@@ -1327,7 +1327,7 @@
      "count_sd": 2.248851725552594,
      "tests": {
       "cc_reject": 0.014,
-      "kupiec_reject": 0.07025,
+      "kupiec_reject": 0.0765,
       "pass": 0.91825,
       "undefined": 0.00625
      }
@@ -1374,7 +1374,7 @@
      "count_sd": 2.5244078704270567,
      "tests": {
       "cc_reject": 0.0485,
-      "kupiec_reject": 0.14325,
+      "kupiec_reject": 0.14425,
       "pass": 0.85475,
       "undefined": 0.001
      }
@@ -1502,7 +1502,7 @@
     "sd_ratio": 1.0156309598571505,
     "tests": {
      "cc_reject": 0.6775,
-     "kupiec_reject": 0.804,
+     "kupiec_reject": 0.81275,
      "pass": 0.179,
      "undefined": 0.00875
     },
@@ -1515,7 +1515,7 @@
      "count_sd": 2.812752725440617,
      "tests": {
       "cc_reject": 0.217,
-      "kupiec_reject": 0.323,
+      "kupiec_reject": 0.32325,
       "pass": 0.66425,
       "undefined": 0.00025
      }
@@ -1894,6 +1894,6 @@
   "wrapped_calibrated": 35,
   "wrapped_exact_binomial": 44
  },
- "seconds": 79,
+ "seconds": 74,
  "seed_base": 20261104
 }
