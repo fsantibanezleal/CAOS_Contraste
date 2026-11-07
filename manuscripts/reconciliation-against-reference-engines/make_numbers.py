@@ -46,6 +46,8 @@ def put(name: str, value, src: str, fmt: str = "i") -> None:
         text = sci(value)
     elif fmt == "p1":
         text = f"{100 * value:.1f}"
+    elif fmt == "p2":
+        text = f"{100 * value:.2f}"
     elif fmt == "p0":
         text = f"{100 * value:.0f}"
     else:
@@ -64,6 +66,7 @@ def main() -> None:
     s42 = {v: load(f"results_ore_seed42_{v}.json")["replicates"][0] for v in ("single-swap", "netting-set", "csa-mpor-10d", "csa-mpor-20d")}
     rtimes = load("run-times.json")
     mt = load("results_maxt.json")
+    mp = load("results_maxt_paired.json")
 
     # ------------------------------------------------------------------ printed answers
     t = pr["totals"]
@@ -311,6 +314,21 @@ def main() -> None:
     put("nPredMone", held(in_band), "predictions.md M1 against results_maxt.json", "t")
     put("nPredMtwo", held(MT["netting-set|sigma+2%"]["pair+maxT"]["rate"] >= MT["netting-set|sigma+2%"]["pair+sidak"]["rate"]), "predictions.md M2 against results_maxt.json", "t")
     put("nPredMthree", held(MT["netting-set|sigma+2%"]["maxT"]["rate"] < MT["netting-set|sigma+2%"]["pair+maxT"]["rate"]), "predictions.md M3 against results_maxt.json", "t")
+
+    # the paired reading of the maximum-T rule against the pair-aware rule at the Sidak bound (exp_maxt_paired.py)
+    PC = mp["cells"]
+    put("nMaxtExtraNetting", PC["netting-set|sigma+2%"]["gained"], "results_maxt_paired.json:cells.netting-set|sigma+2%.gained")
+    put("nMaxtExtraSingle", PC["single-swap|sigma+2%"]["gained"], "results_maxt_paired.json:cells.single-swap|sigma+2%.gained")
+    put("nMaxtGainNetting", PC["netting-set|sigma+2%"]["gain_points"] / 100.0, "results_maxt_paired.json:cells.netting-set|sigma+2%.gain_points", "p2")
+    put("nMaxtGainSingle", PC["single-swap|sigma+2%"]["gain_points"] / 100.0, "results_maxt_paired.json:cells.single-swap|sigma+2%.gain_points", "p2")
+    put("nMaxtSignP", PC["netting-set|sigma+2%"]["sign_test_p"], "results_maxt_paired.json:cells.netting-set|sigma+2%.sign_test_p", "s")
+    put("nMaxtExtraNullNetting", PC["netting-set|null"]["gained"], "results_maxt_paired.json:cells.netting-set|null.gained")
+    put("nMaxtExtraNullSingle", PC["single-swap|null"]["gained"], "results_maxt_paired.json:cells.single-swap|null.gained")
+    put("nMaxtLostMax", max(c["lost"] for c in PC.values()), "results_maxt_paired.json:cells.*.lost")
+    put("nMaxtPairedReps", mp["reps"], "results_maxt_paired.json:reps")
+    put("nSidakBound", mp["sidak_bound"], "results_maxt_paired.json:sidak_bound", "f2")
+    put("nOreFirstSeed", net["summary"]["first_seed"], "results_ore_netting-set.json:summary.first_seed")
+    put("nOreWorkers", rtimes["ore_workers"], "run-times.json:ore_workers")
 
     # analytic constants of the theory section and small numbers of the discussion
     from scipy import stats

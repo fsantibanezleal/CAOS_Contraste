@@ -9,7 +9,7 @@ are compared with the committed ``results_*.json`` after loading both (the seeds
 reproduces its output exactly), and the wall time of each is recorded. The two long experiments are not rerun here: the size and
 power of the rules (``exp_criterion.py``) and the repeated comparisons with ORE (``exp_ore_replicates.py``) record their own wall
 time in their outputs, which this script copies into ``run-times.json``; rerunning them with the commands of the manuscript's
-Reproducibility section gives the same outputs, because every random number is seeded.
+Reproducibility section gives the same outputs except the recorded wall times, because every random number is seeded.
 """
 from __future__ import annotations
 

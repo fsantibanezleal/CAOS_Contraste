@@ -215,6 +215,34 @@
   "value": "0.88",
   "source": "results_committed.json:variants.with-im.dim"
  },
+ "nMaxtExtraNetting": {
+  "value": "19",
+  "source": "results_maxt_paired.json:cells.netting-set|sigma+2%.gained"
+ },
+ "nMaxtExtraNullNetting": {
+  "value": "4",
+  "source": "results_maxt_paired.json:cells.netting-set|null.gained"
+ },
+ "nMaxtExtraNullSingle": {
+  "value": "0",
+  "source": "results_maxt_paired.json:cells.single-swap|null.gained"
+ },
+ "nMaxtExtraSingle": {
+  "value": "15",
+  "source": "results_maxt_paired.json:cells.single-swap|sigma+2%.gained"
+ },
+ "nMaxtGainNetting": {
+  "value": "4.75",
+  "source": "results_maxt_paired.json:cells.netting-set|sigma+2%.gain_points"
+ },
+ "nMaxtGainSingle": {
+  "value": "3.75",
+  "source": "results_maxt_paired.json:cells.single-swap|sigma+2%.gain_points"
+ },
+ "nMaxtLostMax": {
+  "value": "0",
+  "source": "results_maxt_paired.json:cells.*.lost"
+ },
  "nMaxtMeasureNetting": {
   "value": "100.0",
   "source": "results_maxt.json:table.netting-set|measure.pair+maxT.rate"
@@ -226,6 +254,10 @@
  "nMaxtPairBoundLow": {
   "value": "3.07",
   "source": "results_maxt.json:bounds.*.pair"
+ },
+ "nMaxtPairedReps": {
+  "value": "400",
+  "source": "results_maxt_paired.json:reps"
  },
  "nMaxtPowerPairFiveNetting": {
   "value": "100.0",
@@ -246,6 +278,10 @@
  "nMaxtReps": {
   "value": "400",
   "source": "results_maxt.json:reps"
+ },
+ "nMaxtSignP": {
+  "value": "3.8\\times10^{-6}",
+  "source": "results_maxt_paired.json:cells.netting-set|sigma+2%.sign_test_p"
  },
  "nMeasureEepeMiss": {
   "value": "42",
@@ -335,6 +371,10 @@
   "value": "150",
   "source": "results_criterion.json:calibration.netting-set.z_null (rows stored)"
  },
+ "nOreFirstSeed": {
+  "value": "5{,}000",
+  "source": "results_ore_netting-set.json:summary.first_seed"
+ },
  "nOrePairRho": {
   "value": "-0.66",
   "source": "results_ore_netting-set.json:replicates.pair_correlation_ore_mean"
@@ -350,6 +390,10 @@
  "nOreSecondsMean": {
   "value": "59",
   "source": "results_ore_*.json:summary.mean_ore_seconds"
+ },
+ "nOreWorkers": {
+  "value": "4",
+  "source": "run-times.json:ore_workers"
  },
  "nOverstateLast": {
   "value": "2.5",
@@ -770,6 +814,10 @@
  "nSharedMeanGap": {
   "value": "0.000",
   "source": "results_ore_netting-set.json and results_ore_single-swap.json:summary.mean_z_by_date[23:]"
+ },
+ "nSidakBound": {
+  "value": "3.18",
+  "source": "results_maxt_paired.json:sidak_bound"
  },
  "nSingleCvaZ": {
   "value": "0.37",

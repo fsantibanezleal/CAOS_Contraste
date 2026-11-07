@@ -1,6 +1,6 @@
 """The size and power of the exposure reconciliation rule, measured with the engine against a second run of the engine.
 
-    python manuscripts/reconciliation-against-reference-engines/experiments/exp_criterion.py [--reps 300] [--workers 10]
+    python manuscripts/reconciliation-against-reference-engines/experiments/exp_criterion.py [--reps 400] [--workers 10]
         [--out results_criterion.json]
 
 The product accepts the Hull-White exposure against ORE when the difference of the two expected-exposure profiles is within two
@@ -148,7 +148,7 @@ def repetition(r: int) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--reps", type=int, default=300)
+    ap.add_argument("--reps", type=int, default=400)
     ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--out", default=str(HERE / "results_criterion.json"))
     args = ap.parse_args()

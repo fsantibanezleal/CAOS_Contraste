@@ -116,3 +116,13 @@ def test_maxt_repeats_the_criterion_run_and_keeps_its_intervals():
         for kind in ("product", "pair"):
             for bound in d["bounds"][v][kind].values():
                 assert 2.0 < bound < 8.0, (v, kind, bound)     # between the single-comparison bound and a loose family bound
+
+
+def test_maxt_paired_gain_is_the_difference_of_counts_with_no_loss():
+    p, d = load("results_maxt_paired.json"), load("results_maxt.json")
+    assert p["regions_nested"] and p["max_estimated_pair_bound"] < p["sidak_bound"]
+    for key, c in p["cells"].items():
+        assert c["lost"] == 0 and c["gained"] == d["table"][key]["pair+maxT"]["rejected"] - d["table"][key]["pair+sidak"]["rejected"] >= 0
+        assert c["sign_test_p"] == (1.0 if c["gained"] == 0 else min(1.0, 2.0 * 0.5 ** c["gained"]))
+    net = p["cells"]["netting-set|sigma+2%"]
+    assert net["gained"] == 19 and abs(net["gain_points"] - 4.75) < 1e-9

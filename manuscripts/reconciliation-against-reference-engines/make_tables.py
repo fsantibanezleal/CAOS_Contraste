@@ -197,7 +197,7 @@ def main() -> None:
     def pick(key: str, rule: str) -> dict:
         return TM[key][rule] if rule in ("maxT", "pair+maxT") else T[key][rule]
 
-    panels = [("A. Size on the single swap and on the netting set, and power against a volatility raised by 2 \\%", [("single-swap|null", "Size, single swap"), ("netting-set|null", "Size, netting set"), ("netting-set|sigma+2%", "Vol. +2 \\%")]),
+    panels = [("A. Size on the single swap and on the netting set, and power against a volatility raised by 2 \\%", [("single-swap|null", "Size, single swap"), ("netting-set|null", "Size, netting set"), ("netting-set|sigma+2%", "Vol. +2 \\%, netting set")]),
               ("B. Power on the netting set against a volatility raised by 5 \\%, a mean reversion raised by 50 \\%, and a measure error", [("netting-set|sigma+5%", "Vol. +5 \\%"), ("netting-set|a+50%", "Rev. +50 \\%"), ("netting-set|measure", "Measure")])]
     built = []
     for title, cols in panels:
@@ -302,9 +302,9 @@ def main() -> None:
         ["R3", "the product's rule passes at least half of the seeds, uncollateralised variants", nm["nPredRthree"]["value"], "fixed before the replicates"],
         ["R4", "the 10-day collateralised variant fails on every seed, mean largest $\\lvert z\\rvert$ above 5", nm["nPredRfour"]["value"], "fixed before the replicates"],
         ["R5", "CVA $z$ of that variant below $-5$ on at least 7 of 8 seeds", nm["nPredRfive"]["value"], "fixed before the replicates"],
-        ["M1", "maximum-T rules: size between 3 and 8 percent on both variants", nm["nPredMone"]["value"], "fixed before the maximum-T run"],
-        ["M2", "maximum-T rule with pair-aware errors: power against a 2 percent volatility error at least that of the bound 3.18", nm["nPredMtwo"]["value"], "fixed before the maximum-T run"],
-        ["M3", "maximum-T rule with product errors: power against that error below the pair-aware one", nm["nPredMthree"]["value"], "fixed before the maximum-T run"],
+        ["M1", "maximum-T rules: size between 3 and 8 percent on both variants", nm["nPredMone"]["value"], "written after the review and before the maximum-T run, by file times only"],
+        ["M2", "maximum-T rule with pair-aware errors: power against a 2 percent volatility error at least that of the bound 3.18; it holds by construction, because the estimated bound is below 3.18 on the same statistic, and is no evidence", nm["nPredMtwo"]["value"], "written after the review and before the maximum-T run, by file times only"],
+        ["M3", "maximum-T rule with product errors: power against that error below the pair-aware one", nm["nPredMthree"]["value"], "written after the review and before the maximum-T run, by file times only"],
     ]
     write_table("outcomes.tex", [
         ("A. The hypotheses of the design document", ["Hypothesis", "Outcome", "Evidence"], rows, f"l{P(3.2, 'l')}{XL}"),
