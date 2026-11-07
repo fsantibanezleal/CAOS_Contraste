@@ -43,7 +43,7 @@ Two methods of the product are described here. The first is the loss distributio
 measurement approach: the frequency and severity laws, the truncated and spliced fits, the aggregation of the annual loss by three
 independent computations, the single loss approximation, the combination of scenarios with data, and the standardised capital
 (\cref{sec:m24}). It asks whether the three aggregations agree with each other and with a published benchmark, how far the capital
-of each estimation rung is from the true quantile, and how the standardised capital compares. The second method replaces
+of each estimator is from the true quantile, and how the standardised capital compares. The second method replaces
 the maximum likelihood fit of the severity by two robust estimators with an adjusted single loss approximation
 (\cref{sec:m32}); it asks whether bias and spread of the capital improve against the maximum likelihood splice. The results of both
 on all variants, with the validation tests that guard them, follow in \cref{sec:results-oprisk}.
@@ -85,7 +85,7 @@ F_H(x)&=\frac{F(x)-F(H)}{1-F(H)}\ (x\ge H),\qquad \lambda_{\mathrm{full}}=\frac{
 \end{aligned}
 \label{eq:op-trunc}
 \end{equation}
-Ignoring the threshold biases the capital \citep{oprisk:mignola2007,oprisk:cope2009}: the first rung of the ladder fits a lognormal
+Ignoring the threshold biases the capital \citep{oprisk:mignola2007,oprisk:cope2009}: the first estimator fits a lognormal
 to the recorded losses as if they were complete, and the second maximises the truncated likelihood $\ell$ of \cref{eq:op-trunc} and
 rescales the frequency; $\theta$ is the parameter vector of the severity and $n$ the number of recorded losses. For a generalised
 Pareto severity truncated at a threshold $H$ above its location $m$, the truncated law is again generalised Pareto with the same
@@ -101,7 +101,7 @@ w=\frac{1-t}{1-t\,c}.
 \label{eq:op-weight}
 \end{equation}
 A threshold with too few exceedances to fit the tail is listed with an undefined index and not dropped, so the number of
-histories on which a rung has a capital is a result of the estimation (\cref{tab:op-defined}).
+histories on which an estimator has a capital is a result of the estimation (\cref{tab:op-defined}).
 
 \paragraph{Aggregation by three computations.} The distribution of $Z$ has no closed form. Monte Carlo draws the count of a year,
 then that many severities, and sums them; the error of the quantile falls as $K^{-1/2}$ in the number of simulated years $K$
@@ -155,12 +155,13 @@ q_\alpha\approx m+\frac{\beta}{\xi}\Bigl[\Bigl(\frac{\lambda}{1-\alpha}\Bigr)^{\
 \label{eq:op-sla}
 \end{equation}
 where the second form follows by substituting the generalised Pareto quantile $m+(\beta/\xi)((1-p)^{-\xi}-1)$ at
-$p=1-(1-\alpha)/\lambda$ and shows that the capital scales as $\lambda^{\xi}$. The approximation converges for heavy tails and is poor
-for a lognormal severity at practical levels \citep{oprisk:shevchenko2010}; \citet{oprisk:degen2010} studies it as a function of the tail
-index and locates a problematic zone near $\xi=1$, and second-order expansions are reviewed by \citet{oprisk:peters2013}. A correction
-that adds $\E[N]\,\E[X]$ to the first-order value is quoted in the literature; its form was not confirmed against a primary text,
-the artifacts mark it UNVERIFIED, and the ladder carries it only for comparison. With a tail index of one or more the correction
-does not exist and the engine refuses it.
+$p=1-(1-\alpha)/\lambda$ and shows that the capital scales as $\lambda^{\xi}$. The approximation converges for heavy tails; for a lognormal
+severity it is poor for $\mathrm{LN}(0,1)$ and converges to the exact value for $\mathrm{LN}(0,2)$ as the level tends to one
+\citep[Example~9.4]{oprisk:shevchenko2010}; \citet{oprisk:degen2010} studies it as a function of the tail
+index and locates a problematic zone near $\xi=1$, and second-order expansions are reviewed by \citet{oprisk:peters2013}. For a severity with a finite mean,
+B\"ocker and Sprittulla (2006) derived a correction that reduces the error of the first-order form, as \citet{oprisk:shevchenko2010} reports; its
+form was not confirmed against that article, so this report does not evaluate it. The mean-adjusted form of \cref{sec:m32} is the correction by a mean
+that the report evaluates. Like any correction by a mean it does not exist at a tail index of one or more, where the engine refuses it.
 
 \paragraph{Scenarios combined with data.} Scenario analysis supplies expert estimates of the frequency and severity of rare large
 events. The engine implements three combinations: the scenario points as pseudo-observations weighted by their expected counts, a
@@ -231,7 +232,7 @@ year for the four tail indices. The largest log error of the fit is \opCalErrA{}
 \opCalErrC{} at $\xi=0.96$, whose own best fit to the percentiles is a tail index near one. The other settings are the level 0.999, the
 splice threshold $u$ of EUR 100,000 (a parameter of the caller), Monte Carlo of \opTruthMc{} years with seed 17 for the truth, a Fourier grid of
 \opFftPoints{} points for the truth and a Panjer grid of \opPanjerPoints{} points to cross-check it, a grid of 4,096 points for the
-replications, a Monte Carlo of \opRepMc{} years for the rung that ignores the threshold, eight scenario points with a bootstrap of 100 draws, and
+replications, a Monte Carlo of \opRepMc{} years for the estimator that ignores the threshold, eight scenario points with a bootstrap of 100 draws, and
 the seeds of the histories, which start at \opSeedBase{} and occupy disjoint ranges of \opNRep{} per cell.
 
 \paragraph{Complexity.} The Monte Carlo cost is $O(K\,\E[N])$ for the draws and $O(K\log K)$ for the sort that gives the quantile. The Panjer
@@ -256,7 +257,7 @@ inverse distribution function.\par\endgroup
 \paragraph{Comparison and acceptance.} The method is accepted when the engine reproduces the published benchmark of
 \citet{oprisk:shevchenko2010}, a Poisson count with rate 100 and a lognormal severity with $\mu=0$ and $\sigma=2$, whose mean is 738.9056 and
 whose 99.9 percent quantile is 5,849 to 5,850 by the Monte Carlo, Panjer and Fourier computations. Beyond the benchmark the
-capital of every rung is compared with the true quantile of the generator through the capital stability test, which for the ratios
+capital of every estimator is compared with the true quantile of the generator through the capital stability test, which for the ratios
 $r_h=\hat q_h/q^{\mathrm{true}}$ over the independent histories $h$ computes
 \begin{equation}
 m=p_{75}(r)-p_{25}(r),\qquad b=\operatorname{median}(r)-1,
@@ -274,11 +275,10 @@ return no $p$-value.
 
 \paragraph{Theory.} The maximum likelihood fit of a heavy-tailed severity is not robust: the score of a loss grows with its size, so a
 few gross losses, or a few recording errors, move the tail index and with it the capital by a multiple. \citet{oprisk:opdyke2012}
-recommend two robust estimators for the truncated severity of an operational loss distribution, the minimum distance estimator of
-the Cram\'er-von Mises statistic and the optimally bias-robust estimator, and propose them with a mean-adjusted single loss approximation.
-The estimators are implemented from their textbook definitions; the adjustment follows its statement in
-\citet{oprisk:peters2016}, who attribute the second-order term to \citet{oprisk:degen2010}, and the engine labels its results with the status of a
-secondary source. Both estimators work on the left-truncated law of \cref{eq:op-trunc}: with $u_i=F_H(x_i;\theta)$ the truncated
+compare the optimally bias-robust estimator with the minimum distance estimator of the Cram\'er-von Mises statistic for the truncated
+severity of an operational loss distribution, recommend the optimally bias-robust one, and turn the fits into capital with a mean-adjusted
+single loss approximation. The estimators are implemented from their textbook definitions; the form of the adjustment is taken from its
+statement in \citet{oprisk:peters2016}, who attribute the second-order term to \citet{oprisk:degen2010}, and not from the primary articles. Both estimators work on the left-truncated law of \cref{eq:op-trunc}: with $u_i=F_H(x_i;\theta)$ the truncated
 distribution function of the recorded losses and $u_{(1)}\le\dots\le u_{(n)}$ its sorted values,
 \begin{equation}
 W^2(\theta)=\frac{1}{12n}+\sum_{i=1}^{n}\Bigl(u_{(i)}-\frac{2i-1}{2n}\Bigr)^2,\qquad
@@ -320,14 +320,13 @@ discounts. \Cref{alg:op-obre} states the computation.
 \end{algorithmic}
 \end{algorithm}
 
-The mean-adjusted single loss approximation replaces the correction of the first-order form by one mean less, because the
-other $\E[N]-1$ losses of the year are at their means,
+The mean-adjusted single loss approximation adds to the first-order form the other $\E[N]-1$ losses of the year at their means,
+because the first-order term already places one loss at the quantile,
 \begin{equation}
 q_\alpha\approx F^{-1}\!\Bigl(1-\frac{1-\alpha}{\E[N]}\Bigr)+\bigl(\E[N]-1\bigr)\E[X],\qquad \E[X]=m+\frac{\beta}{1-\xi}\ \ (\xi<1),
 \label{eq:op-sla-adjusted}
 \end{equation}
-where the mean of the generalised Pareto severity of location $m$ follows from its moment formula. The adjustment differs from the quoted form by
-exactly $\E[X]$. It is finite only for $\xi<1$ and it grows like $(\lambda-1)\beta/(1-\xi)$, so it overtakes the first-order term, which
+where the mean of the generalised Pareto severity of location $m$ follows from its moment formula. The adjustment is finite only for $\xi<1$ and it grows like $(\lambda-1)\beta/(1-\xi)$, so it overtakes the first-order term, which
 grows like $\lambda^{\xi}$, as the fitted tail index approaches one; the form is refused for an infinite mean and for $\E[N]<1$, where the
 adjustment would be negative.
 
@@ -338,8 +337,8 @@ single loss approximation applies at the level 0.999 with a subexponential sever
 misspecified family.
 
 \paragraph{Parameters and their values.} The requested efficiency of the optimally bias-robust fit is 0.95, the usual choice, and the engine study reported below also
-runs 0.80. The expectations of the estimating equations are taken at 2,000 quantile midpoints, an estimator needs at least ten losses and the case fits no rung on
-a history of fewer than twenty recorded losses. The level is 0.999. The four rungs of the case are the generalised Pareto fit by maximum
+runs 0.80. The expectations of the estimating equations are taken at 2,000 quantile midpoints, an estimator needs at least ten losses and the case fits no estimator on
+a history of fewer than twenty recorded losses. The level is 0.999. The four estimators of the case are the generalised Pareto fit by maximum
 likelihood, by minimum Cram\'er-von Mises distance and by the optimally bias-robust estimator, each with the adjusted approximation of \cref{eq:op-sla-adjusted},
 and the lognormal fitted by minimum Cram\'er-von Mises distance as the control. Each is applied to the same \opNRep{} histories of each cell, and the
 ratio of its capital to the true quantile of the generator isolates the estimation error because truth and method are evaluated at the same level.
@@ -361,7 +360,7 @@ The adjusted approximation is closed form.
 \texttt{fit\_\allowbreak severity\_\allowbreak cvm}, \texttt{fit\_\allowbreak severity\_\allowbreak obre} and \texttt{sla\_\allowbreak var\_\allowbreak mean\_\allowbreak adjusted}, and the records
 \texttt{Robust\-Severity\-Fit} and \texttt{Mean\-Adjusted\-Sla}), added in release 1.1.0
 of the \texttt{riskvalidation} package, with the laws \texttt{lognormal}, \texttt{weibull} and \texttt{gpd}. The case calls them from \texttt{robust\_\allowbreak gpd\_\allowbreak capital},
-\texttt{robust\_\allowbreak lognormal\_\allowbreak capital} and \texttt{mean\_\allowbreak adjusted\_\allowbreak capital} of the module \texttt{replicate} of \texttt{pipeline.\allowbreak cases.\allowbreak c17}. A rung the engine refuses, a fit
+\texttt{robust\_\allowbreak lognormal\_\allowbreak capital} and \texttt{mean\_\allowbreak adjusted\_\allowbreak capital} of the module \texttt{replicate} of \texttt{pipeline.\allowbreak cases.\allowbreak c17}. An estimator the engine refuses, a fit
 that does not converge or a tail index of one or more is an undefined capital with the reason counted, never a placeholder.
 \Cref{alg:op-replication} is the protocol that turns each estimator into a ratio against the truth.\par\endgroup
 
@@ -414,33 +413,31 @@ Monte Carlo of ten million years (crosses). The dotted horizontal line is the le
 \label{fig:op-exceedance}
 \end{figure}
 
-\paragraph{The estimation ladder.} \Cref{tab:op-m24-ratio} and \cref{fig:op-m24-boxes} give the capital of each rung as a multiple of the true quantile, for ten years of history and a threshold
+\paragraph{The estimators of the loss distribution approach.} \Cref{tab:op-m24-ratio} and \cref{fig:op-m24-boxes} give the capital of each estimator as a multiple of the true quantile, for ten years of history and a threshold
 of EUR 20,000. Fitting the lognormal as if the threshold did not exist understates the capital in every history of every variant: the median ratio is \opMedLnA{} at $\xi=0.6$ and \opMedLnD{} at
 $\xi=1.1$, with a spread that is small because the error is systematic. The truncated lognormal with the rescaled frequency removes part of the bias at the lightest tail (median \opMedTrA{}) but
-not at the heavy ones (\opMedTrC{} at $\xi=0.96$), and it understates the capital in \opUndTrC{} percent of the histories there. The splice has a median ratio between \opMedSpD{} and \opMedSpC{}, close to one, but its
+not at the heavy ones (\opMedTrC{} at $\xi=0.96$), and it understates the capital in \opUndTrC{} percent of the histories there. The splice has a median ratio between \opMedSpD{} and \opMedSpC{}, below one at every tail index, and its
 interquartile range is between \opIqrLoSp{} and \opIqrHiSp{} times the true quantile over the sixteen cells and \opIqrSpC{} at $\xi=0.96$ in the cell of \cref{tab:op-m24-ratio}: a bank that fits it on a
 single history obtains a capital whose 25th and 75th percentiles are \opSpQloC{} and \opSpQhiC{} times the truth at $\xi=0.96$. The single loss approximation has a median ratio from \opMedSlaA{} to \opMedSlaD{}
-and a spread of \opIqrSlaA{} to \opIqrSlaD{}, narrower than the splice at every tail index but growing with the tail. The scenario rung overstates the capital, with a median ratio
-of \opMedScA{} at $\xi=0.6$ falling to \opMedScD{} at $\xi=1.1$, and its spread, \opIqrScA{} to \opIqrScD{}, is smaller than that of the splice and of the first-order approximation at every tail index. The rung with the mean correction, whose form is UNVERIFIED, is
-shown for comparison only: it differs from the mean-adjusted rung of \cref{tab:op-m32-ratio} by exactly the mean $\E[X]$ in each history, and its median ratio is within 0.01 of that
-rung over the three variants with a finite mean (\opMedMcA{} against \opMedMaA{} at $\xi=0.6$), and it has no capital at $\xi=1.1$. The reading has
-limits: the ratio is conditional on a capital being defined (\cref{tab:op-defined}), and the generator draws from the family the tail rungs assume.
+and a spread of \opIqrSlaA{} to \opIqrSlaD{}, narrower than the splice at every tail index but growing with the tail. The scenario estimator overstates the capital at the three lighter tails, with a median ratio
+of \opMedScA{} at $\xi=0.6$ falling to \opMedScC{} at $\xi=0.96$, and is near one at $\xi=1.1$ (\opMedScD{}); its spread, \opIqrScA{} to \opIqrScD{}, is smaller than that of the splice and of the first-order approximation at every tail index. The reading has
+limits: the ratio is conditional on a capital being defined (\cref{tab:op-defined}), and the generator draws from the family the tail estimators assume.
 
 \input{tables/oprisk-m24-ratio}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{oprisk-m24-boxes.pdf}
-\caption{Capital over the true 99.9 percent quantile for the six rungs of the loss distribution approach, ten years of history and threshold EUR 20,000, on a logarithmic axis. The thick bar is the
+\caption{Capital over the true 99.9 percent quantile for the five estimators of the loss distribution approach, ten years of history and threshold EUR 20,000, on a logarithmic axis. The thick bar is the
 interquartile range over independent histories, the thin line the 5th to 95th percentile, the white marker the median, and the dashed line a ratio of one.}
 \label{fig:op-m24-boxes}
 \end{figure}
 
 \paragraph{Where the capital is undefined.} The spread of the splice is only part of the instability. \Cref{tab:op-defined} counts the histories on which each method returns a capital: the splice returns one on
 \opNdSpA{} of \opNRep{} histories at $\xi=0.6$ and on \opNdSpD{} at $\xi=1.1$, and over the sixteen cells \opSpliceLost{} histories give no splice capital. \Cref{fig:op-defined} shows the same counts for the
-rungs that fit a tail. The reason is the tail index (\cref{tab:op-tail}, \cref{fig:op-tail}). At the threshold of the cell the fitted index has a median close to the truth, \opXiMedC{} at $\xi=0.96$, but its 5th to 95th
+estimators that fit a tail. The reason is the tail index (\cref{tab:op-tail}, \cref{fig:op-tail}). At the threshold of the cell the fitted index has a median close to the truth, \opXiMedC{} at $\xi=0.96$, but its 5th to 95th
 percentile range is wide, and the share of histories whose fitted index reaches one is between \opInfLoC{} and \opInfHiC{} percent over the four cells at $\xi=0.96$, where the mean exists, and between \opFinLoD{} and \opFinHiD{}
-percent of the histories at $\xi=1.1$ conclude a finite mean that does not exist. A fitted index of one or more leaves the mean-based rungs without a capital, so they are defined on the histories that look light-tailed,
+percent of the histories at $\xi=1.1$ conclude a finite mean that does not exist. A fitted index of one or more leaves the mean-based estimators without a capital, so they are defined on the histories that look light-tailed,
 a selection that makes their medians optimistic where the tail is heavy.
 
 \input{tables/oprisk-defined}
@@ -449,8 +446,8 @@ a selection that makes their medians optimistic where the tail is heavy.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.7\textwidth]{oprisk-defined.pdf}
-\caption{Number of the 1,000 histories of ten years and threshold EUR 20,000 on which each method returns a finite capital, for the four tail indices. The splice, the three robust rungs, the lognormal control and
-the scenario rung lose histories as the tail gets heavier; the first-order single loss approximation, not drawn, is defined on all of them (\cref{tab:op-defined}).}
+\caption{Number of the 1,000 histories of ten years and threshold EUR 20,000 on which each method returns a finite capital, for the four tail indices. The splice, the three robust estimators, the lognormal control and
+the scenario estimator lose histories as the tail gets heavier; the first-order single loss approximation, not drawn, is defined on all of them (\cref{tab:op-defined}).}
 \label{fig:op-defined}
 \end{figure}
 
@@ -462,7 +459,7 @@ Dotted lines are the true indices and the solid line at one marks the point wher
 \label{fig:op-tail}
 \end{figure}
 
-\paragraph{The robust estimators.} \Cref{tab:op-m32-ratio} and \cref{fig:op-m32-boxes} give the robust rungs beside the splice. On histories of the assumed family without contamination the
+\paragraph{The robust estimators.} \Cref{tab:op-m32-ratio} and \cref{fig:op-m32-boxes} give the robust estimators beside the splice. On histories of the assumed family without contamination the
 maximum likelihood fit of the generalised Pareto law has the smallest spread among the three fits at the two lightest tails: its interquartile range is \opIqrMaA{} and \opIqrMaB{} at $\xi=0.6$ and $0.8$, against
 \opIqrCvmA{} and \opIqrCvmB{} for the Cram\'er-von Mises fit and \opIqrObreA{} and \opIqrObreB{} for the optimally bias-robust fit at 95 percent efficiency. The price of robustness on clean data is therefore
 a larger spread, from \opIqrObreA{} to \opIqrCvmA{} against \opIqrMaA{} at $\xi=0.6$. All three are narrower than the splice at the same tail index (\opIqrSpA{} and \opIqrSpB{}), and over the sixteen cells
@@ -485,12 +482,13 @@ lognormal control, ten years of history and threshold EUR 20,000, on a logarithm
 \input{tables/oprisk-grid}
 
 The committed grid has no contaminated histories, so the case that motivates the robust estimators is shown by the study of the engine, which draws 250 losses above EUR 20,000 from lognormal and spliced generators, with and
-without 3 percent of the losses multiplied by 50, in \opContamN{} histories per scenario (\cref{tab:op-contam}, \cref{tab:op-contam-log}). Under contamination of a lognormal truth the likelihood capital is \opContamMleMedian{} times the truth at the median, the Cram\'er-von Mises capital
+without 3 percent of the losses multiplied by 50 (\cref{tab:op-contam}, \cref{tab:op-contam-log}). The cells are the figures printed in the documentation of the engine and are transcribed here: this report does not rerun the study and gives no interval for them.
+The study asked for \opContamRequested{} histories per scenario and was stopped by a cap of \opContamCap{} seconds per scenario, which left \opContamN{} histories (165, 160, 170 and 148 in the four scenarios) instead of the 1,000 of the grid, and the documentation calls
+its intervals wide. Under contamination of a lognormal truth the likelihood capital is \opContamMleMedian{} times the truth at the median, the Cram\'er-von Mises capital
 is \opContamGrossCvm{} in typical log error against \opContamGrossMle{} for the likelihood, and the optimally bias-robust fit at 95 percent efficiency, with a median ratio of \opContamObreMedian{}, still overstates the capital: a 95 percent efficient estimator discounts these gross losses only
 partly, and the fit at 80 percent efficiency, with \opContamGrossObreEighty{}, discounts more. On a spliced truth both robust fits again beat the likelihood in typical log error (\opContamSplCvm{} and \opContamSplObre{} against \opContamSplMle{}). On clean data of the assumed family the likelihood has the smallest spread
 (\opContamCleanIqrMle{} against \opContamCleanIqrObre{} and \opContamCleanIqrCvm{}), as in the committed grid. The third prediction does not hold: on the clean spliced truth the lognormal-based fits understate the capital by about 70 percent, and the splice has the smaller typical error
-(\opContamSpliceErrSplice{} against \opContamSpliceErrMle{}) with a spread ten times larger, so robustness protects against gross losses and does not repair a misspecified family. These cells come from 148 to 170 histories and not from
-the 1,000 of the grid, one contamination design and one fit threshold; they carry an uncertainty of order a tenth in the median ratio.
+(\opContamSpliceErrSplice{} against \opContamSpliceErrMle{} for the likelihood lognormal and \opContamSpliceErrRobLo{} to \opContamSpliceErrRobHi{} for the robust lognormal fits) with a spread ten times larger, so robustness protects against gross losses and does not repair a misspecified family. The cells rest on one contamination design and one fit threshold, and the statements above are read at that resolution.
 
 \input{tables/oprisk-contam}
 \input{tables/oprisk-contam-log}
@@ -514,16 +512,16 @@ Right: the capital of the standardised approach and of the splice over the true 
 \label{fig:op-sma}
 \end{figure}
 
-\paragraph{Scenarios and the validation tests.} The eight scenario points of the credibility rung (\cref{tab:op-scenario}) move the capital of the history of the case by at most \opScMaxInf{} (point \opScMaxId{}), \opScNeg{} of the \opScNPoints{} removals raise it, and the test reads green on this history:
-no single point drives the capital, though the capital of \opScBase{} million is itself a function of an unrestricted prior. \Cref{tab:op-tests} summarises the \opTestsTotal{} lights of the five tests over the four documents. The benchmark reproduction and the
-threshold stability tests are green in every variant, with a benchmark metric of \opBenchStat{} against a tolerance of one. The capital stability test is red for all \opCapRed{} of the \opCapTests{} method-and-cell results, because the dispersion of every rung exceeds the
+\paragraph{Scenarios and the validation tests.} The eight scenario points of the credibility estimator (\cref{tab:op-scenario}) move the capital of the history of the case at $\xi=0.96$ by at most \opScMaxInf{} (point \opScMaxId{}), \opScNeg{} of the \opScNPoints{} removals raise it, and the test reads green on this history:
+no single point drives the capital there, though the capital of \opScBase{} million is itself a function of an unrestricted prior. The test is not green at every tail index: the largest influence of one point is \opScTestA{}, \opScTestB{}, \opScTestC{} and \opScTestD{} at the four tail indices, amber at \opScAmberWhich{} against the green limit of 0.10 and the amber limit of 0.25, so at those tail indices one scenario point moves the capital by more than a tenth. \Cref{tab:op-tests} summarises the \opTestsTotal{} lights of the five tests over the four documents: \opTestsGreen{} green, \opTestsAmber{} amber (the \opScAmberN{} scenario influence results above) and \opTestsRed{} red. The benchmark reproduction and the
+threshold stability tests are green in every variant, with a benchmark metric of \opBenchStat{} against a tolerance of one. The capital stability test is red for all \opCapRed{} of the \opCapTests{} method-and-cell results, because the dispersion of every estimator exceeds the
 green and amber limits of 0.25 and 0.50 or its bias exceeds 0.25, and the multiplier response test is red in all four variants. These lights describe the dispersion of capital estimated from a few years of data, and none is a finding about a particular bank.
 
 \input{tables/oprisk-scenario}
 \input{tables/oprisk-tests}
 
 \paragraph{What follows.} The loss distribution approach computes the same aggregate loss by three routes, and the routes agree, so the instability that the results show lies in the estimation of the tail and not in the arithmetic of the aggregation.
-Truncation matters: ignoring the collection threshold understates the capital in every history. The splice has the right median and a spread of one to three times the truth; the single loss approximation and the three
-generalised Pareto fits narrow that spread but are defined only on the histories whose fitted tail index is below one, which at $\xi=0.96$ is about two thirds of them. Robust estimators do not improve the spread on clean data and protect only against gross losses of the kind the engine study
+Truncation matters: ignoring the collection threshold understates the capital in every history. The splice has a median between \opSpMedLo{} and \opSpMedHi{} of the truth over the sixteen cells, below one in \opSpMedBelowOne{} of them, and an interquartile range of \opIqrLoSp{} to \opIqrHiSp{} times the truth; the first-order single loss approximation, defined on at least \opSlaNdMin{} of the \opNRep{} histories of every cell, narrows the range to \opIqrLoSla{} to \opIqrHiSla{}; the three
+generalised Pareto fits with the mean adjustment narrow it to \opGpdIqrLo{} to \opGpdIqrHi{} but are defined only on the histories whose fitted tail index is below one, which at $\xi=0.96$ is about two thirds of them. Robust estimators do not improve the spread on clean data and protect only against gross losses of the kind the engine study
 contaminates; they do not repair a wrong family. The standardised approach is stable and insensitive to the tail, with a single large loss able to move its multiplier by more than the red tolerance. The recommendation of the product follows from these
-measurements: report the capital of the approach beside the dispersion of the estimate, show the share of histories on which a rung is defined, and treat a fitted tail index near one as a failure of the model and not as a capital number.
+measurements: report the capital of the approach beside the dispersion of the estimate, show the share of histories on which an estimator is defined, and treat a fitted tail index near one as a failure of the model and not as a capital number.

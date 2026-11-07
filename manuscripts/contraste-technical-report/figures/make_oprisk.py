@@ -26,7 +26,6 @@ SHORT = {
     "lda_lognormal_truncated": "LN\ntruncated",
     "lda_splice": "Splice",
     "sla": "SLA",
-    "sla_mean_corrected": "SLA\nmean corr.",
     "scenario": "Scenario",
     "sla_mean_adjusted": "GPD\nML",
     "sla_cvm": "GPD\nCvM",

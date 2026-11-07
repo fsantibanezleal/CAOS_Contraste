@@ -46,7 +46,6 @@ RUNGS = (
     ("lda_lognormal_truncated", "Truncated lognormal"),
     ("lda_splice", "Lognormal and GPD splice"),
     ("sla", "Single loss approximation"),
-    ("sla_mean_corrected", "SLA with mean correction"),
     ("scenario", "Scenario credibility"),
     ("sla_mean_adjusted", "GPD by likelihood, mean-adjusted SLA"),
     ("sla_cvm", "GPD by Cram\\'er-von Mises"),
@@ -54,7 +53,7 @@ RUNGS = (
     ("sla_cvm_lognormal", "Lognormal by Cram\\'er-von Mises (control)"),
 )
 RUNG_NAME = dict(RUNGS)
-M24_RUNGS = ("lda_lognormal", "lda_lognormal_truncated", "lda_splice", "sla", "sla_mean_corrected", "scenario")
+M24_RUNGS = ("lda_lognormal", "lda_lognormal_truncated", "lda_splice", "sla", "scenario")
 M32_RUNGS = ("lda_splice", "sla_mean_adjusted", "sla_cvm", "sla_obre", "sla_cvm_lognormal")
 
 #: The study of contaminated histories of the engine documentation (docs/oprisk/06_robust-severity.md of CAOS_RiskValidation,
@@ -281,7 +280,7 @@ def t_ladders(d: dict) -> None:
     for vid, L, xi in VARIANTS:
         c = cell(d[vid], MAIN_CELL)
         for key, nm in (("lda_lognormal", "Ln"), ("lda_lognormal_truncated", "Tr"), ("lda_splice", "Sp"), ("sla", "Sla"),
-                        ("sla_mean_corrected", "Mc"), ("scenario", "Sc"), ("sla_mean_adjusted", "Ma"), ("sla_cvm", "Cvm"),
+                        ("scenario", "Sc"), ("sla_mean_adjusted", "Ma"), ("sla_cvm", "Cvm"),
                         ("sla_obre", "Obre"), ("sla_cvm_lognormal", "Cl")):
             s = summ(c, key)
             if s is None:
@@ -298,6 +297,16 @@ def t_ladders(d: dict) -> None:
         vals = [summ(cell(d[vid], cid), key)["iqr_over_truth"] for vid, _, _ in VARIANTS for cid, _, _, _ in CELLS if summ(cell(d[vid], cid), key)]
         mac(f"IqrLo{nm}", f2(min(vals)), f"{SRC}/*.json cells[*].capital.{key}.iqr_over_truth, minimum over 16 cells")
         mac(f"IqrHi{nm}", f2(max(vals)), f"{SRC}/*.json cells[*].capital.{key}.iqr_over_truth, maximum over 16 cells")
+    sp_med = [summ(cell(d[vid], cid), "lda_splice")["ratio_to_truth"]["median"] for vid, _, _ in VARIANTS for cid, _, _, _ in CELLS if summ(cell(d[vid], cid), "lda_splice")]
+    mac("SpMedLo", f2(min(sp_med)), f"{SRC}/*.json cells[*].capital.lda_splice.ratio_to_truth.median, minimum over 16 cells")
+    mac("SpMedHi", f2(max(sp_med)), f"{SRC}/*.json cells[*].capital.lda_splice.ratio_to_truth.median, maximum over 16 cells")
+    sp_below = sum(1 for m in sp_med if m < 1.0)
+    mac("SpMedBelowOne", str(sp_below), f"{SRC}/*.json cells[*].capital.lda_splice.ratio_to_truth.median, cells with a median below one")
+    gpd = [summ(cell(d[vid], cid), k)["iqr_over_truth"] for vid, _, _ in VARIANTS for cid, _, _, _ in CELLS for k in ("sla_mean_adjusted", "sla_cvm", "sla_obre") if summ(cell(d[vid], cid), k)]
+    mac("GpdIqrLo", f2(min(gpd)), f"{SRC}/*.json cells[*].capital.(sla_mean_adjusted|sla_cvm|sla_obre).iqr_over_truth, minimum over 16 cells")
+    mac("GpdIqrHi", f2(max(gpd)), f"{SRC}/*.json cells[*].capital.(sla_mean_adjusted|sla_cvm|sla_obre).iqr_over_truth, maximum over 16 cells")
+    sla_nd = [summ(cell(d[vid], cid), "sla")["n_defined"] for vid, _, _ in VARIANTS for cid, _, _, _ in CELLS]
+    mac("SlaNdMin", f"{min(sla_nd):,}", f"{SRC}/*.json cells[*].capital.sla.n_defined, minimum over 16 cells")
     # the same cell of the four variants: spread of the replications and the number of histories lost
     nlost = sum(1000 - summ(cell(d[vid], cid), "lda_splice")["n_defined"] for vid, _, _ in VARIANTS for cid, _, _, _ in CELLS)
     mac("SpliceLost", f"{nlost:,}", "histories without a splice capital, summed over the 16 cells")
@@ -345,14 +354,19 @@ def t_contam() -> None:
     table(OUT / "oprisk-contam.tex", ["Scenario (histories)"] + list(CONTAM_COLUMNS), rows, align="lrrrrr", label="tab:op-contam",
                  caption=r"Capital over truth in the study of contaminated histories of the engine, 250 losses above EUR 20,000 per history: median, "
                          r"interquartile range and share of histories below half of the truth. Gross losses are 3 percent of the losses multiplied by 50. "
-                         r"The splice column is defined on 143, 74, 136 and 19 histories in the four rows.")
+                         r"The splice column is defined on 143, 74, 136 and 19 histories in the four rows. The cells are transcribed from the documentation of the engine, "
+                         r"which ran the study once with a cap of 900 seconds per scenario; no interval is computed for them here.")
     rows2 = []
     for name, n, _, logs in CONTAM:
         rows2.append([name] + [f"{x:.2f}" for x in logs])
     table(OUT / "oprisk-contam-log.tex", ["Scenario"] + list(CONTAM_COLUMNS), rows2, align="lrrrrr", label="tab:op-contam-log",
                  caption=r"Median absolute log ratio of capital to truth in the study of contaminated histories of the engine: the typical multiplicative "
-                         r"error of each estimator, zero for an exact capital and 0.69 for an error by a factor of two, on the same four scenarios.")
+                         r"error of each estimator, zero for an exact capital and 0.69 for an error by a factor of two, on the same four scenarios, transcribed from the documentation of the engine without an interval.")
     mac("ContamN", "148 to 170", "docs/oprisk/06_robust-severity.md line 63")
+    mac("ContamRequested", "200", "docs/oprisk/06_robust-severity.md line 63 (histories requested per scenario)")
+    mac("ContamCap", "900", "docs/oprisk/06_robust-severity.md line 63 (seconds allowed per scenario)")
+    mac("ContamSpliceErrRobLo", f"{min(CONTAM[2][3][1:4]):.2f}", "docs/oprisk/06_robust-severity.md line 84, smallest of the three robust lognormal fits")
+    mac("ContamSpliceErrRobHi", f"{max(CONTAM[2][3][1:4]):.2f}", "docs/oprisk/06_robust-severity.md line 84, largest of the three robust lognormal fits")
     mac("ContamGrossMle", f"{CONTAM[1][3][0]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
     mac("ContamGrossCvm", f"{CONTAM[1][3][1]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
     mac("ContamGrossObre", f"{CONTAM[1][3][2]:.2f}", "docs/oprisk/06_robust-severity.md line 83")
@@ -475,6 +489,14 @@ def t_scenario(d: dict) -> None:
                          r"the loss, the expected number of events per year at or above it, and the influence, the relative change of the 99.9 percent capital "
                          r"when the point is removed. The capital with all eight points is the base of the influences.")
     mx = max(si["scenarios"], key=lambda s: abs(s["influence"]))
+    amber = []
+    for vid, L, xi in VARIANTS:
+        t = next(t for t in d[vid]["tests"] if t["test_id"] == "oprisk.scenario_influence")
+        mac(f"ScTest{L}", f"{t['metric']:.3f}", f"{SRC}/{vid}.json tests[oprisk.scenario_influence].metric")
+        if t["light"] == "amber":
+            amber.append(f"$\\xi={xi}$")
+    mac("ScAmberWhich", " and ".join(amber), f"{SRC}/*.json tests[oprisk.scenario_influence] with an amber light")
+    mac("ScAmberN", str(len(amber)), f"{SRC}/*.json tests[oprisk.scenario_influence] with an amber light")
     mac("ScBase", eur_m(si["base_capital_eur"]), f"{SRC}/xi-0-96.json outputs.scenario_influence.base_capital_eur")
     mac("ScMaxInf", f"{abs(mx['influence']):.3f}", f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios[max |influence|]")
     mac("ScMaxId", mx["scenario_id"], f"{SRC}/xi-0-96.json outputs.scenario_influence.scenarios[max |influence|].scenario_id")
@@ -498,10 +520,11 @@ def t_tests(d: dict) -> None:
     table(OUT / "oprisk-tests.tex", ["Test", "Green", "Amber", "Red", "Not evaluated", "Results"], rows, align="lrrrrr", label="tab:op-tests",
                  caption=r"The lights of the five operational-risk validation tests over the four variant documents of case C17. The lights compare a "
                          r"descriptive metric with tolerances of the product, not with a regulatory threshold; the capital stability test is run for ten "
-                         r"methods in each of the sixteen cells.")
+                         r"methods in each of the sixteen cells; the tenth is a single loss approximation with a correction by the mean whose form was not confirmed against a primary text and which this report does not evaluate.")
     mac("TestsTotal", f"{sum(totals.values())}", "results of the five tests over the four documents")
     mac("TestsRed", f"{totals['red']}", "results with a red light")
     mac("TestsGreen", f"{totals['green']}", "results with a green light")
+    mac("TestsAmber", f"{totals['amber']}", "results with an amber light")
     th = [t for vid, _, _ in VARIANTS for t in d[vid]["tests"] if t["test_id"] == "oprisk.threshold_stability"]
     mac("ThrTests", f"{len(th)}", "threshold stability results")
     bm = d["xi-0-96"]["tests"][0]
