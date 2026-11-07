@@ -1,0 +1,1286 @@
+{
+ "nSims": {
+  "value": "231",
+  "source": "sum of simulations without a study block over the eight credit variants of data/derived/C22"
+ },
+ "nReps": {
+  "value": "551,000",
+  "source": "sum of n_rep over the same simulations"
+ },
+ "nRates": {
+  "value": "476",
+  "source": "sum of len(rates) over the same simulations"
+ },
+ "nExactRows": {
+  "value": "47",
+  "source": "simulations with an exact block"
+ },
+ "nGens": {
+  "value": "123",
+  "source": "distinct (variant, generator) pairs of the same simulations"
+ },
+ "nFamilies": {
+  "value": "8",
+  "source": "the null family and seven defect families"
+ },
+ "nTests": {
+  "value": "21",
+  "source": "keys ending @null in null.json without a study block"
+ },
+ "nPowerTests": {
+  "value": "17",
+  "source": "tests with a power curve on a panel that measures power"
+ },
+ "nTransition": {
+  "value": "4",
+  "source": "tests of the transitions panel"
+ },
+ "nNullReps": {
+  "value": "4,000",
+  "source": "n_rep of every @null simulation"
+ },
+ "nPowerReps": {
+  "value": "2,000",
+  "source": "n_rep of the power and clustering simulations"
+ },
+ "fSimsNull": {
+  "value": "28",
+  "source": "null.json simulations without a study"
+ },
+ "fRepsNull": {
+  "value": "128,000",
+  "source": "null.json sum of n_rep"
+ },
+ "fGensNull": {
+  "value": "14",
+  "source": "null.json distinct generators"
+ },
+ "fSimsMiscal": {
+  "value": "54",
+  "source": "miscalibration.json simulations without a study"
+ },
+ "fRepsMiscal": {
+  "value": "108,000",
+  "source": "miscalibration.json sum of n_rep"
+ },
+ "fGensMiscal": {
+  "value": "24",
+  "source": "miscalibration.json distinct generators"
+ },
+ "fSimsCluster": {
+  "value": "48",
+  "source": "clustering.json simulations without a study"
+ },
+ "fRepsCluster": {
+  "value": "96,000",
+  "source": "clustering.json sum of n_rep"
+ },
+ "fGensCluster": {
+  "value": "24",
+  "source": "clustering.json distinct generators"
+ },
+ "fSimsDrift": {
+  "value": "30",
+  "source": "drift.json simulations without a study"
+ },
+ "fRepsDrift": {
+  "value": "60,000",
+  "source": "drift.json sum of n_rep"
+ },
+ "fGensDrift": {
+  "value": "12",
+  "source": "drift.json distinct generators"
+ },
+ "fSimsDecay": {
+  "value": "21",
+  "source": "discrimination-decay.json simulations without a study"
+ },
+ "fRepsDecay": {
+  "value": "60,000",
+  "source": "discrimination-decay.json sum of n_rep"
+ },
+ "fGensDecay": {
+  "value": "17",
+  "source": "discrimination-decay.json distinct generators"
+ },
+ "fSimsLeak": {
+  "value": "14",
+  "source": "leakage.json simulations without a study"
+ },
+ "fRepsLeak": {
+  "value": "27,000",
+  "source": "leakage.json sum of n_rep"
+ },
+ "fGensLeak": {
+  "value": "8",
+  "source": "leakage.json distinct generators"
+ },
+ "fSimsBroken": {
+  "value": "24",
+  "source": "broken-monotonicity.json simulations without a study"
+ },
+ "fRepsBroken": {
+  "value": "48,000",
+  "source": "broken-monotonicity.json sum of n_rep"
+ },
+ "fGensBroken": {
+  "value": "18",
+  "source": "broken-monotonicity.json distinct generators"
+ },
+ "fSimsConc": {
+  "value": "12",
+  "source": "concentration.json simulations without a study"
+ },
+ "fRepsConc": {
+  "value": "24,000",
+  "source": "concentration.json sum of n_rep"
+ },
+ "fGensConc": {
+  "value": "6",
+  "source": "concentration.json distinct generators"
+ },
+ "nExactCmp": {
+  "value": "94",
+  "source": "47 rows with an exact block at two levels"
+ },
+ "nExactNondeg": {
+  "value": "63",
+  "source": "exact comparisons with exact probability between 0.005 and 0.995"
+ },
+ "nAgree": {
+  "value": "94",
+  "source": "agrees flags of the committed rows"
+ },
+ "zMaxAbs": {
+  "value": "2.85",
+  "source": "max |z| over the non-degenerate exact comparisons"
+ },
+ "zSd": {
+  "value": "1.20",
+  "source": "sd of z over the non-degenerate exact comparisons"
+ },
+ "zMean": {
+  "value": "0.00",
+  "source": "mean of z over the non-degenerate exact comparisons"
+ },
+ "nHold": {
+  "value": "19",
+  "source": "holds() of the 21 @null rows"
+ },
+ "nNotHold": {
+  "value": "2",
+  "source": "21 minus holds"
+ },
+ "boundFive": {
+  "value": "6.06",
+  "source": "alpha + z_0.999 sqrt(alpha(1-alpha)/4000)"
+ },
+ "boundOne": {
+  "value": "1.49",
+  "source": "same at alpha 0.01"
+ },
+ "boundFiveBig": {
+  "value": "5.48",
+  "source": "same at 20,000 repetitions"
+ },
+ "jeffExactOne": {
+  "value": "1.38",
+  "source": "null.json pd.jeffreys@null exact p<0.01"
+ },
+ "jeffExactFive": {
+  "value": "4.79",
+  "source": "null.json pd.jeffreys@null exact p<0.05"
+ },
+ "jeffSimOne": {
+  "value": "1.12",
+  "source": "null.json pd.jeffreys@null rate p<0.01"
+ },
+ "jeffSimFive": {
+  "value": "3.90",
+  "source": "null.json pd.jeffreys@null rate p<0.05"
+ },
+ "binExactFive": {
+  "value": "4.79",
+  "source": "null.json pd.binomial@null exact"
+ },
+ "binExactOne": {
+  "value": "0.69",
+  "source": "null.json pd.binomial@null exact"
+ },
+ "binSimFive": {
+  "value": "4.55",
+  "source": "null.json pd.binomial@null rate"
+ },
+ "normFive": {
+  "value": "8.38",
+  "source": "null.json pd.normal_multiperiod@null"
+ },
+ "normOne": {
+  "value": "4.05",
+  "source": "null.json pd.normal_multiperiod@null"
+ },
+ "normLoFive": {
+  "value": "7.56",
+  "source": "Wilson low"
+ },
+ "normHiFive": {
+  "value": "9.27",
+  "source": "Wilson high"
+ },
+ "migFive": {
+  "value": "0.18",
+  "source": "null.json"
+ },
+ "hhiFive": {
+  "value": "0.0",
+  "source": "null.json"
+ },
+ "momFive": {
+  "value": "4.45",
+  "source": "null.json"
+ },
+ "matFive": {
+  "value": "3.70",
+  "source": "null.json"
+ },
+ "ordFive": {
+  "value": "6.05",
+  "source": "null.json"
+ },
+ "timeFive": {
+  "value": "4.72",
+  "source": "null.json"
+ },
+ "ordTwentyK": {
+  "value": "5.05",
+  "source": "null.json rating.markov_order@null-20000"
+ },
+ "ordTwentyKLo": {
+  "value": "4.76",
+  "source": "same, Wilson low"
+ },
+ "ordTwentyKHi": {
+  "value": "5.36",
+  "source": "same, Wilson high"
+ },
+ "aucNullFive": {
+  "value": "3.40",
+  "source": "null.json"
+ },
+ "profileFive": {
+  "value": "3.70",
+  "source": "null.json"
+ },
+ "hlFive": {
+  "value": "4.60",
+  "source": "null.json"
+ },
+ "hlOne": {
+  "value": "0.97",
+  "source": "null.json"
+ },
+ "chiGradesFive": {
+  "value": "5.30",
+  "source": "null.json"
+ },
+ "markovBoundMargin": {
+  "value": "0.01",
+  "source": "bound minus rate"
+ },
+ "hlFitted": {
+  "value": "11.0",
+  "source": "null.json pd.hosmer_lemeshow@fitted"
+ },
+ "hlFittedOne": {
+  "value": "3.4",
+  "source": "same"
+ },
+ "hlDofTheory": {
+  "value": "11.5",
+  "source": "P(chi2_10 > chi2_{8,0.95})"
+ },
+ "tlUpper": {
+  "value": "6.35",
+  "source": "null.json pd.traffic_lights@upper"
+ },
+ "tlUpperExact": {
+  "value": "6.03",
+  "source": "same, exact"
+ },
+ "tlLowerExact": {
+  "value": "3.79",
+  "source": "null.json pd.traffic_lights@null exact"
+ },
+ "chiThin": {
+  "value": "5.67",
+  "source": "null.json pd.chi2_grades@thin"
+ },
+ "chiThinOne": {
+  "value": "1.73",
+  "source": "same"
+ },
+ "aucDevOne": {
+  "value": "11.6",
+  "source": "null.json disc.auc_vs_initial@dev1"
+ },
+ "aucDevOneExt": {
+  "value": "5.3",
+  "source": "same, extended form"
+ },
+ "aucDevTheory": {
+  "value": "12.2",
+  "source": "P(Z > 1.645/sqrt(1+1/m)), m=1"
+ },
+ "aucDevTheoryFour": {
+  "value": "7.1",
+  "source": "m=4"
+ },
+ "aucDevTheorySixteen": {
+  "value": "5.5",
+  "source": "m=16"
+ },
+ "psiHundred": {
+  "value": "85.0",
+  "source": "null.json stability.psi@n100 rule metric>0.1"
+ },
+ "psiHundredTwentyFive": {
+  "value": "22.9",
+  "source": "same, rule metric>0.25"
+ },
+ "psiHundredBench": {
+  "value": "7.0",
+  "source": "same, benchmark p<0.05"
+ },
+ "psiTheoryHundred": {
+  "value": "83.4",
+  "source": "chi2_9 sf(0.10*100/2)"
+ },
+ "psiTheoryHundredTF": {
+  "value": "18.7",
+  "source": "chi2_9 sf(0.25*100/2)"
+ },
+ "psiTheoryFourHundred": {
+  "value": "1.8",
+  "source": "chi2_9 sf(0.10*400/2)"
+ },
+ "binKOneTwoFive": {
+  "value": "76.0",
+  "source": "miscalibration.json pd.binomial portfolio x=1.25"
+ },
+ "jeffKOneTwoFive": {
+  "value": "79.8",
+  "source": "miscalibration.json pd.jeffreys portfolio x=1.25"
+ },
+ "hlKOneTwoFive": {
+  "value": "64.9",
+  "source": "miscalibration.json pd.hosmer_lemeshow obligors x=1.25"
+ },
+ "spiKOneTwoFive": {
+  "value": "94.6",
+  "source": "miscalibration.json pd.spiegelhalter obligors x=1.25"
+ },
+ "chiKOneTwoFive": {
+  "value": "66.1",
+  "source": "miscalibration.json pd.chi2_grades grades x=1.25"
+ },
+ "normKOneTwoFive": {
+  "value": "86.2",
+  "source": "miscalibration.json pd.normal_multiperiod years x=1.25"
+ },
+ "tlKOneTwoFive": {
+  "value": "80.6",
+  "source": "miscalibration.json pd.traffic_lights years x=1.25"
+ },
+ "vasKOneTwoFive": {
+  "value": "0.0",
+  "source": "miscalibration.json pd.binomial_vasicek portfolio x=1.25"
+ },
+ "binKOneFive": {
+  "value": "99.6",
+  "source": "miscalibration.json pd.binomial portfolio x=1.5"
+ },
+ "vasKOneFive": {
+  "value": "0.0",
+  "source": "miscalibration.json pd.binomial_vasicek portfolio x=1.5"
+ },
+ "vasKThree": {
+  "value": "79.0",
+  "source": "miscalibration.json pd.binomial_vasicek portfolio x=3.0"
+ },
+ "profKThree": {
+  "value": "2.4",
+  "source": "miscalibration.json pd.default_profile grades x=3.0"
+ },
+ "binKOneOne": {
+  "value": "22.8",
+  "source": "miscalibration.json pd.binomial portfolio x=1.1"
+ },
+ "spiKOneOne": {
+  "value": "41.2",
+  "source": "miscalibration.json pd.spiegelhalter obligors x=1.1"
+ },
+ "hlKOneOne": {
+  "value": "16.8",
+  "source": "miscalibration.json pd.hosmer_lemeshow obligors x=1.1"
+ },
+ "chiKOneOne": {
+  "value": "16.0",
+  "source": "miscalibration.json pd.chi2_grades grades x=1.1"
+ },
+ "vasKThreeExact": {
+  "value": "78.8",
+  "source": "miscalibration.json pd.binomial_vasicek portfolio x=3 exact"
+ },
+ "binKOneTwoFiveExact": {
+  "value": "74.9",
+  "source": "miscalibration.json pd.binomial x=1.25 exact"
+ },
+ "binRhoTwo": {
+  "value": "12.3",
+  "source": "clustering.json pd.binomial portfolio x=0.02"
+ },
+ "binRhoTwoExact": {
+  "value": "13.2",
+  "source": "same, exact"
+ },
+ "binRhoFive": {
+  "value": "17.5",
+  "source": "clustering.json pd.binomial portfolio x=0.05"
+ },
+ "binRhoFiveExact": {
+  "value": "17.8",
+  "source": "same, exact"
+ },
+ "binRhoOneZero": {
+  "value": "18.6",
+  "source": "clustering.json pd.binomial portfolio x=0.1"
+ },
+ "binRhoOneZeroExact": {
+  "value": "19.7",
+  "source": "same, exact"
+ },
+ "chiRhoTwo": {
+  "value": "46.8",
+  "source": "clustering.json pd.chi2_grades grades x=0.02"
+ },
+ "chiRhoOneZero": {
+  "value": "74.9",
+  "source": "clustering.json pd.chi2_grades grades x=0.1"
+ },
+ "hlRhoTwo": {
+  "value": "50.0",
+  "source": "clustering.json pd.hosmer_lemeshow obligors x=0.02"
+ },
+ "hlRhoTwoZero": {
+  "value": "86.5",
+  "source": "clustering.json pd.hosmer_lemeshow obligors x=0.2"
+ },
+ "spiRhoFive": {
+  "value": "34.5",
+  "source": "clustering.json pd.spiegelhalter obligors x=0.05"
+ },
+ "normRhoFive": {
+  "value": "7.4",
+  "source": "clustering.json pd.normal_multiperiod years x=0.05"
+ },
+ "normRhoTwoZero": {
+  "value": "3.5",
+  "source": "clustering.json pd.normal_multiperiod years x=0.2"
+ },
+ "vasRhoOneZero": {
+  "value": "4.7",
+  "source": "clustering.json pd.binomial_vasicek portfolio x=0.1"
+ },
+ "vasRhoTwoZero": {
+  "value": "5.9",
+  "source": "clustering.json pd.binomial_vasicek portfolio x=0.2"
+ },
+ "tlRhoFive": {
+  "value": "10.8",
+  "source": "clustering.json pd.traffic_lights years x=0.05"
+ },
+ "normRhoZero": {
+  "value": "8.2",
+  "source": "clustering.json pd.normal_multiperiod years x=0"
+ },
+ "vasRhoTwoZeroExact": {
+  "value": "7.1",
+  "source": "same, exact"
+ },
+ "psiBenchZeroTwo": {
+  "value": "89.6",
+  "source": "drift.json stability.psi x=0.2 p<0.05"
+ },
+ "psiBenchZeroOne": {
+  "value": "27.2",
+  "source": "drift.json stability.psi x=0.1 p<0.05"
+ },
+ "psiBandZeroOneAtZeroTwo": {
+  "value": "2.8",
+  "source": "drift.json stability.psi x=0.2 metric>0.1"
+ },
+ "psiBandZeroTwoFiveAtZeroTwo": {
+  "value": "0.0",
+  "source": "drift.json stability.psi x=0.2 metric>0.25"
+ },
+ "psiBandZeroOneAtZeroThree": {
+  "value": "53.1",
+  "source": "drift.json stability.psi x=0.3 metric>0.1"
+ },
+ "psiBandZeroTwoFiveAtZeroFive": {
+  "value": "55.6",
+  "source": "drift.json stability.psi x=0.5 metric>0.25"
+ },
+ "chiDriftZeroTwo": {
+  "value": "88.5",
+  "source": "drift.json stability.chi2 x=0.2 p<0.05"
+ },
+ "ksDriftZeroTwo": {
+  "value": "97.3",
+  "source": "drift.json stability.ks x=0.2 p<0.05"
+ },
+ "ksDriftZeroOne": {
+  "value": "46.5",
+  "source": "drift.json stability.ks x=0.1 p<0.05"
+ },
+ "hlDriftZeroFive": {
+  "value": "4.9",
+  "source": "drift.json pd.hosmer_lemeshow calibration x=0.5"
+ },
+ "spiDriftZeroFive": {
+  "value": "5.0",
+  "source": "drift.json pd.spiegelhalter calibration x=0.5"
+ },
+ "ecbDropZeroTwo": {
+  "value": "25.4",
+  "source": "discrimination-decay.json disc.auc_vs_initial ecb x=0.02"
+ },
+ "ecbDropZeroFive": {
+  "value": "81.5",
+  "source": "discrimination-decay.json disc.auc_vs_initial ecb x=0.05"
+ },
+ "ecbDropZeroEight": {
+  "value": "99.1",
+  "source": "discrimination-decay.json disc.auc_vs_initial ecb x=0.08"
+ },
+ "delDropZeroFive": {
+  "value": "71.6",
+  "source": "discrimination-decay.json disc.delong delong x=0.05"
+ },
+ "delDropZeroTwo": {
+  "value": "18.0",
+  "source": "discrimination-decay.json disc.delong delong x=0.02"
+ },
+ "ecbDropAtPower": {
+  "value": "0.049",
+  "source": "discrimination-decay.json impact.ecb_drop80"
+ },
+ "delDropAtPower": {
+  "value": "0.060",
+  "source": "discrimination-decay.json impact.delong_drop80"
+ },
+ "leakAucZeroTwoFive": {
+  "value": "63.5",
+  "source": "leakage.json disc.auc_vs_initial auc x=0.25"
+ },
+ "leakCsiZeroTwoFive": {
+  "value": "6.0",
+  "source": "leakage.json stability.csi feature x=0.25"
+ },
+ "leakCsiOne": {
+  "value": "14.6",
+  "source": "leakage.json stability.csi feature x=1.0"
+ },
+ "leakCsiTwo": {
+  "value": "58.1",
+  "source": "leakage.json stability.csi feature x=2.0"
+ },
+ "leakAucZeroFive": {
+  "value": "98.9",
+  "source": "leakage.json disc.auc_vs_initial auc x=0.5"
+ },
+ "migROneFivenFiveZeroZero": {
+  "value": "7.9",
+  "source": "rating.migration_ztests migration-500 x=1.5"
+ },
+ "migRTwonFiveZeroZero": {
+  "value": "55.5",
+  "source": "rating.migration_ztests migration-500 x=2.0"
+ },
+ "migRThreenFiveZeroZero": {
+  "value": "99.7",
+  "source": "rating.migration_ztests migration-500 x=3.0"
+ },
+ "migRTwonTwoZeroZeroZero": {
+  "value": "100.0",
+  "source": "rating.migration_ztests migration-2000 x=2.0"
+ },
+ "migROneFivenTwoZeroZeroZero": {
+  "value": "65.7",
+  "source": "rating.migration_ztests migration-2000 x=1.5"
+ },
+ "hhiPower": {
+  "value": "0.0",
+  "source": "rating.hhi ecb x=0.5"
+ },
+ "chiCountZeroZeroFive": {
+  "value": "94.8",
+  "source": "stability.chi2 counts x=0.05"
+ },
+ "chiCountZeroZeroTwo": {
+  "value": "23.4",
+  "source": "stability.chi2 counts x=0.02"
+ },
+ "swapProfile": {
+  "value": "95.2",
+  "source": "pd.default_profile curve x=1.0"
+ },
+ "swapChi": {
+  "value": "93.7",
+  "source": "pd.chi2_grades curve x=1.0"
+ },
+ "hhiPeak": {
+  "value": "1.09",
+  "source": "max over c of sqrt(K-1)(c-CV0)/(c sqrt(0.5+c^2)), K=10, CV0=0.6"
+ },
+ "hhiAllIn": {
+  "value": "0.78",
+  "source": "same at c = sqrt(K-1)"
+ },
+ "hhiAllInP": {
+  "value": "0.22",
+  "source": "upper normal tail of the all-in statistic"
+ },
+ "zCrit": {
+  "value": "1.645",
+  "source": "norm.ppf(0.95)"
+ },
+ "nReach": {
+  "value": "13",
+  "source": "main curves whose rate reaches 0.8 on the ladder"
+ },
+ "nNoReach": {
+  "value": "4",
+  "source": "main curves that do not"
+ },
+ "sPsi": {
+  "value": "0.185",
+  "source": "severity at 80% power, stability.psi"
+ },
+ "sChiStab": {
+  "value": "0.186",
+  "source": "severity at 80% power, stability.chi2"
+ },
+ "sKs": {
+  "value": "0.166",
+  "source": "severity at 80% power, stability.ks"
+ },
+ "sMig": {
+  "value": "2.55",
+  "source": "severity at 80% power, rating.migration_ztests"
+ },
+ "sBin": {
+  "value": "1.29",
+  "source": "severity at 80% power, pd.binomial"
+ },
+ "sJeff": {
+  "value": "1.25",
+  "source": "severity at 80% power, pd.jeffreys"
+ },
+ "sChi": {
+  "value": "1.35",
+  "source": "severity at 80% power, pd.chi2_grades"
+ },
+ "sHl": {
+  "value": "1.36",
+  "source": "severity at 80% power, pd.hosmer_lemeshow"
+ },
+ "sSpi": {
+  "value": "1.21",
+  "source": "severity at 80% power, pd.spiegelhalter"
+ },
+ "sNorm": {
+  "value": "1.23",
+  "source": "severity at 80% power, pd.normal_multiperiod"
+ },
+ "sTl": {
+  "value": "1.25",
+  "source": "severity at 80% power, pd.traffic_lights"
+ },
+ "nMonoPairs": {
+  "value": "220",
+  "source": "adjacent ladder pairs of the power panels, two levels"
+ },
+ "nMonoViol": {
+  "value": "0",
+  "source": "falls larger than 3.29 combined SE"
+ },
+ "wpAgree": {
+  "value": "143",
+  "source": "clustering.json golden"
+ },
+ "wpTotal": {
+  "value": "144",
+  "source": "same"
+ },
+ "wpRuns": {
+  "value": "25,000",
+  "source": "same"
+ },
+ "ynAgree": {
+  "value": "50",
+  "source": "drift.json golden"
+ },
+ "ynTotal": {
+  "value": "54",
+  "source": "same"
+ },
+ "ynRuns": {
+  "value": "10,000",
+  "source": "same"
+ },
+ "ynMeanZ": {
+  "value": "0.65",
+  "source": "mean z of the cells strictly between 0 and 1"
+ },
+ "ynInterior": {
+  "value": "52",
+  "source": "cells with a published rate strictly between 0 and 1"
+ },
+ "demlerRuns": {
+  "value": "1,000",
+  "source": "leakage.json golden"
+ },
+ "demlerMeasured": {
+  "value": "0.2",
+  "source": "leakage.json golden measured"
+ },
+ "demlerPublished": {
+  "value": "0.1",
+  "source": "leakage.json golden published"
+ },
+ "wpOffPub": {
+  "value": "95.5",
+  "source": "the one WP14 cell that disagrees"
+ },
+ "wpOffMeas": {
+  "value": "94.4",
+  "source": "same, measured"
+ },
+ "ivWaldAll": {
+  "value": "68",
+  "source": "exact value inside the 95% interval, all 94 comparisons"
+ },
+ "ivWaldNd": {
+  "value": "56",
+  "source": "same, the 63 non-degenerate comparisons"
+ },
+ "ivWilsonAll": {
+  "value": "69",
+  "source": "exact value inside the 95% interval, all 94 comparisons"
+ },
+ "ivWilsonNd": {
+  "value": "57",
+  "source": "same, the 63 non-degenerate comparisons"
+ },
+ "ivACAll": {
+  "value": "88",
+  "source": "exact value inside the 95% interval, all 94 comparisons"
+ },
+ "ivACNd": {
+  "value": "57",
+  "source": "same, the 63 non-degenerate comparisons"
+ },
+ "ivCPAll": {
+  "value": "88",
+  "source": "exact value inside the 95% interval, all 94 comparisons"
+ },
+ "ivCPNd": {
+  "value": "57",
+  "source": "same, the 63 non-degenerate comparisons"
+ },
+ "ivJefAll": {
+  "value": "87",
+  "source": "exact value inside the 95% interval, all 94 comparisons"
+ },
+ "ivJefNd": {
+  "value": "56",
+  "source": "same, the 63 non-degenerate comparisons"
+ },
+ "covWaldThousandth": {
+  "value": "90.6",
+  "source": "exact coverage of the Wald interval, R=4000, p=0.001"
+ },
+ "covWaldOne": {
+  "value": "94.4",
+  "source": "exact coverage of the Wald interval, R=4000, p=0.01"
+ },
+ "covWaldFive": {
+  "value": "94.9",
+  "source": "exact coverage of the Wald interval, R=4000, p=0.05"
+ },
+ "covWilsonThousandth": {
+  "value": "93.1",
+  "source": "exact coverage of the Wilson interval, R=4000, p=0.001"
+ },
+ "covWilsonOne": {
+  "value": "95.4",
+  "source": "exact coverage of the Wilson interval, R=4000, p=0.01"
+ },
+ "covWilsonFive": {
+  "value": "95.4",
+  "source": "exact coverage of the Wilson interval, R=4000, p=0.05"
+ },
+ "covACThousandth": {
+  "value": "97.9",
+  "source": "exact coverage of the Agresti--Coull interval, R=4000, p=0.001"
+ },
+ "covACOne": {
+  "value": "95.4",
+  "source": "exact coverage of the Agresti--Coull interval, R=4000, p=0.01"
+ },
+ "covACFive": {
+  "value": "95.4",
+  "source": "exact coverage of the Agresti--Coull interval, R=4000, p=0.05"
+ },
+ "covCPThousandth": {
+  "value": "96.0",
+  "source": "exact coverage of the Clopper--Pearson interval, R=4000, p=0.001"
+ },
+ "covCPOne": {
+  "value": "96.2",
+  "source": "exact coverage of the Clopper--Pearson interval, R=4000, p=0.01"
+ },
+ "covCPFive": {
+  "value": "95.4",
+  "source": "exact coverage of the Clopper--Pearson interval, R=4000, p=0.05"
+ },
+ "covJefThousandth": {
+  "value": "96.0",
+  "source": "exact coverage of the Jeffreys interval, R=4000, p=0.001"
+ },
+ "covJefOne": {
+  "value": "94.4",
+  "source": "exact coverage of the Jeffreys interval, R=4000, p=0.01"
+ },
+ "covJefFive": {
+  "value": "95.0",
+  "source": "exact coverage of the Jeffreys interval, R=4000, p=0.05"
+ },
+ "flagFive": {
+  "value": "0.14",
+  "source": "instrument.json flag_probability 4000 0.05"
+ },
+ "flagOne": {
+  "value": "0.18",
+  "source": "same 0.01"
+ },
+ "flagTest": {
+  "value": "0.31",
+  "source": "per test, both levels"
+ },
+ "flagFamily": {
+  "value": "6.4",
+  "source": "21 tests, independence assumed"
+ },
+ "flagThousand": {
+  "value": "0.48",
+  "source": "per test at R=1000"
+ },
+ "flagTwentyK": {
+  "value": "0.25",
+  "source": "per test at R=20000"
+ },
+ "detFiveThousand": {
+  "value": "2.87",
+  "source": "smallest excess over 5% detected with probability 0.8, R=1000"
+ },
+ "detOneThousand": {
+  "value": "1.36",
+  "source": "same over 1%, R=1000"
+ },
+ "detFiveTwoK": {
+  "value": "2.01",
+  "source": "smallest excess over 5% detected with probability 0.8, R=2000"
+ },
+ "detOneTwoK": {
+  "value": "0.94",
+  "source": "same over 1%, R=2000"
+ },
+ "detFiveFour": {
+  "value": "1.39",
+  "source": "smallest excess over 5% detected with probability 0.8, R=4000"
+ },
+ "detOneFour": {
+  "value": "0.66",
+  "source": "same over 1%, R=4000"
+ },
+ "detFiveTwentyK": {
+  "value": "0.61",
+  "source": "smallest excess over 5% detected with probability 0.8, R=20000"
+ },
+ "detOneTwentyK": {
+  "value": "0.28",
+  "source": "same over 1%, R=20000"
+ },
+ "detFiveTwoHundredK": {
+  "value": "0.19",
+  "source": "smallest excess over 5% detected with probability 0.8, R=200000"
+ },
+ "detOneTwoHundredK": {
+  "value": "0.09",
+  "source": "same over 1%, R=200000"
+ },
+ "agFailOne": {
+  "value": "0.1",
+  "source": "instrument.json agreement_failure binomial 5% factor 1.0"
+ },
+ "agFailTwoPercent": {
+  "value": "14.8",
+  "source": "instrument.json agreement_failure binomial 5% factor 1.02"
+ },
+ "agFailFivePercent": {
+  "value": "98.5",
+  "source": "instrument.json agreement_failure binomial 5% factor 1.05"
+ },
+ "agFailTenPercent": {
+  "value": "100.0",
+  "source": "instrument.json agreement_failure binomial 5% factor 1.1"
+ },
+ "agSimFive": {
+  "value": "99.0",
+  "source": "instrument.json agreement_simulated factor 1.05"
+ },
+ "agSimTen": {
+  "value": "100",
+  "source": "same factor 1.10"
+ },
+ "agSimNone": {
+  "value": "0.0",
+  "source": "same factor 1.00"
+ },
+ "agBlocks": {
+  "value": "200",
+  "source": "blocks per factor"
+ },
+ "agMeanRateFive": {
+  "value": "6.74",
+  "source": "mean simulated binomial rate at 5% when the generator's PD is 5% too high"
+ },
+ "hhiWilsonHi": {
+  "value": "0.10",
+  "source": "upper Wilson limit of a rate of 0 in 4,000 repetitions"
+ },
+ "jeffDetect": {
+  "value": "28.1",
+  "source": "P(rate > bound) at R=4000 with true size = exact Jeffreys size at 1%"
+ },
+ "nReproduced": {
+  "value": "21",
+  "source": "reproduce.json"
+ },
+ "nReproTotal": {
+  "value": "21",
+  "source": "reproduce.json"
+ },
+ "seedMinutes": {
+  "value": "14",
+  "source": "seed_replication.json seconds / 60"
+ },
+ "reproSeconds": {
+  "value": "67",
+  "source": "reproduce.json seconds"
+ },
+ "nBlocks": {
+  "value": "50",
+  "source": "seed_replication.json"
+ },
+ "nRepsPooled": {
+  "value": "200,000",
+  "source": "blocks times repetitions"
+ },
+ "sdRatioMean": {
+  "value": "1.00",
+  "source": "mean over tests and levels of sd of block rates over sqrt(p(1-p)/4000)"
+ },
+ "sdRatioMin": {
+  "value": "0.78",
+  "source": "min of the same"
+ },
+ "sdRatioMax": {
+  "value": "1.22",
+  "source": "max of the same"
+ },
+ "nWithin": {
+  "value": "10",
+  "source": "tests whose pooled rate is at most the level at both levels"
+ },
+ "nOver": {
+  "value": "9",
+  "source": "tests whose pooled Wilson lower limit exceeds the level at one level"
+ },
+ "nNeither": {
+  "value": "2",
+  "source": "the others"
+ },
+ "nVerdictAgree": {
+  "value": "16",
+  "source": "committed verdict equals pooled verdict"
+ },
+ "nVerdictDisagree": {
+  "value": "5",
+  "source": "21 minus the above"
+ },
+ "smallExcMax": {
+  "value": "0.29",
+  "source": "largest pooled excess over the level among the over tests other than Jeffreys and normal"
+ },
+ "smallExcMin": {
+  "value": "0.09",
+  "source": "smallest pooled excess among them"
+ },
+ "nSmallOver": {
+  "value": "7",
+  "source": "over tests other than Jeffreys and normal"
+ },
+ "pooledPsi": {
+  "value": "5.29",
+  "source": "pooled rate at 5%, stability.psi, 200,000 repetitions"
+ },
+ "pooledHl": {
+  "value": "5.17",
+  "source": "pooled rate at 5%, pd.hosmer_lemeshow, 200,000 repetitions"
+ },
+ "pooledSpi": {
+  "value": "5.15",
+  "source": "pooled rate at 5%, pd.spiegelhalter, 200,000 repetitions"
+ },
+ "pooledOrd": {
+  "value": "5.15",
+  "source": "pooled rate at 5%, rating.markov_order, 200,000 repetitions"
+ },
+ "pooledChi": {
+  "value": "5.15",
+  "source": "pooled rate at 5%, pd.chi2_grades, 200,000 repetitions"
+ },
+ "pooledDel": {
+  "value": "5.13",
+  "source": "pooled rate at 5%, disc.delong, 200,000 repetitions"
+ },
+ "pooledCsi": {
+  "value": "5.09",
+  "source": "pooled rate at 5%, stability.csi"
+ },
+ "pooledHlOne": {
+  "value": "1.26",
+  "source": "pooled rate at 1% Hosmer-Lemeshow"
+ },
+ "pooledNorm": {
+  "value": "7.99",
+  "source": "pooled normal at 5%"
+ },
+ "pooledJeffOne": {
+  "value": "1.38",
+  "source": "pooled Jeffreys at 1%"
+ },
+ "pooledBinOne": {
+  "value": "0.66",
+  "source": "pooled binomial at 1%"
+ },
+ "pooledMigFive": {
+  "value": "0.11",
+  "source": "pooled migration at 5%"
+ },
+ "pooledAucFive": {
+  "value": "4.00",
+  "source": "pooled AUC test at 5%"
+ },
+ "pooledProfFive": {
+  "value": "4.05",
+  "source": "pooled default profile at 5%"
+ },
+ "pooledTlFive": {
+  "value": "3.81",
+  "source": "pooled traffic lights at 5%"
+ },
+ "flWithinBoundThousand": {
+  "value": "0.15",
+  "source": "share of cells of 1000 repetitions flagged by the bound rule, tests within the level"
+ },
+ "flWithinNaiveThousand": {
+  "value": "22.7",
+  "source": "same by the naive rule"
+ },
+ "flOverBoundThousand": {
+  "value": "13.0",
+  "source": "same for the tests above the level"
+ },
+ "flOverNaiveThousand": {
+  "value": "77.6",
+  "source": "same by the naive rule"
+ },
+ "flWithinBoundTwoK": {
+  "value": "0.00",
+  "source": "share of cells of 2000 repetitions flagged by the bound rule, tests within the level"
+ },
+ "flWithinNaiveTwoK": {
+  "value": "19.4",
+  "source": "same by the naive rule"
+ },
+ "flOverBoundTwoK": {
+  "value": "13.7",
+  "source": "same for the tests above the level"
+ },
+ "flOverNaiveTwoK": {
+  "value": "82.1",
+  "source": "same by the naive rule"
+ },
+ "flWithinBoundFour": {
+  "value": "0.00",
+  "source": "share of cells of 4000 repetitions flagged by the bound rule, tests within the level"
+ },
+ "flWithinNaiveFour": {
+  "value": "14.0",
+  "source": "same by the naive rule"
+ },
+ "flOverBoundFour": {
+  "value": "16.4",
+  "source": "same for the tests above the level"
+ },
+ "flOverNaiveFour": {
+  "value": "87.8",
+  "source": "same by the naive rule"
+ },
+ "flWithinBoundTwentyK": {
+  "value": "0.00",
+  "source": "share of cells of 20000 repetitions flagged by the bound rule, tests within the level"
+ },
+ "flWithinNaiveTwentyK": {
+  "value": "10.0",
+  "source": "same by the naive rule"
+ },
+ "flOverBoundTwentyK": {
+  "value": "38.9",
+  "source": "same for the tests above the level"
+ },
+ "flOverNaiveTwentyK": {
+  "value": "97.8",
+  "source": "same by the naive rule"
+ },
+ "nStudies": {
+  "value": "25",
+  "source": "studies of the null variant with a study block"
+ },
+ "nExtTests": {
+  "value": "21",
+  "source": "distinct tests among them"
+ },
+ "nExtHold": {
+  "value": "19",
+  "source": "tests all of whose studies hold their size"
+ },
+ "nStudiesHold": {
+  "value": "23",
+  "source": "studies that hold their size"
+ },
+ "extPowMin": {
+  "value": "14",
+  "source": "weakest power at 5% of the 25 studies"
+ },
+ "extPowMax": {
+  "value": "100",
+  "source": "strongest"
+ },
+ "extPowMed": {
+  "value": "73.2",
+  "source": "median"
+ },
+ "extAboveBar": {
+  "value": "10",
+  "source": "studies with power at least 0.8"
+ },
+ "extBelowHalf": {
+  "value": "4",
+  "source": "studies with power below 0.5"
+ },
+ "chrIndFive": {
+  "value": "5.7",
+  "source": "Christoffersen independence size at 5%"
+ },
+ "chrIndOne": {
+  "value": "1.52",
+  "source": "at 1%"
+ },
+ "chrCcFive": {
+  "value": "6.9",
+  "source": "Christoffersen conditional coverage size at 5%"
+ },
+ "aucCover": {
+  "value": "94.0",
+  "source": "null.json estimators.auc.coverage"
+ },
+ "aucCoverMcse": {
+  "value": "0.4",
+  "source": "null.json estimators.auc.coverage_mcse"
+ },
+ "aucSeRel": {
+  "value": "-0.15",
+  "source": "null.json estimators.auc.model_se_relative_error_pct"
+ },
+ "nConsFive": {
+  "value": "7",
+  "source": "credit-family tests whose Wilson interval at 5% lies wholly below 5%"
+ },
+ "nExtCons": {
+  "value": "8",
+  "source": "studies of the extension whose Wilson interval at 5% lies wholly below 5%"
+ },
+ "flagUnion": {
+  "value": "6.6",
+  "source": "21 tests times the sum of the two exact flag probabilities at R=4000"
+ },
+ "binLimitRhoFive": {
+  "value": "39.6",
+  "source": "Phi(Phi^-1(pi)(1 - sqrt(1-rho))/sqrt(rho)), pi=0.01, rho=0.05"
+ },
+ "binLimitRhoTen": {
+  "value": "35.3",
+  "source": "same, rho=0.10"
+ },
+ "binNRhoTenThousand": {
+  "value": "19.7",
+  "source": "independent recomputation, N=1000, rho=0.10, alpha=0.05"
+ },
+ "binNRhoTenTenK": {
+  "value": "28.8",
+  "source": "independent recomputation, N=10000, rho=0.10, alpha=0.05"
+ },
+ "binNRhoTenHundredK": {
+  "value": "34.3",
+  "source": "independent recomputation, N=100000, rho=0.10, alpha=0.05"
+ },
+ "hhiKMinSix": {
+  "value": "22",
+  "source": "smallest K with sqrt(K-1) g(c0) >= 1.645, c0=0.6"
+ },
+ "hhiKMinThree": {
+  "value": "9",
+  "source": "same, c0=0.3"
+ },
+ "nBinRecon": {
+  "value": "26",
+  "source": "exact rejection probabilities of the binomial test recomputed without the engine"
+ },
+ "binReconMax": {
+  "value": "4.4\\times10^{-10}",
+  "source": "largest absolute difference, independent recomputation against the committed exact value"
+ },
+ "zBound": {
+  "value": "3.090",
+  "source": "norm.ppf(0.999)"
+ },
+ "zAgree": {
+  "value": "3.29",
+  "source": "constant of the agreement check (norm.ppf(0.9995) rounded)"
+ }
+}

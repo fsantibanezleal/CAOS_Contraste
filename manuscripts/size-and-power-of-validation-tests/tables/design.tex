@@ -1,0 +1,20 @@
+\begin{table*}[htbp]
+\centering
+\footnotesize
+\caption{The eight families of the measurement: the defect planted, the unit and values of its severity ladder, the tests measured, and the number of simulations, seeded repetitions and generators of known truth in each family (credit-family tests only).}
+\label{tab:design}
+\fitwidth{\begin{tabular}{llllrrr}
+\toprule
+Family & Severity unit & Ladder & Tests measured & Sims & Repetitions & Generators \\
+\midrule
+Null family & each test at the boundary of its null & none & 21 tests & 28 & 128,000 & 14 \\
+Miscalibration & true PD / PD applied & 1, 1.1, 1.25, 1.5, 2, 3 & 9 calibration tests & 54 & 108,000 & 24 \\
+Default clustering & asset correlation, PDs right & 0, 0.02, 0.05, 0.10, 0.15, 0.20 & 8 calibration tests & 48 & 96,000 & 24 \\
+Drift & mean shift (standard deviations) & 0, 0.05, 0.1, 0.2, 0.3, 0.5 & 3 stability and 2 calibration tests & 30 & 60,000 & 12 \\
+Discrimination decay & AUC drop from 0.80 & 0, 0.01, 0.02, 0.03, 0.05, 0.08 & 2 discrimination tests & 21 & 60,000 & 17 \\
+Leakage & shift of the leaked feature & 0, 0.25, 0.5, 1, 1.5, 2 & AUC test, CSI, DeLong on nested models & 14 & 27,000 & 8 \\
+Broken monotonicity & planted cell / closer neighbour & 1, 1.25, 1.5, 2, 3, 4 & migration z-tests; 2 calibration tests & 24 & 48,000 & 18 \\
+Concentration & share moved into the modal grade & 0, 0.01, 0.02, 0.05, 0.10, 0.50 & 2 tests & 12 & 24,000 & 6 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

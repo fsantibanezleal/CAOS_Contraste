@@ -1,0 +1,51 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What a light is worth}
+\label{sec:di-lights}
+
+A light is a p-value read against a level, so the rate at which a light is wrongly red is the size of the test, and the rate at which it is rightly red is its power against the defect that is present.
+The measurement turns both into numbers a validator can attach to the light.
+For most of the \nTests{} tests the size is close to the level in the scenario measured, and a red light from them in the setting of the generator means what it says.
+For the tests that assume independent defaults it does not: at an asset correlation of 10\,\% the binomial test, which is exact at independence, is red for a correct PD in \binRhoOneZeroExact\,\% of portfolios of 1,000 obligors and in \binNRhoTenHundredK\,\% of portfolios of 100,000, and the limit of \cref{prop:clustering} is \binLimitRhoTen\,\%.
+A larger portfolio makes that test less trustworthy when defaults cluster, which is the reverse of what a practitioner expects from a larger sample.
+The advice of the Basel Committee to read these tests as an early warning \citep{bcbswp14} is therefore a statement about their size, and the measurement quantifies it: an early warning that is raised in a fifth to a third of correct portfolios cannot be a decision.
+The chi-square test over grades and the Hosmer--Lemeshow test reject a correct model in \chiRhoOneZero\,\% and \hlRhoTwoZero\,\% of the samples at asset correlations of 10\,\% and 20\,\%, and a validator who reads either as a test of calibration is reading a test of the correlation as well.
+
+\subsection{What the tests cannot see}
+\label{sec:di-blind}
+
+The measurement finds four tests that are blind to the defect a validator would expect them to see, and each blindness has a cause that the theory identifies.
+The default-profile test compares the distribution of defaults over grades, so it sees the shape of the calibration curve and not its level: it rejects \profKThree\,\% of samples when every probability of default is three times too low.
+The characteristic stability index of a leaked feature sees the feature's own distribution, which moves little when the leak is the relation between the feature and the outcome, and so it reaches only \leakCsiTwo\,\% at the largest leak while the AUC test sees the same leak in \leakAucZeroFive\,\% at the middle of its ladder.
+The concentration test of the European Central Bank cannot reject at all with ten grades (\cref{prop:hhi}), and the chi-square test of homogeneity on the counts, applied to the same samples, rejects \chiCountZeroZeroFive\,\% at 5\,\% of mass moved.
+The Vasicek-corrected binomial test pays for protecting against a correlation that the generator does not have, and rejects nothing until the true probability of default is far above the one applied.
+Blindness of this kind is not a flaw of a test that is used for what it tests; it is a flaw of a validation report that uses one of these tests as evidence for something else, and the measured power says which.
+
+A second kind of weakness is lack of power at the sample size of the portfolio: with 150 defaulters an AUC drop of two points is caught in \ecbDropZeroTwo\,\% of samples, and the migration z-tests, which control 42 cells with Holm's procedure, miss a migration twice as frequent as its neighbour in about half of the samples with 500 obligors per grade.
+The population stability index has the opposite structure: its fixed bands have a false alarm rate that falls with the sample size and a power that depends on the shift only, so the band of 0.10 raises an alarm in \psiHundred\,\% of samples of 100 in which nothing changed (\cref{prop:psi}), and the band of 0.25 raises none for a shift of 0.2 standard deviations in samples of 1,000.
+
+\subsection{What ``holds its size'' means}
+\label{sec:di-holds}
+
+The judgement of \cref{alg:judgement} is a statement of resolution as much as of size.
+Of the \nTests{} tests, \nHold{} hold their size at 4,000 repetitions, and the replication shows that \nSmallOver{} of the \nHold{} exceed the level by \smallExcMin{} to \smallExcMax{} points, which no cell of that size can see.
+Whether such an excess matters is a question for the user of the test, not for the measurement: a size of \pooledPsi\,\% against a level of 5\,\% changes few decisions, and a size of \normFive\,\% changes many.
+The measurement offers a way to state the question: the size with its interval, the resolution of the cell, and the group in which the pooled replication places the test.
+It does not offer a threshold, and none is implied. The distinction also tells a validator what to ask of an engine: not that every test has a size equal to its level, which only some of the 21 tests of the battery have to the resolution of 200,000 repetitions, but that the departures that matter for decisions, the ones of several points that correlated defaults and wrong reference values produce, are measured and documented.
+
+\subsection{What the measurement changed in the engine}
+\label{sec:di-engine}
+
+Several defaults of the engine that is measured were set by measurements of this kind.
+The Hosmer--Lemeshow test uses as many degrees of freedom as groups for probabilities that were set before the outcomes, since the two fewer degrees of freedom of the original statistic over-reject by the \hlFitted\,\% of \cref{sec:rs-settings} on a validation sample.
+The comparison of the AUC with its development value has an extension that adds the variance of the development estimate, which brings the size from \aucDevOne\,\% to \aucDevOneExt\,\% in the design in which the two samples are of equal size.
+The migration z-tests report a Holm-adjusted family-wise p-value, which the measurement shows to be conservative for one planted cell, and the concentration statistic is documented as bounded.
+A measurement of size and power is thus a development tool for a validation engine, not only a report on it: the first two of these defaults were choices that a reader of the p-value could not have checked, and the measurement checked them.
+
+\subsection{Reading the extension}
+\label{sec:di-extension}
+
+The \nExtTests{} tests outside the credit families are measured at one alternative each and at the null of one study, so their results are less informative than those of the credit families, and \nExtHold{} of them hold their size.
+The two that do not, the independence and the conditional-coverage tests of Christoffersen, are the tests that the back-testing literature relies on for the clustering of exceedances \citep{christoffersen1998}, and their sizes of \chrIndFive\,\% and \chrCcFive\,\% at 5\,\% in series of 1,500 days at a 5\,\% quantile mean that a back-test of 1,500 days that is read through the conditional-coverage test flags a correct model in about one case in fifteen.
+The power of the dynamic quantile test at 250 days and a 1\,\% quantile is \extPowMin\,\%, which says that a series of that length cannot reject a mis-specified VaR model by this test; this is a statement about the test at the stated alternative and not about the risk model. The extension also shows how conservative tests hide in a battery: \nExtCons{} of the 25 studies reject less often than their level, which costs power and not credibility, and a validator who reads a green light from one of them has seen less than the light suggests.

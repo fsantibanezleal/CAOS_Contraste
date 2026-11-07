@@ -1,0 +1,110 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{A validation test as a decision rule}
+\label{sec:pf-rule}
+
+A validation test $T$ takes the data $Y$ of a validation sample, such as the default counts of a portfolio, the scores and outcomes of its obligors, or two samples of a model input, and returns a p-value $p_T(Y)\in[0,1]$, or no p-value when its statistic is undefined, for example when a variance is zero.
+At a level $\lev$ the test rejects when the p-value falls below it, $p_T(Y)<\lev$; the engine that is measured colours a result amber below 5\,\% and red below 1\,\%, and the two levels of the measurement are these, $\lev\in\{0.05,0.01\}$.
+A result without a p-value is never a rejection and is counted separately.
+Let $G_\theta$ be a generator of validation samples with parameter $\theta$ and exactly known truth, and let the \emph{rejection probability} of the test at level $\lev$ be
+\begin{equation}
+\rej_T(\theta,\lev)\;=\;\Prob_\theta\big(p_T(Y)<\lev\big),\qquad Y\sim G_\theta .
+\label{eq:rejection}
+\end{equation}
+Every defect of a model is a departure of $\theta$ from the set $\Theta_0(T)$ of the parameters for which the null hypothesis of $T$ holds. Some tests are one-sided, as the binomial test whose alternative is a probability of default above the one applied, and some are two-sided, as the DeLong comparison of two areas; the rejection rule is the same for both, and only the null set differs.
+
+\subsection{Size, power and the estimands}
+\label{sec:pf-estimands}
+
+The size of the test is the largest rejection probability over the null set, and its power at a parameter outside it is the rejection probability there:
+\begin{equation}
+\mathrm{size}_T(\lev)\;=\;\sup_{\theta\in\Theta_0(T)}\rej_T(\theta,\lev),\qquad
+\mathrm{power}_T(\theta,\lev)\;=\;\rej_T(\theta,\lev),\quad \theta\notin\Theta_0(T).
+\label{eq:size-power}
+\end{equation}
+For the tests measured here the null is either simple or one-sided in a parameter along which the rejection probability does not decrease as the null fails, so the supremum is attained at the boundary of the null, the generator $G_{\theta_b}$ in which the null holds with equality and every assumption of the test is met; the size is $\rej_T(\theta_b,\lev)$.
+A test \emph{holds its size} when $\rej_T(\theta_b,\lev)\le\lev$ at both levels, is \emph{conservative} when the inequality is strict, and is \emph{oversized} otherwise.
+A defect is a one-parameter family $\theta(\sev)$ of generators, with a severity $\sev$ on a ladder of six values, and the power curve of the test against it is $\sev\mapsto\rej_T(\theta(\sev),\lev)$.
+The summary of a curve that the measurement reports is the severity at which the power first reaches 80\,\%,
+\begin{equation}
+\sev_{0.8}(T)\;=\;\inf\{\sev:\ \rej_T(\theta(\sev),0.05)\ge 0.8\},
+\label{eq:s80}
+\end{equation}
+which is a property of the test and the ladder together and carries the unit of the ladder.
+The estimands are therefore the size at 5\,\% and at 1\,\% of each test at the boundary of its null, its power at each point of the ladder of each defect that it targets, and $\sev_{0.8}$; for the three tests whose rejection region is a single default count, they are also computable exactly.
+
+\subsection{The tests that are measured}
+\label{sec:pf-tests}
+
+The battery is the 21 tests of the five credit families of the engine that return a p-value: nine tests of the calibration of the default probability, two of discrimination, four of population and characteristic stability, two of the rating system, and four of rating transitions.
+\Cref{tab:tests} lists each with its statistic and its null hypothesis, as the engine documents them.
+The four transition tests have a size in the measurement and no power, because no ladder of a defect of the transition process is planted for them, and the measurement does not claim a power for them. The 21 tests of the other seven families of the engine are measured separately (\cref{sec:extension}), each at the null of a named study and at one stated alternative.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{The 21 tests of the credit families that are measured: the statistic each computes and the null hypothesis it tests, as documented by the engine; D is the number of defaults, N the number of obligors, and a grade is a rating class.}
+\label{tab:tests}
+\fitwidth{\begin{tabular}{p{3.0cm}p{5.0cm}p{6.4cm}}
+\toprule
+Test & Statistic and reference distribution & Null hypothesis \\
+\midrule
+Binomial & upper tail of $\Bin(N,\mathrm{PD})$ at $D$ & true PD not above the PD applied, defaults independent \\
+Jeffreys & posterior $\mathrm{Beta}(D+\tfrac12,N-D+\tfrac12)$ at the PD applied & PD applied not below the true PD \\
+Vasicek-corrected binomial & binomial mixture over one systematic factor, assumed asset correlation & true PD not above the PD applied at the assumed correlation \\
+Chi-square over grades & $\sum_i (n_ip_i-d_i)^2/(n_ip_i(1-p_i))$, $\chi^2$ with one degree of freedom per grade & every grade PD is the true one, defaults independent \\
+Default profile & Pearson statistic of the defaults over grades given their number, Monte Carlo p-value & defaults fall on the grades as the PD curve implies (the shape, not the level) \\
+Hosmer--Lemeshow & groups by predicted PD, $\chi^2$ with $G$ degrees of freedom for given PDs & predicted equals true PD in every group \\
+Spiegelhalter & standardised Brier score, normal tail & the forecast equals the true PD of every obligor \\
+Normal, five years & $\sum_t(d_t-\mathrm{PD}_t)/(\sqrt T\hat\sigma)$, normal tail & no year's true PD exceeds its forecast, years independent \\
+Traffic lights & multinomial profile of the colours of the yearly standardised default rates, exact enumeration & as the normal test, with the colour probabilities of the rule \\
+AUC against development & $(\mathrm{AUC}_\mathrm{dev}-\mathrm{AUC}_\mathrm{cur})/s$, normal tail, development AUC taken as known & AUC at development smaller than in the observation period \\
+DeLong & difference of two AUCs on one sample over its covariance-based standard error, two-sided & the two AUCs are equal \\
+Population stability index & PSI against $(1/n+1/m)\chi^2_{1-\lev,B-1}$ (chi-square benchmark) & the binned distributions of the two samples are equal \\
+Characteristic stability index & the same on one model input & the binned distributions of the input are equal \\
+Chi-square of homogeneity & Pearson statistic of the $2\times B$ table & the binned distributions of the two samples are equal \\
+Kolmogorov--Smirnov & supremum distance of the two empirical distributions & both samples come from one continuous distribution \\
+Migration z-tests & one z per cell against its closer neighbour, smallest Holm-adjusted p & migration frequencies do not increase away from the diagonal \\
+Concentration (ECB) & $\sqrt{K-1}(\mathrm{CV}_\mathrm{cur}-\mathrm{CV}_\mathrm{dev})/\sqrt{\mathrm{CV}_\mathrm{cur}^2(\tfrac12+\mathrm{CV}_\mathrm{cur}^2)}$, normal tail & concentration in the grades has not increased since development \\
+Time homogeneity & chi-square on the transition counts of the periods & the transition probabilities are the same in every period \\
+Markov order & chi-square on triplets of ratings grouped by direction & the rating process is of first order \\
+Matrix against a reference & chi-square of the counts of a year against a reference matrix & the transition matrix equals the reference \\
+Downward momentum & hazard-based test of a momentum coefficient & the momentum coefficient is zero \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Notation and assumptions}
+\label{sec:pf-notation}
+
+\Cref{tab:notation} collects the symbols.
+The assumptions of the measurement are three.
+The repetitions of one cell are independent draws of the generator, which the stream design secures.
+The generator reproduces the null or the defect it states, which the exact probabilities check for the count tests and the reruns of published studies check for others.
+The severity ladders are design choices, set so that the power of the targeted tests runs from their size towards one in the sample size of the variant; a power measured on a ladder is a property of the pair of test and ladder, and the limitations return to what that does not mean. The notation separates the probability $\rej$, a property of a test and a generator, from its estimate $\hat\rej$, a property of a sample of repetitions, because the conclusions of the text are statements about the first that are read from the second.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Notation of the measurement: each symbol with its meaning; every quantity of the text is a probability or a rate unless a unit is stated, and a level is written as a fraction or as a percentage.}
+\label{tab:notation}
+\fitwidth{\begin{tabular}{p{2.6cm}p{11.6cm}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$T$, $p_T(Y)$ & a validation test and its p-value on data $Y$ \\
+$\lev$ & level of the test, 0.05 or 0.01 \\
+$G_\theta$, $\theta_b$ & generator of known truth with parameter $\theta$; the parameter at the boundary of the null \\
+$\rej_T(\theta,\lev)$ & rejection probability of $T$ at level $\lev$ under $G_\theta$ \\
+$\nrep$, $K$, $\hat\rej=K/\nrep$ & number of repetitions of a cell, number of rejections, the measured rate \\
+$\MCSE(\hat\rej)$ & Monte Carlo standard error of the rate, $\sqrt{\hat\rej(1-\hat\rej)/\nrep}$ \\
+$z_q$ & the $q$ quantile of the standard normal distribution \\
+$b_\nrep(\lev)$ & one-sided bound of the size judgement at $\nrep$ repetitions \\
+$k^*$ & smallest default count whose p-value is below $\lev$ \\
+$\sev$, $\sev_{0.8}$ & severity on a ladder; severity at which the power reaches 80\,\% \\
+$\rho$, $\mathrm{PD}$ & asset correlation of the one-factor model; probability of default \\
+$\delta_\nrep(\lev)$ & excess over the level that the bound detects with probability 0.8 \\
+\bottomrule
+\end{tabular}}
+\end{table}

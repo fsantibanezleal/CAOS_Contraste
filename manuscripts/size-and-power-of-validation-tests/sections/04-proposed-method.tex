@@ -1,0 +1,163 @@
+\section{Proposed method}
+\label{sec:proposed-method}
+
+The proposed measurement turns the question ``how often does this test reject?'' into an experiment with a known answer to compare against.
+Its idea is that a validation test can be measured exactly like any other statistical procedure once the data it sees come from a generator whose truth is fixed: the test is called as a validator calls it, on many independent samples, under the null and under planted defects, and its rejection rate is reported with the error of the estimate and, where the problem admits it, beside the exact value.
+The steps are the generators (\cref{sec:pm-generators}), the estimator and its error (\cref{sec:pm-estimator}), the streams that make repetitions independent and reproducible (\cref{sec:pm-streams}), the exact probabilities (\cref{sec:pm-exact}), the rules that judge a size and the agreement with an exact value (\cref{sec:pm-judgement}), the summary of a power curve (\cref{sec:pm-power}), the reruns of published studies (\cref{sec:pm-published}), and the algorithm with its cost and its implementation (\cref{sec:pm-algorithm}).
+
+\subsection{Generators of known truth}
+\label{sec:pm-generators}
+
+A generator is a frozen configuration with a method that draws one validation sample from a random stream and a method that returns the exact truth of the configuration, so that every quantity a test estimates is known.
+The measurement uses seven kinds.
+Default counts draw, for a portfolio of $N$ obligors with probability of default $\pi$ and asset correlation $\rho$, the number of defaults from the one-factor model in which the asset value of an obligor is $\sqrt{1-\rho}\,\varepsilon_i+\sqrt{\rho}\,X$ with independent standard normals $\varepsilon_i$ and $X$, and the obligor defaults when it falls below $\Phi^{-1}(\pi)$; given the systematic factor $X$ the defaults are independent.
+The same generator, with one portfolio per year, produces the multi-year series that the normal and traffic-lights tests read, and with several grades the counts per grade.
+A logistic portfolio draws covariates, true probabilities and outcomes for the obligor-level tests.
+Binormal scores draw defaulters from $N(\delta,1)$ and survivors from $N(0,1)$, so that the AUC is $\Phi(\delta/\sqrt2)$ and its variance is exact, with options for a challenger score of given correlation, a development sample of a given relative size, and a feature that leaks the outcome.
+A two-sample generator draws a base and a target sample, the target shifted by a stated number of standard deviations, and bins them at the deciles of the base population.
+A migration generator draws transition counts from a matrix whose cells fall geometrically away from the diagonal, from which a single cell can be raised to a multiple of its closer neighbour.
+A grade-frequency generator draws the counts of ten grades, and a rating-path generator draws the paths of a continuous-time Markov chain of five grades and default with 1,000 obligors per grade and five annual snapshots.
+Every generator records its configuration and its truth in the artifact, so that a reader can redraw any simulation from the document alone; the measurement uses \nGens{} configurations in all.
+
+The null of a test is the generator at the boundary of its null hypothesis with its assumptions met: for example, the PD applied equals the true PD of 1\,\% for 1,000 obligors with independent defaults for the count tests, five annual cohorts of 1,000 obligors at 3\,\% for the multi-year tests, two samples of 1,000 from one population for the stability tests, and the one cell at the boundary of the monotonicity null for the migration z-tests.
+A defect is one parameter of a generator moved away from the null along a ladder of six severities: \cref{tab:design} lists the seven defects and their units.
+
+\input{tables/design}
+
+\subsection{The estimator and its error}
+\label{sec:pm-estimator}
+
+Let $Y_1,\dots,Y_\nrep$ be independent draws of a generator $G_\theta$ and let
+\begin{equation}
+X_i=\indic\{p_T(Y_i)<\lev\},\qquad K=\sum_{i=1}^{\nrep}X_i,\qquad \hat\rej=\frac{K}{\nrep}
+\label{eq:rate}
+\end{equation}
+be the indicators of rejection, their sum over the repetitions that have a p-value, and the rate.
+The indicators are independent Bernoulli variables with mean $\rej_T(\theta,\lev)$, so $K$ is binomial and $\hat\rej$ is unbiased.
+Its Monte Carlo standard error and its Wilson interval at the normal quantile $z=z_{0.975}$ are
+\begin{equation}
+\MCSE(\hat\rej)=\sqrt{\frac{\hat\rej(1-\hat\rej)}{\nrep}},\qquad
+\left[\frac{\hat\rej+\frac{z^2}{2\nrep}\pm z\sqrt{\frac{\hat\rej(1-\hat\rej)}{\nrep}+\frac{z^2}{4\nrep^2}}}{1+\frac{z^2}{\nrep}}\right].
+\label{eq:se-wilson}
+\end{equation}
+The first expression is the standard error that \citet{morris2019} tabulate for a rejection percentage; the interval is the score interval of \citet{wilson1927}, which stays inside $[0,1]$ and behaves near zero, where the size of a conservative test sits.
+Every rate of the measurement carries both.
+The number of repetitions is chosen from the standard error: with $\nrep=4{,}000$ the standard error of a rate at 5\,\% is $0.34$ percentage points and its worst case, at a rate of one half, is $0.79$ points; with $\nrep=2{,}000$ the worst case is $1.12$ points. A repetition for which the test returns no p-value is not a rejection and is counted separately; the rate is taken over all repetitions, so a test that often returned no p-value would show a lower rate, and none of the \nRates{} rates of the measurement has an undefined repetition.
+
+\subsection{Independent streams and seeds}
+\label{sec:pm-streams}
+
+The repetitions of a cell must be independent, and a cell must be reproducible.
+Both follow from deriving the generator of repetition $i$ from one seed by spawning: $\mathrm{SeedSequence}(\mathrm{seed})$ is split into $\nrep$ child sequences, and repetition $i$ draws from the stream of child $i$.
+Repetition $i$ therefore depends on the seed and on $i$ only, so it reruns alone and returns the same data, and the repetitions do not share random numbers, which \citet{morris2019} identify as the way in which dependence enters a simulation and distorts both the estimates and their errors.
+A test that has randomness of its own, the Monte Carlo p-value of the default-profile test, receives a seed drawn from the stream of the repetition after the data, never a constant.
+The seed of a cell is derived from the seed of the case and a key made of the family and the cell, and it is recorded in the artifact, so that two bakes with one seed give identical artifacts.
+Results of deterministic tests on short inputs are cached by their inputs, which changes the time and never the numbers.
+
+\subsection{Exact rejection probabilities}
+\label{sec:pm-exact}
+
+For three tests the rejection probability needs no simulation.
+The binomial test, the binomial test corrected for asset correlation and the Jeffreys test see the data only through the default count $D$, and their p-values fall as $D$ grows.
+Each therefore rejects at level $\lev$ exactly when $D\ge k^*$, with
+\begin{equation}
+k^*(\lev)=\min\{k:\ p_T(k)<\lev\},
+\label{eq:kstar}
+\end{equation}
+which is found by bisection on the registered test itself, so that the rejection region used for the exact value is the region of the code that is measured.
+For a true probability of default $\pi$ and an asset correlation $\rho$ the count is a binomial mixture over the systematic factor, and
+\begin{equation}
+\rej_T(\theta,\lev)=\Prob_{\pi,\rho}(D\ge k^*)=\int_{-\infty}^{\infty}\bar F_{\Bin(N,\,p(x))}(k^*-1)\,\varphi(x)\dd x,\qquad
+p(x)=\Phin\!\left(\frac{\Phin^{-1}(\pi)-\sqrt\rho\,x}{\sqrt{1-\rho}}\right),
+\label{eq:mixture}
+\end{equation}
+where $\bar F_{\Bin(N,p)}(k-1)=\Prob(\Bin(N,p)\ge k)$, evaluated with a 256-node Gauss--Hermite rule that agrees with an adaptive quadrature to $10^{-15}$ for 1,000 obligors; with $\rho=0$ it is the binomial tail.
+For the traffic-lights test with independent years, the exact probability of each colour of a year is the binomial probability of the counts that the rule colours so, and the probability of a profile of colour counts $a=(a_\mathrm{g},a_\mathrm{y},a_\mathrm{o},a_\mathrm{r})$ is the coefficient of $x^a$ in the product over the years of $\sum_{c}q_{t,c}\,x_c$, with $q_{t,c}$ the exact probability that year $t$ has colour $c$; the rejection probability sums the profiles in the rejection region of the test.
+The exact value is placed beside the rate in \nExactRows{} rows of the measurement, and it checks the generator, the harness and the test together.
+
+\subsection{Judging a size and the agreement with an exact value}
+\label{sec:pm-judgement}
+
+Under the null at its boundary, an exact test with a continuous statistic has rejection probability $\lev$, and a conservative or discrete test has at most $\lev$, so a measured size is judged one-sided.
+With $z_{0.999}=\zBound$, a test holds its size at $\nrep$ repetitions when
+\begin{equation}
+\hat\rej\;\le\; b_\nrep(\lev)=\lev+z_{0.999}\sqrt{\frac{\lev(1-\lev)}{\nrep}},
+\label{eq:bound}
+\end{equation}
+which is \boundFive\,\% at $\lev=5\,\%$ and \boundOne\,\% at $1\,\%$ for $\nrep=\nNullReps{}$.
+Where an exact probability exists it replaces the bound, since it carries no Monte Carlo error: the test holds its size when its exact rejection probability does not exceed the level.
+Against an exact value $p$, the simulated rate is judged two-sided,
+\begin{equation}
+|\hat\rej-p|\;\le\;3.29\sqrt{\frac{p(1-p)}{\nrep}},
+\label{eq:agree}
+\end{equation}
+which a correct generator, harness and test pass with probability 0.999 per comparison.
+The two rules answer different questions, and \cref{alg:judgement} states how they combine: the bound asks whether the simulation can exclude an excess over the level, the agreement check asks whether the instrument reproduces a value that is known.
+
+\begin{algorithm}[htbp]
+\caption{Judging the size of one test at one level $\lev$ from its null cell.}
+\label{alg:judgement}
+\begin{algorithmic}[1]
+\Require rate $\hat\rej$ in $\nrep$ repetitions, level $\lev$, exact probability $p$ or none
+\If{an exact probability $p$ exists}
+  \State check the agreement \eqref{eq:agree}; if it fails, stop and report the generator as inconsistent with the exact value
+  \State \Return \textsc{holds} if $p\le\lev$, otherwise \textsc{oversized}
+\Else
+  \State \Return \textsc{holds} if $\hat\rej\le b_\nrep(\lev)$ by \eqref{eq:bound}, otherwise \textsc{oversized}
+\EndIf
+\State a test holds its size when it is \textsc{holds} at both levels
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Power curves and their summary}
+\label{sec:pm-power}
+
+A power curve is the rate $\hat\rej_j$ at each of the six severities $\sev_1<\dots<\sev_6$ of a ladder, each with its standard error and Wilson interval.
+The severity at which the curve reaches 80\,\%, the empirical counterpart of \eqref{eq:s80}, is obtained by linear interpolation between the two points that bracket 80\,\%,
+\begin{equation}
+\hat\sev_{0.8}=\sev_{j-1}+\frac{0.8-\hat\rej_{j-1}}{\hat\rej_j-\hat\rej_{j-1}}\,(\sev_j-\sev_{j-1}),\qquad j=\min\{j:\hat\rej_j\ge0.8\},
+\label{eq:s80-hat}
+\end{equation}
+and its interval is obtained by applying the same rule to the lower and to the upper Wilson limits of the points, which is conservative because it ignores the dependence between neighbouring points.
+A curve that never reaches 80\,\% on its ladder has no $\hat\sev_{0.8}$; the measurement reports that and the rate at the top of the ladder, never an extrapolation.
+Because the ladders are design choices, the values of $\hat\sev_{0.8}$ compare tests that share a ladder, and they do not rank tests that were measured on different panels.
+The curve is also checked for monotonicity: a fall of the rate between neighbouring severities by more than 3.29 combined standard errors is a violation, which for the exact tests the theory of \cref{sec:th-monotone} rules out.
+
+\subsection{Published studies as a check of the protocol}
+\label{sec:pm-published}
+
+Three published simulation studies can be rerun with the same harness: the normal and traffic-lights tests of the Basel Committee at 25,000 runs per cell, the population stability index and its benchmark of \citet{yurdakul2020} at 10,000 runs, and the single rate that \citet{demler2012} report for the DeLong test on nested models at 1,000 runs.
+For a printed rate $p'$ of $n'$ runs and a measured rate $\hat\rej$ of $\nrep$ runs both are estimates, and the difference is judged by
+\begin{equation}
+z=\frac{\hat\rej-p'}{\sqrt{\bar\rej(1-\bar\rej)\,(1/\nrep+1/n')}},\qquad \bar\rej=\frac{\nrep\hat\rej+n'p'}{\nrep+n'},\qquad |z|\le3.29\ \text{agrees},
+\label{eq:pooled-z}
+\end{equation}
+the pooled two-sample statistic at the pooled rate.
+A cell that does not agree is listed with its printed and measured values.
+These reruns validate the protocol rather than the tests: if the harness reproduces the cells of a published study, the generators and the decision rules it implements are the published ones. The check is not an independent oracle: the printed rates come from simulations that have their own error, and a cell that disagrees may reflect an unstated detail of the printed study, as the reruns of the stability study show.
+
+\subsection{Algorithm, cost and implementation}
+\label{sec:pm-algorithm}
+
+\Cref{alg:cell} measures one cell.
+The cost of a cell is $O(\nrep\,c)$ with $c$ the cost of one call of the test, and the repetitions are independent, so a cell parallelises over repetitions and a variant over cells without changing a number; the \nSims{} simulations of the \nFamilies{} families of the measurement total \nReps{} repetitions.
+The parameters are $\nrep=\nNullReps{}$ for a size, chosen so that the standard error of a rate near 5\,\% is about 0.3 points, and $\nrep=\nPowerReps{}$ for a power point, which bounds the standard error at 1.1 points.
+The implementation is the \texttt{riskvalidation.harness} module of the engine release 1.1.0 (the rates, the exact probabilities and the run) driven by the pipeline module \texttt{data-pipeline/pipeline/cases/c22\_validator.py} of the repository; the additional experiments call the same module from the scripts of \texttt{experiments/}. The worker pool that runs the cells changes no byte of the artifacts, because repetition $i$ depends on its seed and its index only.
+
+\begin{algorithm}[htbp]
+\caption{Measuring one cell of the size and power of a test.}
+\label{alg:cell}
+\begin{algorithmic}[1]
+\Require test $T$, generator $G_\theta$ with its truth, repetitions $\nrep$, seed, levels $\{0.05,0.01\}$, exact probability routine (optional)
+\State $(\mathcal S_1,\dots,\mathcal S_\nrep)\gets\mathrm{SeedSequence}(\mathrm{seed}).\mathrm{spawn}(\nrep)$
+\For{$i=1,\dots,\nrep$}
+  \State $Y_i\gets G_\theta.\mathrm{draw}(\mathrm{rng}(\mathcal S_i))$
+  \State $p_i\gets p_T(Y_i)$ \Comment{a test with randomness of its own receives a seed drawn after the data}
+  \If{$p_i$ is undefined} \State count it as undefined \Else \State $X_i(\lev)\gets\indic\{p_i<\lev\}$ for each level \EndIf
+\EndFor
+\State $K(\lev)\gets\sum_iX_i(\lev)$; $\hat\rej(\lev)\gets K(\lev)/\nrep$; compute $\MCSE$ and the Wilson interval by \eqref{eq:se-wilson}
+\If{an exact routine exists} \State compute $p(\lev)$ by \eqref{eq:mixture} and check the agreement \eqref{eq:agree} \EndIf
+\State record the configuration, the truth, the seed, $\nrep$, the counts, the undefined count and the histogram of the p-values
+\Ensure the rates with their errors, the exact values, and the record that redraws the cell
+\end{algorithmic}
+\end{algorithm}

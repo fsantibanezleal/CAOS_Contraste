@@ -1,0 +1,66 @@
+\section{Related work}
+\label{sec:related-work}
+
+\subsection{Supervisory texts and the missing error rates}
+\label{sec:rw-supervisory}
+
+The 2011 guidance on model risk management of the United States supervisors names outcomes analysis, which includes back-testing, among the three core elements of validation, beside the evaluation of conceptual soundness and ongoing monitoring \citep{fed2011sr117}.
+The reporting instructions of the European Central Bank for internal ratings-based models define the statistics a bank reports for calibration, discrimination, rating stability and concentration, and attach to them no threshold for pass or fail \citep{ecb2019instructions}.
+The study of validation methods of the Basel Committee on Banking Supervision reviews the calibration tests of its time, simulates the normal test and the traffic-lights test, and concludes that no really powerful tests of adequate calibration are currently available \citep{bcbswp14}; the newsletter on low-default portfolios addresses the case in which a portfolio produces too few defaults for any of these tests to be informative \citep{bcbs2005lowdefault}.
+These texts specify what to compute.
+They do not give, for the statistics they prescribe, the rate at which a correct model is flagged or a defective one is missed, and the validator is left to read a p-value without the error rate that would say what the p-value is worth.
+
+\subsection{Tests of the default probability}
+\label{sec:rw-calibration}
+
+The tests of calibration used in practice descend from a few constructions.
+The binomial test and its extension to correlated defaults by the single-factor model \citep{gordy2003} treat the number of defaults of a portfolio as a binomial count, or as a binomial mixture over one systematic factor; the traffic-lights approach colours each year's standardised default rate and rejects on the profile of colours; the normal test aggregates the differences between forecast and observed rates over several years \citep{bcbswp14}.
+A Bayesian reading of the same count, with the Jeffreys prior \citep{jeffreys1946}, gives the posterior probability that the true default probability lies below the one applied, which the European Central Bank prescribes for its reporting \citep{ecb2019instructions}.
+The chi-square statistic of Pearson \citep{pearson1900} over grades and the default-profile test, which compares the distribution of defaults over grades with the one the curve implies \citep{tasche2013}, test the shape of the calibration; the review of \citet{tasche2008} treats the validation of internal rating systems and of probability-of-default estimates, and the volume edited by \citet{engelmann2011} places these tests among the validation of the Basel risk parameters.
+At obligor level the Hosmer--Lemeshow statistic groups obligors by predicted probability \citep{hosmer1980}, its power depends on the sample size and on the grouping \citep{hosmer1997,paul2013}, and the Spiegelhalter statistic standardises the Brier score without any binning \citep{spiegelhalter1986,brier1950}.
+Of these, the simulation of \citet{bcbswp14} measures the size and power of two tests on eight scenarios; no source known to us measures the other tests, with the same protocol and the same generators, beside them.
+
+\subsection{Discrimination and stability}
+\label{sec:rw-discrimination}
+
+The area under the ROC curve is the probability that a defaulter is ranked above a survivor \citep{hanley1982}; its standard error follows from the placement values of the defaulters and of the survivors, and the comparison of two areas on the same obligors by the covariance of their placements is the test of \citet{delong1988}.
+\citet{demler2012} show by simulation that the DeLong test, applied to nested models fitted on the comparison sample, rejects a true null far below its level, so that the test has almost no power in that design; their single published rate is one of the studies the measurement reruns.
+A coherent alternative to the area as a measure of classifier performance has been proposed \citep{hand2009}; it does not change what the tests of the area measure, but it bears on what a validator should conclude from them.
+For population stability, the index used in credit scoring is a symmetrised divergence between two binned distributions, applied with the bands of 0.10 and 0.25; \citet{yurdakul2020} derive its approximate distribution, show that the bands have a type~I error that depends on the sample sizes and a power that falls as they grow, and report a simulation that the measurement reruns cell by cell.
+The two-sample Kolmogorov--Smirnov test \citep{massey1951} and the chi-square test of homogeneity \citep{pearson1900} are the stability tests that control their size by construction.
+
+\subsection{Rating transitions and multiplicity}
+\label{sec:rw-transitions}
+
+The tests of whether a rating process is a time-homogeneous Markov chain of first order are those of \citet{andersongoodman1957}, applied to the transition counts of a rating system.
+The reporting instructions of the European Central Bank add a test per cell of a migration matrix that the frequency of a transition should not increase with the distance from the diagonal \citep{ecb2019instructions}; a matrix of seven grades has 42 such cells, so the control of multiplicity decides the size and the power of the family.
+The sequentially rejective procedure of \citet{holm1979} controls the family-wise error rate without assuming independence, and the product bound of \citet{sidak1967} gives the probability that at least one of $m$ independent tests of level $\gamma$ rejects.
+Both ideas enter the measurement: the first inside one test, the second in the judgement of a battery. Multiplicity matters more for the power of the migration test than for its size: with 42 cells the adjusted threshold of any one cell lies far below the nominal level, so the family-wise p-value of a single planted cell is conservative, which is the case that the measurement quantifies. The battery also holds a test of whether the transition counts of a year match a reference matrix and a test of downward rating momentum, for which only the size is measured.
+
+\subsection{Back-tests of market and portfolio risk}
+\label{sec:rw-backtests}
+
+The proportion-of-failures test of \citet{kupiec1995}, the independence and conditional-coverage tests of \citet{christoffersen1998}, and the tests of the whole forecast density of \citet{berkowitz2001} are the tests on which the back-testing of value-at-risk rests, and \citet{nolde2017} distinguish such traditional back-tests, which assess whether a set of risk-measure forecasts is correct, from comparative back-tests, which compare two estimation procedures.
+The measurement covers the tests of this family that the engine registers as a second part (\cref{sec:extension}), each against one stated alternative, because their natural ladders are not shared across tests. The proportion-of-failures test is a likelihood-ratio test of the number of exceedances of a value-at-risk forecast against its nominal rate; the independence test of \citet{christoffersen1998} is a likelihood-ratio test of a first-order Markov chain for the sequence of exceedances, and the conditional-coverage test combines the two. The proportion-of-failures and independence tests rest on asymptotic chi-square distributions, and the documentation of the engine reports that the asymptotic Kupiec test is not of nominal size at 250 days and a 1\,\% level, so the size of these tests in short series is in question.
+
+\subsection{Simulation studies and error-rate reporting}
+\label{sec:rw-simulation}
+
+Size and power are the two error probabilities of a test in the sense of \citet{neymanpearson1933}.
+Their estimation by simulation is the subject of a methodological literature: \citet{burton2006} set out how a simulation study in medical statistics should be designed, \citet{morris2019} organise it as aims, data-generating mechanisms, estimands, methods and performance measures, tabulate the Monte Carlo standard error of each performance measure, and report that most of the studies of a volume of a leading journal did not give one, and \citet{siepe2024} propose a template for planning, preregistering and reporting such studies.
+The measurement follows that structure, and it adds what a validation battery needs: an exact probability beside the simulated rate where one exists, a decision rule for the size that is one-sided and accounts for the Monte Carlo error, and a statement of the smallest excess that the number of repetitions can resolve. The three works agree that a simulation study states its data-generating mechanisms and its performance measures before it reports results and that it reports the Monte Carlo error of each estimate; they do not address a battery of tests under one protocol, the exact probability beside the simulated rate, or the resolution of a size judgement.
+
+\subsection{Intervals for a rate}
+\label{sec:rw-intervals}
+
+A rejection rate is a binomial proportion, and the choice of its interval matters most where the rates sit: at 1\,\% and below.
+Five intervals are in common use: the score interval of \citet{wilson1927}, the exact interval of \citet{clopper1934}, the adjusted interval of \citet{agresti1998}, the equal-tailed Jeffreys interval, and the interval based on the normal approximation.
+\citet{newcombe1998} compared seven methods for the interval of a single proportion, and \citet{brown2001} recommend the Wilson and the Jeffreys intervals for small samples and the interval of Agresti and Coull for larger ones, and find that the interval based on the normal approximation has poor coverage even for large samples when the proportion is small.
+The measurement reports the Wilson interval and tests that choice against the others in \cref{sec:ablation}. A rejection rate near zero is where the choice matters: a rate of 0.1\,\% in 4,000 repetitions is four rejections, an interval built on the estimated variance is symmetric around a rate whose sampling distribution is not, and a rate of zero rejections gives it a zero width.
+
+\subsection{Where the measurement stands}
+\label{sec:rw-position}
+
+The published work gives the tests, the supervisory texts prescribe them, and a few studies measure the error rates of a few of them.
+The measurement proposed here treats a battery as one object: the same protocol, the same estimator and the same error for every test, an exact value as a check of the instrument where the test admits one, the published studies rerun inside it as a validation of the protocol, and a statement of the resolution of the result.
+It does not propose a new test, and it does not claim that the generators represent any bank. Against the study of the Basel Committee, which simulates two tests on eight scenarios, and the stability study, which simulates one index on six pairs of sample sizes, the measurement differs in coverage, in protocol and in what it reports about itself: 21 tests of five families under one protocol, an exact check of the instrument, and the resolution of each judgement.

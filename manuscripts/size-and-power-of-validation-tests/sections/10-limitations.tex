@@ -1,0 +1,34 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Internal validity}
+\label{sec:li-internal}
+
+The rates are estimates, and each carries its Monte Carlo error; the conclusions that follow from them are limited by it.
+A cell of \nNullReps{} repetitions resolves an excess over the level of about \detFiveFour{} points at 5\,\% and \detOneFour{} points at 1\,\%, so the statement that a test holds its size is a statement about excesses larger than that, and the replication shows that \nVerdictDisagree{} of the \nTests{} tests are judged differently by the pool of \nRepsPooled{} repetitions.
+A power point of \nPowerReps{} repetitions has a standard error of up to 1.1 points, and the interval of $\hat\sev_{0.8}$ ignores the dependence between neighbouring points.
+The agreement check of \eqref{eq:agree} is run on the three count tests and the traffic-lights test only, and it does not see an error of 2\,\% in a probability of default, which it flags with probability \agFailTwoPercent\,\%; a generator error smaller than that would pass.
+The exact probabilities exist for four tests of the 21, so for the other 17 the generator is checked by the reruns of published studies, which cover three studies and a fraction of the tests, and by the exact values of the tests that share a generator with them.
+The judgement of a battery of 21 tests at two levels is not corrected for multiplicity: if the tests were independent and correct, about \flagFamily\,\% of batteries would flag at least one, and at most \flagUnion\,\% in any case.
+The 5\,\% and 1\,\% levels are measured on the same samples, so their rates are not independent.
+
+\subsection{External validity}
+\label{sec:li-external}
+
+Every generator is a design choice, and a size measured on one is a property of the test in that scenario.
+The size of a count test depends on the number of obligors and on the probability of default: the exact size of the Jeffreys test at 1\,\% is \jeffExactOne\,\% for 1,000 obligors at 1\,\%, and it moves with both because the count is discrete, so another portfolio would give another size, sometimes below the level.
+The null generators use independent years, a single systematic factor and normal scores; a portfolio with serial correlation of the systematic factor, several factors, heavy tails or missing values is not represented.
+The severity ladders were set from pilot runs so that the power of the targeted tests runs from their size towards one in the sample size of the family, and they are in the units of the generator: a true probability of default that is a multiple of the one applied, an AUC drop, a mean shift in standard deviations of a normal base.
+Power against such a ladder is not the probability that a test detects a real problem of a real bank, and the values of $\hat\sev_{0.8}$ compare tests on the same panel and not tests across panels.
+The extension to the 21 tests outside the credit families has one alternative per test, no ladder, and a size at the null of one study, so it gives two points per study and no curve.
+No real portfolio, real model or real bank enters the measurement; the claim is about the tests, not about any institution.
+
+\subsection{Construct validity}
+\label{sec:li-construct}
+
+The measurement counts a rejection when the p-value is below the level, which is the rule of the lights of the engine at the two levels it uses.
+A validation report reads several tests together, applies tolerances and judgement, and acts on the pattern; the rejection rate of one test does not give the rate at which a report reaches a wrong conclusion, which would need a model of how reports combine tests.
+Four of the 21 tests have no power in the measurement because no defect of the rating process was planted for them, and nothing here says how they perform against a defect.
+A threshold, a pass mark or a regulatory limit is not implied by any size or power in the text: the sizes and powers are descriptions of what each test does on the generator it was measured on, and the question of what error rate is acceptable belongs to the user of the test.
+The generators and the tests were written by the same programme, so the measurement checks the engine against the truth of its own generators, and independent implementations of the tests, which the published reruns and the recomputation of the binomial rejection probability partly provide, would strengthen it.
+Finally, the measurement is of one release of the engine, 1.1.0, and a later release that changes a test changes its size and its power; the repository's scripts rerun every number.

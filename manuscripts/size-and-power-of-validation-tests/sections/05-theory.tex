@@ -1,0 +1,122 @@
+\section{Theory}
+\label{sec:theory}
+
+The theory has two aims: to state what the measurement can and cannot conclude, which is the error of the instrument, and to explain from first principles why the measured sizes and powers of some tests depart from what their form suggests.
+The first is general (\cref{sec:th-error,sec:th-monotone}); the second is a set of derivations, each checked against the measured rate it predicts (\cref{sec:th-failures}).
+
+\subsection{The error of the measurement}
+\label{sec:th-error}
+
+The size judgement of \cref{sec:pm-judgement} can fail in two ways: it can flag a correct test, and it can miss an oversized one.
+The first probability is controlled by the quantile of the bound, the second by the number of repetitions.
+
+\begin{proposition}[False flags]
+\label{prop:false-flag}
+Let $K\sim\Bin(\nrep,\rej)$ with $\rej\le\lev$ and let $b_\nrep(\lev)$ be the bound of \eqref{eq:bound}. Then
+\begin{equation}
+\Prob\big(K/\nrep>b_\nrep(\lev)\big)\;\le\;\gamma_\nrep(\lev):=\Prob\big(\Bin(\nrep,\lev)>\nrep\,b_\nrep(\lev)\big),\qquad
+\gamma_\nrep(\lev)\xrightarrow[\nrep\to\infty]{}1-\Phi(z_{0.999})=0.001 .
+\label{eq:false-flag}
+\end{equation}
+For $m$ tests judged at two levels each, the probability that at least one is flagged is at most $m\,(\gamma_\nrep(0.05)+\gamma_\nrep(0.01))$, and equals $1-\prod(1-\gamma)$ if the judgements are independent \citep{sidak1967}.
+\end{proposition}
+\begin{proof}
+The binomial distribution is stochastically increasing in its success probability, so $\Prob(\Bin(\nrep,\rej)>c)\le\Prob(\Bin(\nrep,\lev)>c)$ for every threshold $c$ when $\rej\le\lev$, which is the inequality.
+The limit is the de Moivre--Laplace theorem applied to the standardised count at the threshold $\nrep\lev+z_{0.999}\sqrt{\nrep\lev(1-\lev)}$.
+The statement on $m$ tests is the union bound, and the product form is the independence case.
+\end{proof}
+
+At $\nrep=\nNullReps{}$ the exact values are $\gamma=\flagFive\,\%$ at 5\,\% and $\flagOne\,\%$ at 1\,\%, so a correct test is flagged with probability at most $\flagTest\,\%$, and among the 21 tests of the battery with probability about $\flagFamily\,\%$ if the tests are independent and at most $\flagUnion\,\%$ in any case.
+The convergence to 0.001 is slow because the binomial is discrete: the values at $\nrep=1{,}000$ and $20{,}000$ are $\flagThousand\,\%$ and $\flagTwentyK\,\%$ per test.
+
+\begin{proposition}[Resolution]
+\label{prop:resolution}
+Let a test have true size $\lev+\delta$ with $\delta>0$. The bound flags it with probability
+\begin{equation}
+\Prob\big(K/\nrep>b_\nrep(\lev)\big)\;\approx\;\Phi\!\left(\frac{\delta\sqrt{\nrep}-z_{0.999}\sqrt{\lev(1-\lev)}}{\sqrt{(\lev+\delta)(1-\lev-\delta)}}\right),
+\label{eq:resolution}
+\end{equation}
+so the excess that it detects with probability $\pi$ is $\delta_\nrep(\lev)\approx(z_{0.999}+z_\pi)\sqrt{\lev(1-\lev)/\nrep}$ for small $\delta$, and halving it takes four times the repetitions.
+\end{proposition}
+\begin{proof}
+Standardise $K$ under $\Bin(\nrep,\lev+\delta)$ at the threshold $\nrep\,b_\nrep(\lev)$ and use the normal approximation; solving $\Phi(\cdot)=\pi$ for $\delta$ and replacing the variance at $\lev+\delta$ by the variance at $\lev$ gives the approximation.
+\end{proof}
+
+With $\pi=0.8$, $z_{0.999}+z_{0.8}=3.93$ and the excess at $\nrep=\nNullReps{}$ is $\detFiveFour\,$ points at 5\,\% and $\detOneFour\,$ points at 1\,\% (exact binomial values; \cref{tab:resolution}).
+The consequence is a limit on the statement ``the test holds its size'': it means that no excess larger than about $\delta_\nrep(\lev)$ is present, and it does not exclude a smaller one.
+An excess of $0.2$ points at 5\,\% needs about $200{,}000$ repetitions to be seen with probability 0.8.
+
+\subsection{Monotone power of the count tests}
+\label{sec:th-monotone}
+
+\begin{proposition}[Monotone power]
+\label{prop:monotone}
+For the binomial test, the binomial test corrected for asset correlation and the Jeffreys test, the rejection probability $\rej_T(\pi,\rho)=\Prob_{\pi,\rho}(D\ge k^*)$ of \eqref{eq:mixture} is nondecreasing in the true probability of default $\pi$ for a fixed critical count $k^*$.
+\end{proposition}
+\begin{proof}
+Let $U_1,\dots,U_N$ be independent uniform variables and $X$ the systematic factor. The count $D_\pi=\sum_j\indic\{U_j\le p_\pi(X)\}$ has the distribution of the mixture, and $p_\pi(x)$ is nondecreasing in $\pi$ for every $x$, so $D_\pi$ is nondecreasing in $\pi$ pathwise and $\Prob(D_\pi\ge k^*)$ is nondecreasing. The critical count $k^*$ depends on the PD applied and on the level, not on $\pi$.
+\end{proof}
+
+The proposition is a testable consequence for the instrument: a power curve of these tests, measured on a ladder in which the true PD is a multiple of the PD applied, cannot fall, so a fall between two neighbouring severities of more than $3.29$ combined standard errors would indicate a defect in the generator, the harness or the test.
+For a correct instrument the probability of such a fall at one pair is about $1-\Phi(3.29)=0.0005$, and the expected number of violations in the \nMonoPairs{} adjacent pairs of the measured curves is about $0.1$.
+The tests that are not count tests have no such proof, and the monotonicity of their curves is an empirical result.
+
+\subsection{Why some tests do not keep their level}
+\label{sec:th-failures}
+
+Four mechanisms account for the largest departures from the level that the measurement finds.
+Each is derived here and compared with the rate it predicts in \cref{sec:results}.
+
+\begin{proposition}[Defaults that are correlated]
+\label{prop:clustering}
+Let the defaults of $N$ obligors follow the one-factor model with asset correlation $\rho>0$ and true probability of default equal to the PD applied $\pi$, and let a test reject when $D\ge k^*_N$ with $k^*_N/N\to\pi$, as the binomial test at a fixed level does. Then, as $N\to\infty$,
+\begin{equation}
+\rej_N\;\longrightarrow\;\Phi\!\left(\Phi^{-1}(\pi)\,\frac{1-\sqrt{1-\rho}}{\sqrt\rho}\right),
+\label{eq:clustering-limit}
+\end{equation}
+which does not depend on the level, is below $\tfrac12$ for $\pi<\tfrac12$, and tends to $\tfrac12$ as $\rho\to0$.
+\end{proposition}
+\begin{proof}
+Given $X=x$ the count is binomial with success probability $p(x)$ of \eqref{eq:mixture}, so $D/N\to p(X)$ almost surely. Since $k^*_N/N\to\pi$, the indicator $\indic\{D\ge k^*_N\}$ converges to $\indic\{p(X)>\pi\}$ except on the event $p(X)=\pi$, which has probability zero. Now $p(x)>\pi$ if and only if $\Phi^{-1}(\pi)-\sqrt\rho\,x>\sqrt{1-\rho}\,\Phi^{-1}(\pi)$, that is, $x<\Phi^{-1}(\pi)(1-\sqrt{1-\rho})/\sqrt\rho$, and dominated convergence gives \eqref{eq:clustering-limit}.
+\end{proof}
+
+The size of an independence-based test does not shrink to its level as the portfolio grows; it grows towards the limit \eqref{eq:clustering-limit}, which for $\pi=1\,\%$ is $\binLimitRhoFive\,\%$ at $\rho=5\,\%$ and $\binLimitRhoTen\,\%$ at $\rho=10\,\%$, against the exact $\binRhoFiveExact\,\%$ and $\binRhoOneZeroExact\,\%$ at $N=1{,}000$ (\cref{sec:rs-defects}).
+Recomputed with a routine that calls no function of the engine, the size at $\rho=10\,\%$ is $\binNRhoTenThousand\,\%$, $\binNRhoTenTenK\,\%$ and $\binNRhoTenHundredK\,\%$ at $N=1{,}000$, $10{,}000$ and $100{,}000$ obligors: a larger portfolio makes the independence-based test less reliable, not more.
+
+\begin{proposition}[A fixed band of the stability index]
+\label{prop:psi}
+Let two samples of sizes $n$ and $m$ come from one distribution on $B$ bins. Then $(1/n+1/m)^{-1}\,\mathrm{PSI}\to\chi^2_{B-1}$ in distribution, so a rule that alarms when $\mathrm{PSI}>c$ has the false alarm rate
+\begin{equation}
+\Prob(\mathrm{PSI}>c)\;\to\;\Prob\!\left(\chi^2_{B-1}>\frac{c\,nm}{n+m}\right),
+\label{eq:psi-band}
+\end{equation}
+and when the populations differ by a fixed amount with population index $D>0$, $\mathrm{PSI}\to D$ in probability, so the rule has power tending to $\indic\{D>c\}$.
+\end{proposition}
+\begin{proof}
+Expanding $(a-e)\ln(a/e)=(a-e)^2/e+O(|a-e|^3)$ shows that the index is, to first order, the Pearson statistic of the two samples divided by $nm/(n+m)$, and the Pearson statistic of two samples is asymptotically $\chi^2_{B-1}$. Under a fixed alternative the bin proportions converge to their population values and the index to its population value $D$.
+\end{proof}
+
+For $B=10$ and $n=m=100$ the false alarm rate of the 0.10 band is $\Prob(\chi^2_9>5)=\psiTheoryHundred\,\%$, against $\psiHundred\,\%$ measured, and at $n=m=400$ it is $\psiTheoryFourHundred\,\%$.
+A fixed band therefore has a false alarm rate that falls with the samples and a power that is a step function of the size of the shift, which is why it is blind to every shift whose population index lies below the band, whatever the sample size.
+
+\begin{proposition}[A bounded statistic]
+\label{prop:hhi}
+The concentration statistic of the European Central Bank is $S(c)=\sqrt{K-1}\,(c-c_0)/\big(c\sqrt{\tfrac12+c^2}\big)$ for a current coefficient of variation $c>c_0$ of the grade frequencies and an initial one $c_0$. It is bounded: its maximum over $c$ is attained at the real root $c^*>c_0$ of $c^3-2c_0c^2-c_0/2=0$, and the test can reject at level $\lev$ only if $S(c^*)\ge z_{1-\lev}$.
+\end{proposition}
+\begin{proof}
+Setting the derivative of $\ln S$ to zero gives $1/(c-c_0)-1/c-c/(\tfrac12+c^2)=0$, which reduces to $c_0(\tfrac12+c^2)=c^2(c-c_0)$, the cubic. As $c\to\infty$, $S\to0$, so the maximum is interior.
+\end{proof}
+
+For ten grades and $c_0=0.6$, $c^*=1.36$ and $S(c^*)=\hhiPeak<z_{0.95}=\zCrit$: no current distribution can be rejected at 5\,\%, and even the concentration of every obligor in one grade gives $S=\hhiAllIn$, a p-value of $\hhiAllInP$.
+Because $S(c^*)$ grows with $\sqrt{K-1}$, the test can reject at 5\,\% only with at least \hhiKMinSix{} grades at $c_0=0.6$ and \hhiKMinThree{} grades at $c_0=0.3$.
+
+\begin{proposition}[A reference that is an estimate]
+\label{prop:reference}
+If a test compares a statistic with a reference value that is itself the estimate from an independent sample whose size is $m$ times the current one, and treats the reference as known, the variance of the difference is $(1+1/m)$ times the variance the test assumes, and the size of its one-sided test at level $\lev$ is $1-\Phi\big(z_{1-\lev}/\sqrt{1+1/m}\big)$. Likewise, a $\chi^2$ test whose statistic has $G$ degrees of freedom but is referred to $G-2$ has size $\Prob\big(\chi^2_G>\chi^2_{G-2,\,1-\lev}\big)$.
+\end{proposition}
+\begin{proof}
+The variance of a difference of independent estimates is the sum of the variances, and the variance of the reference is $1/m$ times that of the current estimate when its sample is $m$ times larger. The second statement is the definition of the size of a test with the wrong reference distribution.
+\end{proof}
+
+For the AUC test with a development sample as large as the current one, $m=1$ and the size at 5\,\% is $\aucDevTheory\,\%$, against $\aucDevOne\,\%$ measured; with four and sixteen times the sample, $\aucDevTheoryFour\,\%$ and $\aucDevTheorySixteen\,\%$.
+For the Hosmer--Lemeshow test with $G=10$ groups referred to $G-2=8$ degrees of freedom the size at 5\,\% is $\hlDofTheory\,\%$, against $\hlFitted\,\%$ measured.
