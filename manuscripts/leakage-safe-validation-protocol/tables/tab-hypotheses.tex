@@ -1,22 +1,22 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{The nine predictions of the experimental design, each with the quantity that decides it and its outcome, computed by the table script from the committed experiment outputs. A prediction that fails is reported as not held.}
+\caption{The nine predictions of the experimental design, each with the quantity that decides it and its outcome, computed by the table script from every cell that the paper reports. The predictions were written in the table script together with the outputs that decide them; none was registered before the runs. A dagger marks the two whose thresholds were set with the committed values of the cases C22 and C03 already known (Section~\ref{sec:experimental-design}). A prediction that fails is reported as not held.}
 \label{tab:hypotheses}
 \fitwidth{%
 \begin{tabular}{lp{7.2cm}p{4.6cm}l}
 \toprule
-Id & Prediction stated before the experiments & Evidence & Outcome \\
+Id & Prediction & Evidence & Outcome \\
 \midrule
 H1 & \relax The proposed protocol's holdout AUC is unbiased for the fitted model's true AUC (the 95\% interval of the bias contains 0) and its 95\% interval covers (the Wilson interval of the coverage contains 0.95); refuted if either fails in any cell. & 6 of 6 cells & held \\
 H2 & \relax A step that reads holdout labels (WoE, screen, or the whole fit) inflates the AUC (the 95\% interval of the bias excludes 0 from above); refuted if any of the three does not in a data set. & syn: 3 of 3, small: 3 of 3, tw: 2 of 3 & not held \\
 H3 & A step that reads only holdout inputs (imputation, scaling, bin edges) leaves the estimate within 0.005 of the truth. & 12 of 12 cells & held \\
 H4 & A calibration map fitted on the holdout biases the AUC and the Brier score optimistically (positive AUC bias, negative Brier bias, intervals excluding 0). & 6 of 6 cells & held \\
 H5 & At least one of the three gates fails on every leak planted in the fitting path, in every draw, and none fails on the proposed protocol. & \relax 15 of 15 leaks, false alarms 0\% & held \\
-H6 & \relax A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\% at s = 0.5) and not by the CSI of the leaked feature (power at most 20\% at s = 1) or the single-feature screen (at most 2\% at s = 1). & \relax AUC test power 99.0\% at s = 0.5; CSI power 14.2\% and single-feature flag 0.0\% at s = 1 & held \\
+\relax H6$^{\dagger}$ & \relax A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\% at s = 0.5) and not by the CSI of the leaked feature (power at most 20\% at s = 1) or the single-feature screen (at most 2\% at s = 1). & \relax AUC test power 99.0\% at s = 0.5; CSI power 14.2\% and single-feature flag 0.0\% at s = 1 & held \\
 H7 & The closed forms of Proposition 4 reproduce the generator's exact development and decision-time AUC and the simulated means within three standard errors. & largest absolute z 1.8 over seven levels & held \\
-H8 & A random split inside the training window reports a level gap below 1 point for every cohort, while the out-of-time gap is at least 2 points. & random gap below 1 point in 5 of 5 cohorts; out-of-time gap at least 2 points in 5 of 5 & held \\
-H9 & Preprocessing fitted before the folds inflates the cross-validated AUC; fitted inside the folds it does not. & outside-fold bias positive, inside-fold bias null & held \\
+\relax H8$^{\dagger}$ & A random split inside the training window reports a level gap below 1 point for every cohort, while the out-of-time gap is at least 2 points, for the scorecard and for the gradient-boosting rung. & random gap below 1 point in 10 of 10 cohort and rung cells; out-of-time gap at least 2 points in 8 of 10 & not held \\
+H9 & Preprocessing fitted before the folds inflates the cross-validated AUC; fitted inside the folds it does not, for both models on every data set. & outside-fold bias positive in 5 of 6 and inside-fold bias null in 5 of 6 pairs of data set and model & not held \\
 \bottomrule
 \end{tabular}%
 }

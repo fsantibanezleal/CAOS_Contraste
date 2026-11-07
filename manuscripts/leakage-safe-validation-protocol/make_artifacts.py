@@ -106,6 +106,7 @@ def e1_numbers() -> dict[str, dict]:
                 put(f"{k}.covlo", ratio(v["coverage_lo"]), src + ".coverage_lo")
                 put(f"{k}.covhi", ratio(v["coverage_hi"]), src + ".coverage_hi")
                 put(f"{k}.brier", sg(v["brier_bias"], 4), src + ".brier_bias")
+                put(f"{k}.brierci", f"{1.96 * v['brier_bias_se']:.4f}", src + ".brier_bias_se x 1.96")
                 put(f"{k}.ece", sg(v["ece_bias"], 4), src + ".ece_bias")
     # the split sizes the design implies
     rng = np.random.default_rng(1)
@@ -281,7 +282,7 @@ def e3_numbers_tables() -> dict:
                                                     "$1-0.1^m$ (\\%)"], rows,
                  caption=(f"Probability that sending m outside rows beyond the training range changes at least one decile edge of a "
                           f"pooled sample of {th['detection']['n_train'] + th['detection']['n_out']:,} rows ({th['detection']['n_train']:,} "
-                          f"training and {th['detection']['n_out']:,} outside), simulated with the pipeline's own edge function over "
+                          f"development and {th['detection']['n_out']:,} outside), simulated with the pipeline's own edge function over "
                           f"{th['detection']['trials']:,} trials per row, against the exact hypergeometric expression and its approximation "
                           f"of Proposition 2."),
                  label="tab:theory-detection", align="lrrr")
@@ -429,11 +430,25 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
     h6 = lv["0.5"]["auc_test"]["lo"] >= 0.97 and lv["1.0"]["csi_test"]["hi"] <= 0.20 and lv["1.0"]["single_feature_flag"]["hi"] <= 0.02
     h7 = all(abs(v["dev_auc"]["mean"] - v["closed_form"]["dev_auc"]) <= 3 * v["dev_auc"]["se"] and
              abs(v["cur_auc"]["mean"] - v["closed_form"]["cur_auc"]) <= 3 * v["cur_auc"]["se"] for v in lv.values())
-    sc_gaps = [(c["rungs"]["P1-scorecard"]["random_gap"], c["rungs"]["P1-scorecard"]["oot_gap"]) for c in e4["cohorts"]]
-    h8 = all(abs(r) < 0.01 for r, _ in sc_gaps)
-    h8b = sum(abs(o) >= 0.02 for _, o in sc_gaps)
-    cvp = [S["woe/cv_pre"], Sm["woe/cv_pre"]]
-    h9 = all(pos(v) for v in cvp) and all(ci0(ds["woe/cv_in"]) for ds in (S, Sm, T))
+    rungs = ("P1-scorecard", "P4-lightgbm")
+    cells8 = [(c["cohort"], r, c["rungs"][r]["random_gap"], c["rungs"][r]["oot_gap"]) for c in e4["cohorts"] for r in rungs]
+    h8a = sum(abs(rg) < 0.01 for _, _, rg, _ in cells8)
+    h8b = sum(abs(og) >= 0.02 for _, _, _, og in cells8)
+    h8 = h8a == len(cells8) and h8b == len(cells8)
+    h8fail = [(coh, r, og) for coh, r, _, og in cells8 if abs(og) < 0.02]
+    put("h8.cells", str(len(cells8)), "two printed rungs times five cohorts")
+    put("h8.rand", str(h8a), "cells with |random gap| < 1 point")
+    put("h8.oot", str(h8b), "cells with |out-of-time gap| >= 2 points")
+    put("h8.failed", " and ".join(f"{coh[2:]} ({sg(100 * og, 1)})" for coh, r, og in h8fail), "cells of the gradient-boosting rung below 2 points")
+    c03min = min(abs(next(r for r in figkit.doc(f"C03/{cid}.json")["outputs"]["rung_comparison"] if r["rung_id"] == "P1-scorecard")["calibration_gap_5y"])
+                 for cid in ("fy2006-07", "fy2008-10", "fy2011-14", "fy2015-17", "fy2018-20"))
+    put("c03.mingap", f"{100 * c03min:.2f}", "data/derived/C03/fy*.json outputs.rung_comparison[P1-scorecard].calibration_gap_5y, smallest absolute value x 100")
+    h9pos = [pos(ds[f"{m}/cv_pre"]) for ds in (S, Sm, T) for m in ("woe", "linear")]
+    h9null = [ci0(ds[f"{m}/cv_in"]) for ds in (S, Sm, T) for m in ("woe", "linear")]
+    h9 = all(h9pos) and all(h9null)
+    put("h9.pos", str(sum(h9pos)), "pairs of data set and model with the outside-fold bias interval above 0, of six")
+    put("h9.null", str(sum(h9null)), "pairs of data set and model with the inside-fold bias interval containing 0, of six")
+    put("h9.failcells", str(12 - sum(h9pos) - sum(h9null)), "cells of the twelve that fail")
     sel = e5["loglog_fit_p40"]
     res = {"H1": (all(h1), f"{sum(h1)} of {len(h1)} cells"), "H2": (all(all(v) for v in h2.values()),
            ", ".join(f"{k}: {sum(v)} of 3" for k, v in h2.items())), "H3": (all(h3), f"{sum(h3)} of {len(h3)} cells"),
@@ -441,9 +456,16 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
            f"{sum(1 for v in detect_any.values() if v >= 0.999)} of {len(detect_any)} leaks, false alarms {100 * max(false_alarm.values()):.0f}\\%"),
            "H6": (h6, f"AUC test power {ratio(lv['0.5']['auc_test']['rate'])}\\% at s = 0.5; CSI power {ratio(lv['1.0']['csi_test']['rate'])}\\% and single-feature flag {ratio(lv['1.0']['single_feature_flag']['rate'])}\\% at s = 1"),
            "H7": (h7, f"largest absolute z {max(max(abs((v['dev_auc']['mean'] - v['closed_form']['dev_auc']) / v['dev_auc']['se']), abs((v['cur_auc']['mean'] - v['closed_form']['cur_auc']) / v['cur_auc']['se'])) for v in lv.values()):.1f} over seven levels"),
-           "H8": (h8 and h8b == len(sc_gaps), f"random gap below 1 point in {sum(abs(r) < 0.01 for r, _ in sc_gaps)} of {len(sc_gaps)} cohorts; "
-                                              f"out-of-time gap at least 2 points in {h8b} of {len(sc_gaps)}"),
-           "H9": (h9, "outside-fold bias positive, inside-fold bias null")}
+           "H8": (h8, f"random gap below 1 point in {h8a} of {len(cells8)} cohort and rung cells; "
+                      f"out-of-time gap at least 2 points in {h8b} of {len(cells8)}"),
+           "H9": (h9, f"outside-fold bias positive in {sum(h9pos)} of {len(h9pos)} and inside-fold bias null in {sum(h9null)} of {len(h9null)} "
+                      f"pairs of data set and model")}
+    nh = sum(1 for ok, _ in res.values() if ok)
+    words = {0: "zero", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine"}
+    put("h.held", str(nh), "make_artifacts.hypotheses: predictions whose rule holds")
+    put("h.notheld", str(9 - nh), "make_artifacts.hypotheses: predictions whose rule fails")
+    put("h.held.word", words[nh], "make_artifacts.hypotheses")
+    put("h.notheld.word", words[9 - nh], "make_artifacts.hypotheses")
     for k, (ok, ev) in res.items():
         put(f"verdict.{k}", "held" if ok else "not held", f"make_artifacts.hypotheses {k}")
         put(f"verdict.{k}.ev", ev, f"make_artifacts.hypotheses {k}")
@@ -455,13 +477,17 @@ def hypotheses(e1: dict, e2: dict, e3: dict, e4: dict, e5: dict) -> None:
         "H5": "At least one of the three gates fails on every leak planted in the fitting path, in every draw, and none fails on the proposed protocol.",
         "H6": "A leak that exists only in development is flagged by the AUC-against-development test (power at least 97\\% at s = 0.5) and not by the CSI of the leaked feature (power at most 20\\% at s = 1) or the single-feature screen (at most 2\\% at s = 1).",
         "H7": "The closed forms of Proposition 4 reproduce the generator's exact development and decision-time AUC and the simulated means within three standard errors.",
-        "H8": "A random split inside the training window reports a level gap below 1 point for every cohort, while the out-of-time gap is at least 2 points.",
-        "H9": "Preprocessing fitted before the folds inflates the cross-validated AUC; fitted inside the folds it does not.",
+        "H8": "A random split inside the training window reports a level gap below 1 point for every cohort, while the out-of-time gap is at least 2 points, for the scorecard and for the gradient-boosting rung.",
+        "H9": "Preprocessing fitted before the folds inflates the cross-validated AUC; fitted inside the folds it does not, for both models on every data set.",
     }
-    rows = [[k, txt[k], res[k][1], "held" if res[k][0] else "not held"] for k in txt]
-    table(TAB / "tab-hypotheses.tex", ["Id", "Prediction stated before the experiments", "Evidence", "Outcome"], rows,
+    tag = {"H6": "H6$^{\\dagger}$", "H8": "H8$^{\\dagger}$"}
+    rows = [[tag.get(k, k), txt[k], res[k][1], "held" if res[k][0] else "not held"] for k in txt]
+    table(TAB / "tab-hypotheses.tex", ["Id", "Prediction", "Evidence", "Outcome"], rows,
                  caption=("The nine predictions of the experimental design, each with the quantity that decides it and its outcome, computed by the table "
-                          "script from the committed experiment outputs. A prediction that fails is reported as not held."),
+                          "script from every cell that the paper reports. The predictions were written in the table script together with the outputs "
+                          "that decide them; none was registered before the runs. A dagger marks the two whose thresholds were set with the "
+                          "committed values of the cases C22 and C03 already known (Section~\\ref{sec:experimental-design}). A prediction that fails is "
+                          "reported as not held."),
                  label="tab:hypotheses", align="lp{7.2cm}p{4.6cm}l", wide=True)
 
 
@@ -576,6 +602,35 @@ def derived_numbers() -> None:
         if kind in ("disc.auc_vs_initial", "stability.csi") and lv.replace(".", "").isdigit():
             tag = "auc" if kind.startswith("disc") else "csi"
             put(f"c22.{tag}.{lv}", ratio(sim["rates"]["p<0.05"]["rate"]), f"data/derived/C22/leakage.json simulations[{sim['key']}] rate at 5%, {sim['rates']['p<0.05']['n']} repetitions")
+    c22null = next(sim["rates"]["p<0.05"] for sim in doc["outputs"]["simulations"] if sim["key"] == "disc.auc_vs_initial@l0")
+    e3full = load("e3_planted_leak.json")
+    e3n, e3reps = e3full["levels"]["0.0"]["auc_test"], e3full["reps"]
+    x1, n1, x2, n2 = c22null["rate"] * c22null["n"], c22null["n"], e3n["rate"] * e3reps, e3reps
+    pp = (x1 + x2) / (n1 + n2)
+    zz2 = (x1 / n1 - x2 / n2) / math.sqrt(pp * (1 - pp) * (1 / n1 + 1 / n2))
+    put("c22.null.diff", f"{100 * (x1 / n1 - x2 / n2):.1f}", "C22 null rate minus the e3 null rate of the test against development, points")
+    put("c22.null.z", f"{zz2:.1f}", "pooled two-proportion z of the C22 and e3 null rates")
+    put("c22.null.p", f"{math.erfc(zz2 / math.sqrt(2)):.3f}", "two-sided p of the pooled two-proportion z")
+    put("e3.s0.0.auc_lo", ratio(e3n["lo"]), "experiments/results/e3_planted_leak.json levels[0.0].auc_test.lo")
+    put("e3.s0.0.auc_hi", ratio(e3n["hi"]), "experiments/results/e3_planted_leak.json levels[0.0].auc_test.hi")
+    for mm in ("3", "5"):
+        v = th["by_m"][mm]
+        put(f"th.det.{mm}.miss", str(round((1 - v["simulated"]) * th["trials"])), f"theory_checks.json detection.by_m[{mm}] misses among the trials")
+        put(f"th.det.{mm}.missexp", f"{(1 - v['exact']) * th['trials']:.1f}", f"theory_checks.json detection.by_m[{mm}] expected misses = (1 - exact) x trials")
+    e4d = load("e4_out_of_time.json")
+    ses = [100 * math.sqrt(c["random_rate"] * (1 - c["random_rate"]) / e4d["random_holdout_cap"]) for c in e4d["cohorts"]]
+    put("e4.sed.lo", f"{min(ses):.2f}", "binomial standard error of the random-split rate at the window rate, smallest cohort, points")
+    put("e4.sed.hi", f"{max(ses):.2f}", "binomial standard error of the random-split rate at the window rate, largest cohort, points")
+    put("e4.maxz", f"{max(abs(100 * c['rungs'][r]['random_gap']) / se for c, se in zip(e4d['cohorts'], ses) for r in ('P1-scorecard', 'P4-lightgbm')):.1f}",
+        "largest |random gap| / binomial standard error at the window rate over the two printed rungs and five cohorts")
+    zd = []
+    for model, K in (("woe", 8), ("linear", 2)):
+        for d_, obs in dr["detection_by_draws"][model].items():
+            pr = 1.0 - K ** (-int(d_))
+            sd = math.sqrt(pr * (1 - pr) / dr["reps"])
+            if sd > 0:
+                zd.append(abs(obs - pr) / sd)
+    put("e2.draws.zmax", f"{max(zd):.1f}", "largest |observed - 1 + K^-d| / sqrt(p (1 - p) / reps) over the cells of the repeated-perturbation study")
     put("c22.reps", f"{doc['outputs']['simulations'][0]['rates']['p<0.05']['n']:,}", "data/derived/C22/leakage.json simulations[0] n")
     e3 = load("e3_planted_leak.json")["levels"]
     zz = []

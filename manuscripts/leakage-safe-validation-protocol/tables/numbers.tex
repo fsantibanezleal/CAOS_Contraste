@@ -62,6 +62,7 @@
 \expandafter\def\csname num@c03.2018-20.events\endcsname{115,237}
 \expandafter\def\csname num@c03.2018-20.last\endcsname{2012}
 \expandafter\def\csname num@c03.2018-20.nloans\endcsname{1,024,597}
+\expandafter\def\csname num@c03.mingap\endcsname{2.21}
 \expandafter\def\csname num@c22.auc.0\endcsname{4.7}
 \expandafter\def\csname num@c22.auc.0.25\endcsname{63.5}
 \expandafter\def\csname num@c22.auc.0.5\endcsname{98.9}
@@ -74,6 +75,9 @@
 \expandafter\def\csname num@c22.csi.1\endcsname{14.6}
 \expandafter\def\csname num@c22.csi.1.5\endcsname{33.4}
 \expandafter\def\csname num@c22.csi.2\endcsname{58.1}
+\expandafter\def\csname num@c22.null.diff\endcsname{2.2}
+\expandafter\def\csname num@c22.null.p\endcsname{0.025}
+\expandafter\def\csname num@c22.null.z\endcsname{2.2}
 \expandafter\def\csname num@c22.reps\endcsname{2,000}
 \expandafter\def\csname num@e2.draws.l.1\endcsname{52.5}
 \expandafter\def\csname num@e2.draws.l.2\endcsname{72.5}
@@ -93,6 +97,7 @@
 \expandafter\def\csname num@e2.draws.w.2\endcsname{99.0}
 \expandafter\def\csname num@e2.draws.w.3\endcsname{100.0}
 \expandafter\def\csname num@e2.draws.w.5\endcsname{100.0}
+\expandafter\def\csname num@e2.draws.zmax\endcsname{1.3}
 \expandafter\def\csname num@e2.fa.upper\endcsname{3.7}
 \expandafter\def\csname num@e2.l.calov.G1\endcsname{0}
 \expandafter\def\csname num@e2.l.calov.G2\endcsname{100}
@@ -191,6 +196,8 @@
 \expandafter\def\csname num@e2.w.woe.any\endcsname{100}
 \expandafter\def\csname num@e2.w.woe.nv\endcsname{100}
 \expandafter\def\csname num@e3.reps\endcsname{500}
+\expandafter\def\csname num@e3.s0.0.auc_hi\endcsname{4.1}
+\expandafter\def\csname num@e3.s0.0.auc_lo\endcsname{1.4}
 \expandafter\def\csname num@e3.s0.0.auc_test\endcsname{2.4}
 \expandafter\def\csname num@e3.s0.0.csi_test\endcsname{5.6}
 \expandafter\def\csname num@e3.s0.0.cur\endcsname{0.692}
@@ -432,6 +439,9 @@
 \expandafter\def\csname num@e4.2018_20.rundiff\endcsname{0.0000}
 \expandafter\def\csname num@e4.holdse\endcsname{0.20}
 \expandafter\def\csname num@e4.maxrepdiff\endcsname{0.0000}
+\expandafter\def\csname num@e4.maxz\endcsname{1.2}
+\expandafter\def\csname num@e4.sed.hi\endcsname{0.13}
+\expandafter\def\csname num@e4.sed.lo\endcsname{0.10}
 \expandafter\def\csname num@e5.exp\endcsname{0.88}
 \expandafter\def\csname num@e5.expse\endcsname{0.01}
 \expandafter\def\csname num@e5.n1600.p10.in\endcsname{+0.001}
@@ -453,10 +463,21 @@
 \expandafter\def\csname num@e5.n800.p40.in\endcsname{$-$0.004}
 \expandafter\def\csname num@e5.n800.p40.out\endcsname{+0.106}
 \expandafter\def\csname num@e5.reps\endcsname{100}
+\expandafter\def\csname num@h.held\endcsname{6}
+\expandafter\def\csname num@h.held.word\endcsname{six}
+\expandafter\def\csname num@h.notheld\endcsname{3}
+\expandafter\def\csname num@h.notheld.word\endcsname{three}
 \expandafter\def\csname num@h5.detected\endcsname{15}
 \expandafter\def\csname num@h5.false\endcsname{0}
 \expandafter\def\csname num@h5.minany\endcsname{100}
 \expandafter\def\csname num@h5.total\endcsname{15}
+\expandafter\def\csname num@h8.cells\endcsname{10}
+\expandafter\def\csname num@h8.failed\endcsname{2011-14 ($-$1.7) and 2018-20 ($-$1.6)}
+\expandafter\def\csname num@h8.oot\endcsname{8}
+\expandafter\def\csname num@h8.rand\endcsname{10}
+\expandafter\def\csname num@h9.failcells\endcsname{2}
+\expandafter\def\csname num@h9.null\endcsname{5}
+\expandafter\def\csname num@h9.pos\endcsname{5}
 \expandafter\def\csname num@prod.n\endcsname{2,500}
 \expandafter\def\csname num@prod.oracle\endcsname{50,000}
 \expandafter\def\csname num@prod.orcse\endcsname{0.0025}
@@ -464,6 +485,7 @@
 \expandafter\def\csname num@prod.p.caltest.abias\endcsname{0.016}
 \expandafter\def\csname num@prod.p.caltest.bias\endcsname{+0.016}
 \expandafter\def\csname num@prod.p.caltest.brier\endcsname{$-$0.0080}
+\expandafter\def\csname num@prod.p.caltest.brierci\endcsname{0.0016}
 \expandafter\def\csname num@prod.p.caltest.ci\endcsname{0.004}
 \expandafter\def\csname num@prod.p.caltest.cov\endcsname{81.1}
 \expandafter\def\csname num@prod.p.caltest.covhi\endcsname{87.9}
@@ -475,6 +497,7 @@
 \expandafter\def\csname num@prod.p.fit.abias\endcsname{0.039}
 \expandafter\def\csname num@prod.p.fit.bias\endcsname{+0.039}
 \expandafter\def\csname num@prod.p.fit.brier\endcsname{$-$0.0136}
+\expandafter\def\csname num@prod.p.fit.brierci\endcsname{0.0017}
 \expandafter\def\csname num@prod.p.fit.ci\endcsname{0.004}
 \expandafter\def\csname num@prod.p.fit.cov\endcsname{35.6}
 \expandafter\def\csname num@prod.p.fit.covhi\endcsname{45.8}
@@ -486,6 +509,7 @@
 \expandafter\def\csname num@prod.p.none.abias\endcsname{0.001}
 \expandafter\def\csname num@prod.p.none.bias\endcsname{+0.001}
 \expandafter\def\csname num@prod.p.none.brier\endcsname{$-$0.0003}
+\expandafter\def\csname num@prod.p.none.brierci\endcsname{0.0017}
 \expandafter\def\csname num@prod.p.none.ci\endcsname{0.004}
 \expandafter\def\csname num@prod.p.none.cov\endcsname{93.3}
 \expandafter\def\csname num@prod.p.none.covhi\endcsname{96.9}
@@ -509,6 +533,7 @@
 \expandafter\def\csname num@small.l.calov.abias\endcsname{0.008}
 \expandafter\def\csname num@small.l.calov.bias\endcsname{+0.008}
 \expandafter\def\csname num@small.l.calov.brier\endcsname{$-$0.0051}
+\expandafter\def\csname num@small.l.calov.brierci\endcsname{0.0015}
 \expandafter\def\csname num@small.l.calov.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.calov.cov\endcsname{91.0}
 \expandafter\def\csname num@small.l.calov.covhi\endcsname{93.7}
@@ -520,6 +545,7 @@
 \expandafter\def\csname num@small.l.caltest.abias\endcsname{0.030}
 \expandafter\def\csname num@small.l.caltest.bias\endcsname{+0.030}
 \expandafter\def\csname num@small.l.caltest.brier\endcsname{$-$0.0172}
+\expandafter\def\csname num@small.l.caltest.brierci\endcsname{0.0015}
 \expandafter\def\csname num@small.l.caltest.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.caltest.cov\endcsname{79.0}
 \expandafter\def\csname num@small.l.caltest.covhi\endcsname{83.2}
@@ -543,6 +569,7 @@
 \expandafter\def\csname num@small.l.fit.abias\endcsname{0.028}
 \expandafter\def\csname num@small.l.fit.bias\endcsname{+0.028}
 \expandafter\def\csname num@small.l.fit.brier\endcsname{$-$0.0113}
+\expandafter\def\csname num@small.l.fit.brierci\endcsname{0.0015}
 \expandafter\def\csname num@small.l.fit.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.fit.cov\endcsname{79.7}
 \expandafter\def\csname num@small.l.fit.covhi\endcsname{83.8}
@@ -554,6 +581,7 @@
 \expandafter\def\csname num@small.l.imp.abias\endcsname{0.000}
 \expandafter\def\csname num@small.l.imp.bias\endcsname{0.000}
 \expandafter\def\csname num@small.l.imp.brier\endcsname{$-$0.0008}
+\expandafter\def\csname num@small.l.imp.brierci\endcsname{0.0016}
 \expandafter\def\csname num@small.l.imp.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.imp.cov\endcsname{92.3}
 \expandafter\def\csname num@small.l.imp.covhi\endcsname{94.8}
@@ -565,6 +593,7 @@
 \expandafter\def\csname num@small.l.none.abias\endcsname{0.000}
 \expandafter\def\csname num@small.l.none.bias\endcsname{0.000}
 \expandafter\def\csname num@small.l.none.brier\endcsname{$-$0.0007}
+\expandafter\def\csname num@small.l.none.brierci\endcsname{0.0016}
 \expandafter\def\csname num@small.l.none.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.none.cov\endcsname{92.7}
 \expandafter\def\csname num@small.l.none.covhi\endcsname{95.1}
@@ -576,6 +605,7 @@
 \expandafter\def\csname num@small.l.scale.abias\endcsname{0.000}
 \expandafter\def\csname num@small.l.scale.bias\endcsname{0.000}
 \expandafter\def\csname num@small.l.scale.brier\endcsname{$-$0.0008}
+\expandafter\def\csname num@small.l.scale.brierci\endcsname{0.0016}
 \expandafter\def\csname num@small.l.scale.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.scale.cov\endcsname{93.0}
 \expandafter\def\csname num@small.l.scale.covhi\endcsname{95.4}
@@ -587,6 +617,7 @@
 \expandafter\def\csname num@small.l.scr.abias\endcsname{0.015}
 \expandafter\def\csname num@small.l.scr.bias\endcsname{+0.015}
 \expandafter\def\csname num@small.l.scr.brier\endcsname{$-$0.0062}
+\expandafter\def\csname num@small.l.scr.brierci\endcsname{0.0015}
 \expandafter\def\csname num@small.l.scr.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.scr.cov\endcsname{89.3}
 \expandafter\def\csname num@small.l.scr.covhi\endcsname{92.3}
@@ -598,6 +629,7 @@
 \expandafter\def\csname num@small.l.sel.abias\endcsname{0.000}
 \expandafter\def\csname num@small.l.sel.bias\endcsname{0.000}
 \expandafter\def\csname num@small.l.sel.brier\endcsname{$-$0.0008}
+\expandafter\def\csname num@small.l.sel.brierci\endcsname{0.0016}
 \expandafter\def\csname num@small.l.sel.ci\endcsname{0.004}
 \expandafter\def\csname num@small.l.sel.cov\endcsname{92.7}
 \expandafter\def\csname num@small.l.sel.covhi\endcsname{95.1}
@@ -616,6 +648,7 @@
 \expandafter\def\csname num@small.w.bin.abias\endcsname{0.001}
 \expandafter\def\csname num@small.w.bin.bias\endcsname{+0.001}
 \expandafter\def\csname num@small.w.bin.brier\endcsname{$-$0.0006}
+\expandafter\def\csname num@small.w.bin.brierci\endcsname{0.0014}
 \expandafter\def\csname num@small.w.bin.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.bin.cov\endcsname{93.0}
 \expandafter\def\csname num@small.w.bin.covhi\endcsname{95.4}
@@ -627,6 +660,7 @@
 \expandafter\def\csname num@small.w.calov.abias\endcsname{0.012}
 \expandafter\def\csname num@small.w.calov.bias\endcsname{+0.012}
 \expandafter\def\csname num@small.w.calov.brier\endcsname{$-$0.0060}
+\expandafter\def\csname num@small.w.calov.brierci\endcsname{0.0013}
 \expandafter\def\csname num@small.w.calov.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.calov.cov\endcsname{92.7}
 \expandafter\def\csname num@small.w.calov.covhi\endcsname{95.1}
@@ -638,6 +672,7 @@
 \expandafter\def\csname num@small.w.caltest.abias\endcsname{0.036}
 \expandafter\def\csname num@small.w.caltest.bias\endcsname{+0.036}
 \expandafter\def\csname num@small.w.caltest.brier\endcsname{$-$0.0173}
+\expandafter\def\csname num@small.w.caltest.brierci\endcsname{0.0013}
 \expandafter\def\csname num@small.w.caltest.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.caltest.cov\endcsname{79.7}
 \expandafter\def\csname num@small.w.caltest.covhi\endcsname{83.8}
@@ -661,6 +696,7 @@
 \expandafter\def\csname num@small.w.fit.abias\endcsname{0.057}
 \expandafter\def\csname num@small.w.fit.bias\endcsname{+0.057}
 \expandafter\def\csname num@small.w.fit.brier\endcsname{$-$0.0193}
+\expandafter\def\csname num@small.w.fit.brierci\endcsname{0.0017}
 \expandafter\def\csname num@small.w.fit.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.fit.cov\endcsname{54.0}
 \expandafter\def\csname num@small.w.fit.covhi\endcsname{59.6}
@@ -672,6 +708,7 @@
 \expandafter\def\csname num@small.w.imp.abias\endcsname{0.003}
 \expandafter\def\csname num@small.w.imp.bias\endcsname{+0.003}
 \expandafter\def\csname num@small.w.imp.brier\endcsname{$-$0.0019}
+\expandafter\def\csname num@small.w.imp.brierci\endcsname{0.0014}
 \expandafter\def\csname num@small.w.imp.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.imp.cov\endcsname{95.3}
 \expandafter\def\csname num@small.w.imp.covhi\endcsname{97.2}
@@ -683,6 +720,7 @@
 \expandafter\def\csname num@small.w.none.abias\endcsname{0.003}
 \expandafter\def\csname num@small.w.none.bias\endcsname{+0.003}
 \expandafter\def\csname num@small.w.none.brier\endcsname{$-$0.0019}
+\expandafter\def\csname num@small.w.none.brierci\endcsname{0.0014}
 \expandafter\def\csname num@small.w.none.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.none.cov\endcsname{95.3}
 \expandafter\def\csname num@small.w.none.covhi\endcsname{97.2}
@@ -694,6 +732,7 @@
 \expandafter\def\csname num@small.w.scr.abias\endcsname{0.019}
 \expandafter\def\csname num@small.w.scr.bias\endcsname{+0.019}
 \expandafter\def\csname num@small.w.scr.brier\endcsname{$-$0.0064}
+\expandafter\def\csname num@small.w.scr.brierci\endcsname{0.0014}
 \expandafter\def\csname num@small.w.scr.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.scr.cov\endcsname{89.3}
 \expandafter\def\csname num@small.w.scr.covhi\endcsname{92.3}
@@ -705,6 +744,7 @@
 \expandafter\def\csname num@small.w.sel.abias\endcsname{0.016}
 \expandafter\def\csname num@small.w.sel.bias\endcsname{+0.016}
 \expandafter\def\csname num@small.w.sel.brier\endcsname{$-$0.0049}
+\expandafter\def\csname num@small.w.sel.brierci\endcsname{0.0014}
 \expandafter\def\csname num@small.w.sel.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.sel.cov\endcsname{91.3}
 \expandafter\def\csname num@small.w.sel.covhi\endcsname{94.0}
@@ -716,6 +756,7 @@
 \expandafter\def\csname num@small.w.woe.abias\endcsname{0.036}
 \expandafter\def\csname num@small.w.woe.bias\endcsname{+0.036}
 \expandafter\def\csname num@small.w.woe.brier\endcsname{$-$0.0120}
+\expandafter\def\csname num@small.w.woe.brierci\endcsname{0.0015}
 \expandafter\def\csname num@small.w.woe.ci\endcsname{0.004}
 \expandafter\def\csname num@small.w.woe.cov\endcsname{72.3}
 \expandafter\def\csname num@small.w.woe.covhi\endcsname{77.1}
@@ -729,6 +770,7 @@
 \expandafter\def\csname num@syn.l.calov.abias\endcsname{0.003}
 \expandafter\def\csname num@syn.l.calov.bias\endcsname{+0.003}
 \expandafter\def\csname num@syn.l.calov.brier\endcsname{$-$0.0019}
+\expandafter\def\csname num@syn.l.calov.brierci\endcsname{0.0007}
 \expandafter\def\csname num@syn.l.calov.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.calov.cov\endcsname{96.0}
 \expandafter\def\csname num@syn.l.calov.covhi\endcsname{97.7}
@@ -740,6 +782,7 @@
 \expandafter\def\csname num@syn.l.caltest.abias\endcsname{0.014}
 \expandafter\def\csname num@syn.l.caltest.bias\endcsname{+0.014}
 \expandafter\def\csname num@syn.l.caltest.brier\endcsname{$-$0.0079}
+\expandafter\def\csname num@syn.l.caltest.brierci\endcsname{0.0007}
 \expandafter\def\csname num@syn.l.caltest.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.caltest.cov\endcsname{87.0}
 \expandafter\def\csname num@syn.l.caltest.covhi\endcsname{90.3}
@@ -763,6 +806,7 @@
 \expandafter\def\csname num@syn.l.fit.abias\endcsname{0.009}
 \expandafter\def\csname num@syn.l.fit.bias\endcsname{+0.009}
 \expandafter\def\csname num@syn.l.fit.brier\endcsname{$-$0.0034}
+\expandafter\def\csname num@syn.l.fit.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.fit.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.fit.cov\endcsname{92.7}
 \expandafter\def\csname num@syn.l.fit.covhi\endcsname{95.1}
@@ -774,6 +818,7 @@
 \expandafter\def\csname num@syn.l.imp.abias\endcsname{0.001}
 \expandafter\def\csname num@syn.l.imp.bias\endcsname{$-$0.001}
 \expandafter\def\csname num@syn.l.imp.brier\endcsname{+0.0002}
+\expandafter\def\csname num@syn.l.imp.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.imp.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.imp.cov\endcsname{94.3}
 \expandafter\def\csname num@syn.l.imp.covhi\endcsname{96.4}
@@ -785,6 +830,7 @@
 \expandafter\def\csname num@syn.l.none.abias\endcsname{0.001}
 \expandafter\def\csname num@syn.l.none.bias\endcsname{$-$0.001}
 \expandafter\def\csname num@syn.l.none.brier\endcsname{+0.0002}
+\expandafter\def\csname num@syn.l.none.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.none.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.none.cov\endcsname{94.7}
 \expandafter\def\csname num@syn.l.none.covhi\endcsname{96.7}
@@ -796,6 +842,7 @@
 \expandafter\def\csname num@syn.l.scale.abias\endcsname{0.001}
 \expandafter\def\csname num@syn.l.scale.bias\endcsname{$-$0.001}
 \expandafter\def\csname num@syn.l.scale.brier\endcsname{+0.0002}
+\expandafter\def\csname num@syn.l.scale.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.scale.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.scale.cov\endcsname{95.0}
 \expandafter\def\csname num@syn.l.scale.covhi\endcsname{96.9}
@@ -807,6 +854,7 @@
 \expandafter\def\csname num@syn.l.scr.abias\endcsname{0.004}
 \expandafter\def\csname num@syn.l.scr.bias\endcsname{+0.004}
 \expandafter\def\csname num@syn.l.scr.brier\endcsname{$-$0.0017}
+\expandafter\def\csname num@syn.l.scr.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.scr.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.scr.cov\endcsname{93.7}
 \expandafter\def\csname num@syn.l.scr.covhi\endcsname{95.9}
@@ -818,6 +866,7 @@
 \expandafter\def\csname num@syn.l.sel.abias\endcsname{0.001}
 \expandafter\def\csname num@syn.l.sel.bias\endcsname{$-$0.001}
 \expandafter\def\csname num@syn.l.sel.brier\endcsname{+0.0002}
+\expandafter\def\csname num@syn.l.sel.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.l.sel.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.l.sel.cov\endcsname{95.0}
 \expandafter\def\csname num@syn.l.sel.covhi\endcsname{96.9}
@@ -837,6 +886,7 @@
 \expandafter\def\csname num@syn.w.bin.abias\endcsname{0.001}
 \expandafter\def\csname num@syn.w.bin.bias\endcsname{$-$0.001}
 \expandafter\def\csname num@syn.w.bin.brier\endcsname{+0.0001}
+\expandafter\def\csname num@syn.w.bin.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.bin.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.bin.cov\endcsname{96.3}
 \expandafter\def\csname num@syn.w.bin.covhi\endcsname{97.9}
@@ -848,6 +898,7 @@
 \expandafter\def\csname num@syn.w.calov.abias\endcsname{0.004}
 \expandafter\def\csname num@syn.w.calov.bias\endcsname{+0.004}
 \expandafter\def\csname num@syn.w.calov.brier\endcsname{$-$0.0022}
+\expandafter\def\csname num@syn.w.calov.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.calov.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.calov.cov\endcsname{94.3}
 \expandafter\def\csname num@syn.w.calov.covhi\endcsname{96.4}
@@ -859,6 +910,7 @@
 \expandafter\def\csname num@syn.w.caltest.abias\endcsname{0.016}
 \expandafter\def\csname num@syn.w.caltest.bias\endcsname{+0.016}
 \expandafter\def\csname num@syn.w.caltest.brier\endcsname{$-$0.0081}
+\expandafter\def\csname num@syn.w.caltest.brierci\endcsname{0.0007}
 \expandafter\def\csname num@syn.w.caltest.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.caltest.cov\endcsname{88.0}
 \expandafter\def\csname num@syn.w.caltest.covhi\endcsname{91.2}
@@ -882,6 +934,7 @@
 \expandafter\def\csname num@syn.w.fit.abias\endcsname{0.025}
 \expandafter\def\csname num@syn.w.fit.bias\endcsname{+0.025}
 \expandafter\def\csname num@syn.w.fit.brier\endcsname{$-$0.0088}
+\expandafter\def\csname num@syn.w.fit.brierci\endcsname{0.0009}
 \expandafter\def\csname num@syn.w.fit.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.fit.cov\endcsname{66.7}
 \expandafter\def\csname num@syn.w.fit.covhi\endcsname{71.8}
@@ -893,6 +946,7 @@
 \expandafter\def\csname num@syn.w.imp.abias\endcsname{0.000}
 \expandafter\def\csname num@syn.w.imp.bias\endcsname{0.000}
 \expandafter\def\csname num@syn.w.imp.brier\endcsname{0.0000}
+\expandafter\def\csname num@syn.w.imp.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.imp.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.imp.cov\endcsname{95.3}
 \expandafter\def\csname num@syn.w.imp.covhi\endcsname{97.2}
@@ -904,6 +958,7 @@
 \expandafter\def\csname num@syn.w.none.abias\endcsname{0.000}
 \expandafter\def\csname num@syn.w.none.bias\endcsname{0.000}
 \expandafter\def\csname num@syn.w.none.brier\endcsname{$-$0.0001}
+\expandafter\def\csname num@syn.w.none.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.none.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.none.cov\endcsname{95.3}
 \expandafter\def\csname num@syn.w.none.covhi\endcsname{97.2}
@@ -915,6 +970,7 @@
 \expandafter\def\csname num@syn.w.scr.abias\endcsname{0.004}
 \expandafter\def\csname num@syn.w.scr.bias\endcsname{+0.004}
 \expandafter\def\csname num@syn.w.scr.brier\endcsname{$-$0.0016}
+\expandafter\def\csname num@syn.w.scr.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.scr.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.scr.cov\endcsname{94.3}
 \expandafter\def\csname num@syn.w.scr.covhi\endcsname{96.4}
@@ -926,6 +982,7 @@
 \expandafter\def\csname num@syn.w.sel.abias\endcsname{0.005}
 \expandafter\def\csname num@syn.w.sel.bias\endcsname{+0.005}
 \expandafter\def\csname num@syn.w.sel.brier\endcsname{$-$0.0018}
+\expandafter\def\csname num@syn.w.sel.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.sel.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.sel.cov\endcsname{96.0}
 \expandafter\def\csname num@syn.w.sel.covhi\endcsname{97.7}
@@ -937,6 +994,7 @@
 \expandafter\def\csname num@syn.w.woe.abias\endcsname{0.018}
 \expandafter\def\csname num@syn.w.woe.bias\endcsname{+0.018}
 \expandafter\def\csname num@syn.w.woe.brier\endcsname{$-$0.0062}
+\expandafter\def\csname num@syn.w.woe.brierci\endcsname{0.0008}
 \expandafter\def\csname num@syn.w.woe.ci\endcsname{0.002}
 \expandafter\def\csname num@syn.w.woe.cov\endcsname{78.3}
 \expandafter\def\csname num@syn.w.woe.covhi\endcsname{82.6}
@@ -956,9 +1014,13 @@
 \expandafter\def\csname num@th.det.2.sim\endcsname{99.1}
 \expandafter\def\csname num@th.det.3.approx\endcsname{99.9}
 \expandafter\def\csname num@th.det.3.exact\endcsname{99.9}
+\expandafter\def\csname num@th.det.3.miss\endcsname{3}
+\expandafter\def\csname num@th.det.3.missexp\endcsname{9.6}
 \expandafter\def\csname num@th.det.3.sim\endcsname{100.0}
 \expandafter\def\csname num@th.det.5.approx\endcsname{100.0}
 \expandafter\def\csname num@th.det.5.exact\endcsname{100.0}
+\expandafter\def\csname num@th.det.5.miss\endcsname{0}
+\expandafter\def\csname num@th.det.5.missexp\endcsname{0.1}
 \expandafter\def\csname num@th.det.5.sim\endcsname{100.0}
 \expandafter\def\csname num@th.det.nout\endcsname{450}
 \expandafter\def\csname num@th.det.ntrain\endcsname{1,050}
@@ -1015,6 +1077,7 @@
 \expandafter\def\csname num@tw.l.calov.abias\endcsname{0.006}
 \expandafter\def\csname num@tw.l.calov.bias\endcsname{+0.006}
 \expandafter\def\csname num@tw.l.calov.brier\endcsname{$-$0.0029}
+\expandafter\def\csname num@tw.l.calov.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.calov.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.calov.cov\endcsname{91.3}
 \expandafter\def\csname num@tw.l.calov.covhi\endcsname{94.9}
@@ -1026,6 +1089,7 @@
 \expandafter\def\csname num@tw.l.caltest.abias\endcsname{0.023}
 \expandafter\def\csname num@tw.l.caltest.bias\endcsname{+0.023}
 \expandafter\def\csname num@tw.l.caltest.brier\endcsname{$-$0.0079}
+\expandafter\def\csname num@tw.l.caltest.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.caltest.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.caltest.cov\endcsname{85.3}
 \expandafter\def\csname num@tw.l.caltest.covhi\endcsname{90.1}
@@ -1049,6 +1113,7 @@
 \expandafter\def\csname num@tw.l.fit.abias\endcsname{0.009}
 \expandafter\def\csname num@tw.l.fit.bias\endcsname{+0.009}
 \expandafter\def\csname num@tw.l.fit.brier\endcsname{$-$0.0028}
+\expandafter\def\csname num@tw.l.fit.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.l.fit.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.fit.cov\endcsname{90.7}
 \expandafter\def\csname num@tw.l.fit.covhi\endcsname{94.4}
@@ -1060,6 +1125,7 @@
 \expandafter\def\csname num@tw.l.imp.abias\endcsname{0.001}
 \expandafter\def\csname num@tw.l.imp.bias\endcsname{+0.001}
 \expandafter\def\csname num@tw.l.imp.brier\endcsname{$-$0.0011}
+\expandafter\def\csname num@tw.l.imp.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.imp.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.imp.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.l.imp.covhi\endcsname{96.3}
@@ -1071,6 +1137,7 @@
 \expandafter\def\csname num@tw.l.none.abias\endcsname{0.001}
 \expandafter\def\csname num@tw.l.none.bias\endcsname{+0.001}
 \expandafter\def\csname num@tw.l.none.brier\endcsname{$-$0.0011}
+\expandafter\def\csname num@tw.l.none.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.none.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.none.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.l.none.covhi\endcsname{96.3}
@@ -1082,6 +1149,7 @@
 \expandafter\def\csname num@tw.l.scale.abias\endcsname{0.001}
 \expandafter\def\csname num@tw.l.scale.bias\endcsname{+0.001}
 \expandafter\def\csname num@tw.l.scale.brier\endcsname{$-$0.0011}
+\expandafter\def\csname num@tw.l.scale.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.l.scale.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.scale.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.l.scale.covhi\endcsname{96.3}
@@ -1093,6 +1161,7 @@
 \expandafter\def\csname num@tw.l.scr.abias\endcsname{0.003}
 \expandafter\def\csname num@tw.l.scr.bias\endcsname{+0.003}
 \expandafter\def\csname num@tw.l.scr.brier\endcsname{$-$0.0014}
+\expandafter\def\csname num@tw.l.scr.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.scr.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.scr.cov\endcsname{92.7}
 \expandafter\def\csname num@tw.l.scr.covhi\endcsname{95.9}
@@ -1104,6 +1173,7 @@
 \expandafter\def\csname num@tw.l.sel.abias\endcsname{0.002}
 \expandafter\def\csname num@tw.l.sel.bias\endcsname{+0.002}
 \expandafter\def\csname num@tw.l.sel.brier\endcsname{$-$0.0013}
+\expandafter\def\csname num@tw.l.sel.brierci\endcsname{0.0012}
 \expandafter\def\csname num@tw.l.sel.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.l.sel.cov\endcsname{92.7}
 \expandafter\def\csname num@tw.l.sel.covhi\endcsname{95.9}
@@ -1121,6 +1191,7 @@
 \expandafter\def\csname num@tw.w.bin.abias\endcsname{0.002}
 \expandafter\def\csname num@tw.w.bin.bias\endcsname{+0.002}
 \expandafter\def\csname num@tw.w.bin.brier\endcsname{$-$0.0016}
+\expandafter\def\csname num@tw.w.bin.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.bin.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.bin.cov\endcsname{94.0}
 \expandafter\def\csname num@tw.w.bin.covhi\endcsname{96.8}
@@ -1132,6 +1203,7 @@
 \expandafter\def\csname num@tw.w.calov.abias\endcsname{0.007}
 \expandafter\def\csname num@tw.w.calov.bias\endcsname{+0.007}
 \expandafter\def\csname num@tw.w.calov.brier\endcsname{$-$0.0034}
+\expandafter\def\csname num@tw.w.calov.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.calov.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.calov.cov\endcsname{91.3}
 \expandafter\def\csname num@tw.w.calov.covhi\endcsname{94.9}
@@ -1143,6 +1215,7 @@
 \expandafter\def\csname num@tw.w.caltest.abias\endcsname{0.020}
 \expandafter\def\csname num@tw.w.caltest.bias\endcsname{+0.020}
 \expandafter\def\csname num@tw.w.caltest.brier\endcsname{$-$0.0084}
+\expandafter\def\csname num@tw.w.caltest.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.caltest.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.caltest.cov\endcsname{81.3}
 \expandafter\def\csname num@tw.w.caltest.covhi\endcsname{86.8}
@@ -1166,6 +1239,7 @@
 \expandafter\def\csname num@tw.w.fit.abias\endcsname{0.019}
 \expandafter\def\csname num@tw.w.fit.bias\endcsname{+0.019}
 \expandafter\def\csname num@tw.w.fit.brier\endcsname{$-$0.0050}
+\expandafter\def\csname num@tw.w.fit.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.fit.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.fit.cov\endcsname{85.3}
 \expandafter\def\csname num@tw.w.fit.covhi\endcsname{90.1}
@@ -1177,6 +1251,7 @@
 \expandafter\def\csname num@tw.w.imp.abias\endcsname{0.002}
 \expandafter\def\csname num@tw.w.imp.bias\endcsname{+0.002}
 \expandafter\def\csname num@tw.w.imp.brier\endcsname{$-$0.0015}
+\expandafter\def\csname num@tw.w.imp.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.imp.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.imp.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.w.imp.covhi\endcsname{96.3}
@@ -1188,6 +1263,7 @@
 \expandafter\def\csname num@tw.w.none.abias\endcsname{0.002}
 \expandafter\def\csname num@tw.w.none.bias\endcsname{+0.002}
 \expandafter\def\csname num@tw.w.none.brier\endcsname{$-$0.0015}
+\expandafter\def\csname num@tw.w.none.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.none.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.none.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.w.none.covhi\endcsname{96.3}
@@ -1199,6 +1275,7 @@
 \expandafter\def\csname num@tw.w.scr.abias\endcsname{0.003}
 \expandafter\def\csname num@tw.w.scr.bias\endcsname{+0.003}
 \expandafter\def\csname num@tw.w.scr.brier\endcsname{$-$0.0019}
+\expandafter\def\csname num@tw.w.scr.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.scr.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.scr.cov\endcsname{93.3}
 \expandafter\def\csname num@tw.w.scr.covhi\endcsname{96.3}
@@ -1210,6 +1287,7 @@
 \expandafter\def\csname num@tw.w.sel.abias\endcsname{0.004}
 \expandafter\def\csname num@tw.w.sel.bias\endcsname{+0.004}
 \expandafter\def\csname num@tw.w.sel.brier\endcsname{$-$0.0020}
+\expandafter\def\csname num@tw.w.sel.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.sel.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.sel.cov\endcsname{94.0}
 \expandafter\def\csname num@tw.w.sel.covhi\endcsname{96.8}
@@ -1221,6 +1299,7 @@
 \expandafter\def\csname num@tw.w.woe.abias\endcsname{0.015}
 \expandafter\def\csname num@tw.w.woe.bias\endcsname{+0.015}
 \expandafter\def\csname num@tw.w.woe.brier\endcsname{$-$0.0039}
+\expandafter\def\csname num@tw.w.woe.brierci\endcsname{0.0011}
 \expandafter\def\csname num@tw.w.woe.ci\endcsname{0.004}
 \expandafter\def\csname num@tw.w.woe.cov\endcsname{88.0}
 \expandafter\def\csname num@tw.w.woe.covhi\endcsname{92.3}
@@ -1243,7 +1322,7 @@
 \expandafter\def\csname num@verdict.H6.ev\endcsname{AUC test power 99.0\% at s = 0.5; CSI power 14.2\% and single-feature flag 0.0\% at s = 1}
 \expandafter\def\csname num@verdict.H7\endcsname{held}
 \expandafter\def\csname num@verdict.H7.ev\endcsname{largest absolute z 1.8 over seven levels}
-\expandafter\def\csname num@verdict.H8\endcsname{held}
-\expandafter\def\csname num@verdict.H8.ev\endcsname{random gap below 1 point in 5 of 5 cohorts; out-of-time gap at least 2 points in 5 of 5}
-\expandafter\def\csname num@verdict.H9\endcsname{held}
-\expandafter\def\csname num@verdict.H9.ev\endcsname{outside-fold bias positive, inside-fold bias null}
+\expandafter\def\csname num@verdict.H8\endcsname{not held}
+\expandafter\def\csname num@verdict.H8.ev\endcsname{random gap below 1 point in 10 of 10 cohort and rung cells; out-of-time gap at least 2 points in 8 of 10}
+\expandafter\def\csname num@verdict.H9\endcsname{not held}
+\expandafter\def\csname num@verdict.H9.ev\endcsname{outside-fold bias positive in 5 of 6 and inside-fold bias null in 5 of 6 pairs of data set and model}

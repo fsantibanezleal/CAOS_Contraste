@@ -59,6 +59,10 @@
   "text": "$-$0.0001",
   "source": "experiments/results/e1_synthetic.json summary[woe/none].brier_bias"
  },
+ "syn.w.none.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/none].brier_bias_se x 1.96"
+ },
  "syn.w.none.ece": {
   "text": "+0.0148",
   "source": "experiments/results/e1_synthetic.json summary[woe/none].ece_bias"
@@ -102,6 +106,10 @@
  "syn.w.imp.brier": {
   "text": "0.0000",
   "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].brier_bias"
+ },
+ "syn.w.imp.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/impute_full].brier_bias_se x 1.96"
  },
  "syn.w.imp.ece": {
   "text": "+0.0145",
@@ -147,6 +155,10 @@
   "text": "+0.0001",
   "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].brier_bias"
  },
+ "syn.w.bin.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].brier_bias_se x 1.96"
+ },
  "syn.w.bin.ece": {
   "text": "+0.0147",
   "source": "experiments/results/e1_synthetic.json summary[woe/bin_full].ece_bias"
@@ -190,6 +202,10 @@
  "syn.w.woe.brier": {
   "text": "$-$0.0062",
   "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].brier_bias"
+ },
+ "syn.w.woe.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/woe_full].brier_bias_se x 1.96"
  },
  "syn.w.woe.ece": {
   "text": "+0.0126",
@@ -235,6 +251,10 @@
   "text": "$-$0.0016",
   "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].brier_bias"
  },
+ "syn.w.scr.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].brier_bias_se x 1.96"
+ },
  "syn.w.scr.ece": {
   "text": "+0.0132",
   "source": "experiments/results/e1_synthetic.json summary[woe/screen_full].ece_bias"
@@ -278,6 +298,10 @@
  "syn.w.fit.brier": {
   "text": "$-$0.0088",
   "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].brier_bias"
+ },
+ "syn.w.fit.brierci": {
+  "text": "0.0009",
+  "source": "experiments/results/e1_synthetic.json summary[woe/fit_full].brier_bias_se x 1.96"
  },
  "syn.w.fit.ece": {
   "text": "+0.0113",
@@ -323,6 +347,10 @@
   "text": "$-$0.0018",
   "source": "experiments/results/e1_synthetic.json summary[woe/select_test].brier_bias"
  },
+ "syn.w.sel.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/select_test].brier_bias_se x 1.96"
+ },
  "syn.w.sel.ece": {
   "text": "+0.0127",
   "source": "experiments/results/e1_synthetic.json summary[woe/select_test].ece_bias"
@@ -367,6 +395,10 @@
   "text": "$-$0.0081",
   "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].brier_bias"
  },
+ "syn.w.caltest.brierci": {
+  "text": "0.0007",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].brier_bias_se x 1.96"
+ },
  "syn.w.caltest.ece": {
   "text": "$-$0.0055",
   "source": "experiments/results/e1_synthetic.json summary[woe/cal_test].ece_bias"
@@ -410,6 +442,10 @@
  "syn.w.calov.brier": {
   "text": "$-$0.0022",
   "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].brier_bias"
+ },
+ "syn.w.calov.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[woe/cal_overlap].brier_bias_se x 1.96"
  },
  "syn.w.calov.ece": {
   "text": "+0.0113",
@@ -503,6 +539,10 @@
   "text": "+0.0002",
   "source": "experiments/results/e1_synthetic.json summary[linear/none].brier_bias"
  },
+ "syn.l.none.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/none].brier_bias_se x 1.96"
+ },
  "syn.l.none.ece": {
   "text": "+0.0150",
   "source": "experiments/results/e1_synthetic.json summary[linear/none].ece_bias"
@@ -546,6 +586,10 @@
  "syn.l.imp.brier": {
   "text": "+0.0002",
   "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].brier_bias"
+ },
+ "syn.l.imp.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/impute_full].brier_bias_se x 1.96"
  },
  "syn.l.imp.ece": {
   "text": "+0.0142",
@@ -591,6 +635,10 @@
   "text": "+0.0002",
   "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].brier_bias"
  },
+ "syn.l.scale.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].brier_bias_se x 1.96"
+ },
  "syn.l.scale.ece": {
   "text": "+0.0149",
   "source": "experiments/results/e1_synthetic.json summary[linear/scale_full].ece_bias"
@@ -634,6 +682,10 @@
  "syn.l.scr.brier": {
   "text": "$-$0.0017",
   "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].brier_bias"
+ },
+ "syn.l.scr.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/screen_full].brier_bias_se x 1.96"
  },
  "syn.l.scr.ece": {
   "text": "+0.0130",
@@ -679,6 +731,10 @@
   "text": "$-$0.0034",
   "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].brier_bias"
  },
+ "syn.l.fit.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].brier_bias_se x 1.96"
+ },
  "syn.l.fit.ece": {
   "text": "+0.0118",
   "source": "experiments/results/e1_synthetic.json summary[linear/fit_full].ece_bias"
@@ -722,6 +778,10 @@
  "syn.l.sel.brier": {
   "text": "+0.0002",
   "source": "experiments/results/e1_synthetic.json summary[linear/select_test].brier_bias"
+ },
+ "syn.l.sel.brierci": {
+  "text": "0.0008",
+  "source": "experiments/results/e1_synthetic.json summary[linear/select_test].brier_bias_se x 1.96"
  },
  "syn.l.sel.ece": {
   "text": "+0.0150",
@@ -767,6 +827,10 @@
   "text": "$-$0.0079",
   "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].brier_bias"
  },
+ "syn.l.caltest.brierci": {
+  "text": "0.0007",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].brier_bias_se x 1.96"
+ },
  "syn.l.caltest.ece": {
   "text": "$-$0.0063",
   "source": "experiments/results/e1_synthetic.json summary[linear/cal_test].ece_bias"
@@ -810,6 +874,10 @@
  "syn.l.calov.brier": {
   "text": "$-$0.0019",
   "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].brier_bias"
+ },
+ "syn.l.calov.brierci": {
+  "text": "0.0007",
+  "source": "experiments/results/e1_synthetic.json summary[linear/cal_overlap].brier_bias_se x 1.96"
  },
  "syn.l.calov.ece": {
   "text": "+0.0109",
@@ -923,6 +991,10 @@
   "text": "$-$0.0019",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/none].brier_bias"
  },
+ "small.w.none.brierci": {
+  "text": "0.0014",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/none].brier_bias_se x 1.96"
+ },
  "small.w.none.ece": {
   "text": "+0.0277",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/none].ece_bias"
@@ -966,6 +1038,10 @@
  "small.w.imp.brier": {
   "text": "$-$0.0019",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].brier_bias"
+ },
+ "small.w.imp.brierci": {
+  "text": "0.0014",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/impute_full].brier_bias_se x 1.96"
  },
  "small.w.imp.ece": {
   "text": "+0.0277",
@@ -1011,6 +1087,10 @@
   "text": "$-$0.0006",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].brier_bias"
  },
+ "small.w.bin.brierci": {
+  "text": "0.0014",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].brier_bias_se x 1.96"
+ },
  "small.w.bin.ece": {
   "text": "+0.0300",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/bin_full].ece_bias"
@@ -1054,6 +1134,10 @@
  "small.w.woe.brier": {
   "text": "$-$0.0120",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].brier_bias"
+ },
+ "small.w.woe.brierci": {
+  "text": "0.0015",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/woe_full].brier_bias_se x 1.96"
  },
  "small.w.woe.ece": {
   "text": "+0.0211",
@@ -1099,6 +1183,10 @@
   "text": "$-$0.0064",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].brier_bias"
  },
+ "small.w.scr.brierci": {
+  "text": "0.0014",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].brier_bias_se x 1.96"
+ },
  "small.w.scr.ece": {
   "text": "+0.0254",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/screen_full].ece_bias"
@@ -1142,6 +1230,10 @@
  "small.w.fit.brier": {
   "text": "$-$0.0193",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].brier_bias"
+ },
+ "small.w.fit.brierci": {
+  "text": "0.0017",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/fit_full].brier_bias_se x 1.96"
  },
  "small.w.fit.ece": {
   "text": "+0.0220",
@@ -1187,6 +1279,10 @@
   "text": "$-$0.0049",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].brier_bias"
  },
+ "small.w.sel.brierci": {
+  "text": "0.0014",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].brier_bias_se x 1.96"
+ },
  "small.w.sel.ece": {
   "text": "+0.0251",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/select_test].ece_bias"
@@ -1231,6 +1327,10 @@
   "text": "$-$0.0173",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].brier_bias"
  },
+ "small.w.caltest.brierci": {
+  "text": "0.0013",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].brier_bias_se x 1.96"
+ },
  "small.w.caltest.ece": {
   "text": "+0.0021",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_test].ece_bias"
@@ -1274,6 +1374,10 @@
  "small.w.calov.brier": {
   "text": "$-$0.0060",
   "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].brier_bias"
+ },
+ "small.w.calov.brierci": {
+  "text": "0.0013",
+  "source": "experiments/results/e1_synthetic-small.json summary[woe/cal_overlap].brier_bias_se x 1.96"
  },
  "small.w.calov.ece": {
   "text": "+0.0235",
@@ -1367,6 +1471,10 @@
   "text": "$-$0.0007",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/none].brier_bias"
  },
+ "small.l.none.brierci": {
+  "text": "0.0016",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/none].brier_bias_se x 1.96"
+ },
  "small.l.none.ece": {
   "text": "+0.0268",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/none].ece_bias"
@@ -1410,6 +1518,10 @@
  "small.l.imp.brier": {
   "text": "$-$0.0008",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].brier_bias"
+ },
+ "small.l.imp.brierci": {
+  "text": "0.0016",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/impute_full].brier_bias_se x 1.96"
  },
  "small.l.imp.ece": {
   "text": "+0.0263",
@@ -1455,6 +1567,10 @@
   "text": "$-$0.0008",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].brier_bias"
  },
+ "small.l.scale.brierci": {
+  "text": "0.0016",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].brier_bias_se x 1.96"
+ },
  "small.l.scale.ece": {
   "text": "+0.0268",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/scale_full].ece_bias"
@@ -1498,6 +1614,10 @@
  "small.l.scr.brier": {
   "text": "$-$0.0062",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].brier_bias"
+ },
+ "small.l.scr.brierci": {
+  "text": "0.0015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/screen_full].brier_bias_se x 1.96"
  },
  "small.l.scr.ece": {
   "text": "+0.0231",
@@ -1543,6 +1663,10 @@
   "text": "$-$0.0113",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].brier_bias"
  },
+ "small.l.fit.brierci": {
+  "text": "0.0015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].brier_bias_se x 1.96"
+ },
  "small.l.fit.ece": {
   "text": "+0.0202",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/fit_full].ece_bias"
@@ -1586,6 +1710,10 @@
  "small.l.sel.brier": {
   "text": "$-$0.0008",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].brier_bias"
+ },
+ "small.l.sel.brierci": {
+  "text": "0.0016",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/select_test].brier_bias_se x 1.96"
  },
  "small.l.sel.ece": {
   "text": "+0.0264",
@@ -1631,6 +1759,10 @@
   "text": "$-$0.0172",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].brier_bias"
  },
+ "small.l.caltest.brierci": {
+  "text": "0.0015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].brier_bias_se x 1.96"
+ },
  "small.l.caltest.ece": {
   "text": "$-$0.0025",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_test].ece_bias"
@@ -1674,6 +1806,10 @@
  "small.l.calov.brier": {
   "text": "$-$0.0051",
   "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].brier_bias"
+ },
+ "small.l.calov.brierci": {
+  "text": "0.0015",
+  "source": "experiments/results/e1_synthetic-small.json summary[linear/cal_overlap].brier_bias_se x 1.96"
  },
  "small.l.calov.ece": {
   "text": "+0.0229",
@@ -1787,6 +1923,10 @@
   "text": "$-$0.0015",
   "source": "experiments/results/e1_taiwan.json summary[woe/none].brier_bias"
  },
+ "tw.w.none.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/none].brier_bias_se x 1.96"
+ },
  "tw.w.none.ece": {
   "text": "+0.0118",
   "source": "experiments/results/e1_taiwan.json summary[woe/none].ece_bias"
@@ -1830,6 +1970,10 @@
  "tw.w.imp.brier": {
   "text": "$-$0.0015",
   "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].brier_bias"
+ },
+ "tw.w.imp.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/impute_full].brier_bias_se x 1.96"
  },
  "tw.w.imp.ece": {
   "text": "+0.0118",
@@ -1875,6 +2019,10 @@
   "text": "$-$0.0016",
   "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].brier_bias"
  },
+ "tw.w.bin.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].brier_bias_se x 1.96"
+ },
  "tw.w.bin.ece": {
   "text": "+0.0132",
   "source": "experiments/results/e1_taiwan.json summary[woe/bin_full].ece_bias"
@@ -1918,6 +2066,10 @@
  "tw.w.woe.brier": {
   "text": "$-$0.0039",
   "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].brier_bias"
+ },
+ "tw.w.woe.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/woe_full].brier_bias_se x 1.96"
  },
  "tw.w.woe.ece": {
   "text": "+0.0112",
@@ -1963,6 +2115,10 @@
   "text": "$-$0.0019",
   "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].brier_bias"
  },
+ "tw.w.scr.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].brier_bias_se x 1.96"
+ },
  "tw.w.scr.ece": {
   "text": "+0.0122",
   "source": "experiments/results/e1_taiwan.json summary[woe/screen_full].ece_bias"
@@ -2006,6 +2162,10 @@
  "tw.w.fit.brier": {
   "text": "$-$0.0050",
   "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].brier_bias"
+ },
+ "tw.w.fit.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/fit_full].brier_bias_se x 1.96"
  },
  "tw.w.fit.ece": {
   "text": "+0.0101",
@@ -2051,6 +2211,10 @@
   "text": "$-$0.0020",
   "source": "experiments/results/e1_taiwan.json summary[woe/select_test].brier_bias"
  },
+ "tw.w.sel.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/select_test].brier_bias_se x 1.96"
+ },
  "tw.w.sel.ece": {
   "text": "+0.0113",
   "source": "experiments/results/e1_taiwan.json summary[woe/select_test].ece_bias"
@@ -2095,6 +2259,10 @@
   "text": "$-$0.0084",
   "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].brier_bias"
  },
+ "tw.w.caltest.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].brier_bias_se x 1.96"
+ },
  "tw.w.caltest.ece": {
   "text": "$-$0.0042",
   "source": "experiments/results/e1_taiwan.json summary[woe/cal_test].ece_bias"
@@ -2138,6 +2306,10 @@
  "tw.w.calov.brier": {
   "text": "$-$0.0034",
   "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].brier_bias"
+ },
+ "tw.w.calov.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[woe/cal_overlap].brier_bias_se x 1.96"
  },
  "tw.w.calov.ece": {
   "text": "+0.0092",
@@ -2231,6 +2403,10 @@
   "text": "$-$0.0011",
   "source": "experiments/results/e1_taiwan.json summary[linear/none].brier_bias"
  },
+ "tw.l.none.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/none].brier_bias_se x 1.96"
+ },
  "tw.l.none.ece": {
   "text": "+0.0142",
   "source": "experiments/results/e1_taiwan.json summary[linear/none].ece_bias"
@@ -2274,6 +2450,10 @@
  "tw.l.imp.brier": {
   "text": "$-$0.0011",
   "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].brier_bias"
+ },
+ "tw.l.imp.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/impute_full].brier_bias_se x 1.96"
  },
  "tw.l.imp.ece": {
   "text": "+0.0142",
@@ -2319,6 +2499,10 @@
   "text": "$-$0.0011",
   "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].brier_bias"
  },
+ "tw.l.scale.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].brier_bias_se x 1.96"
+ },
  "tw.l.scale.ece": {
   "text": "+0.0141",
   "source": "experiments/results/e1_taiwan.json summary[linear/scale_full].ece_bias"
@@ -2362,6 +2546,10 @@
  "tw.l.scr.brier": {
   "text": "$-$0.0014",
   "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].brier_bias"
+ },
+ "tw.l.scr.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/screen_full].brier_bias_se x 1.96"
  },
  "tw.l.scr.ece": {
   "text": "+0.0138",
@@ -2407,6 +2595,10 @@
   "text": "$-$0.0028",
   "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].brier_bias"
  },
+ "tw.l.fit.brierci": {
+  "text": "0.0011",
+  "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].brier_bias_se x 1.96"
+ },
  "tw.l.fit.ece": {
   "text": "+0.0124",
   "source": "experiments/results/e1_taiwan.json summary[linear/fit_full].ece_bias"
@@ -2450,6 +2642,10 @@
  "tw.l.sel.brier": {
   "text": "$-$0.0013",
   "source": "experiments/results/e1_taiwan.json summary[linear/select_test].brier_bias"
+ },
+ "tw.l.sel.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/select_test].brier_bias_se x 1.96"
  },
  "tw.l.sel.ece": {
   "text": "+0.0145",
@@ -2495,6 +2691,10 @@
   "text": "$-$0.0079",
   "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].brier_bias"
  },
+ "tw.l.caltest.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].brier_bias_se x 1.96"
+ },
  "tw.l.caltest.ece": {
   "text": "$-$0.0014",
   "source": "experiments/results/e1_taiwan.json summary[linear/cal_test].ece_bias"
@@ -2538,6 +2738,10 @@
  "tw.l.calov.brier": {
   "text": "$-$0.0029",
   "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].brier_bias"
+ },
+ "tw.l.calov.brierci": {
+  "text": "0.0012",
+  "source": "experiments/results/e1_taiwan.json summary[linear/cal_overlap].brier_bias_se x 1.96"
  },
  "tw.l.calov.ece": {
   "text": "+0.0114",
@@ -2651,6 +2855,10 @@
   "text": "$-$0.0003",
   "source": "experiments/results/e1_product.json summary[product/none].brier_bias"
  },
+ "prod.p.none.brierci": {
+  "text": "0.0017",
+  "source": "experiments/results/e1_product.json summary[product/none].brier_bias_se x 1.96"
+ },
  "prod.p.none.ece": {
   "text": "+0.0136",
   "source": "experiments/results/e1_product.json summary[product/none].ece_bias"
@@ -2695,6 +2903,10 @@
   "text": "$-$0.0136",
   "source": "experiments/results/e1_product.json summary[product/fit_full].brier_bias"
  },
+ "prod.p.fit.brierci": {
+  "text": "0.0017",
+  "source": "experiments/results/e1_product.json summary[product/fit_full].brier_bias_se x 1.96"
+ },
  "prod.p.fit.ece": {
   "text": "+0.0105",
   "source": "experiments/results/e1_product.json summary[product/fit_full].ece_bias"
@@ -2738,6 +2950,10 @@
  "prod.p.caltest.brier": {
   "text": "$-$0.0080",
   "source": "experiments/results/e1_product.json summary[product/cal_test].brier_bias"
+ },
+ "prod.p.caltest.brierci": {
+  "text": "0.0016",
+  "source": "experiments/results/e1_product.json summary[product/cal_test].brier_bias_se x 1.96"
  },
  "prod.p.caltest.ece": {
   "text": "$-$0.0058",
@@ -4751,6 +4967,58 @@
   "text": "58.1",
   "source": "data/derived/C22/leakage.json simulations[stability.csi@l2] rate at 5%, 2000 repetitions"
  },
+ "c22.null.diff": {
+  "text": "2.2",
+  "source": "C22 null rate minus the e3 null rate of the test against development, points"
+ },
+ "c22.null.z": {
+  "text": "2.2",
+  "source": "pooled two-proportion z of the C22 and e3 null rates"
+ },
+ "c22.null.p": {
+  "text": "0.025",
+  "source": "two-sided p of the pooled two-proportion z"
+ },
+ "e3.s0.0.auc_lo": {
+  "text": "1.4",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].auc_test.lo"
+ },
+ "e3.s0.0.auc_hi": {
+  "text": "4.1",
+  "source": "experiments/results/e3_planted_leak.json levels[0.0].auc_test.hi"
+ },
+ "th.det.3.miss": {
+  "text": "3",
+  "source": "theory_checks.json detection.by_m[3] misses among the trials"
+ },
+ "th.det.3.missexp": {
+  "text": "9.6",
+  "source": "theory_checks.json detection.by_m[3] expected misses = (1 - exact) x trials"
+ },
+ "th.det.5.miss": {
+  "text": "0",
+  "source": "theory_checks.json detection.by_m[5] misses among the trials"
+ },
+ "th.det.5.missexp": {
+  "text": "0.1",
+  "source": "theory_checks.json detection.by_m[5] expected misses = (1 - exact) x trials"
+ },
+ "e4.sed.lo": {
+  "text": "0.10",
+  "source": "binomial standard error of the random-split rate at the window rate, smallest cohort, points"
+ },
+ "e4.sed.hi": {
+  "text": "0.13",
+  "source": "binomial standard error of the random-split rate at the window rate, largest cohort, points"
+ },
+ "e4.maxz": {
+  "text": "1.2",
+  "source": "largest |random gap| / binomial standard error at the window rate over the two printed rungs and five cohorts"
+ },
+ "e2.draws.zmax": {
+  "text": "1.3",
+  "source": "largest |observed - 1 + K^-d| / sqrt(p (1 - p) / reps) over the cells of the repeated-perturbation study"
+ },
  "c22.reps": {
   "text": "2,000",
   "source": "data/derived/C22/leakage.json simulations[0] n"
@@ -4806,6 +5074,54 @@
  "h5.false": {
   "text": "0",
   "source": "experiments/results/e2_matrix.json maximum any_gate_fails on the protocol"
+ },
+ "h8.cells": {
+  "text": "10",
+  "source": "two printed rungs times five cohorts"
+ },
+ "h8.rand": {
+  "text": "10",
+  "source": "cells with |random gap| < 1 point"
+ },
+ "h8.oot": {
+  "text": "8",
+  "source": "cells with |out-of-time gap| >= 2 points"
+ },
+ "h8.failed": {
+  "text": "2011-14 ($-$1.7) and 2018-20 ($-$1.6)",
+  "source": "cells of the gradient-boosting rung below 2 points"
+ },
+ "c03.mingap": {
+  "text": "2.21",
+  "source": "data/derived/C03/fy*.json outputs.rung_comparison[P1-scorecard].calibration_gap_5y, smallest absolute value x 100"
+ },
+ "h9.pos": {
+  "text": "5",
+  "source": "pairs of data set and model with the outside-fold bias interval above 0, of six"
+ },
+ "h9.null": {
+  "text": "5",
+  "source": "pairs of data set and model with the inside-fold bias interval containing 0, of six"
+ },
+ "h9.failcells": {
+  "text": "2",
+  "source": "cells of the twelve that fail"
+ },
+ "h.held": {
+  "text": "6",
+  "source": "make_artifacts.hypotheses: predictions whose rule holds"
+ },
+ "h.notheld": {
+  "text": "3",
+  "source": "make_artifacts.hypotheses: predictions whose rule fails"
+ },
+ "h.held.word": {
+  "text": "six",
+  "source": "make_artifacts.hypotheses"
+ },
+ "h.notheld.word": {
+  "text": "three",
+  "source": "make_artifacts.hypotheses"
  },
  "verdict.H1": {
   "text": "held",
@@ -4864,19 +5180,19 @@
   "source": "make_artifacts.hypotheses H7"
  },
  "verdict.H8": {
-  "text": "held",
+  "text": "not held",
   "source": "make_artifacts.hypotheses H8"
  },
  "verdict.H8.ev": {
-  "text": "random gap below 1 point in 5 of 5 cohorts; out-of-time gap at least 2 points in 5 of 5",
+  "text": "random gap below 1 point in 10 of 10 cohort and rung cells; out-of-time gap at least 2 points in 8 of 10",
   "source": "make_artifacts.hypotheses H8"
  },
  "verdict.H9": {
-  "text": "held",
+  "text": "not held",
   "source": "make_artifacts.hypotheses H9"
  },
  "verdict.H9.ev": {
-  "text": "outside-fold bias positive, inside-fold bias null",
+  "text": "outside-fold bias positive in 5 of 6 and inside-fold bias null in 5 of 6 pairs of data set and model",
   "source": "make_artifacts.hypotheses H9"
  },
  "abl.G1.full": {

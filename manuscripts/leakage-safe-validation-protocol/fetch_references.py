@@ -77,7 +77,7 @@ URLS = [
      "{Basel Committee on Banking Supervision}", "2005", "Bank for International Settlements, Working Paper 14",
      "https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf"),
     ("sr262", "techreport", "Revised guidance on model risk management (SR 26-2)",
-     "{Board of Governors of the Federal Reserve System}", "2026", "Federal Reserve",
+     "{Board of Governors of the Federal Reserve System and Federal Deposit Insurance Corporation and Office of the Comptroller of the Currency}", "2026", "Board of Governors of the Federal Reserve System, FDIC and OCC",
      "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"),
     ("mercury2023", "misc", "mercury-robust: a framework to perform robust testing on machine-learning models and datasets",
      "{BBVA Advanced Analytics}", "2023", "Python package, repository opened 2026-11-07", "https://github.com/BBVA/mercury-robust"),
