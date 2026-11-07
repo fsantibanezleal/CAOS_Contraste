@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Size of the Christoffersen conditional-coverage test on independent hits: the committed C22 document, the engine function that this paper calls, rerun on the same design with the seed of \texttt{c22\_size\_check.py}, the same function at the 250-day, 97.5\% design of the desk back-test, and the rule that this paper uses, a critical value read from the calibration null. The rerun agrees with the committed document (differences of $z=-0.13$ and $0.29$ for the two rules).}
+\label{tab:c22-check}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{2.1cm}rc}
+\toprule
+Source & Design & Rule & Rejections & Size, in percent (95\% Wilson) \\
+\midrule
+C22 committed document & \relax 1,500 days, hit probability 5\% & $p<0.05$ & 133 of 2,000 & \begin{tabular}[t]{@{}c@{}}6.7\\(5.6--7.8)\end{tabular} \\
+C22 committed document & \relax 1,500 days, hit probability 5\% & $p<0.01$ & 25 of 2,000 & \begin{tabular}[t]{@{}c@{}}1.2\\(0.8--1.8)\end{tabular} \\
+Engine function rerun here & \relax 1,500 days, hit probability 5\% & $p<0.05$ & 135 of 2,000 & \begin{tabular}[t]{@{}c@{}}6.8\\(5.7--7.9)\end{tabular} \\
+Engine function rerun here & \relax 1,500 days, hit probability 5\% & $p<0.01$ & 23 of 2,000 & \begin{tabular}[t]{@{}c@{}}1.1\\(0.8--1.7)\end{tabular} \\
+Engine function rerun here & \relax 250 days, hit probability 2.5\% & $p<0.05$ & 69 of 2,000 & \begin{tabular}[t]{@{}c@{}}3.5\\(2.7--4.3)\end{tabular} \\
+Engine function rerun here & \relax 250 days, hit probability 2.5\% & $p<0.01$ & 5 of 2,000 & \begin{tabular}[t]{@{}c@{}}0.2\\(0.1--0.6)\end{tabular} \\
+Rule used in this paper & \relax 250 days, 97.5\% VaR of the desk, held-out null & \relax simulated critical value, 1\% & 8 of 1,000 & \begin{tabular}[t]{@{}c@{}}0.8\\(0.4--1.6)\end{tabular} \\
+\bottomrule
+\end{tabular}
+\end{table}

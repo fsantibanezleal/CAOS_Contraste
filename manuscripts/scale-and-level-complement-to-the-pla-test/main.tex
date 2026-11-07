@@ -26,12 +26,12 @@
 \headerblock
 
 \begin{abstract}
-The profit and loss attribution test of the Basel market risk standard compares the hypothetical and the risk-theoretical profit and loss of a desk through a Spearman correlation of the levels and a Kolmogorov--Smirnov distance, with zones that a desk with a faulty model can pass.
+The profit and loss attribution test of the Basel market risk standard compares the hypothetical and the risk-theoretical profit and loss of a desk through a Spearman correlation of the levels and a Kolmogorov--Smirnov distance, with zones that a faulty-model desk can pass.
 On a generator with a known true risk model, a model fed a volatility twenty days old is flagged by neither statistic in any of 1,000 replications.
-We propose a complement added beside the regulatory zone: a Mincer--Zarnowitz regression of the hypothetical on the risk-theoretical profit and loss with a joint Wald test under an HC3 covariance, the Spearman correlation of the absolute values, and that of their 20-day rolling means, each with a critical value read from a simulated null.
+We propose a complement added beside the regulatory zone: a Mincer--Zarnowitz regression of the hypothetical on the risk-theoretical profit and loss with a joint Wald test under an HC3 covariance, the Spearman correlation of the absolute values, and of their 20-day rolling means, each with a critical value read from a simulated null.
 At a family size of 1\% the complement flags the stale-volatility model in 99.9\% of 1,000 replications (95\% Wilson interval 99.4 to 100.0\%) with a held-out false-alarm rate of 0.9\% (0.5 to 1.7\%); the regulatory zone flags 0.0\%.
-Against the published comparators, the rolling-mean statistic has the largest area under the ROC curve at lags of 5, 10 and 20 days, but alone it is weak against a wrong correlation (4.5\%) and a one-day misalignment (42.3\%), which the union flags only through the Wald test.
-The stated size does not transfer to desks with more persistent or more dispersed volatility (4.0\% and 6.2\%) or a larger pricing noise (99.0\%): thresholds must be calibrated on each desk's own null.
+Against published comparators the rolling-mean statistic has the largest area under the ROC curve at lags of 5, 10 and 20 days, but it is weak against a wrong correlation (4.5\%, flagged by the union only through the Wald test) and a one-day misalignment (42.3\%, flagged in 100.0\% by the absolute-value and Wald statistics).
+The stated size does not transfer to desks with more persistent or more dispersed volatility (4.0\% and 6.2\%) or a larger pricing noise (99.0\%): thresholds need each desk's own null.
 \end{abstract}
 
 \input{s01-introduction}

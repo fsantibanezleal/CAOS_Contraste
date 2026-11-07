@@ -1,28 +1,28 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\scriptsize\setlength{\tabcolsep}{2pt}
-\caption{Ablation of the complement: held-out false-alarm rate (Size) and percent of 1,000 replications flagged, with the 95\% Wilson interval, on the stale-volatility variant at lags of 5, 10, 20 and 40 days (L5 to L40) and on the missing-basis, wrong-correlation, omitted-factor and time-misalignment variants, for the full complement and for each component removed, replaced or changed; every configuration is calibrated on the same 10,000 null desk-years at a family size of 1\% (the no-correction row at 1\% per statistic).}
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\caption{Ablation of the complement, first part: held-out false-alarm rate (Size) and detection of the stale-volatility variant at lags of 5, 10, 20 and 40 days (L5 to L40), for the full complement and for each component removed, replaced or changed; every configuration is calibrated on the same 10,000 null desk-years at a family size of 1\% (the no-correction row at 1\% per statistic); percent of 1,000 replications flagged, over the 95\% Wilson interval.}
 \label{tab:ablation}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{4.6cm}ccccccccc}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.5cm}ccccc}
 \toprule
-Configuration & Size & L5 & L10 & L20 & L40 & Basis & Corr. & Factor & Time \\
+Configuration & Size & L5 & L10 & L20 & L40 \\
 \midrule
-Full complement (three statistics, Bonferroni) & 0.9 (0.5--1.7) & 37.3 (34.4--40.3) & 94.0 (92.4--95.3) & 99.9 (99.4--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Without the Wald test & 1.0 (0.5--1.8) & 44.5 (41.4--47.6) & 96.3 (94.9--97.3) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 7.4 (5.9--9.2) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Without the absolute-value Spearman & 0.6 (0.3--1.3) & 44.4 (41.3--47.5) & 96.3 (94.9--97.3) & 99.9 (99.4--100.0) & 100.0 (99.6--100.0) & 99.7 (99.1--99.9) & 100.0 (99.6--100.0) & 97.3 (96.1--98.1) & 100.0 (99.6--100.0) \\
-Without the rolling-mean Spearman & 1.0 (0.5--1.8) & 3.8 (2.8--5.2) & 17.3 (15.1--19.8) & 67.7 (64.7--70.5) & 92.4 (90.6--93.9) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Wald test alone & 0.8 (0.4--1.6) & 2.4 (1.6--3.5) & 6.0 (4.7--7.6) & 14.2 (12.2--16.5) & 28.7 (26.0--31.6) & 0.9 (0.5--1.7) & 100.0 (99.6--100.0) & 0.6 (0.3--1.3) & 100.0 (99.6--100.0) \\
-Absolute-value Spearman alone & 1.6 (1.0--2.6) & 4.5 (3.4--6.0) & 25.6 (23.0--28.4) & 76.7 (74.0--79.2) & 94.1 (92.5--95.4) & 100.0 (99.6--100.0) & 8.7 (7.1--10.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Rolling-mean Spearman alone (20 days) & 1.2 (0.7--2.1) & 57.6 (54.5--60.6) & 97.5 (96.3--98.3) & 99.9 (99.4--100.0) & 100.0 (99.6--100.0) & 99.9 (99.4--100.0) & 4.5 (3.4--6.0) & 98.7 (97.8--99.2) & 42.3 (39.3--45.4) \\
-Rolling-mean Spearman, 5 days & 1.2 (0.7--2.1) & 91.1 (89.2--92.7) & 99.8 (99.3--99.9) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 8.9 (7.3--10.8) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Rolling-mean Spearman, 10 days & 1.0 (0.5--1.8) & 82.9 (80.4--85.1) & 99.8 (99.3--99.9) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 7.3 (5.8--9.1) & 100.0 (99.6--100.0) & 94.5 (92.9--95.8) \\
-Rolling-mean Spearman, 40 days & 1.0 (0.5--1.8) & 24.2 (21.6--27.0) & 83.4 (81.0--85.6) & 98.4 (97.4--99.0) & 99.9 (99.4--100.0) & 96.8 (95.5--97.7) & 2.8 (1.9--4.0) & 81.6 (79.1--83.9) & 11.6 (9.8--13.7) \\
-Rolling-mean Spearman, 60 days & 1.0 (0.5--1.8) & 15.4 (13.3--17.8) & 61.9 (58.8--64.9) & 94.2 (92.6--95.5) & 98.8 (97.9--99.3) & 87.5 (85.3--89.4) & 2.6 (1.8--3.8) & 63.4 (60.4--66.3) & 5.3 (4.1--6.9) \\
-OLS covariance in place of HC3 & 1.1 (0.6--2.0) & 44.2 (41.1--47.3) & 95.4 (93.9--96.5) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-\relax No multiplicity correction (1\% each) & 3.3 (2.4--4.6) & 59.4 (56.3--62.4) & 97.9 (96.8--98.6) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Rolling means at 5, 10, 20 and 40 days (Bonferroni) & 0.5 (0.2--1.2) & 76.7 (74.0--79.2) & 99.5 (98.8--99.8) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 4.1 (3.0--5.5) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-Full complement and regulatory zone & 0.9 (0.5--1.7) & 37.3 (34.4--40.3) & 94.0 (92.4--95.3) & 99.9 (99.4--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
+Full complement (three statistics, Bonferroni) & \begin{tabular}[t]{@{}c@{}}0.9\\(0.5--1.7)\end{tabular} & \begin{tabular}[t]{@{}c@{}}37.3\\(34.4--40.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.0\\(92.4--95.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Without the Wald test & \begin{tabular}[t]{@{}c@{}}1.0\\(0.5--1.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}44.5\\(41.4--47.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}96.3\\(94.9--97.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Without the absolute-value Spearman & \begin{tabular}[t]{@{}c@{}}0.6\\(0.3--1.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}44.4\\(41.3--47.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}96.3\\(94.9--97.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Without the rolling-mean Spearman & \begin{tabular}[t]{@{}c@{}}1.0\\(0.5--1.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}3.8\\(2.8--5.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}17.3\\(15.1--19.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}67.7\\(64.7--70.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}92.4\\(90.6--93.9)\end{tabular} \\ \addlinespace[0.8ex]
+Wald test alone & \begin{tabular}[t]{@{}c@{}}0.8\\(0.4--1.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}2.4\\(1.6--3.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}6.0\\(4.7--7.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}14.2\\(12.2--16.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}28.7\\(26.0--31.6)\end{tabular} \\ \addlinespace[0.8ex]
+Absolute-value Spearman alone & \begin{tabular}[t]{@{}c@{}}1.6\\(1.0--2.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}4.5\\(3.4--6.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}25.6\\(23.0--28.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}76.7\\(74.0--79.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.1\\(92.5--95.4)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling-mean Spearman alone (20 days) & \begin{tabular}[t]{@{}c@{}}1.2\\(0.7--2.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}57.6\\(54.5--60.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}97.5\\(96.3--98.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling-mean Spearman, 5 days & \begin{tabular}[t]{@{}c@{}}1.2\\(0.7--2.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}91.1\\(89.2--92.7)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.8\\(99.3--99.9)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling-mean Spearman, 10 days & \begin{tabular}[t]{@{}c@{}}1.0\\(0.5--1.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}82.9\\(80.4--85.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.8\\(99.3--99.9)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling-mean Spearman, 40 days & \begin{tabular}[t]{@{}c@{}}1.0\\(0.5--1.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}24.2\\(21.6--27.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}83.4\\(81.0--85.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}98.4\\(97.4--99.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling-mean Spearman, 60 days & \begin{tabular}[t]{@{}c@{}}1.0\\(0.5--1.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}15.4\\(13.3--17.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}61.9\\(58.8--64.9)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.2\\(92.6--95.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}98.8\\(97.9--99.3)\end{tabular} \\ \addlinespace[0.8ex]
+OLS covariance in place of HC3 & \begin{tabular}[t]{@{}c@{}}1.1\\(0.6--2.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}44.2\\(41.1--47.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}95.4\\(93.9--96.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+No multiplicity correction (1\% each) & \begin{tabular}[t]{@{}c@{}}3.3\\(2.4--4.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}59.4\\(56.3--62.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}97.9\\(96.8--98.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Rolling means at 5, 10, 20 and 40 days (Bonferroni) & \begin{tabular}[t]{@{}c@{}}0.5\\(0.2--1.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}76.7\\(74.0--79.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.5\\(98.8--99.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+Full complement and regulatory zone & \begin{tabular}[t]{@{}c@{}}0.9\\(0.5--1.7)\end{tabular} & \begin{tabular}[t]{@{}c@{}}37.3\\(34.4--40.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.0\\(92.4--95.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
 \bottomrule
-\end{tabular}}
-\end{table*}
+\end{tabular}
+\end{table}

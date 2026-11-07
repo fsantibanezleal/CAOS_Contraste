@@ -1,20 +1,36 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\scriptsize\setlength{\tabcolsep}{3pt}
-\caption{The Mincer--Zarnowitz slope and the Pearson correlation of the 20-day rolling means of the absolute series at each lag of the volatility input: the closed forms of Propositions 2 and 3, the mean over 1,000 C13 desk-years of 250 days (with its standard error, and for the slope its standard deviation over desk-years), and an independent simulation of the noise-free model on windows of 100,000 and of 250 days (mean and standard error over 20 and 4,000 windows).}
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\caption{The Mincer--Zarnowitz slope and the Pearson correlation of the 20-day rolling means of the absolute series at each lag of the volatility input: the closed forms of Propositions 2 and 3, the mean over 1,000 C13 desk-years of 250 days (with its standard error, and for the slope its standard deviation over desk-years), and an independent simulation of the noise-free model on windows of 100,000 and of 250 days (mean and standard error over 20 and 4,000 windows). The first panel is the slope, the second the correlation.}
 \label{tab:theory-slope-corr}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{rccccccccc}
+\begin{tabular}{rcccc}
 \toprule
-Lag & Slope, closed form & Slope, 100,000-day windows & Slope, C13 mean & Slope, C13 sd & Corr., closed form & Corr., 100,000-day windows & Corr., 250-day windows & Corr., C13 mean \\
+Lag & \shortstack{Closed\\form} & \shortstack{100,000-day\\windows} & \shortstack{C13\\mean} & \shortstack{C13\\sd} \\
 \midrule
-0 & 1.0000 & $1.0000\pm0.0000$ & $1.0002\pm0.0002$ & 0.0069 & 1.0000 & $1.0000\pm0.0000$ & $1.0000\pm0.0000$ & $0.9942\pm0.0002$ \\
-2 & 0.9952 & $0.9951\pm0.0001$ & $0.9955\pm0.0004$ & 0.0128 & 0.9959 & $0.9960\pm0.0000$ & $0.9932\pm0.0001$ & $0.9874\pm0.0003$ \\
-5 & 0.9883 & $0.9885\pm0.0002$ & $0.9882\pm0.0006$ & 0.0202 & 0.9800 & $0.9802\pm0.0001$ & $0.9666\pm0.0003$ & $0.9610\pm0.0007$ \\
-10 & 0.9778 & $0.9776\pm0.0002$ & $0.9788\pm0.0010$ & 0.0310 & 0.9333 & $0.9340\pm0.0005$ & $0.8909\pm0.0009$ & $0.8866\pm0.0018$ \\
-20 & 0.9601 & $0.9603\pm0.0003$ & $0.9633\pm0.0016$ & 0.0508 & 0.8054 & $0.8084\pm0.0014$ & $0.6946\pm0.0023$ & $0.6908\pm0.0044$ \\
-40 & 0.9344 & $0.9346\pm0.0005$ & $0.9426\pm0.0026$ & 0.0836 & 0.5969 & $0.6021\pm0.0025$ & $0.4284\pm0.0038$ & $0.4203\pm0.0076$ \\
-80 & 0.9065 & $0.9063\pm0.0009$ & $0.9228\pm0.0042$ & 0.1312 & 0.3717 & $0.3732\pm0.0039$ & $0.2286\pm0.0050$ & $0.2089\pm0.0099$ \\
+0 & 1.0000 & $1.0000\pm0.0000$ & $1.0002\pm0.0002$ & 0.0069 \\ \addlinespace[0.8ex]
+2 & 0.9952 & $0.9951\pm0.0001$ & $0.9955\pm0.0004$ & 0.0128 \\ \addlinespace[0.8ex]
+5 & 0.9883 & $0.9885\pm0.0002$ & $0.9882\pm0.0006$ & 0.0202 \\ \addlinespace[0.8ex]
+10 & 0.9778 & $0.9776\pm0.0002$ & $0.9788\pm0.0010$ & 0.0310 \\ \addlinespace[0.8ex]
+20 & 0.9601 & $0.9603\pm0.0003$ & $0.9633\pm0.0016$ & 0.0508 \\ \addlinespace[0.8ex]
+40 & 0.9344 & $0.9346\pm0.0005$ & $0.9426\pm0.0026$ & 0.0836 \\ \addlinespace[0.8ex]
+80 & 0.9065 & $0.9063\pm0.0009$ & $0.9228\pm0.0042$ & 0.1312 \\ \addlinespace[0.8ex]
 \bottomrule
-\end{tabular}}
-\end{table*}
+\end{tabular}
+
+\vspace{1.5ex}
+
+\begin{tabular}{rcccc}
+\toprule
+Lag & \shortstack{Closed\\form} & \shortstack{100,000-day\\windows} & \shortstack{250-day\\windows} & \shortstack{C13\\mean} \\
+\midrule
+0 & 1.0000 & $1.0000\pm0.0000$ & $1.0000\pm0.0000$ & $0.9942\pm0.0002$ \\ \addlinespace[0.8ex]
+2 & 0.9959 & $0.9960\pm0.0000$ & $0.9932\pm0.0001$ & $0.9874\pm0.0003$ \\ \addlinespace[0.8ex]
+5 & 0.9800 & $0.9802\pm0.0001$ & $0.9666\pm0.0003$ & $0.9610\pm0.0007$ \\ \addlinespace[0.8ex]
+10 & 0.9333 & $0.9340\pm0.0005$ & $0.8909\pm0.0009$ & $0.8866\pm0.0018$ \\ \addlinespace[0.8ex]
+20 & 0.8054 & $0.8084\pm0.0014$ & $0.6946\pm0.0023$ & $0.6908\pm0.0044$ \\ \addlinespace[0.8ex]
+40 & 0.5969 & $0.6021\pm0.0025$ & $0.4284\pm0.0038$ & $0.4203\pm0.0076$ \\ \addlinespace[0.8ex]
+80 & 0.3717 & $0.3732\pm0.0039$ & $0.2286\pm0.0050$ & $0.2089\pm0.0099$ \\ \addlinespace[0.8ex]
+\bottomrule
+\end{tabular}
+\end{table}

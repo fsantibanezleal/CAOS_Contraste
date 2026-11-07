@@ -4,7 +4,7 @@
 \subsection{Predictions}
 \label{sec:design-hypotheses}
 
-Five predictions are tested; they are listed with their criteria and outcomes in Table~\ref{tab:hypotheses}, and each is stated here in the form of its text.
+Five predictions are tested; they are listed with their criteria and outcomes in Table~\ref{tab:hypotheses}.
 Only H1 and H2 were fixed in writing before the evaluation (in the specification of the method and in the research brief that proposed it); H3 to H5 were not recorded before the runs.
 \textbf{H1}: at a size of at most 1\%, the complement flags the model that uses a 20-day-old volatility in at least 30\% of replications, and the prediction is refuted if it flags fewer than 10\%.
 This is the acceptance and refutation criterion fixed for the method before the evaluation.
@@ -12,7 +12,7 @@ This is the acceptance and refutation criterion fixed for the method before the 
 \textbf{H3}: the false-alarm rate of the union stays at most 1\% on desks whose generator differs from the calibration null.
 \textbf{H4}: the flag rate of the rolling-mean statistic rises with the age $L$ of the volatility input.
 \textbf{H5}: the complement flags a constant mis-scale of RTPL that the regulatory zone does not.
-H1 and H2 come from the specification of the method; H3 to H5 are predictions about its limits, written from the theory of Section~\ref{sec:theory} (Proposition~\ref{prop:size} and its exchangeability condition for H3, Proposition~\ref{prop:rolling} for H4 and Proposition~\ref{prop:invariance} for H5).
+H1 comes from the specification of the method and H2 from the research brief that proposed it; H3 to H5 are predictions about its limits, written from the theory of Section~\ref{sec:theory} (Proposition~\ref{prop:size} and its exchangeability condition for H3, Proposition~\ref{prop:rolling} for H4 and Proposition~\ref{prop:invariance} for H5).
 A prediction that fails is reported as failed, with its numbers.
 
 \subsection{Data and its provenance}
@@ -77,5 +77,12 @@ The thresholds are calibrated once, on the 10,000 null desk-years, before any de
 \item \textbf{Ablation}: the full complement, each statistic removed or alone, the window at 5, 10, 40 and 60 days, the ordinary covariance in place of HC3, no multiplicity correction, and rolling means at four windows combined, on the held-out null and on the stale desks at four lags and the four other variants.
 \item \textbf{Checks of the theory}: the leave-one-block-out size on the real null, an independent simulation of the size of Proposition~\ref{prop:size} on Gaussian draws, and the slope and the rolling-mean correlation of Propositions~\ref{prop:slope} and~\ref{prop:rolling} on 250-day and 100,000-day windows of the noise-free model.
 \end{enumerate}
-The specification of the method also planned a cross-check of the size on the C22 case of the product; it was not run, because C22 generates and tests credit-scoring and fairness data and contains no desk profit and loss series and no attribution test, so there is no P\&L statistic whose size it could check; the size is instead checked on the ten held-out blocks of the null, on Gaussian draws and on the six alternative nulls above.
-The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve.
+The specification of the method also planned a cross-check of the size on the C22 case of the product.
+C22 runs the size and power of the engine's tests that return a p-value, across credit, fairness, market back-test, counterparty, portfolio and machine-learning families, and it holds no desk profit and loss generator and no attribution statistic; the complement decides by simulated critical values and not by a p-value, so the size of the complement itself cannot be read there without registering the C13 generator and the complement in that harness, which was not done.
+The size of the complement is checked instead on the ten held-out blocks of the null, on Gaussian draws and on the six alternative nulls above.
+What the C22 documents do allow is a check of one comparator.
+They hold the size of the Christoffersen conditional-coverage test, the one used here, on independent hits, and the script \path{experiments/c22_size_check.py} reads that committed size and reruns the same engine function on the same design (1,500 days, hit probability 5\%, 2,000 replications, its own seed); Table~\ref{tab:c22-check} gives the two sizes, which agree.
+The p-value rule of that test is above its nominal size on 1,500 days and below it on the 250 days at 2.5\% of the desk back-test, which is why the comparator is run here with a critical value read from the calibration null, as every other detector is, and not with its p-value.
+
+\input{tables/c22-check}
+The seeds are those of Section~\ref{sec:design-data}; no experiment draws a random number except through them and through the bootstrap seed of the area under the curve and the seed of the C22 size check.

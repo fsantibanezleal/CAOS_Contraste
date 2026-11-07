@@ -1,19 +1,34 @@
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \centering
-\scriptsize\setlength{\tabcolsep}{3pt}
-\caption{Percent of 1,000 replications flagged, with the 95\% Wilson interval, as the age of the volatility input of the risk model grows from 2 to 80 days (stale-volatility variant, committed seeds; the 20-day row is the committed variant). Zone is the regulatory zone, Desk the desk back-test limit, CC the Christoffersen conditional coverage, MZ the Mincer--Zarnowitz Wald test with the OLS or HC3 covariance, LB the Ljung--Box test and Sp. the Spearman statistic.}
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\caption{Percent of 1,000 replications flagged, over the 95\% Wilson interval, as the age of the volatility input of the risk model grows from 2 to 80 days (stale-volatility variant, committed seeds; the 20-day row is the committed variant). The first panel holds the regulatory zone and the published comparators, the second the proposed components and their union. Zone is the regulatory zone, Desk the desk back-test limit, CC the Christoffersen conditional coverage, MZ the Mincer--Zarnowitz Wald test with the OLS or HC3 covariance, LB the Ljung--Box test and Sp. the Spearman statistic.}
 \label{tab:lag-ladder}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{rccccccccc}
+\begin{tabular}{rccccc}
 \toprule
-Lag (days) & Zone & Desk & CC 97.5 & MZ OLS & LB sq. & MZ HC3 & Abs. Sp. & Roll Sp. & Union \\
+Lag (days) & Zone & Desk & CC 97.5 & MZ OLS & LB sq. \\
 \midrule
-2 & 0.0 (0.0--0.4) & 0.0 (0.0--0.4) & 1.8 (1.1--2.8) & 5.5 (4.2--7.1) & 9.0 (7.4--10.9) & 0.7 (0.3--1.4) & 1.4 (0.8--2.3) & 5.7 (4.4--7.3) & 2.9 (2.0--4.1) \\
-5 & 0.0 (0.0--0.4) & 0.0 (0.0--0.4) & 2.8 (1.9--4.0) & 15.1 (13.0--17.5) & 26.1 (23.5--28.9) & 2.4 (1.6--3.5) & 4.5 (3.4--6.0) & 57.6 (54.5--60.6) & 37.3 (34.4--40.3) \\
-10 & 0.0 (0.0--0.4) & 0.0 (0.0--0.4) & 5.4 (4.2--7.0) & 25.6 (23.0--28.4) & 49.2 (46.1--52.3) & 6.0 (4.7--7.6) & 25.6 (23.0--28.4) & 97.5 (96.3--98.3) & 94.0 (92.4--95.3) \\
-20 & 0.0 (0.0--0.4) & 0.5 (0.2--1.2) & 12.7 (10.8--14.9) & 41.0 (38.0--44.1) & 71.9 (69.0--74.6) & 14.2 (12.2--16.5) & 76.7 (74.0--79.2) & 99.9 (99.4--100.0) & 99.9 (99.4--100.0) \\
-40 & 0.2 (0.1--0.7) & 3.9 (2.9--5.3) & 27.1 (24.4--29.9) & 54.6 (51.5--57.7) & 82.6 (80.1--84.8) & 28.7 (26.0--31.6) & 94.1 (92.5--95.4) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
-80 & 5.1 (3.9--6.6) & 13.5 (11.5--15.8) & 40.0 (37.0--43.1) & 67.6 (64.6--70.4) & 86.8 (84.6--88.8) & 45.2 (42.1--48.3) & 96.2 (94.8--97.2) & 100.0 (99.6--100.0) & 100.0 (99.6--100.0) \\
+2 & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}1.8\\(1.1--2.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}5.5\\(4.2--7.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}9.0\\(7.4--10.9)\end{tabular} \\ \addlinespace[0.8ex]
+5 & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}2.8\\(1.9--4.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}15.1\\(13.0--17.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}26.1\\(23.5--28.9)\end{tabular} \\ \addlinespace[0.8ex]
+10 & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}5.4\\(4.2--7.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}25.6\\(23.0--28.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}49.2\\(46.1--52.3)\end{tabular} \\ \addlinespace[0.8ex]
+20 & \begin{tabular}[t]{@{}c@{}}0.0\\(0.0--0.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}0.5\\(0.2--1.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}12.7\\(10.8--14.9)\end{tabular} & \begin{tabular}[t]{@{}c@{}}41.0\\(38.0--44.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}71.9\\(69.0--74.6)\end{tabular} \\ \addlinespace[0.8ex]
+40 & \begin{tabular}[t]{@{}c@{}}0.2\\(0.1--0.7)\end{tabular} & \begin{tabular}[t]{@{}c@{}}3.9\\(2.9--5.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}27.1\\(24.4--29.9)\end{tabular} & \begin{tabular}[t]{@{}c@{}}54.6\\(51.5--57.7)\end{tabular} & \begin{tabular}[t]{@{}c@{}}82.6\\(80.1--84.8)\end{tabular} \\ \addlinespace[0.8ex]
+80 & \begin{tabular}[t]{@{}c@{}}5.1\\(3.9--6.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}13.5\\(11.5--15.8)\end{tabular} & \begin{tabular}[t]{@{}c@{}}40.0\\(37.0--43.1)\end{tabular} & \begin{tabular}[t]{@{}c@{}}67.6\\(64.6--70.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}86.8\\(84.6--88.8)\end{tabular} \\ \addlinespace[0.8ex]
 \bottomrule
-\end{tabular}}
-\end{table*}
+\end{tabular}
+
+\vspace{1.5ex}
+
+\begin{tabular}{rcccc}
+\toprule
+Lag (days) & MZ HC3 & Abs. Sp. & Roll Sp. & Union \\
+\midrule
+2 & \begin{tabular}[t]{@{}c@{}}0.7\\(0.3--1.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}1.4\\(0.8--2.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}5.7\\(4.4--7.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}2.9\\(2.0--4.1)\end{tabular} \\ \addlinespace[0.8ex]
+5 & \begin{tabular}[t]{@{}c@{}}2.4\\(1.6--3.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}4.5\\(3.4--6.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}57.6\\(54.5--60.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}37.3\\(34.4--40.3)\end{tabular} \\ \addlinespace[0.8ex]
+10 & \begin{tabular}[t]{@{}c@{}}6.0\\(4.7--7.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}25.6\\(23.0--28.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}97.5\\(96.3--98.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.0\\(92.4--95.3)\end{tabular} \\ \addlinespace[0.8ex]
+20 & \begin{tabular}[t]{@{}c@{}}14.2\\(12.2--16.5)\end{tabular} & \begin{tabular}[t]{@{}c@{}}76.7\\(74.0--79.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}99.9\\(99.4--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+40 & \begin{tabular}[t]{@{}c@{}}28.7\\(26.0--31.6)\end{tabular} & \begin{tabular}[t]{@{}c@{}}94.1\\(92.5--95.4)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+80 & \begin{tabular}[t]{@{}c@{}}45.2\\(42.1--48.3)\end{tabular} & \begin{tabular}[t]{@{}c@{}}96.2\\(94.8--97.2)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} & \begin{tabular}[t]{@{}c@{}}100.0\\(99.6--100.0)\end{tabular} \\ \addlinespace[0.8ex]
+\bottomrule
+\end{tabular}
+\end{table}
