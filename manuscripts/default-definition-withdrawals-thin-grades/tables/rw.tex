@@ -2,7 +2,7 @@
 \centering
 \setlength{\tabcolsep}{3.5pt}
 \footnotesize
-\caption{IRB risk weight of each agency's cohort mix (F-IRB corporate, LGD 45\%, maturity 2.5 years, Basel III function) when the one-year PD of every grade is read under each definition, with the percentile interval of 2{,}000 resamples of the cohort years; Moody's transition page has no default category.}
+\caption{IRB risk weight of each agency's cohort mix (F-IRB corporate, LGD 45\%, maturity 2.5 years, Basel III function) when the one-year PD of every grade is read under each definition, with the percentile interval of 2{,}000 resamples of the cohort years; Moody's transition page has no default category, and the last two rows restrict Fitch to the years in which its transition page's default column is populated.}
 \label{tab:rw}
 \begin{tabular}{llrrr}
 \toprule
@@ -18,6 +18,8 @@ Agency & Definition & Risk weight (\%) & 95\% bootstrap interval & Below default
 \relax Fitch & \relax defaults page & $47.0$ & \relax [40.9, 56.2] & \relax -- \\
 \relax Fitch & \relax transition page & $31.1$ & \relax [26.2, 35.2] & $15.8$ \\
 \relax Fitch & \relax withdrawals kept & $30.3$ & \relax [25.5, 34.3] & $16.6$ \\
+\relax Fitch & \relax default page, 15 years & $43.8$ & \relax [39.5, 47.7] & \relax -- \\
+\relax Fitch & \relax transition page, 15 years & $35.2$ & \relax [30.3, 39.9] & $8.6$ \\
 \bottomrule
 \end{tabular}
 \end{table}

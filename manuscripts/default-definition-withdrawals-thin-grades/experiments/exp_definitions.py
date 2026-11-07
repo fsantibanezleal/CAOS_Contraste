@@ -10,7 +10,9 @@ Reads ``data/derived/C04/{sp,moodys,fitch}.json`` (the case C04 documents) and w
   function (``pipeline.cases.c05_ldp_calibration._irb_rw``, the one behind the committed ``rw_d2`` and ``rw_d4``);
 * the interval of those quantities from a bootstrap over the annual cohorts: B = 2,000 resamples of the cohort years
   with replacement, the same resample feeding every definition (seed 20261104), percentile interval at 95%;
-* the share of the cohort years in which the transition page's rate is below the default page's.
+* the share of the cohort years in which the transition page's rate is below the default page's;
+* Fitch's gap index and risk-weight fall on the years in which the transition page's default column is populated
+  (the years 2006 to 2014 are dropped), with a bootstrap of its own (seed 20261106).
 
 Run from the repository root::
 
@@ -141,8 +143,43 @@ def one_agency(code: str) -> dict:
     return res
 
 
+def populated_years(code: str) -> dict:
+    """Fitch's years in which the transition page's default column is usable: the years from 2006 to 2014 have that
+    column empty in every grade while the default page counts defaults, so each rate of the transition page in them is
+    zero for a reason of the data and not of the grade. The rule is the data's: a year is dropped when every entry of the
+    transition page's default column is zero and the default page counts at least one defaulted rating."""
+    out = figkit.doc(f"C04/{code}.json")["outputs"]
+    keep = []
+    for c in out["cohorts"]:
+        empty = all(row[-1] == 0 for row in c["counts"]) and sum(c["defaulted"]) > 0
+        keep.append(not empty)
+    mask = np.array(keep)
+    rates = {k: arr(out["pd"][k])[mask] for k in ("d2", "d4", "keep")}
+    mix = np.array(out["origination"][:7], dtype=float)
+    mix = mix / mix.sum()
+    labels = [c["label"] for c, k in zip(out["cohorts"], keep) if k]
+    dropped = [c["label"] for c, k in zip(out["cohorts"], keep) if not k]
+    point = {k: {"lra": lra(rates[k]).tolist(), "rw": portfolio_rw(lra(rates[k]), mix)} for k in rates}
+    rng = np.random.default_rng(SEED + 2)
+    t = int(mask.sum())
+    ratio, diff, rw2, rw4 = [], [], [], []
+    for _ in range(B):
+        idx = rng.integers(0, t, t)
+        v2, v4 = lra(rates["d2"][idx]), lra(rates["d4"][idx])
+        ratio.append(np.where(v2 > 0, v4 / np.where(v2 > 0, v2, np.nan), np.nan))
+        rw2.append(portfolio_rw(v2, mix))
+        rw4.append(portfolio_rw(v4, mix))
+        diff.append(rw2[-1] - rw4[-1])
+    ratio = np.array(ratio)
+    return {"rule": "years with the transition page's default column empty in every grade while the default page counts "
+                    "defaults are dropped", "kept_years": labels, "dropped_years": dropped, "seed": SEED + 2, "B": B,
+            "point": point, "ratio_d4_over_d2": [pct(ratio[:, g]) for g in range(7)], "rw_d2_minus_d4": pct(np.array(diff)),
+            "rw_d2": pct(np.array(rw2)), "rw_d4": pct(np.array(rw4)), "rw_gap_point": point["d2"]["rw"] - point["d4"]["rw"]}
+
+
 def main() -> None:
     result = {"seed": SEED, "bootstrap_resamples": B, "agencies": {a: one_agency(a) for a in AGENCIES}}
+    result["fitch_populated_years"] = populated_years("fitch")
     # the check against the committed impact values
     sp_doc = figkit.doc("C04/sp.json")["impact"]
     sp = result["agencies"]["sp"]["point"]

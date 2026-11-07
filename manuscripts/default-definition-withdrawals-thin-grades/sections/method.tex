@@ -59,12 +59,12 @@ The pairing of the observed and latent draws serves the contrast between a treat
 \subsection{Component 3: the matrix tests as a screen}
 \label{sec:method-tests}
 
-A validator who suspects the withdrawals can look for them only through what the standard tests of a migration matrix see. The protocol runs two on the paired draws of the withdrawal generator at selected levels of $k$: the chi-square test of time homogeneity across the five annual matrices, and the test of the last annual matrix against the matrix exponential of the generator, which is the true one-year matrix. The measure is the rejection rate at level $\alpha$ over $R$ repetitions, $\hat r_\alpha=R^{-1}\sum_r\mathbf 1\{P_r<\alpha\}$, with the Wilson interval
+A validator who suspects the withdrawals can look for them only through what the standard tests of a migration matrix see. The protocol runs two on the paired draws of the withdrawal generator at selected levels of $k$: the chi-square test of time homogeneity across the five annual matrices, and the test of the last annual matrix against the matrix exponential of the generator, which is the true one-year matrix; the engine's tests of the Markov order, of rating momentum and of the monotonicity of the migration matrix are run on the same draws, so that the screen is not limited to two tests. The measure is the rejection rate at level $\alpha$ over $R$ repetitions, $\hat r_\alpha=R^{-1}\sum_r\mathbf 1\{P_r<\alpha\}$, with the Wilson interval
 \begin{equation}
 \frac{\hat r+\dfrac{z^{2}}{2R}\;\pm\;z\sqrt{\dfrac{\hat r(1-\hat r)}{R}+\dfrac{z^{2}}{4R^{2}}}}{1+\dfrac{z^{2}}{R}},\qquad z=\Phi^{-1}(0.975),
 \label{eq:wilson}
 \end{equation}
-which behaves for a rate near zero where the Wald interval degenerates \citep{Wilson_1927}. A rejection rate near $\alpha$ at a level of $k$ at which the treatments are far from the truth means that the test cannot serve as a screen for withdrawals. Both tests compare transition counts with a reference, a chi-square comparison in the manner of Anderson and Goodman \citep{Anderson_1957}. They are sensitive to what the removal treatment does to the rows of the matrix, since the row sums exclude the withdrawn ratings, but the counts they read contain no information on the relation of a withdrawal to a later default, so a test can detect informative withdrawal only through its second-order effects on the matrix.
+which behaves for a rate near zero where the Wald interval degenerates \citep{Wilson_1927}. A rejection rate near $\alpha$ at a level of $k$ at which the treatments are far from the truth means that the test cannot serve as a screen for withdrawals. The first two tests compare transition counts with a reference, a chi-square comparison in the manner of Anderson and Goodman \citep{Anderson_1957}. These two are sensitive to what the removal treatment does to the rows of the matrix, since the row sums exclude the withdrawn ratings, but the counts they read contain no information on the relation of a withdrawal to a later default, so a test can detect informative withdrawal only through its second-order effects on the matrix.
 
 \subsection{Component 4: exact coverage of the interval estimators}
 \label{sec:method-coverage}
@@ -101,7 +101,7 @@ The protocol has few parameters, and each has a reason. The baseline withdrawal 
     \State compute the four estimators and the risk weight under each \Comment{Equations~\eqref{eq:estimators}, \eqref{eq:rw-error}}
   \EndFor
   \State report $\hat\beta_g(\tau,k)$ and $\Delta\RW^{\tau}$ with their standard errors \Comment{Equations~\eqref{eq:rel-bias}, \eqref{eq:rw-error}}
-  \State run the two matrix tests on $R$ further draws; report $\hat r_\alpha$ with the Wilson interval \Comment{Equation~\eqref{eq:wilson}}
+  \State run the transition tests on $R$ further draws; report $\hat r_\alpha$ with the Wilson interval \Comment{Equation~\eqref{eq:wilson}}
 \EndFor
 \For{each cohort size $n$ and each grade $g$}
   \State compute $c(n,p_g)$ for the three intervals by enumeration \Comment{Equation~\eqref{eq:coverage}}

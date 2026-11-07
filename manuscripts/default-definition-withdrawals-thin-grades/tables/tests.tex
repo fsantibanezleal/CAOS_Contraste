@@ -2,18 +2,27 @@
 \centering
 \setlength{\tabcolsep}{3.5pt}
 \footnotesize
-\caption{Rejection rates, in percent, of the two matrix tests the case runs on five annual matrices of the withdrawal generator, over 1{,}000 repetitions per $k$ with Wilson intervals; at the level of the test a rate near 5 or 1 means the test does not see the withdrawals.}
+\caption{Rejection rates, in percent, of five transition tests of the engine on five annual matrices of the withdrawal generator, over 1{,}000 repetitions per $k$ with Wilson intervals, the same draws for every test at a given $k$; the first two tests are the case's, the other three were run after them, once their results were known. At the level of the test a rate near 5 or 1 means the test does not see the withdrawals; the matrix weighted bandwidth, a descriptive metric with no rejection rule, is not run.}
 \label{tab:tests}
 \begin{tabular}{lrrr}
 \toprule
-Matrix test & $k$ & Rejections at 5\% (Wilson 95\%) & Rejections at 1\% (Wilson 95\%) \\
+Transition test & $k$ & Rejections at 5\% (Wilson 95\%) & Rejections at 1\% (Wilson 95\%) \\
 \midrule
 \relax time homogeneity & \relax 0 & $2.8$ [1.9, 4.0] & $0.4$ [0.2, 1.0] \\
-\relax last year against $\exp(Q)$ & \relax 0 & $0.2$ [0.1, 0.7] & $0.0$ [0.0, 0.4] \\
 \relax time homogeneity & \relax 9 & $5.8$ [4.5, 7.4] & $1.0$ [0.5, 1.8] \\
-\relax last year against $\exp(Q)$ & \relax 9 & $1.4$ [0.8, 2.3] & $0.0$ [0.0, 0.4] \\
 \relax time homogeneity & \relax 19 & $8.8$ [7.2, 10.7] & $2.1$ [1.4, 3.2] \\
+\relax last year against $\exp(Q)$ & \relax 0 & $0.2$ [0.1, 0.7] & $0.0$ [0.0, 0.4] \\
+\relax last year against $\exp(Q)$ & \relax 9 & $1.4$ [0.8, 2.3] & $0.0$ [0.0, 0.4] \\
 \relax last year against $\exp(Q)$ & \relax 19 & $16.3$ [14.1, 18.7] & $4.3$ [3.2, 5.7] \\
+\relax Markov order & \relax 0 & $6.0$ [4.7, 7.6] & $2.2$ [1.5, 3.3] \\
+\relax Markov order & \relax 9 & $8.3$ [6.7, 10.2] & $2.5$ [1.7, 3.7] \\
+\relax Markov order & \relax 19 & $6.6$ [5.2, 8.3] & $3.2$ [2.3, 4.5] \\
+\relax rating momentum & \relax 0 & $4.2$ [3.1, 5.6] & $0.7$ [0.3, 1.4] \\
+\relax rating momentum & \relax 9 & $4.2$ [3.1, 5.6] & $0.8$ [0.4, 1.6] \\
+\relax rating momentum & \relax 19 & $4.1$ [3.0, 5.5] & $0.5$ [0.2, 1.2] \\
+\relax monotonicity z-tests & \relax 0 & $0.0$ [0.0, 0.4] & $0.0$ [0.0, 0.4] \\
+\relax monotonicity z-tests & \relax 9 & $0.0$ [0.0, 0.4] & $0.0$ [0.0, 0.4] \\
+\relax monotonicity z-tests & \relax 19 & $0.1$ [0.0, 0.6] & $0.0$ [0.0, 0.4] \\
 \bottomrule
 \end{tabular}
 \end{table}

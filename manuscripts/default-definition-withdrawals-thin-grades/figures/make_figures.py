@@ -2,7 +2,7 @@
 
 Run from the repository root, after the four experiment scripts have written their JSON::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/default-definition-withdrawals-thin-grades/figures/make_figures.py
+    python manuscripts/default-definition-withdrawals-thin-grades/figures/make_figures.py
 
 It writes vector PDFs next to this script. No number is typed: every point is read from ``data/derived/C04`` or from
 ``experiments/*.json``.
@@ -103,7 +103,7 @@ def fig_yearly() -> None:
 
 def fig_rw() -> None:
     """The bootstrap interval of the IRB risk weight of the cohort mix under each definition, three agencies."""
-    fig, ax = plt.subplots(figsize=(6.0, 2.6))
+    fig, ax = plt.subplots(figsize=(6.0, 3.0))
     ypos = 0
     ticks, names = [], []
     for code, name in (("sp", "S&P"), ("moodys", "Moody's"), ("fitch", "Fitch")):
@@ -120,6 +120,16 @@ def fig_rw() -> None:
             names.append(f"{name}, {label}")
             ypos -= 1
         ypos -= 0.6
+    pop = DEF["fitch_populated_years"]
+    for i, (key, label) in enumerate((("d2", "default page"), ("d4", "transition page"))):
+        b = pop["rw_" + key]
+        pt = pop["point"][key]["rw"]
+        st = S[i]
+        ax.errorbar([pt], [ypos], xerr=[[pt - b["lo"]], [b["hi"] - pt]], fmt=st["marker"], color=st["color"], ms=4, lw=0.9,
+                    capsize=2)
+        ticks.append(ypos)
+        names.append(f"Fitch, {len(pop['kept_years'])} years, {label}")
+        ypos -= 1
     ax.set_yticks(ticks)
     ax.set_yticklabels(names)
     ax.set_xlabel("IRB risk weight of the cohort mix (share of exposure)")

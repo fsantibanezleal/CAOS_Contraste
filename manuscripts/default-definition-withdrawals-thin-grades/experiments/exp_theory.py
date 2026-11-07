@@ -13,7 +13,7 @@ Run from the repository root::
 
     python manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_theory.py
 
-It writes ``experiments/theory.json`` and takes about ten minutes.
+It writes ``experiments/theory.json`` and takes about a minute.
 """
 from __future__ import annotations
 
