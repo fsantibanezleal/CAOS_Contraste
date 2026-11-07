@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ablation on grade B at informativeness 1 and 9: coverage (\%) in the first-year, pooled and ten-fold designs, and the width (percentage points) and relative bias of the first-year design, as the second source, the family PD$(k)$, the clipping to the identified set and the outer Jeffreys interval are retained or removed.}
+\label{tab:ablation}
+\begin{tabular}{p{0.9cm}p{6.1cm}rrrrr}
+\toprule
+ & Components retained & First & Pooled & $\times10$ & $W$ (pp) & Bias (\%) \\
+\midrule
+$\iota=1$ & Removed estimate with a Jeffreys interval (no anchor, no family) & 94.6 & 94.8 & 95.6 & 1.17 & $-0.2$ \\
+ & Manski band (family and its bounds, no anchor) & 98.5 & 99.7 & 99.7 & 7.75 & -- \\
+ & \relax Anchored $k$ band alone, mapped through PD$(k)$ and clipped to the identified set & 59.5 & 72.6 & 75.6 & 0.74 & $-0.0$ \\
+ & Anchored interval (band, clipping and outer Jeffreys interval) & 98.5 & 99.7 & 99.6 & 1.99 & $-0.0$ \\
+$\iota=9$ & Removed estimate with a Jeffreys interval (no anchor, no family) & 86.8 & 13.9 & 18.9 & 1.04 & $-20.8$ \\
+ & Manski band (family and its bounds, no anchor) & 99.9 & 100.0 & 100.0 & 8.26 & -- \\
+ & \relax Anchored $k$ band alone, mapped through PD$(k)$ and clipped to the identified set & 88.3 & 75.3 & 95.8 & 0.96 & $-0.1$ \\
+ & Anchored interval (band, clipping and outer Jeffreys interval) & 99.9 & 99.2 & 100.0 & 2.16 & $-0.1$ \\
+\bottomrule
+\end{tabular}
+\end{table}

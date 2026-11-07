@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Coverage of the true one-year PD of grade B (1.17\%) at informativeness 9, by design and treatment: coverage with its Monte Carlo standard error over 1,000 repetitions, mean width of the 95\% interval in percentage points, and relative bias of the point estimate with its standard error; the duration estimator row uses 100 repetitions and a resampling bootstrap on five-year paths.}
+\label{tab:main-results}
+\begin{tabular}{llrrr}
+\toprule
+Design & Treatment & Coverage (\%) & Width (pp) & Bias (\%) \\
+\midrule
+first-year cohort & \relax Removed ($k=1$) & $86.8\pm1.1$ & 1.04 & $-20.8\pm0.7$ \\
+ & \relax Kept ($k=0$) & $86.6\pm1.1$ & 0.98 & $-25.9\pm0.7$ \\
+ & Followed (oracle) & $96.2\pm0.6$ & 1.13 & $-0.1\pm0.8$ \\
+ & Manski band & $99.9\pm0.1$ & 8.26 & -- \\
+ & \relax Anchored $k$ band only & $88.3\pm1.0$ & 0.96 & $-0.1\pm0.8$ \\
+ & Anchored interval & $99.9\pm0.1$ & 2.16 & $-0.1\pm0.8$ \\
+five cohorts pooled & \relax Removed ($k=1$) & $13.9\pm1.1$ & 0.46 & $-35.0\pm0.3$ \\
+ & \relax Kept ($k=0$) & $4.9\pm0.7$ & 0.44 & $-39.1\pm0.3$ \\
+ & Followed (oracle) & $75.3\pm1.4$ & 0.51 & $-15.9\pm0.3$ \\
+ & Manski band & $100.0\pm0.0$ & 7.21 & -- \\
+ & \relax Anchored $k$ band only & $75.3\pm1.4$ & 0.50 & $-15.9\pm0.3$ \\
+ & Anchored interval & $99.2\pm0.3$ & 1.02 & $-15.9\pm0.3$ \\
+ten times the cohort & \relax Removed ($k=1$) & $18.9\pm1.2$ & 0.33 & $-21.7\pm0.2$ \\
+ & \relax Kept ($k=0$) & $4.2\pm0.6$ & 0.31 & $-26.4\pm0.2$ \\
+ & Followed (oracle) & $95.8\pm0.6$ & 0.36 & $-0.0\pm0.2$ \\
+ & Manski band & $100.0\pm0.0$ & 6.63 & -- \\
+ & \relax Anchored $k$ band only & $95.8\pm0.6$ & 0.36 & $-0.0\pm0.2$ \\
+ & Anchored interval & $100.0\pm0.0$ & 0.72 & $-0.0\pm0.2$ \\
+five-year paths & Duration estimator (censoring) & $1\pm1$ & -- & $-37.7\pm0.7$ \\
+\bottomrule
+\end{tabular}
+\end{table}

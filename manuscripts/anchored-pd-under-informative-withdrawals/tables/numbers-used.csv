@@ -1,0 +1,159 @@
+key,text,where,source
+abias.fy.i9.industry,20.8,01-introduction.tex;05-theory.tex;07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.industry
+abias.fy.i9.unfollowed,25.9,01-introduction.tex;05-theory.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.unfollowed
+abias.pool.i9.industry,35.0,01-introduction.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.industry
+abias.pool.i9.unfollowed,39.1,01-introduction.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.unfollowed
+abias.x30.i9.industry,21.8,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.industry
+bias.fy.i9.anchored,-0.1,08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored
+bias.fy.i9.followed,-0.1,05-theory.tex;07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.followed
+bias.fy.i9.industry,-20.8,07-results.tex;08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.industry
+bias.fy.i9.unfollowed,-25.9,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.unfollowed
+bias.pool.i19.followed,-29.1,07-results.tex,experiments/results/coverage-grid.json pooled informative 19 treatments.followed
+bias.pool.i9.anchored,-15.9,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored
+bias.pool.i9.followed,-15.9,05-theory.tex;07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.followed
+bias.pool.i9.industry,-35.0,07-results.tex;09-discussion.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.industry
+bias.pool.i9.unfollowed,-39.1,09-discussion.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.unfollowed
+boot.duration,200,10-limitations.tex,experiments/results/duration.json
+bse.fy.i9.followed,0.8,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.followed
+c200.pooled.i9.anchored,100.0,07-results.tex,data/derived/C04/withdrawals.json rungs[informative 9].bounds.designs[pooled] anchored
+c200.pooled.i9.industry,13.5,07-results.tex,data/derived/C04/withdrawals.json rungs[informative 9].bounds.designs[pooled] industry
+c200.reps,200,06-design.tex;07-results.tex,data/derived/C04/withdrawals.json outputs.bounds_verdict.reps
+cap.i9.c0.5.bias,-25.3,05-theory.tex,experiments/results/capture-ladder.json informative 9 capture 0.5
+cap.i9.c0.5.cov,97.5,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 0.5
+cap.i9.c0.8.bias,-16.6,05-theory.tex;07-results.tex;08-ablation.tex,experiments/results/capture-ladder.json informative 9 capture 0.8
+cap.i9.c0.8.cov,99.9,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 0.8
+cap.i9.c0.8.k,1.2,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 0.8
+cap.i9.c0.9.bias,-9.1,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 0.9
+cap.i9.c1.1.abias,9.5,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 1.1
+cap.i9.c1.1.cov,99.9,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 1.1
+cap.i9.c1.3.abias,29.7,05-theory.tex;07-results.tex;08-ablation.tex,experiments/results/capture-ladder.json informative 9 capture 1.3
+cap.i9.c1.3.cov,97.8,07-results.tex;08-ablation.tex,experiments/results/capture-ladder.json informative 9 capture 1.3
+cap.i9.c1.3.k,12.1,07-results.tex,experiments/results/capture-ladder.json informative 9 capture 1.3
+case.seed,42,06-design.tex;11-reproducibility.tex,data/derived/C04/withdrawals.json provenance.seed
+cov.fy.i1.anchored,98.5,08-ablation.tex,experiments/results/coverage-grid.json first_year informative 1 treatments.anchored
+cov.fy.i1.band,59.5,07-results.tex;08-ablation.tex,experiments/results/coverage-grid.json first_year informative 1 treatments.band
+cov.fy.i19.industry,58.0,07-results.tex,experiments/results/coverage-grid.json first_year informative 19 treatments.industry
+cov.fy.i9.anchored,99.9,07-results.tex;08-ablation.tex;09-discussion.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored
+cov.fy.i9.band,88.3,07-results.tex;08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.band
+cov.fy.i9.followed,96.2,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.followed
+cov.fy.i9.identified,99.9,07-results.tex;08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.identified
+cov.fy.i9.industry,86.8,01-introduction.tex;07-results.tex;09-discussion.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.industry
+cov.fy.i9.unfollowed,86.6,07-results.tex;09-discussion.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.unfollowed
+cov.pool.i19.anchored,91.5,07-results.tex,experiments/results/coverage-grid.json pooled informative 19 treatments.anchored
+cov.pool.i19.followed,26.8,07-results.tex,experiments/results/coverage-grid.json pooled informative 19 treatments.followed
+cov.pool.i19.industry,0.0,07-results.tex,experiments/results/coverage-grid.json pooled informative 19 treatments.industry
+cov.pool.i9.anchored,99.2,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored
+cov.pool.i9.followed,75.3,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.followed
+cov.pool.i9.industry,13.9,01-introduction.tex;07-results.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.industry
+cov.pool.i9.unfollowed,4.9,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.unfollowed
+cov.x10.i9.anchored,100.0,07-results.tex;09-discussion.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.anchored
+cov.x10.i9.followed,95.8,07-results.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.followed
+cov.x10.i9.industry,18.9,07-results.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.industry
+cov.x3.i9.anchored,100.0,07-results.tex,experiments/results/scale-ladder.json x3 informative 9 treatments.anchored
+cov.x3.i9.followed,96.2,07-results.tex,experiments/results/scale-ladder.json x3 informative 9 treatments.followed
+cov.x3.i9.industry,66.8,07-results.tex,experiments/results/scale-ladder.json x3 informative 9 treatments.industry
+cov.x30.i9.anchored,100.0,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.anchored
+cov.x30.i9.followed,94.2,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.followed
+cov.x30.i9.industry,0.0,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.industry
+dec.fy.i9.anchored.-0.15.u,99,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored decisions.by_treatment.anchored.-0.15.undetermined
+dec.pool.i9.anchored.-0.15.u,100,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored decisions.by_treatment.anchored.-0.15.undetermined
+dec.pool.i9.industry.-0.15.w,45,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored decisions.by_treatment.industry.-0.15.wrong
+dec.x10.i9.anchored.+0.30.c,36,07-results.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.anchored decisions.by_treatment.anchored.+0.30.correct
+dec.x10.i9.anchored.-0.30.c,64,07-results.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.anchored decisions.by_treatment.anchored.-0.30.correct
+dur.i9.abias,37.7,07-results.tex;09-discussion.tex,experiments/results/duration.json informative 9
+dur.i9.bse,0.7,07-results.tex,experiments/results/duration.json informative 9
+dur.i9.cov,1,07-results.tex,experiments/results/duration.json informative 9
+dur.i9.cse,1,07-results.tex,experiments/results/duration.json informative 9
+fitch.empty.first,2006,07-results.tex,data/derived/C04/fitch.json outputs.cohorts (default column of counts empty while the default page counts defaults)
+fitch.empty.last,2014,07-results.tex,data/derived/C04/fitch.json outputs.cohorts (default column of counts empty while the default page counts defaults)
+fitch.empty.lost,189,07-results.tex;09-discussion.tex,data/derived/C04/fitch.json outputs.cohorts (default column of counts empty while the default page counts defaults)
+fitch.empty.n,9,07-results.tex;09-discussion.tex,data/derived/C04/fitch.json outputs.cohorts (default column of counts empty while the default page counts defaults)
+h1.min,98.5,01-introduction.tex;07-results.tex;12-conclusions.tex;main.tex,"experiments/results/coverage-grid.json anchored coverage, minimum over the designs and iota 1, 3, 9"
+ktrue.fy.i9,5.2,06-design.tex;07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored k.true_median
+mcse.nominal,0.7,06-design.tex,binomial standard error of a coverage of 0.95 at the repetitions of the grid
+mcse.nominal200,1.5,06-design.tex,binomial standard error of a coverage of 0.95 at 200 repetitions
+obligorsB,"1,391",06-design.tex,data/derived/C04/withdrawals.json outputs.generator.obligors[5]
+real.fitch.B.contain,7,07-results.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[B]
+real.fitch.B.usable,10,07-results.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[B]
+real.fitch.BB.k,24.7,07-results.tex;09-discussion.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[BB]
+real.fitch.BB.tip,11.6,07-results.tex;09-discussion.tex,data/derived/C04/fitch.json outputs.withdrawal_bounds.grades[BB]
+real.fitch.cohorts,24,06-design.tex;07-results.tex,data/derived/C04/fitch.json outputs.cohorts
+real.sp.A.k,5.0,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[A]
+real.sp.AA.k,17.2,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[AA]
+real.sp.B.A,993,01-introduction.tex;04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.D,372,01-introduction.tex;04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.N,"36,163",04-method.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.Na,"37,774",04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.S,"31,340",04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.W,"4,451",04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.contain,17,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.d4d2,45,01-introduction.tex,data/derived/C04/sp.json outputs.definition_gap.d4_over_d2[5]
+real.sp.B.k,12.6,04-method.tex;07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.khi,14.1,04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.klo,11.2,04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.manski,13.3,04-method.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.pd0,1.03,04-method.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.pdanc,2.63,04-method.tex;07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.pdhi,2.97,04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.pdind,1.17,04-method.tex;07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.pdlo,2.31,04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.share,68,01-introduction.tex;07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.tip,16.8,04-method.tex;07-results.tex;09-discussion.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.tipthr,3.08,04-method.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.usable,25,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.B.ximp,579,04-method.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[B]
+real.sp.BB.k,7.5,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB]
+real.sp.BB.khi,10.5,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB]
+real.sp.BB.share,88,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB]
+real.sp.BB.tip,10.3,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BB]
+real.sp.BBB.k,7.9,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BBB]
+real.sp.BBB.share,89,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[BBB]
+real.sp.CCC-C.contain,16,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.k,36.3,01-introduction.tex;07-results.tex;09-discussion.tex;12-conclusions.tex;main.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.khi,46.4,01-introduction.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.klo,29.2,01-introduction.tex;07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.pdanc,27.43,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.pdind,8.07,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.share,64,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.CCC-C.usable,25,07-results.tex,data/derived/C04/sp.json outputs.withdrawal_bounds.grades[CCC-C]
+real.sp.cohorts,26,04-method.tex;06-design.tex;07-results.tex,data/derived/C04/sp.json outputs.cohorts
+reps,"1,000",01-introduction.tex;04-method.tex;06-design.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json
+reps.duration,100,07-results.tex;10-limitations.tex,experiments/results/duration.json
+rho.fy.i9,0.79,05-theory.tex;07-results.tex;09-discussion.tex,experiments/results/coverage-grid.json first_year informative 9 industry rel_bias: rho = 1 + bias
+rho.hi.fy.i9,1.21,05-theory.tex;07-results.tex,experiments/results/coverage-grid.json first_year informative 9 industry rel_bias: 2 - rho = 1 - bias
+se.fy.i9.anchored,0.1,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored
+se.fy.i9.industry,1.1,07-results.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.industry
+se.pool.i9.anchored,0.3,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored
+se.pool.i9.industry,1.1,07-results.tex;main.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.industry
+se.pool.i9.unfollowed,0.7,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.unfollowed
+stab.i9.c1.3.B.share,98.2,07-results.tex,experiments/results/stability.json informative 9 capture 1.3 grade B
+stab.i9.c1.B.share,99.5,01-introduction.tex;07-results.tex;09-discussion.tex,experiments/results/stability.json informative 9 capture 1 grade B
+stab.i9.cu1.0-1.6.B.share,96.6,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-1.6 grade B
+stab.i9.cu1.0-4.0.B.share,64.7,07-results.tex;09-discussion.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade B
+stab.i9.cu1.0-4.0.B.stable,41.1,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade B
+stab.i9.cu1.0-4.0.BB.share,86.9,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade BB
+stab.i9.cu1.0-4.0.CCC-C.share,76.2,07-results.tex,experiments/results/stability.json informative 9 capture u1.0-4.0 grade CCC-C
+th.anchor.k,2.3e-06,05-theory.tex,experiments/results/theory-checks.json checks.anchor_identity.anchor_k_max_rel
+th.contain.n,"3,000",05-theory.tex,experiments/results/theory-checks.json checks.containment.cohorts_checked
+th.contain.viol,0,05-theory.tex,experiments/results/theory-checks.json checks.containment.violations
+th.draws,"20,000",05-theory.tex,experiments/results/theory-checks.json
+th.half,4.5e-13,05-theory.tex,experiments/results/theory-checks.json checks.closed_forms.half_saturation_max_abs
+th.lemma.counts,"4,679,505",05-theory.tex,experiments/results/theory-checks.json checks.jeffreys_lemma.counts_checked
+th.lemma.large,"5,000, 10,000, 20,000, 40,000, 100,000",05-theory.tex,experiments/results/theory-checks.json checks.jeffreys_lemma.large_n
+th.lemma.nmax,"3,000",05-theory.tex,experiments/results/theory-checks.json checks.jeffreys_lemma.n_max
+th.lemma.viol,0,05-theory.tex,experiments/results/theory-checks.json checks.jeffreys_lemma.violations
+th.limit,2.2e-16,05-theory.tex,experiments/results/theory-checks.json checks.closed_forms.limit_*
+th.round.rel,4.1e-16,05-theory.tex,experiments/results/theory-checks.json checks.bijection.roundtrip_max_rel_count
+th.tip.err,2.2e-16,05-theory.tex,experiments/results/theory-checks.json checks.tipping.tipping_roundtrip_max_abs
+th.width.max,2.27,05-theory.tex,experiments/results/theory-checks.json checks.containment.max_width_ratio
+th.width.med,1.92,05-theory.tex,experiments/results/theory-checks.json checks.containment.median_width_ratio
+truthB,1.17,01-introduction.tex;06-design.tex;07-results.tex;main.tex,data/derived/C04/withdrawals.json outputs.generator.pd_1y[5]
+w.fy.i9.anchored,2.16,01-introduction.tex;07-results.tex;08-ablation.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.anchored
+w.fy.i9.band,0.96,08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.band
+w.fy.i9.followed,1.13,01-introduction.tex;07-results.tex;12-conclusions.tex;main.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.followed
+w.fy.i9.identified,8.26,07-results.tex;08-ablation.tex,experiments/results/coverage-grid.json first_year informative 9 treatments.identified
+w.pool.i9.anchored,1.02,07-results.tex,experiments/results/coverage-grid.json pooled informative 9 treatments.anchored
+w.x10.i9.anchored,0.72,07-results.tex;08-ablation.tex,experiments/results/scale-ladder.json x10 informative 9 treatments.anchored
+w.x30.i9.anchored,0.41,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.anchored
+w.x30.i9.identified,6.39,07-results.tex,experiments/results/scale-ladder.json x30 informative 9 treatments.identified
+withdrawal.rate,6,06-design.tex;10-limitations.tex,data/derived/C04/withdrawals.json outputs.rungs[0].withdrawal_rate

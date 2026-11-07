@@ -1,0 +1,11 @@
+The code, the data and the computational outputs are in the repository \pth{github.com/fsantibanezleal/CAOS_Contraste}. The method is the module \pth{riskvalidation.transitions.withdrawals} of the engine \pth{riskvalidation} 1.1.0, published on the Python Package Index, and its documentation in the engine repository (\pth{docs/transitions/06_withdrawal-bounds.md}) states the model and the assumptions. The product's study, the real-data function and the criteria of Section~\ref{sec:experimental-design} are in \pth{data-pipeline/pipeline/cases/c04_bounds.py}, and its documents, one per agency and one for the known-truth withdrawals family, are \pth{data/derived/C04/sp.json}, \pth{fitch.json} and \pth{withdrawals.json}. The cohorts are the aggregates of the central repository of ESMA (\pth{registers.esma.europa.eu/cerep-publication}), reproduced as its terms allow with the source acknowledged.
+
+Every number of the paper is read from those documents or from the outputs of the scripts of this paper by the table script, and no number of the prose is typed. From the repository root, with the engine installed in a Python environment,
+\begin{itemize}
+\item \pth{experiments/extended_study.py} runs the coverage grid, the capture ladder, the stability study, the scale ladder and the duration comparison, each with the option \pth{--only} to run one, and writes the JSON files of \pth{experiments/results/};
+\item \pth{experiments/theory_checks.py} runs the numerical checks of the propositions;
+\item \pth{experiments/crosscheck_pipeline.py} reproduces the product's committed function on the same seed and compares the coverage of every treatment;
+\item \pth{tables/make_tables.py} writes the tables and the file of numbers, and \pth{figures/make_figures.py} the figures, both from the committed documents and the results;
+\item \pth{pdflatex}, \pth{bibtex} and two more \pth{pdflatex} runs from the manuscript folder build the paper.
+\end{itemize}
+Each experiment script runs in under 30 minutes on a workstation, the longest being the coverage grid, and a rerun of the grid with the default repetitions and seeds reproduces its two output files byte for byte. The seeds are pure functions of the case seed \nv{case.seed} and the key of each cell (Table~\ref{tab:design}), so a cell can be rerun alone.

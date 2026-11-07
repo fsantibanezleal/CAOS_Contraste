@@ -1,0 +1,84 @@
+The propositions below answer four questions. What shape does the family have, and does the parameter $k$ add an assumption? When is a decision at a threshold determined by $k$? What can be said of the coverage of the anchored interval when the second source counts exactly what the transition page would count if it followed the \wdn{} ratings? And what does a second source with another definition, or the pooling of annual cohorts, do to the answer? Throughout, $D$, $S$ and $W$ are positive, which excludes the degenerate grades that the method reports with a reason instead of a result.
+
+\subsection{Shape of the family and the role of $k$}
+
+\begin{proposition}[shape]
+\label{prop:shape}
+For $D,S,W>0$ the count $X(k)=WkD/(kD+S)$ is strictly increasing and strictly concave on $[0,\infty)$, with $X(0)=0$, $X(S/D)=W/2$ and $X(k)\to W$ as $k\to\infty$. The PD $\pdk(k)=(D+X(k))/N$ is strictly increasing and strictly concave from $D/N$ to $(D+W)/N$, and $\pdk(1)=D/(D+S)$.
+\end{proposition}
+\begin{proof}
+Differentiating, $X'(k)=WDS/(kD+S)^2>0$ and $X''(k)=-2WD^2S/(kD+S)^3<0$. Direct substitution gives $X(0)=0$ and $X(S/D)=WS/(S+S)=W/2$, and $X(k)\to W$ because $kD/(kD+S)\to1$. $\pdk$ is $X$ plus a constant, divided by $N$, so it inherits the monotonicity and the concavity. Finally $X(1)=WD/(D+S)$, so $D+X(1)=D(D+S+W)/(D+S)=DN/(D+S)$ and $\pdk(1)=D/(D+S)$.
+\end{proof}
+
+The concavity has a practical consequence. Half of the range of $k$-dependence is used up at $k=S/D$, the inverse of the odds of default among the ratings seen; for a grade whose removal PD is $p$ that is about $1/p$. A grade with a PD of one percent therefore has most of its movement between $k=1$ and $k=100$, and a plausible $k$ of a few units sits on the steep part. In the first annual cohort of grade B of the generator, the half-saturation point is far beyond the informativeness of the experiments, which is why the removed estimate is a long way from the realised default fraction at informativeness 9.
+
+\begin{proposition}[$k$ is a reparameterisation]
+\label{prop:bijection}
+For $D,S,W>0$ the map $k\mapsto X(k)$ is a bijection from $[0,\infty]$ onto $[0,W]$, with inverse $X\mapsto XS/(D(W-X))$, and the identified set of $(D+X)/N$ under assumption A1 alone is $\{(D+j)/N:\ j=0,1,\dots,W\}$, whose convex hull is $[D/N,(D+W)/N]$.
+\end{proposition}
+\begin{proof}
+By Proposition~\ref{prop:shape} the map is continuous and strictly increasing with limits $0$ and $W$, hence a bijection of the extended half line onto $[0,W]$; solving Equation~\eqref{eq:k} for $X$ gave the forward map, and solving $X=X(k)$ for $k$ gives the inverse. Under A1 the data fix $D$, $S$ and $W$ and place no restriction on how many of the $W$ \wdn{} ratings would have defaulted, so $X$ may be any integer from $0$ to $W$.
+\end{proof}
+
+The statement says that, for one grade in one cohort, choosing $k$ does not add information or exclude anything the data allow: it names a point of the identified set. The assumption that matters is A2 when several cohorts are pooled or compared, because then one $k$ is asked to serve counts that each have their own $X$. The coverage experiments pool five cohorts for this reason.
+
+\subsection{The tipping odds ratio decides the decision}
+
+\begin{proposition}[tipping]
+\label{prop:tipping}
+Let $D,S,W>0$ and $t\in[D/N,(D+W)/N]$. There is a unique $\tip\in[0,\infty]$ with $\pdk(\tip)=t$, given by Equation~\eqref{eq:tip}, and for every $k\in[0,\infty]$, $\pdk(k)>t$ if and only if $k>\tip$. When $t$ lies outside the interval, $\pdk(k)\ne t$ for every $k$ and the decision at $t$ does not depend on the \wdn{} ratings.
+\end{proposition}
+\begin{proof}
+Existence and uniqueness follow from the strict monotonicity and the limits of Proposition~\ref{prop:shape}; setting $\pdk(k)=t$ gives $X^{\ast}=tN-D\in[0,W]$ and, by Proposition~\ref{prop:bijection}, Equation~\eqref{eq:tip}. The equivalence $\pdk(k)>t\iff k>\tip$ is the monotonicity again. Outside the interval the strict bounds $D/N\le\pdk(k)\le(D+W)/N$ exclude equality.
+\end{proof}
+
+The proposition turns a decision into a comparison. Whatever the source of $k$, a judgement, an external study or the anchored value $\widehat k$ of Equation~\eqref{eq:anchor}, the decision at $t$ is that the PD is above the threshold exactly when $k$ is above $\tip$. A validator therefore needs from the second source only the answer to one question: is the withdrawal of this grade informative enough to exceed $\tip$? For the agencies' cohorts, Table~\ref{tab:real} gives both numbers side by side, and Figure~\ref{fig:tipping} shows them on one axis for every grade.
+
+\subsection{The anchored interval with an exact second source}
+
+\begin{lemma}[Jeffreys bracketing]
+\label{lem:jeffreys}
+For the Jeffreys interval at level $0.95$ and every count $0\le C\le N$, $L(C)\le C/N\le U(C)$.
+\end{lemma}
+The lemma is verified, not proved. Its status is a numerical check on every count of every cohort size from $1$ to \nv{th.lemma.nmax} and on the sizes \nv{th.lemma.large}, \nv{th.lemma.counts} counts in all, with \nv{th.lemma.viol} violations (Table~\ref{tab:theory-checks}). For large $N$ it follows from the normal approximation of the Beta quantile, $L(C)=\widehat p-z\sqrt{\widehat p(1-\widehat p)/N}\,(1+o(1))$ with $z=1.96$, whose correction is of an order smaller than the half-width; a proof for every $N$ is not given. The pooled cohorts of the agencies, with up to some tens of thousands of ratings in a grade, are within the checked range.
+
+\begin{proposition}[the anchored interval contains the oracle's interval]
+\label{prop:containment}
+Let the second source count exactly the defaults of the followed cohort, $A=D+X$ with $N_a=N$, and let Lemma~\ref{lem:jeffreys} hold. Then the anchored interval of Equation~\eqref{eq:interval} contains the Jeffreys interval $[L(A),U(A)]$ of the oracle that follows every \wdn{} rating. Consequently, for every PD $\pi$, the anchored interval covers $\pi$ whenever the oracle's interval does, and it is never narrower.
+\end{proposition}
+\begin{proof}
+The second source's interval is $[a_{\ell},a_{u}]=[L(A),U(A)]$. By the lemma $a_{\ell}N\le A\le a_{u}N$, and $D\le A\le D+W$ because $0\le X\le W$. The lower count of the anchored interval is $D+X_{\ell}=\max\{D,\,a_{\ell}N\}$, since $a_{\ell}N\le A\le D+W$, and it is at most $A$ because both $D$ and $a_{\ell}N$ are. The limit $L$ is non-decreasing in the count, because Beta$(C+\tfrac12,N-C+\tfrac12)$ is stochastically increasing in $C$, so $L(D+X_{\ell})\le L(A)$. In the same way the upper count is $D+X_{u}=\min\{D+W,\,a_{u}N\}\ge A$ and $U(D+X_{u})\ge U(A)$.
+\end{proof}
+
+The proposition has two consequences that frame the experiments. The coverage of the anchored interval, with an exact second source, cannot fall below that of the oracle whose Jeffreys interval has coverage near $95\%$ for counts of this size \citep{brown2001}; the coverage experiment of Section~\ref{sec:results} therefore cannot fail the coverage prediction, and what it measures is how much the interval over-covers and how wide it is. And the anchored interval is wider than the oracle's. A numerical check on \nv{th.contain.n} random cohorts finds \nv{th.contain.viol} violations of the containment and a median width ratio of \nv{th.width.med}, with a maximum of \nv{th.width.max}, close to the ratio that the experiments find. The test that can fail is a second source whose definition differs, which is the next question.
+
+\subsection{A second source with another definition}
+
+\begin{proposition}[bias under a different definition]
+\label{prop:capture}
+Let the second source count $A'$ defaults with $\E[A'\mid D,S,W,X]=c\,(D+X)$, the capture $c$ being the expected share of the followed defaults that it counts, and let $\pi^{\ast}=(D+X)/N$. If $D\le A'\le D+W$ then the anchored point $\widehat\pi=A'/N$ has $\E[\widehat\pi]=c\,\pi^{\ast}$. In every case $D/N\le\widehat\pi\le(D+W)/N$. Write $\rho=\pdk(1)/\pi^{\ast}$ for the ratio of the removal estimate to the realised fraction; when $\rho<1$, ignoring the clipping, the anchored point has a smaller absolute relative bias than the removal estimate if and only if $\rho<c<2-\rho$.
+\end{proposition}
+\begin{proof}
+Without clipping, Equation~\eqref{eq:anchor} gives $\widehat\pi=(D+\widehat X)/N=A'/N$, whose expectation is $c(D+X)/N$. The clipping to $[0,W]$ of $\widehat X$ keeps $\widehat\pi$ between $D/N$ and $(D+W)/N$. The relative biases of the anchored point and of removal are $c-1$ and $\rho-1$, and $|c-1|<1-\rho$ is $\rho<c<2-\rho$.
+\end{proof}
+
+At informativeness 9 in the first annual cohort, the removal estimate has a relative bias of $-\nv{abias.fy.i9.industry}\%$, so $\rho=\nv{rho.fy.i9}$ and the window is $\nv{rho.fy.i9}<c<\nv{rho.hi.fy.i9}$. The ladder of Table~\ref{tab:capture} tests the prediction: a capture of 0.8 gives a bias of $\nv{cap.i9.c0.8.bias}\%$, better than removal's, one of 0.5 gives $\nv{cap.i9.c0.5.bias}\%$, near the floor of keeping, $-\nv{abias.fy.i9.unfollowed}\%$, and one of 1.3, outside the window, gives $+\nv{cap.i9.c1.3.abias}\%$, worse than removal's. A second source that counts more events than the transition page, as the default page of the repository does, moves the anchored point upward by the same factor, and the anchored $k$ with it.
+
+\subsection{Selection when annual cohorts are pooled}
+
+The proposition above is about the second source. The pooled design has a second source of bias, and it exists even for the oracle.
+
+\begin{proposition}[selection]
+\label{prop:selection}
+In the first annual cohort no rating has been \wdn{} before the cohort starts, and the realised fraction $\pi^{\ast}$ has expectation $\pi$. In a later cohort, let $q_1$ and $q_0$ be the probabilities of not having been \wdn{} earlier for a rating of the grade that will and will not default within the cohort's year. If $q_1<q_0$, a rating that is in the cohort defaults within its year with probability $\pi q_1/(\pi q_1+(1-\pi)q_0)<\pi$.
+\end{proposition}
+\begin{proof}
+The first statement holds because the latent outcomes of the ratings in the first cohort are independent draws with probability $\pi$, and withdrawal acts on what is observed. For a later cohort, Bayes' rule gives $\Prob(Y=1\mid\text{in the cohort})=\pi q_1/(\pi q_1+(1-\pi)q_0)$, which is below $\pi$ exactly when $q_1<q_0$.
+\end{proof}
+In the generator of Section~\ref{sec:experimental-design} the withdrawal hazard is raised over the year before a default, a window that for a default in year $t$ extends into the years before $t$, so $q_1<q_0$ whenever the informativeness is positive, and the pooled realised fraction is below the one-year PD that the generator holds as truth. The prediction is that the oracle's bias is zero in the first cohort and grows in magnitude with the informativeness in the pooled design; the grid of Table~\ref{tab:grid} and the bias of the followed treatment at informativeness 9, $\nv{bias.pool.i9.followed}\%$ in the pooled design against $\nv{bias.fy.i9.followed}\%$ in the first cohort, are the evidence. This is a property of pooling, not of the method, and the anchored interval inherits it: its centre follows the pooled realised fraction.
+
+\subsection{Numerical checks}
+
+Table~\ref{tab:theory-checks} reports the checks that the engine's functions satisfy the closed forms of the propositions on \nv{th.draws} random cohorts and on every binomial count of the cohort sizes given. The limits agree with the closed forms to \nv{th.limit}, the inverse of Equation~\eqref{eq:pdk} returns the count to a relative deviation of \nv{th.round.rel}, the tipping $k$ returns the threshold to \nv{th.tip.err}, and an exact anchor returns the realised $k$ to a relative deviation of \nv{th.anchor.k}, which is the rounding of the anchor count to nine decimals. The half-saturation property holds to \nv{th.half} ratings. The two entries of the table on the anchored interval check Proposition~\ref{prop:containment} directly on the engine's output rather than on its algebra: the interval is compared, cohort by cohort, with the Jeffreys interval of the followed count.
+
+\input{tables/tab-theory-checks}
