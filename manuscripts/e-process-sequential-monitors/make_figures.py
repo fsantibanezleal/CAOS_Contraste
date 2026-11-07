@@ -24,7 +24,12 @@ import figkit  # noqa: E402
 EXP = HERE / "experiments"
 OUT = HERE / "figures"
 S = figkit.STYLES + [{"color": "0.1", "linestyle": (0, (3, 1, 1, 1, 1, 1)), "marker": "P"},
-                      {"color": "0.5", "linestyle": (0, (1, 2)), "marker": "*"}]
+                      {"color": "0.5", "linestyle": (0, (1, 2)), "marker": "*"},
+                      {"color": "0.3", "linestyle": (0, (5, 1, 1, 1)), "marker": "x"}]
+# One style per method, the same in every panel of a figure (a position in a legend must not decide the style).
+PD_STYLE = {"Product": 0, "Average": 1, "Average, upper": 2, "Average, upper, 4 alternatives": 3, "Chi-square at year 10": 4,
+            "Chi-square every year": 5, "Chi-square, simulated critical value (5 % size)": 6,
+            "Vasicek binomial, true correlation": 7, "Vasicek binomial, correlation 0.12 assumed": 8}
 
 
 def load(name: str) -> dict:
@@ -179,21 +184,21 @@ def fig_pd() -> None:
     cols = [("all-x1", 1.0), ("all-x1.05", 1.05), ("all-x1.1", 1.1), ("all-x1.25", 1.25)]
     keys = [("product", "Product"), ("average", "Average"), ("average-upper", "Average, upper"), ("average-upper-coarse", "Average, upper, 4 alternatives"),
             ("chi2-one-shot-year-10", "Chi-square at year 10"), ("chi2-every-year", "Chi-square every year")]
-    for i, (k, name) in enumerate(keys):
-        axes[0].plot([f for _, f in cols], [100 * p[c][k]["ever"] for c, _ in cols], label=name, **S[i % len(S)])
+    for k, name in keys:
+        axes[0].plot([f for _, f in cols], [100 * p[c][k]["ever"] for c, _ in cols], label=name, **S[PD_STYLE[name]])
     eq = PDC["equal_size_chi2"]["scenarios"]
-    axes[0].plot([f for _, f in cols], [100 * eq[c]["chi2_sim"]["ever"] for c, _ in cols], label="Chi-square, simulated critical value (5 % size)", **S[len(keys) % len(S)])
+    axes[0].plot([f for _, f in cols], [100 * eq[c]["chi2_sim"]["ever"] for c, _ in cols], label="Chi-square, simulated critical value (5 % size)", **S[PD_STYLE["Chi-square, simulated critical value (5 % size)"]])
     axes[0].set_xlabel("Every true PD divided by the predicted PD")
     axes[0].set_ylabel("Rejected within 10 years, %")
     axes[0].axhline(5, color="0.0", linestyle="--", linewidth=0.7)
     axes[0].legend(frameon=False, fontsize=6, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
     rows = PC["rows"]
     rho = [r["rho"] for r in rows]
-    for i, (k, name) in enumerate((("e_product", "Product"), ("e_average", "Average"), ("e_average_upper", "Average, upper"),
-                                   ("chi2_one_shot_year_10", "Chi-square at year 10"), ("chi2_every_year", "Chi-square every year"))):
-        axes[1].plot(rho, [100 * r[k]["ever"] for r in rows], label=name, **S[i % len(S)])
-    for j, (k, name) in enumerate((("vasicek_true", "Vasicek binomial, true correlation"), ("vasicek_assumed", "Vasicek binomial, correlation 0.12 assumed"))):
-        axes[1].plot(rho, [100 * PDC["correlation"][i][k]["every_year"]["ever"] for i in range(len(rho))], label=name, **S[(5 + j) % len(S)])
+    for k, name in (("e_product", "Product"), ("e_average", "Average"), ("e_average_upper", "Average, upper"),
+                    ("chi2_one_shot_year_10", "Chi-square at year 10"), ("chi2_every_year", "Chi-square every year")):
+        axes[1].plot(rho, [100 * r[k]["ever"] for r in rows], label=name, **S[PD_STYLE[name]])
+    for k, name in (("vasicek_true", "Vasicek binomial, true correlation"), ("vasicek_assumed", "Vasicek binomial, correlation 0.12 assumed")):
+        axes[1].plot(rho, [100 * PDC["correlation"][i][k]["every_year"]["ever"] for i in range(len(rho))], label=name, **S[PD_STYLE[name]])
     axes[1].axhline(5, color="0.0", linestyle="--", linewidth=0.7)
     axes[1].legend(frameon=False, fontsize=6, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
     axes[1].set_xlabel(r"Asset correlation $\rho$ (predicted PD correct)")

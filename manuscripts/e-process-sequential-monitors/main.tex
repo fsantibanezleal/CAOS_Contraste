@@ -23,12 +23,12 @@
 \headerblock
 
 \begin{abstract}
-Value-at-risk (VaR) back-tests and default-probability (PD) calibration tests are valid when read once on a fixed window, but a validation function reads them every day or every year:
+Value-at-risk (VaR) back-tests and default-probability (PD) calibration tests are valid when read once on a fixed window, but validation reads them every day or year:
 read daily over 1,000 days, the Kupiec test on the last 250 days rejects a correct 99\,\% VaR in \nNullSizeKupTrail\,\% of the series. The proposed monitors are mixtures of likelihood-ratio e-processes over alternatives fixed before the data, for the VaR exceedance rate, exceedance clustering and the defaults of each rating grade;
-each rejects when its process reaches 20, anytime-valid size 5\,\%. The paper proves validity and a power bound for any valid monitor at a fixed horizon.
-Ten other rules run on the same streams, six market-risk windows and five loan cohorts. The rate monitor rejects \nNullSizeE\,\% (\nNullSizeELo\ to \nNullSizeEHi\,\%) of correct series read daily and detects a hit rate four times too high at a median of \nSeedsFourMed\ days.
+each rejects when its process reaches 20, anytime-valid size 5\,\%. The paper proves validity and a power bound at a fixed horizon.
+Ten other VaR rules and the engine's PD tests run on simulated streams, six market-risk windows and five loan cohorts. The rate monitor rejects \nNullSizeE\,\% (\nNullSizeELo\ to \nNullSizeEHi\,\%) of correct series read daily and detects a hit rate four times too high at a median of \nSeedsFourMed\ days.
 The delay and power-cost hypotheses set before the experiments fail at three times the rate (\nSeedsThreeMed\ days, \nSeedsThreeMedLo\ to \nSeedsThreeMedHi; \nSeedsThreeCost\ $\pm$ \nSeedsThreeCostSe\ points) and hold at four times; an upper-side variant chosen after these results meets both (\nSeedsUpThreeMed\ days, \nSeedsUpThreeCost\ $\pm$ \nSeedsUpThreeCostSe\ points) and needs a prospective test.
-The PD monitor rejects \nRhoZeroThreeAvg\,\% of correct histories at an asset correlation of $0.03$, where the engine's Vasicek-corrected binomial test with the true correlation rejects \nPdcZeroThreeVasTrueEvery\,\%, and at an equal size a chi-square rule detects a 5\,\% PD error in \nPdcOneZeroFiveChiSim\,\% of histories against \nPdOneZeroFiveAvg\,\% for the monitor.
+The PD monitor rejects \nRhoZeroThreeAvg\,\% of correct histories at asset correlation $0.03$, where the engine's Vasicek test with the true correlation rejects \nPdcZeroThreeVasTrueEvery\,\%, and at the monitor's size (\nPdcMatchedSize\,\%) a chi-square rule read every year detects a 5\,\% PD error in \nPdcOneZeroFiveChiMatched\,\% of histories against \nPdOneZeroFiveAvg\,\% for the monitor (\nPdcOneZeroFiveChiSim\,\% at a nominal 5\,\%).
 \end{abstract}
 
 \input{sections/s01-introduction}

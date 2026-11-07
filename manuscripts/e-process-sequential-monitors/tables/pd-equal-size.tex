@@ -1,18 +1,18 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, at a size of 5\,\% and at the size the average e-process measured (0.4\,\%), on 1,000 histories per row (the histories of \cref{tab:pd-results}, no asset correlation). The first three rule columns give three numbers separated by slashes: the share of histories rejected within ten years (\%), the share rejected by year 3 (\%) and the median year of rejection among the histories rejected. The last two columns give the share rejected within ten years (\%) by the engine's binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years.}
+\caption{Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, at a size of 5\,\% and at the size the average e-process measured (0.4\,\%, 4 of 1,000 histories, a 95\,\% Wilson interval of [0.2, 1.0]), on 1,000 histories per row (the histories of \cref{tab:pd-results}, no asset correlation). The first three rule columns give the share of histories rejected within ten years (\%) with its 95\,\% Wilson interval, the share rejected by year 3 (\%) and the median year of rejection among the histories rejected, separated by slashes. The last two columns give the share rejected within ten years (\%) with its interval by the engine's binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years.}
 \label{tab:pd-equal-size}
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{p{2.4cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.6cm}}
+\begin{tabular}{p{2.0cm}>{\raggedleft\arraybackslash}p{3.7cm}>{\raggedleft\arraybackslash}p{3.7cm}>{\raggedleft\arraybackslash}p{3.7cm}>{\raggedleft\arraybackslash}p{2.6cm}>{\raggedleft\arraybackslash}p{2.6cm}}
 \toprule
 PD scaling & Average e-process & Chi-square, 5\,\% size & Chi-square, size of the e-process & Binomial per grade, ever & Vasicek, $0.12$ assumed, ever \\
 \midrule
-\relax 1 (size) & \relax 0.4 / 0.4 / 1 & \relax 4.1 / 2.1 / 3 & \relax 0.4 / 0.2 / 4 & \relax 2.6 & \relax 0.0 \\
-\relax 1.05 & \relax 2.9 / 0.8 / 4 & \relax 53.2 / 15.4 / 6 & \relax 23.2 / 2.4 / 7 & \relax 15.7 & \relax 0.0 \\
-\relax 1.1 & \relax 55.9 / 13.8 / 6 & \relax 99.8 / 60.4 / 3 & \relax 98.8 / 29.3 / 5 & \relax 55.5 & \relax 0.0 \\
-\relax 1.25 & \relax 100.0 / 99.7 / 2 & \relax 100.0 / 100.0 / 1 & \relax 100.0 / 100.0 / 1 & \relax 100.0 & \relax 0.0 \\
-\relax 10\% grade only, 1.3 & \relax 100.0 / 100.0 / 1 & \relax 100.0 / 100.0 / 1 & \relax 100.0 / 100.0 / 1 & \relax 100.0 & \relax 0.0 \\
+\relax 1 (size) & \relax 0.4 [0.2, 1.0] / 0.4 / 1 & \relax 4.1 [3.0, 5.5] / 2.1 / 3 & \relax 0.4 [0.2, 1.0] / 0.2 / 4 & \relax 2.6 [1.8, 3.8] & \relax 0.0 [0.0, 0.4] \\
+\relax 1.05 & \relax 2.9 [2.0, 4.1] / 0.8 / 4 & \relax 53.2 [50.1, 56.3] / 15.4 / 6 & \relax 23.2 [20.7, 25.9] / 2.4 / 7 & \relax 15.7 [13.6, 18.1] & \relax 0.0 [0.0, 0.4] \\
+\relax 1.1 & \relax 55.9 [52.8, 58.9] / 13.8 / 6 & \relax 99.8 [99.3, 99.9] / 60.4 / 3 & \relax 98.8 [97.9, 99.3] / 29.3 / 5 & \relax 55.5 [52.4, 58.6] & \relax 0.0 [0.0, 0.4] \\
+\relax 1.25 & \relax 100.0 [99.6, 100.0] / 99.7 / 2 & \relax 100.0 [99.6, 100.0] / 100.0 / 1 & \relax 100.0 [99.6, 100.0] / 100.0 / 1 & \relax 100.0 [99.6, 100.0] & \relax 0.0 [0.0, 0.4] \\
+\relax 10\% grade only, 1.3 & \relax 100.0 [99.6, 100.0] / 100.0 / 1 & \relax 100.0 [99.6, 100.0] / 100.0 / 1 & \relax 100.0 [99.6, 100.0] / 100.0 / 1 & \relax 100.0 [99.6, 100.0] & \relax 0.0 [0.0, 0.4] \\
 \bottomrule
 \end{tabular}}
 \end{table*}

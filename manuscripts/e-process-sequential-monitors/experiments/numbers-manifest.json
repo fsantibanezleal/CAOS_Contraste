@@ -2919,6 +2919,22 @@
   "value": "0.4",
   "source": "results_pd_comparators.json:equal_size_chi2.matched_size (the average e-process size, results_ablation.json)"
  },
+ "nPdcMatchedSizeLo": {
+  "value": "0.2",
+  "source": "results_ablation.json:pd_combine.all-x1.average.ever_ci[0]"
+ },
+ "nPdcMatchedSizeHi": {
+  "value": "1.0",
+  "source": "results_ablation.json:pd_combine.all-x1.average.ever_ci[1]"
+ },
+ "nPdcMatchedSizeCount": {
+  "value": "4",
+  "source": "results_pd_comparators.json:equal_size_chi2.matched_size times results_ablation.json:pd_combine.all-x1.average.n"
+ },
+ "nPdcMatchedSizeN": {
+  "value": "1,000",
+  "source": "results_ablation.json:pd_combine.all-x1.average.n"
+ },
  "nPdcCalReps": {
   "value": "50,000",
   "source": "results_pd_comparators.json:meta.calibration_reps"
@@ -5182,5 +5198,9 @@
  "nPythonVersion": {
   "value": "3.13.14",
   "source": "run-times.json:python"
+ },
+ "nProductRelease": {
+  "value": "1.00.000",
+  "source": "VERSION (repository root)"
  }
 }

@@ -283,6 +283,11 @@ def build() -> None:
         put(f"Pdc{tag}ChiMatched", r["chi2_matched"]["ever"], f"results_pd_comparators.json:correlation[rho={r['rho']}].chi2_matched.ever", 1, pct=True)
     eq = PDC["equal_size_chi2"]
     put("PdcMatchedSize", eq["matched_size"], "results_pd_comparators.json:equal_size_chi2.matched_size (the average e-process size, results_ablation.json)", 1, pct=True)
+    sz = AB["pd_combine"]["all-x1"]["average"]
+    put("PdcMatchedSizeLo", sz["ever_ci"][0], "results_ablation.json:pd_combine.all-x1.average.ever_ci[0]", 1, pct=True)
+    put("PdcMatchedSizeHi", sz["ever_ci"][1], "results_ablation.json:pd_combine.all-x1.average.ever_ci[1]", 1, pct=True)
+    put("PdcMatchedSizeCount", round(eq["matched_size"] * sz["n"]), "results_pd_comparators.json:equal_size_chi2.matched_size times results_ablation.json:pd_combine.all-x1.average.n")
+    put("PdcMatchedSizeN", sz["n"], "results_ablation.json:pd_combine.all-x1.average.n", thousands=True)
     put("PdcCalReps", PDC["meta"]["calibration_reps"], "results_pd_comparators.json:meta.calibration_reps", thousands=True)
     put("PdcAssumedRho", PDC["meta"]["assumed_rho"], "results_pd_comparators.json:meta.assumed_rho", 2)
     put("PdcBonferroniEvery", PDC["meta"]["bonferroni_every_year"], "results_pd_comparators.json:meta.bonferroni_every_year", 3)
@@ -359,6 +364,7 @@ def run_times() -> None:
     tot = rt["total_seconds"]
     put("RunTotal", "NA" if tot != tot else f"{tot:,.0f}", "run-times.json:total_seconds")
     put("PythonVersion", rt["python"], "run-times.json:python")
+    put("ProductRelease", (HERE.parents[1] / "VERSION").read_text(encoding="utf-8").strip(), "VERSION (repository root)")
 
 
 def main() -> None:

@@ -205,7 +205,7 @@ def t_hypotheses() -> None:
              f"{100 * u4['pooled_power_cost']:.1f} $\\pm$ {100 * u4['pooled_power_cost_se']:.1f} points"),
          raw("Met at both severities; needs a prospective confirmation" if u_ok else "Not met at both severities")],
         [raw("PD question (run after the results): are the defaults of five grades detected earlier than by the chi-square test across grades read every year, "
-             "when the chi-square rule is given the same size?"),
+             "when the chi-square rule is given the size the e-process measured?"),
          raw(f"PD $\\times 1.05$: chi-square {pc(eq['all-x1.05']['chi2_sim']['ever'])}\\,\\% at a size of 5\\,\\% and {pc(eq['all-x1.05']['chi2_matched']['ever'])}\\,\\% at the "
              f"size of the e-process, average e-process {pc(abl['all-x1.05']['average']['ever'])}\\,\\%; "
              f"$\\times 1.1$: {pc(eq['all-x1.1']['chi2_sim']['ever'])}, {pc(eq['all-x1.1']['chi2_matched']['ever'])} and {pc(abl['all-x1.1']['average']['ever'])}\\,\\%"),
@@ -465,7 +465,7 @@ def t_pd_comparators() -> None:
                  "a systematic factor of asset correlation $\\rho$): share of histories rejected at some year, in percent with 95\\,\\% Wilson intervals. "
                  "The per-grade tests (the exact binomial test, the Jeffreys test, and the binomial test under the Vasicek one-factor mixture with the correlation assumed or the "
                  f"true one) are one-sided; read every year they reject when any of the 5 grades in any of the 10 years has a p-value below ${m['bonferroni_every_year']:.3f}$ "
-                 f"(a Bonferroni split of 5\\,\\% over the 50 grade-years), and read once when any grade at year 10 is below $0.01$. The chi-square rule reads the statistic across grades every year "
+                 f"(a Bonferroni split of 5\\,\\% over the 50 grade-years), and read once, on the defaults of year 10 alone, when any grade is below $0.01$. The chi-square rule reads the statistic across grades every year "
                  f"against one critical value set by simulation on {m['calibration_reps']:,} correct histories to a size of 5\\,\\% over the ten years."))
 
 
@@ -476,20 +476,24 @@ def t_pd_equal_size() -> None:
     for sid, lab in names.items():
         a, v = AB["pd_combine"][sid]["average"], eq["scenarios"][sid]
         def trio(m: dict) -> str:
-            return raw(f"{pc(m['ever'])} / {pc(m['by3'])} / {day_s(m['median_year_among_detected'])}")
+            lo, hi = m["ever_ci"]
+            return raw(f"{pc(m['ever'])} [{pc(lo)}, {pc(hi)}] / {pc(m['by3'])} / {day_s(m['median_year_among_detected'])}")
 
         cells = [raw(lab), trio(a), trio(v["chi2_sim"]), trio(v["chi2_matched"]),
-                 raw(pc(v["binomial"]["every_year"]["ever"])), raw(pc(v["vasicek_assumed"]["every_year"]["ever"]))]
+                 pdci(v["binomial"]["every_year"]), pdci(v["vasicek_assumed"]["every_year"])]
         rows.append(cells)
+    size = AB["pd_combine"]["all-x1"]["average"]
+    size_lo, size_hi = size["ever_ci"]
     figkit.table(
         OUT / "pd-equal-size.tex",
-        ["PD scaling", "Average e-process", "Chi-square, 5\\,\\% size", "Chi-square, size of the e-process", "Binomial per grade, ever", "Vasicek, $0.12$ assumed, ever"],
-        rows, align="p{2.4cm}" + ">{\\raggedleft\\arraybackslash}p{2.6cm}" * 5, wide=True, label="tab:pd-equal-size",
-        caption=(f"Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, "
-                 f"at a size of 5\\,\\% and at the size the average e-process measured ({pc(eq['matched_size'])}\\,\\%), on {AB['meta']['pd_reps']:,} histories per row (the histories of "
-                 "\\cref{tab:pd-results}, no asset correlation). The first three rule columns give three numbers separated by slashes: the share of histories rejected within ten years (\\%), "
-                 "the share rejected by year 3 (\\%) and the median year of rejection among the histories rejected. The last two columns give the share rejected within ten years (\\%) by the engine's "
-                 "binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years."))
+        [r"PD scaling", r"Average e-process", r"Chi-square, 5\,\% size", r"Chi-square, size of the e-process", r"Binomial per grade, ever", r"Vasicek, $0.12$ assumed, ever"],
+        rows, align=r"p{2.0cm}" + r">{\raggedleft\arraybackslash}p{3.7cm}" * 3 + r">{\raggedleft\arraybackslash}p{2.6cm}" * 2, wide=True, label="tab:pd-equal-size",
+        caption=(rf"Detection of a PD that is too low by the average PD e-process and by the chi-square test across grades read every year with a simulated constant critical value, "
+                 rf"at a size of 5\,\% and at the size the average e-process measured ({pc(eq['matched_size'])}\,\%, {round(eq['matched_size'] * AB['meta']['pd_reps'])} of {AB['meta']['pd_reps']:,} histories, "
+                 rf"a 95\,\% Wilson interval of [{pc(size_lo)}, {pc(size_hi)}]), on {AB['meta']['pd_reps']:,} histories per row (the histories of "
+                 r"\cref{tab:pd-results}, no asset correlation). The first three rule columns give the share of histories rejected within ten years (\%) with its 95\,\% Wilson interval, "
+                 r"the share rejected by year 3 (\%) and the median year of rejection among the histories rejected, separated by slashes. The last two columns give the share rejected within ten years (\%) "
+                 r"with its interval by the engine's binomial test per grade and by its Vasicek-corrected binomial test with a correlation of 0.12 assumed, each read every year with a Bonferroni split over the 50 grade-years."))
 
 
 def fit(path: pathlib.Path) -> None:
