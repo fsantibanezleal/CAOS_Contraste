@@ -22,7 +22,7 @@ both negative numbers in practice. The engine of the product stores them in this
 layer, so that no page mixes the two conventions. The pair is preferred to either number alone for reasons that are mathematical
 before they are regulatory. The VaR fails subadditivity in general, so the VaR of a merged book can exceed the sum of the VaRs of its
 parts \citep{market:artzner1999}; the ES, defined through the tail integral so that atoms are handled, is a coherent measure
-\citep{market:acerbitasche2002}. Quantiles are elicitable, which means that a scoring function exists whose expected value is minimised
+\citep{credit-capital:acerbitasche2002}. Quantiles are elicitable, which means that a scoring function exists whose expected value is minimised
 by the true quantile, and the ES is not elicitable on its own \citep{market:gneiting2011}; the pair $(v_t,e_t)$ is, however, jointly
 elicitable, and the full class of strictly consistent scoring functions for it is known \citep{market:fisslerziegel2016}. That
 property lets one loss function both estimate and rank the two numbers (\cref{sec:m18}) and is what makes a comparison of ES forecasts
@@ -90,7 +90,7 @@ ES the empirical tail integral,
 \label{eq:mk-sample}
 \end{equation}
 When $\alpha N$ is not an integer the $k$-th return carries the fractional weight $\alpha N-(k-1)$, as in the tail integral of
-\citet{market:acerbitasche2002}; the mean of the $k$ smallest returns would overstate the tail count. The window of 250 days at the 99
+\citet{credit-capital:acerbitasche2002}; the mean of the $k$ smallest returns would overstate the tail count. The window of 250 days at the 99
 percent level holds $2.5$ tail observations, which is the reason the estimator is slow to react to a volatility regime and keeps the
 memory of a crisis day until it leaves the window \citep{market:pritsker2001}; the case runs windows of \mkHsShort{} and \mkHsLong{} days.
 

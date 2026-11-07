@@ -29,7 +29,7 @@ not covered by the first pillar and a voluntary buffer, and a summary table in i
 compared with: the 2025 EU-wide stress test holds the balance sheet static and lets banks apply their own satellite models under
 constraints \citep{aggregation-stress:ebanote2025,aggregation-stress:ebaresults2025}, and the Federal Reserve publishes the
 documentation of its supervisory credit-loss models together with the loss rates of hypothetical portfolios
-\citep{aggregation-stress:fedmethod2025,aggregation-stress:fedcredit2026}.
+\citep{lgd-ead:fedmethod2025,aggregation-stress:fedcredit2026}.
 
 Two cases of the product cover this area. Case C18, the capital aggregation of the ICAAP and the IAPE under macroeconomic
 scenarios, uses real macroeconomic paths (the Federal Reserve 2026 baseline and severely adverse scenarios
@@ -86,7 +86,7 @@ band, and $\mathrm{DF}_{\mathrm{row}}$ is its diversification factor against the
 $Z=Ae$ with $AA^{\top}=R$ and $e$ a vector of independent standard normal variables, and sets $U=\Phi(Z)$ with $\Phi$ the
 standard normal distribution function. The Student $t$ copula with $\nu>2$ degrees of freedom draws $W=\nu/\chi^2_{\nu}$
 independent of $Z$, sets $X=\sqrt{W}\,Z$ and $U=t_{\nu}(X)$, with $t_{\nu}$ the $t$ distribution function and $\chi^2_{\nu}$ a
-chi-square variable \citep{aggregation-stress:li2000,aggregation-stress:frey2003,aggregation-stress:demarta2005}. For a singular
+chi-square variable \citep{credit-capital:li2000,credit-capital:freymcneil2003,credit-capital:demartamcneil2005}. For a singular
 matrix such as the all-ones matrix of the comonotonic case the factor $A$ is the eigen factor with the null eigenvalues set to
 zero. The two families share the Kendall rank correlation, and they differ in the tail,
 \begin{equation}
@@ -95,7 +95,7 @@ zero. The two families share the Kendall rank correlation, and they differ in th
 \label{eq:ag-tail}
 \end{equation}
 where $\rho$ is an off-diagonal entry of $R$ and $\lambda_t$ is the coefficient of tail dependence of the $t$ copula; the
-Gaussian copula has $\lambda=0$ for $\lvert\rho\rvert<1$ \citep{aggregation-stress:demarta2005}.
+Gaussian copula has $\lambda=0$ for $\lvert\rho\rvert<1$ \citep{credit-capital:demartamcneil2005}.
 
 The bounds on the value at risk of the total for any dependence come from the rearrangement algorithm of
 \citet{aggregation-stress:embrechts2013}. For marginal quantile functions $F_j^{-1}$, $j=1,\dots,K$, a level $\alpha$ and $N$
@@ -136,7 +136,7 @@ mitigation \citep{aggregation-stress:embrechts2013}; an adaptive variant of the 
 
 The allocation of the aggregate capital to the risks uses the Euler principle. For a risk measure $\rho$ that is positively
 homogeneous of degree one and differentiable, the Euler contributions $\rho(L_k\mid L)=\tfrac{d}{dh}\rho(L+hL_k)\vert_{h=0}$ add
-up to the total and are the only ones compatible with the return on risk-adjusted capital \citep{aggregation-stress:tasche2008}.
+up to the total and are the only ones compatible with the return on risk-adjusted capital \citep{credit-capital:tasche2008}.
 The product allocates the expected shortfall, whose contributions are conditional expectations over the tail of the total, and
 reports the Euler diversification benefit of each risk,
 \begin{equation}
@@ -147,8 +147,8 @@ B_k=1-\frac{\ES_q(L_k\mid L)}{\ES_q(L_k)},
 \end{equation}
 where $\ES_q$ is the expected shortfall at level $q$ and $B_k$ is the Euler benefit of risk $k$. The expected shortfall is chosen
 over the value at risk because the contribution of the value at risk is conditioned on a single point and is very noisy in
-simulation, the caveat that \citet{aggregation-stress:tasche2008} states; the shortfall is a coherent measure
-\citep{aggregation-stress:acerbi2002}, and the sample estimator puts exactly the mass $1-q$ in the tail.
+simulation, the caveat that \citet{credit-capital:tasche2008} states; the shortfall is a coherent measure
+\citep{credit-capital:acerbitasche2002}, and the sample estimator puts exactly the mass $1-q$ in the tail.
 
 Model risk is measured on the band itself. With a reference model $X_0$ and a set of models whose largest and smallest value of
 the risk measure are $\overline{\rho}$ and $\underline{\rho}$, the add-on and the relative measure of
@@ -253,7 +253,7 @@ where $g$ is a link function (probit $\Phi^{-1}$, logit or identity), $\alpha$ i
 coefficients of order $p$, $X_t$ is the vector of macroeconomic regressors with distributed-lag coefficients $\beta_l$ up to lag
 $q$, and $\varepsilon_t$ is the error. The form is generic in the family of macroeconomic credit risk models of
 \citet{aggregation-stress:wilson1998} and \citet{aggregation-stress:virolainen2004}; it is not an equation of either paper. The
-probit link is the choice consistent with the one-factor asymptotic model of \citet{aggregation-stress:gordy2003}: with asset
+probit link is the choice consistent with the one-factor asymptotic model of \citet{ratings:gordy2003}: with asset
 correlation $\rho$, a through-the-cycle default probability $\bar p$ and a systematic factor $Z_t$, the conditional default
 probability of a name is $\Phi\bigl((\Phi^{-1}(\bar p)-\sqrt{\rho}Z_t)/\sqrt{1-\rho}\bigr)$, and in a large portfolio the default
 rate equals it, so that
@@ -390,7 +390,7 @@ mortgages, and hazard logits by account status and horizon for credit cards.
 Three sets of assumptions bound a replication. The model and the scenario must be those of the answer key: the published loss
 rates of the 2025 methodology belong to the 2024 severely adverse scenario over the nine quarters from the first quarter of 2024
 and to portfolio data of the end of 2023, whereas the only public coefficients are those of the 2026 documentation
-\citep{aggregation-stress:fedmethod2025,aggregation-stress:fedcredit2026}. The 2025 corporate model projects the change of a
+\citep{lgd-ead:fedmethod2025,aggregation-stress:fedcredit2026}. The 2025 corporate model projects the change of a
 default probability that starts from a long-run average of vendor expected default probabilities, and it prints no coefficient.
 The inputs of the public portfolio files are limited to the balances, the rating, the lien, the facility type and a two-digit
 industry code. The tolerance of a replication is a modelling choice of the case, to be fixed before the computation and

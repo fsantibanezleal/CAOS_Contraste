@@ -134,7 +134,7 @@ NL=\frac{\ECL_{\mathrm{weighted}}}{\ECL(\bar m)}-1,
 \label{eq:prov-weighted}
 \end{equation}
 where $\bar m=\sum_s w_s m_s$ is the weighted mean macroeconomic path and $NL$ the non-linearity index of the portfolio, the excess of the weighted loss over the loss at the mean path. With a convex loss in the path, Jensen's
-inequality gives $\E[\ECL(M)]\ge\ECL(\E[M])$ and so $NL\ge0$. The one-factor conditional probability of default makes the effect concrete \citep{provisions:gordy2003,provisions:bcbs2005}. With asset correlation $\rho$ and a standard-normal systematic factor $z$,
+inequality gives $\E[\ECL(M)]\ge\ECL(\E[M])$ and so $NL\ge0$. The one-factor conditional probability of default makes the effect concrete \citep{ratings:gordy2003,ratings:bcbs2005}. With asset correlation $\rho$ and a standard-normal systematic factor $z$,
 $\PD^{\mathrm{PIT}}(z)=\Phi\bigl((\Phi^{-1}(\PD^{\mathrm{TTC}})-\sqrt{\rho}\,z)/\sqrt{1-\rho}\bigr)$ with $\Phi$ the standard normal distribution function. For a through-the-cycle probability of $2\%$, $\rho=\pvRhoUsed$ and
 scenarios $z=+1,0,-2$ with weights $0.25,0.50,0.25$, the engine returns the conditional probabilities $\pvWxPitUp\%$, $\pvWxPitMid\%$ and $\pvWxPitDown\%$; the weighted probability is $\pvWxWeighted\%$ and the probability at the weighted mean factor
 $\bar z=\pvWxZbar$ is $\pvWxAtMean\%$, a ratio of $\pvWxRatio$ and $NL=\pvWxIndex$ at a loss given default of $40\%$ (a weighted loss rate of $\pvWxLossWeighted\%$ against $\pvWxLossMean\%$ for the average scenario). The scenario at $z=0$ is the median, not the mean, probability,

@@ -471,7 +471,7 @@ come from there. The parameters are $E=8$ ensemble members on the CPU, the train
 training slice (an unseen category is $-1$), and the isotonic map; none is tuned. The method runs only on the small case. The
 German twin has \csFitGeTrain{} training rows, \csFitGeCal{} calibration rows and a holdout of \csGtN{} applicants with
 \csGtEvents{} defaults; the context of a transformer holds all training rows, so cost and memory grow with the training size and a
-context limit is the expected failure on the samples of \csFitTwTrain{} rows and more, which is why the SDD restricts the rung to
+context limit is the expected failure on the samples of \csFitTwTrain{} rows and more, which is why the design document restricts the rung to
 small cases.
 On the vintage samples the method is absent from the environment that produced the committed results (the package is an optional
 extra), and no number stands in for it. The implementation is \texttt{pipeline/model/tabpfn\_rung.py} (\texttt{fit\_tabpfn}) on

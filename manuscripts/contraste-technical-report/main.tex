@@ -3,7 +3,7 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Technical report}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{2 November 2026}
+\newcommand{\docdate}{7 November 2026}
 \newcommand{\versiondoi}{10.5281/zenodo.0}
 \newcommand{\conceptdoi}{10.5281/zenodo.0}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
@@ -20,7 +20,7 @@
 % The numbers of the abstract and of the framing sections (tables/make_results.py, from data/derived).
 \input{tables/results-numbers}
 
-\title{Contraste: validating the risk models of a bank on twenty-one cases, with the size and power of the validation tests measured on planted defects}
+\title{Contraste: validating bank risk models on twenty-one public and synthetic cases, with the size of the validation tests measured under the null and their power on planted defects}
 \author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
 \small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
@@ -31,15 +31,15 @@
 \headerblock
 
 \begin{abstract}
-Banks set capital and provisions with internal models, and supervisors keep finding deficiencies in the evidence behind them: thresholds are missing and the error rates of the validation tests are not measured.
-Contraste is an open workbench that builds the main families of bank risk models, from credit scoring and IFRS~9 provisions to market, counterparty, interest-rate, liquidity and operational risk and machine-learning validation, and runs on each the tests that a validator and a supervisor would run, on public data and on generators of known truth.
-This report states the methods, the data contracts and the leakage-safe protocol, and gives the results of \rsCasesResult{} cases.
+Supervisors keep finding deficiencies in the evidence behind the internal models that set bank capital and provisions: thresholds are missing and the error rates of the validation tests are not measured.
+Contraste is an open workbench that builds the main families of bank risk models, from credit scoring to market, counterparty, liquidity and operational risk, and runs on each the tests that a validator would run, on public data and on generators of known truth.
+This report states the methods, contracts and protocol, and gives results for \rsCasesResult{} cases.
 The validation raised \rsFindTotal{} findings, \rsFindSOne{} critical and \rsFindSTwo{} significant; every case ends at opinion level 3 or 4 of 4.
-Ranking is not calibration: the scorecard of the small-business case keeps an AUC of \rsCThreeAuc{} while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
-The tests have error rates that the regulation does not state: of \rsOneTests{} tests, \rsCTwentyTwoWithin{} hold their size over \rsOneReps{} repetitions.
-Of four proposed methods, a complement to the profit-and-loss attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% of \rsThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, and
-an adaptive conformal recalibration of the value at risk meets its criterion; the anchored default probability fails its stability criterion and the sequential monitors lose power at day 250.
-The results measure the tests and the methods, not any real institution.
+Ranking is not calibration: the scorecard of the small-business case keeps an AUC of \rsCThreeAuc{} (95\,\% interval \rsCThreeAucLo{} to \rsCThreeAucHi{}) while the observed five-year default probability is \rsCThreeObs{}\,\% against \rsCThreePred{}\,\% predicted.
+The tests have error rates that the regulation does not state: of \rsOneTests{} tests, each simulated in \rsCTwentyTwoNullPerTest{} null repetitions, \rsCTwentyTwoWithin{} hold their size at 5 and 1\,\%.
+Of four proposed methods, a complement to the profit-and-loss attribution test flags a stale-volatility model in \rsThirteenPower{}\,\% (\rsThirteenCiLo{} to \rsThirteenCiHi{}\,\%) of \rsThirteenN{} replications where the regulatory test flags it in \rsThirteenPla{}\,\%, and
+an adaptive conformal recalibration of the value at risk meets its criterion; the anchored default probability fails its coverage and stability clauses, and the sequential monitors lose power at day 250.
+The results do not describe any real institution.
 \end{abstract}
 
 \tableofcontents

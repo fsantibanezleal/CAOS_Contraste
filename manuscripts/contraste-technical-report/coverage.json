@@ -4,8 +4,7 @@
     "tab:results-summary",
     "fig:results-findings",
     "tab:vt-size",
-    "fig:vt-power",
-    "tab:proposed-summary"
+    "fig:vt-power"
   ],
   "methods": {
     "M-1": "sec:m1",

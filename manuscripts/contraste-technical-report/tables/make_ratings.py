@@ -517,7 +517,7 @@ def _ldp_table(R: dict[str, Any], out: pathlib.Path) -> None:
     header = ["Level"] + [f"{a}, independent" for a in LDP_GRADES] + [f"{a}, $\\rho = 12$\\%" for a in LDP_GRADES]
     rows = []
     for gi, g in enumerate(lo["gammas"]):
-        rows.append([f"{100 * g:g}\\%"] + [pct(lo["bounds"]["independent"][gi][ai], 2) for ai in range(3)]
+        rows.append([f"{100 * g:g}%"] + [pct(lo["bounds"]["independent"][gi][ai], 2) for ai in range(3)]
                     + [pct(lo["bounds"]["correlated"][gi][ai], 2) for ai in range(3)])
     figkit.table(
         out / "ratings-ldp.tex", header, rows, align="lrrrrrr", wide=True,
@@ -535,7 +535,7 @@ def _cov_table(R: dict[str, Any], out: pathlib.Path) -> None:
     rows = []
     for gi in range(5):
         gamma = kt["coverage"]["independent"]["A"][gi]["gamma"]
-        row: list[Any] = [f"{100 * gamma:g}\\%"]
+        row: list[Any] = [f"{100 * gamma:g}%"]
         for kind in ("independent", "correlated", "scaled"):
             for g in LDP_GRADES:
                 c = kt["coverage"][kind][g][gi]

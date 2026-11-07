@@ -205,7 +205,9 @@ def headline(c: dict) -> str:
     if cid == "C03":
         d = load("C03/fy2008-10.json")
         row = next(r for r in d["outputs"]["rung_comparison"] if r["rung_id"] == "P1-scorecard")
-        return (f"FY2008--10 cohort: scorecard AUC {f3(row['auc'])} (95\\,\\% CI {f3(row['auc_ci_low'])} to {f3(row['auc_ci_high'])}); "
+        lgb = next(r for r in d["outputs"]["rung_comparison"] if r["rung_id"] == "P4-lightgbm")
+        return (f"FY2008--10 cohort: scorecard AUC {f3(row['auc'])} (95\\,\\% CI {f3(row['auc_ci_low'])} to {f3(row['auc_ci_high'])}), "
+                f"LightGBM {f3(lgb['auc'])} ({f3(lgb['auc_ci_low'])} to {f3(lgb['auc_ci_high'])}); "
                 f"observed 5-year PD {pct(impact(d, 'observed_5y_pd')['value'])}\\,\\% against "
                 f"{pct(impact(d, 'predicted_5y_pd')['value'])}\\,\\% predicted.")
     if cid == "C04":
@@ -419,7 +421,7 @@ def splits_table() -> None:
     rows = [[r[0], esc(r[1]), esc(r[2])] for r in sdd_table("| Case | Variants (the regime each shows)")]
     long_table(OUT / "results-splits.tex", ["Case", "Variants (the regime each shows)", "Leakage-safe split"], rows,
                spec="l>{\\raggedright\\arraybackslash}p{6.2cm}>{\\raggedright\\arraybackslash}p{8.0cm}",
-               caption=("The variants of each case and the leakage-safe split that keeps the evaluation honest, as the design document fixes "
+               caption=("The variants of each case and the leakage-safe split that keeps information the model could not have had out of the evaluation, as the design document fixes "
                         "them before development: what the model is trained on, what it is tested on and what is applied to the "
                         "evaluation set only."),
                label="tab:data-splits")
@@ -466,7 +468,7 @@ def versions_table() -> None:
     rows = []
     for name in wanted:
         r = table[name]
-        use = re.split(r"[;(]", r[3])[0].strip().replace("state-of-" + "the-art ", "")
+        use = re.split(r"[;(]", r[3])[0].strip().replace("state-of-" + "the-art ", "").replace("adversarial", "negative-control")
         rows.append([esc(name), esc(r[2]), esc(use)])
     long_table(OUT / "results-versions.tex", ["Package", "Pinned version", "Use"], rows,
                spec="lr>{\\raggedright\\arraybackslash}p{9.0cm}",
@@ -596,7 +598,7 @@ def numbers(data: dict) -> dict[str, str]:
     ram = re.search(r"(\d+) GB of RAM", text)
     out["rsRamGb"] = ram.group(1)
     for key, src in [("rsOneTests", "pxOneTests"), ("rsOneRates", "pxOneRates"), ("rsOneSims", "pxOneSims"), ("rsOneReps", "pxOneReps"),
-                     ("rsThirteenPower", "pxThirteenPowerRate"), ("rsThirteenPowerCi", "pxThirteenPower"), ("rsThirteenPla", "pxThirteenPla"), ("rsThirteenN", "pxThirteenN")]:
+                     ("rsThirteenPower", "pxThirteenPowerRate"), ("rsThirteenPowerCi", "pxThirteenPower"), ("rsThirteenCiLo", "pxThirteenCiLo"), ("rsThirteenCiHi", "pxThirteenCiHi"), ("rsThirteenPla", "pxThirteenPla"), ("rsThirteenN", "pxThirteenN")]:
         out[key] = MACROS[src]
     out["rsProductVersion"] = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     # splits and contract counts
@@ -611,6 +613,11 @@ def case_numbers() -> dict[str, str]:
     d = load("C03/fy2008-10.json")
     row = next(r for r in d["outputs"]["rung_comparison"] if r["rung_id"] == "P1-scorecard")
     o["rsCThreeAuc"] = f3(row["auc"])
+    lgb = next(r for r in d["outputs"]["rung_comparison"] if r["rung_id"] == "P4-lightgbm")
+    ebm = next(r for r in d["outputs"]["rung_comparison"] if r["rung_id"] == "P3-ebm")
+    o["rsCThreeLgbAuc"], o["rsCThreeLgbLo"], o["rsCThreeLgbHi"] = f3(lgb["auc"]), f3(lgb["auc_ci_low"]), f3(lgb["auc_ci_high"])
+    o["rsCThreeEbmAuc"] = f3(ebm["auc"])
+    o["rsCThreeAucLo"], o["rsCThreeAucHi"] = f3(row["auc_ci_low"]), f3(row["auc_ci_high"])
     o["rsCThreeObs"] = pct(impact(d, "observed_5y_pd")["value"])
     o["rsCThreePred"] = pct(impact(d, "predicted_5y_pd")["value"])
     d = load("C05/sp-2010.json")
@@ -644,6 +651,23 @@ def case_numbers() -> dict[str, str]:
     o["rsCTwentyTwoNormal"] = f3(impact(d, "size_normal")["value"])
     o["rsCTwentyTwoPsi"] = f3(impact(d, "psi010_false_alarm_n100")["value"])
     o["rsCTwentyTwoBound"] = f3(d["outputs"]["size_bounds"]["p<0.05"])
+    # the two tests that do not hold their size, found by the rule of the pipeline (exact probability where one exists,
+    # otherwise the one-sided Monte Carlo bound), and checked against the count the artifact reports
+    bounds = d["outputs"]["size_bounds"]
+    nulls = [s for s in d["outputs"]["simulations"] if s["key"].endswith("@null") and not s.get("study")]
+    failing = [s for s in nulls if not all(
+        (s["exact"][lv] <= float(lv[2:]) + 1e-12) if s["exact"] is not None else (s["rates"][lv]["rate"] <= bounds[lv])
+        for lv in ("p<0.05", "p<0.01"))]
+    assert len(nulls) - len(failing) == round(impact(d, "tests_within_bound")["value"]), "the failing tests differ from the artifact count"
+    assert sorted(s["test_id"] for s in failing) == ["pd.jeffreys", "pd.normal_multiperiod"], [s["test_id"] for s in failing]
+    jef = next(s for s in failing if s["test_id"] == "pd.jeffreys")
+    nor = next(s for s in failing if s["test_id"] == "pd.normal_multiperiod")
+    o["rsCTwentyTwoJeffExactOne"] = f3(jef["exact"]["p<0.01"])
+    o["rsCTwentyTwoNormalOne"] = f3(nor["rates"]["p<0.01"]["rate"])
+    o["rsCTwentyTwoBoundOne"] = f3(bounds["p<0.01"])
+    o["rsCTwentyTwoNullReps"] = f"{sum(s['n_rep'] for s in nulls):,}".replace(",", "{,}")
+    o["rsCTwentyTwoNullPerTest"] = f"{nulls[0]['n_rep']:,}".replace(",", "{,}")
+    o["rsCTwentyTwoWithinFive"] = str(sum(1 for s in nulls if (s["exact"][ "p<0.05"] <= 0.05 + 1e-12 if s["exact"] is not None else s["rates"]["p<0.05"]["rate"] <= bounds["p<0.05"])))
     d = load("C21/pair-2023-24.json")
     row = next(t for t in d["tests"] if t["test_id"] == "fair.two_proportion_z" and t["segment"].startswith("derived_race|Black or African American vs White"))
     e = row["extras"]

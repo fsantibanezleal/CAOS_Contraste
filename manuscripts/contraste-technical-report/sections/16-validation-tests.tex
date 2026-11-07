@@ -22,7 +22,7 @@ the statistical tests be appropriate from a methodological point of view and suf
 The reporting instructions of February 2019 fix the statistics and the p-values of the back-testing of the probability of default
 (a Jeffreys test per grade), of the comparison of the area under the receiver operating characteristic curve with its value at
 development, of the stability of the migration matrix and of the concentration in rating grades, and fix no pass or fail threshold
-\citep{validation-tests:ecb2019instructions}. The European Banking Authority guidelines on probability-of-default and loss-given-default
+\citep{credit-scoring:ecb2019}. The European Banking Authority guidelines on probability-of-default and loss-given-default
 estimation require a review of the estimates with predefined metrics, thresholds and significance levels at least once a year
 \citep{validation-tests:eba2018gl1716}, and the delegated regulation on the assessment methodology for the internal ratings-based approach
 fixes the independence of the validation function, the annual back-testing of every rating system and the content of the validation
@@ -32,7 +32,7 @@ stability of the model against its hyperparameters and the randomness of its tra
 
 The statistical instruments that these texts name are weaker than their regulatory use suggests. The Basel Committee working paper that
 introduced most of them states that no really powerful tests of adequate calibration are available and that, because of the correlation
-of defaults, there seems to be no way to develop such tests \citep{validation-tests:bcbs2005wp14}. A validator who applies a test with a
+of defaults, there seems to be no way to develop such tests \citep{credit-scoring:bcbswp14}. A validator who applies a test with a
 5 percent level needs three facts that the regulatory texts do not give: how often the test rejects a right model (its size), how often it
 rejects a model with a defect of a known size (its power), and whether the statistic the test computes is the one its authors derived. The
 fairness tests face the same question in another form. The four-fifths rule that is applied to selection rates in credit by analogy is an
@@ -104,7 +104,7 @@ Beta$(D+\tfrac12,N-D+\tfrac12)$ and the p-value is the posterior probability tha
   \label{eq:vt-jeffreys}
 \end{equation}
 where $F$ in \cref{eq:vt-jeffreys} is the distribution function of the posterior; the null is that the applied probability is not below the true one, and the interval logic is
-that of \citet{validation-tests:brown2001}. The binomial test has the p-value $P(\mathrm{Bin}(N,\mathrm{PD})\ge D)$ under independent defaults; the working paper
+that of \citet{ratings:brown2001}. The binomial test has the p-value $P(\mathrm{Bin}(N,\mathrm{PD})\ge D)$ under independent defaults; the working paper
 warns that its size can be much larger than its level when defaults are correlated. The correction of the working paper uses the one-factor model of
 Vasicek: the asset value of an obligor is $\sqrt{1-\rho}\,\varepsilon_i+\sqrt{\rho}\,X$ with independent standard normal $X$ and $\varepsilon_i$ and
 asset correlation $\rho$, an obligor defaults when its asset value is at most $\Phi^{-1}(\mathrm{PD})$, and conditional on the systematic factor $X=x$ the
@@ -117,7 +117,7 @@ defaults are independent with probability $\mathrm{PD}(x)=\Phi\bigl((\Phi^{-1}(\
 where $\varphi$ is the standard normal density, $q$ the confidence level and the test rejects when $D\ge k^{*}$. The engine evaluates the integral with
 Gauss-Hermite quadrature of 256 nodes. The definition of $k^{*}$ is the one that reproduces the critical counts that the working paper tabulates for a
 probability of 1 percent, 1,000 obligors and $q=99$ percent, 19, 35, 49, 63 and 77 for asset correlations of 0, 5, 10, 15 and 20 percent
-\citep{validation-tests:bcbs2005wp14}; the 99 percent quantile of $D$ itself is one lower, and the engine adopts the definition that reproduces the print. Other parametric tests that incorporate dependence start from the Basel II model and use a granularity adjustment or moment matching \citep{validation-tests:tasche2003}.
+\citep{credit-scoring:bcbswp14}; the 99 percent quantile of $D$ itself is one lower, and the engine adopts the definition that reproduces the print. Other parametric tests that incorporate dependence start from the Basel II model and use a granularity adjustment or moment matching \citep{validation-tests:tasche2003}.
 Over several grades the chi-square test of the working paper sums the standardised differences,
 \begin{equation}
   T=\sum_{i}\frac{(n_i p_i-d_i)^2}{n_i p_i(1-p_i)},
@@ -126,7 +126,7 @@ Over several grades the chi-square test of the working paper sums the standardis
 where, in \cref{eq:vt-chi2}, $n_i$, $d_i$ and $p_i$ are the obligors, the defaults and the probability applied in grade $i$; $T$ is asymptotically chi-square with as many degrees
 of freedom as grades under independence. The test of the default profile ranks the calibrations of a probability-of-default curve by the shape and not
 the level: given the total $D=\sum_i d_i$ the counts by grade are multinomial with the implied profile $q_i=n_ip_i/\sum_j n_jp_j$ and Pearson's statistic
-$\sum_i(d_i-Dq_i)^2/(Dq_i)$ is referred to a Monte Carlo distribution, as \citet{validation-tests:tasche2013} does to rank calibrations of the S\&P default
+$\sum_i(d_i-Dq_i)^2/(Dq_i)$ is referred to a Monte Carlo distribution, as \citet{ratings:tasche2013} does to rank calibrations of the S\&P default
 curve. The Hosmer-Lemeshow statistic groups the obligors into $G$ groups of equal size by predicted probability, with observed defaults $O_g$, expected defaults
 $E_g=\sum_{j\in g}p_j$ and size $m_g$,
 \begin{equation}
@@ -134,16 +134,16 @@ $E_g=\sum_{j\in g}p_j$ and size $m_g$,
   \label{eq:vt-hl}
 \end{equation}
 and \cref{eq:vt-hl} is referred to a chi-square law whose degrees of freedom are the object of a decision: the statistic was derived for a logistic model fitted on the same
-data, with $G-2$ degrees of freedom \citep{validation-tests:hosmer1980}, whereas a validator tests probabilities that were set before the outcomes on data the
+data, with $G-2$ degrees of freedom \citep{credit-scoring:hosmer1980}, whereas a validator tests probabilities that were set before the outcomes on data the
 model was not fitted to, for which each standardised group difference is asymptotically an independent chi-square variable with one degree of freedom and the
-sum has $G$ \citep{validation-tests:bcbs2005wp14}. The engine uses $G$ by default and $G-2$ only for a model fitted on the sample, and the measured sizes of both
+sum has $G$ \citep{credit-scoring:bcbswp14}. The engine uses $G$ by default and $G-2$ only for a model fitted on the sample, and the measured sizes of both
 choices are in \cref{tab:vt-settings}. The test depends on the grouping \citep{validation-tests:hosmer1997} and its power grows with the sample size until small
 departures are significant \citep{validation-tests:paul2013}. The Spiegelhalter test works on the forecasts $f_j$ and outcomes $d_j$ without binning:
 \begin{align}
   E(\mathrm{BS})&=\frac1N\sum_j f_j(1-f_j), & \mathrm{Var}(\mathrm{BS})&=\frac1{N^2}\sum_j f_j(1-f_j)(1-2f_j)^2, & Z&=\frac{\mathrm{BS}-E(\mathrm{BS})}{\sqrt{\mathrm{Var}(\mathrm{BS})}},
   \label{eq:vt-spiegelhalter}
 \end{align}
-with $\mathrm{BS}$ the observed Brier score in \cref{eq:vt-spiegelhalter} and the p-value the upper normal tail \citep{validation-tests:spiegelhalter1986,validation-tests:brier1950}. The Brier score also decomposes exactly, for forecasts constant within each group, into reliability, resolution and uncertainty \citep{validation-tests:murphy1973}, and the expected calibration error averages the absolute gap between the observed and the predicted default rate over $M$ quantile bins \citep{validation-tests:naeini2015,validation-tests:guo2017}; both are descriptive and carry no light. Two tests use
+with $\mathrm{BS}$ the observed Brier score in \cref{eq:vt-spiegelhalter} and the p-value the upper normal tail \citep{credit-scoring:spiegelhalter1986,credit-scoring:brier1950}. The Brier score also decomposes exactly, for forecasts constant within each group, into reliability, resolution and uncertainty \citep{credit-scoring:murphy1973}, and the expected calibration error averages the absolute gap between the observed and the predicted default rate over $M$ quantile bins \citep{credit-scoring:naeini2015,validation-tests:guo2017}; both are descriptive and carry no light. Two tests use
 several years: for forecasts $\mathrm{PD}_t$ and observed default rates $d_t$ over $T$ years the normal test is
 \begin{equation}
   \hat\sigma^2=\frac1{T-1}\Bigl(\sum_t(d_t-\mathrm{PD}_t)^2-\frac1T\Bigl(\sum_t(d_t-\mathrm{PD}_t)\Bigr)^2\Bigr),\qquad Z=\frac{\sum_t(d_t-\mathrm{PD}_t)}{\sqrt T\,\hat\sigma},
@@ -162,7 +162,7 @@ size by a factor of about four when a grade expects few defaults.
 
 \paragraph{Discriminatory power.} With $A$ the defaulters and $B$ the non-defaulters the area under the curve is the Mann-Whitney statistic
 $\mathrm{AUC}=|A|^{-1}|B|^{-1}\sum_{a\in A}\sum_{b\in B}u_{a,b}$, with $u_{a,b}$ equal to 1, $\tfrac12$ or 0 as the risk of $a$ is above, equal to or below that of $b$, the probability that a
-defaulter is ranked riskier than a non-defaulter \citep{validation-tests:hanley1982}. Its Gini form $2\,\mathrm{AUC}-1$ is the accuracy ratio of the cumulative accuracy profile and equals Somers'
+defaulter is ranked riskier than a non-defaulter \citep{credit-scoring:hanley1982}. Its Gini form $2\,\mathrm{AUC}-1$ is the accuracy ratio of the cumulative accuracy profile and equals Somers'
 $D$ \citep{validation-tests:somers1962}. The structural components $V_{10}(a)=|B|^{-1}\sum_bu_{a,b}$ and $V_{01}(b)=|A|^{-1}\sum_au_{a,b}$ give the variance used by the ECB and, with it,
 the test against the area at development; the extension that the engine adds passes the variance of an estimated development area:
 \begin{equation}
@@ -173,13 +173,13 @@ the test against the area at development; the extension that the engine adds pas
 \end{equation}
 with the p-value $1-\Phi(S)$ and the null that the area at development is smaller than the current one. The statistic $S$ of \cref{eq:vt-auc} treats the development area as a constant; when it was estimated
 on a sample of the same size the difference has twice the variance the test assumes, which $S_{\mathrm{ext}}$ corrects. To compare a champion and a challenger scored on the same obligors the
-engine implements the nonparametric test of \citet{validation-tests:delong1988}, $z=(\widehat{\mathrm{AUC}}_1-\widehat{\mathrm{AUC}}_2)/\sqrt{\mathbf S_{11}+\mathbf S_{22}-2\mathbf S_{12}}$ with $\mathbf S=S_{10}/|A|+S_{01}/|B|$
+engine implements the nonparametric test of \citet{credit-scoring:delong1988}, $z=(\widehat{\mathrm{AUC}}_1-\widehat{\mathrm{AUC}}_2)/\sqrt{\mathbf S_{11}+\mathbf S_{22}-2\mathbf S_{12}}$ with $\mathbf S=S_{10}/|A|+S_{01}/|B|$
 the covariance matrix of the placements of the two models. The test is valid for models of different families validated on a holdout; for nested models fitted on the sample they are compared on its null
 distribution is not normal when the added predictor is unrelated to the outcome \citep{validation-tests:demler2012}.
 
 \paragraph{Stability and rating structure.} The population stability index of $B$ fixed bins with development proportions $e_i$ and current proportions $a_i$ is
 $\mathrm{PSI}=\sum_i(a_i-e_i)\ln(a_i/e_i)$, the symmetrised Kullback-Leibler divergence. The rule of thumb that reads it below 0.10 as little change and above 0.25 as significant change has no
-reference to type I or type II error \citep{validation-tests:yurdakul2020}; the same authors show that, for samples of $n$ and $m$ observations, $(1/n+1/m)^{-1}\mathrm{PSI}$ is approximately chi-square with
+reference to type I or type II error \citep{credit-scoring:yurdakul2020}; the same authors show that, for samples of $n$ and $m$ observations, $(1/n+1/m)^{-1}\mathrm{PSI}$ is approximately chi-square with
 $B-1$ degrees of freedom, so that
 \begin{equation}
   \text{reject}\iff \mathrm{PSI}>\Bigl(\frac1n+\frac1m\Bigr)\chi^2_{1-\alpha,\,B-1},
@@ -212,7 +212,7 @@ traffic-lights distribution convolves $T$ years over the $\binom{T+3}{3}$ colour
 \vtfn{transitions} of \vtfn{riskvalidation} \vtEngineVersion{}, registered in \vtfn{riskvalidation.core.registry} and returned as \vtfn{TestResult} objects of \vtfn{riskvalidation.core.result}; the policy
 is \vtfn{riskvalidation.core.policy.Policy} read from the packaged \vtfn{default.json}. The pipeline module \vtfn{data-pipeline/pipeline/cases/c22_validator.py} feeds them from the generators of
 \vtfn{riskvalidation.generators}. Each test is compared against a published worked example or an independent reference, and the acceptance criterion is that it reproduces it to a stated tolerance and that every result
-carries its reference, its null hypothesis and the version of the policy: the critical counts of the working paper, the benchmark values of \citet{validation-tests:yurdakul2020}, the closed forms of the
+carries its reference, its null hypothesis and the version of the policy: the critical counts of the working paper, the benchmark values of \citet{credit-scoring:yurdakul2020}, the closed forms of the
 distributions of SciPy, the placements of the ECB formulas, and the published simulations that \cref{sec:m37} reruns. The calibration of the Hosmer-Lemeshow degrees of freedom, of the traffic-lights tie rule and of the
 extended AUC variance are findings of this comparison and not conventions inherited from a source.
 \par\endgroup
@@ -272,7 +272,7 @@ better, flagged when it exceeds $\tau$, and the weak spots are the slices of at 
 \paragraph{Seeds, explanations and the split-conformal coverage.} The stability across seeds is the sample standard deviation $s_A$ of the AUC of $K$ refits, $s_A=\sqrt{(K-1)^{-1}\sum_k(A_k-\bar A)^2}$, read beside the
 share of obligors whose grade changes between seeds and the Kendall rank correlation of the attributions of two seeds. The reasons of an obligor in a refit are its four features of largest signed contribution towards the
 event on the log-odds scale, and the stability of the reason codes is the mean share of the reasons kept between the first refit and each later one. The agreement of two explainers is the Spearman correlation $\rho$ between the
-mean absolute SHAP value of each feature \citep{validation-tests:lundberg2017,validation-tests:lundberg2020} and the range of its accumulated local effect curve \citep{validation-tests:apley2020}, and the additivity of the attributions is checked
+mean absolute SHAP value of each feature \citep{credit-scoring:lundberg2017,credit-scoring:lundberg2020} and the range of its accumulated local effect curve \citep{validation-tests:apley2020}, and the additivity of the attributions is checked
 by
 \begin{equation}
   f(x)=\phi_0+\sum_i\phi_i,\qquad \text{gap}=\max_r\Bigl|f(x_r)-\bigl(\phi_0+\sum_i\phi_{ri}\bigr)\Bigr|,
@@ -295,7 +295,7 @@ Brier difference $d_i=(q_i-y_i)^2-(p_i-y_i)^2$.
 
 \paragraph{Fairness.} For a protected attribute $A$, a decision $\hat Y$ and an outcome $Y$, demographic parity is the equality of the selection rates $r_g=x_g/n_g$ of the groups, measured by the difference $\Delta_g=r_g-r_{\mathrm{ref}}$ and the
 ratio $\rho_g=r_g/r_{\mathrm{ref}}$; equalized odds and equal opportunity equalise the true and false positive rates $P(\hat Y=1\mid A=g,Y=y)$ \citep{validation-tests:hardt2016}; the calibration within groups and the area under the curve by group are the engine's
-own tests applied inside each group \citep{validation-tests:kozodoi2022,validation-tests:naeini2015}. The four-fifths indicator is decided on the integer counts, against the group of highest rate $h$,
+own tests applied inside each group \citep{validation-tests:kozodoi2022,credit-scoring:naeini2015}. The four-fifths indicator is decided on the integer counts, against the group of highest rate $h$,
 \begin{equation}
   \text{flag}_g\iff 5\,x_g\,n_h<4\,x_h\,n_g,
   \label{eq:vt-fourfifths}
@@ -336,16 +336,16 @@ at least 0.90; the reconciliations against independent implementations are those
 \subsection{Rerun of the published size and power studies of the validation tests}
 \label{sec:m37}
 
-Three studies measured the size and power of the tests of \cref{sec:m28}: the simulation of the Basel Committee working paper for the normal and traffic-lights tests \citep{validation-tests:bcbs2005wp14}, the simulation of \citet{validation-tests:yurdakul2020}
+Three studies measured the size and power of the tests of \cref{sec:m28}: the simulation of the Basel Committee working paper for the normal and traffic-lights tests \citep{credit-scoring:bcbswp14}, the simulation of \citet{credit-scoring:yurdakul2020}
 for the population stability index and its chi-square benchmark, and the simulation of \citet{validation-tests:demler2012} for the DeLong test on nested models. The product reruns all three, cell by cell, with the generator, the tests and the harness of the engine.
-The design follows the structure of \citet{validation-tests:morris2019}: aims, data-generating mechanisms, estimands, methods and performance measures. The estimand is the true rejection probability of a test at a level; the performance measure is the rejection rate with its Monte Carlo
+The design follows the structure of \citet{alm:morris2019}: aims, data-generating mechanisms, estimands, methods and performance measures. The estimand is the true rejection probability of a test at a level; the performance measure is the rejection rate with its Monte Carlo
 standard error. With $n$ repetitions and $k$ rejections the rate $\hat r=k/n$ has
 \begin{equation}
   \widehat{\mathrm{SE}}(\hat r)=\sqrt{\frac{\hat r(1-\hat r)}{n}},\qquad
   \Bigl[\frac{\hat r+\frac{z^2}{2n}\pm z\sqrt{\frac{\hat r(1-\hat r)}{n}+\frac{z^2}{4n^2}}}{1+\frac{z^2}{n}}\Bigr],
   \label{eq:vt-mcse}
 \end{equation}
-the second expression being the Wilson interval, which stays inside $[0,1]$ and behaves near zero where small sizes sit, and is recommended for a binomial proportion \citep{validation-tests:brown2001}. Their review found that 93 of 100 simulation studies in one volume of Statistics in Medicine did not report
+the second expression being the Wilson interval, which stays inside $[0,1]$ and behaves near zero where small sizes sit, and is recommended for a binomial proportion \citep{ratings:brown2001}. Their review found that 93 of 100 simulation studies in one volume of Statistics in Medicine did not report
 the Monte Carlo error; every rate of the engine carries it. Under the null at its boundary the true rejection rate is at most $\alpha$, so a measured size is judged one-sided: a test holds its size when
 \begin{equation}
   \hat r\le\alpha+z_{0.999}\sqrt{\frac{\alpha(1-\alpha)}{n}},

@@ -1,7 +1,7 @@
 """Generate the data-contracts appendix of the technical report from ``docs/contracts/catalog.md`` and the schema files:
 one subsection per catalog row, labelled ``sec:contract-<id>`` (the label ``coverage.json`` maps the row to), with its
 purpose, version, producer, consumers, tests and missing-data behaviour stated from the row, and a table of the fields of
-its schema (name, JSON type, constraint, description). Nothing is typed by hand: a new catalog row or a changed schema
+its schema (name, JSON type, unit, range or values, description). Nothing is typed by hand: a new catalog row or a changed schema
 changes the chapter at the next run.
 
     python manuscripts/contraste-technical-report/tables/make_contracts.py
@@ -142,6 +142,153 @@ def constraint_of(spec: dict) -> str:
     return "; ".join(bits) or "-"
 
 
+def range_of(spec: dict) -> str:
+    """The range or the values a field takes: the schema's own bounds, enumeration, constant or pattern, else what its type allows."""
+    own = constraint_of(spec)
+    if own != "-":
+        return own
+    kind = kind_of(spec)
+    if "format" in spec:
+        return f"format {spec['format']}"
+    if kind.startswith("string"):
+        return "any text" + (" or null" if "null" in kind else "")
+    if kind.startswith("boolean"):
+        return "true or false"
+    if kind.startswith("integer"):
+        return "any integer" + (" or null" if "null" in kind else "")
+    if kind.startswith("number"):
+        return "any real number" + (" or null" if "null" in kind else "")
+    if kind.startswith("array"):
+        return "any length"
+    return "see its fields" if kind.startswith("object") else "any"
+
+
+#: The unit of a field whose schema states none, from the words of its description and then from its name (the schema
+#: files hold the unit in a field named ``unit`` of the document, not in the field's own declaration).
+UNIT_WORDS = [
+    (re.compile(r"\bbasis points?\b|\bbps?\b", re.I), "basis points"),
+    (re.compile(r"\bpercent(?:age)?\b|\bper cent\b", re.I), "percent"),
+    (re.compile(r"\bcalendar year\b|\byears?\b", re.I), "years"),
+    (re.compile(r"\bdays?\b", re.I), "days"),
+    (re.compile(r"\bmonths?\b", re.I), "months"),
+    (re.compile(r"\bseconds?\b", re.I), "seconds"),
+    (re.compile(r"\bcurrency units?\b", re.I), "currency units"),
+]
+UNIT_NAMES = [
+    (re.compile(r"_bp$|^bp$|_bp_"), "basis points"),
+    (re.compile(r"(^|_)months?($|_)"), "months"),
+    (re.compile(r"(^|_)years?($|_)|^year$"), "calendar year"),
+    (re.compile(r"(^|_)days?($|_)"), "days"),
+    (re.compile(r"^seed$|_seed$"), "integer seed"),
+    (re.compile(r"^n$|^n_|_n$|^defaults$|^count$|_count$"), "count"),
+    (re.compile(r"^p_value$|^alpha|^pd\d*$|_pd$|^rate$|_rate$|^prob"), "probability"),
+    (re.compile(r"^rho$|correlation"), "correlation (unitless)"),
+    (re.compile(r"^ar\d*$"), "accuracy ratio (unitless)"),
+    (re.compile(r"^statistic$|^metric$"), "the scale of its test"),
+]
+
+
+def unit_of(name: str, spec: dict, schema: dict, description: str) -> str:
+    """The unit of a field: the one the schema declares, else the one its description names, else the one its name implies,
+    else what its type implies (text, a record, a list, a flag), else ``unitless``."""
+    node = resolve(spec, schema)
+    for key in ("unit", "x-unit"):
+        for s in (spec, node):
+            if isinstance(s.get(key), str):
+                return s[key]
+    kind = kind_of(spec)
+    numeric = kind.startswith(("number", "integer"))
+    for pat, unit in UNIT_WORDS:
+        if numeric and pat.search(description):
+            return unit
+    leaf = name.split(".")[-1]
+    for pat, unit in UNIT_NAMES:
+        if numeric and pat.search(leaf):
+            return unit
+    if kind.startswith(("string", "constant", "any")):
+        return "none (text)"
+    if kind.startswith("boolean"):
+        return "none (flag)"
+    if kind.startswith("object") or kind.startswith("one of"):
+        return "none (record)"
+    if kind.startswith("array"):
+        return "none (list)"
+    return "unitless"
+
+
+#: What the fields every contract of a case shares mean (the envelope of the document), stated once.
+COMMON = {
+    "schema": "Identifier and version of the schema the document declares, checked against the schema file.",
+    "case_id": "Identifier of the case the document belongs to.",
+    "variant_id": "Identifier of the variant of the case the document describes.",
+    "fit_id": "Identifier of the fit of the models artifact the document describes.",
+    "fit": "The fit of the models the document describes.",
+    "impact": "The headline quantities of the document, each with its value, its unit and a bilingual label.",
+    "outputs": "The outputs of the case, in the structure its own schema defines.",
+    "outputs.kind": "Kind of output the document carries, which names the structure of the other outputs.",
+    "engine_version": "Version of the validation engine that produced the document.",
+    "n_cases": "Number of cases the inventory lists.",
+    "default_case": "Identifier of the case the application opens first.",
+    "default_variant": "Identifier of the variant the application opens first.",
+    "model_id": "Identifier of the model the test row refers to, when it refers to one.",
+    "test_id": "Identifier of the test of the engine the row reports.",
+    "segment": "Segment of the data the test row was computed on, when it is computed on one.",
+    "statistic": "Value of the test statistic.",
+    "p_value": "The p-value of the test, when the test decides by one.",
+    "metric": "Value of the metric the test reports.",
+    "alpha_amber": "Level of the p-value at which the light turns amber.",
+    "alpha_red": "Level of the p-value at which the light turns red.",
+    "light": "The light of the test: green, amber, red, not evaluated or error.",
+    "n": "Number of observations the test used.",
+    "n_events": "Number of events (defaults) among the observations the test used.",
+    "inputs_hash": "Hash of the inputs the test was computed on.",
+    "policy_version": "Version of the policy that sets the levels of the lights.",
+    "h0": "The null hypothesis of the test.",
+    "alternative": "The alternative hypothesis of the test.",
+    "extras": "Further values of the test, open by design.",
+    "seed": "Seed of the random number generator of the document.",
+}
+
+
+def ref_text(spec: dict, schema: dict) -> str:
+    """The title and description of the schema a field points to, local or in another file."""
+    ref = spec.get("$ref", "")
+    items = spec.get("items") if isinstance(spec.get("items"), dict) else {}
+    ref = ref or items.get("$ref", "")
+    if not ref or ref.startswith("#"):
+        return ""
+    hits = list(SCHEMAS.rglob(ref.split("#")[0].rsplit("/", 1)[-1]))
+    if not hits:
+        return ""
+    node = json.loads(hits[0].read_text(encoding="utf-8"))
+    return (node.get("description") or node.get("title") or "").strip()
+
+
+def describe(name: str, spec: dict, schema: dict) -> str:
+    """The description of a field: the schema's own, else the one of the schema it points to, else the shared one of the
+    envelope fields, else a statement of its structure from the declaration."""
+    own = spec.get("description", "") or resolve(spec, schema).get("description", "")
+    if own:
+        return own
+    if name in COMMON:
+        return COMMON[name]
+    pointed = ref_text(spec, schema)
+    if pointed:
+        return ("A list of: " if kind_of(spec).startswith("array") else "") + pointed.rstrip(".") + "."
+    leaf = name.split(".")[-1]
+    kind = kind_of(spec)
+    words = leaf.replace("_", " ")
+    if kind.startswith("constant"):
+        return f"Fixed value of {words}: {constraint_of(spec).lstrip('= ')}."
+    if "enum" in spec:
+        return f"The {words}, one of the values stated in the range."
+    if kind.startswith("array"):
+        return f"The {words}, as a list of {kind[len('array of '):] or 'items'}."
+    if kind.startswith("object"):
+        return f"The {words}, as a record."
+    return f"The {words}."
+
+
 def sentence(text: str) -> str:
     """A catalog cell as prose: backticks become typewriter text, the rest is escaped."""
     parts = re.split(r"(`[^`]*`)", text)
@@ -165,7 +312,20 @@ INTERNAL = [
     (re.compile(r"\bbeyond the " + _ART + r":?\s*", re.I), ""),
     (re.compile(r"\b" + _ART + r"\b", re.I), "published"),
     (re.compile(r"\bSO" + r"TA\b"), "published"),
+    (re.compile(r"\bSDD\b"), "the design document"),
+    (re.compile(r"\s*\(U\d+-[A-Z]\d*\)"), ""),
+    (re.compile(r"\s*\bU\d+-[A-Z]\d*\b"), ""),
 ]
+
+
+def producer_text(owner: str) -> str:
+    """The producer cell without the development unit ids (``U13-S``, ``U13-E1``, ``U13-P1``, ``U15-W``): the modules and paths
+    stay, the process vocabulary goes."""
+    out = re.sub(r"^U\d+-[A-Z]\d*\s*\((.*)\)$", r"\1", owner.strip())
+    out = re.sub(r"implemented by U\d+-[A-Z]\d* in ", "implemented in ", out)
+    out = re.sub(r"(\w) U\d+-[A-Z]\d*( in)", r"\1\2", out)
+    out = re.sub(r"\bU\d+-[A-Z]\d*\b", "", out)
+    return re.sub(r"\s{2,}", " ", out).strip()
 
 
 def scrub(text: str) -> str:
@@ -211,7 +371,7 @@ def subsection(row: dict[str, str]) -> str:
         para.append(sentence(desc.rstrip(".")) + ".")
     para.append(f"The contract is at version {figkit.tex_escape(row['version'])} and its status in the catalog is "
                 f"\\emph{{{figkit.tex_escape(row['status'])}}}.")
-    para.append(f"Its producer is \\texttt{{{figkit.tex_escape(row['owner'])}}}, and its schema file is "
+    para.append(f"Its producer is \\texttt{{{figkit.tex_escape(producer_text(row['owner']))}}}, and its schema file is "
                 f"\\texttt{{{figkit.tex_escape(row['schema file'])}}}" +
                 (f"; the committed documents it governs are {sentence(row['documents'])}." if row["documents"] not in ("", "-")
                  else "; it governs no committed document of its own and is composed by the schemas that reference it."))
@@ -228,22 +388,23 @@ def subsection(row: dict[str, str]) -> str:
     if props:
         n = len(list(expand(props, schema)))
         para.append(f"Table~\\ref{{tab:contract-{cid}}} lists its {n} top-level "
-                    f"field{'s' if n != 1 else ''} with the type, the constraint and the description the schema states.")
+                    f"field{'s' if n != 1 else ''} with the type, the unit, the range or the values and the description.")
     lines.append(" ".join(para))
     lines.append("")
     if schema:
         if props:
-            lines += ["{\\small", "\\begin{longtable}{p{0.22\\textwidth}p{0.17\\textwidth}p{0.15\\textwidth}p{0.36\\textwidth}}",
+            lines += ["{\\small", "\\begin{longtable}{p{0.19\\textwidth}p{0.13\\textwidth}p{0.11\\textwidth}p{0.16\\textwidth}p{0.30\\textwidth}}",
                       f"\\caption{{The top-level fields of the contract \\texttt{{{figkit.tex_escape(cid)}}}: the name, the JSON "
-                      f"type, the constraint the schema states and its description, as the schema file holds them.}}"
+                      f"type, the unit, the range or the values and the description, as the schema file holds them.}}"
                       f"\\label{{tab:contract-{cid}}}\\\\",
-                      "\\toprule Field & Type & Constraint & Description \\\\ \\midrule \\endfirsthead",
-                      "\\toprule Field & Type & Constraint & Description \\\\ \\midrule \\endhead"]
+                      "\\toprule Field & Type & Unit & Range or values & Description \\\\ \\midrule \\endfirsthead",
+                      "\\toprule Field & Type & Unit & Range or values & Description \\\\ \\midrule \\endhead"]
             for name, spec in expand(props, schema):
-                d = spec.get("description", "") or resolve(spec, schema).get("description", "")
+                d = describe(name, spec, schema)
                 d = (d[:220] + " ...") if len(d) > 220 else d
                 lines.append(f"\\texttt{{{figkit.tex_escape(name)}}} & {figkit.tex_escape(kind_of(spec))} & "
-                             f"{figkit.tex_escape(constraint_of(spec))} & {sentence(d) or '-'} \\\\")
+                             f"{figkit.tex_escape(unit_of(name, spec, schema, d))} & "
+                             f"{figkit.tex_escape(range_of(spec))} & {sentence(d) or '-'} \\\\")
             lines += ["\\bottomrule", "\\end{longtable}", "}", ""]
     return "\n".join(lines)
 

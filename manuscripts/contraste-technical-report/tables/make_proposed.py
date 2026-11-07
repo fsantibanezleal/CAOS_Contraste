@@ -13,6 +13,7 @@ Run from the repository root::
 from __future__ import annotations
 
 import json
+import decimal
 import pathlib
 import sys
 
@@ -71,6 +72,12 @@ def D(rel: str):
 
 def pct(x: float, d: int = 1) -> str:
     return f"{100 * x:.{d}f}"
+
+
+def pct_half_up(x: float, d: int = 1) -> str:
+    """A share in percent rounded half up on its decimal form (0.0885 prints 8.9, where the binary float prints 8.8)."""
+    q = decimal.Decimal(1).scaleb(-d)
+    return str((decimal.Decimal(str(x)) * 100).quantize(q, rounding=decimal.ROUND_HALF_UP))
 
 
 def wilson_str(r: dict) -> str:
@@ -194,9 +201,16 @@ def build() -> dict:
     put("oneBound", f"{100 * b05:.2f}")
     over = [s for s in tests if s["rates"]["p<0.05"]["rate"] > b05]
     put("oneOver", len(over))
+    # the rule of the pipeline: the exact rejection probability where one exists, the one-sided Monte Carlo bound otherwise
+    within_both = [s for s in tests if all(
+        (s["exact"][lv] <= float(lv[2:]) + 1e-12) if s["exact"] is not None else (s["rates"][lv]["rate"] <= A["size_bounds"][lv])
+        for lv in ("p<0.05", "p<0.01"))]
+    assert len(within_both) == round(figkit.doc("C22/null.json")["impact"]["tests_within_bound"]["value"])
+    put("oneWithinBoth", len(within_both))
     put("oneOverName", figkit.tex_escape(over[0]["test_id"]) if over else "none")
     put("oneOverRate", pct(over[0]["rates"]["p<0.05"]["rate"], 2) if over else "0")
     put("oneNullReps", f"{tests[0]['n_rep']:,}")
+    put("oneNullTotal", f"{sum(s['n_rep'] for s in tests):,}")
     lk = A["leak"]
     put("oneLeakAucOne", pct(lk[("disc.auc_vs_initial", 1)]["rate"], 1))
     put("oneLeakAucTwo", pct(lk[("disc.auc_vs_initial", 2)]["rate"], 1))
@@ -274,6 +288,10 @@ def build() -> dict:
     put("thirteenWindow", stale["window_days"])
     put("thirteenPower", wilson_str(h["measured_power"]))
     put("thirteenPowerRate", pct(h["measured_power"]["rate"]))
+    put("thirteenCiLo", pct(h["measured_power"]["ci_low"]))
+    put("thirteenCiHi", pct(h["measured_power"]["ci_high"]))
+    put("thirteenUnionPower", pct(stale["flags"]["family"]["any"]["rate"]))
+    put("thirteenUnionK", stale["flags"]["family"]["any"]["k"])
     put("thirteenHeld", pct(h["held_out_size"]["rate"]))
     put("thirteenHeldCi", f"{pct(h['held_out_size']['ci_low'], 2)} to {pct(h['held_out_size']['ci_high'], 2)}")
     put("thirteenPla", pct(h["pla_power"]["rate"]))
@@ -326,6 +344,11 @@ def build() -> dict:
     put("fourteenAnchoredThree", pct(cov[("first_year", 3.0, "anchored")]["value"]))
     put("fourteenAnchoredNine", pct(cov[("first_year", 9.0, "anchored")]["value"]))
     put("fourteenIndustryNine", pct(cov[("first_year", 9.0, "industry")]["value"]))
+    put("fourteenUnfollowedNine", pct(cov[("first_year", 9.0, "unfollowed")]["value"]))
+    put("fourteenFollowedNine", pct(cov[("first_year", 9.0, "followed")]["value"]))
+    put("fourteenFollowedTen", pct(cov[("first_year_x10", 9.0, "followed")]["value"]))
+    put("fourteenExistingFirstYearHold", sum(1 for r in bv["rows"] if r["id"] == "existing-coverage" and r["design"] == "first_year" and r["holds"]))
+    assert not bv["summary"]["existing_under_50"], "the second clause is written as failed; the artifact says it holds"
     put("fourteenIndustryPooled", pct(cov[("pooled", 9.0, "industry")]["value"]))
     put("fourteenUnfollowedPooled", pct(cov[("pooled", 9.0, "unfollowed")]["value"]))
     put("fourteenFollowedPooled", pct(cov[("pooled", 9.0, "followed")]["value"]))
@@ -362,8 +385,8 @@ def build() -> dict:
     put("fifteenLightDay", f"{sc['rate-x3']['traffic_light']['median_day']:.0f}")
     hyp = {x["id"]: x for x in seq["hypotheses"]}
     vals = {x["id"]: x["value"] for h_ in seq["hypotheses"] for x in h_["values"]}
-    put("fifteenCostThree", f"{100 * vals['x3_power_cost']:.1f}")
-    put("fifteenCostFour", f"{100 * vals['x4_power_cost']:.1f}")
+    put("fifteenCostThree", pct_half_up(vals["x3_power_cost"]))
+    put("fifteenCostFour", pct_half_up(vals["x4_power_cost"]))
     put("fifteenBound", pct(vals["bound"]))
     put("fifteenHeld", "H1 and H2 held" if hyp["H1"]["holds"] and hyp["H2"]["holds"] else "see table")
     pdg = {s["id"]: s for s in seq["pd_grades"]["scenarios"]}
@@ -481,24 +504,28 @@ def write_tables(A: dict) -> None:
     N = A["N"]
     T = OUT
     figkit.table(T / "proposed-summary.tex", ["Method", "Case", "Quantity measured", "Value"], [
-        ["Size and power of the tests", "C22", "tests of the null family within the one-sided size bound at 5\\%",
+        ["Size and power of the tests", "C22", "tests of the null family within the size bound at 5%",
          f"{len(A['size_tests']) - int(N['oneOver'])} of {N['oneTests']}"],
+        ["Size and power of the tests", "C22", "tests of the null family within the size bound at 5% and at 1%",
+         f"{N['oneWithinBoth']} of {N['oneTests']}"],
         ["Reconciliation with ORE", "C12", "single swap, dates within two combined standard errors",
          f"{int(N['twoSingleDates']) - int(N['twoSingleOut'])} of {N['twoSingleDates']}"],
         ["Reconciliation with ORE", "C12", "CSA with 10 days, dates within two combined standard errors",
          f"{int(N['twoCsaTenDates']) - int(N['twoCsaTenOut'])} of {N['twoCsaTenDates']}"],
-        ["Informative withdrawals", "C04", "relative error of the B probability of default, withdrawals removed, k = 9 (\\%)",
+        ["Informative withdrawals", "C04", "relative error of the B probability of default, withdrawals removed, k = 9 (%)",
          N["fourRemovedB"]],
-        ["Thin grades", "C04", "coverage of the Wald interval for the first grade at 50 obligors (\\%)", N["fourWaldAaa"]],
-        ["UF as its own currency", "C15", "indexation charge over the change in net interest income, short-UF variant (\\%)",
+        ["Thin grades", "C04", "coverage of the Wald interval for the first grade at 50 obligors (%)", N["fourWaldAaa"]],
+        ["UF as its own currency", "C15", "indexation charge over the change in net interest income, short-UF variant (%)",
          N["sevenShare"]],
         ["Dependence band", "C18", "worst-case capital over the simple sum", N["nineWorstRatio"]],
         ["Reverse liquidity stress", "C16", "run-off multiplier at the 30-day target, adverse base", N["elevenAdverse"]],
         ["Reverse liquidity stress", "C16", "fast-run base", N["elevenFast"]],
         ["Operational-risk instability", "C17", "interquartile range over the truth, splice rung, range over the cells",
          f"{N['twelveIqrMin']} to {N['twelveIqrMax']}"],
-    ], caption="The headline quantity of each measurement, protocol and reconciliation of this section, read from the committed "
-               "documents of the case named in the second column; the sections of each method give the design and the full results.",
+    ], caption="Headline quantities of some of the contributions of this section, none of the four proposed methods among them, read from the "
+               "committed documents of the case named in the second column, each as a count or a point value without an interval; the intervals are in the tables of the "
+               "sections of the contributions, and the four proposed methods report theirs in the tables on the complement to the attribution "
+               "test, the anchored probability of default, the sequential monitors and the conformal recalibration.",
         label="tab:proposed-summary", align="lllr")
 
     # --- reconciliation with ORE
@@ -548,7 +575,7 @@ def write_tables(A: dict) -> None:
             cells = []
             for tr in ["industry", "unfollowed", "followed", "anchored"]:
                 r = cov.get((dsg, k, tr))
-                cells.append("--" if r is None else f"{pct(r['value'])} $\\pm$ {100 * 1.96 * r['mcse']:.1f}")
+                cells.append("--" if r is None else f"${pct(r['value'])} \\pm {100 * 1.96 * r['mcse']:.1f}$")
             if all(c == "--" for c in cells):
                 continue
             rows.append([dl[dsg], f"{k:.0f}"] + cells)
@@ -607,7 +634,7 @@ def write_tables(A: dict) -> None:
     for w in STRESS:
         for r in A["c11"][w]["conformal"]["rows"]:
             u, wr = r["unwrapped"], r["wrapped"]
-            rows.append([w, MODEL_LABEL[r["model_id"]], f"{100 * r['alpha']:g}\\%", f"{u['hit_rate']:.3f}", f"{wr['hit_rate']:.3f}",
+            rows.append([w, MODEL_LABEL[r["model_id"]], f"{100 * r['alpha']:g}%", f"{u['hit_rate']:.3f}", f"{wr['hit_rate']:.3f}",
                          yn(u["passes_coverage"]), yn(wr["passes_coverage"]), f"{100 * r['fz0_change']:+.1f}"])
     figkit.table(T / "proposed-conformal.tex", ["Window", "Model", "Level", "Hit rate", "Wrapped", "Pass", "Wrapped", "FZ0 change (\\%)"], rows,
                  caption="Adaptive conformal recalibration of three models on the three stress windows of C11: the hit rate of each model without "
@@ -615,7 +642,7 @@ def write_tables(A: dict) -> None:
                          "loss (negative is an improvement).", label="tab:proposed-conformal", align="llrrrllr")
     rows = []
     for c in A["c11"]["equity-2007-09"]["conformal"]["hypothesis"]["cells"]:
-        rows.append([MODEL_LABEL[c["model_id"]], f"{100 * c['alpha']:g}\\%", c["windows_passed_unwrapped"], c["windows_passed_wrapped"],
+        rows.append([MODEL_LABEL[c["model_id"]], f"{100 * c['alpha']:g}%", c["windows_passed_unwrapped"], c["windows_passed_wrapped"],
                      c["extra_windows"], f"{100 * c['worst_fz0_change']:+.1f}", yn(c["holds"])])
     figkit.table(T / "proposed-conformal-cells.tex", ["Model", "Level", "Windows passed", "Windows passed wrapped", "Extra windows", "Worst FZ0 change (\\%)", "Holds"],
                  rows, caption="The six cells of the evaluation of the conformal wrapper: for each model and tail level, the stress windows passed "

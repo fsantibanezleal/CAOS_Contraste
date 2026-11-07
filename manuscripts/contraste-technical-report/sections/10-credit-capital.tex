@@ -19,14 +19,14 @@ it covers the distance between the expected loss and a high quantile of the loss
 set less by the average quality of the loans than by how strongly their defaults move together. A book of independent borrowers has a
 narrow loss distribution; a book whose borrowers share one economic cycle has a long upper tail. The quantity that carries the
 co-movement, the asset correlation, is also the hardest to observe, because a bank sees one default rate per year while the tail that
-decides the capital is a one-in-a-thousand-year event \citep{credit-capital:vasicek2002,credit-capital:gordy2003}.
+decides the capital is a one-in-a-thousand-year event \citep{ratings:vasicek2002,ratings:gordy2003}.
 
 The regulation that governs the capital of a bank with supervisory approval is the internal ratings-based (IRB) approach of the Basel
 Framework. For each exposure class it fixes a risk-weight function that turns the bank's estimates of the default probability and of
 the loss given default into a capital requirement per unit of exposure at the 99.9 percent confidence level, with a correlation fixed
 by the class \citep{credit-capital:basel-cre31,credit-capital:basel-cre32}. The function is the one-factor model of Vasicek
-evaluated for an infinitely large portfolio \citep{credit-capital:basel2005}, and its justification as a portfolio-invariant capital
-rule is the asymptotic single risk factor model of Gordy \citep{credit-capital:gordy2003}. The chapters in force from 1 January 2023
+evaluated for an infinitely large portfolio \citep{ratings:bcbs2005}, and its justification as a portfolio-invariant capital
+rule is the asymptotic single risk factor model of Gordy \citep{ratings:gordy2003}. The chapters in force from 1 January 2023
 follow the final Basel III reforms \citep{credit-capital:basel-d424}; the European Union applies them through Article 153 of Regulation
 (EU) 2024/1623 from 1 January 2025 \citep{credit-capital:crr3}; and the Basel II text, which multiplied the IRB risk-weighted assets by
 1.06, remains the reference of older figures \citep{credit-capital:basel-cre30}. In Chile the Comisi\'on para el Mercado Financiero sets
@@ -68,7 +68,7 @@ capital to the names. The results of all methods on all loan types follow in \cr
 \subsubsection{The single-factor model and the large homogeneous portfolio}
 
 Let $\Phi$ be the standard normal distribution function and $\Phi^{-1}$ its inverse. In the model of
-\citet{credit-capital:vasicek2002} (the notes are collected in \citealp{credit-capital:vasicek1987,credit-capital:vasicek1991}) the
+\citet{ratings:vasicek2002} (the notes are collected in \citealp{credit-capital:vasicek1987,ratings:vasicek1991}) the
 latent asset return of obligor $i$ is
 \begin{equation}
 A_i=\sqrt{\rho}\,Z+\sqrt{1-\rho}\,\varepsilon_i,\qquad Z,\varepsilon_i\ \text{independent standard normal},
@@ -91,7 +91,7 @@ event $\{p(Z)\le x\}$ equals $\{Z\ge z_x\}$ with $z_x=\big(\Phi^{-1}(\PD)-\sqrt{
 \end{aligned}
 \label{eq:cc-lhp}
 \end{equation}
-the second expression being the inverse of the first at $x=\VaR_q$ \citep{credit-capital:vasicek2002}. Differentiating the first with
+the second expression being the inverse of the first at $x=\VaR_q$ \citep{ratings:vasicek2002}. Differentiating the first with
 $\mathrm{d}\Phi^{-1}(x)/\mathrm{d}x=1/\varphi(\Phi^{-1}(x))$, with $\varphi$ the standard normal density, gives the density of the default
 fraction
 \begin{equation}
@@ -108,7 +108,7 @@ is $\EAD\cdot\LGD\cdot L_\infty$, the expected loss is $\EL=\EAD\cdot\LGD\cdot\P
 \end{equation}
 where the expected shortfall integrates the conditional default probability over the worst $1-q$ of the factor, and the economic
 capital $\mathrm{EC}_q$ is the unexpected loss, the same concept as the IRB capital requirement
-\citep{credit-capital:basel2005,credit-capital:acerbitasche2002}.
+\citep{ratings:bcbs2005,credit-capital:acerbitasche2002}.
 
 \subsubsection{The IRB capital requirement}
 
@@ -122,7 +122,7 @@ b&=\big(0.11852-0.05478\ln\PD\big)^2,
 \end{aligned}
 \label{eq:cc-irb}
 \end{equation}
-with $M$ the effective maturity in years and $\mathrm{RWA}=12.5\,K\cdot\EAD$ \citep{credit-capital:basel2005,credit-capital:basel-cre31}.
+with $M$ the effective maturity in years and $\mathrm{RWA}=12.5\,K\cdot\EAD$ \citep{ratings:bcbs2005,credit-capital:basel-cre31}.
 Writing the argument of $\Phi$ as $\big(\Phi^{-1}(\PD)+\sqrt{R}\,\Phi^{-1}(0.999)\big)/\sqrt{1-R}$ shows that the bracket is
 $\LGD\,(\VaR_{0.999}-\PD)$ of \cref{eq:cc-lhp} with $\rho=R$: the IRB formula is the unexpected loss of the large homogeneous portfolio
 at the regulatory correlation, times the maturity adjustment. The correlation depends on the class. With
@@ -181,7 +181,7 @@ $\ell_P(\rho)=\max_{\PD}\ell(\PD,\rho)$,
 \label{eq:cc-profile}
 \end{equation}
 and that of the moments estimate is a parametric-bootstrap interval of \ccBoot{} series of the same length drawn from the fitted model
-\citep{credit-capital:vasicek2002}. \Cref{alg:cc-profile} states the procedure. The factor of a year implied by the fit is
+\citep{ratings:vasicek2002}. \Cref{alg:cc-profile} states the procedure. The factor of a year implied by the fit is
 \begin{equation}
 \hat z_t=\frac{\Phi^{-1}(\PD)-\sqrt{1-\rho}\,\Phi^{-1}(r_t)}{\sqrt{\rho}},
 \label{eq:cc-implied}
