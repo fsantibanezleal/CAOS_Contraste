@@ -2,13 +2,14 @@
 // appetite, Reports. The design group then holds Coverage, Protocol and metrics, these three and the C22 tab: six, the
 // ADR-0071 limit. The group is relabelled "How are the experiments designed and governed?". Experiments.tsx registers
 // these tabs (the patch in changes/U15-W.md); each tab reads its governance document and says "not available yet",
-// with the reason, while the bake has not written it.
+// with the reason, while the bake has not written it. The Findings and Reports tabs are the paged forms of the governance
+// views (GATE-15B): the register filtered and read a page at a time, a report read a section at a time.
 import type { BiText } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { DocSection } from '@fasl-work/caos-app-shell';
 import { InventoryTabLoader } from '../../workbench/governance/InventoryView';
-import { FindingsTabLoader } from '../../workbench/governance/RegisterView';
-import { ReportsTabLoader } from '../../workbench/governance/ReportView';
+import { PagedFindingsTabLoader } from './PagedRegister';
+import { PagedReportsTabLoader } from './PagedReport';
 
 export const DESIGN_GROUP_LABEL: { en: string; es: string } = { en: 'How are the experiments designed and governed?', es: '¿Cómo se diseñan y gobiernan los experimentos?' };
 
@@ -40,7 +41,7 @@ export function governanceTabs(lang: 'en' | 'es'): Array<{ id: string; label: st
       label: l('Findings and appetite', 'Hallazgos y apetito'),
       content: (
         <Section title={{ en: 'The findings register and the model risk appetite', es: 'El registro de hallazgos y el apetito de riesgo de modelo' }}>
-          <FindingsTabLoader />
+          <PagedFindingsTabLoader />
         </Section>
       ),
     },
@@ -49,7 +50,7 @@ export function governanceTabs(lang: 'en' | 'es'): Array<{ id: string; label: st
       label: l('Reports', 'Informes'),
       content: (
         <Section title={{ en: 'The validation report of an inventory entry', es: 'El informe de validación de una entrada del inventario' }}>
-          <ReportsTabLoader />
+          <PagedReportsTabLoader />
         </Section>
       ),
     },
