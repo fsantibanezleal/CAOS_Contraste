@@ -12,7 +12,7 @@ for n = 50, 100, 200, 500, 1000 at the seven grades' PDs of the C04 generator. T
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_thin.py
+    python manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_thin.py
 
 It writes ``experiments/thin.json`` and takes under a minute.
 """

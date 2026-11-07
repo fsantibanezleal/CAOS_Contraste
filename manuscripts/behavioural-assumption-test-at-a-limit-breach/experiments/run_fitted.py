@@ -1,7 +1,7 @@
 """Experiment 3: a fitted behavioural parameter (the weighted average maturity of the replicating portfolio, re-estimated at each date), with an override planted
 at breach dates.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_fitted.py [--workers 20] [--cache DIR]
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_fitted.py [--workers 20] [--cache DIR]
 
 The banks: 1,000 calibration banks and 2,000 test banks (5 blocks of 400), each a circular block bootstrap (6-quarter blocks) of the 40 real quarterly rows of case C14,
 whose 12 consecutive 16-quarter fits are the engine's ``replicating_portfolio``. A history has a breach chain (stationary prevalence 0.10, 0.25 or 0.50, persistence
@@ -37,7 +37,9 @@ PI_M = 0.5
 ANTICIPATION_YEARS = 2.0
 NO_WEIGHTS = tuple(d for d in core.DETECTORS if d != "stability")
 N_REAL_DRAWS = 2000
-DEFAULT_CACHE = pathlib.Path("D:/_Temp/ms-behavioural-assumption-test-at-a-l-2026-11-04/cache")
+# The cache lives in the device's temp root (CAOS_TEMP_ROOT, as the pipeline reads it) or where --cache says.
+DEFAULT_CACHE = (pathlib.Path(os.environ["CAOS_TEMP_ROOT"]) / "contraste-behavioural-assumption-test-at-a-limit-breach" / "cache"
+                 if os.environ.get("CAOS_TEMP_ROOT") else None)
 
 _REAL: dict = {}
 
@@ -201,7 +203,8 @@ def realism(real: core.RealSeries, test_w: np.ndarray) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=20)
-    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE)
+    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE, required=DEFAULT_CACHE is None,
+                    help="cache folder; defaults to $CAOS_TEMP_ROOT/contraste-behavioural-assumption-test-at-a-limit-breach/cache")
     args = ap.parse_args()
     real = core.load_real()
     with mp.Pool(args.workers, initializer=_init, initargs=(real.client_rate, real.tranche_yields)) as pool:

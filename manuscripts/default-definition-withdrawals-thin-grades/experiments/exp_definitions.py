@@ -14,7 +14,7 @@ Reads ``data/derived/C04/{sp,moodys,fitch}.json`` (the case C04 documents) and w
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_definitions.py
+    python manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_definitions.py
 
 It reads committed JSON only and takes about ten seconds.
 """

@@ -13,7 +13,7 @@ repetitions per rung on k = 0, 1, 2, 3, 5, 9, 19, each estimator also on the fir
 weight of S&P's cohort mix under each estimator's PDs, and the rejection rates of the two matrix tests of the case at
 k = 0, 9 and 19 over 1,000 repetitions. Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_withdrawals.py
+    python manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_withdrawals.py
 
 It writes ``experiments/withdrawals.json`` and takes about fifteen minutes (a draw is 0.03 s).
 """

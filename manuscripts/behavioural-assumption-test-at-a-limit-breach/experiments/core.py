@@ -2,10 +2,10 @@
 assumption change, the calibration of the tolerance, and the interval and area statistics.
 
 Nothing here is typed from a result: the generator of the fitted regime is calibrated from the committed C14 raw inputs
-(``E:/_Datos/contraste/raw`` on the default device, ``CONTRASTE_DATA`` elsewhere), the replicating portfolio and the two
+(``raw/`` under the device data root that ``CONTRASTE_DATA`` names), the replicating portfolio and the two
 comparator tests of the engine are called, not re-implemented, and the engine's test itself is called on every history.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe -m pytest manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments -q
+    python -m pytest manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments -q
 """
 from __future__ import annotations
 
@@ -39,8 +39,11 @@ def dates(t: int) -> np.ndarray:
 
 
 def data_root() -> pathlib.Path:
-    """The device data root of the raw C14 inputs: ``CONTRASTE_DATA``, else the default device's ``E:/_Datos/contraste``."""
-    return pathlib.Path(os.environ.get("CONTRASTE_DATA", "E:/_Datos/contraste"))
+    """The device data root of the raw C14 inputs, from ``CONTRASTE_DATA`` (as the pipeline's bakes read it)."""
+    root = os.environ.get("CONTRASTE_DATA")
+    if not root:
+        raise FileNotFoundError("the fitted regime reads the raw C14 inputs of the device data root: set CONTRASTE_DATA")
+    return pathlib.Path(root)
 
 
 # ---------------------------------------------------------------------------------------------------- real inputs

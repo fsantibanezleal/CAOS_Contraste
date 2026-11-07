@@ -1,6 +1,6 @@
 """List every number macro of the prose (``tables/numbers.tex``), the sections that use it and its source, as a markdown table.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/number_sources.py [--unused]
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/number_sources.py [--unused]
 
 Exit 1 when the prose uses a macro that ``numbers.tex`` does not define (a number that would have to be typed by hand).
 """

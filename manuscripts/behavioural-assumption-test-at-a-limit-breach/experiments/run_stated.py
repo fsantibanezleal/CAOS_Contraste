@@ -1,6 +1,6 @@
 """Experiment 2: a stated behavioural parameter, with an assumption change planted at breach dates.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_stated.py [--per-block 800]
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_stated.py [--per-block 800]
 
 A history of 12 quarters has a breach chain (stationary prevalence ``p``, persistence 0.8), a stated parameter with changes that have nothing to do with
 the breach (a rate ``lam`` per quarter), and, in the alternative arm, a lengthening at each breach date with probability ``pi_m`` (at least one). Both arms share

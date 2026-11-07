@@ -15,7 +15,6 @@ import pathlib
 import sys
 
 import numpy as np
-from scipy import stats
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "data-pipeline"))

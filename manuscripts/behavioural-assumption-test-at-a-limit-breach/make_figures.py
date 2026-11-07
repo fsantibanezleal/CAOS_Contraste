@@ -1,6 +1,6 @@
 """Write the figures of the manuscript (vector PDF, grayscale-safe) from ``experiments/results_*.json`` and the cached banks of ``experiments/run_fitted.py``.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/make_figures.py [--cache D:/_Temp/ms-behavioural-assumption-test-at-a-l-2026-11-04/cache]
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/make_figures.py [--cache <temp root>/contraste-behavioural-assumption-test-at-a-limit-breach/cache]
 """
 from __future__ import annotations
 
@@ -20,7 +20,9 @@ import core  # noqa: E402
 EXP = HERE / "experiments"
 OUT = HERE / "figures"
 S = figkit.STYLES
-DEFAULT_CACHE = pathlib.Path("D:/_Temp/ms-behavioural-assumption-test-at-a-l-2026-11-04/cache")
+# The cache lives in the device's temp root (CAOS_TEMP_ROOT, as the pipeline reads it) or where --cache says.
+DEFAULT_CACHE = (pathlib.Path(os.environ["CAOS_TEMP_ROOT"]) / "contraste-behavioural-assumption-test-at-a-limit-breach" / "cache"
+                 if os.environ.get("CAOS_TEMP_ROOT") else None)
 
 
 def load(name: str) -> dict:
@@ -212,7 +214,8 @@ def fig_conformal() -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE)
+    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE, required=DEFAULT_CACHE is None,
+                    help="cache folder; defaults to $CAOS_TEMP_ROOT/contraste-behavioural-assumption-test-at-a-limit-breach/cache")
     args = ap.parse_args()
     figkit.style()
     fig_history()

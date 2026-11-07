@@ -1,6 +1,6 @@
 """Tests of the shared core of the experiments: the engine against the closed form, the statistics, the generators and their determinism.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe -m pytest manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments -q
+    python -m pytest manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments -q
 """
 from __future__ import annotations
 

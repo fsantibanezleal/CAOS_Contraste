@@ -11,7 +11,7 @@ the first-year cohort, lies within three Monte Carlo standard errors of its clos
 
 Run from the repository root::
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_theory.py
+    python manuscripts/default-definition-withdrawals-thin-grades/experiments/exp_theory.py
 
 It writes ``experiments/theory.json`` and takes about ten minutes.
 """

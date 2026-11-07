@@ -1,8 +1,8 @@
 """Phase 2 of the experiments: turn the cached statistic rows into ``results.json``, the only source of every number the manuscript
 reports (its tables and figures are written from this file by ``make_tables.py`` and ``make_figures.py``).
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/scale-and-level-complement-to-the-pla-test/experiments/analyse.py \
-        [--cache D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache]
+    python manuscripts/scale-and-level-complement-to-the-pla-test/experiments/analyse.py \
+        [--cache <temp root>/contraste-scale-and-level/cache]
 
 Sections of the output: ``thresholds``, ``main`` (the six variants of the committed bake), ``repeats`` (five further independent
 bakes), ``ladder`` (stale-volatility lags), ``auc``, ``by_size`` (power against size), ``ablation``, ``altnull``, ``xform``,
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import sys
 
@@ -24,7 +25,9 @@ import stats_core as sc  # noqa: E402
 import theory  # noqa: E402
 from riskvalidation.market import frtb  # noqa: E402
 
-DEFAULT_CACHE = pathlib.Path("D:/_Temp/ms-scale-and-level-complement-to-the-2026-11-04/cache")
+# The cache lives in the device's temp root (CAOS_TEMP_ROOT, as the pipeline reads it) or where --cache says.
+DEFAULT_CACHE = (pathlib.Path(os.environ["CAOS_TEMP_ROOT"]) / "contraste-scale-and-level" / "cache"
+                 if os.environ.get("CAOS_TEMP_ROOT") else None)
 OUT = HERE / "results.json"
 IDS = tuple(sc.params.IDS)
 PLANTED = IDS[1:]
@@ -110,7 +113,8 @@ def auc(pos: np.ndarray, neg: np.ndarray, high: bool, boot: int = 1000, seed: in
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE)
+    ap.add_argument("--cache", type=pathlib.Path, default=DEFAULT_CACHE, required=DEFAULT_CACHE is None,
+                    help="cache folder; defaults to $CAOS_TEMP_ROOT/contraste-scale-and-level/cache")
     cache = Cache(ap.parse_args().cache)
     null = np.vstack([cache.get(f"null_{cs}") for cs in NULL_SEEDS])
     rules = Rules(null)

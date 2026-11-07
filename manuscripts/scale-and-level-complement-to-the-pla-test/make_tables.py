@@ -1,6 +1,6 @@
 """Write every results table of the manuscript from ``experiments/results.json`` and ``experiments/results_theory.json``.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/scale-and-level-complement-to-the-pla-test/make_tables.py
+    python manuscripts/scale-and-level-complement-to-the-pla-test/make_tables.py
 
 Tables land in ``tables/`` as booktabs ``.tex`` files that ``main.tex`` inputs; no number in them is typed by hand.
 """

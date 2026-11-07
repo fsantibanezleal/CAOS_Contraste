@@ -1,6 +1,6 @@
 """Experiment 1: the test on the committed history of case C14, on constructed histories, and by exhaustion.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_reproduction.py
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_reproduction.py
 
 Reads the committed documents ``data/derived/C14/vd-*.json`` and ``models-svb-2021-2022.json``, the raw inputs of the case (to rebuild the fitted weighted
 average maturity at the three dates), and calls the engine ``riskvalidation`` 1.1.0. Writes ``results_reproduction.json`` next to this file.

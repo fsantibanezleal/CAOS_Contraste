@@ -1,6 +1,6 @@
 """Experiment 4: numerical checks of the propositions of the Theory section.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_theory.py
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/experiments/run_theory.py
 
 (a) the false-flag probability ``1 - C(n-k, m) / C(n, m)`` of the proposed test when the breach dates are placed uniformly among the dates, against a
 simulation of placements; (b) the same probability ``E[1 - (1-lambda)^m]`` for the changes of the stated regime of Experiment 2, with the number ``m`` of breach

@@ -1,6 +1,6 @@
 """Write every results table and every number of the prose of the manuscript from ``experiments/results_*.json``.
 
-    E:/_venvs/contraste-u16-i/Scripts/python.exe manuscripts/behavioural-assumption-test-at-a-limit-breach/make_tables.py
+    python manuscripts/behavioural-assumption-test-at-a-limit-breach/make_tables.py
 
 Tables land in ``tables/`` as booktabs ``.tex`` files that the sections input; ``tables/numbers.tex`` defines one macro per number quoted in the prose
 (each preceded by a comment naming its source), so that no number is typed by hand and a new run regenerates the text's figures.
