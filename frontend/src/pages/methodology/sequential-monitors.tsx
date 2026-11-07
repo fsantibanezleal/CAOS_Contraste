@@ -1,7 +1,7 @@
 // The Methodology section on the sequential monitors (cases C22, C11 and C03): e-processes that read a back-test of the VaR
 // or a calibration of the PD every day or every vintage and keep their size. Transcribed from the engine page
 // docs/sequential/README.md of riskvalidation 1.1.0 (the idea, the assumptions, what is refused) and from notebook 09 of the
-// validating-the-validator topic (notebooks/en/14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb).
+// validating-the-validator topic (notebooks/en/14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb).
 // The numbers are the notebook's, which read the committed documents of C22 (data/derived/C22/other-families.json, the study
 // of 2,000 series per scenario), C11 and C03, not the engine page's own run, whose seed and tables differ (for instance 12.2
 // points of power cost at three times the hit rate there, 11.9 here). Every display equation carries a caption that defines
@@ -13,7 +13,7 @@ import type { MethodologySection } from '../methodologyRegistry';
 import { GroupedBars } from '../MethodFigures';
 
 const NB = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/notebooks';
-const NB_PATH = '14-validating-the-validator/09-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb';
+const NB_PATH = '14-validating-the-validator/10-sequential-monitors-that-keep-their-size-when-read-every-day.ipynb';
 
 /** A small results table: a head row and the rows, the first column text and the others numbers. */
 function Tbl({ head, rows, id }: { head: ReactNode[]; rows: ReactNode[][]; id: string }) {

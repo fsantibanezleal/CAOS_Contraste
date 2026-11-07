@@ -811,7 +811,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
   https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
   an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
-  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
   and its Spanish counterpart.
   Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
   `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
