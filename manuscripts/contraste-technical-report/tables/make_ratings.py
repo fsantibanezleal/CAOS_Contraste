@@ -74,8 +74,21 @@ def pct(x: float | None, d: int = 2) -> str:
     return "--" if x is None else f"{100 * x:.{d}f}"
 
 
+def pm_pct(x: float, ci: tuple[float, float]) -> str:
+    """A share in percent with the half-width of its interval, to one decimal."""
+    return f"${100 * x:.1f}\\pm{100 * (ci[1] - ci[0]) / 2:.1f}$"
+
+
 def pm(x: float, e: float, d: int = 2) -> str:
     return f"${100 * x:.{d}f}\\pm{100 * e:.{d}f}$"
+
+
+def wilson(k: int, n: int, z: float = 1.959963984540054) -> tuple[float, float]:
+    """The 95 % Wilson score interval of a binomial proportion ``k / n``."""
+    p = k / n
+    centre = (p + z * z / (2 * n)) / (1 + z * z / n)
+    half = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n)
+    return float(centre - half), float(centre + half)
 
 
 def _gh_mean(ttc: float, rho: float, n: int = 120) -> float:
@@ -198,6 +211,9 @@ def compute() -> dict[str, Any]:
         for gi in (0, 1, 5, 6):
             num[name("mk", k, GRADES[gi], "rmse")] = f"{1e4 * est[k]['rmse'][gi]:.1f}"
             num[name("mk", k, GRADES[gi], "se")] = f"{1e4 * est[k]['empirical_se'][gi]:.1f}"
+    ratios = [abs(est[k]["bias"][0] / est[k]["bias_mcse"][0]) for k in ("em", "diagonal", "weighted")]
+    num[name("mk", "bias", "se", "min")] = f"{min(ratios):.1f}"
+    num[name("mk", "bias", "se", "max")] = f"{max(ratios):.1f}"
     num[name("mk", "emconv")] = pct(rung["em"]["converged"]["rate"], 0)
     num[name("mk", "emiter")] = f"{rung['em']['iterations_mean']:.1f}"
 
@@ -222,6 +238,16 @@ def compute() -> dict[str, Any]:
         num[name("eng", "last", "abcd"[i])] = pct(path[-1], 3)
         num[name("eng", "argmax", "abcd"[i])] = str(int(path.argmax()))
         num[name("eng", "argmin", "abcd"[i])] = str(int(path.argmin()))
+    eng_cells = [(eng["ttc_pd"]["printed"], eng["ttc_pd"]["recomputed"], eng["ttc_pd"]["decimals"])]
+    eng_cells += [(a, b, d) for a, b, d in zip(eng["w_ttc"]["printed"], eng["w_ttc"]["recomputed"], eng["w_ttc"]["decimals"])]
+    for pf in eng["portfolios"]:
+        for part in (pf["pd0"], pf["extreme"]):
+            if part:
+                eng_cells.append((part["printed"], part["recomputed"], part["decimals"]))
+    R["eng_cells"] = eng_cells
+    num[name("eng", "cells")] = str(len(eng_cells))
+    num[name("eng", "ident")] = str(sum(1 for a, b, d in eng_cells if abs(a - b) <= 0.5 * 10 ** -d + 1e-12))
+    num[name("eng", "maxgap")] = f"{max(abs(a - b) for a, b, _ in eng_cells):.5f}"
     num[name("eng", "years")] = str(len(eng["portfolios"][0]["pd_path"]))
 
     # ---- C05, the S&P calibration to 2010 and 2011 (Tasche 2013) and the low-default example (Pluto and Tasche)
@@ -306,6 +332,11 @@ def compute() -> dict[str, Any]:
     num[name("pt", "cells")] = str(len(cells))
     num[name("pt", "ident")] = str(sum(1 for c in cells if abs(c["gap"]) < 1e-9))
     num[name("pt", "maxgap")] = f"{max(abs(c['gap']) for c in cells):.2f}"
+    t8 = byt[8]
+    num[name("pt", "eight", "n")] = str(len(t8))
+    num[name("pt", "eight", "low")] = str(sum(1 for c in t8 if abs(c["gap"] + 0.01) < 1e-9))
+    num[name("pt", "eight", "max")] = f"{max(c['printed'] - c['ours'] for c in t8):.4f}"
+    assert all(c["gap"] <= 1e-9 for c in t8), "table 8: a recomputed cell above its print"
     ind, cor = lo["bounds"]["independent"], lo["bounds"]["correlated"]
     gam = lo["gammas"]
     for gi, g in enumerate(gam):
@@ -352,8 +383,19 @@ def compute() -> dict[str, Any]:
         c02[h] = {"counts": d["outputs"]["counts"], "challenger": {c["challenger"].split("-", 1)[1]: c for c in d["outputs"]["challenger"]},
                   "version": d["provenance"]["riskvalidation_version"]}
     R["c02"] = c02
-    num[name("cz", "rows")] = f"{c02['pooled']['counts']['rows']:,}".replace(",", "\\,")
-    num[name("cz", "events")] = f"{c02['pooled']['counts']['events']:,}".replace(",", "\\,")
+    for h in HORIZONS:
+        d = figkit.doc(f"C02/{h}.json")["outputs"]["split"]
+        c02[h]["hold_rows"], c02[h]["hold_events"] = d["holdout_rows"], d["holdout_events"]
+        for cid, _ in CHALLENGERS:
+            ch = c02[h]["challenger"][cid]
+            k = round(ch["grade_disagreement_share"] * d["holdout_rows"])
+            assert abs(k / d["holdout_rows"] - ch["grade_disagreement_share"]) < 1e-9, (h, cid)
+            ch["wilson"] = wilson(k, d["holdout_rows"])
+    num[name("cz", "hold", "rows")] = f"{c02['pooled']['hold_rows']:,}".replace(",", "\\,")
+    num[name("cz", "hold", "events")] = f"{c02['pooled']['hold_events']:,}".replace(",", "\\,")
+    halves = [100 * (c02[h]["challenger"][c]["wilson"][1] - c02[h]["challenger"][c]["wilson"][0]) / 2 for h in HORIZONS for c, _ in CHALLENGERS]
+    num[name("cz", "half", "min")] = f"{min(halves):.1f}"
+    num[name("cz", "half", "max")] = f"{max(halves):.1f}"
     for h in HORIZONS:
         for cid, _ in CHALLENGERS:
             num[name("cz", HT[h], CS[cid])] = pct(c02[h]["challenger"][cid]["grade_disagreement_share"], 1)
@@ -565,11 +607,15 @@ def _gold_table(R: dict[str, Any], out: pathlib.Path) -> None:
         n, ident, ok, mx = g[key]
         rows.append([label, str(n), str(ident), str(ok), f"{mx:.4f}"])
     rows.append(["Tasche, table 8 (case 3 forecast PD)", str(g["t8"][0]), "--", "--", f"{g['t8'][1]:.3f} pp"])
-    rows.append(["Tasche, table 7 $p$-values", str(g["t7p"][0]), "--", "--", f"{g['t7p'][1]:.2f} pp"])
+    rows.append(["Tasche, table 7, p-values", str(g["t7p"][0]), "--", "--", f"{g['t7p'][1]:.2f} pp"])
     irw = R["pub"]["irw"]["rows"]
     rows.append(["Israel, Rosenthal and Wei, nine distances", str(len(irw)), str(sum(1 for r in irw if r["agrees"])), "--", "--"])
     sr = R["pub"]["sr190"]["rows"]
     rows.append(["Schuermann and Hanson, table 5 intervals", str(len(sr)), str(sum(1 for r in sr if r["agrees"])), "--", "--"])
+    cells = R["eng_cells"]
+    rows.append(["Engelmann (2024), TTC portfolio, PD and path extremes", str(len(cells)),
+                 str(sum(1 for a, b, d in cells if abs(a - b) <= 0.5 * 10 ** -d + 1e-12)), "--",
+                 f"{max(abs(a - b) for a, b, _ in cells):.5f}"])
     figkit.table(
         out / "ratings-golden.tex", header, rows, align="lrrrr", wide=True,
         caption=("Printed values of the five papers the engine reproduces for these methods, recomputed from the committed inputs: the cells "
@@ -579,18 +625,20 @@ def _gold_table(R: dict[str, Any], out: pathlib.Path) -> None:
 
 
 def _c02_table(R: dict[str, Any], out: pathlib.Path) -> None:
-    header = ["Document", "Rows", "Events"] + [label for _, label in CHALLENGERS]
+    header = ["Document", "Holdout rows", "Holdout events"] + [label for _, label in CHALLENGERS]
     rows = []
     names = {"h1": "1-year file", "h2": "2-year file", "h3": "3-year file", "h4": "4-year file", "h5": "5-year file", "pooled": "Pooled"}
     for h in HORIZONS:
         c = R["c02"][h]
-        rows.append([names[h], c["counts"]["rows"], c["counts"]["events"]]
-                    + [pct(c["challenger"][cid]["grade_disagreement_share"], 1) for cid, _ in CHALLENGERS])
+        rows.append([names[h], c["hold_rows"], c["hold_events"]]
+                    + [pm_pct(c["challenger"][cid]["grade_disagreement_share"], c["challenger"][cid]["wilson"])
+                       for cid, _ in CHALLENGERS])
     figkit.table(
         out / "ratings-c02.tex", header, rows, align="lrrrrrrr", wide=True,
         caption=("Share of the holdout companies of each Polish bankruptcy document whose master-scale grade under a challenger differs by at "
                  "least two grades from the grade under the logistic scorecard, in percent; the grade of a PD is its position on the "
-                 "geometric master scale of twelve grades."),
+                 "geometric master scale of twelve grades. The rows and events are those of the holdout, and each share carries the half-width of its "
+                 "95\\% Wilson interval, in percentage points, with the companies taken as independent."),
         label="tab:ratings-c02")
 
 
