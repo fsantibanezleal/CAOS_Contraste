@@ -2,7 +2,7 @@
 // every number arrives as an argument read from an artifact, never written here. Spanish follows the product's rules
 // (scripts/check_spanish.py): accents, the rulings on terms, decimals with a comma through formatNumber.
 import { formatNumber } from '@fasl-work/caos-app-shell';
-import { ZONE_TEXT } from '../workbench/c11/selection';
+import { WINDOW_TEXT, ZONE_TEXT } from '../workbench/c11/selection';
 import { bi, type Bi, type Decision, type Tally, type Zone } from './model';
 
 export type Lang = 'en' | 'es';
@@ -22,6 +22,32 @@ export const VERBS: Record<StepId, Bi> = {
 export const zoneBi = (z: Zone | 'not_evaluated'): Bi => ZONE_TEXT[z] ?? bi(z, z);
 
 /** The words of the three zones and the exceptions each holds, from the cuts of the Basel table. */
+/** A zone as a word after "zone" / "zona": the Spanish noun is feminine ("zona roja", never "zona rojo"). */
+const ZONE_AFTER_NOUN: Record<Zone, Bi> = {
+  green: bi('green', 'verde'),
+  amber: bi('amber', 'ámbar'),
+  red: bi('red', 'roja'),
+};
+export const zoneAdjective = (z: Zone, lang: Lang): string => ZONE_AFTER_NOUN[z][lang];
+
+/** The ids of the windows a document sentence names, in the window's own name. The ids are matched whole (a word boundary on each side). */
+export const WINDOW_ID_PATTERN = new RegExp(String.raw`\b(${Object.keys(WINDOW_TEXT).join('|')})\b`, 'g');
+export const windowWords = (sentence: string, lang: Lang): string => sentence.replace(WINDOW_ID_PATTERN, (id) => WINDOW_TEXT[id]?.[lang] ?? id);
+
+/** "1 entry" / "5 entries": the count with its unit in the singular for one (a phone shows the short form "ent."). */
+export function entriesLabel(n: number, lang: Lang, short = false): string {
+  const count = n0(n, lang);
+  if (short) return `${count} ent.`;
+  return `${count} ${lang === 'es' ? (n === 1 ? 'entrada' : 'entradas') : n === 1 ? 'entry' : 'entries'}`;
+}
+
+/** "1 finding" / "5 findings" (a phone shows "hall."). */
+export function findingsLabel(n: number, lang: Lang, short = false): string {
+  const count = n0(n, lang);
+  if (short) return `${count} ${lang === 'es' ? 'hall.' : n === 1 ? 'finding' : 'findings'}`;
+  return `${count} ${lang === 'es' ? (n === 1 ? 'hallazgo' : 'hallazgos') : n === 1 ? 'finding' : 'findings'}`;
+}
+
 export function zoneRange(z: Zone, cuts: { amberStart: number; redStart: number }, lang: Lang): string {
   const to = lang === 'es' ? 'a' : 'to';
   if (z === 'green') return `0 ${to} ${cuts.amberStart - 1}`;
@@ -31,10 +57,12 @@ export function zoneRange(z: Zone, cuts: { amberStart: number; redStart: number 
 
 export const missingNumber: Bi = bi('number not available', 'número no disponible');
 
-export function headlineInventory(models: number, s1: number, s2: number): Bi {
+/** The inventory has entries, not models (one is the validator's own check, one case holds several snapshots), and the findings it
+ * carries are those not closed by validation. */
+export function headlineInventory(entries: number, s1: number, s2: number): Bi {
   return bi(
-    `${models} models carry ${s1} critical and ${s2} significant findings`,
-    `${models} modelos acumulan ${s1} hallazgos críticos y ${s2} significativos`,
+    `${entries} inventory entries carry ${s1} critical and ${s2} significant findings`,
+    `${entries} entradas del inventario acumulan ${s1} hallazgos críticos y ${s2} significativos`,
   );
 }
 
@@ -56,8 +84,7 @@ export function headlineBacktest(label: Bi, final: number | null, zone: Zone | n
   if (final == null || zone == null) {
     return bi(`${name.en}: ${exceptions} exceptions in ${days} days`, `${name.es}: ${exceptions} excepciones en ${days} días`);
   }
-  const z = zoneBi(zone);
-  return bi(`${name.en}: ${final} exceptions, ${z.en.toLowerCase()} zone`, `${name.es}: ${final} excepciones, zona ${z.es.toLowerCase()}`);
+  return bi(`${name.en}: ${final} exceptions, ${zoneAdjective(zone, 'en')} zone`, `${name.es}: ${final} excepciones, zona ${zoneAdjective(zone, 'es')}`);
 }
 
 export function headlineCrisis(label: Bi, exceptions: number, days: number): Bi {
@@ -65,10 +92,12 @@ export function headlineCrisis(label: Bi, exceptions: number, days: number): Bi 
   return bi(`${name.en}: ${exceptions} VaR breaches in ${days} days`, `${name.es}: ${exceptions} excedencias del VaR en ${days} días`);
 }
 
-export function headlineRecalibration(raw: number, wrapped: number): Bi {
-  if (wrapped < raw) return bi(`Recalibration cuts breaches from ${raw} to ${wrapped}`, `La recalibración baja las excedencias de ${raw} a ${wrapped}`);
-  if (wrapped > raw) return bi(`Recalibration raises breaches from ${raw} to ${wrapped}`, `La recalibración sube las excedencias de ${raw} a ${wrapped}`);
-  return bi(`Recalibration leaves breaches at ${raw}`, `La recalibración deja las excedencias en ${raw}`);
+/** The headline states the move and the target the count is measured against, never that the recalibration restores coverage. */
+export function headlineRecalibration(raw: number, wrapped: number, expected: number): Bi {
+  const target = n0(Math.round(expected), 'en');
+  const verb = wrapped < raw ? ['cuts', 'baja'] : wrapped > raw ? ['raises', 'sube'] : null;
+  if (!verb) return bi(`Recalibration leaves breaches at ${raw}; ${target} were expected`, `La recalibración deja las excedencias en ${raw}; se esperaban ${n0(Math.round(expected), 'es')}`);
+  return bi(`Recalibration ${verb[0]} breaches from ${raw} to ${wrapped}; ${target} were expected`, `La recalibración ${verb[1]} las excedencias de ${raw} a ${wrapped}; se esperaban ${n0(Math.round(expected), 'es')}`);
 }
 
 export function headlineDecision(d: Pick<Decision, 'eligible' | 'total' | 'setSize'>): Bi {

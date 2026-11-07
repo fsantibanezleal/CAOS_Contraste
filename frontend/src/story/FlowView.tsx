@@ -3,11 +3,11 @@
 // bank's models is the model inventory of SR 11-7 drawn as flow, not a generic node diagram. Selecting a family node selects its
 // row in the panel (V2) and back; the market node carries the Basel zone of the shared day (V3's cursor). Every count is read
 // from the governance documents (model.ts).
-import { useLinkedView, useShellLang } from '@fasl-work/caos-app-shell';
+import { flowSpeed, useLinkedView, useShellLang } from '@fasl-work/caos-app-shell';
 import type { KeyboardEvent } from 'react';
 import { DayScrubber, cursorMarker, fit, int, type Size } from './chart';
 import { SEVERITIES, type Bi, type Flow, type FlowNode, type Zone } from './model';
-import { zoneBi, type Lang } from './text';
+import { entriesLabel, findingsLabel, zoneBi, type Lang } from './text';
 
 export interface Box {
   id: string;
@@ -126,8 +126,14 @@ export function FlowView({
           const y2 = b.y + b.h / 2;
           const mid = (x1 + x2) / 2;
           const hot = onPath(l);
+          const d = `M${x1},${y1}C${mid},${y1} ${mid},${y2} ${x2},${y2}`;
+          // the flow moves from the exposure to what it sets, at a speed set by the entries it carries (the shell's flowSpeed)
+          const speed = flowSpeed(l.entries, maxEntries);
           return (
-            <path key={`${l.from}>${l.to}`} d={`M${x1},${y1}C${mid},${y1} ${mid},${y2} ${x2},${y2}`} fill="none" stroke={hot ? 'var(--color-accent)' : 'var(--color-border)'} strokeOpacity={hot ? 0.95 : selectedFamily ? 0.35 : 0.8} strokeWidth={(hot ? 1.5 : 0.6) + (4.5 * l.entries) / maxEntries} data-flow-link={`${l.from}>${l.to}`} />
+            <g key={`${l.from}>${l.to}`}>
+              <path d={d} fill="none" stroke={hot ? 'var(--color-accent)' : 'var(--color-border)'} strokeOpacity={hot ? 0.95 : selectedFamily ? 0.35 : 0.8} strokeWidth={(hot ? 1.5 : 0.6) + (4.5 * l.entries) / maxEntries} data-flow-link={`${l.from}>${l.to}`} />
+              <path d={d} className="story-flow-pulse" fill="none" stroke={hot ? 'var(--color-bg)' : 'var(--color-fg-subtle)'} strokeOpacity={hot ? 0.9 : 0.5} strokeWidth={1.4} strokeLinecap="round" strokeDasharray="1.5 9" style={{ animationDuration: `${Math.round((160 / Math.max(0.1, speed))) / 100}s` }} data-flow-speed={Math.round(speed * 1000) / 1000} pointerEvents="none" />
+            </g>
           );
         })}
         {boxes.map((b) => {
@@ -148,20 +154,22 @@ export function FlowView({
           let x = b.x + 8;
           const isMarket = n.id === 'market' && isFamily;
           return (
-            <g key={b.id} {...props} aria-label={isFamily ? `${full}: ${int(n.total, lang)} ${t('findings', 'hallazgos')}, ${int(n.entries.length, lang)} ${t('entries', 'entradas')}` : undefined} data-flow-node={b.id}>
-              <title>{`${full} · ${int(n.entries.length, lang)} ${t('entries', 'entradas')} · ${int(n.total, lang)} ${t('findings', 'hallazgos')}`}</title>
+            <g key={b.id} {...props} aria-label={isFamily ? `${full}: ${findingsLabel(n.total, lang)}, ${entriesLabel(n.entries.length, lang)}` : undefined} data-flow-node={b.id}>
+              <title>{`${full} · ${entriesLabel(n.entries.length, lang)} · ${findingsLabel(n.total, lang)}${isMarket && market ? ` · ${market.label[lang]}` : ''}`}</title>
               <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={8} fill={chosen ? 'var(--color-accent-soft)' : 'var(--color-surface)'} stroke={stroke} strokeWidth={chosen || ringed ? 2.5 : inPath ? 1.8 : 1.2} strokeDasharray={ringed && !chosen ? '4 3' : undefined} />
               <text x={b.x + 8} y={b.y + (narrow ? 12 : 17)} fill="var(--color-fg)" fontSize={fs} fontWeight={650}>
                 {fit(name, maxChars)}
               </text>
               {b.h >= (narrow ? 30 : 38) && n.kind !== 'exposure' && (
                 <text x={b.x + 8} y={b.y + (narrow ? 25 : 33)} fill="var(--color-fg-subtle)" fontSize={narrow ? 8.5 : 11} fontFamily="var(--font-mono)">
-                  {int(n.entries.length, lang)} {t(narrow ? 'ent.' : 'entries', narrow ? 'ent.' : 'entradas')} · {int(n.total, lang)} {t(narrow ? 'hall.' : 'findings', narrow ? 'hall.' : 'hallazgos')}
+                  {entriesLabel(n.entries.length, lang, narrow)}
+                  {/* the output column of a phone is too narrow for the findings count: it stays in the node's title and the panel */}
+                  {narrow && n.kind === 'output' ? '' : ` · ${findingsLabel(n.total, lang, narrow)}`}
                 </text>
               )}
               {n.kind === 'exposure' && b.h >= 26 && !narrow && (
                 <text x={b.x + 8} y={b.y + 33} fill="var(--color-fg-subtle)" fontSize={11} fontFamily="var(--font-mono)">
-                  {int(n.entries.length, lang)} {t('entries', 'entradas')}
+                  {entriesLabel(n.entries.length, lang)}
                 </text>
               )}
               {n.total > 0 && isFamily && (

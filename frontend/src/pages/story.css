@@ -7,7 +7,7 @@
 .contraste-story .caos-story-header, .contraste-story .caos-story-stepper { flex-shrink: 0; }
 /* the drawing is laid over the stage, so its measured size never feeds back into the height of the stage (a stage that sizes itself
    from its own drawing shrank the stepper by 5 px, G5) */
-.story-stage-box { position: relative; width: 100%; height: 100%; min-height: 0; overflow: hidden; }
+.story-stage-box { --story-band: 86px; position: relative; width: 100%; height: 100%; min-height: 0; overflow: hidden; }
 .story-callouts { height: 100%; pointer-events: none; }
 .story-drawing { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; padding-top: var(--story-band, 86px); }
 .story-view { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; min-height: 0; }
@@ -22,12 +22,26 @@
 .story-scrub-n { white-space: nowrap; }
 .story-controls-row { display: flex; align-items: center; min-width: 0; min-height: 40px; max-height: 40px; padding-left: .5rem; }
 .story-controls-row .story-scrub { flex: 1 1 0; min-width: 0; padding-left: .5rem; }
+.story-scrub-row { display: flex; flex: 1 1 auto; align-items: center; min-width: 0; min-height: 40px; max-height: 40px; }
+.story-scrub-row .story-scrub { flex: 1 1 0; min-width: 0; }
+.story-controls-row .story-scrub-row { flex: 1 1 0; }
+/* the zoom of a dated view: three small buttons at the end of the day control */
+.story-zoom { display: inline-flex; gap: .2rem; padding-right: .6rem; }
+.story-zoom button { min-width: 1.7rem; min-height: 1.7rem; padding: 0 .35rem; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface-2); color: var(--color-fg); font: inherit; font-size: .74rem; font-variant-numeric: tabular-nums; cursor: pointer; }
+.story-zoom button:disabled { opacity: .45; cursor: default; }
+.story-zoom button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+/* the data of a drawing as a table for a screen reader: out of sight, in the reading order (rubric section 8) */
+.story-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* the flow of V1 moves along its links; motion is off when the reader asks for none */
+.story-flow-pulse { animation: story-flow-move linear infinite; }
+@keyframes story-flow-move { to { stroke-dashoffset: -10.5; } }
+@media (prefers-reduced-motion: reduce) { .story-flow-pulse { animation: none; opacity: 0; } }
 .story-play { min-height: 30px; padding: .2rem .7rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface-2); color: var(--color-fg); font: inherit; font-size: .78rem; white-space: nowrap; }
 .story-play[aria-pressed="true"] { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-soft); }
 .story-play:disabled { opacity: .55; }
 
 .story-panel-body { display: grid; align-content: start; gap: .65rem; min-width: 0; }
-.story-window { display: flex; align-items: center; gap: .5rem; font-size: .76rem; color: var(--color-fg-subtle); }
+.story-window { display: flex; flex-direction: column; align-items: stretch; gap: .2rem; font-size: .76rem; color: var(--color-fg-subtle); }
 .story-window select { flex: 1 1 auto; min-width: 0; min-height: 2rem; padding: .2rem .4rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-2); color: var(--color-fg); font: inherit; font-size: .8rem; }
 .story-evidence { display: grid; align-content: start; gap: .5rem; min-width: 0; }
 .story-evidence h2 { margin: 0; font-size: 1.05rem; }
@@ -64,7 +78,8 @@
 .story-state { padding: 1rem; color: var(--color-fg-subtle); }
 
 @media (max-width: 760px) {
-  .story-scrub strong { min-width: 5rem; }
+  .story-scrub strong { min-width: 4.4rem; }
+  .story-zoom { padding-right: .3rem; }
   .story-scrub-n { display: none; }
   .story-models { max-height: 9rem; }
 }

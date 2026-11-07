@@ -2,13 +2,17 @@
 // the range the ladder's VaR spans as the uncertainty band, the days the VaR was exceeded marked, the stretch the Basel light
 // stood in amber or red and the end of the evaluation. The realised loss is drawn where the document commits it; where its
 // licence class withholds it (derived results only) the exceedance days the document lists are marked on the VaR and the view says so.
+// A press-drag on the plot zooms to the days it covers; the paths ease to the next model's; a hidden table holds the plotted series.
 import { useLinkedView, useShellLang } from '@fasl-work/caos-app-shell';
 import { useMemo, type KeyboardEvent, type PointerEvent } from 'react';
-import { DayScrubber, Swatch, bandPath, cursorMarker, dayLabel, int, lin, linePath, monthLabel, pct, pointerX, tickIndices, type Size } from './chart';
+import { DayScrubber, Legend, SrTable, bandPath, cursorMarker, dayLabel, fullRange, int, lin, linePath, monthLabel, pct, pointerX, tickIndicesIn, useBrush, useEasedSeries, xOfRange, type LegendItem, type Range, type Size } from './chart';
 import { stressSpan, varEnvelope, zoneOf, type WindowModel } from './model';
 import { type Lang } from './text';
 
-export function crisisGeometry(size: Size, w: WindowModel, modelId: string) {
+/** The Basel light needs 250 days: before the first complete window the zones are counts so far, not the light. */
+export const FIRST_FULL_WINDOW = 249;
+
+export function crisisGeometry(size: Size, w: WindowModel, modelId: string, range: Range = fullRange(w.n)) {
   const narrow = size.width < 560;
   const l = narrow ? 40 : 54;
   const r = size.width - (narrow ? 8 : 16);
@@ -22,7 +26,7 @@ export function crisisGeometry(size: Size, w: WindowModel, modelId: string) {
   const p90 = highs.length ? highs[Math.floor(0.9 * (highs.length - 1))]! : 0;
   const top = Math.max(...m.var, ...m.es.map((v) => v ?? 0), p90, ...(w.loss ?? [0])) * 1.1;
   const clipped = Math.max(0, ...highs) > top;
-  const x = lin(0, Math.max(1, w.n - 1), l, r);
+  const x = xOfRange(range, l, r);
   const y = lin(0, top || 0.05, b, t);
   return { narrow, l, r, t, b, top, x, y, m, env, clipped };
 }
@@ -33,34 +37,46 @@ export function CrisisView({
   modelId,
   cursor,
   onCursor,
+  range,
+  onRange,
 }: {
   size: Size;
   w: WindowModel;
   modelId: string;
   cursor: number;
   onCursor: (i: number) => void;
+  /** The days shown (a zoom); the whole window when absent. */
+  range?: Range;
+  onRange?: (r: Range | null) => void;
 }) {
   const lang = useShellLang() as Lang;
   const scrub = useLinkedView((s) => s.scrub);
   const tx = (en: string, es: string) => (lang === 'es' ? es : en);
-  const g = crisisGeometry(size, w, modelId);
+  const shown = range ?? fullRange(w.n);
+  const g = crisisGeometry(size, w, modelId, shown);
   const { narrow, l, r, t, b, x, y, m, env } = g;
+  // the selected model's VaR and ES ease to the next model's
+  const varShown = useEasedSeries(m.var);
+  const hasEs = m.es.some((v) => v != null);
+  const esTarget = useMemo(() => m.es.map((v) => v ?? 0), [m]);
+  const esShown = useEasedSeries(esTarget);
   const paths = useMemo(
     () => ({
       band: bandPath(env.lo, env.hi, x, y),
-      var: linePath(m.var, x, y),
-      es: m.es.some((v) => v != null) ? linePath(m.es, x, y) : '',
+      var: linePath(varShown as number[], x, y),
+      es: hasEs ? linePath(m.es.map((v, i) => (v == null ? null : (esShown[i] ?? v))), x, y) : '',
       loss: w.loss ? linePath(w.loss, x, y) : '',
     }),
-    [w, m, size.width, size.height], // eslint-disable-line react-hooks/exhaustive-deps
+    [w, m, varShown, esShown, size.width, size.height, shown[0], shown[1]], // eslint-disable-line react-hooks/exhaustive-deps
   );
-  const span = stressSpan(m, w.cuts);
-  const hasEs = m.es.some((v) => v != null);
-  const move = (e: PointerEvent<SVGRectElement>) => {
-    const i = Math.max(0, Math.min(w.n - 1, Math.round(((pointerX(e) - l) / Math.max(1, r - l)) * (w.n - 1))));
+  // the amber or red stretch counts only from the first complete Basel window; before it the days are counts so far (F19)
+  const span = stressSpan(m, w.cuts, w.evaluated ? FIRST_FULL_WINDOW : 0);
+  const hover = (e: PointerEvent<SVGRectElement>) => {
+    const i = Math.max(0, Math.min(w.n - 1, Math.round(shown[0] + ((pointerX(e) - l) / Math.max(1, r - l)) * (shown[1] - shown[0]))));
     scrub(i);
     onCursor(i);
   };
+  const { handlers, brush } = useBrush({ l, r, range: shown, n: w.n, onRange, hover });
   const key = (e: KeyboardEvent<SVGSVGElement>) => {
     const step = e.shiftKey ? 10 : 1;
     const to = e.key === 'ArrowLeft' ? cursor - step : e.key === 'ArrowRight' ? cursor + step : null;
@@ -72,8 +88,30 @@ export function CrisisView({
     onCursor(i);
   };
   const cx = x(cursor);
-  const marks = m.exceedances.map((d) => ({ d, v: w.loss ? w.loss[d]! : m.var[d]! }));
+  const inView = cursor >= shown[0] && cursor <= shown[1];
+  const marks = m.exceedances.filter((d) => d >= shown[0] && d <= shown[1]).map((d) => ({ d, v: w.loss ? w.loss[d]! : m.var[d]! }));
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((k) => k * g.top);
+  const legend: LegendItem[] = [
+    { kind: 'line', color: 'var(--color-accent)', label: 'VaR' },
+    ...(hasEs ? [{ kind: 'dash' as const, color: 'var(--color-magenta)', label: 'ES' }] : []),
+    { kind: 'band', color: 'var(--color-accent)', label: narrow ? tx('range', 'rango') : tx(`range of the ${int(w.models.length, lang)} models`, `rango de los ${int(w.models.length, lang)} modelos`) },
+    { kind: 'mark', color: 'var(--color-bad)', label: narrow ? tx('breach', 'excedencia') : tx('day the VaR was exceeded', 'día en que se excedió el VaR') },
+  ];
+  const rows = useMemo(
+    () => w.dates.map((d, i) => [dayLabel(d, lang), pct(m.var[i], lang), m.es[i] == null ? '' : pct(m.es[i], lang), w.loss ? pct(w.loss[i], lang) : '', m.exceedances.includes(i) ? tx('yes', 'sí') : tx('no', 'no')]),
+    [w, m, lang], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const table = useMemo(
+    () => (
+      <SrTable
+        id="crisis"
+        caption={tx(`VaR and expected shortfall of ${m.label.en} by day, with the days the VaR was exceeded`, `VaR y pérdida esperada de ${m.label.es} por día, con los días en que se excedió el VaR`)}
+        head={[tx('Day', 'Día'), 'VaR', 'ES', tx('Loss', 'Pérdida'), tx('VaR exceeded', 'VaR excedido')]}
+        rows={rows}
+      />
+    ),
+    [m, rows], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   return (
     <div className="story-view" data-view="crisis">
       <svg width={size.width} height={Math.max(40, size.height - 40)} viewBox={`0 0 ${size.width} ${Math.max(40, size.height - 40)}`} role="group" tabIndex={0} onKeyDown={key} aria-label={tx('Value at risk and expected shortfall by day, with the days the VaR was exceeded', 'Valor en riesgo y pérdida esperada por día, con los días en que se excedió el VaR')} data-crisis="">
@@ -85,53 +123,54 @@ export function CrisisView({
             </text>
           </g>
         ))}
+        <clipPath id="story-crisis-clip">
+          <rect x={l} y={t} width={Math.max(0, r - l)} height={Math.max(0, b - t)} />
+        </clipPath>
         {span && (
-          <g data-stress-span="">
+          <g data-stress-span="" clipPath="url(#story-crisis-clip)">
             <rect x={x(span[0])} y={t} width={Math.max(2, x(span[1]) - x(span[0]))} height={b - t} fill="var(--color-bad)" fillOpacity={0.08} />
-            <text x={x(span[0]) + 4} y={t + 12} fill="var(--color-fg)" fontSize={narrow ? 8.5 : 10.5} fontWeight={650}>
+            <text x={Math.max(l, x(span[0])) + 4} y={t + 12} fill="var(--color-fg)" fontSize={narrow ? 8.5 : 10.5} fontWeight={650}>
               {tx('amber or red zone', 'zona ámbar o roja')}
             </text>
           </g>
         )}
-        <clipPath id="story-crisis-clip">
-          <rect x={l} y={t} width={Math.max(0, r - l)} height={Math.max(0, b - t)} />
-        </clipPath>
-        <path d={paths.band} fill="var(--color-accent)" fillOpacity={0.12} clipPath="url(#story-crisis-clip)" data-envelope="" />
-        {paths.loss && <path d={paths.loss} fill="none" stroke="var(--color-fg-faint)" strokeWidth={1} data-realised-loss="" />}
-        {paths.es && <path d={paths.es} fill="none" stroke="var(--color-magenta)" strokeWidth={1.6} strokeDasharray="6 4" />}
-        <path d={paths.var} fill="none" stroke="var(--color-accent)" strokeWidth={2.2} strokeLinejoin="round" />
+        <g clipPath="url(#story-crisis-clip)">
+          <path d={paths.band} fill="var(--color-accent)" fillOpacity={0.12} data-envelope="" />
+          {paths.loss && <path d={paths.loss} fill="none" stroke="var(--color-fg-faint)" strokeWidth={1} data-realised-loss="" />}
+          {paths.es && <path d={paths.es} fill="none" stroke="var(--color-magenta)" strokeWidth={1.6} strokeDasharray="6 4" />}
+          <path d={paths.var} fill="none" stroke="var(--color-accent)" strokeWidth={2.2} strokeLinejoin="round" />
+        </g>
         {marks.map(({ d, v }) => (
           <path key={d} transform={`translate(${x(d)},${y(v)})`} d="M0,-5 L5,0 L0,5 L-5,0 Z" fill="var(--color-bad)" stroke="var(--color-bg)" strokeWidth={1} data-exception-day={d} />
         ))}
-        <line x1={x(w.n - 1)} x2={x(w.n - 1)} y1={t} y2={b} stroke="var(--color-fg-subtle)" strokeDasharray="2 4" />
-        <text x={x(w.n - 1) - 4} y={b - 6} textAnchor="end" fill="var(--color-fg-subtle)" fontSize={narrow ? 8.5 : 10.5}>
-          {tx('end of evaluation', 'fin de la evaluación')} · {dayLabel(w.dates[w.n - 1], lang)}
-        </text>
-        {tickIndices(w.n, narrow ? 3 : 5).map((i) => (
-          <text key={i} x={x(i)} y={b + 16} textAnchor={i === 0 ? 'start' : i === w.n - 1 ? 'end' : 'middle'} fill="var(--color-fg-subtle)" fontSize={narrow ? 9 : 11}>
+        {shown[1] >= w.n - 1 && (
+          <>
+            <line x1={x(w.n - 1)} x2={x(w.n - 1)} y1={t} y2={b} stroke="var(--color-fg-subtle)" strokeDasharray="2 4" />
+            <text x={x(w.n - 1) - 4} y={b - 6} textAnchor="end" fill="var(--color-fg-subtle)" fontSize={narrow ? 8.5 : 10.5}>
+              {tx('end of evaluation', 'fin de la evaluación')} · {dayLabel(w.dates[w.n - 1], lang)}
+            </text>
+          </>
+        )}
+        {tickIndicesIn(shown, narrow ? 3 : 5).map((i) => (
+          <text key={i} x={x(i)} y={b + 16} textAnchor={i === shown[0] ? 'start' : i === shown[1] ? 'end' : 'middle'} fill="var(--color-fg-subtle)" fontSize={narrow ? 9 : 11}>
             {monthLabel(w.dates[i], lang)}
           </text>
         ))}
         <text x={l} y={t - 10} fill="var(--color-fg-subtle)" fontSize={narrow ? 9 : 11}>
           {tx('Loss, % of portfolio value', 'Pérdida, % del valor de la cartera')}
         </text>
-        <rect x={l} y={t} width={Math.max(0, r - l)} height={Math.max(0, b - t)} fill="transparent" onPointerMove={move} data-scrub-area="" />
-        <line x1={cx} x2={cx} y1={t} y2={b} stroke="var(--color-fg)" strokeOpacity={0.7} strokeDasharray="3 3" />
-        <circle cx={cx} cy={y(m.var[cursor] ?? 0)} r={5} fill="var(--color-accent)" stroke="var(--color-bg)" strokeWidth={2.5} {...cursorMarker(cursor)} />
-        {!narrow && (
-          <g transform={`translate(${l + 8},${size.height - 40 - 8})`} fontSize={11}>
-            <Swatch x={0} y={0} color="var(--color-accent)" label="VaR" />
-            {hasEs && <Swatch x={64} y={0} color="var(--color-magenta)" dash="6 4" label="ES" />}
-            <rect x={hasEs ? 124 : 70} y={-5} width={14} height={9} fill="var(--color-accent)" fillOpacity={0.12} stroke="var(--color-accent)" strokeOpacity={0.4} />
-            <text x={(hasEs ? 124 : 70) + 20} y={4} fill="var(--color-fg-subtle)" fontSize={11}>
-              {tx(`range of the ${int(w.models.length, lang)} models`, `rango de los ${int(w.models.length, lang)} modelos`)}
+        <rect x={l} y={t} width={Math.max(0, r - l)} height={Math.max(0, b - t)} fill="transparent" {...handlers} data-scrub-area="" />
+        {brush && <rect x={brush[0]} y={t} width={brush[1] - brush[0]} height={b - t} fill="var(--color-accent)" fillOpacity={0.14} stroke="var(--color-accent)" strokeDasharray="4 3" data-brush="" style={{ pointerEvents: 'none' }} />}
+        {inView && (
+          <>
+            <line x1={cx} x2={cx} y1={t} y2={b} stroke="var(--color-fg)" strokeOpacity={0.7} strokeDasharray="3 3" style={{ pointerEvents: 'none' }} />
+            <circle cx={cx} cy={y(m.var[cursor] ?? 0)} r={5} fill="var(--color-accent)" stroke="var(--color-bg)" strokeWidth={2.5} {...cursorMarker(cursor)} style={{ pointerEvents: 'none' }} />
+            <text x={cx + (cx > (l + r) / 2 ? -9 : 9)} y={Math.max(t + 26, y(m.var[cursor] ?? 0) - 10)} textAnchor={cx > (l + r) / 2 ? 'end' : 'start'} fill="var(--color-fg)" fontSize={narrow ? 9.5 : 11.5} fontWeight={700} data-cursor-readout="" style={{ pointerEvents: 'none' }}>
+              {dayLabel(w.dates[cursor], lang)} · VaR {pct(m.var[cursor], lang)}
             </text>
-            <path transform={`translate(${(hasEs ? 124 : 70) + 190},0)`} d="M0,-5 L5,0 L0,5 L-5,0 Z" fill="var(--color-bad)" />
-            <text x={(hasEs ? 124 : 70) + 200} y={4} fill="var(--color-fg-subtle)" fontSize={11}>
-              {tx('day the VaR was exceeded', 'día en que se excedió el VaR')}
-            </text>
-          </g>
+          </>
         )}
+        <Legend items={legend} x={l + 8} y={size.height - 40 - 8} maxWidth={r - l - 8} fontSize={narrow ? 9 : 11} />
         {g.clipped && (
           <text x={r - 4} y={t + (w.loss === null ? 26 : 12)} textAnchor="end" fill="var(--color-fg-subtle)" fontSize={narrow ? 8.5 : 10.5} data-band-clipped="">
             {tx('Band cut at the axis: one model forecasts far above it', 'Banda cortada en el eje: un modelo pronostica muy por encima')}
@@ -143,7 +182,8 @@ export function CrisisView({
           </text>
         )}
       </svg>
-      <DayScrubber dates={w.dates} index={cursor} onChange={onCursor} />
+      {table}
+      <DayScrubber dates={w.dates} index={cursor} onChange={onCursor} range={shown} onRange={onRange} />
     </div>
   );
 }
@@ -162,4 +202,3 @@ export function crisisReadout(w: WindowModel, modelId: string, cursor: number) {
     loss: w.loss ? (w.loss[cursor] ?? null) : null,
   };
 }
-

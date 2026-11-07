@@ -95,9 +95,10 @@ export const DIRECTION_TEXT: Record<string, Bi> = {
   'not-evaluated': { en: 'Not evaluated', es: 'No evaluado' },
 };
 
+// the names of the windows are the short titles of the C11 manifest's variants, so the story and the App chips name a window the same way
 export const WINDOW_TEXT: Record<string, Bi> = {
-  'equity-2007-09': { en: 'Equity 2007 to 2009', es: 'Acciones 2007 a 2009' },
-  'equity-2020': { en: 'Equity 2020', es: 'Acciones 2020' },
+  'equity-2007-09': { en: 'Equity 2007 to 2009', es: 'Renta variable 2007 a 2009' },
+  'equity-2020': { en: 'Equity 2020', es: 'Renta variable 2020' },
   'rates-2022': { en: 'Rates 2022', es: 'Tasas 2022' },
   'fx-2008': { en: 'FX 2008', es: 'Divisas 2008' },
   'mixed-2023': { en: 'Mixed 2023', es: 'Mixta 2023' },

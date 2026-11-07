@@ -21,11 +21,12 @@ import {
   type CaseDef,
   type RailSection,
 } from '@fasl-work/caos-app-shell';
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { loadCase, loadIndex, useArtifact, type CaseData } from '../api/artifacts';
 import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
+import { seedOfQuery } from '../story/exit';
 import { caseLabel } from './caseLabels';
 import { useMeasuredLayout } from './layout';
 import { ContextView } from './ContextView';
@@ -150,8 +151,22 @@ export function Workbench() {
   const [caseId, setCaseId] = useState<string | null>(null);
   const selected = caseId ?? (index.state === 'ready' ? index.data.default_case : null);
   const [variantId, setVariantId] = useState<string | null>(null);
+  // the story's exit lands here with its window (`variant`) and model (`model`): the variant is applied once, when its case is the
+  // selected one, and the C11 instrument reads the model (ADR-0082 rule 3, the exit carries the step's state)
+  const seed = useRef<{ variant: string | null; case: string | null }>({
+    variant: typeof window === 'undefined' ? null : seedOfQuery(window.location.search).variant,
+    case: typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('case'),
+  });
   const loaded = useArtifact((s) => (selected ? loadCase(selected, variantId, s) : new Promise<CaseData>(() => undefined)), [selected, variantId], { unavailable: true });
   const data = loaded.state === 'ready' && loaded.data.manifest.case_id === selected ? loaded.data : null;
+
+  useEffect(() => {
+    const s = seed.current;
+    if (s.variant && selected && selected === s.case) {
+      seed.current = { variant: null, case: null };
+      setVariantId(s.variant);
+    }
+  }, [selected]);
 
   const [challenger, setChallenger] = useState<string | null>(null);
   const [alphas, setAlphas] = useState<PolicyAlphas>(COMMITTED);

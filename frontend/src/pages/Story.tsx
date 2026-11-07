@@ -3,7 +3,9 @@
 // family opened by SR 11-7), 2 Back-test (the Basel traffic light), 3 Crisis (the losses and the VaR through the window), 4
 // Recalibrate (the conformal recalibration against the raw VaR, coupled to the light), 5 Decide (the ladder on one axis). One stage
 // and one docked panel per step on the shell's StoryFrame, three anchored callouts per stage, the scene and the panel one linked
-// selection, one day cursor shared by the light, the crisis and the recalibration. The exit lands on the App (`from`).
+// selection, one day cursor shared by the light, the crisis and the recalibration. The exit lands on the App with the step's window
+// and model (`from`, or the C11 case). A callout's colour is a rule of its number: a breach count against the count its level
+// expects, the same on every step; a model the confidence set never ranked is "not ranked", never "out".
 import { SceneCallouts, StoryFrame, useLinkedView, useShellLang, useStageSize, type SceneCalloutDef, type StoryStep } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
@@ -14,20 +16,19 @@ import { FlowView, flowGeometry, type MarketInfo } from '../story/FlowView';
 import { CrisisPanel, DecisionPanel, InventoryPanel, LightPanel, RecalibrationPanel, Unavailable, WINDOW_IDS, WindowPicker } from '../story/Panels';
 import { RecalibrationView, recalibrationGeometry } from '../story/RecalibrationView';
 import { TrafficLightView, lightGeometry } from '../story/TrafficLightView';
-import { int, pct, type Size } from '../story/chart';
+import { fullRange, int, pct, useEasedCount, type Range, type Size } from '../story/chart';
+import { exitTarget } from '../story/exit';
 import {
-  CASE_FLOW, DEFAULT_MODEL, DEFAULT_WINDOW, clampCursor, decision, defaultCursor, recalibration, windowModel, wrappedModels, zoneOf, type Decision, type Flow, type ModelPath, type Zone,
+  CASE_FLOW, DEFAULT_MODEL, DEFAULT_WINDOW, breachState, clampCursor, decision, defaultCursor, recalibration, windowModel, wrappedModels, zoneOf, type Decision, type Flow, type ModelPath, type Zone,
 } from '../story/model';
 import {
-  STEP_IDS, VERBS, headName, headlineBacktest, headlineCrisis, headlineDecision, headlineInventory, headlineRecalibration, missingNumber, sublineTally, zoneBi, type Lang, type StepId,
+  STEP_IDS, VERBS, headName, headlineBacktest, headlineCrisis, headlineDecision, headlineInventory, headlineRecalibration, missingNumber, sublineTally, windowWords, zoneAdjective, type Lang, type StepId,
 } from '../story/text';
-import { WINDOW_TEXT, outputsOf } from '../workbench/c11/selection';
+import { outputsOf } from '../workbench/c11/selection';
 import './story.css';
 
 type Bi = { en: string; es: string };
 const bi = (en: string, es: string): Bi => ({ en, es });
-/** The ids of the windows a document sentence names, in the window's own name. */
-const windowWords = (sentence: string, lang: Lang): string => sentence.replace(/(equity-2007-09|equity-2020|rates-2022|fx-2008|mixed-2023|calm-2004-06)/g, (id) => WINDOW_TEXT[id]?.[lang] ?? id);
 const BAND = (width: number) => (width < 760 ? 130 : 86);
 const clamp01 = (v: number, lo = 0.04, hi = 0.96) => Math.max(lo, Math.min(hi, v));
 const stateOfZone = (z: Zone): SceneCalloutDef['state'] => (z === 'red' ? 'alarm' : z === 'amber' ? 'warning' : 'normal');
@@ -78,10 +79,19 @@ export function Story() {
   const recId = wrapped.includes(chosen?.id ?? '') ? chosen!.id : (wrapped[0] ?? '');
   const rec = useMemo(() => (win.state === 'ready' && recId ? recalibration(win.data, recId) : null), [win, recId]);
   const rawOfRec = w?.models.find((m) => m.id === recId);
+  // the days shown by the dated views (a zoom), kept per window; the whole window when none is set
+  const [zoom, setZoom] = useState<{ win: string; range: Range } | null>(null);
+  const shown: Range = w ? (zoom && zoom.win === windowId && zoom.range[1] < w.n ? zoom.range : fullRange(w.n)) : [0, 0];
+  const setRange = (r: Range | null) => setZoom(r ? { win: windowId, range: r } : null);
+  // the counts of the callouts count up to a new model's or window's, and are instant under reduced motion
+  const easedFinal = useEasedCount(chosen?.trailing.at(-1) ?? 0, !!chosen);
+  const easedPeak = useEasedCount(chosen ? (chosen.trailing[defaultCursor(chosen, chosen.n)] ?? 0) : 0, !!chosen);
+  const easedBreaches = useEasedCount(chosen?.exceedances.length ?? 0, !!chosen);
+  const easedRaw = useEasedCount(rec?.rawExceptions ?? 0, !!rec);
+  const easedWrapped = useEasedCount(rec?.wrappedExceptions ?? 0, !!rec);
 
   const from = query.get('from');
   const safeFrom = from && from.startsWith('/app') && !from.startsWith('//') && !from.includes('\\') ? from : null;
-  const fallback = '/app?case=C11';
   const params = new URLSearchParams({ window: windowId, model: chosen?.id ?? modelId });
   if (safeFrom) params.set('from', safeFrom);
 
@@ -146,7 +156,8 @@ export function Story() {
             callouts: [
               callout('findings', bi('REGISTER', 'REGISTRO'), int(flow.total, lang), bi('findings', 'hallazgos'), 'warning', right(`family:${top.id}`), bi('Register of findings', 'Registro de hallazgos')),
               callout('critical', bi('CRITICAL', 'CRÍTICOS'), int(flow.sev.S1, lang), bi('S1 findings', 'hallazgos S1'), flow.sev.S1 > 0 ? 'alarm' : 'normal', right(`family:${s1.id}`), bi('Register of findings', 'Registro de hallazgos')),
-              callout('selected', bi('FAMILY', 'FAMILIA'), int(sel.total, lang), bi(`findings, ${sel.short.en}`, `hallazgos, ${sel.short.es}`), 'selected', right(`family:${sel.id}`), src),
+              // the family is the eyebrow (its short name, in capitals) so the unit stays one word and the eyebrow is never cut
+              callout('selected', bi(sel.short.en.toUpperCase(), sel.short.es.toUpperCase()), int(sel.total, lang), bi('findings', 'hallazgos'), 'selected', right(`family:${sel.id}`), src),
             ],
             drawing: (
               <FlowView
@@ -177,7 +188,7 @@ export function Story() {
     return (
       <StageBox
         build={(draw, at) => {
-          const g = lightGeometry(draw, w);
+          const g = lightGeometry(draw, w, shown);
           const src = bi('Window document', 'Documento de ventana');
           const finalCount = chosen.trailing.at(-1) ?? 0;
           const peakDay = defaultCursor(chosen, w.n);
@@ -187,11 +198,12 @@ export function Story() {
           const here = chosen.trailing[cursor] ?? 0;
           return {
             callouts: [
-              callout('final', bi('FINAL', 'FINAL'), int(finalCount, lang), bi('exceptions', 'excepciones'), w.evaluated ? stateOfZone(zoneEnd) : 'inactive', at(g.x(w.n - 1), g.y(finalCount)), src),
-              callout('peak', bi('PEAK', 'MÁXIMO'), int(peak, lang), bi('exceptions', 'excepciones'), w.evaluated ? stateOfZone(zonePeak) : 'inactive', at(g.x(peakDay), g.y(peak)), src, 'up'),
+              // a peak is a maximum, not a trend: no arrow on it
+              callout('final', bi('FINAL', 'FINAL'), int(easedFinal, lang), bi('exceptions', 'excepciones'), w.evaluated ? stateOfZone(zoneEnd) : 'inactive', at(g.x(w.n - 1), g.y(finalCount)), src),
+              callout('peak', bi('PEAK', 'MÁXIMO'), int(easedPeak, lang), bi('exceptions', 'excepciones'), w.evaluated ? stateOfZone(zonePeak) : 'inactive', at(g.x(peakDay), g.y(peak)), src),
               callout('day', bi('DAY', 'DÍA'), int(here, lang), bi('exceptions', 'excepciones'), 'selected', at(g.x(cursor), g.y(here)), bi('Window document', 'Documento de ventana')),
             ],
-            drawing: <TrafficLightView size={draw} w={w} selected={chosen.id} cursor={cursor} onSelect={pickModel} onCursor={() => undefined} />,
+            drawing: <TrafficLightView size={draw} w={w} selected={chosen.id} cursor={cursor} onSelect={pickModel} onCursor={() => undefined} range={shown} onRange={setRange} />,
           };
         }}
       />
@@ -209,7 +221,7 @@ export function Story() {
     return (
       <StageBox
         build={(draw, at) => {
-          const g = crisisGeometry(draw, w, chosen.id);
+          const g = crisisGeometry(draw, w, chosen.id, shown);
           const last = chosen.exceedances.at(-1) ?? 0;
           const src = bi('Window document', 'Documento de ventana');
           const ratio = chosen.expected ? chosen.exceedances.length / chosen.expected : 0;
@@ -217,11 +229,11 @@ export function Story() {
           const loHere = g.env.lo[cursor] ?? 0;
           return {
             callouts: [
-              callout('breaches', bi('BREACHES', 'EXCEDEN.'), int(chosen.exceedances.length, lang), bi(`of ${int(chosen.n, lang)} days`, `de ${int(chosen.n, lang)} días`), ratio > 2 ? 'alarm' : ratio > 1 ? 'warning' : 'normal', at(g.x(last), g.y(chosen.var[last] ?? 0)), src, ratio > 1 ? 'up' : 'flat'),
+              callout('breaches', bi('BREACHES', 'EXCEDENCIAS'), int(easedBreaches, lang), bi(`of ${int(chosen.n, lang)} days`, `de ${int(chosen.n, lang)} días`), breachState(chosen.exceedances.length, chosen.expected), at(g.x(last), g.y(chosen.var[last] ?? 0)), src, ratio > 1 ? 'up' : 'flat'),
               callout('var', bi('VAR', 'VAR'), pct(chosen.var[cursor], lang), bi('of value', 'del valor'), 'selected', at(g.x(cursor), g.y(chosen.var[cursor] ?? 0)), bi('Window document', 'Documento de ventana')),
               callout('range', bi('RANGE', 'RANGO'), pct(hiHere - loHere, lang), bi('of value', 'del valor'), 'inactive', at(g.x(cursor), g.y(Math.min(hiHere, g.top))), bi('Window document', 'Documento de ventana')),
             ],
-            drawing: <CrisisView size={draw} w={w} modelId={chosen.id} cursor={cursor} onCursor={() => undefined} />,
+            drawing: <CrisisView size={draw} w={w} modelId={chosen.id} cursor={cursor} onCursor={() => undefined} range={shown} onRange={setRange} />,
           };
         }}
       />
@@ -242,19 +254,22 @@ export function Story() {
     return (
       <StageBox
         build={(draw, at) => {
-          const g = recalibrationGeometry(draw, w, rawOfRec, rec);
+          const g = recalibrationGeometry(draw, w, rawOfRec, rec, shown);
           const src = bi('Window document', 'Documento de ventana');
           const lastRaw = rawOfRec.exceedances.at(-1) ?? 0;
           const lastRec = rec.exceedances.at(-1) ?? 0;
           const here = rec.trailing[cursor] ?? 0;
           const zone = zoneOf(here, w.cuts);
+          const phone = draw.width < 560;
           return {
             callouts: [
-              callout('without', bi('RAW VAR', 'VAR SIN'), int(rec.rawExceptions, lang), bi('breaches', 'excedencias'), 'warning', at(g.x(lastRaw), g.y1(rawOfRec.var[lastRaw] ?? 0)), src),
-              callout('with', bi('RECAL.', 'VAR CON'), int(rec.wrappedExceptions, lang), bi('breaches', 'excedencias'), rec.wrappedExceptions <= rec.rawExceptions ? 'normal' : 'warning', at(g.x(lastRec), g.y1(rec.var[lastRec] ?? 0)), src, rec.wrappedExceptions < rec.rawExceptions ? 'down' : 'flat'),
-              callout('zone', bi('DAY', 'DÍA'), int(here, lang), bi(`exceptions, ${zoneBi(zone).en.toLowerCase()}`, `excepciones, ${zoneBi(zone).es.toLowerCase()}`), w.evaluated ? stateOfZone(zone) : 'inactive', at(g.x(cursor), g.y2(here)), bi('Window document', 'Documento de ventana')),
+              // both counts take the colour of the one rule of the story (a breach count against the count expected), so a count that
+              // is still more than twice the expected one stays red after the recalibration
+              callout('without', bi('RAW VAR', 'VAR SIN'), int(easedRaw, lang), bi(phone ? 'exc.' : 'breaches', phone ? 'exc.' : 'excedencias'), breachState(rec.rawExceptions, rec.expected), at(g.x(lastRaw), g.y1(rawOfRec.var[lastRaw] ?? 0)), src),
+              callout('with', bi('RECALIBRATED', 'RECALIBRADO'), int(easedWrapped, lang), bi(phone ? 'exc.' : 'breaches', phone ? 'exc.' : 'excedencias'), breachState(rec.wrappedExceptions, rec.expected), at(g.x(lastRec), g.y1(rec.var[lastRec] ?? 0)), src, rec.wrappedExceptions < rec.rawExceptions ? 'down' : 'flat'),
+              callout('zone', bi('DAY', 'DÍA'), int(here, lang), bi(phone ? `exc., ${zoneAdjective(zone, 'en')}` : `exceptions, ${zoneAdjective(zone, 'en')} zone`, phone ? `exc., ${zoneAdjective(zone, 'es')}` : `excepciones, zona ${zoneAdjective(zone, 'es')}`), w.evaluated ? stateOfZone(zone) : 'inactive', at(g.x(cursor), g.y2(here)), bi('Window document', 'Documento de ventana')),
             ],
-            drawing: <RecalibrationView size={draw} w={w} raw={rawOfRec} rec={rec} cursor={cursor} onCursor={() => undefined} />,
+            drawing: <RecalibrationView size={draw} w={w} raw={rawOfRec} rec={rec} cursor={cursor} onCursor={() => undefined} range={shown} onRange={setRange} />,
           };
         }}
       />
@@ -282,13 +297,15 @@ export function Story() {
           const selIdx = Math.max(0, g.rows.findIndex((q) => q.id === chosen.id));
           const rowAt = champIdx >= 0 ? champIdx : selIdx;
           const firstPass = g.rows.findIndex((q) => q.eligible);
-          const firstSet = g.rows.findIndex((q) => q.inSet);
+          const firstSet = g.rows.findIndex((q) => q.setState === 'in');
           const champ = dec.rows.find((q) => q.id === dec.champion);
+          const phone = g.narrow;
           return {
             callouts: [
-              callout('champion', bi('CHAMPION', 'CAMPEÓN'), champ ? headName(champ.label)[lang] : '0', bi(champ ? 'chosen' : 'models chosen', champ ? 'elegido' : 'modelos elegidos'), champ ? 'selected' : 'inactive', at(g.l + 8, g.rowY(rowAt)), src),
+              callout('champion', bi('CHAMPION', 'CAMPEÓN'), champ ? headName(champ.label)[lang] : '0', bi(champ ? 'chosen' : phone ? 'chosen' : 'models chosen', champ ? 'elegido' : phone ? 'elegidos' : 'modelos elegidos'), champ ? 'selected' : 'inactive', at(g.l + 8, g.rowY(rowAt)), src),
               callout('gates', bi('GATES', 'PASAN'), int(dec.eligible, lang), bi(`of ${int(dec.total, lang)} models`, `de ${int(dec.total, lang)} modelos`), dec.eligible === 0 ? 'alarm' : 'normal', at(g.r + 30, g.rowY(Math.max(0, firstPass))), src),
-              callout('set', bi('IN SET', 'CONJUNTO'), dec.setSize == null ? '0' : int(dec.setSize, lang), bi(dec.setSize == null ? 'no set in this window' : 'models kept', dec.setSize == null ? 'sin conjunto en esta ventana' : 'modelos retenidos'), dec.setSize == null ? 'inactive' : 'normal', at(g.r + 30 + (g.narrow ? 0 : 66), g.rowY(Math.max(0, firstSet))), src),
+              // the set holds the models that entered its comparison (those with an ES), so its size is read against that number
+              callout('set', bi('IN SET', 'CONJUNTO'), dec.setSize == null ? '0' : int(dec.setSize, lang), bi(dec.setSize == null ? 'no set in this window' : `of ${int(dec.setOf, lang)} with an ES`, dec.setSize == null ? 'sin conjunto en esta ventana' : `de ${int(dec.setOf, lang)} con ES`), dec.setSize == null ? 'inactive' : 'normal', at(g.r + 30 + (g.narrow ? 0 : 66), g.rowY(Math.max(0, firstSet))), src),
             ],
             drawing: <DecisionView size={{ width: draw.width, height: draw.height }} d={dec} alpha={0.01} selected={chosen.id} onSelect={pickModel} />,
           };
@@ -305,18 +322,20 @@ export function Story() {
   const missing = (b: Bi): Bi => bi(`${b.en}: ${missingNumber.en}`, `${b.es}: ${missingNumber.es}`);
   const finalOf = chosen?.light ?? null;
   const heads: Record<StepId, Bi> = {
-    inventory: flow ? headlineInventory(flow.entries, flow.sev.S1, flow.sev.S2) : missing(VERBS.inventory),
+    inventory: flow ? headlineInventory(flow.entries, flow.carried.S1, flow.carried.S2) : missing(VERBS.inventory),
     backtest: chosen && w ? headlineBacktest(chosen.label, finalOf ? finalOf.final : null, finalOf ? finalOf.zone : null, chosen.exceedances.length, w.n) : missing(VERBS.backtest),
     crisis: chosen ? headlineCrisis(chosen.label, chosen.exceedances.length, chosen.n) : missing(VERBS.crisis),
-    recalibrate: rec ? headlineRecalibration(rec.rawExceptions, rec.wrappedExceptions) : missing(VERBS.recalibrate),
+    recalibrate: rec ? headlineRecalibration(rec.rawExceptions, rec.wrappedExceptions, rec.expected) : missing(VERBS.recalibrate),
     decide: dec ? headlineDecision(dec) : missing(VERBS.decide),
   };
   const lines: Record<StepId, Bi> = {
-    inventory: bi('Each model family sits between what it is exposed to and what it sets; the bar under a family is its findings by severity.', 'Cada familia de modelos está entre aquello a lo que se expone y lo que fija; la barra bajo una familia son sus hallazgos por severidad.'),
+    // the Spanish sublines are one line at 1280 px (the header does not grow, so the story keeps 80% of the viewport; F5)
+    inventory: bi('Each model family sits between what it is exposed to and what it sets; the bar under a family is its findings by severity.', 'Cada familia, entre lo que la expone y lo que fija; la barra son sus hallazgos por severidad.'),
     backtest: chosen && w ? bi(sublineTally(chosen.computed, w.n, 'en'), sublineTally(chosen.computed, w.n, 'es')) : bi('The exceptions of each model against the three zones of the Basel table.', 'Las excepciones de cada modelo frente a las tres zonas de la tabla de Basilea.'),
     crisis: bi('The VaR and the ES of the selected model through the window, the range the ladder spans, and the days the VaR was exceeded.', 'El VaR y la ES del modelo seleccionado en la ventana, el rango que abarca la escalera y los días en que se excedió el VaR.'),
-    recalibrate: bi(`${rec ? rec.label.en : 'The model'} with the adaptive conformal recalibration, against its own raw VaR on the same days.`, `${rec ? rec.label.es : 'El modelo'} con la recalibración conforme adaptativa, frente a su propio VaR sin tratar en los mismos días.`),
-    decide: bi('The models on one axis with the interval of their exception rate, the gates they fail and the set the comparison keeps.', 'Los modelos en un eje, con el intervalo de su tasa de excepciones, las compuertas que fallan y el conjunto que retiene la comparación.'),
+    // the recalibrate line says what the back-tests do with a recalibrated run: they accept it too easily (viz review F1)
+    recalibrate: bi('Breaches move towards the target, but the back-tests accept recalibrated runs too easily.', 'Las excedencias se acercan al objetivo, pero las pruebas retrospectivas aceptan con demasiada facilidad las corridas recalibradas.'),
+    decide: bi('The models on one axis: rate with interval, gates and set; recalibrated runs are not ranked here.', 'Modelos en un eje: tasa con intervalo, compuertas y conjunto; sin las corridas recalibradas.'),
   };
   const stages: Record<StepId, ReactNode> = { inventory: inventoryStage, backtest: lightStage, crisis: crisisStage, recalibrate: recalibrateStage, decide: decideStage };
   const panels: Record<StepId, ReactNode> = { inventory: inventoryPanel, backtest: lightPanel, crisis: crisisPanel, recalibrate: recalibratePanel, decide: decidePanel };
@@ -331,6 +350,6 @@ export function Story() {
     stage: stages[id],
     panel: panels[id],
   }));
-  return <StoryFrame className="contraste-story" steps={steps} activeId={active} mobileStageMinHeight={620} autoAdvanceMs={7000} onStepChange={(next) => navigate(`/story/${next}?${params.toString()}`)} onExit={() => navigate(safeFrom ?? fallback)} />;
+  return <StoryFrame className="contraste-story" steps={steps} activeId={active} mobileStageMinHeight={620} autoAdvanceMs={7000} onStepChange={(next) => navigate(`/story/${next}?${params.toString()}`)} onExit={() => navigate(exitTarget(safeFrom, windowId, chosen?.id ?? modelId))} />;
 }
 

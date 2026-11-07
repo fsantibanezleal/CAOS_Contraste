@@ -127,6 +127,8 @@ export interface Flow {
   entries: number;
   total: number;
   sev: SevCount;
+  /** The findings still carried: the register's rows whose status is not `validated_closed`, by severity. */
+  carried: SevCount;
   exposures: FlowNode[];
   families: FlowNode[];
   outputs: FlowNode[];
@@ -154,6 +156,8 @@ export function buildFlow(inv: GovInventory, fin: GovFindings): Flow {
   const unmapped: string[] = [];
   const familyOfEntry = new Map<string, string>();
   const total = zeroSev();
+  const carried = zeroSev();
+  for (const r of fin.rows) if (r.status !== 'validated_closed') carried[r.severity] += 1;
   const bump = (key: string, entry: string, sev: SevCount, n: number) => {
     const node = byId.get(key)!;
     node.entries.push(entry);
@@ -185,7 +189,7 @@ export function buildFlow(inv: GovInventory, fin: GovFindings): Flow {
       link(`family:${place.family}`, `output:${out}`, n);
     }
   }
-  return { entries: inv.entries.length, total: SEVERITIES.reduce((a, s) => a + total[s], 0), sev: total, exposures, families, outputs, links: [...links.values()], unmapped, familyOfEntry };
+  return { entries: inv.entries.length, total: SEVERITIES.reduce((a, s) => a + total[s], 0), sev: total, carried, exposures, families, outputs, links: [...links.values()], unmapped, familyOfEntry };
 }
 
 /** The findings of the entries in a family, the most severe first. */
@@ -227,6 +231,14 @@ export interface ZoneCuts {
   amberStart: number;
   redStart: number;
 }
+/** The state of a breach count against the count its level expects, the one rule of every step (the crisis step's rule): green at
+ * or below the expected count, amber above it, red above twice it. A window with no expected count has no ratio and stays green. */
+export type BreachState = 'normal' | 'warning' | 'alarm';
+export const breachState = (count: number, expected: number): BreachState => {
+  const ratio = expected > 0 ? count / expected : 0;
+  return ratio > 2 ? 'alarm' : ratio > 1 ? 'warning' : 'normal';
+};
+
 export const zoneOf = (exceptions: number, cuts: ZoneCuts): Zone => (exceptions >= cuts.redStart ? 'red' : exceptions >= cuts.amberStart ? 'amber' : 'green');
 
 /** Exceptions in the trailing `window` days at each day: element i counts the days max(0, i - window + 1) to i, so it equals the
@@ -360,12 +372,13 @@ export function defaultCursor(path: ModelPath | undefined, n: number): number {
 /** The cursor clamped to the window (the selector of the windows changes the number of days). */
 export const clampCursor = (cursor: number | null, n: number, fallback: number): number => Math.max(0, Math.min(n - 1, cursor == null || !Number.isFinite(cursor) ? fallback : Math.round(cursor)));
 
-/** The days the model sits outside the green zone: the first and last day of its yellow or red zone, or null. */
-export function stressSpan(path: ModelPath, cuts: ZoneCuts): [number, number] | null {
+/** The days the model sits outside the green zone: the first and last day of its yellow or red zone, or null. Days before `from`
+ * (the first complete Basel window) are counts so far, not the light, and never open the stretch. */
+export function stressSpan(path: ModelPath, cuts: ZoneCuts, from = 0): [number, number] | null {
   let a = -1;
   let b = -1;
   path.trailing.forEach((c, i) => {
-    if (zoneOf(c, cuts) !== 'green') {
+    if (i >= from && zoneOf(c, cuts) !== 'green') {
       if (a < 0) a = i;
       b = i;
     }
@@ -404,6 +417,9 @@ export interface Recalibrated {
   rawKupiec: number | null;
   wrappedKupiec: number | null;
   gamma: number;
+  /** The tail level the VaR promises (the target the working level is steered back to) and the floor of the working level's band. */
+  target: number;
+  levelMin: number;
   tally: Tally | null;
 }
 
@@ -432,6 +448,8 @@ export function recalibration(data: CaseData | null, modelId: string, alpha = 0.
     rawKupiec: row.unwrapped.kupiec_p,
     wrappedKupiec: row.wrapped.kupiec_p,
     gamma: o.conformal.method.gamma,
+    target: alpha,
+    levelMin: o.conformal.method.level_min,
     tally: tally(trailing, cuts),
   };
 }
@@ -461,8 +479,12 @@ export interface DecisionRow {
   failedGates: string[];
   esP: number | null;
   esLight: string | null;
-  /** In the model confidence set, or null when the window has no set. */
+  /** In the model confidence set, or null when the window has no set. A model that never entered the comparison is not in it, and is
+   * `not-tested` in `setState` (never "out": it was not ranked). */
   inSet: boolean | null;
+  /** `in` and `out` are the set's own decision on a ranked model; `not-tested` is a model that forecasts no ES, so FZ0 is not defined
+   * for it and it never entered; null when the window has no set. */
+  setState: 'in' | 'out' | 'not-tested' | null;
 }
 export interface Decision {
   rows: DecisionRow[];
@@ -470,6 +492,8 @@ export interface Decision {
   eligible: number;
   /** The members of the confidence set, or null when the window carries none. */
   setSize: number | null;
+  /** The models that entered the set's comparison (its members), or null when the window carries none. */
+  setOf: number | null;
   confidence: number | null;
   champion: string | null;
   championReason: string | null;
@@ -498,13 +522,15 @@ export function decision(data: CaseData | null, w: WindowModel | null, alpha = 0
       esP: es?.p_value ?? null,
       esLight: null,
       inSet: mcs ? (member ? member.in_set : false) : null,
+      setState: mcs ? (member ? (member.in_set ? 'in' : 'out') : 'not-tested') : null,
     };
   });
   return {
     rows,
     total: rows.length,
     eligible: rows.filter((r) => r.eligible).length,
-    setSize: mcs ? rows.filter((r) => r.inSet).length : null,
+    setSize: mcs ? rows.filter((r) => r.setState === 'in').length : null,
+    setOf: mcs ? mcs.members.length : null,
     confidence: mcs?.confidence ?? null,
     champion: champ?.model_id ?? null,
     championReason: champ?.reason ?? null,

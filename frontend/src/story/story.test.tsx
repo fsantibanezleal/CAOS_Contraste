@@ -36,7 +36,7 @@ describe('V1: the flow shows the counts of the governance documents', () => {
     expect((m.match(/data-linked-view="scene"/g) ?? []).length).toBe(flow.families.length);
     for (const f of flow.families) {
       expect(m).toContain(`data-linked-id="family:${f.id}"`);
-      expect(textOf(m)).toContain(`${en(f.entries.length)} entries · ${en(f.total)} findings`);
+      expect(textOf(m)).toContain(`${en(f.entries.length)} ${f.entries.length === 1 ? 'entry' : 'entries'} · ${en(f.total)} ${f.total === 1 ? 'finding' : 'findings'}`);
     }
     expect(flow.families.reduce((a, f) => a + f.entries.length, 0)).toBe(34);
     expect(m).toMatch(/data-linked-id="family:market"[^>]*data-linked-selected="true"/);
@@ -82,7 +82,7 @@ describe('V3: the traffic light', () => {
       expect((m.match(/data-linked-view="scene"/g) ?? []).length).toBe(18);
       expect((m.match(/data-linked-selected="true"/g) ?? []).length).toBe(1);
       for (const z of ['Green · 0 to 4', 'Amber · 5 to 9', 'Red · 10 or more']) expect(textOf(m)).toContain(z);
-      expect(textOf(m)).toContain(`${hs.trailing[day]} · ${zoneBi(zoneOf(hs.trailing[day]!, w.cuts)).en}`);
+      expect(textOf(m)).toContain(`${hs.trailing[day]} exceptions · ${zoneBi(zoneOf(hs.trailing[day]!, w.cuts)).en}`);
       expect(m).toContain(`data-linked-cursor-position="${day}"`);
       expect(m).toContain(`value="${day}"`);
       expect(m).not.toMatch(BAD);
@@ -206,13 +206,13 @@ describe('the headlines state a finding with its number in at most 12 words', ()
       const data = c11(id);
       const w = windowModel(data)!;
       const d = decision(data, w)!;
-      const heads = [headlineInventory(34, flow.sev.S1, flow.sev.S2), headlineDecision(d)];
+      const heads = [headlineInventory(34, flow.carried.S1, flow.carried.S2), headlineDecision(d)];
       for (const m of w.models) {
         heads.push(headlineBacktest(m.label, m.light ? m.light.final : null, m.light ? m.light.zone : null, m.exceedances.length, w.n), headlineCrisis(m.label, m.exceedances.length, m.n));
       }
       for (const mid of ['hs-250', 'garch-t', 'fhs']) {
         const r = recalibration(data, mid)!;
-        heads.push(headlineRecalibration(r.rawExceptions, r.wrappedExceptions));
+        heads.push(headlineRecalibration(r.rawExceptions, r.wrappedExceptions, r.expected));
       }
       for (const h of heads) {
         for (const lang of ['en', 'es'] as const) {
@@ -224,7 +224,8 @@ describe('the headlines state a finding with its number in at most 12 words', ()
   });
 
   it('the inventory headline quotes the register', () => {
-    expect(headlineInventory(flow.entries, flow.sev.S1, flow.sev.S2).en).toBe(`34 models carry ${fin.counts.by_severity.S1} critical and ${fin.counts.by_severity.S2} significant findings`);
+    const carried = (sev: string) => fin.rows.filter((r) => r.severity === sev && r.status !== 'validated_closed').length;
+    expect(headlineInventory(flow.entries, flow.carried.S1, flow.carried.S2).en).toBe(`34 inventory entries carry ${carried('S1')} critical and ${carried('S2')} significant findings`);
     expect(STEP_IDS).toHaveLength(5);
   });
 });

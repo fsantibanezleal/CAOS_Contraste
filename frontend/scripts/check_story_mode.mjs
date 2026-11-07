@@ -26,11 +26,15 @@ const hs = window2007.outputs.models.find((m) => m.model_id === 'hs-250').by_lev
 const garch = window2007.outputs.models.find((m) => m.model_id === 'garch-t').by_level.find((l) => l.alpha === 0.01);
 const wrapped = window2007.outputs.conformal.rows.find((r) => r.model_id === 'hs-250' && r.alpha === 0.01);
 const mcs = window2007.outputs.comparison.mcs.find((s) => s.alpha === 0.01);
+// the findings still carried: the register's rows not closed by validation (the inventory holds entries, not models)
+const carried = (severity) => findings.rows.filter((r) => r.severity === severity && r.status !== 'validated_closed').length;
+// the one colour rule of a breach count: against the count its level expects (green at or below it, amber above, red above twice it)
+const breachState = (count, expectedCount) => { const ratio = expectedCount > 0 ? count / expectedCount : 0; return ratio > 2 ? 'alarm' : ratio > 1 ? 'warning' : 'normal'; };
 const expected = {
-  inventory: `${inventory.entries.length} models carry ${findings.counts.by_severity.S1} critical and ${findings.counts.by_severity.S2} significant findings`,
+  inventory: `${inventory.entries.length} inventory entries carry ${carried('S1')} critical and ${carried('S2')} significant findings`,
   backtest: `Historical simulation, 250 days: ${hs.traffic_light.final_rolling_exceedances} exceptions, ${hs.traffic_light.final_zone === 'amber' ? 'amber' : hs.traffic_light.final_zone} zone`,
   crisis: `Historical simulation, 250 days: ${hs.n_exceedances} VaR breaches in ${hs.n_scored} days`,
-  recalibrate: `Recalibration cuts breaches from ${wrapped.unwrapped.n_exceedances} to ${wrapped.wrapped.n_exceedances}`,
+  recalibrate: `Recalibration cuts breaches from ${wrapped.unwrapped.n_exceedances} to ${wrapped.wrapped.n_exceedances}; ${Math.round(wrapped.wrapped.expected_exceedances)} were expected`,
   decide: `Gates pass ${window2007.impact.eligible_models.value} of ${window2007.outputs.models.length} models; the confidence set keeps ${mcs.members.filter((m) => m.in_set).length}`,
 };
 
@@ -82,6 +86,22 @@ try {
     assert.equal(await headline(desktop), expected[step], `the ${step} headline is the artifacts' number`);
     assert.equal(await desktop.locator('[data-caos-callout]').count(), 3, `${step} carries three anchored callouts`);
   }
+
+  // the colour of a count is the one rule of its number: the recalibrated 11 against 5.04 expected is red, as the raw 19 is
+  await goStep(desktop, 'recalibrate');
+  assert.equal(await desktop.locator('[data-caos-callout="with"]').getAttribute('data-callout-state'), breachState(wrapped.wrapped.n_exceedances, wrapped.wrapped.expected_exceedances), 'the recalibrated count takes the colour of its ratio to the expected count');
+  assert.equal(await desktop.locator('[data-caos-callout="without"]').getAttribute('data-callout-state'), breachState(wrapped.unwrapped.n_exceedances, wrapped.wrapped.expected_exceedances), 'the raw count takes the same rule');
+  assert.equal(await desktop.locator('[data-caos-callout="with"]').getAttribute('data-callout-state'), 'alarm', 'eleven breaches against five expected are not green');
+  const panelText = await desktop.locator('[data-panel="recalibration"]').innerText();
+  assert.ok(!/equity-2007-09/.test(panelText), 'the panel names the window in words, never by its id');
+  assert.ok(/accept recalibrated runs too easily/.test(panelText) && /upper bound/.test(panelText), 'the panel says the back-tests accept recalibrated runs too easily');
+  assert.equal(await desktop.locator('[data-path="working-level"]').count(), 1, 'the working tail level is drawn');
+  // a model that never entered the confidence set is not tested, never out
+  await goStep(desktop, 'decide');
+  const unranked = mcs ? window2007.outputs.models.filter((m) => !mcs.members.some((x) => x.model_id === m.model_id)).map((m) => m.model_id) : [];
+  assert.ok(unranked.length >= 1, 'the window has models the set never ranked');
+  for (const id of unranked) assert.equal(await desktop.locator(`[data-decision-row="${id}"] [data-set-state]`).getAttribute('data-set-state'), 'not-tested', `${id} is not tested by the set`);
+  assert.ok(!/\bout\b/.test(await desktop.locator(`[data-decision-row="${unranked[0]}"]`).textContent()), 'a model the set never ranked is not marked out');
 
   // the scene and the panel are one selection, both ways (step 1: the families)
   await goStep(desktop, 'inventory');
@@ -136,9 +156,38 @@ try {
   assert.equal(await desktop.locator('.story-play').isDisabled(), true, 'reduced motion: the day player is off');
   await desktop.emulateMedia({ reducedMotion: 'no-preference' });
 
-  // the exit lands on the route the reader came from
+  // a change of model inside a step is an eased move: the path is still moving a few frames after the click and settled later
+  await desktop.locator('[data-story-link="recalibrate"]').click();
+  await desktop.locator('[data-path="recalibrated-var"]').waitFor({ state: 'visible', timeout: 15000 });
+  const pathD = () => desktop.locator('[data-path="recalibrated-var"]').getAttribute('d');
+  const before = await pathD();
+  await desktop.locator('[data-linked-view="panel"][data-linked-id="model:garch-t"]').click();
+  await desktop.waitForTimeout(60);
+  const early = await pathD();
+  await desktop.waitForTimeout(900);
+  const late = await pathD();
+  assert.notEqual(before, late, 'the recalibrated path changes with the model');
+  assert.notEqual(early, late, 'the change of model is eased, not a cut');
+  assert.equal(late, await pathD(), 'the eased move settles');
+  await desktop.locator('[data-linked-view="panel"][data-linked-id="model:hs-250"]').click();
+  await desktop.waitForTimeout(500);
+
+  // the exit lands on the route the reader came from, with the window and the model of the step (ADR-0082 rule 3)
+  const modelNow = await desktop.locator('[data-linked-view="panel"][aria-pressed="true"]').first().getAttribute('data-linked-id');
+  assert.equal(modelNow, 'model:hs-250');
   await desktop.locator('.caos-story-exit').click();
-  await desktop.waitForURL((url) => `${url.pathname}${url.search}` === from);
+  const wanted = new URL(from, 'https://x.test');
+  wanted.searchParams.set('variant', 'equity-2007-09');
+  wanted.searchParams.set('model', 'hs-250');
+  await desktop.waitForURL((url) => url.pathname === wanted.pathname && [...wanted.searchParams].every(([k, v]) => url.searchParams.get(k) === v));
+  await desktop.locator('[data-workbench], .caos-workbench, main').first().waitFor({ state: 'visible', timeout: 20000 });
+  assert.match(await desktop.locator('body').innerText(), /Equity 2007 to 2009/, 'the App opens on the window of the step');
+  // and with no route to return to, the exit goes to the C11 case with the same state
+  await desktop.goto(`${base}/story/decide?window=fx-2008&model=garch-t`, { waitUntil: 'domcontentloaded' });
+  await desktop.locator(VIEWS.decide).waitFor({ state: 'visible', timeout: 15000 });
+  await desktop.locator('.caos-story-exit').click();
+  await desktop.waitForURL((url) => url.pathname === '/app' && url.searchParams.get('case') === 'C11' && url.searchParams.get('variant') === 'fx-2008' && url.searchParams.get('model') === 'garch-t');
+  assert.match(await desktop.locator('body').innerText(), /FX 2008/, 'the App opens on the window of the exit');
 
   // the phone: the panel below the stage, three callouts, no horizontal overflow, at every step
   const phone = await browser.newPage({ viewport: { width: 390, height: 844 } });
