@@ -59,7 +59,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [04-provisions/02-staging-and-the-significant-increase-in-credit-risk.ipynb](04-provisions/02-staging-and-the-significant-increase-in-credit-risk.ipynb) | 2 | Staging and the significant increase in credit risk |
 | [04-provisions/03-scenarios-weights-and-the-non-linearity-of-ecl.ipynb](04-provisions/03-scenarios-weights-and-the-non-linearity-of-ecl.ipynb) | 2 | Scenarios, weights and the non-linearity of ECL |
 | [04-provisions/04-overlays-and-the-allowance-roll-forward.ipynb](04-provisions/04-overlays-and-the-allowance-roll-forward.ipynb) | 2 | Overlays and the allowance roll-forward |
-| [04-provisions/05-the-ifrs9-validation-battery-across-six-dates.ipynb](04-provisions/05-the-ifrs9-validation-battery-across-six-dates.ipynb) | 2 | The IFRS 9 validation battery across six reporting dates |
+| [04-provisions/05-the-ifrs9-validation-battery-across-six-dates.ipynb](04-provisions/05-the-ifrs9-validation-battery-across-six-dates.ipynb) | 2 | Back-testing an IFRS 9 model: the tests, their lights and six reporting dates |
 | [04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb](04-provisions/06-chile-cmf-b1-ifrs9-and-bde-annex9-on-one-portfolio.ipynb) | 2 | Chile: CMF B-1, IFRS 9 and the Bank of Spain Annex 9 on one portfolio (Banco Andino) |
 | [04-provisions/07-lifetime-pd-by-survival.ipynb](04-provisions/07-lifetime-pd-by-survival.ipynb) | 3 | Lifetime PD by survival, competing risks and macro satellites |
 | [04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb](04-provisions/08-reconciliation-overlays-and-three-regimes.ipynb) | 4 | Reconciliation identities, overlays as lines and a regime comparison on one book |
@@ -104,7 +104,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 | [09-irrbb/07-curves-deposits-and-recalibration.ipynb](09-irrbb/07-curves-deposits-and-recalibration.ipynb) | 3 | Curve fitting, stochastic rates, deposit models, the 2024 recalibration and the open-source gap |
 | [09-irrbb/08-the-uf-and-the-breach-test.ipynb](09-irrbb/08-the-uf-and-the-breach-test.ipynb) | 4 | The UF as its own currency and a test that catches a behavioural assumption changed at a limit breach |
 | [10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb](10-liquidity/01-the-liquidity-ladder-nlp-and-survival-period.ipynb) | 1 | The liquidity ladder, the net liquidity position and the survival period |
-| [10-liquidity/02-run-off-by-daily-compounding.ipynb](10-liquidity/02-run-off-by-daily-compounding.ipynb) | 2 | Run-off by daily compounding: the LiST golden of 12.11% after 125 days |
+| [10-liquidity/02-run-off-by-daily-compounding.ipynb](10-liquidity/02-run-off-by-daily-compounding.ipynb) | 2 | The daily compounding of run-off: from a rate per day to the runs of 2023 |
 | [10-liquidity/03-the-counterbalancing-capacity.ipynb](10-liquidity/03-the-counterbalancing-capacity.ipynb) | 2 | The counterbalancing capacity: haircuts, monetisation capacity and held-to-maturity losses |
 | [10-liquidity/04-scenarios-and-the-depositor-generator.ipynb](10-liquidity/04-scenarios-and-the-depositor-generator.ipynb) | 2 | Scenarios: LiST adverse and extreme, the 2023 fast run and a depositor generator |
 | [10-liquidity/05-the-lcr-and-the-nsfr.ipynb](10-liquidity/05-the-lcr-and-the-nsfr.ipynb) | 2 | The LCR and the NSFR on the call reports of the bank that failed in 2023 |
