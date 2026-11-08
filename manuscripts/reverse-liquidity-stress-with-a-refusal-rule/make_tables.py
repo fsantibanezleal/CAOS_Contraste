@@ -54,6 +54,23 @@ def notation() -> None:
         ("$m_0$, $m^\\ast$", "root of $w_T$ and its six-decimal upward rounding", "1"),
         ("$\\delta$", "rounding step, $10^{-6}$", "1"),
         ("$\\kappa$", "capacity over opening balance, one segment", "1"),
+        ("$O_{j,d}$", "outflow of segment $j$ on day $d$", "money"),
+        ("$U_T$", "set of multipliers in $[1,m_{\\max}]$ at which the survival period is at most $T$", "set"),
+        ("$\\bar m$", "upper end of the bracket: the cap when finite, 1 when no rate can be scaled", "1"),
+        ("$\\mathrm{SP}_1$", "survival period of the unscaled scenario, $\\mathrm{SP}(1)$", "days"),
+        ("$Q_T$", "bound $\\sum_jA_j\\sum_{s\\le T}q_{j,s}$ on the slope of $X_T$ in $m$", "money"),
+        ("$O_T(m)$", "outflow of day $T$ at multiplier $m$", "money"),
+        ("$a$, $b$", "$-\\ln(1-\\kappa)$ and $-\\ln(1-q)$, one segment", "1"),
+        ("$\\tilde m$", "hyperbolic rule $\\mathrm{SP}(1)/T$", "1"),
+        ("$\\varepsilon$", "level shift of the effective capacity", "money"),
+        ("$t_0$", "day at which $\\mathrm{NLP}_t(m_0)$ is smallest over $t\\le T$", "days"),
+        ("$X'_t(m)$", "derivative of $X_t$ in $m$", "money"),
+        ("$n$", "horizon of a row of the labelled run, in days", "days"),
+        ("$\\hat q$, $q_{\\mathrm{fast}}$", "implied daily rate of a row, and the rate of the fast-run base, the maximum of $\\hat q$ over $\\mathcal R_{<2023}$", "per day"),
+        ("$\\mathcal R_{<2023}$", "rows of the table of observed outflows dated before 2023", "set"),
+        ("$F^{\\mathrm{mod}}_n$, $F^{\\mathrm{obs}}$", "modelled and observed cumulative outflow share of the deposit base at the horizon of a row", "share"),
+        ("$m_{\\mathrm{run}}$", "multiplier at which the modelled share equals the observed one", "1"),
+        ("$e$, $\\tau$", "signed relative error of an answer $\\hat m$, and its threshold-property indicator", "1"),
     ]
     body = [f"{a} & {b} & {c} \\\\" for a, b, c in rows]
     write("notation", tab("Notation of the reverse stress: every symbol of the problem formulation, the method and the theory with its meaning and unit, the money unit being that of the balance sheet it is applied to (thousands of US dollars for case C16).",
@@ -91,7 +108,7 @@ def main_results() -> None:
         else:
             b.append(f"{lab} & {day(e['base_sp'])} ({e['horizon']}-day horizon) & {e['cap']:.1f} & refused, no number & -- & -- \\\\")
     cap = ("Main results. Panel A: the proposed solver and four comparators scored against the independent oracle on 20,000 instances of the seeded corpus; "
-           "rates in per cent with 95\\% Wilson intervals, median absolute relative error of the multiplier on solved instances, mean forward evaluations per solved instance and median time per call. "
+           "rates in per cent with 95\\% Wilson intervals, median absolute relative error of the multiplier on solved instances, mean forward evaluations per solved instance and median time per call; the scans call the engine's own forward function, which is slower per evaluation than the lighter function the solver and Brent's method call, so the cost is compared by evaluations. "
            "Panel B: the same solver on the three committed bases of case C16 at a target of 30 days, with the survival period reached at the multiplier and just below it.")
     text = "\n".join(["\\begin{table*}[htbp]", "\\centering", "\\small", "\\setlength{\\tabcolsep}{3pt}", f"\\caption{{{cap}}}", "\\label{tab:main-results}",
                       "\\begin{tabular}{p{2.8cm}p{2.3cm}p{2.3cm}p{2.3cm}p{1.5cm}p{1.6cm}p{1.1cm}}", "\\toprule",
@@ -101,6 +118,42 @@ def main_results() -> None:
                       "\\begin{tabular}{p{3.0cm}p{3.0cm}p{1.4cm}p{2.3cm}p{1.8cm}p{2.3cm}}", "\\toprule", "\\multicolumn{6}{l}{\\textit{Panel B: committed bases of case C16, target of 30 days}} \\\\",
                       "Base & base SP (days) & cap & multiplier $m^\\ast$ & SP at $m^\\ast$ & SP at $m^\\ast-10^{-6}$ \\\\", "\\midrule", *b, "\\bottomrule", "\\end{tabular}", "\\end{table*}", ""])
     write("main-results", text)
+
+
+def spread() -> None:
+    """Spread of the rates over the five corpora and bootstrap intervals of the median error (the statistics of the experimental design)."""
+    m = K["methods"]
+    names = [("proposed", "proposed solver"), ("grid_case", "scan of the case grid"), ("grid_fine", "scan of a fine grid"),
+             ("brent_sp", "Brent on the survival period"), ("bisect_no_refusal", "bisection without refusal")]
+    body = []
+    for k, lab in names:
+        x = m[k]
+        e = x["abs_rel_error_median"]
+        body.append(f"{lab} & {pc(x['false_answer_on_refused']['sd_over_corpora'], 2)} & {pc(x['miss_on_solved']['sd_over_corpora'], 2)} & "
+                    f"{pc(x['threshold_property_on_solved']['sd_over_corpora'], 2)} & {e['est']:.2e} ({e['lo']:.2e} to {e['hi']:.2e}) \\\\")
+    write("spread", tab("Spread of the rates of Panel A of \\cref{tab:main-results} over the five corpora of 1,000 banks, as the standard deviation of the rate of a corpus in percentage points, "
+                        "and the median absolute relative error with its 95\\% bootstrap percentile interval (1,000 resamples of the solved instances).",
+                        "tab:spread", body, "p{3.8cm}p{2.2cm}p{2.2cm}p{2.2cm}p{4.4cm}",
+                        "Method & SD, answers where refused & SD, no answer where solved & SD, threshold property & median $|$rel. error$|$ (95\\% interval)", star=True))
+
+
+def theory_checks() -> None:
+    cf = T["closed_form_single_segment"]
+    er = T["exact_round_trip"]
+    rows = [
+        ("Monotone position", f"{T['monotone_in_multiplier']['banks']:,} corpus banks, {T['monotone_in_multiplier']['comparisons']:,} pairs of adjacent points of a 40-point multiplier grid",
+         f"{T['monotone_in_multiplier']['violations']} increases above a tolerance of $10^{{-9}}$ of the opening balance (largest increase {T['monotone_in_multiplier']['largest_increase']:.1e})"),
+        ("Threshold: non-increasing in the target", f"{T['monotone_in_target']['banks']:,} banks, {T['monotone_in_target']['pairs']:,} pairs of targets", f"{T['monotone_in_target']['violations']} violations"),
+        ("Threshold: non-decreasing in the capacity", f"{T['monotone_in_capacity']['banks']:,} banks, {T['monotone_in_capacity']['pairs']:,} pairs of solves with the capacity raised by 5\\%", f"{T['monotone_in_capacity']['violations']} violations"),
+        ("Closed form, outcome", f"{cf['instances']:,} single-segment banks", f"{cf['condition_mismatches']} disagreements between the engine's outcome and the stated conditions"),
+        ("Closed form, value", f"{cf['solved']:,} solved", f"largest difference {cf['max_abs_difference'] * 1e6:.4f} millionths, {cf['engine_below_closed_form']} engine values below the closed form, {cf['multiplier_bound_violations']} violations of the bounds on the root"),
+        ("Hyperbolic rule", f"{cf['hyperbolic_instances']:,} solved instances with $a<2T$", f"{cf['hyperbolic_bound_violations']} violations of the two-sided bound; median relative error {pc(cf['hyperbolic_relative_error_median'])}\\%"),
+        ("Exact round trip", f"{er['solved_flat_no_inflow']:,} solved banks with a constant capacity and no inflow", f"condition holds on {er['condition_holds']:,}, round trip exact on {er['exact']:,}, {er['violations_of_the_proposition']} violations; margin at least {er['margin_min']:.0f}, median {er['margin_median']:,.0f}"),
+    ]
+    body = [f"{a} & {b} & {c} \\\\" for a, b, c in rows]
+    write("theory-checks", tab(f"Numerical checks of the propositions of \\cref{{sec:theory}} on banks drawn with seed {T['seed']}: what was tested, on how many cases, and what was found. "
+                               "The checks test the statements and do not replace the proofs.",
+                               "tab:theory-checks", body, "p{3.2cm}p{4.6cm}p{6.6cm}", "Statement & Sample & Result"))
 
 
 def ablation() -> None:
@@ -120,24 +173,29 @@ def ablation() -> None:
 
 def band() -> None:
     body = []
+
+    def row(label: str, r: dict, c0: float) -> str:
+        if r["multiplier"] is None:
+            return f"{label} & refused & & \\\\"
+        return f"{label} & {r['multiplier']:.6f} & {100 * (r['multiplier'] / c0 - 1):+.1f} & {r['sp_at']} \\\\"
+
     for base, lab in (("list-adverse", "Adverse"), ("list-extreme", "Extreme")):
         b = C["band"][base]
         c0 = C["bases"][base]["engine"]["multiplier"]
-        body.append(f"\\multicolumn{{3}}{{l}}{{\\textit{{LiST {lab} base, central multiplier {c0:.6f}}}}} \\\\")
+        body.append(f"\\multicolumn{{4}}{{l}}{{\\textit{{LiST {lab} base, central multiplier {c0:.6f}}}}} \\\\")
         for r in b["one_at_a_time"]:
-            v = f"{r['multiplier']:.6f}" if r["multiplier"] is not None else "refused"
-            body.append(f"{r['factor']} & {v} & {'' if r['multiplier'] is None else f'{100 * (r['multiplier'] / c0 - 1):+.1f}'} \\\\")
+            body.append(row(r["factor"], r, c0))
         for r in b["mapping"]:
             if r["mapping"].endswith("(central)"):
                 continue
-            v = f"{r['multiplier']:.6f}" if r["multiplier"] is not None else "refused"
-            body.append(f"uninsured as {r['mapping']} & {v} & {'' if r['multiplier'] is None else f'{100 * (r['multiplier'] / c0 - 1):+.1f}'} \\\\")
-        lo = [r for r in b["haircut_x_monetisation"] if r["haircut"] == "low" and r["monetisation"] == "slow"][0]
-        body.append(f"joint: haircut low and slow monetisation & {'refused' if lo['multiplier'] is None else format(lo['multiplier'], '.6f')} & "
-                    f"{'' if lo['multiplier'] is None else format(100 * (lo['multiplier'] / c0 - 1), '+.1f')} \\\\")
+            body.append(row(f"uninsured as {r['mapping']}", r, c0))
+        for hc in ("low", "central", "high"):
+            lo = [r for r in b["haircut_x_monetisation"] if r["haircut"] == hc and r["monetisation"] == "slow"][0]
+            body.append(row(f"joint: haircut {hc} and slow monetisation", lo, c0))
     write("band", tab("Sensitivity of the threshold multiplier at a target of 30 days to the conventions of case C16: the haircut band of 0.05, the immediate and slow monetisation schedules, "
-                      "the placement of the uninsured balance, and the corner of the joint band that stays solved; a refusal is stated, never a number.",
-                      "tab:band", body, "lrr", "Convention changed & Multiplier & Change (\\%)"))
+                      "the placement of the uninsured balance, and the three corners of the joint band that use the slow schedule; the last column is the survival period at the multiplier, "
+                      "which is the target wherever the round trip is exact and falls short of it where the slow schedule turns the threshold into a step; a refusal is stated, never a number.",
+                      "tab:band", body, "lrrr", "Convention changed & Multiplier & Change (\\%) & SP at $m^\\ast$"))
 
 
 def labelled() -> None:
@@ -166,18 +224,18 @@ def hypotheses() -> None:
         ("H1", "outcome equals the oracle's", "0 disagreements", f"{k['H1']['disagreements']} of {k['H1']['instances']:,}", "held"),
         ("H2", "threshold within the rounding step", "0 to $10^{-6}$ above the root", f"{k['H2']['diff_min'] * 1e6:.3f} to {k['H2']['diff_max'] * 1e6:.3f} $\\times10^{{-6}}$", "held"),
         ("H3", "exact round trip: flat capacity; schedule", "$\\ge$99\\%; $\\ge$5\\% with a gap", f"{pc(k['H3']['monotone']['rate'])}\\%; {pc(k['H3']['growing']['rate'])}\\%", "held"),
-        ("H4", "case grid overshoots by more than 10\\%", "$\\ge$30\\% of solved", f"{pc(k['H4']['rate'])}\\%", "held"),
+        ("H4", "case grid overshoots by more than 10\\%", "$\\ge$30\\% of the solved instances it answers", f"{pc(k['H4']['rate'])}\\%", "held"),
         ("H5", "Brent on SP misses the threshold", "$\\ge$10\\% of solved", f"{pc(k['H5']['rate_of_all_solved'])}\\%", "held"),
         ("H6", "SP(1)/T within 10\\% of the threshold", "$\\ge$80\\%, flat capacity", f"{pc(k['H6']['rate'])}\\%", "failed"),
         ("H7", "derivative equals finite difference", "within 1\\%", f"{100 * max(H['H7'].values()):.4f}\\%", "held"),
         ("H8", "Adverse multiplier within 25\\% over the band", "$<$25\\%", f"{pc(H['H8_joint_max_rel_deviation'])}\\%", "failed"),
         ("H9", "uninsured as legal entities: refusal", "refused", "refused", "held"),
         ("H10", "2-day outflow reaches the amber bar", "ratio $\\ge$0.5", f"{H['H10_ratio_2d']:.3f}", "failed"),
-        ("H11", "labelled multiplier $\\ge2\\times$ that for 2 days", "$\\ge$2", f"{H['H11_ratio']:.2f}", "held"),
+        ("H11", "labelled multiplier $\\ge2\\times$ that bringing SP to at most 2 days", "$\\ge$2", f"{H['H11_ratio']:.2f}", "held"),
         ("H12", "other calibration rules stay below amber", "ratio $<$0.5", f"{H['H12_max_ratio_other_rules']:.3f}", "held"),
     ]
     body = [f"{a} & {b} & {c} & {d} & {e} \\\\" for a, b, c, d, e in rows]
-    write("hypotheses", tab("Reproductions and predictions with the value each one took. R1 to R5 restate values committed before the design document named them; H1 to H12 were written before the corresponding run. "
+    write("hypotheses", tab("Reproductions and predictions with the value each one took. R1 to R5 restate values committed before the design document named them; H1 to H12 were written into a file whose modification time precedes that of the three result files (\\cref{sec:experimental-design}). "
                             "Three predictions failed (H6, H8, H10): the hyperbolic rule, the stability of the Adverse multiplier over the joint convention band, and the amber bar of the labelled run.",
                             "tab:hypotheses", body, "lp{4.6cm}p{3.0cm}p{3.4cm}l", "Id & Statement & Criterion & Measured & Outcome", star=True))
 
@@ -190,5 +248,7 @@ if __name__ == "__main__":
     band()
     labelled()
     hypotheses()
+    spread()
+    theory_checks()
     mn.write()
     print("tables written to", OUT)

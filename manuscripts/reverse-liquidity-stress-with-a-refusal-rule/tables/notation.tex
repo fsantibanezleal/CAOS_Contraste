@@ -23,6 +23,23 @@ $w_T(m)$ & window function $\min_{t\le T}\mathrm{NLP}_t(m)$ & money \\
 $m_0$, $m^\ast$ & root of $w_T$ and its six-decimal upward rounding & 1 \\
 $\delta$ & rounding step, $10^{-6}$ & 1 \\
 $\kappa$ & capacity over opening balance, one segment & 1 \\
+$O_{j,d}$ & outflow of segment $j$ on day $d$ & money \\
+$U_T$ & set of multipliers in $[1,m_{\max}]$ at which the survival period is at most $T$ & set \\
+$\bar m$ & upper end of the bracket: the cap when finite, 1 when no rate can be scaled & 1 \\
+$\mathrm{SP}_1$ & survival period of the unscaled scenario, $\mathrm{SP}(1)$ & days \\
+$Q_T$ & bound $\sum_jA_j\sum_{s\le T}q_{j,s}$ on the slope of $X_T$ in $m$ & money \\
+$O_T(m)$ & outflow of day $T$ at multiplier $m$ & money \\
+$a$, $b$ & $-\ln(1-\kappa)$ and $-\ln(1-q)$, one segment & 1 \\
+$\tilde m$ & hyperbolic rule $\mathrm{SP}(1)/T$ & 1 \\
+$\varepsilon$ & level shift of the effective capacity & money \\
+$t_0$ & day at which $\mathrm{NLP}_t(m_0)$ is smallest over $t\le T$ & days \\
+$X'_t(m)$ & derivative of $X_t$ in $m$ & money \\
+$n$ & horizon of a row of the labelled run, in days & days \\
+$\hat q$, $q_{\mathrm{fast}}$ & implied daily rate of a row, and the rate of the fast-run base, the maximum of $\hat q$ over $\mathcal R_{<2023}$ & per day \\
+$\mathcal R_{<2023}$ & rows of the table of observed outflows dated before 2023 & set \\
+$F^{\mathrm{mod}}_n$, $F^{\mathrm{obs}}$ & modelled and observed cumulative outflow share of the deposit base at the horizon of a row & share \\
+$m_{\mathrm{run}}$ & multiplier at which the modelled share equals the observed one & 1 \\
+$e$, $\tau$ & signed relative error of an answer $\hat m$, and its threshold-property indicator & 1 \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -119,7 +119,7 @@ def build() -> None:
     cf = T["closed_form_single_segment"]
     reg("thCfN", f"{cf['instances']:,}", f"{t} closed_form_single_segment.instances")
     reg("thCfSolved", f"{cf['solved']:,}", f"{t} closed_form_single_segment.solved")
-    reg("thCfMax", f"{cf['max_abs_difference'] * 1e6:.3f}", f"{t} closed_form_single_segment.max_abs_difference x 1e6")
+    reg("thCfMax", f"{cf['max_abs_difference'] * 1e6:.4f}", f"{t} closed_form_single_segment.max_abs_difference x 1e6")
     reg("thCfMed", f"{cf['median_abs_difference'] * 1e6:.3f}", f"{t} closed_form_single_segment.median_abs_difference x 1e6")
     reg("thHypN", f"{cf['hyperbolic_instances']:,}", f"{t} closed_form_single_segment.hyperbolic_instances")
     reg("thHypMed", pc(cf["hyperbolic_relative_error_median"]), f"{t} hyperbolic_relative_error_median x 100")
@@ -142,6 +142,7 @@ def build() -> None:
     reg("kFlat", f"{dsg['solved_flat_no_inflow']:,}", f"{k} design.solved_flat_no_inflow")
     reg("kGrow", f"{dsg['solved_growing']:,}", f"{k} design.solved_growing")
     reg("kWallMin", f"{dsg['wall_seconds_total'] / 60:.0f}", f"{k} design.wall_seconds_total / 60")
+    reg("kWallSec", f"{dsg['wall_seconds_total']:,.1f}", f"{k} design.wall_seconds_total")
     reg("kProc", K["platform"]["processor"] or K["platform"]["machine"], f"{k} platform.processor")
     reg("kPy", K["platform"]["python"], f"{k} platform.python")
     mm = K["methods"]
@@ -159,6 +160,7 @@ def build() -> None:
         reg(f"k{nm}ErrQ", f"{x['abs_rel_error_q95']['est']:.3f}", f"{k} methods.{key}.abs_rel_error_q95")
         reg(f"k{nm}Evals", f"{x['evals_mean_solved']:.1f}", f"{k} methods.{key}.evals_mean_solved")
         reg(f"k{nm}Time", f"{x['time_us_median'] / 1000:.2f}", f"{k} methods.{key}.time_us_median / 1000 (ms)")
+        reg(f"k{nm}PerEval", f"{x['time_us_median'] / x['evals_mean_solved'] / 1000:.2f}", f"{k} methods.{key}.time_us_median / evals_mean_solved / 1000 (ms)")
     reg("kHOneDis", str(K["H1"]["disagreements"]), f"{k} H1.disagreements")
     reg("kHTwoMin", f"{K['H2']['diff_min'] * 1e6:.3f}", f"{k} H2.diff_min x 1e6")
     reg("kHTwoMax", f"{K['H2']['diff_max'] * 1e6:.3f}", f"{k} H2.diff_max x 1e6")
@@ -178,6 +180,46 @@ def build() -> None:
     reg("kMzeroMed", f"{K['m0_quantiles']['0.5']:.2f}", f"{k} m0_quantiles 0.5")
     reg("kMzeroLo", f"{K['m0_quantiles']['0.05']:.2f}", f"{k} m0_quantiles 0.05")
     reg("kMzeroHi", f"{K['m0_quantiles']['0.95']:.1f}", f"{k} m0_quantiles 0.95")
+    # the spread over the five corpora and the bootstrap intervals of the median error
+    reg("kHSixSd", pc(K["H6"]["sd_over_corpora"]), f"{k} H6.sd_over_corpora x 100")
+    reg("kHSixHalf", pc((K["H6"]["hi"] - K["H6"]["lo"]) / 2.0), f"{k} H6 Wilson half-width x 100")
+    reg("kHFourSd", pc(K["H4"]["sd_over_corpora"]), f"{k} H4.sd_over_corpora x 100")
+    reg("kHFourAll", pc(K["H4"]["k"] / dsg["solved"]), f"{k} H4.k / design.solved x 100")
+    reg("kHFourAns", f"{K['H4']['answered_solved']:,}", f"{k} H4.answered_solved")
+    reg("kGFalseSd", pc(mm["grid_case"]["false_answer_on_refused"]["sd_over_corpora"]), f"{k} methods.grid_case.false_answer_on_refused.sd_over_corpora x 100")
+    reg("kGFalseHalf", pc((mm["grid_case"]["false_answer_on_refused"]["hi"] - mm["grid_case"]["false_answer_on_refused"]["lo"]) / 2.0, 2), f"{k} methods.grid_case.false_answer_on_refused Wilson half-width x 100")
+    reg("kGErrLo", pc(mm["grid_case"]["abs_rel_error_median"]["lo"]), f"{k} methods.grid_case.abs_rel_error_median.lo x 100")
+    reg("kGErrHi", pc(mm["grid_case"]["abs_rel_error_median"]["hi"]), f"{k} methods.grid_case.abs_rel_error_median.hi x 100")
+    # the order of the predictions and the runs, from experiments/record_order.py
+    ft = load("file_times.json")["files"]
+    reg("tOrdHyp", ft["hypotheses.json"]["clock"], "file_times.json hypotheses.json clock")
+    reg("tOrdC", ft["results_reverse_c16.json"]["clock"], "file_times.json results_reverse_c16.json clock")
+    reg("tOrdT", ft["results_theory.json"]["clock"], "file_times.json results_theory.json clock")
+    reg("tOrdK", ft["results_corpus.json"]["clock"], "file_times.json results_corpus.json clock")
+    # the slow-schedule corner of the joint band
+    lowslow = [r for r in ba["haircut_x_monetisation"] if r["haircut"] == "low" and r["monetisation"] == "slow"][0]
+    reg("lowSlowM", f"{lowslow['multiplier']:.6f}", f"{s} band.list-adverse.haircut_x_monetisation low/slow multiplier")
+    reg("lowSlowSp", str(lowslow["sp_at"]), f"{s} band.list-adverse.haircut_x_monetisation low/slow sp_at")
+    reg("lowSlowBelow", str(lowslow["sp_just_below"]), f"{s} band.list-adverse.haircut_x_monetisation low/slow sp_just_below")
+    reg("lowSlowGap", str(30 - lowslow["sp_at"]), f"{s} target 30 minus low/slow sp_at")
+    reg("spAtTwo", str(L["reverse_by_target"]["2"]["sp_at"]), f"{s} labelled_run.reverse_by_target.2.sp_at")
+    # numerical checks of the propositions
+    reg("thMonoViol", str(T["monotone_in_multiplier"]["violations"]), f"{t} monotone_in_multiplier.violations")
+    reg("thMonoLarge", f"{T['monotone_in_multiplier']['largest_increase']:.1e}", f"{t} monotone_in_multiplier.largest_increase")
+    reg("thCfMism", str(cf["condition_mismatches"]), f"{t} closed_form_single_segment.condition_mismatches")
+    reg("thCfRefused", f"{cf['refused']:,}", f"{t} closed_form_single_segment.refused")
+    reg("thCfBelow", str(cf["engine_below_closed_form"]), f"{t} closed_form_single_segment.engine_below_closed_form")
+    reg("thCfBoundViol", str(cf["multiplier_bound_violations"]), f"{t} closed_form_single_segment.multiplier_bound_violations")
+    reg("thHypViol", str(cf["hyperbolic_bound_violations"]), f"{t} closed_form_single_segment.hyperbolic_bound_violations")
+    reg("thTgtBanks", f"{T['monotone_in_target']['banks']:,}", f"{t} monotone_in_target.banks")
+    reg("thTgtViol", str(T["monotone_in_target"]["violations"]), f"{t} monotone_in_target.violations")
+    reg("thCapBanks", f"{T['monotone_in_capacity']['banks']:,}", f"{t} monotone_in_capacity.banks")
+    reg("thCapViol", str(T["monotone_in_capacity"]["violations"]), f"{t} monotone_in_capacity.violations")
+    reg("thErExact", f"{er['exact']:,}", f"{t} exact_round_trip.exact")
+    reg("thErCond", f"{er['condition_holds']:,}", f"{t} exact_round_trip.condition_holds")
+    reg("thErViol", str(er["violations_of_the_proposition"]), f"{t} exact_round_trip.violations_of_the_proposition")
+    reg("thErMarginMed", f"{er['margin_median']:,.0f}", f"{t} exact_round_trip.margin_median")
+    reg("thSeed", str(T["seed"]), f"{t} seed")
 
 
 def write() -> None:

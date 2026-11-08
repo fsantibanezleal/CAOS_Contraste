@@ -1,7 +1,7 @@
 \section{Theory}
 \label{sec:theory}
 
-The propositions below hold for the model of \cref{sec:problem}: independent segments, rates in $[0,1]$, an effective capacity $C_t$ that does not depend on $m$, and integer days. Each proposition is checked numerically in \cref{sec:results}; the checks test the statements and do not replace the proofs.
+The propositions below hold for the model of \cref{sec:problem}: independent segments, rates in $[0,1]$, an effective capacity $C_t$ that does not depend on $m$, and integer days. Each proposition is checked numerically in \cref{sec:results} (\cref{tab:theory-checks}; the refusal rule against the oracle on the corpus, and the sensitivity formula against repeated solves on the committed bank); the checks test the statements and do not replace the proofs.
 
 \subsection{Monotonicity and the threshold}
 
@@ -15,10 +15,10 @@ Each factor $1-\min(m q_{j,s},1)$ is continuous, takes values in $[0,1]$ and is 
 
 \begin{proposition}[The threshold]
 \label{prop:threshold}
-Let $U_T=\{m\in[1,m_{\max}]:w_T(m)<0\}$, the multipliers at which the survival period is at most $T$ (\cref{eq:equivalence}). Then $U_T$ is closed upwards and open in $[1,m_{\max}]$. If $w_T(1)\ge 0$ and $U_T\ne\emptyset$, then $m_0=\inf U_T$ satisfies $w_T(m_0)=0$, $m_0\notin U_T$, and the rounding of \cref{eq:rounding} lies in $U_T$ with $0\le m^\ast_T-m_0<\delta$ when $m_0<m_{\max}$ is not within $\delta$ of the cap. Moreover $m_0$ is non-increasing in $T$ and non-decreasing in the capacity: if $C'_t\ge C_t$ for all $t$, then $m_0'\ge m_0$.
+Let $U_T=\{m\in[1,m_{\max}]:w_T(m)<0\}$, the multipliers at which the survival period is at most $T$ (\cref{eq:equivalence}). Then $U_T$ is closed upwards and open in $[1,m_{\max}]$. If $w_T(1)\ge 0$ and $U_T\ne\emptyset$, then $m_0=\inf U_T$ satisfies $w_T(m_0)=0$, $m_0\notin U_T$, and the smallest multiple of $\delta$ above $m_0$, which is the rounding of \cref{eq:rounding} after its neighbour check, is $m^\ast_T=\delta(\lfloor m_0/\delta\rfloor+1)$, lies in $U_T$ and satisfies $0<m^\ast_T-m_0\le\delta$, when $m_0<m_{\max}$ is not within $\delta$ of the cap. Moreover $m_0$ is non-increasing in $T$ and non-decreasing in the capacity: if $C'_t\ge C_t$ for all $t$, then $m_0'\ge m_0$.
 \end{proposition}
 \begin{proof}
-$U_T$ is the preimage of $(-\infty,0)$ under a continuous non-increasing function, hence open and closed upwards. Its infimum $m_0$ satisfies $w_T(m_0)\ge 0$ because $m_0\notin U_T$ ($U_T$ is open and $m_0$ is its left end, or $m_0=1$ with $w_T(1)\ge 0$), and $w_T(m_0)\le 0$ by continuity from the right. Hence $w_T(m_0)=0$. Every multiple of $\delta$ above $m_0$ lies in $U_T$ only if $w_T$ is strictly negative there, which holds when $w_T$ is strictly decreasing at $m_0$; the smallest such multiple is $\delta\lceil m_0/\delta\rceil$, which is at most $m_0+\delta$. For the dependence on $T$: $w_{T'}\le w_T$ pointwise for $T'>T$, since a minimum over more days is smaller, so $U_T\subseteq U_{T'}$ and $m_0(T')\le m_0(T)$. For the capacity: $C'\ge C$ gives $w'\ge w$, so $U'\subseteq U$ and $m_0'\ge m_0$.
+$U_T$ is the preimage of $(-\infty,0)$ under a continuous non-increasing function, hence open and closed upwards. Its infimum $m_0$ satisfies $w_T(m_0)\ge 0$ because $m_0\notin U_T$ ($U_T$ is open and $m_0$ is its left end, or $m_0=1$ with $w_T(1)\ge 0$), and $w_T(m_0)\le 0$ by continuity from the right. Hence $w_T(m_0)=0$. Every $m>m_0$ lies in $U_T$: since $m_0$ is the infimum, some $m'\in U_T$ has $m'<m$, so $w_T(m)\le w_T(m')<0$. The smallest multiple of $\delta$ above $m_0$ is $\delta(\lfloor m_0/\delta\rfloor+1)$, which is $\delta\lceil m_0/\delta\rceil$ unless $m_0/\delta$ is an integer, when it is $m_0+\delta$; in both cases it exceeds $m_0$ by at most $\delta$. For the dependence on $T$: $w_{T'}\le w_T$ pointwise for $T'>T$, since a minimum over more days is smaller, so $U_T\subseteq U_{T'}$ and $m_0(T')\le m_0(T)$. For the capacity: $C'\ge C$ gives $w'\ge w$, so $U'\subseteq U$ and $m_0'\ge m_0$.
 \end{proof}
 
 The open end of $U_T$ is why the method rounds up. A root rounded to the nearest decimal falls below $m_0$ in about half of the cases and then fails the threshold property of \cref{eq:threshold}, a prediction the ablation tests.
@@ -37,16 +37,15 @@ The three conditions are not exclusive, and the order of the tests decides which
 
 \subsection{One segment: closed form, exact round trip and a hyperbolic rule}
 
-Take one segment with a constant rate $q$, opening $A$ and a constant capacity $C_t=\kappa A$ with $\kappa<1$, no inflow, and write $a=-\ln(1-\kappa)$, $b=-\ln(1-q)$.
+Take one segment with a constant rate $q$, opening $A$ and a constant capacity $C_t=\kappa A$ with $\kappa>0$, no inflow, and write $a=-\ln(1-\kappa)$, $b=-\ln(1-q)$.
 
 \begin{proposition}[Closed form]
 \label{prop:closed}
-For $T<H$ and $\mathrm{SP}(1)>T$, the threshold is
+For $T<H$ and $\mathrm{SP}(1)>T$ the target is unreachable if and only if $\kappa\ge 1$, and for $\kappa<1$ the threshold is
 \begin{equation}
-m_0=\frac{1-(1-\kappa)^{1/T}}{q},
+m_0=\frac{1-(1-\kappa)^{1/T}}{q}.
 \label{eq:closed}
 \end{equation}
-and the target is unreachable if and only if $\kappa\ge 1$.
 \end{proposition}
 \begin{proof}
 The position $\mathrm{NLP}_t(m)=\kappa A-A\bigl(1-(1-mq)^t\bigr)$ is decreasing in $t$, so $w_T(m)=\mathrm{NLP}_T(m)$, which vanishes at $(1-mq)^T=1-\kappa$, that is, at \cref{eq:closed}. This is below $1/q=m_{\max}$ because $1-(1-\kappa)^{1/T}<1$. At the cap every day-1 outflow is $A$, so $w_T(m_{\max})=(\kappa-1)A<0$ if and only if $\kappa<1$.

@@ -93,7 +93,7 @@ def fig_scatter() -> None:
     hy = np.array([np.nan if x is None else x for x in s["hyper"]])
     gc = np.array(s["grid_case"])
     flat = np.array(s["flat_no_inflow"])
-    fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.9))
+    fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.9), layout="constrained")
     lim = [1.0, 150.0]
     ax[0].plot(lim, lim, color="0.6", lw=0.6)
     ax[0].fill_between(lim, [0.9 * x for x in lim], [1.1 * x for x in lim], color="0.9")
@@ -136,7 +136,7 @@ def fig_labelled() -> None:
 
 
 def fig_band() -> None:
-    fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.8))
+    fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.8), layout="constrained")
     for i, b in enumerate(("list-adverse", "list-extreme")):
         rows = C["band"][b]["uninsured_share"]
         ax[0].plot([r["uninsured_share"] for r in rows], [r["multiplier"] for r in rows], label=LABEL[b], **S[i])

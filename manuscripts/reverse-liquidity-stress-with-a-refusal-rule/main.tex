@@ -3,7 +3,7 @@
 % The four macros of the header standard; tools/zenodo/publish_revision.py patches them when it reserves the DOI.
 \newcommand{\doctype}{Preprint}
 \newcommand{\docversion}{v1.00.000}
-\newcommand{\docdate}{4 November 2026}
+\newcommand{\docdate}{8 November 2026}
 \newcommand{\versiondoi}{10.5281/zenodo.0}
 \newcommand{\conceptdoi}{10.5281/zenodo.0}
 \newcommand{\docidentity}{CAOS\_Contraste, the validation of the risk models of a bank}
@@ -14,8 +14,8 @@
 \input{tables/numbers}
 
 \title{Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run}
-\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\
-\small CAOS open-research programme, Santiago, Chile\
+\author{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}\\
+\small CAOS open-research programme, Santiago, Chile\\
 \small \texttt{fsantibanez@gmail.com}}
 \date{\docdate}
 
@@ -24,16 +24,16 @@
 \headerblock
 
 \begin{abstract}
-Validating a bank's liquidity stress model needs the inverse of the forward scenario: the run-off speed at which a stated survival period is reached.
+Validating a liquidity stress model needs the inverse of the forward scenario: the run-off speed at which a stated survival period is reached.
 We define the reverse liquidity stress as the smallest multiplier on the daily run-off rates, capped so that no rate exceeds one, at which the survival period is at most a target.
-It is solved as the root of a continuous window function, rounded up to six decimals with a check of the neighbouring decimal, and a target that no multiplier brackets is refused with its reason and no number.
-We prove the monotonicity of the position, the characterisation of the threshold, the soundness and completeness of the refusal rule, a closed form for one segment, an exact round trip with a sufficient condition, and a sensitivity formula.
-On \kInst{} instances of a seeded corpus the engine agrees with an independent oracle on every outcome and returns a threshold on every solved instance; a scan of the case grid answers \kGFalse{}\,\% of the refused instances and overshoots by a median of \kGErrPc{}\,\%.
-On the bank of case C16, with real aggregates and synthetic behaviour, the multiplier for 30 days is \mAdv{} (LiST Adverse) and \mExt{} (LiST Extreme), and the 2023 fast-run base is refused.
-Calibrated on rows before 2023, that base models \svbModel{} of deposits in the two days of the March 2023 run against 0.85 observed, a ratio of \svbRatio{}, and the multiplier that reproduces the run is \mSvb{} times the calibrated rate.
-The Adverse multiplier moves by \jointDevAdv{}\,\% over the joint band of case conventions and is refused under a slow monetisation schedule.
-Nine of twelve predictions held.
-The bank's deposit behaviour is synthetic: no result concerns what it did.
+It is the root of a continuous window function, rounded up with a neighbour check; a target that no multiplier brackets is refused with its reason and no number.
+Seven propositions with proofs give its monotonicity, refusal rule, exact round trip and sensitivity.
+On \kInst{} seeded instances the engine agrees with an independent oracle on every outcome and returns a threshold on every solved one; a case-grid scan answers \kGFalse{}\,\% of the refused instances and overshoots by a median of \kGErrPc{}\,\%.
+On case C16 the multiplier for 30 days is \mAdv{} (LiST Adverse) and \mExt{} (LiST Extreme), and the 2023 fast-run base is refused.
+Calibrated on rows before 2023, that base models \svbModel{} of deposits in the two days of the March 2023 run against 0.85 observed (ratio \svbRatio{}), and the multiplier that reproduces the run is \mSvb{} times the calibrated rate.
+The Adverse multiplier moves by \jointDevAdv{}\,\% over the joint band of case conventions: under the slow monetisation schedule it is refused at the central haircut and falls to \lowSlowM{} at the low haircut.
+Nine of twelve predictions held; three failed.
+The bank's deposit behaviour is synthetic.
 \end{abstract}
 
 \input{sections/s01-introduction}

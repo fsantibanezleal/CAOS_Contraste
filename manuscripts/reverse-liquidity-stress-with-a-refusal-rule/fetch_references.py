@@ -65,6 +65,8 @@ WORKS = {
                      "Sensitivity analysis of liquidity risk, stress test 2019, final results annex|European Central Bank, Banking Supervision|2019"),
     "fedsvb2023": ("url", "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
                    "Review of the Federal Reserve's supervision and regulation of Silicon Valley Bank|Board of Governors of the Federal Reserve System|2023"),
+    "brent1973": ("url", "https://maths-people.anu.edu.au/~brent/pub/pub011.html",
+                  "Algorithms for Minimization without Derivatives (Prentice-Hall, Englewood Cliffs, New Jersey)|Richard P. Brent|1973"),
     "scipybrentq": ("url", "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html",
                     "scipy.optimize.brentq, SciPy reference guide|The SciPy community|2025"),
 }
@@ -119,6 +121,7 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
             title = re.search(r"title\s*=\s*\{(.+?)\}\s*,", raw, re.S)
         if words and (not title or words.lower() not in title.group(1).lower()):
             raise RuntimeError(f"{key}: the record {ident} has title {title.group(1) if title else raw[:80]!r}, expected words {words!r}")
+        raw = re.sub(r"title=\{\d+ ", "title={", raw)    # a chapter record starts its title with the chapter number
         raw = re.sub(r"^\s*@(\w+)\{[^,]*,", lambda m: f"@{m.group(1)}{{{key},", raw.strip(), count=1)
         return raw + "\n"
     title, author, year = words.split("|")

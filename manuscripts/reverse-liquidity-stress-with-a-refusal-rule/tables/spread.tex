@@ -1,0 +1,18 @@
+\begin{table*}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Spread of the rates of Panel A of \cref{tab:main-results} over the five corpora of 1,000 banks, as the standard deviation of the rate of a corpus in percentage points, and the median absolute relative error with its 95\% bootstrap percentile interval (1,000 resamples of the solved instances).}
+\label{tab:spread}
+\begin{tabular}{p{3.8cm}p{2.2cm}p{2.2cm}p{2.2cm}p{4.4cm}}
+\toprule
+Method & SD, answers where refused & SD, no answer where solved & SD, threshold property & median $|$rel. error$|$ (95\% interval) \\
+\midrule
+proposed solver & 0.00 & 0.00 & 0.00 & 8.88e-08 (8.56e-08 to 9.22e-08) \\
+scan of the case grid & 1.18 & 0.64 & 0.00 & 2.17e-01 (2.11e-01 to 2.24e-01) \\
+scan of a fine grid & 1.07 & 0.45 & 0.00 & 1.34e-02 (1.29e-02 to 1.38e-02) \\
+Brent on the survival period & 0.35 & 0.00 & 1.09 & 6.35e-02 (6.09e-02 to 6.55e-02) \\
+bisection without refusal & 0.00 & 0.00 & 0.48 & 9.22e-08 (8.84e-08 to 9.54e-08) \\
+\bottomrule
+\end{tabular}
+\end{table*}

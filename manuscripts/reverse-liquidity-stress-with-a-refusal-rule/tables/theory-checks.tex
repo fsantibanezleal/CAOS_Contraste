@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\caption{Numerical checks of the propositions of \cref{sec:theory} on banks drawn with seed 20261120: what was tested, on how many cases, and what was found. The checks test the statements and do not replace the proofs.}
+\label{tab:theory-checks}
+\begin{tabular}{p{3.2cm}p{4.6cm}p{6.6cm}}
+\toprule
+Statement & Sample & Result \\
+\midrule
+Monotone position & 3,000 corpus banks, 117,000 pairs of adjacent points of a 40-point multiplier grid & 0 increases above a tolerance of $10^{-9}$ of the opening balance (largest increase 1.6e-13) \\
+Threshold: non-increasing in the target & 600 banks, 2,152 pairs of targets & 0 violations \\
+Threshold: non-decreasing in the capacity & 600 banks, 626 pairs of solves with the capacity raised by 5\% & 0 violations \\
+Closed form, outcome & 3,000 single-segment banks & 0 disagreements between the engine's outcome and the stated conditions \\
+Closed form, value & 1,953 solved & largest difference 0.9999 millionths, 0 engine values below the closed form, 0 violations of the bounds on the root \\
+Hyperbolic rule & 983 solved instances with $a<2T$ & 0 violations of the two-sided bound; median relative error 2.0\% \\
+Exact round trip & 710 solved banks with a constant capacity and no inflow & condition holds on 710, round trip exact on 710, 0 violations; margin at least 787, median 342,614 \\
+\bottomrule
+\end{tabular}
+\end{table}

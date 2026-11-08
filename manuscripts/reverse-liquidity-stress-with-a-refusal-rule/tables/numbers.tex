@@ -128,7 +128,7 @@
 % results_theory.json closed_form_single_segment.solved
 \newcommand{\thCfSolved}{1,953}
 % results_theory.json closed_form_single_segment.max_abs_difference x 1e6
-\newcommand{\thCfMax}{1.000}
+\newcommand{\thCfMax}{0.9999}
 % results_theory.json closed_form_single_segment.median_abs_difference x 1e6
 \newcommand{\thCfMed}{0.508}
 % results_theory.json closed_form_single_segment.hyperbolic_instances
@@ -165,6 +165,8 @@
 \newcommand{\kGrow}{5,177}
 % results_corpus.json design.wall_seconds_total / 60
 \newcommand{\kWallMin}{30}
+% results_corpus.json design.wall_seconds_total
+\newcommand{\kWallSec}{1,805.1}
 % results_corpus.json platform.processor
 \newcommand{\kProc}{Intel64 Family 6 Model 183 Stepping 1, GenuineIntel}
 % results_corpus.json platform.python
@@ -191,6 +193,8 @@
 \newcommand{\kPEvals}{15.7}
 % results_corpus.json methods.proposed.time_us_median / 1000 (ms)
 \newcommand{\kPTime}{0.29}
+% results_corpus.json methods.proposed.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kPPerEval}{0.02}
 % results_corpus.json methods.grid_case.false_answer_on_refused
 \newcommand{\kGFalse}{93.5 (93.0 to 93.9)}
 % results_corpus.json methods.grid_case.false_answer_on_refused.k
@@ -213,6 +217,8 @@
 \newcommand{\kGEvals}{9.7}
 % results_corpus.json methods.grid_case.time_us_median / 1000 (ms)
 \newcommand{\kGTime}{1.88}
+% results_corpus.json methods.grid_case.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kGPerEval}{0.19}
 % results_corpus.json methods.grid_fine.false_answer_on_refused
 \newcommand{\kFFalse}{93.7 (93.3 to 94.1)}
 % results_corpus.json methods.grid_fine.false_answer_on_refused.k
@@ -235,6 +241,8 @@
 \newcommand{\kFEvals}{171.6}
 % results_corpus.json methods.grid_fine.time_us_median / 1000 (ms)
 \newcommand{\kFTime}{35.14}
+% results_corpus.json methods.grid_fine.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kFPerEval}{0.20}
 % results_corpus.json methods.brent_sp.false_answer_on_refused
 \newcommand{\kBFalse}{13.5 (12.9 to 14.2)}
 % results_corpus.json methods.brent_sp.false_answer_on_refused.k
@@ -257,6 +265,8 @@
 \newcommand{\kBEvals}{15.0}
 % results_corpus.json methods.brent_sp.time_us_median / 1000 (ms)
 \newcommand{\kBTime}{0.30}
+% results_corpus.json methods.brent_sp.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kBPerEval}{0.02}
 % results_corpus.json methods.bisect_no_refusal.false_answer_on_refused
 \newcommand{\kNFalse}{100.0 (100.0 to 100.0)}
 % results_corpus.json methods.bisect_no_refusal.false_answer_on_refused.k
@@ -279,6 +289,8 @@
 \newcommand{\kNEvals}{61.4}
 % results_corpus.json methods.bisect_no_refusal.time_us_median / 1000 (ms)
 \newcommand{\kNTime}{2.97}
+% results_corpus.json methods.bisect_no_refusal.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kNPerEval}{0.05}
 % results_corpus.json methods.uncapped.false_answer_on_refused
 \newcommand{\kUFalse}{4.6 (4.2 to 5.0)}
 % results_corpus.json methods.uncapped.false_answer_on_refused.k
@@ -301,6 +313,8 @@
 \newcommand{\kUEvals}{82.0}
 % results_corpus.json methods.uncapped.time_us_median / 1000 (ms)
 \newcommand{\kUTime}{0.10}
+% results_corpus.json methods.uncapped.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kUPerEval}{0.00}
 % results_corpus.json methods.nearest.false_answer_on_refused
 \newcommand{\kRFalse}{0.0 (0.0 to 0.0)}
 % results_corpus.json methods.nearest.false_answer_on_refused.k
@@ -323,6 +337,8 @@
 \newcommand{\kREvals}{8.7}
 % results_corpus.json methods.nearest.time_us_median / 1000 (ms)
 \newcommand{\kRTime}{0.07}
+% results_corpus.json methods.nearest.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kRPerEval}{0.01}
 % results_corpus.json methods.raw_capacity.false_answer_on_refused
 \newcommand{\kWFalse}{1.4 (1.2 to 1.6)}
 % results_corpus.json methods.raw_capacity.false_answer_on_refused.k
@@ -345,6 +361,8 @@
 \newcommand{\kWEvals}{15.0}
 % results_corpus.json methods.raw_capacity.time_us_median / 1000 (ms)
 \newcommand{\kWTime}{0.31}
+% results_corpus.json methods.raw_capacity.time_us_median / evals_mean_solved / 1000 (ms)
+\newcommand{\kWPerEval}{0.02}
 % results_corpus.json H1.disagreements
 \newcommand{\kHOneDis}{0}
 % results_corpus.json H2.diff_min x 1e6
@@ -383,3 +401,71 @@
 \newcommand{\kMzeroLo}{1.17}
 % results_corpus.json m0_quantiles 0.95
 \newcommand{\kMzeroHi}{38.1}
+% results_corpus.json H6.sd_over_corpora x 100
+\newcommand{\kHSixSd}{4.0}
+% results_corpus.json H6 Wilson half-width x 100
+\newcommand{\kHSixHalf}{2.5}
+% results_corpus.json H4.sd_over_corpora x 100
+\newcommand{\kHFourSd}{1.5}
+% results_corpus.json H4.k / design.solved x 100
+\newcommand{\kHFourAll}{73.4}
+% results_corpus.json H4.answered_solved
+\newcommand{\kHFourAns}{8,306}
+% results_corpus.json methods.grid_case.false_answer_on_refused.sd_over_corpora x 100
+\newcommand{\kGFalseSd}{1.2}
+% results_corpus.json methods.grid_case.false_answer_on_refused Wilson half-width x 100
+\newcommand{\kGFalseHalf}{0.45}
+% results_corpus.json methods.grid_case.abs_rel_error_median.lo x 100
+\newcommand{\kGErrLo}{21.1}
+% results_corpus.json methods.grid_case.abs_rel_error_median.hi x 100
+\newcommand{\kGErrHi}{22.4}
+% file_times.json hypotheses.json clock
+\newcommand{\tOrdHyp}{21:49:08}
+% file_times.json results_reverse_c16.json clock
+\newcommand{\tOrdC}{22:08:16}
+% file_times.json results_theory.json clock
+\newcommand{\tOrdT}{22:16:23}
+% file_times.json results_corpus.json clock
+\newcommand{\tOrdK}{22:26:27}
+% results_reverse_c16.json band.list-adverse.haircut_x_monetisation low/slow multiplier
+\newcommand{\lowSlowM}{1.063646}
+% results_reverse_c16.json band.list-adverse.haircut_x_monetisation low/slow sp_at
+\newcommand{\lowSlowSp}{4}
+% results_reverse_c16.json band.list-adverse.haircut_x_monetisation low/slow sp_just_below
+\newcommand{\lowSlowBelow}{61}
+% results_reverse_c16.json target 30 minus low/slow sp_at
+\newcommand{\lowSlowGap}{26}
+% results_reverse_c16.json labelled_run.reverse_by_target.2.sp_at
+\newcommand{\spAtTwo}{1}
+% results_theory.json monotone_in_multiplier.violations
+\newcommand{\thMonoViol}{0}
+% results_theory.json monotone_in_multiplier.largest_increase
+\newcommand{\thMonoLarge}{1.6e-13}
+% results_theory.json closed_form_single_segment.condition_mismatches
+\newcommand{\thCfMism}{0}
+% results_theory.json closed_form_single_segment.refused
+\newcommand{\thCfRefused}{1,047}
+% results_theory.json closed_form_single_segment.engine_below_closed_form
+\newcommand{\thCfBelow}{0}
+% results_theory.json closed_form_single_segment.multiplier_bound_violations
+\newcommand{\thCfBoundViol}{0}
+% results_theory.json closed_form_single_segment.hyperbolic_bound_violations
+\newcommand{\thHypViol}{0}
+% results_theory.json monotone_in_target.banks
+\newcommand{\thTgtBanks}{600}
+% results_theory.json monotone_in_target.violations
+\newcommand{\thTgtViol}{0}
+% results_theory.json monotone_in_capacity.banks
+\newcommand{\thCapBanks}{600}
+% results_theory.json monotone_in_capacity.violations
+\newcommand{\thCapViol}{0}
+% results_theory.json exact_round_trip.exact
+\newcommand{\thErExact}{710}
+% results_theory.json exact_round_trip.condition_holds
+\newcommand{\thErCond}{710}
+% results_theory.json exact_round_trip.violations_of_the_proposition
+\newcommand{\thErViol}{0}
+% results_theory.json exact_round_trip.margin_median
+\newcommand{\thErMarginMed}{342,614}
+% results_theory.json seed
+\newcommand{\thSeed}{20261120}
