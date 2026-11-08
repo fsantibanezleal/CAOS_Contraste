@@ -66,7 +66,7 @@ WORKS = {
     "fedsvb2023": ("url", "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
                    "Review of the Federal Reserve's supervision and regulation of Silicon Valley Bank|Board of Governors of the Federal Reserve System|2023"),
     "brent1973": ("url", "https://maths-people.anu.edu.au/~brent/pub/pub011.html",
-                  "Algorithms for Minimization without Derivatives (Prentice-Hall, Englewood Cliffs, New Jersey)|Richard P. Brent|1973"),
+                  "Algorithms for Minimization without Derivatives|Richard P. Brent|1973|Prentice-Hall|Englewood Cliffs, New Jersey"),
     "scipybrentq": ("url", "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html",
                     "scipy.optimize.brentq, SciPy reference guide|The SciPy community|2025"),
 }
@@ -124,10 +124,13 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
         raw = re.sub(r"title=\{\d+ ", "title={", raw)    # a chapter record starts its title with the chapter number
         raw = re.sub(r"^\s*@(\w+)\{[^,]*,", lambda m: f"@{m.group(1)}{{{key},", raw.strip(), count=1)
         return raw + "\n"
-    title, author, year = words.split("|")
+    title, author, year, *book = words.split("|")
     code = urllib.request.urlopen(urllib.request.Request(ident, headers={"User-Agent": "Mozilla/5.0"}), timeout=60).status
     if code != 200:
         raise RuntimeError(f"{key}: {ident} answered {code}")
+    if book:                                            # a book with no DOI: publisher and address from the record of the book
+        return (f"@book{{{key},\n  author = {{{{{author}}}}},\n  title = {{{title}}},\n  publisher = {{{book[0]}}},\n  address = {{{book[1]}}},\n"
+                f"  year = {{{year}}},\n  url = {{{ident}}}\n}}\n")
     return f"@misc{{{key},\n  author = {{{{{author}}}}},\n  title = {{{title}}},\n  year = {{{year}}},\n  url = {{{ident}}}\n}}\n"
 
 

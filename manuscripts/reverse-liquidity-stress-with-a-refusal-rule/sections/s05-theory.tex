@@ -1,7 +1,7 @@
 \section{Theory}
 \label{sec:theory}
 
-The propositions below hold for the model of \cref{sec:problem}: independent segments, rates in $[0,1]$, an effective capacity $C_t$ that does not depend on $m$, and integer days. Each proposition is checked numerically in \cref{sec:results} (\cref{tab:theory-checks}; the refusal rule against the oracle on the corpus, and the sensitivity formula against repeated solves on the committed bank); the checks test the statements and do not replace the proofs.
+The propositions below hold for the model of \cref{sec:problem}: independent segments, rates in $[0,1]$, an effective capacity $C_t$ that does not depend on $m$, and integer days. Each proposition is checked numerically in \cref{sec:results} (\cref{tab:theory-checks}; the solver's refusals against an oracle that implements the same conditions independently, on the corpus, and the sensitivity formula against repeated solves on the committed bank); the checks test the statements and do not replace the proofs.
 
 \subsection{Monotonicity and the threshold}
 
@@ -37,7 +37,7 @@ The three conditions are not exclusive, and the order of the tests decides which
 
 \subsection{One segment: closed form, exact round trip and a hyperbolic rule}
 
-Take one segment with a constant rate $q$, opening $A$ and a constant capacity $C_t=\kappa A$ with $\kappa>0$, no inflow, and write $a=-\ln(1-\kappa)$, $b=-\ln(1-q)$.
+Take one segment with a constant rate $q$, opening $A$ and a constant capacity $C_t=\kappa A$ with $\kappa>0$, no inflow, and, for $\kappa<1$, write $a=-\ln(1-\kappa)$, $b=-\ln(1-q)$.
 
 \begin{proposition}[Closed form]
 \label{prop:closed}

@@ -5,6 +5,8 @@ is complete, and the numbers the manuscript quotes are in the files.
 """
 from __future__ import annotations
 
+import datetime as dt
+import hashlib
 import json
 import pathlib
 
@@ -25,11 +27,16 @@ def committed() -> dict:
     return {b["base_id"]: b for b in d["outputs"]["bases"]}
 
 
-def test_the_hypotheses_file_precedes_the_results() -> None:
-    h = HERE / "hypotheses.json"
-    assert h.exists()
+def test_the_recorded_order_of_the_predictions_and_the_results() -> None:
+    """``file_times.json`` records the file times of the working copy of the runs; a clone changes the file times, so the files are
+    compared with their recorded SHA-256 digests and the recorded times are checked for order."""
+    rec = load("file_times.json")["files"]
+    assert set(rec) == {"hypotheses.json", "results_reverse_c16.json", "results_theory.json", "results_corpus.json"}
+    for name, r in rec.items():
+        assert hashlib.sha256((HERE / name).read_bytes()).hexdigest() == r["sha256"], f"{name} differs from the file recorded in file_times.json"
+    h = dt.datetime.fromisoformat(rec["hypotheses.json"]["modified"])
     for name in ("results_corpus.json", "results_reverse_c16.json", "results_theory.json"):
-        assert (HERE / name).stat().st_mtime >= h.stat().st_mtime, f"{name} is older than the predictions"
+        assert dt.datetime.fromisoformat(rec[name]["modified"]) >= h, f"{name} was recorded as older than the predictions"
 
 
 def test_the_c16_reproduction_values_are_the_committed_ones() -> None:

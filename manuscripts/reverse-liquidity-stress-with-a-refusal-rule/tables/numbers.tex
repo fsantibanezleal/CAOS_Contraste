@@ -402,7 +402,7 @@
 % results_corpus.json m0_quantiles 0.95
 \newcommand{\kMzeroHi}{38.1}
 % results_corpus.json H6.sd_over_corpora x 100
-\newcommand{\kHSixSd}{4.0}
+\newcommand{\kHSixSd}{3.95}
 % results_corpus.json H6 Wilson half-width x 100
 \newcommand{\kHSixHalf}{2.5}
 % results_corpus.json H4.sd_over_corpora x 100
@@ -412,9 +412,13 @@
 % results_corpus.json H4.answered_solved
 \newcommand{\kHFourAns}{8,306}
 % results_corpus.json methods.grid_case.false_answer_on_refused.sd_over_corpora x 100
-\newcommand{\kGFalseSd}{1.2}
+\newcommand{\kGFalseSd}{1.18}
 % results_corpus.json methods.grid_case.false_answer_on_refused Wilson half-width x 100
 \newcommand{\kGFalseHalf}{0.45}
+% results_corpus.json sqrt(rate (1 - rate) / (n / 5)) x 100 of methods.grid_case.false_answer_on_refused
+\newcommand{\kGFalseInd}{0.52}
+% results_corpus.json sqrt(rate (1 - rate) / (n / 5)) x 100 of H6
+\newcommand{\kHSixInd}{2.86}
 % results_corpus.json methods.grid_case.abs_rel_error_median.lo x 100
 \newcommand{\kGErrLo}{21.1}
 % results_corpus.json methods.grid_case.abs_rel_error_median.hi x 100
@@ -427,6 +431,8 @@
 \newcommand{\tOrdT}{22:16:23}
 % file_times.json results_corpus.json clock
 \newcommand{\tOrdK}{22:26:27}
+% file_times.json results_corpus.json modified minus results_corpus.json design.wall_seconds_total
+\newcommand{\tOrdKStart}{21:56}
 % results_reverse_c16.json band.list-adverse.haircut_x_monetisation low/slow multiplier
 \newcommand{\lowSlowM}{1.063646}
 % results_reverse_c16.json band.list-adverse.haircut_x_monetisation low/slow sp_at

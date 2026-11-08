@@ -4,13 +4,14 @@
 
 The order of the predictions and the runs is attested only by the modification times that the files had in the working copy where the
 experiments were run; a clone does not keep them. This script writes them down once, from that working copy, with the digests of the
-files, and states when it ran. Run it again only from a working copy whose file times are the original ones: it refuses when a result
-file is older than the predictions.
+files, and states when it ran. It was run once, in that working copy, and must not be run again: it refuses when ``file_times.json``
+exists unless given ``--force``, and then also when a result file is older than the predictions (a fresh clone changes the file times).
 """
 from __future__ import annotations
 
 import datetime as dt
 import hashlib
+import argparse
 import json
 import pathlib
 import sys
@@ -26,6 +27,12 @@ def stamp(p: pathlib.Path) -> dict:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--force", action="store_true", help="overwrite an existing file_times.json (loses the original record)")
+    args = ap.parse_args()
+    if (HERE / "file_times.json").exists() and not args.force:
+        print("file_times.json exists and records the original file times: refusing to overwrite it (use --force only from the original working copy)")
+        return 1
     rec = {name: stamp(HERE / name) for name in FILES}
     h = (HERE / FILES[0]).stat().st_mtime
     for name in FILES[1:]:

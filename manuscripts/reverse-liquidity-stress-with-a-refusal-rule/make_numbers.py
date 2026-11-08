@@ -7,6 +7,7 @@ also exposes ``reg`` and ``NUM`` so that ``make_tables.py`` registers the number
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import pathlib
 
@@ -181,13 +182,17 @@ def build() -> None:
     reg("kMzeroLo", f"{K['m0_quantiles']['0.05']:.2f}", f"{k} m0_quantiles 0.05")
     reg("kMzeroHi", f"{K['m0_quantiles']['0.95']:.1f}", f"{k} m0_quantiles 0.95")
     # the spread over the five corpora and the bootstrap intervals of the median error
-    reg("kHSixSd", pc(K["H6"]["sd_over_corpora"]), f"{k} H6.sd_over_corpora x 100")
+    reg("kHSixSd", pc(K["H6"]["sd_over_corpora"], 2), f"{k} H6.sd_over_corpora x 100")
     reg("kHSixHalf", pc((K["H6"]["hi"] - K["H6"]["lo"]) / 2.0), f"{k} H6 Wilson half-width x 100")
     reg("kHFourSd", pc(K["H4"]["sd_over_corpora"]), f"{k} H4.sd_over_corpora x 100")
     reg("kHFourAll", pc(K["H4"]["k"] / dsg["solved"]), f"{k} H4.k / design.solved x 100")
     reg("kHFourAns", f"{K['H4']['answered_solved']:,}", f"{k} H4.answered_solved")
-    reg("kGFalseSd", pc(mm["grid_case"]["false_answer_on_refused"]["sd_over_corpora"]), f"{k} methods.grid_case.false_answer_on_refused.sd_over_corpora x 100")
+    reg("kGFalseSd", pc(mm["grid_case"]["false_answer_on_refused"]["sd_over_corpora"], 2), f"{k} methods.grid_case.false_answer_on_refused.sd_over_corpora x 100")
     reg("kGFalseHalf", pc((mm["grid_case"]["false_answer_on_refused"]["hi"] - mm["grid_case"]["false_answer_on_refused"]["lo"]) / 2.0, 2), f"{k} methods.grid_case.false_answer_on_refused Wilson half-width x 100")
+    # the spread expected if the instances were independent: the binomial standard deviation of a corpus rate, a fifth of the instances each
+    ncorp = len(dsg["seeds"])
+    for nm, h in (("kGFalseInd", mm["grid_case"]["false_answer_on_refused"]), ("kHSixInd", K["H6"])):
+        reg(nm, pc((h["rate"] * (1.0 - h["rate"]) / (h["n"] / ncorp)) ** 0.5, 2), f"{k} sqrt(rate (1 - rate) / (n / {ncorp})) x 100 of " + ("methods.grid_case.false_answer_on_refused" if nm == "kGFalseInd" else "H6"))
     reg("kGErrLo", pc(mm["grid_case"]["abs_rel_error_median"]["lo"]), f"{k} methods.grid_case.abs_rel_error_median.lo x 100")
     reg("kGErrHi", pc(mm["grid_case"]["abs_rel_error_median"]["hi"]), f"{k} methods.grid_case.abs_rel_error_median.hi x 100")
     # the order of the predictions and the runs, from experiments/record_order.py
@@ -196,6 +201,8 @@ def build() -> None:
     reg("tOrdC", ft["results_reverse_c16.json"]["clock"], "file_times.json results_reverse_c16.json clock")
     reg("tOrdT", ft["results_theory.json"]["clock"], "file_times.json results_theory.json clock")
     reg("tOrdK", ft["results_corpus.json"]["clock"], "file_times.json results_corpus.json clock")
+    t_end = dt.datetime.fromisoformat(ft["results_corpus.json"]["modified"])
+    reg("tOrdKStart", (t_end - dt.timedelta(seconds=dsg["wall_seconds_total"])).strftime("%H:%M"), "file_times.json results_corpus.json modified minus results_corpus.json design.wall_seconds_total")
     # the slow-schedule corner of the joint band
     lowslow = [r for r in ba["haircut_x_monetisation"] if r["haircut"] == "low" and r["monetisation"] == "slow"][0]
     reg("lowSlowM", f"{lowslow['multiplier']:.6f}", f"{s} band.list-adverse.haircut_x_monetisation low/slow multiplier")

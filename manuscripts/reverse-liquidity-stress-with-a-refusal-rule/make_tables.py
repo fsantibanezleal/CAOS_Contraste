@@ -148,7 +148,7 @@ def theory_checks() -> None:
         ("Closed form, outcome", f"{cf['instances']:,} single-segment banks", f"{cf['condition_mismatches']} disagreements between the engine's outcome and the stated conditions"),
         ("Closed form, value", f"{cf['solved']:,} solved", f"largest difference {cf['max_abs_difference'] * 1e6:.4f} millionths, {cf['engine_below_closed_form']} engine values below the closed form, {cf['multiplier_bound_violations']} violations of the bounds on the root"),
         ("Hyperbolic rule", f"{cf['hyperbolic_instances']:,} solved instances with $a<2T$", f"{cf['hyperbolic_bound_violations']} violations of the two-sided bound; median relative error {pc(cf['hyperbolic_relative_error_median'])}\\%"),
-        ("Exact round trip", f"{er['solved_flat_no_inflow']:,} solved banks with a constant capacity and no inflow", f"condition holds on {er['condition_holds']:,}, round trip exact on {er['exact']:,}, {er['violations_of_the_proposition']} violations; margin at least {er['margin_min']:.0f}, median {er['margin_median']:,.0f}"),
+        ("Exact round trip", f"{er['solved_flat_no_inflow']:,} solved instances (bank and target pairs at targets of 2, 5, 10 and 30 days) with a constant capacity and no inflow among 1,500 banks drawn", f"condition holds on {er['condition_holds']:,}, round trip exact on {er['exact']:,}, {er['violations_of_the_proposition']} violations; margin at least {er['margin_min']:.0f}, median {er['margin_median']:,.0f}"),
     ]
     body = [f"{a} & {b} & {c} \\\\" for a, b, c in rows]
     write("theory-checks", tab(f"Numerical checks of the propositions of \\cref{{sec:theory}} on banks drawn with seed {T['seed']}: what was tested, on how many cases, and what was found. "
@@ -224,14 +224,14 @@ def hypotheses() -> None:
         ("H1", "outcome equals the oracle's", "0 disagreements", f"{k['H1']['disagreements']} of {k['H1']['instances']:,}", "held"),
         ("H2", "threshold within the rounding step", "0 to $10^{-6}$ above the root", f"{k['H2']['diff_min'] * 1e6:.3f} to {k['H2']['diff_max'] * 1e6:.3f} $\\times10^{{-6}}$", "held"),
         ("H3", "exact round trip: flat capacity; schedule", "$\\ge$99\\%; $\\ge$5\\% with a gap", f"{pc(k['H3']['monotone']['rate'])}\\%; {pc(k['H3']['growing']['rate'])}\\%", "held"),
-        ("H4", "case grid overshoots by more than 10\\%", "$\\ge$30\\% of the solved instances it answers", f"{pc(k['H4']['rate'])}\\%", "held"),
+        ("H4", "case grid overshoots by more than 10\\%", "$\\ge$30\\% of the solved instances", f"{pc(k['H4']['rate'])}\\% answered, {pc(k['H4']['k'] / k['design']['solved'])}\\% all", "held"),
         ("H5", "Brent on SP misses the threshold", "$\\ge$10\\% of solved", f"{pc(k['H5']['rate_of_all_solved'])}\\%", "held"),
         ("H6", "SP(1)/T within 10\\% of the threshold", "$\\ge$80\\%, flat capacity", f"{pc(k['H6']['rate'])}\\%", "failed"),
         ("H7", "derivative equals finite difference", "within 1\\%", f"{100 * max(H['H7'].values()):.4f}\\%", "held"),
         ("H8", "Adverse multiplier within 25\\% over the band", "$<$25\\%", f"{pc(H['H8_joint_max_rel_deviation'])}\\%", "failed"),
         ("H9", "uninsured as legal entities: refusal", "refused", "refused", "held"),
         ("H10", "2-day outflow reaches the amber bar", "ratio $\\ge$0.5", f"{H['H10_ratio_2d']:.3f}", "failed"),
-        ("H11", "labelled multiplier $\\ge2\\times$ that bringing SP to at most 2 days", "$\\ge$2", f"{H['H11_ratio']:.2f}", "held"),
+        ("H11", "labelled multiplier $\\ge2\\times$ that bringing SP to 2 days", "$\\ge$2", f"{H['H11_ratio']:.2f}", "held"),
         ("H12", "other calibration rules stay below amber", "ratio $<$0.5", f"{H['H12_max_ratio_other_rules']:.3f}", "held"),
     ]
     body = [f"{a} & {b} & {c} & {d} & {e} \\\\" for a, b, c, d, e in rows]
