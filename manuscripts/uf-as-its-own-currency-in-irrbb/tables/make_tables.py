@@ -493,8 +493,8 @@ def t_hypotheses() -> None:
          f"{FLOORS['h5_floor_never_raises']['violations']} of {g(FLOORS['h5_floor_never_raises']['checked'])} comparisons of the two measures raise it, all on the delta NII"],
     ]
     cap = ("The statements tested or reproduced in this paper, with the deciding quantity and the outcome: R1 to R4 are the statements of the product's specification, entered after "
-           "the numbers of the published case were known, and so reproduced and not tested; H1, H2, H4 and H5 were written by the author into the headers of the experiment scripts "
-           "before the scripts that decide them ran (an order that the repository history cannot show); H3 was written after the reproduction run had printed a value that already contradicts one of its clauses, so it is a refuted statement and not a prediction.")
+           "the numbers of the published case were known, and so reproduced and not tested; H2 and H5 were written by the author into the headers of the experiment scripts "
+           "before the scripts that decide them ran, and H4 likewise, but its decision rule was written out after the runs (an order that the repository history cannot show); H1 was stated for every shock and only its consequence for the two measures was checked, so it is printed in that narrower form and is a statement revised after its result, not a prediction; H3 was written after the reproduction run had printed a value that already contradicts one of its clauses, so it is a refuted statement and not a prediction.")
     tablewrite("hypotheses", [("", head, rows)], cap, "tab:hypotheses", "p{0.8cm}p{7.6cm}p{1.9cm}p{3.6cm}")
 
 

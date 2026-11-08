@@ -2,6 +2,9 @@
 
 The prediction below was written into this header by the author before the script was first run (no version control history shows that order).
 
+Restated on 2026-11-08 after review and after the runs: the decision rule below and its refutation clause were written out after the runs as
+the criterion of the statement; the statement itself is the one first written.
+
 * H4 (a different supervisory outcome). There is a net UF position, as a share of Tier 1 inside the range the generator can balance, at
   which the Annex 1 treatment flags the bank as prioritised under at least one of the three tests of Annex 1 in most books (more than half
   of the seeds) while the single-currency treatment of the same flows flags it in none. It is decided by that criterion: a position

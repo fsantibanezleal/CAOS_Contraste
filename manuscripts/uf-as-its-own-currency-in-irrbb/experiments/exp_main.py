@@ -3,6 +3,9 @@
 The predictions below were written into this header by the author of the manuscript before this script was first run; no version
 control history can show that order (the manuscript is committed by the main session after the run), so they are the author's word.
 
+Restated on 2026-11-08 after review and after the runs: the text of H1 was narrowed from every shock to the two aggregated measures, and the
+statement of H1 is therefore a statement revised after its result, not a prediction.
+
 * H1 (the sandwich). For every variant, every seed and every treatment, the sum of the two legs is at most the Annex 1 pair rule, which
   is at most the sum of the positive parts, for the two measures (each the maximum over its scenarios, aggregated per treatment; the
   check is on the two aggregated measures and not on each scenario). One violation beyond a relative 1e-9 refutes it.

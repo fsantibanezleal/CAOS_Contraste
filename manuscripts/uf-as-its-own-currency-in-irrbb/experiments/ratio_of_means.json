@@ -36,6 +36,7 @@
  "bootstrap_seed": 20261108,
  "variants": {
   "long-uf": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 4.936377197109744,
    "ratio_of_means_ci": [
     4.470289011155104,
@@ -51,10 +52,11 @@
    "mean_single_nii": 2412.088039997482
   },
   "short-uf": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 5.4945486499467275,
    "ratio_of_means_ci": [
-    4.910265478454059,
-    6.292577570149272
+    4.8962562761988755,
+    6.324298167525
    ],
    "per_book_median": 5.809130979779746,
    "per_book_q1": 4.380817182399046,
@@ -66,10 +68,11 @@
    "mean_single_nii": 2142.522403536928
   },
   "cpi-surprise": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 4.936377197109744,
    "ratio_of_means_ci": [
-    4.46011866277615,
-    5.540820664634901
+    4.464539597289414,
+    5.537907340410776
    ],
    "per_book_median": 5.085913622519014,
    "per_book_q1": 4.062910793661691,
@@ -81,10 +84,11 @@
    "mean_single_nii": 2412.088039997482
   },
   "clp-steepener": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 1.9032806939531939,
    "ratio_of_means_ci": [
-    1.815001576632567,
-    2.0014021743619135
+    1.816135232147226,
+    2.0014284331773604
    ],
    "per_book_median": 1.9194599051974754,
    "per_book_q1": 1.7708818366666783,
@@ -96,10 +100,11 @@
    "mean_single_nii": 3954.7297582519386
   },
   "offset-on-off": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 5.723087430100649,
    "ratio_of_means_ci": [
-    5.056263749917962,
-    6.57476124208692
+    5.069863576254293,
+    6.618767217270491
    ],
    "per_book_median": 6.1268797713608985,
    "per_book_q1": 4.504795508336967,
@@ -111,10 +116,11 @@
    "mean_single_nii": 2048.775273489872
   },
   "floors-active": {
+   "books_skipped_nonpositive_single": 0,
    "ratio_of_means": 1.2613126315996794,
    "ratio_of_means_ci": [
-    1.236416954429199,
-    1.2883796851810505
+    1.237478170589755,
+    1.2892740581019535
    ],
    "per_book_median": 1.2615085474213847,
    "per_book_q1": 1.2141545207417184,
@@ -126,5 +132,5 @@
    "mean_single_nii": 5672.229399400473
   }
  },
- "seconds": 0.7025943000335246
+ "seconds": 1.05773020000197
 }
