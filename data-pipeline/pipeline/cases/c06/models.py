@@ -149,7 +149,7 @@ def fit_block(run: DateRun) -> dict[str, Any]:
                       "is carried at its full approval (conversion factor 1)")}
     staging = {**policy_block(), "source": ("multiplier schedule, absolute floor and threefold ratio of the engine-provisions-api contract; "
                                             "30 and 90 days past due are IFRS 9 5.5.11 and B5.5.37 (no delinquency data in the file); no "
-                                            "probation (the file has no cure dates and the reporting dates are a year apart)"),
+                                            "probation (the file has no cure dates)"),
                "probation_months": 0}
     return {"currency": CURRENCY, "segments": segments, "scenario_definitions": defs, "pit": pit, "ladder": ladder, "lgd": lgd, "ead": ead,
             "staging_policy": staging}
