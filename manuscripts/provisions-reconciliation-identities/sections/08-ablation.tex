@@ -1,0 +1,28 @@
+\section{Ablation}
+\label{sec:ablation}
+
+The protocol has components whose contribution can be removed one at a time: the identity families, the relative tolerance, the separate overlay line, the region qualifier of the non-linearity statement and the weighting of scenarios.
+Each removal is measured on the experiment that exercises the component.
+
+\subsection{Identity families}
+\label{sec:ablation-families}
+
+\Cref{tab:ablation} leaves out one of the six identity families and reports the share of the \eoneCases{} cases of each defect class, planted at ten times the limit, that the remaining identities still flag.
+Exactly \eoneFamiliesLost{} families are irreplaceable for detection: the gross-amount roll-forward, without which a gross-amount movement is never flagged, and the tie of the stage closing to the stage ECL and the overlays, without which a reallocation between stages and a change of the stage ECL are never flagged.
+The other four families, the allowance roll-forward and the three waterfall identities, are redundant for single-entry detection, because every class they see is also seen by another family; they remain useful for localization, since they change the number of failing identities from one or two to the values of Section~\ref{sec:res-detection}.
+The comparator that keeps only the two roll-forwards of each stage is the removal of the four cross families at once, and it loses four classes.
+This is the prediction P3, which held.
+
+\input{tables/ablation}
+
+\subsection{The other components}
+\label{sec:ablation-components}
+
+\Cref{tab:ablation-components} measures the other components.
+Replacing the relative tolerance by an absolute tolerance of $10^{-6}$ units moves the false alarms on clean resampled books from none to \etwoAbsResPct{}.
+Removing the cross identities lowers the detection above the limit from \eoneAboveFullK{} of \eoneAboveFullN{} to \eoneAboveStageK{}.
+Replacing the separate overlay line by a merge leaves nothing to test: every table closes and the model ECL is overstated by the overlay share over one minus the share.
+Dropping the region qualifier makes the statement that the weighted PD is at least the PD at the mean factor false in \efourConcaveNeg{} concave draws and \efourMixedNeg{} mixed draws, against none of the \efourConvexN{} convex draws.
+Replacing weighted scenarios by the base scenario alone raises the median absolute error of the expected PD from \efourGhThreeMed{} for the three-point rule to \efourSingleMed{}.
+
+\input{tables/ablation-components}

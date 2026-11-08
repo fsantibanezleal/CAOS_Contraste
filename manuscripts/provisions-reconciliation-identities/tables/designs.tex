@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Relative error of the expected PD of five scenario sets against the 64-node Gauss--Hermite expectation under a normal factor, over 5,000 draws of the PD, the correlation and the forecast mean and spread: quantiles of the signed error in percent, the share of draws with absolute error above 5\%, and the share understated among the draws whose forecast lies two standard deviations inside the convex region.}
+\label{tab:designs}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{5.2cm}rrrrr}
+\toprule
+Scenario set & 5th pct (\%) & Median (\%) & 95th pct (\%) & $|$error$|>5\%$ & Understated (convex margin) \\
+\midrule
+Base scenario alone & -38 & -9.2 & -1.47 & 72.4\% & 100.0\% \\
+Three scenarios at one standard deviation, 25/50/25 & -19.9 & -4.56 & -0.727 & 46.4\% & 100.0\% \\
+Three equal-probability tertile means & -9.4 & -1.84 & -0.293 & 16.7\% & 100.0\% \\
+Three-point Gauss--Hermite & -0.0211 & +0.0006 & +0.119 & 0.0\% & 29.2\% \\
+Five-point Gauss--Hermite & -0.000336 & +4.27e-09 & +0.000267 & 0.0\% & 41.1\% \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

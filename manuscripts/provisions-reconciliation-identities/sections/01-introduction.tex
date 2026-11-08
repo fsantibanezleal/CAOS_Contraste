@@ -1,0 +1,36 @@
+\section{Introduction}
+\label{sec:introduction}
+
+A bank that provisions under IFRS 9 publishes one number that matters to its supervisors, its auditors and its investors, the allowance for expected credit losses, and it publishes it twice: as a balance at the reporting date and as a roll-forward by stage from the opening to the closing allowance, with the matching roll-forward of the gross carrying amount \citep{ifrs9eu}.
+The two tables are meant to tie to each other and to the measurement that produced them, yet the standard states objectives and principles and, in the words of the Global Public Policy Committee, ``generally does not prescribe particular detailed methods'' \citep{gppc2016}.
+What a validator can demand of such a number is therefore a set of properties, not a formula.
+This paper asks which properties can be demanded as machine-checkable acceptance tests, how small a defect each test can see, and where the properties stop.
+
+Three practical facts motivate the question.
+First, management adjustments sit outside the models and are large: the European Central Bank found that roughly a quarter of the loan loss coverage in the performing books of its sample was due to overlays \citep{ecb2024}, and the Basel Committee asks that such adjustments be identifiable and attributed \citep{bcbsd350}.
+An overlay that is merged into the model estimate cannot be attributed, and an overlay that is booked in the total and not in the stage tables breaks the reconciliation, but nothing in the literature we found measures what a reconciliation sees of either.
+Second, the probability-weighted loss is a non-linear function of the macroeconomic path, so that the loss at the weighted mean path is not the weighted loss; the Basel Committee asks banks to show how estimates change with scenarios \citep{bcbsd350}, and the European Banking Authority found that 19 per cent of the institutions in its sample had back-tested nothing, or only the twelve-month PD or LGD \citep{eba2023}.
+A short statement of when the weighted value is the larger is useful only if its region of validity is stated, and a short scenario set is useful only if its distance from the full distribution of the factor is known.
+Third, one bank can be provisioned under several regimes.
+A Chilean bank provisions under the Compendium of Accounting Standards for Banks of the CMF \citep{cmfcncb}, a Spanish bank under Circular 4/2017 and its supervisory alternative solutions \citep{boe2017,boe2021}, and for the Chilean bank an IFRS 9 allowance is a comparison measure that neither text requires.
+Putting the three on one portfolio and bridging the gaps among them is a measurement that a validator can repeat.
+
+We propose a protocol, run by the Contraste validation product on its own data, that turns each of the three facts into a test with a stated limit.
+The reconciliation identities of the two IFRS 7 roll-forwards, the waterfall that opens into them and the tie of each stage closing to the stage ECL and the overlays carried in it are judged on one relative tolerance, one millionth of the gross carrying amount of the book; the size of the smallest defect the test names is measured by planting defects, and the identities are studied as a linear map whose rank, blind spots and ambiguous groups are computed.
+Overlays are separate lines that move the total allowance and nothing else, and five wrong ways of booking one are planted and tested.
+The non-linearity of the weighted PD is stated for the region in which it is a theorem and measured outside it, and five scenario sets are compared with the full distribution of the factor.
+One synthetic bank is provisioned under CMF B-1, IFRS 9 and Bank of Spain Annex 9 in six scenarios, a bridge from the B-1 total to the IFRS 9 total is checked in every run, and the whole is regenerated for ten seeds.
+
+The contributions are the following.
+\begin{enumerate}
+\item A protocol of acceptance tests for an expected credit loss allowance (Section~\ref{sec:proposed-method}) with a tolerance basis that is relative to the gross carrying amount of the book, and a theory of what a set of linear identities can detect, localize and miss (Section~\ref{sec:theory}), checked against the engine entry by entry.
+\item A measurement of detection and false alarms on six committed dates of a real loan book: the twelve identities name every planted defect of seven classes from the limit, the two comparators run on the same defects name three of the seven classes, an absolute tolerance flags clean tables, and rounding to millions flags nearly all clean books (Section~\ref{sec:results}).
+\item A test of the overlay rule: the invariance of the model estimate in \ethreeSets{} randomly drawn overlay sets, and the detection of four wrong bookings, with the one booking, a merge into the model loss, that no identity sees.
+\item The region of validity of the non-linearity statement, in \efourDraws{} draws, the error of five scenario sets against the full distribution, and a second-order formula for that error that holds within 25\% in \efourSecondWithin{} of the convex draws.
+\item A three-regime comparison of one synthetic bank over \efiveSeeds{} seeds at the committed size and six sizes of the book, with a bridge that closes in all \efiveCells{} runs, and the account of every prediction made before the runs: \hypHeld{} held and \hypRefuted{} were refuted.
+\end{enumerate}
+
+The main result is a set of limits, not a ranking.
+The test names a defect from one millionth of the gross carrying amount, which is between \eoneCleanLimitLow{} and \eoneCleanLimitHigh{} USD on books of \eoneGrossLow{} to \eoneGrossHigh{} billion USD; it cannot name a misclassification between lines or an overlay merged into the model estimate; and it is compatible with tables disclosed in thousands but not with tables disclosed in millions.
+The weighted PD is not below the PD at the mean factor when every scenario lies in the convex region of the conditional PD, and the committed ECL-level comparison on one date is below zero for a reason that the PD-level statement does not cover.
+On the synthetic bank the IFRS 9 total is below the B-1 total in five of six scenarios and above it in the combined severe scenario, in every seed, and it is a statement about one synthetic book under three texts, not about which regime is right.

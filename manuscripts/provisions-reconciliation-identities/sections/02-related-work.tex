@@ -1,0 +1,55 @@
+\section{Related work}
+\label{sec:related-work}
+
+The works below fall in four groups: the texts that define the allowance and its disclosure, the literature that models its inputs, the one-factor model and the convexity argument behind the non-linearity of the weighted loss, and the software-testing literature whose techniques the protocol borrows.
+Each group is characterised by what it assumes, what it gives and where it stops with respect to the three questions of this paper.
+
+\subsection{Standards and supervisory texts}
+\label{sec:rw-standards}
+
+IFRS 9 measures the allowance as an unbiased, probability-weighted amount that reflects at least two outcomes when scenarios are needed, and IFRS 7 requires the reconciliation of the allowance and of the gross carrying amount by stage from the opening to the closing balance \citep{ifrs9eu}.
+The Basel Committee guidance on credit risk and accounting for expected credit losses asks that estimates be shown to respond to scenarios and treats temporary adjustments as items to be documented and attributed \citep{bcbsd350}.
+The Global Public Policy Committee reads the standard for the largest banks and states that when the loss is not linear in the scenarios more than one scenario must be used, and that the standard does not prescribe methods \citep{gppc2016}.
+The European Banking Authority monitors the implementation in 47 institutions and reports how thresholds, staging and back-testing are done \citep{eba2021,eba2023}, and the European Central Bank reports that overlays carry about a quarter of the coverage of the performing books it reviewed and ranks the practices that attach them to the model \citep{ecb2024}.
+For the two local regimes the texts are the Compendium of Accounting Standards for Banks of the Chilean CMF \citep{cmfcncb} and Circular 4/2017 of the Bank of Spain with its 2021 amendment \citep{boe2017,boe2021}.
+The Federal Reserve guidance on model risk management asks that a model be validated by ongoing monitoring and outcomes analysis \citep{sr117}, and the Bank for International Settlements has described the move to expected credit loss provisioning and its consequences \citep{cohenedwards2017}.
+These texts assume that a bank can reconcile its tables and attribute its overlays, and they give no detection limit for a reconciliation, no test of the rule that an overlay moves only the total, and no comparison of the three regimes on one portfolio; the search behind this work found none, and that finding is bounded by the sources named here.
+
+\subsection{Modelling the inputs of the allowance}
+\label{sec:rw-modelling}
+
+The modelling literature supplies the PD, LGD and staging that the allowance sums.
+Bellini gives a practical guide to IFRS 9 and CECL modelling and validation with worked examples \citep{bellini2019}, and Skoglund gives a practical guide to the credit risk term structures that lifetime impairment needs \citep{skoglund2017}.
+Miu and Ozdemir adapt advanced internal-ratings-based models to IFRS 9 \citep{miuozdemir2017}.
+Discrete-time survival models carry the term structure: the proportional hazards model of Cox admits time-varying covariates \citep{cox1972}, Breeden separates lifecycle, vintage and environment in loan-level forecasts and stress tests \citep{breeden2016}, and Botha and Verster give a tutorial on discrete-time survival analysis for the term structure of default risk under IFRS 9 \citep{bothaverster2025}.
+The same authors with co-authors compare 27 definitions of a significant increase in credit risk on South African mortgage data \citep{bothasicr2025}, and Perederiy derives lifetime PDs from a portfolio model whose systematic factor follows an autoregressive process \citep{perederiy2015}.
+Kr\"uger, R\"osch and Scheule study how loan loss provisioning affects capital requirements \citep{kruger2018}, and Novotny-Farkas studies the interaction of the expected loss approach with supervisory rules and its implications for financial stability \citep{novotny2016}.
+These works improve the inputs; they take the arithmetic that assembles the inputs into a roll-forward as given.
+The present paper takes the inputs as given and tests the arithmetic.
+
+\subsection{The one-factor model and the convexity of the weighted loss}
+\label{sec:rw-onefactor}
+
+The conditional PD used here to study non-linearity comes from the structural view in which a borrower defaults when its asset value falls below a threshold \citep{merton1974}.
+Gordy gives the risk-factor foundation of the ratings-based capital rules, in which one systematic factor drives the default rate of a large portfolio \citep{gordy2003}, and the Basel Committee note on the risk weight functions describes that adaptation of the Merton model \citep{bcbs2005}.
+Under it the PD given the factor is a normal distribution function of a linear function of the factor, which is convex on one side of an inflection and concave on the other.
+Jensen's inequality for convex functions then orders the weighted mean of a convex function above the function of the weighted mean \citep{jensen1906}, and the Gauss quadrature rules computed by the algorithm of Golub and Welsch give the expectation over a normal factor that a short scenario set is compared with \citep{golubwelsch1969}.
+The literature states the inequality; it does not state the region of the factor in which the conditional PD is convex for the parameters of a portfolio, nor how far a three-scenario set is from the full distribution.
+
+\subsection{Testing numerical code and tables}
+\label{sec:rw-testing}
+
+Four techniques of software testing carry over.
+DeMillo, Lipton and Sayward introduced the judgement of a test set by the changed programs it can distinguish from the original \citep{demillo1978}, and Jia and Harman survey the development of that mutation testing \citep{jia2011}; planting a defect in a table and asking whether the test names it is the same experiment.
+Metamorphic testing checks a relation among the outputs of several runs when no oracle states the right output \citep{chen2018,segura2016}; the rule that overlays do not change the model estimate is such a relation.
+QuickCheck states properties as functions and tests them on random inputs \citep{claessen2000}, which is how the sweeps of this paper test the convexity statement.
+Hamming's error-detecting and error-correcting codes locate an error from the pattern of failing parity checks \citep{hamming1950}; a set of reconciliation identities is a parity-check matrix over the entries of the tables, and its blind spots and ambiguous groups are the questions the theory of Section~\ref{sec:theory} answers.
+
+\subsection{Position of the proposed method}
+\label{sec:rw-position}
+
+The protocol contributes no new estimator.
+It contributes a measurement of what the identities of the disclosure can see, with a tolerance basis and a detection limit stated in the units of the book, a test of the overlay rule with its one known blind spot, the region and the size of the non-linearity of the weighted PD, and one synthetic bank under three regimes with a bridge that is checked in every run.
+The comparators it is run against are the practices the texts describe: the arithmetic of each stage table in the disclosure and one pooled row, an absolute tolerance, a merge of the overlay into the model loss, the base scenario alone, and short scenario sets.
+All of them are run on the same data and the same defects in Section~\ref{sec:experimental-design}.
+None of the comparators is a proposal of this paper: each is a practice that a bank or a validator can follow today, and the measurement is of what each sees of a defect of a known size, which the texts reviewed do not report.
