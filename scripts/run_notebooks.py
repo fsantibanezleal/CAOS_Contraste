@@ -267,9 +267,7 @@ def main() -> int:
             if tmp_root is not None:
                 # a copy of the repository's inputs at the same relative depth: the notebook reads `../../../data/...`
                 work = tmp_root / "repo"
-                # manuscripts/ and tests/ too: a notebook teaches a proposed method from its paper's committed results and runs the
-                # contract checks JSON Schema cannot express (Contraste 1.00.000; a finding for the template's runner)
-                for item in ("data", "data-pipeline", "docs", "content", "models", "notebooks", "manuscripts", "tests"):
+                for item in ("data", "data-pipeline", "docs", "content", "models", "notebooks"):
                     if (ROOT / item).exists() and not (work / item).exists():
                         shutil.copytree(ROOT / item, work / item, ignore=shutil.ignore_patterns("__pycache__", ".ipynb_checkpoints"))
                 work.mkdir(parents=True, exist_ok=True)
