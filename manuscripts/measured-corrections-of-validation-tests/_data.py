@@ -23,7 +23,7 @@ def results(name: str) -> dict:
     return json.loads((RESULTS / f"{name}.json").read_text(encoding="utf-8"))
 
 
-COVERAGE = results("coverage")
+COVERAGE_RESULTS = results("coverage")
 EXACT = results("exact")
 SHIFT = results("shift")
 SITUATION = results("situation")
@@ -34,7 +34,7 @@ PAIRS = {"A": (20000, 2000), "B": (2000, 2000), "C": (1000, 4000)}
 
 
 def cov_cell(n: int, m: int, b: float = 1.0) -> dict:
-    return next(c for c in COVERAGE["cells"] if c["n"] == n and c["m"] == m and abs(c["b"] - b) < 1e-9)
+    return next(c for c in COVERAGE_RESULTS["cells"] if c["n"] == n and c["m"] == m and abs(c["b"] - b) < 1e-9)
 
 
 def shift_cell(n_eval: int, shift: float) -> dict:

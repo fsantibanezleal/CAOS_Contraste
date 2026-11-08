@@ -12,7 +12,7 @@ import numpy as np
 import _data as D
 import exp_coverage
 import exp_shift
-from _data import PAIRS, COVERAGE, EXACT, SHIFT, SITUATION, cov_cell, figkit, shift_cell, sit_cell
+from _data import PAIRS, COVERAGE_RESULTS, EXACT, SHIFT, SITUATION, cov_cell, figkit, shift_cell, sit_cell
 
 figkit.style()
 import matplotlib.pyplot as plt  # noqa: E402
@@ -36,7 +36,7 @@ def coverage_size() -> None:
     ax.axhline(0.05, color="0.0", linewidth=0.6, linestyle=(0, (1, 2)))
     marks = {200: "o", 1000: "s", 5000: "^"}
     for n, mk in marks.items():
-        cells = [c for c in COVERAGE["cells"] if c["n"] == n and c["b"] == 1.0 and 0.09 <= c["ratio"] <= 8.5]
+        cells = [c for c in COVERAGE_RESULTS["cells"] if c["n"] == n and c["b"] == 1.0 and 0.09 <= c["ratio"] <= 8.5]
         ax.errorbar([c["ratio"] for c in cells], [c["rates"]["bin"]["rate"] for c in cells], yerr=[2 * c["rates"]["bin"]["se"] for c in cells],
                     fmt=mk, color="0.0", markerfacecolor="white", markersize=4, linewidth=0.8, label=f"binomial, simulated, $n={n:,}$")
         ax.errorbar([c["ratio"] for c in cells], [c["rates"]["bb"]["rate"] for c in cells], yerr=[2 * c["rates"]["bb"]["se"] for c in cells],

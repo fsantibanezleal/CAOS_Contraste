@@ -20,7 +20,7 @@ import exp_coverage
 import exp_shift
 import exp_situation
 import exp_situation_indep
-from _data import COVERAGE, EXACT, PAIRS, SHIFT, SITUATION, SITUATION_INDEP, cov_cell, figkit, shift_cell, sit_cell, sit_indep_cell
+from _data import COVERAGE_RESULTS, EXACT, PAIRS, SHIFT, SITUATION, SITUATION_INDEP, cov_cell, figkit, shift_cell, sit_cell, sit_indep_cell
 
 NUM: dict[str, tuple[str, str]] = {}
 THETA = 0.05
@@ -76,13 +76,13 @@ def coverage_macros() -> None:
         for b, bn in SHAPE.items():
             put(f"CovMean{tag}{bn}", f3(cov_cell(n, m, b)["mean_coverage"]), f"{src}: mean coverage, n={n}, m={m}, b={b}")
         put(f"CovOracleCut{tag}", f"{null['oracle_threshold']:.4f}" if null["oracle_threshold"] >= 1e-3 else sci(null["oracle_threshold"], 1), f"{src}: size-calibrated binomial cut, n={n}, m={m}")
-    size_cells = [c for c in COVERAGE["cells"] if c["b"] == 1.0 and "exact" in c]
+    size_cells = [c for c in COVERAGE_RESULTS["cells"] if c["b"] == 1.0 and "exact" in c]
     grid = [c for c in size_cells if c["n"] in exp_coverage.SIZE_NS and any(abs(c["ratio"] - r) < 1e-9 for r in exp_coverage.SIZE_RATIOS)]
     put("CovGridCells", str(len(grid)), f"{src}: the size grid")
-    put("CovTotalCells", str(len(COVERAGE["cells"])), f"{src}: all cells")
-    put("CovTotalReps", thousands(sum(c["reps"] for c in COVERAGE["cells"])), f"{src}: replications over all cells")
-    put("CovReps", thousands(COVERAGE["meta"]["reps"]), f"{src}: replications per cell")
-    ver = COVERAGE["meta"]["versions"]
+    put("CovTotalCells", str(len(COVERAGE_RESULTS["cells"])), f"{src}: all cells")
+    put("CovTotalReps", thousands(sum(c["reps"] for c in COVERAGE_RESULTS["cells"])), f"{src}: replications over all cells")
+    put("CovReps", thousands(COVERAGE_RESULTS["meta"]["reps"]), f"{src}: replications per cell")
+    ver = COVERAGE_RESULTS["meta"]["versions"]
     tm = json.loads((D.RESULTS / "timings.json").read_text(encoding="utf-8"))
     tsrc = "experiments/results/timings.json"
     for key, nm in (("coverage", "Cov"), ("shift", "Shift"), ("situation", "Sit"), ("situation_indep", "SitIn")):
@@ -94,8 +94,8 @@ def coverage_macros() -> None:
     put("EnvEngine", ver["riskvalidation"], f"{src}: meta.versions.riskvalidation")
     put("EnvNumpy", ver["numpy"], f"{src}: meta.versions.numpy")
     put("EnvScipy", ver["scipy"], f"{src}: meta.versions.scipy")
-    put("RootSeed", str(COVERAGE["meta"]["base_seed"]), f"{src}: meta.base_seed")
-    put("CovEngineMismatches", str(sum(c["engine_mismatches"] for c in COVERAGE["cells"])), f"{src}: engine p-value against the vectorised p-value")
+    put("RootSeed", str(COVERAGE_RESULTS["meta"]["base_seed"]), f"{src}: meta.base_seed")
+    put("CovEngineMismatches", str(sum(c["engine_mismatches"] for c in COVERAGE_RESULTS["cells"])), f"{src}: engine p-value against the vectorised p-value")
     put("CovBBMaxExact", f4(max(c["exact"]["bb"] for c in size_cells)), f"{src}: maximum exact Beta-Binomial size over the size cells")
     put("CovBBMaxRate", f3(max(c["rates"]["bb"]["rate"] for c in grid)), f"{src}: maximum simulated Beta-Binomial size over the size grid")
     viol = [c for c in grid if c["rates"]["bb"]["rate"] > THETA + 2 * c["rates"]["bb"]["se"]]
@@ -427,7 +427,7 @@ def committed_macros() -> None:
 def hypotheses() -> list[list[str]]:
     rows = []
     # H1: coverage
-    grid = [c for c in COVERAGE["cells"] if c["b"] == 1.0 and "exact" in c and c["n"] in exp_coverage.SIZE_NS and any(abs(c["ratio"] - r) < 1e-9 for r in exp_coverage.SIZE_RATIOS)]
+    grid = [c for c in COVERAGE_RESULTS["cells"] if c["b"] == 1.0 and "exact" in c and c["n"] in exp_coverage.SIZE_NS and any(abs(c["ratio"] - r) < 1e-9 for r in exp_coverage.SIZE_RATIOS)]
     bin1 = [c for c in grid if c["ratio"] == 1.0]
     bin4 = [c for c in grid if c["ratio"] == 4.0]
     held_a = all(c["rates"]["bin"]["rate"] + 2 * c["rates"]["bin"]["se"] >= 0.15 for c in bin1) and all(
