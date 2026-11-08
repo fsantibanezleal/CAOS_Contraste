@@ -755,6 +755,18 @@ The first stable release (U16): every case baked on riskvalidation 1.1.0, the fi
 - Story: the inventory headline counts inventory entries and the findings still carried (not closed by validation); the exit lands on the App with the step's window and model (`variant` and `model` in the query, read by the Workbench and the C11 instrument); a window id in a verdict sentence is named in words (the regex held two backspace characters where a word boundary was meant); "zona roja", "1 entry"; the Spanish sublines fit one line so the story keeps the 80% floor; the working tail level is drawn under the VaR with its target and floor; the amber or red stretch starts at the first complete Basel window; eyebrows fit; no arrow on a peak.
 - Story drawings: eased changes of model and window inside a step (the shell's staged transition, instant under reduced motion), counts that count up, a flow that moves at a speed set by the entries of each link, a drag-to-zoom and zoom buttons on the three dated views, a hidden data table per drawing for a screen reader, a one-line key on a phone, a readout of the day, the value and the unit at the cursor.
 - Governance bake (code only, the documents are re-baked at the release): a C11 window document whose own gate finding quotes a model count other than its ladder's refuses the bake, so the register's "17 of 17" beside an 18-model ladder cannot be written again.
+- Base: product template 0.15.006 (was 0.15.000) and shell 0.25.0 (was 0.23.2), adopted with CAOS_MANAGE `tools/git/template_adopt.py`.
+  The gate runner, the static build and the story check read the story's five steps from `product.json` (`showcase.story_routes`);
+  `check_story_mode.mjs` is the template's and holds what every story owes, and what Contraste's story shows moved to
+  `check_story_contraste.mjs` (`npm run story:check`). The base scripts and tests (`gate.mjs`, `materialize-routes.mjs`,
+  `copy-data.mjs`, `declared.mjs`, `workflow.py`, the guards for internal names, notebooks, the SDD and document paths, the base tests
+  under `frontend/src` and `tests/`) are the template's; the readiness checker judges a stage's catalog and VERSION and keeps the
+  product's authored inputs. The SDD carries the technology row and a base adoption section.
+- Story: the stage pads its drawing by the header band the callout cards measure (`SceneCallouts` `onLayout`, shell 0.24.0) and the
+  phone stage floor follows that band (`frontend/src/story/band.ts`, requirement CT-973), instead of a fixed 86 px (130 px on a phone)
+  sized for the older cards.
+- Requirements: the notebooks feature states topic 01 as five notebooks (the row named a test that no longer exists); the method-tier
+  feature rules and the notebook depth rules of the template are taken.
 
 ## [0.15.000], 2026-10-21
 
