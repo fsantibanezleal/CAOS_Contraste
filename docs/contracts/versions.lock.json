@@ -112,7 +112,7 @@
   "api": {
     "version": "35.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "d4aaa9fcef01cd7f7b38f215a59215cde8b8314c73b7c9fb0c431550657af38a"
+    "sha256": "fa3b08a1dccc654e43a0a1a9f61ed2244458500f172b848a377d3a36a2e76b07"
   },
   "readiness": {
     "version": "1.0.1",
