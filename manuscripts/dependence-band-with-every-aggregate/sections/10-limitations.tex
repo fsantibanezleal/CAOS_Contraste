@@ -9,13 +9,12 @@ errors are about one percent of a row. The comparisons that matter are two order
 of the band is \bdWidthOverSe{} standard errors), but the coverage of a structure whose capital lies within a few standard errors of
 the edge of an interval is sensitive to it: the reflected Clayton copula is inside the interval of both matrices near its upper end,
 and a different seed could move it across. The widening by three standard errors of the capital of the structure, the tolerance of
-5 percent, the 75 percent of the coverage and the 100 standard errors of the width are thresholds of the author, fixed before the
-experiments and not derived. The capital of a planted structure is itself an estimate, from 20 samples of $10^6$ draws, with a
+5 percent, the 75 percent of the coverage and the 100 standard errors of the width are thresholds set by the author and not derived. The capital of a planted structure is itself an estimate, from 20 samples of $10^6$ draws, with a
 standard error of at most CLP \bdTruthSeMax{} billion. The rearrangement algorithm that computes the bounds has no proof of
 convergence; the evidence here is the narrowness of the ranges, and a marginal with another shape of tail could behave otherwise.
 The coverage of the planted structures by the sharp range is, by Proposition~\ref{prop:coverage}, a check of the implementation and
-not a finding. The classification of a test as unrunnable without a row is made by the arguments of the function for two of the
-tests and by an engine call for one.
+not a finding. A test counts as runnable when the engine returns a light for it; the study does not break the rule and run the nine tests on the
+broken band, so how many of them turn red on a violation is not measured.
 
 \subsection{External validity}
 \label{sec:limits-external}

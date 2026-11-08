@@ -159,7 +159,7 @@ $L_k$ given the tail event is the Euler principle \citep{tasche2008}.
 
 The additivity is therefore an identity of the estimator, and a test of it checks the implementation. What is not an identity
 is the allocation itself, which carries the sampling error of the tail of the sample: the shares in Table~\ref{tab:euler} have a
-standard deviation of about one percentage point over independent seeds.
+standard deviation of $\bdShareSdMin$ to $\bdShareSdMax$ percentage points over independent seeds.
 
 \subsection{Sampling error, and what coverage by the sharp range means}
 \label{sec:theory-sampling}
@@ -188,6 +188,6 @@ empirical finding about the structures: it holds for every structure, up to the 
 capital of the structure and the two ends of the range. The experiment that measures it is a verification of the implementation
 against the theory, and its empirical content is the width of the interval, that is, how much of the interval is slack for the
 structures that a bank might plausibly face. The interior rows are different. The interval spanned by the five interior rows is the
-range of the capitals of five specific couplings, and whether it contains the capital of another coupling is an empirical question
+range of the capitals of four specific couplings, the Gaussian and the three $t$ copulas, and of the square-root rule, and whether it contains the capital of another coupling is an empirical question
 that depends on the coupling: Proposition~\ref{prop:tails} says that a structure whose tail dependence or whose matrix lies outside
 what the five rows span can fall outside. Section~\ref{sec:results-planted} measures it.

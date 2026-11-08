@@ -6,11 +6,14 @@ the band spans, and what each component contributes. They run the engine on the 
 dependence structures whose capital is known by simulation. Every number in Section~\ref{sec:results} comes from a script that
 is committed beside the manuscript and is run from the repository root.
 
-\subsection{Predictions stated before the experiments}
+\subsection{The predictions}
 \label{sec:design-hypotheses}
 
-The predictions were written to a file that the experiment scripts read, before the experiments that test them were run, and a
-criterion is never edited after a run. Each is stated with the outcome that refutes it.
+The nine predictions were set by the author for this study; the design record of the protocol states no acceptance criteria, so they
+were not taken from a prior specification. They are written to \texttt{experiments/hypotheses.json}, which the experiment scripts
+read. By file time they were written on 6 November 2026, before the runs of the reproduction, planted-structure and ablation
+experiments (H2 to H4c, H6 and H7). Their order relative to the first run of the structure experiment (H1 and H5) is not recorded,
+and the file was first versioned together with the results. Each prediction is stated with the outcome that refutes it.
 \begin{description}
 \item[H1, structure.] In each of the six committed aggregates the band has eight rows in the stated order, exactly one row labelled
 headline capital and it is the simple sum, seven rows labelled information, one horizon and one confidence level, and an Euler
@@ -24,9 +27,11 @@ row. Refuted if any row differs by more.
 percent. Refuted if the width is below 100 standard errors or some row lies within 10 percent of every other row.
 \item[H4a, coverage by the sharp range.] Over the planted structures the interval from the lower bound to the worst case contains
 the capital of the structure in all of them, after widening it by three standard errors of the capital of the structure.
-\item[H4b, coverage by the interior rows.] The interval spanned by the five interior rows (the square-root rule, the Gaussian copula
+\item[H4b, coverage by the interior rows.] The interval spanned by the five interior rows of the band (the square-root rule, the Gaussian copula
 and the $t$ copulas with 4, 8 and 30 degrees of freedom) contains the capital of the structure in at least 75 percent of the
-structures. Refuted if fewer are covered.
+structures. Refuted if fewer are covered. ``The band'' here is the base band, computed with the base matrix, which is the stricter
+reading; Section~\ref{sec:results-planted} also reports the reading with the interior rows of both matrices, so the refutation does
+not depend on the reading.
 \item[H4c, a single figure is not reliable.] The Gaussian copula row alone lies within 5 percent of the capital of the structure in
 at most half of the structures. Refuted if more than half are within 5 percent.
 \item[H5, invariance of the bounds.] The lower bound and the worst case are equal in the base band and in the band under the
@@ -37,7 +42,7 @@ changes the simple sum by at least 10 percent, and the consistency test returns 
 \item[H7, each row feeds a test.] Removing the $t$ rows leaves the copula-choice test unrunnable and removing the stressed band
 leaves the correlation-stress test unrunnable; with the Gaussian row alone, at most half of the nine tests can be run.
 \end{description}
-H4a is a consequence of Proposition~\ref{prop:coverage}; it was stated as a check on the implementation and not as a finding about
+H4a is a consequence of Proposition~\ref{prop:coverage}; its outcome verifies the implementation and carries no information about
 the structures.
 
 \subsection{Data and provenance}
@@ -96,7 +101,7 @@ sample quantile of marginal $k$, less the expected losses. The calibrated Gaussi
 the structure, converts it to a correlation by $\rho=\sin(\pi\tau/2)$, the inverse of Equation~\ref{eq:kendall}, and simulates the
 Gaussian copula with that matrix. Both are calibrated on a sample of 200,000 draws of the structure (the rank correlation on its first 50,000), kept apart from
 the draws that define its capital. They represent a bank that observes the joint tail with a long sample and which can estimate a matrix perfectly, so
-their errors are lower bounds for what a bank achieves in practice.
+their errors are expected to be smaller than those of a bank.
 
 \subsection{Metrics}
 \label{sec:design-metrics}

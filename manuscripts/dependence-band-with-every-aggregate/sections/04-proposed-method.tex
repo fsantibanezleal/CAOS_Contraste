@@ -3,8 +3,9 @@
 
 The proposed method is a reporting protocol for the aggregate capital figure. It takes the marginals, a correlation matrix, a set
 of degrees of freedom, a level and a horizon, and returns the band of eight rows, their labels, an allocation of the aggregate
-expected shortfall, the model-risk measures of the band and the results of the checks that guard the rule. Figure~\ref{fig:protocol}
-shows the flow, and the subsections define each part. The protocol has no free parameter beyond the inputs: the rows are fixed by
+expected shortfall, the model-risk measures of the band and the results of the nine tests. Figure~\ref{fig:protocol}
+shows the flow: the inputs fix the eight rows, each row receives its label from its method alone, and the tests and the readings
+are taken from the labelled band, so that no figure reaches the reader without its status. The subsections define each part. The protocol has no free parameter beyond the inputs: the rows are fixed by
 the rule, the Monte Carlo size and the seed are stated, and nothing in the band is fitted to the outcome it is meant to describe.
 
 \begin{figure}[htbp]
@@ -106,7 +107,7 @@ bookkeeping of the allocation, not a statistical property of the dependence.
 
 The second quantity is a pair of model-risk measures on the set of models that the band itself supplies. With $\rho_j$ the capital
 of row $j$ of the band, $\rho_0$ that of the reference row (the Gaussian copula), $\overline\rho=\max_j\rho_j$ and
-$\underline\rho=\min_j\rho_j$, the additive and the relative measure of Barrieu and Scandolo \citep{barrieu2015} are
+$\underline\rho=\min_j\rho_j$, the absolute and the relative measure of Barrieu and Scandolo \citep{barrieu2015} are
 \begin{equation}
 \mathrm{AM}=\frac{\overline\rho}{\rho_0}-1,\qquad \mathrm{RM}=\frac{\overline\rho-\rho_0}{\overline\rho-\underline\rho}\in[0,1].
 \label{eq:model-risk}
@@ -127,12 +128,15 @@ test is red when a row lies outside the interval from the lower bound to the wor
 relative change of the Gaussian row between the base matrix and the stressed matrix, red when it is negative and amber above 0.10.
 Six tests read the Gaussian row, the marginals or the conventions. The comparison with the simple sum and the square-root rule
 tests whether the aggregate is not above the simple sum and agrees with the square-root rule within 10 percent. The sign test is
-red when any diversification factor exceeds one. The consistency test counts the marginals whose horizon or level differs from the
+red when the diversification factor of any interior row exceeds one; the worst case, whose factor is above one, is not among the rows it reads. The consistency test counts the marginals whose horizon or level differs from the
 band's and is red when the count is above zero. The additivity test compares the sum of the Euler contributions with the aggregate
 expected shortfall. The agreement test compares a Monte Carlo run on elliptical marginals with the square-root row in units of its
 standard error, green within three. The reference of Rosenberg and Schuermann compares the additive overestimate of the case with
 the published range of 30 to 40 percent and is always green, because it is a reference and not a criterion. The tests make the
-rule enforceable: a band with a missing row or a changed label does not pass its checks.
+rule checkable: the row object of the engine refuses a status that does not follow the method, and three of the tests cannot run
+without the rows they read (Section~\ref{sec:ablation-tests}). No experiment of this study breaks the rule and records how the
+nine tests respond, so the study does not measure how many of them turn red on a violation: the Rosenberg and Schuermann reference
+is green by construction, and none of the nine reads a row label or the row order.
 
 \subsection{Algorithm and complexity}
 \label{sec:method-algorithm}

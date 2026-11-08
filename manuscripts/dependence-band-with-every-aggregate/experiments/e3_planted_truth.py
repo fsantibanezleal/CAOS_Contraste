@@ -2,7 +2,7 @@
 
 The four marginals of Banco Andino are rebuilt from the committed grids. For each of ten planted dependence structures (six
 Gaussian or t copulas, a mixture of two Gaussian regimes, a reflected Clayton and a Gumbel copula) the capital of the sum
-``VaR_0.999 - EL`` is estimated from 20 independent samples of 10^6 draws (seeds 3001 + 100 s + r). The rows of the band, run once
+``VaR_0.999 - EL`` is estimated from 20 independent samples of 10^6 draws (seeds 3001 + 100 s + r). The rows of the band, as the means of the 20 repetitions of e2
 with the named convention (base matrix, nu = 4, 8, 30), are then set against that truth, together with two published single-figure
 methods calibrated on the truth itself (the best case for them): the hybrid quantile of Rosenberg and Schuermann with the Pearson
 correlation of the truth sample, and the Gaussian copula with the matrix read from the Kendall rank correlation of the truth sample

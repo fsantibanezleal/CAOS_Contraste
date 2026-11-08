@@ -56,6 +56,11 @@
      "light": "not_evaluated",
      "reason": "not evaluated"
     },
+    "with_gaussian_only": {
+     "runnable": false,
+     "light": "not_evaluated",
+     "reason": "not evaluated"
+    },
     "light_in_committed_document": "amber"
    },
    "aggregation.worst_case_bracket": {
@@ -71,7 +76,11 @@
     },
     "without_bounds": {
      "runnable": false,
-     "reason": "no lower bound and no worst case to bracket with"
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "with_gaussian_only": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
     },
     "light_in_committed_document": "green"
    },
@@ -87,7 +96,11 @@
     },
     "without_stressed_band": {
      "runnable": false,
-     "reason": "no second matrix, so no second Gaussian row"
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
+    },
+    "with_gaussian_only": {
+     "runnable": false,
+     "reason": "TypeError: float() argument must be a string or a real number, not 'NoneType'"
     },
     "light_in_committed_document": "amber"
    },
@@ -188,6 +201,10 @@
    "aggregation.correlation_stress"
   ],
   "runnable_with_gaussian_only_share": 0.6666666666666666,
+  "removed_rows_still_runnable": {
+   "copula_choice_without_t_rows": false,
+   "correlation_stress_without_stressed_band": false
+  },
   "clause_removing_rows_makes_tests_unrunnable": true,
   "clause_gaussian_only_share_ok": false,
   "non_green_lights_in_document": {
@@ -505,5 +522,5 @@
    ]
   }
  ],
- "seconds": 28
+ "seconds": 79
 }

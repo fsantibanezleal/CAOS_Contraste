@@ -20,7 +20,7 @@ The two bound rows converge. The four rearrangements behind them ran $\bdSweeps$
 \bdLowerRangeLo{} to \bdLowerRangeHi{} billion of value at risk, a width of \bdLowerRangeWidth{} billion, and the range of the
 worst case is CLP \bdUpperRangeLo{} to \bdUpperRangeHi{} billion, a width of \bdUpperRangeWidth{} million. The worst value at risk
 of CLP \bdWorstVar{} billion is below the ceiling of Proposition~\ref{prop:headline}, the sum of the expected shortfalls of the
-marginals, CLP \bdSumEs{} billion, by CLP \bdSlack{} billion, and the comonotonic value at risk is CLP \bdComoVar{} billion: the
+marginals, CLP \bdSumEs{} billion, by CLP \bdSlack{} billion, and the comonotonic value at risk, computed on the rebuilt grid and \bdComoOverSum{} percent above the committed sum of the values at risk, is CLP \bdComoVar{} billion: the
 worst case is $\bdWorstOverEs$ of the ceiling and exceeds the comonotonic value, as the proposition allows. On the committed
 aggregate the nine tests return green for seven and amber for two: the copula-choice statistic is $\bdCopulaStat$ percent, between
 the green limit of 5 and the red limit of 15, and the correlation-stress statistic is $\bdStressStat$ percent, above the amber limit
@@ -58,7 +58,7 @@ degrees of freedom and at most CLP \bdMaxSd{} billion for any row, and $\bdBound
 \emph{The band is not noise (H3).} The width of CLP \bdWidth{} billion is \bdWidthOverSe{} times the largest Monte Carlo standard
 error, CLP \bdMaxSe{} billion, which is above the 100 that the prediction required. No row speaks for the band: the largest relative difference from a row to another row is
 $\bdFarthestMin$ percent for the Gaussian copula, the row with the smallest such difference, and rises to $\bdFarthestMax$ percent
-for the lower bound. No single row is within three quarters of every other.
+for the lower bound. Every row has another row more than 75 percent away from it.
 
 \emph{Invariance of the bounds (H5).} The stress that raises the market-credit correlation to 0.8 leaves the lower bound and the
 worst case unchanged to the precision of the documents, as Proposition~\ref{prop:bracket} requires, while the Gaussian row moves by
@@ -101,7 +101,7 @@ standard error of every capital is at most CLP \bdTruthSeMax{} billion.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/truth-errors}
-\caption{Relative error in percent of six single-figure methods against the planted capital of each of the ten structures: the simple sum, the square-root row, the Gaussian copula row, the $t$ rows with 4 and 30 degrees of freedom, the hybrid quantile and the Gaussian copula calibrated on the structure itself. The shaded band marks errors within 5 percent; each marker is one method on one structure.}
+\caption{Relative error in percent of seven single-figure methods against the planted capital of each of the ten structures: the simple sum, the square-root row, the Gaussian copula row, the $t$ rows with 4 and 30 degrees of freedom, the hybrid quantile and the Gaussian copula calibrated on the structure itself. The shaded band marks errors within 5 percent; each marker is one method on one structure.}
 \label{fig:truth-errors}
 \end{figure}
 
@@ -167,7 +167,7 @@ $\bdBenefitMarket$ and $\bdBenefitIrrbb$ percent for credit, market and interest
 \label{fig:euler}
 \end{figure}
 
-The model-risk measures of the band are information. With the Gaussian copula as the reference model, the additive measure is
+The model-risk measures of the band are information. With the Gaussian copula as the reference model, the absolute measure is
 $\bdAm$ percent and the relative measure is $\bdRm$: multiplying the Gaussian row by the factor $1+\mathrm{AM}$ reaches the worst
 case, and the worst case lies above the Gaussian row by $\bdRmPct$ percent of the width of the band. The measure of Glasserman and Xu
 with a relative entropy budget of $\bdGxEta$ raises the expected aggregate loss from CLP \bdGxBase{} to \bdGxWorst{} billion.

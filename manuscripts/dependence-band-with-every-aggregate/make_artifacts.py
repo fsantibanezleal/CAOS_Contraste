@@ -99,6 +99,7 @@ rs = e1["rosenberg_schuermann"]; M("bdRsOver", pc(rs["case_additive_overestimate
 tl = {t["test_id"]: t for t in e1["tests_of_the_document"]}
 M("bdCopulaStat", pc(tl["aggregation.copula_choice_sensitivity"]["statistic"])); M("bdStressStat", pc(tl["aggregation.correlation_stress"]["statistic"]))
 M("bdBracketStat", bn(tl["aggregation.worst_case_bracket"]["statistic"]))
+M("bdGaussSe", bn(next(r for r in case.committed_band if r["method"] == "gaussian-copula")["mc_se_clp_m"]))
 # e2
 r2 = e2["H2"]["per_row"]
 M("bdMaxRelDiff", f"{max(abs(v['relative_difference']) for v in r2.values()) * 100:.4f}")
@@ -112,6 +113,7 @@ for k, nm in (("simple-sum", "Sum"), ("gaussian-copula", "Gauss"), ("worst-case"
     M("bdFarthest" + nm, pc(fr[k], 0))
 br = e2["bound_ranges"]
 M("bdWorstOverComo", pc(e1["analytic_bound"]["worst_var"] / br["comonotonic_var"] - 1.0))
+M("bdComoOverSum", pc(br["comonotonic_var"] / e1["analytic_bound"]["sum_of_var"] - 1.0, 2))
 M("bdLowerRangeWidth", bn(br["lower_range"][1] - br["lower_range"][0], 2)); M("bdUpperRangeWidth", f"{br['upper_range'][1] - br['upper_range'][0]:.1f}".replace(",", "{,}"))
 M("bdLowerRangeLo", bn(br["lower_range"][0])); M("bdLowerRangeHi", bn(br["lower_range"][1]))
 M("bdUpperRangeLo", bn(br["upper_range"][0], 3)); M("bdUpperRangeHi", bn(br["upper_range"][1], 3))
@@ -150,6 +152,8 @@ M("bdSumErrMin", pc(min(_sum_err.values()), 0)); M("bdSumErrMaxOther", pc(max(_s
 _gauss_dep = [e["gaussian-copula"] for i, e in errs.items() if i in ("gaussian-stress", "gaussian-crisis", "t3-base", "t25-base", "t3-crisis", "clayton-survival", "gumbel")]
 M("bdGaussDepMin", pc(-max(_gauss_dep), 0)); M("bdGaussDepMax", pc(-min(_gauss_dep), 0))
 _k_tail = [abs(errs[i]["gaussian-kendall-calibrated"]) for i in ("t3-base", "t25-base", "t3-crisis", "clayton-survival", "gumbel")]
+_stress_gauss = [abs(e3["band_rows_used"]["stress"]["gaussian-copula"] / r["truth"] - 1.0) for r in st if r["id"] in ("gaussian-stress", "gaussian-crisis", "t3-base", "t25-base", "t3-crisis", "clayton-survival", "gumbel")]
+M("bdGaussStressDepMin", pc(min(_stress_gauss))); M("bdGaussStressDepMax", pc(max(_stress_gauss)))
 M("bdKTailMin", pc(min(_k_tail), 0)); M("bdKTailMax", pc(max(_k_tail), 0))
 _k_g = [abs(errs[i]["gaussian-kendall-calibrated"]) for i in ("gaussian-base", "gaussian-stress", "gaussian-crisis", "gaussian-independent", "regime-mixture")]
 M("bdKGaussMax", pc(max(_k_g), 0))
@@ -314,7 +318,7 @@ def t_hyp() -> None:
            "H5": e1["H5"]["outcome"], "H6": h6["outcome"], "H7": h7["outcome"]}
     rows = [[k, short[k], meas[k], out[k]] for k in hyp if not k.startswith("_")]
     T(TAB / "hypotheses.tex", ["Id", "Prediction", "Measured", "Outcome"], rows,
-                 caption="The predictions stated before the experiments, the measured quantity of each and whether it held or was refuted, from the outputs of the experiment scripts.",
+                 caption="The nine predictions, the measured quantity of each and whether it held or was refuted, from the outputs of the experiment scripts.",
                  label="tab:hypotheses", align="llp{5.2cm}l")
 
 
@@ -357,11 +361,23 @@ def t_notation() -> None:
         ["$\\tau$", "Kendall rank correlation", "1"],
     ]
     T(TAB / "notation.tex", ["Symbol", "Meaning", "Unit"], rows,
-                 caption="The notation of the formulation and of the proposed method: every symbol with its meaning and its unit; money is in CLP billion unless a table states CLP million.",
+                 caption="The notation of the formulation and of the proposed method: the main symbols with their meaning and their unit; money is in CLP billion unless a table states CLP million.",
                  label="tab:notation", align="lp{9cm}l")
 
 
-for fn in (t_marginals, t_protocol, t_main, t_truth, t_ablation, t_hyp, t_tests, t_euler, t_notation):
+def t_matrices() -> None:
+    mats = [case.corr, case.corr_stress, bk.crisis_corr()]
+    rows = []
+    for i in range(4):
+        for j in range(i + 1, 4):
+            rows.append([f"{RISK_NAMES[bk.RISKS[i]]} and {RISK_NAMES[bk.RISKS[j]]}"] + [f"{m[i, j]:.2f}" for m in mats])
+    T(TAB / "matrices.tex", ["Pair of risks", "Base", "Market-credit 0.8", "Crisis"], rows,
+      caption="The three correlation matrices of the study, one entry per pair of risk types (the matrices are symmetric with a unit diagonal): the base matrix of the committed documents, "
+              "the matrix of the market-credit stress, and the crisis matrix of two planted structures.",
+      label="tab:matrices", align="lrrr")
+
+
+for fn in (t_marginals, t_protocol, t_main, t_truth, t_ablation, t_hyp, t_tests, t_euler, t_notation, t_matrices):
     fn()
 
 # ---------------------------------------------------------------------------------------------------------------- figures
@@ -424,7 +440,7 @@ def fig_truth() -> None:
     y = np.arange(len(st))[::-1]
     for key, lab, i in methods:
         s = figkit.STYLES[i % len(figkit.STYLES)]
-        ax.plot([100 * r["relative_error"][key] for r in st], y, linestyle="none", marker=s["marker"], color=s["color"], label=lab, markersize=4)
+        ax.plot([100 * r["relative_error"][key] for r in st], y, linestyle="none", marker=s["marker"] if i < len(figkit.STYLES) else "P", color=s["color"], mfc=("none" if i >= len(figkit.STYLES) else None), label=lab, markersize=4)
     ax.axvline(0, color="0.2", linewidth=0.8)
     ax.axvspan(-5, 5, color="0.93")
     ax.set_yticks(y); ax.set_yticklabels([r["label"] for r in st], fontsize=7)
@@ -440,7 +456,7 @@ def fig_cov() -> None:
     ax.bar(range(len(vals)), vals, color=["0.15"] * 4 + ["0.6"] * 5, edgecolor="0.0")
     for i, v in enumerate(vals):
         ax.text(i, v + 0.1, str(v), ha="center", fontsize=7)
-    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labs, fontsize=6.5); ax.set_ylim(0, len(st) + 1)
+    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labs, fontsize=6.5, rotation=30, ha="right"); ax.set_ylim(0, len(st) + 1)
     ax.set_ylabel(f"planted structures covered, of {len(st)}")
     figkit.save(fig, FIG, "coverage")
 

@@ -1,5 +1,5 @@
 {
-  "_comment": "The predictions of the manuscript, written before experiments e2, e3 and e4 were run. Each experiment script reads its criteria from this file and writes the outcome next to the numbers. A criterion is never edited after a run.",
+  "_comment": "The predictions of the manuscript, written by the earlier writing unit before experiments e2, e3 and e4 were run (by file time; the order relative to e1 is not recorded, and the file was first committed with the results). Each experiment script reads its criteria from this file and writes the outcome next to the numbers.",
   "H1": {
     "text": "Structure. In each of the six committed aggregates the band has eight rows in the stated order, exactly one row labelled headline capital and it is the simple sum, seven rows labelled information, one horizon and one confidence level, and an Euler allocation that adds up to the aggregate expected shortfall.",
     "criterion": {"aggregates": 6, "rows": 8, "headline_rows": 1, "information_rows": 7, "euler_relative_error_max": 1e-6},

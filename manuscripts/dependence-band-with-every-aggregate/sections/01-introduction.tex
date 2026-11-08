@@ -29,7 +29,7 @@ Exactly one row, the simple sum, is labelled headline capital; the other seven a
 allocation of the aggregate expected shortfall adds up to the aggregate, and the model risk measures computed on the band carry the
 same label. Each ingredient is published: the copula families, the sharp bounds, the Euler principle and the model risk measures all
 have a literature that Section~\ref{sec:related-work} reviews. What is proposed is their composition into a rule that a program can
-enforce on every aggregate, together with the checks that fail when the rule is broken, and a measurement of what the rule buys.
+enforce on every aggregate, together with the tests that accompany it, and a measurement of what the rule buys.
 
 The study runs the rule on the aggregates of a complete capital case, the committed documents of case C18 of Contraste, the
 validation of the risk models of a bank (engine \texttt{riskvalidation} release 1.1.0). The four marginals are rebuilt from the
@@ -47,7 +47,7 @@ its width is $\bdWidthOverSe$ times the largest Monte Carlo standard error, no r
 $\bdCovInterior$ of the ten, and $\bdCovInteriorStress$ when the rows of the market-credit stress are added; the Gaussian copula row alone is within 5 percent of the capital of $\bdGaussWithin$ of the ten, with a median absolute error of $\bdGaussMedErr$ percent
 (Table~\ref{tab:planted-truth}, Figure~\ref{fig:truth-errors}). Two single-figure estimators calibrated on the structure itself are within 5 percent in $\bdAblHybridPoint$ of the ten.
 \item Removing a component of the rule has a measured cost: without the bounds the interval contains $\bdAblNoBounds$ of the ten, without the second matrix $\bdAblNoStress$ and without the $t$ rows,
-on the base matrix, $\bdAblNoT$ (Table~\ref{tab:ablation}). Of nine predictions stated beforehand, seven held and two were refuted, among them the coverage of the planted structures by the interior rows of the base matrix.
+on the base matrix, $\bdAblNoT$ (Table~\ref{tab:ablation}). Of nine predictions, seven held and two were refuted, among them the coverage of the planted structures by the interior rows of the base matrix.
 \end{itemize}
 
 The remainder of the paper is organised as follows. Section~\ref{sec:related-work} places the rule among the published methods.

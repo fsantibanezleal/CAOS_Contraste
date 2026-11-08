@@ -65,13 +65,16 @@ position that diversification between risk types is not recognised; the experime
 every planted structure with positive dependence, since the simple sum exceeds the capital of each by $\bdSumErrMin$ to $\bdSumErrMaxOther$ percent, except for
 the independent structure, where it exceeds it by $\bdSumMaxErr$ percent. A bank that did claim diversification would have to
 choose one row of the band, and the experiments give it a reason for the choice: the Gaussian row underestimates by $\bdGaussDepMin$ to $\bdGaussDepMax$ percent
-every planted structure with a stressed matrix or with tail dependence, seven of the ten, and the interior rows of the stressed matrix come closer.
+every planted structure with a stressed matrix or with tail dependence, seven of the ten, and the interior rows of the stressed matrix come closer: on these seven structures the Gaussian row of the stressed matrix falls short by
+$\bdGaussStressDepMin$ to $\bdGaussStressDepMax$ percent, against $\bdGaussDepMin$ to $\bdGaussDepMax$ percent below for the Gaussian row of the base matrix.
 
 \subsection{Relation to the published findings}
 \label{sec:discussion-literature}
 
 The overestimate of the additive rule over the Gaussian copula in the case, $\bdAdditiveOver$ percent, lies in the range of 30 to 40
-percent that Rosenberg and Schuermann report \citep{rosenberg2006}. The excess of the worst value at risk over the comonotonic one,
+percent that Rosenberg and Schuermann report \citep{rosenberg2006}. The same authors find that the choice between a normal and a Student $t$ copula has a more modest effect
+on risk than the additive overestimate; the case agrees in order of magnitude, since the largest difference between a $t$ row and
+the Gaussian row is $\bdCopulaStat$ percent, against $\bdAdditiveOver$ percent for the simple sum. The excess of the worst value at risk over the comonotonic one,
 $\bdWorstOverComo$ percent here, is the phenomenon that Embrechts, Puccetti and R\"uschendorf describe and that makes the simple
 sum a non-bound \citep{epr2013}. The dependence of the capital on the degrees of freedom is that of the tail dependence of
 Demarta and McNeil \citep{demarta2005}. The Joint Forum's reluctance to rely on aggregation models \citep{jointforum2010} is, in

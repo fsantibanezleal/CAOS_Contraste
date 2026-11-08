@@ -13,7 +13,7 @@ $\alpha=0.999$. The value at risk and the expected shortfall of a loss $X$ at le
 \ES_\alpha(X)=\frac{1}{1-\alpha}\int_\alpha^1 Q_X(p)\dd p ,
 \label{eq:var-es}
 \end{equation}
-and $\mathrm{EL}_k=\E[L_k]$ is the expected loss of risk type $k$. Table~\ref{tab:notation} lists every symbol of the paper with its
+and $\mathrm{EL}_k=\E[L_k]$ is the expected loss of risk type $k$. Table~\ref{tab:notation} lists the main symbols of the paper with their
 unit. Money is in billions of Chilean pesos (CLP billion) unless a table states CLP million, the unit of the committed documents.
 
 \input{tables/notation}
@@ -76,10 +76,13 @@ The study rests on four assumptions, each stated with its source. The marginals 
 and every statement below is conditional on them, so a marginal error moves every row of the band alike and the band is not a
 remedy for it. The horizon and the level are common to the four marginals; a marginal read at another level or horizon is
 converted by the caller before it enters the band, and the experiments in Section~\ref{sec:ablation} measure what an unconverted
-marginal does. The correlation matrices are conventions: for the base matrix, the market-credit correlation of 0.5, the
-correlation of 0.2 of each of these with operational risk, and, by the case's own statement, the same values for interest rate risk
-as for market risk, which the case records as unverified against any source and which the band exists to expose; the stress matrix raises the market-credit
-correlation to 0.8. The set $\mathcal N$ is $\{4,8,30\}$, a convention of the case that spans heavy tails to nearly Gaussian ones.
+marginal does. The correlation matrices are conventions, given entry by entry in Table~\ref{tab:matrices}: the base matrix has the
+market-credit correlation of 0.5, the correlation of 0.2 of each of these with operational risk, and, by the case's own statement,
+the same values for interest rate risk as for market risk, which the case records as unverified against any source and which the
+band exists to expose; the stress matrix raises the market-credit correlation to 0.8, and the crisis matrix of the planted
+structures sets the three financial risks at 0.8 with each other and 0.4 with operational risk. The set $\mathcal N$ is $\{4,8,30\}$, a convention of the case that spans heavy tails to nearly Gaussian ones.
 Finally, the marginals are continuous and strictly increasing on the region where they are read, which makes the quantile
 function a proper inverse and the value at risk of a coupling well defined; the grids of the committed marginals satisfy this
 (Section~\ref{sec:design-data}).
+
+\input{tables/matrices}

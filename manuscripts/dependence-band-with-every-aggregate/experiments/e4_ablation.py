@@ -92,15 +92,18 @@ def main() -> None:
         "aggregation.copula_choice_sensitivity": {
             "needs": ["Gaussian row", "t rows"],
             "with_all_rows": attempt(lambda: rv_va.copula_choice_sensitivity(gauss, t_caps)),
-            "without_t_rows": attempt(lambda: rv_va.copula_choice_sensitivity(gauss, []))},
+            "without_t_rows": attempt(lambda: rv_va.copula_choice_sensitivity(gauss, [])),
+            "with_gaussian_only": attempt(lambda: rv_va.copula_choice_sensitivity(gauss, []))},
         "aggregation.worst_case_bracket": {
             "needs": ["lower bound", "worst case", "interior rows"],
             "with_all_rows": attempt(lambda: rv_va.worst_case_bracket(base["lower-bound"], [base[k] for k in INTERIOR], base["worst-case"])),
-            "without_bounds": {"runnable": False, "reason": "no lower bound and no worst case to bracket with"}},
+            "without_bounds": attempt(lambda: rv_va.worst_case_bracket(None, [base[k] for k in INTERIOR], None)),
+            "with_gaussian_only": attempt(lambda: rv_va.worst_case_bracket(None, [gauss], None))},
         "aggregation.correlation_stress": {
             "needs": ["Gaussian row of the base matrix", "Gaussian row of the stressed matrix"],
             "with_all_rows": attempt(lambda: rv_va.correlation_stress(gauss, stress["gaussian-copula"])),
-            "without_stressed_band": {"runnable": False, "reason": "no second matrix, so no second Gaussian row"}},
+            "without_stressed_band": attempt(lambda: rv_va.correlation_stress(gauss, None)),
+            "with_gaussian_only": attempt(lambda: rv_va.correlation_stress(gauss, None))},
         "aggregation.diversification_sign": {
             "needs": ["the diversification factor of each interior row"],
             "with_all_rows": attempt(lambda: rv_va.diversification_sign(factors_all)),
@@ -128,11 +131,14 @@ def main() -> None:
     for k, v in tests.items():
         v["light_in_committed_document"] = doc_lights.get(k)
     c7 = h["H7"]["criterion"]
-    t_removed = tests["aggregation.copula_choice_sensitivity"]["without_t_rows"]["runnable"]
+    # first clause of H7: the two calls the prediction names, each made without the rows it reads
+    removed = {"copula_choice_without_t_rows": tests["aggregation.copula_choice_sensitivity"]["without_t_rows"]["runnable"],
+               "correlation_stress_without_stressed_band": tests["aggregation.correlation_stress"]["without_stressed_band"]["runnable"]}
+    t_removed = any(removed.values())
     share = len(runnable_gauss_only) / c7["tests_total"]
     h7 = {"criterion": c7, "tests": tests, "runnable_with_gaussian_only": runnable_gauss_only, "need_other_rows": needs_more,
           "runnable_with_gaussian_only_share": share,
-          "clause_removing_rows_makes_tests_unrunnable": (not t_removed),
+          "removed_rows_still_runnable": removed, "clause_removing_rows_makes_tests_unrunnable": (not t_removed),
           "clause_gaussian_only_share_ok": share <= c7["runnable_with_gaussian_only_max_share"],
           "non_green_lights_in_document": {k: v for k, v in doc_lights.items() if v != "green"},
           "outcome": "held" if ((not t_removed) and share <= c7["runnable_with_gaussian_only_max_share"]) else "refuted"}

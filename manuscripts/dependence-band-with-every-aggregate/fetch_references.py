@@ -52,6 +52,9 @@ DOIS = {
     "elm2003": "10.1016/b978-044450896-6.50010-8",
 }
 
+# Print years of the journal volume where the record carries the online year (Crossref "issued").
+PRINT_YEAR = {"demarta2005": "2005", "elw2008": "2009", "brv2015": "2017", "glasserman2014": "2014"}
+
 MANUAL = """
 @misc{tasche2008,
   title = {{Capital allocation to business units and sub-portfolios: the Euler principle}},
@@ -127,6 +130,8 @@ def main() -> None:
             lines.append(f"  booktitle = {{{journal}}},")
         for f in ("volume", "number", "pages", "year", "publisher"):
             v = clean(field(t, f))
+            if f == "year" and key in PRINT_YEAR:
+                v = PRINT_YEAR[key]
             if v:
                 lines.append(f"  {f} = {{{v}}},")
         lines.append(f"  doi = {{{doi}}}, url = {{https://doi.org/{doi}}}")
@@ -136,7 +141,8 @@ def main() -> None:
         print("ok", key, flush=True)
         time.sleep(0.5)
     out.append(MANUAL.strip())
-    (HERE / "references.bib").write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    text = re.sub(r"\n\}\n\n\}\n", "\n}\n", "\n".join(out) + "\n")  # a record that closes twice
+    (HERE / "references.bib").write_text(text, encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":

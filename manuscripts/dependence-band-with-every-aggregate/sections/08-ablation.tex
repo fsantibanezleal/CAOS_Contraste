@@ -4,7 +4,10 @@
 The ablation removes one component of the protocol at a time and measures what is lost on the ten planted structures of
 Section~\ref{sec:design-planted}. Table~\ref{tab:ablation} gives every variant and Figure~\ref{fig:coverage} the counts of the
 first nine. The components are the sharp bounds, the second matrix, the $t$ rows, the single figures that the band replaces, the
-common level and the tests.
+common level and the tests. In Figure~\ref{fig:coverage} the dark bars fall from $\bdAblFull$ of the ten for the full band to
+$\bdAblNoBounds$, $\bdAblNoStress$ and $\bdAblNoT$ when the bounds, the stressed matrix or the $t$ rows are removed, and the light
+bars show that each single figure stays at $\bdAblGaussPoint$, $\bdAblVcPoint$, $\bdAblSumPoint$, $\bdAblHybridPoint$ and
+$\bdAblKendallPoint$: only the full band holds every capital.
 
 \input{tables/ablation}
 
@@ -60,9 +63,10 @@ estimators use the structure's own data.
 The tests of Section~\ref{sec:method-checks} each read a defined set of inputs, listed in Table~\ref{tab:tests-rows}. Removing the
 $t$ rows leaves the copula-choice test unrunnable: the engine returns the light not evaluated when it is given an empty list of
 $t$ capital figures. The correlation-stress test needs the Gaussian row of the stressed matrix, and the bracket test needs the two
-bound rows, so removing the stressed band or the bounds leaves each without its input; these two are determined by the arguments
-of the functions, which take the missing row as a required argument, and not by an engine call that refuses them. The first clause
-of the prediction (H7) holds on these grounds.
+bound rows; called without the missing value, the engine raises an error in both cases, so neither test can be run without its
+row. Each of these cells of the table is the outcome of an engine call and none is classified by hand. The first clause of the
+prediction (H7), that removing the $t$ rows leaves the copula-choice test unrunnable and removing the stressed band leaves the
+correlation-stress test unrunnable, holds.
 
 \input{tables/tests-rows}
 
