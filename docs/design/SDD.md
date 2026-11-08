@@ -807,10 +807,10 @@ no claim is stated before its demonstration exists. Each claim is stated only as
 - **BS-1** The measured size and power of the validation tests on planted defects.
   What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
   them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
-  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
-  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
+  matrix against a reference, downward momentum) have a size and no power. The measurement is 256 simulations and 651,000 seeded
+  repetitions in eight families, every one of its 537 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
   https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
-  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
+  an exact rejection probability beside 47 of the rows, on 148 generators whose truth is known and reproduces from the committed
   configuration. Demonstrated by `notebooks/en/14-validating-the-validator/09-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
   and its Spanish counterpart.
   Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
