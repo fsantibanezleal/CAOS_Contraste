@@ -1,0 +1,85 @@
+\section{Problem formulation}
+\label{sec:problem}
+
+\subsection{Setting and notation}
+\label{sec:problem-setting}
+
+A bank has $K$ risk types. For risk type $k=1,\dots,K$ the loss over the horizon $h$ is a random variable $L_k$ with distribution
+function $F_k$, and the model of the risk type delivers $F_k$ as a quantile function $Q_k(p)=\inf\{x:F_k(x)\ge p\}$. The study
+uses $K=4$ (credit, market, interest rate risk in the banking book and operational risk), $h$ of one year and a confidence level
+$\alpha=0.999$. The value at risk and the expected shortfall of a loss $X$ at level $\alpha$ are
+\begin{equation}
+\VaR_\alpha(X)=Q_X(\alpha),\qquad
+\ES_\alpha(X)=\frac{1}{1-\alpha}\int_\alpha^1 Q_X(p)\dd p ,
+\label{eq:var-es}
+\end{equation}
+and $\mathrm{EL}_k=\E[L_k]$ is the expected loss of risk type $k$. Table~\ref{tab:notation} lists every symbol of the paper with its
+unit. Money is in billions of Chilean pesos (CLP billion) unless a table states CLP million, the unit of the committed documents.
+
+\input{tables/notation}
+
+The four marginals that the study uses are those of Banco Andino, the synthetic bank of the case; they are read from the committed
+documents and summarised in Table~\ref{tab:marginals}. Their sizes are very different: the credit and the market marginal carry \bdEcShareCredit{} and \bdEcShareMarket{} percent of the sum of the capital figures, the interest rate marginal \bdEcShareIrrbb{} percent and the operational marginal \bdEcShareOperational{} percent.
+
+\input{tables/marginals}
+
+\subsection{The capital basis and the headline}
+\label{sec:problem-basis}
+
+The capital of a risk type is its economic capital, the unexpected loss at level $\alpha$,
+\begin{equation}
+\mathrm{EC}_k=\VaR_\alpha(L_k)-\mathrm{EL}_k ,\qquad H=\sum_{k=1}^K \mathrm{EC}_k ,
+\label{eq:ec-headline}
+\end{equation}
+and $H$, the simple sum, is the headline capital of the aggregate. The choice of the simple sum as the headline is a supervisory
+position of the case, not a result of this paper: a regulator that does not recognise the diversification between risk types adds
+the capital needed for each. Every other figure the protocol produces is information for the validator and is not capital. Two conventions of the basis are
+stated here. The expected loss is subtracted because the capital figures of the committed documents are the unexpected part of the
+loss, the part that provisions and pricing are not meant to absorb, and the expected loss is additive over risk types, which is
+what lets one number, $\sum_k\mathrm{EL}_k$, convert the value at risk of any aggregate into its capital. The value at risk, and
+not the expected shortfall, defines the capital, because that is how the documents define it; the expected shortfall enters only
+the allocation, where its coherence is needed.
+
+The aggregate that a bank reports below $H$ asserts that the four risk types do not reach their $\alpha$-quantiles together. That
+assertion is a statement about the joint law of $(L_1,\dots,L_K)$, which no bank observes in the region of probability $1-\alpha$.
+
+\subsection{Dependence uncertainty}
+\label{sec:problem-uncertainty}
+
+Let $\mathcal C(F_1,\dots,F_K)$ be the set of joint laws of $(L_1,\dots,L_K)$ with the marginals $F_k$, which the literature calls the
+couplings of the marginals. For a coupling $\pi$ write $S_\pi=\sum_k L_k$ for the total loss under $\pi$. The expected loss of
+the total does not depend on $\pi$, because the expectation is additive, so the capital of the aggregate under $\pi$ is
+\begin{equation}
+b(\pi)=\VaR_\alpha(S_\pi)-\sum_{k=1}^K \mathrm{EL}_k ,\qquad \pi\in\mathcal C(F_1,\dots,F_K).
+\label{eq:coupling-capital}
+\end{equation}
+The set $\{b(\pi)\}$ is the dependence uncertainty of the aggregate: it is what the capital can be when only the marginals are
+known. Its extreme values are
+\begin{equation}
+\underline b=\inf_{\pi\in\mathcal C} b(\pi),\qquad \overline b=\sup_{\pi\in\mathcal C} b(\pi),
+\label{eq:sharp-bounds}
+\end{equation}
+the sharp bounds, and the diversification factor of any row $j$ that reports a capital $b_j$ is $\mathrm{DF}_j=b_j/H$.
+
+The problem of the paper is the following. Given the marginals, a correlation matrix $R$ for the copulas and a set $\mathcal N$ of
+degrees of freedom of the $t$ copula, define a reporting rule for the aggregate such that (i) the capital is never shown as one
+figure but as a fixed ordered band of rows computed on the same marginals, one horizon and one level; (ii) exactly one row is
+capital and the other rows say that they are information; (iii) the sharp bounds of Equation~\ref{eq:sharp-bounds} are rows of the
+band, so that the band contains the capital under every coupling; (iv) an allocation of the aggregate to the risk types adds up to
+the aggregate; and (v) a program can check that each of these holds, and fail when one does not. The paper then measures how much
+of the dependence uncertainty the band spans and how it compares with the single figures that are used in its place.
+
+\subsection{Assumptions}
+\label{sec:problem-assumptions}
+
+The study rests on four assumptions, each stated with its source. The marginals are given: the protocol does not estimate them,
+and every statement below is conditional on them, so a marginal error moves every row of the band alike and the band is not a
+remedy for it. The horizon and the level are common to the four marginals; a marginal read at another level or horizon is
+converted by the caller before it enters the band, and the experiments in Section~\ref{sec:ablation} measure what an unconverted
+marginal does. The correlation matrices are conventions: for the base matrix, the market-credit correlation of 0.5, the
+correlation of 0.2 of each of these with operational risk, and, by the case's own statement, the same values for interest rate risk
+as for market risk, which the case records as unverified against any source and which the band exists to expose; the stress matrix raises the market-credit
+correlation to 0.8. The set $\mathcal N$ is $\{4,8,30\}$, a convention of the case that spans heavy tails to nearly Gaussian ones.
+Finally, the marginals are continuous and strictly increasing on the region where they are read, which makes the quantile
+function a proper inverse and the value at risk of a coupling well defined; the grids of the committed marginals satisfy this
+(Section~\ref{sec:design-data}).

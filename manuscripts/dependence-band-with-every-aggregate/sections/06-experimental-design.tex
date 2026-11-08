@@ -1,0 +1,151 @@
+\section{Experimental design}
+\label{sec:experimental-design}
+
+The experiments test whether the protocol does what Section~\ref{sec:method-rule} says, how much of the dependence uncertainty
+the band spans, and what each component contributes. They run the engine on the committed documents of the case and on planted
+dependence structures whose capital is known by simulation. Every number in Section~\ref{sec:results} comes from a script that
+is committed beside the manuscript and is run from the repository root.
+
+\subsection{Predictions stated before the experiments}
+\label{sec:design-hypotheses}
+
+The predictions were written to a file that the experiment scripts read, before the experiments that test them were run, and a
+criterion is never edited after a run. Each is stated with the outcome that refutes it.
+\begin{description}
+\item[H1, structure.] In each of the six committed aggregates the band has eight rows in the stated order, exactly one row labelled
+headline capital and it is the simple sum, seven rows labelled information, one horizon and one confidence level, and an Euler
+allocation that adds up to the aggregate expected shortfall to a relative error of at most $10^{-6}$. Refuted if any aggregate fails
+any element.
+\item[H2, reproduction.] The engine, given the marginals rebuilt from the committed quantile grids and the committed seed, returns
+every row of the committed band within the larger of three combined Monte Carlo standard errors and 0.5 percent of the committed
+row. Refuted if any row differs by more.
+\item[H3, the band is not noise and no row speaks for it.] The width of the band, the worst case less the lower bound, is at least
+100 times the largest Monte Carlo standard error of its rows, and for every row some other row differs from it by more than 10
+percent. Refuted if the width is below 100 standard errors or some row lies within 10 percent of every other row.
+\item[H4a, coverage by the sharp range.] Over the planted structures the interval from the lower bound to the worst case contains
+the capital of the structure in all of them, after widening it by three standard errors of the capital of the structure.
+\item[H4b, coverage by the interior rows.] The interval spanned by the five interior rows (the square-root rule, the Gaussian copula
+and the $t$ copulas with 4, 8 and 30 degrees of freedom) contains the capital of the structure in at least 75 percent of the
+structures. Refuted if fewer are covered.
+\item[H4c, a single figure is not reliable.] The Gaussian copula row alone lies within 5 percent of the capital of the structure in
+at most half of the structures. Refuted if more than half are within 5 percent.
+\item[H5, invariance of the bounds.] The lower bound and the worst case are equal in the base band and in the band under the
+market-credit correlation of 0.8 (relative difference below $10^{-9}$), while the Gaussian copula row moves by more than 10
+percent.
+\item[H6, the common horizon and level matter.] Reading one marginal, the market marginal, at 99 percent in place of 99.9 percent
+changes the simple sum by at least 10 percent, and the consistency test returns red on that band.
+\item[H7, each row feeds a test.] Removing the $t$ rows leaves the copula-choice test unrunnable and removing the stressed band
+leaves the correlation-stress test unrunnable; with the Gaussian row alone, at most half of the nine tests can be run.
+\end{description}
+H4a is a consequence of Proposition~\ref{prop:coverage}; it was stated as a check on the implementation and not as a finding about
+the structures.
+
+\subsection{Data and provenance}
+\label{sec:design-data}
+
+The data are the committed documents of case C18 of Contraste, the aggregation of capital under macroeconomic scenarios, for
+Banco Andino. The bank is synthetic and its loss models are simulated, so no statement below is about the capital of any
+actual bank. There are four scenario documents, the baseline, the adverse scenario of the European Banking Authority 2025, the
+severely adverse scenario of the Federal Reserve 2026 and the delayed-transition scenario of the Network for Greening the
+Financial System, and a fifth document, the $t$ copula variant of the baseline, which also holds the band under the
+market-credit correlation of 0.8. The five documents carry one and the same aggregation block, shown by its SHA-256 digest, and
+the block of the stress is the sixth aggregate: the six aggregates reduce to $\bdDistinct$ distinct ones. The marginals come from four producers: the credit marginal from the engine's
+grouped copula on six portfolio segments with 400 representative names each, the market marginal from the committed mixed-portfolio
+forecast of the market case moved from 99 percent and one day to 99.9 percent and one year by the normal quantile ratio and the
+square root of 250, the interest rate marginal from the engine's one-factor Hull--White simulation on the curve and the book of
+the interest-rate case, and the operational marginal from the Fourier aggregation of a Poisson--generalised Pareto compound
+whose parameters are those of the operational-risk case scaled by assets.
+
+The documents commit the expected loss, the value at risk, the expected shortfall and the capital of each marginal and, for each
+marginal, its quantile function on a grid of $\bdGridPoints$ probabilities, the standard normal distribution function at the points from
+$-4.9$ to $4.9$ in steps of $0.005$, which reaches probabilities of $5\times10^{-7}$ at each end; the simulated samples are not
+committed. The experiments rebuild each marginal by linear interpolation of the committed grid, which is the same rule that
+produced the committed band, and the quantile function is clamped at the ends of the grid. The market marginal has losses below
+zero, a market gain, down to CLP \bdMarketGridMin{} billion at the lower end of its grid. Table~\ref{tab:marginals} gives the
+four marginals.
+
+\subsection{Planted dependence structures}
+\label{sec:design-planted}
+
+To know what the band contains, the capital of the aggregate must be known under a dependence structure that is not read from the
+band. Ten structures are planted on the four marginals of Banco Andino. Four are Gaussian copulas: with the base matrix, with
+the matrix of the market-credit stress, with a crisis matrix in which the three financial risks have a correlation of 0.8 with
+each other and 0.4 with operational risk, and with independent risks. Three are $t$ copulas: with 3 degrees of freedom and the
+base matrix, with 2.5 degrees of freedom and the base matrix, and with 3 degrees of freedom and the crisis matrix; the degrees
+of freedom are below the set of the band. One is a mixture of two Gaussian regimes in which 5 percent of the draws come from the
+crisis matrix and the others from the base matrix. Two are copulas of families that are not in the band: a reflected Clayton copula,
+which has upper tail dependence as a loss tail needs, with the parameter $\theta=\bdClaytonTheta$ that gives the mean Kendall rank
+correlation $\bar\tau=\bdTauBar$ of the base matrix, and a Gumbel copula with $\theta=\bdGumbelTheta$ and the same mean. The Clayton and Gumbel
+samplers are written for this study, because the engine does not simulate them, and each is checked against its closed
+form: the Laplace transform of the stable variable used by the Gumbel sampler, and the rank correlation of each copula
+(simulated $\bdClaytonTauSim$ against $\bdClaytonTauExact$ for the Clayton copula at $\theta=2$, and $\bdGumbelTauSim$ against
+$\bdGumbelTauExact$ for the Gumbel copula at $\theta=1.67$; the difference of 0.006 for the Gumbel check is twice the standard
+error of Kendall's coefficient on 50,000 pairs). The ten structures are the choice of the author: they span matrices, degrees of
+freedom and families inside and outside the band, and they are not a sample from a population of dependence structures of banks.
+
+\subsection{Methods compared}
+\label{sec:design-methods}
+
+Every method is run by the product on the same marginals, and none is taken from its publication. The rows of the band are the
+simple sum, the square-root rule, the Gaussian copula \citep{li2000,rosenberg2006}, the $t$ copula \citep{demarta2005} at
+4, 8 and 30 degrees of freedom, and the sharp bounds by the rearrangement algorithm \citep{puccetti2012,epr2013}. Two further
+methods are single-figure estimators that a bank could use in place of the band, given the most favourable input: data from the
+planted structure itself. The hybrid value at risk of Rosenberg and Schuermann \citep{rosenberg2006} combines the quantile of each
+marginal with the empirical Pearson correlation of a sample of the structure, $\sqrt{v^\top R_{\mathrm{emp}}v}$ with $v_k$ the
+sample quantile of marginal $k$, less the expected losses. The calibrated Gaussian copula takes the rank correlation of a sample of
+the structure, converts it to a correlation by $\rho=\sin(\pi\tau/2)$, the inverse of Equation~\ref{eq:kendall}, and simulates the
+Gaussian copula with that matrix. Both are calibrated on a sample of 200,000 draws of the structure (the rank correlation on its first 50,000), kept apart from
+the draws that define its capital. They represent a bank that observes the joint tail with a long sample and which can estimate a matrix perfectly, so
+their errors are lower bounds for what a bank achieves in practice.
+
+\subsection{Metrics}
+\label{sec:design-metrics}
+
+For a planted structure $s$ the capital $b^\ast(s)$ is the mean of $R_s=20$ independent estimates of Equation~\ref{eq:coupling-capital}
+on $10^6$ draws each, with the standard error $\mathrm{se}^\ast(s)=\mathrm{sd}/\sqrt{R_s}$. The error of a single figure $b_j$ is
+\begin{equation}
+e_j(s)=\frac{b_j}{b^\ast(s)}-1 ,
+\label{eq:relative-error}
+\end{equation}
+and a figure is within the tolerance $\delta$ of the structure when $\lvert e_j(s)\rvert\le\delta$, with $\delta=0.05$ unless
+stated. An interval $[\ell,u]$ covers the structure when, after widening by three standard errors of the capital of the structure,
+\begin{equation}
+\ell-3\,\mathrm{se}^\ast(s)\le b^\ast(s)\le u+3\,\mathrm{se}^\ast(s),
+\label{eq:coverage-indicator}
+\end{equation}
+and the coverage of a set of $M$ structures is the share of those covered. The width of an interval relative to the capital is
+$(u-\ell)/b^\ast(s)$; it is the price of coverage, because an interval that is wide enough covers everything. The reproduction of
+a committed row uses the combined standard error $\sqrt{\mathrm{se}_{\mathrm{rebuilt}}^2+\mathrm{se}_{\mathrm{committed}}^2}$, and the
+width of the band in standard errors is $(b_{\mathrm{worst}}-b_{\mathrm{lower}})/\max_j\mathrm{se}_j$, the maximum taken over the
+simulated rows. The difference between the rows is measured by the largest relative difference from a row to another row,
+$\max_{l\ne j}\lvert b_l/b_j-1\rvert$. The relative error is signed, so that an underestimate, the dangerous direction for a
+capital figure, is told apart from an overestimate, and the median and the maximum of its absolute value summarise it over the
+structures. The widening by three standard errors is a common convention that makes the indicator insensitive to the
+estimation error of the capital of the structure; it favours an interval by less than the tolerance of 5 percent, since the
+standard error of every capital is under one percent of it.
+
+\subsection{Repetitions, seeds and statistics}
+\label{sec:design-statistics}
+
+The committed band was produced with the seed 42, $10^6$ draws and $10^5$ cells for the bounds, and the reproduction (H2) runs the
+engine at that seed. The variation of the band over the seed is measured by 20 independent runs of the base band (seeds 1001 to
+1020) and 10 of the stressed band (seeds 2001 to 2010), reported as the mean and the standard deviation over runs. The capital of
+planted structure number $s$, counted from 0, uses the seeds $3001+100s+r$ for $r=0,\dots,19$, its calibration sample the seed
+$9001+s$, and the calibrated Gaussian copula the seed $9501+s$. The Euler allocation is repeated over the 20 seeds 4001 to 4020. The
+tests of H1, H5, H6 and H7 are deterministic functions of the committed documents and of the engine, and have no repetitions. The
+interval of every uncertainty is the standard deviation over seeds, or three standard errors where an interval is widened. No
+hypothesis test with a $p$-value is used: each prediction is a stated threshold on a measured quantity, and the table of outcomes
+reports the measured value beside the threshold.
+
+\subsection{Ablations planned}
+\label{sec:design-ablation}
+
+Four components of the protocol are removed one at a time and the loss is measured on the planted structures. The sharp bounds are
+removed, leaving the five interior rows of both matrices. The stressed matrix is removed, leaving the interior rows of the base
+matrix. The $t$ rows are removed, leaving the square-root rule and the Gaussian row. And each row is used alone, as a single figure,
+with its coverage at the tolerance of 5 percent. The component that is not an interval, the common horizon and level, is ablated
+by reading one marginal at another level (H6), and the checks are ablated by removing the rows each reads (H7). The Euler
+allocation is compared with the allocation by stand-alone expected shortfall, which does not add up. Each ablation is evaluated on
+the same ten structures and the same rows, so that the variants differ only in the component removed and the capital of the
+structures is not re-estimated; the interval ends are the means of the independent runs of the band, so that they do not carry
+the sampling error of a single run.

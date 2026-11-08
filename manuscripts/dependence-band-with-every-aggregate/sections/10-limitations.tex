@@ -1,0 +1,59 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\subsection{Internal validity}
+\label{sec:limits-internal}
+
+The simulated rows are sample quantiles at 99.9 percent from $10^6$ draws, so each rests on 1,000 tail draws, and their standard
+errors are about one percent of a row. The comparisons that matter are two orders of magnitude larger than this error (the width
+of the band is \bdWidthOverSe{} standard errors), but the coverage of a structure whose capital lies within a few standard errors of
+the edge of an interval is sensitive to it: the reflected Clayton copula is inside the interval of both matrices near its upper end,
+and a different seed could move it across. The widening by three standard errors of the capital of the structure, the tolerance of
+5 percent, the 75 percent of the coverage and the 100 standard errors of the width are thresholds of the author, fixed before the
+experiments and not derived. The capital of a planted structure is itself an estimate, from 20 samples of $10^6$ draws, with a
+standard error of at most CLP \bdTruthSeMax{} billion. The rearrangement algorithm that computes the bounds has no proof of
+convergence; the evidence here is the narrowness of the ranges, and a marginal with another shape of tail could behave otherwise.
+The coverage of the planted structures by the sharp range is, by Proposition~\ref{prop:coverage}, a check of the implementation and
+not a finding. The classification of a test as unrunnable without a row is made by the arguments of the function for two of the
+tests and by an engine call for one.
+
+\subsection{External validity}
+\label{sec:limits-external}
+
+All results are for one synthetic bank, four risk types, one level of 99.9 percent and one horizon of one year. The marginals are
+simulated by the producers of the case, and two of them rest on conventions that the case records as conventions: the
+market marginal is moved from 99 percent and one day to 99.9 percent and one year by the normal quantile ratio and the square root
+of 250, and the correlation of interest rate risk with the other types is set equal to that of market risk, which the case records as unverified. Each moves every row
+of the band alike, so the band does not remove it; the band shows the dependence uncertainty conditional on the marginals and not
+the uncertainty of the marginals. The marginals are read from a grid of $\bdGridPoints$ probabilities that ends at $5\times10^{-7}$ on each
+side with linear interpolation and clamping, so the rearrangement for the worst case reads the quantile functions only as far as
+the grid allows; the lower end of the grid reaches losses of CLP \bdMarketGridMin{} billion for the market marginal, and a bound row
+that depends on the extreme tail beyond the grid would not see it. The ten planted structures are chosen by the author, include
+several that are in the family of the band, and are not a sample of the dependence structures of banks: the proportions covered
+are properties of this set. The competing single-figure estimators were calibrated on data of the planted structure, which is
+favourable to them, and the band's interior rows use named conventions; with real data a bank would have a noisier matrix.
+
+\subsection{Construct validity}
+\label{sec:limits-construct}
+
+The experiments measure coverage of the capital of planted structures with the marginals of the case, so they measure whether the
+band brackets the effect of the dependence on the capital, which is the construct of the dependence band. They do not measure
+whether the band is useful for a decision, whether it changes what a bank holds, or whether a supervisor would accept it. The
+width is used as the price of coverage, and a more informative comparison would be a proper scoring rule for an interval, which
+is not computed here. The planted structures share the marginals of the case, so a structure that changes the marginals, such as a
+dependence between the frequency and the severity of operational losses, is outside what they test; the band is conditional on
+the marginals by design. The Euler allocation is evaluated for the expected shortfall of the Gaussian copula row only, and the
+model-risk measures are computed on the band of that one aggregate; neither is validated against a known allocation or a known
+model risk.
+
+\subsection{Scope}
+\label{sec:limits-scope}
+
+The study does not claim that the band is optimal, that no other interval construction is better, or that the band's rows are the
+only ones that a validator should show; the bounds with a constraint on the variance of the sum \citep{brv2015}, for example, give
+narrower intervals under extra information and are not run here. It does not claim that no maintained toolkit or published practice
+reports the band beside every aggregate, since no search beyond the cited sources was made. It does not examine the aggregation of
+the expected shortfall, only of the value at risk at one level, nor a number of risk types other than four. The acceptance criteria
+of the tests are internal to the validation, and no result is a statement about regulatory compliance. Nor does it claim that eight
+is the right number of rows: the set of degrees of freedom is a convention, and a set with another number of values gives a band
+with more or fewer rows under the same rule, so the claim is about the rule and the number of rows follows from the set.

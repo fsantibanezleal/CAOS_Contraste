@@ -1,0 +1,57 @@
+\section{Introduction}
+\label{sec:introduction}
+
+A bank that models its own capital computes the loss distribution of each risk type separately: credit, market, interest rate risk in
+the banking book and operational risk. It then has to say how much capital the four need together. The sum of the four stand-alone
+capital figures assumes that the worst years of the four risks coincide. Any figure below the sum asserts a diversification benefit,
+and that assertion rests on a statement about the dependence between the risks that the bank can seldom estimate, because the
+joint tail of four risks of different nature is observed in a handful of episodes at most. The benefit is large when it is claimed:
+Rosenberg and Schuermann report that the additive approximation overestimates the risk of a typical large bank by about 30 to 40
+percent against a copula model with skewed, fat-tailed margins \citep{rosenberg2006}, and Banco Andino, the synthetic bank used in
+this study, shows $\bdAdditiveOver$ percent between its simple sum and the Gaussian copula figure computed on the same four
+marginals. The supervisory stance has been cautious for the same reason: the Joint Forum found that supervisors generally do not
+rely on the aggregation models of firms, which it described as a ``work in progress'' \citep{jointforum2010}, and the Basel
+Committee reviewed the range of practices and the supervisory concerns around economic capital frameworks \citep{bcbs2009}.
+
+The consequence for a validator is that an aggregate capital figure shown alone carries no information about how much of it depends
+on the choice of the aggregation model. Three facts make that choice consequential and not cosmetic. The value at risk is not
+subadditive, so the simple sum is not an upper bound and the comonotonic dependence is not the worst case; for the marginals of
+Banco Andino the sharp worst case is $\bdWorstOverHeadline$ times the simple sum. The rank correlation of a Gaussian and of a
+$t$ copula with the same matrix is identical, so a correlation matrix cannot tell the two apart, and yet they differ in the
+tail where the capital is read. And the correlation matrix itself is a convention for most pairs of risk types. A single diversified
+figure hides all three; a band of figures over the same marginals shows them.
+
+This paper studies one rule, the proposed protocol, and measures what it buys. The rule is that every aggregate capital figure is
+shown with the band of aggregation methods over the same marginals, one horizon and one confidence level, and never as one
+diversified number. The band has eight rows in a fixed order: a lower bound, the simple sum, the square-root rule, the Gaussian
+copula, one $t$ copula for each degree of freedom of a named set, and the sharp worst case computed by the rearrangement algorithm.
+Exactly one row, the simple sum, is labelled headline capital; the other seven are labelled information and not capital. The Euler
+allocation of the aggregate expected shortfall adds up to the aggregate, and the model risk measures computed on the band carry the
+same label. Each ingredient is published: the copula families, the sharp bounds, the Euler principle and the model risk measures all
+have a literature that Section~\ref{sec:related-work} reviews. What is proposed is their composition into a rule that a program can
+enforce on every aggregate, together with the checks that fail when the rule is broken, and a measurement of what the rule buys.
+
+The study runs the rule on the aggregates of a complete capital case, the committed documents of case C18 of Contraste, the
+validation of the risk models of a bank (engine \texttt{riskvalidation} release 1.1.0). The four marginals are rebuilt from the
+committed quantile grids, every published method of the band is run by the engine on the same marginals, and ten planted
+dependence structures of known capital test what the band covers. The main findings are the following.
+
+\begin{itemize}
+\item The six committed aggregates, which reduce to $\bdDistinct$ distinct ones, all carry the eight rows in order with one headline
+and seven information labels, a single horizon and level, and an Euler allocation that adds up to a relative error of
+$\bdEulerGap$ (Table~\ref{tab:hypotheses}).
+\item The band of Banco Andino runs from CLP $\bdLower$ to CLP $\bdWorst$ billion against a headline of CLP $\bdHeadline$ billion;
+its width is $\bdWidthOverSe$ times the largest Monte Carlo standard error, no row lies within 10 percent of every other row, and the engine reproduces the committed rows from the committed marginal grids to within $\bdMaxRelDiff$ percent
+(Table~\ref{tab:main-results}, Figure~\ref{fig:band}).
+\item On ten planted structures the sharp range contains the capital of all of them, with a median width of $\bdAblFullWidth$ times the capital; the interior rows of the base matrix contain
+$\bdCovInterior$ of the ten, and $\bdCovInteriorStress$ when the rows of the market-credit stress are added; the Gaussian copula row alone is within 5 percent of the capital of $\bdGaussWithin$ of the ten, with a median absolute error of $\bdGaussMedErr$ percent
+(Table~\ref{tab:planted-truth}, Figure~\ref{fig:truth-errors}). Two single-figure estimators calibrated on the structure itself are within 5 percent in $\bdAblHybridPoint$ of the ten.
+\item Removing a component of the rule has a measured cost: without the bounds the interval contains $\bdAblNoBounds$ of the ten, without the second matrix $\bdAblNoStress$ and without the $t$ rows,
+on the base matrix, $\bdAblNoT$ (Table~\ref{tab:ablation}). Of nine predictions stated beforehand, seven held and two were refuted, among them the coverage of the planted structures by the interior rows of the base matrix.
+\end{itemize}
+
+The remainder of the paper is organised as follows. Section~\ref{sec:related-work} places the rule among the published methods.
+Section~\ref{sec:problem} states the problem, and Section~\ref{sec:proposed-method} defines the rule, its checks and its
+algorithm. Section~\ref{sec:theory} proves what can be proved about the band. Section~\ref{sec:experimental-design} states the
+predictions, the data and the metrics, Section~\ref{sec:results} reports the results, Section~\ref{sec:ablation} the contribution of each
+component, Sections~\ref{sec:discussion} and~\ref{sec:limitations} discuss the findings and the threats to their validity, Section~\ref{sec:reproducibility} lists the commands that rebuild every number, and Section~\ref{sec:conclusions} concludes.
