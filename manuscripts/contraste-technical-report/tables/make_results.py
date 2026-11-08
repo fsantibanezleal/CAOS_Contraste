@@ -302,7 +302,7 @@ def headline(c: dict) -> str:
     if cid == "C22":
         d = load("C22/null.json")
         bound = d["outputs"]["size_bounds"]["p<0.05"]
-        return (f"{group(round(impact(d, 'tests_within_bound')['value']))} of {m('pxOneTests')} tests hold their size at 5 and "
+        return (f"{group(round(impact(d, 'tests_within_bound')['value']))} of {m('pxOneTests')} tests pass the size screen at 5 and "
                 f"1\\,\\%; Hosmer--Lemeshow with $G-2$ degrees of freedom rejects {f3(impact(d, 'size_hl_fitted')['value'])} of null "
                 f"validation samples (Monte Carlo bound {f3(bound)}); {m('pxOneRates')} rates carry their standard error.")
     if cid == CASE_WITH_NO_RESULT:
@@ -384,6 +384,12 @@ def sources_table(data: dict) -> None:
                         "the cases that read it and the period or extent it covers; a source that no case reads was researched and "
                         "classified but is not used."),
                label="tab:data-sources")
+    # a source whose published name carries its own version (SGCD-v0.1) is a name, not a version narrative of this report
+    path = OUT / "results-sources.tex"
+    named = re.compile(r"-v\d+(?:\.\d+)*\)")
+    lines = path.read_text(encoding="utf-8").split("\n")
+    path.write_text("\n".join(f"{ln} % voice-ok: name of an external dataset" if named.search(ln) and "voice-ok" not in ln else ln
+                              for ln in lines), encoding="utf-8", newline="\n")
 
 
 def cases_table(data: dict) -> None:

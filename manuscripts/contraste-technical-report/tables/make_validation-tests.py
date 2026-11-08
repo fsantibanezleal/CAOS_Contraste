@@ -89,11 +89,14 @@ def r05(s: dict) -> dict:
     return s["rates"]["p<0.05"]
 
 
-def emit(path, header, rows, **kw):
-    """figkit.table, then a smaller type size and a tighter column gap so that the table fits the text width."""
+def emit(path, header, rows, stretch=None, **kw):
+    """figkit.table, then a smaller type size and a tighter column gap so that the table fits the text width; ``stretch`` tightens the
+    row height of a table too tall for its page."""
     figkit.table(path, header, rows, **kw)
     txt = path.read_text(encoding="utf-8")
     txt = txt.replace(BS + "small", BS + "footnotesize", 1).replace(BS + "centering", BS + "centering" + chr(10) + BS + "setlength{" + BS + "tabcolsep}{3pt}", 1)
+    if stretch is not None:
+        txt = txt.replace(BS + "footnotesize", BS + "footnotesize" + chr(10) + BS + "renewcommand{" + BS + "arraystretch}{" + f"{stretch}" + "}", 1)
     path.write_text(txt, encoding="utf-8", newline=chr(10))
 
 
@@ -343,7 +346,7 @@ def table_size() -> None:
     macro("vtAucModelSe", f"{est['model_se']:.4f}", "outputs.estimators.auc.model_se")
     macro("vtAucExactSe", f"{est['exact_se']:.4f}", "outputs.estimators.auc.exact_se")
     emit(OUT / "validation-tests-size.tex", ["Test", "Null scenario", "Size 5\\%", "Size 1\\%", "Exact 5\\%", "Exact 1\\%"], rows,
-                 caption=(f"The size of the tests of the catalogue on data whose null holds at its boundary, from {wanted[0]['n_rep']:,} independent "
+                 stretch=0.88, caption=(f"The size of the tests of the catalogue on data whose null holds at its boundary, from {wanted[0]['n_rep']:,} independent "
                           "repetitions: the rejection rate in percent at the 5 and 1 percent levels with its Monte Carlo standard error, and the exact rejection "
                           f"probability at each level where the test has one. A test with an exact probability holds its size when that probability does not exceed the "
                           f"level; any other test holds it when its rate is within the bound, which is {pct(b5, 2)} percent at 5 percent and {pct(b1, 2)} percent at 1 percent."),
