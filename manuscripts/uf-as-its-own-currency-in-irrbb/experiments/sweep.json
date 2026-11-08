@@ -1,0 +1,1311 @@
+{
+ "valuation_date": "2026-09-03",
+ "seeds": [
+  101,
+  102,
+  103,
+  104,
+  105,
+  106,
+  107,
+  108,
+  109,
+  110,
+  111,
+  112,
+  113,
+  114,
+  115,
+  116,
+  117,
+  118,
+  119,
+  120
+ ],
+ "grid": [
+  -1.5,
+  -1.4,
+  -1.3,
+  -1.2,
+  -1.1,
+  -1.0,
+  -0.9,
+  -0.8,
+  -0.7,
+  -0.6,
+  -0.5,
+  -0.4,
+  -0.3,
+  -0.2,
+  -0.1,
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5,
+  0.6,
+  0.7,
+  0.8,
+  0.9,
+  1.0,
+  1.1,
+  1.2,
+  1.3,
+  1.4,
+  1.5
+ ],
+ "positions": {
+  "-0.50": {
+   "net_uf_share_tier1": -0.5,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 18.187929827439973,
+    "ci_half": 12.986673984004563,
+    "sd": 27.748449205541
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.286157821666492,
+    "ci_half": 0.028032599530175315,
+    "sd": 0.05989687314245502
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.019167805540777776,
+    "ci_half": 0.0005477110972502934,
+    "sd": 0.0011702868324930727
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.002482300093812099,
+    "ci_half": 0.0007498135830504039,
+    "sd": 0.001602116457880238
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.07688111629391564,
+    "ci_half": 0.004316793085082777,
+    "sd": 0.009223632917849951
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.05991835745291939,
+    "ci_half": 0.0036751728817037885,
+    "sd": 0.007852691778907099
+   }
+  },
+  "-0.40": {
+   "net_uf_share_tier1": -0.4,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 14.024381793797398,
+    "ci_half": 8.250514622341354,
+    "sd": 17.62876208331649
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.2446689235606851,
+    "ci_half": 0.025121645140078388,
+    "sd": 0.05367707659310455
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.016684236852353353,
+    "ci_half": 0.0005534215058951752,
+    "sd": 0.0011824881847731523
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0025229887507270013,
+    "ci_half": 0.0007580766103129421,
+    "sd": 0.0016197719555512316
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.08000346176898457,
+    "ci_half": 0.004236156642701465,
+    "sd": 0.009051338131033149
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.06438399346757749,
+    "ci_half": 0.0036197713780495655,
+    "sd": 0.00773431614154581
+   }
+  },
+  "-0.30": {
+   "net_uf_share_tier1": -0.3,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 11.098197924854194,
+    "ci_half": 5.752283747979004,
+    "sd": 12.290826241826935
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.208764006008495,
+    "ci_half": 0.022848820230847375,
+    "sd": 0.04882076260350537
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.014200668163928917,
+    "ci_half": 0.0005594246256853162,
+    "sd": 0.0011953149689656775
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0025636774076419045,
+    "ci_half": 0.0007667234435801591,
+    "sd": 0.0016382475262785537
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.08312580724405344,
+    "ci_half": 0.004159576231198434,
+    "sd": 0.008887709810082876
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.06884962948223551,
+    "ci_half": 0.003568292145951528,
+    "sd": 0.00762432116833157
+   }
+  },
+  "-0.20": {
+   "net_uf_share_tier1": -0.2,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 8.742331099596157,
+    "ci_half": 4.239100277583402,
+    "sd": 9.057627755543761
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.177364796120078,
+    "ci_half": 0.02101042399075736,
+    "sd": 0.04489268642706276
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.01171709947550449,
+    "ci_half": 0.0005657111382664648,
+    "sd": 0.0012087472746701903
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0026043660645568073,
+    "ci_half": 0.0007757412486276951,
+    "sd": 0.0016575157473500328
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.08624815271912223,
+    "ci_half": 0.004087279841699019,
+    "sd": 0.008733235100527571
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.07331526549689352,
+    "ci_half": 0.0035209072323689155,
+    "sd": 0.007523074469656023
+   }
+  },
+  "-0.10": {
+   "net_uf_share_tier1": -0.1,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 6.671817489962853,
+    "ci_half": 3.188109844180378,
+    "sd": 6.81199082858977
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.149658967147361,
+    "ci_half": 0.019479850397912737,
+    "sd": 0.04162233070328759
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.00923353078708005,
+    "ci_half": 0.0005722717043450882,
+    "sd": 0.0012227651467455578
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.00264505472147171,
+    "ci_half": 0.0007851172426871508,
+    "sd": 0.0016775493059987448
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.0893704981941911,
+    "ci_half": 0.00401949864350378,
+    "sd": 0.008588407938659347
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.07778090151155156,
+    "ci_half": 0.0034777839969745406,
+    "sd": 0.0074309336406498255
+   }
+  },
+  "+0.00": {
+   "net_uf_share_tier1": 0.0,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 4.722782134691627,
+    "ci_half": 2.3039974985606624,
+    "sd": 4.9229200361269045
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.1250214976167983,
+    "ci_half": 0.01817577700149018,
+    "sd": 0.03883593486047993
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.006749962098655629,
+    "ci_half": 0.0005790970097738677,
+    "sd": 0.0012373486837802183
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0026857433783866133,
+    "ci_half": 0.0007948387501638774,
+    "sd": 0.0016983211184544583
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.09249284366925994,
+    "ci_half": 0.003956464702920971,
+    "sd": 0.008453724177394416
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.08224653752620957,
+    "ci_half": 0.003439082757197464,
+    "sd": 0.007348241229377442
+   }
+  },
+  "+0.10": {
+   "net_uf_share_tier1": 0.1,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 7.011278015435467,
+    "ci_half": 3.9139999613024865,
+    "sd": 8.362990343059446
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.1029628213831946,
+    "ci_half": 0.017044310173393973,
+    "sd": 0.03641834511842183
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.00926639341023117,
+    "ci_half": 0.0005861778069525899,
+    "sd": 0.0012524781265529032
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.002726432035301516,
+    "ci_half": 0.000804893251813342,
+    "sd": 0.0017198044350181013
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.09561518914432879,
+    "ci_half": 0.003898408304084107,
+    "sd": 0.008329675861700532
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.0867121735408676,
+    "ci_half": 0.0034049542996447985,
+    "sd": 0.00727531941952605
+   }
+  },
+  "+0.20": {
+   "net_uf_share_tier1": 0.2,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 9.744723240042742,
+    "ci_half": 6.284573289669301,
+    "sd": 13.428162046854926
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.0833757392191525,
+    "ci_half": 0.01615689161848817,
+    "sd": 0.034522209993663344
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.011782824721806728,
+    "ci_half": 0.0005935049515363549,
+    "sd": 0.0012681339364665636
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.002767120692216419,
+    "ci_half": 0.0008152684275270436,
+    "sd": 0.0017419729314818461
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.09876073404771127,
+    "ci_half": 0.003835554654123259,
+    "sd": 0.008195377324948966
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.0911778095555256,
+    "ci_half": 0.0033755373268655646,
+    "sd": 0.007212464574940689
+   }
+  },
+  "+0.30": {
+   "net_uf_share_tier1": 0.3,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 13.386813457197206,
+    "ci_half": 10.204863628652989,
+    "sd": 21.804592954125457
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.0794910430017035,
+    "ci_half": 0.01821304853011511,
+    "sd": 0.03891557242743014
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.014299256033382304,
+    "ci_half": 0.0006010694345350661,
+    "sd": 0.0012842968641349143
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0028078093491313216,
+    "ci_half": 0.0008259521929781179,
+    "sd": 0.0017648007874292728
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.1032081878636882,
+    "ci_half": 0.0037769927172777275,
+    "sd": 0.00807024883308586
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.0956434455701837,
+    "ci_half": 0.003350955923021266,
+    "sd": 0.007159941824557139
+   }
+  },
+  "+0.40": {
+   "net_uf_share_tier1": 0.4,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 19.19554958483812,
+    "ci_half": 17.98973013833488,
+    "sd": 38.438411065051355
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.0965480488379349,
+    "ci_half": 0.018468582597365064,
+    "sd": 0.03946156858426785
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.016815687344957864,
+    "ci_half": 0.0006088624099631596,
+    "sd": 0.001300948008461231
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.002848498006046225,
+    "ci_half": 0.0008369327304529836,
+    "sd": 0.0017882627521129272
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.10972279357361878,
+    "ci_half": 0.0037557704368773523,
+    "sd": 0.0080249034759574
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.10010908158484169,
+    "ci_half": 0.003331317133143671,
+    "sd": 0.0071179798900350335
+   }
+  },
+  "+0.50": {
+   "net_uf_share_tier1": 0.5,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 0
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 33.01179747582739,
+    "ci_half": 41.24227946557234,
+    "sd": 88.12181612325895
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.114194332364032,
+    "ci_half": 0.01799752599068548,
+    "sd": 0.038455068356458746
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.01933211865653344,
+    "ci_half": 0.000616875218257064,
+    "sd": 0.001318068866674119
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.002889186662961128,
+    "ci_half": 0.0008481985142505216,
+    "sd": 0.0018123341987244018
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.11645244552032119,
+    "ci_half": 0.0037042164791763915,
+    "sd": 0.007914748837566408
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.1045747175994997,
+    "ci_half": 0.0033167087565383114,
+    "sd": 0.007086766370953203
+   }
+  },
+  "+0.60": {
+   "net_uf_share_tier1": 0.6,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 1,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 1
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 2454.591702492762,
+    "ci_half": 5101.319674345881,
+    "sd": 10899.920182732134
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.130382004073514,
+    "ci_half": 0.017605890137607234,
+    "sd": 0.037618265369828346
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.021848549968109,
+    "ci_half": 0.0006250994057211727,
+    "sd": 0.0013356413758774568
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0029298753198760304,
+    "ci_half": 0.000859738331066656,
+    "sd": 0.0018369911679497904
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.12318209746702354,
+    "ci_half": 0.003656019396636461,
+    "sd": 0.007811766788555108
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.10904035361415773,
+    "ci_half": 0.0033071974540984186,
+    "sd": 0.0070664437007331785
+   }
+  },
+  "+0.70": {
+   "net_uf_share_tier1": 0.7,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 7,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 0,
+    "single": 0,
+    "positive_parts": 7
+   },
+   "annex_flagged_single_not": 0,
+   "ratio_nii_annex_over_single": {
+    "mean": 47.75283903510953,
+    "ci_half": 55.43389309065275,
+    "sd": 118.44484342842095
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.145286081487892,
+    "ci_half": 0.017278362112906294,
+    "sd": 0.036918440705869034
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.024368253383338506,
+    "ci_half": 0.0006315339709408485,
+    "sd": 0.0013493900236357535
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0029749267816628405,
+    "ci_half": 0.0008681034391107799,
+    "sd": 0.0018548647802347472
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.1299117494137259,
+    "ci_half": 0.003611313595696506,
+    "sd": 0.007716244513328727
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.11350598962881579,
+    "ci_half": 0.0033028272609490943,
+    "sd": 0.007057105968626267
+   }
+  },
+  "+0.80": {
+   "net_uf_share_tier1": 0.8,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 1,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 17,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 1,
+    "single": 0,
+    "positive_parts": 17
+   },
+   "annex_flagged_single_not": 1,
+   "ratio_nii_annex_over_single": {
+    "mean": 46.334615503620576,
+    "ci_half": 42.04226065000202,
+    "sd": 89.83112501088304
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.1590544621520542,
+    "ci_half": 0.017003249917724266,
+    "sd": 0.03633061223006099
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.02688798787817856,
+    "ci_half": 0.0006381234352543538,
+    "sd": 0.0013634696421755148
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.003020019682930394,
+    "ci_half": 0.0008766709271687369,
+    "sd": 0.001873170815135455
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.13664140136042832,
+    "ci_half": 0.0035702302304253413,
+    "sd": 0.007628462246997585
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.11797162564347383,
+    "ci_half": 0.0033036185799086943,
+    "sd": 0.007058796769056222
+   }
+  },
+  "+0.90": {
+   "net_uf_share_tier1": 0.9,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 2,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 2,
+    "single": 0,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 2,
+   "ratio_nii_annex_over_single": {
+    "mean": 76.26012004647005,
+    "ci_half": 82.37125897415416,
+    "sd": 176.00154577345992
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.1718130155810553,
+    "ci_half": 0.016771497849019556,
+    "sd": 0.03583543074520564
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.02940772237301862,
+    "ci_half": 0.000644881292712779,
+    "sd": 0.0013779090640516907
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0030651125841979496,
+    "ci_half": 0.0008854665353865812,
+    "sd": 0.0018919642712709752
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.14337105330713068,
+    "ci_half": 0.003532895676909222,
+    "sd": 0.0075486900156218235
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.12243726165813187,
+    "ci_half": 0.00330956770862051,
+    "sd": 0.007071508191247953
+   }
+  },
+  "+1.00": {
+   "net_uf_share_tier1": 1.0,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 10,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 10,
+    "single": 0,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 10,
+   "ratio_nii_annex_over_single": {
+    "mean": 273.09589600528994,
+    "ci_half": 411.32297020720046,
+    "sd": 878.8681813314662
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.183669562270024,
+    "ci_half": 0.016575993496129343,
+    "sd": 0.03541769926042993
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.03192914670433742,
+    "ci_half": 0.0006502283149263221,
+    "sd": 0.0013893339734993404
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.003112458600770502,
+    "ci_half": 0.0008926747299833179,
+    "sd": 0.0019073659223694441
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.150100705253833,
+    "ci_half": 0.003499429922645246,
+    "sd": 0.007477184194850253
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.12690289767278984,
+    "ci_half": 0.0033206469256675517,
+    "sd": 0.007095181003227806
+   }
+  },
+  "+1.10": {
+   "net_uf_share_tier1": 1.1,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 17,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 0,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 17,
+    "single": 0,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 17,
+   "ratio_nii_annex_over_single": {
+    "mean": 75.88493221233556,
+    "ci_half": 89.18349247132552,
+    "sd": 190.55715219011194
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.1947170152742168,
+    "ci_half": 0.016411075082039397,
+    "sd": 0.03506532033399583
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.03445672445792866,
+    "ci_half": 0.0006506983445815101,
+    "sd": 0.0013903382794539017
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.003168009180372972,
+    "ci_half": 0.0008934034841687068,
+    "sd": 0.0019089230414995229
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.15683035720053545,
+    "ci_half": 0.0034699449069093636,
+    "sd": 0.007414183963807307
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.13136853368744797,
+    "ci_half": 0.003336805131038252,
+    "sd": 0.007129706020297905
+   }
+  },
+  "+1.20": {
+   "net_uf_share_tier1": 1.2,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 19,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 1,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 19,
+    "single": 1,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 18,
+   "ratio_nii_annex_over_single": {
+    "mean": 48.16268329200747,
+    "ci_half": 45.84006322159988,
+    "sd": 97.94583797591584
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.2050358841452187,
+    "ci_half": 0.016272177603370002,
+    "sd": 0.034768539985433715
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.03698489482014989,
+    "ci_half": 0.0006507724578088374,
+    "sd": 0.0013904966361760677
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.003224349904815409,
+    "ci_half": 0.000893511114973851,
+    "sd": 0.0019091530147731395
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.1635600091472378,
+    "ci_half": 0.0034445428556439564,
+    "sd": 0.007359907747270042
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.135834169702106,
+    "ci_half": 0.0033579690068071127,
+    "sd": 0.007174926585046658
+   }
+  },
+  "+1.30": {
+   "net_uf_share_tier1": 1.3,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 2,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 20,
+    "single": 2,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 18,
+   "ratio_nii_annex_over_single": {
+    "mean": 39.211604782951035,
+    "ci_half": 32.62259885295084,
+    "sd": 69.70426210273673
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.2146962880479533,
+    "ci_half": 0.01615557595936239,
+    "sd": 0.03451939884275062
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.0395130651823711,
+    "ci_half": 0.0006508512927201902,
+    "sd": 0.0013906650816561032
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0032806906292578452,
+    "ci_half": 0.000893632513063982,
+    "sd": 0.0019094124044168465
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.17028966109394017,
+    "ci_half": 0.0034233146606249382,
+    "sd": 0.007314549752456584
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.14029980571676398,
+    "ci_half": 0.0033840446376203863,
+    "sd": 0.0072306420298184106
+   }
+  },
+  "+1.40": {
+   "net_uf_share_tier1": 1.4,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 4,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 20,
+    "single": 4,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 16,
+   "ratio_nii_annex_over_single": {
+    "mean": 34.81628270232471,
+    "ci_half": 26.15045888339585,
+    "sd": 55.87532888877079
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.223759587288026,
+    "ci_half": 0.016058196452720497,
+    "sd": 0.03431132937884928
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.04204123554459232,
+    "ci_half": 0.0006509348476000364,
+    "sd": 0.0013908436122284532
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0033370313537002816,
+    "ci_half": 0.0008937676728291783,
+    "sd": 0.001909701198444001
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.1770193130406425,
+    "ci_half": 0.0034063383567742417,
+    "sd": 0.007278276715520483
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.14476544173142203,
+    "ci_half": 0.00341491950984402,
+    "sd": 0.007296611948265604
+   }
+  },
+  "+1.50": {
+   "net_uf_share_tier1": 1.5,
+   "n": 20,
+   "flag_counts": {
+    "annex1": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    },
+    "single": {
+     "nii-tier1": 0,
+     "eve-tier1": 8,
+     "nii-margin": 0
+    },
+    "positive_parts": {
+     "nii-tier1": 0,
+     "eve-tier1": 20,
+     "nii-margin": 0
+    }
+   },
+   "any_flag": {
+    "annex1": 20,
+    "single": 8,
+    "positive_parts": 20
+   },
+   "annex_flagged_single_not": 12,
+   "ratio_nii_annex_over_single": {
+    "mean": 32.25820741983482,
+    "ci_half": 22.27971436529877,
+    "sd": 47.604761861344485
+   },
+   "ratio_eve_annex_over_single": {
+    "mean": 1.2322797154275809,
+    "ci_half": 0.015977476924590034,
+    "sd": 0.03413885706384529
+   },
+   "annex_nii_over_tier1": {
+    "mean": 0.04456940590681353,
+    "ci_half": 0.0006510231206310358,
+    "sd": 0.001391032224010032
+   },
+   "single_nii_over_tier1": {
+    "mean": 0.0033933720781427193,
+    "ci_half": 0.0008939165880271639,
+    "sd": 0.0019100193835168168
+   },
+   "annex_eve_over_tier1": {
+    "mean": 0.1837489649873449,
+    "ci_half": 0.003393677752809449,
+    "sd": 0.007251224975678455
+   },
+   "single_eve_over_tier1": {
+    "mean": 0.14923107774608005,
+    "ci_half": 0.0034504647945741503,
+    "sd": 0.0073725610734261616
+   }
+  }
+ },
+ "refused": [
+  {
+   "net_uf_share_tier1": -1.5,
+   "reason": "sweep-1.50: the UF borrowings would be 2,934,115 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -1.4,
+   "reason": "sweep-1.40: the UF borrowings would be 2,851,694 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -1.3,
+   "reason": "sweep-1.30: the UF borrowings would be 2,769,273 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -1.2,
+   "reason": "sweep-1.20: the UF borrowings would be 2,686,851 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -1.1,
+   "reason": "sweep-1.10: the UF borrowings would be 2,604,430 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -1.0,
+   "reason": "sweep-1.00: the UF borrowings would be 2,522,009 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -0.9,
+   "reason": "sweep-0.90: the UF borrowings would be 2,439,587 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -0.8,
+   "reason": "sweep-0.80: the UF borrowings would be 2,357,166 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -0.7,
+   "reason": "sweep-0.70: the UF borrowings would be 2,274,744 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  },
+  {
+   "net_uf_share_tier1": -0.6,
+   "reason": "sweep-0.60: the UF borrowings would be 2,192,323 of 2,117,041 CLP million: the stated shares cannot balance the book"
+  }
+ ],
+ "h4_positions_where_annex_flags_and_single_does_not": [
+  1.1,
+  1.2,
+  1.3,
+  1.4,
+  1.5
+ ],
+ "feasible_range": [
+  -0.5,
+  1.5
+ ],
+ "seconds": 5.134336599963717
+}

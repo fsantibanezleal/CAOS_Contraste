@@ -1,0 +1,57 @@
+\subsection{The banking book, the legs and the grid}
+\label{sec:problem-book}
+
+A bank has a banking book of assets and liabilities whose repricing is slotted into $K=19$ time buckets with midpoints $t_1<\dots<t_{19}$ years, from 0.0028 years (overnight) to 25 years, the grid of the supervisory text. The flows are signed notional repricing flows, assets positive and liabilities negative. The book has two legs, indexed by $c\in\{\CLP,\UR\}$: the flows in pesos and the flows indexed to the UF, which the text treats as one currency, the UR. A flow of the UR leg is written in UF and converted to pesos at the UF value $U$ (pesos per UF) of the valuation date, so that both legs are in millions of pesos when the measures are added; $\mathrm{CF}_{c}(t_k)$ is the flow of leg $c$ in bucket $k$ before any shock. The flows include the behavioural slotting that the text prescribes for non-maturity deposits, with a stable share and a maximum average maturity by deposit category, and the early redemption of term deposits and the prepayment of loans, which depend on the scenario; $\mathrm{CF}_{i,c}(t_k)$ is the flow of leg $c$ in bucket $k$ under scenario $i$. Table~\ref{tab:notation} collects the notation.
+
+\input{tables/notation}
+
+The net UF position is $\PNUR=U\,(A_{\UR}-L_{\UR})$ in millions of pesos, with $A_{\UR}$ and $L_{\UR}$ the UF assets and liabilities in millions of UF, and $\nu=\PNUR/T_1$ is its share of the level 1 capital $T_1$ of the bank. A positive $\nu$ is a net long position in UF, which gains when the index rises, and a negative $\nu$ is a net short position, which loses when it rises.
+
+\subsection{The scenarios, the floors and the two deltas}
+\label{sec:problem-deltas}
+
+Each currency $c$ has three shock sizes in basis points, $P_c$ (parallel), $S_c$ (short) and $L_c$ (long). With $x=4$ years and $\alpha(t)=e^{-t/x}$, the six scenarios of the delta EVE shift the zero rate of currency $c$ at bucket $k$ by
+\begin{equation}
+\Delta S_{i,c}(t_k)=\begin{cases}
+\pm P_c, & i=1,2\ \text{(parallel up, down)},\\
+-0.65\,S_c\,\alpha(t_k)+0.90\,L_c\,\bigl(1-\alpha(t_k)\bigr), & i=3\ \text{(steepener)},\\
++0.80\,S_c\,\alpha(t_k)-0.60\,L_c\,\bigl(1-\alpha(t_k)\bigr), & i=4\ \text{(flattener)},\\
+\pm S_c\,\alpha(t_k), & i=5,6\ \text{(short up, down)},
+\end{cases}
+\label{eq:shocks}
+\end{equation}
+and the two scenarios of the delta NII are the parallel shifts $\pm B$ with $B=\sizeUrNii$ basis points for both legs. The post-shock rate is floored,
+\begin{equation}
+r_{i,c}(t_k)=\max\Bigl\{r_{0,c}(t_k)+\tfrac{\Delta S_{i,c}(t_k)}{10^{4}},\ \min\bigl\{f_c,\,r_{0,c}(t_k)\bigr\}\Bigr\},
+\label{eq:floor}
+\end{equation}
+with the floor $f_{\CLP}=0$ and $f_{\UR}=-0.02$. The minimum in Equation~\eqref{eq:floor} implements the provision of the text that a pre-shock rate already below the floor is kept: the text states the floors of minus two percent for the UR and zero for the other rates and adds that if the pre-shock rates were below ``these floors'' (the text says it in the plural) the pre-shock rate is the one to consider, so the provision applies to both floors. The engine's documentation lists the reading for the UR floor as unverified; the text of the supervisor, read from the document itself, settles it. The loss-positive changes of leg $c$ under scenario $i$ are
+\begin{align}
+\dEVE_{i,c}&=\sum_{k=1}^{19}\mathrm{CF}_{c}(t_k)\,e^{-r_{0,c}(t_k)t_k}-\sum_{k=1}^{19}\mathrm{CF}_{i,c}(t_k)\,e^{-r_{i,c}(t_k)t_k},\label{eq:deve}\\
+\dNII_{i,c}&=\sum_{k:\,t_k<1}\mathrm{CF}_{c}(t_k)\,\bigl(r_{0,c}(t_k)-r_{i,c}(t_k)\bigr)\,\bigl(1-t_k\bigr),\label{eq:dnii}
+\end{align}
+the first on the run-off balance and the second on the constant balance, both as the text states. A positive value is a loss.
+
+\subsection{The aggregation across the two legs and the measures}
+\label{sec:problem-aggregation}
+
+For two loss-positive deltas $a$ (the peso leg) and $b$ (the UR leg), write $\pp{u}=\max\{u,0\}$ and $\npart{u}=\max\{-u,0\}$. The pair rule of the text, with the offsetting share $\lambda=1/2$, is
+\begin{equation}
+P_\lambda(a,b)=\bigl[\pp{a}-\lambda\,\npart{b}\bigr]^{+}+\bigl[\pp{b}-\lambda\,\npart{a}\bigr]^{+}.
+\label{eq:pair}
+\end{equation}
+It is the compact form of the three cases of the text: the sum of the positive parts when the deltas have the same sign or one is zero, $\max\{a+\lambda b,0\}$ when the peso leg loses and the UR leg gains, and $\max\{\lambda a+b,0\}$ in the opposite case. The two measures of the text, for a bank whose significant currencies are the peso and the UR, are
+\begin{align}
+\dEVE&=\max_{i=1,\dots,6}P_{1/2}\bigl(\dEVE_{i,\CLP},\dEVE_{i,\UR}\bigr),\label{eq:measure-eve}\\
+\dNII&=\max_{i=1,2}P_{1/2}\bigl(\dNII_{i,\CLP},\dNII_{i,\UR}\bigr)+\kappa\,\bigl|\PNUR\bigr|,\qquad \kappa=0.025,\label{eq:measure-nii}
+\end{align}
+and the bank is prioritised when $\dNII>0.05\,T_1$, or $\dEVE>0.15\,T_1$, or $\dNII$ exceeds 18 percent of the net interest and indexation margin of the last twelve months. The last term of Equation~\eqref{eq:measure-nii} is the indexation charge: the text gives it as 2.5 percent of the absolute net position in the UR, and it is the only term of either measure that does not depend on a rate shock.
+
+\subsection{The problem, the assumptions and their origin}
+\label{sec:problem-statement}
+
+The problem is to attribute the difference between two measures of the same flows. The Annex 1 treatment measures the two legs on their own curves, with their own shock sizes and floors, combines them by the pair rule and adds the charge. The single-currency treatment converts the UF flows to pesos, discounts and shocks the whole book with the peso curve, the peso sizes and the zero floor, sums the flows before computing the delta, and adds no charge. Both are functions of the same book, so the question is how much of $M(\text{Annex 1})-M(\text{single currency})$, for each measure $M\in\{\dEVE,\dNII\}$, is carried by each of the five components that differ, and under which conditions the attribution is exact. Section~\ref{sec:proposed-method} gives the five-switch parameterisation and the decomposition; Section~\ref{sec:theory} proves what can be proved about them.
+
+The assumptions are of three kinds. The first kind are the rules of the supervisor's text: the grid, the scenarios, the floors, the pair rule, the charge and the thresholds, taken as they are and held in the engine with golden values checked against the text. The second kind are the curves: a zero curve for each currency, fitted by the engine's bootstrap and a Nelson-Siegel curve to the Banco Central de Chile's yields for one valuation date; they are real, each curve is a fit to four points, and the assumption that the yields are semiannual bond-equivalent par yields is the case's and is UNVERIFIED against the central bank's methodology note. The third kind are the behaviour and the balance sheet: the repricing profile of each item, the deposit split and the behavioural parameters are synthetic and stated, because the aggregates published by the supervisor do not carry them. Table~\ref{tab:sizes} gives the inputs in which the two treatments differ.
+
+\input{tables/sizes}

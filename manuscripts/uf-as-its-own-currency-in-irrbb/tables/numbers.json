@@ -1,0 +1,3598 @@
+{
+ "valDate": {
+  "value": "2026-09-03",
+  "source": "data/derived/C15/long-uf.json outputs.as_of"
+ },
+ "ufValue": {
+  "value": "40{,}877.73",
+  "source": "outputs.ur_currency.uf_value"
+ },
+ "tierOne": {
+  "value": "824{,}214",
+  "source": "experiments/reproduce.json variants.long-uf.tier1 (CLP million)"
+ },
+ "clpAssets": {
+  "value": "4{,}988{,}540",
+  "source": "outputs.legs[CLP].assets_total (CLP million)"
+ },
+ "clpLiabs": {
+  "value": "4{,}411{,}591",
+  "source": "outputs.legs[CLP].liabilities_total (CLP million)"
+ },
+ "urAssetsUf": {
+  "value": "66",
+  "source": "outputs.legs[UR].assets_total (UF million)"
+ },
+ "urLiabsUf": {
+  "value": "60",
+  "source": "outputs.legs[UR].liabilities_total (UF million)"
+ },
+ "nItemsClp": {
+  "value": "12",
+  "source": "outputs.legs[CLP].items"
+ },
+ "nItemsUr": {
+  "value": "5",
+  "source": "outputs.legs[UR].items"
+ },
+ "rmseClp": {
+  "value": "0.50",
+  "source": "outputs.curves.clp.fit.rmse_bp"
+ },
+ "shortClp": {
+  "value": "4.50",
+  "source": "outputs.curves.clp.zero_rates_at_midpoints[0] (percent)"
+ },
+ "longClp": {
+  "value": "5.91",
+  "source": "outputs.curves.clp.zero_rates_at_midpoints[18] (percent)"
+ },
+ "minClp": {
+  "value": "4.49",
+  "source": "outputs.curves.clp.zero_rates_at_midpoints min (percent)"
+ },
+ "maxClp": {
+  "value": "5.91",
+  "source": "outputs.curves.clp.zero_rates_at_midpoints max (percent)"
+ },
+ "nTenorsClp": {
+  "value": "4",
+  "source": "outputs.curves.clp.points"
+ },
+ "rmseUr": {
+  "value": "0.41",
+  "source": "outputs.curves.ur.fit.rmse_bp"
+ },
+ "shortUr": {
+  "value": "1.20",
+  "source": "outputs.curves.ur.zero_rates_at_midpoints[0] (percent)"
+ },
+ "longUr": {
+  "value": "2.84",
+  "source": "outputs.curves.ur.zero_rates_at_midpoints[18] (percent)"
+ },
+ "minUr": {
+  "value": "1.20",
+  "source": "outputs.curves.ur.zero_rates_at_midpoints min (percent)"
+ },
+ "maxUr": {
+  "value": "2.84",
+  "source": "outputs.curves.ur.zero_rates_at_midpoints max (percent)"
+ },
+ "nTenorsUr": {
+  "value": "4",
+  "source": "outputs.curves.ur.points"
+ },
+ "spreadFive": {
+  "value": "317",
+  "source": "peso minus UR zero rate at midpoint 5.5 years (bp), outputs.curves"
+ },
+ "spreadLast": {
+  "value": "307",
+  "source": "peso minus UR zero rate at the last midpoint (bp)"
+ },
+ "spreadFirst": {
+  "value": "329",
+  "source": "peso minus UR zero rate at the first midpoint (bp)"
+ },
+ "dfRatioFive": {
+  "value": "0.867",
+  "source": "exp(-(r_clp - r_ur) t) at 5.5 years, Annex 1 midpoint"
+ },
+ "dfRatioTen": {
+  "value": "0.741",
+  "source": "exp(-(r_clp - r_ur) t) at 9.5 years"
+ },
+ "dfRatioLast": {
+  "value": "0.464",
+  "source": "exp(-(r_clp - r_ur) t) at 25 years"
+ },
+ "sizeRatio": {
+  "value": "1.50",
+  "source": "parallel size of the peso over the UR row of the Hoja 9 table (engine shock_table)"
+ },
+ "weightFive": {
+  "value": "1.30",
+  "source": "size ratio times exp(-(r_clp - r_ur) t) at 5.5 years"
+ },
+ "weightTen": {
+  "value": "1.11",
+  "source": "the same at 9.5 years"
+ },
+ "weightLast": {
+  "value": "0.70",
+  "source": "the same at 25 years"
+ },
+ "tStarLo": {
+  "value": "12.5",
+  "source": "midpoint of the last bucket whose first-order weight is at least 1"
+ },
+ "tStarHi": {
+  "value": "17.5",
+  "source": "midpoint of the first bucket whose first-order weight is below 1"
+ },
+ "repMaxDev": {
+  "value": "0",
+  "source": "experiments/reproduce.json max_relative_deviation"
+ },
+ "repSandChecked": {
+  "value": "384",
+  "source": "experiments/reproduce.json sandwich.checked"
+ },
+ "repSandViol": {
+  "value": "0",
+  "source": "experiments/reproduce.json sandwich.violations"
+ },
+ "repAnnexEveLng": {
+  "value": "93{,}816",
+  "source": "experiments/reproduce.json variants.long-uf.annex1.delta_eve"
+ },
+ "repAnnexNiiLng": {
+  "value": "11{,}213",
+  "source": "experiments/reproduce.json variants.long-uf.annex1.delta_nii"
+ },
+ "repSingleEveLng": {
+  "value": "84{,}710",
+  "source": "experiments/reproduce.json variants.long-uf.single.delta_eve"
+ },
+ "repSingleNiiLng": {
+  "value": "1{,}648",
+  "source": "experiments/reproduce.json variants.long-uf.single.delta_nii"
+ },
+ "repPosEveLng": {
+  "value": "94{,}721",
+  "source": "experiments/reproduce.json variants.long-uf.positive_parts.delta_eve"
+ },
+ "repPosNiiLng": {
+  "value": "8{,}415",
+  "source": "experiments/reproduce.json variants.long-uf.positive_parts.delta_nii"
+ },
+ "repGapNiiLng": {
+  "value": "1{,}648",
+  "source": "experiments/reproduce.json variants.long-uf.gap.delta_nii_gap"
+ },
+ "repGapEveLng": {
+  "value": "98{,}166",
+  "source": "experiments/reproduce.json variants.long-uf.gap.delta_eve_duration"
+ },
+ "repChargeLng": {
+  "value": "6{,}182",
+  "source": "experiments/reproduce.json variants.long-uf.annex1.charge"
+ },
+ "repMaxPairLng": {
+  "value": "5{,}032",
+  "source": "experiments/reproduce.json variants.long-uf.annex1.max_pair"
+ },
+ "repChargeShareLng": {
+  "value": "55.1",
+  "source": "experiments/reproduce.json variants.long-uf.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiLng": {
+  "value": "6.8",
+  "source": "experiments/reproduce.json variants.long-uf.ratio_nii_annex_over_single"
+ },
+ "repEveShortLng": {
+  "value": "9.7",
+  "source": "experiments/reproduce.json variants.long-uf.eve_shortfall_single_percent"
+ },
+ "repNuLng": {
+  "value": "30",
+  "source": "experiments/reproduce.json variants.long-uf.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrLng": {
+  "value": "247{,}264",
+  "source": "experiments/reproduce.json variants.long-uf.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginLng": {
+  "value": "261{,}022",
+  "source": "experiments/reproduce.json variants.long-uf.margin_12m"
+ },
+ "repNiiTLng": {
+  "value": "1.36",
+  "source": "experiments/reproduce.json variants.long-uf.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTLng": {
+  "value": "11.4",
+  "source": "experiments/reproduce.json variants.long-uf.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleLng": {
+  "value": "10.3",
+  "source": "experiments/reproduce.json variants.long-uf.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosLng": {
+  "value": "11.5",
+  "source": "experiments/reproduce.json variants.long-uf.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistLng": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.long-uf.committed.closest_floor_bp"
+ },
+ "repAssetUnderLng": {
+  "value": "16.5",
+  "source": "experiments/reproduce.json variants.long-uf.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderLng": {
+  "value": "11.0",
+  "source": "experiments/reproduce.json variants.long-uf.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repAnnexEveSht": {
+  "value": "79{,}643",
+  "source": "experiments/reproduce.json variants.short-uf.annex1.delta_eve"
+ },
+ "repAnnexNiiSht": {
+  "value": "11{,}067",
+  "source": "experiments/reproduce.json variants.short-uf.annex1.delta_nii"
+ },
+ "repSingleEveSht": {
+  "value": "64{,}213",
+  "source": "experiments/reproduce.json variants.short-uf.single.delta_eve"
+ },
+ "repSingleNiiSht": {
+  "value": "1{,}356",
+  "source": "experiments/reproduce.json variants.short-uf.single.delta_nii"
+ },
+ "repPosEveSht": {
+  "value": "79{,}643",
+  "source": "experiments/reproduce.json variants.short-uf.positive_parts.delta_eve"
+ },
+ "repPosNiiSht": {
+  "value": "8{,}415",
+  "source": "experiments/reproduce.json variants.short-uf.positive_parts.delta_nii"
+ },
+ "repGapNiiSht": {
+  "value": "1{,}356",
+  "source": "experiments/reproduce.json variants.short-uf.gap.delta_nii_gap"
+ },
+ "repGapEveSht": {
+  "value": "73{,}544",
+  "source": "experiments/reproduce.json variants.short-uf.gap.delta_eve_duration"
+ },
+ "repChargeSht": {
+  "value": "6{,}182",
+  "source": "experiments/reproduce.json variants.short-uf.annex1.charge"
+ },
+ "repMaxPairSht": {
+  "value": "4{,}885",
+  "source": "experiments/reproduce.json variants.short-uf.annex1.max_pair"
+ },
+ "repChargeShareSht": {
+  "value": "55.9",
+  "source": "experiments/reproduce.json variants.short-uf.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiSht": {
+  "value": "8.2",
+  "source": "experiments/reproduce.json variants.short-uf.ratio_nii_annex_over_single"
+ },
+ "repEveShortSht": {
+  "value": "19.4",
+  "source": "experiments/reproduce.json variants.short-uf.eve_shortfall_single_percent"
+ },
+ "repNuSht": {
+  "value": "30",
+  "source": "experiments/reproduce.json variants.short-uf.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrSht": {
+  "value": "247{,}264",
+  "source": "experiments/reproduce.json variants.short-uf.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginSht": {
+  "value": "274{,}664",
+  "source": "experiments/reproduce.json variants.short-uf.margin_12m"
+ },
+ "repNiiTSht": {
+  "value": "1.34",
+  "source": "experiments/reproduce.json variants.short-uf.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTSht": {
+  "value": "9.7",
+  "source": "experiments/reproduce.json variants.short-uf.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleSht": {
+  "value": "7.8",
+  "source": "experiments/reproduce.json variants.short-uf.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosSht": {
+  "value": "9.7",
+  "source": "experiments/reproduce.json variants.short-uf.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistSht": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.short-uf.committed.closest_floor_bp"
+ },
+ "repAssetUnderSht": {
+  "value": "16.5",
+  "source": "experiments/reproduce.json variants.short-uf.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderSht": {
+  "value": "12.1",
+  "source": "experiments/reproduce.json variants.short-uf.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repAnnexEveCpi": {
+  "value": "93{,}816",
+  "source": "experiments/reproduce.json variants.cpi-surprise.annex1.delta_eve"
+ },
+ "repAnnexNiiCpi": {
+  "value": "11{,}213",
+  "source": "experiments/reproduce.json variants.cpi-surprise.annex1.delta_nii"
+ },
+ "repSingleEveCpi": {
+  "value": "84{,}710",
+  "source": "experiments/reproduce.json variants.cpi-surprise.single.delta_eve"
+ },
+ "repSingleNiiCpi": {
+  "value": "1{,}648",
+  "source": "experiments/reproduce.json variants.cpi-surprise.single.delta_nii"
+ },
+ "repPosEveCpi": {
+  "value": "94{,}721",
+  "source": "experiments/reproduce.json variants.cpi-surprise.positive_parts.delta_eve"
+ },
+ "repPosNiiCpi": {
+  "value": "8{,}415",
+  "source": "experiments/reproduce.json variants.cpi-surprise.positive_parts.delta_nii"
+ },
+ "repGapNiiCpi": {
+  "value": "1{,}648",
+  "source": "experiments/reproduce.json variants.cpi-surprise.gap.delta_nii_gap"
+ },
+ "repGapEveCpi": {
+  "value": "98{,}166",
+  "source": "experiments/reproduce.json variants.cpi-surprise.gap.delta_eve_duration"
+ },
+ "repChargeCpi": {
+  "value": "6{,}182",
+  "source": "experiments/reproduce.json variants.cpi-surprise.annex1.charge"
+ },
+ "repMaxPairCpi": {
+  "value": "5{,}032",
+  "source": "experiments/reproduce.json variants.cpi-surprise.annex1.max_pair"
+ },
+ "repChargeShareCpi": {
+  "value": "55.1",
+  "source": "experiments/reproduce.json variants.cpi-surprise.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiCpi": {
+  "value": "6.8",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ratio_nii_annex_over_single"
+ },
+ "repEveShortCpi": {
+  "value": "9.7",
+  "source": "experiments/reproduce.json variants.cpi-surprise.eve_shortfall_single_percent"
+ },
+ "repNuCpi": {
+  "value": "30",
+  "source": "experiments/reproduce.json variants.cpi-surprise.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrCpi": {
+  "value": "247{,}264",
+  "source": "experiments/reproduce.json variants.cpi-surprise.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginCpi": {
+  "value": "261{,}022",
+  "source": "experiments/reproduce.json variants.cpi-surprise.margin_12m"
+ },
+ "repNiiTCpi": {
+  "value": "1.36",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTCpi": {
+  "value": "11.4",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleCpi": {
+  "value": "10.3",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosCpi": {
+  "value": "11.5",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistCpi": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.cpi-surprise.committed.closest_floor_bp"
+ },
+ "repAssetUnderCpi": {
+  "value": "16.5",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderCpi": {
+  "value": "11.0",
+  "source": "experiments/reproduce.json variants.cpi-surprise.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repAnnexEveStp": {
+  "value": "140{,}645",
+  "source": "experiments/reproduce.json variants.clp-steepener.annex1.delta_eve"
+ },
+ "repAnnexNiiStp": {
+  "value": "6{,}783",
+  "source": "experiments/reproduce.json variants.clp-steepener.annex1.delta_nii"
+ },
+ "repSingleEveStp": {
+  "value": "129{,}432",
+  "source": "experiments/reproduce.json variants.clp-steepener.single.delta_eve"
+ },
+ "repSingleNiiStp": {
+  "value": "3{,}091",
+  "source": "experiments/reproduce.json variants.clp-steepener.single.delta_nii"
+ },
+ "repPosEveStp": {
+  "value": "140{,}645",
+  "source": "experiments/reproduce.json variants.clp-steepener.positive_parts.delta_eve"
+ },
+ "repPosNiiStp": {
+  "value": "8{,}415",
+  "source": "experiments/reproduce.json variants.clp-steepener.positive_parts.delta_nii"
+ },
+ "repGapNiiStp": {
+  "value": "3{,}091",
+  "source": "experiments/reproduce.json variants.clp-steepener.gap.delta_nii_gap"
+ },
+ "repGapEveStp": {
+  "value": "162{,}183",
+  "source": "experiments/reproduce.json variants.clp-steepener.gap.delta_eve_duration"
+ },
+ "repChargeStp": {
+  "value": "1{,}030",
+  "source": "experiments/reproduce.json variants.clp-steepener.annex1.charge"
+ },
+ "repMaxPairStp": {
+  "value": "5{,}753",
+  "source": "experiments/reproduce.json variants.clp-steepener.annex1.max_pair"
+ },
+ "repChargeShareStp": {
+  "value": "15.2",
+  "source": "experiments/reproduce.json variants.clp-steepener.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiStp": {
+  "value": "2.2",
+  "source": "experiments/reproduce.json variants.clp-steepener.ratio_nii_annex_over_single"
+ },
+ "repEveShortStp": {
+  "value": "8.0",
+  "source": "experiments/reproduce.json variants.clp-steepener.eve_shortfall_single_percent"
+ },
+ "repNuStp": {
+  "value": "5",
+  "source": "experiments/reproduce.json variants.clp-steepener.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrStp": {
+  "value": "41{,}211",
+  "source": "experiments/reproduce.json variants.clp-steepener.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginStp": {
+  "value": "278{,}048",
+  "source": "experiments/reproduce.json variants.clp-steepener.margin_12m"
+ },
+ "repNiiTStp": {
+  "value": "0.82",
+  "source": "experiments/reproduce.json variants.clp-steepener.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTStp": {
+  "value": "17.1",
+  "source": "experiments/reproduce.json variants.clp-steepener.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleStp": {
+  "value": "15.7",
+  "source": "experiments/reproduce.json variants.clp-steepener.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosStp": {
+  "value": "17.1",
+  "source": "experiments/reproduce.json variants.clp-steepener.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistStp": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.clp-steepener.committed.closest_floor_bp"
+ },
+ "repAssetUnderStp": {
+  "value": "16.5",
+  "source": "experiments/reproduce.json variants.clp-steepener.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderStp": {
+  "value": "11.5",
+  "source": "experiments/reproduce.json variants.clp-steepener.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repAnnexEveOff": {
+  "value": "81{,}173",
+  "source": "experiments/reproduce.json variants.offset-on-off.annex1.delta_eve"
+ },
+ "repAnnexNiiOff": {
+  "value": "11{,}016",
+  "source": "experiments/reproduce.json variants.offset-on-off.annex1.delta_nii"
+ },
+ "repSingleEveOff": {
+  "value": "59{,}422",
+  "source": "experiments/reproduce.json variants.offset-on-off.single.delta_eve"
+ },
+ "repSingleNiiOff": {
+  "value": "1{,}254",
+  "source": "experiments/reproduce.json variants.offset-on-off.single.delta_nii"
+ },
+ "repPosEveOff": {
+  "value": "94{,}721",
+  "source": "experiments/reproduce.json variants.offset-on-off.positive_parts.delta_eve"
+ },
+ "repPosNiiOff": {
+  "value": "8{,}415",
+  "source": "experiments/reproduce.json variants.offset-on-off.positive_parts.delta_nii"
+ },
+ "repGapNiiOff": {
+  "value": "1{,}254",
+  "source": "experiments/reproduce.json variants.offset-on-off.gap.delta_nii_gap"
+ },
+ "repGapEveOff": {
+  "value": "66{,}893",
+  "source": "experiments/reproduce.json variants.offset-on-off.gap.delta_eve_duration"
+ },
+ "repChargeOff": {
+  "value": "6{,}182",
+  "source": "experiments/reproduce.json variants.offset-on-off.annex1.charge"
+ },
+ "repMaxPairOff": {
+  "value": "4{,}834",
+  "source": "experiments/reproduce.json variants.offset-on-off.annex1.max_pair"
+ },
+ "repChargeShareOff": {
+  "value": "56.1",
+  "source": "experiments/reproduce.json variants.offset-on-off.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiOff": {
+  "value": "8.8",
+  "source": "experiments/reproduce.json variants.offset-on-off.ratio_nii_annex_over_single"
+ },
+ "repEveShortOff": {
+  "value": "26.8",
+  "source": "experiments/reproduce.json variants.offset-on-off.eve_shortfall_single_percent"
+ },
+ "repNuOff": {
+  "value": "30",
+  "source": "experiments/reproduce.json variants.offset-on-off.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrOff": {
+  "value": "247{,}264",
+  "source": "experiments/reproduce.json variants.offset-on-off.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginOff": {
+  "value": "258{,}182",
+  "source": "experiments/reproduce.json variants.offset-on-off.margin_12m"
+ },
+ "repNiiTOff": {
+  "value": "1.34",
+  "source": "experiments/reproduce.json variants.offset-on-off.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTOff": {
+  "value": "9.8",
+  "source": "experiments/reproduce.json variants.offset-on-off.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleOff": {
+  "value": "7.2",
+  "source": "experiments/reproduce.json variants.offset-on-off.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosOff": {
+  "value": "11.5",
+  "source": "experiments/reproduce.json variants.offset-on-off.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistOff": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.offset-on-off.committed.closest_floor_bp"
+ },
+ "repAssetUnderOff": {
+  "value": "16.5",
+  "source": "experiments/reproduce.json variants.offset-on-off.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderOff": {
+  "value": "11.0",
+  "source": "experiments/reproduce.json variants.offset-on-off.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repAnnexEveFlr": {
+  "value": "60{,}764",
+  "source": "experiments/reproduce.json variants.floors-active.annex1.delta_eve"
+ },
+ "repAnnexNiiFlr": {
+  "value": "6{,}606",
+  "source": "experiments/reproduce.json variants.floors-active.annex1.delta_nii"
+ },
+ "repSingleEveFlr": {
+  "value": "49{,}837",
+  "source": "experiments/reproduce.json variants.floors-active.single.delta_eve"
+ },
+ "repSingleNiiFlr": {
+  "value": "4{,}653",
+  "source": "experiments/reproduce.json variants.floors-active.single.delta_nii"
+ },
+ "repPosEveFlr": {
+  "value": "60{,}764",
+  "source": "experiments/reproduce.json variants.floors-active.positive_parts.delta_eve"
+ },
+ "repPosNiiFlr": {
+  "value": "6{,}497",
+  "source": "experiments/reproduce.json variants.floors-active.positive_parts.delta_nii"
+ },
+ "repGapNiiFlr": {
+  "value": "4{,}653",
+  "source": "experiments/reproduce.json variants.floors-active.gap.delta_nii_gap"
+ },
+ "repGapEveFlr": {
+  "value": "57{,}279",
+  "source": "experiments/reproduce.json variants.floors-active.gap.delta_eve_duration"
+ },
+ "repChargeFlr": {
+  "value": "1{,}030",
+  "source": "experiments/reproduce.json variants.floors-active.annex1.charge"
+ },
+ "repMaxPairFlr": {
+  "value": "5{,}575",
+  "source": "experiments/reproduce.json variants.floors-active.annex1.max_pair"
+ },
+ "repChargeShareFlr": {
+  "value": "15.6",
+  "source": "experiments/reproduce.json variants.floors-active.charge_share_of_nii (percent)"
+ },
+ "repRatioNiiFlr": {
+  "value": "1.4",
+  "source": "experiments/reproduce.json variants.floors-active.ratio_nii_annex_over_single"
+ },
+ "repEveShortFlr": {
+  "value": "18.0",
+  "source": "experiments/reproduce.json variants.floors-active.eve_shortfall_single_percent"
+ },
+ "repNuFlr": {
+  "value": "5",
+  "source": "experiments/reproduce.json variants.floors-active.net_uf_share_tier1 (percent of Tier 1, absolute value)"
+ },
+ "repPnUrFlr": {
+  "value": "41{,}211",
+  "source": "experiments/reproduce.json variants.floors-active.pn_ur (absolute value, CLP million)"
+ },
+ "repMarginFlr": {
+  "value": "261{,}583",
+  "source": "experiments/reproduce.json variants.floors-active.margin_12m"
+ },
+ "repNiiTFlr": {
+  "value": "0.80",
+  "source": "experiments/reproduce.json variants.floors-active.ratios_tier1.annex1.nii (percent)"
+ },
+ "repEveTFlr": {
+  "value": "7.4",
+  "source": "experiments/reproduce.json variants.floors-active.ratios_tier1.annex1.eve (percent)"
+ },
+ "repEveTSingleFlr": {
+  "value": "6.0",
+  "source": "experiments/reproduce.json variants.floors-active.ratios_tier1.single.eve (percent)"
+ },
+ "repEveTPosFlr": {
+  "value": "7.4",
+  "source": "experiments/reproduce.json variants.floors-active.ratios_tier1.positive_parts.eve (percent)"
+ },
+ "repFloorDistFlr": {
+  "value": "20.48",
+  "source": "experiments/reproduce.json variants.floors-active.committed.closest_floor_bp"
+ },
+ "repAssetUnderFlr": {
+  "value": "14.8",
+  "source": "experiments/reproduce.json variants.floors-active.ur_leg_gross_pv.asset.understatement_percent"
+ },
+ "repLiabUnderFlr": {
+  "value": "11.7",
+  "source": "experiments/reproduce.json variants.floors-active.ur_leg_gross_pv.liability.understatement_percent"
+ },
+ "repCpiEffect": {
+  "value": "6{,}182",
+  "source": "experiments/reproduce.json variants.cpi-surprise.committed.cpi_effect (absolute value)"
+ },
+ "repRatioLo": {
+  "value": "6.8",
+  "source": "min over long-uf, short-uf, offset-on-off of ratio_nii_annex_over_single"
+ },
+ "repRatioHi": {
+  "value": "8.8",
+  "source": "max over the same"
+ },
+ "repEveShortLo": {
+  "value": "10",
+  "source": "min over the same of eve_shortfall_single_percent, rounded"
+ },
+ "repEveShortHi": {
+  "value": "27",
+  "source": "max over the same, rounded"
+ },
+ "repChargeOverTier": {
+  "value": "0.75",
+  "source": "charge over Tier 1 in the short-uf variant (percent)"
+ },
+ "repChargeShareLo": {
+  "value": "55.1",
+  "source": "min charge share, the three 30 percent variants"
+ },
+ "repChargeShareHi": {
+  "value": "56.1",
+  "source": "max charge share, the three 30 percent variants"
+ },
+ "floorBreakNu": {
+  "value": "2.0",
+  "source": "0.05 over 0.025: the net UF position over Tier 1 at which the charge alone reaches the 5 percent line"
+ },
+ "repFlagLng": {
+  "value": "none",
+  "source": "experiments/reproduce.json variants.long-uf.classification.annex1"
+ },
+ "repFlagSht": {
+  "value": "none",
+  "source": "experiments/reproduce.json variants.short-uf.classification.annex1"
+ },
+ "repFlagCpi": {
+  "value": "none",
+  "source": "experiments/reproduce.json variants.cpi-surprise.classification.annex1"
+ },
+ "repFlagStp": {
+  "value": "eve-tier1",
+  "source": "experiments/reproduce.json variants.clp-steepener.classification.annex1"
+ },
+ "repFlagOff": {
+  "value": "none",
+  "source": "experiments/reproduce.json variants.offset-on-off.classification.annex1"
+ },
+ "repFlagFlr": {
+  "value": "none",
+  "source": "experiments/reproduce.json variants.floors-active.classification.annex1"
+ },
+ "mainSeeds": {
+  "value": "30",
+  "source": "experiments/main.json seeds"
+ },
+ "mainSeconds": {
+  "value": "19",
+  "source": "experiments/main.json seconds (measured)"
+ },
+ "repSeconds": {
+  "value": "0.3",
+  "source": "experiments/reproduce.json seconds (measured)"
+ },
+ "sweepSeconds": {
+  "value": "5",
+  "source": "experiments/sweep.json seconds (measured)"
+ },
+ "floorsSeconds": {
+  "value": "21",
+  "source": "experiments/floors.json seconds (measured)"
+ },
+ "hOneChecked": {
+  "value": "2{,}880",
+  "source": "experiments/main.json h1_sandwich.checked"
+ },
+ "hOneViol": {
+  "value": "0",
+  "source": "experiments/main.json h1_sandwich.violations"
+ },
+ "hThreeChecked": {
+  "value": "180",
+  "source": "experiments/main.json h3_comparators.checked"
+ },
+ "hThreeViol": {
+  "value": "30",
+  "source": "experiments/main.json h3_comparators.violations"
+ },
+ "mainAnnexNiiLng": {
+  "value": "11{,}907",
+  "source": "experiments/main.json variants.long-uf.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiLngCi": {
+  "value": "251",
+  "source": "experiments/main.json variants.long-uf.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveLng": {
+  "value": "85{,}061",
+  "source": "experiments/main.json variants.long-uf.summary.annex_eve.mean"
+ },
+ "mainAnnexEveLngCi": {
+  "value": "1{,}875",
+  "source": "experiments/main.json variants.long-uf.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiLng": {
+  "value": "2{,}412",
+  "source": "experiments/main.json variants.long-uf.summary.single_nii.mean"
+ },
+ "mainSingleNiiLngCi": {
+  "value": "323",
+  "source": "experiments/main.json variants.long-uf.summary.single_nii.ci_half"
+ },
+ "mainSingleEveLng": {
+  "value": "80{,}186",
+  "source": "experiments/main.json variants.long-uf.summary.single_eve.mean"
+ },
+ "mainSingleEveLngCi": {
+  "value": "1{,}790",
+  "source": "experiments/main.json variants.long-uf.summary.single_eve.ci_half"
+ },
+ "mainPosNiiLng": {
+  "value": "9{,}039",
+  "source": "experiments/main.json variants.long-uf.summary.pos_nii.mean"
+ },
+ "mainPosNiiLngCi": {
+  "value": "230",
+  "source": "experiments/main.json variants.long-uf.summary.pos_nii.ci_half"
+ },
+ "mainPosEveLng": {
+  "value": "85{,}927",
+  "source": "experiments/main.json variants.long-uf.summary.pos_eve.mean"
+ },
+ "mainPosEveLngCi": {
+  "value": "1{,}810",
+  "source": "experiments/main.json variants.long-uf.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiLng": {
+  "value": "2{,}412",
+  "source": "experiments/main.json variants.long-uf.summary.gap_nii.mean"
+ },
+ "mainGapNiiLngCi": {
+  "value": "323",
+  "source": "experiments/main.json variants.long-uf.summary.gap_nii.ci_half"
+ },
+ "mainGapEveLng": {
+  "value": "91{,}126",
+  "source": "experiments/main.json variants.long-uf.summary.gap_eve.mean"
+ },
+ "mainGapEveLngCi": {
+  "value": "2{,}178",
+  "source": "experiments/main.json variants.long-uf.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiLng": {
+  "value": "5.8",
+  "source": "experiments/main.json variants.long-uf.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiLngCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.long-uf.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortLng": {
+  "value": "5.7",
+  "source": "experiments/main.json variants.long-uf.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortLngCi": {
+  "value": "0.8",
+  "source": "experiments/main.json variants.long-uf.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareLng": {
+  "value": "52.1",
+  "source": "experiments/main.json variants.long-uf.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareLngCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.long-uf.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiLng": {
+  "value": "0.76",
+  "source": "experiments/main.json variants.long-uf.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveLng": {
+  "value": "1.010",
+  "source": "experiments/main.json variants.long-uf.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveLng": {
+  "value": "1.07",
+  "source": "experiments/main.json variants.long-uf.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveLng": {
+  "value": "0.943",
+  "source": "experiments/main.json variants.long-uf.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTLng": {
+  "value": "1.44",
+  "source": "experiments/main.json variants.long-uf.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTLng": {
+  "value": "10.3",
+  "source": "experiments/main.json variants.long-uf.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveLng": {
+  "value": "32{,}767",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveLngCi": {
+  "value": "956",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesLng": {
+  "value": "$-$28{,}757",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesLngCi": {
+  "value": "568",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairLng": {
+  "value": "866",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairLngCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveLng": {
+  "value": "283",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveLngCi": {
+  "value": "139",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorLng": {
+  "value": "$-$172",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorLngCi": {
+  "value": "101",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairLng": {
+  "value": "3{,}202",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairLngCi": {
+  "value": "99",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeLng": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveLng": {
+  "value": "27{,}228",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveLngCi": {
+  "value": "800",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesLng": {
+  "value": "$-$34{,}296",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesLngCi": {
+  "value": "704",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairLng": {
+  "value": "866",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairLngCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorLng": {
+  "value": "$-$122",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorLngCi": {
+  "value": "134",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairLng": {
+  "value": "3{,}313",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairLngCi": {
+  "value": "125",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeLng": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveLng": {
+  "value": "38{,}306",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveLngCi": {
+  "value": "1{,}112",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesLng": {
+  "value": "$-$23{,}218",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesLngCi": {
+  "value": "446",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairLng": {
+  "value": "866",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairLngCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveLng": {
+  "value": "787",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveLngCi": {
+  "value": "357",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorLng": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairLng": {
+  "value": "3{,}313",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairLngCi": {
+  "value": "125",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeLng": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeLngCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.long-uf.add_one_in.delta_nii.charge.ci_half"
+ },
+ "mainAnnexNiiSht": {
+  "value": "11{,}772",
+  "source": "experiments/main.json variants.short-uf.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiShtCi": {
+  "value": "252",
+  "source": "experiments/main.json variants.short-uf.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveSht": {
+  "value": "68{,}605",
+  "source": "experiments/main.json variants.short-uf.summary.annex_eve.mean"
+ },
+ "mainAnnexEveShtCi": {
+  "value": "2{,}088",
+  "source": "experiments/main.json variants.short-uf.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiSht": {
+  "value": "2{,}143",
+  "source": "experiments/main.json variants.short-uf.summary.single_nii.mean"
+ },
+ "mainSingleNiiShtCi": {
+  "value": "325",
+  "source": "experiments/main.json variants.short-uf.summary.single_nii.ci_half"
+ },
+ "mainSingleEveSht": {
+  "value": "58{,}057",
+  "source": "experiments/main.json variants.short-uf.summary.single_eve.mean"
+ },
+ "mainSingleEveShtCi": {
+  "value": "1{,}827",
+  "source": "experiments/main.json variants.short-uf.summary.single_eve.ci_half"
+ },
+ "mainPosNiiSht": {
+  "value": "9{,}039",
+  "source": "experiments/main.json variants.short-uf.summary.pos_nii.mean"
+ },
+ "mainPosNiiShtCi": {
+  "value": "230",
+  "source": "experiments/main.json variants.short-uf.summary.pos_nii.ci_half"
+ },
+ "mainPosEveSht": {
+  "value": "68{,}605",
+  "source": "experiments/main.json variants.short-uf.summary.pos_eve.mean"
+ },
+ "mainPosEveShtCi": {
+  "value": "2{,}088",
+  "source": "experiments/main.json variants.short-uf.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiSht": {
+  "value": "2{,}143",
+  "source": "experiments/main.json variants.short-uf.summary.gap_nii.mean"
+ },
+ "mainGapNiiShtCi": {
+  "value": "325",
+  "source": "experiments/main.json variants.short-uf.summary.gap_nii.ci_half"
+ },
+ "mainGapEveSht": {
+  "value": "64{,}216",
+  "source": "experiments/main.json variants.short-uf.summary.gap_eve.mean"
+ },
+ "mainGapEveShtCi": {
+  "value": "2{,}251",
+  "source": "experiments/main.json variants.short-uf.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiSht": {
+  "value": "6.9",
+  "source": "experiments/main.json variants.short-uf.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiShtCi": {
+  "value": "1.7",
+  "source": "experiments/main.json variants.short-uf.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortSht": {
+  "value": "15.4",
+  "source": "experiments/main.json variants.short-uf.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortShtCi": {
+  "value": "0.8",
+  "source": "experiments/main.json variants.short-uf.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareSht": {
+  "value": "52.7",
+  "source": "experiments/main.json variants.short-uf.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareShtCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.short-uf.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiSht": {
+  "value": "0.77",
+  "source": "experiments/main.json variants.short-uf.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveSht": {
+  "value": "1.000",
+  "source": "experiments/main.json variants.short-uf.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveSht": {
+  "value": "0.94",
+  "source": "experiments/main.json variants.short-uf.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveSht": {
+  "value": "0.846",
+  "source": "experiments/main.json variants.short-uf.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTSht": {
+  "value": "1.43",
+  "source": "experiments/main.json variants.short-uf.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTSht": {
+  "value": "8.3",
+  "source": "experiments/main.json variants.short-uf.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveSht": {
+  "value": "18{,}927",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveShtCi": {
+  "value": "1{,}029",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesSht": {
+  "value": "$-$8{,}379",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesShtCi": {
+  "value": "597",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveSht": {
+  "value": "421",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveShtCi": {
+  "value": "163",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorSht": {
+  "value": "$-$257",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorShtCi": {
+  "value": "122",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairSht": {
+  "value": "3{,}283",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairShtCi": {
+  "value": "97",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeSht": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveSht": {
+  "value": "15{,}863",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveShtCi": {
+  "value": "860",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesSht": {
+  "value": "$-$11{,}443",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesShtCi": {
+  "value": "745",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorSht": {
+  "value": "$-$184",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorShtCi": {
+  "value": "177",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairSht": {
+  "value": "3{,}448",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairShtCi": {
+  "value": "126",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeSht": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveSht": {
+  "value": "21{,}991",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveShtCi": {
+  "value": "1{,}199",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesSht": {
+  "value": "$-$5{,}315",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesShtCi": {
+  "value": "464",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveSht": {
+  "value": "1{,}173",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveShtCi": {
+  "value": "412",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairSht": {
+  "value": "3{,}448",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairShtCi": {
+  "value": "126",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeSht": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeShtCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf.add_one_in.delta_nii.charge.ci_half"
+ },
+ "mainAnnexNiiCpi": {
+  "value": "11{,}907",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiCpiCi": {
+  "value": "251",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveCpi": {
+  "value": "85{,}061",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_eve.mean"
+ },
+ "mainAnnexEveCpiCi": {
+  "value": "1{,}875",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiCpi": {
+  "value": "2{,}412",
+  "source": "experiments/main.json variants.cpi-surprise.summary.single_nii.mean"
+ },
+ "mainSingleNiiCpiCi": {
+  "value": "323",
+  "source": "experiments/main.json variants.cpi-surprise.summary.single_nii.ci_half"
+ },
+ "mainSingleEveCpi": {
+  "value": "80{,}186",
+  "source": "experiments/main.json variants.cpi-surprise.summary.single_eve.mean"
+ },
+ "mainSingleEveCpiCi": {
+  "value": "1{,}790",
+  "source": "experiments/main.json variants.cpi-surprise.summary.single_eve.ci_half"
+ },
+ "mainPosNiiCpi": {
+  "value": "9{,}039",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_nii.mean"
+ },
+ "mainPosNiiCpiCi": {
+  "value": "230",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_nii.ci_half"
+ },
+ "mainPosEveCpi": {
+  "value": "85{,}927",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_eve.mean"
+ },
+ "mainPosEveCpiCi": {
+  "value": "1{,}810",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiCpi": {
+  "value": "2{,}412",
+  "source": "experiments/main.json variants.cpi-surprise.summary.gap_nii.mean"
+ },
+ "mainGapNiiCpiCi": {
+  "value": "323",
+  "source": "experiments/main.json variants.cpi-surprise.summary.gap_nii.ci_half"
+ },
+ "mainGapEveCpi": {
+  "value": "91{,}126",
+  "source": "experiments/main.json variants.cpi-surprise.summary.gap_eve.mean"
+ },
+ "mainGapEveCpiCi": {
+  "value": "2{,}178",
+  "source": "experiments/main.json variants.cpi-surprise.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiCpi": {
+  "value": "5.8",
+  "source": "experiments/main.json variants.cpi-surprise.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiCpiCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.cpi-surprise.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortCpi": {
+  "value": "5.7",
+  "source": "experiments/main.json variants.cpi-surprise.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortCpiCi": {
+  "value": "0.8",
+  "source": "experiments/main.json variants.cpi-surprise.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareCpi": {
+  "value": "52.1",
+  "source": "experiments/main.json variants.cpi-surprise.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareCpiCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.cpi-surprise.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiCpi": {
+  "value": "0.76",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveCpi": {
+  "value": "1.010",
+  "source": "experiments/main.json variants.cpi-surprise.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveCpi": {
+  "value": "1.07",
+  "source": "experiments/main.json variants.cpi-surprise.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveCpi": {
+  "value": "0.943",
+  "source": "experiments/main.json variants.cpi-surprise.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTCpi": {
+  "value": "1.44",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTCpi": {
+  "value": "10.3",
+  "source": "experiments/main.json variants.cpi-surprise.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveCpi": {
+  "value": "32{,}767",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveCpiCi": {
+  "value": "956",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesCpi": {
+  "value": "$-$28{,}757",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesCpiCi": {
+  "value": "568",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairCpi": {
+  "value": "866",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairCpiCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveCpi": {
+  "value": "283",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveCpiCi": {
+  "value": "139",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorCpi": {
+  "value": "$-$172",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorCpiCi": {
+  "value": "101",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairCpi": {
+  "value": "3{,}202",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairCpiCi": {
+  "value": "99",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeCpi": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveCpi": {
+  "value": "27{,}228",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveCpiCi": {
+  "value": "800",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesCpi": {
+  "value": "$-$34{,}296",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesCpiCi": {
+  "value": "704",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairCpi": {
+  "value": "866",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairCpiCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorCpi": {
+  "value": "$-$122",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorCpiCi": {
+  "value": "134",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairCpi": {
+  "value": "3{,}313",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairCpiCi": {
+  "value": "125",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeCpi": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveCpi": {
+  "value": "38{,}306",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveCpiCi": {
+  "value": "1{,}112",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesCpi": {
+  "value": "$-$23{,}218",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesCpiCi": {
+  "value": "446",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairCpi": {
+  "value": "866",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairCpiCi": {
+  "value": "367",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveCpi": {
+  "value": "787",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveCpiCi": {
+  "value": "357",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorCpi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairCpi": {
+  "value": "3{,}313",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairCpiCi": {
+  "value": "125",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeCpi": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeCpiCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.cpi-surprise.add_one_in.delta_nii.charge.ci_half"
+ },
+ "mainAnnexNiiStp": {
+  "value": "7{,}527",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiStpCi": {
+  "value": "250",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveStp": {
+  "value": "130{,}674",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_eve.mean"
+ },
+ "mainAnnexEveStpCi": {
+  "value": "1{,}937",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiStp": {
+  "value": "3{,}955",
+  "source": "experiments/main.json variants.clp-steepener.summary.single_nii.mean"
+ },
+ "mainSingleNiiStpCi": {
+  "value": "321",
+  "source": "experiments/main.json variants.clp-steepener.summary.single_nii.ci_half"
+ },
+ "mainSingleEveStp": {
+  "value": "123{,}940",
+  "source": "experiments/main.json variants.clp-steepener.summary.single_eve.mean"
+ },
+ "mainSingleEveStpCi": {
+  "value": "1{,}689",
+  "source": "experiments/main.json variants.clp-steepener.summary.single_eve.ci_half"
+ },
+ "mainPosNiiStp": {
+  "value": "9{,}039",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_nii.mean"
+ },
+ "mainPosNiiStpCi": {
+  "value": "230",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_nii.ci_half"
+ },
+ "mainPosEveStp": {
+  "value": "130{,}674",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_eve.mean"
+ },
+ "mainPosEveStpCi": {
+  "value": "1{,}937",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiStp": {
+  "value": "3{,}955",
+  "source": "experiments/main.json variants.clp-steepener.summary.gap_nii.mean"
+ },
+ "mainGapNiiStpCi": {
+  "value": "321",
+  "source": "experiments/main.json variants.clp-steepener.summary.gap_nii.ci_half"
+ },
+ "mainGapEveStp": {
+  "value": "153{,}785",
+  "source": "experiments/main.json variants.clp-steepener.summary.gap_eve.mean"
+ },
+ "mainGapEveStpCi": {
+  "value": "2{,}088",
+  "source": "experiments/main.json variants.clp-steepener.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiStp": {
+  "value": "2.0",
+  "source": "experiments/main.json variants.clp-steepener.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiStpCi": {
+  "value": "0.1",
+  "source": "experiments/main.json variants.clp-steepener.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortStp": {
+  "value": "5.1",
+  "source": "experiments/main.json variants.clp-steepener.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortStpCi": {
+  "value": "0.4",
+  "source": "experiments/main.json variants.clp-steepener.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareStp": {
+  "value": "13.8",
+  "source": "experiments/main.json variants.clp-steepener.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareStpCi": {
+  "value": "0.5",
+  "source": "experiments/main.json variants.clp-steepener.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiStp": {
+  "value": "1.20",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveStp": {
+  "value": "1.000",
+  "source": "experiments/main.json variants.clp-steepener.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveStp": {
+  "value": "1.18",
+  "source": "experiments/main.json variants.clp-steepener.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveStp": {
+  "value": "0.949",
+  "source": "experiments/main.json variants.clp-steepener.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTStp": {
+  "value": "0.91",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTStp": {
+  "value": "15.9",
+  "source": "experiments/main.json variants.clp-steepener.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveStp": {
+  "value": "27{,}000",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveStpCi": {
+  "value": "984",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesStp": {
+  "value": "$-$20{,}266",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesStpCi": {
+  "value": "579",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveStp": {
+  "value": "1",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveStpCi": {
+  "value": "3",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorStp": {
+  "value": "$-$1",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorStpCi": {
+  "value": "2",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairStp": {
+  "value": "2{,}541",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairStpCi": {
+  "value": "124",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeStp": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveStp": {
+  "value": "22{,}493",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveStpCi": {
+  "value": "823",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesStp": {
+  "value": "$-$24{,}774",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesStpCi": {
+  "value": "719",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairStp": {
+  "value": "2{,}542",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairStpCi": {
+  "value": "124",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeStp": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveStp": {
+  "value": "31{,}508",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveStpCi": {
+  "value": "1{,}145",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesStp": {
+  "value": "$-$15{,}759",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesStpCi": {
+  "value": "452",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveStp": {
+  "value": "4",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveStpCi": {
+  "value": "9",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorStp": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairStp": {
+  "value": "2{,}542",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairStpCi": {
+  "value": "124",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeStp": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeStpCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.clp-steepener.add_one_in.delta_nii.charge.ci_half"
+ },
+ "mainAnnexNiiOff": {
+  "value": "11{,}725",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiOffCi": {
+  "value": "252",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveOff": {
+  "value": "72{,}044",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_eve.mean"
+ },
+ "mainAnnexEveOffCi": {
+  "value": "1{,}824",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiOff": {
+  "value": "2{,}049",
+  "source": "experiments/main.json variants.offset-on-off.summary.single_nii.mean"
+ },
+ "mainSingleNiiOffCi": {
+  "value": "325",
+  "source": "experiments/main.json variants.offset-on-off.summary.single_nii.ci_half"
+ },
+ "mainSingleEveOff": {
+  "value": "54{,}645",
+  "source": "experiments/main.json variants.offset-on-off.summary.single_eve.mean"
+ },
+ "mainSingleEveOffCi": {
+  "value": "1{,}758",
+  "source": "experiments/main.json variants.offset-on-off.summary.single_eve.ci_half"
+ },
+ "mainPosNiiOff": {
+  "value": "9{,}039",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_nii.mean"
+ },
+ "mainPosNiiOffCi": {
+  "value": "230",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_nii.ci_half"
+ },
+ "mainPosEveOff": {
+  "value": "85{,}434",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_eve.mean"
+ },
+ "mainPosEveOffCi": {
+  "value": "1{,}792",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiOff": {
+  "value": "2{,}049",
+  "source": "experiments/main.json variants.offset-on-off.summary.gap_nii.mean"
+ },
+ "mainGapNiiOffCi": {
+  "value": "325",
+  "source": "experiments/main.json variants.offset-on-off.summary.gap_nii.ci_half"
+ },
+ "mainGapEveOff": {
+  "value": "59{,}621",
+  "source": "experiments/main.json variants.offset-on-off.summary.gap_eve.mean"
+ },
+ "mainGapEveOffCi": {
+  "value": "2{,}155",
+  "source": "experiments/main.json variants.offset-on-off.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiOff": {
+  "value": "7.5",
+  "source": "experiments/main.json variants.offset-on-off.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiOffCi": {
+  "value": "2.0",
+  "source": "experiments/main.json variants.offset-on-off.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortOff": {
+  "value": "24.2",
+  "source": "experiments/main.json variants.offset-on-off.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortOffCi": {
+  "value": "1.1",
+  "source": "experiments/main.json variants.offset-on-off.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareOff": {
+  "value": "52.9",
+  "source": "experiments/main.json variants.offset-on-off.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareOffCi": {
+  "value": "1.2",
+  "source": "experiments/main.json variants.offset-on-off.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiOff": {
+  "value": "0.77",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveOff": {
+  "value": "1.187",
+  "source": "experiments/main.json variants.offset-on-off.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveOff": {
+  "value": "0.83",
+  "source": "experiments/main.json variants.offset-on-off.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveOff": {
+  "value": "0.758",
+  "source": "experiments/main.json variants.offset-on-off.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTOff": {
+  "value": "1.42",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTOff": {
+  "value": "8.7",
+  "source": "experiments/main.json variants.offset-on-off.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveOff": {
+  "value": "32{,}724",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveOffCi": {
+  "value": "976",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesOff": {
+  "value": "$-$28{,}671",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesOffCi": {
+  "value": "628",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairOff": {
+  "value": "13{,}346",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairOffCi": {
+  "value": "468",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveOff": {
+  "value": "475",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveOffCi": {
+  "value": "172",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorOff": {
+  "value": "$-$295",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorOffCi": {
+  "value": "130",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairOff": {
+  "value": "3{,}315",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairOffCi": {
+  "value": "96",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeOff": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveOff": {
+  "value": "27{,}228",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveOffCi": {
+  "value": "800",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesOff": {
+  "value": "$-$34{,}296",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesOffCi": {
+  "value": "704",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairOff": {
+  "value": "13{,}390",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairOffCi": {
+  "value": "484",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorOff": {
+  "value": "$-$229",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorOffCi": {
+  "value": "191",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairOff": {
+  "value": "3{,}495",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairOffCi": {
+  "value": "126",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeOff": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveOff": {
+  "value": "38{,}306",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveOffCi": {
+  "value": "1{,}112",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesOff": {
+  "value": "$-$22{,}960",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesOffCi": {
+  "value": "663",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairOff": {
+  "value": "13{,}390",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairOffCi": {
+  "value": "484",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveOff": {
+  "value": "1{,}311",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveOffCi": {
+  "value": "434",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorOff": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairOff": {
+  "value": "3{,}495",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairOffCi": {
+  "value": "126",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeOff": {
+  "value": "6{,}182",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeOffCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.offset-on-off.add_one_in.delta_nii.charge.ci_half"
+ },
+ "mainAnnexNiiFlr": {
+  "value": "7{,}154",
+  "source": "experiments/main.json variants.floors-active.summary.annex_nii.mean"
+ },
+ "mainAnnexNiiFlrCi": {
+  "value": "315",
+  "source": "experiments/main.json variants.floors-active.summary.annex_nii.ci_half"
+ },
+ "mainAnnexEveFlr": {
+  "value": "61{,}303",
+  "source": "experiments/main.json variants.floors-active.summary.annex_eve.mean"
+ },
+ "mainAnnexEveFlrCi": {
+  "value": "2{,}643",
+  "source": "experiments/main.json variants.floors-active.summary.annex_eve.ci_half"
+ },
+ "mainSingleNiiFlr": {
+  "value": "5{,}672",
+  "source": "experiments/main.json variants.floors-active.summary.single_nii.mean"
+ },
+ "mainSingleNiiFlrCi": {
+  "value": "351",
+  "source": "experiments/main.json variants.floors-active.summary.single_nii.ci_half"
+ },
+ "mainSingleEveFlr": {
+  "value": "49{,}036",
+  "source": "experiments/main.json variants.floors-active.summary.single_eve.mean"
+ },
+ "mainSingleEveFlrCi": {
+  "value": "2{,}190",
+  "source": "experiments/main.json variants.floors-active.summary.single_eve.ci_half"
+ },
+ "mainPosNiiFlr": {
+  "value": "6{,}576",
+  "source": "experiments/main.json variants.floors-active.summary.pos_nii.mean"
+ },
+ "mainPosNiiFlrCi": {
+  "value": "300",
+  "source": "experiments/main.json variants.floors-active.summary.pos_nii.ci_half"
+ },
+ "mainPosEveFlr": {
+  "value": "61{,}303",
+  "source": "experiments/main.json variants.floors-active.summary.pos_eve.mean"
+ },
+ "mainPosEveFlrCi": {
+  "value": "2{,}643",
+  "source": "experiments/main.json variants.floors-active.summary.pos_eve.ci_half"
+ },
+ "mainGapNiiFlr": {
+  "value": "5{,}672",
+  "source": "experiments/main.json variants.floors-active.summary.gap_nii.mean"
+ },
+ "mainGapNiiFlrCi": {
+  "value": "351",
+  "source": "experiments/main.json variants.floors-active.summary.gap_nii.ci_half"
+ },
+ "mainGapEveFlr": {
+  "value": "56{,}760",
+  "source": "experiments/main.json variants.floors-active.summary.gap_eve.mean"
+ },
+ "mainGapEveFlrCi": {
+  "value": "2{,}764",
+  "source": "experiments/main.json variants.floors-active.summary.gap_eve.ci_half"
+ },
+ "mainRatioNiiFlr": {
+  "value": "1.3",
+  "source": "experiments/main.json variants.floors-active.summary.ratio_nii_annex_over_single.mean"
+ },
+ "mainRatioNiiFlrCi": {
+  "value": "0.0",
+  "source": "experiments/main.json variants.floors-active.summary.ratio_nii_annex_over_single.ci_half"
+ },
+ "mainEveShortFlr": {
+  "value": "20.0",
+  "source": "experiments/main.json variants.floors-active.summary.eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortFlrCi": {
+  "value": "1.2",
+  "source": "experiments/main.json variants.floors-active.summary.eve_shortfall_single_percent.ci_half"
+ },
+ "mainChargeShareFlr": {
+  "value": "14.6",
+  "source": "experiments/main.json variants.floors-active.summary.charge_share_of_nii.mean (percent)"
+ },
+ "mainChargeShareFlrCi": {
+  "value": "0.7",
+  "source": "experiments/main.json variants.floors-active.summary.charge_share_of_nii.ci_half (percent)"
+ },
+ "mainPosOverAnnexNiiFlr": {
+  "value": "0.92",
+  "source": "experiments/main.json variants.floors-active.summary.pos_over_annex_nii.mean"
+ },
+ "mainPosOverAnnexEveFlr": {
+  "value": "1.000",
+  "source": "experiments/main.json variants.floors-active.summary.pos_over_annex_eve.mean"
+ },
+ "mainGapOverAnnexEveFlr": {
+  "value": "0.92",
+  "source": "experiments/main.json variants.floors-active.summary.gap_over_annex_eve.mean"
+ },
+ "mainSingleOverAnnexEveFlr": {
+  "value": "0.800",
+  "source": "experiments/main.json variants.floors-active.summary.single_over_annex_eve.mean"
+ },
+ "mainAnnexNiiTFlr": {
+  "value": "0.87",
+  "source": "experiments/main.json variants.floors-active.summary.annex_nii_over_tier1.mean (percent)"
+ },
+ "mainAnnexEveTFlr": {
+  "value": "7.4",
+  "source": "experiments/main.json variants.floors-active.summary.annex_eve_over_tier1.mean (percent)"
+ },
+ "mainShapEveCurveFlr": {
+  "value": "24{,}889",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.curve.mean"
+ },
+ "mainShapEveCurveFlrCi": {
+  "value": "1{,}437",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.curve.ci_half"
+ },
+ "mainShapEveSizesFlr": {
+  "value": "$-$12{,}622",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.sizes.mean"
+ },
+ "mainShapEveSizesFlrCi": {
+  "value": "783",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.sizes.ci_half"
+ },
+ "mainShapEveFloorFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.floor.mean"
+ },
+ "mainShapEveFloorFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.floor.ci_half"
+ },
+ "mainShapEvePairFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.pair.mean"
+ },
+ "mainShapEvePairFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.pair.ci_half"
+ },
+ "mainShapEveChargeFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.charge.mean"
+ },
+ "mainShapEveChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_eve.charge.ci_half"
+ },
+ "mainShapNiiCurveFlr": {
+  "value": "171",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.curve.mean"
+ },
+ "mainShapNiiCurveFlrCi": {
+  "value": "42",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.curve.ci_half"
+ },
+ "mainShapNiiSizesFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.sizes.mean"
+ },
+ "mainShapNiiSizesFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.sizes.ci_half"
+ },
+ "mainShapNiiFloorFlr": {
+  "value": "$-$136",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.floor.mean"
+ },
+ "mainShapNiiFloorFlrCi": {
+  "value": "34",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.floor.ci_half"
+ },
+ "mainShapNiiPairFlr": {
+  "value": "417",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.pair.mean"
+ },
+ "mainShapNiiPairFlrCi": {
+  "value": "78",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.pair.ci_half"
+ },
+ "mainShapNiiChargeFlr": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.charge.mean"
+ },
+ "mainShapNiiChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.shapley.delta_nii.charge.ci_half"
+ },
+ "mainLooEveCurveFlr": {
+  "value": "20{,}818",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.curve.mean"
+ },
+ "mainLooEveCurveFlrCi": {
+  "value": "1{,}204",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.curve.ci_half"
+ },
+ "mainLooEveSizesFlr": {
+  "value": "$-$16{,}693",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.sizes.mean"
+ },
+ "mainLooEveSizesFlrCi": {
+  "value": "993",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.sizes.ci_half"
+ },
+ "mainLooEveFloorFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.floor.mean"
+ },
+ "mainLooEveFloorFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.floor.ci_half"
+ },
+ "mainLooEvePairFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.pair.mean"
+ },
+ "mainLooEvePairFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.pair.ci_half"
+ },
+ "mainLooEveChargeFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.charge.mean"
+ },
+ "mainLooEveChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_eve.charge.ci_half"
+ },
+ "mainLooNiiCurveFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.curve.mean"
+ },
+ "mainLooNiiCurveFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.curve.ci_half"
+ },
+ "mainLooNiiSizesFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.sizes.mean"
+ },
+ "mainLooNiiSizesFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.sizes.ci_half"
+ },
+ "mainLooNiiFloorFlr": {
+  "value": "$-$203",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.floor.mean"
+ },
+ "mainLooNiiFloorFlrCi": {
+  "value": "52",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.floor.ci_half"
+ },
+ "mainLooNiiPairFlr": {
+  "value": "452",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.pair.mean"
+ },
+ "mainLooNiiPairFlrCi": {
+  "value": "86",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.pair.ci_half"
+ },
+ "mainLooNiiChargeFlr": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.charge.mean"
+ },
+ "mainLooNiiChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.leave_one_out.delta_nii.charge.ci_half"
+ },
+ "mainAoiEveCurveFlr": {
+  "value": "28{,}961",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.curve.mean"
+ },
+ "mainAoiEveCurveFlrCi": {
+  "value": "1{,}669",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.curve.ci_half"
+ },
+ "mainAoiEveSizesFlr": {
+  "value": "$-$8{,}550",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.sizes.mean"
+ },
+ "mainAoiEveSizesFlrCi": {
+  "value": "589",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.sizes.ci_half"
+ },
+ "mainAoiEveFloorFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.floor.mean"
+ },
+ "mainAoiEveFloorFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.floor.ci_half"
+ },
+ "mainAoiEvePairFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.pair.mean"
+ },
+ "mainAoiEvePairFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.pair.ci_half"
+ },
+ "mainAoiEveChargeFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.charge.mean"
+ },
+ "mainAoiEveChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_eve.charge.ci_half"
+ },
+ "mainAoiNiiCurveFlr": {
+  "value": "411",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.curve.mean"
+ },
+ "mainAoiNiiCurveFlrCi": {
+  "value": "101",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.curve.ci_half"
+ },
+ "mainAoiNiiSizesFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.sizes.mean"
+ },
+ "mainAoiNiiSizesFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.sizes.ci_half"
+ },
+ "mainAoiNiiFloorFlr": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.floor.mean"
+ },
+ "mainAoiNiiFloorFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.floor.ci_half"
+ },
+ "mainAoiNiiPairFlr": {
+  "value": "452",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.pair.mean"
+ },
+ "mainAoiNiiPairFlrCi": {
+  "value": "86",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.pair.ci_half"
+ },
+ "mainAoiNiiChargeFlr": {
+  "value": "1{,}030",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.charge.mean"
+ },
+ "mainAoiNiiChargeFlrCi": {
+  "value": "0",
+  "source": "experiments/main.json variants.floors-active.add_one_in.delta_nii.charge.ci_half"
+ },
+ "hTwoTopLng": {
+  "value": "own curve",
+  "source": "experiments/main.json h2_eve_attribution.long-uf.largest_absolute"
+ },
+ "hTwoTopSht": {
+  "value": "own curve",
+  "source": "experiments/main.json h2_eve_attribution.short-uf.largest_absolute"
+ },
+ "hTwoTopOff": {
+  "value": "own curve",
+  "source": "experiments/main.json h2_eve_attribution.offset-on-off.largest_absolute"
+ },
+ "hThreeSteeperViol": {
+  "value": "30",
+  "source": "experiments/main.json h3_comparators.by_variant.clp-steepener.nii_over_positive_parts"
+ },
+ "caseShapCurveEveLng": {
+  "value": "39{,}076",
+  "source": "experiments/main.json case_seed_values.long-uf.shapley.delta_eve.curve"
+ },
+ "caseShapSizesEveLng": {
+  "value": "$-$30{,}874",
+  "source": "experiments/main.json case_seed_values.long-uf.shapley.delta_eve.sizes"
+ },
+ "caseShapPairEveLng": {
+  "value": "905",
+  "source": "experiments/main.json case_seed_values.long-uf.shapley.delta_eve.pair"
+ },
+ "sweepSeeds": {
+  "value": "20",
+  "source": "experiments/sweep.json seeds"
+ },
+ "sweepLo": {
+  "value": "$-$50",
+  "source": "experiments/sweep.json feasible_range[0] (percent of Tier 1)"
+ },
+ "sweepHi": {
+  "value": "150",
+  "source": "experiments/sweep.json feasible_range[1] (percent of Tier 1)"
+ },
+ "sweepRefused": {
+  "value": "10",
+  "source": "experiments/sweep.json refused"
+ },
+ "sweepNPositions": {
+  "value": "21",
+  "source": "experiments/sweep.json positions"
+ },
+ "hFourLo": {
+  "value": "110",
+  "source": "experiments/sweep.json h4_positions min (percent of Tier 1)"
+ },
+ "hFourHi": {
+  "value": "150",
+  "source": "experiments/sweep.json h4_positions max (percent of Tier 1)"
+ },
+ "hFourN": {
+  "value": "5",
+  "source": "experiments/sweep.json h4_positions count"
+ },
+ "swThreeAnnexNii": {
+  "value": "1.43",
+  "source": "experiments/sweep.json positions.+0.30.annex_nii_over_tier1.mean (percent)"
+ },
+ "swThreeSingleNii": {
+  "value": "0.28",
+  "source": "experiments/sweep.json positions.+0.30.single_nii_over_tier1.mean (percent)"
+ },
+ "swThreeAnnexEve": {
+  "value": "10.3",
+  "source": "experiments/sweep.json positions.+0.30.annex_eve_over_tier1.mean (percent)"
+ },
+ "swThreeSingleEve": {
+  "value": "9.6",
+  "source": "experiments/sweep.json positions.+0.30.single_eve_over_tier1.mean (percent)"
+ },
+ "swThreeFlagAnnex": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.30.any_flag.annex1"
+ },
+ "swThreeFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.30.any_flag.single"
+ },
+ "swThreeFlagPos": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.30.any_flag.positive_parts"
+ },
+ "swEightAnnexNii": {
+  "value": "2.69",
+  "source": "experiments/sweep.json positions.+0.80.annex_nii_over_tier1.mean (percent)"
+ },
+ "swEightSingleNii": {
+  "value": "0.30",
+  "source": "experiments/sweep.json positions.+0.80.single_nii_over_tier1.mean (percent)"
+ },
+ "swEightAnnexEve": {
+  "value": "13.7",
+  "source": "experiments/sweep.json positions.+0.80.annex_eve_over_tier1.mean (percent)"
+ },
+ "swEightSingleEve": {
+  "value": "11.8",
+  "source": "experiments/sweep.json positions.+0.80.single_eve_over_tier1.mean (percent)"
+ },
+ "swEightFlagAnnex": {
+  "value": "1",
+  "source": "experiments/sweep.json positions.+0.80.any_flag.annex1"
+ },
+ "swEightFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.80.any_flag.single"
+ },
+ "swEightFlagPos": {
+  "value": "17",
+  "source": "experiments/sweep.json positions.+0.80.any_flag.positive_parts"
+ },
+ "swTenAnnexNii": {
+  "value": "3.19",
+  "source": "experiments/sweep.json positions.+1.00.annex_nii_over_tier1.mean (percent)"
+ },
+ "swTenSingleNii": {
+  "value": "0.31",
+  "source": "experiments/sweep.json positions.+1.00.single_nii_over_tier1.mean (percent)"
+ },
+ "swTenAnnexEve": {
+  "value": "15.0",
+  "source": "experiments/sweep.json positions.+1.00.annex_eve_over_tier1.mean (percent)"
+ },
+ "swTenSingleEve": {
+  "value": "12.7",
+  "source": "experiments/sweep.json positions.+1.00.single_eve_over_tier1.mean (percent)"
+ },
+ "swTenFlagAnnex": {
+  "value": "10",
+  "source": "experiments/sweep.json positions.+1.00.any_flag.annex1"
+ },
+ "swTenFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+1.00.any_flag.single"
+ },
+ "swTenFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.00.any_flag.positive_parts"
+ },
+ "swElevenAnnexNii": {
+  "value": "3.45",
+  "source": "experiments/sweep.json positions.+1.10.annex_nii_over_tier1.mean (percent)"
+ },
+ "swElevenSingleNii": {
+  "value": "0.32",
+  "source": "experiments/sweep.json positions.+1.10.single_nii_over_tier1.mean (percent)"
+ },
+ "swElevenAnnexEve": {
+  "value": "15.7",
+  "source": "experiments/sweep.json positions.+1.10.annex_eve_over_tier1.mean (percent)"
+ },
+ "swElevenSingleEve": {
+  "value": "13.1",
+  "source": "experiments/sweep.json positions.+1.10.single_eve_over_tier1.mean (percent)"
+ },
+ "swElevenFlagAnnex": {
+  "value": "17",
+  "source": "experiments/sweep.json positions.+1.10.any_flag.annex1"
+ },
+ "swElevenFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+1.10.any_flag.single"
+ },
+ "swElevenFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.10.any_flag.positive_parts"
+ },
+ "swTwelveAnnexNii": {
+  "value": "3.70",
+  "source": "experiments/sweep.json positions.+1.20.annex_nii_over_tier1.mean (percent)"
+ },
+ "swTwelveSingleNii": {
+  "value": "0.32",
+  "source": "experiments/sweep.json positions.+1.20.single_nii_over_tier1.mean (percent)"
+ },
+ "swTwelveAnnexEve": {
+  "value": "16.4",
+  "source": "experiments/sweep.json positions.+1.20.annex_eve_over_tier1.mean (percent)"
+ },
+ "swTwelveSingleEve": {
+  "value": "13.6",
+  "source": "experiments/sweep.json positions.+1.20.single_eve_over_tier1.mean (percent)"
+ },
+ "swTwelveFlagAnnex": {
+  "value": "19",
+  "source": "experiments/sweep.json positions.+1.20.any_flag.annex1"
+ },
+ "swTwelveFlagSingle": {
+  "value": "1",
+  "source": "experiments/sweep.json positions.+1.20.any_flag.single"
+ },
+ "swTwelveFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.20.any_flag.positive_parts"
+ },
+ "swFifteenAnnexNii": {
+  "value": "4.46",
+  "source": "experiments/sweep.json positions.+1.50.annex_nii_over_tier1.mean (percent)"
+ },
+ "swFifteenSingleNii": {
+  "value": "0.34",
+  "source": "experiments/sweep.json positions.+1.50.single_nii_over_tier1.mean (percent)"
+ },
+ "swFifteenAnnexEve": {
+  "value": "18.4",
+  "source": "experiments/sweep.json positions.+1.50.annex_eve_over_tier1.mean (percent)"
+ },
+ "swFifteenSingleEve": {
+  "value": "14.9",
+  "source": "experiments/sweep.json positions.+1.50.single_eve_over_tier1.mean (percent)"
+ },
+ "swFifteenFlagAnnex": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.50.any_flag.annex1"
+ },
+ "swFifteenFlagSingle": {
+  "value": "8",
+  "source": "experiments/sweep.json positions.+1.50.any_flag.single"
+ },
+ "swFifteenFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.50.any_flag.positive_parts"
+ },
+ "swZeroAnnexNii": {
+  "value": "0.67",
+  "source": "experiments/sweep.json positions.+0.00.annex_nii_over_tier1.mean (percent)"
+ },
+ "swZeroSingleNii": {
+  "value": "0.27",
+  "source": "experiments/sweep.json positions.+0.00.single_nii_over_tier1.mean (percent)"
+ },
+ "swZeroAnnexEve": {
+  "value": "9.2",
+  "source": "experiments/sweep.json positions.+0.00.annex_eve_over_tier1.mean (percent)"
+ },
+ "swZeroSingleEve": {
+  "value": "8.2",
+  "source": "experiments/sweep.json positions.+0.00.single_eve_over_tier1.mean (percent)"
+ },
+ "swZeroFlagAnnex": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.00.any_flag.annex1"
+ },
+ "swZeroFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.00.any_flag.single"
+ },
+ "swZeroFlagPos": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.00.any_flag.positive_parts"
+ },
+ "swMinusFiveAnnexNii": {
+  "value": "1.92",
+  "source": "experiments/sweep.json positions.-0.50.annex_nii_over_tier1.mean (percent)"
+ },
+ "swMinusFiveSingleNii": {
+  "value": "0.25",
+  "source": "experiments/sweep.json positions.-0.50.single_nii_over_tier1.mean (percent)"
+ },
+ "swMinusFiveAnnexEve": {
+  "value": "7.7",
+  "source": "experiments/sweep.json positions.-0.50.annex_eve_over_tier1.mean (percent)"
+ },
+ "swMinusFiveSingleEve": {
+  "value": "6.0",
+  "source": "experiments/sweep.json positions.-0.50.single_eve_over_tier1.mean (percent)"
+ },
+ "swMinusFiveFlagAnnex": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.-0.50.any_flag.annex1"
+ },
+ "swMinusFiveFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.-0.50.any_flag.single"
+ },
+ "swMinusFiveFlagPos": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.-0.50.any_flag.positive_parts"
+ },
+ "sweepMaxAnnexNii": {
+  "value": "4.46",
+  "source": "experiments/sweep.json max over positions of annex_nii_over_tier1.mean (percent)"
+ },
+ "sweepNiiFlagTotal": {
+  "value": "0",
+  "source": "experiments/sweep.json sum over positions of annex1 nii-tier1 flag counts"
+ },
+ "sweepMarginFlagTotal": {
+  "value": "0",
+  "source": "experiments/sweep.json sum over positions of annex1 nii-margin flag counts"
+ },
+ "sweepPosFlagFirst": {
+  "value": "60",
+  "source": "experiments/sweep.json first position at which positive parts flag a book (percent)"
+ },
+ "floorsSeeds": {
+  "value": "20",
+  "source": "experiments/floors.json seeds"
+ },
+ "floorsTotal": {
+  "value": "1{,}920",
+  "source": "experiments/floors.json h5.checked"
+ },
+ "floorsRaise": {
+  "value": "208",
+  "source": "experiments/floors.json h5.violations"
+ },
+ "floorsMaxInc": {
+  "value": "3{,}348",
+  "source": "experiments/floors.json h5.max_increase"
+ },
+ "floorsDistZero": {
+  "value": "20.48",
+  "source": "experiments/floors.json results.+0.long-uf.distance_bp.mean"
+ },
+ "flTwentyFiveDistLng": {
+  "value": "-4.5",
+  "source": "experiments/floors.json results.-25.long-uf.distance_bp.mean"
+ },
+ "flTwentyFiveEffLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.long-uf.nii_effect.mean"
+ },
+ "flTwentyFiveEffLngCi": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.long-uf.nii_effect.ci_half"
+ },
+ "flTwentyFiveRaiseLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.long-uf.books_where_floor_raises_nii"
+ },
+ "flTwentyFiveLowerLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.long-uf.books_where_floor_lowers_nii"
+ },
+ "flTwentyFiveDistSht": {
+  "value": "-4.5",
+  "source": "experiments/floors.json results.-25.short-uf.distance_bp.mean"
+ },
+ "flTwentyFiveEffSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.short-uf.nii_effect.mean"
+ },
+ "flTwentyFiveEffShtCi": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.short-uf.nii_effect.ci_half"
+ },
+ "flTwentyFiveRaiseSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.short-uf.books_where_floor_raises_nii"
+ },
+ "flTwentyFiveLowerSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.short-uf.books_where_floor_lowers_nii"
+ },
+ "flTwentyFiveDistFlr": {
+  "value": "-4.5",
+  "source": "experiments/floors.json results.-25.floors-active.distance_bp.mean"
+ },
+ "flTwentyFiveEffFlr": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.floors-active.nii_effect.mean"
+ },
+ "flTwentyFiveEffFlrCi": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.floors-active.nii_effect.ci_half"
+ },
+ "flTwentyFiveRaiseFlr": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.floors-active.books_where_floor_raises_nii"
+ },
+ "flTwentyFiveLowerFlr": {
+  "value": "0",
+  "source": "experiments/floors.json results.-25.floors-active.books_where_floor_lowers_nii"
+ },
+ "flFiftyDistLng": {
+  "value": "-29.5",
+  "source": "experiments/floors.json results.-50.long-uf.distance_bp.mean"
+ },
+ "flFiftyEffLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.long-uf.nii_effect.mean"
+ },
+ "flFiftyEffLngCi": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.long-uf.nii_effect.ci_half"
+ },
+ "flFiftyRaiseLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.long-uf.books_where_floor_raises_nii"
+ },
+ "flFiftyLowerLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.long-uf.books_where_floor_lowers_nii"
+ },
+ "flFiftyDistSht": {
+  "value": "-29.5",
+  "source": "experiments/floors.json results.-50.short-uf.distance_bp.mean"
+ },
+ "flFiftyEffSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.short-uf.nii_effect.mean"
+ },
+ "flFiftyEffShtCi": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.short-uf.nii_effect.ci_half"
+ },
+ "flFiftyRaiseSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.short-uf.books_where_floor_raises_nii"
+ },
+ "flFiftyLowerSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-50.short-uf.books_where_floor_lowers_nii"
+ },
+ "flFiftyDistFlr": {
+  "value": "-29.5",
+  "source": "experiments/floors.json results.-50.floors-active.distance_bp.mean"
+ },
+ "flFiftyEffFlr": {
+  "value": "$-$19",
+  "source": "experiments/floors.json results.-50.floors-active.nii_effect.mean"
+ },
+ "flFiftyEffFlrCi": {
+  "value": "15",
+  "source": "experiments/floors.json results.-50.floors-active.nii_effect.ci_half"
+ },
+ "flFiftyRaiseFlr": {
+  "value": "2",
+  "source": "experiments/floors.json results.-50.floors-active.books_where_floor_raises_nii"
+ },
+ "flFiftyLowerFlr": {
+  "value": "18",
+  "source": "experiments/floors.json results.-50.floors-active.books_where_floor_lowers_nii"
+ },
+ "flHundredDistLng": {
+  "value": "-79.5",
+  "source": "experiments/floors.json results.-100.long-uf.distance_bp.mean"
+ },
+ "flHundredEffLng": {
+  "value": "8",
+  "source": "experiments/floors.json results.-100.long-uf.nii_effect.mean"
+ },
+ "flHundredEffLngCi": {
+  "value": "16",
+  "source": "experiments/floors.json results.-100.long-uf.nii_effect.ci_half"
+ },
+ "flHundredRaiseLng": {
+  "value": "1",
+  "source": "experiments/floors.json results.-100.long-uf.books_where_floor_raises_nii"
+ },
+ "flHundredLowerLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-100.long-uf.books_where_floor_lowers_nii"
+ },
+ "flHundredDistSht": {
+  "value": "-79.5",
+  "source": "experiments/floors.json results.-100.short-uf.distance_bp.mean"
+ },
+ "flHundredEffSht": {
+  "value": "29",
+  "source": "experiments/floors.json results.-100.short-uf.nii_effect.mean"
+ },
+ "flHundredEffShtCi": {
+  "value": "61",
+  "source": "experiments/floors.json results.-100.short-uf.nii_effect.ci_half"
+ },
+ "flHundredRaiseSht": {
+  "value": "1",
+  "source": "experiments/floors.json results.-100.short-uf.books_where_floor_raises_nii"
+ },
+ "flHundredLowerSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-100.short-uf.books_where_floor_lowers_nii"
+ },
+ "flHundredDistFlr": {
+  "value": "-79.5",
+  "source": "experiments/floors.json results.-100.floors-active.distance_bp.mean"
+ },
+ "flHundredEffFlr": {
+  "value": "58",
+  "source": "experiments/floors.json results.-100.floors-active.nii_effect.mean"
+ },
+ "flHundredEffFlrCi": {
+  "value": "40",
+  "source": "experiments/floors.json results.-100.floors-active.nii_effect.ci_half"
+ },
+ "flHundredRaiseFlr": {
+  "value": "15",
+  "source": "experiments/floors.json results.-100.floors-active.books_where_floor_raises_nii"
+ },
+ "flHundredLowerFlr": {
+  "value": "5",
+  "source": "experiments/floors.json results.-100.floors-active.books_where_floor_lowers_nii"
+ },
+ "flTwoHundredDistLng": {
+  "value": "-179.5",
+  "source": "experiments/floors.json results.-200.long-uf.distance_bp.mean"
+ },
+ "flTwoHundredEffLng": {
+  "value": "120",
+  "source": "experiments/floors.json results.-200.long-uf.nii_effect.mean"
+ },
+ "flTwoHundredEffLngCi": {
+  "value": "156",
+  "source": "experiments/floors.json results.-200.long-uf.nii_effect.ci_half"
+ },
+ "flTwoHundredRaiseLng": {
+  "value": "6",
+  "source": "experiments/floors.json results.-200.long-uf.books_where_floor_raises_nii"
+ },
+ "flTwoHundredLowerLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-200.long-uf.books_where_floor_lowers_nii"
+ },
+ "flTwoHundredDistSht": {
+  "value": "-179.5",
+  "source": "experiments/floors.json results.-200.short-uf.distance_bp.mean"
+ },
+ "flTwoHundredEffSht": {
+  "value": "250",
+  "source": "experiments/floors.json results.-200.short-uf.nii_effect.mean"
+ },
+ "flTwoHundredEffShtCi": {
+  "value": "219",
+  "source": "experiments/floors.json results.-200.short-uf.nii_effect.ci_half"
+ },
+ "flTwoHundredRaiseSht": {
+  "value": "7",
+  "source": "experiments/floors.json results.-200.short-uf.books_where_floor_raises_nii"
+ },
+ "flTwoHundredLowerSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-200.short-uf.books_where_floor_lowers_nii"
+ },
+ "flTwoHundredDistFlr": {
+  "value": "-179.5",
+  "source": "experiments/floors.json results.-200.floors-active.distance_bp.mean"
+ },
+ "flTwoHundredEffFlr": {
+  "value": "215",
+  "source": "experiments/floors.json results.-200.floors-active.nii_effect.mean"
+ },
+ "flTwoHundredEffFlrCi": {
+  "value": "90",
+  "source": "experiments/floors.json results.-200.floors-active.nii_effect.ci_half"
+ },
+ "flTwoHundredRaiseFlr": {
+  "value": "16",
+  "source": "experiments/floors.json results.-200.floors-active.books_where_floor_raises_nii"
+ },
+ "flTwoHundredLowerFlr": {
+  "value": "4",
+  "source": "experiments/floors.json results.-200.floors-active.books_where_floor_lowers_nii"
+ },
+ "flThreeHundredDistLng": {
+  "value": "-279.5",
+  "source": "experiments/floors.json results.-300.long-uf.distance_bp.mean"
+ },
+ "flThreeHundredEffLng": {
+  "value": "681",
+  "source": "experiments/floors.json results.-300.long-uf.nii_effect.mean"
+ },
+ "flThreeHundredEffLngCi": {
+  "value": "404",
+  "source": "experiments/floors.json results.-300.long-uf.nii_effect.ci_half"
+ },
+ "flThreeHundredRaiseLng": {
+  "value": "11",
+  "source": "experiments/floors.json results.-300.long-uf.books_where_floor_raises_nii"
+ },
+ "flThreeHundredLowerLng": {
+  "value": "0",
+  "source": "experiments/floors.json results.-300.long-uf.books_where_floor_lowers_nii"
+ },
+ "flThreeHundredDistSht": {
+  "value": "-279.5",
+  "source": "experiments/floors.json results.-300.short-uf.distance_bp.mean"
+ },
+ "flThreeHundredEffSht": {
+  "value": "935",
+  "source": "experiments/floors.json results.-300.short-uf.nii_effect.mean"
+ },
+ "flThreeHundredEffShtCi": {
+  "value": "465",
+  "source": "experiments/floors.json results.-300.short-uf.nii_effect.ci_half"
+ },
+ "flThreeHundredRaiseSht": {
+  "value": "14",
+  "source": "experiments/floors.json results.-300.short-uf.books_where_floor_raises_nii"
+ },
+ "flThreeHundredLowerSht": {
+  "value": "0",
+  "source": "experiments/floors.json results.-300.short-uf.books_where_floor_lowers_nii"
+ },
+ "flThreeHundredDistFlr": {
+  "value": "-279.5",
+  "source": "experiments/floors.json results.-300.floors-active.distance_bp.mean"
+ },
+ "flThreeHundredEffFlr": {
+  "value": "372",
+  "source": "experiments/floors.json results.-300.floors-active.nii_effect.mean"
+ },
+ "flThreeHundredEffFlrCi": {
+  "value": "140",
+  "source": "experiments/floors.json results.-300.floors-active.nii_effect.ci_half"
+ },
+ "flThreeHundredRaiseFlr": {
+  "value": "17",
+  "source": "experiments/floors.json results.-300.floors-active.books_where_floor_raises_nii"
+ },
+ "flThreeHundredLowerFlr": {
+  "value": "3",
+  "source": "experiments/floors.json results.-300.floors-active.books_where_floor_lowers_nii"
+ },
+ "floorsEveEffMax": {
+  "value": "0",
+  "source": "experiments/floors.json max absolute mean eve_effect over every cell"
+ },
+ "floorsEveChanged": {
+  "value": "0",
+  "source": "experiments/floors.json books where the floor changes delta EVE, summed"
+ },
+ "floorsRaiseTotalFlr": {
+  "value": "83",
+  "source": "experiments/floors.json floors-active raises summed over translations"
+ },
+ "floorsLowerTotalFlr": {
+  "value": "37",
+  "source": "experiments/floors.json floors-active lowers summed over translations"
+ },
+ "floorsLowerOthers": {
+  "value": "0",
+  "source": "experiments/floors.json lowers in the five other variants, summed"
+ },
+ "totalSeconds": {
+  "value": "46",
+  "source": "sum of the four measured run times"
+ },
+ "sizeClpPar": {
+  "value": "300",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['CLP'][0] (bp)"
+ },
+ "sizeClpShort": {
+  "value": "400",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['CLP'][1] (bp)"
+ },
+ "sizeClpLong": {
+  "value": "200",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['CLP'][2] (bp)"
+ },
+ "sizeUrEvePar": {
+  "value": "200",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['UR-eve'][0] (bp)"
+ },
+ "sizeUrEveShort": {
+  "value": "250",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['UR-eve'][1] (bp)"
+ },
+ "sizeUrEveLong": {
+  "value": "150",
+  "source": "riskvalidation.irrbb.shocks.shock_table('cmf-annex1')['UR-eve'][2] (bp)"
+ },
+ "sizeUrNii": {
+  "value": "300",
+  "source": "shock_table('cmf-annex1')['UR-nii'][0] (bp)"
+ },
+ "nCurr": {
+  "value": "21",
+  "source": "len(shock_table('2024'))"
+ },
+ "nCurrOld": {
+  "value": "21",
+  "source": "len(shock_table('2016'))"
+ },
+ "usdPar": {
+  "value": "200",
+  "source": "shock_table('2024')['USD'][0] (bp)"
+ },
+ "usdShort": {
+  "value": "300",
+  "source": "shock_table('2024')['USD'][1] (bp)"
+ },
+ "usdLong": {
+  "value": "225",
+  "source": "shock_table('2024')['USD'][2] (bp)"
+ }
+}

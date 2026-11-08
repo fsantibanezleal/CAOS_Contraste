@@ -1,0 +1,2605 @@
+{
+ "seeds": [
+  201,
+  202,
+  203,
+  204,
+  205,
+  206,
+  207,
+  208,
+  209,
+  210,
+  211,
+  212,
+  213,
+  214,
+  215,
+  216,
+  217,
+  218,
+  219,
+  220
+ ],
+ "shifts_bp": [
+  0.0,
+  -25.0,
+  -50.0,
+  -100.0,
+  -150.0,
+  -200.0,
+  -250.0,
+  -300.0
+ ],
+ "ur_floor": -0.02,
+ "results": {
+  "+0": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "eve_no_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "nii_with_peso_floor": {
+     "mean": 11831.52668187366,
+     "ci_half": 234.68085743829073,
+     "sd": 501.43938780321747
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 71002.56940454443,
+     "ci_half": 3850.4103551037465,
+     "sd": 8227.11929865043
+    },
+    "eve_no_floor": {
+     "mean": 71002.56940454443,
+     "ci_half": 3850.4103551037465,
+     "sd": 8227.11929865043
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 71002.56940454443,
+     "ci_half": 3850.4103551037465,
+     "sd": 8227.11929865043
+    },
+    "nii_with_peso_floor": {
+     "mean": 11828.090127303221,
+     "ci_half": 202.30064510109653,
+     "sd": 432.2530296633326
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "eve_no_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 87527.88443432983,
+     "ci_half": 3348.9522890391795,
+     "sd": 7155.660687150679
+    },
+    "nii_with_peso_floor": {
+     "mean": 11831.52668187366,
+     "ci_half": 234.68085743829073,
+     "sd": 501.43938780321747
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 132996.991035793,
+     "ci_half": 3416.924458714594,
+     "sd": 7300.895895176363
+    },
+    "eve_no_floor": {
+     "mean": 132996.991035793,
+     "ci_half": 3416.924458714594,
+     "sd": 7300.895895176363
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 132996.991035793,
+     "ci_half": 3416.924458714594,
+     "sd": 7300.895895176363
+    },
+    "nii_with_peso_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 74145.42024030988,
+     "ci_half": 3217.163913808895,
+     "sd": 6874.070262961815
+    },
+    "eve_no_floor": {
+     "mean": 74145.42024030988,
+     "ci_half": 3217.163913808895,
+     "sd": 6874.070262961815
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 74145.42024030988,
+     "ci_half": 3217.163913808895,
+     "sd": 6874.070262961815
+    },
+    "nii_with_peso_floor": {
+     "mean": 11828.698454860161,
+     "ci_half": 198.1938485133694,
+     "sd": 423.47809339771186
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": 20.476349064339235,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 0.0,
+    "eve_with_floor": {
+     "mean": 58413.81067270293,
+     "ci_half": 3602.4707488367176,
+     "sd": 7697.350123031146
+    },
+    "eve_no_floor": {
+     "mean": 58413.81067270293,
+     "ci_half": 3602.4707488367176,
+     "sd": 7697.350123031146
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 58413.81067270293,
+     "ci_half": 3602.4707488367176,
+     "sd": 7697.350123031146
+    },
+    "nii_with_peso_floor": {
+     "mean": 7256.179753660076,
+     "ci_half": 367.0579944162937,
+     "sd": 784.2878111896322
+    }
+   }
+  },
+  "-25": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "eve_no_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386423,
+     "sd": 636.3283690174645
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386423,
+     "sd": 636.3283690174645
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "nii_with_peso_floor": {
+     "mean": 11949.502403628274,
+     "ci_half": 202.25817857980843,
+     "sd": 432.1622920264018
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 73021.56995166079,
+     "ci_half": 4011.1433378226725,
+     "sd": 8570.555270949775
+    },
+    "eve_no_floor": {
+     "mean": 73021.56995166079,
+     "ci_half": 4011.1433378226725,
+     "sd": 8570.555270949775
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.9678166047654,
+     "sd": 636.663770425515
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.9678166047654,
+     "sd": 636.663770425515
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 73021.56995166079,
+     "ci_half": 4011.1433378226725,
+     "sd": 8570.555270949775
+    },
+    "nii_with_peso_floor": {
+     "mean": 11959.710937671687,
+     "ci_half": 192.46615864937647,
+     "sd": 411.23981657241717
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "eve_no_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386423,
+     "sd": 636.3283690174645
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386423,
+     "sd": 636.3283690174645
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 90595.89536071461,
+     "ci_half": 3500.979822448153,
+     "sd": 7480.495844623521
+    },
+    "nii_with_peso_floor": {
+     "mean": 11949.502403628274,
+     "ci_half": 202.25817857980843,
+     "sd": 432.1622920264018
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 135627.91430414928,
+     "ci_half": 3574.9910517462663,
+     "sd": 7638.634628991855
+    },
+    "eve_no_floor": {
+     "mean": 135627.91430414928,
+     "ci_half": 3574.9910517462663,
+     "sd": 7638.634628991855
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395752,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395752,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 135627.91430414928,
+     "ci_half": 3574.9910517462663,
+     "sd": 7638.634628991855
+    },
+    "nii_with_peso_floor": {
+     "mean": 7339.796303395752,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 77213.43116669465,
+     "ci_half": 3372.9643577634524,
+     "sd": 7206.966946947154
+    },
+    "eve_no_floor": {
+     "mean": 77213.43116669465,
+     "ci_half": 3372.9643577634524,
+     "sd": 7206.966946947154
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.0842916197809,
+     "sd": 636.9126410017575
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.0842916197809,
+     "sd": 636.9126410017575
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 77213.43116669465,
+     "ci_half": 3372.9643577634524,
+     "sd": 7206.966946947154
+    },
+    "nii_with_peso_floor": {
+     "mean": 11967.420154107787,
+     "ci_half": 196.0832180137194,
+     "sd": 418.9683379912591
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -4.523650935660782,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 60681.07917340018,
+     "ci_half": 3732.4946109404214,
+     "sd": 7975.170336084677
+    },
+    "eve_no_floor": {
+     "mean": 60681.07917340018,
+     "ci_half": 3732.4946109404214,
+     "sd": 7975.170336084677
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 60681.07917340018,
+     "ci_half": 3732.4946109404214,
+     "sd": 7975.170336084677
+    },
+    "nii_with_peso_floor": {
+     "mean": 7295.331303125631,
+     "ci_half": 368.72163922257147,
+     "sd": 787.8424983604905
+    }
+   }
+  },
+  "-50": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "eve_no_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "nii_with_peso_floor": {
+     "mean": 12078.124496540739,
+     "ci_half": 190.86198519564914,
+     "sd": 407.8122010295572
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 75165.22534104847,
+     "ci_half": 4179.925502602536,
+     "sd": 8931.189820794007
+    },
+    "eve_no_floor": {
+     "mean": 75165.22534104847,
+     "ci_half": 4179.925502602536,
+     "sd": 8931.189820794007
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11577.704316657439,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657439,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 75165.22534104847,
+     "ci_half": 4179.925502602536,
+     "sd": 8931.189820794007
+    },
+    "nii_with_peso_floor": {
+     "mean": 12103.62890413888,
+     "ci_half": 210.2395569670631,
+     "sd": 449.21599438635326
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "eve_no_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 93813.33715226676,
+     "ci_half": 3660.62847366487,
+     "sd": 7821.614940588859
+    },
+    "nii_with_peso_floor": {
+     "mean": 12078.124496540739,
+     "ci_half": 190.86198519564914,
+     "sd": 407.8122010295572
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 138397.9450947996,
+     "ci_half": 3740.804856573429,
+     "sd": 7992.926724603947
+    },
+    "eve_no_floor": {
+     "mean": 138397.9450947996,
+     "ci_half": 3740.804856573429,
+     "sd": 7992.926724603947
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161045,
+     "sd": 631.5669036283834
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161045,
+     "sd": 631.5669036283834
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 138397.9450947996,
+     "ci_half": 3740.804856573429,
+     "sd": 7992.926724603947
+    },
+    "nii_with_peso_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161045,
+     "sd": 631.5669036283834
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 80430.87295824682,
+     "ci_half": 3536.175311832754,
+     "sd": 7555.69756683936
+    },
+    "eve_no_floor": {
+     "mean": 80430.87295824682,
+     "ci_half": 3536.175311832754,
+     "sd": 7555.69756683936
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11535.179578914605,
+     "ci_half": 294.098782222203,
+     "sd": 628.3968574213649
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 3.8694253880026737,
+     "ci_half": 8.0988004138278,
+     "sd": 17.304596402874957
+    },
+    "eve_with_peso_floor": {
+     "mean": 80430.87295824682,
+     "ci_half": 3536.175311832754,
+     "sd": 7555.69756683936
+    },
+    "nii_with_peso_floor": {
+     "mean": 12118.589435261743,
+     "ci_half": 225.96075790837276,
+     "sd": 482.807270051496
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 2,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 18,
+    "distance_bp": {
+     "mean": -29.523650935660765,
+     "ci_half": 1.7059159398898084e-15,
+     "sd": 3.645007325606123e-15
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 63078.32924334919,
+     "ci_half": 3869.205964427752,
+     "sd": 8267.279620781926
+    },
+    "eve_no_floor": {
+     "mean": 63078.32924334919,
+     "ci_half": 3869.205964427752,
+     "sd": 8267.279620781926
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7021.756387470559,
+     "ci_half": 366.477914646208,
+     "sd": 783.0483626552953
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": -19.345142473178747,
+     "ci_half": 14.999523025727742,
+     "sd": 32.04927630426321
+    },
+    "eve_with_peso_floor": {
+     "mean": 63078.32924334919,
+     "ci_half": 3869.205964427752,
+     "sd": 8267.279620781926
+    },
+    "nii_with_peso_floor": {
+     "mean": 7334.482852591187,
+     "ci_half": 370.80797362385704,
+     "sd": 792.3003406248879
+    }
+   }
+  },
+  "-100": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "eve_no_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11718.751179037728,
+     "ci_half": 290.1760429401141,
+     "sd": 620.0151938907571
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.8108439138646,
+     "sd": 636.3283690174652
+    },
+    "nii_effect": {
+     "mean": 7.6425426305981095,
+     "ci_half": 15.996025562682796,
+     "sd": 34.178489685914876
+    },
+    "eve_with_peso_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "nii_with_peso_floor": {
+     "mean": 12392.004027634768,
+     "ci_half": 247.3847866026679,
+     "sd": 528.5837000083823
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 79855.91323890994,
+     "ci_half": 4542.914674475937,
+     "sd": 9706.783834341775
+    },
+    "eve_no_floor": {
+     "mean": 79855.91323890994,
+     "ci_half": 4542.914674475937,
+     "sd": 9706.783834341775
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11606.81247169345,
+     "ci_half": 272.56915770723464,
+     "sd": 582.3948023144304
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657439,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 29.108155036012523,
+     "ci_half": 60.92406866982054,
+     "sd": 130.17562672025366
+    },
+    "eve_with_peso_floor": {
+     "mean": 79855.91323890994,
+     "ci_half": 4542.914674475937,
+     "sd": 9706.783834341775
+    },
+    "nii_with_peso_floor": {
+     "mean": 12512.323402371909,
+     "ci_half": 287.4990291439096,
+     "sd": 614.2952550181861
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "eve_no_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11718.751179037728,
+     "ci_half": 290.1760429401141,
+     "sd": 620.0151938907571
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.8108439138646,
+     "sd": 636.3283690174652
+    },
+    "nii_effect": {
+     "mean": 7.6425426305981095,
+     "ci_half": 15.996025562682796,
+     "sd": 34.178489685914876
+    },
+    "eve_with_peso_floor": {
+     "mean": 100728.51937264371,
+     "ci_half": 4004.1228834971635,
+     "sd": 8555.55476192867
+    },
+    "nii_with_peso_floor": {
+     "mean": 12392.004027634768,
+     "ci_half": 247.3847866026679,
+     "sd": 528.5837000083823
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 144386.2546807951,
+     "ci_half": 4096.9738014789245,
+     "sd": 8753.948052195148
+    },
+    "eve_no_floor": {
+     "mean": 144386.2546807951,
+     "ci_half": 4096.9738014789245,
+     "sd": 8753.948052195148
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161046,
+     "sd": 631.5669036283836
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161046,
+     "sd": 631.5669036283836
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 144386.2546807951,
+     "ci_half": 4096.9738014789245,
+     "sd": 8753.948052195148
+    },
+    "nii_with_peso_floor": {
+     "mean": 7365.31447622049,
+     "ci_half": 272.1383848903492,
+     "sd": 581.4743759109344
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 87346.05517862376,
+     "ci_half": 3886.191490405945,
+     "sd": 8303.572362512088
+    },
+    "eve_no_floor": {
+     "mean": 87346.05517862376,
+     "ci_half": 3886.191490405945,
+     "sd": 8303.572362512088
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11567.883427574565,
+     "ci_half": 267.929428824602,
+     "sd": 572.4811568817519
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526603,
+     "ci_half": 298.0842916197809,
+     "sd": 636.9126410017575
+    },
+    "nii_effect": {
+     "mean": 36.573274047962606,
+     "ci_half": 76.54874233085286,
+     "sd": 163.56065386194655
+    },
+    "eve_with_peso_floor": {
+     "mean": 87346.05517862376,
+     "ci_half": 3886.191490405945,
+     "sd": 8303.572362512088
+    },
+    "nii_with_peso_floor": {
+     "mean": 12567.664836657132,
+     "ci_half": 301.0640015002849,
+     "sd": 643.2793464698591
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 15,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 5,
+    "distance_bp": {
+     "mean": -79.52365093566077,
+     "ci_half": 6.823663759559234e-15,
+     "sd": 1.4580029302424492e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 68292.29674237435,
+     "ci_half": 4163.917647371476,
+     "sd": 8896.986054816989
+    },
+    "eve_no_floor": {
+     "mean": 68292.29674237435,
+     "ci_half": 4163.917647371476,
+     "sd": 8896.986054816989
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7099.573555797853,
+     "ci_half": 364.7239620047807,
+     "sd": 779.3007159645787
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 58.47202585411569,
+     "ci_half": 39.628909917823385,
+     "sd": 84.67455141170777
+    },
+    "eve_with_peso_floor": {
+     "mean": 68292.29674237435,
+     "ci_half": 4163.917647371476,
+     "sd": 8896.986054816989
+    },
+    "nii_with_peso_floor": {
+     "mean": 7412.785951522297,
+     "ci_half": 376.2191592211655,
+     "sd": 803.8623470996487
+    }
+   }
+  },
+  "-150": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "eve_no_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11751.455027697686,
+     "ci_half": 266.031017213499,
+     "sd": 568.4248466804808
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 40.34639129055813,
+     "ci_half": 84.44596747970805,
+     "sd": 180.43454714498688
+    },
+    "eve_with_peso_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 2,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 85137.84547644152,
+     "ci_half": 4942.146206436563,
+     "sd": 10559.816404459758
+    },
+    "eve_no_floor": {
+     "mean": 85137.84547644152,
+     "ci_half": 4942.146206436563,
+     "sd": 10559.816404459758
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11644.324660791852,
+     "ci_half": 254.10308445448783,
+     "sd": 542.9385954125892
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 66.62034413441661,
+     "ci_half": 129.23569084828227,
+     "sd": 276.1361382801693
+    },
+    "eve_with_peso_floor": {
+     "mean": 85137.84547644152,
+     "ci_half": 4942.146206436563,
+     "sd": 10559.816404459758
+    },
+    "nii_with_peso_floor": {
+     "mean": 12830.880165266422,
+     "ci_half": 333.6453794749869,
+     "sd": 712.8955324841604
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "eve_no_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11751.455027697686,
+     "ci_half": 266.031017213499,
+     "sd": 568.4248466804808
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 40.34639129055813,
+     "ci_half": 84.44596747970805,
+     "sd": 180.43454714498688
+    },
+    "eve_with_peso_floor": {
+     "mean": 108342.01138700235,
+     "ci_half": 4382.332551183653,
+     "sd": 9363.670201322102
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 151028.26345480914,
+     "ci_half": 4488.260017626631,
+     "sd": 9590.003974363986
+    },
+    "eve_no_floor": {
+     "mean": 151028.26345480914,
+     "ci_half": 4488.260017626631,
+     "sd": 9590.003974363986
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 151028.26345480914,
+     "ci_half": 4488.260017626631,
+     "sd": 9590.003974363986
+    },
+    "nii_with_peso_floor": {
+     "mean": 7384.284418569623,
+     "ci_half": 260.50357996223283,
+     "sd": 556.6144468820037
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 3,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 94959.54719298238,
+     "ci_half": 4270.168423668762,
+     "sd": 9124.010639615677
+    },
+    "eve_no_floor": {
+     "mean": 94959.54719298238,
+     "ci_half": 4270.168423668762,
+     "sd": 9124.010639615677
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11618.994742251183,
+     "ci_half": 244.82419237088038,
+     "sd": 523.1125132315161
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 87.6845887245795,
+     "ci_half": 145.62967161923433,
+     "sd": 311.16493343277574
+    },
+    "eve_with_peso_floor": {
+     "mean": 94959.54719298238,
+     "ci_half": 4270.168423668762,
+     "sd": 9124.010639615677
+    },
+    "nii_with_peso_floor": {
+     "mean": 12908.94057812844,
+     "ci_half": 341.0460408285638,
+     "sd": 728.708424677348
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 16,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 4,
+    "distance_bp": {
+     "mean": -129.52365093566078,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 74119.06993550505,
+     "ci_half": 4489.231918223248,
+     "sd": 9592.080621115207
+    },
+    "eve_no_floor": {
+     "mean": 74119.06993550505,
+     "ci_half": 4489.231918223248,
+     "sd": 9592.080621115207
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7177.876654728963,
+     "ci_half": 365.0204236076703,
+     "sd": 779.9341614286989
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 136.77512478522704,
+     "ci_half": 64.55130140607724,
+     "sd": 137.92588544413192
+    },
+    "eve_with_peso_floor": {
+     "mean": 74119.06993550505,
+     "ci_half": 4489.231918223248,
+     "sd": 9592.080621115207
+    },
+    "nii_with_peso_floor": {
+     "mean": 7506.222801707762,
+     "ci_half": 381.2404338995098,
+     "sd": 814.5912362309782
+    }
+   }
+  },
+  "-200": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 6,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "eve_no_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11831.52668187366,
+     "ci_half": 234.68085743829073,
+     "sd": 501.43938780321747
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 120.41804546653057,
+     "ci_half": 155.50684666646328,
+     "sd": 332.26935866358104
+    },
+    "eve_with_peso_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 7,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 91081.85156042916,
+     "ci_half": 5380.764478191594,
+     "sd": 11497.006084389153
+    },
+    "eve_no_floor": {
+     "mean": 91081.85156042916,
+     "ci_half": 5380.764478191594,
+     "sd": 11497.006084389153
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11828.090127303221,
+     "ci_half": 202.30064510109653,
+     "sd": 432.2530296633326
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 250.38581064578347,
+     "ci_half": 218.91288354742133,
+     "sd": 467.7481730145817
+    },
+    "eve_with_peso_floor": {
+     "mean": 91081.85156042916,
+     "ci_half": 5380.764478191594,
+     "sd": 11497.006084389153
+    },
+    "nii_with_peso_floor": {
+     "mean": 12830.880165266422,
+     "ci_half": 333.6453794749869,
+     "sd": 712.8955324841604
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 6,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "eve_no_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11831.52668187366,
+     "ci_half": 234.68085743829073,
+     "sd": 501.43938780321747
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 120.41804546653057,
+     "ci_half": 155.50684666646328,
+     "sd": 332.26935866358104
+    },
+    "eve_with_peso_floor": {
+     "mean": 116730.31204288774,
+     "ci_half": 4798.55465276584,
+     "sd": 10253.006289854251
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 158398.10803907044,
+     "ci_half": 4917.8906294280205,
+     "sd": 10507.989843832946
+    },
+    "eve_no_floor": {
+     "mean": 158398.10803907044,
+     "ci_half": 4917.8906294280205,
+     "sd": 10507.989843832946
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 158398.10803907044,
+     "ci_half": 4917.8906294280205,
+     "sd": 10507.989843832946
+    },
+    "nii_with_peso_floor": {
+     "mean": 7384.284418569623,
+     "ci_half": 260.50357996223283,
+     "sd": 556.6144468820037
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 7,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 103347.8478488678,
+     "ci_half": 4691.462119185131,
+     "sd": 10024.183133746912
+    },
+    "eve_no_floor": {
+     "mean": 103347.8478488678,
+     "ci_half": 4691.462119185131,
+     "sd": 10024.183133746912
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 11828.698454860161,
+     "ci_half": 198.1938485133694,
+     "sd": 423.47809339771186
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 297.3883013335585,
+     "ci_half": 244.4817292137905,
+     "sd": 522.380776873848
+    },
+    "eve_with_peso_floor": {
+     "mean": 103347.8478488678,
+     "ci_half": 4691.462119185131,
+     "sd": 10024.183133746912
+    },
+    "nii_with_peso_floor": {
+     "mean": 12908.94057812844,
+     "ci_half": 341.0460408285638,
+     "sd": 728.708424677348
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 16,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 4,
+    "distance_bp": {
+     "mean": -179.52365093566084,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 80629.48420609077,
+     "ci_half": 4848.079661018146,
+     "sd": 10358.825699626588
+    },
+    "eve_no_floor": {
+     "mean": 80629.48420609077,
+     "ci_half": 4848.079661018146,
+     "sd": 10358.825699626588
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7256.179753660076,
+     "ci_half": 367.0579944162937,
+     "sd": 784.2878111896322
+    },
+    "nii_no_floor": {
+     "mean": 7041.1015299437395,
+     "ci_half": 370.4098868596363,
+     "sd": 791.4497540643887
+    },
+    "nii_effect": {
+     "mean": 215.0782237163375,
+     "ci_half": 89.65830106070459,
+     "sd": 191.5716692281901
+    },
+    "eve_with_peso_floor": {
+     "mean": 80629.48420609077,
+     "ci_half": 4848.079661018146,
+     "sd": 10358.825699626588
+    },
+    "nii_with_peso_floor": {
+     "mean": 7506.222801707762,
+     "ci_half": 381.2404338995098,
+     "sd": 814.5912362309782
+    }
+   }
+  },
+  "-250": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 8,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "eve_no_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12078.124496540739,
+     "ci_half": 190.86198519564914,
+     "sd": 407.8122010295572
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 367.01586013360895,
+     "ci_half": 269.5264132676802,
+     "sd": 575.8934117635927
+    },
+    "eve_with_peso_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 9,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 97767.31128688478,
+     "ci_half": 5862.342365068802,
+     "sd": 12525.98698812039
+    },
+    "eve_no_floor": {
+     "mean": 97767.31128688478,
+     "ci_half": 5862.342365068802,
+     "sd": 12525.98698812039
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12103.62890413888,
+     "ci_half": 210.23955696706315,
+     "sd": 449.2159943863534
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 525.9245874814441,
+     "ci_half": 348.5841272476311,
+     "sd": 744.8149511339373
+    },
+    "eve_with_peso_floor": {
+     "mean": 97767.31128688478,
+     "ci_half": 5862.342365068802,
+     "sd": 12525.98698812039
+    },
+    "nii_with_peso_floor": {
+     "mean": 12830.880165266422,
+     "ci_half": 333.6453794749869,
+     "sd": 712.8955324841604
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 8,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "eve_no_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12078.124496540739,
+     "ci_half": 190.86198519564914,
+     "sd": 407.8122010295572
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 367.01586013360895,
+     "ci_half": 269.5264132676802,
+     "sd": 575.8934117635927
+    },
+    "eve_with_peso_floor": {
+     "mean": 125978.78952595142,
+     "ci_half": 5256.537950698309,
+     "sd": 11231.572957140877
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 0,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 166578.6614568808,
+     "ci_half": 5389.5407236896135,
+     "sd": 11515.758168465269
+    },
+    "eve_no_floor": {
+     "mean": 166578.6614568808,
+     "ci_half": 5389.5407236896135,
+     "sd": 11515.758168465269
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "eve_with_peso_floor": {
+     "mean": 166578.6614568808,
+     "ci_half": 5389.5407236896135,
+     "sd": 11515.758168465269
+    },
+    "nii_with_peso_floor": {
+     "mean": 7384.284418569623,
+     "ci_half": 260.50357996223283,
+     "sd": 556.6144468820037
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 10,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 112596.3253319315,
+     "ci_half": 5153.878374414582,
+     "sd": 11012.221640438851
+    },
+    "eve_no_floor": {
+     "mean": 112596.3253319315,
+     "ci_half": 5153.878374414582,
+     "sd": 11012.221640438851
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12118.589435261743,
+     "ci_half": 225.96075790837264,
+     "sd": 482.8072700514958
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 587.2792817351419,
+     "ci_half": 375.66787033446025,
+     "sd": 802.6844156532165
+    },
+    "eve_with_peso_floor": {
+     "mean": 112596.3253319315,
+     "ci_half": 5153.878374414582,
+     "sd": 11012.221640438851
+    },
+    "nii_with_peso_floor": {
+     "mean": 12908.94057812844,
+     "ci_half": 341.0460408285638,
+     "sd": 728.708424677348
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 17,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 3,
+    "distance_bp": {
+     "mean": -229.5236509356608,
+     "ci_half": 1.3647327519118467e-14,
+     "sd": 2.9160058604848984e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 87902.75910013069,
+     "ci_half": 5243.739662709223,
+     "sd": 11204.227029721706
+    },
+    "eve_no_floor": {
+     "mean": 87902.75910013069,
+     "ci_half": 5243.739662709223,
+     "sd": 11204.227029721706
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7334.482852591187,
+     "ci_half": 370.80797362385704,
+     "sd": 792.3003406248879
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 293.3813226474487,
+     "ci_half": 114.82888055230707,
+     "sd": 245.3533031828905
+    },
+    "eve_with_peso_floor": {
+     "mean": 87902.75910013069,
+     "ci_half": 5243.739662709223,
+     "sd": 11204.227029721706
+    },
+    "nii_with_peso_floor": {
+     "mean": 7506.222801707762,
+     "ci_half": 381.2404338995098,
+     "sd": 814.5912362309782
+    }
+   }
+  },
+  "-300": {
+   "long-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 11,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "eve_no_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12392.004027634768,
+     "ci_half": 247.38478660266773,
+     "sd": 528.5837000083819
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 680.8953912276404,
+     "ci_half": 404.05576478101136,
+     "sd": 863.3404425984224
+    },
+    "eve_with_peso_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "short-uf": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 14,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 105283.20429590247,
+     "ci_half": 6390.939840368028,
+     "sd": 13655.434005238383
+    },
+    "eve_no_floor": {
+     "mean": 105283.20429590247,
+     "ci_half": 6390.939840368028,
+     "sd": 13655.434005238383
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12512.323402371909,
+     "ci_half": 287.49902914390964,
+     "sd": 614.2952550181864
+    },
+    "nii_no_floor": {
+     "mean": 11577.704316657435,
+     "ci_half": 297.96781660476563,
+     "sd": 636.6637704255155
+    },
+    "nii_effect": {
+     "mean": 934.6190857144696,
+     "ci_half": 464.6966827903684,
+     "sd": 992.9110651637197
+    },
+    "eve_with_peso_floor": {
+     "mean": 105283.20429590247,
+     "ci_half": 6390.939840368028,
+     "sd": 13655.434005238383
+    },
+    "nii_with_peso_floor": {
+     "mean": 12830.880165266422,
+     "ci_half": 333.6453794749869,
+     "sd": 712.8955324841604
+    }
+   },
+   "cpi-surprise": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 11,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "eve_no_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12392.004027634768,
+     "ci_half": 247.38478660266773,
+     "sd": 528.5837000083819
+    },
+    "nii_no_floor": {
+     "mean": 11711.108636407129,
+     "ci_half": 297.81084391386435,
+     "sd": 636.3283690174648
+    },
+    "nii_effect": {
+     "mean": 680.8953912276404,
+     "ci_half": 404.05576478101136,
+     "sd": 863.3404425984224
+    },
+    "eve_with_peso_floor": {
+     "mean": 136182.7495944912,
+     "ci_half": 5760.541080476507,
+     "sd": 12308.469571571133
+    },
+    "nii_with_peso_floor": {
+     "mean": 12662.937087575574,
+     "ci_half": 293.4741364913024,
+     "sd": 627.0621854062899
+    }
+   },
+   "clp-steepener": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 1,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 175662.59358395304,
+     "ci_half": 5907.389983353372,
+     "sd": 12622.239619805734
+    },
+    "eve_no_floor": {
+     "mean": 175662.59358395304,
+     "ci_half": 5907.389983353372,
+     "sd": 12622.239619805734
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7365.31447622049,
+     "ci_half": 272.1383848903491,
+     "sd": 581.4743759109341
+    },
+    "nii_no_floor": {
+     "mean": 7339.796303395754,
+     "ci_half": 295.5824095161044,
+     "sd": 631.5669036283833
+    },
+    "nii_effect": {
+     "mean": 25.51817282473644,
+     "ci_half": 53.41014954672178,
+     "sd": 114.12073819539701
+    },
+    "eve_with_peso_floor": {
+     "mean": 175662.59358395304,
+     "ci_half": 5907.389983353372,
+     "sd": 12622.239619805734
+    },
+    "nii_with_peso_floor": {
+     "mean": 7384.284418569623,
+     "ci_half": 260.50357996223283,
+     "sd": 556.6144468820037
+    }
+   },
+   "offset-on-off": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 15,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 0,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 122800.28540047126,
+     "ci_half": 5661.730079788181,
+     "sd": 12097.34145386172
+    },
+    "eve_no_floor": {
+     "mean": 122800.28540047126,
+     "ci_half": 5661.730079788181,
+     "sd": 12097.34145386172
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 12567.664836657132,
+     "ci_half": 301.0640015002849,
+     "sd": 643.2793464698591
+    },
+    "nii_no_floor": {
+     "mean": 11531.310153526601,
+     "ci_half": 298.084291619781,
+     "sd": 636.9126410017577
+    },
+    "nii_effect": {
+     "mean": 1036.3546831305296,
+     "ci_half": 482.3497597892212,
+     "sd": 1030.6301540564957
+    },
+    "eve_with_peso_floor": {
+     "mean": 122800.28540047126,
+     "ci_half": 5661.730079788181,
+     "sd": 12097.34145386172
+    },
+    "nii_with_peso_floor": {
+     "mean": 12908.94057812844,
+     "ci_half": 341.0460408285638,
+     "sd": 728.708424677348
+    }
+   },
+   "floors-active": {
+    "books_where_floor_raises_eve": 0,
+    "books_where_floor_raises_nii": 17,
+    "books_where_floor_lowers_eve": 0,
+    "books_where_floor_lowers_nii": 3,
+    "distance_bp": {
+     "mean": -279.5236509356608,
+     "ci_half": 2.7294655038236935e-14,
+     "sd": 5.832011720969797e-14
+    },
+    "share_of_seeds_binding": 1.0,
+    "eve_with_floor": {
+     "mean": 96027.51605835884,
+     "ci_half": 5679.886884174489,
+     "sd": 12136.136850194065
+    },
+    "eve_no_floor": {
+     "mean": 96027.51605835884,
+     "ci_half": 5679.886884174489,
+     "sd": 12136.136850194065
+    },
+    "eve_effect": {
+     "mean": 0.0,
+     "ci_half": 0.0,
+     "sd": 0.0
+    },
+    "nii_with_floor": {
+     "mean": 7412.785951522297,
+     "ci_half": 376.21915922116534,
+     "sd": 803.8623470996483
+    },
+    "nii_no_floor": {
+     "mean": 7041.101529943738,
+     "ci_half": 370.4098868596362,
+     "sd": 791.4497540643886
+    },
+    "nii_effect": {
+     "mean": 371.6844215785595,
+     "ci_half": 140.02875809143808,
+     "sd": 299.19753787621477
+    },
+    "eve_with_peso_floor": {
+     "mean": 96027.51605835884,
+     "ci_half": 5679.886884174489,
+     "sd": 12136.136850194065
+    },
+    "nii_with_peso_floor": {
+     "mean": 7506.222801707762,
+     "ci_half": 381.2404338995098,
+     "sd": 814.5912362309782
+    }
+   }
+  }
+ },
+ "h5_floor_never_raises": {
+  "checked": 1920,
+  "violations": 208,
+  "max_increase": 3347.773373756063,
+  "examples": [
+   {
+    "variant": "offset-on-off",
+    "shift_bp": -50.0,
+    "seed": 205,
+    "measure": "nii",
+    "with_floor": 10249.217303318019,
+    "no_floor": 10171.828795557965
+   },
+   {
+    "variant": "floors-active",
+    "shift_bp": -50.0,
+    "seed": 202,
+    "measure": "nii",
+    "with_floor": 7961.1456604485875,
+    "no_floor": 7940.74874184983
+   },
+   {
+    "variant": "floors-active",
+    "shift_bp": -50.0,
+    "seed": 204,
+    "measure": "nii",
+    "with_floor": 6385.428508578162,
+    "no_floor": 6359.388652231594
+   },
+   {
+    "variant": "long-uf",
+    "shift_bp": -100.0,
+    "seed": 205,
+    "measure": "nii",
+    "with_floor": 10517.55119095236,
+    "no_floor": 10364.700338340397
+   },
+   {
+    "variant": "short-uf",
+    "shift_bp": -100.0,
+    "seed": 205,
+    "measure": "nii",
+    "with_floor": 10803.7593563579,
+    "no_floor": 10221.596255637649
+   },
+   {
+    "variant": "cpi-surprise",
+    "shift_bp": -100.0,
+    "seed": 205,
+    "measure": "nii",
+    "with_floor": 10517.55119095236,
+    "no_floor": 10364.700338340397
+   }
+  ]
+ },
+ "seconds": 21.43572970002424
+}

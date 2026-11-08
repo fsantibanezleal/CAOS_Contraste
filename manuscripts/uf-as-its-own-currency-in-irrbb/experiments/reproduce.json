@@ -1,0 +1,530 @@
+{
+ "valuation_date": "2026-09-03",
+ "uf_value": 40877.73,
+ "seed": 42,
+ "variants": {
+  "long-uf": {
+   "tier1": 824213.8333614137,
+   "pn_ur": 247264.15000842378,
+   "net_uf_share_tier1": 0.2999999999999996,
+   "margin_12m": 261022.22207302132,
+   "annex1": {
+    "delta_eve": 93816.37238685713,
+    "delta_nii": 11213.27302256319,
+    "max_pair": 5031.669272352595,
+    "charge": 6181.603750210595
+   },
+   "single": {
+    "delta_eve": 84709.57359564469,
+    "delta_nii": 1648.3888232133195
+   },
+   "positive_parts": {
+    "delta_eve": 94721.38128318645,
+    "delta_nii": 8414.949721491872
+   },
+   "gap": {
+    "delta_nii_gap": 1648.388823213317,
+    "delta_eve_duration": 98166.00969855019,
+    "duration_gap_years": 0.5033431928215077
+   },
+   "committed": {
+    "delta_eve": 93816.37238685713,
+    "delta_nii": 11213.27302256319,
+    "charge": 6181.603750210595,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": null
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 6.802565550465437,
+   "eve_shortfall_single_percent": 9.707046392350405,
+   "charge_share_of_nii": 0.5512755943578702,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.013604810509952003,
+     "eve": 0.1138252824564267
+    },
+    "single": {
+     "nii": 0.0019999528720485685,
+     "eve": 0.10277620948215747
+    },
+    "positive_parts": {
+     "nii": 0.010209668147855459,
+     "eve": 0.11492330927871189
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2291801.184786974,
+     "peso_curve": 1912787.0203875224,
+     "understatement_percent": 16.537829150074444
+    },
+    "liability": {
+     "real_curve": 2226683.7644402203,
+     "peso_curve": 1981490.4246927816,
+     "understatement_percent": 11.011592380702496
+    }
+   }
+  },
+  "short-uf": {
+   "tier1": 824213.8333614137,
+   "pn_ur": -247264.15000842436,
+   "net_uf_share_tier1": -0.3000000000000003,
+   "margin_12m": 274664.4903510753,
+   "annex1": {
+    "delta_eve": 79643.36376123683,
+    "delta_nii": 11066.856900412833,
+    "max_pair": 4885.253150202225,
+    "charge": 6181.603750210609
+   },
+   "single": {
+    "delta_eve": 64213.10585387802,
+    "delta_nii": 1355.5565789125794
+   },
+   "positive_parts": {
+    "delta_eve": 79643.36376123683,
+    "delta_nii": 8414.949721491872
+   },
+   "gap": {
+    "delta_nii_gap": 1355.5565789125772,
+    "delta_eve_duration": 73543.75681796098,
+    "duration_gap_years": 0.37709334913903225
+   },
+   "committed": {
+    "delta_eve": 79643.36376123683,
+    "delta_nii": 11066.856900412833,
+    "charge": 6181.603750210609,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": null
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 8.164068599254344,
+   "eve_shortfall_single_percent": 19.37419161955194,
+   "charge_share_of_nii": 0.5585690504392457,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.013427167140933038,
+     "eve": 0.09662949168958393
+    },
+    "single": {
+     "nii": 0.0016446661340106077,
+     "eve": 0.07790830880864492
+    },
+    "positive_parts": {
+     "nii": 0.010209668147855459,
+     "eve": 0.09662949168958393
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2291801.184786974,
+     "peso_curve": 1912787.0203875224,
+     "understatement_percent": 16.537829150074444
+    },
+    "liability": {
+     "real_curve": 2651253.775089707,
+     "peso_curve": 2331475.184344464,
+     "understatement_percent": 12.061410105278336
+    }
+   }
+  },
+  "cpi-surprise": {
+   "tier1": 824213.8333614137,
+   "pn_ur": 247264.15000842378,
+   "net_uf_share_tier1": 0.2999999999999996,
+   "margin_12m": 261022.22207302132,
+   "annex1": {
+    "delta_eve": 93816.37238685713,
+    "delta_nii": 11213.27302256319,
+    "max_pair": 5031.669272352595,
+    "charge": 6181.603750210595
+   },
+   "single": {
+    "delta_eve": 84709.57359564469,
+    "delta_nii": 1648.3888232133195
+   },
+   "positive_parts": {
+    "delta_eve": 94721.38128318645,
+    "delta_nii": 8414.949721491872
+   },
+   "gap": {
+    "delta_nii_gap": 1648.388823213317,
+    "delta_eve_duration": 98166.00969855019,
+    "duration_gap_years": 0.5033431928215077
+   },
+   "committed": {
+    "delta_eve": 93816.37238685713,
+    "delta_nii": 11213.27302256319,
+    "charge": 6181.603750210595,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": -6181.603750210594
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 6.802565550465437,
+   "eve_shortfall_single_percent": 9.707046392350405,
+   "charge_share_of_nii": 0.5512755943578702,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.013604810509952003,
+     "eve": 0.1138252824564267
+    },
+    "single": {
+     "nii": 0.0019999528720485685,
+     "eve": 0.10277620948215747
+    },
+    "positive_parts": {
+     "nii": 0.010209668147855459,
+     "eve": 0.11492330927871189
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2291801.184786974,
+     "peso_curve": 1912787.0203875224,
+     "understatement_percent": 16.537829150074444
+    },
+    "liability": {
+     "real_curve": 2226683.7644402203,
+     "peso_curve": 1981490.4246927816,
+     "understatement_percent": 11.011592380702496
+    }
+   }
+  },
+  "clp-steepener": {
+   "tier1": 824213.8333614137,
+   "pn_ur": 41210.69166807024,
+   "net_uf_share_tier1": 0.04999999999999946,
+   "margin_12m": 278047.5876649314,
+   "annex1": {
+    "delta_eve": 140645.21115396687,
+    "delta_nii": 6783.054486964339,
+    "max_pair": 5752.787195262583,
+    "charge": 1030.267291701756
+   },
+   "single": {
+    "delta_eve": 129431.55958721894,
+    "delta_nii": 3090.6246690332955
+   },
+   "positive_parts": {
+    "delta_eve": 140645.21115396687,
+    "delta_nii": 8414.949721491872
+   },
+   "gap": {
+    "delta_nii_gap": 3090.624669033293,
+    "delta_eve_duration": 162183.45315273968,
+    "duration_gap_years": 0.8717764486646469
+   },
+   "committed": {
+    "delta_eve": 140645.21115396687,
+    "delta_nii": 6783.054486964339,
+    "charge": 1030.267291701756,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": null
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 2.1947195836904987,
+   "eve_shortfall_single_percent": 7.973006314784614,
+   "charge_share_of_nii": 0.15188839978828442,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": true,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": true,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": true,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.008229726573868366,
+     "eve": 0.17064165324715516
+    },
+    "single": {
+     "nii": 0.0037497849998813014,
+     "eve": 0.1570363834581066
+    },
+    "positive_parts": {
+     "nii": 0.010209668147855459,
+     "eve": 0.17064165324715516
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2291801.184786974,
+     "peso_curve": 1912787.0203875224,
+     "understatement_percent": 16.537829150074444
+    },
+    "liability": {
+     "real_curve": 2403587.935544173,
+     "peso_curve": 2127317.407880983,
+     "understatement_percent": 11.494088632153254
+    }
+   }
+  },
+  "offset-on-off": {
+   "tier1": 824213.8333614137,
+   "pn_ur": 247264.15000842378,
+   "net_uf_share_tier1": 0.2999999999999996,
+   "margin_12m": 258182.2162915972,
+   "annex1": {
+    "delta_eve": 81172.61520126976,
+    "delta_nii": 11015.937608827873,
+    "max_pair": 4834.3338586172795,
+    "charge": 6181.603750210595
+   },
+   "single": {
+    "delta_eve": 59422.05922446995,
+    "delta_nii": 1253.7179957426888
+   },
+   "positive_parts": {
+    "delta_eve": 94721.38128318645,
+    "delta_nii": 8414.949721491872
+   },
+   "gap": {
+    "delta_nii_gap": 1253.7179957426865,
+    "delta_eve_duration": 66892.66727673497,
+    "duration_gap_years": 0.3429900922611897
+   },
+   "committed": {
+    "delta_eve": 81172.61520126976,
+    "delta_nii": 11015.937608827873,
+    "charge": 6181.603750210595,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": null
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 8.786615208711392,
+   "eve_shortfall_single_percent": 26.795435779503585,
+   "charge_share_of_nii": 0.5611509405478863,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.013365387916265946,
+     "eve": 0.09848489786955077
+    },
+    "single": {
+     "nii": 0.001521107684676459,
+     "eve": 0.07209544030840559
+    },
+    "positive_parts": {
+     "nii": 0.010209668147855459,
+     "eve": 0.11492330927871189
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2291801.184786974,
+     "peso_curve": 1912787.0203875224,
+     "understatement_percent": 16.537829150074444
+    },
+    "liability": {
+     "real_curve": 2226683.7644402203,
+     "peso_curve": 1981490.4246927816,
+     "understatement_percent": 11.011592380702496
+    }
+   }
+  },
+  "floors-active": {
+   "tier1": 824213.8333614137,
+   "pn_ur": 41210.69166807024,
+   "net_uf_share_tier1": 0.04999999999999946,
+   "margin_12m": 261583.27815033303,
+   "annex1": {
+    "delta_eve": 60764.39574276157,
+    "delta_nii": 6605.619769316762,
+    "max_pair": 5575.352477615006,
+    "charge": 1030.267291701756
+   },
+   "single": {
+    "delta_eve": 49836.58909164881,
+    "delta_nii": 4653.466922794491
+   },
+   "positive_parts": {
+    "delta_eve": 60764.39574276157,
+    "delta_nii": 6497.238032435521
+   },
+   "gap": {
+    "delta_nii_gap": 4653.466922794498,
+    "delta_eve_duration": 57279.13039350508,
+    "duration_gap_years": 0.29052379741216594
+   },
+   "committed": {
+    "delta_eve": 60764.39574276157,
+    "delta_nii": 6605.619769316762,
+    "charge": 1030.267291701756,
+    "closest_floor_bp": 20.47634906433924,
+    "floor_effects": 0,
+    "cpi_effect": null
+   },
+   "relative_deviation": {
+    "delta_eve": 0.0,
+    "delta_nii": 0.0,
+    "charge": 0.0,
+    "margin": 0.0
+   },
+   "max_leg_delta_deviation": 0.0,
+   "ratio_nii_annex_over_single": 1.4195050440693726,
+   "eve_shortfall_single_percent": 17.983897506978018,
+   "charge_share_of_nii": 0.15596830088334307,
+   "classification": {
+    "annex1": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "single": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    },
+    "positive_parts": {
+     "nii-tier1": false,
+     "eve-tier1": false,
+     "nii-margin": false
+    }
+   },
+   "ratios_tier1": {
+    "annex1": {
+     "nii": 0.008014449044584563,
+     "eve": 0.07372406684190737
+    },
+    "single": {
+     "nii": 0.005645946154308198,
+     "eve": 0.060465606223082786
+    },
+    "positive_parts": {
+     "nii": 0.007882951934860955,
+     "eve": 0.07372406684190737
+    }
+   },
+   "ur_leg_gross_pv": {
+    "asset": {
+     "real_curve": 2329244.172053591,
+     "peso_curve": 1983791.9885881015,
+     "understatement_percent": 14.831085019348556
+    },
+    "liability": {
+     "real_curve": 2395174.5425458224,
+     "peso_curve": 2114003.4229058935,
+     "understatement_percent": 11.739065969742358
+    }
+   }
+  }
+ },
+ "max_relative_deviation": 0.0,
+ "sandwich": {
+  "checked": 384,
+  "violations": 0,
+  "max_violation": 0.0
+ },
+ "seconds": 0.32663279998814687
+}

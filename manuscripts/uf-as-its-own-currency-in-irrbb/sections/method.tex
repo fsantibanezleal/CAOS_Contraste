@@ -1,0 +1,90 @@
+\subsection{The treatment of the UF leg as five switches}
+\label{sec:method-switches}
+
+The Annex 1 treatment and the single-currency treatment differ in five inputs, and each input can be changed alone. A treatment is a vector $\tau=(\tau_{\mathrm{c}},\tau_{\mathrm{s}},\tau_{\mathrm{f}},\tau_{\mathrm{p}},\tau_{\chi})\in\{0,1\}^5$ whose components are the switches own curve, own shock sizes, own floor, pair rule and indexation charge. The peso leg is always measured on the peso curve, with the peso sizes and the floor of zero. The inputs of the UR leg follow the first three switches,
+\begin{equation}
+\begin{gathered}
+r_{0,\UR}^{\tau}=\tau_{\mathrm{c}}\,r_{0,\UR}+(1-\tau_{\mathrm{c}})\,r_{0,\CLP},\\
+f_{\UR}^{\tau}=-0.02\,\tau_{\mathrm{f}},\\
+(P,S,L)_{\UR}^{\tau}=\tau_{\mathrm{s}}\,(P,S,L)_{\UR}+(1-\tau_{\mathrm{s}})\,(P,S,L)_{\CLP},
+\end{gathered}
+\label{eq:treated-inputs}
+\end{equation}
+so that with $\tau_{\mathrm{c}}=\tau_{\mathrm{s}}=\tau_{\mathrm{f}}=1$ the UR leg is the UR of the text, and with all three off it is a peso flow. The legs' deltas $a_i^{\tau}=\dEVE_{i,\CLP}$ and $b_i^{\tau}=\dEVE_{i,\UR}^{\tau}$ for the six scenarios, and the two analogues for the income measure, come from Equations~\eqref{eq:deve} and~\eqref{eq:dnii} with those inputs. The fourth switch selects the aggregation across the legs and the fifth the charge,
+\begin{equation}
+A^{\tau}(a,b)=\tau_{\mathrm{p}}\,P_{1/2}(a,b)+(1-\tau_{\mathrm{p}})\,\pp{(a+b)},
+\label{eq:aggregator}
+\end{equation}
+\begin{equation}
+M_{\mathrm{EVE}}(\tau)=\max_{i=1,\dots,6}A^{\tau}\bigl(a_i^{\tau},b_i^{\tau}\bigr),\qquad
+M_{\mathrm{NII}}(\tau)=\max_{i=1,2}A^{\tau}\bigl(a_i^{\tau},b_i^{\tau}\bigr)+\tau_{\chi}\,\kappa\,|\PNUR|.
+\label{eq:measure-tau}
+\end{equation}
+At $\tau=(1,1,1,1,1)$ Equation~\eqref{eq:measure-tau} is the pair of Equations~\eqref{eq:measure-eve} and~\eqref{eq:measure-nii}. At $\tau=0$ the aggregator is the plain sum of the two legs, and because the value of a set of flows at fixed rates is linear in the flows, the sum of the two legs' deltas under the same curve, sizes and floor is the delta of the summed flows: $M(0)$ is the single-currency treatment of the book, the counterfactual that converts the UF flows at the UF value, discounts them on the peso curve and shocks them with the peso table. The 32 values $M(\tau)$ are all computed.
+
+\subsection{The own curve: why an indexed flow is discounted on a real curve}
+\label{sec:method-curve}
+
+The first switch has a reason that the other four lack, which is the consistency of the discount curve with the unit of account. A flow of $F$ UF at $t$ years is a promise of $F$ units whose peso value at time $t$ is $F$ times the UF value at $t$. Under the foreign-currency analogy that underlies the pricing of indexed bonds \citep{Jarrow2003}, the unit plays the part of a foreign currency, its discount factor is that of the real curve, and its peso value today is
+\begin{equation}
+V_{\UR}(t)=U\,F\,e^{-r_{0,\UR}(t)\,t},\qquad V_{\UR}^{\mathrm{peso}}(t)=U\,F\,e^{-r_{0,\CLP}(t)\,t}=V_{\UR}(t)\,e^{-b(t)\,t},
+\label{eq:fisher}
+\end{equation}
+with $b(t)=r_{0,\CLP}(t)-r_{0,\UR}(t)$ the gap between the nominal and the real continuously compounded zero rate, which a Fisher relation reads as the compensation for inflation over the horizon, risk and liquidity premia included \citep{Gurkaynak2010,Ang2008}. Discounting the UF flow on the peso curve understates its value by the factor $1-e^{-b(t)t}$, which grows with the horizon. The same factor enters the first-order exposure. For a parallel shift of $\delta$ in the rate of the leg, the first-order change of the value of the leg is $-\delta\sum_k t_k\mathrm{CF}_k e^{-r_k t_k}$, so that moving the UR leg to the peso curve and to the peso size multiplies the contribution of bucket $k$ by
+\begin{equation}
+w_k=\frac{P_{\CLP}}{P_{\UR}}\,e^{-b(t_k)\,t_k}.
+\label{eq:weight}
+\end{equation}
+The two switches act in opposite directions: the peso size is larger than the UR size, so $P_{\CLP}/P_{\UR}>1$ and the single-currency treatment shocks each flow harder, while the nominal curve discounts the distant flows more, so that the weight falls with the horizon. On the curves of the valuation date the first factor is \sizeRatio{} and the product is \weightFive{} at 5.5 years, \weightTen{} at 9.5 years and \weightLast{} at 25 years; it crosses one between the buckets with midpoints \tStarLo{} and \tStarHi{} years. The measures of the experiments are not first-order, and the weights are used only to explain the sign of the two switches in Section~\ref{sec:ablation}.
+
+\subsection{The aggregation, the floor and the charge}
+\label{sec:method-others}
+
+The fourth switch replaces the pair rule of Equation~\eqref{eq:pair} by the sum of the two legs. The sum lets the whole of the gain of one leg offset the loss of the other, as a calculation on a single currency does; the positive-part aggregation of the Basel standard lets none of it do so; the pair rule of the supervisor's text lets half of it do so. The three are the cases $\lambda=1$, $\lambda=0$ and $\lambda=1/2$ of Equation~\eqref{eq:pair}, and Section~\ref{sec:theory-pair} orders them. The fifth switch adds $\kappa|\PNUR|$ to the income measure only, because the text defines the charge for the measure $\dNII$ alone. The third switch changes only the floor of the UR leg, from zero to minus two percent; it matters when the floor binds, and Section~\ref{sec:theory-floor} derives when the effect of a binding floor on a measure is positive. Because the floor of the peso leg is zero and the peso rates of the valuation date are above four percent, the peso floor does not bind under any shock of the supervisor's table, so the third switch is a statement about the UR leg alone, and the effect of turning it on is measured only where the low real rates of the UF curve make the floor of zero bind. The charge, in contrast, binds in every scenario, since it does not depend on one.
+
+\subsection{The exact decomposition of the difference}
+\label{sec:method-shapley}
+
+The attribution of $M(\mathbf 1)-M(\mathbf 0)$ to the switches is made by the Shapley value, with the switches as players and $M$ as the value of the coalition of the switches that are on. For a measure $M$ and a switch $j$,
+\begin{equation}
+\varphi_j^{M}=\sum_{S\subseteq J\setminus\{j\}}\frac{|S|!\,(|J|-|S|-1)!}{|J|!}\Bigl[M\bigl(\mathbf 1_{S\cup\{j\}}\bigr)-M\bigl(\mathbf 1_{S}\bigr)\Bigr],\qquad J=\{\mathrm{c},\mathrm{s},\mathrm{f},\mathrm{p},\chi\},
+\label{eq:shapley}
+\end{equation}
+where $\mathbf 1_S$ is the treatment with the switches of $S$ on. The five values add up to $M(\mathbf 1)-M(\mathbf 0)$ because the weights of Equation~\eqref{eq:shapley} are those of the average over the $5!=120$ orders of the switches. Two simpler quantities are reported beside it: the change of the measure when a switch is turned off in Annex 1, $M(\mathbf 1)-M(\mathbf 1_{J\setminus\{j\}})$, and the change when it alone is turned on in the single-currency treatment, $M(\mathbf 1_{\{j\}})-M(\mathbf 0)$. The three agree when a switch does not interact with the others, and their difference measures the interaction. With five players the value is computed exactly from the 32 coalitions, so that no sampling error enters the decomposition and the only uncertainty in a Shapley value is the variation of the book over which it is averaged. The value is symmetric in the switches, so that the order in which the text of the supervisor lists the components, or in which this paper discusses them, has no influence on the attribution, which is the property that the order-dependent decompositions of a difference lack \citep{Oaxaca1973}.
+
+\begin{algorithm}[htbp]
+\caption{The measure of a book under a treatment $\tau$, and the exact Shapley decomposition of the difference between Annex 1 and the single currency.}
+\label{alg:shapley}
+\begin{algorithmic}[1]
+\Require the two legs' flows $\mathrm{CF}_c$ in pesos, the two zero curves, the UF value $U$, the shock table of the text, the net position $\PNUR$
+\Function{Measure}{$\tau$}
+  \State set the inputs of the UR leg by Equation~\eqref{eq:treated-inputs}; the peso leg keeps its own
+  \For{each scenario $i$ of the measure}
+    \State shock both legs by Equation~\eqref{eq:shocks}, floor them by Equation~\eqref{eq:floor}, compute $a_i,b_i$ by Equation~\eqref{eq:deve} or~\eqref{eq:dnii}
+  \EndFor
+  \State \Return $\max_i A^{\tau}(a_i,b_i)$, plus $\tau_\chi\kappa|\PNUR|$ for the income measure
+\EndFunction
+\For{each $S\subseteq J$} \State $m_S\gets$ \Call{Measure}{$\mathbf 1_S$} \EndFor
+\For{each switch $j\in J$} \State $\varphi_j\gets\sum_{S\not\ni j}\frac{|S|!(4-|S|)!}{5!}\,(m_{S\cup\{j\}}-m_S)$ \EndFor
+\State \Return $m_J-m_\emptyset$ and $(\varphi_j)_{j\in J}$, which add up to it
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{A worked example on the committed long UF book}
+\label{sec:method-example}
+
+The committed long UF variant has a net UF position of \repNuLng{} percent of level 1 capital, that is \repPnUrLng{} million pesos. Under the scenarios of the income measure the peso leg loses and the UF leg gains in the falling-rate scenario, and the reverse in the rising one, so that the pair rule offsets half of the gain of one leg against the loss of the other at each of the two scenarios. The largest of the two pair values is \repMaxPairLng{} million pesos, the charge is $0.025\times\repPnUrLng{}=\repChargeLng{}$ million pesos, and the Annex 1 income measure is their sum, \repAnnexNiiLng{}. With the five switches off the same flows give \repSingleNiiLng{} million pesos: the two legs are summed before the maximum is taken, they offset each other in full, and there is no charge. The difference of \mbox{\repAnnexNiiLng{} minus \repSingleNiiLng{}} is attributed by Equation~\eqref{eq:shapley} to the charge ($\repChargeLng{}$ exactly), to the pair rule, to the own curve and to the own floor, with the own sizes receiving zero.
+
+For the value measure at the same seed, the Annex 1 measure is \repAnnexEveLng{} million pesos and the single-currency one \repSingleEveLng{}. The Shapley values are $\caseShapCurveEveLng$ for the own curve, $\caseShapSizesEveLng$ for the own sizes and $\caseShapPairEveLng$ for the pair rule, with zero for the floor and the charge. Read with Equation~\eqref{eq:weight}, the real curve raises the weight of the flows nearer than the crossing of the weight at one, the peso sizes lower it by the factor of the sizes, and what remains after the two nearly cancel is the gap that a reader sees in the sum. The example is the contract of the method: a reader who has the committed document can recompute each number from the legs' flows and the curves it carries.
+
+\subsection{The comparators, complexity and implementation}
+\label{sec:method-implementation}
+
+Three comparators are run by the product on the same flows, beside the single-currency treatment. The first is the positive-part aggregation of the Basel standard, $\lambda=0$ in Equation~\eqref{eq:pair} with the Annex 1 curves, sizes and floors and no charge, computed by the engine's \texttt{eve\_risk\_measure} for the value measure. The second and third are the textbook gap measures of the whole book as one currency: the earnings change of the repricing gap, with $G_k$ the repricing flows of the assets less those of the liabilities in bucket $k$,
+\begin{equation}
+\dNII^{\mathrm{gap}}(\delta)=-\sum_{k:\,t_k<1}G_k\,\delta\,(1-t_k),
+\label{eq:gap}
+\end{equation}
+for $\delta=\pm B$ basis points, and the first-order change of equity of the duration gap, $\Delta E\approx-D_{\mathrm{GAP}}\,A\,\delta$ with $D_{\mathrm{GAP}}=D_A-(L/A)D_L$, scaled to a parallel shift of 300 basis points; the engine's \texttt{repricing\_gap}, \texttt{delta\_nii\_gap} and \texttt{duration\_gap} compute them. The earnings gap is the income measure of the single-currency treatment when no floor binds, since Equation~\eqref{eq:dnii} with a flat shift is Equation~\eqref{eq:gap}; the table of results shows the identity, and the duration gap is a different, first-order approximation of the value measure.
+
+Evaluating Algorithm~\ref{alg:shapley} costs 32 evaluations of \textsc{Measure}, each of which shocks two legs under eight scenarios on 19 buckets and a few dozen items, and 80 terms of Equation~\eqref{eq:shapley}; the cost is negligible next to the generation of a book, and a full run of 30 books of each of six variants takes seconds (Section~\ref{sec:reproducibility}). The implementation is a module of the manuscript's experiments, \texttt{uf\_core}, that calls the engine \texttt{riskvalidation} 1.1.0 for every number (the functions \texttt{shock\_size}, \texttt{shock\_curve}, \texttt{apply\_floor}, \texttt{delta\_eve}, \texttt{delta\_nii}, \texttt{cmf\_pair}, \texttt{annex1\_delta\_eve}, \texttt{annex1\_delta\_nii}, \texttt{indexation\_charge}, \texttt{eve\_risk\_measure}, \texttt{prioritised\_bank}) and for the books and the curves the code of the case that generated the committed documents. A contract test of the module compares its Annex 1 measures, its charge and its twelve-month margin with the committed documents (Section~\ref{sec:results-reproduction}).
