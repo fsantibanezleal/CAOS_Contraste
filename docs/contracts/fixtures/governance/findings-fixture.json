@@ -20,147 +20,147 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "63762148d49dc6e14918df742a1023d9dadfde20f1869db5a183170d7c7221c1",
+    "sha256": "29ce63a839578b00ea6b4428aae3fdd900af20507a3866df3b70431af3ea92b1",
     "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "d7c51ece804ce48857cabd50152c2218e1a91ac51dd1efeb818dee57b63fe7f1",
+    "sha256": "8788f4e1dd1973a048256d23e9939d1f40b2a56f63d51e10b82b12c0c08c805b",
     "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "99ecbc9eb6c44b95a91c9538c5e7dd898fb5b16eb8020755a2ba29d03fa6e65d",
+    "sha256": "eac642124d2570f99c09b919285918a26665dd3ca3f8635496dd552f1bf9c19f",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "1e63726939417b12033837ca208e3683636a4c4e969248a7b8e35e6bc86acc50",
+    "sha256": "4081da9d25e53f5350d4e8039cb4fe5cf359beecbcefadf927ef4012821b1c5b",
     "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "aca66adaa70dd735e3dba9d2293319b6a62813e14d61a307deeb92327d2d4a15",
+    "sha256": "81895507235ae51f458efe72777a280f40efa597e9c0baf43a309a388ee5d954",
     "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "e25a3596e1ca1050874363e6d55ef68a6884228d190d356034456815ee91db3b",
+    "sha256": "ccd9b1469409d79e62a2ac299190180cece3d3e634f93018af73a0fc9d39aace",
     "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "475aa91d80397bf7bc243d8e924507a6cfc15ea6acc24d61c872f6752a643cee",
+    "sha256": "ed409cf71c76126873b7c6938ce517b007a25dfcd14320a3201cf84b4bb586df",
     "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "5564c3ff959c5c9030b0df8b95a5335d422cb3e9a5cc33f4c2a55ae35d4d8b51",
+    "sha256": "451c119e11746cd0882bc7078a761184d4ce6d5a7fbff9b8d57f4a2c6672356b",
     "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "f2bf8cb6904e1a5bb51d17d64106890fc569e9eded4e6b8dc9d314c088d16ae6",
+    "sha256": "d45f0e7920c5ad7160cec1ec843dfe5e85eb31b252764afdb7d062fcaf4b9004",
     "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "c3897a659164ff5d91c85784aad6937d8337580f9f10ac8bc34a5a77e9f5fe74",
+    "sha256": "bd0d4d678b461c774dd9a0839651822ece391bc7414809e982616542c3149f0a",
     "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "8f3c3ee5def90d067bd3ffb76278f19c38f0ee3d8139a24428166a159423fb4e",
+    "sha256": "400ea779ffba2d7c8355a0fbca7315379defb680ab1e2e40990772fca98221a1",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "fa4466c5abfd0101866ee661e750f55b4c9566e9ee6efa158b5c997b6aa88edc",
+    "sha256": "c326bc8a9560a5e7009fc1d49427b69fb54d16b71b36577a6bf005ac7d88153a",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "e611baa926c51e2bb1757898f0bb32a27aa2ef28425b4afe4fabc4ffa760e83d",
+    "sha256": "76b77e27b339ec8ec8c8454675a0eb71e06bd380b876fae8233fdf3f2c811272",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "dfe272b20797ea662089cc06ae7cb4b0cc42ae4e5fb6dbf79398fbe81f40a2e8",
+    "sha256": "a4625043cdf3707d29083631b4fcfb9aa082be924af66fa46dbcd03d0086a38c",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "ef6427efdbfeca37212d006e19213bce73855124961a11c15ea465a6ef2ef462",
+    "sha256": "a63630a984ae4a71a4201f522a94578b95886b7fda48d22d52c149ed9edce1c2",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "913ffc14391768cf6af21c09ac870e168a66b447eac9f35d11328daeaf8c998c",
+    "sha256": "d2b5c91858be93bd48d3fb77744ad62b70a5939d8e12ce33422541da6bcb71cc",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "519d4e41ffc743e376ec835f8a8f422767a2730c0d63207b0425c56aeba79c09",
+    "sha256": "dea195175d2ce73c3aeb5598e8a3ea3dd31cda89ca0abf59b0d8860b053d018d",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "ab1114038649eaa005c5ab5ae574d1542d73c8fe0034b5bf35e8cfcfa09b00b6",
+    "sha256": "fc11c1c44aa6fc8f09031f40d01a539749787a88df6bf3f8b02490bafcdb35dd",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "87201d6738417ebecfd8995daf1c6aef23236d170b69e7817fa1ee3b38da36da",
+    "sha256": "c8be2c077739dc0a57cdec50c10e2b672602f39591df6df19eb26fa82933bba4",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "f8143ea4bbea18b0612c6f916a365cab5f792384456be2073bf278618d329fff",
+    "sha256": "88d9e910790ffa6690bba7cad43530e93c0c5a00b33ee0b297a717aed460b818",
     "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "d97e6a99bb6c2ac448256a0c86b413fad0358e110aa5babfd00926bd61e0d29b",
+    "sha256": "0cf5ccad14c0f492deaadd0294a3aa7db0ef614517281326db89c450bbbb7c35",
     "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "fcb7937b3de6b85ff83637494ef66073bc5b60b8726e5daf68234498b6f273b7",
+    "sha256": "8a75c1d1e3843066c5be92a75032f2ace9d78f8f295501e15d70eb2a28b9e2e4",
     "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "fa6da36e9e985181cb12c6a6c481eb60a5b686a2acee0549933a84d6117bddd7",
+    "sha256": "1d7c3f0e690b00063e6131c75e4f426270657876a75134843a8e3bc434e8c10a",
     "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "e4b24e12c946433d77ff09e9e92b2ab0fa789488bb90ad16e2eb12470a4e65b5",
+    "sha256": "62a33a8588cd12fed93dfc9a3ff795b362552533f8a3d1a07361d1814b21a4f1",
     "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "400b273dfbc7241fba04facaea180d920e8cfb56aec64c26ecf2f94a47e8fa33",
+    "sha256": "def90270984ec92b622129fea98b79e43937a397fb98df876182d024607ed4b2",
     "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "7a1da38de2b5c3362eb36d857c74c96832058fc94ae00108fbcc53edf1e8c0bd",
+    "sha256": "8308c01b2c20c247159411a270621bcaf035d8a1417cca6fc119ffc26c4b92b0",
     "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "8f36f666ad722bc7da9c547431585455b4386945e67d7dbacb3448f34759c3a0",
+    "sha256": "4ee81803eae6e468cb0956ee2617d7da78e315db5ced17db2102190b87afb703",
     "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "a250cc3d62810245050baea50f83f47a13dd1f617c0d0e3eb35c83d01b99e408",
+    "sha256": "6eaf8ed43a5962fc632c5993b86e8aab5e12b792afd16dfc5c9ce229ff985062",
     "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "e24434b04aeaed9643893af5633a748c234502ce7f437259b441ab7d73b6cbf9",
+    "sha256": "eee74c13be17f6731eae6cceee0aa62103fe841a73f9ffbe00bc67e425ec5687",
     "ref": null
    }
   ]
@@ -3990,8 +3990,8 @@
    "id": "F-TRANSITION-SIZE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.73 %, Markov order (grouped by direction) 6.05 %, Matrix against a reference 3.70 %, Downward momentum (hazard) 4.45 %); the order test, near its bound in 4,000 repetitions, rejects 5.05 % at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
-    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5 %: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05 % al 5 % en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 pass the size screen at both levels (at 5%: Time homogeneity (chi-square) 4.73 %, Markov order (grouped by direction) 6.05 %, Matrix against a reference 3.70 %, Downward momentum (hazard) 4.45 %); the order test passes it near its bound: in 4,000 repetitions it rejects 6.05 % at 5%, an interval of 5.35 % to 6.83 % that lies wholly above the level, and over 20,000 repetitions it rejects 5.05 % at 5%, an interval of 4.76 % to 5.36 % that includes the level; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 pasan el filtro de tamaño en ambos niveles (al 5 %: Homogeneidad temporal (chi-cuadrado) 4,73 %, Orden de Markov (agrupado por dirección) 6,05 %, Matriz contra una referencia 3,70 %, Impulso a la baja (riesgo) 4,45 %); la prueba de orden lo pasa cerca de su cota: en 4.000 repeticiones rechaza 6,05 % al 5 %, un intervalo de 5,35 % a 6,83 % que queda por completo sobre el nivel, y en 20.000 repeticiones rechaza 5,05 % al 5 %, un intervalo de 4,76 % a 5,36 % que incluye el nivel; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
    },
    "severity": "S4",
    "ecb_f": "F1",
@@ -4035,8 +4035,8 @@
    "id": "F-OTHER-SIZE",
    "entry_key": "C22/generators",
    "title": {
-    "en": "19 of 21 tests of the other seven families hold their size at 5% and 1% in 4,000 repetitions (all 25 studies counted); above their bound and not documented by the engine: Christoffersen independence, Christoffersen conditional coverage",
-    "es": "19 de 21 pruebas de las otras siete familias mantienen su tamaño al 5 % y 1 % en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
+    "en": "19 of 21 tests of the other seven families pass the size screen at 5% and 1% in 4,000 repetitions (all 25 studies counted); above their bound and not documented by the engine: Christoffersen independence, Christoffersen conditional coverage",
+    "es": "19 de 21 pruebas de las otras siete familias pasan el filtro de tamaño al 5 % y 1 % en 4.000 repeticiones (se cuentan los 25 estudios); sobre su cota y sin documentar por el motor: Independencia de Christoffersen, Cobertura condicional de Christoffersen"
    },
    "severity": "S2",
    "ecb_f": "F3",

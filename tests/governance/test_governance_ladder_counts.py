@@ -80,7 +80,6 @@ def test_the_bake_refuses_a_window_document_whose_gate_finding_counts_another_la
         bake.build(tree)
 
 
-@pytest.mark.xfail(strict=True, reason="the committed register still counts the 17-model ladder; it is re-baked at the release after the manifests index (brief show-f-story-fixes-2026-11-07)")
 def test_the_committed_register_quotes_the_ladder_size_of_each_window_document():
     findings = gs.read("data/derived/governance/findings.json")
     rows = {r["key"]: r for r in findings["rows"] if r["id"] == "c11-gates"}
