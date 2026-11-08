@@ -16,11 +16,11 @@ The vector $x\in\mathbb{R}^{n}$ of all entries is the book, and $n=\esixEntries{
 \small
 \caption{Notation of the problem, the method and the theory: each symbol with its meaning and its unit, where the unit is a currency unit (USD for the C06 loan book, CLP for the synthetic bank) or a pure number.}
 \label{tab:notation}
-\begin{tabular}{lll}
+\begin{adjustbox}{max width=\textwidth}\begin{tabular}{lll}
 \toprule
 Symbol & Meaning & Unit \\
 \midrule
-$x$, $n$ & the book (all entries of the tables) and its number of entries & currency, count \\
+$x$, $n$, $m$ & the book (all entries of the tables), its number of entries and the number of identity equations & currency, count \\
 $O^{A}_s, m^{A}_{s,\ell}, C^{A}_s$ & opening, movement on line $\ell$ and closing of the allowance of stage $s$ & currency \\
 $O^{G}_s, m^{G}_{s,\ell}, C^{G}_s$ & the same for the gross carrying amount & currency \\
 $w_0, w_\ell, w_C$ & opening, movement lines and closing of the waterfall & currency \\
@@ -38,8 +38,14 @@ $\mu$, $\sigma$ & mean and standard deviation of the forecast factor & pure \\
 $P^{*}$, $P_d$, $\varepsilon_d$ & expected PD, PD of scenario set $d$, relative error & pure \\
 $T_B, T_I, T_A$ & totals of B-1, IFRS 9 and Annex 9 on the same book & currency \\
 $b_j$ & steps of the bridge from $T_B$ to $T_I$ & currency \\
+$q$, $u$ & largest number of nonzero terms in an identity; rounding unit of a published table & count, currency \\
+$\theta$, $\zeta$ & overlay share of the allowance; standardised argument $(\Norm^{-1}(p)-\sqrt\rho z)/\sqrt{1-\rho}$ & pure \\
+$c$, $\varphi$, $\xi$ & $\sqrt{\rho/(1-\rho)}$; standard normal density; a standard normal draw & pure \\
+$h$, $\kappa$, $N$ & a change of the book; matched moment order; number of Gauss--Hermite nodes & currency, count \\
+$z_{0.975}$ & the 0.975 quantile of the standard normal, 1.96, in the Wilson interval & pure \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
 The engine of the product states twelve identities on a committed C06 book: the two roll-forwards of each of three stages (six), the closing of the waterfall, the equality of the waterfall closing to the sum of the stage closings, the equality of each waterfall movement line to the sum of the stage movements on that line (judged as the largest difference, so one identity), and the equality of each stage closing to its stage ECL plus the overlay money carried in it (three).

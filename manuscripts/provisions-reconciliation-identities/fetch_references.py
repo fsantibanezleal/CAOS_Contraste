@@ -50,7 +50,7 @@ WORKS = {
     "sr117": ("url", "https://www.federalreserve.gov/boarddocs/srletters/2011/sr1107.htm",
               "Supervisory guidance on model risk management, SR 11-7|Board of Governors of the Federal Reserve System|2011"),
     "cohenedwards2017": ("url", "https://www.bis.org/publ/qtrpdf/r_qt1703f.htm",
-                         "The new era of expected credit loss provisioning, BIS Quarterly Review, March 2017|Cohen, Benjamin H. and Edwards, Gerald A.|2017"),
+                         "The new era of expected credit loss provisioning|Cohen, Benjamin H. and Edwards, Jr., Gerald A.|2017|BIS Quarterly Review, March 2017"),
     "sba7a": ("url", "https://data.sba.gov/sites/default/files/uploaded_resources/7a_504_foia_data_dictionary.xlsx",
               "7(a) and 504 FOIA loan data, data dictionary of the quarterly release|U.S. Small Business Administration|2026"),
     # credit loss modelling under IFRS 9
@@ -136,7 +136,7 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
         print(f"{key:20s} {title.group(1)[:90] if title else ''}")
         if key == "bellini2019":
             raw = re.sub(r"(title\s*=)", "author = {Bellini, Tiziano},\n  publisher = {Academic Press},\n  \\1", raw, count=1)  # the book record carries no author
-        raw = re.sub(r"^\s*@(\w+)\{[^,]*,", lambda m: f"@{m.group(1)}{{{key},", raw.strip(), count=1)
+        raw = re.sub(r"^\s*@(\w+)\{[^,]*,", lambda m: f"@{'book' if key == 'bellini2019' else m.group(1)}{{{key},", raw.strip(), count=1)  # a book is not an article
         return raw + "\n"
     if kind == "arxiv":
         xml = get("http://export.arxiv.org/api/query?id_list=" + ident).decode("utf-8")
@@ -150,7 +150,7 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
         year = e.find("a:published", ns).text[:4]
         return (f"@misc{{{key},\n  author = {{{authors}}},\n  title = {{{title}}},\n  year = {{{year}}},\n  eprint = {{{ident}}},\n"
                 f"  archivePrefix = {{arXiv}},\n  url = {{https://arxiv.org/abs/{ident}}}\n}}\n")
-    title, author, year = words.split("|")
+    title, author, year, *venue = words.split("|")
     req = urllib.request.Request(ident, headers={"User-Agent": "Mozilla/5.0"})
     resp = urllib.request.urlopen(req, timeout=40)
     if resp.status != 200:
@@ -158,7 +158,9 @@ def entry(key: str, kind: str, ident: str, words: str) -> str:
     page = resp.read(200000).decode("utf-8", errors="replace")
     seen = re.search(r"<title[^>]*>(.*?)</title>", page, re.S | re.I)
     print(f"{key:20s} url 200; page title: {' '.join(seen.group(1).split())[:100] if seen else '(a document without a title element)'}")
-    return f"@misc{{{key},\n  author = {{{{{author}}}}},\n  title = {{{title}}},\n  year = {{{year}}},\n  url = {{{ident}}}\n}}\n"
+    names = f"{{{author}}}" if " and " in author else f"{{{{{author}}}}}"  # persons are listed one by one, a corporate author in double braces
+    where = f"  howpublished = {{{venue[0]}}},\n" if venue else ""
+    return f"@misc{{{key},\n  author = {names},\n  title = {{{title}}},\n{where}  year = {{{year}}},\n  url = {{{ident}}}\n}}\n"
 
 
 def main() -> int:

@@ -203,6 +203,8 @@ put("efourGapOther", f"{max(v['stage2_gap'] for k, v in cmt.items() if k != '201
 put("efourTenShare", pct(cmt["2010-12"]["stage2_ratio_committed"], 1))
 put("efourEclPositive", sum(1 for v in cmt.values() if v["ecl_index"] > 0))
 put("efourSeconds", f"{E4['meta']['seconds']:.0f}")
+put("etwoSeconds", f"{E2['meta']['seconds']:.1f}")
+put("ethreeSeconds", f"{E3['meta']['seconds']:.1f}")
 
 # ---- E5
 SC = {"base": "Base", "recession": "Recession", "house-price-fall": "House", "consumer-arrears-shock": "Consumer",

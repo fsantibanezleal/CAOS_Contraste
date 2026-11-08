@@ -4,14 +4,20 @@
 \subsection{Predictions and when they were set}
 \label{sec:design-hypotheses}
 
-Each experiment states its predictions in the header of its script, and \cref{tab:hypotheses} lists all \hypTotal{} with the value observed and the outcome, computed from the experiment output by the predicate written beside the statement.
-The predictions were written by the author before the first run of the script that tests them, on 7 November 2026.
-The repository records a script and its output in one change, so the order of writing and running rests on that statement and not on the history of the repository.
+Each experiment states its predictions in the header of its script.
+\Cref{tab:hypotheses} lists all \hypRows{} statements with the time each was set, and \cref{tab:outcomes} in \cref{sec:res-hypotheses} gives the value observed and the outcome, computed from the experiment output by the predicate written beside the statement.
+The scripts and their outputs entered the repository in one change, so the repository does not record whether a prediction preceded the first run of its script, and the text claims no more than that each prediction is stated in the script that tests it and is applied to the output without rounding.
 The history does fix the age of the committed documents that the scripts read: the C06 and C07 documents were first baked on 12 October 2026, with the tests of their identities, of the separate overlay lines and of the closing of the bridge, and were re-baked on the engine 1.1.0 on 30 October 2026.
-The acceptance criteria that the product's design document states for this subject, that the identities close within the tolerance, that the weighted ECL is at least the average-scenario ECL in the convex regime, that the reference example gives 2.68\% against 1.80\%, and that overlays are separate lines, entered that document on 28 October 2026, and the claim text on 20 and 21 October, after the bakes they describe.
-They cannot fail on the committed documents by construction of the bake and are therefore tabulated as reproductions (the rows marked after the bake), not as predictions; one of them, that the weighted ECL exceeds the average-scenario ECL on every committed date, is stated in the product as not claimed, and is tabulated because the committed documents contradict it.
-A second kind of reproduction, in the rows that say so, is a prediction written before the run of a script for a result that the product's notebook had already measured with another seed or on another defect class.
+The design document of the product states four acceptance criteria for this subject: that the reconciliation identities close within $10^{-6}$, that the weighted ECL is at least the average-scenario ECL in the convex regime, that the reference example gives 2.68\% against 1.80\%, and that overlays are reported as separate lines.
+A search of the history of that document for the text of each criterion (\texttt{git log -S} on \texttt{docs/design/SDD.md}) finds all four first in one commit, 4aa4efae of 5 October 2026, a week before the first bake of the C06 and C07 documents; the claim text that names the subject entered on 20 and 21 October 2026 (commits 9e907bf2 and e8ce72cb).
+Read criterion by criterion, the dates show that the first (the identities close) and the third (the reference example) were set before any document existed to be tested and that the bake was built to meet them, so the rows C2 and C1 cannot fail on the committed documents; the second (the convex regime) and the fourth (overlays as separate lines) are tested here on new draws, as the predictions N1 and O1, and those can fail.
+The rows set after the bake are therefore reproductions and not predictions: C1, the reference example, C2, the closing of the identities on the six committed dates, and B6, the committed regime totals read back from the committed seed.
+A third row, C3, is a statement the design document lists as not claimed, with the negative committed index of 2010-12 already recorded, in the commit of 21 October 2026; it is tabulated because the committed documents contradict it, and is counted neither as a held nor as a refuted prediction.
+Reproductions are counted apart in every count of this paper.
+A second kind of statement, in the rows that say so, is a prediction written before the run of a script for a result that the product's notebook had already measured with another seed or on another defect class, and it is counted as a prediction.
 The remaining predictions concern results that no committed document holds: the comparators, the rounding, the placement of overlays, the scenario sets, the ten seeds and the structure of the identities.
+
+\input{tables/hypotheses}
 
 \subsection{Data and provenance}
 \label{sec:design-data}
@@ -34,6 +40,7 @@ The sweeps of Sections~\ref{sec:method-nonlinearity} and~\ref{sec:theory-convexi
 
 Every comparison is run by the product on the same cases.
 For the detection of planted defects the compared methods are the twelve identities, the stage arithmetic (the six roll-forward identities alone) and the pooled row; each defect, at a given size and location, is judged by all three, and the leave-one-family-out variants of the twelve.
+Five further ablations are planned and reported in Section~\ref{sec:ablation-components}: the absolute tolerance in place of the relative one, the removal of the cross identities, the merge of the overlays into the model line, the removal of the region qualifier of the non-linearity statement, and the base scenario alone in place of the weighted set.
 For the false alarms the compared methods are the relative tolerance $10^{-12},10^{-9},10^{-6},10^{-4}$ of $\gross$ and the absolute tolerance $10^{-6},10^{-2},1$ units, judged on the same six committed tables and the same 1,200 resampled books, and on the same books after rounding.
 For the overlays the compared bookings are the correct one and five wrong ones, judged by the three methods on the same six dates and three shares of the allowance, 2\%, 10\% and 25\%.
 For the non-linearity the compared methods are five scenario sets judged against the same quadrature on the same \efourDesignDraws{} draws, and the index is computed by the engine's own test row.
@@ -45,7 +52,7 @@ No result of a published method is taken from a paper: each one is recomputed by
 
 The detection rate of a method at a size is the share of cases flagged, with the Wilson interval \citep{wilson1927,brown2001}
 \begin{equation}
-\Big[\frac{\hat p+z^{2}/2n\pm z\sqrt{\hat p(1-\hat p)/n+z^{2}/4n^{2}}}{1+z^{2}/n}\Big],\qquad z=1.96.
+\Big[\frac{\hat p+z_{0.975}^{2}/2n\pm z_{0.975}\sqrt{\hat p(1-\hat p)/n+z_{0.975}^{2}/4n^{2}}}{1+z_{0.975}^{2}/n}\Big],\qquad z_{0.975}=1.96.
 \label{eq:wilson}
 \end{equation}
 The detection limit is the ratio $\delta^{*}_j/\tlim$ of the bisected size to the limit.

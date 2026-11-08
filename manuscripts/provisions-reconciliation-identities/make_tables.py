@@ -91,7 +91,7 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     thr = [E1["threshold"][c] for c in DETECTABLE]
     dev = max(max(abs(t["min_ratio"] - 1), abs(t["max_ratio"] - 1)) for t in thr)
     mis_ok = E1["threshold"]["line-misclassification"]["n_bisected"] == 0
-    rows.append(("P1", "The smallest defect the test names equals the limit for every class but the misclassification (reproduction).", "after the bake",
+    rows.append(("P1", "The smallest defect the test names equals the limit for every class but the misclassification.", "before the run; the notebook had measured it on one defect class",
                  f"largest deviation of the ratio from 1: {sci(dev)}; misclassification never named", dev < 1e-6 and mis_ok))
     full_ok = agg("full", "1.01", DETECTABLE)[0] == agg("full", "1.01", DETECTABLE)[1] and agg("full", "100", ("line-misclassification",))[0] == 0
     three = ("allowance-movement", "allowance-closing", "gca-movement")
@@ -170,7 +170,7 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     for sid, v in r42["scenarios"].items():
         for reg in common.doc(f"C07/{sid}.json")["outputs"]["regimes"]:
             diff = max(diff, abs(reg["total_provision"] - v["totals"][reg["regime"]]))
-    rows.append(("B6", "The committed seed at the committed size reproduces every committed regime total to within one currency unit (reproduction).", "after the bake",
+    rows.append(("B6", "The committed seed at the committed size reproduces every committed regime total to within one currency unit (reproduction of the committed totals).", "after the bake; the committed totals had been read",
                  f"largest difference {diff:.2f}", diff <= 1.0))
     d6 = E6["dates"]
     rows.append(("A1", "The engine's residuals equal the signed map times the perturbation for every entry of the six dates.", "before the run",
@@ -183,28 +183,52 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     rows.append(("A4", "The largest group of entries no failing pattern distinguishes has at least 11 entries.", "before the run",
                  f"largest group {d6['2008-12']['largest_group']}", all(v["largest_group"] >= 11 for v in d6.values())))
     ex = E4["example"]
-    rows.append(("S1", "The reference example gives a weighted PD of 2.68% against 1.80% at the mean factor (reproduction of the acceptance criterion).", "after the bake",
+    rows.append(("C1", "The reference example gives a weighted PD of 2.68% against 1.80% at the mean factor (reproduction of the acceptance criterion).", "after the bake",
                  f"{100 * ex['pd_weighted']:.3f}% against {100 * ex['pd_at_mean_z']:.3f}%", round(100 * ex["pd_weighted"], 2) == 2.68 and round(100 * ex["pd_at_mean_z"], 2) == 1.80))
     clean_flagged = sum(1 for v in E1["clean"].values() if v["flagged"])
-    rows.append(("S2", "The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion).", "after the bake",
+    rows.append(("C2", "The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion).", "after the bake",
                  f"{clean_flagged} of 6 flagged", clean_flagged == 0))
     ecl_pos = sum(1 for v in E4["committed"].values() if v["ecl_index"] > 0)
-    rows.append(("S3", "The weighted ECL exceeds the ECL at the mean path on every committed date (stated in the product as not claimed).", "after the bake",
+    rows.append(("C3", "The weighted ECL exceeds the ECL at the mean path on every committed date (stated in the product as not claimed).", "after the bake; stated in the product as not claimed",
                  f"{ecl_pos} of 6 dates above zero", ecl_pos == 6))
     return rows
 
 
 def write_hypotheses() -> None:
+    """Two tables from the same rows: the predictions with when they were set (Experimental design) and the outcomes (Results).
+
+    A row set after the bake is a reproduction of a result the committed documents already held, not a prediction; it is counted apart.
+    """
     rows = hypotheses()
-    body = [[i, s, w, o, "held" if ok else "refuted"] for i, s, w, o, ok in rows]
-    held = sum(1 for r in rows if r[4])
-    table("hypotheses", ["ID", "Prediction", "Set", "Observed", "Outcome"], body, align="lp{5.4cm}p{2.3cm}p{3.9cm}l", longtable=True,
-          label="tab:hypotheses",
-          caption="Each prediction of the experiments, stated in the header of its script, with when it was set relative to the run, the value observed and the outcome "
-                  f"computed from the experiment output ({held} held and {len(rows) - held} refuted of {len(rows)}). Predictions marked as reproductions concern results "
-                  "that the committed documents or the product's notebook already held.")
-    (OUT / "hypotheses-count.tex").write_text(f"\\newcommand{{\\hypTotal}}{{{len(rows)}}}\n\\newcommand{{\\hypHeld}}{{{held}}}\n\\newcommand{{\\hypRefuted}}{{{len(rows) - held}}}\n"
-                                              f"\\newcommand{{\\hypRefutedList}}{{{', '.join(r[0] for r in rows if not r[4])}}}\n", encoding="utf-8", newline="\n")
+
+    def repro(r) -> bool:
+        return r[2].startswith("after the bake")
+
+    preds = [r for r in rows if not repro(r)]
+    reps = [r for r in rows if repro(r)]
+    held = sum(1 for r in preds if r[4])
+    rep_ok = sum(1 for r in reps if r[4])
+    table("hypotheses", ["ID", "Statement", "Set"], [[i, st, w] for i, st, w, o, ok in rows], align="lp{7.6cm}p{4.4cm}", longtable=True, label="tab:hypotheses",
+          caption=f"The {len(rows)} statements tested by the experiments, each stated in the header of its script, with when it was set relative to the run. "
+                  f"The {len(preds)} rows not marked after the bake are predictions; the {len(reps)} marked after the bake are reproductions of results that the "
+                  "committed documents already held, and they are not counted as predictions.")
+    body = [[i, o, ("reproduced" if ok else "contradicted") if repro((i, st, w, o, ok)) else ("held" if ok else "refuted")] for i, st, w, o, ok in rows]
+    table("outcomes", ["ID", "Observed", "Outcome"], body, align="lp{9.2cm}l", longtable=True, label="tab:outcomes",
+          caption=f"The value observed for each statement and the outcome computed from the experiment output: {held} held and {len(preds) - held} refuted of the "
+                  f"{len(preds)} predictions; {rep_ok} reproduced and {len(reps) - rep_ok} contradicted of the {len(reps)} reproductions.")
+    refs = ", ".join(r[0] for r in preds if not r[4])
+    contra = ", ".join(r[0] for r in reps if not r[4])
+    (OUT / "hypotheses-count.tex").write_text(
+        f"\\newcommand{{\\hypRows}}{{{len(rows)}}}\n"
+        f"\\newcommand{{\\hypTotal}}{{{len(preds)}}}\n"
+        f"\\newcommand{{\\hypHeld}}{{{held}}}\n"
+        f"\\newcommand{{\\hypRefuted}}{{{len(preds) - held}}}\n"
+        f"\\newcommand{{\\hypRefutedList}}{{{refs}}}\n"
+        f"\\newcommand{{\\hypReproTotal}}{{{len(reps)}}}\n"
+        f"\\newcommand{{\\hypReproHeld}}{{{rep_ok}}}\n"
+        f"\\newcommand{{\\hypReproContradicted}}{{{len(reps) - rep_ok}}}\n"
+        f"\\newcommand{{\\hypReproContradictedList}}{{{contra}}}\n",
+        encoding="utf-8", newline="\n")
 
 
 # ---------------------------------------------------------------------------------------------------------------- main results

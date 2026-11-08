@@ -51,7 +51,7 @@ def power() -> None:
     a.set_xlabel("size of the defect, in multiples of the limit")
     a.set_ylabel("share of cases flagged")
     a.set_title("(a) detection, seven defect classes", loc="left")
-    a.legend(loc="center right")
+    a.legend(loc="lower right")
     gates = ["full", "stage", "total"] + [f"drop:{f}" for f in E1["meta"]["families"]]
     glabel = ["full", "stage", "pooled", "$-$allow.", "$-$gross", "$-$closes", "$-$equals", "$-$lines", "$-$ECL tie"]
     classes = list(G)
@@ -180,7 +180,8 @@ def regimes() -> None:
     b.set_xlabel("accounts in the generated book")
     b.set_ylabel("IFRS 9 total over B-1 total")
     b.set_title("(b) size of the book, seed 42", loc="left")
-    b.legend(loc="upper left")
+    b.set_ylim(top=1.5)  # headroom above the combined severe curve, so the legend covers no curve
+    b.legend(loc="upper left", ncol=3, fontsize=6.5, columnspacing=0.6, handlelength=1.6)
     fig.tight_layout()
     figkit.save(fig, OUT, "regimes")
 
