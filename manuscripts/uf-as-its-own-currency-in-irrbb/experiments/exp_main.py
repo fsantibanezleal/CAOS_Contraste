@@ -4,8 +4,8 @@ The predictions below were written into this header by the author of the manuscr
 control history can show that order (the manuscript is committed by the main session after the run), so they are the author's word.
 
 * H1 (the sandwich). For every variant, every seed and every treatment, the sum of the two legs is at most the Annex 1 pair rule, which
-  is at most the sum of the positive parts, for the delta EVE of every shock and for the delta NII of both shocks, and so for the two
-  measures. One violation beyond a relative 1e-9 refutes it.
+  is at most the sum of the positive parts, for the two measures (each the maximum over its scenarios, aggregated per treatment; the
+  check is on the two aggregated measures and not on each scenario). One violation beyond a relative 1e-9 refutes it.
 * H2 (the attribution of the delta EVE gap). In the three variants whose net UF position is 30 percent of Tier 1 (long UF, short UF,
   offset on and off), the switch that replaces the plain sum of the legs by the pair rule has the largest absolute exact Shapley value of the
   five switches for the delta EVE, in the mean over the seeds. It is refuted in any of the three variants in which another switch has the

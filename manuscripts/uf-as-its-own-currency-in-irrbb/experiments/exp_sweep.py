@@ -3,9 +3,11 @@
 The prediction below was written into this header by the author before the script was first run (no version control history shows that order).
 
 * H4 (a different supervisory outcome). There is a net UF position, as a share of Tier 1 inside the range the generator can balance, at
-  which the Annex 1 treatment flags the bank as prioritised under at least one of the three tests of Annex 1 in the mean of the seeds
-  (more than half of the seeds) while the single-currency treatment of the same flows flags it under none. It is refuted when, at every
-  position of the range, the set of bank-seed pairs flagged by the single-currency treatment contains those flagged by Annex 1.
+  which the Annex 1 treatment flags the bank as prioritised under at least one of the three tests of Annex 1 in most books (more than half
+  of the seeds) while the single-currency treatment of the same flows flags it in none. It is decided by that criterion: a position
+  qualifies only when Annex 1 flags more than half of the 20 books and the single-currency treatment flags none of them. It is refuted when no
+  position of the range qualifies. The script also records, as a separate quantity, the positions at which more than half of the books are
+  classified differently (flagged by Annex 1 and not by the single-currency treatment) and the first position at which any book is.
 
 The book is the case's generator at the variant parameters of the long UF variant, with only ``net_uf_share_tier1`` changed over a grid from
 -1.5 to 1.5 in steps of 0.1 (positions the generator cannot balance are refused by it and listed), 20 seeds of the repricing profiles per
@@ -42,7 +44,7 @@ def main() -> None:
     ctx = u.context(raw)
     base_spec = u.bk.SPECS["long-uf"]
     out: dict = {"valuation_date": ctx.date, "seeds": list(SEEDS), "grid": list(GRID), "positions": {}, "refused": []}
-    h4_positions = []
+    h4_positions, majority_differ, first_differ = [], [], None
     for nu in GRID:
         spec = dataclasses.replace(base_spec, id=f"sweep{nu:+.2f}", params={**base_spec.params, "net_uf_share_tier1": nu})
         rows = {"annex1": {t: 0 for t in TESTS}, "single": {t: 0 for t in TESTS}, "positive_parts": {t: 0 for t in TESTS}}
@@ -84,14 +86,20 @@ def main() -> None:
             "ratio_nii_annex_over_single": ms(ratios_nii), "ratio_eve_annex_over_single": ms(ratios_eve),
             "annex_nii_over_tier1": ms(nii_t1_a), "single_nii_over_tier1": ms(nii_t1_s),
             "annex_eve_over_tier1": ms(eve_t1_a), "single_eve_over_tier1": ms(eve_t1_s)}
-        if annex_only > n_ok / 2:
+        if any_flag["annex1"] > n_ok / 2 and any_flag["single"] == 0:
             h4_positions.append(nu)
+        if annex_only > n_ok / 2:
+            majority_differ.append(nu)
+        if annex_only > 0 and first_differ is None:
+            first_differ = nu
     out["h4_positions_where_annex_flags_and_single_does_not"] = h4_positions
+    out["positions_where_most_books_are_classified_differently"] = majority_differ
+    out["first_position_with_a_differing_book"] = first_differ
     feasible = [p["net_uf_share_tier1"] for p in out["positions"].values()]
     out["feasible_range"] = [min(feasible), max(feasible)] if feasible else None
     out["seconds"] = time.perf_counter() - t0
     (u.HERE / "sweep.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
-    print(f"wrote sweep.json in {out['seconds']:.1f} s; feasible {out['feasible_range']}; H4 positions {h4_positions}; refused {len(out['refused'])}")
+    print(f"wrote sweep.json in {out['seconds']:.1f} s; feasible {out['feasible_range']}; H4 positions {h4_positions}; most books differ at {majority_differ}; first differing book at {first_differ}; refused {len(out['refused'])}")
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ def ex(name: str) -> dict:
     return json.loads((MS / "experiments" / f"{name}.json").read_text(encoding="utf-8"))
 
 
-REP, MAIN, SWEEP, FLOORS = ex("reproduce"), ex("main"), ex("sweep"), ex("floors")
+REP, MAIN, SWEEP, FLOORS, RATIOM = ex("reproduce"), ex("main"), ex("sweep"), ex("floors"), ex("ratio_of_means")
 COMMITTED = {v: figkit.doc(f"C15/{v}.json")["outputs"] for v in REP["variants"]}
 VARS = ["long-uf", "short-uf", "cpi-surprise", "clp-steepener", "offset-on-off", "floors-active"]
 TAG = {"long-uf": "Lng", "short-uf": "Sht", "cpi-surprise": "Cpi", "clp-steepener": "Stp", "offset-on-off": "Off", "floors-active": "Flr"}
@@ -108,21 +108,23 @@ def numbers() -> None:
         put(f"max{nm}", figkit.fmt(100 * max(r), 2), f"outputs.curves.{k}.zero_rates_at_midpoints max (percent)")
         put(f"nTenors{nm}", str(len(c["points"])), f"outputs.curves.{k}.points")
     clp, ur = o["curves"]["clp"]["zero_rates_at_midpoints"], o["curves"]["ur"]["zero_rates_at_midpoints"]
-    put("spreadFive", figkit.fmt(1e4 * (clp[10] - ur[10]), 0), "peso minus UR zero rate at midpoint 5.5 years (bp), outputs.curves")
+    K55 = 11    # index of the 5.5-year midpoint of the 19-bucket grid (0.0028, ..., 3.5, 4.5, 5.5, ...); asserted against the engine grid below
+    put("spreadFive", figkit.fmt(1e4 * (clp[K55] - ur[K55]), 0), "peso minus UR zero rate at midpoint 5.5 years (bp), outputs.curves")
     put("spreadLast", figkit.fmt(1e4 * (clp[18] - ur[18]), 0), "peso minus UR zero rate at the last midpoint (bp)")
     put("spreadFirst", figkit.fmt(1e4 * (clp[0] - ur[0]), 0), "peso minus UR zero rate at the first midpoint (bp)")
     import math
     from riskvalidation.irrbb import slotting
 
     mids = [float(x) for x in slotting.bucket_grid().midpoints]
-    put("dfRatioFive", figkit.fmt(math.exp(-(clp[10] - ur[10]) * mids[10]), 3), "exp(-(r_clp - r_ur) t) at 5.5 years, Annex 1 midpoint")
+    assert mids[K55] == 5.5 and mids[15] == 9.5 and mids[18] == 25.0, mids
+    put("dfRatioFive", figkit.fmt(math.exp(-(clp[K55] - ur[K55]) * mids[K55]), 3), "exp(-(r_clp - r_ur) t) at 5.5 years, Annex 1 midpoint")
     put("dfRatioTen", figkit.fmt(math.exp(-(clp[15] - ur[15]) * mids[15]), 3), "exp(-(r_clp - r_ur) t) at 9.5 years")
     put("dfRatioLast", figkit.fmt(math.exp(-(clp[18] - ur[18]) * mids[18]), 3), "exp(-(r_clp - r_ur) t) at 25 years")
     tb = shocks.shock_table("cmf-annex1")
     size_ratio = tb["CLP"][0] / tb["UR-eve"][0]
     w = [size_ratio * math.exp(-(clp[k] - ur[k]) * mids[k]) for k in range(19)]
     put("sizeRatio", figkit.fmt(size_ratio, 2), "parallel size of the peso over the UR row of the Hoja 9 table (engine shock_table)")
-    put("weightFive", figkit.fmt(w[10], 2), "size ratio times exp(-(r_clp - r_ur) t) at 5.5 years")
+    put("weightFive", figkit.fmt(w[K55], 2), "size ratio times exp(-(r_clp - r_ur) t) at 5.5 years")
     put("weightTen", figkit.fmt(w[15], 2), "the same at 9.5 years")
     put("weightLast", figkit.fmt(w[18], 2), "the same at 25 years")
     k_hi = min(k for k in range(19) if w[k] < 1.0)
@@ -215,6 +217,30 @@ def numbers() -> None:
         h = MAIN["h2_eve_attribution"][v]
         put(f"hTwoTop{TAG[v]}", SWNAME[h["largest_absolute"]].lower(), f"experiments/main.json h2_eve_attribution.{v}.largest_absolute")
     hv = MAIN["h3_comparators"]["by_variant"]["clp-steepener"]["nii_over_positive_parts"]
+    mshare = [MAIN["variants"][v]["summary"]["charge_share_of_nii"]["mean"] for v in V30]
+    put("mainChargeShareLo", pct(min(mshare), 0), "min over the three 30 percent variants of charge_share_of_nii.mean, rounded to the percent")
+    put("mainChargeShareHi", pct(max(mshare), 0), "max over the same, rounded to the percent")
+    for v in V30:
+        e = MAIN["variants"][v]["shapley"]["delta_eve"]["pair"]["mean"]
+        sm = MAIN["variants"][v]["summary"]
+        gap = sm["annex_eve"]["mean"] - sm["single_eve"]["mean"]
+        put(f"pairShareEve{TAG[v]}", pct(e / gap, 0), f"experiments/main.json variants.{v}: pair-rule Shapley value of the delta EVE over (Annex 1 minus single-currency mean delta EVE), percent")
+        put(f"eveGap{TAG[v]}", g(gap), f"experiments/main.json variants.{v}.summary: annex_eve.mean minus single_eve.mean")
+    shl = [MAIN["variants"][v]["summary"]["eve_shortfall_single_percent"]["mean"] for v in V30]
+    put("mainEveShortLo", figkit.fmt(min(shl), 1), "min over the three 30 percent variants of eve_shortfall_single_percent.mean")
+    put("mainEveShortHi", figkit.fmt(max(shl), 1), "max over the same")
+    for v in V30:
+        rm = RATIOM["variants"][v]
+        t = TAG[v]
+        src = f"experiments/ratio_of_means.json variants.{v}"
+        put(f"rmRatio{t}", figkit.fmt(rm["ratio_of_means"], 1), src + ".ratio_of_means")
+        put(f"rmLo{t}", figkit.fmt(rm["ratio_of_means_ci"][0], 1), src + ".ratio_of_means_ci[0] (bootstrap percentile)")
+        put(f"rmHi{t}", figkit.fmt(rm["ratio_of_means_ci"][1], 1), src + ".ratio_of_means_ci[1] (bootstrap percentile)")
+        put(f"rmMed{t}", figkit.fmt(rm["per_book_median"], 1), src + ".per_book_median")
+        put(f"rmQone{t}", figkit.fmt(rm["per_book_q1"], 1), src + ".per_book_q1")
+        put(f"rmQthree{t}", figkit.fmt(rm["per_book_q3"], 1), src + ".per_book_q3")
+        put(f"rmMax{t}", figkit.fmt(rm["per_book_max"], 1), src + ".per_book_max")
+    put("rmResamples", g(RATIOM["resamples"]), "experiments/ratio_of_means.json resamples")
     put("hThreeSteeperViol", str(hv), "experiments/main.json h3_comparators.by_variant.clp-steepener.nii_over_positive_parts")
     # seed 42 values for the Shapley check
     put("caseShapCurveEveLng", g(MAIN["case_seed_values"]["long-uf"]["shapley"]["delta_eve"]["curve"]), "experiments/main.json case_seed_values.long-uf.shapley.delta_eve.curve")
@@ -231,7 +257,15 @@ def numbers() -> None:
     put("hFourLo", pct(min(h4), 0), "experiments/sweep.json h4_positions min (percent of Tier 1)")
     put("hFourHi", pct(max(h4), 0), "experiments/sweep.json h4_positions max (percent of Tier 1)")
     put("hFourN", str(len(h4)), "experiments/sweep.json h4_positions count")
-    names = {"+0.30": "Three", "+0.80": "Eight", "+1.00": "Ten", "+1.10": "Eleven", "+1.20": "Twelve", "+1.50": "Fifteen", "+0.00": "Zero", "-0.50": "MinusFive"}
+    put("sweepGridHi", pct(max(SWEEP["grid"]), 0), "experiments/sweep.json max of grid (percent of Tier 1): the top of the range tested")
+    put("sweepFirstDiff", pct(SWEEP["first_position_with_a_differing_book"], 0), "experiments/sweep.json first_position_with_a_differing_book (percent of Tier 1)")
+    maj = SWEEP["positions_where_most_books_are_classified_differently"]
+    put("sweepMajLo", pct(min(maj), 0), "experiments/sweep.json positions_where_most_books_are_classified_differently min (percent of Tier 1)")
+    put("sweepMajHi", pct(max(maj), 0), "experiments/sweep.json positions_where_most_books_are_classified_differently max (percent of Tier 1)")
+    put("sweepMajN", str(len(maj)), "experiments/sweep.json positions_where_most_books_are_classified_differently count")
+    for key, nm in (("+0.80", "Eight"), ("+0.90", "Nine"), ("+1.00", "Ten"), ("+1.10", "Eleven"), ("+1.20", "Twelve"), ("+1.50", "Fifteen")):
+        put(f"swDiff{nm}", str(pos[key]["annex_flagged_single_not"]), f"experiments/sweep.json positions.{key}.annex_flagged_single_not")
+    names = {"+0.30": "Three", "+0.80": "Eight", "+0.90": "Nine", "+1.00": "Ten", "+1.10": "Eleven", "+1.20": "Twelve", "+1.30": "Thirteen", "+1.40": "Fourteen", "+1.50": "Fifteen", "+0.00": "Zero", "-0.50": "MinusFive"}
     for key, nm in names.items():
         p = pos[key]
         s = f"experiments/sweep.json positions.{key}"
@@ -251,6 +285,10 @@ def numbers() -> None:
     put("floorsSeeds", str(len(FLOORS["seeds"])), "experiments/floors.json seeds")
     put("floorsTotal", g(FLOORS["h5_floor_never_raises"]["checked"]), "experiments/floors.json h5.checked")
     put("floorsRaise", g(FLOORS["h5_floor_never_raises"]["violations"]), "experiments/floors.json h5.violations")
+    raised_nii = sum(r["books_where_floor_raises_nii"] for k in FLOORS["results"] for r in FLOORS["results"][k].values())
+    raised_eve = sum(r["books_where_floor_raises_eve"] for k in FLOORS["results"] for r in FLOORS["results"][k].values())
+    assert raised_nii == FLOORS["h5_floor_never_raises"]["violations"] and raised_eve == 0, (raised_nii, raised_eve)
+    put("floorsTotalNii", g(FLOORS["h5_floor_never_raises"]["checked"] // 2), "experiments/floors.json h5.checked halved: the comparisons of the delta NII alone (h5.checked counts both measures); every raise is on the delta NII")
     put("floorsMaxInc", g(FLOORS["h5_floor_never_raises"]["max_increase"]), "experiments/floors.json h5.max_increase")
     put("floorsDistZero", figkit.fmt(fl["+0"]["long-uf"]["distance_bp"]["mean"], 2), "experiments/floors.json results.+0.long-uf.distance_bp.mean")
     fn = {"-25": "TwentyFive", "-50": "Fifty", "-100": "Hundred", "-200": "TwoHundred", "-300": "ThreeHundred"}
@@ -258,7 +296,7 @@ def numbers() -> None:
         for v in ("long-uf", "short-uf", "floors-active"):
             r = fl[key][v]
             s = f"experiments/floors.json results.{key}.{v}"
-            put(f"fl{nm}Dist{TAG[v]}", figkit.fmt(r["distance_bp"]["mean"], 1), s + ".distance_bp.mean")
+            put(f"fl{nm}Dist{TAG[v]}", figkit.fmt(abs(r["distance_bp"]["mean"]), 1), s + ".distance_bp.mean (absolute value)")
             put(f"fl{nm}Eff{TAG[v]}", g(r["nii_effect"]["mean"]), s + ".nii_effect.mean")
             put(f"fl{nm}Eff{TAG[v]}Ci", g(r["nii_effect"]["ci_half"]), s + ".nii_effect.ci_half")
             put(f"fl{nm}Raise{TAG[v]}", str(r["books_where_floor_raises_nii"]), s + ".books_where_floor_raises_nii")
@@ -272,7 +310,8 @@ def numbers() -> None:
     put("floorsLowerOthers", str(lowers_other), "experiments/floors.json lowers in the five other variants, summed")
     tot = sum(FLOORS["seeds"].__len__() for _ in fl)
     del tot
-    put("totalSeconds", figkit.fmt(REP["seconds"] + MAIN["seconds"] + SWEEP["seconds"] + FLOORS["seconds"], 0), "sum of the four measured run times")
+    put("ratioSeconds", figkit.fmt(RATIOM["seconds"], 0), "experiments/ratio_of_means.json seconds (measured)")
+    put("totalSeconds", figkit.fmt(REP["seconds"] + MAIN["seconds"] + SWEEP["seconds"] + FLOORS["seconds"] + RATIOM["seconds"], 0), "sum of the five measured run times")
     t = shocks.shock_table("cmf-annex1")
     for key, nm in (("CLP", "Clp"), ("UR-eve", "UrEve")):
         for i, nn in enumerate(("Par", "Short", "Long")):
@@ -305,7 +344,7 @@ def t_main() -> None:
         rows = [[label] + [row(label, k, me, v) for v in V30] + [ratio(k, me, v) for v in V30] for label, k in kinds]
         rows.append([gapname + " (single currency)"] + [row(gapname, "gap", me, v) for v in V30] + [ratio("gap", me, v) for v in V30])
         panels.append((title, head, rows))
-    cap = ("Main comparison on the three variants whose net UF position is 30 percent of Tier 1: the delta NII and the delta EVE of the Annex 1 treatment, "
+    cap = ("Main comparison on the three distinct variants with a net UF position of 30 percent of Tier 1 (the CPI-surprise variant, whose position is also 30 percent, has the measures of the long UF one): the delta NII and the delta EVE of the Annex 1 treatment, "
            "of the positive-part aggregation of the Basel standard, of the single-currency treatment of the same flows, and of the repricing-gap "
            "and duration-gap measures, as the mean and the half-width of the 95 percent Student interval over 30 synthetic books (seeds 1 to 30) "
            "on the curves of 2026-09-03; the three right columns divide each mean by the Annex 1 mean.")
@@ -319,7 +358,7 @@ def t_reproduction() -> None:
         r = REP["variants"][v]
         rows.append([VNAME[v], f"{pct(r['net_uf_share_tier1'], 0)}\\%", g(r["committed"]["delta_nii"]), g(r["committed"]["delta_eve"]),
                      f"{pct(r['charge_share_of_nii'])}\\%", figkit.fmt(r["committed"]["closest_floor_bp"], 2), f"{max(r['relative_deviation'].values()):.0e}"])
-    cap = ("The six variants of case C15 as committed (seed 42, valuation date 2026-09-03, CLP million): the delta NII and delta EVE of the Annex 1 "
+    cap = ("The six variants of the published case (seed 42, valuation date 2026-09-03, CLP million): the delta NII and delta EVE of the Annex 1 "
            "treatment, the indexation charge as a share of the delta NII, the smallest distance between a post-shock rate and its floor, and the "
            "largest relative deviation between the committed measures and the measures recomputed here from the same flows by independent engine calls.")
     tablewrite("reproduction", [("", head, rows)], cap, "tab:reproduction", "lrrrrrr")
@@ -402,7 +441,7 @@ def t_floors() -> None:
             r = FLOORS["results"][key][v]
             rows.append([key.replace("-", "$-$"), figkit.fmt(r["distance_bp"]["mean"], 1), g(r["nii_no_floor"]["mean"]), g(r["nii_with_floor"]["mean"]),
                          pm(r["nii_effect"]["mean"], r["nii_effect"]["ci_half"]), f"{r['books_where_floor_raises_nii']}", f"{r['books_where_floor_lowers_nii']}"])
-        panels.append((f"Panel {'A' if v == 'long-uf' else 'B'}. Delta NII, {VNAME[v].lower()} variant, CLP million", head, rows))
+        panels.append((f"Panel {'A' if v == 'long-uf' else 'B'}. Delta NII, {'long UF' if v == 'long-uf' else 'floor-exposed'} variant, CLP million", head, rows))
     cap = ("The UR floor of minus 2 percent made to bind by translating the fitted UF zero curve down: the mean distance of the lowest post-shock UR rate to the floor "
            "(negative once it binds), the Annex 1 delta NII without any floor and with the floor, the effect of the floor with its 95 percent half-width, and the number "
            "of the 20 books (seeds 201 to 220) in which the floor raises or lowers the measure, for two variants.")
@@ -431,6 +470,8 @@ def t_data() -> None:
 def t_hypotheses() -> None:
     head = ["Id", "Statement and deciding quantity", "Status", "Outcome"]
     r = REP["variants"]
+    h4 = SWEEP["h4_positions_where_annex_flags_and_single_does_not"]
+    assert h4 == [1.1], h4
     rows = [
         ["R1", "The indexation charge is 55.9\\% of the delta NII of the short UF variant (reproduction).", "reproduced",
          f"{pct(r['short-uf']['charge_share_of_nii'])}\\%"],
@@ -440,20 +481,20 @@ def t_hypotheses() -> None:
          f"{figkit.fmt(min(r[v]['eve_shortfall_single_percent'] for v in V30), 0)} to {figkit.fmt(max(r[v]['eve_shortfall_single_percent'] for v in V30), 0)}\\%"],
         ["R4", "No floor binds on the committed curves; the closest post-shock rate is 20.48 bp from its floor (reproduction).", "reproduced",
          f"{figkit.fmt(r['long-uf']['committed']['closest_floor_bp'], 2)} bp in every variant"],
-        ["H1", "The sum of the legs is at most the pair rule, which is at most the positive parts, for every shock, variant and treatment.", "held",
+        ["H1", "The sum of the legs is at most the pair rule, which is at most the positive parts, for the two measures of every variant, book and treatment.", "held",
          f"{MAIN['h1_sandwich']['violations']} violations in {g(MAIN['h1_sandwich']['checked'])} comparisons"],
         ["H2", "For the delta EVE, the pair rule has the largest absolute Shapley value in the three 30\\% variants.", "refuted",
          "the own curve has the largest value in all three"],
         ["H3", "The Annex 1 delta NII exceeds the single-currency and the positive-part delta NII, and the Annex 1 delta EVE is not below the single-currency one, in every variant and book.", "refuted in one clause (not a prediction)",
          f"the CLP steepener variant: Annex 1 below positive parts in {MAIN['h3_comparators']['by_variant']['clp-steepener']['nii_over_positive_parts']} of 30 books"],
-        ["H4", "A net UF position exists at which Annex 1 flags the bank in most books and the single-currency treatment flags none.", "held",
-         f"{pct(min(SWEEP['h4_positions_where_annex_flags_and_single_does_not']), 0)}\\% to {pct(max(SWEEP['h4_positions_where_annex_flags_and_single_does_not']), 0)}\\% of Tier 1, the delta EVE test only"],
+        ["H4", "A net UF position exists at which Annex 1 flags the bank in most books and the single-currency treatment flags none.", "held at one position only",
+         f"{pct(min(h4), 0)}\\% of Tier 1 only ({SWEEP['positions']['+1.10']['any_flag']['annex1']} of 20 books against {SWEEP['positions']['+1.10']['any_flag']['single']}), the delta EVE test only"],
         ["H5", "A binding UR floor never raises the Annex 1 measure.", "refuted",
-         f"{FLOORS['h5_floor_never_raises']['violations']} of {g(FLOORS['h5_floor_never_raises']['checked'])} comparisons raise it"],
+         f"{FLOORS['h5_floor_never_raises']['violations']} of {g(FLOORS['h5_floor_never_raises']['checked'])} comparisons of the two measures raise it, all on the delta NII"],
     ]
-    cap = ("The statements tested or reproduced in this paper, with the deciding quantity and the outcome: R1 to R4 are the statements of the committed record, written after "
-           "the bake and so reproduced and not tested; H1, H2, H4 and H5 were fixed by the author in the headers of the experiment scripts before the scripts that decide them ran; "
-           "H3 was written after the reproduction run had printed a value that already contradicts one of its clauses, so it is a refuted statement and not a prediction.")
+    cap = ("The statements tested or reproduced in this paper, with the deciding quantity and the outcome: R1 to R4 are the statements of the product's specification, entered after "
+           "the numbers of the published case were known, and so reproduced and not tested; H1, H2, H4 and H5 were written by the author into the headers of the experiment scripts "
+           "before the scripts that decide them ran (an order that the repository history cannot show); H3 was written after the reproduction run had printed a value that already contradicts one of its clauses, so it is a refuted statement and not a prediction.")
     tablewrite("hypotheses", [("", head, rows)], cap, "tab:hypotheses", "p{0.8cm}p{7.6cm}p{1.9cm}p{3.6cm}")
 
 

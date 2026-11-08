@@ -84,7 +84,7 @@
   "source": "outputs.curves.ur.points"
  },
  "spreadFive": {
-  "value": "317",
+  "value": "318",
   "source": "peso minus UR zero rate at midpoint 5.5 years (bp), outputs.curves"
  },
  "spreadLast": {
@@ -96,7 +96,7 @@
   "source": "peso minus UR zero rate at the first midpoint (bp)"
  },
  "dfRatioFive": {
-  "value": "0.867",
+  "value": "0.840",
   "source": "exp(-(r_clp - r_ur) t) at 5.5 years, Annex 1 midpoint"
  },
  "dfRatioTen": {
@@ -112,7 +112,7 @@
   "source": "parallel size of the peso over the UR row of the Hoja 9 table (engine shock_table)"
  },
  "weightFive": {
-  "value": "1.30",
+  "value": "1.26",
   "source": "size ratio times exp(-(r_clp - r_ur) t) at 5.5 years"
  },
  "weightTen": {
@@ -760,19 +760,19 @@
   "source": "experiments/main.json seeds"
  },
  "mainSeconds": {
-  "value": "19",
+  "value": "18",
   "source": "experiments/main.json seconds (measured)"
  },
  "repSeconds": {
-  "value": "0.3",
+  "value": "0.2",
   "source": "experiments/reproduce.json seconds (measured)"
  },
  "sweepSeconds": {
-  "value": "5",
+  "value": "3",
   "source": "experiments/sweep.json seconds (measured)"
  },
  "floorsSeconds": {
-  "value": "21",
+  "value": "6",
   "source": "experiments/floors.json seconds (measured)"
  },
  "hOneChecked": {
@@ -2915,6 +2915,134 @@
   "value": "own curve",
   "source": "experiments/main.json h2_eve_attribution.offset-on-off.largest_absolute"
  },
+ "mainChargeShareLo": {
+  "value": "52",
+  "source": "min over the three 30 percent variants of charge_share_of_nii.mean, rounded to the percent"
+ },
+ "mainChargeShareHi": {
+  "value": "53",
+  "source": "max over the same, rounded to the percent"
+ },
+ "pairShareEveLng": {
+  "value": "18",
+  "source": "experiments/main.json variants.long-uf: pair-rule Shapley value of the delta EVE over (Annex 1 minus single-currency mean delta EVE), percent"
+ },
+ "eveGapLng": {
+  "value": "4{,}875",
+  "source": "experiments/main.json variants.long-uf.summary: annex_eve.mean minus single_eve.mean"
+ },
+ "pairShareEveSht": {
+  "value": "0",
+  "source": "experiments/main.json variants.short-uf: pair-rule Shapley value of the delta EVE over (Annex 1 minus single-currency mean delta EVE), percent"
+ },
+ "eveGapSht": {
+  "value": "10{,}548",
+  "source": "experiments/main.json variants.short-uf.summary: annex_eve.mean minus single_eve.mean"
+ },
+ "pairShareEveOff": {
+  "value": "77",
+  "source": "experiments/main.json variants.offset-on-off: pair-rule Shapley value of the delta EVE over (Annex 1 minus single-currency mean delta EVE), percent"
+ },
+ "eveGapOff": {
+  "value": "17{,}399",
+  "source": "experiments/main.json variants.offset-on-off.summary: annex_eve.mean minus single_eve.mean"
+ },
+ "mainEveShortLo": {
+  "value": "5.7",
+  "source": "min over the three 30 percent variants of eve_shortfall_single_percent.mean"
+ },
+ "mainEveShortHi": {
+  "value": "24.2",
+  "source": "max over the same"
+ },
+ "rmRatioLng": {
+  "value": "4.9",
+  "source": "experiments/ratio_of_means.json variants.long-uf.ratio_of_means"
+ },
+ "rmLoLng": {
+  "value": "4.5",
+  "source": "experiments/ratio_of_means.json variants.long-uf.ratio_of_means_ci[0] (bootstrap percentile)"
+ },
+ "rmHiLng": {
+  "value": "5.5",
+  "source": "experiments/ratio_of_means.json variants.long-uf.ratio_of_means_ci[1] (bootstrap percentile)"
+ },
+ "rmMedLng": {
+  "value": "5.1",
+  "source": "experiments/ratio_of_means.json variants.long-uf.per_book_median"
+ },
+ "rmQoneLng": {
+  "value": "4.1",
+  "source": "experiments/ratio_of_means.json variants.long-uf.per_book_q1"
+ },
+ "rmQthreeLng": {
+  "value": "5.9",
+  "source": "experiments/ratio_of_means.json variants.long-uf.per_book_q3"
+ },
+ "rmMaxLng": {
+  "value": "14.9",
+  "source": "experiments/ratio_of_means.json variants.long-uf.per_book_max"
+ },
+ "rmRatioSht": {
+  "value": "5.5",
+  "source": "experiments/ratio_of_means.json variants.short-uf.ratio_of_means"
+ },
+ "rmLoSht": {
+  "value": "4.9",
+  "source": "experiments/ratio_of_means.json variants.short-uf.ratio_of_means_ci[0] (bootstrap percentile)"
+ },
+ "rmHiSht": {
+  "value": "6.3",
+  "source": "experiments/ratio_of_means.json variants.short-uf.ratio_of_means_ci[1] (bootstrap percentile)"
+ },
+ "rmMedSht": {
+  "value": "5.8",
+  "source": "experiments/ratio_of_means.json variants.short-uf.per_book_median"
+ },
+ "rmQoneSht": {
+  "value": "4.4",
+  "source": "experiments/ratio_of_means.json variants.short-uf.per_book_q1"
+ },
+ "rmQthreeSht": {
+  "value": "6.9",
+  "source": "experiments/ratio_of_means.json variants.short-uf.per_book_q3"
+ },
+ "rmMaxSht": {
+  "value": "22.5",
+  "source": "experiments/ratio_of_means.json variants.short-uf.per_book_max"
+ },
+ "rmRatioOff": {
+  "value": "5.7",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.ratio_of_means"
+ },
+ "rmLoOff": {
+  "value": "5.1",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.ratio_of_means_ci[0] (bootstrap percentile)"
+ },
+ "rmHiOff": {
+  "value": "6.6",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.ratio_of_means_ci[1] (bootstrap percentile)"
+ },
+ "rmMedOff": {
+  "value": "6.1",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.per_book_median"
+ },
+ "rmQoneOff": {
+  "value": "4.5",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.per_book_q1"
+ },
+ "rmQthreeOff": {
+  "value": "7.2",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.per_book_q3"
+ },
+ "rmMaxOff": {
+  "value": "27.5",
+  "source": "experiments/ratio_of_means.json variants.offset-on-off.per_book_max"
+ },
+ "rmResamples": {
+  "value": "10{,}000",
+  "source": "experiments/ratio_of_means.json resamples"
+ },
  "hThreeSteeperViol": {
   "value": "30",
   "source": "experiments/main.json h3_comparators.by_variant.clp-steepener.nii_over_positive_parts"
@@ -2956,12 +3084,56 @@
   "source": "experiments/sweep.json h4_positions min (percent of Tier 1)"
  },
  "hFourHi": {
-  "value": "150",
+  "value": "110",
   "source": "experiments/sweep.json h4_positions max (percent of Tier 1)"
  },
  "hFourN": {
-  "value": "5",
+  "value": "1",
   "source": "experiments/sweep.json h4_positions count"
+ },
+ "sweepGridHi": {
+  "value": "150",
+  "source": "experiments/sweep.json max of grid (percent of Tier 1): the top of the range tested"
+ },
+ "sweepFirstDiff": {
+  "value": "80",
+  "source": "experiments/sweep.json first_position_with_a_differing_book (percent of Tier 1)"
+ },
+ "sweepMajLo": {
+  "value": "110",
+  "source": "experiments/sweep.json positions_where_most_books_are_classified_differently min (percent of Tier 1)"
+ },
+ "sweepMajHi": {
+  "value": "150",
+  "source": "experiments/sweep.json positions_where_most_books_are_classified_differently max (percent of Tier 1)"
+ },
+ "sweepMajN": {
+  "value": "5",
+  "source": "experiments/sweep.json positions_where_most_books_are_classified_differently count"
+ },
+ "swDiffEight": {
+  "value": "1",
+  "source": "experiments/sweep.json positions.+0.80.annex_flagged_single_not"
+ },
+ "swDiffNine": {
+  "value": "2",
+  "source": "experiments/sweep.json positions.+0.90.annex_flagged_single_not"
+ },
+ "swDiffTen": {
+  "value": "10",
+  "source": "experiments/sweep.json positions.+1.00.annex_flagged_single_not"
+ },
+ "swDiffEleven": {
+  "value": "17",
+  "source": "experiments/sweep.json positions.+1.10.annex_flagged_single_not"
+ },
+ "swDiffTwelve": {
+  "value": "18",
+  "source": "experiments/sweep.json positions.+1.20.annex_flagged_single_not"
+ },
+ "swDiffFifteen": {
+  "value": "12",
+  "source": "experiments/sweep.json positions.+1.50.annex_flagged_single_not"
  },
  "swThreeAnnexNii": {
   "value": "1.43",
@@ -3018,6 +3190,34 @@
  "swEightFlagPos": {
   "value": "17",
   "source": "experiments/sweep.json positions.+0.80.any_flag.positive_parts"
+ },
+ "swNineAnnexNii": {
+  "value": "2.94",
+  "source": "experiments/sweep.json positions.+0.90.annex_nii_over_tier1.mean (percent)"
+ },
+ "swNineSingleNii": {
+  "value": "0.31",
+  "source": "experiments/sweep.json positions.+0.90.single_nii_over_tier1.mean (percent)"
+ },
+ "swNineAnnexEve": {
+  "value": "14.3",
+  "source": "experiments/sweep.json positions.+0.90.annex_eve_over_tier1.mean (percent)"
+ },
+ "swNineSingleEve": {
+  "value": "12.2",
+  "source": "experiments/sweep.json positions.+0.90.single_eve_over_tier1.mean (percent)"
+ },
+ "swNineFlagAnnex": {
+  "value": "2",
+  "source": "experiments/sweep.json positions.+0.90.any_flag.annex1"
+ },
+ "swNineFlagSingle": {
+  "value": "0",
+  "source": "experiments/sweep.json positions.+0.90.any_flag.single"
+ },
+ "swNineFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+0.90.any_flag.positive_parts"
  },
  "swTenAnnexNii": {
   "value": "3.19",
@@ -3102,6 +3302,62 @@
  "swTwelveFlagPos": {
   "value": "20",
   "source": "experiments/sweep.json positions.+1.20.any_flag.positive_parts"
+ },
+ "swThirteenAnnexNii": {
+  "value": "3.95",
+  "source": "experiments/sweep.json positions.+1.30.annex_nii_over_tier1.mean (percent)"
+ },
+ "swThirteenSingleNii": {
+  "value": "0.33",
+  "source": "experiments/sweep.json positions.+1.30.single_nii_over_tier1.mean (percent)"
+ },
+ "swThirteenAnnexEve": {
+  "value": "17.0",
+  "source": "experiments/sweep.json positions.+1.30.annex_eve_over_tier1.mean (percent)"
+ },
+ "swThirteenSingleEve": {
+  "value": "14.0",
+  "source": "experiments/sweep.json positions.+1.30.single_eve_over_tier1.mean (percent)"
+ },
+ "swThirteenFlagAnnex": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.30.any_flag.annex1"
+ },
+ "swThirteenFlagSingle": {
+  "value": "2",
+  "source": "experiments/sweep.json positions.+1.30.any_flag.single"
+ },
+ "swThirteenFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.30.any_flag.positive_parts"
+ },
+ "swFourteenAnnexNii": {
+  "value": "4.20",
+  "source": "experiments/sweep.json positions.+1.40.annex_nii_over_tier1.mean (percent)"
+ },
+ "swFourteenSingleNii": {
+  "value": "0.33",
+  "source": "experiments/sweep.json positions.+1.40.single_nii_over_tier1.mean (percent)"
+ },
+ "swFourteenAnnexEve": {
+  "value": "17.7",
+  "source": "experiments/sweep.json positions.+1.40.annex_eve_over_tier1.mean (percent)"
+ },
+ "swFourteenSingleEve": {
+  "value": "14.5",
+  "source": "experiments/sweep.json positions.+1.40.single_eve_over_tier1.mean (percent)"
+ },
+ "swFourteenFlagAnnex": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.40.any_flag.annex1"
+ },
+ "swFourteenFlagSingle": {
+  "value": "4",
+  "source": "experiments/sweep.json positions.+1.40.any_flag.single"
+ },
+ "swFourteenFlagPos": {
+  "value": "20",
+  "source": "experiments/sweep.json positions.+1.40.any_flag.positive_parts"
  },
  "swFifteenAnnexNii": {
   "value": "4.46",
@@ -3215,6 +3471,10 @@
   "value": "208",
   "source": "experiments/floors.json h5.violations"
  },
+ "floorsTotalNii": {
+  "value": "960",
+  "source": "experiments/floors.json h5.checked halved: the comparisons of the delta NII alone (h5.checked counts both measures); every raise is on the delta NII"
+ },
  "floorsMaxInc": {
   "value": "3{,}348",
   "source": "experiments/floors.json h5.max_increase"
@@ -3224,8 +3484,8 @@
   "source": "experiments/floors.json results.+0.long-uf.distance_bp.mean"
  },
  "flTwentyFiveDistLng": {
-  "value": "-4.5",
-  "source": "experiments/floors.json results.-25.long-uf.distance_bp.mean"
+  "value": "4.5",
+  "source": "experiments/floors.json results.-25.long-uf.distance_bp.mean (absolute value)"
  },
  "flTwentyFiveEffLng": {
   "value": "0",
@@ -3244,8 +3504,8 @@
   "source": "experiments/floors.json results.-25.long-uf.books_where_floor_lowers_nii"
  },
  "flTwentyFiveDistSht": {
-  "value": "-4.5",
-  "source": "experiments/floors.json results.-25.short-uf.distance_bp.mean"
+  "value": "4.5",
+  "source": "experiments/floors.json results.-25.short-uf.distance_bp.mean (absolute value)"
  },
  "flTwentyFiveEffSht": {
   "value": "0",
@@ -3264,8 +3524,8 @@
   "source": "experiments/floors.json results.-25.short-uf.books_where_floor_lowers_nii"
  },
  "flTwentyFiveDistFlr": {
-  "value": "-4.5",
-  "source": "experiments/floors.json results.-25.floors-active.distance_bp.mean"
+  "value": "4.5",
+  "source": "experiments/floors.json results.-25.floors-active.distance_bp.mean (absolute value)"
  },
  "flTwentyFiveEffFlr": {
   "value": "0",
@@ -3284,8 +3544,8 @@
   "source": "experiments/floors.json results.-25.floors-active.books_where_floor_lowers_nii"
  },
  "flFiftyDistLng": {
-  "value": "-29.5",
-  "source": "experiments/floors.json results.-50.long-uf.distance_bp.mean"
+  "value": "29.5",
+  "source": "experiments/floors.json results.-50.long-uf.distance_bp.mean (absolute value)"
  },
  "flFiftyEffLng": {
   "value": "0",
@@ -3304,8 +3564,8 @@
   "source": "experiments/floors.json results.-50.long-uf.books_where_floor_lowers_nii"
  },
  "flFiftyDistSht": {
-  "value": "-29.5",
-  "source": "experiments/floors.json results.-50.short-uf.distance_bp.mean"
+  "value": "29.5",
+  "source": "experiments/floors.json results.-50.short-uf.distance_bp.mean (absolute value)"
  },
  "flFiftyEffSht": {
   "value": "0",
@@ -3324,8 +3584,8 @@
   "source": "experiments/floors.json results.-50.short-uf.books_where_floor_lowers_nii"
  },
  "flFiftyDistFlr": {
-  "value": "-29.5",
-  "source": "experiments/floors.json results.-50.floors-active.distance_bp.mean"
+  "value": "29.5",
+  "source": "experiments/floors.json results.-50.floors-active.distance_bp.mean (absolute value)"
  },
  "flFiftyEffFlr": {
   "value": "$-$19",
@@ -3344,8 +3604,8 @@
   "source": "experiments/floors.json results.-50.floors-active.books_where_floor_lowers_nii"
  },
  "flHundredDistLng": {
-  "value": "-79.5",
-  "source": "experiments/floors.json results.-100.long-uf.distance_bp.mean"
+  "value": "79.5",
+  "source": "experiments/floors.json results.-100.long-uf.distance_bp.mean (absolute value)"
  },
  "flHundredEffLng": {
   "value": "8",
@@ -3364,8 +3624,8 @@
   "source": "experiments/floors.json results.-100.long-uf.books_where_floor_lowers_nii"
  },
  "flHundredDistSht": {
-  "value": "-79.5",
-  "source": "experiments/floors.json results.-100.short-uf.distance_bp.mean"
+  "value": "79.5",
+  "source": "experiments/floors.json results.-100.short-uf.distance_bp.mean (absolute value)"
  },
  "flHundredEffSht": {
   "value": "29",
@@ -3384,8 +3644,8 @@
   "source": "experiments/floors.json results.-100.short-uf.books_where_floor_lowers_nii"
  },
  "flHundredDistFlr": {
-  "value": "-79.5",
-  "source": "experiments/floors.json results.-100.floors-active.distance_bp.mean"
+  "value": "79.5",
+  "source": "experiments/floors.json results.-100.floors-active.distance_bp.mean (absolute value)"
  },
  "flHundredEffFlr": {
   "value": "58",
@@ -3404,8 +3664,8 @@
   "source": "experiments/floors.json results.-100.floors-active.books_where_floor_lowers_nii"
  },
  "flTwoHundredDistLng": {
-  "value": "-179.5",
-  "source": "experiments/floors.json results.-200.long-uf.distance_bp.mean"
+  "value": "179.5",
+  "source": "experiments/floors.json results.-200.long-uf.distance_bp.mean (absolute value)"
  },
  "flTwoHundredEffLng": {
   "value": "120",
@@ -3424,8 +3684,8 @@
   "source": "experiments/floors.json results.-200.long-uf.books_where_floor_lowers_nii"
  },
  "flTwoHundredDistSht": {
-  "value": "-179.5",
-  "source": "experiments/floors.json results.-200.short-uf.distance_bp.mean"
+  "value": "179.5",
+  "source": "experiments/floors.json results.-200.short-uf.distance_bp.mean (absolute value)"
  },
  "flTwoHundredEffSht": {
   "value": "250",
@@ -3444,8 +3704,8 @@
   "source": "experiments/floors.json results.-200.short-uf.books_where_floor_lowers_nii"
  },
  "flTwoHundredDistFlr": {
-  "value": "-179.5",
-  "source": "experiments/floors.json results.-200.floors-active.distance_bp.mean"
+  "value": "179.5",
+  "source": "experiments/floors.json results.-200.floors-active.distance_bp.mean (absolute value)"
  },
  "flTwoHundredEffFlr": {
   "value": "215",
@@ -3464,8 +3724,8 @@
   "source": "experiments/floors.json results.-200.floors-active.books_where_floor_lowers_nii"
  },
  "flThreeHundredDistLng": {
-  "value": "-279.5",
-  "source": "experiments/floors.json results.-300.long-uf.distance_bp.mean"
+  "value": "279.5",
+  "source": "experiments/floors.json results.-300.long-uf.distance_bp.mean (absolute value)"
  },
  "flThreeHundredEffLng": {
   "value": "681",
@@ -3484,8 +3744,8 @@
   "source": "experiments/floors.json results.-300.long-uf.books_where_floor_lowers_nii"
  },
  "flThreeHundredDistSht": {
-  "value": "-279.5",
-  "source": "experiments/floors.json results.-300.short-uf.distance_bp.mean"
+  "value": "279.5",
+  "source": "experiments/floors.json results.-300.short-uf.distance_bp.mean (absolute value)"
  },
  "flThreeHundredEffSht": {
   "value": "935",
@@ -3504,8 +3764,8 @@
   "source": "experiments/floors.json results.-300.short-uf.books_where_floor_lowers_nii"
  },
  "flThreeHundredDistFlr": {
-  "value": "-279.5",
-  "source": "experiments/floors.json results.-300.floors-active.distance_bp.mean"
+  "value": "279.5",
+  "source": "experiments/floors.json results.-300.floors-active.distance_bp.mean (absolute value)"
  },
  "flThreeHundredEffFlr": {
   "value": "372",
@@ -3543,9 +3803,13 @@
   "value": "0",
   "source": "experiments/floors.json lowers in the five other variants, summed"
  },
+ "ratioSeconds": {
+  "value": "1",
+  "source": "experiments/ratio_of_means.json seconds (measured)"
+ },
  "totalSeconds": {
-  "value": "46",
-  "source": "sum of the four measured run times"
+  "value": "27",
+  "source": "sum of the five measured run times"
  },
  "sizeClpPar": {
   "value": "300",
