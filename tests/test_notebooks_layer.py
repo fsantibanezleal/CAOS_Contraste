@@ -452,13 +452,14 @@ def test_a_notebook_that_reads_test_rows_prints_the_engine_version_that_baked_th
             assert not recomputes_without_the_baked_version(source), path.name
 
 
-def test_topic_one_has_its_four_notebooks_in_both_languages():
-    plan = [1, 1, 1, 2]
+def test_topic_one_has_its_five_notebooks_in_both_languages():
+    # the fifth, from a licensed source to a committed document, joined on 2026-11-07
+    plan = [1, 1, 1, 2, 2]
     for lang in LANGS:
         found = notebooks(ROOT, lang)
         got = [p for p in found if p.parent.name == TOPIC_01]
         assert [read_nb(p)["metadata"]["caos"]["level"] for p in got] == plan
-        assert [p.name[:2] for p in got] == ["01", "02", "03", "04"]
+        assert [p.name[:2] for p in got] == ["01", "02", "03", "04", "05"]
 
 
 # ---- NB adversarial: a defect planted in a copy of the committed set --------------------------------------------------
