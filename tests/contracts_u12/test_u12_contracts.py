@@ -667,8 +667,9 @@ def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
         # c17-outputs 4.0.0: the four S-3 capital members (D03), after 3.0.0 the nullable FFT exceedance (U16-R3 c18 B2) and 2.0.0 the Panjer one
-        # (U16-F4); c17-models 1.1.0: the four S-3 rungs of the ladder
-        assert d["version"] == {"c17-outputs": "4.0.0", "c17-models": "1.1.0"}.get(d["id"], "1.0.0")
+        # (U16-F4); c17-models 1.1.0: the four S-3 rungs of the ladder;
+            # c17-outputs 5.0.0 (2026-11-01): the exceedance arrays accept null past the last node of their grid again.
+        assert d["version"] == {"c17-outputs": "5.0.0", "c17-models": "1.1.0"}.get(d["id"], "1.0.0")
         assert d["status"] == "real"                         # the integrator set real when the bake landed (0.11.000)
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]

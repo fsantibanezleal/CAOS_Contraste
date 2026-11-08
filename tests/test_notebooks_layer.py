@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-CLAIMS: frozenset[str] = frozenset({"BS-1", "BS-2", "BS-3", "BS-4", "BS-5", "BS-6", "BS-7", "BS-8", "BS-9", "BS-10", "BS-11", "BS-12"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+CLAIMS: frozenset[str] = frozenset({"BS-1", "BS-2", "BS-3", "BS-4", "BS-5", "BS-6", "BS-7", "BS-8", "BS-9", "BS-10", "BS-11", "BS-12", "BS-13", "BS-14", "BS-15", "BS-16"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
 # the PyPI pin of the notebooks, read from notebooks/requirements.txt; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_PIN = re.search(r"(?m)^riskvalidation==(\d+\.\d+\.\d+)$", (Path(__file__).resolve().parents[1] / "notebooks" / "requirements.txt").read_text(encoding="utf-8")).group(1)

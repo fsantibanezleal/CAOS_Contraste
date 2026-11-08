@@ -144,4 +144,4 @@ def test_the_runner_refuses_a_route_list_that_omits_declared_story_routes(tmp_pa
     repo = make_tree(tmp_path / "repo", *GATE_INPUTS)
     r, args = run_gate(repo, "--routes", "/,/app", "--sizes", "1280x800")
     assert r.returncode != 0 and args is None, (r.stderr, args)
-    assert "showcase routes" in r.stderr and "/story/method" in r.stderr and "ADR-0082" in r.stderr, r.stderr
+    assert "showcase routes" in r.stderr and "/story/inventory" in r.stderr and "ADR-0082" in r.stderr, r.stderr

@@ -11,12 +11,16 @@ from pipeline.cases.c17.documents import _findings
 NBSP = " "
 
 
+# the four robust rungs of S-3: a cell that carries them with no summary counts in no hypothesis share (finding F-5 reads "inconclusive")
+S3 = {rung: {"summary": None} for rung in ("sla_mean_adjusted", "sla_cvm", "sla_obre", "sla_cvm_lognormal")}
+
+
 def _cells(lognormal: float = 0.00438) -> dict:
     return {
-        "y5-h10000": {"lda_splice": {"iqr_over_truth": 3.30, "ratio_to_truth": {"median": 0.7}}},
+        "y5-h10000": {"lda_splice": {"iqr_over_truth": 3.30, "ratio_to_truth": {"median": 0.7}}, **S3},
         "y10-h20000": {"lda_splice": {"iqr_over_truth": 2.32, "ratio_to_truth": {"median": 0.725}},
                        "lda_lognormal": {"ratio_to_truth": {"median": lognormal}},
-                       "lda_lognormal_truncated": {"ratio_to_truth": {"median": 0.0912}}},
+                       "lda_lognormal_truncated": {"ratio_to_truth": {"median": 0.0912}}, **S3},
     }
 
 
