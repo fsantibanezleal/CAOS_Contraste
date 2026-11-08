@@ -27,7 +27,6 @@ are over the same cases. Intervals are Wilson (95%).
 """
 from __future__ import annotations
 
-import math
 import sys
 import time
 from importlib.metadata import version

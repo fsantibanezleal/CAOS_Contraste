@@ -1,0 +1,9 @@
+{
+  "source": "git log -S on docs/design/SDD.md, the first commit that holds the criterion's text",
+  "criteria": {
+    "reconciliation identities close within 1e-6": {
+      "commit": "4aa4efae",
+      "date": "2026-10-05"
+    }
+  }
+}

@@ -99,7 +99,7 @@ The committed seed is reproduced to \efiveCommittedDiff{} currency units.
 Over \efiveSeeds{} seeds the IFRS 9 over B-1 ratio is \efiveBaseMean{} in the base (95\% interval \efiveBaseLo{} to \efiveBaseHi{}, standard deviation \efiveBaseSd{}) and \efiveCombinedMean{} in the combined severe scenario (\efiveCombinedLo{} to \efiveCombinedHi{}); it is below one in the other five scenarios and above one in the severe one \efiveOrder{}.
 IFRS 9 exceeds Annex 9 in the base in \efiveIfrsAboveBde{} seeds of \efiveSeeds{}.
 The bridge closes within \efiveBridgeMax{} units in all \efiveCells{} runs and the engine's reconciliation test is green in \efiveGreen{} of them.
-In the base the mean steps are $\efiveStepBaseMeasurementBasis$ billion for the measurement basis, $+\efiveStepBaseLifetimeHorizon$ for the lifetime horizon, $+\efiveStepBaseForwardLooking$ for probability weighting, $+\efiveStepBaseDiscounting$ for discounting (which raises the loss: the stage 3 loss is the exposure minus the discounted recoveries, so discounting the recoveries lowers them and raises the loss) and $+\efiveStepBaseIfrsNineOverlays$ for overlays; the B-1 minimum is not binding.
+In the base the mean steps are $\efiveStepBaseMeasurementBasis$ billion for the measurement basis, $+\efiveStepBaseLifetimeHorizon$ for the lifetime horizon, $+\efiveStepBaseForwardLooking$ for probability weighting, $+\efiveStepBaseDiscounting$ for discounting (which lowers the stage 1 and 2 losses and raises the stage 3 loss, the exposure minus the discounted recoveries, by more) and $+\efiveStepBaseIfrsNineOverlays$ for overlays; the B-1 minimum is not binding.
 The non-linearity index of the IFRS 9 allowance averages \efiveNlBase{} (\efiveNlBaseLow{} to \efiveNlBaseHigh{}) in the base.
 
 \begin{figure}[htbp]
@@ -118,7 +118,7 @@ The ratios depend on the size of the book (\cref{tab:ladder}): at \efiveLadderLo
 \subsection{Outcome of the predictions and the reproductions}
 \label{sec:res-hypotheses}
 
-Of the \hypTotal{} predictions set before the runs, \hypHeld{} held and \hypRefuted{} were refuted (\hypRefutedList{}), and \cref{tab:outcomes} gives the value observed for each.
+Of the \hypTotal{} predictions, \hypHeld{} held and \hypRefuted{} were refuted (\hypRefutedList{}), and \cref{tab:outcomes} gives the value observed for each.
 The rounding to millions (Q3b), the one blind entry (A2) and the group of eleven entries (A4) were wrong in their numbers.
 The \hypReproTotal{} reproductions, which are not predictions, are counted apart: \hypReproHeld{} were reproduced (the reference example C1, the closing of the identities on the six committed dates C2 and the committed regime totals B6), and \hypReproContradicted{} was contradicted (\hypReproContradictedList{}): the weighted ECL is above the mean-path ECL on five of the six committed dates and below it on 2010-12, a statement that the design document lists as not claimed.
 

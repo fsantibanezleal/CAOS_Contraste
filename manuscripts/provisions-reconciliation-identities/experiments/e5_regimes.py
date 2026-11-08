@@ -1,6 +1,6 @@
 """E5: one synthetic bank under three provisioning regimes, regenerated for several seeds and sizes.
 
-    python manuscripts/provisions-reconciliation-identities/experiments/e5_regimes.py --seeds 42 1 2 3 4 --scale 1.0
+    python manuscripts/provisions-reconciliation-identities/experiments/e5_regimes.py --seeds 42 1 2 3 4 5 6 7 8 9 --scale 1.0
     python manuscripts/provisions-reconciliation-identities/experiments/e5_regimes.py --seeds 42 --scale 0.02 0.05 0.1 0.2 0.5
 
 The script calls the product's own C07 generator and evaluation (``pipeline.cases.c07.bake.build``: the synthetic Banco Andino,

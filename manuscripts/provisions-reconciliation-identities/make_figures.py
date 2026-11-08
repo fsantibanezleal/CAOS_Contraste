@@ -10,7 +10,6 @@ from __future__ import annotations
 import glob
 import json
 import pathlib
-import statistics as st
 import sys
 
 import numpy as np

@@ -22,6 +22,22 @@ import common  # noqa: E402
 import figkit  # noqa: E402
 
 OUT = HERE / "tables"
+
+
+def sdd_date(criterion: str) -> str:
+    """The date a criterion first entered the design document (one source for every Set cell): the stored result of
+    ``experiments/sdd_dates.py``, which reads it once from the git history of docs/design/SDD.md."""
+    stored = json.loads((HERE / "experiments" / "sdd_dates.json").read_text(encoding="utf-8"))["criteria"]
+    if criterion not in stored:
+        raise SystemExit(f"criterion not in experiments/sdd_dates.json (run experiments/sdd_dates.py): {criterion}")
+    y, m, d = stored[criterion]["date"].split("-")
+    return f"{int(d)} {MONTHS[int(m) - 1]} {y}"
+
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+SET_HEADER = "stated in the script header"
+SET_BAKE_DESIGN = f"before the bake (design document, {sdd_date('reconciliation identities close within 1e-6')}); the bake was built to meet it"
+REPRO_IDS = ("B6", "C1", "C2", "C3")
 E1, E2, E3, E4, E6 = (common.load(f) for f in ("e1_gate_power.json", "e2_tolerance_and_rounding.json", "e3_overlays.json", "e4_nonlinearity.json",
                                                 "e6_identity_algebra.json"))
 RUNS = [json.loads(pathlib.Path(f).read_text(encoding="utf-8")) for f in sorted(glob.glob(str(HERE / "experiments" / "e5_regimes" / "s*-x1.json")))]
@@ -91,7 +107,7 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     thr = [E1["threshold"][c] for c in DETECTABLE]
     dev = max(max(abs(t["min_ratio"] - 1), abs(t["max_ratio"] - 1)) for t in thr)
     mis_ok = E1["threshold"]["line-misclassification"]["n_bisected"] == 0
-    rows.append(("P1", "The smallest defect the test names equals the limit for every class but the misclassification.", "before the run; the notebook had measured it on one defect class",
+    rows.append(("P1", "The smallest defect the test names equals the limit for every class but the misclassification.", SET_HEADER + "; the notebook had measured it on one defect class",
                  f"largest deviation of the ratio from 1: {sci(dev)}; misclassification never named", dev < 1e-6 and mis_ok))
     full_ok = agg("full", "1.01", DETECTABLE)[0] == agg("full", "1.01", DETECTABLE)[1] and agg("full", "100", ("line-misclassification",))[0] == 0
     three = ("allowance-movement", "allowance-closing", "gca-movement")
@@ -99,72 +115,72 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     cmp_ok = all(agg(g, m, three)[0] == agg(g, m, three)[1] for g in ("stage", "total") for m in ("1.01", "10", "100")) and \
         all(agg(g, m, four)[0] == 0 for g in ("stage", "total") for m in ("0.25", "0.5", "0.9", "0.99", "1.01", "1.1", "2", "10", "100"))
     rows.append(("P2", "The pooled row and the stage arithmetic detect three classes above the limit and none of the other four; the twelve identities detect all seven.",
-                 "before the run", f"full {num(agg('full', '1.01', DETECTABLE)[0])}/{num(agg('full', '1.01', DETECTABLE)[1])}; stage and pooled "
+                 SET_HEADER, f"full {num(agg('full', '1.01', DETECTABLE)[0])}/{num(agg('full', '1.01', DETECTABLE)[1])}; stage and pooled "
                  f"{num(agg('stage', '1.01', DETECTABLE)[0])}/{num(agg('stage', '1.01', DETECTABLE)[1])}", full_ok and cmp_ok))
     lost = sorted(f for f in E1["meta"]["families"] if any(G[c]["10"][f"drop:{f}"][0] == 0 for c in DETECTABLE))
     rows.append(("P3", "Leaving out one identity family loses a class entirely for exactly two families: the gross amount roll-forward and the tie to the ECL.",
-                 "before the run", f"families whose removal loses a class: {len(lost)} ({', '.join(FAMILY_NAME[f] for f in lost)})",
+                 SET_HEADER, f"families whose removal loses a class: {len(lost)} ({', '.join(FAMILY_NAME[f] for f in lost)})",
                  lost == ["gca-rollforward", "stage-closing-equals-ecl"]))
     cm, rs = E2["committed"], E2["resampled"]
     q1 = sum(1 for v in cm.values() if v["abs:1e-06"]) >= 1 and not any(v["rel:1e-06"] for v in cm.values()) and rs["rel:1e-06"][0] == 0
-    rows.append(("Q1", "An absolute tolerance of 1e-6 units flags a clean committed table; the relative basis flags none of the six or of the 1,200 resampled books "
-                       "(first part a reproduction).", "before the run; the notebook had measured the first part",
+    rows.append(("Q1", "An absolute tolerance of 1e-6 units flags a clean committed table; the relative basis flags none of the six or of the 1,200 resampled books.",
+                 SET_HEADER + "; the notebook had measured the flag on a committed table",
                  f"absolute flags {sum(1 for v in cm.values() if v['abs:1e-06'])} of 6 and {rs['abs:1e-06'][0]} of {num(rs['abs:1e-06'][1])}; relative flags "
                  f"{rs['rel:1e-06'][0]}", q1))
     r = E2["rounding"]
     q2 = all(r[k]["flagged"][0] == 0 for k in ("1", "10", "1000")) and r["10000"]["flagged"][0] / r["10000"]["flagged"][1] < 0.01
-    rows.append(("Q2", "After rounding to 1, 10 and 1,000 units no book is flagged; at 10,000 fewer than 1% are.", "before the run",
+    rows.append(("Q2", "After rounding to 1, 10 and 1,000 units no book is flagged; at 10,000 fewer than 1% are.", SET_HEADER,
                  f"0, 0, {r['1000']['flagged'][0]} flagged; at 10,000: {r['10000']['flagged'][0]} of {num(r['10000']['flagged'][1])}", q2))
     f5 = r["100000"]["flagged"][0] / r["100000"]["flagged"][1]
-    rows.append(("Q3a", "After rounding to 100,000 units between 30% and 95% of the books are flagged.", "before the run", f"{100 * f5:.1f}%", 0.30 <= f5 <= 0.95))
+    rows.append(("Q3a", "After rounding to 100,000 units between 30% and 95% of the books are flagged.", SET_HEADER, f"{100 * f5:.1f}%", 0.30 <= f5 <= 0.95))
     f6 = r["1e+06"]["flagged"][0] / r["1e+06"]["flagged"][1]
-    rows.append(("Q3b", "After rounding to 1,000,000 units more than 99% of the books are flagged.", "before the run", f"{100 * f6:.1f}%", f6 > 0.99))
+    rows.append(("Q3b", "After rounding to 1,000,000 units more than 99% of the books are flagged.", SET_HEADER, f"{100 * f6:.1f}%", f6 > 0.99))
     inv = E3["invariance"]
     o1 = inv["model_changed"] + inv["total_not_model_plus_overlays"] + inv["carried_not_overlay_total"] == 0
-    rows.append(("O1", "The model ECL does not depend on the overlays and the total is the model ECL plus the overlays, in 3,000 draws.", "before the run",
+    rows.append(("O1", "The model ECL does not depend on the overlays and the total is the model ECL plus the overlays, in 3,000 draws.", SET_HEADER,
                  f"{inv['sets_checked']:,} overlay sets, violations {inv['model_changed'] + inv['total_not_model_plus_overlays'] + inv['carried_not_overlay_total']}", o1))
     bk = E3["placement"]["bookings"]
-    rows.append(("O2", "The correct overlay booking closes every identity in 18 of 18 cases.", "before the run", f"flagged {bk['correct']['full'][0]} of {bk['correct']['full'][1]}",
+    rows.append(("O2", "The correct overlay booking closes every identity in 18 of 18 cases.", SET_HEADER, f"flagged {bk['correct']['full'][0]} of {bk['correct']['full'][1]}",
                  bk["correct"]["full"][0] == 0))
     four_w = ("not-carried", "wrong-stage", "double-carried", "carried-not-in-waterfall")
     o3 = all(bk[k]["full"][0] == 18 for k in four_w) and all(bk[k][g][0] == 0 for k in four_w for g in ("stage", "total"))
-    rows.append(("O3", "The twelve identities flag four wrong overlay bookings in 18 of 18 cases each; the stage arithmetic and the pooled row flag none.", "before the run",
+    rows.append(("O3", "The twelve identities flag four wrong overlay bookings in 18 of 18 cases each; the stage arithmetic and the pooled row flag none.", SET_HEADER,
                  "full " + ", ".join(f"{bk[k]['full'][0]}" for k in four_w) + f" of 18; stage and pooled {sum(bk[k][g][0] for k in four_w for g in ('stage', 'total'))}", o3))
-    rows.append(("O4", "No method flags an overlay merged into the model ECL.", "before the run",
+    rows.append(("O4", "No method flags an overlay merged into the model ECL.", SET_HEADER,
                  f"full {bk['merged-into-model']['full'][0]}, stage {bk['merged-into-model']['stage'][0]}, pooled {bk['merged-into-model']['total'][0]} of 18",
                  all(bk["merged-into-model"][g][0] == 0 for g in ("full", "stage", "total"))))
     sw = E4["sweep"]["classes"]
-    rows.append(("N1", "No negative index among the draws whose factors all lie in the convex region (reproduction).", "before the run; the notebook had swept another seed",
+    rows.append(("N1", "No negative index among the draws whose factors all lie in the convex region.", SET_HEADER + "; the notebook had swept another seed",
                  f"{sw['convex']['negative']} of {num(sw['convex']['n'])}", sw["convex"]["negative"] == 0))
-    rows.append(("N2", "No positive index among the draws whose factors all lie in the concave region, with at least 100 such draws.", "before the run",
+    rows.append(("N2", "No positive index among the draws whose factors all lie in the concave region, with at least 100 such draws.", SET_HEADER,
                  f"{sw['concave']['positive']} of {num(sw['concave']['n'])}", sw["concave"]["positive"] == 0 and sw["concave"]["n"] >= 100))
-    rows.append(("N3", "Both signs occur among the draws with factors on both sides of the inflection.", "before the run",
+    rows.append(("N3", "Both signs occur among the draws with factors on both sides of the inflection.", SET_HEADER,
                  f"{num(sw['mixed']['positive'])} positive, {num(sw['mixed']['negative'])} negative", sw["mixed"]["positive"] > 0 and sw["mixed"]["negative"] > 0))
     so = E4["sweep"]["second_order"]
-    rows.append(("N4", "The second-order formula is within 25% of the index in at least 75% of the convex draws.", "before the run",
+    rows.append(("N4", "The second-order formula is within 25% of the index in at least 75% of the convex draws.", SET_HEADER,
                  f"{100 * so['within_25pct']:.1f}% of {num(so['n'])}", so["within_25pct"] >= 0.75))
     ds = E4["designs"]["designs"]
     rows.append(("R1", "Where the forecast lies two standard deviations inside the convex region the base scenario alone understates the expected PD in at least 99% of the draws.",
-                 "before the run", f"{100 * ds['single']['share_negative_strong_margin']:.1f}% of {num(E4['designs']['strong_margin_draws'])}",
+                 SET_HEADER, f"{100 * ds['single']['share_negative_strong_margin']:.1f}% of {num(E4['designs']['strong_margin_draws'])}",
                  ds["single"]["share_negative_strong_margin"] >= 0.99))
     order = [ds[k]["median_abs"] for k in ("gh5", "gh3", "tertile3", "adhoc3", "single")]
-    rows.append(("R2", "The median absolute error is ordered gh5 < gh3 < tertile3 < adhoc3 < single.", "before the run", "ordered as predicted" if order == sorted(order) else "not ordered",
+    rows.append(("R2", "The median absolute error is ordered gh5 < gh3 < tertile3 < adhoc3 < single.", SET_HEADER, "ordered as predicted" if order == sorted(order) else "not ordered",
                  order == sorted(order)))
     br = E4["designs"]["adhoc3_bias_ratio_predicted_over_measured"]
-    rows.append(("R3", "The second-order bias of the three-scenario set is within 20% of the measured bias at the median.", "before the run",
+    rows.append(("R3", "The second-order bias of the three-scenario set is within 20% of the measured bias at the median.", SET_HEADER,
                  f"median ratio {br['q50']:.3f}", abs(br["q50"] - 1) <= 0.2))
     bsum = max(r_["scenarios"][s]["bridge_residual"] for r_ in RUNS for s in r_["scenarios"])
-    rows.append(("B1", "The bridge closes to within one currency unit in every seed and scenario.", "before the run", f"largest residual {sci(bsum)} over {len(RUNS) * 6} runs", bsum <= 1.0))
+    rows.append(("B1", "The bridge closes to within one currency unit in every seed and scenario.", SET_HEADER, f"largest residual {sci(bsum)} over {len(RUNS) * 6} runs", bsum <= 1.0))
     green = all(s["identities"]["light"] == "green" for r_ in RUNS for s in r_["scenarios"].values())
-    rows.append(("B2", "The engine's reconciliation test is green in every seed and scenario.", "before the run", "all green" if green else "a red light", green))
+    rows.append(("B2", "The engine's reconciliation test is green in every seed and scenario.", SET_HEADER, "all green" if green else "a red light", green))
     below = all(r_["scenarios"][s]["ifrs9_over_b1"] < 1 for r_ in RUNS for s in r_["scenarios"] if s != "combined-severe")
     above = all(r_["scenarios"]["combined-severe"]["ifrs9_over_b1"] > 1 for r_ in RUNS)
-    rows.append(("B3", "IFRS 9 is below B-1 in five scenarios and above it in the combined severe scenario, in every seed.", "before the run",
+    rows.append(("B3", "IFRS 9 is below B-1 in five scenarios and above it in the combined severe scenario, in every seed.", SET_HEADER,
                  "five below, one above, in all seeds" if below and above else "an exception", below and above))
     bi = sum(1 for r_ in RUNS if r_["scenarios"]["base"]["totals"]["ifrs9"] > r_["scenarios"]["base"]["totals"]["bde-annex9"])
-    rows.append(("B4", "IFRS 9 is above Annex 9 in the base scenario in at least 8 of 10 seeds.", "before the run", f"{bi} of {len(RUNS)}", bi >= 8))
+    rows.append(("B4", "IFRS 9 is above Annex 9 in the base scenario in at least 8 of 10 seeds.", SET_HEADER, f"{bi} of {len(RUNS)}", bi >= 8))
     sd = st.stdev(r_["scenarios"]["base"]["ifrs9_over_b1"] for r_ in RUNS)
-    rows.append(("B5", "The standard deviation over seeds of the base IFRS 9 over B-1 ratio is below 0.05.", "before the run", f"{sd:.3f}", sd < 0.05))
+    rows.append(("B5", "The standard deviation over seeds of the base IFRS 9 over B-1 ratio is below 0.05.", SET_HEADER, f"{sd:.3f}", sd < 0.05))
     r42 = next(r_ for r_ in RUNS if r_["seed"] == 42)
     diff = 0.0
     for sid, v in r42["scenarios"].items():
@@ -173,20 +189,20 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
     rows.append(("B6", "The committed seed at the committed size reproduces every committed regime total to within one currency unit (reproduction of the committed totals).", "after the bake; the committed totals had been read",
                  f"largest difference {diff:.2f}", diff <= 1.0))
     d6 = E6["dates"]
-    rows.append(("A1", "The engine's residuals equal the signed map times the perturbation for every entry of the six dates.", "before the run",
+    rows.append(("A1", "The engine's residuals equal the signed map times the perturbation for every entry of the six dates.", SET_HEADER,
                  f"largest deviation {sci(max(v['worst_deviation_over_delta'] for v in d6.values()))} of the perturbation",
                  max(v["worst_deviation_over_delta"] for v in d6.values()) < 1e-9))
     nb = max(len(v["blind_entries"]) for v in d6.values())
-    rows.append(("A2", "Exactly one entry is seen by no identity: the model ECL of the POCI stage.", "before the run", f"{nb} entries seen by no identity", sum(len(v["blind_entries"]) for v in d6.values()) == 6))
-    rows.append(("A3", "The signed map has full row rank.", "before the run", f"rank {d6['2008-12']['rank']} of {d6['2008-12']['equations']} equations",
+    rows.append(("A2", "Exactly one entry is seen by no identity: the model ECL of the POCI stage.", SET_HEADER, f"{nb} entries seen by no identity", sum(len(v["blind_entries"]) for v in d6.values()) == 6))
+    rows.append(("A3", "The signed map has full row rank.", SET_HEADER, f"rank {d6['2008-12']['rank']} of {d6['2008-12']['equations']} equations",
                  all(v["rank"] == v["equations"] for v in d6.values())))
-    rows.append(("A4", "The largest group of entries no failing pattern distinguishes has at least 11 entries.", "before the run",
+    rows.append(("A4", "The largest group of entries no failing pattern distinguishes has at least 11 entries.", SET_HEADER,
                  f"largest group {d6['2008-12']['largest_group']}", all(v["largest_group"] >= 11 for v in d6.values())))
     ex = E4["example"]
-    rows.append(("C1", "The reference example gives a weighted PD of 2.68% against 1.80% at the mean factor (reproduction of the acceptance criterion).", "after the bake",
+    rows.append(("C1", "The reference example gives a weighted PD of 2.68% against 1.80% at the mean factor (reproduction of the acceptance criterion).", SET_BAKE_DESIGN,
                  f"{100 * ex['pd_weighted']:.3f}% against {100 * ex['pd_at_mean_z']:.3f}%", round(100 * ex["pd_weighted"], 2) == 2.68 and round(100 * ex["pd_at_mean_z"], 2) == 1.80))
     clean_flagged = sum(1 for v in E1["clean"].values() if v["flagged"])
-    rows.append(("C2", "The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion).", "after the bake",
+    rows.append(("C2", "The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion).", SET_BAKE_DESIGN,
                  f"{clean_flagged} of 6 flagged", clean_flagged == 0))
     ecl_pos = sum(1 for v in E4["committed"].values() if v["ecl_index"] > 0)
     rows.append(("C3", "The weighted ECL exceeds the ECL at the mean path on every committed date (stated in the product as not claimed).", "after the bake; stated in the product as not claimed",
@@ -197,21 +213,22 @@ def hypotheses() -> list[tuple[str, str, str, str, bool]]:
 def write_hypotheses() -> None:
     """Two tables from the same rows: the predictions with when they were set (Experimental design) and the outcomes (Results).
 
-    A row set after the bake is a reproduction of a result the committed documents already held, not a prediction; it is counted apart.
+    A row in REPRO_IDS (a result the committed documents already held) is a reproduction, not a prediction; it is counted apart.
     """
     rows = hypotheses()
 
     def repro(r) -> bool:
-        return r[2].startswith("after the bake")
+        return r[0] in REPRO_IDS
 
     preds = [r for r in rows if not repro(r)]
     reps = [r for r in rows if repro(r)]
     held = sum(1 for r in preds if r[4])
     rep_ok = sum(1 for r in reps if r[4])
     table("hypotheses", ["ID", "Statement", "Set"], [[i, st, w] for i, st, w, o, ok in rows], align="lp{7.6cm}p{4.4cm}", longtable=True, label="tab:hypotheses",
-          caption=f"The {len(rows)} statements tested by the experiments, each stated in the header of its script, with when it was set relative to the run. "
-                  f"The {len(preds)} rows not marked after the bake are predictions; the {len(reps)} marked after the bake are reproductions of results that the "
-                  "committed documents already held, and they are not counted as predictions.")
+          caption=f"The {len(rows)} statements tested by the experiments, each stated in the header of its script, with what the header and the history of the design "
+                  "document say about when it was set; the repository does not record whether a prediction preceded the first run of its script. "
+                  f"The {len(preds)} statements whose result no committed document held are predictions; the {len(reps)} others ({', '.join(r[0] for r in reps)}) "
+                  "are reproductions and are not counted as predictions.")
     body = [[i, o, ("reproduced" if ok else "contradicted") if repro((i, st, w, o, ok)) else ("held" if ok else "refuted")] for i, st, w, o, ok in rows]
     table("outcomes", ["ID", "Observed", "Outcome"], body, align="lp{9.2cm}l", longtable=True, label="tab:outcomes",
           caption=f"The value observed for each statement and the outcome computed from the experiment output: {held} held and {len(preds) - held} refuted of the "
@@ -398,7 +415,7 @@ def write_ablation() -> None:
           caption="Ablation of the twelve identities by family: share of the 600 cases of each defect class (defect of ten times the limit) that the remaining identities still flag when one family is left "
                   "out; the last column counts the classes that no remaining identity detects.")
     # the other components: what removing each one costs
-    cm, rs = E2["committed"], E2["resampled"]
+    rs = E2["resampled"]
     sw = E4["sweep"]["classes"]
     comp = [
         ["Relative tolerance basis replaced by an absolute tolerance of 1e-6 units", "false alarms on clean books", f"{wil(*rs['rel:1e-06'])}", f"{wil(*rs['abs:1e-06'])}"],

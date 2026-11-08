@@ -1,5 +1,5 @@
 \begin{longtable}{lp{7.6cm}p{4.4cm}}
-\caption{The 31 statements tested by the experiments, each stated in the header of its script, with when it was set relative to the run. The 27 rows not marked after the bake are predictions; the 4 marked after the bake are reproductions of results that the committed documents already held, and they are not counted as predictions.}\label{tab:hypotheses}\\
+\caption{The 31 statements tested by the experiments, each stated in the header of its script, with what the header and the history of the design document say about when it was set; the repository does not record whether a prediction preceded the first run of its script. The 27 statements whose result no committed document held are predictions; the 4 others (B6, C1, C2, C3) are reproductions and are not counted as predictions.}\label{tab:hypotheses}\\
 \toprule
 ID & Statement & Set \\
 \midrule
@@ -10,35 +10,35 @@ ID & Statement & Set \\
 \endhead
 \bottomrule
 \endfoot
-P1 & The smallest defect the test names equals the limit for every class but the misclassification. & before the run; the notebook had measured it on one defect class \\
-P2 & The pooled row and the stage arithmetic detect three classes above the limit and none of the other four; the twelve identities detect all seven. & before the run \\
-P3 & Leaving out one identity family loses a class entirely for exactly two families: the gross amount roll-forward and the tie to the ECL. & before the run \\
-Q1 & An absolute tolerance of 1e-6 units flags a clean committed table; the relative basis flags none of the six or of the 1,200 resampled books (first part a reproduction). & before the run; the notebook had measured the first part \\
-Q2 & After rounding to 1, 10 and 1,000 units no book is flagged; at 10,000 fewer than 1\% are. & before the run \\
-Q3a & After rounding to 100,000 units between 30\% and 95\% of the books are flagged. & before the run \\
-Q3b & After rounding to 1,000,000 units more than 99\% of the books are flagged. & before the run \\
-O1 & The model ECL does not depend on the overlays and the total is the model ECL plus the overlays, in 3,000 draws. & before the run \\
-O2 & The correct overlay booking closes every identity in 18 of 18 cases. & before the run \\
-O3 & The twelve identities flag four wrong overlay bookings in 18 of 18 cases each; the stage arithmetic and the pooled row flag none. & before the run \\
-O4 & No method flags an overlay merged into the model ECL. & before the run \\
-N1 & No negative index among the draws whose factors all lie in the convex region (reproduction). & before the run; the notebook had swept another seed \\
-N2 & No positive index among the draws whose factors all lie in the concave region, with at least 100 such draws. & before the run \\
-N3 & Both signs occur among the draws with factors on both sides of the inflection. & before the run \\
-N4 & The second-order formula is within 25\% of the index in at least 75\% of the convex draws. & before the run \\
-R1 & Where the forecast lies two standard deviations inside the convex region the base scenario alone understates the expected PD in at least 99\% of the draws. & before the run \\
-R2 & The median absolute error is ordered gh5 < gh3 < tertile3 < adhoc3 < single. & before the run \\
-R3 & The second-order bias of the three-scenario set is within 20\% of the measured bias at the median. & before the run \\
-B1 & The bridge closes to within one currency unit in every seed and scenario. & before the run \\
-B2 & The engine's reconciliation test is green in every seed and scenario. & before the run \\
-B3 & IFRS 9 is below B-1 in five scenarios and above it in the combined severe scenario, in every seed. & before the run \\
-B4 & IFRS 9 is above Annex 9 in the base scenario in at least 8 of 10 seeds. & before the run \\
-B5 & The standard deviation over seeds of the base IFRS 9 over B-1 ratio is below 0.05. & before the run \\
+P1 & The smallest defect the test names equals the limit for every class but the misclassification. & stated in the script header; the notebook had measured it on one defect class \\
+P2 & The pooled row and the stage arithmetic detect three classes above the limit and none of the other four; the twelve identities detect all seven. & stated in the script header \\
+P3 & Leaving out one identity family loses a class entirely for exactly two families: the gross amount roll-forward and the tie to the ECL. & stated in the script header \\
+Q1 & An absolute tolerance of 1e-6 units flags a clean committed table; the relative basis flags none of the six or of the 1,200 resampled books. & stated in the script header; the notebook had measured the flag on a committed table \\
+Q2 & After rounding to 1, 10 and 1,000 units no book is flagged; at 10,000 fewer than 1\% are. & stated in the script header \\
+Q3a & After rounding to 100,000 units between 30\% and 95\% of the books are flagged. & stated in the script header \\
+Q3b & After rounding to 1,000,000 units more than 99\% of the books are flagged. & stated in the script header \\
+O1 & The model ECL does not depend on the overlays and the total is the model ECL plus the overlays, in 3,000 draws. & stated in the script header \\
+O2 & The correct overlay booking closes every identity in 18 of 18 cases. & stated in the script header \\
+O3 & The twelve identities flag four wrong overlay bookings in 18 of 18 cases each; the stage arithmetic and the pooled row flag none. & stated in the script header \\
+O4 & No method flags an overlay merged into the model ECL. & stated in the script header \\
+N1 & No negative index among the draws whose factors all lie in the convex region. & stated in the script header; the notebook had swept another seed \\
+N2 & No positive index among the draws whose factors all lie in the concave region, with at least 100 such draws. & stated in the script header \\
+N3 & Both signs occur among the draws with factors on both sides of the inflection. & stated in the script header \\
+N4 & The second-order formula is within 25\% of the index in at least 75\% of the convex draws. & stated in the script header \\
+R1 & Where the forecast lies two standard deviations inside the convex region the base scenario alone understates the expected PD in at least 99\% of the draws. & stated in the script header \\
+R2 & The median absolute error is ordered gh5 < gh3 < tertile3 < adhoc3 < single. & stated in the script header \\
+R3 & The second-order bias of the three-scenario set is within 20\% of the measured bias at the median. & stated in the script header \\
+B1 & The bridge closes to within one currency unit in every seed and scenario. & stated in the script header \\
+B2 & The engine's reconciliation test is green in every seed and scenario. & stated in the script header \\
+B3 & IFRS 9 is below B-1 in five scenarios and above it in the combined severe scenario, in every seed. & stated in the script header \\
+B4 & IFRS 9 is above Annex 9 in the base scenario in at least 8 of 10 seeds. & stated in the script header \\
+B5 & The standard deviation over seeds of the base IFRS 9 over B-1 ratio is below 0.05. & stated in the script header \\
 B6 & The committed seed at the committed size reproduces every committed regime total to within one currency unit (reproduction of the committed totals). & after the bake; the committed totals had been read \\
-A1 & The engine's residuals equal the signed map times the perturbation for every entry of the six dates. & before the run \\
-A2 & Exactly one entry is seen by no identity: the model ECL of the POCI stage. & before the run \\
-A3 & The signed map has full row rank. & before the run \\
-A4 & The largest group of entries no failing pattern distinguishes has at least 11 entries. & before the run \\
-C1 & The reference example gives a weighted PD of 2.68\% against 1.80\% at the mean factor (reproduction of the acceptance criterion). & after the bake \\
-C2 & The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion). & after the bake \\
+A1 & The engine's residuals equal the signed map times the perturbation for every entry of the six dates. & stated in the script header \\
+A2 & Exactly one entry is seen by no identity: the model ECL of the POCI stage. & stated in the script header \\
+A3 & The signed map has full row rank. & stated in the script header \\
+A4 & The largest group of entries no failing pattern distinguishes has at least 11 entries. & stated in the script header \\
+C1 & The reference example gives a weighted PD of 2.68\% against 1.80\% at the mean factor (reproduction of the acceptance criterion). & before the bake (design document, 5 October 2026); the bake was built to meet it \\
+C2 & The identities close on the tolerance basis on the six committed dates (reproduction of the acceptance criterion). & before the bake (design document, 5 October 2026); the bake was built to meet it \\
 C3 & The weighted ECL exceeds the ECL at the mean path on every committed date (stated in the product as not claimed). & after the bake; stated in the product as not claimed \\
 \end{longtable}

@@ -46,7 +46,7 @@ import time
 from importlib.metadata import version
 
 import numpy as np
-from scipy.special import ndtr, ndtri
+from scipy.special import ndtri
 
 import common as c
 from riskvalidation.provisions import ecl as ecl_engine
