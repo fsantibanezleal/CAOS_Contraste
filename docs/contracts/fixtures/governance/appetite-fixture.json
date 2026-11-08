@@ -223,11 +223,11 @@
     "es": "Remediacion vencida"
    },
    "kind": "count",
-   "value": 3,
+   "value": 1,
    "unit": "count",
-   "numerator": 3,
+   "numerator": 1,
    "denominator": 42,
-   "register_rows": 7,
+   "register_rows": 2,
    "reason": null,
    "threshold": {
     "label": "convention",
