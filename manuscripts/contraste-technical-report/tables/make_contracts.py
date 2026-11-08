@@ -422,13 +422,13 @@ def subsection(row: dict[str, str]) -> str:
 
 BS = chr(92)
 TT_OPEN = BS + "texttt{"
-BREAK = BS + "allowbreak{}"
+BREAK = BS + "allowbreak "  # no braces: a brace inside a texttt group hides its end from the voice gate; TeX drops the space
 HEADINGS = (BS + "subsection", BS + "subsubsection", BS + "label")
 
 
 def _breaks(body: str) -> str:
-    """Break points after the separators of an identifier: the escaped underscore, the slash, the dot, the colon pair, the hyphen."""
-    body = body.replace(BS + "_", BS + "_" + BREAK)
+    """Break points after the slash, the dot, the colon pair and the hyphen of an identifier, and before its escaped underscore."""
+    body = body.replace(BS + "_", BREAK + BS + "_")
     for sep in ("/", ".", "::", "-"):
         body = body.replace(sep, sep + BREAK)
     return body
@@ -468,10 +468,11 @@ def _token_breaks(token: str) -> str:
         return token
     out = []
     for i, ch in enumerate(token):
-        if ch.isupper() and i > 0 and (token[i - 1].islower() or token[i - 1].isdigit()):
+        if (ch.isupper() and i > 0 and (token[i - 1].islower() or token[i - 1].isdigit())) or (
+                ch == BS and token[i + 1:i + 2] == "_" and i > 0):
             out.append(BREAK)
         out.append(ch)
-        if ch in "/." or (ch == "_" and i > 0 and token[i - 1] == BS) or (ch == "-" and 0 < i < len(token) - 1):
+        if ch in "/." or (ch == "-" and 0 < i < len(token) - 1):
             out.append(BREAK)
     return "".join(out)
 
