@@ -106,7 +106,7 @@ def field(text: str, name: str) -> str:
 
 
 def clean(s: str) -> str:
-    s = s.replace("‐", "-").replace("‑", "-").replace("–", "--").replace("—", "-").replace("’", "'")
+    s = s.replace("‐", "-").replace("‑", "-").replace("–", "--").replace("\u2014", "-").replace("’", "'")
     s = s.replace("‘", "'").replace("&", "\\&")
     return re.sub(r"\s+", " ", s)
 
