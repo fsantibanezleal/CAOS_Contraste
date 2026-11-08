@@ -860,6 +860,8 @@ export type C22SeqHitScenario = components['schemas']['c22SeqHitScenario'];
 export type C22SeqPdScenario = components['schemas']['c22SeqPdScenario'];
 
 export type C22SeqHypothesis = components['schemas']['c22SeqHypothesis'];
+export type C22SeqReplication = components['schemas']['c22SeqReplication'];
+export type C22SeqReplicationFactor = components['schemas']['c22SeqReplicationFactor'];
 
 /** BS-15 (unit D15): the e-process of defaults against the predicted PD by age, per vintage and for the cohort (every C03 cohort document). */
 export type C03Sequential = components['schemas']['c03Sequential'];
@@ -911,6 +913,35 @@ const C22_STUDY = {
 } as const;
 
 const C22_SEQ_DETECTION = { ever: num, by: num, median_day: nNum, median_day_among_detected: nNum } satisfies Record<keyof C22SeqDetection, Kind>;
+
+const C22_SEQ_REPLICATION_FACTOR = {
+  id: 'string',
+  factor: num,
+  seed_medians: { array: nNum },
+  seed_median_mean: nNum,
+  seed_median_sd: nNum,
+  share_of_seeds_below_window: num,
+  pooled_n: 'integer',
+  pooled_median: nNum,
+  pooled_median_ci: { array: nNum },
+  pooled_traffic_light_median: nNum,
+  pooled_share_by_window: num,
+  pooled_kupiec_power: num,
+  pooled_power_cost: num,
+  pooled_power_cost_se: num,
+  seed_power_cost_mean: num,
+} satisfies Record<keyof C22SeqReplicationFactor, Kind>;
+
+const C22_SEQ_REPLICATION = {
+  seeds: 'integer',
+  reps: 'integer',
+  horizon: 'integer',
+  alpha: num,
+  window: 'integer',
+  bootstrap: 'integer',
+  monitor: 'string',
+  factors: { array: { object: C22_SEQ_REPLICATION_FACTOR } },
+} satisfies Record<keyof C22SeqReplication, Kind>;
 
 const C22_SEQUENTIAL = {
   method: {
@@ -977,6 +1008,7 @@ const C22_SEQUENTIAL = {
       >,
     },
   },
+  replication: { object: C22_SEQ_REPLICATION },
   verdict: { object: { holds: 'boolean', held: { array: 'string' }, failed: { array: 'string' }, text: 'text', scope: 'text' } },
 } satisfies Record<keyof C22Sequential, Kind>;
 

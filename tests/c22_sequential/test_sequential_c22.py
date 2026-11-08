@@ -142,6 +142,107 @@ def test_the_hypothesis_holds_only_when_the_three_rules_hold():
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# the replication: H2 and H3 are judged on the pool of independent seeds, as the final manuscript judges them
+
+def _factor(sid: str, medians: list[float], pooled: float | None, ci: tuple[float | None, float | None], light: float | None,
+            cost: float) -> dict:
+    return {"id": sid, "factor": float(sid[-1]), "seed_medians": medians, "seed_median_mean": float(np.mean(medians)),
+            "seed_median_sd": float(np.std(medians, ddof=1)), "share_of_seeds_below_window": float(np.mean(np.array(medians) < sq.WINDOW)),
+            "pooled_n": 40000, "pooled_median": pooled, "pooled_median_ci": list(ci), "pooled_traffic_light_median": light,
+            "pooled_share_by_window": 0.5, "pooled_kupiec_power": 0.6, "pooled_power_cost": cost, "pooled_power_cost_se": 0.002}
+
+
+def _replication(x3: dict, x4: dict, seeds: int = 20) -> dict:
+    return {"seeds": seeds, "reps": 2000, "horizon": 1000, "bootstrap": 2000, "factors": [x3, x4]}
+
+
+GOOD3 = ([240.0] * 14 + [260.0] * 6, 240.0, (236.0, 244.0), 250.0, 0.08)
+GOOD4 = ([128.0] * 20, 128.0, (126.0, 129.0), 250.0, 0.085)
+
+
+def test_the_replication_is_seeds_of_the_committed_size_at_factors_3_and_4_and_is_deterministic():
+    a = sq.run_replication(seed=5, seeds=3, reps=40, horizon=400)
+    b = sq.run_replication(seed=5, seeds=3, reps=40, horizon=400)
+    assert a == b
+    assert sq.REPLICATION_SEEDS == 20 and sq.REPLICATION_FACTORS == (3.0, 4.0)
+    assert a["seeds"] == 3 and a["reps"] == 40 and a["horizon"] == 400
+    assert [f["id"] for f in a["factors"]] == ["rate-x3", "rate-x4"] and [f["factor"] for f in a["factors"]] == [3.0, 4.0]
+    for f in a["factors"]:
+        assert len(f["seed_medians"]) == 3 and f["pooled_n"] == 120
+        assert 0.0 <= f["share_of_seeds_below_window"] <= 1.0
+        assert len(f["pooled_median_ci"]) == 2
+    assert sq.run_replication(seed=6, seeds=3, reps=40, horizon=400) != a
+
+
+def test_the_replication_seeds_come_from_the_case_seed_through_derive_seed():
+    from pipeline.cases.c22_studies import derive_seed
+
+    keys = sq.replication_keys("rate-x3", 2)
+    assert keys == ["sequential:replication:rate-x3:0", "sequential:replication:rate-x3:1"]
+    assert len({derive_seed(5, k) for k in keys}) == 2
+    a = sq.run_replication(seed=5, seeds=2, reps=30, horizon=300)
+    assert a["factors"][0]["seed_medians"][0] != a["factors"][0]["seed_medians"][1]
+
+
+def test_a_stream_that_never_detects_counts_as_never_in_the_pooled_median():
+    days = [np.full(10, math.inf), np.full(10, math.inf)]
+    out = sq.pooled_summary(days, [np.full(10, math.inf)] * 2, [np.zeros(10, dtype=bool)] * 2, np.random.default_rng(1), 50)
+    assert out["pooled_median"] is None and out["pooled_median_ci"] == [None, None]
+    assert out["share_of_seeds_below_window"] == 0.0 and out["pooled_traffic_light_median"] is None
+
+
+def test_h2_and_h3_follow_the_pooled_rule_not_the_single_run():
+    # the single run reads 239 (below 250: the old H2); the pool of 20 seeds is 251 with an interval that holds 250
+    single = _hits(e3=239.0, by3=0.60)
+    assert sq.verdict(single)["H2_delay"]["holds"] is True
+    pooled_no = _replication(_factor("rate-x3", [240.0] * 9 + [260.0] * 11, 251.0, (247.0, 255.0), 250.0, 0.124), _factor("rate-x4", *GOOD4[:1], 128.0, (126.0, 129.0), 250.0, 0.085))
+    v = sq.verdict(single, pooled_no)
+    assert v["H2_delay"]["holds"] is False
+    assert v["detail"]["rate-x3"]["single_run_H2"] is True and v["detail"]["rate-x3"]["H2"] is False
+    good = _replication(_factor("rate-x3", *GOOD3), _factor("rate-x4", *GOOD4))
+    assert sq.verdict(single, good)["H2_delay"]["holds"] is True
+
+
+def test_h2_needs_the_whole_interval_below_the_window_and_the_pooled_median_below_the_light():
+    x4 = _factor("rate-x4", *GOOD4)
+    assert sq.verdict(_hits(), _replication(_factor("rate-x3", *GOOD3), x4))["H2_delay"]["holds"] is True
+    edge = _replication(_factor("rate-x3", GOOD3[0], 249.0, (246.0, 250.0), 250.0, 0.08), x4)
+    assert sq.verdict(_hits(), edge)["H2_delay"]["holds"] is False       # the upper end must be below 250
+    light = _replication(_factor("rate-x3", GOOD3[0], 240.0, (236.0, 244.0), 230.0, 0.08), x4)
+    assert sq.verdict(_hits(), light)["H2_delay"]["holds"] is False      # not below the light's pooled median
+    never = _replication(_factor("rate-x3", GOOD3[0], None, (None, None), None, 0.08), x4)
+    assert sq.verdict(_hits(), never)["H2_delay"]["holds"] is False
+    mute = _replication(_factor("rate-x3", GOOD3[0], 240.0, (236.0, 244.0), None, 0.08), x4)
+    assert sq.verdict(_hits(), mute)["H2_delay"]["holds"] is True        # a light that never speaks is later than any day
+
+
+def test_h3_is_the_pooled_power_cost_under_ten_points_at_both_factors():
+    assert sq.verdict(_hits(), _replication(_factor("rate-x3", *GOOD3), _factor("rate-x4", *GOOD4)))["H3_power_cost"]["holds"] is True
+    over3 = _replication(_factor("rate-x3", GOOD3[0], 240.0, (236.0, 244.0), 250.0, 0.124), _factor("rate-x4", *GOOD4))
+    assert sq.verdict(_hits(), over3)["H3_power_cost"]["holds"] is False
+    over4 = _replication(_factor("rate-x3", *GOOD3), _factor("rate-x4", GOOD4[0], 128.0, (126.0, 129.0), 250.0, 0.10))
+    assert sq.verdict(_hits(), over4)["H3_power_cost"]["holds"] is False
+
+
+def test_the_texts_name_which_reading_decides_and_carry_the_numbers_of_both():
+    rep = _replication(_factor("rate-x3", [240.0] * 9 + [260.0] * 11, 251.0, (247.0, 255.0), 250.0, 0.124),
+                       _factor("rate-x4", GOOD4[0], 128.0, (126.0, 129.0), 250.0, 0.085))
+    hits = _hits(e3=244.0)
+    v = sq.verdict(hits, rep)
+    hyp = {h["id"]: h for h in sq.hypotheses(v, hits, rep)}
+    en, es = hyp["H2"]["measured"]["en"], hyp["H2"]["measured"]["es"]
+    for number in ("251", "247", "255", "244", "45"):                      # the pooled median and interval, the single run, the seeds below 250
+        assert number in en and number in es
+    assert "decides" in en and "single run" in en and "decide" in es and "corrida" in es
+    assert hyp["H2"]["holds"] is False and hyp["H3"]["holds"] is False
+    ids = {x["id"] for x in hyp["H2"]["values"]}
+    assert {"x3_pooled_median", "x3_pooled_median_ci_high", "x3_share_of_seeds_below_window", "x3_e_median_day"} <= ids
+    assert "20" in hyp["H3"]["measured"]["en"]
+    text = sq.verdict_block(v)["text"]["en"]
+    assert "H2, H3 failed" in text and "pooled" in text
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # the committed document
 
 def _variant(name: str) -> dict:
@@ -171,7 +272,7 @@ def test_the_committed_block_is_the_run_of_2000_series_per_scenario_on_the_engin
 
 def test_the_committed_verdict_is_the_rule_applied_to_the_committed_numbers():
     s = _variant("other-families")["outputs"]["sequential"]
-    v = sq.verdict(s["hits"])
+    v = sq.verdict(s["hits"], s["replication"])
     assert [h["holds"] for h in s["hypotheses"]] == [v["H1_size"]["holds"], v["H2_delay"]["holds"], v["H3_power_cost"]["holds"]]
     assert s["verdict"]["holds"] is v["holds"]
     assert s["verdict"]["holds"] == all(h["holds"] for h in s["hypotheses"])
@@ -211,3 +312,19 @@ def test_the_text_of_the_block_has_no_dash_or_arrow_and_both_languages():
     assert texts
     for t in texts:
         assert "\u2014" not in t and "\u2192" not in t and t.strip()
+
+
+def test_the_committed_document_does_not_say_h2_holds_and_carries_the_replication():
+    s = _variant("other-families")["outputs"]["sequential"]
+    rep = s["replication"]
+    assert rep["seeds"] == 20 and rep["reps"] == 2000 and [f["id"] for f in rep["factors"]] == ["rate-x3", "rate-x4"]
+    for f in rep["factors"]:
+        assert len(f["seed_medians"]) == 20 and f["pooled_n"] == 40000
+        assert f["share_of_seeds_below_window"] == pytest.approx(np.mean(np.array(f["seed_medians"]) < sq.WINDOW))
+    h = {x["id"]: x for x in s["hypotheses"]}
+    x3 = next(f for f in rep["factors"] if f["id"] == "rate-x3")
+    assert h["H2"]["holds"] is False and x3["pooled_median_ci"][1] >= sq.WINDOW
+    assert s["verdict"]["held"] == ["H1"] and s["verdict"]["failed"] == ["H2", "H3"]
+    for lang in ("en", "es"):
+        assert "20" in h["H2"]["measured"][lang] and "20" in h["H3"]["measured"][lang]
+    assert "holds: true" not in str(s["hypotheses"][1])

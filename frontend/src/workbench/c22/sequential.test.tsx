@@ -1,6 +1,7 @@
 // BS-15 (unit D15) on the committed C22 documents: the other-families variant carries the e-process monitors against the fixed-window tests read
 // every day, and its Validation group draws them in a Sequential tab, in both languages: the three hypotheses with their measured numbers and
 // the verdict, the VaR-hit scenarios and the PD book. Every other variant carries a null block and draws no such tab.
+import { formatNumber } from '@fasl-work/caos-app-shell';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { CaseData } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
@@ -51,6 +52,30 @@ describe('BS-15 on the committed C22 documents', () => {
     const es = textOf(render(<SequentialView sel={sel(data)} />, 'es'));
     expect(es).toContain('Monitores secuenciales');
     expect(es).not.toContain('Sequential monitors');
+  });
+
+  it('judges H2 and H3 on the 20-seed replication: the verdict is refuted, the replication table draws both factors and the note says which reading decides', () => {
+    const data = committedData('C22', 'other-families');
+    const s = seqOf('other-families')!;
+    expect(s.verdict.holds).toBe(false);
+    expect(s.replication.seeds).toBe(20);
+    expect(s.hypotheses.map((h) => [h.id, h.holds])).toEqual([['H1', true], ['H2', false], ['H3', false]]);
+    for (const lang of ['en', 'es'] as const) {
+      const markup = render(<SequentialView sel={sel(data)} />, lang);
+      expect(markup).toContain('data-sequential-verdict="refuted"');
+      expect(markup).toContain('data-hypothesis="H2" data-holds="no"');
+      expect(markup).toContain('data-table="sequential-replication"');
+      expect(markup).toContain('data-sequential-replication-note');
+      for (const f of s.replication.factors) {
+        expect(markup).toContain(`data-replication="${f.id}"`);
+        const text = textOf(markup);
+        expect(text).toContain(formatNumber(f.pooled_median, lang, { decimals: 0 }));
+        expect(text).toContain(formatNumber(100 * f.pooled_power_cost, lang, { decimals: 1 }));
+      }
+      const note = textOf(markup).split(lang === 'en' ? 'are judged on the replication' : 'se juzgan en la réplica')[1] ?? '';
+      expect(note).toContain('20');
+      expect(textOf(markup)).not.toMatch(/NaN|undefined|Infinity/);
+    }
   });
 
   it('a median that is null (more than half never rejected) is told in words, not drawn as a day', () => {
